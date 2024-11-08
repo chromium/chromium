@@ -294,7 +294,8 @@ class CORE_EXPORT CSSParserImpl {
                               bool& invalid_rule_error);
   StyleRule* ConsumeStyleRuleContents(base::span<CSSSelector> selector_vector,
                                       CSSParserTokenStream& stream,
-                                      bool is_within_scope);
+                                      bool is_within_scope,
+                                      bool has_visited_pseudo);
 
   void ConsumeBlockContents(CSSParserTokenStream&,
                             StyleRule::RuleType,
@@ -302,7 +303,8 @@ class CORE_EXPORT CSSParserImpl {
                             StyleRule* parent_rule_for_nesting,
                             bool is_within_scope,
                             wtf_size_t nested_declarations_start_index,
-                            HeapVector<Member<StyleRuleBase>, 4>* child_rules);
+                            HeapVector<Member<StyleRuleBase>, 4>* child_rules,
+                            bool has_visited_pseudo = false);
 
   void ConsumeRuleListOrNestedDeclarationList(
       CSSParserTokenStream&,
@@ -324,7 +326,9 @@ class CORE_EXPORT CSSParserImpl {
 
   // Returns true if a declaration was parsed and added to parsed_properties_,
   // and false otherwise.
-  bool ConsumeDeclaration(CSSParserTokenStream&, StyleRule::RuleType);
+  bool ConsumeDeclaration(CSSParserTokenStream&,
+                          StyleRule::RuleType,
+                          bool has_visited_pseudo = false);
   void ConsumeDeclarationValue(CSSParserTokenStream&,
                                CSSPropertyID,
                                bool is_in_declaration_list,

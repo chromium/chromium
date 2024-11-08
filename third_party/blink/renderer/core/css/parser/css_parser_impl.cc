@@ -2651,11 +2651,12 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream,
     stream.Restore(state);
   }
 
+  bool has_visited_pseudo = false;
   // Parse the prelude of the style rule
   base::span<CSSSelector> selector_vector = CSSSelectorParser::ConsumeSelector(
       stream, context_, nesting_type, parent_rule_for_nesting, is_within_scope,
       /* semicolon_aborts_nested_selector*/ nested, style_sheet_, observer_,
-      arena_);
+      arena_, &has_visited_pseudo);
 
   if (selector_vector.empty()) {
     // Read the rest of the prelude if there was an error
@@ -2727,7 +2728,8 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream,
       }
     }
     CSSParserTokenStream::BlockGuard guard(stream);
-    return ConsumeStyleRuleContents(selector_vector, stream, is_within_scope);
+    return ConsumeStyleRuleContents(selector_vector, stream, is_within_scope,
+                                    has_visited_pseudo);
   } else {
     CSSParserTokenStream::BlockGuard guard(stream);
 
@@ -2751,21 +2753,23 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream,
         CSSParserTokenStream::BlockGuard sub_guard(
             block_stream);  // Consume the {, and open the block stack.
         return ConsumeStyleRuleContents(selector_vector, block_stream,
-                                        is_within_scope);
+                                        is_within_scope, has_visited_pseudo);
       }
 
       return StyleRule::Create(selector_vector,
                                MakeGarbageCollected<CSSLazyPropertyParserImpl>(
                                    block_start_offset, lazy_state_));
     }
-    return ConsumeStyleRuleContents(selector_vector, stream, is_within_scope);
+    return ConsumeStyleRuleContents(selector_vector, stream, is_within_scope,
+                                    has_visited_pseudo);
   }
 }
 
 StyleRule* CSSParserImpl::ConsumeStyleRuleContents(
     base::span<CSSSelector> selector_vector,
     CSSParserTokenStream& stream,
-    bool is_within_scope) {
+    bool is_within_scope,
+    bool has_visited_pseudo) {
   StyleRule* style_rule = StyleRule::Create(selector_vector);
   HeapVector<Member<StyleRuleBase>, 4> child_rules;
   if (observer_) {
@@ -2774,7 +2778,7 @@ StyleRule* CSSParserImpl::ConsumeStyleRuleContents(
   ConsumeBlockContents(stream, StyleRule::kStyle, CSSNestingType::kNesting,
                        /*parent_rule_for_nesting=*/style_rule, is_within_scope,
                        /*nested_declarations_start_index=*/kNotFound,
-                       &child_rules);
+                       &child_rules, has_visited_pseudo);
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());
   }
@@ -2806,7 +2810,8 @@ void CSSParserImpl::ConsumeBlockContents(
     StyleRule* parent_rule_for_nesting,
     bool is_within_scope,
     wtf_size_t nested_declarations_start_index,
-    HeapVector<Member<StyleRuleBase>, 4>* child_rules) {
+    HeapVector<Member<StyleRuleBase>, 4>* child_rules,
+    bool has_visited_pseudo) {
   DCHECK(parsed_properties_.empty());
 
   while (true) {
@@ -2857,7 +2862,8 @@ void CSSParserImpl::ConsumeBlockContents(
         bool consumed_declaration = false;
         {
           CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
-          consumed_declaration = ConsumeDeclaration(stream, rule_type);
+          consumed_declaration =
+              ConsumeDeclaration(stream, rule_type, has_visited_pseudo);
         }
         if (consumed_declaration) {
           if (!stream.AtEnd()) {
@@ -3044,7 +3050,8 @@ StyleRuleBase* CSSParserImpl::ConsumeNestedRule(
 // kIdentToken branch). If we are anyway going to restart, any work we do
 // to leave the stream in a more consistent state is just wasted.
 bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
-                                       StyleRule::RuleType rule_type) {
+                                       StyleRule::RuleType rule_type,
+                                       bool has_visited_pseudo) {
   const wtf_size_t decl_offset_start = stream.Offset();
 
   DCHECK_EQ(stream.Peek().GetType(), kIdentToken);
@@ -3119,6 +3126,10 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
                 important, *context_);
           }
         } else {
+          if (context_->IsUseCounterRecordingEnabled() && has_visited_pseudo &&
+              unresolved_property == CSSPropertyID::kColumnRuleColor) {
+            context_->Count(WebFeature::kVisitedColumnRuleColor);
+          }
           ConsumeDeclarationValue(stream, unresolved_property,
                                   /*is_in_declaration_list=*/true, rule_type);
         }

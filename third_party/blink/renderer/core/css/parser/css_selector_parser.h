@@ -81,7 +81,8 @@ class CORE_EXPORT CSSSelectorParser {
       bool semicolon_aborts_nested_selector,
       StyleSheetContents*,
       CSSParserObserver*,
-      HeapVector<CSSSelector>&);
+      HeapVector<CSSSelector>&,
+      bool* has_visited_pseudo);
 
   static bool ConsumeANPlusB(CSSParserTokenStream&, std::pair<int, int>&);
   CSSSelectorList* ConsumeNthChildOfSelectors(CSSParserTokenStream&);
@@ -214,7 +215,8 @@ class CORE_EXPORT CSSSelectorParser {
                                    wtf_size_t start_index_of_compound_selector);
   void SplitCompoundAtImplicitShadowCrossingCombinator(
       base::span<CSSSelector> compound_selector);
-  void RecordUsageAndDeprecations(base::span<CSSSelector>);
+  void RecordUsageAndDeprecations(base::span<CSSSelector>,
+                                  bool* has_visited_style = nullptr);
   static bool ContainsUnknownWebkitPseudoElements(
       base::span<CSSSelector> selectors);
 
