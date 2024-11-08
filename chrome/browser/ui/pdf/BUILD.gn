@@ -6,6 +6,7 @@ import("//pdf/features.gni")
 import("//services/screen_ai/buildflags/features.gni")
 
 assert(enable_pdf)
+assert(enable_screen_ai_service)
 
 source_set("pdf") {
   sources = [
@@ -15,17 +16,12 @@ source_set("pdf") {
   deps = [
     "//chrome/browser/download",
     "//chrome/browser/pdf",
+    "//chrome/browser/screen_ai:screen_ai_install_state",
     "//chrome/browser/ui/tab_contents",
+    "//chrome/browser/ui/user_education",
     "//chrome/common",
     "//components/pdf/browser",
     "//extensions/browser",
     "//pdf:features",
-    "//services/screen_ai/buildflags",
   ]
-  if (enable_screen_ai_service) {
-    deps += [
-      "//chrome/browser/screen_ai:screen_ai_install_state",
-      "//chrome/browser/ui/user_education",
-    ]
-  }
 }

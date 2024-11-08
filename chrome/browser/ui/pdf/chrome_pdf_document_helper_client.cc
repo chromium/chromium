@@ -6,19 +6,16 @@
 
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
+#include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/content_restriction.h"
 #include "components/pdf/browser/pdf_frame_util.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "pdf/pdf_features.h"
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/screen_ai/screen_ai_install_state.h"
-#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
-#include "components/user_education/common/feature_promo/feature_promo_controller.h"
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace {
 
@@ -104,10 +101,10 @@ void ChromePDFDocumentHelperClient::SetPluginCanSave(
   }
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void ChromePDFDocumentHelperClient::OnSearchifyStateChange(
     bool busy,
     content::WebContents* contents) {
+  // TODO(crbug.com/360803943): Add test.
   // Show the promo only when ScreenAI component is available and OCR can be
   // done.
   if (busy &&
@@ -118,4 +115,3 @@ void ChromePDFDocumentHelperClient::OnSearchifyStateChange(
   // TODO(crbug.com/360803943): Manage progress indicator. If it's done through
   // WebUI, update this function and the call chain to only send promo trigger.
 }
-#endif
