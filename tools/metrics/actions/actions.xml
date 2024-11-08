@@ -4178,6 +4178,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Ash.Boca.Babelorca.StudentSwitchLanguage">
+  <owner>caott@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <description>A student translate captions in School Tools app.</description>
+</action>
+
 <action name="Ash.Boca.StudentJoinedSession">
   <owner>caott@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>

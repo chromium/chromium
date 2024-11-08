@@ -146,6 +146,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/boca:boca",
     "//chromeos/ash/components/boca/babelorca/proto",
     "//chromeos/ash/components/boca/babelorca/proto:test_support",
     "//chromeos/ash/components/boca/proto",

@@ -4,7 +4,9 @@
 
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/metrics/user_metrics.h"
 
 namespace ash::boca {
@@ -48,6 +50,16 @@ void RecordOnTaskMaxNumOfTabsDuringSession(int max_num_of_tabs) {
 void RecordStudentJoinedSession() {
   base::RecordAction(
       base::UserMetricsAction(kBocaActionOfStudentJoinedSession));
+}
+
+void RecordBabelOrcaTranslationLanguage(const std::string& language) {
+  base::UmaHistogramSparse(kBocaBabelorcaTargetLanguage,
+                           base::HashMetricName(language));
+}
+
+void RecordBabelOrcaTranslationLanguageSwitched() {
+  base::RecordAction(
+      base::UserMetricsAction(kBocaBabelorcaActionOfStudentSwitchLanguage));
 }
 
 }  // namespace ash::boca

@@ -1791,6 +1791,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.LiveTranslate.Ash.Boca.Babelorca.TargetLanguage"
+    enum="LocaleCodeISO639" expires_after="2025-04-04">
+  <owner>caott@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    Records the target language of a translation of live captions from the
+    student in School Tools app. Records once per translation requested for live
+    captions from the student in School Tools app.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.LiveTranslate.CharactersTranslated"
     units="count" expires_after="2025-08-19">
   <owner>evliu@google.com</owner>

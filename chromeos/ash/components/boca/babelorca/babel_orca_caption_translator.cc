@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chromeos/ash/components/boca/babelorca/babel_orca_translation_dispatcher.h"
+#include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "components/live_caption/translation_dispatcher.h"
 #include "components/live_caption/translation_util.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
@@ -22,6 +23,11 @@ void BabelOrcaCaptionTranslator::InitTranslationAndSetCallback(
     OnTranslationCallback callback,
     const std::string& source_language,
     const std::string& target_language) {
+  if (source_language != target_language &&
+      target_language != target_language_) {
+    boca::RecordBabelOrcaTranslationLanguage(target_language);
+    boca::RecordBabelOrcaTranslationLanguageSwitched();
+  }
   source_language_ = source_language;
   target_language_ = target_language;
 

@@ -14,6 +14,10 @@ inline constexpr char kBocaNumOfActiveStudentsWhenSessionEnded[] =
     "Ash.Boca.NumberOfActiveStudentsWhenSessionEnded";
 inline constexpr char kBocaNumOfStudentsJoinedViaCodeDuringSession[] =
     "Ash.Boca.NumberOfStudentsJoinedViaCodeDuringSession";
+inline constexpr char kBocaBabelorcaActionOfStudentSwitchLanguage[] =
+    "Ash.Boca.Babelorca.StudentSwitchLanguage";
+inline constexpr char kBocaBabelorcaTargetLanguage[] =
+    "Accessibility.LiveTranslate.Ash.Boca.Babelorca.TargetLanguage";
 inline constexpr char kBocaOnTaskLockedSessionDurationPercentage[] =
     "Ash.Boca.OnTask.LockedSessionDurationPercentage";
 inline constexpr char kBocaOnTaskUnlockedSessionDurationPercentage[] =
@@ -44,6 +48,13 @@ void RecordOnTaskMaxNumOfTabsDuringSession(int max_num_of_tabs);
 
 // Records the action of a student joined a session.
 void RecordStudentJoinedSession();
+
+// Records the target language of a translation of live captions from the
+// student.
+void RecordBabelOrcaTranslationLanguage(const std::string& language);
+
+// Records the action of a student translates the live caption.
+void RecordBabelOrcaTranslationLanguageSwitched();
 
 }  // namespace ash::boca
 
