@@ -7,6 +7,7 @@
 
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
 #include "base/component_export.h"
+#include "base/sequence_checker.h"
 #include "chromeos/ash/components/mantis/mojom/mantis_processor.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -33,13 +34,30 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_MANTIS_MEDIA_APP)
 
   mojo::PendingReceiver<mantis::mojom::MantisProcessor> GetReceiver();
 
-  // TODO(crbug.com/368986974): Implements
-  // `media_app_ui::mojom::MantisMediaAppUntrustedProcessor`.
+  // Implements `media_app_ui::mojom::MantisMediaAppUntrustedProcessor`:
+  void SegmentImage(const std::vector<uint8_t>& image,
+                    const std::vector<uint8_t>& selection,
+                    SegmentImageCallback callback) override;
+
+  void GenerativeFillImage(const std::vector<uint8_t>& image,
+                           const std::vector<uint8_t>& mask,
+                           const std::string& text,
+                           uint32_t seed,
+                           GenerativeFillImageCallback callback) override;
+
+  void InpaintImage(const std::vector<uint8_t>& image,
+                    const std::vector<uint8_t>& mask,
+                    uint32_t seed,
+                    InpaintImageCallback callback) override;
+
+  void ClassifyImageSafety(const std::vector<uint8_t>& image,
+                           ClassifyImageSafetyCallback callback) override;
 
  private:
   mojo::Receiver<media_app_ui::mojom::MantisMediaAppUntrustedProcessor>
       receiver_;
   mojo::Remote<mantis::mojom::MantisProcessor> processor_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace ash

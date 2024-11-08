@@ -22,4 +22,38 @@ MantisMediaAppUntrustedProcessor::GetReceiver() {
   return processor_.BindNewPipeAndPassReceiver();
 }
 
+void MantisMediaAppUntrustedProcessor::SegmentImage(
+    const std::vector<uint8_t>& image,
+    const std::vector<uint8_t>& selection,
+    SegmentImageCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  processor_->Segmentation(image, selection, std::move(callback));
+}
+
+void MantisMediaAppUntrustedProcessor::GenerativeFillImage(
+    const std::vector<uint8_t>& image,
+    const std::vector<uint8_t>& mask,
+    const std::string& text,
+    uint32_t seed,
+    GenerativeFillImageCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  processor_->GenerativeFill(image, mask, seed, text, std::move(callback));
+}
+
+void MantisMediaAppUntrustedProcessor::InpaintImage(
+    const std::vector<uint8_t>& image,
+    const std::vector<uint8_t>& mask,
+    uint32_t seed,
+    InpaintImageCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  processor_->Inpainting(image, mask, seed, std::move(callback));
+}
+
+void MantisMediaAppUntrustedProcessor::ClassifyImageSafety(
+    const std::vector<uint8_t>& image,
+    ClassifyImageSafetyCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  processor_->ClassifyImageSafety(image, std::move(callback));
+}
+
 }  // namespace ash

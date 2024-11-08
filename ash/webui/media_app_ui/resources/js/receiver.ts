@@ -469,6 +469,26 @@ const DELEGATE: ClientApiDelegate = {
         mantisUntrustedProcessor.$.bindNewPipeAndPassReceiver());
     return response.result;
   },
+  async segmentImage(image: number[], selection: number[]) {
+    const response =
+        await mantisUntrustedProcessor?.segmentImage(image, selection);
+    return response.result;
+  },
+  async generativeFillImage(
+      image: number[], mask: number[], text: string, seed: number) {
+    const response = await mantisUntrustedProcessor?.generativeFillImage(
+        image, mask, text, seed);
+    return response.result;
+  },
+  async inpaintImage(image: number[], mask: number[], seed: number) {
+    const response =
+        await mantisUntrustedProcessor?.inpaintImage(image, mask, seed);
+    return response.result;
+  },
+  async classifyImageSafety(image: number[]) {
+    const response = await mantisUntrustedProcessor?.classifyImageSafety(image);
+    return response.verdict;
+  },
 };
 
 /**
