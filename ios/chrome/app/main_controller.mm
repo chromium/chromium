@@ -120,7 +120,6 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
@@ -198,9 +197,6 @@ NSString* const kSendQueuedFeedback = @"SendQueuedFeedback";
 
 // Constants for deferring the upload of crash reports.
 NSString* const kUploadCrashReports = @"UploadCrashReports";
-
-// Constants for deferring the cleanup of snapshots on disk.
-NSString* const kCleanupSnapshots = @"CleanupSnapshots";
 
 // Constants for deferring startup Spotlight bookmark indexing.
 NSString* const kStartSpotlightBookmarksIndexing =
@@ -335,8 +331,6 @@ void BeginMemoryExperimentationAfterDelay() {
 // Handles collecting metrics on user triggered screenshots
 @property(nonatomic, strong)
     ScreenshotMetricsRecorder* screenshotMetricsRecorder;
-// Cleanup snapshots on disk.
-- (void)cleanupSnapshots;
 // Cleanup discarded sessions on disk.
 - (void)cleanupDiscardedSessions;
 // Pings distribution services.
@@ -361,8 +355,6 @@ void BeginMemoryExperimentationAfterDelay() {
 - (void)scheduleCrashReportUpload;
 // Asynchronously schedules the cleanup of discarded session files on disk.
 - (void)scheduleDiscardedSessionsCleanup;
-// Asynchronously schedules the cleanup of snapshots on disk.
-- (void)scheduleSnapshotsCleanup;
 // Schedules various tasks to be performed after the application becomes active.
 - (void)scheduleLowPriorityStartupTasks;
 // Schedules the deletion of user downloaded files that might be leftover
@@ -630,11 +622,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
   // Remove all discarded sessions from disk.
   [self scheduleDiscardedSessionsCleanup];
-
-  // If the user chooses to restore their session, some cached snapshots and
-  // session states may be needed. Otherwise, cleanup the snapshots and session
-  // states
-  [self scheduleSnapshotsCleanup];
 
   ios::provider::InstallOverrides();
 
@@ -1095,14 +1082,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
                                         }];
 }
 
-- (void)scheduleSnapshotsCleanup {
-  __weak MainController* weakSelf = self;
-  [_appState.deferredRunner enqueueBlockNamed:kCleanupSnapshots
-                                        block:^{
-                                          [weakSelf cleanupSnapshots];
-                                        }];
-}
-
 - (void)scheduleReadingListDownloadServiceInitialization {
   __weak MainController* weakSelf = self;
   [_appState.deferredRunner
@@ -1332,19 +1311,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 #pragma mark - Helper methods.
-
-- (void)cleanupSnapshots {
-  // TODO(crbug.com/40144759): Browsers for disconnected scenes are not in the
-  // BrowserList, so this may not reach all folders.
-  for (ProfileIOS* profile :
-       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
-    for (Browser* browser :
-         browserList->BrowsersOfType(BrowserList::BrowserType::kAll)) {
-      SnapshotBrowserAgent::FromBrowser(browser)->PerformStorageMaintenance();
-    }
-  }
-}
 
 - (void)cleanupDiscardedSessions {
   const std::set<std::string> discardedSessionIDs =

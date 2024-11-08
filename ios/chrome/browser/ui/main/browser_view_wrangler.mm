@@ -122,6 +122,12 @@
   } else {
     RestoreAllInactiveTabs(inactiveBrowser, _mainBrowser.get());
   }
+
+  // Schedule deletion of old snapshots now that tabs have been loaded
+  // and maybe moved between Browser (when determined as inactive).
+  [self cleanupSnapshotsForBrowser:_mainBrowser.get()];
+  [self cleanupSnapshotsForBrowser:inactiveBrowser];
+  [self cleanupSnapshotsForBrowser:_otrBrowser.get()];
 }
 
 #pragma mark - BrowserProviderInterface
@@ -356,11 +362,16 @@
       browser, identifier);
 }
 
-// Load session for `browser`.
+// Loads session for `browser`.
 - (void)loadSessionForBrowser:(Browser*)browser {
   ProfileIOS* profile = browser->GetProfile();
   SessionRestorationServiceFactory::GetForProfile(profile)->LoadSession(
       browser);
+}
+
+// Cleans old snapshots for `browser`.
+- (void)cleanupSnapshotsForBrowser:(Browser*)browser {
+  SnapshotBrowserAgent::FromBrowser(browser)->PerformStorageMaintenance();
 }
 
 @end
