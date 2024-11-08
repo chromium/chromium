@@ -313,11 +313,12 @@ void CredentialProviderService::SyncAllCredentials(
   SyncStore();
 }
 
-bool CredentialProviderService::SaveGaia() {
+bool CredentialProviderService::SaveAccountInfo() {
   CoreAccountInfo account =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  return credential_provider_extension::StoreGaiaInKeychain(
-      base::SysUTF8ToNSString(account.gaia));
+  return credential_provider_extension::StoreAccountInfoInKeychain(
+      base::SysUTF8ToNSString(account.gaia),
+      base::SysUTF8ToNSString(account.email));
 }
 
 void CredentialProviderService::SyncStore() {
@@ -336,7 +337,7 @@ void CredentialProviderService::SyncStore() {
     if (error) {
       return;
     }
-    if (!SaveGaia()) {
+    if (!SaveAccountInfo()) {
       return;
     }
     if (weak_credential_store) {

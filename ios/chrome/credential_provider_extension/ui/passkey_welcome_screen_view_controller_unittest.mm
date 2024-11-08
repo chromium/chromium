@@ -16,6 +16,7 @@ class PasskeyWelcomeScreenViewControllerTest : public PlatformTest {
     return [[PasskeyWelcomeScreenViewController alloc]
                  initForPurpose:purpose
         navigationItemTitleView:[[UIView alloc] init]
+                      userEmail:@"peter.parker@gmail.com"
                        delegate:nil
             primaryButtonAction:nil];
   }

@@ -10,35 +10,38 @@
 
 namespace {
 
-constexpr NSString* kGaiaIdentifier = @"credential_provider_extension.gaia";
+constexpr NSString* kAccountEmailKey = @"AccountEmailKey";
+constexpr NSString* kAccountGaiaKey = @"AccountGaiaKey";
+constexpr NSString* kAccountInfoIdentifier =
+    @"credential_provider_extension.account_info";
 
-NSDictionary* GaiaLoadQuery() {
+NSDictionary* AccountInfoLoadQuery() {
   return @{
     (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
-    (__bridge id)kSecAttrAccount : kGaiaIdentifier,
+    (__bridge id)kSecAttrAccount : kAccountInfoIdentifier,
     (__bridge id)kSecReturnData : @YES,
   };
 }
 
-NSDictionary* GaiaStoreQuery(NSData* gaia) {
+NSDictionary* AccountInfoStoreQuery(NSData* accountInfo) {
   return @{
     (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
     (__bridge id)
     kSecAttrAccessible : (__bridge id)kSecAttrAccessibleWhenUnlocked,
-    (__bridge id)kSecValueData : gaia,
-    (__bridge id)kSecAttrAccount : kGaiaIdentifier,
+    (__bridge id)kSecValueData : accountInfo,
+    (__bridge id)kSecAttrAccount : kAccountInfoIdentifier,
   };
 }
 
-NSDictionary* GaiaUpdateQuery() {
+NSDictionary* AccountInfoUpdateQuery() {
   return @{
     (__bridge id)kSecClass : (__bridge id)kSecClassGenericPassword,
-    (__bridge id)kSecAttrAccount : kGaiaIdentifier,
+    (__bridge id)kSecAttrAccount : kAccountInfoIdentifier,
   };
 }
 
-NSDictionary* GaiaUpdateAttribs(NSData* gaia) {
-  return @{(__bridge id)kSecValueData : gaia};
+NSDictionary* AccountInfoUpdateAttribs(NSData* account_info) {
+  return @{(__bridge id)kSecValueData : account_info};
 }
 
 }  // namespace
@@ -90,42 +93,54 @@ BOOL StorePasswordInKeychain(NSString* password, NSString* identifier) {
   return status == errSecSuccess;
 }
 
-NSString* LoadGaiaFromKeychain() {
-  NSDictionary* gaiaLoadQuery = GaiaLoadQuery();
+AccountInfo LoadAccountInfoFromKeychain() {
+  NSDictionary* accountInfoLoadQuery = AccountInfoLoadQuery();
 
   // Get the keychain item containing the password.
   CFDataRef sec_data_ref = nullptr;
-  OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)gaiaLoadQuery,
-                                        (CFTypeRef*)&sec_data_ref);
+  OSStatus status =
+      SecItemCopyMatching((__bridge CFDictionaryRef)accountInfoLoadQuery,
+                          (CFTypeRef*)&sec_data_ref);
 
   if (status != errSecSuccess) {
     DLOG(ERROR) << "Error retrieving gaia, OSStatus: " << status;
-    return nil;
+    return {/*gaia=*/nil, /*email=*/nil};
   }
 
   // This is safe because SecItemCopyMatching either assign an owned reference
   // to sec_data_ref, or leave it unchanged, and bridging maps nullptr to nil.
   NSData* data = (__bridge_transfer NSData*)sec_data_ref;
-  return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+  NSKeyedUnarchiver* unarchiver =
+      [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
+  NSString* gaia = [unarchiver decodeObjectForKey:kAccountGaiaKey];
+  NSString* email = [unarchiver decodeObjectForKey:kAccountEmailKey];
+  [unarchiver finishDecoding];
+  return {gaia, email};
 }
 
-BOOL StoreGaiaInKeychain(NSString* gaia) {
-  NSData* gaiaData = [gaia dataUsingEncoding:NSUTF8StringEncoding];
+BOOL StoreAccountInfoInKeychain(NSString* gaia, NSString* user_email) {
+  NSKeyedArchiver* archiver =
+      [[NSKeyedArchiver alloc] initRequiringSecureCoding:NO];
+  [archiver encodeObject:gaia forKey:kAccountGaiaKey];
+  [archiver encodeObject:user_email forKey:kAccountEmailKey];
+  [archiver finishEncoding];
+  NSData* accountData = [archiver encodedData];
 
-  // Check that there is not already a gaia.
+  // Check that there is not already a stored account info.
   OSStatus status =
-      SecItemCopyMatching((__bridge CFDictionaryRef)GaiaLoadQuery(),
+      SecItemCopyMatching((__bridge CFDictionaryRef)AccountInfoLoadQuery(),
                           /*result=*/nullptr);
   if (status == errSecItemNotFound) {
     // A new entry must be created.
-    status = SecItemAdd((__bridge CFDictionaryRef)GaiaStoreQuery(gaiaData),
-                        /*result=*/nullptr);
+    status =
+        SecItemAdd((__bridge CFDictionaryRef)AccountInfoStoreQuery(accountData),
+                   /*result=*/nullptr);
 
   } else if (status == noErr) {
     // The entry must be updated.
-    status =
-        SecItemUpdate((__bridge CFDictionaryRef)GaiaUpdateQuery(),
-                      (__bridge CFDictionaryRef)GaiaUpdateAttribs(gaiaData));
+    status = SecItemUpdate(
+        (__bridge CFDictionaryRef)AccountInfoUpdateQuery(),
+        (__bridge CFDictionaryRef)AccountInfoUpdateAttribs(accountData));
   }
 
   return status == errSecSuccess;

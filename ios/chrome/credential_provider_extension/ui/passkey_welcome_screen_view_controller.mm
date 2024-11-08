@@ -101,6 +101,11 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
   // The view to be used as the navigation bar title view.
   UIView* _navigationItemTitleView;
 
+  // Email address associated with the signed in account. Depending on the
+  // PasskeyWelcomeScreenPurpose, the user email might or might no have to be
+  // dispalyed in the UI. If part of the UI, the `userEmail` must not be `nil`.
+  NSString* _userEmail;
+
   // Delegate for this view controller.
   __weak id<PasskeyWelcomeScreenViewControllerDelegate>
       _passkeyWelcomeScreenViewControllerDelegate;
@@ -111,6 +116,7 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
 
 - (instancetype)initForPurpose:(PasskeyWelcomeScreenPurpose)purpose
        navigationItemTitleView:(UIView*)navigationItemTitleView
+                     userEmail:(NSString*)userEmail
                       delegate:(id<PasskeyWelcomeScreenViewControllerDelegate>)
                                    delegate
            primaryButtonAction:(ProceduralBlock)primaryButtonAction {
@@ -118,6 +124,7 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
   if (self) {
     _purpose = purpose;
     _navigationItemTitleView = navigationItemTitleView;
+    _userEmail = userEmail;
     _passkeyWelcomeScreenViewControllerDelegate = delegate;
     _primaryButtonAction = primaryButtonAction;
   }
@@ -220,13 +227,13 @@ NSString* GetPrimaryButtonTitle(PasskeyWelcomeScreenPurpose purpose) {
   UIFont* font = [UIFont systemFontOfSize:13 weight:UIFontWeightRegular];
   footerMessage.font = [[UIFontMetrics defaultMetrics] scaledFontForFont:font];
 
+  CHECK(_userEmail);
   NSString* stringWithPlaceholder = NSLocalizedString(
       @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_ENROLLMENT_FOOTER_MESSAGE",
       @"Footer messsage shown at the bottom of the screen-specific view.");
-  // TODO(crbug.com/355042392): Replace hard-coded email.
-  footerMessage.text = [stringWithPlaceholder
-      stringByReplacingOccurrencesOfString:@"$1"
-                                withString:@"peter.parker@gmail.com"];
+  footerMessage.text =
+      [stringWithPlaceholder stringByReplacingOccurrencesOfString:@"$1"
+                                                       withString:_userEmail];
 
   return footerMessage;
 }

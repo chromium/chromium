@@ -40,6 +40,8 @@
 #import "ios/chrome/credential_provider_extension/ui/stale_credentials_view_controller.h"
 #import "ios/components/credential_provider_extension/password_util.h"
 
+using credential_provider_extension::AccountInfo;
+
 namespace {
 UIColor* BackgroundColor() {
   return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
@@ -449,8 +451,15 @@ UIColor* BackgroundColor() {
   [self.extensionContext completeExtensionConfigurationRequest];
 }
 
+// Loads and returns the account information (gaia and email) from the Keychain
+// Services.
+- (AccountInfo)accountInfo {
+  return credential_provider_extension::LoadAccountInfoFromKeychain();
+}
+
+// Returns the gaia ID associated with the current account.
 - (NSString*)gaia {
-  NSString* gaia = credential_provider_extension::LoadGaiaFromKeychain();
+  NSString* gaia = [self accountInfo].gaia;
   if (gaia.length > 0) {
     return gaia;
   }
@@ -464,6 +473,11 @@ UIColor* BackgroundColor() {
       }];
   return credentialIndex != NSNotFound ? credentials[credentialIndex].gaia
                                        : nil;
+}
+
+// Returns the email address associated with the current account.
+- (NSString*)userEmail {
+  return [self accountInfo].email;
 }
 
 #pragma mark - PasskeyKeychainProviderBridgeDelegate
@@ -950,10 +964,13 @@ UIColor* BackgroundColor() {
     action = primaryButtonAction;
   }
 
+  NSString* userEmail =
+      purpose == PasskeyWelcomeScreenPurpose::kEnroll ? [self userEmail] : nil;
   PasskeyWelcomeScreenViewController* welcomeScreen =
       [[PasskeyWelcomeScreenViewController alloc]
                    initForPurpose:purpose
           navigationItemTitleView:self.passkeyNavigationItemTitleView
+                        userEmail:userEmail
                          delegate:self
               primaryButtonAction:action];
   [self.passkeyNavigationController pushViewController:welcomeScreen
