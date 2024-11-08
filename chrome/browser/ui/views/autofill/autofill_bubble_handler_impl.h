@@ -12,7 +12,6 @@
 #include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/browser/ui/payments/save_payment_method_and_virtual_card_enroll_confirmation_ui_params.h"
 
-class Browser;
 class PageActionIconView;
 class ToolbarButtonProvider;
 
@@ -34,8 +33,8 @@ enum class IbanBubbleType;
 
 class AutofillBubbleHandlerImpl : public AutofillBubbleHandler {
  public:
-  AutofillBubbleHandlerImpl(Browser* browser,
-                            ToolbarButtonProvider* toolbar_button_provider);
+  explicit AutofillBubbleHandlerImpl(
+      ToolbarButtonProvider* toolbar_button_provider);
 
   AutofillBubbleHandlerImpl(const AutofillBubbleHandlerImpl&) = delete;
   AutofillBubbleHandlerImpl& operator=(const AutofillBubbleHandlerImpl&) =
@@ -107,8 +106,6 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler {
       base::OnceCallback<void(PaymentsUiClosedReason)> controller_hide_callback,
       PageActionIconView* icon_view,
       SavePaymentMethodAndVirtualCardEnrollConfirmationUiParams ui_params);
-
-  raw_ptr<Browser> browser_ = nullptr;
 
   raw_ptr<ToolbarButtonProvider> toolbar_button_provider_ = nullptr;
 };

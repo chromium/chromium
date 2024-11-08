@@ -36,7 +36,6 @@
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
 #include "chrome/browser/ui/views/autofill/update_address_profile_view.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -113,9 +112,8 @@ View* ShowBubble(ToolbarButtonProvider* toolbar_button_provider,
 }  // namespace
 
 AutofillBubbleHandlerImpl::AutofillBubbleHandlerImpl(
-    Browser* browser,
     ToolbarButtonProvider* toolbar_button_provider)
-    : browser_(browser), toolbar_button_provider_(toolbar_button_provider) {}
+    : toolbar_button_provider_(toolbar_button_provider) {}
 
 AutofillBubbleHandlerImpl::~AutofillBubbleHandlerImpl() = default;
 

@@ -2216,7 +2216,7 @@ void BrowserView::SetToolbarButtonProvider(ToolbarButtonProvider* provider) {
   // Recreate the autofill bubble handler when toolbar button provider changes.
   autofill_bubble_handler_ =
       std::make_unique<autofill::AutofillBubbleHandlerImpl>(
-          browser_.get(), toolbar_button_provider_);
+          toolbar_button_provider_);
 }
 
 void BrowserView::UpdatePageActionIcon(PageActionIconType type) {
