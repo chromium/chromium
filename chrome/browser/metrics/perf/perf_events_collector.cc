@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
@@ -31,10 +30,6 @@
 #include "third_party/re2/src/re2/re2.h"
 
 namespace metrics {
-
-BASE_FEATURE(kCWPCollectsETM,
-             "CWPCollectsETM",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -374,8 +369,7 @@ std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_aarch64(
   using WeightAndValue = RandomSelector::WeightAndValue;
   std::vector<WeightAndValue> cmds;
 
-  if (base::FeatureList::IsEnabled(kCWPCollectsETM) &&
-      (model == "TROGDOR" || model == "STRONGBAD" || model == "HEROBRINE")) {
+  if (model == "TROGDOR" || model == "STRONGBAD" || model == "HEROBRINE") {
     cmds.emplace_back(50.0, kPerfCyclesHGCmd);
     cmds.emplace_back(20.0, kPerfFPCallgraphHGCmd);
     cmds.emplace_back(30.0, kPerfETMCmd);

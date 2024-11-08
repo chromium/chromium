@@ -21,7 +21,6 @@
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/perf/cpu_identity.h"
 #include "chrome/browser/metrics/perf/windowed_incognito_observer.h"
@@ -324,8 +323,6 @@ class PerfCollectorTest : public testing::Test {
   std::vector<SampledProfile> cached_profile_data_;
 
   std::unique_ptr<TestPerfCollector> perf_collector_;
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(PerfCollectorTest, CheckSetup) {
@@ -823,7 +820,6 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnArch_Arm64) {
 }
 
 TEST_F(PerfCollectorTest, DefaultCommandsBasedOnArch_Arm64_ETM) {
-  feature_list_.InitAndEnableFeature(kCWPCollectsETM);
   CPUIdentity cpuid;
   cpuid.arch = "aarch64";
   cpuid.vendor = "";
