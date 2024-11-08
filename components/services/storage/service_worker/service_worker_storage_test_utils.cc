@@ -23,8 +23,7 @@ void ReadDataPipeInternal(mojo::DataPipeConsumerHandle handle,
     switch (rv) {
       case MOJO_RESULT_BUSY:
       case MOJO_RESULT_INVALID_ARGUMENT:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
       case MOJO_RESULT_FAILED_PRECONDITION:
         std::move(quit_closure).Run();
         return;
@@ -45,8 +44,7 @@ void ReadDataPipeInternal(mojo::DataPipeConsumerHandle handle,
         break;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return;
+  NOTREACHED();
 }
 
 }  // namespace

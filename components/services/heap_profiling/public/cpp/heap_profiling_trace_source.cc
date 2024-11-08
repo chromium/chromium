@@ -30,8 +30,7 @@ std::string GetHeapName(
     case AllocationSubsystem::kPartitionAllocator:
       return "partition_alloc";
     case AllocationSubsystem::kManualForTesting:
-      NOTREACHED_IN_MIGRATION();
-      return {};
+      NOTREACHED();
   }
 }
 

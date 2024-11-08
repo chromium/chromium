@@ -298,8 +298,7 @@ std::pair<leveldb::Status, LevelDBScope::Mode> LevelDBScope::Commit(
       s = WriteChangesAndUndoLogInternal(sync_on_commit);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return {leveldb::Status::NotSupported("Unknown scopes mode."), mode_};
+      NOTREACHED();
   }
   locks_.clear();
   committed_ = true;

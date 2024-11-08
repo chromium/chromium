@@ -74,7 +74,7 @@ bool TransactionalLevelDBIterator::IsValid() const {
     case IteratorState::kActive:
       return iterator_->Valid();
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 leveldb::Status TransactionalLevelDBIterator::SeekToLast() {

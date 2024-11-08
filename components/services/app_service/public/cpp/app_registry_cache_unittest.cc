@@ -345,7 +345,7 @@ class AppRegistryCacheTest : public testing::Test,
 
   void OnAppRegistryCacheWillBeDestroyed(AppRegistryCache* cache) override {
     // The test code explicitly calls both AddObserver and RemoveObserver.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   std::string GetName(AppRegistryCache& cache, const std::string& app_id) {
