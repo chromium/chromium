@@ -62,7 +62,7 @@ scoped_refptr<gpu::ClientSharedImage> CameraBufferFactory::CreateSharedImage(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     const gfx::ColorSpace& color_space) {
-  auto* sii = VideoCaptureDeviceFactoryChromeOS::GetSharedImageInterface();
+  auto sii = VideoCaptureDeviceFactoryChromeOS::GetSharedImageInterface();
   if (!sii) {
     LOG(ERROR) << "SharedImageInterface not set.";
     return nullptr;
@@ -85,7 +85,7 @@ CameraBufferFactory::CreateSharedImageFromGmbHandle(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     const gfx::ColorSpace& color_space) {
-  auto* sii = VideoCaptureDeviceFactoryChromeOS::GetSharedImageInterface();
+  auto sii = VideoCaptureDeviceFactoryChromeOS::GetSharedImageInterface();
   if (!sii) {
     LOG(ERROR) << "SharedImageInterface not set.";
     return nullptr;

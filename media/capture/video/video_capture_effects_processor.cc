@@ -42,8 +42,8 @@ mojom::VideoBufferHandlePtr CreateBufferHandle(
     case VideoCaptureBufferType::kGpuMemoryBuffer: {
       CHECK_EQ(frame_info.pixel_format, VideoPixelFormat::PIXEL_FORMAT_NV12);
 
-      auto* sii =
-          VideoCaptureGpuChannelHost::GetInstance().SharedImageInterface();
+      auto sii =
+          VideoCaptureGpuChannelHost::GetInstance().GetSharedImageInterface();
       CHECK(sii);
 
       // Create a single shared image to back a multiplanar video frame.

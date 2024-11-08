@@ -305,6 +305,9 @@ class VideoCaptureDeviceTest
   }
 
   void TearDown() override {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(nullptr);
+#endif
     task_environment_.RunUntilIdle();
   }
 

@@ -55,7 +55,8 @@ bool V4L2GpuMemoryBufferTracker::Init(const gfx::Size& dimensions,
   }
   gfx::BufferUsage usage = GetBufferUsage(*gfx_format);
 
-  auto* sii = VideoCaptureGpuChannelHost::GetInstance().SharedImageInterface();
+  auto sii =
+      VideoCaptureGpuChannelHost::GetInstance().GetSharedImageInterface();
   if (!sii) {
     LOG(ERROR) << "Failed to get SharedImageInterface.";
     return false;

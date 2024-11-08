@@ -131,7 +131,8 @@ int V4L2CaptureDelegateGpuHelper::OnIncomingCapturedData(
     return -1;
   }
 
-  auto* sii = VideoCaptureGpuChannelHost::GetInstance().SharedImageInterface();
+  auto sii =
+      VideoCaptureGpuChannelHost::GetInstance().GetSharedImageInterface();
   if (!sii) {
     LOG(ERROR) << "Failed to get SharedImageInterface.";
     client->OnFrameDropped(ConvertReservationFailureToFrameDropReason(
