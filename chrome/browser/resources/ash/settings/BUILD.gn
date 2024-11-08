@@ -603,9 +603,8 @@ build_webui("build") {
   ]
 
   if (is_chrome_branded) {
-    ts_path_mappings += [ "/nearby/nearby-share-internal-icons.m.js|" + rebase_path(
-                              "//chrome/browser/nearby_sharing/internal/icons/nearby-share-internal-icons.m.js",
-                              target_gen_dir) ]
+    ts_path_mappings += [ "/nearby/nearby-share-internal-icons.m.js|" +
+                          rebase_path("dummy.d.ts", target_gen_dir) ]
   }
 
   extra_grdp_deps = [

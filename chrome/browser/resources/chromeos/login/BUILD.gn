@@ -259,6 +259,9 @@ build_webui("build") {
     "//tools/typescript/definitions/webview_tag.d.ts",
     "//tools/typescript/definitions/web_request.d.ts",
   ]
+  if (is_chrome_branded) {
+    ts_definitions += [ "dummy.d.ts" ]
+  }
 
   ts_composite = true
 
@@ -282,9 +285,8 @@ build_webui("build") {
   ]
 
   if (is_chrome_branded) {
-    ts_path_mappings += [ "/sync-consent-icons.m.js|" + rebase_path(
-                              "//chrome/browser/internal/resources/chromeos-sync-consent-icons.m.js|",
-                              target_gen_dir) ]
+    ts_path_mappings += [ "/sync-consent-icons.m.js|" +
+                          rebase_path("dummy.d.ts", target_gen_dir) ]
   }
 
   ts_extra_deps =
