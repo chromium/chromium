@@ -983,6 +983,8 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_TITLE},
       {"audioInputStyleTransferDescription",
        IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_DESCRIPTION},
+      {"audioInputVoiceIsolationEffectFallbackMessage",
+       IDS_SETTINGS_AUDIO_INPUT_VOICE_ISOLATION_EFFECT_FALLBACK_MESSAGE},
       {"audioInputEffectMode", IDS_SETTINGS_AUDIO_INPUT_EFFECT_MODE},
       {"audioInputEffectModeStyleTransferTitle",
        IDS_SETTINGS_AUDIO_INPUT_EFFECT_MODE_STYLE_TRANSFER_TITLE},

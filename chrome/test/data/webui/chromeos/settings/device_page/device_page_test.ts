@@ -549,6 +549,20 @@ suite('<settings-device-page>', () => {
           fakeCrosAudioConfig.fakeVoiceIsolationUIAppearanceEffectMode,
     };
 
+    const effectFallbackMessageAudioSystemProperties:
+        crosAudioConfigMojom.AudioSystemProperties = {
+      outputVolumePercent: 0,
+      outputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      outputDevices: [],
+      inputDevices: [
+        fakeCrosAudioConfig.fakeInternalFrontMic,
+      ],
+      inputGainPercent: 0,
+      inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearanceFallback,
+    };
+
     const hfpMicSrNotSupportedAudioSystemProperties:
         crosAudioConfigMojom.AudioSystemProperties = {
       outputVolumePercent: 0,
@@ -1162,6 +1176,40 @@ suite('<settings-device-page>', () => {
             audioPage.getPref('ash.input_voice_isolation_preferred_effect')
                 .value,
             crosAudioConfigMojom.AudioEffectType.kStyleTransfer);
+      });
+
+      test('effect fallback message visibility', async () => {
+        // The fallback message section should be shown only when
+        // the corresponding flag in system properties is on, and
+        // the voice isolation toggle is on.
+
+        // Set system properties with fallback flag.
+        crosAudioConfig.setAudioSystemProperties(
+            effectFallbackMessageAudioSystemProperties);
+        await flushTasks();
+
+        const fallbackMessageSection =
+            audioPage.shadowRoot!.querySelector<HTMLDivElement>(
+                '#voiceIsolationEffectFallbackMessageSection');
+        assertTrue(!!fallbackMessageSection);
+
+        // The fallback message is hidden when the toggle is off.
+        assertFalse(voiceIsolationToggleSection.checked);
+        assertFalse(isVisible(fallbackMessageSection));
+
+        // Turn on the toggle, the fallback message is shown.
+        await voiceIsolationToggleSection.click();
+        assertTrue(voiceIsolationToggleSection.checked);
+        assertTrue(isVisible(fallbackMessageSection));
+
+        // Change the system properties to without fallback flag.
+        crosAudioConfig.setAudioSystemProperties(
+            effectStyleTransferAudioSystemProperties);
+        await flushTasks();
+
+        // The fallback message should be hidden.
+        assertTrue(voiceIsolationToggleSection.checked);
+        assertFalse(isVisible(fallbackMessageSection));
       });
     });
 

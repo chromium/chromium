@@ -152,6 +152,13 @@ export const fakeVoiceIsolationUIAppearanceEffectMode:
       showEffectFallbackMessage: false,
     };
 
+export const fakeVoiceIsolationUIAppearanceFallback:
+    VoiceIsolationUIAppearance = {
+      toggleType: AudioEffectType.kStyleTransfer,
+      effectModeOptions: 0,
+      showEffectFallbackMessage: true,
+    };
+
 export interface FakePropertiesObserverInterface {
   onPropertiesUpdated(properties: AudioSystemProperties): void;
 }

@@ -3731,6 +3731,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_DESCRIPTION" desc="In Device Settings, the description of the allowance of style transfer toggle under the input section in audio settings subpage.">
     Apply noise cancellation and audio improvements.
   </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_VOICE_ISOLATION_EFFECT_FALLBACK_MESSAGE" desc="In Device Settings, the message to inform the user about the effect will fallback to noise cancellation.">
+    The connected mic can only support noise cancellation
+  </message>
   <message name="IDS_SETTINGS_AUDIO_INPUT_EFFECT_MODE" desc="In Device Settings, the section title of the effect mode options.">
     Effect mode
   </message>

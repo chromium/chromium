@@ -489,6 +489,12 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
     return effectModeOptions !== 0 && voiceIsolationEnabled;
   }
 
+  private shouldShowVoiceIsolationFallbackMessage_(
+      crasShowEffectFallbackMessage: boolean,
+      voiceIsolationEnabled: boolean): boolean {
+    return crasShowEffectFallbackMessage && voiceIsolationEnabled;
+  }
+
   private toggleHfpMicSrEnabled_(e: CustomEvent<boolean>): void {
     this.crosAudioConfig_.setHfpMicSrEnabled(e.detail);
   }
