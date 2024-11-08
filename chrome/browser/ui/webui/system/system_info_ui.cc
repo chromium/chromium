@@ -76,17 +76,13 @@ void CreateAndAddSystemInfoUIDataSource(Profile* profile) {
   };
   html_source->AddLocalizedStrings(kStrings);
 
-#if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::u16string other_system_page_url(chrome::kChromeUISystemURL16);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::u16string other_system_page_url(chrome::kOsUISystemURL);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   auto os_link_container = l10n_util::GetStringFUTF16(
       IDS_ABOUT_SYS_OS_LINK_CONTAINER, other_system_page_url);
   html_source->AddString("osLinkContainer", os_link_container);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   webui::SetupWebUIDataSource(
       html_source, base::make_span(kAboutSysResources, kAboutSysResourcesSize),

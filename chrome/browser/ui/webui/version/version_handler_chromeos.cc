@@ -21,23 +21,11 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/lacros_url_handling.h"
-#include "chromeos/startup/browser_params_proxy.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kCrosUrlVersionRedirect[] = "crosUrlVersionRedirect";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-std::string GetOsVersion() {
-  return chromeos::BrowserParamsProxy::Get()->AshChromeVersion().value_or(
-      "0.0.0.0");
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 
@@ -55,13 +43,6 @@ void VersionHandlerChromeOS::HandleRequestVersionInfo(
   VersionHandler::HandleRequestVersionInfo(args);
 
   // Start the asynchronous load of the versions.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&GetOsVersion),
-      base::BindOnce(&VersionHandlerChromeOS::OnOsVersion,
-                     weak_factory_.GetWeakPtr()));
-#endif
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&chromeos::version_loader::GetVersion,
@@ -106,12 +87,6 @@ void VersionHandlerChromeOS::HandleCrosUrlVersionRedirect(
       /*path_behavior=*/NavigateParams::RESPECT);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void VersionHandlerChromeOS::OnOsVersion(const std::string& version) {
-  FireWebUIListener("return-os-version", base::Value(version));
-}
-#endif
 
 void VersionHandlerChromeOS::OnPlatformVersion(
     const std::optional<std::string>& version) {

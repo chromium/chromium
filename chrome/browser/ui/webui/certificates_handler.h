@@ -191,10 +191,6 @@ class CertificatesHandler : public content::WebUIMessageHandler,
       const base::Value::List& args,
       size_t arg_index);
 
-  // Returns true if it is allowed to display the list of client certificates
-  // for the current profile.
-  bool ShouldDisplayClientCertificates();
-
   // Returns true if the user may manage client certificates on |slot|.
   bool IsClientCertificateManagementAllowed(Slot slot);
 

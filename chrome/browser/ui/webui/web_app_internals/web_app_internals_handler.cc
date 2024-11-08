@@ -44,16 +44,6 @@
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/memory/ref_counted.h"
-#include "base/memory/scoped_refptr.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "content/public/browser/browser_thread.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace {
 
 // New fields must be added to BuildIndexJson().
@@ -388,36 +378,6 @@ base::Value::Dict BuildNavigationCapturingLog(
   return root;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class ObliterateStoragePartitionHelper
-    : public base::RefCountedThreadSafe<ObliterateStoragePartitionHelper> {
- public:
-  using Callback = mojom::WebAppInternalsHandler::
-      ClearExperimentalWebAppIsolationDataCallback;
-
-  explicit ObliterateStoragePartitionHelper(Callback callback)
-      : callback_{std::move(callback)} {}
-
-  void OnGcRequired() {
-    CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-    CHECK(!callback_.is_null()) << "OnDone() is called before OnGcRequired";
-    gc_required_ = true;
-  }
-
-  void OnDone() {
-    CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-    std::move(callback_).Run(!gc_required_);
-  }
-
- private:
-  friend class base::RefCountedThreadSafe<ObliterateStoragePartitionHelper>;
-  ~ObliterateStoragePartitionHelper() = default;
-
-  Callback callback_;
-  bool gc_required_ = false;
-};
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 }  // namespace
 
 // static
@@ -517,25 +477,6 @@ void WebAppInternalsHandler::SelectFileAndUpdateIsolatedWebAppFromDevBundle(
   iwa_handler_.SelectFileAndUpdateIsolatedWebAppFromDevBundle(
       app_id, std::move(callback));
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void WebAppInternalsHandler::ClearExperimentalWebAppIsolationData(
-    ClearExperimentalWebAppIsolationDataCallback callback) {
-  CHECK(base::FeatureList::IsEnabled(
-      chromeos::features::kExperimentalWebAppStoragePartitionIsolation));
-
-  // Remove app storage partitions.
-  auto helper = base::MakeRefCounted<ObliterateStoragePartitionHelper>(
-      std::move(callback));
-  // It is a bit hard to work with AsyncObliterate...() since it takes two
-  // separate callbacks. It is probably better to change it to only take a
-  // "done" callback which has a "gc_required" param.
-  profile_->AsyncObliterateStoragePartition(
-      web_app::kExperimentalWebAppStorageParitionDomain,
-      base::BindOnce(&ObliterateStoragePartitionHelper::OnGcRequired, helper),
-      base::BindOnce(&ObliterateStoragePartitionHelper::OnDone, helper));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void WebAppInternalsHandler::SearchForIsolatedWebAppUpdates(
     SearchForIsolatedWebAppUpdatesCallback callback) {

@@ -138,9 +138,6 @@ std::string GetProductModifier() {
       !channel_name.empty()) {
     modifier_parts.push_back(std::move(channel_name));
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  modifier_parts.emplace_back("lacros");
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   modifier_parts.emplace_back("dcheck");
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)

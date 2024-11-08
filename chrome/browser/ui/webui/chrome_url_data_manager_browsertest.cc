@@ -450,6 +450,8 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://cloud-upload",
 
     "chrome://connectivity-diagnostics",
+    "chrome://connectors-internals",
+    "chrome://crashes",
     "chrome://crostini-installer",
     "chrome://crostini-upgrader",
     "chrome://cryptohome",
@@ -501,17 +503,13 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://profile-customization/?debug",
     "chrome://signin-email-confirmation",
 #endif
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-    "chrome://connectors-internals",
-    "chrome://crashes",
-#endif
 #if !BUILDFLAG(IS_MAC)
     "chrome://sandbox",
 #endif  // !BUILDFLAG(IS_MAC)
 #if BUILDFLAG(ENABLE_NACL)
     "chrome://nacl",
 #endif
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_MAC)
     // TODO(crbug.com/40772380): this test is flaky on mac.
     "chrome://bluetooth-internals",
 #endif

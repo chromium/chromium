@@ -150,16 +150,12 @@ DeviceLogUI::DeviceLogUI(content::WebUI* web_ui)
   };
   html->AddLocalizedStrings(kStrings);
 
-#if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::u16string device_log_url(chrome::kChromeUIDeviceLogUrl16);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::u16string device_log_url(chrome::kOsUIDeviceLogURL);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   auto os_link_container = l10n_util::GetStringFUTF16(
       IDS_DEVICE_LOG_OS_LINK_CONTAINER, device_log_url);
   html->AddString("osLinkContainer", os_link_container);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   html->UseStringsJs();
   html->AddResourcePaths(base::make_span(kDeviceLogResources,

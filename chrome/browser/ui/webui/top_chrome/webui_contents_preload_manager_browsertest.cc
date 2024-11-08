@@ -267,18 +267,10 @@ class WebUIContentsPreloadManagerPageLoadMetricsTest
   std::unique_ptr<content::ScopedWebUIConfigRegistration> config_registration_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// The page load metrics test is flaky on LaCrOS because sometimes viz::Display
-// reports a negative frame latency that causes page load metrics to stop
-// propagation.
-#define MAYBE_RequestToFCPAndLCP DISABLED_RequestToFCPAndLCP
-#else
-#define MAYBE_RequestToFCPAndLCP RequestToFCPAndLCP
-#endif
 // Tests that the time from the WebUI is requested to when First Contentful
 // Paint (FCP) is recorded.
 IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerPageLoadMetricsTest,
-                       MAYBE_RequestToFCPAndLCP) {
+                       RequestToFCPAndLCP) {
   // Serves the test origin with files from the test data folder.
   auto url_loader_interceptor =
       content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(

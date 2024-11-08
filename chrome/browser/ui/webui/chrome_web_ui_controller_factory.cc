@@ -395,10 +395,8 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
     return ConflictsUI::GetFaviconResourceBytes(scale_factor);
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (page_url.host_piece() == chrome::kChromeUICrashesHost)
     return CrashesUI::GetFaviconResourceBytes(scale_factor);
-#endif
 
   if (page_url.host_piece() == chrome::kChromeUIFlagsHost)
     return FlagsUI::GetFaviconResourceBytes(scale_factor);
@@ -569,13 +567,6 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUIUserImageURL),
     GURL(chrome::kChromeUIVmUrl),
     GURL(scalable_iph::kScalableIphDebugURL),
-
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Pages that only exist in Lacros, where they are reachable via chrome://.
-    // TODO(neis): Some of these still exist in Ash (but are inaccessible) and
-    // should be removed.
-    GURL(chrome::kChromeUIPolicyURL),
-    GURL(chrome::kChromeUISettingsURL),
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   });
   // clang-format on

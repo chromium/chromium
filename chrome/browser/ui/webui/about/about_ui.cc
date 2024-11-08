@@ -84,9 +84,6 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/zlib/google/compression_utils.h"
 #endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/lacros_url_handling.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/webui_url_constants.h"
@@ -782,15 +779,12 @@ bool AboutUI::OverrideHandleWebUIMessage(const GURL& source_url,
   if (message != "crosUrlAboutRedirect")
     return false;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  lacros_url_handling::NavigateInAsh(GURL(chrome::kChromeUIAboutURL));
-#else
   // Note: This will only be called by the UI when Lacros is available.
   DCHECK(crosapi::BrowserManager::Get());
   crosapi::BrowserManager::Get()->SwitchToTab(
       GURL(chrome::kChromeUIAboutURL),
       /*path_behavior=*/NavigateParams::RESPECT);
-#endif
+
   return true;
 }
 
