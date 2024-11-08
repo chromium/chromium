@@ -454,10 +454,9 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
   }
 
   if (base::FeatureList::IsEnabled(features::kNonBatchedCopySharedImage)) {
-    ri->CopySharedImage(
-        staging_buffer->client_shared_image->mailbox(), shared_image->mailbox(),
-        texture_target, 0, 0, 0, 0, rect_to_copy.width(), rect_to_copy.height(),
-        false /* unpack_flip_y */, false /* unpack_premultiply_alpha */);
+    ri->CopySharedImage(staging_buffer->client_shared_image->mailbox(),
+                        shared_image->mailbox(), 0, 0, 0, 0,
+                        rect_to_copy.width(), rect_to_copy.height());
   } else {
     int bytes_per_row = viz::ResourceSizes::UncheckedWidthInBytes<int>(
         rect_to_copy.width(), staging_buffer->format);
@@ -473,10 +472,8 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
       DCHECK_GT(rows_to_copy, 0);
 
       ri->CopySharedImage(staging_buffer->client_shared_image->mailbox(),
-                          shared_image->mailbox(), texture_target, 0, y, 0, y,
-                          rect_to_copy.width(), rows_to_copy,
-                          false /* unpack_flip_y */,
-                          false /* unpack_premultiply_alpha */);
+                          shared_image->mailbox(), 0, y, 0, y,
+                          rect_to_copy.width(), rows_to_copy);
       y += rows_to_copy;
 
       // Increment |bytes_scheduled_since_last_flush_| by the amount of memory

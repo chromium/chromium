@@ -351,10 +351,8 @@ void ArcScreenCaptureSession::CopyDesktopTextureToGpuBuffer(
   ri->GenQueriesEXT(1, &query_id);
   ri->BeginQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM, query_id);
   ri->CopySharedImage(desktop_texture->mailbox_,
-                      pending_buffer->shared_image_->mailbox(), GL_TEXTURE_2D,
-                      0, 0, 0, 0, size_.width(), size_.height(),
-                      /*unpack_flip_y=*/false,
-                      /*unpack_premultiply_alpha=*/false);
+                      pending_buffer->shared_image_->mailbox(), 0, 0, 0, 0,
+                      size_.width(), size_.height());
   ri->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
 
   // The query will be signalled after the copy operation has finished on the

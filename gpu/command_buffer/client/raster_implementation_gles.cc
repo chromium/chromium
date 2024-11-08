@@ -160,15 +160,12 @@ void RasterImplementationGLES::GetQueryObjectui64vEXT(GLuint id,
 void RasterImplementationGLES::CopySharedImage(
     const gpu::Mailbox& source_mailbox,
     const gpu::Mailbox& dest_mailbox,
-    GLenum dest_target,
     GLint xoffset,
     GLint yoffset,
     GLint x,
     GLint y,
     GLsizei width,
-    GLsizei height,
-    GLboolean unpack_flip_y,
-    GLboolean unpack_premultiply_alpha) {
+    GLsizei height) {
   if (width < 0) {
     LOG(ERROR) << "GL_INVALID_VALUE, glCopySharedImage, width < 0";
     return;

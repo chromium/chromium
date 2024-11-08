@@ -241,10 +241,6 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
                                         raster_context_provider));
     }
 
-    auto origin = source_frame->metadata().texture_origin_is_top_left
-                      ? kTopLeft_GrSurfaceOrigin
-                      : kBottomLeft_GrSurfaceOrigin;
-
     scoped_refptr<media::VideoFrame> dst_frame;
     {
       // Blocking is necessary to create the GpuMemoryBuffer from this thread.
@@ -256,7 +252,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
     if (dst_frame) {
       CHECK(dst_frame->HasSharedImage());
       const bool copy_succeeded = media::CopyRGBATextureToVideoFrame(
-          raster_context_provider.get(), source_frame->coded_size(), origin,
+          raster_context_provider.get(), source_frame->coded_size(),
           source_frame->shared_image(), source_frame->acquire_sync_token(),
           dst_frame.get());
       if (copy_succeeded) {

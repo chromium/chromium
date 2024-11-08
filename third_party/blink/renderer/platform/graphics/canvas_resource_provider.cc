@@ -566,11 +566,8 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
             old_resource_shared_image->GetClientSharedImage()->mailbox();
         auto mailbox = resource()->GetClientSharedImage()->mailbox();
 
-        RasterInterface()->CopySharedImage(
-            old_mailbox, mailbox,
-            resource()->GetClientSharedImage()->GetTextureTarget(), 0, 0, 0, 0,
-            Size().width(), Size().height(), false /* unpack_flip_y */,
-            false /* unpack_premultiply_alpha */);
+        RasterInterface()->CopySharedImage(old_mailbox, mailbox, 0, 0, 0, 0,
+                                           Size().width(), Size().height());
       } else if (use_oop_rasterization_) {
         // If we're not copying over the previous contents, we need to ensure
         // that the image is cleared on the next BeginRasterCHROMIUM.
@@ -1535,10 +1532,9 @@ bool CanvasResourceProvider::OverwriteImage(
 
   raster->WaitSyncTokenCHROMIUM(ready_sync_token.GetConstData());
   raster->CopySharedImage(shared_image_mailbox, dst_client_si->mailbox(),
-                          dst_client_si->GetTextureTarget(), /*xoffset=*/0,
+                          /*xoffset=*/0,
                           /*yoffset=*/0, copy_rect.x(), copy_rect.y(),
-                          copy_rect.width(), copy_rect.height(), unpack_flip_y,
-                          unpack_premultiply_alpha);
+                          copy_rect.width(), copy_rect.height());
   raster->GenUnverifiedSyncTokenCHROMIUM(completion_sync_token.GetData());
   return true;
 }

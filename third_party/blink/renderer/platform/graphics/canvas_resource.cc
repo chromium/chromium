@@ -1085,12 +1085,9 @@ void CanvasResourceSwapChain::PresentSwapChain() {
   // copied into the back buffer to support a retained mode like canvas expects.
   // The wait sync token ensure that the present executes before we do the copy.
   // Don't generate sync token after the copy so that it's not on critical path.
-  raster_interface->CopySharedImage(
-      front_buffer_shared_image_->mailbox(),
-      back_buffer_shared_image_->mailbox(),
-      back_buffer_shared_image_->GetTextureTarget(), 0, 0, 0, 0, size_.width(),
-      size_.height(), false /* unpack_flip_y */,
-      false /* unpack_premultiply_alpha */);
+  raster_interface->CopySharedImage(front_buffer_shared_image_->mailbox(),
+                                    back_buffer_shared_image_->mailbox(), 0, 0,
+                                    0, 0, size_.width(), size_.height());
   // Restore shared image access after copy when using legacy GL raster.
   if (!use_oop_rasterization_) {
     raster_interface->BeginSharedImageAccessDirectCHROMIUM(

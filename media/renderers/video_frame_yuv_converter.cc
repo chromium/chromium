@@ -53,11 +53,9 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
   gpu::Mailbox src_mailbox =
       holder_->VideoFrameToMailbox(video_frame, raster_context_provider);
 
-  ri->CopySharedImage(src_mailbox, dest_mailbox_holder.mailbox, GL_TEXTURE_2D,
-                      0, 0, source_rect.x(), source_rect.y(),
-                      source_rect.width(), source_rect.height(),
-                      /*unpack_flip_y=*/false,
-                      /*unpack_premultiply_alpha=*/false);
+  ri->CopySharedImage(src_mailbox, dest_mailbox_holder.mailbox, 0, 0,
+                      source_rect.x(), source_rect.y(), source_rect.width(),
+                      source_rect.height());
   return true;
 }
 

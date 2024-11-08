@@ -117,8 +117,6 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
       }
       if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
               gfx::Size(image->width(), image->height()),
-              image->IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
-                                       : kBottomLeft_GrSurfaceOrigin,
               image->GetSharedImage(), image->GetSyncToken(),
               gfx::ColorSpace::CreateREC709(),
               std::move(split_callback.first))) {

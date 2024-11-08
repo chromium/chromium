@@ -63,7 +63,6 @@ class PLATFORM_EXPORT WebGraphicsContext3DVideoFramePool {
   // Rec709 (it supports no other values). See https://crbug.com/skia/12545.
   bool CopyRGBATextureToVideoFrame(
       const gfx::Size& src_size,
-      GrSurfaceOrigin src_surface_origin,
       scoped_refptr<gpu::ClientSharedImage> src_shared_image,
       const gpu::SyncToken& acquire_sync_token,
       const gfx::ColorSpace& dst_color_space,

@@ -345,7 +345,7 @@ bool WebGPUSwapBufferProvider::CopyToVideoFrame(
 
   if (frame_pool->CopyRGBATextureToVideoFrame(
           current_swap_buffer_->GetSharedImage()->size(),
-          kTopLeft_GrSurfaceOrigin, current_swap_buffer_->GetSharedImage(),
+          current_swap_buffer_->GetSharedImage(),
           current_swap_buffer_->GetSyncToken(), dst_color_space,
           std::move(callback))) {
     // Subsequent access to this swap buffer (either webgpu or compositor) must

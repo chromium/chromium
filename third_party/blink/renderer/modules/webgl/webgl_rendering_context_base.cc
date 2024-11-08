@@ -1899,7 +1899,6 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw())
     return false;
 
-  const bool flip_y = IsOriginTopLeft() != resource_provider->IsOriginTopLeft();
   if (resource_provider->IsAccelerated()) {
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
         SharedGpuContext::ContextProviderWrapper();
@@ -1918,13 +1917,13 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
     raster_interface->Flush();
 
     return GetDrawingBuffer()->CopyToPlatformMailbox(
-        raster_interface, client_si->mailbox(), client_si->GetTextureTarget(),
-        flip_y, gfx::Point(0, 0), gfx::Rect(drawing_buffer_->Size()),
-        source_buffer);
+        raster_interface, client_si->mailbox(), gfx::Point(0, 0),
+        gfx::Rect(drawing_buffer_->Size()), source_buffer);
   }
 
   // As the resource provider is not accelerated, we don't need an accelerated
   // image.
+  const bool flip_y = IsOriginTopLeft() != resource_provider->IsOriginTopLeft();
   scoped_refptr<StaticBitmapImage> image =
       GetDrawingBuffer()->GetUnacceleratedStaticBitmapImage(flip_y);
 
@@ -1962,8 +1961,7 @@ bool WebGLRenderingContextBase::CopyRenderingResultsToVideoFrame(
     return false;
 
   return drawing_buffer->CopyToVideoFrame(frame_pool, src_buffer,
-                                          is_origin_top_left_, dst_color_space,
-                                          std::move(callback));
+                                          dst_color_space, std::move(callback));
 }
 
 gfx::Size WebGLRenderingContextBase::DrawingBufferSize() const {

@@ -439,14 +439,9 @@ gpu::SyncToken Buffer::Texture::CopyTexImage(
     DCHECK_NE(query_id_, 0u);
     ri->BeginQueryEXT(query_type_, query_id_);
 
-    // This function is used only to copy a Texture backed by a GMB to a Texture
-    // that is not backed by a GMB and has RGBA_8888 format. The texture target
-    // to use for RGBA_8888 on ChromeOS is always GL_TEXTURE_2D.
     ri->CopySharedImage(shared_image_->mailbox(),
-                        destination->shared_image_->mailbox(), GL_TEXTURE_2D, 0,
-                        0, 0, 0, size_.width(), size_.height(),
-                        /*unpack_flip_y=*/false,
-                        /*unpack_premultiply_alpha=*/false);
+                        destination->shared_image_->mailbox(), 0, 0, 0, 0,
+                        size_.width(), size_.height());
     ri->EndQueryEXT(query_type_);
     // Run callback when query result is available.
     ReleaseWhenQueryResultIsAvailable(std::move(callback));

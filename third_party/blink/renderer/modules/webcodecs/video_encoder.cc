@@ -944,10 +944,6 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
   auto [pool_result_cb, background_result_cb] =
       base::SplitOnceCallback(std::move(result_cb));
   if (can_use_gmb && accelerated_frame_pool_) {
-    auto origin = frame->metadata().texture_origin_is_top_left
-                      ? kTopLeft_GrSurfaceOrigin
-                      : kBottomLeft_GrSurfaceOrigin;
-
     // CopyRGBATextureToVideoFrame() operates on mailboxes and
     // not frames, so we must manually copy over properties relevant to
     // the encoder. We amend result callback to do exactly that.
@@ -991,7 +987,7 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "CopyRGBATextureToVideoFrame",
                                       this, "timestamp", frame->timestamp());
     if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
-            frame->coded_size(), origin, frame->shared_image(),
+            frame->coded_size(), frame->shared_image(),
             frame->acquire_sync_token(), kDstColorSpace,
             std::move(callback_chain))) {
       return true;

@@ -2642,9 +2642,7 @@ TEST_F(OopPixelTest, CopySharedImage) {
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
     ri->CopySharedImage(source_client_si->mailbox(), dest_client_si->mailbox(),
-                        GL_TEXTURE_2D, 0, 0, 0, 0, size.width(), size.height(),
-                        /*unpack_flip_y=*/GL_FALSE,
-                        /*unpack_premultiply_alpha=*/GL_FALSE);
+                        0, 0, 0, 0, size.width(), size.height());
   }
 
   // Read the data back as DisplayP3, from the Display P3 SharedImage.
@@ -2727,9 +2725,9 @@ TEST_P(OopYUVToRGBPixelTest, CopyI420SharedImage) {
   // Upload initial Y+U+V planes and convert to RGB.
   UploadPixelsYUV(ri, yuv_client_si->mailbox(), yuv_pixmap);
 
-  ri->CopySharedImage(yuv_client_si->mailbox(), dest_client_si->mailbox(),
-                      GL_TEXTURE_2D, 0, 0, 0, 0, options.resource_size.width(),
-                      options.resource_size.height(), GL_FALSE, GL_FALSE);
+  ri->CopySharedImage(yuv_client_si->mailbox(), dest_client_si->mailbox(), 0, 0,
+                      0, 0, options.resource_size.width(),
+                      options.resource_size.height());
 
   SkBitmap actual_bitmap =
       ReadbackMailbox(ri, dest_client_si->mailbox(), options.resource_size,
@@ -2808,9 +2806,9 @@ TEST_F(OopPixelTest, CopyNV12SharedImage) {
   // Upload initial Y+UV planes and convert to RGB.
   UploadPixelsYUV(ri, y_uv_client_si->mailbox(), yuv_pixmap);
 
-  ri->CopySharedImage(y_uv_client_si->mailbox(), dest_client_si->mailbox(),
-                      GL_TEXTURE_2D, 0, 0, 0, 0, options.resource_size.width(),
-                      options.resource_size.height(), GL_FALSE, GL_FALSE);
+  ri->CopySharedImage(y_uv_client_si->mailbox(), dest_client_si->mailbox(), 0,
+                      0, 0, 0, options.resource_size.width(),
+                      options.resource_size.height());
 
   SkBitmap actual_bitmap =
       ReadbackMailbox(ri, dest_client_si->mailbox(), options.resource_size);

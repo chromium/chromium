@@ -912,17 +912,13 @@ void VideoResourceUpdater::CopyHardwarePlane(
   HardwarePlaneResource* hardware_resource = plane_resource->AsHardware();
   hardware_resource->add_ref();
 
-  DCHECK_EQ(hardware_resource->texture_target(),
-            static_cast<GLenum>(GL_TEXTURE_2D));
-
   auto* ri = RasterInterface();
   ri->WaitSyncTokenCHROMIUM(video_frame->acquire_sync_token().GetConstData());
 
-  ri->CopySharedImage(
-      shared_image->mailbox(), hardware_resource->mailbox(), GL_TEXTURE_2D,
-      /*xoffset=*/0, /*yoffset=*/0, /*x=*/0, /*y=*/0,
-      output_plane_resource_size.width(), output_plane_resource_size.height(),
-      /*unpack_flip_y=*/false, /*unpack_premultiply_alpha=*/false);
+  ri->CopySharedImage(shared_image->mailbox(), hardware_resource->mailbox(),
+                      /*xoffset=*/0, /*yoffset=*/0, /*x=*/0, /*y=*/0,
+                      output_plane_resource_size.width(),
+                      output_plane_resource_size.height());
 
   // Wait (if the existing token isn't null) and replace it with a new one.
   //

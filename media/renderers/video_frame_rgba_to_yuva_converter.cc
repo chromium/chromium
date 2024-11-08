@@ -21,7 +21,6 @@ namespace media {
 bool CopyRGBATextureToVideoFrame(
     viz::RasterContextProvider* provider,
     const gfx::Size& src_size,
-    GrSurfaceOrigin src_surface_origin,
     scoped_refptr<gpu::ClientSharedImage> src_shared_image,
     const gpu::SyncToken& acquire_sync_token,
     VideoFrame* dst_video_frame) {
@@ -51,14 +50,6 @@ bool CopyRGBATextureToVideoFrame(
   auto dst_mailbox = dst_video_frame->shared_image()->mailbox();
   ri->WaitSyncTokenCHROMIUM(dst_sync_token.GetConstData());
 
-  // `unpack_flip_y` should be set if the surface origin of the source
-  // doesn't match that of the destination, which is created with
-  // kTopLeft_GrSurfaceOrigin.
-  // TODO(crbug.com/40271944): If this codepath is used with destinations
-  // that are created with other surface origins, will need to generalize
-  // this.
-  bool unpack_flip_y = (src_surface_origin != kTopLeft_GrSurfaceOrigin);
-
   // Note: the destination video frame can have a coded size that is larger
   // than that of the source video to account for alignment needs. In this
   // case, both this codepath and the the legacy codepath above stretch to
@@ -69,10 +60,8 @@ bool CopyRGBATextureToVideoFrame(
   // details).
   // TODO(crbug.com/40270413): Update this comment when we resolve that bug
   // and change CopySharedImage() to crop rather than stretch.
-  ri->CopySharedImage(src_shared_image->mailbox(), dst_mailbox, GL_TEXTURE_2D,
-                      0, 0, 0, 0, src_size.width(), src_size.height(),
-                      unpack_flip_y,
-                      /*unpack_premultiply_alpha=*/false);
+  ri->CopySharedImage(src_shared_image->mailbox(), dst_mailbox, 0, 0, 0, 0,
+                      src_size.width(), src_size.height());
   ri->Flush();
 
   // Make access to the `dst_video_frame` wait on copy completion. We also

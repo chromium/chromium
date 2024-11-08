@@ -1868,11 +1868,10 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
       auto shared_image = GetVideoFrameSharedImage(video_frame.get());
       ri->WaitSyncTokenCHROMIUM(
           video_frame->acquire_sync_token().GetConstData());
-      ri->CopySharedImage(
-          shared_image->mailbox(), client_shared_image->mailbox(),
-          GL_TEXTURE_2D, 0, 0, 0, 0, video_frame->coded_size().width(),
-          video_frame->coded_size().height(),
-          !video_frame->metadata().texture_origin_is_top_left, GL_FALSE);
+      ri->CopySharedImage(shared_image->mailbox(),
+                          client_shared_image->mailbox(), 0, 0, 0, 0,
+                          video_frame->coded_size().width(),
+                          video_frame->coded_size().height());
 
       if (!gpu_rasterization) {
         raster_context_provider->GrContext()->flushAndSubmit();
@@ -1966,9 +1965,9 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
     ri->WaitSyncTokenCHROMIUM(video_frame->acquire_sync_token().GetConstData());
     ri->WaitSyncTokenCHROMIUM(destination.sync_token.GetConstData());
     ri->CopySharedImage(video_frame->shared_image()->mailbox(),
-                        destination.mailbox, destination.texture_target, 0, 0,
-                        source_rect.x(), source_rect.y(), source_rect.width(),
-                        source_rect.height(), GL_FALSE, GL_FALSE);
+                        destination.mailbox, 0, 0, source_rect.x(),
+                        source_rect.y(), source_rect.width(),
+                        source_rect.height());
   } else {
     // TODO(vasilyt): Add caching support
     VideoFrameYUVConverter converter;

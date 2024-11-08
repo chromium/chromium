@@ -1234,8 +1234,6 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
 bool DrawingBuffer::CopyToPlatformMailbox(
     gpu::raster::RasterInterface* dst_raster_interface,
     gpu::Mailbox dst_mailbox,
-    GLenum dst_texture_target,
-    bool flip_y,
     const gfx::Point& dst_texture_offset,
     const gfx::Rect& src_sub_rectangle,
     SourceDrawingBuffer src_buffer) {
@@ -1246,16 +1244,10 @@ bool DrawingBuffer::CopyToPlatformMailbox(
     dst_raster_interface->WaitSyncTokenCHROMIUM(
         produce_sync_token.GetConstData());
 
-    GLboolean unpack_premultiply_alpha_needed = GL_FALSE;
-    if (src_alpha_type == kUnpremul_SkAlphaType) {
-      unpack_premultiply_alpha_needed = GL_TRUE;
-    }
-
     dst_raster_interface->CopySharedImage(
-        src_shared_image->mailbox(), dst_mailbox, dst_texture_target,
-        dst_texture_offset.x(), dst_texture_offset.y(), src_sub_rectangle.x(),
-        src_sub_rectangle.y(), src_sub_rectangle.width(),
-        src_sub_rectangle.height(), flip_y, unpack_premultiply_alpha_needed);
+        src_shared_image->mailbox(), dst_mailbox, dst_texture_offset.x(),
+        dst_texture_offset.y(), src_sub_rectangle.x(), src_sub_rectangle.y(),
+        src_sub_rectangle.width(), src_sub_rectangle.height());
 
     gpu::SyncToken sync_token;
     dst_raster_interface->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
@@ -1270,7 +1262,6 @@ bool DrawingBuffer::CopyToPlatformMailbox(
 bool DrawingBuffer::CopyToVideoFrame(
     WebGraphicsContext3DVideoFramePool* frame_pool,
     SourceDrawingBuffer src_buffer,
-    bool src_origin_is_top_left,
     const gfx::ColorSpace& dst_color_space,
     WebGraphicsContext3DVideoFramePool::FrameReadyCallback callback) {
   // Ensure that `frame_pool` has not experienced a context loss.
@@ -1278,17 +1269,14 @@ bool DrawingBuffer::CopyToVideoFrame(
   auto* raster_interface = frame_pool->GetRasterInterface();
   if (!raster_interface)
     return false;
-  const GrSurfaceOrigin src_surface_origin = src_origin_is_top_left
-                                                 ? kTopLeft_GrSurfaceOrigin
-                                                 : kBottomLeft_GrSurfaceOrigin;
   auto copy_function =
       [&](scoped_refptr<gpu::ClientSharedImage> src_shared_image,
           const gpu::SyncToken& produce_sync_token, SkAlphaType src_alpha_type,
           const gfx::Size& src_size) -> std::optional<gpu::SyncToken> {
     raster_interface->WaitSyncTokenCHROMIUM(produce_sync_token.GetConstData());
     bool succeeded = frame_pool->CopyRGBATextureToVideoFrame(
-        src_size, src_surface_origin, src_shared_image, gpu::SyncToken(),
-        dst_color_space, std::move(callback));
+        src_size, src_shared_image, gpu::SyncToken(), dst_color_space,
+        std::move(callback));
     if (!succeeded) {
       return std::nullopt;
     }

@@ -266,7 +266,6 @@ void CopyToGpuMemoryBuffer(
 
 bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
     const gfx::Size& src_size,
-    GrSurfaceOrigin src_surface_origin,
     scoped_refptr<gpu::ClientSharedImage> src_shared_image,
     const gpu::SyncToken& acquire_sync_token,
     const gfx::ColorSpace& dst_color_space,
@@ -300,9 +299,9 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
   }
   CHECK(dst_frame->HasSharedImage());
 
-  if (!media::CopyRGBATextureToVideoFrame(
-          raster_context_provider, src_size, src_surface_origin,
-          src_shared_image, acquire_sync_token, dst_frame.get())) {
+  if (!media::CopyRGBATextureToVideoFrame(raster_context_provider, src_size,
+                                          src_shared_image, acquire_sync_token,
+                                          dst_frame.get())) {
     return false;
   }
 
@@ -401,9 +400,6 @@ bool WebGraphicsContext3DVideoFramePool::ConvertVideoFrame(
   DCHECK(src_video_frame->HasSharedImage());
   return CopyRGBATextureToVideoFrame(
       src_video_frame->coded_size(),
-      src_video_frame->metadata().texture_origin_is_top_left
-          ? kTopLeft_GrSurfaceOrigin
-          : kBottomLeft_GrSurfaceOrigin,
       src_video_frame->shared_image(), src_video_frame->acquire_sync_token(),
       dst_color_space,
       WTF::BindOnce(ApplyMetadataAndRunCallback, src_video_frame,

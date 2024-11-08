@@ -33,7 +33,6 @@ class VideoFrame;
 MEDIA_EXPORT bool CopyRGBATextureToVideoFrame(
     viz::RasterContextProvider* raster_context_provider,
     const gfx::Size& src_size,
-    GrSurfaceOrigin src_surface_origin,
     scoped_refptr<gpu::ClientSharedImage> src_shared_image,
     const gpu::SyncToken& acquire_sync_token,
     VideoFrame* dst_video_frame);
