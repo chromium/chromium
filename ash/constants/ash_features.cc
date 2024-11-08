@@ -254,11 +254,6 @@ BASE_FEATURE(kBocaExtensionConsumer,
 
 BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables or disables digital zoom control inside Camera app.
-BASE_FEATURE(kCameraAppDigitalZoom,
-             "CameraAppDigitalZoom",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Make the text on PDFs saved from Camera app accessible.
 BASE_FEATURE(kCameraAppPdfOcr,
              "CameraAppPdfOcr",

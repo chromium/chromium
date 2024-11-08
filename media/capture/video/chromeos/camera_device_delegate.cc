@@ -1096,11 +1096,8 @@ void CameraDeviceDelegate::ConfigureStreams(
     stream_config->session_parameters = cros::mojom::CameraMetadata::New();
     ConfigureSessionParameters(&stream_config->session_parameters);
     // TODO(b/336480993): Enable digital zoom in portrait mode.
-    // TODO(b/225112054): Remove the check for Chrome flag once the feature is
-    // enabled by default.
     bool request_digital_zoom =
         camera_app_device != nullptr &&
-        base::FeatureList::IsEnabled(ash::features::kCameraAppDigitalZoom) &&
         camera_app_device->GetCaptureIntent() !=
             cros::mojom::CaptureIntent::kPortraitCapture;
     if (request_digital_zoom) {

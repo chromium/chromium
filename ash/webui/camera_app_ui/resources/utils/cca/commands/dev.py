@@ -89,8 +89,6 @@ class RequestHandler:
             "os_version": "local-dev",
             "textdirection": "ltr",
             "cca_disallowed": False,
-            "timeLapse": True,
-            "digital_zoom": True,
             "preview_ocr": True,
             "super_res": True,
         }

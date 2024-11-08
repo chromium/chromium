@@ -508,8 +508,6 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
   source->AddString("board_name", base::SysInfo::GetLsbReleaseBoard());
   source->AddString("device_type",
                     DeviceTypeToString(chromeos::GetDeviceType()));
-  source->AddBoolean("digital_zoom", base::FeatureList::IsEnabled(
-                                         ash::features::kCameraAppDigitalZoom));
   source->AddBoolean("preview_ocr", base::FeatureList::IsEnabled(
                                         ash::features::kCameraAppPreviewOcr));
   source->AddBoolean("super_res", base::FeatureList::IsEnabled(

@@ -13,9 +13,7 @@ import * as dom from '../dom.js';
 import {reportError} from '../error.js';
 import * as expert from '../expert.js';
 import {FaceOverlay} from '../face.js';
-import {Flag} from '../flag.js';
 import {Point} from '../geometry.js';
-import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator, parseMetadata} from '../mojo/device_operator.js';
 import {
   AndroidControlAeAntibandingMode,
@@ -130,9 +128,6 @@ export class Preview {
 
   private enableFaceOverlay = false;
 
-  private readonly digitalZoomFlag =
-      loadTimeData.getChromeFlag(Flag.DIGITAL_ZOOM);
-
   private static ptzControllerForTest: PtzController|null = null;
 
   /**
@@ -232,7 +227,7 @@ export class Preview {
     const {pan, tilt, zoom} = this.getVideoTrack().getCapabilities();
     const {deviceId} = getVideoTrackSettings(this.getVideoTrack());
     // TODO(b/336480993): Enable digital zoom in portrait mode.
-    const isDigitalZoomSupported = this.digitalZoomFlag &&
+    const isDigitalZoomSupported =
         (await deviceOperator?.isDigitalZoomSupported(deviceId) ?? false) &&
         !state.get(Mode.PORTRAIT);
 

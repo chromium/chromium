@@ -6285,10 +6285,6 @@ const char kCrostiniVirtualKeyboardSupportName[] =
 const char kCrostiniVirtualKeyboardSupportDescription[] =
     "Experimental support for the Virtual Keyboard on Crostini.";
 
-const char kCameraAppDigitalZoomName[] = "Camera App Digital Zoom";
-const char kCameraAppDigitalZoomDescription[] =
-    "Enable this flag to use digital zoom in Camera app.";
-
 const char kCameraAppPdfOcrName[] = "Camera App PDF OCR";
 const char kCameraAppPdfOcrDescription[] =
     "Enable this flag to make text on PDFs saved from Camera app accessible.";

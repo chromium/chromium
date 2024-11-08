@@ -85,7 +85,6 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<base::TimeDelta>
     kBocaInSessionPeriodicJobIntervalInSeconds;
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCameraAppDigitalZoom);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCameraAppPdfOcr);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCameraAppPreviewOcr);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCameraSuperResSupported);
