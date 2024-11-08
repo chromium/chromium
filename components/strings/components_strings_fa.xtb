@@ -1040,7 +1040,7 @@
 <translation id="2900528713135656174">ایجاد رویداد</translation>
 <translation id="2902312830803030883">کنش‌های بیشتر</translation>
 <translation id="2903493209154104877">آدرس‌ها</translation>
-<translation id="290376772003165898">صفحه به زبان <ph name="LANGUAGE" /> وجود ندارد؟</translation>
+<translation id="290376772003165898">صفحه به زبان <ph name="LANGUAGE" /> نیست؟</translation>
 <translation id="2904165004205947971">مدیریت اطلاعات</translation>
 <translation id="2905107382358353958">هشدار درباره تنظیم پرداخت جدید</translation>
 <translation id="2909120679423833511">سازمانتان، <ph name="MANAGER" />، شما را ملزم می‌کند که با نمایه خاصی به سیستم وارد شوید</translation>
@@ -2319,7 +2319,7 @@
 <translation id="5164928537947209380">‏نتایج این ابزار هوش مصنوعی آزمایشی همیشه صحیح نیست. برای بهبود آن، محتوایتان به Google ارسال می‌شود.
     <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="5169827969064885044">‏ممکن است دسترسی به حساب سازمانتان را از دست بدهید یا به سرقت هویت دچار شوید. Chrome توصیه می‌کند هم‌اکنون گذرواژه‌تان را تغییر دهید.</translation>
-<translation id="5171045022955879922">‏جستجو یا تایپ URL</translation>
+<translation id="5171045022955879922">جستجو یا تایپ نشانی وب</translation>
 <translation id="5172758083709347301">دستگاه</translation>
 <translation id="5177076414499237632">آشنایی با منبع و موضوع این صفحه</translation>
 <translation id="5179490652562926740">تنظیمات تأیید پرداخت ذخیره شد</translation>
@@ -2548,7 +2548,7 @@
 <translation id="5587987780934666589">کاربر پلاتفرم</translation>
 <translation id="5593349413089863479">اتصال کاملاً امن نیست</translation>
 <translation id="5593640815048812868">رایانه کیفی و نوت‌بوک</translation>
-<translation id="5595485650161345191">ویرایش آدرس</translation>
+<translation id="5595485650161345191">ویرایش نشانی</translation>
 <translation id="5596939519753369075">۳٫۵ × ۲ اینچ</translation>
 <translation id="560412284261940334">مدیریت پشتیبانی نمی‌شود</translation>
 <translation id="5605249000617390290">درباره پیگیری قیمت بیشتر بدانید</translation>
@@ -3766,7 +3766,7 @@
 <translation id="776110834126722255">منسوخ</translation>
 <translation id="7761159795823346334">دوربین مجاز شود؟</translation>
 <translation id="7761701407923456692">گواهی سرور با نشانی وب مطابقت ندارد.</translation>
-<translation id="7764225426217299476">افزودن آدرس</translation>
+<translation id="7764225426217299476">افزودن نشانی</translation>
 <translation id="7766518757692125295">«اسکیرت»</translation>
 <translation id="7766899888934244586">برنامه‌های وب</translation>
 <translation id="7767278989746220252">ایوان، چمن، و باغ</translation>
@@ -4585,7 +4585,7 @@
 <translation id="986257639512122511">دسترسی به <ph name="PERMISSION" /> را در <ph name="ORIGIN" /> مجاز کرده‌اید</translation>
 <translation id="987264212798334818">موارد کلی</translation>
 <translation id="988159990683914416">ساخت برنامه‌نویس</translation>
-<translation id="989988560359834682">ویرایش آدرس</translation>
+<translation id="989988560359834682">ویرایش نشانی</translation>
 <translation id="991413375315957741">حسگرهای نوری یا حرکتی</translation>
 <translation id="991936891556421157">کفش</translation>
 <translation id="992110854164447044">کارت مجازی با پنهان کردن کارت واقعی‌تان، از شما دربرابر کلاهبرداری‌های احتمالی محافظت می‌کند. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>

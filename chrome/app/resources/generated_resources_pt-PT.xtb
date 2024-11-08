@@ -1843,7 +1843,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2290615375132886363">Botões de navegação do tablet</translation>
 <translation id="2291452790265535215">Experimente usar o painel lateral para marcadores, percursos e muito mais</translation>
 <translation id="229182044471402145">Não foi encontrado qualquer tipo de letra correspondente.</translation>
-<translation id="2292848386125228270">Inicie o <ph name="PRODUCT_NAME" /> como um utilizador normal. Se precisar de executar com acesso máximo para programação, volte a executar com a sinalização --no-sandbox.</translation>
+<translation id="2292848386125228270">Inicie o <ph name="PRODUCT_NAME" /> como um utilizador normal. Se precisar de executar com acesso root para programação, volte a executar com a sinalização --no-sandbox.</translation>
 <translation id="2292862094862078674">Verifique a ligação à Internet e tente novamente. Ainda pode selecionar um dos temas gerados anteriormente abaixo.</translation>
 <translation id="2294081976975808113">Privacidade do ecrã</translation>
 <translation id="2294358108254308676">Instalar o <ph name="PRODUCT_NAME" />?</translation>

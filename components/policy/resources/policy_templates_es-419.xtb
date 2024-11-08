@@ -2092,6 +2092,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       El corrector ortográfico podrá usar un diccionario descargado de manera local a menos que <ph name="SPELLCHECK_ENABLED_POLICY_NAME" /> inhabilite esa función. En ese caso, esta política no tendrá efecto.</translation>
 <translation id="2433516903565257847">El porcentaje del grupo de dispositivos que se debe actualizar luego de la cantidad de días determinada.</translation>
+<translation id="2433683038230070030">La función de almacenamiento en búfer adaptable de Web Audio se puede habilitar según el proceso de lanzamiento de la función.</translation>
 <translation id="2435052056904485763">Lista de servidores de delegación de Kerberos permitidos</translation>
 <translation id="2436302465999055995">Seleccionar <ph name="LACROS_NAME" /> como el único navegador disponible (aún no se implementó)</translation>
 <translation id="2439187682308339104">No permitir que ningún sitio solicite acceso a los dispositivos HID a través de la API de WebHID</translation>
@@ -6656,6 +6657,14 @@ Si la inhabilitas o no la estableces, no se habilitarán los widgets de consulta
 <translation id="5776485039795852974">Preguntar siempre que un sitio quiera mostrar notificaciones de escritorio.</translation>
 <translation id="5783009211970309878">Imprimir encabezados y pies de página</translation>
 <translation id="5790763087505467169">Reducir la cantidad de notificaciones de inicio automático de la sesión de invitado administrada</translation>
+<translation id="5794205610250307906">Esta política controla si el navegador usa el almacenamiento en búfer adaptable para
+Web Audio, lo que puede reducir las fallas de audio, pero también puede aumentar
+la latencia en una cantidad variable.
+
+Si habilitas la política, siempre se usará la función de almacenamiento en búfer adaptable.
+
+Si inhabilitas la política o no la estableces, el proceso de lanzamiento
+de funciones del navegador decidirá si se usa el almacenamiento en búfer adaptable.</translation>
 <translation id="5800329278018669527">Inhabilitar el mensaje de configuración de red cuando no haya conexión</translation>
 <translation id="5802931736499687181">Inhabilitar la canalización de informes encriptados</translation>
 <translation id="5803715507113569033">Esta política permite a los administradores configurar la activación de <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
@@ -7251,6 +7260,7 @@ En la versión 114 y en versiones posteriores, esta política es opcional si se 
 Si inhabilitas la política, los usuarios no podrán bloquear la pantalla (solo podrán salir de la sesión de usuario).</translation>
 <translation id="6265892395051519509">Permite el acceso a los sensores en estos sitios</translation>
 <translation id="6266043141694454734">Determina si se usarán Chrome Root Store y el verificador de certificados integrado para verificar los certificados de servidores</translation>
+<translation id="6266686172120601139">Habilitar el almacenamiento en búfer adaptable para Web Audio</translation>
 <translation id="6267130578410325007">Esta política permite el agrupamiento en clústeres de agentes con clave de origen de forma predeterminada.
 
 El encabezado del HTTP Origin-Agent-Cluster controla si un documento está
@@ -9949,6 +9959,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8173864651667424191">Cuando la opción Imprimir como imagen está disponible, se establece como opción predeterminada en las vistas previas de impresión de documentos PDF.</translation>
 <translation id="8175922758834816585">Habilitar los comentarios por voz en la pantalla de acceso y permitir que el usuario los inhabilite temporalmente</translation>
 <translation id="8176035528522326671">Permitir que el usuario de empresa sea solo usuario principal en la sesión de perfiles múltiples (comportamiento predeterminado para usuarios administrados por empresas)</translation>
+<translation id="817717947404114735">Habilitar el almacenamiento en búfer adaptable de Web Audio.</translation>
 <translation id="8179082421668183060">Si estableces la política como una lista de cadenas, estas se unen con espacios y se transfieren de <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" /> como parámetros de la línea de comandos. Si un parámetro contiene <ph name="URL_PLACEHOLDER" />, se reemplazará <ph name="URL_PLACEHOLDER" /> por la URL de la página que se abrirá. Si ningún parámetro contiene <ph name="URL_PLACEHOLDER" />, se agregará la URL al final de la línea de comandos.
 
       Se expanden las variables de entorno. En <ph name="MS_WIN_NAME" />, se reemplaza <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> por el valor de la variable de entorno <ph name="ENV_VARIABLE_VALUE" />.

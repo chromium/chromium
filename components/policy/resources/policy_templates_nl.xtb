@@ -2000,6 +2000,7 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 
       Voor de spellingcontrole kan altijd een lokaal gedownload woordenboek worden gebruikt, tenzij de functie is uitgezet op basis van <ph name="SPELLCHECK_ENABLED_POLICY_NAME" />. In dat geval heeft dit beleid geen effect.</translation>
 <translation id="2433516903565257847">Het percentage van de apparaten dat na het opgegeven aantal dagen moet worden geüpdatet.</translation>
+<translation id="2433683038230070030">Aanpasbare buffering voor Web Audio kan worden aangezet, afhankelijk van het startproces voor de functie.</translation>
 <translation id="2435052056904485763">Toelatingslijst voor Kerberos-delegatieserver</translation>
 <translation id="2436302465999055995">Van <ph name="LACROS_NAME" /> de enige beschikbare browser maken (nog niet geïmplementeerd)</translation>
 <translation id="2439187682308339104">Geen enkele site toestemming geven om toegang te vragen tot HID-apparaten via de WebHID API</translation>
@@ -6365,6 +6366,11 @@ Als je dit beleid niet toepast of niet instelt, staat Glanceables niet aan in <p
 <translation id="5776485039795852974">Altijd goedkeuring vragen wanneer een site bureaubladmeldingen wil tonen</translation>
 <translation id="5783009211970309878">Kop- en voetteksten afdrukken</translation>
 <translation id="5790763087505467169">Minder meldingen voor automatisch starten van beheerde gastsessies</translation>
+<translation id="5794205610250307906">Met dit beleid wordt bepaald of de browser aanpasbare buffering voor Web Audio gebruikt. Dit kan audioproblemen verminderen, maar de vertraging met een variabele hoeveelheid verhogen.
+
+Als je het beleid toepast, wordt aanpasbare buffering altijd gebruikt.
+
+Als je het beleid niet toepast of niet instelt, kan het startproces van de browserfunctie beslissen of aanpasbare buffering wordt gebruikt.</translation>
 <translation id="5800329278018669527">Prompt voor netwerkconfiguratie uitzetten als je offline bent</translation>
 <translation id="5802931736499687181">De Encrypted Reporting Pipeline uitzetten</translation>
 <translation id="5803715507113569033">Met dit beleid kunnen beheerders de activering van <ph name="MICROSOFT_ONE_DRIVE_NAME" /> instellen.
@@ -6939,6 +6945,7 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
 Als je het beleid niet toepast, kunnen gebruikers het scherm niet vergrendelen. (Ze kunnen alleen uitloggen van de gebruikerssessie.)</translation>
 <translation id="6265892395051519509">Toegang tot sensoren op deze sites toestaan</translation>
 <translation id="6266043141694454734">Hiermee wordt bepaald of de Chrome Root Store en de ingebouwde certificaatverificatie worden gebruikt om servercertificaten te verifiëren</translation>
+<translation id="6266686172120601139">Aanpasbare buffering voor Web Audio aanzetten</translation>
 <translation id="6267130578410325007">Dit beleid staat origin-keyed agentclustering standaard toe.
 
 De HTTP-header Origin-Agent-Cluster bepaalt of een document wordt geïsoleerd in een origin-keyed agentcluster of in een site-keyed agentcluster. Dit heeft beveiligingsimplicaties omdat een origin-keyed agentcluster isolatie van documenten op basis van oorsprong toestaat. Het voor de ontwikkelaar zichtbare gevolg hiervan is dat de accessor document.domain niet meer kan worden ingesteld.
@@ -9504,6 +9511,7 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
 <translation id="8173864651667424191">Als de optie Afdrukken als afbeelding beschikbaar is, wordt deze standaard ingesteld voor afdrukvoorbeelden van pdf-documenten.</translation>
 <translation id="8175922758834816585">Gesproken feedback op het inlogscherm aanzetten en de gebruiker toestaan dit tijdelijk uit te zetten</translation>
 <translation id="8176035528522326671">Toestaan dat Enterprise-gebruiker alleen primair gebruiker van meerdere profielen is (standaardgedrag voor beheerde Enterprise-gebruikers)</translation>
+<translation id="817717947404114735">Aanpasbare buffering voor Web Audio aanzetten.</translation>
 <translation id="8179082421668183060">Als je het beleid instelt op een lijst met tekenreeksen, worden de tekenreeksen samengevoegd met spaties en van <ph name="IE_PRODUCT_NAME" /> naar <ph name="PRODUCT_NAME" /> doorgegeven als opdrachtregelparameters. Als een parameter <ph name="URL_PLACEHOLDER" /> bevat, wordt <ph name="URL_PLACEHOLDER" /> vervangen door de URL van de pagina die moet worden geopend. Als geen enkele parameter <ph name="URL_PLACEHOLDER" /> bevat, wordt de URL toegevoegd aan het einde van de opdrachtregel.
 
       Omgevingsvariabelen worden uitgevouwen. In <ph name="MS_WIN_NAME" /> wordt <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> vervangen door de waarde van de omgevingsvariabele <ph name="ENV_VARIABLE_VALUE" />.

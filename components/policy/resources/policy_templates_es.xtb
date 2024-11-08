@@ -2003,6 +2003,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       El corrector ortográfico siempre puede usar un diccionario descargado en el almacenamiento local a no ser que esta función se haya inhabilitado con la política <ph name="SPELLCHECK_ENABLED_POLICY_NAME" />. En ese caso, esta política no tendrá ningún efecto.</translation>
 <translation id="2433516903565257847">Porcentaje de dispositivos que deben actualizarse una vez transcurrido el número de días indicado.</translation>
+<translation id="2433683038230070030">El almacenamiento en búfer adaptable de Web Audio se puede habilitar según el proceso de lanzamiento de funciones.</translation>
 <translation id="2435052056904485763">Lista de permitidos de servidores de delegación Kerberos</translation>
 <translation id="2436302465999055995">Establecer que <ph name="LACROS_NAME" /> sea el único navegador disponible (aún no se ha implementado)</translation>
 <translation id="2439187682308339104">No permite que ningún sitio solicite acceso a los dispositivos HID a través de la API WebHID</translation>
@@ -6437,6 +6438,11 @@ Si esta política se inhabilita o no se define, no se habilitarán los widgets G
 <translation id="5776485039795852974">Preguntar siempre que un sitio quiera mostrar notificaciones de escritorio</translation>
 <translation id="5783009211970309878">Imprimir encabezados y pies de página</translation>
 <translation id="5790763087505467169">Reducir las notificaciones de inicio automático de las sesiones de invitado administradas</translation>
+<translation id="5794205610250307906">Esta política controla si el navegador usa el almacenamiento en búfer adaptable para Web Audio, lo que puede reducir los fallos de audio, pero también puede aumentar la latencia en una cantidad variable.
+
+Si se habilita esta política, siempre se usará el almacenamiento en búfer adaptable.
+
+Si se inhabilita esta política o no se define, el proceso de lanzamiento de funciones del navegador decidirá si se usa el almacenamiento en búfer adaptable.</translation>
 <translation id="5800329278018669527">Inhabilitar el mensaje de configuración de red si no hay conexión</translation>
 <translation id="5802931736499687181">Inhabilitar el flujo de procesamiento de informes cifrados</translation>
 <translation id="5803715507113569033">Esta política permite a los administradores configurar el montaje de <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
@@ -7015,6 +7021,7 @@ En la versión 114 y posteriores, esta política es opcional si se establece la 
 Si se inhabilita, los usuarios no podrán bloquear la pantalla. Solo podrán cerrar la sesión de usuario.</translation>
 <translation id="6265892395051519509">Permitir el acceso a los sensores en estos sitios web</translation>
 <translation id="6266043141694454734">Determina si Chrome Root Store y el verificador de certificados integrado se usarán para verificar los certificados de los servidores</translation>
+<translation id="6266686172120601139">Habilitar el almacenamiento en búfer adaptable para Web Audio</translation>
 <translation id="6267130578410325007">Esta política permite los clústeres de agentes con clave de origen de forma predeterminada.
 
 El encabezado HTTP Origin-Agent-Cluster controla si un documento se aísla en un clúster de agentes con clave de origen o en un clúster de agentes con clave de sitio. Esto afecta a la seguridad, ya que un clúster de agentes con clave de origen permite aislar los documentos según el origen. La consecuencia que tiene para el desarrollador es que el descriptor de acceso document.domain ya no se podrá establecer.
@@ -9607,6 +9614,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="8173864651667424191">Cuando la opción Imprimir como imagen está disponible, se establece como opción predeterminada en las vistas previas de impresión de documentos PDF.</translation>
 <translation id="8175922758834816585">Habilitar los mensajes de voz en la pantalla de inicio de sesión y permitir que el usuario los inhabilite temporalmente</translation>
 <translation id="8176035528522326671">Permitir que el usuario de empresa sea solo un usuario principal de varios perfiles (comportamiento predeterminado para usuarios administrados por empresas)</translation>
+<translation id="817717947404114735">Habilitar el almacenamiento en búfer adaptable de Web Audio.</translation>
 <translation id="8179082421668183060">Si se define esta política como una lista de cadenas, dichas cadenas se unirán mediante espacios y pasarán de <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" /> como parámetros de línea de comandos. Si un parámetro contiene la variable <ph name="URL_PLACEHOLDER" />, <ph name="URL_PLACEHOLDER" /> se sustituirá por la URL de la página que se vaya a abrir. Si ningún parámetro contiene la variable <ph name="URL_PLACEHOLDER" />, la URL se añadirá al final de la línea de comandos.
 
       Las variables de entorno se expanden. En <ph name="MS_WIN_NAME" />, <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> se sustituirá por el valor de la variable de entorno <ph name="ENV_VARIABLE_VALUE" />.

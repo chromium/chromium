@@ -178,7 +178,7 @@
 <translation id="1550523713251050646">Націсніце, каб убачыць дадатковыя параметры</translation>
 <translation id="1555130319947370107">Сіні</translation>
 <translation id="1557622599341396706">Паказаць назву працоўнага стала</translation>
-<translation id="1567138500090284106">Кнопка, якая адкрывае меню кнопак мышы</translation>
+<translation id="1567138500090284106">Кнопка, якая адкрывае клавішы кіравання мышшу</translation>
 <translation id="1569384531973824928">Доступ атрымаюць усе праграмы і вэб-сайты, якія маюць дазволы выкарыстоўваць мікрафон і камеру. Магчыма, трэба будзе абнавіць вэб-старонку або перазапусціць праграму.</translation>
 <translation id="1571697193564730395">Уключыць/выключыць рэжым "Не турбаваць". <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Паменшыць маштаб пры ўключанай лупе</translation>
@@ -865,7 +865,7 @@
 <translation id="4002066346123236978">Назва</translation>
 <translation id="40062176907008878">Рукапісны ўвод</translation>
 <translation id="4011112806063830608">Рэжым "Не турбаваць" уключаны.</translation>
-<translation id="4015144849380506405">Калі ўключана, прыпыняе (або ўзнаўляе) дзеянне кнопак мышы</translation>
+<translation id="4015144849380506405">Калі ўключана, прыпыняе (або ўзнаўляе) дзеянне клавіш кіравання мышшу</translation>
 <translation id="4017989525502048489">Лазерная ўказка</translation>
 <translation id="401993194061514265">Маркер недаступны. Адкрыйце Screencast яшчэ раз.</translation>
 <translation id="4021716437419160885">Прагартаць уніз</translation>
@@ -1664,7 +1664,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Акно перадпрагляду камеры прывязана да левага ніжняга вугла, бо яно перакрывала інтэрфейс сістэмы.</translation>
 <translation id="6605415194043280389">Канцэнтрацыя ўвагі ўключана</translation>
-<translation id="660846213831377756">Кнопкі мышы</translation>
+<translation id="660846213831377756">Клавішы кіравання мышшу</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />, знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="6612802754306526077">Выбраны рэжым запісу экрана</translation>
 <translation id="6612889377159412215">падзадача</translation>

@@ -2850,7 +2850,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3000378525979847272">Przyznano uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Dźwięk mono</translation>
 <translation id="3001144475369593262">Konta dla dzieci</translation>
-<translation id="3001614333383288217">{COUNT,plural, =0{Brak dostosowanych kluczy}=1{1 dostosowany klucz}few{{COUNT} dostosowane klucze}many{{COUNT} dostosowanych kluczy}other{{COUNT} dostosowanego klucza}}</translation>
+<translation id="3001614333383288217">{COUNT,plural, =0{Brak dostosowanych klawiszy}=1{1 dostosowany klawisz}few{{COUNT} dostosowane klawisze}many{{COUNT} dostosowanych klawiszy}other{{COUNT} dostosowanego klawisza}}</translation>
 <translation id="3001835006423291524">Dotknij czytnika linii papilarnych w prawym dolnym rogu klawiatury. Odcisk palca jest przechowywany w bezpieczny sposób i jest dostępny tylko na Twoim urządzeniu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3003144360685731741">Preferowane sieci</translation>
 <translation id="3003253259757197230">Odwiedzane adresy URL są wysyłane do Google w celu prognozowania, jakie kolejne witryny możesz odwiedzić, i wyświetlania dodatkowych informacji o odwiedzonej stronie</translation>

@@ -756,7 +756,7 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3628323833346754646">Przycisk z przodu</translation>
 <translation id="3630697955794050612">wyłączono</translation>
 <translation id="3631369015426612114">Zezwalaj na powiadomienia z tych źródeł</translation>
-<translation id="3633097874324966332">Otwórz ustawienia Bluetooth, aby sparować urządzenie</translation>
+<translation id="3633097874324966332">Otwórz ustawienia Bluetootha, aby sparować urządzenie</translation>
 <translation id="3633851487917460983">Otwórz schowek</translation>
 <translation id="363473492175527493">Zadanie, na którym chcesz się skupić: <ph name="TASK_NAME" />. Aby edytować zadanie, naciśnij Enter.</translation>
 <translation id="3638400994746983214">Przełącz ekran chroniący prywatność. <ph name="STATE_TEXT" />.</translation>
@@ -1268,7 +1268,7 @@ Możesz też użyć skrótu klawiszowego. Zaznacz tekst, a potem naciśnij <ph 
 <translation id="5303319262469238330">Bateria: pozostało <ph name="PERCENTAGE" />%.
 W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczone.</translation>
 <translation id="5308380583665731573">Połącz</translation>
-<translation id="5313326810920013265">Ustawienia Bluetooth</translation>
+<translation id="5313326810920013265">Ustawienia Bluetootha</translation>
 <translation id="5314219114274263156">Nagrano ekran</translation>
 <translation id="5314489738835854379">Przełączaj się wstecz między oknami</translation>
 <translation id="5316716239522500219">Wyświetl na monitorach odbicie lustrzane</translation>
@@ -2122,7 +2122,7 @@ W przeciwnym razie za 30 sekund touchpad znowu się włączy.</translation>
 <translation id="8142699993796781067">Sieć prywatna</translation>
 <translation id="8144760705599030999">Aby szybciej parować urządzenie <ph name="NAME" /> z innymi urządzeniami, zapisz je na koncie <ph name="EMAIL" /></translation>
 <translation id="8144914663975476336">Wybierz format nagrywania</translation>
-<translation id="8149413265954228307">Pokaż ustawienia Bluetooth. <ph name="STATE_TEXT" />.</translation>
+<translation id="8149413265954228307">Pokaż ustawienia Bluetootha. <ph name="STATE_TEXT" />.</translation>
 <translation id="8152092012181020186">Aby zamknąć, naciśnij CTRL + W.</translation>
 <translation id="8152264887680882389"><ph name="TEXT" />, autouzupełnianie</translation>
 <translation id="8155007568264258537"><ph name="FEATURE_NAME" /> – tym ustawieniem zarządza Twój administrator.</translation>

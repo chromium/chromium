@@ -142,7 +142,7 @@
 <translation id="1420408895951708260">Вклучи/исклучи „Ноќно светло“: <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1435537621343861112">Не може да започне „Диктирање“. Микрофонот е исклучен.</translation>
-<translation id="1445031758921122223">Датотеките за контролирање лице се преземени</translation>
+<translation id="1445031758921122223">Датотеките за „Контрола со лик“ се преземени</translation>
 <translation id="1447907279406111651">Сега · Завршува во <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Точки на пристап на вашиот уред</translation>
 <translation id="1455242230282523554">Прикажи ги поставките за јазикот</translation>
@@ -178,7 +178,7 @@
 <translation id="1550523713251050646">Кликни за повеќе опции</translation>
 <translation id="1555130319947370107">Сина</translation>
 <translation id="1557622599341396706">Прикажи го името на работната површина</translation>
-<translation id="1567138500090284106">Копче за копчињата на глувчето</translation>
+<translation id="1567138500090284106">Копче за копчиња за глувче</translation>
 <translation id="1569384531973824928">Ова овозможува пристап за сите апликации и веб-сајтови со дозволи за камерата и микрофонот. Можеби ќе треба да ја освежите веб-страницата или да ја рестартирате апликацијата.</translation>
 <translation id="1571697193564730395">Вклучи/исклучи „Не вознемирувај“. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Одзумирајте кога е вклучена лупата</translation>
@@ -445,6 +445,7 @@
 <translation id="2530896289327917474">Вклучете или исклучете „Прелистување со курсор“</translation>
 <translation id="2531025035050312891">уредот е бавен</translation>
 <translation id="2531107890083353124">Додека ја влечете картичката, притискајте <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Се обидувате да го искористите копчето Home? Користете</translation>
 <translation id="254900897760075745">Ги копира избраните содржини во привремената меморија</translation>
 <translation id="2549711466868162843">Подобрување на осветлувањето</translation>
 <translation id="2549985041256363841">Започни со снимање</translation>
@@ -563,6 +564,7 @@
 <translation id="2985148236010982088">Приказ на сите апликации</translation>
 <translation id="2992272421330787632">Скриј ги сите предлози за аудиовизуелни содржини</translation>
 <translation id="2992327365391326550">Копчето за микрофон на уредот е исклучено.</translation>
+<translation id="2993956882370897557">Се обидувате да го искористите копчето End? Користете</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3001391739687111021">Изменете ја големината на екранот</translation>
 <translation id="3009178788565917040">Излез</translation>
@@ -615,6 +617,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> го враќа вашиот <ph name="DEVICE_TYPE" /> на претходна верзија. Уредот ќе се ресетира и сите податоци ќе се избришат.</translation>
 <translation id="316798519864381606">Слајд на Google</translation>
 <translation id="3171170659304083361">Поставки за методи за внесување</translation>
+<translation id="3174897399179348329">Се обидувате да го искористите копчето Page Up? Користете</translation>
 <translation id="3176221688814061633">Вашиот Chromebook или уредот со Bluetooth користи постара верзија на Bluetooth. Вклучете Bluetooth Super Resolution или користете го внатрешниот микрофон за подобар квалитет на аудиото.</translation>
 <translation id="3181441307743005334">Рестартирањето може да потрае</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Поврзан со уред}one{Поврзан со # уред}other{Поврзан со # уреди}}</translation>
@@ -863,7 +866,7 @@
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="40062176907008878">Ракописно</translation>
 <translation id="4011112806063830608">„Не вознемирувај“ е вклучено.</translation>
-<translation id="4015144849380506405">Паузирајте/продолжете ги копчињата на глувчето кога се вклучени</translation>
+<translation id="4015144849380506405">Паузирајте/продолжете ги копчињата за глувче кога се вклучени</translation>
 <translation id="4017989525502048489">Ласерски покажувач</translation>
 <translation id="401993194061514265">Означувачот не е достапен. Отворете ја повторно Screencast.</translation>
 <translation id="4021716437419160885">Оди надолу</translation>
@@ -1262,6 +1265,7 @@
 <translation id="5297704307811127955">Исклучено</translation>
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5302048478445481009">Јазик</translation>
+<translation id="5302531370473608800">Ажурирајте го уредот <ph name="DEVICE_TYPE" /> за да користите YouTube Music</translation>
 <translation id="5303319262469238330">Преостануваат уште <ph name="PERCENTAGE" /> % од батеријата.
 Некои од функциите се ограничени за да се продолжи траењето на батеријата.</translation>
 <translation id="5308380583665731573">Поврзи</translation>
@@ -1486,7 +1490,7 @@
 <translation id="6020147141355393792">Поставете прегледување на известувањата и апликациите на телефонот</translation>
 <translation id="6022924867608035986">Избриши го текстот во полето за пребарување</translation>
 <translation id="602472752137106327">Прикажувај прозорци од сите работни површини, избрано е тркалезно копче</translation>
-<translation id="6024768346262692989">Не можеше да се преземат датотеки за контролирање лице</translation>
+<translation id="6024768346262692989">Не можеше да се преземат датотеки за „Контрола со лик“</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
 <translation id="6027518778343897451">Нема настан на <ph name="CURRENT_MONTH_DAY" />. Притиснете Enter за да го отворите „Календарот на Google“ во прелистувачот.</translation>
 <translation id="6030495522958826102">Менито е преместено во долниот лев агол на екранот.</translation>
@@ -1661,7 +1665,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Камерата е поставена во долниот лев агол. Конфликт со површината на системот.</translation>
 <translation id="6605415194043280389">„Режимот за концентрација“ е вклучен</translation>
-<translation id="660846213831377756">Копчиња на глувчето</translation>
+<translation id="660846213831377756">Копчиња за глувче</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
 <translation id="6612802754306526077">Избран е режимот на снимање на екранот</translation>
 <translation id="6612889377159412215">подзадача</translation>
@@ -1821,6 +1825,7 @@
 <translation id="7144942256906679589">Статус на батеријата</translation>
 <translation id="7145639536026937076">Батеријата е на <ph name="PERCENTAGE" /> % и се полни. „Штедачот на батерија“ е вклучен.</translation>
 <translation id="7147587499155271409">Нема историја на прелистувањето</translation>
+<translation id="7147657298465433425">За да пристапите до функциските копчиња, притиснете го копчето Fn заедно со копчињата во најгорниот ред</translation>
 <translation id="7149149900052329230">Управувајте со локалните датотеки и датотеките во Google Drive, сѐ во апликацијата „Датотеки“.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1930,6 +1935,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> го користи микрофонот во моментов</translation>
 <translation id="7561982940498449837">Затвори го менито</translation>
 <translation id="7564874036684306347">Преместувањето на прозорците на друга работна површина може да доведе до неочекувано однесување. Следните известувања, прозорци и дијалози може да се поделат помеѓу работните површини.</translation>
+<translation id="7568154670718626683">Се обидувате да го искористите копчето Delete? Користете</translation>
 <translation id="7568790562536448087">Се ажурира</translation>
 <translation id="7569509451529460200">Брајовото писмо и ChromeVox се овозможени</translation>
 <translation id="7569886975397378678">Отфрлете го поставувањето прегледување на известувањата и апликациите на телефонот</translation>
@@ -2132,6 +2138,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> Тукушто се концентриравте <ph name="FOCUSED_TIME" />. Отворете „Брзи поставки“ за да се концентрирате повторно.</translation>
 <translation id="8203224998425013577">Прикажи повеќе емоџија и GIF-датотеки</translation>
 <translation id="8203795194971602413">Десен клик</translation>
+<translation id="8205469348819768313">Се обидувате да го искористите копчето Page Down? Користете</translation>
 <translation id="8214996719228530800">Canary Channel</translation>
 <translation id="8219451629189078428">Вашиот Chromebook треба да остане вклучен и поврзан на струја во текот на ова време. Проверете дали каблите на полначот или адаптерот се целосно приклучени во вашиот Chromebook и во штекерот. Не исклучувајте го вашиот Chromebook.</translation>
 <translation id="8220076512072059941">Додај <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2324,6 +2331,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">„Помошникот на Google“ не зборува на овој јазик.</translation>
 <translation id="8926951137623668982">Полицата е секогаш скриена</translation>
+<translation id="8929566928381252430">Се обидувате да го искористите копчето Caps Lock? Користете</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 датотека}one{# датотека}other{# датотеки}}</translation>
 <translation id="8936501819958976551">деактивирано</translation>
 <translation id="8938800817013097409">USB-Ц уред (десна порта од задната страна)</translation>

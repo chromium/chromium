@@ -817,7 +817,7 @@
 <translation id="1573127087832371028">وصف المشكلة</translation>
 <translation id="1574335334663388774">سبق وتم تثبيت الإصدار <ph name="APP_VERSION" /> من "<ph name="APP_NAME" />" على هذا الجهاز.</translation>
 <translation id="1575741822946219011">اللغات وأساليب الإدخال</translation>
-<translation id="1576594961618857597">الصورة الرمزية التلقائية البيضاء</translation>
+<translation id="1576594961618857597">الأفاتار التلقائي الأبيض</translation>
 <translation id="1576729678809834061">الإبلاغ عن نتيجة البحث هذه</translation>
 <translation id="1578488449637163638">داكن</translation>
 <translation id="1578558981922970608">فرض الإغلاق</translation>
@@ -1316,7 +1316,7 @@
 <translation id="1915073950770830761">الكاناري</translation>
 <translation id="1915307458270490472">قطع الاتصال</translation>
 <translation id="1915734383465415025">رقم المتجر</translation>
-<translation id="1916502483199172559">الصورة الرمزية التلقائية الحمراء</translation>
+<translation id="1916502483199172559">الأفاتار التلقائي الأحمر</translation>
 <translation id="1916770123977586577">لتطبيق الإعدادات المُحدَّثة على الموقع الإلكتروني هذا، أعِد تحميل هذه الصفحة</translation>
 <translation id="1918127774159128277">‏إعادة تحميل إمكانات Wi-Fi Direct</translation>
 <translation id="1918141783557917887">أص&amp;غر</translation>
@@ -2279,7 +2279,7 @@
 <translation id="2571655996835834626">يمكنك تغيير الإعدادات التي تتحكَّم في وصول المواقع الإلكترونية إلى ميزات مثل ملفات تعريف الارتباط وجافا سكريبت والمكوّنات الإضافية والمواقع الجغرافية والميكروفون والكاميرا وغيرها.</translation>
 <translation id="257175846174451436">مجموعة علامات التبويب المقترَحة</translation>
 <translation id="2572032849266859634">تم منح إذن دخول للقراءة فقط إلى <ph name="VOLUME_NAME" />.</translation>
-<translation id="2573276323521243649">الرجوع من صفحة اختيار الصورة الرمزية</translation>
+<translation id="2573276323521243649">الرجوع من صفحة اختيار الأفاتار</translation>
 <translation id="2573417407488272418">احتفظ بنسخة احتياطية من التطبيقات والملفات في الملفات &gt; ملفاتي قبل الترقية.</translation>
 <translation id="2573831315551295105">تخصيص مفتاح تحكّم للإجراء "<ph name="ACTION" />"</translation>
 <translation id="2575247648642144396">سيكون هذا الرمز مرئيًا عندما تتمكن الإضافة من تنفيذ الإجراءات على الصفحة الحالية. يمكنك استخدام هذه الإضافة بالنقر على الرمز أو بالضغط على <ph name="EXTENSION_SHORTCUT" />.</translation>
@@ -3056,7 +3056,7 @@
 <translation id="3132896062549112541">القاعدة</translation>
 <translation id="3132996321662585180">إعادة التحميل يوميًا</translation>
 <translation id="3134393957315651797">يمكنك اختيار حالة للتجربة <ph name="EXPERIMENT_NAME" />. وصف التجربة: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
-<translation id="3139925690611372679">الصورة الرمزية التلقائية الصفراء</translation>
+<translation id="3139925690611372679">الأفاتار التلقائي الأصفر</translation>
 <translation id="3141093262818886744">الفتح على أي حال</translation>
 <translation id="3141318088920353606">جارٍ الاستماع…</translation>
 <translation id="3142562627629111859">مجموعة جديدة</translation>
@@ -3160,7 +3160,7 @@
 <translation id="3222779980972075989">ربط بنظام التشغيل <ph name="USB_VM_NAME" /></translation>
 <translation id="3223109931751684474">إزالة إمكانية الوصول إلى مفاتيح المرور على هذا الجهاز</translation>
 <translation id="3223531857777746191">الزر "إعادة الضبط"</translation>
-<translation id="3225084153129302039">الصورة الرمزية التلقائية الأرجوانية</translation>
+<translation id="3225084153129302039">الأفاتار التلقائي الأرجواني</translation>
 <translation id="3225319735946384299">التوقيع بالرمز</translation>
 <translation id="3226487301970807183">التبديل إلى اللوحة الجانبية التي تمت محاذاتها إلى اليسار</translation>
 <translation id="322708765617468434">يمكنك في أي وقت إضافة مستخدم آخر إلى الجهاز بعد إعداده. ويمكن لكل مستخدم تخصيص تجربته والحفاظ على خصوصية بياناته.</translation>
@@ -3394,7 +3394,7 @@
 <translation id="3399432415385675819">سيتم إيقاف الإشعارات</translation>
 <translation id="3400390787768057815">‏<ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> هرتز) - متداخل</translation>
 <translation id="3401484564516348917">الاطّلاع على معلومات عن المتصفّح ونظام التشغيل والجهاز والبرامج المُثبَّتة وقيم قاعدة بيانات المسجّلين والملفات</translation>
-<translation id="3402255108239926910">اختيار صورة رمزية</translation>
+<translation id="3402255108239926910">اختيار أفاتار</translation>
 <translation id="3402585168444815892">جارٍ التسجيل في "الوضع التجريبي"</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />، <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">لم يتم حفظ أي كلمات مرور لهذا الموقع</translation>
@@ -4999,7 +4999,7 @@
 <translation id="4541706525461326392">جارٍ إزالة الملف الشخصي. قد تستغرق هذه العملية بضع دقائق.</translation>
 <translation id="4542520061254486227">قراءة بياناتك على <ph name="WEBSITE_1" /> و<ph name="WEBSITE_2" /></translation>
 <translation id="4543778593405494224">إدارة الشهادات</translation>
-<translation id="4544174279960331769">الصورة الرمزية التلقائية الزرقاء</translation>
+<translation id="4544174279960331769">الأفاتار التلقائي الأزرق</translation>
 <translation id="4545028762441890696">لإعادة تفعليها ، اقبل الأذونات الجديدة:</translation>
 <translation id="4545759655004063573">لا يمكن الحفظ نظرًا لأن الأذونات غير كافية. يُرجى الحفظ في مكان آخر.</translation>
 <translation id="4546345569117159016">زر الماوس الأيمن</translation>
@@ -5567,7 +5567,7 @@
 <translation id="495164417696120157">{COUNT,plural, =1{ملفّ واحد}zero{# ملفّ}two{ملفّان}few{# ملفّات}many{# ملفًّا}other{# ملف}}</translation>
 <translation id="495170559598752135">إجراءات</translation>
 <translation id="4951966678293618079">عدم حفظ كلمات مرور لهذا الموقع الإلكتروني مطلقًا</translation>
-<translation id="4953808748584563296">الصورة الرمزية التلقائية البرتقالية</translation>
+<translation id="4953808748584563296">الأفاتار التلقائي البرتقالي</translation>
 <translation id="4955707703665801001">إمكانية ظهور الجهاز الذي يستخدم ميزة "<ph name="FEATURE_NAME" />"</translation>
 <translation id="4955710816792587366">اختيار رقم التعريف الشخصي</translation>
 <translation id="4956847150856741762">1</translation>
@@ -5930,7 +5930,7 @@
 <translation id="5225463052809312700">تفعيل الكاميرا</translation>
 <translation id="5226514125747186">تظهر دائرة منقَّطة حول رموز الموقع الإلكتروني. <ph name="BEGIN_LINK" />مزيد من المعلومات عن علامات التبويب غير النشطة<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">لا يُسمح للمواقع الإلكترونية باستخدام موقعك الجغرافي</translation>
-<translation id="5227679487546032910">الصورة الرمزية التلقائية الزرقاء المخضرة</translation>
+<translation id="5227679487546032910">الأفاتار التلقائي باللون الأزرق المخضر</translation>
 <translation id="5228245824943774148">هناك <ph name="NUM_DEVICES_CONNECTED" /> جهاز متصل.</translation>
 <translation id="5228579091201413441">تفعيل المزامنة</translation>
 <translation id="5228704301508740018">{GROUP_COUNT,plural, =1{هل تريد إلغاء تجميع مجموعة علامات التبويب؟}zero{هل تريد إلغاء تجميع مجموعات علامات التبويب؟}two{هل تريد إلغاء تجميع مجموعتَي علامات التبويب؟}few{هل تريد إلغاء تجميع مجموعات علامات التبويب؟}many{هل تريد إلغاء تجميع مجموعات علامات التبويب؟}other{هل تريد إلغاء تجميع مجموعات علامات التبويب؟}}</translation>
@@ -7010,7 +7010,7 @@
 <translation id="6021293122504240352">تم إيقاف <ph name="APPS" /> تطبيق نهائيًا</translation>
 <translation id="6021969570711251331">المضمَّن</translation>
 <translation id="6022526133015258832">فتح في وضع ملء الشاشة</translation>
-<translation id="6022659036123304283">‏اجعل Chrome متصفِّحك الدائم.</translation>
+<translation id="6022659036123304283">‏اجعل Chrome متصفِّحك الدائم</translation>
 <translation id="6023643151125006053">تم إقفال هذا الجهاز (الرقم التسلسلي: <ph name="SERIAL_NUMBER" />) من خلال مشرف <ph name="SAML_DOMAIN" />.</translation>
 <translation id="6024317249717725918">الب&amp;حث في إطار الفيديو باستخدام "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
 <translation id="6025215716629925253">تتبع التكديس</translation>
@@ -9126,7 +9126,7 @@
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">إنشاء مجموعة مفاتيح</translation>
 <translation id="7568759527730933493">‏استخدِم اتصالاً آمنًا للبحث عن عنوان IP لموقع إلكتروني في نظام أسماء النطاقات (DNS). يعتمد ذلك على مقدِّم خدمة مُدار ومسجّل على الرابط <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />، علمًا بأنّه لا يتم استخدام الاتصالات الآمنة لبعض النطاقات التي ضبطها المشرف.</translation>
-<translation id="756876171895853918">تخصيص الصورة الرمزية</translation>
+<translation id="756876171895853918">تخصيص الأفاتار</translation>
 <translation id="7568790562536448087">تحديث</translation>
 <translation id="7569983096843329377">أسود</translation>
 <translation id="7570548610653957960">ساعدني في القراءة</translation>
@@ -9852,7 +9852,7 @@
 <translation id="8061970399284390013">التدقيق الإملائي والنحوي</translation>
 <translation id="8061991877177392872">‏يبدو أنه سبق لك إعداد ميزة "التعرّف على الصوت" في خدمة "مساعد Google" على جهاز آخر. أمّا بالنسبة إلى التسجيلات الصوتية السابقة، فقد تم استخدامها لإنشاء نموذج صوتي على هذا الجهاز.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{ورقة واحدة}zero{{COUNT} ورقة}two{ورقتان ({COUNT})}few{{COUNT} أوراق}many{{COUNT} ورقة}other{{COUNT} ورقة}}</translation>
-<translation id="8063235345342641131">الصورة الرمزية التلقائية الخضراء</translation>
+<translation id="8063235345342641131">الأفاتار التلقائي الأخضر</translation>
 <translation id="8063535366119089408">قراءة الملف</translation>
 <translation id="8064015586118426197">‏نظام التشغيل ChromeOS Flex</translation>
 <translation id="8064279191081105977">مجموعة <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -9918,7 +9918,7 @@
 <translation id="8105273883928376822">يُرجى تسجيل الدخول للمتابعة.</translation>
 <translation id="8107015733319732394">‏تثبيت متجر Google Play على <ph name="DEVICE_TYPE" />. قد يستغرق ذلك بضع دقائق.</translation>
 <translation id="810728361871746125">درجة دقة شاشة العرض</translation>
-<translation id="8109109153262930486">الصورة الرمزية التلقائية</translation>
+<translation id="8109109153262930486">الأفاتار التلقائي</translation>
 <translation id="8109991406044913868">مظهر من إنشاء الذكاء الاصطناعي</translation>
 <translation id="8110393529211831722">تم تثبيت الاشتراك على هذا الجهاز فقط ولم تتم مزامنته مع الأجهزة الأخرى ضِمن حسابك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="8110489095782891123">جارٍ تنزيل قائمة جهات الاتصال...</translation>

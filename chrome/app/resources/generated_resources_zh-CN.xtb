@@ -215,7 +215,7 @@
 <translation id="1147991416141538220">要申请访问权限，请与此设备的管理员联系。</translation>
 <translation id="1148624853678088576">搞定了！</translation>
 <translation id="1148669835763563782">您正在获得可增强安全性的最新软件更新，以及最新的 Chromebook 功能。此次更新旨在改进设置体验，以帮助您顺利上手使用 Chromebook。</translation>
-<translation id="1149401351239820326">过期月份</translation>
+<translation id="1149401351239820326">到期月份</translation>
 <translation id="1149483087970735785">辅助技术</translation>
 <translation id="1149725087019908252">正在扫描 <ph name="FILE_NAME" /></translation>
 <translation id="1150490752229770117">这是最后一次自动为此 <ph name="DEVICE_TYPE" /> 提供软件更新和安全更新。要想接收未来的更新，请升级至较新的型号。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -4875,7 +4875,7 @@
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> 检测到一个处于活动状态的 TPM，它可以更安全地存储您的数据。</translation>
 <translation id="4452898361839215358">或选择 PPD。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">轻触键盘右上角的指纹传感器。您的指纹数据会安全地存储在您的 <ph name="DEVICE_TYPE" /> 上，绝不会外泄。</translation>
-<translation id="4453946976636652378">在<ph name="SEARCH_ENGINE_NAME" />中搜索，或者输入一个网址</translation>
+<translation id="4453946976636652378">在 <ph name="SEARCH_ENGINE_NAME" /> 中搜索，或输入网址</translation>
 <translation id="4457472090507035117">请选择当前的声音：</translation>
 <translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> 天前曾有活动</translation>
 <translation id="4460014764210899310">取消分组</translation>
@@ -5822,7 +5822,7 @@
 <translation id="5153234146675181447">移除手机</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
 <translation id="5154108062446123722"><ph name="PRINTING_DESTINATION" />高级设置</translation>
-<translation id="5154702632169343078">主题背景</translation>
+<translation id="5154702632169343078">主题</translation>
 <translation id="5154917547274118687">内存</translation>
 <translation id="5155327081870541046">在地址栏中，输入与您要用作搜索范围的网站对应的快捷字词，例如“@bookmarks”。然后，按您的首选键盘快捷键，并输入搜索字词。</translation>
 <translation id="5156638757840305347">光标在出现或移动时突出显示</translation>
@@ -7344,7 +7344,7 @@
 <translation id="6276210637549544171">代理 <ph name="PROXY_SERVER" /> 要求提供用户名和密码。</translation>
 <translation id="6277105963844135994">网络超时</translation>
 <translation id="6277518330158259200">屏幕截图(&amp;A)</translation>
-<translation id="6278428485366576908">主题背景</translation>
+<translation id="6278428485366576908">主题</translation>
 <translation id="6278776436938569440">更改位置</translation>
 <translation id="6280215091796946657">使用其他账号登录</translation>
 <translation id="6280912520669706465">ARC</translation>

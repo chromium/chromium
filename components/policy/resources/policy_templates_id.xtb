@@ -2095,6 +2095,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Periksa ejaan dapat selalu menggunakan kamus yang didownload secara lokal, kecuali jika fitur ini dinonaktifkan oleh <ph name="SPELLCHECK_ENABLED_POLICY_NAME" /> sehingga kebijakan ini tidak akan berpengaruh.</translation>
 <translation id="2433516903565257847">Persentase fleet perangkat yang harus diperbarui setelah sejumlah hari tertentu.</translation>
+<translation id="2433683038230070030">Buffering adaptif Web Audio mungkin diaktifkan bergantung pada proses peluncuran fitur.</translation>
 <translation id="2435052056904485763">Daftar server delegasi Kerberos yang diizinkan</translation>
 <translation id="2436302465999055995">Jadikan <ph name="LACROS_NAME" /> sebagai satu-satunya browser yang tersedia (belum diimplementasikan)</translation>
 <translation id="2439187682308339104">Jangan izinkan situs apa pun meminta akses ke perangkat HID melalui WebHID API</translation>
@@ -6669,6 +6670,12 @@ Jika kebijakan ini disetel ke nonaktif atau tidak disetel, widget Sekilas Info t
 <translation id="5776485039795852974">Tanyakan setiap kali situs ingin menampilkan pemberitahuan desktop</translation>
 <translation id="5783009211970309878">Cetak Header dan Footer</translation>
 <translation id="5790763087505467169">Mengurangi Notifikasi otomatis untuk sesi tamu terkelola</translation>
+<translation id="5794205610250307906">Kebijakan ini mengontrol apakah browser akan menggunakan buffering adaptif untuk Web Audio, yang mungkin mengurangi gangguan audio tetapi juga mungkin meningkatkan latensi sebesar jumlah variabel.
+
+Jika kebijakan ini disetel ke Aktif, buffering adaptif akan selalu digunakan.
+
+Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, browser
+akan menggunakan proses peluncuran fitur untuk menentukan apakah buffering adaptif akan digunakan.</translation>
 <translation id="5800329278018669527">Nonaktifkan perintah konfigurasi jaringan saat offline</translation>
 <translation id="5802931736499687181">Nonaktifkan Pipeline Pelaporan Terenkripsi</translation>
 <translation id="5803715507113569033">Kebijakan ini memungkinkan admin mengonfigurasi pemasangan <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
@@ -7264,6 +7271,7 @@ Di versi 114 dan yang lebih baru, kebijakan ini bersifat opsional jika kebijakan
 Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat mengunci layar. (Pengguna hanya dapat logout dari sesi pengguna).</translation>
 <translation id="6265892395051519509">Mengizinkan akses ke sensor di situs ini</translation>
 <translation id="6266043141694454734">Menentukan apakah Chrome Root Store dan pemverifikasi sertifikat bawaan akan digunakan untuk memverifikasi sertifikat server</translation>
+<translation id="6266686172120601139">Mengaktifkan buffering adaptif untuk Web Audio</translation>
 <translation id="6267130578410325007">Kebijakan ini mengizinkan pengelompokan cluster agen dengan kunci origin secara default.
 
 Header HTTP Origin-Agent-Cluster mengontrol apakah dokumen
@@ -9958,6 +9966,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan,
 <translation id="8173864651667424191">Opsi Cetak sebagai gambar akan disetel sebagai default untuk pratinjau cetak dokumen PDF jika tersedia.</translation>
 <translation id="8175922758834816585">Aktifkan respons lisan di layar login dan izinkan pengguna menonaktifkannya untuk sementara</translation>
 <translation id="8176035528522326671">Memungkinkan pengguna perusahaan menjadi pengguna banyak profil primer saja (Perilaku default untuk pengguna yang dikelola perusahaan)</translation>
+<translation id="817717947404114735">Aktifkan buffering adaptif Web Audio.</translation>
 <translation id="8179082421668183060">Menyetel kebijakan ke daftar string berarti string tersebut akan digabungkan dengan spasi dan diteruskan dari <ph name="IE_PRODUCT_NAME" /> ke <ph name="PRODUCT_NAME" /> sebagai parameter command line. Jika parameter berisi <ph name="URL_PLACEHOLDER" />, <ph name="URL_PLACEHOLDER" /> akan diganti dengan URL halaman yang akan dibuka. Jika tidak ada parameter yang berisi <ph name="URL_PLACEHOLDER" />, URL akan ditambahkan di akhir command line.
 
       Variabel lingkungan diperluas. Pada <ph name="MS_WIN_NAME" />, <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> akan diganti dengan nilai variabel lingkungan <ph name="ENV_VARIABLE_VALUE" />.

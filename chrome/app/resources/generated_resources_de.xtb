@@ -2292,7 +2292,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2587922766792651800">Zeitüberschreitung</translation>
 <translation id="2588636910004461974">Geräte von <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Drive-Dateien nie anzeigen</translation>
-<translation id="2593499352046705383">Erstelle vor der Installation auf jeden Fall ein Back-up deiner Daten. Wenn du <ph name="DEVICE_OS" /> installierst, werden die Daten auf deiner Festplatte überschrieben. Weitere Informationen findest du unter g.co/flex/InstallGuide.</translation>
+<translation id="2593499352046705383">Erstelle vor der Installation auf jeden Fall ein Backup deiner Daten. Wenn du <ph name="DEVICE_OS" /> installierst, werden die Daten auf deiner Festplatte überschrieben. Weitere Informationen findest du unter g.co/flex/InstallGuide.</translation>
 <translation id="2594832159966169099">V8-Sicherheit verwalten</translation>
 <translation id="2597073208962000830">Nearby Share nutzt die Bluetooth-Suche, um Geräte in der Nähe zu finden.</translation>
 <translation id="2598136842498757793">Schaltflächen auf Symbolleiste anpassen</translation>
@@ -5577,7 +5577,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4967227914555989138">Notiz hinzufügen</translation>
 <translation id="4967360192915400530">Gefährliche Datei herunterladen</translation>
 <translation id="496742804571665842">eSIM-Profile deaktivieren</translation>
-<translation id="4967571733817147990">Maustasten anpassen</translation>
+<translation id="4967571733817147990">Tastaturmaus anpassen</translation>
 <translation id="4967852842111017386">Name des <ph name="FEATURE_NAME" />-Geräts</translation>
 <translation id="4971412780836297815">Nach abgeschlossenem Download öffnen</translation>
 <translation id="4972129977812092092">Druckerinformationen bearbeiten</translation>
@@ -11314,7 +11314,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9110739391922513676">Microsoft 365 zum Öffnen von Dateien einrichten</translation>
 <translation id="9111102763498581341">Entsperren</translation>
 <translation id="9111305600911828693">Lizenz ist nicht eingerichtet</translation>
-<translation id="9111330022786356709">Maustasten hinzufügen oder finden</translation>
+<translation id="9111330022786356709">Tastaturmaus hinzufügen oder finden</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111519254489533373">Safe Browsing-Einstellungen aufrufen</translation>
 <translation id="9111668656364922873">Willkommen in deinem neuen Profil</translation>

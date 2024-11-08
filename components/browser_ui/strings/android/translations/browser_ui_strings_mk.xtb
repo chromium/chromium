@@ -295,6 +295,7 @@
 <translation id="5553374991681107062">Најнови</translation>
 <translation id="5556459405103347317">Повторно вчитај</translation>
 <translation id="5591840828808741583">Блокирано: <ph name="SITE_NAME" /></translation>
+<translation id="560980142378233747">Тоа значи дека функциите на сајтот би требало да функционираат според очекувањата, но може да имате пониско ниво на заштита при прелистувањето. <ph name="BEGIN_LINK" />Испратете повратни информации<ph name="END_LINK" /></translation>
 <translation id="5632485077360054581">Покажи ми како</translation>
 <translation id="5649053991847567735">Автоматски преземања</translation>
 <translation id="5668404140385795438">Отфрли го барањето на веб-локацијата да спречи зумирање</translation>

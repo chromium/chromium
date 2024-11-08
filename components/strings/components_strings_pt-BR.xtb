@@ -194,9 +194,9 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1333745675627230582">Iniciar o jogo do Dinossauro do Chrome</translation>
 <translation id="1333989956347591814">É possível que sua atividade <ph name="BEGIN_EMPHASIS" />ainda esteja visível<ph name="END_EMPHASIS" /> para:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />os websites que você visita
-          <ph name="LIST_ITEM" />seu empregador ou sua escola
-          <ph name="LIST_ITEM" />seu provedor de acesso à Internet
+          <ph name="LIST_ITEM" />Os websites que você visita
+          <ph name="LIST_ITEM" />Seu empregador ou sua escola
+          <ph name="LIST_ITEM" />Seu provedor de acesso à Internet
         <ph name="END_LIST" /></translation>
 <translation id="1335042910556016570">Monitorar item</translation>
 <translation id="1337692097987160377">Compartilhar esta guia</translation>

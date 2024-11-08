@@ -381,7 +381,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 Your search engine is <ph name="DSE_NAME" />. See their instructions for deleting your search history, if applicable.</translation>
 <translation id="269819437389494246">You can see the pages that you've visited or delete them from your history</translation>
 <translation id="2704606927547763573">Copied</translation>
-<translation id="2708051474374549906">Real-time, proactive protection against dangerous sites, downloads, and extensions that’s based on your browsing data getting sent to Google</translation>
+<translation id="2708051474374549906">Real-time, proactive protection against dangerous sites, downloads and extensions that’s based on your browsing data getting sent to Google</translation>
 <translation id="2709516037105925701">Autofill</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2718352093833049315">Only on Wi-Fi</translation>
@@ -440,7 +440,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="3030138564564344289">Retry download</translation>
 <translation id="3037177537145227281">Tracking price</translation>
 <translation id="3039671569659952257">Delete folder</translation>
-<translation id="3053332585453689122">Sends the URLs you visit and a small sample of page content, downloads, extension activity, and system information to Google Safe Browsing to check if they're harmful.</translation>
+<translation id="3053332585453689122">Sends the URLs you visit and a small sample of page content, downloads, extension activity and system information to Google Safe Browsing to check if they're harmful.</translation>
 <translation id="3055102495753300780">Information storage</translation>
 <translation id="3059270601560379555">New search</translation>
 <translation id="3072279342064724558">Password already exists</translation>
@@ -1190,7 +1190,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="6527303717912515753">Share</translation>
 <translation id="6532106788206463496">Save changes</translation>
 <translation id="6536759809440150308">Open <ph name="GROUP_TITLE" />, group of <ph name="NUMBER_OF_TABS" />, <ph name="CREATION_TEXT" /></translation>
-<translation id="6537746030088321027">sample.co.uk</translation>
+<translation id="6537746030088321027">example.com</translation>
 <translation id="6550675742724504774">Options</translation>
 <translation id="6550891580932862748">Does not protect you against dangerous websites, downloads and extensions. Your Safe Browsing settings in other Google products won't be affected.</translation>
 <translation id="6559301491397835130">{count,plural, =1{Bookmark saved to ‘{title}’. It is saved only to this device.}other{Bookmarks saved to ‘{title}’. They are only saved to this device.}}</translation>

@@ -219,6 +219,7 @@
 <translation id="1905710495812624430">Максималниот број дозволени обиди е надминат.</translation>
 <translation id="1908234395526491708">Неуспешни UDP-барања</translation>
 <translation id="1908394185991500139">стрелка налево</translation>
+<translation id="1914144885717544695">во петок</translation>
 <translation id="1923388006036088459">Бои за истакнување</translation>
 <translation id="1945403655450283000">Диктафон</translation>
 <translation id="1947737735496445907">Отпечатено</translation>
@@ -257,6 +258,7 @@
 <translation id="2138109643290557664">Лебдете наоколу</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2148716181193084225">Денес</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> фотографии</translation>
 <translation id="2154460308960858308">Избриши го пребарувањето</translation>
 <translation id="2157660087437850958">избирач на емоџија</translation>
@@ -375,6 +377,7 @@
 <translation id="2713444072780614174">Бела</translation>
 <translation id="2715723665057727940">река</translation>
 <translation id="2717139507051041123">Овозможете режим во темна боја</translation>
+<translation id="2726755229438917165">во понеделник</translation>
 <translation id="2728460467788544679">Избриши ја сета историја на печатење</translation>
 <translation id="2731700343119398978">Почекајте...</translation>
 <translation id="2740531572673183784">Во ред</translation>
@@ -418,6 +421,7 @@
 <translation id="3056720590588772262">Крајна точка</translation>
 <translation id="3060579846059757016">Кратки прегледи</translation>
 <translation id="3061850252076394168">овозможете „Изберете за говор“</translation>
+<translation id="3066772729299747758">во вторник</translation>
 <translation id="3069085583900247081">Тестот не успеа</translation>
 <translation id="3078740164268491126">табела</translation>
 <translation id="3081652522083185657">светла</translation>
@@ -474,6 +478,7 @@
 <translation id="3361618936611118375">суши</translation>
 <translation id="3368922792935385530">Поврзано</translation>
 <translation id="3369013195428705271">Дали сте сигурни дека сакате да ја исчистите сета историја на печатење? Тековните задачи за печатење нема да бидат избришани.</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">Тапет Earth Flow</translation>
 <translation id="33736539805963175">Заднина во <ph name="LETTERS_COLOR" /> со буквата „<ph name="LETTERS_LETTER" />“</translation>
 <translation id="3383623117265110236">Ексклузивно</translation>
@@ -621,6 +626,7 @@
 <translation id="4130035430755296270">Наместете го курсорот за повеќе опции за распоред</translation>
 <translation id="4130750466177569591">Се согласувам</translation>
 <translation id="4131410914670010031">Црно и бело</translation>
+<translation id="4137700675046373159">во сабота</translation>
 <translation id="4143226836069425823">Допрете друго копче на тастатурата за да на замените контролата</translation>
 <translation id="4145784616224233563">Заштитен ѕид со HTTP</translation>
 <translation id="4147897805161313378">Фотографии на Google</translation>
@@ -643,6 +649,7 @@
 <translation id="4227825898293920515">Лозинката истекува за <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Нема задачи за печатење во тек</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">во недела</translation>
 <translation id="4250229828105606438">Слика од екран</translation>
 <translation id="4251839292699800785">Модерна канцеларија</translation>
 <translation id="4258281355379922695">Латенција на HTTP</translation>
@@ -1118,6 +1125,7 @@
 <translation id="6527081081771465939">Непознат безбедносен протокол за Wi-Fi</translation>
 <translation id="6535178685492749208">Офлајн сте. Повратните информации ќе се испратат подоцна.</translation>
 <translation id="6543412779435705598">такоа</translation>
+<translation id="6550369542114086980">во четврток</translation>
 <translation id="6551839203326557324">јаболка</translation>
 <translation id="65526652485742171">Копчето „Потврди“ сега е овозможено</translation>
 <translation id="6557784757915238407">APN е од тип <ph name="ATTACH" />.</translation>
@@ -1133,7 +1141,7 @@
 <translation id="6595046262780525922">Да се вклучи транскрипција и да се преземе моделот за транскрипции?</translation>
 <translation id="6596816719288285829">IP-адреса</translation>
 <translation id="6599673642868607614">Благодариме за повратните информации. Вашите повратни информации ни помагаат да го подобриме доживувањето на Chromebook и ќе бидат разгледани од нашиот тим. Поради големиот број на извештаи, нема да можеме да испратиме одговор.</translation>
-<translation id="660846213831377756">Копчиња на глувчето</translation>
+<translation id="660846213831377756">Копчиња за глувче</translation>
 <translation id="6618744767048954150">Се извршува</translation>
 <translation id="6620487321149975369">Задачите за печатење ќе се појавуваат во историјата, освен ако не се отстранат рачно</translation>
 <translation id="6624819909909965616">Не може да се прикачи датотека поголема од 10 MB</translation>
@@ -1265,6 +1273,7 @@
 <translation id="7180865173735832675">Приспособи</translation>
 <translation id="7182063559013288142">Инстант точка на пристап</translation>
 <translation id="7184043045742675738">Кликнете на кој било од клучевите за да го приспособите вашето копче. Променете ја позицијата на клучот со глувчето или копчињата со стрелки.</translation>
+<translation id="7187669805838282391">во среда</translation>
 <translation id="7206979415662233817">Услови за користење</translation>
 <translation id="7210635925306941239">синозелена</translation>
 <translation id="7212547870105584639">Управувајте со поставките за APN на мрежата. Имињата на пристапните точки воспоставуваат врска меѓу мобилната мрежа и интернетот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1311,6 +1320,7 @@
 <translation id="7388959671917308825">Вградена подлога за допир</translation>
 <translation id="7397270852490618635">Исклучи ја светлата тема</translation>
 <translation id="7401543881546089382">Избриши кратенка</translation>
+<translation id="7405493795721832710"><ph name="DEVICE_NAME" /> е подготвен за ажурирање</translation>
 <translation id="741244894080940828">конверзија</translation>
 <translation id="7415801143053185905">Многу висока латенција на HTTP</translation>
 <translation id="7425037327577270384">Помогни ми да напишам</translation>
@@ -1325,6 +1335,7 @@
 <translation id="7500205272584643581">Да се дозволи „Диктафон“ да открива и да етикетира звучници?</translation>
 <translation id="7501957181231305652">или</translation>
 <translation id="7502658306369382406">IPv6-адреса</translation>
+<translation id="7503342217608032738">Уредот не може да се користи</translation>
 <translation id="7507061649493508884">Сјаен <ph name="FLOWER_COLOR" /> <ph name="FLOWER_TYPE" /></translation>
 <translation id="7513770521371759388">најдолу</translation>
 <translation id="7514365320538308">Преземи</translation>
@@ -1337,6 +1348,8 @@
 <translation id="7544853251252956727">Измешај</translation>
 <translation id="7550715992156305117">Дијагностички рутини</translation>
 <translation id="7551123448725492271">Уредот е аудиоуред.</translation>
+<translation id="7553094907613575384"><ph name="BEGIN_PARAGRAPH1" />Администраторот на <ph name="MANAGER" /> поставил кога може да се користи овој <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
+        <ph name="BEGIN_PARAGRAPH2" />Уредов ќе може да го користите повторно <ph name="DAY" /> во <ph name="TIME" />.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7559239713112547082">Прегледајте ја сликата од екранот</translation>
 <translation id="7561454561030345039">Администраторот управува со дејствово</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
@@ -1425,6 +1438,7 @@
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{„<ph name="APP_NAME_1" />“ се стартуваше автоматски}one{# апликација се стартуваа автоматски}other{# апликации се стартуваа автоматски}}</translation>
 <translation id="7994702968232966508">EAP-метод</translation>
 <translation id="8004582292198964060">Прелистувач</translation>
+<translation id="8010765388850538088">Дознајте повеќе за генеративната AI</translation>
 <translation id="8017679124341497925">Кратенката е изменета</translation>
 <translation id="802154636333426148">Неуспешно преземање</translation>
 <translation id="8028993641010258682">Големина</translation>
@@ -1434,6 +1448,7 @@
 <translation id="8045012663542226664">Исклучи звук на микрофон</translation>
 <translation id="8054112564438735763">беж</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_COLOR" /> <ph name="CHARACTERS_SUBJECTS" /> на <ph name="CHARACTERS_BACKGROUND" /> заднина</translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">APN е поврзано.</translation>
 <translation id="8067208048261192356">кафеава</translation>
 <translation id="8067224607978179455">Избришете го <ph name="ACTION_NAME" /></translation>
@@ -1537,6 +1552,7 @@
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">Оваа опција може да е задолжителна за да се поврзете на мрежата на операторот. Контактирајте со операторот за детали.</translation>
 <translation id="8576249514688522074">Неиницијализирана</translation>
+<translation id="8584654835905316966">Треба да се рестартира за да се заврши инсталирањето на фирмверот за <ph name="DEVICE_NAME" /> на верзија <ph name="VERSION" />. Може да изгледа како компјутерот да се рестартира неколку пати. Ова однесување е очекувано.</translation>
 <translation id="8593058461203131755">паузирање аудиовизуелни содржини</translation>
 <translation id="8620617069779373398">Статус на роаминг</translation>
 <translation id="8626489604350149811">Повеќе дејства за <ph name="APN_NAME" /></translation>
@@ -1671,6 +1687,7 @@
 <translation id="917720651393141712">Тест</translation>
 <translation id="9188992814426075118">Тастатурата може автоматски да се совпаѓа со тапетот</translation>
 <translation id="9189000703457422362">Не може да се поврзе на мрежава со автоматски откриени APN. Контактирајте со вашиот мобилен оператор за повеќе информации.</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">Избраните копчиња на џојстикот се <ph name="KEYS" />. Допрете го копчето за да ја измените контролата</translation>
 <translation id="9204237731135241582">Не може да се стапи во контакт со портал од апликации на Android</translation>

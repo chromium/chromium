@@ -4886,7 +4886,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="445099924538929605"><ph name="DEVICE_OS" /> ha detectado un TPM activo que puede almacenar tus datos de forma más segura.</translation>
 <translation id="4452898361839215358">o selecciona un archivo PPD. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4453430595102511050">Toca el sensor de huellas digitales, que está en la esquina superior derecha del teclado. Los datos de tu huella digital se almacenan de forma segura y nunca salen de tu <ph name="DEVICE_TYPE" />.</translation>
-<translation id="4453946976636652378">Busca <ph name="SEARCH_ENGINE_NAME" /> o introduce una URL</translation>
+<translation id="4453946976636652378">Buscar en <ph name="SEARCH_ENGINE_NAME" /> o escribir una URL</translation>
 <translation id="4457472090507035117">Selecciona la voz actual:</translation>
 <translation id="4459169140545916303">Activo hace <ph name="DEVICE_LAST_ACTIVATED_TIME" /> días</translation>
 <translation id="4460014764210899310">Sin agrupar</translation>
@@ -5264,7 +5264,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4740546261986864539">Abierta recientemente</translation>
 <translation id="4742334355511750246">No puede mostrar imágenes</translation>
 <translation id="4742795653798179840">Datos de Chrome eliminados</translation>
-<translation id="4742970037960872810">Eliminar resaltado</translation>
+<translation id="4742970037960872810">Eliminar texto destacado</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Cómo actualizar aplicaciones<ph name="END_LINK" /></translation>
 <translation id="4743990041512863976">Permitido (<ph name="PERMISSION_DETAILS" />). Activa el <ph name="LINK_BEGIN" />acceso al micrófono del sistema<ph name="LINK_END" />.</translation>
 <translation id="4744260496658845719">Brillo de la retroiluminación del teclado</translation>

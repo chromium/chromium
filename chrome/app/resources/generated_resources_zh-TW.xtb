@@ -3270,7 +3270,7 @@
 <translation id="3308852433423051161">正在載入 Google 助理…</translation>
 <translation id="3309124184713871355">建築作品</translation>
 <translation id="3309330461362844500">憑證設定檔 ID</translation>
-<translation id="331080746368555063">私人網站可能會納入貴公司的內部網路等項目</translation>
+<translation id="331080746368555063">私人網站可能會包含貴公司的內部網路等項目</translation>
 <translation id="3311445899360743395">系統可能會從這部裝置中移除與這個應用程式相關聯的資料。</translation>
 <translation id="3312470654018965389">正在設定 Linux 容器</translation>
 <translation id="3312883087018430408">如要搜尋特定網站或 Chrome，請在網址列輸入相應的搜尋捷徑，然後按下你慣用的鍵盤快速鍵。舉例來說，如果只要搜尋書籤，請輸入「@bookmarks」，然後按下 Tab 鍵或空白鍵。</translation>
@@ -9481,7 +9481,7 @@
 <translation id="7826254698725248775">裝置 ID 發生衝突。</translation>
 <translation id="7828642077514646543">錯誤：無法將憑證解碼</translation>
 <translation id="7829877209233347340">請要求家長登入，授予新增學校帳戶的權限</translation>
-<translation id="7830276128493844263">系統設定中的位置存取權為關閉狀態</translation>
+<translation id="7830276128493844263">系統設定中的定位服務為關閉狀態</translation>
 <translation id="7830833461614351956">要將 <ph name="NUM_OF_FILES" /> 個檔案複製到「<ph name="CLOUD_PROVIDER" />」再開啟嗎？</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="7833720883933317473">你所儲存的自訂字詞會顯示在這裡</translation>

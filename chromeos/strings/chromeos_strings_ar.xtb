@@ -446,7 +446,7 @@
 <translation id="3178532070248519384">الفن الطلائعي</translation>
 <translation id="3182676044300231689">أدخِل طلبًا، مثل "إعادة الكتابة بأسلوب أكثر ثقة"</translation>
 <translation id="3188257591659621405">ملفاتي</translation>
-<translation id="319101249942218879">تم تغيير الصورة الرمزية.</translation>
+<translation id="319101249942218879">تم تغيير الأفاتار.</translation>
 <translation id="3192947282887913208">ملفات صوتية</translation>
 <translation id="3199982728237701504">وحدة تغذية المستندات (وجهان)</translation>
 <translation id="3201315366910775591">يمكن للمستخدمين الآخرين تعديل الألبومات المشترَكة</translation>
@@ -460,7 +460,7 @@
 <translation id="324961752321393509">لا يسمح المشرف بإغلاق هذا التطبيق.</translation>
 <translation id="3263941347294171263">عليك فصل "<ph name="DEVICE_NAME" />" عن مصدر الطاقة ثم إعادة توصيله به لمواصلة عملية التحديث</translation>
 <translation id="3268178239013324452">تعذَّرت الطباعة - باب الطابعة مفتوح</translation>
-<translation id="3275729367986477355">الصورة الرمزية</translation>
+<translation id="3275729367986477355">الأفاتار</translation>
 <translation id="3283504360622356314">{0,plural, =1{تعديل الملف}zero{تعديل الملفات}two{تعديل الملفَين}few{تعديل الملفات}many{تعديل الملفات}other{تعديل الملفات}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> غيغاهرتز</translation>
 <translation id="3291996639387199448">اتجاه المفتاح</translation>
@@ -523,7 +523,7 @@
 <translation id="3595596368722241419">البطارية ممتلئة</translation>
 <translation id="3600339377155080675">النسخ المطابق لمحتوى الشاشة</translation>
 <translation id="3602290021589620013">معاينة</translation>
-<translation id="3603829704940252505">الصورة الرمزية</translation>
+<translation id="3603829704940252505">الأفاتار</translation>
 <translation id="3604713164406837697">تغيير الخلفية</translation>
 <translation id="360565022852130722">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP 802.1x ضعيف.</translation>
 <translation id="3606583719724308068">‏وقت الاستجابة طويل في المواقع الإلكترونية التي تستخدم بروتوكول HTTPS</translation>
@@ -680,7 +680,7 @@
 <translation id="439429847087949098">جارٍ إعادة تشغيل <ph name="DEVICE_NAME" />.</translation>
 <translation id="4395835743215824109">تخصيص لوحة المفاتيح</translation>
 <translation id="439946595190720558">تم إنشاء هذه الخلفية بواسطة الذكاء الاصطناعي باستخدام النص التالي: "<ph name="PROMPT" />".</translation>
-<translation id="4415951057168511744">الصورة الرمزية الحالية</translation>
+<translation id="4415951057168511744">الأفاتار الحالي</translation>
 <translation id="4417830657741848074">لقد ضبط مشرفك بعض التطبيقات لبدء تشغيلها تلقائيًا. ولا يمكنك إغلاقها.</translation>
 <translation id="4422041425070339732">سهم متّجه للأسفل</translation>
 <translation id="4425149324548788773">ملفاتي</translation>
@@ -1368,7 +1368,7 @@
 <translation id="7656388927906093505">الجهاز هو ماوس.</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7663672983483557630"><ph name="DESCRIPTION" />، <ph name="ACCELERATOR_INFO" />، <ph name="ROW_STATUS" />.</translation>
-<translation id="7665800271478495366">تغيير الصورة الرمزية</translation>
+<translation id="7665800271478495366">تغيير الأفاتار</translation>
 <translation id="7673177760638264939">وردة الحديقة</translation>
 <translation id="7683228889864052081">التدرّج اللوني في إضاءة لوحة المفاتيح</translation>
 <translation id="7690294790491645610">تأكيد كلمة المرور الجديدة</translation>
