@@ -1928,12 +1928,12 @@ const KNOWN_SCREENS: ScreenDefType[] = [
   {
     id: 'quick-start',
     kind: ScreenKind.NORMAL,
-    handledSteps: 'verification,connecting_to_wifi,signing_in,setup_complete',
+    handledSteps:
+        'verification,connecting_to_wifi,signing_in,setup_complete,connected_to_wifi',
     states: [
       {
         id: 'PinVerification',
         trigger: (screen: any) => {
-          screen.setDiscoverableName('Chromebook (123)');
           screen.setPin('1234');
         },
       },

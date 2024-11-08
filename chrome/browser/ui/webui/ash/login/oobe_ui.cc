@@ -379,6 +379,9 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeAddUserDuringEnrollmentEnabled",
                      features::IsOobeAddUserDuringEnrollmentEnabled());
 
+  source->AddBoolean("isOobeDevOverlayEnabled",
+                     command_line->HasSwitch(switches::kShowOobeDevOverlay));
+
   // Configure shared resources
   AddProductLogoResources(source);
   if (ash::features::IsBootAnimationEnabled()) {

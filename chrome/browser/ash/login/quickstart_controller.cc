@@ -609,6 +609,14 @@ void QuickStartController::OnOAuthTokenReceived(
 void QuickStartController::StartObservingScreenTransitions() {
   CHECK(LoginDisplayHost::default_host()) << "Missing LoginDisplayHost";
   CHECK(LoginDisplayHost::default_host()->GetOobeUI()) << "Missing Oobe UI";
+
+  // Do not observe transitions when the OOBE overlay debugger is enabled since
+  // the debugger 'forces' the screen for each state and this breaks the logic.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kShowOobeDevOverlay)) {
+    return;
+  }
+
   observation_.Observe(LoginDisplayHost::default_host()->GetOobeUI());
 }
 
