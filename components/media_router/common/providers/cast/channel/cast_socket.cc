@@ -219,8 +219,8 @@ void CastSocketImpl::Connect(OnOpenCallback callback) {
       std::move(callback).Run(this);
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown ReadyState: " << ReadyStateToString(ready_state_);
+      NOTREACHED() << "Unknown ReadyState: "
+                   << ReadyStateToString(ready_state_);
   }
 }
 
@@ -368,12 +368,7 @@ void CastSocketImpl::DoConnectLoop(int result) {
         DCHECK(IsTerminalState(connect_state_));
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unknown state in connect flow: " << AsInteger(state);
-        SetConnectState(ConnectionState::FINISHED);
-        SetErrorState(ChannelError::UNKNOWN);
-        DoConnectCallback();
-        return;
+        NOTREACHED() << "Unknown state in connect flow: " << AsInteger(state);
     }
   } while (rv != net::ERR_IO_PENDING && !IsTerminalState(connect_state_));
   // Exit the state machine if an asynchronous network operation is pending

@@ -181,12 +181,8 @@ void CastTransportImpl::OnWriteResult(int result) {
         DCHECK_EQ(WriteState::WRITE_ERROR, write_state_);
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unknown state in write state machine: " << AsInteger(state);
-        SetWriteState(WriteState::WRITE_ERROR);
-        SetErrorState(ChannelError::UNKNOWN);
-        rv = net::ERR_FAILED;
-        break;
+        NOTREACHED() << "Unknown state in write state machine: "
+                     << AsInteger(state);
     }
   } while (rv != net::ERR_IO_PENDING && !IsTerminalWriteState(write_state_));
 
@@ -305,12 +301,8 @@ void CastTransportImpl::OnReadResult(int result) {
         DCHECK_EQ(read_state_, ReadState::READ_ERROR);
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unknown state in read state machine: " << AsInteger(state);
-        SetReadState(ReadState::READ_ERROR);
-        SetErrorState(ChannelError::UNKNOWN);
-        rv = net::ERR_FAILED;
-        break;
+        NOTREACHED() << "Unknown state in read state machine: "
+                     << AsInteger(state);
     }
   } while (rv != net::ERR_IO_PENDING && !IsTerminalReadState(read_state_));
 

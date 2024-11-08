@@ -74,7 +74,7 @@ time_t GenerateCertTime(TimeBoundCase c, int direction) {
       t = base::Time();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return t.ToTimeT();
 }

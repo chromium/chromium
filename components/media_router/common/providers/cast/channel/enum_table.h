@@ -344,9 +344,7 @@ class EnumTable {
         return entry.str();
     }
 
-    NOTREACHED_IN_MIGRATION()
-        << "No string for enum value: " << static_cast<int32_t>(Value);
-    return "[invalid enum value]";
+    NOTREACHED() << "No string for enum value: " << static_cast<int32_t>(Value);
   }
 
   // Gets the enum value associated with the given string.  Unlike

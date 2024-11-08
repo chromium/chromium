@@ -214,12 +214,12 @@ void MediaRouterAndroid::UnregisterMediaRoutesObserver(
 
 void MediaRouterAndroid::RegisterPresentationConnectionMessageObserver(
     PresentationConnectionMessageObserver* observer) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MediaRouterAndroid::UnregisterPresentationConnectionMessageObserver(
     PresentationConnectionMessageObserver* observer) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MediaRouterAndroid::OnSinksReceived(const std::string& source_urn,
