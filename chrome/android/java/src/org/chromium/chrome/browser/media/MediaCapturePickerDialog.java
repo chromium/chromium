@@ -16,6 +16,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.AllTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -125,7 +126,11 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
                     public void onClick(PropertyModel model, int buttonType) {
                         boolean picked = buttonType == ModalDialogProperties.ButtonType.POSITIVE;
                         if (picked && mLastSelectedTab != null) {
-                            mCallback.onResult(mLastSelectedTab.getWebContents());
+                            mLastSelectedTab.loadIfNeeded(
+                                    TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER);
+                            var webContents = mLastSelectedTab.getWebContents();
+                            assert webContents != null;
+                            mCallback.onResult(webContents);
                         } else {
                             mCallback.onResult(null);
                         }
