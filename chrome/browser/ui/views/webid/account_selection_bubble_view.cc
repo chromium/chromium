@@ -697,12 +697,20 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
   bool is_multi_idp = idp_list.size() > 1u;
   AddAccounts(accounts, accounts_content, is_multi_idp);
   size_t num_account_rows = accounts.size();
+  bool added_use_other_account_separator = false;
   for (const auto& idp_data : idp_list) {
     const content::IdentityProviderMetadata& idp_metadata =
         idp_data->idp_metadata;
     if (!idp_data->has_login_status_mismatch &&
         (idp_metadata.supports_add_account ||
          idp_metadata.has_filtered_out_account)) {
+      if (!added_use_other_account_separator) {
+        added_use_other_account_separator = true;
+        auto separator = std::make_unique<views::Separator>();
+        separator->SetBorder(views::CreateEmptyBorder(
+            gfx::Insets::TLBR(0, 0, kTopBottomPadding + kVerticalSpacing, 0)));
+        accounts_content->AddChildView(std::move(separator));
+      }
       accounts_content->AddChildView(CreateUseOtherAccountButton(
           idp_metadata,
           is_multi_idp ? l10n_util::GetStringFUTF16(
@@ -932,10 +940,6 @@ AccountSelectionBubbleView::CreateUseOtherAccountButton(
                           base::Unretained(observer_), idp_metadata.config_url,
                           idp_metadata.idp_login_url),
       std::move(icon_view), title);
-  button->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-      /*top=*/kVerticalSpacing, /*left=*/kLeftRightPadding,
-      /*bottom=*/kVerticalSpacing,
-      /*right=*/kLeftRightPadding)));
   button->SetIconHorizontalMargins(icon_margin, icon_margin);
   return button;
 }
