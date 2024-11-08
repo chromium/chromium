@@ -238,7 +238,7 @@ void ToastView::Init() {
         kBrowserToolsChromeRefreshIcon,
         /*dip_size=*/
         lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MENU_ICON_SIZE),
-        ui::kColorToastButton));
+        ui::kColorToastForeground));
     views::InstallCircleHighlightPathGenerator(menu_button_);
     menu_button_->SetProperty(views::kElementIdentifierKey, kToastMenuButton);
     menu_button_->SetAccessibleName(
