@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "base/functional/callback.h"
 #import "ios/chrome/browser/collaboration/model/ios_collaboration_flow_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_join_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -42,7 +43,19 @@ void IOSCollaborationControllerDelegate::NotifySignInAndSyncStatusChange(
 }
 
 void IOSCollaborationControllerDelegate::ShowJoinDialog(ResultCallback result) {
-  // TODO(crbug.com/377306986): Implement this.
+  CHECK_EQ(collaboration_flow_->type(),
+           CollaborationFlowConfiguration::Type::kJoin);
+  const CollaborationFlowConfigurationJoin& join_flow =
+      collaboration_flow_->As<CollaborationFlowConfigurationJoin>();
+
+  ShareKitJoinConfiguration* configuration =
+      [[ShareKitJoinConfiguration alloc] init];
+  configuration.URL = join_flow.url();
+  configuration.baseViewController = join_flow.base_view_controller();
+  join_flow.share_kit_service()->JoinGroup(configuration);
+  // TODO(crbug.com/377869115): `result` should be returned when the
+  // ShareKit UI is done.
+  std::move(result).Run(true);
 }
 
 void IOSCollaborationControllerDelegate::ShowShareDialog(

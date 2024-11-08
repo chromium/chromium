@@ -13,6 +13,8 @@
 
 namespace collaboration {
 
+#pragma mark - CollaborationFlowConfigurationShare
+
 CollaborationFlowConfiguration::Type CollaborationFlowConfigurationShare::type()
     const {
   return kType;
@@ -34,5 +36,22 @@ CollaborationFlowConfigurationShare::CollaborationFlowConfigurationShare(
 }
 
 CollaborationFlowConfigurationShare::~CollaborationFlowConfigurationShare() {}
+
+#pragma mark - CollaborationFlowConfigurationJoin
+
+CollaborationFlowConfiguration::Type CollaborationFlowConfigurationJoin::type()
+    const {
+  return kType;
+}
+
+CollaborationFlowConfigurationJoin::CollaborationFlowConfigurationJoin(
+    ShareKitService* share_kit_service,
+    const GURL& url,
+    UIViewController* base_view_controller)
+    : share_kit_service_(share_kit_service),
+      url_(url),
+      base_view_controller_(base_view_controller) {}
+
+CollaborationFlowConfigurationJoin::~CollaborationFlowConfigurationJoin() {}
 
 }  // namespace collaboration

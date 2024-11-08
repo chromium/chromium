@@ -9,6 +9,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "url/gurl.h"
 
 @class CommandDispatcher;
 class ShareKitService;
@@ -86,6 +87,41 @@ class CollaborationFlowConfigurationShare final
   raw_ptr<ShareKitService> share_kit_service_;
   base::WeakPtr<const TabGroup> tab_group_;
   __weak CommandDispatcher* command_dispatcher_;
+  __weak UIViewController* base_view_controller_;
+};
+
+// Represents the join flow configuration.
+class CollaborationFlowConfigurationJoin final
+    : public CollaborationFlowConfiguration {
+ public:
+  static constexpr Type kType = Type::kJoin;
+
+  // Constructs a new CollaborationFlowConfigurationShare object.
+  explicit CollaborationFlowConfigurationJoin(
+      ShareKitService* share_kit_service,
+      const GURL& url,
+      UIViewController* base_view_controller);
+  ~CollaborationFlowConfigurationJoin() override;
+
+  // Returns the type of the collaboration flow configuration.
+  Type type() const final;
+
+  // Returns the ShareKitService associated with the flow configuration.
+  raw_ptr<ShareKitService> share_kit_service() const {
+    return share_kit_service_;
+  }
+
+  // Returns URL containing the collab ID and the token.
+  const GURL& url() const { return url_; }
+
+  // Returns the base view controller associated with the flow configuration.
+  UIViewController* base_view_controller() const {
+    return base_view_controller_;
+  }
+
+ private:
+  raw_ptr<ShareKitService> share_kit_service_;
+  const GURL url_;
   __weak UIViewController* base_view_controller_;
 };
 

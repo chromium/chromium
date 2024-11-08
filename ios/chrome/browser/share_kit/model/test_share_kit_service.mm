@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 
 #import "ios/chrome/browser/share_kit/model/fake_share_flow_view_controller.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_join_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
 
 TestShareKitService::TestShareKitService() {}
@@ -25,11 +27,21 @@ void TestShareKitService::ShareGroup(ShareKitShareGroupConfiguration* config) {
 }
 
 void TestShareKitService::ManageGroup(ShareKitManageConfiguration* config) {
-  // TODO(crbug.com/358373145): add fake implementation.
+  UIViewController* viewController = [[FakeShareFlowViewController alloc] init];
+  UINavigationController* navController = [[UINavigationController alloc]
+      initWithRootViewController:viewController];
+  [config.baseViewController presentViewController:navController
+                                          animated:YES
+                                        completion:nil];
 }
 
 void TestShareKitService::JoinGroup(ShareKitJoinConfiguration* config) {
-  // TODO(crbug.com/358373145): add fake implementation.
+  UIViewController* viewController = [[FakeShareFlowViewController alloc] init];
+  UINavigationController* navController = [[UINavigationController alloc]
+      initWithRootViewController:viewController];
+  [config.baseViewController presentViewController:navController
+                                          animated:YES
+                                        completion:nil];
 }
 
 UIViewController* TestShareKitService::FacePile(

@@ -47,6 +47,13 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
             tab_group_->GetWeakPtr(), base_view_controller_));
   }
 
+  // Init the delegate for a join flow.
+  void InitJoinFlowDelegate() {
+    delegate_ = std::make_unique<IOSCollaborationControllerDelegate>(
+        std::make_unique<CollaborationFlowConfigurationJoin>(
+            share_kit_service_.get(), GURL(), base_view_controller_));
+  }
+
   std::unique_ptr<IOSCollaborationControllerDelegate> delegate_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_{&web_state_list_delegate_};
@@ -79,6 +86,16 @@ TEST_F(IOSCollaborationControllerDelegateTest, ShowShareDialogInValid) {
   EXPECT_CALL(completion_callback, Run(false));
   delegate_->ShowShareDialog(completion_callback.Get());
   EXPECT_FALSE(base_view_controller_.presentedViewController);
+}
+
+// Tests `ShowJoinDialog`.
+TEST_F(IOSCollaborationControllerDelegateTest, ShowJoinDialog) {
+  InitJoinFlowDelegate();
+  base::MockCallback<CollaborationControllerDelegate::ResultCallback>
+      completion_callback;
+  EXPECT_CALL(completion_callback, Run(true));
+  delegate_->ShowJoinDialog(completion_callback.Get());
+  EXPECT_TRUE(base_view_controller_.presentedViewController);
 }
 
 }  // namespace collaboration
