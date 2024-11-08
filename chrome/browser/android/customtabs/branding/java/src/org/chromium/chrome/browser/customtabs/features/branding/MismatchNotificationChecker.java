@@ -90,6 +90,9 @@ public class MismatchNotificationChecker {
                                     if (mFeatureEngagementLock != null) {
                                         mFeatureEngagementLock.release();
                                     }
+                                    // The UI was not visible. Do not do the update.
+                                    if (closeType == CloseType.UNKNOWN.getNumber()) return;
+
                                     MismatchNotificationData res =
                                             mimData != null
                                                     ? mimData

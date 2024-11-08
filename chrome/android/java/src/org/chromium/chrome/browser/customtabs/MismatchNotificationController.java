@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -48,6 +49,7 @@ public class MismatchNotificationController
     private final SigninManager mSigninManager;
 
     private PropertyModel mMessageProperties;
+    private boolean mMessageReachedFullyVisible;
 
     @Nullable
     private static MismatchNotificationController sMismatchNotificationControllerForTesting;
@@ -76,14 +78,7 @@ public class MismatchNotificationController
         mAccountManagerFacade.addObserver(this);
     }
 
-    public void showSignedOutMessage(Context context) {
-        // This method will be removed in favor of the override version below.
-        showSignedOutMessage(context, null);
-    }
-
     public void showSignedOutMessage(Context context, Callback<Integer> onClose) {
-        // TODO(crbug.com/369564573): Hook up |onClose| to return the user action (or lack thereof)
-        // with which the notification is closed.
         mMessageProperties =
                 new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                         .with(
@@ -107,6 +102,10 @@ public class MismatchNotificationController
                         .with(
                                 MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> handlePrimaryAction(context))
+                        .with(
+                                MessageBannerProperties.ON_DISMISSED,
+                                (reason) -> handleDismissed(reason, onClose))
+                        .with(MessageBannerProperties.ON_FULLY_VISIBLE, this::onFullyVisible)
                         .build();
 
         MessageDispatcher dispatcher = MessageDispatcherProvider.from(mWindowAndroid);
@@ -146,6 +145,28 @@ public class MismatchNotificationController
         return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
     }
 
+    private void onFullyVisible(boolean visible) {
+        if (visible) mMessageReachedFullyVisible = true;
+    }
+
+    private void handleDismissed(Integer reason, Callback<Integer> onClose) {
+        CloseType closeType;
+        if (!mMessageReachedFullyVisible) {
+            closeType = CloseType.UNKNOWN;
+        } else {
+            closeType =
+                    switch (reason) {
+                        case DismissReason.PRIMARY_ACTION,
+                                DismissReason.SECONDARY_ACTION -> CloseType.ACCEPTED;
+                        case DismissReason.GESTURE -> CloseType.DISMISSED;
+                        case DismissReason.TIMER -> CloseType.TIMED_OUT;
+                            // Rest of the cases has no user intervention, thus viewed as time-out.
+                        default -> CloseType.TIMED_OUT;
+                    };
+        }
+        onClose.onResult(closeType.getNumber());
+    }
+
     @Override
     public void onSignedIn() {
         dismissMessage();
@@ -171,5 +192,13 @@ public class MismatchNotificationController
     public static void setInstanceForTesting(
             MismatchNotificationController mismatchNotificationController) {
         sMismatchNotificationControllerForTesting = mismatchNotificationController;
+    }
+
+    WindowAndroid getWindowForTesting() {
+        return mWindowAndroid;
+    }
+
+    boolean wasShownForTesting() {
+        return mMessageReachedFullyVisible;
     }
 }

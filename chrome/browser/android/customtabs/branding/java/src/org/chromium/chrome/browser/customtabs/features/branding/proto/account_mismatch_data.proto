@@ -11,7 +11,7 @@ option optimize_for = LITE_RUNTIME;
 
 // How the sign-in prompt UI was closed.
 enum CloseType {
-  UNKNOWN = 0;
+  UNKNOWN = 0;  // Prompt was not (yet) shown/visible
   ACCEPTED = 1;
   DISMISSED = 2;
   TIMED_OUT = 3;
