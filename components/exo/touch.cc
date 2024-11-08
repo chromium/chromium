@@ -170,8 +170,7 @@ void Touch::OnTouchEvent(ui::TouchEvent* event) {
       seat_->AbortPendingDragOperation();
     } break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   if (send_details) {
     // Some devices do not report radius_y/minor. We assume a circular shape

@@ -396,8 +396,7 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
       }
     } break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   if (pending_key_acks_.empty())

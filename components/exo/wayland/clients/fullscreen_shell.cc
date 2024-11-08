@@ -168,8 +168,7 @@ void FullscreenClient::HandleMode(void* data,
       surface_size_.SetSize(height, width);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   std::unique_ptr<wl_region> opaque_region(static_cast<wl_region*>(

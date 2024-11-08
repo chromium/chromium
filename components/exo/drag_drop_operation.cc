@@ -85,10 +85,8 @@ DndAction DragOperationToDndAction(DragOperation op) {
     case DragOperation::kLink:
       return DndAction::kAsk;
     default:
-      NOTREACHED_IN_MIGRATION() << op;
-      return DndAction::kNone;
+      NOTREACHED() << op;
   }
-  NOTREACHED_IN_MIGRATION();
 }
 
 }  // namespace

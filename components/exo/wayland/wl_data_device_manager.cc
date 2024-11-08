@@ -54,7 +54,7 @@ uint32_t WaylandDataDeviceManagerDndAction(DndAction action) {
     case DndAction::kAsk:
       return WL_DATA_DEVICE_MANAGER_DND_ACTION_ASK;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 uint32_t WaylandDataDeviceManagerDndActions(
@@ -76,8 +76,7 @@ DndAction DataDeviceManagerDndAction(uint32_t value) {
     case WL_DATA_DEVICE_MANAGER_DND_ACTION_ASK:
       return DndAction::kAsk;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return DndAction::kNone;
+      NOTREACHED();
   }
 }
 

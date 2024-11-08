@@ -1018,8 +1018,7 @@ bool ClientBase::Init(const InitParams& params) {
       surface_size_.SetSize(params.height, params.width);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   surface_size_ = gfx::ToCeiledSize(
       gfx::ScaleSize(gfx::SizeF(surface_size_), 1.0f / params.scale));

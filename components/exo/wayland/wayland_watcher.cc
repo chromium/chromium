@@ -40,7 +40,7 @@ void WaylandWatcher::OnFileCanReadWithoutBlocking(int fd) {
 }
 
 void WaylandWatcher::OnFileCanWriteWithoutBlocking(int fd) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace wayland

@@ -1634,8 +1634,7 @@ ui::ZOrderLevel AuraTopLevelZOrderLevel(uint32_t z_order_level) {
       return ui::ZOrderLevel::kSecuritySurface;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ui::ZOrderLevel::kNormal;
+  NOTREACHED();
 }
 
 void aura_toplevel_set_z_order(wl_client* client,
