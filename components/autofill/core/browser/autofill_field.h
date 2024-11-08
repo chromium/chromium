@@ -467,15 +467,12 @@ class AutofillField : public FormFieldData {
   std::array<FieldType, static_cast<size_t>(HeuristicSource::kMaxValue) + 1>
       local_type_predictions_;
 
-  // The type of the field. Overrides all other types (html_type_,
-  // heuristic_type_).
-  // |AutofillType(NO_SERVER_DATA)| is used when this |overall_type_| has not
-  // been set.
-  // This field serves as a cache to prevent frequent re-evaluation of
-  // ComputedType(). It is invalidated when set_heuristic_type(),
-  // set_server_predictions() or SetHtmlType() is called and then set to a
-  // value during the rationalization.
-  AutofillType overall_type_;
+  // The rationalized `ComputedType()`. This is the type used for all
+  // autofilling operations. It defaults to `ComputedType()` and is invalidated
+  // when `set_heuristic_type()`, `set_server_predictions()` or `SetHtmlType()`
+  // are called. Rationalization potentially overwrites it using `SetTypeTo()`.
+  // The result is cached to prevent frequent re-evaluation of `ComputedType()`.
+  mutable AutofillType overall_type_;
 
   // The type of the field, as specified by the site author in HTML.
   HtmlFieldType html_type_ = HtmlFieldType::kUnspecified;

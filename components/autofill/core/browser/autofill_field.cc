@@ -415,12 +415,13 @@ AutofillType AutofillField::ComputedType() const {
 
 AutofillType AutofillField::Type() const {
   // Server Overrides are granted precedence unconditionally.
-  if (server_type_prediction_is_override() && server_type() != NO_SERVER_DATA)
+  if (server_type_prediction_is_override() && server_type() != NO_SERVER_DATA) {
     return AutofillType(server_type());
-
-  if (overall_type_.GetStorableType() != NO_SERVER_DATA)
-    return overall_type_;
-  return ComputedType();
+  }
+  if (overall_type_.GetStorableType() == NO_SERVER_DATA) {
+    overall_type_ = ComputedType();
+  }
+  return overall_type_;
 }
 
 const std::u16string& AutofillField::value_for_import() const {

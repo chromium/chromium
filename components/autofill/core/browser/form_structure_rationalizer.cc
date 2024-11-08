@@ -827,10 +827,6 @@ void FormStructureRationalizer::RationalizeFieldTypePredictions(
   RationalizePhoneCountryCode(log_manager);
   RationalizeByRationalizationEngine(client_country, language_code,
                                      log_manager);
-  // Cache the `ComputedType()` for fields that were not rationalized.
-  for (const std::unique_ptr<AutofillField>& field : *fields_) {
-    field->SetTypeTo(field->Type());
-  }
 }
 
 void FormStructureRationalizer::RationalizePhoneCountryCode(
