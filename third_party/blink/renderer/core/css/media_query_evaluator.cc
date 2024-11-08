@@ -1497,6 +1497,8 @@ static bool DevicePostureMediaFeatureEval(const MediaQueryExpValue& value,
 static bool UpdateMediaFeatureEval(const MediaQueryExpValue& value,
                                    MediaQueryOperator,
                                    const MediaValues& media_values) {
+  UseCounter::Count(media_values.GetDocument(), WebFeature::kUpdateMediaQuery);
+
   bool can_update = !EqualIgnoringASCIICase(media_values.MediaType(),
                                             media_type_names::kPrint);
   // No value = boolean context:

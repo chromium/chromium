@@ -536,6 +536,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kCSSWordBreakAutoPhrase,
            WebDXFeature::kWordBreakAutoPhrase},
           {WebFeature::kCSSSelectorPseudoModal, WebDXFeature::kModal},
+          {WebFeature::kUpdateMediaQuery, WebDXFeature::kUpdate},
       }};
 
   return *kMap;
