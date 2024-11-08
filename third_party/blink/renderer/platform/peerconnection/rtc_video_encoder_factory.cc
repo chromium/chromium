@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
+#include "media/base/supported_types.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -285,8 +286,17 @@ SupportedFormats GetSupportedFormatsInternal(
   // querying GPU process.
   supported_formats.unknown = false;
   for (const auto& profile : *profiles) {
-    if (base::Contains(disabled_profiles, profile.profile))
+    // Skip if profile is OS software encoder profile and we don't allow use
+    // OS software encoder.
+    if (profile.is_software_codec &&
+        !media::MayHaveAndAllowSelectOSSoftwareEncoder(
+            media::VideoCodecProfileToVideoCodec(profile.profile))) {
       continue;
+    }
+
+    if (base::Contains(disabled_profiles, profile.profile)) {
+      continue;
+    }
 
     std::optional<webrtc::SdpVideoFormat> format = VEAToWebRTCFormat(profile);
     if (format) {
