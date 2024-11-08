@@ -83,12 +83,13 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
   // Notifies the observers about the updates.
   void NotifyKioskAppsChanged() const;
   void NotifySessionInitialized() const;
+  void NotifyAppRemoved(const std::string& app_id) const;
 
   // Updates internal list of apps by the new data received by policy.
   virtual void UpdateAppsFromPolicy() = 0;
 
   // Performs removal of the removed apps's cryptohomes.
-  void ClearRemovedApps(const std::vector<KioskAppDataBase*>& old_apps);
+  void ClearRemovedApps(const std::vector<KioskAppDataBase*>& old_apps) const;
 
   bool auto_launched_with_zero_delay_ = false;
 

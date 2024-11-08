@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <string>
@@ -117,46 +118,26 @@ void KioskIwaManager::OnKioskSessionStarted(const KioskAppId& app_id) {
 }
 
 void KioskIwaManager::UpdateAppsFromPolicy() {
-  // TODO(crbug.com/361017701): remove old apps as other app managers do.
-  Clear();
-
   if (!ash::features::IsIsolatedWebAppKioskEnabled()) {
     // keeps KioskIwaManager empty if the feature is disabled.
+    Reset();
     return;
   }
 
+  auto previous_apps = GetAppsAndReset();
+
   const std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(CrosSettings::Get());
-
   for (const policy::DeviceLocalAccount& account : device_local_accounts) {
-    if (account.type != policy::DeviceLocalAccountType::kKioskIsolatedWebApp) {
-      continue;
-    }
-
-    const std::string web_bundle_id(account.kiosk_iwa_info.web_bundle_id());
-    const GURL update_manifest_url(
-        account.kiosk_iwa_info.update_manifest_url());
-
-    auto iwa_data = KioskIwaData::Create(account.user_id, web_bundle_id,
-                                         update_manifest_url);
-
-    if (!iwa_data) {
-      LOG(WARNING) << "Cannot add Kiosk IWA data for account "
-                   << account.account_id;
-      continue;
-    }
-
-    MaybeSetAutoLaunchInfo(account.account_id, iwa_data->account_id());
-
-    KioskCryptohomeRemover::CancelDelayedCryptohomeRemoval(
-        iwa_data->account_id());
-    isolated_web_apps_.push_back(std::move(iwa_data));
+    ProcessDeviceLocalAccount(account, previous_apps);
   }
 
+  CancelCryptohomeRemovalsForCurrentApps();
+  RemoveApps(previous_apps);
   NotifyKioskAppsChanged();
 }
 
-void KioskIwaManager::Clear() {
+void KioskIwaManager::Reset() {
   isolated_web_apps_.clear();
   auto_launch_id_.reset();
   auto_launched_with_zero_delay_ = false;
@@ -174,6 +155,70 @@ void KioskIwaManager::MaybeSetAutoLaunchInfo(
     // Kiosk mode only supports immediate auto launch.
     auto_launched_with_zero_delay_ = (GetAutoLoginDelaySetting() == 0);
   }
+}
+
+void KioskIwaManager::CancelCryptohomeRemovalsForCurrentApps() {
+  for (const auto& iwa : isolated_web_apps_) {
+    KioskCryptohomeRemover::CancelDelayedCryptohomeRemoval(iwa->account_id());
+  }
+}
+
+void KioskIwaManager::RemoveApps(const KioskIwaDataMap& previous_apps) const {
+  std::vector<KioskAppDataBase*> apps_to_remove;
+  base::ranges::transform(previous_apps, std::back_inserter(apps_to_remove),
+                          [](const auto& kv) { return kv.second.get(); });
+  ClearRemovedApps(apps_to_remove);
+}
+
+KioskIwaManager::KioskIwaDataMap KioskIwaManager::GetAppsAndReset() {
+  KioskIwaDataMap result;
+  for (auto& app : isolated_web_apps_) {
+    result[app->app_id()] = std::move(app);
+  }
+  Reset();
+  return result;
+}
+
+void KioskIwaManager::ProcessDeviceLocalAccount(
+    const policy::DeviceLocalAccount& account,
+    KioskIwaDataMap& previous_apps) {
+  if (account.type != policy::DeviceLocalAccountType::kKioskIsolatedWebApp) {
+    return;
+  }
+  const std::string& web_bundle_id = account.kiosk_iwa_info.web_bundle_id();
+  const GURL update_manifest_url(account.kiosk_iwa_info.update_manifest_url());
+
+  auto new_iwa_data =
+      KioskIwaData::Create(account.user_id, web_bundle_id, update_manifest_url);
+
+  if (!new_iwa_data) {
+    LOG(WARNING) << "Cannot create Kiosk IWA data for account "
+                 << account.account_id;
+    return;
+  }
+
+  // TODO(crbug.com/378065964): Revisit app data processing below after
+  // implementing icon and title.
+  auto previous_match = previous_apps.find(new_iwa_data->app_id());
+  if (previous_match != previous_apps.end()) {
+    // Reuse the already existing app data and keep this app from deletion.
+    auto previous_iwa_data = std::move(previous_match->second);
+    previous_apps.erase(previous_match);
+
+    // But still replace with a new IWA entry if manifest URL changed.
+    if (new_iwa_data->update_manifest_url() !=
+        previous_iwa_data->update_manifest_url()) {
+      isolated_web_apps_.push_back(std::move(new_iwa_data));
+    } else {
+      isolated_web_apps_.push_back(std::move(previous_iwa_data));
+    }
+  } else {
+    // Add a new IWA entry (no existing matches).
+    isolated_web_apps_.push_back(std::move(new_iwa_data));
+  }
+
+  MaybeSetAutoLaunchInfo(account.account_id,
+                         isolated_web_apps_.back()->account_id());
 }
 
 }  // namespace ash
