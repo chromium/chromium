@@ -47,16 +47,24 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement,
   bool ValidateSnapshot() override;
   bool ShouldScheduleNextService() override;
 
- private:
-  bool UpdateSelectedScrollMarker();
+  bool UpdateSelectedScrollMarker(const ScrollOffset& offset);
 
+ private:
   void ActivateScrollMarker(ScrollMarkerPseudoElement* (
       ScrollMarkerGroupPseudoElement::*find_scroll_marker_func)(
       const Element&));
 
+  bool UpdateSnapshotInternal();
+
   // TODO(332396355): Add spec link, once it's created.
   HeapVector<Member<ScrollMarkerPseudoElement>> focus_group_;
-  Member<ScrollMarkerPseudoElement> selected_marker_ = nullptr;
+  // The scroll-marker selected based on the last scroll update observed.
+  // At the next snapshot, it will become the |selected_marker_|, if it isn't
+  // already, and be cleared.
+  Member<ScrollMarkerPseudoElement> pending_selected_marker_;
+  // The selected scroll-marker that was captured at the time of the last
+  // snapshot.
+  Member<ScrollMarkerPseudoElement> selected_marker_;
 };
 
 template <>

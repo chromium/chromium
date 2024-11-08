@@ -282,6 +282,9 @@ ScrollResult ScrollableArea::UserScroll(ui::ScrollGranularity granularity,
   ScrollResult result =
       GetScrollAnimator().UserScroll(granularity, scrollable_axis_delta,
                                      std::move(run_scroll_complete_callbacks));
+  if (result.DidScroll()) {
+    UpdateScrollMarkers(GetScrollAnimator().DesiredTargetOffset());
+  }
 
   // Delta that wasn't scrolled because the axis is !userInputScrollable
   // should count as unusedScrollDelta.
@@ -414,6 +417,15 @@ bool ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
       }
     default:
       NOTREACHED();
+  }
+
+  if (scroll_type != mojom::blink::ScrollType::kCompositor) {
+    // Updates from the compositor are handled in
+    // WebFrameWidgetImpl::HandleActiveScrollGesture rather than from here
+    // because here we cannot differentiate between gesture scrolls and
+    // compositor-handled smooth programmatic scrolls (for which we don't
+    // want to do the scroll-marker update).
+    UpdateScrollMarkers(clamped_offset);
   }
 
   std::move(run_scroll_complete_callbacks).Run(ScrollCompletionMode::kFinished);
@@ -631,6 +643,8 @@ bool ScrollableArea::ProgrammaticScrollHelper(
     if (callback)
       std::move(callback).Run(ScrollCompletionMode::kFinished);
   }
+
+  UpdateScrollMarkers(offset);
   return true;
 }
 

@@ -1472,6 +1472,21 @@ void WebFrameWidgetImpl::SendEndOfScrollEvents(
   }
 }
 
+void WebFrameWidgetImpl::HandleScrollMarkerUpdates(
+    const cc::CompositorCommitData& commit_data) {
+  for (const auto& scroll : commit_data.scrolls) {
+    Node* node =
+        View()->FindNodeFromScrollableCompositorElementId(scroll.element_id);
+    if (!node) {
+      continue;
+    }
+    if (ScrollableArea* scrollable_area =
+            ScrollableArea::GetForScrolling(node->GetLayoutBox())) {
+      scrollable_area->UpdateScrollMarkers(scrollable_area->GetScrollOffset());
+    }
+  }
+}
+
 void WebFrameWidgetImpl::SendScrollSnapChangingEventIfNeeded(
     const cc::CompositorCommitData& commit_data) {
   Node* target_node = View()->FindNodeFromScrollableCompositorElementId(
@@ -1505,6 +1520,8 @@ void WebFrameWidgetImpl::UpdateCompositorScrollState(
                                       commit_data.scroll_latched_element_id);
     }
   }
+
+  HandleScrollMarkerUpdates(commit_data);
 
   // TODO(bokan): If a scroll ended and a new one began in the same Blink frame
   // (e.g. during a long running main thread task), this will erroneously

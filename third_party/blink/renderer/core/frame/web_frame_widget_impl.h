@@ -1038,6 +1038,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   // Triggers onmove event for window.
   void EnqueueMoveEvent();
 
+  // Update scroll-markers for any scroller scrolled by the impl thread.
+  void HandleScrollMarkerUpdates(const cc::CompositorCommitData& commit_data);
+
 #if BUILDFLAG(IS_WIN)
   // Computes a contiguous range of character bounds within proximity of
   // `pivot_position` to enable gesture support for StylusHandwritingWin.

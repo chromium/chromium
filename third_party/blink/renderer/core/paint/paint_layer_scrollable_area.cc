@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
@@ -1096,6 +1097,8 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
   if (IsApplyingScrollStart()) {
     ApplyScrollStart();
   }
+
+  UpdateScrollMarkers(GetScrollOffset());
 }
 
 Element* PaintLayerScrollableArea::GetElementForScrollStart() const {
@@ -3388,6 +3391,20 @@ void PaintLayerScrollableArea::CreateAndSetSnappedQueryScrollSnapshotIfNeeded(
 void PaintLayerScrollableArea::SetSnappedQueryTargetIds(
     std::optional<cc::TargetSnapAreaElementIds> ids) {
   EnsureRareData().snapped_query_target_ids_ = ids;
+}
+
+void PaintLayerScrollableArea::UpdateScrollMarkers(const ScrollOffset& offset) {
+  if (Element* element = DynamicTo<Element>(GetLayoutBox()->GetNode())) {
+    if (PseudoElement* before =
+            element->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore)) {
+      auto* group_before = DynamicTo<ScrollMarkerGroupPseudoElement>(before);
+      group_before->UpdateSelectedScrollMarker(offset);
+    } else if (PseudoElement* after =
+                   element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
+      auto* group_after = DynamicTo<ScrollMarkerGroupPseudoElement>(after);
+      group_after->UpdateSelectedScrollMarker(offset);
+    }
+  }
 }
 
 }  // namespace blink
