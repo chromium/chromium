@@ -68,6 +68,12 @@ screenshots_lists = [
   "m128/PasswordSharing_darkmode.json",
   "m128/CustomizableOverflowMenu.json",
   "m128/CustomizableOverflowMenu_darkmode.json",
+  "m132/PriceTracking.json",
+  "m132/PriceTracking_darkmode.json",
+  "m132/PriceHistory.json",
+  "m132/PriceHistory_darkmode.json",
+  "m132/OtherBuyingOptions.json",
+  "m132/OtherBuyingOptions_darkmode.json",
 ]
 
 bundle_data("screenshots_files") {

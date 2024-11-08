@@ -69,6 +69,12 @@ const char* WhatsNewTypeToString(WhatsNewType type) {
       return "CustomizableOverflowMenu";
     case WhatsNewType::kDockingBling:
       return "DockingBling";
+    case WhatsNewType::kPriceTracking:
+      return "PriceTracking";
+    case WhatsNewType::kPriceHistory:
+      return "PriceHistory";
+    case WhatsNewType::kOtherBuyingOptions:
+      return "OtherBuyingOptions";
     case WhatsNewType::kError:
       return nil;
   };
