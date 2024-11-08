@@ -1296,7 +1296,9 @@ ClientModeAndBrowser GetEffectiveClientModeAndBrowserForCapturing(
 AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   Profile* profile = params.initiating_profile;
 
-  if (!AreWebAppsEnabled(profile)) {
+  if (!AreWebAppsEnabled(profile) ||
+      Browser::GetCreationStatusForProfile(profile) !=
+          Browser::CreationStatus::kOk) {
     return AppNavigationResult::CapturingDisabled();
   }
   base::Value::Dict debug_data;
@@ -1347,27 +1349,26 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
 
       // App popups are handled in the switch statement in
       // `GetBrowserAndTabForDisposition()`.
-      if (params.disposition != WindowOpenDisposition::NEW_POPUP &&
-          Browser::GetCreationStatusForProfile(profile) ==
-              Browser::CreationStatus::kOk) {
-        std::string app_name =
-            web_app::GenerateApplicationNameFromAppId(*app_id);
-        // Installed PWAs are considered trusted.
-        Browser::CreateParams browser_params =
-            Browser::CreateParams::CreateForApp(
-                app_name, /*trusted_source=*/true,
-                params.window_features.bounds, profile, params.user_gesture);
-        browser_params.initial_origin_specified = GetOriginSpecified(params);
-        Browser* browser = Browser::Create(browser_params);
-        return AppNavigationResult::NoCapturingOverrideBrowser(browser);
+      if (params.disposition == WindowOpenDisposition::NEW_POPUP) {
+        return AppNavigationResult::CapturingDisabled();
       }
+      std::string app_name = web_app::GenerateApplicationNameFromAppId(*app_id);
+      // Installed PWAs are considered trusted.
+      Browser::CreateParams browser_params =
+          Browser::CreateParams::CreateForApp(app_name, /*trusted_source=*/true,
+                                              params.window_features.bounds,
+                                              profile, params.user_gesture);
+      browser_params.initial_origin_specified = GetOriginSpecified(params);
+      Browser* browser = Browser::Create(browser_params);
+      return AppNavigationResult::NoCapturingOverrideBrowser(browser);
     }
   }
 
   // Below here handles the states outlined in
   // https://bit.ly/pwa-navigation-capturing
   if (params.started_from_context_menu ||
-      params.pwa_navigation_capturing_force_off) {
+      params.pwa_navigation_capturing_force_off ||
+      params.tabstrip_index != -1) {
     return AppNavigationResult::CapturingDisabled();
   }
 
@@ -1685,7 +1686,7 @@ void OnWebAppNavigationAfterWebContentsCreation(
     return;
   }
   CHECK(AreWebAppsEnabled(params.initiating_profile));
-  CHECK(!params.open_pwa_window_if_possible);
+  CHECK(!(params.force_open_pwa_window && params.open_pwa_window_if_possible));
 
   std::optional<webapps::AppId> first_navigation_app_id =
       app_navigation_result.redirection_info().first_navigation_app_id();
