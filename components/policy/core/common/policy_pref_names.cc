@@ -175,6 +175,15 @@ const char kSelectParserRelaxationEnabled[] =
 const char kForcePermissionPolicyUnloadDefaultEnabled[] =
     "policy.force_permission_policy_unload_default_enabled";
 
+// Prevents certain types of downloads based on integer value, which corresponds
+// to policy::DownloadRestriction.
+// 0 - No special restrictions (default)
+// 1 - Block dangerous downloads
+// 2 - Block potentially dangerous downloads
+// 3 - Block all downloads
+// 4 - Block malicious downloads
+const char kDownloadRestrictions[] = "download_restrictions";
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Allows user browser navigation access to the listed host patterns. Only
 // applied when a AlwaysOn VPN is active but not connected.

@@ -3676,7 +3676,7 @@ bool RenderViewContextMenu::IsSaveAsItemAllowedByPolicy(
 
   // Check if all downloads are forbidden by policy.
   if (DownloadPrefs::FromBrowserContext(GetProfile())->download_restriction() ==
-      DownloadPrefs::DownloadRestriction::ALL_FILES) {
+      policy::DownloadRestriction::ALL_FILES) {
     return false;
   }
 

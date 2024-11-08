@@ -47,6 +47,7 @@
 #include "components/download/public/common/mock_download_item.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
@@ -864,8 +865,8 @@ TEST_F(DownloadTargetDeterminerTest,
   // Setting the "DownloadRestrictions" policy to 1 or 2 should result in the
   // dangerous level persisting instead of being bypassed.
   for (int download_restrictions : {1, 2}) {
-    profile()->GetTestingPrefService()->SetInteger(prefs::kDownloadRestrictions,
-                                                   download_restrictions);
+    profile()->GetTestingPrefService()->SetInteger(
+        policy::policy_prefs::kDownloadRestrictions, download_restrictions);
 
     const DownloadTestCase kSafeBrowsingTestCases[] = {
         {// 0: Automatic Maybe dangerous content

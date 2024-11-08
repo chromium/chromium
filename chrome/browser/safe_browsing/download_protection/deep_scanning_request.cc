@@ -45,6 +45,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/policy/core/common/cloud/dm_token.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -211,10 +212,10 @@ EventResult GetEventResult(download::DownloadDangerType danger_type,
 EventResult GetEventResult(DownloadCheckResult download_result,
                            Profile* profile) {
   auto download_restriction =
-      profile
-          ? static_cast<DownloadPrefs::DownloadRestriction>(
-                profile->GetPrefs()->GetInteger(prefs::kDownloadRestrictions))
-          : DownloadPrefs::DownloadRestriction::NONE;
+      profile ? static_cast<policy::DownloadRestriction>(
+                    profile->GetPrefs()->GetInteger(
+                        policy::policy_prefs::kDownloadRestrictions))
+              : policy::DownloadRestriction::NONE;
   switch (download_result) {
     case DownloadCheckResult::UNKNOWN:
     case DownloadCheckResult::SAFE:
@@ -228,12 +229,12 @@ EventResult GetEventResult(DownloadCheckResult download_result,
     case DownloadCheckResult::DANGEROUS_HOST:
     case DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE:
       switch (download_restriction) {
-        case DownloadPrefs::DownloadRestriction::ALL_FILES:
-        case DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
-        case DownloadPrefs::DownloadRestriction::DANGEROUS_FILES:
-        case DownloadPrefs::DownloadRestriction::MALICIOUS_FILES:
+        case policy::DownloadRestriction::ALL_FILES:
+        case policy::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
+        case policy::DownloadRestriction::DANGEROUS_FILES:
+        case policy::DownloadRestriction::MALICIOUS_FILES:
           return EventResult::BLOCKED;
-        case DownloadPrefs::DownloadRestriction::NONE:
+        case policy::DownloadRestriction::NONE:
           return EventResult::WARNED;
       }
 

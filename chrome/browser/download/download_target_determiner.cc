@@ -34,6 +34,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_target_info.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
@@ -1293,9 +1294,10 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
       safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
           virtual_path_.BaseName(), download_->GetURL(),
           GetProfile()->GetPrefs());
-  DownloadPrefs::DownloadRestriction download_restriction =
-      static_cast<DownloadPrefs::DownloadRestriction>(
-          GetProfile()->GetPrefs()->GetInteger(prefs::kDownloadRestrictions));
+  policy::DownloadRestriction download_restriction =
+      static_cast<policy::DownloadRestriction>(
+          GetProfile()->GetPrefs()->GetInteger(
+              policy::policy_prefs::kDownloadRestrictions));
 
   // If the user has has been prompted or will be, assume that the user has
   // approved the download. A programmatic download is considered safe unless it
@@ -1310,10 +1312,9 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
       user_approved_path) {
     // If the "DownloadRestrictions" enterprise policy explicitly disallows the
     // download, don't let the user gesture bypass the dangerous verdict.
-    if ((download_restriction ==
-             DownloadPrefs::DownloadRestriction::DANGEROUS_FILES ||
+    if ((download_restriction == policy::DownloadRestriction::DANGEROUS_FILES ||
          download_restriction ==
-             DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES) &&
+             policy::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES) &&
         danger_level != DownloadFileType::NOT_DANGEROUS) {
       return DownloadFileType::DANGEROUS;
     }
