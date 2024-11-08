@@ -108,6 +108,11 @@ UIColor* BackgroundColor() {
   // Stores whether or not user verficiation should be performed for passkey
   // creation or assertion.
   BOOL _userVerificationRequired;
+
+  // Stores whether or not the credential list is about to be shown for
+  // passkeys. Used to determine which reauthentication reason to provide to the
+  // user.
+  BOOL _nextCredentialListIsForPasskeys;
 }
 
 + (void)initialize {
@@ -136,20 +141,28 @@ UIColor* BackgroundColor() {
     NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers =
         self.serviceIdentifiers;
     self.serviceIdentifiers = nil;
+    BOOL isAccessingPasskeys = _nextCredentialListIsForPasskeys;
+    _nextCredentialListIsForPasskeys = NO;
+
     __weak __typeof__(self) weakSelf = self;
     [self validateUserWithCompletion:^(BOOL userIsValid) {
       if (!userIsValid) {
         [weakSelf showStaleCredentials];
         return;
       }
-      [weakSelf reauthenticateIfNeededWithCompletionHandler:^(
-                    ReauthenticationResult result) {
-        if (result != ReauthenticationResult::kFailure) {
-          [weakSelf showCredentialListForServiceIdentifiers:serviceIdentifiers];
-        } else {
-          [weakSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
-        }
-      }];
+      [weakSelf
+          reauthenticateIfNeededToAccessPasskeys:isAccessingPasskeys
+                           withCompletionHandler:^(
+                               ReauthenticationResult result) {
+                             if (result != ReauthenticationResult::kFailure) {
+                               [weakSelf
+                                   showCredentialListForServiceIdentifiers:
+                                       serviceIdentifiers];
+                             } else {
+                               [weakSelf exitWithErrorCode:
+                                             ASExtensionErrorCodeFailed];
+                             }
+                           }];
     }];
 
     return;
@@ -165,6 +178,7 @@ UIColor* BackgroundColor() {
   // authenticating and showing the credentials, store the list of
   // identifiers and authenticate once the extension is visible.
   self.serviceIdentifiers = serviceIdentifiers;
+  _nextCredentialListIsForPasskeys = NO;
 }
 
 // Only available in iOS 17.0+.
@@ -178,6 +192,7 @@ UIColor* BackgroundColor() {
     API_AVAILABLE(ios(17.0)) {
   self.serviceIdentifiers = serviceIdentifiers;
   _requestParameters = requestParameters;
+  _nextCredentialListIsForPasskeys = _requestParameters != nil;
 }
 
 // Deprecated in iOS 17.0+.
@@ -266,14 +281,18 @@ UIColor* BackgroundColor() {
       [weakSelf showStaleCredentials];
       return;
     }
-    [weakSelf reauthenticateIfNeededWithCompletionHandler:^(
-                  ReauthenticationResult result) {
-      if (result != ReauthenticationResult::kFailure) {
-        [weakSelf provideCredentialForRequest:credentialRequest];
-      } else {
-        [weakSelf exitWithErrorCode:ASExtensionErrorCodeUserCanceled];
-      }
-    }];
+    [weakSelf
+        reauthenticateIfNeededToAccessPasskeys:NO
+                         withCompletionHandler:^(
+                             ReauthenticationResult result) {
+                           if (result != ReauthenticationResult::kFailure) {
+                             [weakSelf
+                                 provideCredentialForRequest:credentialRequest];
+                           } else {
+                             [weakSelf exitWithErrorCode:
+                                           ASExtensionErrorCodeUserCanceled];
+                           }
+                         }];
   }];
 }
 
@@ -490,14 +509,16 @@ UIColor* BackgroundColor() {
   }
 
   __weak __typeof(self) weakSelf = self;
-  [self reauthenticateIfNeededWithCompletionHandler:^(
-            ReauthenticationResult result) {
-    if (result != ReauthenticationResult::kFailure) {
-      completion();
-    } else {
-      [weakSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
-    }
-  }];
+  [self
+      reauthenticateIfNeededToAccessPasskeys:YES
+                       withCompletionHandler:^(ReauthenticationResult result) {
+                         if (result != ReauthenticationResult::kFailure) {
+                           completion();
+                         } else {
+                           [weakSelf
+                               exitWithErrorCode:ASExtensionErrorCodeFailed];
+                         }
+                       }];
 }
 
 - (void)showEnrollmentWelcomeScreen:(ProceduralBlock)enrollBlock {
@@ -547,11 +568,16 @@ UIColor* BackgroundColor() {
 
 #pragma mark - Private
 
-- (void)reauthenticateIfNeededWithCompletionHandler:
-    (void (^)(ReauthenticationResult))completionHandler {
-  [self.reauthenticationHandler
-      verifyUserWithCompletionHandler:completionHandler
-      presentReminderOnViewController:self];
+// Asks user for hardware reauthentication if needed. `forPasskeys` indicates
+// whether the reauthentication is guarding an access to passkeys (when `YES`)
+// or an access to passwords (when `NO`).
+- (void)reauthenticateIfNeededToAccessPasskeys:(BOOL)forPasskeys
+                         withCompletionHandler:
+                             (void (^)(ReauthenticationResult))
+                                 completionHandler {
+  [self.reauthenticationHandler verifyUserToAccessPasskeys:(BOOL)forPasskeys
+                                     withCompletionHandler:completionHandler
+                           presentReminderOnViewController:self];
 }
 
 // Returns whether or not the user should be asked to re-authenticate depending
@@ -587,14 +613,18 @@ UIColor* BackgroundColor() {
       [weakSelf showStaleCredentials];
       return;
     }
-    [weakSelf reauthenticateIfNeededWithCompletionHandler:^(
-                  ReauthenticationResult result) {
-      if (result != ReauthenticationResult::kFailure) {
-        [weakSelf provideCredentialForIdentifier:identifier];
-      } else {
-        [weakSelf exitWithErrorCode:ASExtensionErrorCodeUserCanceled];
-      }
-    }];
+    [weakSelf
+        reauthenticateIfNeededToAccessPasskeys:NO
+                         withCompletionHandler:^(
+                             ReauthenticationResult result) {
+                           if (result != ReauthenticationResult::kFailure) {
+                             [weakSelf
+                                 provideCredentialForIdentifier:identifier];
+                           } else {
+                             [weakSelf exitWithErrorCode:
+                                           ASExtensionErrorCodeUserCanceled];
+                           }
+                         }];
   }];
 }
 
@@ -974,14 +1004,17 @@ UIColor* BackgroundColor() {
       _userVerificationRequired) {
     __weak __typeof(self) weakSelf = self;
     action = ^{
-      [weakSelf reauthenticateIfNeededWithCompletionHandler:^(
-                    ReauthenticationResult result) {
-        if (result != ReauthenticationResult::kFailure) {
-          primaryButtonAction();
-        } else {
-          [weakSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
-        }
-      }];
+      [weakSelf
+          reauthenticateIfNeededToAccessPasskeys:YES
+                           withCompletionHandler:^(
+                               ReauthenticationResult result) {
+                             if (result != ReauthenticationResult::kFailure) {
+                               primaryButtonAction();
+                             } else {
+                               [weakSelf exitWithErrorCode:
+                                             ASExtensionErrorCodeFailed];
+                             }
+                           }];
     };
   } else {
     action = primaryButtonAction;

@@ -147,15 +147,18 @@
     }
   }
 
-  [self reauthenticateIfNeededWithCompletionHandler:^(
-            ReauthenticationResult result) {
-    if (result != ReauthenticationResult::kFailure) {
-      ASPasswordCredential* passwordCredential =
-          [ASPasswordCredential credentialWithUser:credential.username
-                                          password:credential.password];
-      [self.credentialResponseHandler userSelectedPassword:passwordCredential];
-    }
-  }];
+  [self
+      reauthenticateIfNeededToAccessPasskeys:NO
+                       withCompletionHandler:^(ReauthenticationResult result) {
+                         if (result != ReauthenticationResult::kFailure) {
+                           ASPasswordCredential* passwordCredential =
+                               [ASPasswordCredential
+                                   credentialWithUser:credential.username
+                                             password:credential.password];
+                           [self.credentialResponseHandler
+                               userSelectedPassword:passwordCredential];
+                         }
+                       }];
 }
 
 - (void)showDetailsForCredential:(id<Credential>)credential {
@@ -202,12 +205,13 @@
 
 - (void)unlockPasswordForCredential:(id<Credential>)credential
                   completionHandler:(void (^)(NSString*))completionHandler {
-  [self reauthenticateIfNeededWithCompletionHandler:^(
-            ReauthenticationResult result) {
-    if (result != ReauthenticationResult::kFailure) {
-      completionHandler(credential.password);
-    }
-  }];
+  [self
+      reauthenticateIfNeededToAccessPasskeys:NO
+                       withCompletionHandler:^(ReauthenticationResult result) {
+                         if (result != ReauthenticationResult::kFailure) {
+                           completionHandler(credential.password);
+                         }
+                       }];
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -233,12 +237,16 @@
 
 #pragma mark - Private
 
-// Asks user for hardware reauthentication if needed.
-- (void)reauthenticateIfNeededWithCompletionHandler:
-    (void (^)(ReauthenticationResult))completionHandler {
-  [self.reauthenticationHandler
-      verifyUserWithCompletionHandler:completionHandler
-      presentReminderOnViewController:self.viewController];
+// Asks user for hardware reauthentication if needed. `forPasskeys` indicates
+// whether the reauthentication is guarding an access to passkeys (when `YES`)
+// or an access to passwords (when `NO`).
+- (void)reauthenticateIfNeededToAccessPasskeys:(BOOL)forPasskeys
+                         withCompletionHandler:
+                             (void (^)(ReauthenticationResult))
+                                 completionHandler {
+  [self.reauthenticationHandler verifyUserToAccessPasskeys:forPasskeys
+                                     withCompletionHandler:completionHandler
+                           presentReminderOnViewController:self.viewController];
 }
 
 @end
