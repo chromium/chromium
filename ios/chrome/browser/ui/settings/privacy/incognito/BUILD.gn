@@ -36,13 +36,10 @@ source_set("incognito_ui") {
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",
-    "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/ui/settings:settings_root",
-    "//ios/chrome/browser/ui/settings/elements:info_popover_view_controller",
     "//ios/chrome/browser/ui/settings/privacy:privacy_constants",
-    "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]
 }
