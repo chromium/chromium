@@ -36,7 +36,6 @@
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/ash_test_util.h"
 #include "ash/test/test_ash_web_view_factory.h"
 #include "base/auto_reset.h"
 #include "base/memory/ref_counted_memory.h"
@@ -780,7 +779,7 @@ TEST_F(SunfishTest, AddActionButton) {
   // There should only be one valid button in the session.
   const std::vector<ActionButtonView*> action_buttons =
       session_test_api.GetActionButtons();
-  EXPECT_EQ(action_buttons.size(), 1u);
+  ASSERT_EQ(action_buttons.size(), 1u);
 
   // Clicking the button should successfully run the callback, and change the
   // value of the bool.
@@ -884,35 +883,89 @@ TEST_F(SunfishTest, ActionContainerWidgetOpacity) {
 
   // The action container widget should be transparent before a region has been
   // selected.
-  auto* container_widget = session_test_api.GetActionContainerWidget();
-  ASSERT_TRUE(container_widget);
-  EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 0.f);
+  ASSERT_FALSE(session_test_api.GetActionContainerWidget());
 
   // Attempt to add a new action button using the API. The container widget
   // opacity should not change.
   capture_mode_util::AddActionButton(
       views::Button::PressedCallback(), u"Do not show", &kCaptureModeImageIcon,
       ActionButtonRank(ActionButtonType::kOther, 0));
-  EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 0.f);
+  ASSERT_FALSE(session_test_api.GetActionContainerWidget());
 
-  // Select a new capture region. The container widget should be opaque when we
-  // have finished selecting a region.
-  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(50, 50, 100, 100),
+  // Select a new capture region that does not overlap with the search results
+  // panel.
+  auto* event_generator = GetEventGenerator();
+  SelectCaptureModeRegion(event_generator, gfx::Rect(100, 100, 600, 500),
                           /*release_mouse=*/true, /*verify_region=*/true);
-  EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 1.f);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  auto* container_widget = session_test_api.GetActionContainerWidget();
+  EXPECT_TRUE(container_widget->IsVisible());
 
   // Begin adjusting the capture region by dragging from the bottom right
   // corner. The container widget should be transluscent while the region is
   // being adjusted.
-  auto* event_generator = GetEventGenerator();
   event_generator->MoveMouseTo(gfx::Point(150, 150));
   event_generator->PressLeftButton();
   event_generator->MoveMouseTo(gfx::Point(300, 300));
-  EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 0.f);
+  ASSERT_TRUE(controller->capture_mode_session()->is_drag_in_progress());
+  EXPECT_FALSE(container_widget->IsVisible());
 
   // Finish adjusting the region. The widget should now be visible.
   event_generator->ReleaseLeftButton();
-  EXPECT_EQ(container_widget->GetLayer()->GetTargetOpacity(), 1.f);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  ASSERT_FALSE(controller->capture_mode_session()->is_drag_in_progress());
+  EXPECT_TRUE(container_widget->IsVisible());
+}
+
+TEST_F(SunfishTest, DismissButtonsOnSourceChange) {
+  // Start default mode. Test the buttons are hidden.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  ASSERT_TRUE(controller->IsActive());
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi session_test_api(session);
+  ASSERT_FALSE(session_test_api.GetActionContainerWidget());
+
+  // Select a region and wait for the buttons to show up.
+  auto* generator = GetEventGenerator();
+  SelectCaptureModeRegion(generator, gfx::Rect(10, 10, 40, 40),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  auto* container_widget = session_test_api.GetActionContainerWidget();
+  ASSERT_TRUE(container_widget->IsVisible());
+  ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
+
+  // Set the type to `kVideo`. Test the buttons are hidden.
+  controller->SetType(CaptureModeType::kVideo);
+  EXPECT_FALSE(container_widget->IsVisible());
+  EXPECT_EQ(session_test_api.GetActionButtons().size(), 0u);
+
+  // Switch back to `kImage` then select a region.
+  controller->SetType(CaptureModeType::kImage);
+  SelectCaptureModeRegion(generator, gfx::Rect(100, 100, 50, 50),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  EXPECT_TRUE(container_widget->IsVisible());
+  EXPECT_EQ(session_test_api.GetActionButtons().size(), 1u);
+
+  // Set the source to `kFullscreen`. Test the buttons are hidden.
+  controller->SetSource(CaptureModeSource::kFullscreen);
+  EXPECT_FALSE(container_widget->IsVisible());
+  EXPECT_EQ(session_test_api.GetActionButtons().size(), 0u);
+
+  // Switch back to `kRegion` then select a region.
+  controller->SetSource(CaptureModeSource::kRegion);
+  SelectCaptureModeRegion(generator, gfx::Rect(10, 10, 50, 50),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  EXPECT_TRUE(container_widget->IsVisible());
+  EXPECT_EQ(session_test_api.GetActionButtons().size(), 1u);
+
+  // Set the source to `kWindow`. Test the buttons are hidden.
+  controller->SetSource(CaptureModeSource::kWindow);
+  EXPECT_FALSE(container_widget->IsVisible());
+  EXPECT_EQ(session_test_api.GetActionButtons().size(), 0u);
+
+  // TODO(b/377569542): Re-show the action buttons if the mode changes back to
+  // image region.
 }
 
 // Tests that the search button is re-shown on region selected or adjusted in

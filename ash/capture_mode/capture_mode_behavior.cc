@@ -113,6 +113,7 @@ class DefaultBehavior : public CaptureModeBehavior {
     auto* scanner_controller = Shell::Get()->scanner_controller();
     return scanner_controller && scanner_controller->CanStartSession();
   }
+  bool CanShowActionButtons() const override { return true; }
   void OnRegionSelectedOrAdjusted() override {
     if (ShouldShowDefaultActionButtonsAfterRegionSelected() &&
         features::IsScannerEnabled()) {
@@ -365,6 +366,7 @@ class SunfishBehavior : public CaptureModeBehavior {
   bool ShouldShowCaptureButtonAfterRegionSelected() const override {
     return false;
   }
+  bool CanShowActionButtons() const override { return true; }
   bool ShouldEndSessionOnSearchResultClicked() const override { return true; }
   const std::u16string GetCaptureLabelRegionText() const override {
     return l10n_util::GetStringUTF16(IDS_ASH_SUNFISH_CAPTURE_LABEL);
@@ -540,6 +542,10 @@ bool CaptureModeBehavior::ShouldShowDefaultActionButtonsAfterRegionSelected()
 }
 
 bool CaptureModeBehavior::CanShowSmartActionsButton() const {
+  return false;
+}
+
+bool CaptureModeBehavior::CanShowActionButtons() const {
   return false;
 }
 

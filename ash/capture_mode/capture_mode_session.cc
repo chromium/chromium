@@ -851,9 +851,6 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
   if (capture_label_widget_) {
     widget_opacity_map[capture_label_widget_.get()] = 1.f;
   }
-  if (action_container_widget_) {
-    widget_opacity_map[action_container_widget_.get()] = 1.f;
-  }
   if (feedback_button_widget_) {
     widget_opacity_map[feedback_button_widget_.get()] = 1.f;
   }
@@ -937,8 +934,7 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
       opacity = capture_mode::kCaptureUiOverlapOpacity;
     }
 
-    if (widget == action_container_widget_.get() ||
-        widget == search_results_panel_widget) {
+    if (widget == search_results_panel_widget) {
       // If drag for capture region is in progress, action buttons should be
       // hidden.
       if (is_drag_in_progress_) {
@@ -1018,6 +1014,7 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
   UpdateDimensionsLabelWidget(/*is_resizing=*/false);
   layer()->SchedulePaint(layer()->bounds());
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
+  UpdateActionContainerWidget();
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
@@ -1034,6 +1031,7 @@ void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
   capture_mode_bar_view_->OnCaptureTypeChanged(new_type);
   MaybeUpdateSelfieCamInSessionVisibility();
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
+  UpdateActionContainerWidget();
   UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
                /*is_touch=*/false);
 
@@ -1382,17 +1380,14 @@ ActionButtonView* CaptureModeSession::AddActionButton(
     std::u16string text,
     const gfx::VectorIcon* icon,
     ActionButtonRank rank) {
+  // This function is called asynchronously, and the conditions may have changed
+  // since the action widget was updated.
+  UpdateActionContainerWidget();
+
   // Another process may try to add an action button before the container is
   // created, or while it is invalid. In these cases, we don't want to do
   // anything.
-  if (!action_container_widget_) {
-    return nullptr;
-  }
-
-  // If we are in the midst of selecting a region, or a region has not been
-  // selected yet, don't add a button.
-  if (controller_->source() != CaptureModeSource::kRegion ||
-      is_drag_in_progress_ || controller_->user_capture_region().IsEmpty()) {
+  if (!action_container_widget_ || !action_container_widget_->IsVisible()) {
     return nullptr;
   }
 
@@ -2597,11 +2592,10 @@ void CaptureModeSession::OnLocatedEventReleased(
     }
   };
 
+  // TODO(b/377569542): Move and consolidate with `UpdateCaptureRegion()`.
   // TODO(b/367882127): May also need to check if the user has opted in.
   if (active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected()) {
-    DCHECK(action_container_widget_);
     if (IsSunfishFeatureEnabledWithFeatureKey()) {
-      // TODO(b/373896226): Update string and icon with UX specs.
       capture_mode_util::AddActionButton(
           base::BindRepeating(&CaptureModeSession::OnSearchButtonPressed,
                               weak_ptr_factory_.GetWeakPtr()),
@@ -3006,6 +3000,7 @@ void CaptureModeSession::EndSelection(
   Shell::Get()->UpdateCursorCompositingEnabled();
 
   MaybeUpdateCaptureUisOpacity(cursor_screen_location);
+  UpdateActionContainerWidget();
   UpdateDimensionsLabelWidget(/*is_resizing=*/false);
   CloseMagnifierGlass();
 }
@@ -3208,10 +3203,13 @@ bool CaptureModeSession::IsPointOverSelectedWindow(
 
 // TODO(http://b/363069895): Upload strings for translation.
 void CaptureModeSession::UpdateActionContainerWidget() {
-  const bool show_action_container =
-      active_behavior_->behavior_type() == BehaviorType::kSunfish ||
-      active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected();
-  if (!show_action_container) {
+  if (!ShouldShowActionContainerWidget()) {
+    if (action_container_widget_ && action_container_widget_->IsVisible()) {
+      // It is inefficient to destroy and recreate the widget if a drag is in
+      // progress.
+      RemoveAllActionButtons();
+      action_container_widget_->Hide();
+    }
     return;
   }
 
@@ -3230,19 +3228,9 @@ void CaptureModeSession::UpdateActionContainerWidget() {
             .SetCrossAxisAlignment(
                 views::BoxLayout::CrossAxisAlignment::kStretch)
             .Build());
-
-    action_container_widget_->Show();
-
-    // Set the starting opacity to zero as we don't want to show the widget
-    // until a region has been selected.
-    action_container_widget_->SetOpacity(0.f);
   }
 
-  UpdateActionContainerWidgetBounds();
-}
-
-void CaptureModeSession::UpdateActionContainerWidgetBounds() {
-  DCHECK(action_container_widget_);
+  action_container_widget_->Show();
 
   const gfx::Rect bounds = CalculateActionContainerWidgetBounds();
   if (bounds != action_container_widget_->GetWindowBoundsInScreen()) {
@@ -3329,6 +3317,32 @@ bool CaptureModeSession::ShouldHideFeedbackWidget(views::Widget* widget) const {
   auto* controller = CaptureModeController::Get();
   return controller->type() != CaptureModeType::kImage ||
          controller->source() != CaptureModeSource::kRegion;
+}
+
+bool CaptureModeSession::ShouldShowActionContainerWidget() const {
+  if (!CaptureModeController::IsSunfishAllowedAndEnabled()) {
+    return false;
+  }
+
+  // If drag for capture region is in progress, action buttons should be
+  // hidden.
+  if (is_drag_in_progress_) {
+    return false;
+  }
+
+  // If our capture source is not `kRegion`, or the region is empty, hide
+  // the action buttons.
+  if (controller_->type() != CaptureModeType::kImage ||
+      controller_->source() != CaptureModeSource::kRegion ||
+      controller_->user_capture_region().IsEmpty()) {
+    return false;
+  }
+
+  if (!active_behavior_->CanShowActionButtons()) {
+    return false;
+  }
+
+  return true;
 }
 
 void CaptureModeSession::ShowFeedbackPage() {

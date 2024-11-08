@@ -414,18 +414,15 @@ class ASH_EXPORT CaptureModeSession
   bool IsPointOverSelectedWindow(const gfx::Point& screen_point) const;
 
   // Creates the the action container widget if it wasn't previously created,
-  // and updates the widget's bounds.
+  // and updates the widget's bounds and visibility.
   void UpdateActionContainerWidget();
-
-  // Updates the action container widget's bounds.
-  void UpdateActionContainerWidgetBounds();
 
   // Calculates the targeted action container widget bounds in screen
   // coordinates.
   gfx::Rect CalculateActionContainerWidgetBounds() const;
 
   // Removes any existing action buttons from `action_container_view_` if the
-  // `action_container_widget_` exists,
+  // `action_container_widget_` exists.
   void RemoveAllActionButtons();
 
   // Sets the enabled state of all existing action buttons. Action buttons that
@@ -453,6 +450,9 @@ class ASH_EXPORT CaptureModeSession
   // hide it, as the button should only be shown when we are in region selection
   // mode for an image (including Sunfish/Scanner sessions).
   bool ShouldHideFeedbackWidget(views::Widget* widget) const;
+
+  // Returns true if the action container should be shown.
+  bool ShouldShowActionContainerWidget() const;
 
   // Shows the feedback page with preset information for sunfish.
   void ShowFeedbackPage();
