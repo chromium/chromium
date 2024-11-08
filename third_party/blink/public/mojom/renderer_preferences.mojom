@@ -74,6 +74,10 @@ struct RendererPreferences {
   // Whether or not to set custom colors at all.
   bool use_custom_colors = true;
 
+  // Whether or not to use overlay scrollbar.
+  [EnableIf=is_chromeos]
+  bool use_overlay_scrollbar = false;
+
   // Set to false to not send referrers.
   bool enable_referrers = true;
 

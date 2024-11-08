@@ -783,6 +783,7 @@ class ASH_EXPORT AccessibilityController
   void UpdateDisableTouchpadFromPrefs(bool notify);
   void UpdateColorCorrectionFromPrefs();
   void UpdateCaretBlinkIntervalFromPrefs() const;
+  void UpdateUseOverlayScrollbarFromPref() const;
   void UpdateSwitchAccessKeyCodesFromPref(SwitchAccessCommand command);
   void UpdateSwitchAccessAutoScanEnabledFromPref();
   void UpdateSwitchAccessAutoScanSpeedFromPref();

@@ -131,6 +131,13 @@ struct BLINK_COMMON_EXPORT
     return data.enable_encrypted_media;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  static const bool& use_overlay_scrollbar(
+      const ::blink::RendererPreferences& data) {
+    return data.use_overlay_scrollbar;
+  }
+#endif
+
   static const std::string& webrtc_ip_handling_policy(
       const ::blink::RendererPreferences& data) {
     return data.webrtc_ip_handling_policy;

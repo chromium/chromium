@@ -140,7 +140,7 @@ class AccessibilityControllerTest : public AccessibilityControllerTestBase {
                               ::features::kAccessibilityMouseKeys,
                               ::features::kAccessibilityFlashScreenFeature,
                               ::features::kOverlayScrollbarsOSSetting},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{::features::kOverlayScrollbar});
     AccessibilityControllerTestBase::SetUp();
   }
 
@@ -357,13 +357,13 @@ TEST_F(AccessibilityControllerTest, SetAlwaysShowScrollbarEnabled) {
   EXPECT_TRUE(controller()->always_show_scrollbar().enabled());
   EXPECT_EQ(1, observer.status_changed_count_);
   ExpectSessionDurationMetricCount("CrosAlwaysShowScrollbar", 0);
-  EXPECT_TRUE(ui::NativeTheme::GetPrefersAlwaysShowScrollbar());
+  EXPECT_FALSE(ui::NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar());
 
   controller()->always_show_scrollbar().SetEnabled(false);
   EXPECT_FALSE(controller()->always_show_scrollbar().enabled());
   EXPECT_EQ(2, observer.status_changed_count_);
   ExpectSessionDurationMetricCount("CrosAlwaysShowScrollbar", 1);
-  EXPECT_FALSE(ui::NativeTheme::GetPrefersAlwaysShowScrollbar());
+  EXPECT_TRUE(ui::NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar());
 
   controller()->RemoveObserver(&observer);
 }

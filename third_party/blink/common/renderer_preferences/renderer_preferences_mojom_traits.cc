@@ -46,6 +46,11 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
     return false;
 
   out->use_custom_colors = data.use_custom_colors();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  out->use_overlay_scrollbar = data.use_overlay_scrollbar();
+#endif
+
   out->enable_referrers = data.enable_referrers();
   out->allow_cross_origin_auth_prompt = data.allow_cross_origin_auth_prompt();
   out->enable_do_not_track = data.enable_do_not_track();

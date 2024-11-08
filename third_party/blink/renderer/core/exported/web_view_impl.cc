@@ -188,6 +188,10 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/native_theme/native_theme.h"
+#endif
+
 #if !BUILDFLAG(IS_MAC)
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/platform/web_font_render_style.h"
@@ -3424,6 +3428,16 @@ void WebViewImpl::UpdateFontRenderingFromRendererPrefs() {
 #endif  // !BUILDFLAG(IS_MAC)
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void WebViewImpl::UpdateUseOverlayScrollbar(bool use_overlay_scrollbar) {
+  ui::NativeTheme::GetInstanceForWeb()->set_use_overlay_scrollbar(
+      use_overlay_scrollbar);
+  if (MainFrameImpl() && MainFrameImpl()->GetFrameView()) {
+    MainFrameImpl()->GetFrameView()->UsesOverlayScrollbarsChanged();
+  }
+}
+#endif
+
 void WebViewImpl::ActivatePrerenderedPage(
     mojom::blink::PrerenderPageActivationParamsPtr
         prerender_page_activation_params,
@@ -3541,6 +3555,14 @@ void WebViewImpl::UpdateRendererPreferences(
 
   SetExplicitlyAllowedPorts(
       renderer_preferences_.explicitly_allowed_network_ports);
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!ScrollbarTheme::MockScrollbarsEnabled()) {
+    WebRuntimeFeatures::EnableOverlayScrollbars(
+        renderer_preferences_.use_overlay_scrollbar);
+    UpdateUseOverlayScrollbar(renderer_preferences_.use_overlay_scrollbar);
+  }
+#endif
 
   MaybePreloadSystemFonts(GetPage());
 }

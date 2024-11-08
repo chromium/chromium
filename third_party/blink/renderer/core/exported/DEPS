@@ -15,6 +15,7 @@ specific_include_rules = {
     "+media/base/media_switches.h",
     "+third_party/icu/source/common/unicode/uscript.h",
     "+ui/gfx/font_render_params.h",
+    "+ui/native_theme/native_theme.h",
   ],
   "web_view_test.cc": [
     "+ui/base/mojom/menu_source_type.mojom-blink.h",

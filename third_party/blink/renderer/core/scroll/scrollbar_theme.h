@@ -29,6 +29,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
@@ -259,6 +260,8 @@ class CORE_EXPORT ScrollbarTheme {
   friend class MockScrollableArea;
   friend class MockScrollableAreaForAnimatorTest;
   friend class Page;
+  // For MockScrollbarsEnabled().
+  friend class WebViewImpl;
 
   // Get the theme based on global scrollbar settings. We should always use
   // Page::GetScrollbarTheme() to get scrollbar theme because we support

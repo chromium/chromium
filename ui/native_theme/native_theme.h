@@ -572,20 +572,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
     return should_use_system_accent_color_;
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // This should only be used by the ChromeOS Accessibility system.
-  static void SetPrefersAlwaysShowScrollbar(
-      bool prefers_always_show_scrollbar) {
-    prefers_always_show_scrollbar_ = prefers_always_show_scrollbar;
-  }
-  // Determines whether the user desires to always show scrollbars.
-  static bool GetPrefersAlwaysShowScrollbar() {
-    return prefers_always_show_scrollbar_;
-  }
-#endif
-
-  static bool IsOverlayScrollbarEnabledByOSSetting() {
-    return !prefers_always_show_scrollbar_;
+  bool use_overlay_scrollbar() const { return use_overlay_scrollbars_; }
+  void set_use_overlay_scrollbar(bool use_overlay_scrollbar) {
+    use_overlay_scrollbars_ = use_overlay_scrollbar;
   }
 
   // On certain platforms, currently only Mac, there is a unique visual for
@@ -617,6 +606,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
   // Whether dark mode is forced via command-line flag.
   static bool IsForcedDarkMode();
+
+  // Calculates and returns the use overlay scrollbar setting.
+  static bool CalculateUseOverlayScrollbar();
 
  protected:
   explicit NativeTheme(
@@ -687,10 +679,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   PreferredColorScheme preferred_color_scheme_ = PreferredColorScheme::kLight;
   PreferredContrast preferred_contrast_ = PreferredContrast::kNoPreference;
   std::optional<base::TimeDelta> caret_blink_interval_;
-
-  // Obtaining the PrefersAlwaysShowScrollbar system setting can be expensive,
-  // so it is cached in this boolean.
-  static bool prefers_always_show_scrollbar_;
+  bool use_overlay_scrollbars_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

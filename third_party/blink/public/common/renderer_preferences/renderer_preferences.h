@@ -58,6 +58,9 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   bool allow_cross_origin_auth_prompt{false};
   bool enable_do_not_track{false};
   bool enable_encrypted_media{true};
+#if BUILDFLAG(IS_CHROMEOS)
+  bool use_overlay_scrollbar{false};
+#endif
   std::string webrtc_ip_handling_policy;
   uint16_t webrtc_udp_min_port{0};
   uint16_t webrtc_udp_max_port{0};

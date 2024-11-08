@@ -27,8 +27,11 @@ std::string_view NativeThemeColorSchemeName(
 }
 
 bool IsOverlayScrollbarEnabled() {
-  return IsOverlayScrollbarEnabledByFeatureFlag() &&
-         NativeTheme::IsOverlayScrollbarEnabledByOSSetting();
+#if BUILDFLAG(IS_CHROMEOS)
+  return NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar();
+#else
+  return IsOverlayScrollbarEnabledByFeatureFlag();
+#endif
 }
 
 }  // namespace ui

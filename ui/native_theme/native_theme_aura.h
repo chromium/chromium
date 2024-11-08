@@ -97,8 +97,6 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
                                      const SkScalar lower_left_radius,
                                      const cc::PaintFlags& flags);
 
-  bool use_overlay_scrollbars_;
-
   // Used to notify the web native theme of changes to dark mode, high
   // contrast, preferred color scheme, and preferred contrast.
   std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>

@@ -620,8 +620,9 @@ void NativeThemeMac::ConfigureWebInstance() {
 }
 
 NativeThemeMacWeb::NativeThemeMacWeb()
-    : NativeThemeAura(/*use_overlay_scrollbars=*/IsOverlayScrollbarEnabled(),
-                      /*should_only_use_dark_colors=*/false) {}
+    : NativeThemeAura(
+          /*use_overlay_scrollbars=*/CalculateUseOverlayScrollbar(),
+          /*should_only_use_dark_colors=*/false) {}
 
 // static
 NativeThemeMacWeb* NativeThemeMacWeb::instance() {

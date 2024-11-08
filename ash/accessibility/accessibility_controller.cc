@@ -1576,7 +1576,7 @@ void AccessibilityController::RegisterProfilePrefs(
   }
 
   registry->RegisterBooleanPref(prefs::kAccessibilityOverlayScrollbarEnabled,
-                                  false);
+                                false);
 }
 
 void AccessibilityController::Shutdown() {
@@ -3202,6 +3202,47 @@ void AccessibilityController::UpdateCaretBlinkIntervalFromPrefs() const {
   }
 }
 
+void AccessibilityController::UpdateUseOverlayScrollbarFromPref() const {
+  if (!::features::IsOverlayScrollbarOSSettingEnabled()) {
+    return;
+  }
+  const bool overlay_scrollbar_enabled_by_feature_flag =
+      ::ui::IsOverlayScrollbarEnabledByFeatureFlag();
+  const bool overlay_scrollbar_enabled_by_os_setting =
+      !always_show_scrollbar().enabled();
+  const bool use_overlay_scrollbar =
+      overlay_scrollbar_enabled_by_feature_flag ||
+      overlay_scrollbar_enabled_by_os_setting;
+  bool notify_dark = false;
+  bool notify_web = false;
+  bool notify_native = false;
+  auto* native_theme_dark = ui::NativeTheme::GetInstanceForDarkUI();
+  if (native_theme_dark->use_overlay_scrollbar() != use_overlay_scrollbar) {
+    notify_dark = true;
+    native_theme_dark->set_use_overlay_scrollbar(use_overlay_scrollbar);
+  }
+  auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
+  if (native_theme_web->use_overlay_scrollbar() != use_overlay_scrollbar) {
+    notify_web = true;
+    native_theme_web->set_use_overlay_scrollbar(use_overlay_scrollbar);
+  }
+  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  if (native_theme->use_overlay_scrollbar() != use_overlay_scrollbar) {
+    notify_native = true;
+    native_theme->set_use_overlay_scrollbar(use_overlay_scrollbar);
+  }
+  // Avoid unnecessary notifications.
+  if (notify_dark) {
+    native_theme_dark->NotifyOnNativeThemeUpdated();
+  }
+  if (notify_web) {
+    native_theme_web->NotifyOnNativeThemeUpdated();
+  }
+  if (notify_native) {
+    native_theme->NotifyOnNativeThemeUpdated();
+  }
+}
+
 std::optional<ui::KeyboardCode>
 AccessibilityController::GetCaretBrowsingActionKey() {
   const std::vector<ui::KeyboardDevice>& keyboards =
@@ -3743,8 +3784,7 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
       // Handled in AccessibilityManager.
       break;
     case FeatureType::kAlwaysShowScrollbar:
-      ui::NativeTheme::SetPrefersAlwaysShowScrollbar(
-          always_show_scrollbar().enabled());
+      UpdateUseOverlayScrollbarFromPref();
       break;
     case FeatureType::kSelectToSpeak:
       select_to_speak_state_ = SelectToSpeakState::kSelectToSpeakStateInactive;

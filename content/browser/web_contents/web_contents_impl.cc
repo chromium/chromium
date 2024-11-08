@@ -1307,6 +1307,10 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
   inverted_colors_ = native_theme->GetInvertedColors();
   renderer_preferences_.caret_blink_interval =
       native_theme->GetCaretBlinkInterval();
+#if BUILDFLAG(IS_CHROMEOS)
+  renderer_preferences_.use_overlay_scrollbar =
+      native_theme->use_overlay_scrollbar();
+#endif
 
   screen_change_monitor_ =
       std::make_unique<ScreenChangeMonitor>(base::BindRepeating(
@@ -10889,17 +10893,20 @@ void WebContentsImpl::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::OnNativeThemeUpdated");
   DCHECK(native_theme_observation_.IsObservingSource(observed_theme));
 
-  bool using_dark_colors = observed_theme->ShouldUseDarkColors();
-  bool in_forced_colors = observed_theme->InForcedColorsMode();
-  ui::NativeTheme::PreferredColorScheme preferred_color_scheme =
+  const bool using_dark_colors = observed_theme->ShouldUseDarkColors();
+  const bool in_forced_colors = observed_theme->InForcedColorsMode();
+  const ui::NativeTheme::PreferredColorScheme preferred_color_scheme =
       observed_theme->GetPreferredColorScheme();
-  ui::NativeTheme::PreferredContrast preferred_contrast =
+  const ui::NativeTheme::PreferredContrast preferred_contrast =
       observed_theme->GetPreferredContrast();
-  bool prefers_reduced_transparency =
+  const bool prefers_reduced_transparency =
       observed_theme->GetPrefersReducedTransparency();
-  bool inverted_colors = observed_theme->GetInvertedColors();
-  base::TimeDelta caret_blink_interval =
+  const bool inverted_colors = observed_theme->GetInvertedColors();
+  const base::TimeDelta caret_blink_interval =
       observed_theme->GetCaretBlinkInterval();
+#if BUILDFLAG(IS_CHROMEOS)
+  const bool use_overlay_scrollbar = observed_theme->use_overlay_scrollbar();
+#endif
   bool preferences_changed = false;
 
   if (using_dark_colors_ != using_dark_colors) {
@@ -10931,11 +10938,22 @@ void WebContentsImpl::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
     NotifyPreferencesChanged();
   }
 
+  bool renderer_preference_changed = false;
   // Only caret blink interval from NativeTheme impacts
   // blink::RendererPreferences, which are not synced in
   // NotifyPreferencesChanged(). Sync these if the interval has changed.
   if (renderer_preferences_.caret_blink_interval != caret_blink_interval) {
     renderer_preferences_.caret_blink_interval = caret_blink_interval;
+    renderer_preference_changed = true;
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (renderer_preferences_.use_overlay_scrollbar != use_overlay_scrollbar) {
+    renderer_preferences_.use_overlay_scrollbar = use_overlay_scrollbar;
+    renderer_preference_changed = true;
+  }
+#endif
+
+  if (renderer_preference_changed) {
     SyncRendererPrefs();
   }
 }

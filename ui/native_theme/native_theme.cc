@@ -22,6 +22,7 @@
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/native_theme/common_theme.h"
+#include "ui/native_theme/native_theme_features.h"
 #include "ui/native_theme/native_theme_utils.h"
 
 namespace ui {
@@ -30,9 +31,6 @@ namespace {
 static constexpr base::TimeDelta kDefaultCaretBlinkInterval =
     base::Milliseconds(500);
 }
-
-// static
-bool NativeTheme::prefers_always_show_scrollbar_ = false;
 
 NativeTheme::MenuListExtraParams::MenuListExtraParams() = default;
 NativeTheme::TextFieldExtraParams::TextFieldExtraParams() = default;
@@ -244,6 +242,16 @@ NativeTheme::PreferredColorScheme NativeTheme::CalculatePreferredColorScheme()
                                : NativeTheme::PreferredColorScheme::kLight;
 }
 
+// static
+bool NativeTheme::CalculateUseOverlayScrollbar() {
+  bool use_overlay_scrollbar = IsOverlayScrollbarEnabledByFeatureFlag();
+#if BUILDFLAG(IS_CHROMEOS)
+  use_overlay_scrollbar =
+      use_overlay_scrollbar || features::IsOverlayScrollbarOSSettingEnabled();
+#endif
+  return use_overlay_scrollbar;
+}
+
 std::optional<base::TimeDelta> NativeTheme::GetPlatformCaretBlinkInterval()
     const {
   return std::nullopt;
@@ -304,8 +312,9 @@ NativeTheme::GetSystemColors() const {
 std::optional<SkColor> NativeTheme::GetSystemThemeColor(
     SystemThemeColor theme_color) const {
   auto color = system_colors_.find(theme_color);
-  if (color != system_colors_.end())
+  if (color != system_colors_.end()) {
     return color->second;
+  }
 
   return std::nullopt;
 }
@@ -329,11 +338,11 @@ NativeTheme::ColorSchemeNativeThemeObserver::~ColorSchemeNativeThemeObserver() =
 
 void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
     ui::NativeTheme* observed_theme) {
-  bool should_use_dark_colors = observed_theme->ShouldUseDarkColors();
-  PreferredColorScheme preferred_color_scheme =
+  const bool should_use_dark_colors = observed_theme->ShouldUseDarkColors();
+  const PreferredColorScheme preferred_color_scheme =
       observed_theme->GetPreferredColorScheme();
-  bool inverted_colors = observed_theme->GetInvertedColors();
-  base::TimeDelta caret_blink_interval =
+  const bool inverted_colors = observed_theme->GetInvertedColors();
+  const base::TimeDelta caret_blink_interval =
       observed_theme->GetCaretBlinkInterval();
   bool notify_observers = false;
 
@@ -439,7 +448,8 @@ SkColor4f NativeTheme::GetScrollbarThumbColor(
     const ui::ColorProvider& color_provider,
     State state,
     const ScrollbarThumbExtraParams& extra_params) const {
-  // A native theme using solid color scrollbar thumb must override this method.
+  // A native theme using solid color scrollbar thumb must override this
+  // method.
   NOTREACHED();
 }
 
