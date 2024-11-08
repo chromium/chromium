@@ -178,6 +178,11 @@ class ChromeAuthenticatorRequestDelegate
         ChromeAuthenticatorRequestDelegate* delegate,
         device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai) {}
 
+    // Called when TAI enumeration has finished but it might have to wait for
+    // enclave availability.
+    virtual void OnPreTransportAvailabilityEnumerated(
+        ChromeAuthenticatorRequestDelegate* delegate) {}
+
     virtual void UIShown(ChromeAuthenticatorRequestDelegate* delegate) {}
 
     virtual void CableV2ExtensionSeen(

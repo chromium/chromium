@@ -527,6 +527,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
         : test_instance_(test_instance) {
       run_loop_ = std::make_unique<base::RunLoop>();
       tai_run_loop_ = std::make_unique<base::RunLoop>();
+      pre_tai_run_loop_ = std::make_unique<base::RunLoop>();
       destruction_run_loop_ = std::make_unique<base::RunLoop>();
     }
     virtual ~DelegateObserver() = default;
@@ -539,6 +540,11 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     void WaitForTransportAvailabilityEnumerated() {
       tai_run_loop_->Run();
       tai_run_loop_ = std::make_unique<base::RunLoop>();
+    }
+
+    void WaitForPreTransportAvailabilityEnumerated() {
+      pre_tai_run_loop_->Run();
+      pre_tai_run_loop_ = std::make_unique<base::RunLoop>();
     }
 
     void WaitForDelegateDestruction() {
@@ -589,6 +595,11 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       return ret;
     }
 
+    void OnPreTransportAvailabilityEnumerated(
+        ChromeAuthenticatorRequestDelegate* delegate) override {
+      pre_tai_run_loop_->QuitWhenIdle();
+    }
+
     void OnTransportAvailabilityEnumerated(
         ChromeAuthenticatorRequestDelegate* delegate,
         device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai)
@@ -619,6 +630,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     bool ui_shown_ = false;
     std::unique_ptr<base::RunLoop> run_loop_;
     std::unique_ptr<base::RunLoop> tai_run_loop_;
+    std::unique_ptr<base::RunLoop> pre_tai_run_loop_;
     std::unique_ptr<base::RunLoop> destruction_run_loop_;
   };
 
@@ -2338,7 +2350,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
   model_observer()->SetStepToObserve(
       AuthenticatorRequestDialogModel::Step::kGPMConnecting);
-  delegate_observer()->WaitForTransportAvailabilityEnumerated();
+  delegate_observer()->WaitForPreTransportAvailabilityEnumerated();
 
   // Make the enclave ready by having the account state download time out.
   timer_task_runner_->FastForwardBy(
@@ -2386,7 +2398,7 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 
   // Wait for the transport availability to be enumerated. The UI won't be shown
   // yet because the enclave is not ready.
-  delegate_observer()->WaitForTransportAvailabilityEnumerated();
+  delegate_observer()->WaitForPreTransportAvailabilityEnumerated();
 
   // Wait for 75% of the time it takes to time out. We should still be waiting.
   timer_task_runner_->FastForwardBy(

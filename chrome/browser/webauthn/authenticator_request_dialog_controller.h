@@ -557,7 +557,7 @@ class AuthenticatorRequestDialogController
   // profile authenticator.
   bool should_create_in_icloud_keychain_ = false;
 
-  // enclave_enabled_status_ determines whether Googple Password Manager entries
+  // enclave_enabled_status_ determines whether Google Password Manager entries
   // should be offered both for `makeCredential` or `getAssertion`. If reauth
   // needed, instead of offering the actual passkeys or creating a passkey,
   // re-authentication to Google is offered.

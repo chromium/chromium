@@ -265,7 +265,7 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   // The user verification that will be performed for this request.
   std::optional<EnclaveUserVerificationMethod> uv_method_;
 
-  std::optional<bool> is_active_ = false;
+  std::optional<bool> is_active_;
 
   // Whether the system can make UV keys.
   std::optional<bool> can_make_uv_keys_;

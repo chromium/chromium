@@ -1327,20 +1327,8 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     return;
   }
 
-  if (can_use_synced_phone_passkeys_ ||
-      (enclave_controller_ && enclave_controller_->is_active())) {
-    GetPhoneContactableGpmPasskeysForRpId(&data.recognized_credentials);
-  }
-  FilterRecognizedCredentials(&data);
-
   if (g_observer) {
-    g_observer->OnTransportAvailabilityEnumerated(this, &data);
-  }
-
-  if (dialog_model_->step() !=
-      AuthenticatorRequestDialogModel::Step::kNotStarted) {
-    dialog_controller_->OnTransportAvailabilityChanged(std::move(data));
-    return;
+    g_observer->OnPreTransportAvailabilityEnumerated(this);
   }
 
   const bool delay_ui_for_gpm =
@@ -1498,6 +1486,22 @@ content::BrowserContext* ChromeAuthenticatorRequestDelegate::GetBrowserContext()
 
 void ChromeAuthenticatorRequestDelegate::ShowUI(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo tai) {
+  if (can_use_synced_phone_passkeys_ ||
+      (enclave_controller_ && enclave_controller_->is_active())) {
+    GetPhoneContactableGpmPasskeysForRpId(&tai.recognized_credentials);
+  }
+  FilterRecognizedCredentials(&tai);
+
+  if (g_observer) {
+    g_observer->OnTransportAvailabilityEnumerated(this, &tai);
+  }
+
+  if (dialog_model_->step() !=
+      AuthenticatorRequestDialogModel::Step::kNotStarted) {
+    dialog_controller_->OnTransportAvailabilityChanged(std::move(tai));
+    return;
+  }
+
   // At the time of writing we don't support GPM passkeys on iOS, so we want to
   // avoid defaulting to GPM for macOS users who likely have an iPhone. But on
   // all other platforms, GPM should be the default.
