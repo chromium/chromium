@@ -40,9 +40,6 @@ inline constexpr char16_t kPrivacyPolicyFunc[] = u"onPrivacyPolicyLinkClicked_";
 // The id of the html element that opens the privacy policy link.
 inline constexpr char16_t kPrivacyPolicyId[] = u"privacyPolicyLink";
 
-// The V2 id of the html element that opens the privacy policy link.
-inline constexpr char16_t kPrivacyPolicyIdV2[] = u"privacyPolicyLinkV2";
-
 PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
   auto* source = content::WebUIDataSource::CreateAndAdd(
@@ -148,21 +145,6 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
       {"m1ConsentLearnMoreBullet3",
        IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_3},
 
-      // Strings for the consent step of the combined dialog with the Ads API UX
-      // Enhancement.
-      {"m1ConsentDescription2V2",
-       IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_2_V2},
-      {"m1ConsentDescription4V2",
-       IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_4_V2},
-      {"m1ConsentLearnmoreBullet1V2",
-       IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_1_V2},
-      {"m1ConsentLearnmoreBullet2V2",
-       IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2_V2},
-      {"m1ConsentLearnmoreBullet2DescriptionNoLink",
-       IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2_DESCRIPTION_NO_LINK},
-      {"m1ConsentLearnmoreBullet3V2",
-       IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_3_V2},
-
       // Strings for the notice step of the combined dialog (kM1NoticeEEA).
       {"m1NoticeEeaTitle", IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_TITLE},
       {"m1NoticeEeaDescription1",
@@ -256,14 +238,6 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
   source->AddBoolean("isPrivacySandboxAdsApiUxEnhancementsEnabled",
                      base::FeatureList::IsEnabled(
                          privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements));
-  source->AddString(
-      "m1ConsentLearnmoreBullet2Description",
-      l10n_util::GetStringFUTF16(
-          IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2_DESCRIPTION,
-          kPrivacyPolicyIdV2,
-          l10n_util::GetStringUTF16(
-              IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP_ARIA_DESCRIPTION),
-          kPrivacyPolicyFunc));
 
   const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
   if (url.query().find("debug") != std::string::npos) {

@@ -33,16 +33,13 @@
 namespace {
 constexpr int kAverageBrowserWidth = 800;
 constexpr int kAverageBrowserHeight = 700;
+#if !BUILDFLAG(IS_LINUX)
 constexpr base::TimeDelta kMaxWaitTime = base::Seconds(30);
+#endif
 }  // namespace
 
 class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
  public:
-  PrivacySandboxDialogViewBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements);
-  }
-
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
@@ -84,7 +81,6 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
 
  private:
   raw_ptr<MockPrivacySandboxService, DanglingUntriaged> mock_service_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if !BUILDFLAG(IS_LINUX)
@@ -159,54 +155,13 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
 }
 #endif
 
-class PrivacySandboxDialogViewAdsApiUxEnhancementBrowserTest
-    : public PrivacySandboxDialogViewBrowserTest {
- public:
-  PrivacySandboxDialogViewAdsApiUxEnhancementBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewAdsApiUxEnhancementBrowserTest,
-                       InvokeUi_Consent) {
-  base::WaitableEvent shown_waiter;
-  base::WaitableEvent closed_waiter;
-
-  EXPECT_CALL(
-      *mock_service(),
-      PromptActionOccurred(PrivacySandboxService::PromptAction::kConsentShown,
-                           PrivacySandboxService::SurfaceType::kDesktop))
-      .WillOnce([&shown_waiter] { shown_waiter.Signal(); });
-  EXPECT_CALL(*mock_service(),
-              PromptActionOccurred(
-                  PrivacySandboxService::PromptAction::kConsentClosedNoDecision,
-                  PrivacySandboxService::SurfaceType::kDesktop))
-      .WillOnce([&closed_waiter] { closed_waiter.Signal(); });
-  ShowAndVerifyUi();
-
-  shown_waiter.TimedWait(kMaxWaitTime);
-  closed_waiter.TimedWait(kMaxWaitTime);
-}
-
 class PrivacySandboxDialogViewPrivacyPolicyBrowserTest
     : public PrivacySandboxDialogViewBrowserTest {
  public:
   PrivacySandboxDialogViewPrivacyPolicyBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        // Enabled
-        {privacy_sandbox::kPrivacySandboxPrivacyPolicy},
-        // Disabled
-        {privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements});
+    scoped_feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kPrivacySandboxPrivacyPolicy);
   }
-
-  virtual std::string GetPrivacyPolicyLinkElementId() {
-    return "#privacyPolicyLink";
-  }
-
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     PrivacySandboxService::PromptType prompt_type =
@@ -242,10 +197,8 @@ class PrivacySandboxDialogViewPrivacyPolicyBrowserTest
                         "document.querySelector('body > "
                         "privacy-sandbox-combined-dialog-app')"
                         ".shadowRoot.querySelector('#consent')"
-                        ".shadowRoot.querySelector('" +
-                            GetPrivacyPolicyLinkElementId() +
-                            "')"
-                            ".click()"));
+                        ".shadowRoot.querySelector('#privacyPolicyLink')"
+                        ".click()"));
 
     // Intentionally navigate to some blocked content to avoid flakiness.
     auto script = content::JsReplace(
@@ -265,31 +218,5 @@ class PrivacySandboxDialogViewPrivacyPolicyBrowserTest
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewPrivacyPolicyBrowserTest,
                        InvokeUi_PrivacyPolicy) {
-  ShowAndVerifyUi();
-}
-
-class PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest
-    : public PrivacySandboxDialogViewPrivacyPolicyBrowserTest {
- public:
-  PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        // Enabled Features
-        {privacy_sandbox::kPrivacySandboxPrivacyPolicy,
-         privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements},
-        // Disabled Features
-        {});
-  }
-
-  std::string GetPrivacyPolicyLinkElementId() override {
-    return "#privacyPolicyLinkV2";
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest,
-    InvokeUi_PrivacyPolicy) {
   ShowAndVerifyUi();
 }
