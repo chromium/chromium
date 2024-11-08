@@ -4051,7 +4051,7 @@ IN_PROC_BROWSER_TEST_F(
             BlueURL());
 
   ASSERT_FALSE(did_invoke.IsReady());
-  ASSERT_TRUE(did_cancel.IsReady());
+  ASSERT_TRUE(did_cancel.Wait());
 
   ASSERT_EQ(back_nav.last_navigation_url(), BlueURL());
   ASSERT_FALSE(did_invoke.IsReady());
