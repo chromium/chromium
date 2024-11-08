@@ -173,6 +173,17 @@ void MediaCaptureDevicesDispatcher::ProcessMediaAccessRequest(
                           nullptr);
 }
 
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_FUCHSIA)
+void MediaCaptureDevicesDispatcher::ProcessSelectAudioOutputRequest(
+    Browser* browser,
+    const content::SelectAudioOutputRequest& request,
+    content::SelectAudioOutputCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  picker_views_ = SelectAudioOutputPicker::Create(request);
+  picker_views_->Show(browser, request, std::move(callback));
+}
+#endif
+
 bool MediaCaptureDevicesDispatcher::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const url::Origin& security_origin,

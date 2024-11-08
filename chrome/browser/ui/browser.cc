@@ -2540,6 +2540,18 @@ void Browser::RequestMediaAccessPermission(
       web_contents, request, std::move(callback), extension);
 }
 
+void Browser::ProcessSelectAudioOutput(
+    const content::SelectAudioOutputRequest& request,
+    content::SelectAudioOutputCallback callback) {
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_FUCHSIA)
+  MediaCaptureDevicesDispatcher::GetInstance()->ProcessSelectAudioOutputRequest(
+      this, request, std::move(callback));
+#else
+  std::move(callback).Run(
+      base::unexpected(content::SelectAudioOutputError::kUnknown));
+#endif
+}
+
 bool Browser::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const url::Origin& security_origin,

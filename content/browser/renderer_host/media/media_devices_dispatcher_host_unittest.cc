@@ -29,6 +29,7 @@
 #include "content/browser/renderer_host/media/video_capture_provider_switcher.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
@@ -904,6 +905,7 @@ TEST_P(MediaDevicesDispatcherHostTest,
             0u);
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 TEST_P(MediaDevicesDispatcherHostTest, SelectAudioOutputNoUserActivation) {
   base::test::TestFuture<blink::mojom::SelectAudioOutputResultPtr> future;
   host_->SelectAudioOutput(kDefaultAudioDeviceID, future.GetCallback());
@@ -930,6 +932,38 @@ TEST_P(MediaDevicesDispatcherHostTest, SelectAudioOutputNoPermission) {
   EXPECT_TRUE(result->device_info.group_id.empty());
   EXPECT_TRUE(result->device_info.label.empty());
 }
+
+TEST_P(MediaDevicesDispatcherHostTest, SelectAudioOutputSuccess) {
+  render_frame_host_->SimulateUserActivation();
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kUseFakeUIForMediaStream);
+
+  media_stream_manager_->media_devices_manager()->SetPermissionChecker(
+      std::make_unique<MediaDevicesPermissionChecker>(true));
+
+  base::test::TestFuture<blink::mojom::SelectAudioOutputResultPtr> future;
+
+  EnumerateDevicesAndWaitForResult(false, false, true);
+
+  std::string last_audio_output_device_id;
+  last_audio_output_device_id =
+      enumerated_devices_[static_cast<size_t>(
+                              MediaDeviceType::kMediaAudioOutput)]
+          .back()
+          .device_id;
+  host_->SelectAudioOutput(last_audio_output_device_id, future.GetCallback());
+
+  blink::mojom::SelectAudioOutputResultPtr result = future.Take();
+  base::test::TestFuture<const MediaDeviceSaltAndOrigin&> salt_future;
+
+  GetMediaDeviceSaltAndOrigin(render_frame_host_->GetGlobalId(),
+                              salt_future.GetCallback());
+  MediaDeviceSaltAndOrigin salt_and_origin = salt_future.Get();
+
+  EXPECT_EQ(result->status, blink::mojom::AudioOutputStatus::kSuccess);
+  EXPECT_EQ(result->device_info.device_id, last_audio_output_device_id);
+}
+#endif
 
 INSTANTIATE_TEST_SUITE_P(All,
                          MediaDevicesDispatcherHostTest,

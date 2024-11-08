@@ -138,9 +138,13 @@ class CONTENT_EXPORT MediaDevicesManager
   void AddAudioDeviceToOriginMap(GlobalRenderFrameHostId render_frame_host_id,
                                  const blink::WebMediaDeviceInfo& device_info);
 
-  void IsSpeakerSelectionPermissionDenied(
+  bool IsAudioOutputDeviceExplicitlyAuthorized(
       GlobalRenderFrameHostId render_frame_host_id,
-      base::OnceCallback<void(PermissionDeniedState)> callback);
+      const std::string& raw_device_id);
+
+  void GetSpeakerSelectionAndMicrophonePermissionState(
+      GlobalRenderFrameHostId render_frame_host_id,
+      base::OnceCallback<void(PermissionDeniedState, bool)> callback);
 
   uint32_t SubscribeDeviceChangeNotifications(
       GlobalRenderFrameHostId render_frame_host_id,

@@ -22,6 +22,7 @@
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
@@ -1056,6 +1057,11 @@ class Browser : public TabStripModelObserver,
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) override;
+
+  void ProcessSelectAudioOutput(
+      const content::SelectAudioOutputRequest& request,
+      content::SelectAudioOutputCallback callback) override;
+
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) override;

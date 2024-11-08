@@ -18638,6 +18638,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_PDF_SEARCHIFY_IPH_BODY_SCREEN_READER" desc="Content of in product help to introduce PDF Searchify feature for screen reader users.">
     PDFs automatically get converted so you can search and select text
     </message>
+
+    <!-- Select Audio Output dialog. -->
+    <message name="IDS_SELECT_AUDIO_OUTPUT_DIALOG_TITLE" desc="Title of the dialog that allows the user to select an audio output device.">
+      Select Audio Output
+    </message>
+    <message name="IDS_SELECT_AUDIO_OUTPUT_DIALOG_CHOOSE_DEVICE" desc="Text displayed above the list of audio output devices in the selection dialog.">
+      Choose an audio output device
+    </message>
   </messages>
 </release>
 </grit>

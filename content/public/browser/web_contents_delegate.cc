@@ -276,6 +276,15 @@ void WebContentsDelegate::RequestMediaAccessPermission(
                           std::unique_ptr<MediaStreamUI>());
 }
 
+void WebContentsDelegate::ProcessSelectAudioOutput(
+    const SelectAudioOutputRequest& request,
+    SelectAudioOutputCallback callback) {
+  LOG(ERROR) << "WebContentsDelegate::ProcessSelectAudioOutput: "
+             << "Not supported.";
+  std::move(callback).Run(
+      base::unexpected(content::SelectAudioOutputError::kNotSupported));
+}
+
 bool WebContentsDelegate::CheckMediaAccessPermission(
     RenderFrameHost* render_frame_host,
     const url::Origin& security_origin,

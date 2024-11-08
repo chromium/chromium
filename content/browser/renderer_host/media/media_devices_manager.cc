@@ -567,12 +567,25 @@ void MediaDevicesManager::AddAudioDeviceToOriginMap(
   audio_device_origin_map_[render_frame_host_id].insert(device_info);
 }
 
-void MediaDevicesManager::IsSpeakerSelectionPermissionDenied(
+bool MediaDevicesManager::IsAudioOutputDeviceExplicitlyAuthorized(
     GlobalRenderFrameHostId render_frame_host_id,
-    base::OnceCallback<void(PermissionDeniedState)> callback) {
+    const std::string& raw_device_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  auto authorized_devices = audio_device_origin_map_.find(render_frame_host_id);
+  if (authorized_devices == audio_device_origin_map_.end()) {
+    return false;
+  }
+  blink::WebMediaDeviceInfo device_info;
+  device_info.device_id = raw_device_id;
+  return base::Contains(authorized_devices->second, device_info);
+}
+
+void MediaDevicesManager::GetSpeakerSelectionAndMicrophonePermissionState(
+    GlobalRenderFrameHostId render_frame_host_id,
+    base::OnceCallback<void(PermissionDeniedState, bool)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  permission_checker_->IsSpeakerSelectionDenied(
+  permission_checker_->GetSpeakerSelectionAndMicrophonePermissionState(
       render_frame_host_id.child_id, render_frame_host_id.frame_routing_id,
       std::move(callback));
 }

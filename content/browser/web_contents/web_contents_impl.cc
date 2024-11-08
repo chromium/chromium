@@ -5318,6 +5318,19 @@ void WebContentsImpl::RequestMediaAccessPermission(
   }
 }
 
+void WebContentsImpl::ProcessSelectAudioOutput(
+    const SelectAudioOutputRequest& request,
+    SelectAudioOutputCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (delegate_) {
+    delegate_->ProcessSelectAudioOutput(request, std::move(callback));
+  } else {
+    std::move(callback).Run(
+        base::unexpected(content::SelectAudioOutputError::kNotSupported));
+  }
+}
+
 bool WebContentsImpl::CheckMediaAccessPermission(
     RenderFrameHostImpl* render_frame_host,
     const url::Origin& security_origin,

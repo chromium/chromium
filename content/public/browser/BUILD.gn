@@ -382,6 +382,8 @@ source_set("browser_sources") {
     "screenlock_observer.h",
     "secure_payment_confirmation_utils.cc",
     "secure_payment_confirmation_utils.h",
+    "select_audio_output_request.cc",
+    "select_audio_output_request.h",
     "serial_chooser.cc",
     "serial_chooser.h",
     "serial_delegate.h",

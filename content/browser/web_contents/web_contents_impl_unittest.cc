@@ -3538,4 +3538,24 @@ TEST_P(WebContentsImplTestKeyboardEvents,
   EXPECT_TRUE(contents()->HasRecentInteraction());
 }
 
+TEST_F(WebContentsImplTest, ProcessSelectAudioOutputNoDelegate) {
+  SelectAudioOutputRequest dummy_request(content::GlobalRenderFrameHostId(0, 0),
+                                         std::vector<AudioOutputDeviceInfo>());
+
+  bool callback_run = false;
+
+  contents()->ProcessSelectAudioOutput(
+      dummy_request,
+      base::BindLambdaForTesting(
+          [&](base::expected<std::string, content::SelectAudioOutputError>
+                  result) {
+            EXPECT_FALSE(result.has_value());
+            EXPECT_EQ(result.error(),
+                      content::SelectAudioOutputError::kNotSupported);
+            callback_run = true;
+          }));
+
+  ASSERT_TRUE(callback_run);
+}
+
 }  // namespace content

@@ -52,6 +52,11 @@ class MediaStreamUIProxy::Core {
   ~Core();
 
   void RequestAccess(std::unique_ptr<MediaStreamRequest> request);
+
+  void RequestSelectAudioOutput(
+      std::unique_ptr<SelectAudioOutputRequest> request,
+      SelectAudioOutputCallback callback);
+
   void OnStarted(gfx::NativeViewId* window_id,
                  bool has_source_callback,
                  const std::string& label,
@@ -158,6 +163,25 @@ void MediaStreamUIProxy::Core::RequestAccess(
       *request,
       base::BindOnce(&Core::ProcessAccessRequestResponse, weak_this_,
                      request->render_process_id, request->render_frame_id));
+}
+
+void MediaStreamUIProxy::Core::RequestSelectAudioOutput(
+    std::unique_ptr<SelectAudioOutputRequest> request,
+    SelectAudioOutputCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  RenderFrameHostDelegate* render_delegate = GetRenderFrameHostDelegate(
+      request->render_frame_host_id().child_id,
+      request->render_frame_host_id().frame_routing_id);
+  if (!render_delegate) {
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  base::unexpected(
+                                      SelectAudioOutputError::kNotSupported)));
+    return;
+  }
+
+  render_delegate->ProcessSelectAudioOutput(*request, std::move(callback));
 }
 
 void MediaStreamUIProxy::Core::OnStarted(
@@ -377,6 +401,17 @@ void MediaStreamUIProxy::RequestAccess(
                                 std::move(request)));
 }
 
+void MediaStreamUIProxy::RequestSelectAudioOutput(
+    std::unique_ptr<SelectAudioOutputRequest> request,
+    SelectAudioOutputCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Core::RequestSelectAudioOutput, core_->GetWeakPtr(),
+                     std::move(request), std::move(callback)));
+}
+
 void MediaStreamUIProxy::OnStarted(
     base::OnceClosure stop_callback,
     MediaStreamUI::SourceCallback source_callback,
@@ -586,6 +621,13 @@ void FakeMediaStreamUIProxy::RequestAccess(
           is_devices_empty ? blink::mojom::MediaStreamRequestResult::NO_HARDWARE
                            : blink::mojom::MediaStreamRequestResult::OK,
           std::unique_ptr<MediaStreamUI>()));
+}
+
+void FakeMediaStreamUIProxy::RequestSelectAudioOutput(
+    std::unique_ptr<SelectAudioOutputRequest> request,
+    SelectAudioOutputCallback callback) {
+  std::move(callback).Run(
+      base::unexpected(content::SelectAudioOutputError::kNoPermission));
 }
 
 void FakeMediaStreamUIProxy::OnStarted(

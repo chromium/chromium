@@ -3798,7 +3798,10 @@
       // SelectAudioOutput API
       // https://chromestatus.com/feature/5164535504437248
       name: "SelectAudioOutput",
-      status: "test",
+      status: {
+        "Android": "",
+        "default": "test",
+      },
     },
     {
       // The selectedcontentelement attribute is for connecting select elements

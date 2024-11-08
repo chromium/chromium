@@ -950,6 +950,10 @@ class CONTENT_EXPORT WebContentsImpl
       override;
   void RequestMediaAccessPermission(const MediaStreamRequest& request,
                                     MediaResponseCallback callback) override;
+
+  void ProcessSelectAudioOutput(const SelectAudioOutputRequest& request,
+                                SelectAudioOutputCallback callback) override;
+
   bool CheckMediaAccessPermission(RenderFrameHostImpl* render_frame_host,
                                   const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) override;

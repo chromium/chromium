@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/desktop_capture/screen_capture_permission_checker.h"
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_dialog_views.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
+#include "chrome/browser/ui/views/media_picker_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -621,31 +622,11 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   previously_selected_category_ = GetSelectedTabIndex();
   ConfigureUIForNewPane(previously_selected_category_);
 
-  // If |params.web_contents| is set and it's not a background page then the
-  // picker will be shown modal to the web contents. Otherwise the picker is
-  // shown in a separate window.
-  views::Widget* widget = nullptr;
-  bool modal_dialog = params.web_contents &&
-                      !params.web_contents->GetDelegate()->IsNeverComposited(
-                          params.web_contents);
-  if (modal_dialog) {
-    Browser* browser = chrome::FindBrowserWithTab(params.web_contents);
-    // Close the extension popup to prevent spoofing.
-    if (browser && browser->window() &&
-        browser->window()->GetExtensionsContainer()) {
-      browser->window()->GetExtensionsContainer()->HideActivePopup();
-    }
-    widget =
-        constrained_window::ShowWebModalDialogViews(this, params.web_contents);
-  } else {
-#if BUILDFLAG(IS_MAC)
-    // On Mac, ModalType::kChild with a null parent isn't allowed - fall back to
-    // ModalType::kWindow.
-    SetModalType(ui::mojom::ModalType::kWindow);
-#endif
-    widget = CreateDialogWidget(this, params.context, nullptr);
-    widget->Show();
-  }
+  bool modal_dialog = IsMediaPickerModalWindow(params.web_contents);
+  views::Widget* widget = CreateMediaPickerDialogWidget(
+      modal_dialog ? chrome::FindBrowserWithTab(params.web_contents) : nullptr,
+      params.web_contents,
+      /*delegate=*/this, params.context, /*parent=*/nullptr);
 
   extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
 

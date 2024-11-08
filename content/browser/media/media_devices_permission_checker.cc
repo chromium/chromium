@@ -88,17 +88,35 @@ MediaDevicesManager::BoolDeviceTypes DoCheckPermissionsOnUIThread(
   return result;
 }
 
-MediaDevicesManager::PermissionDeniedState IsSpeakerSelectionPermissionDenied(
+bool CheckSinglePermissionOnUIThread(MediaDeviceType device_type,
+                                     int render_process_id,
+                                     int render_frame_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  MediaDevicesManager::BoolDeviceTypes requested;
+  requested[static_cast<size_t>(device_type)] = true;
+  MediaDevicesManager::BoolDeviceTypes result = DoCheckPermissionsOnUIThread(
+      requested, render_process_id, render_frame_id);
+  return result[static_cast<size_t>(device_type)];
+}
+
+void GetSpeakerSelectionAndMicrophoneState(
     int render_process_id,
-    int render_frame_id) {
+    int render_frame_id,
+    base::OnceCallback<void(MediaDevicesManager::PermissionDeniedState, bool)>
+        callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RenderFrameHostImpl* frame_host =
       RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
 
   // If there is no |frame_host|, return PermissionDeniedState::kDenied.
   if (!frame_host) {
-    return MediaDevicesManager::PermissionDeniedState::kDenied;
+    std::move(callback).Run(MediaDevicesManager::PermissionDeniedState::kDenied,
+                            false);
+    return;
   }
+
+  bool has_micophone_permission = CheckSinglePermissionOnUIThread(
+      MediaDeviceType::kMediaAudioInput, render_process_id, render_frame_id);
 
   blink::mojom::PermissionStatus speaker_selection_permission_status =
       frame_host->GetBrowserContext()
@@ -110,23 +128,16 @@ MediaDevicesManager::PermissionDeniedState IsSpeakerSelectionPermissionDenied(
       blink::mojom::PermissionsPolicyFeature::kSpeakerSelection);
 
   // Check if permission is DENIED or permissions policy is not enabled.
-  if (!speaker_selection_permissions_policy ||
-      speaker_selection_permission_status ==
-          blink::mojom::PermissionStatus::DENIED) {
-    return MediaDevicesManager::PermissionDeniedState::kDenied;
-  }
-  return MediaDevicesManager::PermissionDeniedState::kNotDenied;
-}
+  MediaDevicesManager::PermissionDeniedState
+      speaker_selection_permission_state =
+          (!speaker_selection_permissions_policy ||
+           speaker_selection_permission_status ==
+               blink::mojom::PermissionStatus::DENIED)
+              ? MediaDevicesManager::PermissionDeniedState::kDenied
+              : MediaDevicesManager::PermissionDeniedState::kNotDenied;
 
-bool CheckSinglePermissionOnUIThread(MediaDeviceType device_type,
-                                     int render_process_id,
-                                     int render_frame_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  MediaDevicesManager::BoolDeviceTypes requested;
-  requested[static_cast<size_t>(device_type)] = true;
-  MediaDevicesManager::BoolDeviceTypes result = DoCheckPermissionsOnUIThread(
-      requested, render_process_id, render_frame_id);
-  return result[static_cast<size_t>(device_type)];
+  std::move(callback).Run(speaker_selection_permission_state,
+                          has_micophone_permission);
 }
 
 }  // namespace
@@ -153,27 +164,30 @@ bool MediaDevicesPermissionChecker::CheckPermissionOnUIThread(
                                          render_frame_id);
 }
 
-void MediaDevicesPermissionChecker::IsSpeakerSelectionDenied(
-    int render_process_id,
-    int render_frame_id,
-    base::OnceCallback<void(MediaDevicesManager::PermissionDeniedState)>
-        callback) const {
+void MediaDevicesPermissionChecker::
+    GetSpeakerSelectionAndMicrophonePermissionState(
+        int render_process_id,
+        int render_frame_id,
+        base::OnceCallback<void(MediaDevicesManager::PermissionDeniedState,
+                                bool)> callback) const {
   if (use_override_) {
     if (override_value_) {
       std::move(callback).Run(
-          MediaDevicesManager::PermissionDeniedState::kNotDenied);
+          MediaDevicesManager::PermissionDeniedState::kNotDenied, true);
     } else {
       std::move(callback).Run(
-          MediaDevicesManager::PermissionDeniedState::kDenied);
+          MediaDevicesManager::PermissionDeniedState::kDenied, false);
     }
     return;
   }
 
-  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&IsSpeakerSelectionPermissionDenied, render_process_id,
-                     render_frame_id),
-      std::move(callback));
+      base::BindOnce(
+          &GetSpeakerSelectionAndMicrophoneState, render_process_id,
+          render_frame_id,
+          base::BindPostTask(base::SequencedTaskRunner::GetCurrentDefault(),
+                             std::move(callback))));
 }
 
 void MediaDevicesPermissionChecker::CheckPermission(

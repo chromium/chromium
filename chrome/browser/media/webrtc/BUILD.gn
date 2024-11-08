@@ -52,6 +52,7 @@ source_set("webrtc") {
     "rtp_dump_type.h",
     "same_origin_observer.cc",
     "same_origin_observer.h",
+    "select_audio_output_picker.h",
     "thumbnail_capturer.cc",
     "thumbnail_capturer.h",
     "webrtc_event_log_history.cc",

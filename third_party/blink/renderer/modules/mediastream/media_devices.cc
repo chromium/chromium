@@ -725,20 +725,19 @@ ScriptPromise<MediaDeviceInfo> MediaDevices::selectAudioOutput(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolverWithTracker<
       AudioOutputSelectionResult, MediaDeviceInfo>>(
       script_state, "Media.MediaDevices.SelectAudioOutput", base::Seconds(8));
-
   if (!LocalFrame::HasTransientUserActivation(window->GetFrame())) {
     resolver->Reject<DOMException>(
         MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kInvalidStateError,
             "selectAudioOutput() requires transient "
             "activation (user gesture)."),
-        AudioOutputSelectionResult::kInvalidStateError);
+        AudioOutputSelectionResult::kNoUserActivation);
     return resolver->Promise();
   }
 
   GetDispatcherHost(window->GetFrame())
       .SelectAudioOutput(
-          options->deviceId(),
+          options->hasDeviceId() ? options->deviceId() : String(),
           WTF::BindOnce(&MediaDevices::OnSelectAudioOutputResult,
                         WrapPersistent(this), WrapPersistent(resolver)));
 
@@ -749,7 +748,7 @@ void MediaDevices::OnSelectAudioOutputResult(
     ScriptPromiseResolverWithTracker<AudioOutputSelectionResult,
                                      MediaDeviceInfo>* resolver,
     mojom::blink::SelectAudioOutputResultPtr result) {
-  if (result->status == blink::mojom::AudioOutputStatus::kSuccess) {
+  if (result->status == mojom::blink::AudioOutputStatus::kSuccess) {
     MediaDeviceInfo* media_device_info = MakeGarbageCollected<MediaDeviceInfo>(
         String::FromUTF8(result->device_info.device_id),
         String::FromUTF8(result->device_info.label),
@@ -764,21 +763,26 @@ void MediaDevices::OnSelectAudioOutputResult(
         AudioOutputSelectionResult::kOtherError;
 
     switch (result->status) {
-      case blink::mojom::AudioOutputStatus::kNoPermission:
+      case mojom::blink::AudioOutputStatus::kNoPermission:
         error_message = "Permission denied to select audio output.";
         exception_code = DOMExceptionCode::kNotAllowedError;
         result_enum = AudioOutputSelectionResult::kPermissionDenied;
         break;
-      case blink::mojom::AudioOutputStatus::kNoDevices:
+      case mojom::blink::AudioOutputStatus::kNoDevices:
         error_message = "No audio output devices found.";
         exception_code = DOMExceptionCode::kNotFoundError;
         result_enum = AudioOutputSelectionResult::kNoDevices;
         break;
-      case blink::mojom::AudioOutputStatus::kNoUserActivation:
+      case mojom::blink::AudioOutputStatus::kNotSupported:
+        error_message = "Audio output is not supported.";
+        exception_code = DOMExceptionCode::kInvalidStateError;
+        result_enum = AudioOutputSelectionResult::kNotSupported;
+        break;
+      case mojom::blink::AudioOutputStatus::kNoUserActivation:
         error_message =
             "selectAudioOutput() requires transient activation (user gesture).";
         exception_code = DOMExceptionCode::kInvalidStateError;
-        result_enum = AudioOutputSelectionResult::kInvalidStateError;
+        result_enum = AudioOutputSelectionResult::kNoUserActivation;
         break;
       default:
         error_message =

@@ -36,13 +36,15 @@ class CONTENT_EXPORT MediaDevicesPermissionChecker {
                                  int render_process_id,
                                  int render_frame_id) const;
 
-  // This function checks if speaker selection is denied for the
-  // SelectAudioOutput API. This API requires a different permission check
-  // compared to other MediaDevices APIs.
-  void IsSpeakerSelectionDenied(
+  // This function checks the state of the speaker selection and microphone
+  // permissions for the SelectAudioOutput API. The speaker selection state is
+  // returned as denied/not denied via the first parameter of `callback` and
+  // the microphone permission state is returned as a bool (true for allowed,
+  // false for not allowed) via the second parameter of `callback`.
+  void GetSpeakerSelectionAndMicrophonePermissionState(
       int render_process_id,
       int render_frame_id,
-      base::OnceCallback<void(MediaDevicesManager::PermissionDeniedState)>
+      base::OnceCallback<void(MediaDevicesManager::PermissionDeniedState, bool)>
           callback) const;
 
   // Checks if the origin associated to a render frame identified by

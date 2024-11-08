@@ -59,10 +59,11 @@ enum class AudioOutputSelectionResult {
   kSuccess = 0,
   kPermissionDenied = 1,
   kNoDevices = 2,
-  kInvalidStateError = 3,
+  kNoUserActivation = 3,
   kOtherError = 4,
   kTimedOut = 5,
-  kMaxValue = kTimedOut
+  kNotSupported = 6,
+  kMaxValue = kNotSupported
 };
 
 class MODULES_EXPORT MediaDevices final

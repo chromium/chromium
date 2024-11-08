@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_output_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crop_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_double_range.h"
@@ -200,7 +201,17 @@ class MockMediaDevicesDispatcherHost final
   void SelectAudioOutput(
       const String& device_id,
       SelectAudioOutputCallback select_audio_output_callback) override {
-    NOTREACHED();
+    mojom::blink::SelectAudioOutputResultPtr result =
+        mojom::blink::SelectAudioOutputResult::New();
+    if (device_id == "test_device_id") {
+      result->status = blink::mojom::AudioOutputStatus::kSuccess;
+      result->device_info.device_id = "test_device_id";
+      result->device_info.label = "Test Speaker";
+      result->device_info.group_id = "test_group_id";
+    } else {
+      result->status = blink::mojom::AudioOutputStatus::kNoPermission;
+    }
+    std::move(select_audio_output_callback).Run(std::move(result));
   }
 
   void GetVideoInputCapabilities(GetVideoInputCapabilitiesCallback) override {

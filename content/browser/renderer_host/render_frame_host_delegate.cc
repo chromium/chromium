@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -55,6 +56,15 @@ void RenderFrameHostDelegate::RequestMediaAccessPermission(
   std::move(callback).Run(blink::mojom::StreamDevicesSet(),
                           blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
                           std::unique_ptr<MediaStreamUI>());
+}
+
+void RenderFrameHostDelegate::ProcessSelectAudioOutput(
+    const SelectAudioOutputRequest& request,
+    SelectAudioOutputCallback callback) {
+  LOG(ERROR) << "RenderFrameHostDelegate::ProcessSelectAudioOutput: "
+             << "Not supported.";
+  std::move(callback).Run(
+      base::unexpected(content::SelectAudioOutputError::kNotSupported));
 }
 
 bool RenderFrameHostDelegate::CheckMediaAccessPermission(

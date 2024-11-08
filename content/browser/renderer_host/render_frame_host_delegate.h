@@ -22,6 +22,7 @@
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/media_player_watch_time.h"
 #include "content/public/browser/media_stream_request.h"
+#include "content/public/browser/select_audio_output_request.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/javascript_dialog_type.h"
@@ -289,6 +290,13 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // calling |callback|.
   virtual void RequestMediaAccessPermission(const MediaStreamRequest& request,
                                             MediaResponseCallback callback);
+
+  // Called when a renderer requests to select an audio output device.
+  // |request| contains parameters for audio output device selection.
+  // |callback| is called with the unique ID of the selected device, or
+  // std::nullopt if selection fails.
+  virtual void ProcessSelectAudioOutput(const SelectAudioOutputRequest& request,
+                                        SelectAudioOutputCallback callback);
 
   // Checks if we have permission to access the microphone or camera. Note that
   // this does not query the user. |type| must be MEDIA_DEVICE_AUDIO_CAPTURE

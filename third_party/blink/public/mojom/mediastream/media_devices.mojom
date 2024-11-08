@@ -45,6 +45,9 @@ enum AudioOutputStatus {
   kNoPermission,
   kNoDevices,
   kUnknown,
+  kDeviceNotFound,
+  kErrorOtherRequestInProgress,
+  kNotSupported,
   kNoUserActivation
 };
 

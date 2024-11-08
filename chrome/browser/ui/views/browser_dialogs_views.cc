@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/browser_dialogs.h"
-
 #include <memory>
 
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/chrome_device_permissions_prompt.h"
+#include "chrome/browser/media/webrtc/select_audio_output_picker.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_editor_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/select_audio_output/select_audio_output_views.h"
 #include "chrome/browser/ui/views/task_manager_view.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/permissions/chooser_controller.h"
@@ -36,6 +37,11 @@ void BookmarkEditor::Show(gfx::NativeWindow parent_window,
 
 void ChromeDevicePermissionsPrompt::ShowDialog() {
   ShowDialogViews();
+}
+
+std::unique_ptr<SelectAudioOutputPicker> SelectAudioOutputPicker::Create(
+    const content::SelectAudioOutputRequest& request) {
+  return std::make_unique<SelectAudioOutputPickerViews>();
 }
 
 namespace chrome {
