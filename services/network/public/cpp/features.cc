@@ -463,4 +463,16 @@ BASE_FEATURE(kStorageAccessHeaders,
 BASE_FEATURE(kStorageAccessHeadersTrial,
              "StorageAccessHeadersTrial",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_WIN)
+// On Windows, when the params for a new network context supplies a cookie
+// database path but does not specify a value for
+// `enable_locking_cookie_database` then this feature determines whether or not
+// the cookie database is locked or not. This is enabled by default so it can be
+// removed in a future release if no incompatibilities are found.
+BASE_FEATURE(kEnableLockCookieDatabaseByDefault,
+             "EnableLockCookieDatabaseByDefault",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace network::features

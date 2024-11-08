@@ -3013,7 +3013,10 @@ NetworkContext::MakeSessionCleanupCookieStore() const {
   }
 
 #if BUILDFLAG(IS_WIN)
-  const bool enable_exclusive_access = params_->enable_locking_cookie_database;
+  const bool enable_exclusive_access =
+      params_->enable_locking_cookie_database.value_or(
+          base::FeatureList::IsEnabled(
+              features::kEnableLockCookieDatabaseByDefault));
 #else
   const bool enable_exclusive_access = false;
 #endif  // BUILDFLAG(IS_WIN)

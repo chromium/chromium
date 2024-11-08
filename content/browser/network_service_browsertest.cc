@@ -838,6 +838,12 @@ CreateNetworkContextForPaths(network::mojom::NetworkContextFilePathsPtr paths,
   context_params->enable_encrypted_cookies = false;
   context_params->http_cache_enabled = true;
   context_params->file_paths->http_cache_directory = cache_path;
+#if BUILDFLAG(IS_WIN)
+  // The cookie file is still open on the background sequence within the network
+  // service when performing parts of the test here, so file locking must be
+  // disabled. See https://crbug.com/377940976.
+  context_params->enable_locking_cookie_database = false;
+#endif  // BUILDFLAG(IS_WIN)
   mojo::PendingRemote<network::mojom::NetworkContext> network_context;
   content::CreateNetworkContextInNetworkService(
       network_context.InitWithNewPipeAndPassReceiver(),
