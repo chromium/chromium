@@ -52,10 +52,27 @@ export class CrRippleElement extends CrLitElement {
         (this.parentNode as ShadowRoot).host :
         this.parentElement!;
 
-    this.eventTracker_.add(
-        keyEventTarget, 'pointerdown',
-        (e: Event) => this.uiDownAction(e as PointerEvent));
-    const cancelOrUp = (e: Event) => this.uiUpAction(e as PointerEvent);
+    this.eventTracker_.add(keyEventTarget, 'pointerdown', (e: Event) => {
+      const handled = this.uiDownAction(e as PointerEvent);
+
+      if (!handled) {
+        return;
+      }
+
+      this.eventTracker_.add(keyEventTarget, 'pointermove', (e: Event) => {
+        // Only call setPointerCapture() if 'pointermove' happens and not
+        // in 'pointerdown', so that clicking any links or other elements
+        // within the parent works as expected.
+        this.setPointerCapture((e as PointerEvent).pointerId);
+        this.eventTracker_.remove(keyEventTarget, 'pointermove');
+      });
+    });
+
+    const cancelOrUp = (e: Event) => {
+      this.eventTracker_.remove(keyEventTarget, 'pointermove');
+      this.uiUpAction(e as PointerEvent);
+    };
+
     this.eventTracker_.add(keyEventTarget, 'pointercancel', cancelOrUp);
     this.eventTracker_.add(keyEventTarget, 'pointerup', cancelOrUp);
 
@@ -98,17 +115,18 @@ export class CrRippleElement extends CrLitElement {
     }
   }
 
-  uiDownAction(e?: PointerEvent) {
+  uiDownAction(e?: PointerEvent): boolean {
     if (e !== undefined && e.button !== 0) {
       // Ignore secondary mouse button clicks.
-      return;
+      return false;
     }
 
     if (this.noink) {
-      return;
+      return false;
     }
 
     this.downAction_(e);
+    return true;
   }
 
   private downAction_(e?: PointerEvent) {
@@ -133,10 +151,6 @@ export class CrRippleElement extends CrLitElement {
   }
 
   private showRipple_(e?: PointerEvent) {
-    if (e !== undefined) {
-      this.setPointerCapture(e.pointerId);
-    }
-
     const rect = this.getBoundingClientRect();
 
     const roundedCenterX = function() {
@@ -216,7 +230,7 @@ export class CrRippleElement extends CrLitElement {
   }
 
   private hideRipple_(e?: PointerEvent) {
-    if (e !== undefined) {
+    if (e !== undefined && this.hasPointerCapture(e.pointerId)) {
       this.releasePointerCapture(e.pointerId);
     }
 
