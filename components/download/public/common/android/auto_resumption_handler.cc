@@ -378,7 +378,7 @@ bool AutoResumptionHandler::IsAutoResumableDownload(
              IsInterruptedDownloadAutoResumable(
                  item, config_->auto_resumption_size_limit);
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return false;

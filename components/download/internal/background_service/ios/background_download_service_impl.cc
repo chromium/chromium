@@ -63,20 +63,18 @@ void BackgroundDownloadServiceImpl::Initialize(base::OnceClosure callback) {
 }
 
 const ServiceConfig& BackgroundDownloadServiceImpl::GetConfig() {
-  NOTREACHED_IN_MIGRATION() << " This function is not supported on iOS.";
-  return service_config_;
+  NOTREACHED() << " This function is not supported on iOS.";
 }
 
 void BackgroundDownloadServiceImpl::OnStartScheduledTask(
     DownloadTaskType task_type,
     TaskFinishedCallback callback) {
-  NOTREACHED_IN_MIGRATION() << " This function is not supported on iOS.";
+  NOTREACHED() << " This function is not supported on iOS.";
 }
 
 bool BackgroundDownloadServiceImpl::OnStopScheduledTask(
     DownloadTaskType task_type) {
-  NOTREACHED_IN_MIGRATION() << " This function is not supported on iOS.";
-  return true;
+  NOTREACHED() << " This function is not supported on iOS.";
 }
 
 BackgroundDownloadService::ServiceStatus
@@ -119,11 +117,11 @@ void BackgroundDownloadServiceImpl::StartDownload(
 }
 
 void BackgroundDownloadServiceImpl::PauseDownload(const std::string& guid) {
-  NOTREACHED_IN_MIGRATION() << " This function is not supported on iOS.";
+  NOTREACHED() << " This function is not supported on iOS.";
 }
 
 void BackgroundDownloadServiceImpl::ResumeDownload(const std::string& guid) {
-  NOTREACHED_IN_MIGRATION() << " This function is not supported on iOS.";
+  NOTREACHED() << " This function is not supported on iOS.";
 }
 void BackgroundDownloadServiceImpl::CancelDownload(const std::string& guid) {
   cancelled_downloads_.emplace(guid);
@@ -131,7 +129,7 @@ void BackgroundDownloadServiceImpl::CancelDownload(const std::string& guid) {
 void BackgroundDownloadServiceImpl::ChangeDownloadCriteria(
     const std::string& guid,
     const SchedulingParams& params) {
-  NOTREACHED_IN_MIGRATION() << " This function is not supported on iOS.";
+  NOTREACHED() << " This function is not supported on iOS.";
 }
 
 Logger* BackgroundDownloadServiceImpl::GetLogger() {

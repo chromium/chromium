@@ -77,10 +77,8 @@ Client::FailureReason FailureReasonFromCompletionType(CompletionType type) {
     case CompletionType::CANCEL:
       return Client::FailureReason::CANCELLED;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  return Client::FailureReason::UNKNOWN;
 }
 
 // Helper function to determine if more downloads can be activated based on
@@ -448,7 +446,7 @@ void ControllerImpl::HandleTaskFinished(DownloadTaskType task_type,
     case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK:
     case DownloadTaskType::DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_TASK:
     case DownloadTaskType::DOWNLOAD_LATER_TASK:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -888,14 +886,12 @@ void ControllerImpl::ResolveInitialRequestStates() {
             new_state = Entry::State::COMPLETE;
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
         }
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     // Update the Entry::State to the new correct state.
@@ -938,8 +934,7 @@ void ControllerImpl::ResolveInitialRequestStates() {
         }
         break;
       case Entry::State::COUNT:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 }

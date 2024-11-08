@@ -693,8 +693,7 @@ void DownloadFileImpl::StreamActive(SourceStream* source_stream,
       case InputStream::COMPLETE:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     now = base::TimeTicks::Now();
   } while (state == InputStream::HAS_DATA &&

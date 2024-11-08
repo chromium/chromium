@@ -132,8 +132,7 @@ std::string GetDownloadCreationTypeNames(
     case DownloadItem::TYPE_SAVE_PAGE_AS:
       return "SAVE_PAGE_AS";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "INVALID_TYPE";
+      NOTREACHED();
   }
 }
 
@@ -186,8 +185,7 @@ std::string GetDownloadDangerNames(DownloadDangerType type) {
     case DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
       return "BLOCKED_SCAN_FAILED";
     case DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED_IN_MIGRATION();
-      return "UNKNOWN_DANGER_TYPE";
+      NOTREACHED();
   }
 }
 
@@ -633,7 +631,7 @@ void DownloadItemImpl::Pause() {
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
     case TARGET_RESOLVED_INTERNAL:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -678,7 +676,7 @@ void DownloadItemImpl::Resume(bool user_resume) {
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
     case TARGET_RESOLVED_INTERNAL:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -857,9 +855,8 @@ bool DownloadItemImpl::CanResume() const {
     }
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return false;
 }
 
 bool DownloadItemImpl::IsDone() const {
@@ -1072,8 +1069,7 @@ bool DownloadItemImpl::IsDangerous() const {
     case DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
       return false;
     case DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -2153,8 +2149,7 @@ void DownloadItemImpl::InterruptWithPartialState(
 
     case INITIAL_INTERNAL:
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
 
     case TARGET_PENDING_INTERNAL:
     case INTERRUPTED_TARGET_PENDING_INTERNAL:
@@ -2385,8 +2380,7 @@ void DownloadItemImpl::TransitionTo(DownloadInternalState new_state) {
 
   switch (state_) {
     case INITIAL_INTERNAL:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case TARGET_PENDING_INTERNAL:
     case TARGET_RESOLVED_INTERNAL:
@@ -2454,8 +2448,7 @@ void DownloadItemImpl::TransitionTo(DownloadInternalState new_state) {
       break;
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   DVLOG(20) << __func__ << "() from:" << DebugDownloadStateString(old_state)
@@ -2690,8 +2683,7 @@ DownloadItem::DownloadState DownloadItemImpl::InternalToExternalState(
     case MAX_DOWNLOAD_INTERNAL_STATE:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return MAX_DOWNLOAD_STATE;
+  NOTREACHED();
 }
 
 // static
@@ -2707,9 +2699,8 @@ DownloadItemImpl::ExternalToInternalState(DownloadState external_state) {
     case INTERRUPTED:
       return INTERRUPTED_INTERNAL;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return MAX_DOWNLOAD_INTERNAL_STATE;
 }
 
 // static
@@ -2734,9 +2725,8 @@ bool DownloadItemImpl::IsValidSavePackageStateTransition(
              to == INTERRUPTED_INTERNAL;
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return false;
 #else
   return true;
 #endif
@@ -2784,9 +2774,8 @@ bool DownloadItemImpl::IsValidStateTransition(DownloadInternalState from,
       return false;
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return false;
 #else
   return true;
 #endif  // DCHECK_IS_ON()
@@ -2818,8 +2807,7 @@ const char* DownloadItemImpl::DebugDownloadStateString(
     case MAX_DOWNLOAD_INTERNAL_STATE:
       break;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown download state " << state;
-  return "unknown";
+  NOTREACHED() << "Unknown download state " << state;
 }
 
 const char* DownloadItemImpl::DebugResumeModeString(ResumeMode mode) {
@@ -2835,8 +2823,7 @@ const char* DownloadItemImpl::DebugResumeModeString(ResumeMode mode) {
     case ResumeMode::USER_RESTART:
       return "USER_RESTART";
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown resume mode " << static_cast<int>(mode);
-  return "unknown";
+  NOTREACHED() << "Unknown resume mode " << static_cast<int>(mode);
 }
 
 std::pair<int64_t, int64_t> DownloadItemImpl::GetRangeRequestOffset() const {

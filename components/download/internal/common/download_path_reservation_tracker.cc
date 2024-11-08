@@ -247,8 +247,7 @@ PathValidationResult ResolveReservationConflicts(
     case DownloadPathReservationTracker::PROMPT:
       return PathValidationResult::CONFLICT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PathValidationResult::SUCCESS;
+  NOTREACHED();
 }
 
 // Verify that |target_path| can be written to and also resolve any conflicts if
@@ -389,7 +388,7 @@ void UpdateReservation(ReservationKey key, const base::FilePath& new_path) {
     // This would happen if an UpdateReservation() notification was scheduled on
     // the SequencedTaskRunner before ReserveInternal(), or after a Revoke()
     // call. Neither should happen.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -475,16 +474,13 @@ void DownloadItemObserver::OnDownloadUpdated(DownloadItem* download) {
 
     case DownloadItem::MAX_DOWNLOAD_STATE:
       // Compiler appeasement.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
 void DownloadItemObserver::OnDownloadDestroyed(DownloadItem* download) {
   // Items should be COMPLETE/INTERRUPTED/CANCELLED before being destroyed.
-  NOTREACHED_IN_MIGRATION();
-  DownloadPathReservationTracker::GetTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&RevokeReservation,
-                                reinterpret_cast<ReservationKey>(download)));
+  NOTREACHED();
 }
 
 // static

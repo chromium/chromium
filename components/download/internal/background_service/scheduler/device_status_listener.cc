@@ -47,8 +47,7 @@ NetworkStatus ToNetworkStatus(network::mojom::ConnectionType type) {
       return NetworkStatus::UNMETERED;
 #endif
   }
-  NOTREACHED_IN_MIGRATION();
-  return NetworkStatus::DISCONNECTED;
+  NOTREACHED();
 }
 
 }  // namespace
