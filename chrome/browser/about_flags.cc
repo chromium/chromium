@@ -8059,10 +8059,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityAcceleratorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityAccelerator)},
 
-    {"enable-accessibility-disable-trackpad",
+    {"enable-accessibility-disable-touchpad",
      flag_descriptions::kAccessibilityDisableTouchpadName,
      flag_descriptions::kAccessibilityDisableTouchpadDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAccessibilityDisableTrackpad)},
+     FEATURE_VALUE_TYPE(features::kAccessibilityDisableTouchpad)},
 
     {"enable-accessibility-flash-screen-feature",
      flag_descriptions::kAccessibilityFlashScreenFeatureName,

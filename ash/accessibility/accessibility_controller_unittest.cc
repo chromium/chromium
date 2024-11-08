@@ -1838,18 +1838,6 @@ TEST_F(AccessibilityControllerTest, LogsDurationAtShutdown) {
   ExpectSessionDurationMetricCount("CrosLargeCursor", 1);
 }
 
-// Verifies that the DisableTouchpadEventRewriter isn't initialized, since the
-// feature flag is off in this test suite.
-TEST_F(AccessibilityControllerTest,
-       DisableTouchpadEventRewriterNotInitialized) {
-  // Initialize the EventRewriterController manually so that all EventRewriters
-  // get initialized.
-  EventRewriterController::Get()->Initialize(nullptr, nullptr);
-  // AccessibilityController shouldn't have a reference to the
-  // DisableTouchpadEventRewriter.
-  ASSERT_EQ(nullptr, controller()->GetDisableTouchpadEventRewriterForTest());
-}
-
 // Verifies that the FilterKeysEventRewriter isn't initialized, since the
 // feature flag is off in this test suite.
 TEST_F(AccessibilityControllerTest, FilterKeysEventRewriterNotInitialized) {
@@ -2231,7 +2219,7 @@ class AccessibilityControllerDisableTouchpadTest : public AshTestBase {
 
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityDisableTrackpad);
+        ::features::kAccessibilityDisableTouchpad);
 
     AshTestBase::SetUp();
 

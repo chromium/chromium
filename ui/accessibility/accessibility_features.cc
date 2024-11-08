@@ -229,12 +229,12 @@ bool IsAccessibilityMouseKeysEnabled() {
   return base::FeatureList::IsEnabled(::features::kAccessibilityMouseKeys);
 }
 
-BASE_FEATURE(kAccessibilityDisableTrackpad,
-             "AccessibilityDisableTrackpad",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAccessibilityDisableTouchpad,
+             "AccessibilityDisableTouchpad",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityDisableTouchpadEnabled() {
   return base::FeatureList::IsEnabled(
-      ::features::kAccessibilityDisableTrackpad);
+      ::features::kAccessibilityDisableTouchpad);
 }
 
 BASE_FEATURE(kAccessibilityFlashScreenFeature,

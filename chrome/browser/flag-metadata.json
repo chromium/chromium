@@ -2379,7 +2379,7 @@
     "expiry_milestone": 143
   },
   {
-    "name": "enable-accessibility-disable-trackpad",
+    "name": "enable-accessibility-disable-touchpad",
     "owners": [ "akihiroota@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 142
   },

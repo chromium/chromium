@@ -15155,7 +15155,6 @@ from previous Chrome versions.
   <int value="-2047190657" label="SyncUserConsentSeparateType:enabled"/>
   <int value="-2047071651" label="NearbySharing:enabled"/>
   <int value="-2046434739" label="enable-unsafe-webgpu-service"/>
-  <int value="-2046366419" label="AccessibilityDisableTrackpad:enabled"/>
   <int value="-2044939529" label="CrostiniResetLxdDb:disabled"/>
   <int value="-2044252895"
       label="QuickActionSearchWidgetAndroidDinoVariant:disabled"/>
@@ -15427,7 +15426,6 @@ from previous Chrome versions.
       label="SearchCustomizableShortcutsInLauncher:enabled"/>
   <int value="-1953145846" label="TargetEmbeddingLookalikes:disabled"/>
   <int value="-1953121360" label="EphemeralTab:disabled"/>
-  <int value="-1952743491" label="AccessibilityDisableTrackpad:disabled"/>
   <int value="-1951046208" label="SidePanelPrototype:disabled"/>
   <int value="-1950469963" label="SeparatePointingStickSettings:enabled"/>
   <int value="-1949364473" label="webview-disable-app-recovery"/>
@@ -23090,6 +23088,7 @@ from previous Chrome versions.
   <int value="1166789664" label="SyncPseudoUSSAppList:disabled"/>
   <int value="1166883356" label="CWSInfoFastCheck:enabled"/>
   <int value="1166897718" label="TextSuggestionsTouchBar:disabled"/>
+  <int value="1167117315" label="AccessibilityDisableTouchpad:enabled"/>
   <int value="1167350114" label="AndroidNightMode:enabled"/>
   <int value="1167613030" label="enable-permission-action-reporting"/>
   <int value="1168226627" label="OmniboxMaxZeroSuggestMatches:enabled"/>
@@ -23612,6 +23611,7 @@ from previous Chrome versions.
   <int value="1367487214" label="VaapiJpegImageDecodeAcceleration:enabled"/>
   <int value="1367529437" label="NTPAssetDownloadSuggestions:enabled"/>
   <int value="1367671275" label="enable-proximity-auth-proximity-detection"/>
+  <int value="1367959068" label="AccessibilityDisableTouchpad:disabled"/>
   <int value="1368938539" label="TaskManagerDesktopRefresh:disabled"/>
   <int value="1369022678" label="OrganicRepeatableQueries:disabled"/>
   <int value="1369449914" label="SysInternals:disabled"/>

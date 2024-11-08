@@ -572,10 +572,16 @@ inline constexpr char kAccessibilityChromeVoxVoiceName[] =
     "settings.a11y.chromevox.voice_name";
 // A boolean pref which determines whether the disable touchpad feature is
 // enabled.
+// NOTE: all instances of `trackpad` have been replaced with `touchpad`
+// but since the pref was originally `trackpad` we've left the pref
+// name as such.
 inline constexpr char kAccessibilityDisableTrackpadEnabled[] =
     "settings.a11y.disable_trackpad_enabled";
 // An integer pref which determines the mode of the disabled internal
-// trackpad. Values are from the ash::kDisableTouchpadMode enum.
+// touhchpad. Values are from the ash::kDisableTouchpadMode enum.
+// NOTE: all instances of `trackpad` have been replaced with `touchpad`
+// but since the pref was originally `trackpad` we've left the pref
+// name as such.
 inline constexpr char kAccessibilityDisableTrackpadMode[] =
     "settings.a11y.disable_trackpad_mode";
 // A boolean pref which determines whether high contrast is enabled.

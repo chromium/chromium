@@ -184,8 +184,8 @@ AX_BASE_EXPORT bool IsAccessibilityMouseKeysEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityShakeToLocate);
 AX_BASE_EXPORT bool IsAccessibilityShakeToLocateEnabled();
 
-// Controls whether the disable trackpad feature is enabled.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityDisableTrackpad);
+// Controls whether the disable touchpad feature is enabled.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityDisableTouchpad);
 AX_BASE_EXPORT bool IsAccessibilityDisableTouchpadEnabled();
 
 // Controls whether the flash screen for notifications feature is available.
