@@ -322,8 +322,11 @@ function getFullyQualifiedUrl(originalURL: string): string {
 
 // Send the form data to the browser.
 function formSubmitted(
-    form: HTMLFormElement, messageHandler: string,
-    includeRemoteFrameToken: boolean = false): void {
+    form: HTMLFormElement,
+    messageHandler: string,
+    programmaticSubmission: boolean,
+    includeRemoteFrameToken: boolean = false,
+    ): void {
   // Default URL for action is the document's URL.
   const action = form.getAttribute('action') || document.URL;
 
@@ -335,6 +338,7 @@ function formSubmitted(
     formData: gCrWeb.fill.autofillSubmissionData(form),
     remoteFrameToken: includeRemoteFrameToken ? getRemoteFrameToken() :
                                                 undefined,
+    programmaticSubmission: programmaticSubmission,
   };
 
   sendWebKitMessage(messageHandler, message);

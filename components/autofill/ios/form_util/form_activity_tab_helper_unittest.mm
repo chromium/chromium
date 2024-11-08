@@ -183,6 +183,9 @@ TEST_F(FormActivityTabHelperTest, TestObserverDocumentSubmitted) {
 
   EXPECT_FALSE(observer_->submit_document_info()->has_user_gesture);
 
+  histogram_tester_.ExpectUniqueSample(kProgrammaticFormSubmissionHistogram,
+                                       false, 1);
+
   // Verify that there isn't any form activity metric recorded as the form
   // submit signals aren't covered.
   histogram_tester_.ExpectTotalCount("Autofill.iOS.FormActivity.DropCount", 0);
@@ -888,6 +891,9 @@ TEST_P(FormSubmittedHookTest, TestFormSubmittedHook) {
   EXPECT_EQ(main_frame, observer_->submit_document_info()->sender_frame);
   EXPECT_EQ(kTestFormData, observer_->submit_document_info()->form_data);
   EXPECT_FALSE(observer_->submit_document_info()->has_user_gesture);
+
+  histogram_tester_.ExpectUniqueSample(kProgrammaticFormSubmissionHistogram,
+                                       true, 1);
 
   // Verify that there isn't any form activity metric recorded as the form
   // submit signals aren't covered.

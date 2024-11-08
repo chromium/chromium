@@ -36,6 +36,7 @@ HTMLFormElement.prototype.submit = function() {
   try {
     gCrWeb.form.formSubmitted(
         this, /* messageHandler= */ NATIVE_MESSAGE_HANDLER,
+        /* programmaticSubmission= */ true,
         /* includeRemoteFrameToken= */ true);
   } catch (e) {
   }

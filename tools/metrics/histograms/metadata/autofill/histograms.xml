@@ -3329,6 +3329,21 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.iOS.FormSubmission.IsProgrammatic" enum="Boolean"
+    expires_after="M135">
+  <owner>eic@google.com</owner>
+  <owner>vincb@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records whether an http form submission was triggered by a script (i.e.
+    form.submit()). On iOS, we have to modify the prototype of HtmlFormElement
+    to detect programmatic form submissions. This histogram is for tracking
+    which submissions are detected through the modified prototype. Recorded when
+    the browser process receives a form submission message from the renderer.
+    iOS only.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.iOS.TriggeredFormExtractionFromDriver.{Range}"
     units="count" expires_after="2025-06-11">
   <owner>vincb@google.com</owner>

@@ -168,7 +168,8 @@ function submitHandler(evt: Event): void {
 
   gCrWeb.form.formSubmitted(
       evt.target as HTMLFormElement,
-      /* messageHandler= */ NATIVE_MESSAGE_HANDLER);
+      /* messageHandler= */ NATIVE_MESSAGE_HANDLER,
+      /* programmaticSubmission= */ false);
 }
 
 /**
@@ -266,7 +267,8 @@ function attachListeners(): void {
         try {
           gCrWeb.form.formSubmitted(
               this,
-              /* messageHandler= */ NATIVE_MESSAGE_HANDLER);
+              /* messageHandler= */ NATIVE_MESSAGE_HANDLER,
+              /* programmaticSubmission= */ true);
         } catch (e) {
         }
       }

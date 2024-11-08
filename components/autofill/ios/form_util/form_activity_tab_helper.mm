@@ -309,6 +309,11 @@ void FormActivityTabHelper::FormSubmissionHandler(
     return;
   }
 
+  if (std::optional<bool> programmatic_submission =
+          message_body.FindBool("programmaticSubmission")) {
+    base::UmaHistogramBoolean(kProgrammaticFormSubmissionHistogram,
+                              *programmatic_submission);
+  }
   FormData form = forms.value()[0];
 
   for (auto& observer : observers_) {

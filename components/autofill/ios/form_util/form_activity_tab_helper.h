@@ -20,6 +20,9 @@ namespace autofill {
 
 class FormActivityObserver;
 
+inline constexpr char kProgrammaticFormSubmissionHistogram[] =
+    "Autofill.iOS.FormSubmission.IsProgrammatic";
+
 // Processes user activity messages for web page forms and forwards the form
 // activity event to FormActivityObserver.
 class FormActivityTabHelper
