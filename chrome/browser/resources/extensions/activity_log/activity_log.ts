@@ -206,9 +206,6 @@ export class ExtensionsActivityLogElement extends
   }
 }
 
-// Exported for use in the auto-generated Lit template file.
-export type ActivityLogElement = ExtensionsActivityLogElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'extensions-activity-log': ExtensionsActivityLogElement;

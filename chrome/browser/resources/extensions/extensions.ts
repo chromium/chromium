@@ -15,7 +15,7 @@ export {ActivityGroup, ActivityLogHistoryItemElement} from './activity_log/activ
 export {ActivityLogStreamElement} from './activity_log/activity_log_stream.js';
 export {ActivityLogStreamItemElement, ARG_URL_PLACEHOLDER, StreamItem} from './activity_log/activity_log_stream_item.js';
 export {asyncMap} from './async_map_directive.js';
-export {CodeSectionElement} from './code_section.js';
+export {ExtensionsCodeSectionElement} from './code_section.js';
 export {ExtensionsDetailViewElement} from './detail_view.js';
 export {ErrorPageDelegate, ExtensionsErrorPageElement} from './error_page.js';
 export {ExtensionsHostPermissionsToggleListElement} from './host_permissions_toggle_list.js';

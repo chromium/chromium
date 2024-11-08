@@ -13,9 +13,7 @@ import {DragAndDropHandler} from './drag_and_drop_handler.js';
 import {getCss} from './drop_overlay.css.js';
 import {getHtml} from './drop_overlay.html.js';
 
-// TODO (rbpotter): Rename back to ExtensionsDropOverlayElement when .html.ts
-// files are checked in.
-export class DropOverlayElement extends CrLitElement {
+export class ExtensionsDropOverlayElement extends CrLitElement {
   static get is() {
     return 'extensions-drop-overlay';
   }
@@ -68,4 +66,5 @@ export class DropOverlayElement extends CrLitElement {
   }
 }
 
-customElements.define(DropOverlayElement.is, DropOverlayElement);
+customElements.define(
+    ExtensionsDropOverlayElement.is, ExtensionsDropOverlayElement);

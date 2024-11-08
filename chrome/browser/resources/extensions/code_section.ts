@@ -22,17 +22,16 @@ function visibleLineCount(totalCount: number, oppositeCount: number): number {
   return Math.min(max, totalCount);
 }
 
-// TODO (rbpotter): Rename back to ExtensionsCodeSectionElement when .html.ts
-// files are checked in.
-export interface CodeSectionElement {
+export interface ExtensionsCodeSectionElement {
   $: {
     'scroll-container': HTMLElement,
   };
 }
 
-const CodeSectionElementBase = I18nMixinLit(CrLitElement);
+const ExtensionsCodeSectionElementBase = I18nMixinLit(CrLitElement);
 
-export class CodeSectionElement extends CodeSectionElementBase {
+export class ExtensionsCodeSectionElement extends
+    ExtensionsCodeSectionElementBase {
   static get is() {
     return 'extensions-code-section';
   }
@@ -191,9 +190,10 @@ export class CodeSectionElement extends CodeSectionElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'extensions-code-section': CodeSectionElement;
+    'extensions-code-section': ExtensionsCodeSectionElement;
   }
 }
 
 
-customElements.define(CodeSectionElement.is, CodeSectionElement);
+customElements.define(
+    ExtensionsCodeSectionElement.is, ExtensionsCodeSectionElement);

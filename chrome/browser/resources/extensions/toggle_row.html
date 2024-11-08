@@ -1,9 +1,0 @@
-<label id="label" aria-hidden="true">
-  <input id="native" type="checkbox" .checked="${this.checked}"
-      @change="${this.onNativeChange_}" @click="${this.onNativeClick_}"
-      .disabled="${this.disabled}">
-  <slot></slot>
-</label>
-<cr-toggle id="crToggle" ?checked="${this.checked}" aria-labelledby="label"
-    @change="${this.onCrToggleChange_}" ?disabled="${this.disabled}">
-</cr-toggle>
