@@ -4877,21 +4877,6 @@
             ]
         }
     ],
-    "ChromeOSOobeQuickStart": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "OobeQuickStart"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeOSOobeSplitModifierKeyboard": [
         {
             "platforms": [
