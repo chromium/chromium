@@ -1224,5 +1224,7 @@ if (enable_screen_capture) {
   chrome_java_sources += [
     "java/src/org/chromium/chrome/browser/media/MediaCapturePickerDialog.java",
     "java/src/org/chromium/chrome/browser/media/MediaCapturePickerDialogBridge.java",
+    "java/src/org/chromium/chrome/browser/media/MediaCapturePickerItemProperties.java",
+    "java/src/org/chromium/chrome/browser/media/MediaCapturePickerItemViewBinder.java",
   ]
 }

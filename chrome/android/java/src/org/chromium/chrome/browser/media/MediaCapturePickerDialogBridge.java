@@ -45,6 +45,7 @@ public class MediaCapturePickerDialogBridge {
     public void showDialog(WindowAndroid windowAndroid) {
         Activity activity = windowAndroid.getActivity().get();
         MediaCapturePickerDialog.showDialog(
+                activity,
                 ((ModalDialogManagerHolder) activity).getModalDialogManager(),
                 (webContents) -> {
                     // We know `mNativeMediaCapturePickerDialogBridge` is non-zero because

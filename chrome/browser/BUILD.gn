@@ -8924,6 +8924,16 @@ if (enable_bound_session_credentials) {
   }
 }
 
+if (is_android) {
+  android_resources("screen_capture_java_resources") {
+    sources = [
+      "media/android/java/res/layout/media_capture_picker_dialog.xml",
+      "media/android/java/res/layout/media_capture_picker_list.xml",
+      "media/android/java/res/layout/media_capture_picker_list_item.xml",
+    ]
+  }
+}
+
 grit("resources") {
   source = "browser_resources.grd"
 

@@ -284,6 +284,10 @@ if (current_toolchain == default_toolchain) {
     } else {
       deps += [ "//components/plus_addresses/android:java_resources" ]
     }
+
+    if (enable_screen_capture) {
+      deps += [ "//chrome/browser:screen_capture_java_resources" ]
+    }
   }
 
   android_resources("java_overlay_resources") {

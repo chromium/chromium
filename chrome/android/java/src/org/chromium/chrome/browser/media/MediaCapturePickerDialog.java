@@ -4,19 +4,68 @@
 
 package org.chromium.chrome.browser.media;
 
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ListView;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.AllTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.HashMap;
+import java.util.Map;
+
 /** Dialog for selecting a media source for media capture. */
-public class MediaCapturePickerDialog {
+public class MediaCapturePickerDialog implements AllTabObserver.Observer {
     private final ModalDialogManager mModalDialogManager;
-    private Callback<WebContents> mCallback;
+    private final View mDialogView;
+    private final ModelList mModelList = new ModelList();
+    private final Map<Tab, TabItemState> mTabItemStateMap = new HashMap<>();
+    @Nullable private Tab mLastSelectedTab;
+    @Nullable private Callback<WebContents> mCallback;
+
+    private class TabItemState {
+        private final ModelListAdapter.ListItem mItem;
+
+        TabItemState(Tab tab) {
+            PropertyModel itemModel =
+                    new PropertyModel.Builder(MediaCapturePickerItemProperties.ALL_KEYS)
+                            .with(
+                                    MediaCapturePickerItemProperties.CLICK_LISTENER,
+                                    (view) -> {
+                                        mLastSelectedTab = tab;
+                                    })
+                            .with(MediaCapturePickerItemProperties.TAB_NAME, tab.getTitle())
+                            .build();
+            mItem = new ModelListAdapter.ListItem(EntryType.DEFAULT, itemModel);
+            mModelList.add(mItem);
+        }
+
+        void destroy() {
+            mModelList.remove(mItem);
+        }
+    }
+
+    /** Type of the entries shown on the dialog. */
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({MediaCapturePickerDialog.EntryType.DEFAULT})
+    private @interface EntryType {
+        int DEFAULT = 0;
+    }
 
     /**
      * Shows the media capture picker dialog.
@@ -26,38 +75,60 @@ public class MediaCapturePickerDialog {
      *     dialog is dismissed.
      */
     public static void showDialog(
-            ModalDialogManager modalDialogManager, Callback<WebContents> callback) {
-        new MediaCapturePickerDialog(modalDialogManager, callback).show();
+            Context context,
+            ModalDialogManager modalDialogManager,
+            Callback<WebContents> callback) {
+        new MediaCapturePickerDialog(context, modalDialogManager, callback).show();
     }
 
     private MediaCapturePickerDialog(
-            ModalDialogManager modalDialogManager, Callback<WebContents> callback) {
+            Context context,
+            ModalDialogManager modalDialogManager,
+            Callback<WebContents> callback) {
         mModalDialogManager = modalDialogManager;
         mCallback = callback;
+
+        mDialogView =
+                LayoutInflater.from(context).inflate(R.layout.media_capture_picker_dialog, null);
+
+        ModelListAdapter adapter = new ModelListAdapter(mModelList);
+        adapter.registerType(
+                EntryType.DEFAULT,
+                parentView ->
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.media_capture_picker_list_item, null),
+                MediaCapturePickerItemViewBinder::bind);
+
+        ListView listView =
+                (ListView) mDialogView.findViewById(R.id.media_capture_picker_list_view);
+        listView.setAdapter(adapter);
+    }
+
+    @Override
+    public void onTabAdded(Tab tab) {
+        mTabItemStateMap.put(tab, new TabItemState(tab));
+    }
+
+    @Override
+    public void onTabRemoved(Tab tab) {
+        var removed = mTabItemStateMap.remove(tab);
+        assert removed != null;
+        removed.destroy();
     }
 
     private void show() {
-        var allTabObserver =
-                new AllTabObserver(
-                        new AllTabObserver.Observer() {
-                            @Override
-                            public void onTabAdded(Tab tab) {
-                                // TODO(crbug.com/352186941): Plumb this to the dialog.
-                            }
-
-                            @Override
-                            public void onTabRemoved(Tab tab) {
-                                // TODO(crbug.com/352186941): Plumb this to the dialog.
-                            }
-                        });
+        var allTabObserver = new AllTabObserver(this);
 
         var controller =
                 new ModalDialogProperties.Controller() {
                     @Override
                     public void onClick(PropertyModel model, int buttonType) {
                         boolean picked = buttonType == ModalDialogProperties.ButtonType.POSITIVE;
-                        // TODO(crbug.com/352186941): Return a `WebContents`.
-                        mCallback.onResult(null);
+                        if (picked && mLastSelectedTab != null) {
+                            mCallback.onResult(mLastSelectedTab.getWebContents());
+                        } else {
+                            mCallback.onResult(null);
+                        }
                         mCallback = null;
                         mModalDialogManager.dismissDialog(
                                 model,
@@ -79,6 +150,7 @@ public class MediaCapturePickerDialog {
         var propertyModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, controller)
+                        .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView)
                         .with(ModalDialogProperties.TITLE, "Share tab")
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, "Share")
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, "Cancel")
