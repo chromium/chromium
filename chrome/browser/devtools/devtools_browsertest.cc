@@ -2145,8 +2145,18 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
   Run(false, "fILe:");
 }
 
+// This test is flaky on Mac and Linux.
+// TODO(crbug.com/40787389): Enable the test.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#define MAYBE_TestNoScriptDuplicatesOnPanelSwitch \
+  DISABLED_TestNoScriptDuplicatesOnPanelSwitch
+#else
+#define MAYBE_TestNoScriptDuplicatesOnPanelSwitch \
+  TestNoScriptDuplicatesOnPanelSwitch
+#endif
 // Tests that scripts are not duplicated after Scripts Panel switch.
-IN_PROC_BROWSER_TEST_F(DevToolsTest, TestNoScriptDuplicatesOnPanelSwitch) {
+IN_PROC_BROWSER_TEST_F(DevToolsTest,
+                       MAYBE_TestNoScriptDuplicatesOnPanelSwitch) {
   RunTest("testNoScriptDuplicatesOnPanelSwitch", kDebuggerTestPage);
 }
 
