@@ -159,7 +159,9 @@ PublicKeyCredential::getClientCapabilities(ScriptState* script_state) {
       ScriptPromiseResolver<IDLRecord<IDLString, IDLBoolean>>>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  // TODO(crbug.com/360327828): Add "UseCounter".
+  UseCounter::Count(resolver->GetExecutionContext(),
+                    WebFeature::kWebAuthnGetClientCapabilities);
+
   auto* authenticator =
       CredentialManagerProxy::From(script_state)->Authenticator();
   authenticator->GetClientCapabilities(WTF::BindOnce(

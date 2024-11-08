@@ -4556,6 +4556,7 @@ enum WebFeature {
   kCSSSelectorPseudoModal = 5182,
   kUpdateMediaQuery = 5183,
   kCSSSelectorPseudoFileSelectorButton = 5184,
+  kWebAuthnGetClientCapabilities = 5185,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra
