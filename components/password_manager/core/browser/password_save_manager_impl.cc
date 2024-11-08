@@ -217,8 +217,7 @@ PendingCredentialsState ResolvePendingCredentialsStates(
       account_state == PendingCredentialsState::NEW_LOGIN) {
     return PendingCredentialsState::NEW_LOGIN;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PendingCredentialsState::NONE;
+  NOTREACHED();
 }
 
 // Returns a PasswordForm that has all fields taken from |update| except
@@ -667,8 +666,7 @@ PasswordForm PasswordSaveManagerImpl::BuildPendingCredentials(
       pending_credentials.action = parsed_submitted_form.action;
       break;
     case PendingCredentialsState::NONE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   pending_credentials.password_value =

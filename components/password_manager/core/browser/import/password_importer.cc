@@ -103,9 +103,8 @@ ImportEntry::Status GetConflictType(
     case PasswordForm::Store::kNotSet:
       return ImportEntry::Status::UNKNOWN_ERROR;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return ImportEntry::Status::UNKNOWN_ERROR;
 }
 
 ImportEntry CreateFailedImportEntry(const CredentialUIEntry& credential,

@@ -333,7 +333,7 @@ void EncodePasswordAttributesMetadata(
       }
       break;
     case PasswordAttribute::kPasswordAttributesCount:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   upload.set_password_length(password_attributes.password_length_vote);
 }

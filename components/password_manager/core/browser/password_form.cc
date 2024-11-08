@@ -87,8 +87,7 @@ std::string ToString(PasswordForm::GenerationUploadStatus status) {
       return "Negative Signal Sent";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string ToString(InsecureType insecure_type) {

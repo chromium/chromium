@@ -85,8 +85,7 @@ std::string GetPasswordAccountStorageUserStateHistogramSuffix(
         kSyncUser:
       return "SyncUser";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
@@ -103,8 +102,7 @@ std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
         kSyncing:
       return "Syncing";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 LeakDialogMetricsRecorder::LeakDialogMetricsRecorder(ukm::SourceId source_id,

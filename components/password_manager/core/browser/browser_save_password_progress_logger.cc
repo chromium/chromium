@@ -64,9 +64,8 @@ std::string GenerationTypeToString(
     case AutofillUploadContents::Field::IGNORED_GENERATION_POPUP:
       return "Generation ignored";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return std::string();
 }
 
 std::string VoteTypeToString(
