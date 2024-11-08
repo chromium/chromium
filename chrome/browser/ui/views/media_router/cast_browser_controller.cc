@@ -95,6 +95,7 @@ void CastBrowserController::UpdateIcon() {
             kActionRouteMedia,
             browser_->browser_actions()->root_action_item()));
     const gfx::VectorIcon* new_icon = nullptr;
+    bool active = false;
 
     bool is_frozen = false;
     for (const auto& route_id : tracked_mirroring_routes_) {
@@ -115,6 +116,7 @@ void CastBrowserController::UpdateIcon() {
       new_icon = &vector_icons::kMediaRouterPausedIcon;
     } else {
       new_icon = &vector_icons::kMediaRouterActiveChromeRefreshIcon;
+      active = true;
     }
 
     const auto& stateful_image = action_item->GetStatefulImage();
@@ -125,9 +127,8 @@ void CastBrowserController::UpdateIcon() {
 
     LogIconChange(new_icon);
 
-    // TODO(crbug.com/372907639): Use engaged state to account for
-    // kColorMediaRouterIconActive replacement.
     action_item->SetStatefulImage(ui::ImageModel::FromVectorIcon(*new_icon));
+    action_item->SetProperty(kActionItemUnderlineIndicatorKey, active);
   }
 
   button->UpdateIcon();
