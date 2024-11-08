@@ -15,6 +15,7 @@ source_set("browser") {
   ]
   deps = [
     "//base",
+    "//components/crash/core/common:crash_key",
     "//components/google/core/common",
     "//components/page_load_metrics/browser",
     "//components/page_load_metrics/common",

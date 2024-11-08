@@ -6,6 +6,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -17,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/named_trigger.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -249,6 +251,97 @@ bool CheckContentSecurityPolicyHeaderConsistency(
     return false;
   }
   return true;
+}
+
+using ArrayItemKey = crash_reporter::CrashKeyString<256>;
+ArrayItemKey g_header_not_expected_keys_for_header_name[] = {
+    {"GWSHeaderNotExpected-Header-1", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderNotExpected-Header-2", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderNotExpected-Header-3", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderNotExpected-Header-4", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderNotExpected-Header-5", ArrayItemKey::Tag::kArray},
+};
+ArrayItemKey g_header_not_expected_keys_for_value[] = {
+    {"GWSHeaderNotExpected-Value-1", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderNotExpected-Value-2", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderNotExpected-Value-3", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderNotExpected-Value-4", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderNotExpected-Value-5", ArrayItemKey::Tag::kArray},
+};
+ArrayItemKey g_header_value_mismatched_keys_for_header_name[] = {
+    {"GWSHeaderValueMismatched-Header-1", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderValueMismatched-Header-2", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderValueMismatched-Header-3", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderValueMismatched-Header-4", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderValueMismatched-Header-5", ArrayItemKey::Tag::kArray},
+};
+ArrayItemKey g_header_value_mismatched_keys_for_value[] = {
+    {"GWSHeaderValueMismatched-Value-1", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderValueMismatched-Value-2", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderValueMismatched-Value-3", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderValueMismatched-Value-4", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderValueMismatched-Value-5", ArrayItemKey::Tag::kArray},
+};
+ArrayItemKey g_header_not_exist_keys_for_header_name[] = {
+    {"GWSHeaderNotActuallyExist-Header-1", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderNotActuallyExist-Header-2", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderNotActuallyExist-Header-3", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderNotActuallyExist-Header-4", ArrayItemKey::Tag::kArray},
+    {"GWSHeaderNotActuallyExist-Header-5", ArrayItemKey::Tag::kArray},
+};
+
+struct HeaderInfo {
+  std::string header_name;
+  std::string value;
+};
+
+using ReportedHeaders = std::vector<HeaderInfo>;
+
+enum class HeaderMismatchType {
+  kHeaderNotExpected,
+  kValueMismatched,
+  kHeaderNotActuallyExist,
+};
+
+void SetHeaderCrashKeys(const ReportedHeaders& reported_headers,
+                        HeaderMismatchType mismatch_type) {
+  auto it = reported_headers.begin();
+
+#define SetCrashKeyForUnexpectedHeader(headers, keys, is_header_name) \
+  it = headers.begin();                                               \
+  for (ArrayItemKey & key : keys) {                                   \
+    if (it == headers.end()) {                                        \
+      key.Clear();                                                    \
+    } else {                                                          \
+      key.Set(is_header_name ? it->header_name : it->value);          \
+      ++it;                                                           \
+    }                                                                 \
+  }
+
+  switch (mismatch_type) {
+    case HeaderMismatchType::kHeaderNotExpected:
+      SetCrashKeyForUnexpectedHeader(reported_headers,
+                                     g_header_not_expected_keys_for_header_name,
+                                     /*is_header_name=*/true);
+      SetCrashKeyForUnexpectedHeader(reported_headers,
+                                     g_header_not_expected_keys_for_value,
+                                     /*is_header_name=*/false);
+      break;
+    case HeaderMismatchType::kValueMismatched:
+      SetCrashKeyForUnexpectedHeader(
+          reported_headers, g_header_value_mismatched_keys_for_header_name,
+          /*is_header_name=*/true);
+      SetCrashKeyForUnexpectedHeader(reported_headers,
+                                     g_header_value_mismatched_keys_for_value,
+                                     /*is_header_name=*/false);
+      break;
+    case HeaderMismatchType::kHeaderNotActuallyExist:
+      SetCrashKeyForUnexpectedHeader(reported_headers,
+                                     g_header_not_exist_keys_for_header_name,
+                                     /*is_header_name=*/true);
+      break;
+  }
+#undef SetCrashKeyForUnexpectedHeader
 }
 }  // namespace
 
@@ -683,13 +776,9 @@ void GWSPageLoadMetricsObserver::MaybeRecordUnexpectedHeaders(
     return;
   }
 
-#define SET_CRASH_KEYS(key_name, header_name, value)                         \
-  static auto* const header_crash_key = base::debug::AllocateCrashKeyString( \
-      key_name "-name", base::debug::CrashKeySize::Size256);                 \
-  base::debug::SetCrashKeyString(header_crash_key, header_name);             \
-  static auto* const value_crash_key = base::debug::AllocateCrashKeyString(  \
-      key_name "-name", base::debug::CrashKeySize::Size256);                 \
-  base::debug::SetCrashKeyString(value_crash_key, value);
+  ReportedHeaders not_expected_headers;
+  ReportedHeaders value_mismatched_headers;
+  ReportedHeaders not_exist_headers;
 
   std::unordered_map<std::string, ExpectedHeaderInfo> expected_headers =
       GetExpectedHeaderInfo();
@@ -700,16 +789,14 @@ void GWSPageLoadMetricsObserver::MaybeRecordUnexpectedHeaders(
   while (response_headers->EnumerateHeaderLines(&iter, &name, &value)) {
     if (!expected_headers.contains(name)) {
       // GWSHeaderNotExpected: The header is not in the expected header list.
-      SET_CRASH_KEYS("GWSHeaderNotExpected", name, value);
-      set_crash_key = true;
+      not_expected_headers.emplace_back(name, value);
       continue;
     }
     if (name == "content-security-policy") {
       // Check content-security-policy separately. The CSP value should be
       // consistent except for the `nonce` value.
       if (!CheckContentSecurityPolicyHeaderConsistency(value)) {
-        SET_CRASH_KEYS("GWSHeaderValueMismatched", name, value);
-        set_crash_key = true;
+        value_mismatched_headers.emplace_back(name, value);
       }
     }
     auto* expected = &expected_headers[name];
@@ -717,9 +804,7 @@ void GWSPageLoadMetricsObserver::MaybeRecordUnexpectedHeaders(
     if (!expected->allow_value_mismatch && !expected->values.contains(value)) {
       // GWSHeaderValueMismatched: The header is in the expected header list,
       // but the value is different or an inconsistent value is not allowed.
-      SET_CRASH_KEYS("GWSHeaderValueMismatched", name, value);
-      set_crash_key = true;
-      continue;
+      value_mismatched_headers.emplace_back(name, value);
     }
   }
 
@@ -729,8 +814,23 @@ void GWSPageLoadMetricsObserver::MaybeRecordUnexpectedHeaders(
     }
     // GWSHeaderNotActuallyExist: The expected header does not exist in the
     // actual headers.
-    SET_CRASH_KEYS("GWSHeaderNotActuallyExist", header.first, "");
+    not_exist_headers.emplace_back(header.first, "");
+  }
+
+  if (!not_expected_headers.empty()) {
     set_crash_key = true;
+    SetHeaderCrashKeys(not_expected_headers,
+                       HeaderMismatchType::kHeaderNotExpected);
+  }
+  if (!value_mismatched_headers.empty()) {
+    set_crash_key = true;
+    SetHeaderCrashKeys(value_mismatched_headers,
+                       HeaderMismatchType::kValueMismatched);
+  }
+  if (!not_exist_headers.empty()) {
+    set_crash_key = true;
+    SetHeaderCrashKeys(not_exist_headers,
+                       HeaderMismatchType::kHeaderNotActuallyExist);
   }
 
   if (set_crash_key) {
