@@ -324,7 +324,8 @@ enum class ToastCatalogName {
   // [Deprecated] kOnTaskSessionEnd = 54,
   kOnTaskUrlBlocked = 55,
   kCopyImageToClipboardAction = 56,
-  kMaxValue = kCopyImageToClipboardAction
+  kCaptureModeTextCopied = 57,
+  kMaxValue = kCaptureModeTextCopied
 };
 
 }  // namespace ash

@@ -2354,6 +2354,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="54" label="OnTask session end (deprecated)"/>
   <int value="55" label="OnTask URL blocked"/>
   <int value="56" label="Copy Image To Clipboard Action"/>
+  <int value="57" label="Capture Mode Text Copied"/>
 </enum>
 
 <enum name="TogglePickerAction">

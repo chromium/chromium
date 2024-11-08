@@ -32,6 +32,8 @@
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/scanner/scanner_action_view_model.h"
@@ -143,6 +145,9 @@ constexpr std::string_view kSunfishEnabledPrefName =
 // disclaimer has been accepted.
 constexpr char kSunfishConsentDisclaimerAccepted[] =
     "ash.capture_mode.sunfish_consent_disclaimer_accepted";
+
+// The ID for the toast shown when text is copied to clipboard.
+constexpr char kCaptureModeTextCopiedToastId[] = "capture_mode_text_copied";
 
 // An invalid IDS value used as a placeholder to not show a message in a
 // notification.
@@ -373,6 +378,14 @@ void ShowVideoRecordingStoppedByHdcpNotification() {
       /*optional_fields=*/{}, /*delegate=*/nullptr,
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING,
       kCaptureModeIcon);
+}
+
+// Shows a toast informing the user that text has been copied to clipboard.
+void ShowTextCopiedToast() {
+  // TODO(crbug.com/375967525): Finalize and translate the toast string.
+  ToastManager::Get()->Show(ToastData(kCaptureModeTextCopiedToastId,
+                                      ToastCatalogName::kCaptureModeTextCopied,
+                                      u"Text copied to clipboard"));
 }
 
 // Copies the bitmap representation of the given |image| to the clipboard.
@@ -1946,7 +1959,7 @@ void CaptureModeController::OnTextDetectionComplete(
 void CaptureModeController::OnCopyTextButtonClicked(
     const std::u16string& text) {
   CopyTextToClipboard(text);
-  // TODO(crbug.com/375963884): Show a notification for the copied text.
+  ShowTextCopiedToast();
   Stop();
 }
 

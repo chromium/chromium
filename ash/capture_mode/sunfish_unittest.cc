@@ -27,6 +27,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_controller.h"
@@ -87,6 +88,7 @@ constexpr char kSunfishConsentDisclaimerAccepted[] =
     "ash.capture_mode.sunfish_consent_disclaimer_accepted";
 constexpr std::string_view kSunfishEnabledPrefName =
     "ash.capture_mode.sunfish_enabled";
+constexpr char kCaptureModeTextCopiedToastId[] = "capture_mode_text_copied";
 
 void WaitForImageCapturedForSearch(PerformCaptureType expected_capture_type) {
   base::test::TestFuture<void> image_captured_future;
@@ -1671,11 +1673,12 @@ TEST_F(ScannerTest, CopyTextButtonShownForDetectedText) {
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
   EXPECT_EQ(clipboard_data, u"");
-  // Clicking on the button should copy text to clipboard.
+  // Clicking on the button should copy text to clipboard and show a toast.
   LeftClickOn(action_buttons[1]);
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &clipboard_data);
   EXPECT_EQ(clipboard_data, u"detected text");
+  EXPECT_TRUE(ToastManager::Get()->IsToastShown(kCaptureModeTextCopiedToastId));
 }
 
 // Tests that the copy text button is not shown in default capture mode if no
