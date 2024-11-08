@@ -133,15 +133,9 @@ void ProtobufHttpClient::DoExecuteRequest(
   if (!timeout_duration.is_zero()) {
     send_url_loader->SetTimeoutDuration(request->GetRequestTimeoutDuration());
   }
-  if (request->config().method != net::HttpRequestHeaders::kGetMethod &&
-      request->config().method != net::HttpRequestHeaders::kHeadMethod) {
-    send_url_loader->AttachStringForUpload(
-        request->config().request_message->SerializeAsString(),
-        "application/x-protobuf");
-  } else {
-    // GET and HEAD requests cannot have content in the message body.
-    CHECK(!request->config().request_message);
-  }
+  send_url_loader->AttachStringForUpload(
+      request->config().request_message->SerializeAsString(),
+      "application/x-protobuf");
   send_url_loader->SetAllowHttpErrorResults(true);
   auto* unowned_request = request.get();
   base::OnceClosure invalidator = base::BindOnce(
