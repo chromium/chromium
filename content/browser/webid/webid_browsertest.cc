@@ -1478,12 +1478,8 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_noPopUpWindow) {
   EXPECT_EQ(std::string("[request lgtm!]"), EvalJs(shell(), script));
 }
 
-// Verify that the Authz parameters are passed to the id assertion endpoint.
+// Verify that subsets of the default fields work.
 IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_invalidFields) {
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-  console_observer.SetPattern(
-      "Invalid 'fields' were specified in the FedCM call.");
-
   IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
 
   // Points the id assertion endpoint to a servlet.
@@ -1509,9 +1505,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_invalidFields) {
       }) ()
     )";
 
-  std::string expected_error = "NetworkError: Error retrieving a token.";
-  EXPECT_EQ(expected_error, ExtractJsError(EvalJs(shell(), script)));
-  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(std::string("[not a real token]"), EvalJs(shell(), script));
 }
 
 // Verify that the id assertion endpoint can request a pop-up window.

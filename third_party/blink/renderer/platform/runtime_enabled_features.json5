@@ -1787,7 +1787,7 @@
       depends_on: ["FedCm"],
       public: true,
       browser_process_read_access: true,
-      status: "experimental",
+      status: "stable",
       base_feature: "none",
       origin_trial_feature_name: "FedCmContinueOnBundle",
       origin_trial_allows_third_party: true,
