@@ -47,16 +47,10 @@ using crosapi::keystore_service_util::MakeEcdsaKeystoreAlgorithm;
 using crosapi::keystore_service_util::MakeRsassaPkcs1v15KeystoreAlgorithm;
 using crosapi::mojom::KeystoreBinaryResult;
 using crosapi::mojom::KeystoreBinaryResultPtr;
-using crosapi::mojom::KeystoreECDSAParams;
-using crosapi::mojom::KeystoreECDSAParamsPtr;
 using crosapi::mojom::KeystoreError;
-using crosapi::mojom::KeystorePKCS115Params;
-using crosapi::mojom::KeystorePKCS115ParamsPtr;
 using crosapi::mojom::KeystoreSelectClientCertificatesResult;
 using crosapi::mojom::KeystoreSelectClientCertificatesResultPtr;
 using crosapi::mojom::KeystoreService;
-using crosapi::mojom::KeystoreSigningAlgorithm;
-using crosapi::mojom::KeystoreSigningAlgorithmPtr;
 using crosapi::mojom::KeystoreSigningScheme;
 using crosapi::mojom::KeystoreType;
 

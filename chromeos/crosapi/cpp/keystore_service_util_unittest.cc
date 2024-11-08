@@ -25,7 +25,7 @@ TEST(KeystoreServiceUtil, EcdsaDictionary) {
   value.Set("name", kWebCryptoEcdsa);
   value.Set("namedCurve", kWebCryptoNamedCurveP256);
 
-  std::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr> ptr =
+  std::optional<crosapi::mojom::KeystoreAlgorithmPtr> ptr =
       MakeKeystoreAlgorithmFromDictionary(value);
   ASSERT_TRUE(ptr);
 
@@ -45,7 +45,7 @@ TEST(KeystoreServiceUtil, RsassaPkcs1v15Dictionary) {
             base::Value::BlobStorage(std::begin(kDefaultPublicExponent),
                                      std::end(kDefaultPublicExponent)));
 
-  std::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr> ptr =
+  std::optional<crosapi::mojom::KeystoreAlgorithmPtr> ptr =
       MakeKeystoreAlgorithmFromDictionary(value);
   ASSERT_TRUE(ptr);
 
@@ -65,7 +65,7 @@ TEST(KeystoreServiceUtil, RsaOaepDictionary) {
             base::Value::BlobStorage(std::begin(kDefaultPublicExponent),
                                      std::end(kDefaultPublicExponent)));
 
-  std::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr> ptr =
+  std::optional<crosapi::mojom::KeystoreAlgorithmPtr> ptr =
       MakeKeystoreAlgorithmFromDictionary(value);
   ASSERT_TRUE(ptr);
 
@@ -77,31 +77,32 @@ TEST(KeystoreServiceUtil, RsaOaepDictionary) {
 }
 
 TEST(KeystoreServiceUtil, MakeRsassaPkcs1v15KeystoreAlgorithm) {
-  crosapi::mojom::KeystoreSigningAlgorithmPtr algorithm_ptr =
+  crosapi::mojom::KeystoreAlgorithmPtr algorithm_ptr =
       MakeRsassaPkcs1v15KeystoreAlgorithm(kModulusLength, kSoftwareBacked);
 
   EXPECT_EQ(algorithm_ptr->which(),
-            crosapi::mojom::KeystoreSigningAlgorithm::Tag::kPkcs115);
-  EXPECT_EQ(algorithm_ptr->get_pkcs115()->modulus_length, kModulusLength);
-  EXPECT_TRUE(algorithm_ptr->get_pkcs115()->sw_backed);
+            crosapi::mojom::KeystoreAlgorithm::Tag::kRsassaPkcs115);
+  EXPECT_EQ(algorithm_ptr->get_rsassa_pkcs115()->modulus_length,
+            kModulusLength);
+  EXPECT_TRUE(algorithm_ptr->get_rsassa_pkcs115()->sw_backed);
 }
 
 TEST(KeystoreServiceUtil, MakeRsaOaepKeystoreAlgorithm) {
-  crosapi::mojom::KeystoreSigningAlgorithmPtr algorithm_ptr =
+  crosapi::mojom::KeystoreAlgorithmPtr algorithm_ptr =
       MakeRsaOaepKeystoreAlgorithm(kModulusLength, kSoftwareBacked);
 
   EXPECT_EQ(algorithm_ptr->which(),
-            crosapi::mojom::KeystoreSigningAlgorithm::Tag::kRsaOaep);
+            crosapi::mojom::KeystoreAlgorithm::Tag::kRsaOaep);
   EXPECT_EQ(algorithm_ptr->get_rsa_oaep()->modulus_length, kModulusLength);
   EXPECT_TRUE(algorithm_ptr->get_rsa_oaep()->sw_backed);
 }
 
 TEST(KeystoreServiceUtil, MakeEcdsaKeystoreAlgorithm) {
-  crosapi::mojom::KeystoreSigningAlgorithmPtr algorithm_ptr =
+  crosapi::mojom::KeystoreAlgorithmPtr algorithm_ptr =
       MakeEcdsaKeystoreAlgorithm(kWebCryptoNamedCurveP256);
 
   EXPECT_EQ(algorithm_ptr->which(),
-            crosapi::mojom::KeystoreSigningAlgorithm::Tag::kEcdsa);
+            crosapi::mojom::KeystoreAlgorithm::Tag::kEcdsa);
   EXPECT_EQ(algorithm_ptr->get_ecdsa()->named_curve, kWebCryptoNamedCurveP256);
 }
 

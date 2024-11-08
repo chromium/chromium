@@ -43,7 +43,7 @@ namespace crosapi {
 
 namespace {
 
-using SigningAlgorithmName = mojom::KeystoreSigningAlgorithmName;
+using mojom::KeystoreAlgorithmName;
 using SigningScheme = mojom::KeystoreSigningScheme;
 using ::ash::platform_keys::KeyPermissionsService;
 using ::ash::platform_keys::PlatformKeysService;
@@ -76,28 +76,28 @@ std::optional<TokenId> KeystoreToToken(mojom::KeystoreType type) {
 
 // Returns whether the `algorithm_name` can be used for signing. The unknown
 // type is considered invalid for signing.
-bool IsSigningAlgorithm(SigningAlgorithmName algorithm_name) {
+bool IsSigningAlgorithm(KeystoreAlgorithmName algorithm_name) {
   switch (algorithm_name) {
-    case SigningAlgorithmName::kRsassaPkcs115:
-    case SigningAlgorithmName::kEcdsa:
+    case KeystoreAlgorithmName::kRsassaPkcs115:
+    case KeystoreAlgorithmName::kEcdsa:
       return true;
-    case SigningAlgorithmName::kRsaOaep:
-    case SigningAlgorithmName::kUnknown:
+    case KeystoreAlgorithmName::kRsaOaep:
+    case KeystoreAlgorithmName::kUnknown:
       return false;
   }
 }
 
 // The input should be the name of a signing algorithm, which can be validated
 // with the `IsSigningAlgorithm()` function above.
-std::string StringFromSigningAlgorithmName(
-    SigningAlgorithmName algorithm_name) {
+std::string StringFromKeystoreAlgorithmName(
+    KeystoreAlgorithmName algorithm_name) {
   switch (algorithm_name) {
-    case SigningAlgorithmName::kRsassaPkcs115:
+    case KeystoreAlgorithmName::kRsassaPkcs115:
       return crosapi::keystore_service_util::kWebCryptoRsassaPkcs1v15;
-    case SigningAlgorithmName::kEcdsa:
+    case KeystoreAlgorithmName::kEcdsa:
       return crosapi::keystore_service_util::kWebCryptoEcdsa;
-    case SigningAlgorithmName::kRsaOaep:
-    case SigningAlgorithmName::kUnknown:
+    case KeystoreAlgorithmName::kRsaOaep:
+    case KeystoreAlgorithmName::kUnknown:
       NOTREACHED();
   }
 }
@@ -212,7 +212,7 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
     mojom::KeystoreType type,
     const std::vector<uint8_t>& challenge,
     bool migrate,
-    SigningAlgorithmName algorithm,
+    KeystoreAlgorithmName algorithm,
     ChallengeAttestationOnlyKeystoreCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!crosapi::mojom::IsKnownEnumValue(type)) {
@@ -226,14 +226,14 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
   attestation::KeyType key_crypto_type;
   switch (algorithm) {
     // Use RSA by default for backwards compatibility.
-    case SigningAlgorithmName::kUnknown:
-    case SigningAlgorithmName::kRsassaPkcs115:
+    case KeystoreAlgorithmName::kUnknown:
+    case KeystoreAlgorithmName::kRsassaPkcs115:
       key_crypto_type = attestation::KEY_TYPE_RSA;
       break;
-    case SigningAlgorithmName::kEcdsa:
+    case KeystoreAlgorithmName::kEcdsa:
       key_crypto_type = attestation::KEY_TYPE_ECC;
       break;
-    case SigningAlgorithmName::kRsaOaep:
+    case KeystoreAlgorithmName::kRsaOaep:
       std::move(callback).Run(
           mojom::ChallengeAttestationOnlyKeystoreResult::NewErrorMessage(
               chromeos::platform_keys::KeystoreErrorToString(
@@ -580,7 +580,7 @@ void KeystoreServiceAsh::DEPRECATED_RemoveCertificate(
 //------------------------------------------------------------------------------
 
 void KeystoreServiceAsh::GetPublicKey(const std::vector<uint8_t>& certificate,
-                                      SigningAlgorithmName algorithm_name,
+                                      KeystoreAlgorithmName algorithm_name,
                                       GetPublicKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -590,16 +590,15 @@ void KeystoreServiceAsh::GetPublicKey(const std::vector<uint8_t>& certificate,
     return;
   }
 
-  std::string name = StringFromSigningAlgorithmName(algorithm_name);
+  std::string name = StringFromKeystoreAlgorithmName(algorithm_name);
   chromeos::platform_keys::GetPublicKeyAndAlgorithmOutput output =
       chromeos::platform_keys::GetPublicKeyAndAlgorithm(certificate, name);
 
   mojom::GetPublicKeyResultPtr result_ptr;
   if (output.status == chromeos::platform_keys::Status::kSuccess) {
-    std::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr>
-        signing_algorithm =
-            crosapi::keystore_service_util::MakeKeystoreAlgorithmFromDictionary(
-                output.algorithm);
+    std::optional<crosapi::mojom::KeystoreAlgorithmPtr> signing_algorithm =
+        crosapi::keystore_service_util::MakeKeystoreAlgorithmFromDictionary(
+            output.algorithm);
     if (signing_algorithm) {
       mojom::GetPublicKeySuccessResultPtr success_result_ptr =
           mojom::GetPublicKeySuccessResult::New();
@@ -623,7 +622,7 @@ void KeystoreServiceAsh::GetPublicKey(const std::vector<uint8_t>& certificate,
 
 void KeystoreServiceAsh::DEPRECATED_GetPublicKey(
     const std::vector<uint8_t>& certificate,
-    SigningAlgorithmName algorithm_name,
+    KeystoreAlgorithmName algorithm_name,
     DEPRECATED_GetPublicKeyCallback callback) {
   LOG(ERROR) << "DEPRECATED_GetPublicKey method was called.";
   base::debug::DumpWithoutCrashing();
@@ -636,7 +635,7 @@ void KeystoreServiceAsh::DEPRECATED_GetPublicKey(
 
 void KeystoreServiceAsh::DEPRECATED_ExtensionGenerateKey(
     mojom::KeystoreType keystore,
-    mojom::KeystoreSigningAlgorithmPtr algorithm,
+    mojom::KeystoreAlgorithmPtr algorithm,
     const std::optional<std::string>& extension_id,
     DEPRECATED_ExtensionGenerateKeyCallback callback) {
   LOG(ERROR) << "DEPRECATED_ExtensionGenerateKey method was called.";
@@ -666,10 +665,9 @@ void KeystoreServiceAsh::DEPRECATED_ExtensionSign(
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::GenerateKey(
-    mojom::KeystoreType keystore,
-    mojom::KeystoreSigningAlgorithmPtr algorithm,
-    GenerateKeyCallback callback) {
+void KeystoreServiceAsh::GenerateKey(mojom::KeystoreType keystore,
+                                     mojom::KeystoreAlgorithmPtr algorithm,
+                                     GenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   PlatformKeysService* platform_keys_service = GetPlatformKeys();
@@ -680,12 +678,12 @@ void KeystoreServiceAsh::GenerateKey(
     return;
   }
 
-  using Tag = mojom::KeystoreSigningAlgorithm::Tag;
+  using Tag = mojom::KeystoreAlgorithm::Tag;
   switch (algorithm->which()) {
-    case Tag::kPkcs115: {
+    case Tag::kRsassaPkcs115: {
       platform_keys_service->GenerateRSAKey(
-          token_id.value(), algorithm->get_pkcs115()->modulus_length,
-          algorithm->get_pkcs115()->sw_backed,
+          token_id.value(), algorithm->get_rsassa_pkcs115()->modulus_length,
+          algorithm->get_rsassa_pkcs115()->sw_backed,
           base::BindOnce(&KeystoreServiceAsh::DidGenerateKey,
                          std::move(callback)));
       return;

@@ -21,32 +21,33 @@ const char kWebCryptoNamedCurveP256[] = "P-256";
 
 // Converts a keystore algorithm into a WebCrypto dictionary.
 std::optional<base::Value::Dict> MakeDictionaryFromKeystoreAlgorithm(
-    const crosapi::mojom::KeystoreSigningAlgorithmPtr& algorithm) {
+    const crosapi::mojom::KeystoreAlgorithmPtr& algorithm) {
   base::Value::Dict value;
   switch (algorithm->which()) {
-    case crosapi::mojom::KeystoreSigningAlgorithm::Tag::kPkcs115:
+    case crosapi::mojom::KeystoreAlgorithm::Tag::kRsassaPkcs115:
       value.Set("name", kWebCryptoRsassaPkcs1v15);
 
       if (!base::IsValueInRangeForNumericType<int>(
-              algorithm->get_pkcs115()->modulus_length)) {
+              algorithm->get_rsassa_pkcs115()->modulus_length)) {
         return std::nullopt;
       }
 
-      value.Set("modulusLength",
-                static_cast<int>(algorithm->get_pkcs115()->modulus_length));
+      value.Set(
+          "modulusLength",
+          static_cast<int>(algorithm->get_rsassa_pkcs115()->modulus_length));
 
-      if (!algorithm->get_pkcs115()->public_exponent) {
+      if (!algorithm->get_rsassa_pkcs115()->public_exponent) {
         return std::nullopt;
       }
       value.Set("publicExponent",
                 base::Value::BlobStorage(
-                    algorithm->get_pkcs115()->public_exponent.value()));
+                    algorithm->get_rsassa_pkcs115()->public_exponent.value()));
       return value;
-    case crosapi::mojom::KeystoreSigningAlgorithm::Tag::kEcdsa:
+    case crosapi::mojom::KeystoreAlgorithm::Tag::kEcdsa:
       value.Set("name", kWebCryptoEcdsa);
       value.Set("namedCurve", algorithm->get_ecdsa()->named_curve);
       return value;
-    case crosapi::mojom::KeystoreSigningAlgorithm::Tag::kRsaOaep:
+    case crosapi::mojom::KeystoreAlgorithm::Tag::kRsaOaep:
       value.Set("name", kWebCryptoRsaOaep);
 
       if (!base::IsValueInRangeForNumericType<int>(
@@ -70,7 +71,7 @@ std::optional<base::Value::Dict> MakeDictionaryFromKeystoreAlgorithm(
 }
 
 // Converts a WebCrypto dictionary into a keystore algorithm.
-std::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr>
+std::optional<crosapi::mojom::KeystoreAlgorithmPtr>
 MakeKeystoreAlgorithmFromDictionary(const base::Value::Dict& dictionary) {
   const std::string* name = dictionary.FindString("name");
   if (!name) {
@@ -87,12 +88,12 @@ MakeKeystoreAlgorithmFromDictionary(const base::Value::Dict& dictionary) {
     if (!base::IsValueInRangeForNumericType<uint32_t>(modulus_length.value())) {
       return std::nullopt;
     }
-    crosapi::mojom::KeystorePKCS115ParamsPtr params =
-        crosapi::mojom::KeystorePKCS115Params::New();
+    crosapi::mojom::KeystoreRsaParamsPtr params =
+        crosapi::mojom::KeystoreRsaParams::New();
     params->modulus_length =
         base::checked_cast<uint32_t>(modulus_length.value());
     params->public_exponent = *public_exponent;
-    return crosapi::mojom::KeystoreSigningAlgorithm::NewPkcs115(
+    return crosapi::mojom::KeystoreAlgorithm::NewRsassaPkcs115(
         std::move(params));
   }
 
@@ -101,11 +102,10 @@ MakeKeystoreAlgorithmFromDictionary(const base::Value::Dict& dictionary) {
     if (!named_curve) {
       return std::nullopt;
     }
-    crosapi::mojom::KeystoreECDSAParamsPtr params =
-        crosapi::mojom::KeystoreECDSAParams::New();
+    crosapi::mojom::KeystoreEcdsaParamsPtr params =
+        crosapi::mojom::KeystoreEcdsaParams::New();
     params->named_curve = *named_curve;
-    return crosapi::mojom::KeystoreSigningAlgorithm::NewEcdsa(
-        std::move(params));
+    return crosapi::mojom::KeystoreAlgorithm::NewEcdsa(std::move(params));
   }
 
   if (*name == kWebCryptoRsaOaep) {
@@ -118,41 +118,40 @@ MakeKeystoreAlgorithmFromDictionary(const base::Value::Dict& dictionary) {
     if (!base::IsValueInRangeForNumericType<uint32_t>(modulus_length.value())) {
       return std::nullopt;
     }
-    crosapi::mojom::KeystorePKCS115ParamsPtr params =
-        crosapi::mojom::KeystorePKCS115Params::New();
+    crosapi::mojom::KeystoreRsaParamsPtr params =
+        crosapi::mojom::KeystoreRsaParams::New();
     params->modulus_length =
         base::checked_cast<uint32_t>(modulus_length.value());
     params->public_exponent = *public_exponent;
-    return crosapi::mojom::KeystoreSigningAlgorithm::NewRsaOaep(
-        std::move(params));
+    return crosapi::mojom::KeystoreAlgorithm::NewRsaOaep(std::move(params));
   }
 
   return std::nullopt;
 }
 
-mojom::KeystoreSigningAlgorithmPtr MakeRsassaPkcs1v15KeystoreAlgorithm(
+mojom::KeystoreAlgorithmPtr MakeRsassaPkcs1v15KeystoreAlgorithm(
     unsigned int modulus_length,
     bool sw_backed) {
-  mojom::KeystorePKCS115ParamsPtr params = mojom::KeystorePKCS115Params::New();
+  mojom::KeystoreRsaParamsPtr params = mojom::KeystoreRsaParams::New();
   params->modulus_length = modulus_length;
   params->sw_backed = sw_backed;
-  return mojom::KeystoreSigningAlgorithm::NewPkcs115(std::move(params));
+  return mojom::KeystoreAlgorithm::NewRsassaPkcs115(std::move(params));
 }
 
-mojom::KeystoreSigningAlgorithmPtr MakeEcdsaKeystoreAlgorithm(
+mojom::KeystoreAlgorithmPtr MakeEcdsaKeystoreAlgorithm(
     const std::string& named_curve) {
-  mojom::KeystoreECDSAParamsPtr params = mojom::KeystoreECDSAParams::New();
+  mojom::KeystoreEcdsaParamsPtr params = mojom::KeystoreEcdsaParams::New();
   params->named_curve = named_curve;
-  return mojom::KeystoreSigningAlgorithm::NewEcdsa(std::move(params));
+  return mojom::KeystoreAlgorithm::NewEcdsa(std::move(params));
 }
 
-mojom::KeystoreSigningAlgorithmPtr MakeRsaOaepKeystoreAlgorithm(
+mojom::KeystoreAlgorithmPtr MakeRsaOaepKeystoreAlgorithm(
     unsigned int modulus_length,
     bool sw_backed) {
-  mojom::KeystorePKCS115ParamsPtr params = mojom::KeystorePKCS115Params::New();
+  mojom::KeystoreRsaParamsPtr params = mojom::KeystoreRsaParams::New();
   params->modulus_length = modulus_length;
   params->sw_backed = sw_backed;
-  return mojom::KeystoreSigningAlgorithm::NewRsaOaep(std::move(params));
+  return mojom::KeystoreAlgorithm::NewRsaOaep(std::move(params));
 }
 
 }  // namespace keystore_service_util

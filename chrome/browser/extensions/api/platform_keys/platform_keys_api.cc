@@ -37,10 +37,10 @@ namespace {
 
 namespace api_pk = api::platform_keys;
 namespace api_pki = api::platform_keys_internal;
-using crosapi::mojom::KeystoreService;
-using SigningAlgorithmName = crosapi::mojom::KeystoreSigningAlgorithmName;
 using crosapi::keystore_service_util::kWebCryptoEcdsa;
 using crosapi::keystore_service_util::kWebCryptoRsassaPkcs1v15;
+using crosapi::mojom::KeystoreAlgorithmName;
+using crosapi::mojom::KeystoreService;
 
 const char kErrorInvalidSigningAlgorithm[] = "Invalid signing algorithm.";
 const char kErrorInteractiveCallFromBackground[] =
@@ -70,12 +70,14 @@ crosapi::mojom::KeystoreService* GetKeystoreService(
       browser_context);
 }
 
-std::optional<SigningAlgorithmName> SigningAlgorithmNameFromString(
+std::optional<KeystoreAlgorithmName> KeystoreAlgorithmNameFromString(
     const std::string& input) {
-  if (input == kWebCryptoRsassaPkcs1v15)
-    return SigningAlgorithmName::kRsassaPkcs115;
-  if (input == kWebCryptoEcdsa)
-    return SigningAlgorithmName::kEcdsa;
+  if (input == kWebCryptoRsassaPkcs1v15) {
+    return KeystoreAlgorithmName::kRsassaPkcs115;
+  }
+  if (input == kWebCryptoEcdsa) {
+    return KeystoreAlgorithmName::kEcdsa;
+  }
   return std::nullopt;
 }
 
@@ -121,8 +123,9 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
     client_certs = std::make_unique<net::CertificateList>();
     for (const std::vector<uint8_t>& client_cert_der :
          *params->details.client_certs) {
-      if (client_cert_der.empty())
+      if (client_cert_der.empty()) {
         return RespondNow(Error(platform_keys::kErrorInvalidX509Cert));
+      }
       // Allow UTF-8 inside PrintableStrings in client certificates. See
       // crbug.com/770323 and crbug.com/788655.
       net::X509Certificate::UnsafeCreateOptions options;
@@ -130,8 +133,9 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
       scoped_refptr<net::X509Certificate> client_cert_x509 =
           net::X509Certificate::CreateFromBytesUnsafeOptions(client_cert_der,
                                                              options);
-      if (!client_cert_x509)
+      if (!client_cert_x509) {
         return RespondNow(Error(platform_keys::kErrorInvalidX509Cert));
+      }
       client_certs->push_back(client_cert_x509);
     }
   }
@@ -220,8 +224,8 @@ PlatformKeysInternalGetPublicKeyFunction::Run() {
       api_pki::GetPublicKey::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::optional<SigningAlgorithmName> algorithm_name =
-      SigningAlgorithmNameFromString(params->algorithm_name);
+  std::optional<KeystoreAlgorithmName> algorithm_name =
+      KeystoreAlgorithmNameFromString(params->algorithm_name);
   if (!algorithm_name) {
     return RespondNow(Error(chromeos::platform_keys::KeystoreErrorToString(
         crosapi::mojom::KeystoreError::kAlgorithmNotSupported)));
@@ -267,8 +271,9 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const auto& public_key_spki_der = params->public_key_spki_der;
-  if (public_key_spki_der.empty())
+  if (public_key_spki_der.empty()) {
     return RespondNow(Error(kErrorInvalidSpki));
+  }
 
   PublicKeyInfo key_info;
   key_info.public_key_spki_der.assign(std::begin(public_key_spki_der),
@@ -284,8 +289,9 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
   chromeos::platform_keys::Status check_result =
       chromeos::platform_keys::CheckKeyTypeAndAlgorithm(key_info.key_type,
                                                         params->algorithm_name);
-  if (check_result != chromeos::platform_keys::Status::kSuccess)
+  if (check_result != chromeos::platform_keys::Status::kSuccess) {
     return RespondNow(Error(StatusToString(check_result)));
+  }
 
   api_pki::GetPublicKeyBySpki::Results::Algorithm algorithm;
   std::optional<base::Value::Dict> algorithm_dictionary =
