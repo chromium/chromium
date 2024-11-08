@@ -275,41 +275,31 @@ MATCHER_P3(OnlyPasswordsFallbackAdded,
               IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE));
     }
   } else if (add_import_passwords_submenu_option) {
-    if (is_password_generation_enabled_for_current_field &&
-        is_passkey_from_another_device_in_context_menu) {
-      EXPECT_EQ(submenu->GetItemCount(), 3u);
-      EXPECT_EQ(
-          submenu->GetLabelAt(1),
-          l10n_util::GetStringUTF16(
-              IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD));
-      EXPECT_EQ(
-          submenu->GetLabelAt(2),
-          l10n_util::GetStringUTF16(
-              IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE));
-    } else if (is_password_generation_enabled_for_current_field) {
-      EXPECT_EQ(submenu->GetItemCount(), 3u);
-      EXPECT_EQ(
-          submenu->GetLabelAt(2),
-          l10n_util::GetStringUTF16(
-              IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD));
-    } else if (is_passkey_from_another_device_in_context_menu) {
-      EXPECT_EQ(submenu->GetItemCount(), 2u);
-      EXPECT_EQ(
-          submenu->GetLabelAt(1),
-          l10n_util::GetStringUTF16(
-              IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE));
-    } else {
-      EXPECT_EQ(submenu->GetItemCount(), 2u);
-    }
-
-    size_t import_index =
-        is_passkey_from_another_device_in_context_menu ? 0 : 1;
-    if (!is_passkey_from_another_device_in_context_menu) {
+    size_t expected_count = 2;
+    if (is_password_generation_enabled_for_current_field) {
+      expected_count += 1;
       EXPECT_EQ(
           submenu->GetLabelAt(0),
           l10n_util::GetStringUTF16(
+              IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD));
+    }
+    if (is_passkey_from_another_device_in_context_menu) {
+      EXPECT_EQ(
+          submenu->GetLabelAt(expected_count - 1),
+          l10n_util::GetStringUTF16(
+              IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE));
+    }
+    EXPECT_EQ(submenu->GetItemCount(), expected_count);
+
+    size_t import_index = is_password_generation_enabled_for_current_field +
+                          !is_passkey_from_another_device_in_context_menu;
+    if (!is_passkey_from_another_device_in_context_menu) {
+      EXPECT_EQ(
+          submenu->GetLabelAt(is_password_generation_enabled_for_current_field),
+          l10n_util::GetStringUTF16(
               IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS));
-      EXPECT_EQ(submenu->IsEnabledAt(0), false);
+      EXPECT_FALSE(submenu->IsEnabledAt(
+          is_password_generation_enabled_for_current_field));
     }
     EXPECT_EQ(
         submenu->GetLabelAt(import_index),

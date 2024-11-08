@@ -615,6 +615,11 @@ void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
         IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD);
   }
+  if (add_password_generation_option) {
+    passwords_submenu_model_.AddItemWithStringId(
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD,
+        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD);
+  }
   if (add_no_saved_passwords_option) {
     // This entry is disabled (i.e. it is greyed out and doesn't do anything
     // upon clicking). The logic which disables it is in
@@ -628,13 +633,6 @@ void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS,
         IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS);
   }
-
-  if (add_password_generation_option) {
-    passwords_submenu_model_.AddItemWithStringId(
-        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD,
-        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD);
-  }
-
   if (add_passkey_from_another_device_option) {
     passwords_submenu_model_.AddItemWithStringId(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE,
