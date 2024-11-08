@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_pref_names.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -266,7 +267,7 @@ std::optional<TabGroupId> SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
 
   // If our tab group was not found in any tabstrip model, open the group in
   // this browser's tabstrip model.
-  std::map<tabs::TabModel*, base::Uuid> tab_guid_mapping =
+  std::map<tabs::TabInterface*, base::Uuid> tab_guid_mapping =
       OpenSavedTabGroupAndGetTabToGuidMapping(browser, saved_group);
 
   // If no tabs were opened, then there's nothing to do.
@@ -292,7 +293,7 @@ std::optional<TabGroupId> SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
 
 TabGroupId SavedTabGroupKeyedService::AddOpenedTabsToGroup(
     TabStripModel* const tab_strip_model_for_creation,
-    const std::map<tabs::TabModel*, base::Uuid>& tab_guid_mapping,
+    const std::map<tabs::TabInterface*, base::Uuid>& tab_guid_mapping,
     const SavedTabGroup& saved_group) {
   std::vector<int> tab_indices;
   for (int i = 0; i < tab_strip_model_for_creation->count(); ++i) {
@@ -355,14 +356,14 @@ base::Uuid SavedTabGroupKeyedService::SaveGroup(const TabGroupId& group_id,
   // Build the SavedTabGroupTabs and add them to the SavedTabGroup.
   const gfx::Range tab_range = tab_group->ListTabs();
 
-  std::map<tabs::TabModel*, base::Uuid> tab_guid_mapping;
+  std::map<tabs::TabInterface*, base::Uuid> tab_guid_mapping;
   for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
-    tabs::TabModel* tab = tab_strip_model->GetTabAtIndex(i);
+    tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
     CHECK(tab);
 
     SavedTabGroupTab saved_tab_group_tab =
         SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
-            tab->contents(), saved_tab_group.saved_guid());
+            tab->GetContents(), saved_tab_group.saved_guid());
 
     tab_guid_mapping.emplace(tab, saved_tab_group_tab.saved_tab_guid());
 
@@ -453,12 +454,12 @@ void SavedTabGroupKeyedService::ConnectLocalTabGroup(
     const gfx::Range tab_range = tab_group->ListTabs();
 
     for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
-      tabs::TabModel* tab = tab_strip_model->GetTabAtIndex(i);
+      tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
       CHECK(tab);
 
       SavedTabGroupTab saved_tab_group_tab =
           SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(
-              tab->contents(), saved_group->saved_guid());
+              tab->GetContents(), saved_group->saved_guid());
 
       model()->AddTabToGroupLocally(saved_group->saved_guid(),
                                     std::move(saved_tab_group_tab));
@@ -609,15 +610,15 @@ void SavedTabGroupKeyedService::UpdateWebContentsToMatchSavedTabGroupTabs(
   }
 }
 
-std::map<tabs::TabModel*, base::Uuid>
+std::map<tabs::TabInterface*, base::Uuid>
 SavedTabGroupKeyedService::GetTabToGuidMappingForSavedGroup(
     const TabStripModel* const tab_strip_model,
     const SavedTabGroup* const saved_group,
     const gfx::Range& tab_range) {
-  std::map<tabs::TabModel*, base::Uuid> tab_guid_mapping;
+  std::map<tabs::TabInterface*, base::Uuid> tab_guid_mapping;
 
   for (size_t i = tab_range.start(); i < tab_range.end(); ++i) {
-    tabs::TabModel* const tab = tab_strip_model->GetTabAtIndex(i);
+    tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(i);
     CHECK(tab);
 
     const SavedTabGroupTab& saved_tab =
@@ -629,11 +630,11 @@ SavedTabGroupKeyedService::GetTabToGuidMappingForSavedGroup(
   return tab_guid_mapping;
 }
 
-std::map<tabs::TabModel*, base::Uuid>
+std::map<tabs::TabInterface*, base::Uuid>
 SavedTabGroupKeyedService::OpenSavedTabGroupAndGetTabToGuidMapping(
     Browser* browser,
     const SavedTabGroup* const saved_group) {
-  std::map<tabs::TabModel*, base::Uuid> tab_guid_mapping;
+  std::map<tabs::TabInterface*, base::Uuid> tab_guid_mapping;
   for (const SavedTabGroupTab& saved_tab : saved_group->saved_tabs()) {
     if (!saved_tab.url().is_valid()) {
       continue;
@@ -650,7 +651,7 @@ SavedTabGroupKeyedService::OpenSavedTabGroupAndGetTabToGuidMapping(
       continue;
     }
 
-    tabs::TabModel* tab =
+    tabs::TabInterface* tab =
         browser->tab_strip_model()->GetTabForWebContents(created_contents);
     CHECK(tab);
 

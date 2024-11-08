@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
@@ -57,18 +56,17 @@ ScopedLocalObservationPauserImpl::~ScopedLocalObservationPauserImpl() {
 
 // Removes the tab from the group and closes it.
 void RemoveTabFromGroup(TabStripModel& tab_strip_model,
-                        const tabs::TabModel& local_tab) {
+                        const tabs::TabInterface& local_tab) {
   // Unload listeners can delay or prevent a tab closing. Remove the tab from
   // the group first so the local and saved groups can be consistent even if
   // this happens. Do not store the index of the tab before removing it from the
   // group because removing it from the group may have moved the tab to maintain
   // group contiguity.
-  tab_strip_model.RemoveFromGroup(
-      {tab_strip_model.GetIndexOfTab(local_tab.GetHandle())});
+  tab_strip_model.RemoveFromGroup({tab_strip_model.GetIndexOfTab(&local_tab)});
 
   // Find the tab again and close it.
   tab_strip_model.CloseWebContentsAt(
-      tab_strip_model.GetIndexOfTab(local_tab.GetHandle()),
+      tab_strip_model.GetIndexOfTab(&local_tab),
       TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }
 
@@ -98,13 +96,13 @@ void RemoveExtraTabsFromLocalGroupBeforeConnecting(
   // Collect the tabs to close because the range and tab indexes may change
   // during removing the tabs from the group.
   gfx::Range tab_range = tab_group->ListTabs();
-  std::vector<const tabs::TabModel*> tabs_to_close;
+  std::vector<const tabs::TabInterface*> tabs_to_close;
   for (size_t i = saved_group.saved_tabs().size(); i < tab_range.length();
        ++i) {
     tabs_to_close.push_back(
         tab_strip_model->GetTabAtIndex(i + tab_range.start()));
   }
-  for (const tabs::TabModel* tab : tabs_to_close) {
+  for (const tabs::TabInterface* const tab : tabs_to_close) {
     CHECK(tab);
     RemoveTabFromGroup(*tab_strip_model, *tab);
   }
@@ -112,8 +110,8 @@ void RemoveExtraTabsFromLocalGroupBeforeConnecting(
 
 // Try to open the `saved_tab`. Returns the opened tab if successful, otherwise
 // returns nullptr.
-tabs::TabModel* MaybeOpenTabFromSavedTab(const SavedTabGroupTab& saved_tab,
-                                         Browser* browser) {
+tabs::TabInterface* MaybeOpenTabFromSavedTab(const SavedTabGroupTab& saved_tab,
+                                             Browser* browser) {
   if (!saved_tab.url().is_valid()) {
     return nullptr;
   }
@@ -166,7 +164,7 @@ void TabGroupSyncDelegateDesktop::HandleOpenTabGroupRequest(
   Browser* const browser = desktop_context->browser;
 
   // Open the tabs in the saved group.
-  std::map<tabs::TabModel*, base::Uuid> tab_guid_mapping =
+  std::map<tabs::TabInterface*, base::Uuid> tab_guid_mapping =
       OpenTabsAndMapToUuids(browser, group.value());
 
   if (tab_guid_mapping.empty()) {
@@ -218,9 +216,10 @@ void TabGroupSyncDelegateDesktop::ConnectLocalTabGroup(
   // best effort without verifying if they match or valid.
   gfx::Range tab_range = tab_group->ListTabs();
   CHECK_LE(tab_range.length(), group.saved_tabs().size());
-  std::map<tabs::TabModel*, base::Uuid> tab_guid_mapping;
+  std::map<tabs::TabInterface*, base::Uuid> tab_guid_mapping;
   for (size_t i = 0; i < tab_range.length(); ++i) {
-    tabs::TabModel* tab = tab_strip_model->GetTabAtIndex(tab_range.start() + i);
+    tabs::TabInterface* const tab =
+        tab_strip_model->GetTabAtIndex(tab_range.start() + i);
     CHECK(tab);
     tab_guid_mapping.emplace(tab, group.saved_tabs()[i].saved_tab_guid());
   }
@@ -283,13 +282,14 @@ TabGroupSyncDelegateDesktop::CreateScopedLocalObserverPauser() {
   return std::make_unique<ScopedLocalObservationPauserImpl>(listener_.get());
 }
 
-std::map<tabs::TabModel*, base::Uuid>
+std::map<tabs::TabInterface*, base::Uuid>
 TabGroupSyncDelegateDesktop::OpenTabsAndMapToUuids(
     Browser* const browser,
     const SavedTabGroup& saved_group) {
-  std::map<tabs::TabModel*, base::Uuid> tab_guid_mapping;
+  std::map<tabs::TabInterface*, base::Uuid> tab_guid_mapping;
   for (const SavedTabGroupTab& saved_tab : saved_group.saved_tabs()) {
-    tabs::TabModel* tab = MaybeOpenTabFromSavedTab(saved_tab, browser);
+    tabs::TabInterface* const tab =
+        MaybeOpenTabFromSavedTab(saved_tab, browser);
     if (tab) {
       tab_guid_mapping.emplace(tab, saved_tab.saved_tab_guid());
     }
@@ -300,7 +300,7 @@ TabGroupSyncDelegateDesktop::OpenTabsAndMapToUuids(
 
 TabGroupId TabGroupSyncDelegateDesktop::AddOpenedTabsToGroup(
     TabStripModel* tab_strip_model,
-    const std::map<tabs::TabModel*, base::Uuid>& tab_guid_mapping,
+    const std::map<tabs::TabInterface*, base::Uuid>& tab_guid_mapping,
     const SavedTabGroup& saved_group) {
   std::vector<int> tab_indices;
   for (int i = 0; i < tab_strip_model->count(); ++i) {

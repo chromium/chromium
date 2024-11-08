@@ -503,7 +503,7 @@ std::vector<content::WebContents*> SavedTabGroupUtils::GetWebContentsesInGroup(
 }
 
 // static
-std::vector<tabs::TabModel*> SavedTabGroupUtils::GetTabsInGroup(
+std::vector<tabs::TabInterface*> SavedTabGroupUtils::GetTabsInGroup(
     tab_groups::TabGroupId group_id) {
   Browser* browser = GetBrowserWithTabGroupId(group_id);
   if (!browser || !browser->tab_strip_model() ||
@@ -513,7 +513,7 @@ std::vector<tabs::TabModel*> SavedTabGroupUtils::GetTabsInGroup(
 
   const gfx::Range local_tab_group_indices =
       SavedTabGroupUtils::GetTabGroupWithId(group_id)->ListTabs();
-  std::vector<tabs::TabModel*> local_tabs;
+  std::vector<tabs::TabInterface*> local_tabs;
   for (size_t index = local_tab_group_indices.start();
        index < local_tab_group_indices.end(); index++) {
     local_tabs.push_back(browser->tab_strip_model()->GetTabAtIndex(index));

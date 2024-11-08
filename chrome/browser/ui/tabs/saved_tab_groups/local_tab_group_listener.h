@@ -7,7 +7,6 @@
 
 #include "base/uuid.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -17,6 +16,10 @@ class Browser;
 
 namespace content {
 class WebContents;
+}
+
+namespace tabs {
+class TabInterface;
 }
 
 namespace tab_groups {
@@ -31,7 +34,7 @@ class LocalTabGroupListener {
       tab_groups::TabGroupId local_id,
       base::Uuid saved_guid,
       TabGroupSyncService* service,
-      std::map<tabs::TabModel*, base::Uuid>& tab_guid_mapping);
+      std::map<tabs::TabInterface*, base::Uuid>& tab_guid_mapping);
   virtual ~LocalTabGroupListener();
 
   // Pauses listening to changes to the local tab group. Call this before
@@ -50,7 +53,7 @@ class LocalTabGroupListener {
       const TabGroupChange::VisualsChange* visuals_change);
 
   // Updates the saved group with the new tab and tracks it for further changes.
-  void AddTabFromLocal(tabs::TabModel* local_tab,
+  void AddTabFromLocal(tabs::TabInterface* local_tab,
                        TabStripModel* tab_strip_model,
                        int index);
 
@@ -80,7 +83,7 @@ class LocalTabGroupListener {
   [[nodiscard]] Liveness UpdateFromSync();
 
   // Testing Accessors.
-  std::map<tabs::TabModel*, SavedTabGroupWebContentsListener>&
+  std::map<tabs::TabInterface*, SavedTabGroupWebContentsListener>&
   GetTabListenerMappingForTesting() {
     return tab_listener_mapping_;
   }
@@ -89,7 +92,7 @@ class LocalTabGroupListener {
   // Updates `tab` to match `saved_tab`, and ensures it is at
   // `target_index_in_tab_strip` in `tab_strip_model`.
   void MatchLocalTabToSavedTab(SavedTabGroupTab saved_tab,
-                               tabs::TabModel* local_tab,
+                               tabs::TabInterface* local_tab,
                                TabStripModel* tab_strip_model,
                                int target_index_in_tab_strip);
   void OpenWebContentsFromSync(SavedTabGroupTab tab,
@@ -101,13 +104,13 @@ class LocalTabGroupListener {
 
   // Removes the tab from the mapping and removes the corresponding tab
   // from the group in the Tabstrip then closing it if should_close_tab is true.
-  void RemoveTabFromSync(tabs::TabModel* local_tab, bool should_close_tab);
+  void RemoveTabFromSync(tabs::TabInterface* local_tab, bool should_close_tab);
 
   // Whether local tab group changes will be ignored (`paused_` is true) or
   // reflected in the saved group (`paused_` is false).
   bool paused_ = false;
 
-  std::map<tabs::TabModel*, SavedTabGroupWebContentsListener>
+  std::map<tabs::TabInterface*, SavedTabGroupWebContentsListener>
       tab_listener_mapping_;
 
   // The service used to manage SavedTabGroups.

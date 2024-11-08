@@ -25,7 +25,7 @@ class Profile;
 class TabGroup;
 
 namespace tabs {
-class TabModel;
+class TabInterface;
 }
 
 namespace syncer {
@@ -152,7 +152,7 @@ class SavedTabGroupKeyedService : public KeyedService,
   // should be part of `saved_group` outputs a mapping of tab to guid. This
   // method performs no checks to make sure that the tabs are the correct ones
   // that should be connected.
-  std::map<tabs::TabModel*, base::Uuid> GetTabToGuidMappingForSavedGroup(
+  std::map<tabs::TabInterface*, base::Uuid> GetTabToGuidMappingForSavedGroup(
       const TabStripModel* const tab_strip_model,
       const SavedTabGroup* const saved_group,
       const gfx::Range& tab_range);
@@ -163,7 +163,8 @@ class SavedTabGroupKeyedService : public KeyedService,
   // This method does not check that the saved group is already open so that
   // must be done by callers. This method does not check if the saved_group is
   // part of the model, this must be done by callers.
-  std::map<tabs::TabModel*, base::Uuid> OpenSavedTabGroupAndGetTabToGuidMapping(
+  std::map<tabs::TabInterface*, base::Uuid>
+  OpenSavedTabGroupAndGetTabToGuidMapping(
       Browser* browser,
       const SavedTabGroup* const saved_group);
 
@@ -171,7 +172,7 @@ class SavedTabGroupKeyedService : public KeyedService,
   // for the saved group, and then groups them in the tabstrip model.
   tab_groups::TabGroupId AddOpenedTabsToGroup(
       TabStripModel* const tab_strip_model_for_creation,
-      const std::map<tabs::TabModel*, base::Uuid>& tab_guid_mapping,
+      const std::map<tabs::TabInterface*, base::Uuid>& tab_guid_mapping,
       const SavedTabGroup& saved_group);
 
   // Returns a pointer to the TabStripModel which contains `local_group_id`.

@@ -18,7 +18,6 @@ class WebContents;
 }  // namespace content
 
 namespace tabs {
-class TabModel;
 class TabInterface;
 }  // namespace tabs
 
@@ -33,7 +32,7 @@ class TabGroupSyncService;
 class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
  public:
   SavedTabGroupWebContentsListener(TabGroupSyncService* service,
-                                   tabs::TabModel* local_tab);
+                                   tabs::TabInterface* local_tab);
   ~SavedTabGroupWebContentsListener() override;
 
   // Method to be called when a navigation request comes in via sync. Sets the
@@ -69,7 +68,7 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver {
   const raw_ptr<TabGroupSyncService> service_ = nullptr;
 
   // The local tab that is being listened to.
-  const raw_ptr<tabs::TabModel> local_tab_ = nullptr;
+  const raw_ptr<tabs::TabInterface> local_tab_ = nullptr;
 
   // The subscription to the tab discarding callback in the `local_tab_`.
   base::CallbackListSubscription tab_discard_subscription_;

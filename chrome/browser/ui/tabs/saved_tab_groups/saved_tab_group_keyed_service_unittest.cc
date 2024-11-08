@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_utils.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -56,12 +57,12 @@ class SavedTabGroupKeyedServiceUnitTest : public BrowserWithTestWindowTest {
     return browser_ptr;
   }
 
-  tabs::TabModel* AddTabToBrowser(Browser* browser, int index) {
+  tabs::TabInterface* AddTabToBrowser(Browser* browser, int index) {
     std::unique_ptr<tabs::TabModel> tab = std::make_unique<tabs::TabModel>(
         content::WebContentsTester::CreateTestWebContents(profile_.get(),
                                                           nullptr),
         browser->tab_strip_model());
-    tabs::TabModel* tab_ptr = tab.get();
+    tabs::TabInterface* tab_ptr = tab.get();
 
     browser->tab_strip_model()->AddTab(
         std::move(tab), index, ui::PageTransition::PAGE_TRANSITION_TYPED,
@@ -129,7 +130,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   // Create a new tab and add it to a group.
   ASSERT_EQ(0, browser_1->tab_strip_model()->count());
   AddTabToBrowser(browser_1, 0);
-  tabs::TabModel* tab = AddTabToBrowser(browser_1, 1);
+  tabs::TabInterface* tab = AddTabToBrowser(browser_1, 1);
   ASSERT_EQ(2, browser_1->tab_strip_model()->count());
 
   tab_groups::TabGroupId group_id =
@@ -155,7 +156,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   EXPECT_EQ(1u, tab_listener_mapping.count(tab));
 
   // Remove `web_contents_ptr`.
-  tab->contents()->Close();
+  tab->GetContents()->Close();
   ASSERT_EQ(1, browser_1->tab_strip_model()->count());
 
   // Expect that the group is still listened to since there's still
@@ -186,7 +187,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, AddedTabIsListenedTo) {
   ASSERT_EQ(1u, tab_listener_mapping.size());
 
   // Add a second tab and expect that it is observed too.
-  tabs::TabModel* tab = AddTabToBrowser(browser_1, 1);
+  tabs::TabInterface* tab = AddTabToBrowser(browser_1, 1);
   browser_1->tab_strip_model()->AddToExistingGroup({1}, group_id);
   EXPECT_EQ(2u, tab_listener_mapping.size());
   EXPECT_TRUE(tab_listener_mapping.contains(tab));
@@ -198,7 +199,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, PauseResumeTracking) {
   // Create a saved tab group with two tabs, one in a saved group.
   ASSERT_EQ(0, browser_1->tab_strip_model()->count());
   AddTabToBrowser(browser_1, 0);
-  tabs::TabModel* tab = AddTabToBrowser(browser_1, 1);
+  tabs::TabInterface* tab = AddTabToBrowser(browser_1, 1);
   ASSERT_EQ(2, browser_1->tab_strip_model()->count());
   tab_groups::TabGroupId group_id =
       browser_1->tab_strip_model()->AddToNewGroup({1});
@@ -940,8 +941,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   TabStripModel* const tabstrip = browser->tab_strip_model();
 
   // Create a saved tab group with two tabs.
-  tabs::TabModel* tab_0 = AddTabToBrowser(browser, 0);
-  tabs::TabModel* tab_1 = AddTabToBrowser(browser, 1);
+  tabs::TabInterface* tab_0 = AddTabToBrowser(browser, 0);
+  tabs::TabInterface* tab_1 = AddTabToBrowser(browser, 1);
   const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0, 1});
   service()->SaveGroup(group_id);
 
@@ -1035,8 +1036,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, AddedBadTabIsNTPInstead) {
 
   // Create a saved tab group with one tab.
   ASSERT_EQ(0, browser_1->tab_strip_model()->count());
-  tabs::TabModel* added_tab = AddTabToBrowser(browser_1, 0);
-  added_tab->contents()->GetController().LoadURLWithParams(
+  tabs::TabInterface* added_tab = AddTabToBrowser(browser_1, 0);
+  added_tab->GetContents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(GURL("file://1")));
   tab_groups::TabGroupId group_id =
       browser_1->tab_strip_model()->AddToNewGroup({0});
@@ -1055,11 +1056,11 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   // Create a saved tab group with one good tab.
   ASSERT_EQ(0, browser_1->tab_strip_model()->count());
-  tabs::TabModel* added_tab = AddTabToBrowser(browser_1, 0);
+  tabs::TabInterface* added_tab = AddTabToBrowser(browser_1, 0);
   GURL good_gurl = GURL("http://www.google.com");
   GURL bad_gurl = GURL("file://1");
 
-  auto* tester = content::WebContentsTester::For(added_tab->contents());
+  auto* tester = content::WebContentsTester::For(added_tab->GetContents());
   tester->NavigateAndCommit(good_gurl);
 
   tab_groups::TabGroupId group_id =
@@ -1080,12 +1081,12 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   // Create a saved tab group with one good tab.
   ASSERT_EQ(0, browser_1->tab_strip_model()->count());
-  tabs::TabModel* added_tab = AddTabToBrowser(browser_1, 0);
+  tabs::TabInterface* added_tab = AddTabToBrowser(browser_1, 0);
   GURL good_url = GURL("http://www.foo.com");
   GURL delete_url = GURL("http://www.delete.com");
   GURL redirect_url = GURL("http://www.redirect.com");
 
-  auto* tester = content::WebContentsTester::For(added_tab->contents());
+  auto* tester = content::WebContentsTester::For(added_tab->GetContents());
   tester->NavigateAndCommit(good_url);
   tab_groups::TabGroupId group_id =
       browser_1->tab_strip_model()->AddToNewGroup({0});
@@ -1093,7 +1094,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   const SavedTabGroup* const saved_group = service()->model()->Get(group_id);
 
   content::RenderFrameHost* render_frame_host =
-      added_tab->contents()->GetPrimaryMainFrame();
+      added_tab->GetContents()->GetPrimaryMainFrame();
   std::unique_ptr<content::NavigationSimulator> navigation =
       content::NavigationSimulator::CreateRendererInitiated(delete_url,
                                                             render_frame_host);
@@ -1217,8 +1218,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, CreateTabStateOnSyncNavigations) {
   const GURL url2 = GURL("https://www.example2.com");
 
   // Manually navigate the webcontents of the saved tab locally.
-  tabs::TabModel* tab = tabstrip->GetTabAtIndex(0);
-  content::WebContents* contents = tab->contents();
+  tabs::TabInterface* tab = tabstrip->GetTabAtIndex(0);
+  content::WebContents* contents = tab->GetContents();
   auto* tester = content::WebContentsTester::For(contents);
   tester->NavigateAndCommit(url);
   EXPECT_EQ(contents->GetURL(), url);
@@ -1253,8 +1254,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, TabStateClearedOnUserInput) {
   const GURL url = GURL("https://www.example.com");
 
   // Simulate a sync navigation on the tab.
-  tabs::TabModel* tab = tabstrip->GetTabAtIndex(0);
-  content::WebContents* web_contents = tab->contents();
+  tabs::TabInterface* tab = tabstrip->GetTabAtIndex(0);
+  content::WebContents* web_contents = tab->GetContents();
   service()
       ->listener()
       ->GetLocalTabGroupListenerMapForTesting()
@@ -1284,8 +1285,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   const GURL url2 = GURL("https://www.example2.com");
 
   // Manually navigate the webcontents of the saved tab locally.
-  tabs::TabModel* tab = tabstrip->GetTabAtIndex(0);
-  content::WebContents* web_contents = tab->contents();
+  tabs::TabInterface* tab = tabstrip->GetTabAtIndex(0);
+  content::WebContents* web_contents = tab->GetContents();
 
   auto* tester = content::WebContentsTester::For(web_contents);
   tester->NavigateAndCommit(url);
@@ -1327,8 +1328,8 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, TabStateNotClearedOnReload) {
   service()->SaveGroup(group_id);
   const GURL url = GURL("https://www.example.com");
 
-  tabs::TabModel* tab = tabstrip->GetTabAtIndex(0);
-  content::WebContents* web_contents = tab->contents();
+  tabs::TabInterface* tab = tabstrip->GetTabAtIndex(0);
+  content::WebContents* web_contents = tab->GetContents();
   auto* tester = content::WebContentsTester::For(web_contents);
 
   // Simulate a sync navigation on the tab.

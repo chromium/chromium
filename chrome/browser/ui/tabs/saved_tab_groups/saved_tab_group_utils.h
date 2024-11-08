@@ -119,7 +119,7 @@ class SavedTabGroupUtils {
   static TabGroup* GetTabGroupWithId(tab_groups::TabGroupId group_id);
 
   // Returns the list of Tabs in the local group `group_id` in order.
-  static std::vector<tabs::TabModel*> GetTabsInGroup(
+  static std::vector<tabs::TabInterface*> GetTabsInGroup(
       tab_groups::TabGroupId group_id);
 
   // TODO(crbug.com/350514491) remove this once all cases are handled by
