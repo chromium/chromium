@@ -207,48 +207,6 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PostLoginLaunch) {
   EXPECT_TRUE(WindowState::Get(settings_window)->IsMaximized());
 }
 
-// Tests that clicking the in session coral button opens and activates a new
-// desk.
-// TODO(zxdan): Temporarily disable the test until the item uses the real group
-// data.
-IN_PROC_BROWSER_TEST_F(CoralBrowserTest, DISABLED_OpenNewDesk) {
-  DesksController* desks_controller = DesksController::Get();
-  EXPECT_EQ(desks_controller->desks().size(), 1u);
-
-  // Set up a callback for a birch data fetch.
-  base::RunLoop birch_data_fetch_waiter;
-  Shell::Get()->birch_model()->SetDataFetchCallbackForTest(
-      birch_data_fetch_waiter.QuitClosure());
-
-  // Create a test coral group with no tabs and apps.
-  std::vector<coral::mojom::GroupPtr> test_groups;
-  test_groups.push_back(CreateTestGroup({}, "Coral desk"));
-  OverrideTestResponse(std::move(test_groups));
-
-  ToggleOverview();
-  WaitForOverviewEntered();
-
-  // Wait for fetch callback to complete.
-  birch_data_fetch_waiter.Run();
-
-  // The birch bar is created with a single chip.
-  BirchChipButtonBase* coral_chip = GetBirchChipButton();
-  ASSERT_TRUE(coral_chip);
-  ASSERT_EQ(coral_chip->GetItem()->GetType(), BirchItemType::kCoral);
-
-  DeskSwitchAnimationWaiter waiter;
-  test::Click(coral_chip);
-  waiter.Wait();
-
-  // After clicking the coral chip, we have two desks and the new active desk
-  // has the coral title.
-  EXPECT_EQ(desks_controller->desks().size(), 2u);
-  EXPECT_EQ(desks_controller->GetActiveDeskIndex(), 1);
-  EXPECT_EQ(
-      desks_controller->GetDeskName(desks_controller->GetActiveDeskIndex()),
-      u"Coral desk");
-}
-
 // Tests that the Coral Delegate could create a new browser on the new desk by
 // moving indicated tabs from the browser on the active desk.
 IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveTabsToNewDesk) {

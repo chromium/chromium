@@ -68,6 +68,19 @@ class CoralControllerTest : public AshTestBase {
   base::test::ScopedFeatureList feature_list_{features::kCoralFeature};
 };
 
+// Tests that clicking the in session coral button opens and activates a new
+// desk.
+TEST_F(CoralControllerTest, OpenNewDesk) {
+  // Click the coral button and verify we have created and activated the new
+  // desk.
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  ClickFirstCoralButton();
+  auto* desks_controller = DesksController::Get();
+  EXPECT_EQ(desks_controller->desks().size(), 2u);
+  EXPECT_EQ(desks_controller->GetActiveDeskIndex(), 1);
+}
+
 // Tests that clicking the coral chip and then it's addon view will not crash.
 // Regression test for crbug.com/376549527.
 TEST_F(CoralControllerTest, ClickChipWithMaxDesks) {
