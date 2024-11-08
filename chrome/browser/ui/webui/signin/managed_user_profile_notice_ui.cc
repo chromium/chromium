@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,10 +22,13 @@
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui.h"
@@ -284,6 +288,23 @@ void ManagedUserProfileNoticeUI::Initialize(
     update_data.Set("separateBrowsingDataTitle",
                     l10n_util::GetStringUTF16(
                         IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_SCHOOL_TITLE));
+  }
+
+  // Change the text so that the "(Recommended)" label is not shown when the
+  // admin has set merging data as the default option.
+  bool profile_separation_data_migration_settings_optout =
+      profile->GetPrefs()->GetInteger(
+          prefs::kProfileSeparationDataMigrationSettings) == 2;
+  bool check_link_data_checkbox_by_default_from_legacy_policy =
+      g_browser_process->local_state()->GetBoolean(
+          prefs::kEnterpriseProfileCreationKeepBrowsingData);
+  if (create_param->show_link_data_option &&
+      (profile_separation_data_migration_settings_optout ||
+       check_link_data_checkbox_by_default_from_legacy_policy)) {
+    update_data.Set(
+        "separateBrowsingDataChoiceTitle",
+        l10n_util::GetStringUTF16(
+            IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_NOT_RECOMMENDED));
   }
 
   content::WebUIDataSource::Update(

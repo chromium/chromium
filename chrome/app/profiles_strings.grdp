@@ -695,6 +695,9 @@
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
       Yes, keep it separate (recommended)
     </message>
+    <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_NOT_RECOMMENDED" desc="Label of a radio button option that lets the user separate their existing data from a newly created work profile.">
+      Yes, keep it separate
+    </message>
     <message name="IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_DETAILS" desc="Additional information of a radio button option that lets the user separate their existing data from a newly created personal profile.">
       Your existing browsing data will remain in the existing profile. This new profile will not contain any previous browsing data.
     </message>
