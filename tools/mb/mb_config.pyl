@@ -271,8 +271,8 @@
     },
 
     'tryserver.v8': {
-      'v8_linux_blink_rel': 'release_trybot_blink',
-      'v8_linux_chromium_gn_rel': 'release_trybot_reclient',
+      'v8_linux_blink_rel': 'release_trybot_blink_siso',
+      'v8_linux_chromium_gn_rel': 'release_trybot_reclient_siso',
     },
 
     'tryserver.webrtc': {
@@ -645,8 +645,16 @@
       'release_trybot_blink', 'devtools_do_typecheck',
     ],
 
+    'release_trybot_blink_siso': [
+      'release_trybot_blink', 'use_siso',
+    ],
+
     'release_trybot_reclient': [
       'release_trybot_reclient',
+    ],
+
+    'release_trybot_reclient_siso': [
+      'release_trybot_reclient', 'use_siso',
     ],
 
     'v8_future_debug_bot_reclient': [
