@@ -108,6 +108,10 @@ base::UnsafeSharedMemoryRegion SyncReader::TakeSharedMemoryRegion() {
 void SyncReader::RequestMoreData(base::TimeDelta delay,
                                  base::TimeTicks delay_timestamp,
                                  const media::AudioGlitchInfo& glitch_info) {
+  TRACE_EVENT("audio", "SyncReader::RequestMoreData", "this",
+              static_cast<void*>(this), "delay_timestamp (ms)",
+              (delay_timestamp - base::TimeTicks()).InMillisecondsF(),
+              "playout_delay (ms)", delay.InMillisecondsF());
   // We don't send arguments over the socket since sending more than 4
   // bytes might lead to being descheduled. The reading side will zero
   // them when consumed.
