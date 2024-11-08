@@ -36,4 +36,6 @@ const char kLobsterDownloadModeValue[] = "download";
 
 const char kLobsterInsertModeValue[] = "insert";
 
+const char kLobsterFeedbackEnabledParamKey[] = "feedback-enabled";
+
 }  // namespace ash

@@ -36,6 +36,8 @@ extern const char kLobsterDownloadModeValue[];
 
 extern const char kLobsterInsertModeValue[];
 
+extern const char kLobsterFeedbackEnabledParamKey[];
+
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_MAKO_URL_CONSTANTS_H_

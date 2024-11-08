@@ -7,6 +7,8 @@
 #include <optional>
 #include <string_view>
 
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/lobster/lobster_view.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
@@ -40,6 +42,11 @@ void LobsterBubbleCoordinator::LoadUI(Profile* profile,
                                            mode == LobsterMode::kInsert
                                                ? kLobsterInsertModeValue
                                                : kLobsterDownloadModeValue);
+
+  url = net::AppendOrReplaceQueryParameter(
+      url, kLobsterFeedbackEnabledParamKey,
+      base::FeatureList::IsEnabled(ash::features::kLobsterFeedback) ? "true"
+                                                                    : "false");
 
   contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<MakoUntrustedUI>>(
       url, profile, IDS_ACCNAME_ORCA,
