@@ -7,3 +7,7 @@ features:
   files:
   - spelling-error-*
   - grammar-spelling-errors-*
+features:
+- name: marker
+  files:
+  - marker-*
