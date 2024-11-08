@@ -155,8 +155,7 @@ std::string GetStringNameForOptimizationType(
   // variant list in
   // //tools/metrics/histograms/metadata/optimization/histograms.xml. Also
   // update enums.xml when adding new value in OptimizationType.
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 const proto::PageHint* FindPageHintForURL(const GURL& gurl,

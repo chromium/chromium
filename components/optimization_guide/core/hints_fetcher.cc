@@ -49,8 +49,7 @@ std::string GetStringNameForRequestContext(
   switch (request_context) {
     case proto::RequestContext::CONTEXT_UNSPECIFIED:
     case proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS:
-      NOTREACHED_IN_MIGRATION();
-      return "Unknown";
+      NOTREACHED();
     case proto::RequestContext::CONTEXT_PAGE_NAVIGATION:
       return "PageNavigation";
     case proto::RequestContext::CONTEXT_BATCH_UPDATE_GOOGLE_SRP:
@@ -70,8 +69,7 @@ std::string GetStringNameForRequestContext(
     case proto::RequestContext::CONTEXT_SHOPPING:
       return "Shopping";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 void RecordRequestStatusHistogram(proto::RequestContext request_context,

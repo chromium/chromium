@@ -140,8 +140,7 @@ std::string GetStringNameForOptimizationTarget(
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::optional<base::FilePath> StringToFilePath(const std::string& str_path) {

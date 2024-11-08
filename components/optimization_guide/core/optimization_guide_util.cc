@@ -126,8 +126,7 @@ std::string GetStringForOptimizationGuideDecision(
     case OptimizationGuideDecision::kFalse:
       return "False";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 optimization_guide::proto::OriginInfo GetClientOriginInfo() {

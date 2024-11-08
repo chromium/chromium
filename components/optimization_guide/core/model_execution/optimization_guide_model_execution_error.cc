@@ -89,8 +89,7 @@ bool OptimizationGuideModelExecutionError::transient() const {
     case ModelExecutionError::kCancelled:
       return true;
     case ModelExecutionError::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
   }
 }
 
@@ -109,8 +108,7 @@ bool OptimizationGuideModelExecutionError::ShouldLogModelQuality() const {
     case ModelExecutionError::kCancelled:
       return false;
     case ModelExecutionError::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
