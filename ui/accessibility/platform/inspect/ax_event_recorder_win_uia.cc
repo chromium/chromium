@@ -93,9 +93,9 @@ void AXEventRecorderWinUia::WaitForDoneRecording() {
   base::PlatformThread::Join(thread_handle_);
 }
 
-AXEventRecorderWinUia::Thread::Thread() {}
+AXEventRecorderWinUia::Thread::Thread() = default;
 
-AXEventRecorderWinUia::Thread::~Thread() {}
+AXEventRecorderWinUia::Thread::~Thread() = default;
 
 void AXEventRecorderWinUia::Thread::Init(AXEventRecorderWinUia* owner,
                                          HWND hwnd,
@@ -222,7 +222,7 @@ AXEventRecorderWinUia::Thread::EventHandler::EventHandler() {
           : L"RPCRT4.dll");
 }
 
-AXEventRecorderWinUia::Thread::EventHandler::~EventHandler() {}
+AXEventRecorderWinUia::Thread::EventHandler::~EventHandler() = default;
 
 void AXEventRecorderWinUia::Thread::EventHandler::Init(
     AXEventRecorderWinUia::Thread* owner,

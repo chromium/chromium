@@ -36,7 +36,7 @@ scoped_refptr<gl::GLSurface> CreateGLSurface(gl::GLDisplay* display,
 }
 }  // namespace
 
-SkiaRendererFactory::SkiaRendererFactory() {}
+SkiaRendererFactory::SkiaRendererFactory() = default;
 
 SkiaRendererFactory::~SkiaRendererFactory() {
   if (display_) {

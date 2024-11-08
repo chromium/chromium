@@ -88,7 +88,7 @@ bool AllowCpuMappableBuffers() {
 
 }  // namespace
 
-ClientNativePixmapDmaBuf::PlaneInfo::PlaneInfo() {}
+ClientNativePixmapDmaBuf::PlaneInfo::PlaneInfo() = default;
 
 ClientNativePixmapDmaBuf::PlaneInfo::PlaneInfo(PlaneInfo&& info)
     : data(info.data), offset(info.offset), size(info.size) {

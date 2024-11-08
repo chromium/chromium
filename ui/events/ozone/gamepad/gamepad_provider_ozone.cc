@@ -9,9 +9,9 @@
 
 namespace ui {
 
-GamepadProviderOzone::GamepadProviderOzone() {}
+GamepadProviderOzone::GamepadProviderOzone() = default;
 
-GamepadProviderOzone::~GamepadProviderOzone() {}
+GamepadProviderOzone::~GamepadProviderOzone() = default;
 
 GamepadProviderOzone* GamepadProviderOzone::GetInstance() {
   // GamepadProviderOzone is not holding any important resource. It's best to be

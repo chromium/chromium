@@ -73,9 +73,9 @@ PointerProperties GetPointerPropertiesFromTouchEvent(const TouchEvent& touch) {
 
 }  // namespace
 
-MotionEventAura::MotionEventAura() {}
+MotionEventAura::MotionEventAura() = default;
 
-MotionEventAura::~MotionEventAura() {}
+MotionEventAura::~MotionEventAura() = default;
 
 bool MotionEventAura::OnTouch(const TouchEvent& touch) {
   int index = FindPointerIndexOfId(touch.pointer_details().id);

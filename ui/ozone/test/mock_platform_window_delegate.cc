@@ -6,9 +6,9 @@
 
 namespace ui {
 
-MockPlatformWindowDelegate::MockPlatformWindowDelegate() {}
+MockPlatformWindowDelegate::MockPlatformWindowDelegate() = default;
 
-MockPlatformWindowDelegate::~MockPlatformWindowDelegate() {}
+MockPlatformWindowDelegate::~MockPlatformWindowDelegate() = default;
 
 bool operator==(const PlatformWindowDelegate::BoundsChange& a,
                 const PlatformWindowDelegate::BoundsChange& b) {

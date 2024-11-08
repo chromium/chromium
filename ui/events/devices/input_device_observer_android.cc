@@ -14,9 +14,9 @@ using jni_zero::JavaParamRef;
 
 namespace ui {
 
-InputDeviceObserverAndroid::InputDeviceObserverAndroid() {}
+InputDeviceObserverAndroid::InputDeviceObserverAndroid() = default;
 
-InputDeviceObserverAndroid::~InputDeviceObserverAndroid() {}
+InputDeviceObserverAndroid::~InputDeviceObserverAndroid() = default;
 
 InputDeviceObserverAndroid* InputDeviceObserverAndroid::GetInstance() {
   return base::Singleton<

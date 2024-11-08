@@ -316,8 +316,8 @@ bool WindowResizeHelperMac::WaitForSingleTaskToRun(
   return pumpable_task_runner->WaitForSingleWrappedTaskToRun(max_delay);
 }
 
-WindowResizeHelperMac::WindowResizeHelperMac() {}
-WindowResizeHelperMac::~WindowResizeHelperMac() {}
+WindowResizeHelperMac::WindowResizeHelperMac() = default;
+WindowResizeHelperMac::~WindowResizeHelperMac() = default;
 
 void WindowResizeHelperMac::EventTimedWait(base::WaitableEvent* event,
                                            base::TimeDelta delay) {

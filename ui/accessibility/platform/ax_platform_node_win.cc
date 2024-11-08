@@ -277,9 +277,9 @@ const uint32_t kScreenReaderAccessibilityMode =
 // WinAccessibilityAPIUsageObserver
 //
 
-WinAccessibilityAPIUsageObserver::WinAccessibilityAPIUsageObserver() {}
+WinAccessibilityAPIUsageObserver::WinAccessibilityAPIUsageObserver() = default;
 
-WinAccessibilityAPIUsageObserver::~WinAccessibilityAPIUsageObserver() {}
+WinAccessibilityAPIUsageObserver::~WinAccessibilityAPIUsageObserver() = default;
 
 // static
 base::ObserverList<WinAccessibilityAPIUsageObserver>::Unchecked&
@@ -330,7 +330,7 @@ AXPlatformNode* AXPlatformNode::FromNativeViewAccessible(
 // AXPlatformNodeWin
 //
 
-AXPlatformNodeWin::AXPlatformNodeWin() {}
+AXPlatformNodeWin::AXPlatformNodeWin() = default;
 
 AXPlatformNodeWin::~AXPlatformNodeWin() {
   ClearOwnRelations();

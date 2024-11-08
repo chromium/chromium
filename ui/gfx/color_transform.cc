@@ -1325,7 +1325,7 @@ sk_sp<SkData> ColorTransformInternal::GetSkShaderUniforms(
   return SkData::MakeWithCopy(&data, sizeof(data));
 }
 
-ColorTransformInternal::~ColorTransformInternal() {}
+ColorTransformInternal::~ColorTransformInternal() = default;
 
 void ColorTransformInternal::Simplify() {
   for (auto iter = steps_.begin(); iter != steps_.end();) {
@@ -1374,7 +1374,7 @@ std::unique_ptr<ColorTransform> ColorTransform::NewColorTransform(
   return std::make_unique<ColorTransformInternal>(src, dst, options);
 }
 
-ColorTransform::ColorTransform() {}
-ColorTransform::~ColorTransform() {}
+ColorTransform::ColorTransform() = default;
+ColorTransform::~ColorTransform() = default;
 
 }  // namespace gfx

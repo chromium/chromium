@@ -286,9 +286,9 @@ bool TouchCalibrationData::IsEmpty() const {
 
 ////////////////////////////////////////////////////////////////////////////////
 // TouchDeviceManager
-TouchDeviceManager::TouchDeviceManager() {}
+TouchDeviceManager::TouchDeviceManager() = default;
 
-TouchDeviceManager::~TouchDeviceManager() {}
+TouchDeviceManager::~TouchDeviceManager() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // TouchDeviceManager

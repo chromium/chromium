@@ -8,7 +8,7 @@
 
 namespace ui {
 
-OverlayPlane::OverlayPlane() {}
+OverlayPlane::OverlayPlane() = default;
 
 OverlayPlane::OverlayPlane(scoped_refptr<gfx::NativePixmap> pixmap,
                            std::unique_ptr<gfx::GpuFence> gpu_fence,
@@ -21,6 +21,6 @@ OverlayPlane::OverlayPlane(OverlayPlane&& other) = default;
 
 OverlayPlane& OverlayPlane::operator=(OverlayPlane&& other) = default;
 
-OverlayPlane::~OverlayPlane() {}
+OverlayPlane::~OverlayPlane() = default;
 
 }  // namespace ui

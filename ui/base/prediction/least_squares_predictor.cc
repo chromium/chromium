@@ -38,9 +38,9 @@ static bool SolveLeastSquares(const gfx::Matrix3F& x,
 
 }  // namespace
 
-LeastSquaresPredictor::LeastSquaresPredictor() {}
+LeastSquaresPredictor::LeastSquaresPredictor() = default;
 
-LeastSquaresPredictor::~LeastSquaresPredictor() {}
+LeastSquaresPredictor::~LeastSquaresPredictor() = default;
 
 const char* LeastSquaresPredictor::GetName() const {
   return features::kPredictorNameLsq;

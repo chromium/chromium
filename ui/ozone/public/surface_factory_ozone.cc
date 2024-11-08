@@ -21,9 +21,9 @@
 
 namespace ui {
 
-SurfaceFactoryOzone::SurfaceFactoryOzone() {}
+SurfaceFactoryOzone::SurfaceFactoryOzone() = default;
 
-SurfaceFactoryOzone::~SurfaceFactoryOzone() {}
+SurfaceFactoryOzone::~SurfaceFactoryOzone() = default;
 
 std::vector<gl::GLImplementationParts>
 SurfaceFactoryOzone::GetAllowedGLImplementations() {

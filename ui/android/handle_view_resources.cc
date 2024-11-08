@@ -22,7 +22,7 @@ static SkBitmap CreateSkBitmapFromJavaBitmap(
 
 namespace ui {
 
-HandleViewResources::HandleViewResources() {}
+HandleViewResources::HandleViewResources() = default;
 
 void HandleViewResources::LoadIfNecessary(const JavaRef<jobject>& context) {
   if (loaded_)
