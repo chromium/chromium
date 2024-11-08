@@ -188,17 +188,18 @@ IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, AiInfoCard) {
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, TabOrganizationSubpage) {
-  RunTest("settings/ai_subpage_test.js",
+  RunTest("settings/ai_tab_organization_subpage_test.js",
           "runMochaSuite('TabOrganizationSubpage')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, HistorySearchSubpage) {
-  RunTest("settings/ai_subpage_test.js",
+  RunTest("settings/ai_history_search_subpage_test.js",
           "runMochaSuite('HistorySearchSubpage')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, CompareSubpage) {
-  RunTest("settings/ai_subpage_test.js", "runMochaSuite('CompareSubpage')");
+  RunTest("settings/ai_compare_subpage_test.js",
+          "runMochaSuite('CompareSubpage')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, LoggingInfoBullet) {
