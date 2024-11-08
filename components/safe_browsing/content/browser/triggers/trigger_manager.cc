@@ -53,9 +53,8 @@ bool TriggerNeedsOptInForCollection(const TriggerType trigger_type) {
       return true;
     case TriggerType::DEPRECATED_AD_POPUP:
     case TriggerType::DEPRECATED_AD_REDIRECT:
-      NOTREACHED_IN_MIGRATION() << "These triggers have been handled in "
-                                   "CanStartDataCollectionWithReason()";
-      return true;
+      NOTREACHED() << "These triggers have been handled in "
+                      "CanStartDataCollectionWithReason()";
   }
   // By default, require opt-in for all triggers.
   return true;

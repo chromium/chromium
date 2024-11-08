@@ -191,8 +191,7 @@ SBThreatType RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
       case RTLookupResponse::ThreatInfo::SAFE:
         return SB_THREAT_TYPE_SAFE;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return SB_THREAT_TYPE_SAFE;
+        NOTREACHED();
     }
   }
 
@@ -211,9 +210,7 @@ SBThreatType RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
       return SB_THREAT_TYPE_BILLING;
     case RTLookupResponse::ThreatInfo::MANAGED_POLICY:
     case RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected RTLookupResponse::ThreatType encountered";
-      return SB_THREAT_TYPE_SAFE;
+      NOTREACHED() << "Unexpected RTLookupResponse::ThreatType encountered";
   }
 }
 

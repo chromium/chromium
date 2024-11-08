@@ -47,7 +47,7 @@ class FakeSafeBrowsing : public mojom::SafeBrowsing {
   }
 
   void Clone(mojo::PendingReceiver<mojom::SafeBrowsing> receiver) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void EnableDelayCallback() { should_delay_callback_ = true; }

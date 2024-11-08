@@ -228,8 +228,7 @@ void V4Database::ApplyUpdate(
                                       std::move(store_ready_callback)));
       }
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << "Got update for unexpected identifier: " << identifier;
+      NOTREACHED() << "Got update for unexpected identifier: " << identifier;
     }
   }
 

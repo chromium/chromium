@@ -165,15 +165,13 @@ bool RemoteSafeBrowsingDatabaseManager::CheckBrowseUrl(
 bool RemoteSafeBrowsingDatabaseManager::CheckDownloadUrl(
     const std::vector<GURL>& url_chain,
     Client* client) {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 bool RemoteSafeBrowsingDatabaseManager::CheckExtensionIDs(
     const std::set<std::string>& extension_ids,
     Client* client) {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 void RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
@@ -244,9 +242,7 @@ AsyncMatch RemoteSafeBrowsingDatabaseManager::CheckCsdAllowlistUrl(
 void RemoteSafeBrowsingDatabaseManager::MatchDownloadAllowlistUrl(
     const GURL& url,
     base::OnceCallback<void(bool)> callback) {
-  NOTREACHED_IN_MIGRATION();
-  ui_task_runner()->PostTask(FROM_HERE,
-                             base::BindOnce(std::move(callback), true));
+  NOTREACHED();
 }
 
 safe_browsing::ThreatSource

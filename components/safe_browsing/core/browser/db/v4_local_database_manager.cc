@@ -164,9 +164,8 @@ ThreatSeverity GetThreatSeverity(const ListIdentifier& list_id) {
     case POTENTIALLY_HARMFUL_APPLICATION:
     case SOCIAL_ENGINEERING_PUBLIC:
     case THREAT_TYPE_UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected ThreatType encountered: " << list_id.threat_type();
-      return kLeastSeverity;
+      NOTREACHED() << "Unexpected ThreatType encountered: "
+                   << list_id.threat_type();
   }
 }
 
@@ -191,9 +190,7 @@ ListIdentifier GetUrlIdFromSBThreatType(SBThreatType sb_threat_type) {
       return GetUrlBillingId();
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      // Compiler requires a return statement here.
-      return GetUrlMalwareId();
+      NOTREACHED();
   }
 }
 
@@ -852,7 +849,7 @@ void V4LocalDatabaseManager::HandleAllowlistCheckContinuation(
                               : SBThreatType::SB_THREAT_TYPE_SAFE;
       RespondToClient(std::move(check));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -1145,8 +1142,7 @@ void V4LocalDatabaseManager::RespondToClientWithoutPendingCheckCleanup(
     }
 
     case ClientCallbackType::CHECK_OTHER:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected client_callback_type encountered";
+      NOTREACHED() << "Unexpected client_callback_type encountered";
   }
 }
 

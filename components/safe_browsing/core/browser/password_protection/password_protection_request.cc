@@ -296,7 +296,7 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

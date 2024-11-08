@@ -159,8 +159,7 @@ std::string BaseBlockingPage::GetMetricPrefix(
     case BaseSafeBrowsingErrorUI::SB_REASON_PHISHING:
       return "phishing";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "unkown_metric_prefix";
+  NOTREACHED();
 }
 
 // static

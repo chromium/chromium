@@ -334,8 +334,7 @@ std::string SafeBrowsingUIManager::GetThreatTypeStringForInterstitial(
     case SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
     case SB_THREAT_TYPE_APK_DOWNLOAD:
     case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return std::string();
 }

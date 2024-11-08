@@ -678,8 +678,7 @@ void ClientSidePhishingModel::OnGetOverridenModelData(
       break;
     }
     case CSDModelType::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   if (tflite_model.IsValid()) {

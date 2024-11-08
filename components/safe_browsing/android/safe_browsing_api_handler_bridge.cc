@@ -318,8 +318,7 @@ SafeBrowsingJavaThreatType SBThreatTypeToSafeBrowsingApiJavaThreatType(
     case SB_THREAT_TYPE_BILLING:
       return SafeBrowsingJavaThreatType::BILLING;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return SafeBrowsingJavaThreatType::NO_THREAT;
+      NOTREACHED();
   }
 }
 

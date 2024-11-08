@@ -50,8 +50,7 @@ bool SafeBrowsingDatabaseManager::CancelApiCheck(Client* client) {
     api_checks_.erase(it);
     return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool SafeBrowsingDatabaseManager::CheckApiBlocklistUrl(const GURL& url,

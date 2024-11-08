@@ -92,8 +92,7 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
 
   // network::SharedURLLoaderFactory implementation:
   std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   network::mojom::URLLoaderFactory* GetURLLoaderFactory() {
