@@ -323,9 +323,6 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
 // Tests that setting a menu model in `ToastParams` adds a menu button to the
 // toast that runs the menu model and that interacting with a menu element
 // closes the toast.
-// TODO(crbug.com/358618479): Understand why `SelectMenuItem` is not working
-// properly on Mac and re-enable the test.
-#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
                        MenuButtonClickOpensMenu) {
   ToastParams params(ToastId::kPlusAddressOverride);
@@ -337,10 +334,9 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest,
                   EnsurePresent(toasts::ToastView::kToastMenuButton),
                   PressButton(toasts::ToastView::kToastMenuButton),
                   WaitForShow(kSampleMenuItem), SelectMenuItem(kSampleMenuItem),
-                  Check([&]() { return counter == 1; }),
-                  WaitForHide(toasts::ToastView::kToastViewId));
+                  WaitForHide(toasts::ToastView::kToastViewId),
+                  Check([&]() { return counter == 1; }));
 }
-#endif
 
 // Tests that attempting to close the `ToastView` does not succeed while the
 // menu is open. If that happens, the `ToastView` is closed once the menu
