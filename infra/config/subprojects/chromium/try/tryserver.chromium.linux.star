@@ -421,16 +421,6 @@ try_.orchestrator_builder(
     ),
     compilator = "linux-rel-compilator",
     coverage_test_types = ["unit", "overall"],
-    custom_metrics = [
-        buildbucket.custom_metric(
-            name = "/chrome/infra/browser/builds/ran_tests_retry_shard_count",
-            predicates = ["has(build.output.properties.ran_tests_retry_shard)"],
-        ),
-        buildbucket.custom_metric(
-            name = "/chrome/infra/browser/builds/ran_tests_without_patch_count",
-            predicates = ["has(build.output.properties.ran_tests_without_patch)"],
-        ),
-    ],
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,

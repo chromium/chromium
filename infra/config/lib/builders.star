@@ -1000,7 +1000,25 @@ def builder(
 
     contact_team_email = defaults.get_value("contact_team_email", contact_team_email)
 
-    kwargs["custom_metrics"] = defaults.get_value_from_kwargs("custom_metrics", kwargs)
+    custom_metrics = [
+        buildbucket.custom_metric(
+            name = "/chrome/infra/browser/builds/ran_tests_retry_shard_count",
+            predicates = ["has(build.output.properties.ran_tests_retry_shard)"],
+        ),
+        buildbucket.custom_metric(
+            name = "/chrome/infra/browser/builds/ran_tests_without_patch_count",
+            predicates = ["has(build.output.properties.ran_tests_without_patch)"],
+        ),
+    ]
+
+    kwargs["custom_metrics"] = args.listify(
+        custom_metrics,
+        defaults.get_value_from_kwargs(
+            "custom_metrics",
+            kwargs,
+            merge = args.MERGE_LIST,
+        ),
+    )
 
     builder = branches.builder(
         name = name,
