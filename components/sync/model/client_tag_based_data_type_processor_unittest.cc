@@ -2872,11 +2872,6 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   // Initial update.
   worker()->UpdateFromServer();
   EXPECT_TRUE(type_processor()->IsTrackingMetadata());
-
-  histogram_tester.ExpectBucketCount(
-      "Sync.DataTypeEntityMetadataWithoutInitialSync",
-      /*sample=*/DataTypeHistogramValue(GetDataType()),
-      /*expected_count=*/1);
 }
 
 // Regression test for crbug.com/1427000.
@@ -2905,10 +2900,6 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   EXPECT_EQ(2U, db()->metadata_count());
   EXPECT_EQ(2U, ProcessorEntityCount());
   EXPECT_TRUE(type_processor()->IsTrackingMetadata());
-
-  histogram_tester.ExpectTotalCount(
-      "Sync.DataTypeEntityMetadataWithoutInitialSync",
-      /*expected_count=*/0);
 }
 
 TEST_F(ClientTagBasedDataTypeProcessorTest,

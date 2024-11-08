@@ -740,16 +740,6 @@ chromium-metrics-reviews@google.com.
   <token key="SyncDataType" variants="SyncDataType"/>
 </histogram>
 
-<histogram name="Sync.DataTypeEntityMetadataWithoutInitialSync"
-    enum="SyncDataTypes" expires_after="2024-12-08">
-  <owner>mastiz@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <summary>
-    Records whenever ClientTagBasedDataTypeProcessor finds entity metadata
-    during ModelReadyToSync() but initial_sync_done is false.
-  </summary>
-</histogram>
-
 <histogram name="Sync.DataTypeErrorSite{SyncDataType}"
     enum="SyncDataTypeErrorSite" expires_after="2025-03-09">
   <owner>treib@chromium.org</owner>
