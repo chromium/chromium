@@ -31,8 +31,10 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.TestActivity;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -105,6 +107,10 @@ public class AuthTabIntentDataProviderUnitTest {
         assertEquals("Intent doesn't match expectation.", mIntent, mIntentDataProvider.getIntent());
         assertEquals("Wrong package name", PACKAGE, mIntentDataProvider.getClientPackageName());
         assertEquals("Wrong URL", URL, mIntentDataProvider.getUrlToLoad());
+        assertEquals(
+                "CustomTabMode should be regular.",
+                CustomTabProfileType.REGULAR,
+                mIntentDataProvider.getCustomTabMode());
         histogramWatcher.assertExpected();
     }
 
@@ -140,6 +146,27 @@ public class AuthTabIntentDataProviderUnitTest {
 
         assertEquals("Wrong https redirect host.", HOST, mIntentDataProvider.getAuthRedirectHost());
         assertEquals("Wrong https redirect path.", PATH, mIntentDataProvider.getAuthRedirectPath());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.CCT_EPHEMERAL_MODE)
+    public void testIntentData_ephemeralBrowsing() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM,
+                                CustomTabsFeatureUsage.CustomTabsFeature
+                                        .EXTRA_ENABLE_EPHEMERAL_BROWSING)
+                        .allowExtraRecordsForHistogramsAbove()
+                        .build();
+        mIntent.putExtra(CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
+        mIntentDataProvider = new AuthTabIntentDataProvider(mIntent, mActivity);
+
+        assertEquals(
+                "CustomTabMode should be ephemeral.",
+                CustomTabProfileType.EPHEMERAL,
+                mIntentDataProvider.getCustomTabMode());
         histogramWatcher.assertExpected();
     }
 }
