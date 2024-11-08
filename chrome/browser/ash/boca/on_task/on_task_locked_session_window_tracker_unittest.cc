@@ -1743,3 +1743,45 @@ TEST_F(OnTaskNavigationThrottleTest, AllowClientRedirectToPass) {
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             simulator->GetLastThrottleCheckResult());
 }
+
+TEST_F(OnTaskNavigationThrottleTest, CloseBlockedUrlInNewTabWhenSwitchingToIt) {
+  CreateWindowTrackerServiceForTesting();
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
+  const GURL url_a(kTabUrl1);
+  const GURL url_b(kTabUrl2);
+
+  AddTab(browser(), url_a);
+  const auto* const tab_strip_model = browser()->tab_strip_model();
+  window_tracker->InitializeBrowserInfoForTracking(browser());
+  ASSERT_EQ(window_tracker->browser(), browser());
+  auto* const on_task_blocklist = window_tracker->on_task_blocklist();
+  on_task_blocklist->SetParentURLRestrictionLevel(
+      tab_strip_model->GetWebContentsAt(0), url_a,
+      LockedNavigationOptions::BLOCK_NAVIGATION);
+  window_tracker->RefreshUrlBlocklist();
+  task_environment()->RunUntilIdle();
+  const SessionID active_tab_id = sessions::SessionTabHelper::IdForTab(
+      tab_strip_model->GetWebContentsAt(0));
+  EXPECT_CALL(boca_window_observer_, OnTabAdded(active_tab_id, _, url_b))
+      .Times(1);
+
+  content::WebContents* const new_tab = browser()->OpenURL(
+      content::OpenURLParams(url_b, content::Referrer(),
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                             ui::PAGE_TRANSITION_LINK,
+                             /* is_renderer_initiated= */ false),
+      /*navigation_handle_callback=*/{});
+  ASSERT_EQ(tab_strip_model->count(), 2);
+  ASSERT_FALSE(new_tab->GetLastCommittedURL().is_valid());
+  browser()->tab_strip_model()->ActivateTabAt(1);
+
+  const SessionID tab_id = sessions::SessionTabHelper::IdForTab(new_tab);
+  EXPECT_CALL(boca_window_observer_, OnTabRemoved(tab_id)).Times(1);
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return tab_strip_model->GetIndexOfWebContents(new_tab) ==
+           TabStripModel::kNoTab;
+  }));
+}

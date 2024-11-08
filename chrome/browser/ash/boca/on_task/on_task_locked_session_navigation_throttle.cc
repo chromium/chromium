@@ -251,7 +251,8 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
   // by the device admin panel, this would be enforced by a different
   // NavigationThrottle.
   if (window_tracker->on_task_blocklist()->IsCurrentRestrictionOneLevelDeep() &&
-      navigation_handle()->GetReloadType() != content::ReloadType::NONE) {
+      navigation_handle()->GetReloadType() != content::ReloadType::NONE &&
+      navigation_handle()->GetWebContents()->GetLastCommittedURL().is_valid()) {
     should_redirects_pass_ = true;
     return PROCEED;
   }

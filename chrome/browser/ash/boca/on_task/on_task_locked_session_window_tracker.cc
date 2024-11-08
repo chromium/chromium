@@ -117,6 +117,10 @@ void LockedSessionWindowTracker::MaybeCloseBrowser(
 void LockedSessionWindowTracker::MaybeCloseWebContents(
     base::WeakPtr<content::WebContents> weak_tab_ptr) {
   content::WebContents* const tab = weak_tab_ptr.get();
+  if (!tab || tab->GetLastCommittedURL().is_valid() ||
+      on_task_blocklist()->IsParentTab(tab)) {
+    return;
+  }
   if (browser_->tab_strip_model()->count() > 1) {
     int index = browser_->tab_strip_model()->GetIndexOfWebContents(tab);
     if (index == TabStripModel::kNoTab) {
@@ -195,6 +199,13 @@ void LockedSessionWindowTracker::TabChangedAt(content::WebContents* contents,
   }
 
   if (browser_ && browser_->tab_strip_model()->active_index() == index) {
+    // This is only needed to clean up tabs that were created with previously
+    // cancelled navigations.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&LockedSessionWindowTracker::MaybeCloseWebContents,
+                       weak_pointer_factory_.GetWeakPtr(),
+                       contents->GetWeakPtr()));
     // Only fire for active tab.
     for (auto& observer : observers_) {
       observer.OnActiveTabChanged(contents->GetTitle());
@@ -215,6 +226,13 @@ void LockedSessionWindowTracker::OnTabStripModelChanged(
   if (selection.active_tab_changed()) {
     RefreshUrlBlocklist();
     if (selection.new_contents) {
+      // This is only needed to clean up tabs that were created with previously
+      // cancelled navigations.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&LockedSessionWindowTracker::MaybeCloseWebContents,
+                         weak_pointer_factory_.GetWeakPtr(),
+                         selection.new_contents->GetWeakPtr()));
       for (auto& observer : observers_) {
         observer.OnActiveTabChanged(selection.new_contents->GetTitle());
       }
@@ -319,10 +337,6 @@ void LockedSessionWindowTracker::DidFinishNavigation(
                        browser->AsWeakPtr()));
   } else {
     content::WebContents* const tab = navigation_handle->GetWebContents();
-    if (!tab || tab->GetLastCommittedURL().is_valid() ||
-        on_task_blocklist()->IsParentTab(tab)) {
-      return;
-    }
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&LockedSessionWindowTracker::MaybeCloseWebContents,
