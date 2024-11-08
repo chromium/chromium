@@ -320,16 +320,12 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                                 mNightModeStateController,
                                 intentIgnoringCriterion,
                                 getTopUiThemeColorProvider(),
-                                new DefaultBrowserProviderImpl(),
-                                mCipherFactory,
                                 this)
                         : new BaseCustomTabActivityModule(
                                 mIntentDataProvider,
                                 mNightModeStateController,
                                 intentIgnoringCriterion,
                                 getTopUiThemeColorProvider(),
-                                new DefaultBrowserProviderImpl(),
-                                mCipherFactory,
                                 this);
 
         BaseCustomTabActivityComponent component =
@@ -919,5 +915,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     public ClientPackageNameProvider getClientPackageNameProvider() {
         return mClientPackageNameProvider;
+    }
+
+    public CipherFactory getCipherFactory() {
+        return mCipherFactory;
     }
 }

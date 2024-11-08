@@ -44,7 +44,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabNavigationEventObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
-import org.chromium.chrome.browser.customtabs.DefaultBrowserProviderImpl;
 import org.chromium.chrome.browser.customtabs.ReparentingTaskProvider;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
 import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
@@ -149,6 +148,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(activity.getTabObserverRegistrar()).thenReturn(tabObserverRegistrar);
         when(activity.getCustomTabObserver()).thenReturn(customTabObserver);
         when(activity.getCustomTabNavigationEventObserver()).thenReturn(navigationEventObserver);
+        when(activity.getCipherFactory()).thenReturn(cipherFactory);
     }
 
     @Override
@@ -175,8 +175,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 reparentingTaskProvider,
                 () -> activity.getSavedInstanceState(),
                 activity.getWindowAndroid(),
-                tabModelInitializer,
-                cipherFactory);
+                tabModelInitializer);
     }
 
     public CustomTabActivityNavigationController createNavigationController(
@@ -187,8 +186,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                         intentDataProvider,
                         closeButtonNavigator,
                         activity,
-                        lifecycleDispatcher,
-                        new DefaultBrowserProviderImpl());
+                        lifecycleDispatcher);
         return controller;
     }
 

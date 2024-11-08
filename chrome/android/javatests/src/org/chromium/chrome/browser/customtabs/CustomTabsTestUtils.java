@@ -9,6 +9,11 @@ import static org.junit.Assert.assertEquals;
 import static org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule.LONG_TIMEOUT_MS;
 
 import android.content.ComponentName;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -25,12 +30,15 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 import org.junit.Assert;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -190,6 +198,31 @@ public class CustomTabsTestUtils {
             }
         }
         return items.toString();
+    }
+
+    public static PackageManagerWrapper getDefaultBrowserOverridingPackageManager(
+            String browserPackage, PackageManager wrapped) {
+        return new PackageManagerWrapper(wrapped) {
+            @Override
+            public ResolveInfo resolveActivity(Intent intent, int flags) {
+                // Set ourselves as the default browser.
+                if (intent.filterEquals(PackageManagerUtils.BROWSER_INTENT)) {
+                    return newResolveInfo(ContextUtils.getApplicationContext().getPackageName());
+                }
+                return super.resolveActivity(intent, flags);
+            }
+        };
+    }
+
+    public static ResolveInfo newResolveInfo(String packageName) {
+        ActivityInfo ai = new ActivityInfo();
+        ai.packageName = packageName;
+        ai.name = "Name: " + packageName;
+        ai.applicationInfo = new ApplicationInfo();
+        ai.exported = true;
+        ResolveInfo ri = new ResolveInfo();
+        ri.activityInfo = ai;
+        return ri;
     }
 
     @NativeMethods

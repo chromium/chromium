@@ -39,8 +39,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -63,12 +61,7 @@ import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
-import org.chromium.chrome.browser.crypto.CipherFactory;
-import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
-import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
-import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -76,7 +69,6 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
@@ -109,34 +101,8 @@ public class CustomTabActivityAppMenuTest {
     @Rule public JniMocker jniMocker = new JniMocker();
     @Mock private TranslateBridge.Natives mTranslateBridgeJniMock;
 
-    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
-
-    private final TestRule mModuleOverridesRule =
-            new ModuleOverridesRule()
-                    .setOverride(
-                            BaseCustomTabActivityModule.Factory.class,
-                            (BrowserServicesIntentDataProvider intentDataProvider,
-                                    CustomTabNightModeStateController nightModeController,
-                                    CustomTabIntentHandler.IntentIgnoringCriterion
-                                            intentIgnoringCriterion,
-                                    TopUiThemeColorProvider topUiThemeColorProvider,
-                                    DefaultBrowserProviderImpl customTabDefaultBrowserProvider,
-                                    CipherFactory cipherFactory,
-                                    BaseCustomTabActivity activity) ->
-                                    new BaseCustomTabActivityModule(
-                                            intentDataProvider,
-                                            nightModeController,
-                                            intentIgnoringCriterion,
-                                            topUiThemeColorProvider,
-                                            new FakeDefaultBrowserProviderImpl(),
-                                            cipherFactory,
-                                            activity));
-
     @Rule
-    public RuleChain mRuleChain =
-            RuleChain.emptyRuleChain()
-                    .around(mCustomTabActivityTestRule)
-                    .around(mModuleOverridesRule);
+    public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
     private String mTestPage;
 
@@ -147,12 +113,15 @@ public class CustomTabActivityAppMenuTest {
 
         @Override
         public PackageManager getPackageManager() {
-            return new PackageManagerWrapper(super.getPackageManager()) {
-                @Override
-                public List<ResolveInfo> queryBroadcastReceivers(Intent intent, int filters) {
-                    return new ArrayList<ResolveInfo>();
-                }
-            };
+            return CustomTabsTestUtils.getDefaultBrowserOverridingPackageManager(
+                    getPackageName(),
+                    new PackageManagerWrapper(super.getPackageManager()) {
+                        @Override
+                        public List<ResolveInfo> queryBroadcastReceivers(
+                                Intent intent, int filters) {
+                            return new ArrayList<ResolveInfo>();
+                        }
+                    });
         }
 
         @Override
@@ -180,6 +149,9 @@ public class CustomTabActivityAppMenuTest {
         mTestPage = mCustomTabActivityTestRule.getTestServer().getURL(TEST_PAGE);
         WebappsUtils.setAddToHomeIntentSupportedForTesting(true);
         LibraryLoader.getInstance().ensureInitialized();
+
+        TestContext testContext = new TestContext(ContextUtils.getApplicationContext());
+        ContextUtils.initApplicationContextForTests(testContext);
     }
 
     @After
@@ -532,9 +504,6 @@ public class CustomTabActivityAppMenuTest {
     public void testAddToHomeScreenMenuItemNoHomeScreen() throws Exception {
         // Clear default setting from #setUp.
         WebappsUtils.setAddToHomeIntentSupportedForTesting(null);
-        Context contextToRestore = ContextUtils.getApplicationContext();
-        TestContext testContext = new TestContext(contextToRestore);
-        ContextUtils.initApplicationContextForTests(testContext);
         Intent intent = createMinimalCustomTabIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
@@ -544,8 +513,6 @@ public class CustomTabActivityAppMenuTest {
                         mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.universal_install);
 
         Assert.assertNull(addToHomeScreenPropertyModel);
-
-        ContextUtils.initApplicationContextForTests(contextToRestore);
     }
 
     /** Test that only up to 7 entries are added to the custom menu. */

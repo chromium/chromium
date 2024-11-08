@@ -493,7 +493,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabsFeatureUsage.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabsOpenTimeRecorder.java",
   "java/src/org/chromium/chrome/browser/customtabs/CustomTabsShareBroadcastReceiver.java",
-  "java/src/org/chromium/chrome/browser/customtabs/DefaultBrowserProviderImpl.java",
   "java/src/org/chromium/chrome/browser/customtabs/EphemeralCustomTabIntentDataProvider.java",
   "java/src/org/chromium/chrome/browser/customtabs/FirstMeaningfulPaintObserver.java",
   "java/src/org/chromium/chrome/browser/customtabs/HiddenTabHolder.java",

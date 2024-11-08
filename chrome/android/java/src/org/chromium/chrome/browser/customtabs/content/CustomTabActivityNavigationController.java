@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNa
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Browser;
@@ -22,6 +23,7 @@ import androidx.core.app.ActivityOptionsCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -98,20 +100,12 @@ public class CustomTabActivityNavigationController
         void onFinish(@FinishReason int reason, boolean warmupOnFinish);
     }
 
-    /** Interface which gets the package name of the default web browser on the device. */
-    public interface DefaultBrowserProvider {
-        /** Returns the package name for the default browser on the device as a string. */
-        @Nullable
-        String getDefaultBrowser();
-    }
-
     private final CustomTabActivityTabController mTabController;
     private final CustomTabActivityTabProvider mTabProvider;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final CustomTabObserver mCustomTabObserver;
     private final CloseButtonNavigator mCloseButtonNavigator;
     private final Activity mActivity;
-    private final DefaultBrowserProvider mDefaultBrowserProvider;
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>(false);
 
@@ -153,15 +147,13 @@ public class CustomTabActivityNavigationController
             BrowserServicesIntentDataProvider intentDataProvider,
             CloseButtonNavigator closeButtonNavigator,
             BaseCustomTabActivity activity,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
-            DefaultBrowserProvider customTabsDefaultBrowserProvider) {
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mTabController = tabController;
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mIntentDataProvider = intentDataProvider;
         mCustomTabObserver = activity.getCustomTabObserver();
         mCloseButtonNavigator = closeButtonNavigator;
         mActivity = activity;
-        mDefaultBrowserProvider = customTabsDefaultBrowserProvider;
 
         lifecycleDispatcher.register(this);
         mTabProvider.addObserver(mTabObserver);
@@ -315,9 +307,9 @@ public class CustomTabActivityNavigationController
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(IntentHandler.EXTRA_FROM_OPEN_IN_BROWSER, true);
-        String packageName = mDefaultBrowserProvider.getDefaultBrowser();
-        if (packageName != null) {
-            intent.setPackage(packageName);
+        ResolveInfo resolveInfo = PackageManagerUtils.resolveDefaultWebBrowserActivity();
+        if (resolveInfo != null) {
+            intent.setPackage(resolveInfo.activityInfo.packageName);
             // crbug.com/1265223
             if (intent.resolveActivity(mActivity.getPackageManager()) == null) {
                 intent.setPackage(null);

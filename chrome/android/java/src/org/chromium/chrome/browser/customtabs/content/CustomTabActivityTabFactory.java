@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -63,7 +64,7 @@ public class CustomTabActivityTabFactory {
 
     @Inject
     public CustomTabActivityTabFactory(
-            Activity activity,
+            BaseCustomTabActivity activity,
             CustomTabTabPersistencePolicy persistencePolicy,
             Lazy<ActivityWindowAndroid> activityWindowAndroid,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
@@ -71,8 +72,7 @@ public class CustomTabActivityTabFactory {
             BrowserServicesIntentDataProvider intentDataProvider,
             TabCreatorManager tabCreatorManager,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
-            Supplier<CompositorViewHolder> compositorViewHolderSupplier,
-            CipherFactory cipherFactory) {
+            Supplier<CompositorViewHolder> compositorViewHolderSupplier) {
         mActivity = activity;
         mPersistencePolicy = persistencePolicy;
         mActivityWindowAndroid = activityWindowAndroid;
@@ -82,7 +82,7 @@ public class CustomTabActivityTabFactory {
         mTabCreatorManager = tabCreatorManager;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
-        mCipherFactory = cipherFactory;
+        mCipherFactory = activity.getCipherFactory();
     }
 
     public void setActivityType(int activityType) {

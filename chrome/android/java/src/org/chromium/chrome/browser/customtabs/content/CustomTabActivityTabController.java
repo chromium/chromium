@@ -138,8 +138,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             ReparentingTaskProvider reparentingTaskProvider,
             @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
             ActivityWindowAndroid windowAndroid,
-            TabModelInitializer tabModelInitializer,
-            CipherFactory cipherFactory) {
+            TabModelInitializer tabModelInitializer) {
         mProfileProviderSupplier = profileProviderSupplier;
         mCustomTabDelegateFactory = customTabDelegateFactory;
         mActivity = activity;
@@ -157,7 +156,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
         mWindowAndroid = windowAndroid;
         mTabModelInitializer = tabModelInitializer;
-        mCipherFactory = cipherFactory;
+        mCipherFactory = activity.getCipherFactory();
 
         mSession = mIntentDataProvider.getSession();
         mIntent = mIntentDataProvider.getIntent();

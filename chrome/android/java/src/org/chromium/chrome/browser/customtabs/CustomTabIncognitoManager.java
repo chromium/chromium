@@ -40,7 +40,6 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
 
     @Nullable private IncognitoCustomTabHost mIncognitoTabHost;
 
-    private final IncognitoTabHostRegistry mIncognitoTabHostRegistry;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
 
     @Inject
@@ -49,12 +48,10 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
             BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabActivityNavigationController navigationController,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            IncognitoTabHostRegistry incognitoTabHostRegistry,
             OneshotSupplier<ProfileProvider> profileProviderSupplier) {
         mActivity = activity;
         mIntentDataProvider = intentDataProvider;
         mNavigationController = navigationController;
-        mIncognitoTabHostRegistry = incognitoTabHostRegistry;
         mProfileProviderSupplier = profileProviderSupplier;
 
         lifecycleDispatcher.register(this);
@@ -70,7 +67,7 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
     @Override
     public void onDestroy() {
         if (mIncognitoTabHost != null) {
-            mIncognitoTabHostRegistry.unregister(mIncognitoTabHost);
+            IncognitoTabHostRegistry.getInstance().unregister(mIncognitoTabHost);
         }
 
         if (mProfileProviderSupplier.get().hasOffTheRecordProfile()) {
@@ -88,7 +85,7 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
     private void initializeIncognito() {
         if (mIntentDataProvider.isOpenedByChrome()) {
             mIncognitoTabHost = new IncognitoCustomTabHost();
-            mIncognitoTabHostRegistry.register(mIncognitoTabHost);
+            IncognitoTabHostRegistry.getInstance().register(mIncognitoTabHost);
         }
 
         maybeCreateIncognitoTabSnapshotController();
