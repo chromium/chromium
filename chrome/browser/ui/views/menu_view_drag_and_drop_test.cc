@@ -7,7 +7,6 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/menu_test_base.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -641,15 +640,7 @@ void MenuViewDragAndDropForDropStayOpen::DoTestWithMenuOpen() {
 // Test that if a menu is opened for a drop which is handled by a child view
 // that the menu does not immediately try to close.
 // If this flakes, disable and log details in http://crbug.com/523255.
-// Flaky on Lacros. https://crbug.com/1281104
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_MenuViewStaysOpenForNestedDrag \
-  DISABLED_MenuViewStaysOpenForNestedDrag
-#else
-#define MAYBE_MenuViewStaysOpenForNestedDrag MenuViewStaysOpenForNestedDrag
-#endif
-VIEW_TEST(MenuViewDragAndDropForDropStayOpen,
-          MAYBE_MenuViewStaysOpenForNestedDrag)
+VIEW_TEST(MenuViewDragAndDropForDropStayOpen, MenuViewStaysOpenForNestedDrag)
 
 class MenuViewDragAndDropForDropCancel : public MenuViewDragAndDropTest {
  public:
@@ -678,11 +669,4 @@ void MenuViewDragAndDropForDropCancel::DoTestWithMenuOpen() {
 
 // Test that if a menu is opened for a drop handled entirely by menu code, the
 // menu will try to close if it does not receive any drag updates.
-// Flaky on Lacros. https://crbug.com/1281103
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_MenuViewCancelsForOwnDrag \
-  DISABLED_MenuViewCancelsForOwnDrag
-#else
-#define MAYBE_MenuViewCancelsForOwnDrag MenuViewCancelsForOwnDrag
-#endif
-VIEW_TEST(MenuViewDragAndDropForDropCancel, MAYBE_MenuViewCancelsForOwnDrag)
+VIEW_TEST(MenuViewDragAndDropForDropCancel, MenuViewCancelsForOwnDrag)

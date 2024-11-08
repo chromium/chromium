@@ -813,12 +813,7 @@ void DownloadBubbleSecurityView::OnInfoChanged() {
   // is otherwise no longer dangerous, we return to the primary dialog. Note
   // that we want this behavior even if this is a different download, e.g.
   // user clicks on a different download via entry point external to the
-  // download bubble (e.g. notification on Lacros).
-  //
-  // TODO(crbug.com/377410087): Confirm whether `Lacros` was the only user of
-  // the behavior above. If so, there is room for simplicate now that Lacros
-  // support has remove removed; otherwise, just remove the remove the reference
-  // to `Lacros` above.
+  // download bubble.
   if (ShouldReturnToPrimaryDialog(info_.get())) {
     navigation_handler_->OpenPrimaryDialog();
     // No need to update views here because we're resetting and returning to

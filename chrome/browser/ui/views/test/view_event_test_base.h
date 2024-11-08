@@ -22,11 +22,10 @@
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/accessibility/platform/ax_platform_for_test.h"
 
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
 namespace display {
 class Screen;
 }
@@ -130,7 +129,7 @@ class ViewEventTestBase : public ChromeViewsTestBase {
 
   ui::AXPlatformForTest ax_platform_;
 
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<display::Screen> screen_;
 #endif
 
