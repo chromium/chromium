@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//services/device/public/cpp/geolocation/buildflags.gni")
 
@@ -127,6 +128,7 @@ source_set("permissions") {
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/favicon/core:core",
+    "//components/guest_view/buildflags",
     "//components/keyed_service/content",
     "//components/permissions/prediction_service",
     "//components/permissions/vector_icons",
@@ -160,7 +162,7 @@ source_set("permissions") {
       "contexts/geolocation_permission_context_system.h",
     ]
   }
-  if (!is_android) {
+  if (enable_guest_view) {
     deps += [ "//components/guest_view/browser" ]
   }
   if (is_android) {
