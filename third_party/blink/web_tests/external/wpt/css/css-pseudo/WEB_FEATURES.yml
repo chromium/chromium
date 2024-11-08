@@ -11,3 +11,7 @@ features:
 - name: marker
   files:
   - marker-*
+features:
+- name: file-selector-button
+  files:
+  - file-selector-button-*

@@ -2554,6 +2554,9 @@ static void RecordUsageAndDeprecationsOneSelector(
     case CSSSelector::kPseudoModal:
       feature = WebFeature::kCSSSelectorPseudoModal;
       break;
+    case CSSSelector::kPseudoFileSelectorButton:
+      feature = WebFeature::kCSSSelectorPseudoFileSelectorButton;
+      break;
     default:
       break;
   }
