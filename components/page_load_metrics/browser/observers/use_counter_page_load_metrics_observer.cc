@@ -530,6 +530,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kOverflowMediaQuery, WebDXFeature::kOverflow},
           {WebFeature::kHasSpellingOrGrammarErrorPseudoElement,
            WebDXFeature::kSpellingGrammarError},
+          {WebFeature::kDynamicRangeMediaQuery, WebDXFeature::kDynamicRange},
           {WebFeature::kHasMarkerPseudoElement, WebDXFeature::kMarker},
       }};
 

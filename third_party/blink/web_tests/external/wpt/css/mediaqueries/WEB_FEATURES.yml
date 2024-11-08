@@ -19,3 +19,7 @@ features:
 - name: overflow
   files:
   - overflow-media-features.html
+features:
+- name: dynamic-range
+  files:
+  - dynamic-range.html
