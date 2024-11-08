@@ -2551,6 +2551,9 @@ static void RecordUsageAndDeprecationsOneSelector(
         feature = WebFeature::kCSSSelectorNthChildOfSelector;
       }
       break;
+    case CSSSelector::kPseudoModal:
+      feature = WebFeature::kCSSSelectorPseudoModal;
+      break;
     default:
       break;
   }
