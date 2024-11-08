@@ -316,7 +316,7 @@
     "owners": ["vasilyt@chromium.org", "chrome-gpu@google.com"],
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["images",
-              "external/wpt/css/css-images/gradient"],
+              "external/wpt/css/css-images"],
     "args": ["--enable-gpu-rasterization"],
     "expires": "Jul 1, 2025"
   },

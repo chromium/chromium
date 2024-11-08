@@ -752,6 +752,8 @@ crbug.com/1174873 external/wpt/css/css-images/object-position-svg-002e.html [ Fa
 crbug.com/1174873 external/wpt/css/css-images/object-position-svg-002i.html [ Failure ]
 crbug.com/1174873 external/wpt/css/css-images/object-position-svg-002o.html [ Failure ]
 crbug.com/1174873 external/wpt/css/css-images/object-position-svg-002p.html [ Failure ]
+crbug.com/378046059 virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-fill-png-001c.html [ Failure ]
+crbug.com/378046059 virtual/gpu-rasterization/external/wpt/css/css-images/object-fit-fill-png-002c.html [ Failure ]
 
 # The following fails because we don't use the natural aspect ratio when applying
 # object-fit, and the images referenced don't have a natural size.
