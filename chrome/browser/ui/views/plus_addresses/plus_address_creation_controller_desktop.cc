@@ -161,6 +161,9 @@ void PlusAddressCreationControllerDesktop::OnCanceled() {
   if (!modal_error_status_) {
     RecordModalShownOutcome(PlusAddressModalCompletionStatus::kModalCanceled,
                             was_notice_shown);
+    if (was_notice_shown) {
+      TriggerUserPerceptionSurvey(hats::SurveyType::kDeclinedFirstTimeCreate);
+    }
     return;
   }
 

@@ -76,6 +76,7 @@ extern const char kHatsSurveyTriggerSafetyHubAndroid[];
 
 extern const char kHatsSurveyTriggerPermissionsPrompt[];
 extern const char kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate[];
+extern const char kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate[];
 extern const char kHatsSurveyTriggerPrivacySandboxSentimentSurvey[];
 
 extern const char kHatsSurveyTriggerTesting[];

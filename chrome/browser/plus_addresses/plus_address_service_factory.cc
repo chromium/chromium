@@ -42,6 +42,14 @@ void LaunchUserPerceptionSurvey(HatsService* hats_service,
       }
       survey_trigger = kHatsSurveyTriggerPlusAddressAcceptedFirstTimeCreate;
       break;
+    case plus_addresses::hats::SurveyType::kDeclinedFirstTimeCreate:
+      if (!base::FeatureList::IsEnabled(
+              plus_addresses::features::
+                  kPlusAddressDeclinedFirstTimeCreateSurvey)) {
+        return;
+      }
+      survey_trigger = kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate;
+      break;
   }
 
   hats_service->LaunchSurvey(

@@ -23,6 +23,8 @@ inline constexpr char kLastPlusAddressFillingTime[] =
 enum class SurveyType {
   // Triggered after the user has created their first plus address.
   kAcceptedFirstTimeCreate = 1,
+  // The user has declined the first plus address creation flow.
+  kDeclinedFirstTimeCreate = 2,
 };
 
 std::map<std::string, std::string> GetPlusAddressHatsData(

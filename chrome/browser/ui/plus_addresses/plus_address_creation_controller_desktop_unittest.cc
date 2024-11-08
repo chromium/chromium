@@ -167,6 +167,54 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
               Optional(hats::SurveyType::kAcceptedFirstTimeCreate));
 }
 
+// Tests the scenario when the user declines the first plus address creation
+// flow.
+TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
+       FirstTimePlusAddressCreationDeclined) {
+  setting_service().set_has_accepted_notice(false);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
+
+  PlusAddressCreationControllerDesktop::CreateForWebContents(
+      web_contents.get());
+  PlusAddressCreationControllerDesktop* controller =
+      PlusAddressCreationControllerDesktop::FromWebContents(web_contents.get());
+  controller->set_suppress_ui_for_testing(true);
+
+  base::test::TestFuture<const std::string&> future;
+
+  controller->OfferCreation(
+      url::Origin::Create(GURL("https://mattwashere.example")),
+      future.GetCallback());
+  ASSERT_FALSE(future.IsReady());
+
+  task_environment()->FastForwardBy(kDuration);
+
+  controller->OnCanceled();
+
+  EXPECT_FALSE(future.IsReady());
+
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(
+          kPlusAddressModalEventHistogramWithNotice),
+      BucketsAre(
+          base::Bucket(metrics::PlusAddressModalEvent::kModalShown, 1),
+          base::Bucket(metrics::PlusAddressModalEvent::kModalCanceled, 1)));
+  histogram_tester().ExpectUniqueTimeSample(
+      FormatModalWithNoticeDurationMetrics(
+          metrics::PlusAddressModalCompletionStatus::kModalCanceled),
+      kDuration, 1);
+  // The pref is set only when the first time onboarding notice is shown.
+  EXPECT_EQ(profile()->GetTestingPrefService()->GetTime(
+                prefs::kFirstPlusAddressCreationTime),
+            base::Time());
+  // HaTS survey should be shown if the user declined the first time plus
+  // address creation flow.
+  EXPECT_THAT(plus_address_service().get_triggered_survey_type(),
+              Optional(hats::SurveyType::kDeclinedFirstTimeCreate));
+}
+
 // Tests the scenario when the user confirms the first plus address creation
 // flow, but the `PlusAddressService` fails to confirm the plus address.
 TEST_F(PlusAddressCreationControllerDesktopEnabledTest,

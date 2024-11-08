@@ -19,7 +19,7 @@ constexpr char kPlusAddressRequestTimeoutName[] = "request-timeout";
 
 }  // namespace
 
-// When enabled, HaTS survey is shown after the successful first time creation
+// When enabled, a HaTS survey is shown after the successful first time creation
 // flow.
 BASE_FEATURE(kPlusAddressAcceptedFirstTimeCreateSurvey,
              "PlusAddressAcceptedFirstTimeCreateSurvey",
@@ -32,6 +32,12 @@ BASE_FEATURE(kPlusAddressAndroidOpenGmsCoreManagementPage,
              "PlusAddressAndroidOpenGmsCoreManagementPage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// When enabled, a HaTS survey is shown after the declined the first plus
+// address creation flow.
+BASE_FEATURE(kPlusAddressDeclinedFirstTimeCreateSurvey,
+             "PlusAddressDeclinedFirstTimeCreateSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls the enabled/disabled state of the experimental feature.
 BASE_FEATURE(kPlusAddressesEnabled,
