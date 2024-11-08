@@ -28,10 +28,8 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -55,7 +53,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "crbug.com/342984901")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.DisableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
 public class TabStripTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =

@@ -70,6 +70,7 @@ import org.chromium.chrome.browser.PlayServicesVersionInfo;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.download.DownloadMessageUiDelegate;
+import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFactory;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
@@ -1045,6 +1046,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         super.onStartWithNative();
 
         ChromeActivitySessionTracker.getInstance().onStartWithNative(getProfileProviderSupplier());
+        ChromeCachedFlags.getInstance().cacheNativeFlags();
 
         // postDeferredStartupIfNeeded() is called in TabModelSelectorTabObsever#onLoadStopped(),
         // #onPageLoadFinished() and #onCrash(). If we are not actively loading a tab (e.g.

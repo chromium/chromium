@@ -78,8 +78,7 @@ public class ChromeCachedFlags {
     /**
      * Caches flags that are needed by Activities that launch before the native library is loaded
      * and stores them in SharedPreferences. Because this function is called during launch after the
-     * library has loaded, any flags that have already been accessed won't reflect the most recent
-     * server configuration state until the next launch after Chrome is restarted.
+     * library has loaded, they won't affect the next launch until Chrome is restarted.
      */
     public void cacheNativeFlags() {
         if (mIsFinishedCachingNativeFlags) return;

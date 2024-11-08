@@ -20,11 +20,9 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -35,12 +33,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-// The combination of these two features causes the first page load to layout correctly in this
-// test suite. TODO(crbug.com/377778493): To fix this test to work properly w/ EdgeToEdge.
-@Features.DisableFeatures({
-    ChromeFeatureList.DRAW_CUTOUT_EDGE_TO_EDGE,
-    ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
-})
 @MinAndroidSdkLevel(Build.VERSION_CODES.P)
 public class DisplayCutoutTest {
     @Rule

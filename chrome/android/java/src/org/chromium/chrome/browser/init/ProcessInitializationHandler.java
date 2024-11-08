@@ -353,11 +353,6 @@ public class ProcessInitializationHandler {
     /** Performs the post native initialization. */
     @CallSuper
     protected void handlePostNativeInitialization() {
-        // Triggered early in post native startup to allow any flags that have not be accessed to
-        // use the most up to date flag state from the server
-        // (see ChromeCachedFlags#cacheNativeFlags for more details).
-        ChromeCachedFlags.getInstance().cacheNativeFlags();
-
         ChromeActivitySessionTracker.getInstance().initializeWithNative();
         ProfileManagerUtils.removeSessionCookiesForAllProfiles();
         AppBannerManager.setAppDetailsDelegate(
