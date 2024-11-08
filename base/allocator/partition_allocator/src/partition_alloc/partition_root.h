@@ -1593,11 +1593,14 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
     // complete before we clear kMemoryHeldByAllocatorBit in
     // ReleaseFromAllocator(), otherwise another thread may allocate and start
     // using the slot in the middle of zapping.
+    bool was_zapped = false;
     if (!ref_count->IsAliveWithNoKnownRefs()) [[unlikely]] {
+      was_zapped = true;
       QuarantineForBrp(slot_span, object);
     }
 
     if (!(ref_count->ReleaseFromAllocator())) [[unlikely]] {
+      PA_CHECK(was_zapped);
       total_size_of_brp_quarantined_bytes.fetch_add(
           slot_span->GetSlotSizeForBookkeeping(), std::memory_order_relaxed);
       total_count_of_brp_quarantined_slots.fetch_add(1,
