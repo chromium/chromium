@@ -99,8 +99,8 @@
 #include "components/network_hints/renderer/web_prescient_networking_impl.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_client.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_render_frame_observer.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_utils.h"
-#include "components/no_state_prefetch/renderer/prerender_render_frame_observer.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_load_metrics/renderer/metrics_render_frame_observer.h"
@@ -607,7 +607,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
       new ChromeRenderFrameObserver(render_frame, web_cache_impl_.get());
   service_manager::BinderRegistry* registry = render_frame_observer->registry();
 
-  new prerender::PrerenderRenderFrameObserver(render_frame);
+  new prerender::NoStatePrefetchRenderFrameObserver(render_frame);
 
   auto content_settings_delegate =
       std::make_unique<ChromeContentSettingsAgentDelegate>(render_frame);
@@ -1151,7 +1151,8 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
               render_frame, params, info, identifier, group_name,
               IDR_BLOCKED_PLUGIN_HTML,
               l10n_util::GetStringFUTF16(IDS_PLUGIN_BLOCKED, group_name));
-          placeholder->set_blocked_for_prerendering(is_no_state_prefetching);
+          placeholder->set_blocked_for_no_state_prefetching(
+              is_no_state_prefetching);
           placeholder->AllowLoading();
           break;
         }

@@ -287,7 +287,7 @@ void NoStatePrefetchContents::StartPrerendering(
   web_contents_delegate_ = std::make_unique<WebContentsDelegateImpl>(this);
   no_state_prefetch_contents_->SetDelegate(web_contents_delegate_.get());
 
-  // Set the size of the prerender WebContents.
+  // Set the size of the NoStatePrefetch WebContents.
   no_state_prefetch_contents_->Resize(bounds_);
   no_state_prefetch_contents_->WasHidden();
 
@@ -424,15 +424,15 @@ void NoStatePrefetchContents::PrimaryMainFrameRenderProcessGone(
 
 void NoStatePrefetchContents::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  // When a new RenderFrame is created for a prerendering WebContents, tell the
-  // new RenderFrame it's being used for prerendering before any navigations
+  // When a new RenderFrame is created for a NoStatePrefetch WebContents, tell
+  // the new RenderFrame it's being used for prefetching before any navigations
   // occur.  Note that this is always triggered before the first navigation, so
   // there's no need to send the message just after the WebContents is created.
-  mojo::AssociatedRemote<prerender::mojom::PrerenderMessages>
-      prerender_render_frame;
+  mojo::AssociatedRemote<prerender::mojom::NoStatePrefetchMessages>
+      no_state_prefetch_render_frame;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
-      &prerender_render_frame);
-  prerender_render_frame->SetIsPrerendering(
+      &no_state_prefetch_render_frame);
+  no_state_prefetch_render_frame->SetIsNoStatePrefetching(
       NoStatePrefetchHistograms::GetHistogramPrefix(origin_));
 }
 
