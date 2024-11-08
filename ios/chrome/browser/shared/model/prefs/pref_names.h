@@ -707,6 +707,11 @@ inline constexpr char kIdentityConfirmationSnackbarDisplayCount[] =
 inline constexpr char kNTPHomeCustomizationNewBadgeImpressionCount[] =
     "ios.home_customization.new_badge_impressions";
 
+// The number of times that the prominence alert about the user's push
+// notification silent authorization state has been shown.
+inline constexpr char kProminenceNotificationAlertImpressionCount[] =
+    "ios.push_notification.prominence_alert_impressions";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_

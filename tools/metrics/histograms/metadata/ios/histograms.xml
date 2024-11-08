@@ -3766,6 +3766,17 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.PushNotification.ProminenceAlert.Result"
+    enum="IOSNotificationsProminenceAlertActionResult"
+    expires_after="2025-11-10">
+  <owner>thegreenfrog@google.com</owner>
+  <owner>bling-gsu-pod@google.com</owner>
+  <summary>
+    Logs the action the user takes on the alert informing the user that their
+    notifications are being delivered silently.
+  </summary>
+</histogram>
+
 <histogram name="IOS.PushNotification.Provisional.EnabledPermissisons"
     enum="PushNotificationPermissionProvisionalStatus"
     expires_after="2025-11-24">

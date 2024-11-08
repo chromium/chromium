@@ -540,6 +540,11 @@ the generic promo launch. -->
   <int value="2" label="Enable notifications tapped"/>
 </enum>
 
+<enum name="IOSNotificationsProminenceAlertActionResult">
+  <int value="0" label="Open Settings tapped"/>
+  <int value="1" label="No thanks tapped"/>
+</enum>
+
 <enum name="IOSNTPImpressionCustomizationState">
   <int value="0" label="All components enabled"/>
   <int value="1"

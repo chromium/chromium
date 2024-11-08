@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -33,6 +35,9 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
+
+// Impression limit for the ProminenceNotificationSettingAlert.
+const int kProminenceAlertImpressionLimit = 2;
 
 // Returns the gaia id used for `profile`.
 NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
@@ -68,6 +73,8 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
 - (void)stop {
   [_alertCoordinator stop];
   _alertCoordinator = nil;
+  [_prominenceAlertCoordinator stop];
+  _prominenceAlertCoordinator = nil;
 }
 
 #pragma mark - ProminenceNotificationSettingAlertCoordinatorDelegate
@@ -119,7 +126,14 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
     if (self.confirmationMessage) {
       [self showConfirmationSnackbar];
     }
-    if (IsProvisionalNotificationAlertEnabled()) {
+    PrefService* localState = GetApplicationContext()->GetLocalState();
+    const int impressionCount = localState->GetInteger(
+        prefs::kProminenceNotificationAlertImpressionCount);
+    // Check notification permission settings in case user doesn't have lock
+    // screen or alert notifications enabled to show an alert. The alert has an
+    // impression limit so don't try if the limit has already been met.
+    if (IsProvisionalNotificationAlertEnabled() &&
+        impressionCount < kProminenceAlertImpressionLimit) {
       __weak __typeof(self) weakSelf = self;
       [PushNotificationUtil
           getPermissionSettings:^(UNNotificationSettings* settings) {
