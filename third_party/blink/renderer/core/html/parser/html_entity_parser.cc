@@ -54,6 +54,14 @@ UChar AdjustEntity(UChar32 value) {
   return kWindowsLatin1ExtensionArray[value - 0x80];
 }
 
+void AppendMatchToDecoded(const HTMLEntityTableEntry& match,
+                          DecodedHTMLEntity& decoded_entity) {
+  decoded_entity.Append(match.first_value);
+  if (match.second_value) {
+    decoded_entity.Append(match.second_value);
+  }
+}
+
 constexpr UChar32 kInvalidUnicode = -1;
 
 typedef Vector<UChar, 64> ConsumedCharacterBuffer;
@@ -121,9 +129,7 @@ bool ConsumeNamedEntity(SegmentedString& source,
   if (entity_search.MostRecentMatch()->LastCharacter() == ';' ||
       !additional_allowed_character ||
       !(IsASCIIAlphanumeric(cc) || cc == '=')) {
-    decoded_entity.Append(entity_search.MostRecentMatch()->first_value);
-    if (UChar32 second = entity_search.MostRecentMatch()->second_value)
-      decoded_entity.Append(second);
+    AppendMatchToDecoded(*entity_search.MostRecentMatch(), decoded_entity);
     return true;
   }
   UnconsumeCharacters(source, consumed_characters);
@@ -267,37 +273,21 @@ bool ConsumeHTMLEntity(SegmentedString& source,
   return false;
 }
 
-static size_t AppendUChar32ToUCharArray(UChar32 value, UChar* result) {
-  if (U_IS_BMP(value)) {
-    UChar character = static_cast<UChar>(value);
-    DCHECK_EQ(character, value);
-    result[0] = character;
-    return 1;
-  }
-
-  result[0] = U16_LEAD(value);
-  result[1] = U16_TRAIL(value);
-  return 2;
-}
-
-size_t DecodeNamedEntityToUCharArray(const char* name, UChar result[4]) {
+std::optional<DecodedHTMLEntity> DecodeNamedEntity(std::string_view name) {
   HTMLEntitySearch search;
-  while (*name) {
-    search.Advance(*name++);
-    if (!search.IsEntityPrefix())
-      return 0;
+  for (const auto c : name) {
+    search.Advance(c);
+    if (!search.IsEntityPrefix()) {
+      return std::nullopt;
+    }
   }
   search.Advance(';');
-  if (!search.IsEntityPrefix())
-    return 0;
-
-  size_t number_of_code_points =
-      AppendUChar32ToUCharArray(search.MostRecentMatch()->first_value, result);
-  if (!search.MostRecentMatch()->second_value)
-    return number_of_code_points;
-  return number_of_code_points +
-         AppendUChar32ToUCharArray(search.MostRecentMatch()->second_value,
-                                   result + number_of_code_points);
+  if (!search.IsEntityPrefix()) {
+    return std::nullopt;
+  }
+  DecodedHTMLEntity decoded_entity;
+  AppendMatchToDecoded(*search.MostRecentMatch(), decoded_entity);
+  return decoded_entity;
 }
 
 }  // namespace blink

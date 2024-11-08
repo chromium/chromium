@@ -1474,15 +1474,15 @@ static xmlEntityPtr SharedXHTMLEntity() {
   return &entity;
 }
 
-static size_t ConvertUTF16EntityToUTF8(const UChar* utf16_entity,
-                                       size_t number_of_code_units,
-                                       char* target,
-                                       size_t target_size) {
+static size_t ConvertUTF16EntityToUTF8(const DecodedHTMLEntity& entity,
+                                       base::span<char> target_span) {
+  const UChar* utf16_entity = entity.data.data();
+  char* target = target_span.data();
   const char* original_target = target;
   WTF::unicode::ConversionResult conversion_result =
       WTF::unicode::ConvertUTF16ToUTF8(&utf16_entity,
-                                       utf16_entity + number_of_code_units,
-                                       &target, target + target_size);
+                                       utf16_entity + entity.length, &target,
+                                       target + target_span.size());
   if (conversion_result != WTF::unicode::kConversionOK)
     return 0;
 
@@ -1494,18 +1494,16 @@ static size_t ConvertUTF16EntityToUTF8(const UChar* utf16_entity,
 }
 
 static xmlEntityPtr GetXHTMLEntity(const xmlChar* name) {
-  UChar utf16_decoded_entity[4];
-  size_t number_of_code_units = DecodeNamedEntityToUCharArray(
-      reinterpret_cast<const char*>(name), utf16_decoded_entity);
-  if (!number_of_code_units)
+  std::optional<DecodedHTMLEntity> decoded_entity =
+      DecodeNamedEntity(reinterpret_cast<const char*>(name));
+  if (!decoded_entity) {
     return nullptr;
+  }
 
-  constexpr size_t kSharedXhtmlEntityResultLength =
-      std::size(g_shared_xhtml_entity_result);
   size_t entity_length_in_utf8;
   // Unlike HTML parser, XML parser parses the content of named
   // entities. So we need to escape '&' and '<'.
-  if (number_of_code_units == 1 && utf16_decoded_entity[0] == '&') {
+  if (decoded_entity->length == 1 && decoded_entity->data[0] == '&') {
     g_shared_xhtml_entity_result[0] = '&';
     g_shared_xhtml_entity_result[1] = '#';
     g_shared_xhtml_entity_result[2] = '3';
@@ -1513,7 +1511,7 @@ static xmlEntityPtr GetXHTMLEntity(const xmlChar* name) {
     g_shared_xhtml_entity_result[4] = ';';
     g_shared_xhtml_entity_result[5] = 0;
     entity_length_in_utf8 = 5;
-  } else if (number_of_code_units == 1 && utf16_decoded_entity[0] == '<') {
+  } else if (decoded_entity->length == 1 && decoded_entity->data[0] == '<') {
     g_shared_xhtml_entity_result[0] = '&';
     g_shared_xhtml_entity_result[1] = '#';
     g_shared_xhtml_entity_result[2] = '6';
@@ -1521,8 +1519,8 @@ static xmlEntityPtr GetXHTMLEntity(const xmlChar* name) {
     g_shared_xhtml_entity_result[4] = ';';
     g_shared_xhtml_entity_result[5] = 0;
     entity_length_in_utf8 = 5;
-  } else if (number_of_code_units == 2 && utf16_decoded_entity[0] == '<' &&
-             utf16_decoded_entity[1] == 0x20D2) {
+  } else if (decoded_entity->length == 2 && decoded_entity->data[0] == '<' &&
+             decoded_entity->data[1] == 0x20D2) {
     g_shared_xhtml_entity_result[0] = '&';
     g_shared_xhtml_entity_result[1] = '#';
     g_shared_xhtml_entity_result[2] = '6';
@@ -1534,18 +1532,17 @@ static xmlEntityPtr GetXHTMLEntity(const xmlChar* name) {
     g_shared_xhtml_entity_result[8] = 0;
     entity_length_in_utf8 = 8;
   } else {
-    DCHECK_LE(number_of_code_units, 4u);
+    DCHECK_LE(decoded_entity->length, 4u);
     entity_length_in_utf8 = ConvertUTF16EntityToUTF8(
-        utf16_decoded_entity, number_of_code_units,
-        reinterpret_cast<char*>(g_shared_xhtml_entity_result),
-        kSharedXhtmlEntityResultLength);
+        *decoded_entity,
+        base::as_writable_chars(base::span(g_shared_xhtml_entity_result)));
     if (entity_length_in_utf8 == 0)
       return nullptr;
   }
-  DCHECK_LE(entity_length_in_utf8, kSharedXhtmlEntityResultLength);
+  CHECK_LE(entity_length_in_utf8, std::size(g_shared_xhtml_entity_result));
 
   xmlEntityPtr entity = SharedXHTMLEntity();
-  entity->length = base::checked_cast<int>(entity_length_in_utf8);
+  entity->length = static_cast<int>(entity_length_in_utf8);
   entity->name = name;
   return entity;
 }
