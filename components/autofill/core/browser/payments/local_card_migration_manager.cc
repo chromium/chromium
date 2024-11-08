@@ -214,6 +214,7 @@ void LocalCardMigrationManager::OnUserDeletedLocalCardViaMigrationDialog(
 bool LocalCardMigrationManager::IsCreditCardMigrationEnabled() {
   return ::autofill::IsCreditCardMigrationEnabled(
       client_->GetPersonalDataManager(), client_->GetSyncService(),
+      *client_->GetPrefs(),
       /*is_test_mode=*/observer_for_testing_, client_->GetLogManager());
 }
 
