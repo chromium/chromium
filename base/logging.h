@@ -18,6 +18,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/logging/log_severity.h"
 #include "base/strings/utf_ostream_operators.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -366,24 +367,6 @@ typedef bool (*LogMessageHandlerFunction)(int severity,
     const char* file, int line, size_t message_start, const std::string& str);
 BASE_EXPORT void SetLogMessageHandler(LogMessageHandlerFunction handler);
 BASE_EXPORT LogMessageHandlerFunction GetLogMessageHandler();
-
-using LogSeverity = int;
-constexpr LogSeverity LOGGING_VERBOSE = -1;  // This is level 1 verbosity
-// Note: the log severities are used to index into the array of names,
-// see log_severity_names.
-constexpr LogSeverity LOGGING_INFO = 0;
-constexpr LogSeverity LOGGING_WARNING = 1;
-constexpr LogSeverity LOGGING_ERROR = 2;
-constexpr LogSeverity LOGGING_FATAL = 3;
-constexpr LogSeverity LOGGING_NUM_SEVERITIES = 4;
-
-// LOGGING_DFATAL is LOGGING_FATAL in DCHECK-enabled builds, ERROR in normal
-// mode.
-#if DCHECK_IS_ON()
-constexpr LogSeverity LOGGING_DFATAL = LOGGING_FATAL;
-#else
-constexpr LogSeverity LOGGING_DFATAL = LOGGING_ERROR;
-#endif
 
 // A few definitions of macros that don't generate much code. These are used
 // by LOG() and LOG_IF, etc. Since these are used all over our code, it's
