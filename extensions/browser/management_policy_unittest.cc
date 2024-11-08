@@ -67,32 +67,25 @@ TEST_F(ManagementPolicyTest, RegisterAndUnregister) {
 
 TEST_F(ManagementPolicyTest, UserMayLoad) {
   // No providers registered.
-  std::u16string error;
   // The extension and location are irrelevant to the
   // TestManagementPolicyProviders.
-  EXPECT_TRUE(policy_.UserMayLoad(nullptr, &error));
-  EXPECT_TRUE(error.empty());
+  EXPECT_TRUE(policy_.UserMayLoad(nullptr));
 
   // One provider, no relevant restriction.
   policy_.RegisterProvider(&no_modify_status_);
-  EXPECT_TRUE(policy_.UserMayLoad(nullptr, &error));
-  EXPECT_TRUE(error.empty());
+  EXPECT_TRUE(policy_.UserMayLoad(nullptr));
 
   // Two providers, no relevant restrictions.
   policy_.RegisterProvider(&must_remain_enabled_);
-  EXPECT_TRUE(policy_.UserMayLoad(nullptr, &error));
-  EXPECT_TRUE(error.empty());
+  EXPECT_TRUE(policy_.UserMayLoad(nullptr));
 
   // Three providers, one with a relevant restriction.
   policy_.RegisterProvider(&no_load_);
-  EXPECT_FALSE(policy_.UserMayLoad(nullptr, &error));
-  EXPECT_FALSE(error.empty());
+  EXPECT_FALSE(policy_.UserMayLoad(nullptr));
 
   // Remove the restriction.
   policy_.UnregisterProvider(&no_load_);
-  error.clear();
-  EXPECT_TRUE(policy_.UserMayLoad(nullptr, &error));
-  EXPECT_TRUE(error.empty());
+  EXPECT_TRUE(policy_.UserMayLoad(nullptr));
 }
 TEST_F(ManagementPolicyTest, UserMayModifySettings) {
   // No providers registered.
@@ -213,27 +206,19 @@ TEST_F(ManagementPolicyTest, ErrorHandling) {
   std::string original_error = "Ceci est en effet une erreur.";
   std::u16string original_error16 = base::UTF8ToUTF16(original_error);
   std::u16string error = original_error16;
-  EXPECT_TRUE(policy_.UserMayLoad(nullptr, &error));
-  EXPECT_EQ(original_error, base::UTF16ToUTF8(error));
   EXPECT_TRUE(policy_.UserMayModifySettings(nullptr, &error));
   EXPECT_EQ(original_error, base::UTF16ToUTF8(error));
   EXPECT_FALSE(policy_.MustRemainEnabled(nullptr, &error));
   EXPECT_EQ(original_error, base::UTF16ToUTF8(error));
 
   // Ensure no crashes if no error message was requested.
-  EXPECT_TRUE(policy_.UserMayLoad(nullptr, nullptr));
   EXPECT_TRUE(policy_.UserMayModifySettings(nullptr, nullptr));
   EXPECT_FALSE(policy_.MustRemainEnabled(nullptr, nullptr));
   policy_.RegisterProvider(&restrict_all_);
-  EXPECT_FALSE(policy_.UserMayLoad(nullptr, nullptr));
   EXPECT_FALSE(policy_.UserMayModifySettings(nullptr, nullptr));
   EXPECT_TRUE(policy_.MustRemainEnabled(nullptr, nullptr));
 
   // Make sure returned error is correct.
-  error = original_error16;
-  EXPECT_FALSE(policy_.UserMayLoad(nullptr, &error));
-  EXPECT_EQ(base::UTF8ToUTF16(TestProvider::expected_error()), error);
-  error = original_error16;
   EXPECT_FALSE(policy_.UserMayModifySettings(nullptr, &error));
   EXPECT_EQ(base::UTF8ToUTF16(TestProvider::expected_error()), error);
   error = original_error16;

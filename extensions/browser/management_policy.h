@@ -129,11 +129,11 @@ class ManagementPolicy {
       const std::vector<std::unique_ptr<Provider>>& providers);
 
   // Returns true if the user is permitted to install, load, and run the given
-  // extension. If not, |error| may be set to an appropriate message.
+  // extension.
   // Installed extensions failing this check are disabled with the reason
   // DISABLE_BLOCKED_BY_POLICY.
   // TODO(crbug.com/41159442): Misleading name; see comment in Provider.
-  bool UserMayLoad(const Extension* extension, std::u16string* error) const;
+  bool UserMayLoad(const Extension* extension) const;
 
   // Returns false if the user should not be allowed to install the given
   // |extension|. By default, this forwards to UserMayLoad() (since a user

@@ -86,10 +86,9 @@ void ManagementPolicy::RegisterProviders(
     providers_.insert(provider.get());
 }
 
-bool ManagementPolicy::UserMayLoad(const Extension* extension,
-                                   std::u16string* error) const {
-  return ApplyToProviderList(
-      &Provider::UserMayLoad, "Installation", true, extension, error);
+bool ManagementPolicy::UserMayLoad(const Extension* extension) const {
+  return ApplyToProviderList(&Provider::UserMayLoad, "Installation", true,
+                             extension, /*error=*/nullptr);
 }
 
 bool ManagementPolicy::UserMayInstall(const Extension* extension,
@@ -131,7 +130,7 @@ bool ManagementPolicy::MustRemainEnabled(const Extension* extension,
 bool ManagementPolicy::MustRemainDisabled(
     const Extension* extension,
     disable_reason::DisableReason* reason) const {
-  if (!UserMayLoad(extension, /*error=*/nullptr)) {
+  if (!UserMayLoad(extension)) {
     if (reason) {
       *reason = disable_reason::DISABLE_BLOCKED_BY_POLICY;
     }
