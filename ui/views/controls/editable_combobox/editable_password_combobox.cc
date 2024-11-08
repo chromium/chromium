@@ -108,26 +108,7 @@ EditablePasswordCombobox::EditablePasswordCombobox(
         base::Unretained(this));
   }
 
-  // If there is no arrow for a dropdown element, then the eye is too close to
-  // the border of the textarea - therefore add additional padding.
-  std::unique_ptr<ToggleImageButton> eye = CreateEye(std::move(eye_callback));
-  eye_ = eye.get();
-  if (!display_arrow) {
-    // Add the insets to an additional container instead of directly to the
-    // button's border so that the focus ring around the pressed button is not
-    // affected by this additional padding.
-    auto container =
-        Builder<BoxLayoutView>()
-            .SetInsideBorderInsets(gfx::Insets().set_right(
-                std::max(0, LayoutProvider::Get()->GetDistanceMetric(
-                                DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING) -
-                                kEyePaddingWidth)))
-            .Build();
-    container->AddChildView(std::move(eye));
-    AddControlElement(std::move(container));
-  } else {
-    AddControlElement(std::move(eye));
-  }
+  eye_ = AddControlElement(CreateEye(std::move(eye_callback)));
 
   GetTextfield().SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   SetMenuDecorationStrategy(
