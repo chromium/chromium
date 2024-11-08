@@ -2333,8 +2333,9 @@ export class AppElement extends AppElementBase {
 
     // Enable the locale for the preferred voice for this language.
     if (this.selectedVoice_ &&
-        !this.enabledLangs.includes(this.selectedVoice_.lang)) {
-      this.enabledLangs = [...this.enabledLangs, this.selectedVoice_.lang];
+        !this.enabledLangs.includes(this.selectedVoice_.lang.toLowerCase())) {
+      this.enabledLangs =
+          [...this.enabledLangs, this.selectedVoice_.lang.toLowerCase()];
     }
   }
 
