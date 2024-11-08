@@ -204,8 +204,7 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   // Controller doesn't exist in unsupported context but WebUI should still
   // load.
   if (auto* controller =
-          LensOverlayController::GetControllerFromWebViewWebContents(
-              web_ui->GetWebContents())) {
+          LensOverlayController::GetController(web_ui->GetWebContents())) {
     html_source->AddDouble("invocationTime",
                            controller->GetInvocationTimeSinceEpoch());
     html_source->AddString("invocationSource",
@@ -277,7 +276,7 @@ void LensOverlayUntrustedUI::BindInterface(
 void LensOverlayUntrustedUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
   LensOverlayController* controller =
-      LensOverlayController::GetController(web_ui());
+      LensOverlayController::GetController(web_ui()->GetWebContents());
   // TODO(crbug.com/360724768): This should not need to be null-checked and
   // exists here as a temporary solution to handle situations where lens may be
   // loaded in an unsupported context (e.g. browser tab). Remove this once work
@@ -312,7 +311,7 @@ void LensOverlayUntrustedUI::CreatePageHandler(
     mojo::PendingReceiver<lens::mojom::LensPageHandler> receiver,
     mojo::PendingRemote<lens::mojom::LensPage> page) {
   LensOverlayController* controller =
-      LensOverlayController::GetController(web_ui());
+      LensOverlayController::GetController(web_ui()->GetWebContents());
   // TODO(crbug.com/360724768): This should not need to be null-checked and
   // exists here as a temporary solution to handle situations where lens may be
   // loaded in an unsupported context (e.g. browser tab). Remove this once work
@@ -328,7 +327,7 @@ void LensOverlayUntrustedUI::CreatePageHandler(
 void LensOverlayUntrustedUI::CreateGhostLoaderPage(
     mojo::PendingRemote<lens::mojom::LensGhostLoaderPage> page) {
   LensOverlayController* controller =
-      LensOverlayController::GetController(web_ui());
+      LensOverlayController::GetController(web_ui()->GetWebContents());
   // TODO(crbug.com/360724768): See above.
   if (!controller) {
     return;

@@ -7,9 +7,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_controller_glue.h"
 #include "chrome/browser/ui/lens/search_bubble_ui.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -45,7 +45,6 @@ class LensSearchBubbleDialogView : public WebUIBubbleDialogView {
   // WebUIContentsWrapper::Host:
   void CloseUI() override {
     WebUIBubbleDialogView::CloseUI();
-    search_bubble_controller_->RemoveLensOverlayControllerGlue();
     // The lens overlay controller's CloseUIAsync() will eventually call the
     // search bubble's Close() function.
     search_bubble_controller_->CloseLensOverlay();
@@ -82,8 +81,8 @@ void LensSearchBubbleController::Show() {
           /*esc_closes_ui=*/true,
           /*supports_draggable_regions=*/false);
   web_contents_ = contents_wrapper->web_contents();
-  lens::LensOverlayControllerGlue::CreateForWebContents(
-      web_contents_, lens_overlay_controller_);
+  webui::SetTabInterface(web_contents_,
+                         lens_overlay_controller_->GetTabInterface());
   std::unique_ptr<LensSearchBubbleDialogView> bubble_view =
       std::make_unique<LensSearchBubbleDialogView>(
           lens_overlay_controller_->GetTabInterface()
@@ -103,7 +102,6 @@ void LensSearchBubbleController::Close() {
     DCHECK(bubble_view_->GetWidget());
     bubble_view_->GetWidget()->CloseWithReason(
         views::Widget::ClosedReason::kUnspecified);
-    RemoveLensOverlayControllerGlue();
   }
   // RealboxOmniboxClient has a reference to web_contents_ so must reset before
   // web_contents_ gets destroyed.
@@ -120,11 +118,6 @@ bool LensSearchBubbleController::IsSearchBubbleVisible() {
 void LensSearchBubbleController::CloseLensOverlay() {
   lens_overlay_controller_->CloseUISync(
       lens::LensOverlayDismissalSource::kSearchBubbleCloseButton);
-}
-
-void LensSearchBubbleController::RemoveLensOverlayControllerGlue() {
-  CHECK(web_contents_);
-  web_contents_->RemoveUserData(LensOverlayControllerGlue::UserDataKey());
 }
 
 void LensSearchBubbleController::SetContextualSearchboxHandler(

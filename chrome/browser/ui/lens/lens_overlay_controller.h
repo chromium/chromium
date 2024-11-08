@@ -163,6 +163,11 @@ class LensOverlayController : public LensSearchboxClient,
     std::optional<TranslateOptions> translate_options_;
   };
 
+  // A simple utility that gets the the LensOverlayController TabFeature set by
+  // the embedding context of a lens WebUI hosted in `webui_contents`.
+  static LensOverlayController* GetController(
+      content::WebContents* webui_contents);
+
   // Sets a region to search after the overlay loads, then calls ShowUI().
   // All units are in device pixels. region_bitmap contains the high definition
   // image bytes to use for the search instead of cropping the region from the
@@ -197,24 +202,6 @@ class LensOverlayController : public LensSearchboxClient,
   // Instantly closes the overlay. This may not look nice if the overlay is
   // visible when this is called.
   void CloseUISync(lens::LensOverlayDismissalSource dismissal_source);
-
-  // Given an instance of `web_ui` created by the LensOverlayController, returns
-  // the LensOverlayController. This method is necessary because WebUIController
-  // is created by //content with no context or references to the owning
-  // controller.
-  static LensOverlayController* GetController(content::WebUI* web_ui);
-
-  // Given a `content::WebContents` associated with a tab, returns the
-  // associated controller. Returns `nullptr` if there is no controller (e.g.
-  // the WebContents is not a tab).
-  static LensOverlayController* GetController(
-      content::WebContents* tab_contents);
-
-  // Given a `content::WebContents` associated with a glued web view (e.g. side
-  // panel), returns the associated controller. Returns `nullptr` if there is no
-  // controller glued to the web contents.
-  static LensOverlayController* GetControllerFromWebViewWebContents(
-      content::WebContents* contents);
 
   // This method is used to set up communication between this instance and the
   // overlay WebUI. This is called by the WebUIController when the WebUI is
@@ -346,16 +333,6 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Testing helper method for checking web view.
   views::WebView* GetOverlayWebViewForTesting();
-
-  // Creates the glue that allows the WebUIController for a WebView to look up
-  // the LensOverlayController.
-  void CreateGlueForWebView(views::WebView* web_view);
-
-  // Removes the glue that allows the WebUIController for a WebView to look up
-  // the LensOverlayController. Used by the side panel coordinator when it is
-  // closed when the overlay is still open. This is a no-op if the provided web
-  // view is not glued.
-  void RemoveGlueForWebView(views::WebView* web_view);
 
   // Send text data to the WebUI.
   void SendText(lens::mojom::TextPtr text);
@@ -985,10 +962,6 @@ class LensOverlayController : public LensSearchboxClient,
   // Controller for showing the page screenshot permission bubble.
   std::unique_ptr<lens::LensPermissionBubbleController>
       permission_bubble_controller_;
-
-  // Pointer to the WebViews that are being glued by this class. Only used to
-  // clean up stale pointers. Only valid while `overlay_view_` is showing.
-  std::vector<views::WebView*> glued_webviews_;
 
   // The assembly data needed for the overlay to be created and shown.
   std::unique_ptr<OverlayInitializationData> initialization_data_;

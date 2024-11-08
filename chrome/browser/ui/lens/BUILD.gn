@@ -33,8 +33,6 @@ source_set("lens") {
     "lens_overlay_blur_layer_delegate.h",
     "lens_overlay_colors.h",
     "lens_overlay_controller.cc",
-    "lens_overlay_controller_glue.cc",
-    "lens_overlay_controller_glue.h",
     "lens_overlay_entry_point_controller.cc",
     "lens_overlay_event_handler.cc",
     "lens_overlay_event_handler.h",

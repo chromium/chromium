@@ -132,7 +132,6 @@ void LensOverlaySidePanelCoordinator::WebViewClosing() {
   // state associated with the WebView.
   if (side_panel_web_view_) {
     lens_overlay_controller_->ResetSidePanelSearchboxHandler();
-    lens_overlay_controller_->RemoveGlueForWebView(side_panel_web_view_);
     side_panel_web_view_ = nullptr;
   }
 }
@@ -308,11 +307,6 @@ LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView(
   side_panel_web_view_ = view.get();
   Observe(GetSidePanelWebContents());
 
-  // Important safety note: creating the SidePanelWebUIViewT can result in
-  // synchronous construction of the WebUIController. Until
-  // "CreateGlueForWebView" is called below, the WebUIController will not be
-  // able to access to LensOverlayController.
-  lens_overlay_controller_->CreateGlueForWebView(view.get());
   view->SetVisible(true);
   SidePanelUtil::GetSidePanelContentProxy(view.get())->SetAvailable(true);
   return view;

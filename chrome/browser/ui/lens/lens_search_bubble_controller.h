@@ -43,9 +43,6 @@ class LensSearchBubbleController {
   // manually through the "X" button.
   void CloseLensOverlay();
 
-  // Removes LensOverlayControllerGlue from the web contents.
-  void RemoveLensOverlayControllerGlue();
-
   // This method is used to set up communication between this instance and the
   // search bubble searchbox WebUI Passes
   //  ownership of `handler` to the search_bubble_controller_.

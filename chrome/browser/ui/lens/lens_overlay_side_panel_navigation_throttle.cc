@@ -30,8 +30,8 @@ LensOverlaySidePanelNavigationThrottle::MaybeCreateFor(
     return nullptr;
   }
 
-  auto* controller = LensOverlayController::GetControllerFromWebViewWebContents(
-      handle->GetWebContents());
+  LensOverlayController* controller =
+      LensOverlayController::GetController(handle->GetWebContents());
   // Only create the navigation throttle for this handle if it equals the side
   // panel web contents and the side panel web contents is not null. The entry
   // does not need to be showing as it's possible a new tab was opened that hid
@@ -73,7 +73,7 @@ LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
   auto params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
 
-  auto* controller = LensOverlayController::GetControllerFromWebViewWebContents(
+  LensOverlayController* controller = LensOverlayController::GetController(
       navigation_handle()->GetWebContents());
   // If the URL is a redirect to a search URL, we want to load it directly in
   // the side panel.

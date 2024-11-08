@@ -75,7 +75,7 @@ void SearchBubbleUI::BindInterface(
 void SearchBubbleUI::BindInterface(
     mojo::PendingReceiver<searchbox::mojom::PageHandler> receiver) {
   LensOverlayController* controller =
-      LensOverlayController::GetController(web_ui());
+      LensOverlayController::GetController(web_ui()->GetWebContents());
   CHECK(controller);
   auto contextual_searchbox_handler = std::make_unique<RealboxHandler>(
       std::move(receiver), Profile::FromWebUI(web_ui_),

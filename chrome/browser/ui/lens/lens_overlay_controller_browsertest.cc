@@ -47,7 +47,6 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/lens/lens_overlay_colors.h"
-#include "chrome/browser/ui/lens/lens_overlay_controller_glue.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
@@ -3981,20 +3980,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // Overlay should close
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOff; }));
-}
-
-// Regression test for crbug.com/360710001. Asserts the untrusted lens page will
-// load in an unsupported context (browser tab for e.g.) without crashing.
-// TODO(crbug.com/360724768): This should be updated to assert the WebUI does
-// not load in an unsupported context at all once improvements have landed.
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       LoadsInUnsupportedContext) {
-  content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_FALSE(
-      lens::LensOverlayControllerGlue::FromWebContents(active_contents));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUILensOverlayUntrustedURL)));
 }
 
 class LensOverlayControllerBrowserFullscreenDisabled
