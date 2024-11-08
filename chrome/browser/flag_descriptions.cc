@@ -2959,12 +2959,6 @@ const char kPasswordFormGroupedAffiliationsDescription[] =
     "Enables offering credentials coming from grouped domains for "
     "filling";
 
-const char kPasswordGenerationSoftNudgeName[] =
-    "Password generation soft nudge";
-const char kPasswordGenerationSoftNudgeDescription[] =
-    "Enables updated password generation UI with a prominent button and "
-    "previewing the generated password on focus.";
-
 const char kPasswordLeakToggleMoveName[] = "Password leak toggle move";
 const char kPasswordLeakToggleMoveDescription[] =
     "Enables the new location of the password leak toggle option under "

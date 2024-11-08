@@ -11712,14 +11712,6 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kBiometricAuthIdentityCheck)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"password-generation-soft-nudge",
-     flag_descriptions::kPasswordGenerationSoftNudgeName,
-     flag_descriptions::kPasswordGenerationSoftNudgeDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kPasswordGenerationSoftNudge)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
     {"autofill-enable-cvc-storage-and-filling-standalone-form-enhancement",
      flag_descriptions::
          kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementName,
