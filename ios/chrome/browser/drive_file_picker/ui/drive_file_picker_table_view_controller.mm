@@ -1017,8 +1017,8 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   for (NSString* selectedIdentifier in newSelectedIdentifiers) {
     NSIndexPath* selectedIndexPath =
         [_diffableDataSource indexPathForItemIdentifier:selectedIdentifier];
-    if (![self.tableView.indexPathsForSelectedRows
-            containsObject:selectedIndexPath]) {
+    if (selectedIndexPath && ![self.tableView.indexPathsForSelectedRows
+                                 containsObject:selectedIndexPath]) {
       [self.tableView selectRowAtIndexPath:selectedIndexPath
                                   animated:YES
                             scrollPosition:UITableViewScrollPositionNone];
