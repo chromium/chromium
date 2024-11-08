@@ -64,14 +64,15 @@ export class HealthdInternalsCpuCardElement extends PolymerElement {
       this.$.infoCard.updateDisplayedInfo(nextIdx + i, {
         'Model': physicalCpus[i].modelName,
         'Logical CPUs': physicalCpus[i].logicalCpus.map((logicalCpu) => {
-          const curFreq = parseInt(logicalCpu.frequency.current);
-          const maxFreq = parseInt(logicalCpu.frequency.max);
-          const freqPercentage =
-              (maxFreq === 0) ? 'N/A' : (curFreq / maxFreq * 100).toFixed(2);
+          const curFreqKhz = parseInt(logicalCpu.frequency.current);
+          const maxFreqKhz = parseInt(logicalCpu.frequency.max);
+          const freqPercentage = (maxFreqKhz === 0) ?
+              'N/A' :
+              (curFreqKhz / maxFreqKhz * 100).toFixed(2);
           return {
             'Core ID': logicalCpu.coreId,
-            'Frequency (cur/max/%)':
-                `${curFreq} / ${maxFreq} / ${freqPercentage}%`,
+            'Current / Max Frequency': `${curFreqKhz / 1e6}GHz / ${
+                maxFreqKhz / 1e6}GHz (${freqPercentage}%)`,
           };
         }),
       });
