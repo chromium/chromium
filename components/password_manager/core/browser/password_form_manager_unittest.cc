@@ -2551,6 +2551,43 @@ TEST_P(PasswordFormManagerTest, FillingAssistanceMetric) {
       PasswordFormMetricsRecorder::FillingAssistance::kManual, 1);
 }
 
+TEST_P(PasswordFormManagerTest, FillingAssistanceMetric_ManualFallback) {
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+
+  // Simulate that the user fills the saved credentials manually.
+  test_api(submitted_form_)
+      .field(kUsernameFieldIndex)
+      .set_value(saved_match_.username_value);
+  test_api(submitted_form_)
+      .field(kUsernameFieldIndex)
+      .set_properties_mask(
+          FieldPropertiesFlags::kAutofilledPasswordFormFilledViaManualFallback);
+  test_api(submitted_form_)
+      .field(kPasswordFieldIndex)
+      .set_value(saved_match_.password_value);
+  test_api(submitted_form_)
+      .field(kPasswordFieldIndex)
+      .set_properties_mask(
+          FieldPropertiesFlags::kAutofilledPasswordFormFilledViaManualFallback);
+
+  base::HistogramTester histogram_tester;
+  //  Simulate successful submission.
+  form_manager_->ProvisionallySave(submitted_form_, &driver_,
+                                   possible_usernames_);
+  form_manager_->GetMetricsRecorder()->LogSubmitPassed();
+
+  form_manager_.reset();
+
+  // Verify that the filling assistance metric for single username forms isn't
+  // recorded for password forms.
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SingleUsernameFillingAssistance", 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FillingAssistance",
+      PasswordFormMetricsRecorder::FillingAssistance::kManualFallbackUsed, 1);
+}
+
 // Test calculating the filling assistance metric on a single username form on
 // provisional save.
 TEST_P(PasswordFormManagerTest, FillingAssistanceMetric_SingleUsernameForm) {
@@ -2580,6 +2617,42 @@ TEST_P(PasswordFormManagerTest, FillingAssistanceMetric_SingleUsernameForm) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.FillingAssistanceForSingleUsername",
       PasswordFormMetricsRecorder::SingleUsernameFillingAssistance::kManual, 1);
+}
+
+// Test calculating the filling assistance metric when using manual fallbacks on
+// a single username form on provisional save.
+TEST_P(
+    PasswordFormManagerTest,
+    FillingAssistanceMetric_ManualFallback_SingleUsernameForm_ManualFallback) {
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+
+  // Simulate that the user fills the saved username manually.
+  test_api(non_password_form_)
+      .field(kUsernameFieldIndex)
+      .set_value(saved_match_.username_value);
+  test_api(non_password_form_)
+      .field(kUsernameFieldIndex)
+      .set_autocomplete_attribute("username");
+  test_api(non_password_form_)
+      .field(kUsernameFieldIndex)
+      .set_properties_mask(
+          FieldPropertiesFlags::kAutofilledPasswordFormFilledViaManualFallback);
+
+  base::HistogramTester histogram_tester;
+
+  form_manager_->ProvisionallySave(non_password_form_, &driver_,
+                                   possible_usernames_);
+  form_manager_.reset();
+
+  // Verify that the filling assistance metric for forms with a password isn't
+  // recorded for single username forms.
+  histogram_tester.ExpectTotalCount("PasswordManager.FillingAssistance", 0);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FillingAssistanceForSingleUsername",
+      PasswordFormMetricsRecorder::SingleUsernameFillingAssistance::
+          kManualFallbackUsed,
+      1);
 }
 
 TEST_P(PasswordFormManagerTest, PasswordRevealedVote) {

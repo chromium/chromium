@@ -16,6 +16,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/content/browser/form_meta_data.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -107,7 +108,8 @@ class FakePasswordAutofillAgent
               (autofill::FieldRendererId,
                autofill::FieldRendererId,
                const std::u16string&,
-               const std::u16string&),
+               const std::u16string&,
+               autofill::AutofillSuggestionTriggerSource),
               (override));
   MOCK_METHOD(void,
               PreviewPasswordSuggestionById,
@@ -127,7 +129,9 @@ class FakePasswordAutofillAgent
               (override));
   MOCK_METHOD(void,
               FillField,
-              (autofill::FieldRendererId, const std::u16string&),
+              (autofill::FieldRendererId,
+               const std::u16string&,
+               autofill::AutofillSuggestionTriggerSource),
               (override));
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void, KeyboardReplacingSurfaceClosed, (bool), (override));
@@ -368,7 +372,9 @@ TEST_P(ContentPasswordManagerDriverTest, LogFilledFieldTypeMetric) {
   std::unique_ptr<ContentPasswordManagerDriver> driver(
       new ContentPasswordManagerDriver(main_rfh(), &password_manager_client_));
 
-  driver->FillField(u"password");
+  driver->FillField(
+      u"password",
+      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange);
   histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.Password",
                                       field_part_of_password_form, 1);
 
@@ -376,9 +382,10 @@ TEST_P(ContentPasswordManagerDriverTest, LogFilledFieldTypeMetric) {
   histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.Password",
                                       field_part_of_password_form, 2);
 
-  driver->FillSuggestionById(autofill::FieldRendererId(),
-                             autofill::FieldRendererId(), u"username",
-                             u"password");
+  driver->FillSuggestionById(
+      autofill::FieldRendererId(), autofill::FieldRendererId(), u"username",
+      u"password",
+      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange);
   histogram_tester.ExpectUniqueSample("Autofill.FilledFieldType.Password",
                                       field_part_of_password_form, 3);
 

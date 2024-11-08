@@ -10,6 +10,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/content/browser/bad_message.h"
@@ -230,10 +231,12 @@ void ContentPasswordManagerDriver::FocusNextFieldAfterPasswords() {
   GetPasswordGenerationAgent()->FocusNextFieldAfterPasswords();
 }
 
-void ContentPasswordManagerDriver::FillField(const std::u16string& value) {
+void ContentPasswordManagerDriver::FillField(
+    const std::u16string& value,
+    autofill::AutofillSuggestionTriggerSource suggestion_source) {
   if (const auto& agent = GetPasswordAutofillAgent()) {
     LogFilledFieldType();
-    agent->FillField(last_triggering_field_id_, value);
+    agent->FillField(last_triggering_field_id_, value, suggestion_source);
   }
 }
 
@@ -250,10 +253,12 @@ void ContentPasswordManagerDriver::FillSuggestionById(
     autofill::FieldRendererId username_element_id,
     autofill::FieldRendererId password_element_id,
     const std::u16string& username,
-    const std::u16string& password) {
+    const std::u16string& password,
+    autofill::AutofillSuggestionTriggerSource suggestion_source) {
   LogFilledFieldType();
   GetPasswordAutofillAgent()->FillPasswordSuggestionById(
-      username_element_id, password_element_id, username, password);
+      username_element_id, password_element_id, username, password,
+      suggestion_source);
 }
 
 void ContentPasswordManagerDriver::FillIntoFocusedField(

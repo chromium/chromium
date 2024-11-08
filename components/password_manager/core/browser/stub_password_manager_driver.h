@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 
 namespace password_manager {
@@ -33,10 +34,12 @@ class StubPasswordManagerDriver : public PasswordManagerDriver {
   void FillSuggestion(const std::u16string& username,
                       const std::u16string& password,
                       base::OnceCallback<void(bool)> success_callback) override;
-  void FillSuggestionById(autofill::FieldRendererId username_element_id,
-                          autofill::FieldRendererId password_element_id,
-                          const std::u16string& username,
-                          const std::u16string& password) override;
+  void FillSuggestionById(
+      autofill::FieldRendererId username_element_id,
+      autofill::FieldRendererId password_element_id,
+      const std::u16string& username,
+      const std::u16string& password,
+      autofill::AutofillSuggestionTriggerSource suggestion_source) override;
 #if BUILDFLAG(IS_ANDROID)
   void TriggerFormSubmission() override;
 #endif

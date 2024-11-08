@@ -53,8 +53,12 @@ enum FieldPropertiesFlags : uint32_t {
   // A value was autofilled on pageload. This means that at least one character
   // of the field value comes from being autofilled.
   kAutofilledOnPageLoad = 1u << 5,
+  // Whether a field was filled because the user used the password manual
+  // fallbacks feature.
+  kAutofilledPasswordFormFilledViaManualFallback = 1u << 6,
   // A value was autofilled on any of the triggers.
-  kAutofilled = kAutofilledOnUserTrigger | kAutofilledOnPageLoad,
+  kAutofilled = kAutofilledOnUserTrigger | kAutofilledOnPageLoad |
+                kAutofilledPasswordFormFilledViaManualFallback,
 };
 
 // FieldPropertiesMask is used to contain combinations of FieldPropertiesFlags

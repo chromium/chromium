@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_test_helpers.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -118,7 +119,8 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               (FieldRendererId,
                FieldRendererId,
                const std::u16string&,
-               const std::u16string&),
+               const std::u16string&,
+               autofill::AutofillSuggestionTriggerSource),
               (override));
   MOCK_METHOD(void,
               PreviewSuggestionById,
@@ -127,7 +129,11 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
                const std::u16string&,
                const std::u16string&),
               (override));
-  MOCK_METHOD(void, FillField, (const std::u16string&), (override));
+  MOCK_METHOD(void,
+              FillField,
+              (const std::u16string&,
+               autofill::AutofillSuggestionTriggerSource),
+              (override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const override));
 };
 
@@ -611,7 +617,11 @@ TEST_F(PasswordManualFallbackFlowTest, AcceptUsernameFieldByFieldSuggestion) {
   const FieldRendererId field_id = MakeFieldRendererId();
   flow().RunFlow(field_id, gfx::RectF{}, TextDirection::LEFT_TO_RIGHT);
 
-  EXPECT_CALL(driver(), FillField(std::u16string(u"username@example.com")));
+  EXPECT_CALL(
+      driver(),
+      FillField(
+          std::u16string(u"username@example.com"),
+          autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords));
   EXPECT_CALL(
       autofill_client(),
       HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
@@ -728,10 +738,12 @@ TEST_F(PasswordManualFallbackFlowTest,
 
   EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
       .WillOnce(Return(false));
-  EXPECT_CALL(driver(), FillSuggestionById(form.username_element_renderer_id,
-                                           form.password_element_renderer_id,
-                                           std::u16string(u"username"),
-                                           std::u16string(u"password")));
+  EXPECT_CALL(
+      driver(),
+      FillSuggestionById(
+          form.username_element_renderer_id, form.password_element_renderer_id,
+          std::u16string(u"username"), std::u16string(u"password"),
+          autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords));
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       SuggestionType::kPasswordEntry, u"google.com",
       CreateTestPasswordDetails());
@@ -823,10 +835,12 @@ TEST_F(PasswordManualFallbackFlowTest,
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
-  EXPECT_CALL(driver(), FillSuggestionById(form.username_element_renderer_id,
-                                           form.password_element_renderer_id,
-                                           std::u16string(u"username"),
-                                           std::u16string(u"password")));
+  EXPECT_CALL(
+      driver(),
+      FillSuggestionById(
+          form.username_element_renderer_id, form.password_element_renderer_id,
+          std::u16string(u"username"), std::u16string(u"password"),
+          autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords));
 
   base::HistogramTester histograms;
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
@@ -868,8 +882,10 @@ TEST_F(PasswordManualFallbackFlowTest,
 
   EXPECT_CALL(
       driver(),
-      FillSuggestionById(FieldRendererId(), form.password_element_renderer_id,
-                         std::u16string(), std::u16string(u"password")));
+      FillSuggestionById(
+          FieldRendererId(), form.password_element_renderer_id,
+          std::u16string(), std::u16string(u"password"),
+          autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords));
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       SuggestionType::kPasswordEntry, u"google.com",
       CreateTestPasswordDetails());
@@ -933,7 +949,11 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthNotAvailable) {
 
   EXPECT_CALL(password_manager_client(), IsReauthBeforeFillingRequired)
       .WillOnce(Return(false));
-  EXPECT_CALL(driver(), FillField(std::u16string(u"password")));
+  EXPECT_CALL(
+      driver(),
+      FillField(
+          std::u16string(u"password"),
+          autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords));
   ShowAndAcceptSuggestion(autofill::test::CreateAutofillSuggestion(
                               SuggestionType::kFillPassword, u"Fill password",
                               CreateTestPasswordDetails()),
@@ -1048,7 +1068,11 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthSucceeds) {
   EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
       .WillOnce(Return(testing::ByMove(std::move(authenticator))));
 
-  EXPECT_CALL(driver(), FillField(std::u16string(u"password")));
+  EXPECT_CALL(
+      driver(),
+      FillField(
+          std::u16string(u"password"),
+          autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords));
   base::HistogramTester histograms;
   base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
   ShowAndAcceptSuggestion(autofill::test::CreateAutofillSuggestion(

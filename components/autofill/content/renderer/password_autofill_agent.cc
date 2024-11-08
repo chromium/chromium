@@ -8,6 +8,7 @@
 
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -39,6 +40,7 @@
 #include "components/autofill/content/renderer/prefilled_values_detector.h"
 #include "components/autofill/content/renderer/renderer_save_password_progress_logger.h"
 #include "components/autofill/content/renderer/suggestion_properties.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
@@ -927,7 +929,8 @@ void PasswordAutofillAgent::FillPasswordSuggestion(
     password_info->password_field = FieldRef(password_element);
   }
   bool success = FillUsernameAndPasswordElements(
-      username_element, password_element, username, password);
+      username_element, password_element, username, password,
+      AutofillSuggestionTriggerSource::kUnspecified);
   std::move(callback).Run(success);
 }
 
@@ -935,7 +938,8 @@ void PasswordAutofillAgent::FillPasswordSuggestionById(
     FieldRendererId username_element_id,
     FieldRendererId password_element_id,
     const std::u16string& username,
-    const std::u16string& password) {
+    const std::u16string& password,
+    AutofillSuggestionTriggerSource suggestion_source) {
   if (!last_queried_element()) {
     return;
   }
@@ -944,14 +948,15 @@ void PasswordAutofillAgent::FillPasswordSuggestionById(
           .DynamicTo<WebInputElement>(),
       GetFormControlByRendererId(password_element_id)
           .DynamicTo<WebInputElement>(),
-      username, password);
+      username, password, suggestion_source);
 }
 
 bool PasswordAutofillAgent::FillUsernameAndPasswordElements(
     blink::WebInputElement username_element,
     blink::WebInputElement password_element,
     const std::u16string& username,
-    const std::u16string& password) {
+    const std::u16string& password,
+    AutofillSuggestionTriggerSource suggestion_source) {
   ClearPreviewedForm();
   WebFormControlElement focused_element = last_queried_element();
   // TODO(crbug.com/341995827): Remove dependency on `focused_element`. Username
@@ -967,10 +972,10 @@ bool PasswordAutofillAgent::FillUsernameAndPasswordElements(
   if (IsUsernameAmendable(username_element, is_password_field_focused) &&
       !(username.empty() && is_password_field_focused) &&
       username_element.Value().Utf16() != username) {
-    DoFillField(username_element, username);
+    DoFillField(username_element, username, suggestion_source);
   }
   if (password_element && IsElementEditable(password_element)) {
-    FillPasswordFieldAndSave(password_element, password);
+    FillPasswordFieldAndSave(password_element, password, suggestion_source);
     // TODO(crbug.com/40223173): As Touch-To-Fill and auto-submission don't
     // currently support filling single username fields, the code below is
     // within `password_element`. Support such fields too and move the
@@ -1003,12 +1008,14 @@ void PasswordAutofillAgent::FillIntoFocusedField(
     return;
   }
   if (!is_password) {
-    DoFillField(focused_input, credential);
+    DoFillField(focused_input, credential,
+                AutofillSuggestionTriggerSource::kUnspecified);
   }
   if (focused_input.FormControlTypeForAutofill() != kInputPassword) {
     return;
   }
-  FillPasswordFieldAndSave(focused_input, credential);
+  FillPasswordFieldAndSave(focused_input, credential,
+                           AutofillSuggestionTriggerSource::kUnspecified);
 }
 
 void PasswordAutofillAgent::PreviewField(FieldRendererId field_id,
@@ -1023,8 +1030,10 @@ void PasswordAutofillAgent::PreviewField(FieldRendererId field_id,
       /*is_password=*/input.FormControlTypeForAutofill() == kInputPassword);
 }
 
-void PasswordAutofillAgent::FillField(FieldRendererId field_id,
-                                      const std::u16string& value) {
+void PasswordAutofillAgent::FillField(
+    FieldRendererId field_id,
+    const std::u16string& value,
+    AutofillSuggestionTriggerSource suggestion_source) {
   WebFormControlElement form_control =
       form_util::GetFormControlByRendererId(field_id);
   WebInputElement input_element = form_control.DynamicTo<WebInputElement>();
@@ -1032,7 +1041,7 @@ void PasswordAutofillAgent::FillField(FieldRendererId field_id,
     // Early return for non-input fields such as textarea.
     return;
   }
-  DoFillField(input_element, value);
+  DoFillField(input_element, value, suggestion_source);
 }
 
 void PasswordAutofillAgent::DoPreviewField(WebInputElement input,
@@ -1047,21 +1056,27 @@ void PasswordAutofillAgent::DoPreviewField(WebInputElement input,
   input.SetSuggestedValue(WebString::FromUTF16(credential));
 }
 
-void PasswordAutofillAgent::DoFillField(WebInputElement input,
-                                        const std::u16string& credential) {
+void PasswordAutofillAgent::DoFillField(
+    WebInputElement input,
+    const std::u16string& credential,
+    AutofillSuggestionTriggerSource suggestion_source) {
   CHECK(input);
   input.SetAutofillValue(WebString::FromUTF16(credential));
   field_data_manager().UpdateFieldDataMap(
       form_util::GetFieldRendererId(input), credential,
-      FieldPropertiesFlags::kAutofilledOnUserTrigger);
+      suggestion_source ==
+              AutofillSuggestionTriggerSource::kManualFallbackPasswords
+          ? FieldPropertiesFlags::kAutofilledPasswordFormFilledViaManualFallback
+          : FieldPropertiesFlags::kAutofilledOnUserTrigger);
   TrackAutofilledElement(input);
 }
 
 void PasswordAutofillAgent::FillPasswordFieldAndSave(
     WebInputElement password_input,
-    const std::u16string& credential) {
+    const std::u16string& credential,
+    AutofillSuggestionTriggerSource suggestion_source) {
   CHECK(password_input.FormControlTypeForAutofill() == kInputPassword);
-  DoFillField(password_input, credential);
+  DoFillField(password_input, credential, suggestion_source);
   InformBrowserAboutUserInput(form_util::GetOwningForm(password_input),
                               password_input);
 }

@@ -291,7 +291,9 @@ class PasswordFormMetricsRecorder
     // No credentials exist and the user has ignored the save bubble too often,
     // meaning that they won't be asked to save credentials anymore.
     kNoSavedCredentialsAndBlocklistedBySmartBubble = 8,
-    kMaxValue = kNoSavedCredentialsAndBlocklistedBySmartBubble,
+    // Whether the user used manual fallback to fill a form.
+    kManualFallbackUsed = 9,
+    kMaxValue = kManualFallbackUsed,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -319,7 +321,9 @@ class PasswordFormMetricsRecorder
     kNoSavedCredentialsAndBlocklistedBySmartBubble = 6,
     // Neither user input nor filling.
     kNoUserInputNoFillingOfUsername = 7,
-    kMaxValue = kNoUserInputNoFillingOfUsername,
+    // Whether the user used manual fallback to fill a form.
+    kManualFallbackUsed = 9,
+    kMaxValue = kManualFallbackUsed,
   };
 
   // Records which store(s) a filled password came from.

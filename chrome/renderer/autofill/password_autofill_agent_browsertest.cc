@@ -2559,7 +2559,8 @@ TEST_F(PasswordAutofillAgentTest, FillIntoReadonlyTextField) {
   // If the field is readonly, it should not be affected.
   SetElementReadOnly(username_element_, true);
   password_autofill_agent_->FillField(
-      form_util::GetFieldRendererId(username_element_), kAliceUsername16);
+      form_util::GetFieldRendererId(username_element_), kAliceUsername16,
+      AutofillSuggestionTriggerSource::kUnspecified);
   CheckTextFieldsDOMState(
       /*username=*/std::string(), /*username_autofilled=*/false,
       /*password=*/std::string(), /*password_autofilled=*/false);
@@ -2573,7 +2574,8 @@ TEST_F(PasswordAutofillAgentTest, FillIntoUsernameField) {
       /*password=*/std::string(), /*password_autofilled=*/false);
 
   password_autofill_agent_->FillField(
-      form_util::GetFieldRendererId(username_element_), kAliceUsername16);
+      form_util::GetFieldRendererId(username_element_), kAliceUsername16,
+      AutofillSuggestionTriggerSource::kUnspecified);
   CheckTextFieldsDOMState(
       /*username=*/kAliceUsername, /*username_autofilled=*/true,
       /*password=*/std::string(), /*password_autofilled=*/false);
@@ -2587,7 +2589,8 @@ TEST_F(PasswordAutofillAgentTest, FillIntoPasswordField) {
       /*password=*/std::string(), /*password_autofilled=*/false);
 
   password_autofill_agent_->FillField(
-      form_util::GetFieldRendererId(password_element_), kAlicePassword16);
+      form_util::GetFieldRendererId(password_element_), kAlicePassword16,
+      AutofillSuggestionTriggerSource::kUnspecified);
   CheckTextFieldsDOMState(
       /*username=*/std::string(), /*username_autofilled=*/false,
       /*password=*/kAlicePassword, /*password_autofilled=*/true);
@@ -2601,7 +2604,8 @@ TEST_F(PasswordAutofillAgentTest, FillIntoRandomField) {
   EXPECT_EQ(std::string(), random_element.Value().Utf8());
 
   password_autofill_agent_->FillField(
-      form_util::GetFieldRendererId(random_element), kAliceUsername16);
+      form_util::GetFieldRendererId(random_element), kAliceUsername16,
+      AutofillSuggestionTriggerSource::kUnspecified);
   EXPECT_EQ(kAliceUsername, random_element.Value().Utf8());
 }
 
@@ -2615,7 +2619,9 @@ TEST_F(PasswordAutofillAgentTest, FillIntoNonExistingField) {
       /*password=*/std::string(), /*password_autofilled=*/false);
   EXPECT_EQ(std::string(), random_element.Value().Utf8());
 
-  password_autofill_agent_->FillField(FieldRendererId(), kAliceUsername16);
+  password_autofill_agent_->FillField(
+      FieldRendererId(), kAliceUsername16,
+      AutofillSuggestionTriggerSource::kUnspecified);
   // Neither field should be autocompleted.
   CheckTextFieldsDOMState(
       /*username=*/std::string(), /*username_autofilled=*/false,
@@ -3296,7 +3302,7 @@ TEST_F(PasswordAutofillAgentTest, FillPasswordSuggestionById) {
   password_autofill_agent_->FillPasswordSuggestionById(
       form_util::GetFieldRendererId(username_element_),
       form_util::GetFieldRendererId(password_element_), kAliceUsername16,
-      kAlicePassword16);
+      kAlicePassword16, AutofillSuggestionTriggerSource::kUnspecified);
 
   EXPECT_EQ(username_element_.SelectionStart(), 5u);
   EXPECT_EQ(username_element_.SelectionEnd(), 5u);
@@ -3326,7 +3332,7 @@ TEST_F(PasswordAutofillAgentTest, FillPasswordSuggestionById_ReadOnlyElements) {
   password_autofill_agent_->FillPasswordSuggestionById(
       form_util::GetFieldRendererId(username_element_),
       form_util::GetFieldRendererId(password_element_), kAliceUsername16,
-      kAlicePassword16);
+      kAlicePassword16, AutofillSuggestionTriggerSource::kUnspecified);
 
   EXPECT_EQ(username_element_.Value().Utf16(), u"");
   EXPECT_FALSE(username_element_.IsAutofilled());
@@ -3351,7 +3357,8 @@ TEST_F(PasswordAutofillAgentTest, FillPasswordSuggestionById_NoUsernameValue) {
 
   password_autofill_agent_->FillPasswordSuggestionById(
       form_util::GetFieldRendererId(username_element_),
-      form_util::GetFieldRendererId(password_element_), u"", kAlicePassword16);
+      form_util::GetFieldRendererId(password_element_), u"", kAlicePassword16,
+      AutofillSuggestionTriggerSource::kUnspecified);
 
   EXPECT_EQ(username_element_.Value().Utf16(), kBobUsername16);
   EXPECT_FALSE(username_element_.IsAutofilled());
@@ -3376,7 +3383,8 @@ TEST_F(PasswordAutofillAgentTest, FillPasswordSuggestionById_NoUsername) {
 
   password_autofill_agent_->FillPasswordSuggestionById(
       FieldRendererId(), form_util::GetFieldRendererId(password_element_),
-      kAliceUsername16, kAlicePassword16);
+      kAliceUsername16, kAlicePassword16,
+      AutofillSuggestionTriggerSource::kUnspecified);
 
   EXPECT_TRUE(password_element_.SuggestedValue().IsEmpty());
   EXPECT_EQ(password_element_.Value().Utf16(), kAlicePassword16);
@@ -3400,7 +3408,8 @@ TEST_F(PasswordAutofillAgentTest, FillPasswordSuggestionById_NoPassword) {
 
   password_autofill_agent_->FillPasswordSuggestionById(
       form_util::GetFieldRendererId(username_element_), FieldRendererId(),
-      kAliceUsername16, kAlicePassword16);
+      kAliceUsername16, kAlicePassword16,
+      AutofillSuggestionTriggerSource::kUnspecified);
 
   EXPECT_TRUE(username_element_.SuggestedValue().IsEmpty());
   EXPECT_EQ(username_element_.Value().Utf16(), kAliceUsername16);
@@ -3425,7 +3434,7 @@ TEST_F(PasswordAutofillAgentTest, FillPasswordSuggestionById_NoFocusedElement) {
   password_autofill_agent_->FillPasswordSuggestionById(
       form_util::GetFieldRendererId(username_element_),
       form_util::GetFieldRendererId(password_element_), kAliceUsername16,
-      kAlicePassword16);
+      kAlicePassword16, AutofillSuggestionTriggerSource::kUnspecified);
 
   EXPECT_EQ(username_element_.Value().Utf16(), kAliceUsername16);
   EXPECT_TRUE(username_element_.IsAutofilled());

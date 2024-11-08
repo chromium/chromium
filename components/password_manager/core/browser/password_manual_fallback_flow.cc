@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
@@ -261,11 +262,15 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
                   form->username_element_renderer_id,
                   form->password_element_renderer_id,
                   GetUsernameFromLabel(suggestion.labels[0][0].value),
-                  payload.password)));
+                  payload.password,
+                  autofill::AutofillSuggestionTriggerSource::
+                      kManualFallbackPasswords)));
       break;
     }
     case autofill::SuggestionType::kPasswordFieldByFieldFilling:
-      password_manager_driver_->FillField(suggestion.main_text.value);
+      password_manager_driver_->FillField(
+          suggestion.main_text.value,
+          autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords);
       break;
     case autofill::SuggestionType::kFillPassword: {
       Suggestion::PasswordSuggestionDetails payload =
@@ -276,7 +281,9 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
               weak_ptr_factory_.GetWeakPtr(),
               base::BindOnce(&PasswordManagerDriver::FillField,
                              base::Unretained(password_manager_driver_),
-                             payload.password)));
+                             payload.password,
+                             autofill::AutofillSuggestionTriggerSource::
+                                 kManualFallbackPasswords)));
       break;
     }
     case autofill::SuggestionType::kViewPasswordDetails: {

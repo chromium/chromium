@@ -137,10 +137,12 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void FillPasswordSuggestion(const std::u16string& username,
                               const std::u16string& password,
                               base::OnceCallback<void(bool)> callback) override;
-  void FillPasswordSuggestionById(FieldRendererId username_element_id,
-                                  FieldRendererId password_element_id,
-                                  const std::u16string& username,
-                                  const std::u16string& password) override;
+  void FillPasswordSuggestionById(
+      FieldRendererId username_element_id,
+      FieldRendererId password_element_id,
+      const std::u16string& username,
+      const std::u16string& password,
+      AutofillSuggestionTriggerSource suggestion_source) override;
   void PreviewPasswordSuggestionById(FieldRendererId username_element_id,
                                      FieldRendererId password_element_id,
                                      const std::u16string& username,
@@ -152,7 +154,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void PreviewField(FieldRendererId field_id,
                     const std::u16string& value) override;
   void FillField(FieldRendererId field_id,
-                 const std::u16string& value) override;
+                 const std::u16string& value,
+                 AutofillSuggestionTriggerSource suggestion_source) override;
   void SetLoggingState(bool active) override;
   void AnnotateFieldsWithParsingResult(
       const ParsingResult& parsing_result) override;
@@ -467,8 +470,11 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // Checks that a given input field is valid before filling the given `input`
   // with the given `credential` and marking the field as auto-filled.
+  // Uses `suggestion_source` to update the `FieldPropertiesMask` of filled
+  // field.
   void DoFillField(blink::WebInputElement input,
-                   const std::u16string& credential);
+                   const std::u16string& credential,
+                   AutofillSuggestionTriggerSource suggestion_source);
 
   // Given `username_element` and `password_element`, previews `username` and
   // `password` respectively into them.
@@ -480,15 +486,23 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // Given `username_element` and `password_element`, fills `username` and
   // `password` respectively into them.
-  bool FillUsernameAndPasswordElements(blink::WebInputElement username_element,
-                                       blink::WebInputElement password_element,
-                                       const std::u16string& username,
-                                       const std::u16string& password);
+  // Uses `suggestion_source` to update the `FieldPropertiesMask` of filled
+  // fields.
+  bool FillUsernameAndPasswordElements(
+      blink::WebInputElement username_element,
+      blink::WebInputElement password_element,
+      const std::u16string& username,
+      const std::u16string& password,
+      AutofillSuggestionTriggerSource suggestion_source);
 
   // Uses `FillField` to fill the given `credential` into the `password_input`.
   // Saves the password for its associated form.
-  void FillPasswordFieldAndSave(blink::WebInputElement password_input,
-                                const std::u16string& credential);
+  // Uses `suggestion_source` to update the `FieldPropertiesMask` of filled
+  // fields.
+  void FillPasswordFieldAndSave(
+      blink::WebInputElement password_input,
+      const std::u16string& credential,
+      AutofillSuggestionTriggerSource suggestion_source);
 
   // This function attempts to fill `username_element` and `password_element`
   // with values from `fill_data`. The `username_element` and `password_element`

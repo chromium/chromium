@@ -262,10 +262,12 @@ class FakePasswordAutofillAgent
       const std::u16string& password,
       base::OnceCallback<void(bool)> success_callback) override {}
 
-  void FillPasswordSuggestionById(autofill::FieldRendererId username_element_id,
-                                  autofill::FieldRendererId password_element_id,
-                                  const std::u16string& username,
-                                  const std::u16string& password) override {}
+  void FillPasswordSuggestionById(
+      autofill::FieldRendererId username_element_id,
+      autofill::FieldRendererId password_element_id,
+      const std::u16string& username,
+      const std::u16string& password,
+      autofill::AutofillSuggestionTriggerSource suggestion_source) override {}
 
   void PreviewPasswordSuggestionById(
       autofill::FieldRendererId username_element_id,
@@ -280,11 +282,12 @@ class FakePasswordAutofillAgent
                             const std::u16string& credential) override {}
   void PreviewField(autofill::FieldRendererId field_id,
                     const std::u16string& value) override {}
-  void FillField(autofill::FieldRendererId field_id,
-                 const std::u16string& value) override {}
+  void FillField(
+      autofill::FieldRendererId field_id,
+      const std::u16string& value,
+      autofill::AutofillSuggestionTriggerSource suggestion_source) override {}
   void AnnotateFieldsWithParsingResult(
       const autofill::ParsingResult& parsing_result) override {}
-
   void SetLoggingState(bool active) override {
     called_set_logging_state_ = true;
     logging_state_active_ = active;

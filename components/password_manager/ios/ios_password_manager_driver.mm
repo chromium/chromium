@@ -120,7 +120,8 @@ void IOSPasswordManagerDriver::FillSuggestionById(
     autofill::FieldRendererId username_element_id,
     autofill::FieldRendererId password_element_id,
     const std::u16string& username,
-    const std::u16string& password) {
+    const std::u16string& password,
+    autofill::AutofillSuggestionTriggerSource suggestion_source) {
   NOTIMPLEMENTED() << "This function is used for non-iOS manual fallback";
 }
 

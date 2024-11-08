@@ -102,6 +102,8 @@ struct UsernamePasswordsState {
   bool username_exists_in_profile_store = false;
   bool username_exists_in_account_store = false;
 
+  bool manual_fallback_used = false;
+
   bool IsPasswordFilled() {
     return password_automatically_filled || password_manually_filled;
   }
@@ -131,6 +133,9 @@ UsernamePasswordsState CalculateUsernamePasswordsState(
                            FieldPropertiesFlags::kAutofilledOnUserTrigger;
     bool automatically_filled =
         field.properties_mask() & FieldPropertiesFlags::kAutofilledOnPageLoad;
+    result.manual_fallback_used |=
+        field.properties_mask() &
+        FieldPropertiesFlags::kAutofilledPasswordFormFilledViaManualFallback;
 
     // The typed `value` could appear in `saved_usernames`, `saved_passwords`,
     // or both. In the last case we use the control type of the form as a
@@ -746,6 +751,12 @@ void PasswordFormMetricsRecorder::CalculatePasswordFillingAssistanceMetric(
       CalculateUsernamePasswordsState(submitted_form, saved_usernames,
                                       saved_passwords);
 
+  // Consider first whether the user used manual fallbacks.
+  if (username_password_state.manual_fallback_used) {
+    filling_assistance_ = FillingAssistance::kManualFallbackUsed;
+    return;
+  }
+
   // Consider cases when the user typed known or unknown credentials.
   if (username_password_state.saved_password_typed) {
     filling_assistance_ = FillingAssistance::kKnownPasswordTyped;
@@ -796,6 +807,16 @@ void PasswordFormMetricsRecorder::
             saved_usernames,
         bool is_blocklisted,
         const std::vector<InteractionsStats>& interactions_stats) {
+  UsernamePasswordsState username_password_state =
+      CalculateUsernamePasswordsState(submitted_form, saved_usernames,
+                                      /*saved_passwords=*/{});
+
+  // Consider first whether the user used manual fallbacks.
+  if (username_password_state.manual_fallback_used) {
+    filling_assistance_ = SingleUsernameFillingAssistance::kManualFallbackUsed;
+    return;
+  }
+
   // Cases related to not stored crendentials. Do not proceed with the filling
   // experience cases if there are no stored usernames.
   if (saved_usernames.empty()) {
@@ -811,13 +832,6 @@ void PasswordFormMetricsRecorder::
     }
     return;
   }
-
-  // Cases related to the username filling experience while there are stored
-  // credentials. At this point, it is known that there are stored credentials.
-
-  UsernamePasswordsState username_password_state =
-      CalculateUsernamePasswordsState(submitted_form, saved_usernames,
-                                      /*saved_passwords=*/{});
 
   // Case where the username was typed regardless of whether or not it was
   // filled.
@@ -1157,6 +1171,8 @@ PasswordFormMetricsRecorder::FillingAssinstanceToHatsInProductDataString() {
       return "No credentials exist and the user has ignored the save bubble "
              "too often, meaning that they won't be asked to save credentials "
              "anymore.";
+    case FillingAssistance::kManualFallbackUsed:
+      return "User chose credential via manual fallbacks.";
   };
   NOTREACHED();
 }
