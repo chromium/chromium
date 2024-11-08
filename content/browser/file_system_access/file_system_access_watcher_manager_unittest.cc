@@ -1134,16 +1134,13 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalFile) {
   // Deleting the watched file should notify `accumulator`.
   DeleteFile(file_path);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
   // There is no way to know the correct handle type on Windows in this
   // scenario.
   //
   // Window's content::FilePathWatcher uses base::GetFileInfo to figure out the
   // file path type. Since `fileInDir` is deleted, there is nothing to call
   // base::GetFileInfo on.
-  //
-  // FSEvents (Mac) relies on calls to `vnode_getattr`, which operates similarly
-  // to `GetFileInfo`.
   ChangeInfo change_info(FilePathType::kUnknown, ChangeType::kDeleted,
                          file_url.path());
 #else
@@ -1208,7 +1205,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
   // Deleting the watched file should notify each `accumulator`.
   DeleteFile(file_path);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
   // There is no way to know the correct handle type on Windows in this
   // scenario.
   //

@@ -535,6 +535,51 @@ TEST_F(FileSystemAccessObserverObservationTest,
 }
 
 TEST_F(FileSystemAccessObserverObservationTest,
+       FileObservationDestructedWhenParentDirectoryDeleted) {
+  base::FilePath dir_path = CreateDirectory();
+  base::FilePath file_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::CreateTemporaryFileInDir(dir_path, &file_path));
+    EXPECT_TRUE(base::WriteFile(file_path, "observe me"));
+  }
+  storage::FileSystemURL file_url = CreateFileSystemURL(file_path);
+  std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
+      CreateFileHandle(file_url);
+
+  FileSystemAccessWatchScope scope =
+      FileSystemAccessWatchScope::GetScopeForFileWatch(file_url);
+
+  FakeChangeSource source(scope, file_system_context());
+  RegisterChangeSource(source);
+
+  FakeObserver observer = CreateObserver();
+  FakeObservation observation =
+      observer.Observe(file_handle.get(), /*recursive=*/false);
+
+  // Deleting the parent directory should result in a disappeared and an errored
+  // event on the file observation.
+  source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kModified, file_path));
+  // We handle directory deletion by first signaling a deleted event on the file
+  // and then an error.
+  source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kDeleted, file_path));
+  source.SignalError();
+  EXPECT_TRUE(observation.EventsReceivedMatches(
+      {{MojoChangeType::kModified, MojoFilePathType::kFile, {}},
+       {MojoChangeType::kDisappeared, MojoFilePathType::kFile, {}},
+       {MojoChangeType::kErrored, MojoFilePathType::kFile, {}}}));
+
+  // The remote observation should have been destructed and disconnected. So,
+  // further events should not be received.
+  source.SignalChange(
+      ChangeInfo(FilePathType::kFile, ChangeType::kModified, file_path));
+  EXPECT_TRUE(observation.EventsReceivedMatches({}));
+  EXPECT_TRUE(observation.RemoteObservationDisconnected());
+}
+
+TEST_F(FileSystemAccessObserverObservationTest,
        DirectoryObservationDestructedAfterScopeRootDeleted) {
   base::FilePath dir_path = CreateDirectory();
   storage::FileSystemURL dir_url = CreateFileSystemURL(dir_path);
@@ -557,8 +602,11 @@ TEST_F(FileSystemAccessObserverObservationTest,
   // event.
   source.SignalChange(
       ChangeInfo(FilePathType::kFile, ChangeType::kCreated, file_path));
+  // We handle directory deletion by first signaling a deleted event and then an
+  // error.
   source.SignalChange(
       ChangeInfo(FilePathType::kDirectory, ChangeType::kDeleted, dir_path));
+  source.SignalError();
   EXPECT_TRUE(observation.EventsReceivedMatches(
       {{MojoChangeType::kAppeared, MojoFilePathType::kFile, {"file.txt"}},
        {MojoChangeType::kDisappeared, MojoFilePathType::kDirectory, {}},
