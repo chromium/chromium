@@ -261,9 +261,8 @@
 // Convenience method to check the pref associated with the soft lock setting
 // and the feature flag.
 - (BOOL)isSoftLockFeatureEnabled {
-  // TODO(crbug.com/370804664): Add pref check when the settings page is
-  // available.
-  return IsIOSSoftLockEnabled();
+  return IsIOSSoftLockEnabled() && self.localState &&
+         self.localState->GetBoolean(prefs::kIncognitoSoftLockSetting);
 }
 
 // Convenience method to check whether any of the locking features are enabled.
