@@ -5,6 +5,7 @@
 #include <string_view>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -106,7 +107,8 @@ class EditorMenuBrowserFeatureDisabledTest : public EditorMenuBrowserTest {
   EditorMenuBrowserFeatureDisabledTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{chromeos::features::kOrcaDogfood});
+        /*disabled_features=*/{chromeos::features::kOrcaDogfood,
+                               ash::features::kLobsterDogfood});
   }
 
   ~EditorMenuBrowserFeatureDisabledTest() override = default;
@@ -115,7 +117,9 @@ class EditorMenuBrowserFeatureDisabledTest : public EditorMenuBrowserTest {
 class EditorMenuBrowserFeatureEnabledTest : public EditorMenuBrowserTest {
  public:
   EditorMenuBrowserFeatureEnabledTest() {
-    feature_list_.InitAndEnableFeature(chromeos::features::kOrca);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{chromeos::features::kOrca},
+        /*disabled_features=*/{ash::features::kLobsterDogfood});
   }
 
   ~EditorMenuBrowserFeatureEnabledTest() override = default;
@@ -133,7 +137,7 @@ class EditorMenuBrowserI18nEnabledTest : public EditorMenuBrowserTest {
         /*enabled_features=*/{chromeos::features::kOrca,
                               chromeos::features::kFeatureManagementOrca,
                               chromeos::features::kOrcaUseL10nStrings},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{ash::features::kLobsterDogfood});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -152,7 +156,8 @@ class EditorMenuBrowserI18nDisabledTest : public EditorMenuBrowserTest {
             chromeos::features::kOrca,
             chromeos::features::kFeatureManagementOrca,
         },
-        /*disabled_features=*/{chromeos::features::kOrcaUseL10nStrings});
+        /*disabled_features=*/{ash::features::kLobsterDogfood,
+                               chromeos::features::kOrcaUseL10nStrings});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -165,6 +170,7 @@ class EditorMenuBrowserI18nDisabledTest : public EditorMenuBrowserTest {
 IN_PROC_BROWSER_TEST_F(EditorMenuBrowserFeatureDisabledTest,
                        ShouldNotCreateWhenFeatureNotEnabled) {
   EXPECT_FALSE(chromeos::features::IsOrcaEnabled());
+  EXPECT_FALSE(ash::features::IsLobsterEnabled());
   EXPECT_EQ(nullptr, GetControllerImpl());
 }
 
