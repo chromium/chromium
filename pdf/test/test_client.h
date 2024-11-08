@@ -50,6 +50,7 @@ class TestClient : public PDFiumEngineClient {
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void OnSearchifyStateChange(bool busy) override;
+  void OnHasSearchifyText() override;
 #endif
 
  private:

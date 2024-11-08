@@ -4292,6 +4292,13 @@ void PDFiumEngine::CancelPendingSearchify(int page_index) {
 void PDFiumEngine::OnSearchifyStateChange(bool busy) {
   client_->OnSearchifyStateChange(busy);
 }
+
+void PDFiumEngine::OnHasSearchifyText() {
+  if (!has_searchify_text_) {
+    has_searchify_text_ = true;
+    client_->OnHasSearchifyText();
+  }
+}
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 void PDFiumEngine::UpdateLinkUnderCursor(const std::string& target_url) {

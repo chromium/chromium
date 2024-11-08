@@ -385,6 +385,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void OnSearchifyStateChange(bool busy) override;
+  void OnHasSearchifyText() override;
 #endif
 
   // pdf::mojom::PdfListener:
@@ -694,6 +695,11 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   // Starts loading accessibility information.
   void LoadAccessibility();
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // Triggered to show/hide Searchify progress indicator.
+  void SetShowSearchifyInProgress(bool show);
+#endif
+
   bool initialized_ = false;
 
   blink::WebString selected_text_;
@@ -913,6 +919,10 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
 
   // Queue of available preview pages to load next.
   base::queue<PreviewPageInfo> preview_pages_info_;
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  bool show_searchify_in_progress_ = false;
+#endif
 
   base::WeakPtrFactory<PdfViewWebPlugin> weak_factory_{this};
 };

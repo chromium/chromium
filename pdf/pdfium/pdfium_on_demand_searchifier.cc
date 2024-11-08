@@ -168,12 +168,17 @@ void PDFiumOnDemandSearchifier::SearchifyNextImage() {
     // It is expected that the page would be still loaded.
     FPDF_PAGE page = current_page_->page();
     CHECK(page);
+    bool added_text = false;
     for (auto& result : current_page_ocr_results_) {
       FPDF_PAGEOBJECT image = FPDFPage_GetObject(page, result.image_index);
       std::vector<FPDF_PAGEOBJECT> added_text_objects =
           AddTextOnImage(engine_->doc(), page, font_.get(), image,
                          std::move(result.annotation), result.image_size);
       current_page_->OnSearchifyGotOcrResult(added_text_objects);
+      added_text |= !added_text_objects.empty();
+    }
+    if (added_text) {
+      engine_->OnHasSearchifyText();
     }
     current_page_ocr_results_.clear();
 

@@ -391,6 +391,9 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // See the comment for `OnSearchifyStateChange` in pdf/pdf.mojom.
   void OnSearchifyStateChange(bool busy);
 
+  // Called when searchify text is added.
+  void OnHasSearchifyText();
+
   PDFiumOnDemandSearchifier* GetSearchifierForTesting() {
     return searchifier_.get();
   }
@@ -870,6 +873,9 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // Keeps track of the indices of pages for which "PDF.PageHasText" metric is
   // reported.
   std::set<int> page_has_text_metric_reported_;
+
+  // Records if at least one page has searchify text.
+  bool has_searchify_text_ = false;
 #endif
 
   std::unique_ptr<PDFiumDocument> document_;

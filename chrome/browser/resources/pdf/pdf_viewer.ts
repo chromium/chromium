@@ -912,6 +912,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         // Editing mode can only be entered once, and cannot be exited.
         this.hasEdits_ = true;
         return;
+      case 'setHasSearchifyText':
+        // TODO(crbug.com/360803943): Add separate metrics for searchified PDFs.
+        return;
+      case 'showSearchifyInProgress':
+        // TODO(crbug.com/360803943): Trigger showing/hiding searchify progress.
+        return;
       case 'startedFindInPage':
         record(UserAction.FIND_IN_PAGE);
         return;

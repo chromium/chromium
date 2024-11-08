@@ -207,6 +207,9 @@ class PDFiumEngineClient {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // See the comment for `OnSearchifyStateChange` in pdf/pdf.mojom.
   virtual void OnSearchifyStateChange(bool busy) = 0;
+
+  // Notifies that at least one page is searchified.
+  virtual void OnHasSearchifyText() = 0;
 #endif
 };
 

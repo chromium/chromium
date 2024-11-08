@@ -1418,8 +1418,54 @@ bool PdfViewWebPlugin::IsInAnnotationMode() const {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 void PdfViewWebPlugin::OnSearchifyStateChange(bool busy) {
   pdf_host_->OnSearchifyStateChange(busy);
+
+  if (busy && show_searchify_in_progress_) {
+    return;
+  }
+
+  if (busy) {
+    // The UI is asked to show the progress indicator with 1s delay, so that if
+    // the task finishes in less than 1s, the indicator would not be shown.
+    show_searchify_in_progress_ = true;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&PdfViewWebPlugin::SetShowSearchifyInProgress,
+                       weak_factory_.GetWeakPtr(), /*show=*/true),
+        base::Seconds(1));
+    return;
+  }
+
+  if (show_searchify_in_progress_) {
+    show_searchify_in_progress_ = false;
+    SetShowSearchifyInProgress(false);
+  }
 }
-#endif
+
+void PdfViewWebPlugin::SetShowSearchifyInProgress(bool show) {
+  // Searchify tasks are expected to be quite fast most of the times, and if so,
+  // showing progress indicator is not needed.
+  // `SetShowSearchifyInProgress` is posted with delay to allow discarding the
+  // the request to show the progress indicator in such cases.
+  // A true `show` and a false `show_searchify_in_progress_` means that the task
+  // finished before the indicator is shown and UI element is not needed.
+  if (show && !show_searchify_in_progress_) {
+    return;
+  }
+
+  // TODO(crbug.com/360803943): Add test.
+  base::Value::Dict message;
+  message.Set("type", "showSearchifyInProgress");
+  message.Set("show", show);
+  client_->PostMessage(std::move(message));
+}
+
+void PdfViewWebPlugin::OnHasSearchifyText() {
+  // TODO(crbug.com/360803943): Add test.
+  base::Value::Dict message;
+  message.Set("type", "setHasSearchifyText");
+  client_->PostMessage(std::move(message));
+}
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 void PdfViewWebPlugin::SetCaretPosition(const gfx::PointF& position) {
   engine_->SetCaretPosition(FrameToPdfCoordinates(position));
