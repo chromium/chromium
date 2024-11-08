@@ -8,19 +8,16 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include <optional>
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/launch.h"
-#include "base/synchronization/lock.h"
 #include "base/win/access_token.h"
 #include "base/win/windows_types.h"
 #include "sandbox/win/src/app_container_base.h"
