@@ -98,8 +98,7 @@ public class SyncConsentActivity extends SynchronousInitializationActivity
                             this,
                             /* listenToActivityState= */ true,
                             IntentRequestTracker.createFromActivity(this),
-                            getInsetObserver(),
-                            /* trackOcclusion= */ true);
+                            getInsetObserver());
         }
         return mWindowAndroid;
     }

@@ -172,8 +172,7 @@ public class OverlayPanelBaseTest {
                                     mActivity,
                                     /* listenToActivityState= */ true,
                                     IntentRequestTracker.createFromActivity(mActivity),
-                                    mInsetObserver,
-                                    /* trackOcclusion= */ true);
+                                    mInsetObserver);
                     OverlayPanelManager panelManager = new OverlayPanelManager();
                     mExpandPanel =
                             new MockOverlayPanel(

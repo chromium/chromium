@@ -189,8 +189,7 @@ public class AndroidShareSheetControllerUnitTest {
                         mActivity,
                         false,
                         IntentRequestTracker.createFromActivity(mActivity),
-                        mInsetObserver,
-                        /* trackOcclusion= */ true);
+                        mInsetObserver);
         mPrintCallback = new PayloadCallbackHelper<>();
         // Set up mock tab
         doReturn(mWindow).when(mTab).getWindowAndroid();

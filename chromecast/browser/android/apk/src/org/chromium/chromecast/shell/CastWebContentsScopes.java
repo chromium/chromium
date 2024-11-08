@@ -42,8 +42,7 @@ class CastWebContentsScopes {
                             activity,
                             /* listenToActivityState= */ true,
                             IntentRequestTracker.createFromActivity(activity),
-                            /* insetObserver= */ null,
-                            /* trackOcclusion= */ true);
+                            /* insetObserver= */ null);
                 },
                 backgroundColor);
     }
@@ -52,38 +51,24 @@ class CastWebContentsScopes {
             Activity activity, FrameLayout layout, @ColorInt int backgroundColor) {
         layout.setBackgroundColor(backgroundColor);
         return onLayoutInternal(
-                activity,
-                layout,
-                () -> new WindowAndroid(activity, /* trackOcclusion= */ false),
-                backgroundColor);
+                activity, layout, () -> new WindowAndroid(activity), backgroundColor);
     }
 
-    static Observer<WebContents> onLayoutView(
-            Context context,
-            FrameLayout layout,
-            @ColorInt int backgroundColor,
-            WindowTokenProvider windowTokenProvider) {
+    static Observer<WebContents> onLayoutView(Context context, FrameLayout layout,
+            @ColorInt int backgroundColor, WindowTokenProvider windowTokenProvider) {
         layout.setBackgroundColor(backgroundColor);
-        return onLayoutInternal(
-                context,
-                layout,
-                () ->
-                        new WindowAndroid(context, /* trackOcclusion= */ false) {
-                            @Override
-                            public IBinder getWindowToken() {
-                                return windowTokenProvider.provideWindowToken();
-                            }
-                        },
-                backgroundColor);
+        return onLayoutInternal(context, layout, () -> new WindowAndroid(context) {
+            @Override
+            public IBinder getWindowToken() {
+                return windowTokenProvider.provideWindowToken();
+            }
+        }, backgroundColor);
     }
 
     // Note: the |windowFactory| should create a new instance of a WindowAndroid each time it is
     // invoked.
-    private static Observer<WebContents> onLayoutInternal(
-            Context context,
-            FrameLayout layout,
-            Supplier<WindowAndroid> windowFactory,
-            @ColorInt int backgroundColor) {
+    private static Observer<WebContents> onLayoutInternal(Context context, FrameLayout layout,
+            Supplier<WindowAndroid> windowFactory, @ColorInt int backgroundColor) {
         return (WebContents webContents) -> {
             WindowAndroid window = windowFactory.get();
             ContentViewRenderView contentViewRenderView =
@@ -131,7 +116,7 @@ class CastWebContentsScopes {
 
     public static Observer<WebContents> withoutLayout(Context context) {
         return (WebContents webContents) -> {
-            WindowAndroid window = new WindowAndroid(context, /* trackOcclusion= */ false);
+            WindowAndroid window = new WindowAndroid(context);
             ContentView contentView = ContentView.createContentView(context, webContents);
             WebContentsRegistry.initializeWebContents(webContents, contentView, window);
             // Enable display of current webContents.

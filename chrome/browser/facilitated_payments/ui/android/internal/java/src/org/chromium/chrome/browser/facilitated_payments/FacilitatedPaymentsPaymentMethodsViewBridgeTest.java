@@ -111,7 +111,7 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
     @Before
     public void setUp() {
         mApplicationContext = ApplicationProvider.getApplicationContext();
-        mWindow = new WindowAndroid(mApplicationContext, /* trackOcclusion= */ false);
+        mWindow = new WindowAndroid(mApplicationContext);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         mViewBridge =
                 FacilitatedPaymentsPaymentMethodsViewBridge.create(

@@ -58,9 +58,7 @@ public class AcknowledgeGroupedCredentialSheetModuleTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         mJniMocker.mock(AcknowledgeGroupedCredentialSheetBridgeJni.TEST_HOOKS, mBridgeJniMock);
-        mWindowAndroid =
-                new WindowAndroid(
-                        ContextUtils.getApplicationContext(), /* trackOcclusion= */ false);
+        mWindowAndroid = new WindowAndroid(ContextUtils.getApplicationContext());
         setUpBottomSheetController();
         mBridge = new AcknowledgeGroupedCredentialSheetBridge(TEST_NATIVE_POINTER, mWindowAndroid);
     }

@@ -100,12 +100,7 @@ public class CreatorActivity extends SnackbarActivity {
 
         IntentRequestTracker intentRequestTracker = IntentRequestTracker.createFromActivity(this);
         mWindowAndroid =
-                new ActivityWindowAndroid(
-                        this,
-                        false,
-                        intentRequestTracker,
-                        getInsetObserver(),
-                        /* trackOcclusion= */ true);
+                new ActivityWindowAndroid(this, false, intentRequestTracker, getInsetObserver());
 
         TabShareDelegateImpl tabshareDelegate =
                 new TabShareDelegateImpl(
