@@ -122,7 +122,18 @@ void SuggestInternalsHandler::OnSuggestRequestCompleted(
   // Call the completion callback after the delay given by the page.
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(std::move(completion_callback), source, response_code,
-                     std::move(response_body)),
+      base::BindOnce(
+          [](base::WeakPtr<const network::SimpleURLLoader> weak_source,
+             const int response_code,
+             std::unique_ptr<std::string> response_body,
+             RemoteSuggestionsService::CompletionCallback completion_callback) {
+            if (weak_source) {
+              std::move(completion_callback)
+                  .Run(weak_source.get(), response_code,
+                       std::move(response_body));
+            }
+          },
+          source->GetWeakPtr(), response_code, std::move(response_body),
+          std::move(completion_callback)),
       delay);
 }
