@@ -42,8 +42,7 @@ ReadWriteCardsManagerImpl::ReadWriteCardsManagerImpl()
           g_browser_process->shared_url_loader_factory(),
           quick_answers_controller_->GetQuickAnswersDelegate()));
 
-  if (chromeos::features::IsOrcaEnabled() ||
-      ash::features::IsLobsterEnabled()) {
+  if (chromeos::features::IsOrcaEnabled()) {
     editor_menu_controller_ =
         std::make_unique<editor_menu::EditorMenuControllerImpl>();
   }
