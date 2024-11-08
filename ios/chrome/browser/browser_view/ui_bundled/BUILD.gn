@@ -48,6 +48,7 @@ source_set("ui_bundled") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ai_prototyping/coordinator",
     "//ios/chrome/browser/app_launcher/model",
     "//ios/chrome/browser/app_store_rating/ui_bundled:features",
     "//ios/chrome/browser/autofill/model:model_internal",
