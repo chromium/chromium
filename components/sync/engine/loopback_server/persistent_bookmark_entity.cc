@@ -149,7 +149,7 @@ PersistentBookmarkEntity::PersistentBookmarkEntity(
       parent_id_(parent_id),
       creation_time_(creation_time),
       last_modified_time_(last_modified_time) {
-  if (!client_tag_hash.empty()) {
+  if (!client_tag_hash.empty() && !originator_client_item_id.empty()) {
     // This relies technically on a well-behaving client, but verifying here to
     // avoid issues with Local Sync, which uses LoopbackServer.
     DCHECK_EQ(

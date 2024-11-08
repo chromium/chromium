@@ -4,30 +4,40 @@
 
 #include "components/sync/test/entity_builder_factory.h"
 
-#include "base/strings/string_number_conversions.h"
+#include "base/base64.h"
+#include "base/rand_util.h"
 #include "base/uuid.h"
 
-using std::string;
-
 namespace fake_server {
+namespace {
+
+std::string GenerateCacheGUID() {
+  // Generate a GUID with 128 bits of randomness.
+  const int kGuidBytes = 128 / 8;
+  return base::Base64Encode(base::RandBytesAsVector(kGuidBytes));
+}
+
+}  // namespace
 
 EntityBuilderFactory::EntityBuilderFactory()
-    : cache_guid_(base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
+    : cache_guid_(GenerateCacheGUID()) {}
 
-EntityBuilderFactory::EntityBuilderFactory(const string& cache_guid)
+EntityBuilderFactory::EntityBuilderFactory(const std::string& cache_guid)
     : cache_guid_(cache_guid) {}
 
 EntityBuilderFactory::~EntityBuilderFactory() = default;
 
-BookmarkEntityBuilder EntityBuilderFactory::NewBookmarkEntityBuilder(
-    const string& title,
-    std::optional<std::string> originator_client_item_id) {
-  if (!originator_client_item_id) {
-    originator_client_item_id =
-        base::Uuid::GenerateRandomV4().AsLowercaseString();
-  }
+void EntityBuilderFactory::EnableClientTagHash() {
+  use_client_tag_hash_ = true;
+}
 
-  BookmarkEntityBuilder builder(title, cache_guid_, *originator_client_item_id);
+BookmarkEntityBuilder EntityBuilderFactory::NewBookmarkEntityBuilder(
+    const std::string& title,
+    const base::Uuid& uuid) {
+  auto builder = BookmarkEntityBuilder(title, uuid, cache_guid_);
+  if (use_client_tag_hash_) {
+    builder.EnableClientTagHash();
+  }
   return builder;
 }
 

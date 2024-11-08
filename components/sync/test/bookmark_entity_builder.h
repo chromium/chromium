@@ -27,14 +27,11 @@ class BookmarkEntityBuilder {
  public:
   // Represents different generations of bookmarks ordered by time. It doesn't
   // contain all generations and may reflect differences in specifics and
-  // SyncEntity.
+  // SyncEntity. Note that this distinction represents which version of the
+  // browser last modified a bookmark, rather than when it was created.
   enum class BookmarkGeneration {
     // A bookmark which doesn't contain title and GUID in specifics.
     kWithoutTitleInSpecifics,
-    // A bookmark entity having legacy title in specifics and uppercase GUID in
-    // |originator_client_item_id|
-    // without GUID in specifics. For bookmarks created between M45 and M51.
-    kLegacyTitleUppercaseOriginatorClientItemId,
     // A bookmark which contains valid GUID in specifics and
     // |originator_client_item_id|. For bookmarks created after M52.
     kLegacyTitleWithoutGuidInSpecifics,
@@ -51,12 +48,19 @@ class BookmarkEntityBuilder {
   };
 
   BookmarkEntityBuilder(const std::string& title,
-                        const std::string& originator_cache_guid,
-                        const std::string& originator_client_item_id);
-
+                        const base::Uuid& uuid,
+                        const std::string& originator_cache_guid);
   BookmarkEntityBuilder(const BookmarkEntityBuilder& other);
-
   ~BookmarkEntityBuilder();
+
+  // Allows setting an originator item ID that is not the default (which is the
+  // GUID).
+  BookmarkEntityBuilder& SetOriginatorClientItemId(
+      const std::string& originator_client_item_id);
+
+  // Uses a client tag hash instead of the pair
+  // originator_cache_guid/originator_client_item_id.
+  BookmarkEntityBuilder& EnableClientTagHash();
 
   // Sets the ID for the bookmark to be built. The ID should be in the format
   // returned by LoopbackServerEntity::CreateId. If this is not called, a random
@@ -73,7 +77,7 @@ class BookmarkEntityBuilder {
 
   // Sets the index of the bookmark to be built. If this is not called,
   // the bookmark will be placed at index 0.
-  void SetIndex(int index);
+  BookmarkEntityBuilder& SetIndex(int index);
 
   // Update bookmark's generation, will be used to fill in the final entity
   // fields.
@@ -91,6 +95,8 @@ class BookmarkEntityBuilder {
   std::unique_ptr<syncer::LoopbackServerEntity> BuildFolder();
 
  private:
+  sync_pb::UniquePosition GetUniquePosition() const;
+
   // Creates an EntitySpecifics and pre-populates its BookmarkSpecifics.
   sync_pb::EntitySpecifics CreateBaseEntitySpecifics(bool is_folder);
 
@@ -104,15 +110,17 @@ class BookmarkEntityBuilder {
   // not be nullptr.
   void FillWithFaviconIfNeeded(sync_pb::BookmarkSpecifics* bookmark_specifics);
 
-  // Generates unique position based on |index_|, item ID and cache GUID.
-  sync_pb::UniquePosition GenerateUniquePosition() const;
-
   // The bookmark entity's title. This value is also used as the entity's name.
   const std::string title_;
 
+  // The bookmark's GUID.
+  const base::Uuid uuid_;
+
   // Information that associates the bookmark with its original client.
   const std::string originator_cache_guid_;
-  const std::string originator_client_item_id_;
+  std::string originator_client_item_id_;
+
+  bool use_client_tag_hash_ = false;
 
   // The ID for the bookmark. This is only non-empty if it was explicitly set
   // via SetId(); otherwise a random ID will be generated on demand.
@@ -124,7 +132,6 @@ class BookmarkEntityBuilder {
 
   // The index of the bookmark folder within its siblings.
   int index_ = 0;
-  sync_pb::UniquePosition unique_position_;
 
   // Information about the favicon of the bookmark.
   gfx::Image favicon_;

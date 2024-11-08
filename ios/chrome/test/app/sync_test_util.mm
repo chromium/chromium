@@ -169,8 +169,8 @@ void AddLegacyBookmarkToFakeSyncServer(std::string url,
       !base::Uuid::ParseCaseInsensitive(originator_client_item_id).is_valid());
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
-      entity_builder_factory.NewBookmarkEntityBuilder(
-          title, std::move(originator_client_item_id));
+      entity_builder_factory.NewBookmarkEntityBuilder(title)
+          .SetOriginatorClientItemId(std::move(originator_client_item_id));
   gSyncFakeServer->InjectEntity(
       bookmark_builder
           .SetGeneration(fake_server::BookmarkEntityBuilder::

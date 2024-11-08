@@ -223,6 +223,19 @@ class SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks
   base::test::ScopedFeatureList features_override_;
 };
 
+class SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration
+    : public SyncTest {
+ public:
+  SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration()
+      : SyncTest(SINGLE_CLIENT) {
+    features_override_.InitAndEnableFeature(
+        switches::kSyncMigrateBookmarksWithoutClientTagHash);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_override_;
+};
+
 class SingleClientBookmarksThrottlingSyncTest : public SyncTest {
  public:
   SingleClientBookmarksThrottlingSyncTest() : SyncTest(SINGLE_CLIENT) {}
@@ -330,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, Sanity) {
   //      -> tier1_a_url1 (www.pandora.com)
   //    -> Porsche (www.porsche.com)
   //    -> Bank of America (www.bankofamerica.com)
-  //    -> Seattle Bubble
+  //    -> Wikipedia
   //  other_node
   //    -> top
   //      -> tier1_b
@@ -394,8 +407,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, Sanity) {
   ASSERT_NE(nullptr, boa);
   Move(kSingleProfileIndex, tier1_a_url0, top, top->children().size());
   const BookmarkNode* bubble =
-      AddURL(kSingleProfileIndex, bar, bar->children().size(), "Seattle Bubble",
-             GURL("http://seattlebubble.com"));
+      AddURL(kSingleProfileIndex, bar, bar->children().size(), "Wikipedia",
+             GURL("http://wikipedia.org"));
   ASSERT_NE(nullptr, bubble);
   const BookmarkNode* wired = AddURL(kSingleProfileIndex, bar, 2, "Wired News",
                                      GURL("http://www.wired.com"));
@@ -422,8 +435,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, Sanity) {
                                        GURL("http://www.wired.com")),
           IsUrlBookmarkWithTitleAndUrl("Bank of America",
                                        GURL("https://www.bankofamerica.com")),
-          IsUrlBookmarkWithTitleAndUrl("Seattle Bubble",
-                                       GURL("http://seattlebubble.com"))));
+          IsUrlBookmarkWithTitleAndUrl("Wikipedia",
+                                       GURL("http://wikipedia.org"))));
   EXPECT_THAT(tier1_a->children(),
               ElementsAre(IsUrlBookmarkWithTitleAndUrl(
                               "tier1_a_url2", GURL("http://www.facebook.com")),
@@ -475,8 +488,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, Sanity) {
                                        GURL("http://www.porsche.com")),
           IsUrlBookmarkWithTitleAndUrl("Bank of America",
                                        GURL("https://www.bankofamerica.com")),
-          IsUrlBookmarkWithTitleAndUrl("Seattle Bubble",
-                                       GURL("http://seattlebubble.com"))));
+          IsUrlBookmarkWithTitleAndUrl("Wikipedia",
+                                       GURL("http://wikipedia.org"))));
   EXPECT_THAT(
       top->children(),
       ElementsAre(IsFolderWithTitleAndChildrenAre(
@@ -570,16 +583,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   const std::string title1 = "Title1";
   const std::string title2 = "Title2";
 
+  fake_server::EntityBuilderFactory entity_builder_factory1;
+  fake_server::EntityBuilderFactory entity_builder_factory2;
+
   // Mimic the creation of two bookmarks from two different devices, with the
   // same client item ID.
-  fake_server::BookmarkEntityBuilder bookmark_builder1(
-      title1, /*originator_cache_guid=*/
-      base::Uuid::GenerateRandomV4().AsLowercaseString(),
-      /*originator_client_item_id=*/"1");
-  fake_server::BookmarkEntityBuilder bookmark_builder2(
-      title2, /*originator_cache_guid=*/
-      base::Uuid::GenerateRandomV4().AsLowercaseString(),
-      /*originator_client_item_id=*/"1");
+  fake_server::BookmarkEntityBuilder bookmark_builder1 =
+      entity_builder_factory1.NewBookmarkEntityBuilder(title1)
+          .SetOriginatorClientItemId("1");
+  fake_server::BookmarkEntityBuilder bookmark_builder2 =
+      entity_builder_factory2.NewBookmarkEntityBuilder(title2)
+          .SetOriginatorClientItemId("1");
 
   fake_server_->InjectEntity(
       bookmark_builder1
@@ -604,12 +618,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   const std::string title1 = "Title1";
   const std::string title2 = "Title2";
 
+  fake_server::EntityBuilderFactory entity_builder_factory;
   // Bookmarks created around 2016, between [M44..M52) use an uppercase UUID as
   // originator client item ID.
-  fake_server::BookmarkEntityBuilder bookmark_builder(
-      title1, /*originator_cache_guid=*/
-      base::Uuid::GenerateRandomV4().AsLowercaseString(),
-      /*originator_client_item_id=*/uppercase_uuid_str);
+  fake_server::BookmarkEntityBuilder bookmark_builder =
+      entity_builder_factory.NewBookmarkEntityBuilder(title1)
+          .SetOriginatorClientItemId(uppercase_uuid_str);
 
   fake_server_->InjectEntity(
       bookmark_builder
@@ -649,24 +663,25 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
                        DownloadModernBookmarkCollidingPre2015BookmarkId) {
   const std::string title1 = "Title1";
   const std::string title2 = "Title2";
-
-  const std::string kOriginalOriginatorCacheUuid =
-      base::Uuid::GenerateRandomV4().AsLowercaseString();
   const std::string kOriginalOriginatorClientItemId = "1";
 
+  fake_server::EntityBuilderFactory entity_builder_factory1;
+  fake_server::EntityBuilderFactory entity_builder_factory2;
+
   // One pre-2015 bookmark, nothing special here.
-  fake_server::BookmarkEntityBuilder bookmark_builder1(
-      title1, kOriginalOriginatorCacheUuid, kOriginalOriginatorClientItemId);
+  fake_server::BookmarkEntityBuilder bookmark_builder1 =
+      entity_builder_factory1.NewBookmarkEntityBuilder(title1)
+          .SetOriginatorClientItemId(kOriginalOriginatorClientItemId);
 
   // A second bookmark, possibly uploaded by a buggy client, happens to use an
   // originator client item ID that collides with the UUID that would have been
   // inferred for the original pre-2015 bookmark.
-  fake_server::BookmarkEntityBuilder bookmark_builder2(
-      title2, /*originator_cache_guid=*/
-      base::Uuid::GenerateRandomV4().AsLowercaseString(),
-      /*originator_client_item_id=*/
+  fake_server::BookmarkEntityBuilder bookmark_builder2 =
+      entity_builder_factory2.NewBookmarkEntityBuilder(title2);
+  bookmark_builder2.SetOriginatorClientItemId(
       syncer::InferGuidForLegacyBookmarkForTesting(
-          kOriginalOriginatorCacheUuid, kOriginalOriginatorClientItemId));
+          entity_builder_factory1.cache_guid(),
+          kOriginalOriginatorClientItemId));
 
   fake_server_->InjectEntity(
       bookmark_builder1
@@ -928,7 +943,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, DownloadBookmarkFolder) {
-  const std::string title = "Seattle Sounders FC";
+  const std::string title = "Title1";
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
       entity_builder_factory.NewBookmarkEntityBuilder(title);
@@ -944,7 +959,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, DownloadBookmarkFolder) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
                        DownloadLegacyBookmarkFolder) {
-  const std::string title = "Seattle Sounders FC";
+  const std::string title = "Title1";
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
       entity_builder_factory.NewBookmarkEntityBuilder(title);
@@ -1184,10 +1199,11 @@ IN_PROC_BROWSER_TEST_F(
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
                        PRE_PersistProgressMarkerOnRestart) {
-  const std::string title = "Seattle Sounders FC";
+  const std::string title = "Title1";
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
-      entity_builder_factory.NewBookmarkEntityBuilder(title, kBookmarkGuid);
+      entity_builder_factory.NewBookmarkEntityBuilder(
+          title, base::Uuid::ParseLowercase(kBookmarkGuid));
   bookmark_builder.SetId(
       syncer::LoopbackServerEntity::CreateId(syncer::BOOKMARKS, kBookmarkGuid));
   fake_server_->InjectEntity(bookmark_builder.BuildFolder());
@@ -1203,10 +1219,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
                        PersistProgressMarkerOnRestart) {
-  const std::string title = "Seattle Sounders FC";
+  const std::string title = "Title1";
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
-      entity_builder_factory.NewBookmarkEntityBuilder(title, kBookmarkGuid);
+      entity_builder_factory.NewBookmarkEntityBuilder(
+          title, base::Uuid::ParseLowercase(kBookmarkGuid));
   bookmark_builder.SetId(
       syncer::LoopbackServerEntity::CreateId(syncer::BOOKMARKS, kBookmarkGuid));
   fake_server_->InjectEntity(bookmark_builder.BuildFolder());
@@ -1239,7 +1256,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   // Create a bookmark folder with a valid UUID.
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
-      entity_builder_factory.NewBookmarkEntityBuilder("Seattle Sounders FC");
+      entity_builder_factory.NewBookmarkEntityBuilder("Title1");
 
   // Issue remote creation with a valid UUID.
   base::HistogramTester histogram_tester;
@@ -1280,7 +1297,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
       entity_builder_factory.NewBookmarkEntityBuilder(
-          "Seattle Sounders FC", originator_client_item_id.AsLowercaseString());
+          "Title1", originator_client_item_id);
 
   // Issue remote creation without a valid GUID but with a valid
   // originator_client_item_id.
@@ -1317,8 +1334,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
 
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
-      entity_builder_factory.NewBookmarkEntityBuilder(
-          "Seattle Sounders FC", originator_client_item_id);
+      entity_builder_factory.NewBookmarkEntityBuilder("Title1");
+  bookmark_builder.SetOriginatorClientItemId(originator_client_item_id);
 
   // Issue remote creation without a valid GUID or a valid
   // originator_client_item_id.
@@ -1346,7 +1363,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   const GURL url = GURL("http://www.foo.com");
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
-      entity_builder_factory.NewBookmarkEntityBuilder("Seattle Sounders FC");
+      entity_builder_factory.NewBookmarkEntityBuilder("Title1");
 
   // Create bookmark in server with a valid UUID.
   std::unique_ptr<syncer::LoopbackServerEntity> bookmark =
@@ -1429,7 +1446,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
       entity_builder_factory.NewBookmarkEntityBuilder(
-          "Seattle Sounders FC", originator_client_item_id.AsLowercaseString());
+          "Title1", originator_client_item_id);
 
   // Create bookmark in server without a valid GUID but with a valid
   // originator_client_item_id.
@@ -1470,8 +1487,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   const std::string originator_client_item_id = "INVALID OCII";
   fake_server::EntityBuilderFactory entity_builder_factory;
   fake_server::BookmarkEntityBuilder bookmark_builder =
-      entity_builder_factory.NewBookmarkEntityBuilder(
-          "Seattle Sounders FC", originator_client_item_id);
+      entity_builder_factory.NewBookmarkEntityBuilder("Title1");
+  bookmark_builder.SetOriginatorClientItemId(originator_client_item_id);
 
   // Create bookmark in server without a valid GUID and without a valid
   // originator_client_item_id.
@@ -1511,7 +1528,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   ASSERT_TRUE(SetupClients());
 
   // Create a local bookmark folder.
-  const std::string title = "Seattle Sounders FC";
+  const std::string title = "Title1";
   const BookmarkNode* local_folder = AddFolder(
       kSingleProfileIndex, GetBookmarkBarNode(kSingleProfileIndex), 0, title);
   const base::Uuid old_uuid = local_folder->uuid();
@@ -2819,5 +2836,89 @@ IN_PROC_BROWSER_TEST_F(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientBookmarksSyncTestWithEnabledClientTagHashMigration,
+    MigratePreExistingBookmarks) {
+  const base::Uuid kOriginalFolder1Uuid = base::Uuid::GenerateRandomV4();
+  const base::Uuid kOriginalFolder2Uuid = base::Uuid::GenerateRandomV4();
+
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+
+  fake_server::EntityBuilderFactory entity_builder_factory;
+  fake_server_->InjectEntity(
+      entity_builder_factory
+          .NewBookmarkEntityBuilder("Folder1", kOriginalFolder1Uuid)
+          .SetIndex(0)
+          .BuildFolder());
+  fake_server_->InjectEntity(
+      entity_builder_factory
+          .NewBookmarkEntityBuilder("Folder2", kOriginalFolder2Uuid)
+          .SetIndex(1)
+          .EnableClientTagHash()
+          .BuildFolder());
+
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder("Url1")
+          .SetParentGuid(kOriginalFolder1Uuid)
+          .SetIndex(0)
+          .BuildBookmark(GURL("http://url1.com")));
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder("Url2")
+          .SetParentGuid(kOriginalFolder1Uuid)
+          .SetIndex(1)
+          .BuildBookmark(GURL("http://url2.com")));
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder("Url3")
+          .SetParentGuid(kOriginalFolder1Uuid)
+          .SetIndex(2)
+          .EnableClientTagHash()
+          .BuildBookmark(GURL("http://url3.com")));
+
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder("Url4")
+          .SetParentGuid(kOriginalFolder2Uuid)
+          .SetIndex(0)
+          .BuildBookmark(GURL("http://url4.com")));
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder("Url5")
+          .SetParentGuid(kOriginalFolder2Uuid)
+          .SetIndex(1)
+          .BuildBookmark(GURL("http://url5.com")));
+  fake_server_->InjectEntity(
+      entity_builder_factory.NewBookmarkEntityBuilder("Url6")
+          .SetParentGuid(kOriginalFolder2Uuid)
+          .SetIndex(2)
+          .EnableClientTagHash()
+          .BuildBookmark(GURL("http://url6.com")));
+
+  ASSERT_EQ(
+      8u, GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS).size());
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_THAT(
+      GetBookmarkBarNode(kSingleProfileIndex)->children(),
+      ElementsAre(
+          IsFolderWithTitleAndChildrenAre(
+              "Folder1",
+              IsUrlBookmarkWithTitleAndUrl("Url1", GURL("http://url1.com")),
+              IsUrlBookmarkWithTitleAndUrl("Url2", GURL("http://url2.com")),
+              IsUrlBookmarkWithTitleAndUrl("Url3", GURL("http://url3.com"))),
+          IsFolderWithTitleAndChildrenAre(
+              "Folder2",
+              IsUrlBookmarkWithTitleAndUrl("Url4", GURL("http://url4.com")),
+              IsUrlBookmarkWithTitleAndUrl("Url5", GURL("http://url5.com")),
+              IsUrlBookmarkWithTitleAndUrl("Url6", GURL("http://url6.com")))));
+
+  const std::vector<sync_pb::SyncEntity> server_bookmarks =
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::BOOKMARKS);
+  EXPECT_EQ(8u, server_bookmarks.size());
+
+  for (const sync_pb::SyncEntity& entity : server_bookmarks) {
+    // All entities should have adopted a client tag hash.
+    EXPECT_TRUE(entity.has_client_tag_hash())
+        << "for title " << entity.specifics().bookmark().full_title();
+  }
+}
 
 }  // namespace

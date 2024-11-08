@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/strings/string_util.h"
+#include "base/uuid.h"
 #include "components/sync/test/bookmark_entity_builder.h"
 #include "url/gurl.h"
 
@@ -30,14 +31,19 @@ class EntityBuilderFactory {
   explicit EntityBuilderFactory(const std::string& cache_guid);
   virtual ~EntityBuilderFactory();
 
+  // Uses a client tag hash instead of the pair
+  // originator_cache_guid/originator_client_item_id in future builders.
+  void EnableClientTagHash();
+
+  const std::string& cache_guid() const { return cache_guid_; }
+
   BookmarkEntityBuilder NewBookmarkEntityBuilder(
       const std::string& title,
-      std::optional<std::string> originator_client_item_id = std::nullopt);
+      const base::Uuid& uuid = base::Uuid::GenerateRandomV4());
 
  private:
-  // An identifier used when creating entities. This value is used similarly to
-  // the value in the legacy Sync Directory code.
   const std::string cache_guid_;
+  bool use_client_tag_hash_ = false;
 };
 
 }  // namespace fake_server

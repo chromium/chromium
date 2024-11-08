@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -78,9 +79,10 @@ std::unique_ptr<syncer::LoopbackServerEntity> CreateBookmarkEntity(
                           << ") is not a valid URL.";
 
   fake_server::EntityBuilderFactory entity_builder_factory;
-  std::optional<std::string> converted_guid = std::nullopt;
+  base::Uuid converted_guid = base::Uuid::GenerateRandomV4();
   if (guid) {
-    converted_guid = base::android::ConvertJavaStringToUTF8(env, guid.value());
+    converted_guid = base::Uuid::ParseCaseInsensitive(
+        base::android::ConvertJavaStringToUTF8(env, guid.value()));
   }
   fake_server::BookmarkEntityBuilder bookmark_builder =
       entity_builder_factory.NewBookmarkEntityBuilder(
@@ -341,7 +343,8 @@ static void JNI_FakeServerHelper_ModifyBookmarkFolderEntity(
   fake_server::BookmarkEntityBuilder bookmark_builder =
       entity_builder_factory.NewBookmarkEntityBuilder(
           base::android::ConvertJavaStringToUTF8(env, title),
-          base::android::ConvertJavaStringToUTF8(env, guid));
+          base::Uuid::ParseLowercase(
+              base::android::ConvertJavaStringToUTF8(env, guid)));
   bookmark_builder.SetParentId(
       base::android::ConvertJavaStringToUTF8(env, parent_id));
   bookmark_builder.SetParentGuid(base::Uuid::ParseLowercase(
