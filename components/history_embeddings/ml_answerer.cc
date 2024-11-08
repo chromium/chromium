@@ -71,6 +71,9 @@ class MlAnswerer::SessionManager {
         weak_ptr_factory_(this) {}
 
   ~SessionManager() {
+    // Explicitly invalidate weak pointers to prevent callbacks that may be
+    // triggered by the destructor logic.
+    weak_ptr_factory_.InvalidateWeakPtrs();
     // Run the existing callback if not called yet with canceled status.
     if (!callback_.is_null()) {
       FinishAndResetSessions(AnswererResult(
