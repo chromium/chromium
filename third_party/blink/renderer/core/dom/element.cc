@@ -3168,20 +3168,6 @@ void Element::MovedFrom(ContainerNode& old_parent) {
     // we skipped the step that sets it on removal/insertion.
     old_parent_element->SetHasFocusWithinUpToAncestor(false, common_ancestor);
     new_parent_element->SetHasFocusWithinUpToAncestor(true, common_ancestor);
-
-    To<Element>(old_parent)
-        .DispatchFocusOutEvent(event_type_names::kFocusout, focused_element);
-
-    // Note that at this point we might be firing a focusin event at an inert
-    // subtree. That's because the inertness of the tree might only be known
-    // during the next style calculation, and we don't want to force a
-    // synchronous style calculation for the sake of the focusin event. If that
-    // occurs, the subtree would receive the focusin event, followed by a
-    // focusout event when the focus fixup occurs in the next "update the
-    // rendering" step.
-    new_parent_element->DispatchFocusInEvent(event_type_names::kFocusin,
-                                             focused_element,
-                                             mojom::blink::FocusType::kScript);
   }
 }
 
