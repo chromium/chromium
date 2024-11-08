@@ -11326,6 +11326,17 @@ const CSSValue* WordBreak::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.WordBreak());
 }
 
+void WordBreak::ApplyValue(StyleResolverState& state,
+                           const CSSValue& value,
+                           ValueMode) const {
+  blink::EWordBreak word_break =
+      To<CSSIdentifierValue>(value).ConvertTo<blink::EWordBreak>();
+  if (word_break == EWordBreak::kAutoPhrase) {
+    UseCounter::Count(state.GetDocument(), WebFeature::kCSSWordBreakAutoPhrase);
+  }
+  state.StyleBuilder().SetWordBreak(word_break);
+}
+
 const CSSValue* WordSpacing::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,

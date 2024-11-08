@@ -6895,6 +6895,7 @@
     {
       name: "word-break",
       property_methods: ["CSSValueFromComputedStyleInternal"],
+      style_builder_custom_functions: ["value"],
       inherited: true,
       field_group: "*",
       field_template: "keyword",

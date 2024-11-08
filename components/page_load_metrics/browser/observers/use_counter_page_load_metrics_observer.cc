@@ -533,6 +533,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kDynamicRangeMediaQuery, WebDXFeature::kDynamicRange},
           {WebFeature::kHasMarkerPseudoElement, WebDXFeature::kMarker},
           {WebFeature::kDisplayModeMediaQuery, WebDXFeature::kDisplayMode},
+          {WebFeature::kCSSWordBreakAutoPhrase,
+           WebDXFeature::kWordBreakAutoPhrase},
       }};
 
   return *kMap;
