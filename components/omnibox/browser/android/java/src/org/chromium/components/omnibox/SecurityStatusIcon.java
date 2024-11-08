@@ -17,7 +17,7 @@ public class SecurityStatusIcon {
             @ConnectionSecurityLevel int securityLevel,
             boolean isSmallDevice,
             boolean skipIconForNeutralState,
-            boolean useUpdatedConnectionSecurityIndicators) {
+            boolean useLockIconForSecureState) {
         switch (securityLevel) {
             case ConnectionSecurityLevel.NONE:
                 if (isSmallDevice && skipIconForNeutralState) return 0;
@@ -28,9 +28,9 @@ public class SecurityStatusIcon {
                 return R.drawable.omnibox_dangerous;
             case ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT:
             case ConnectionSecurityLevel.SECURE:
-                return useUpdatedConnectionSecurityIndicators
-                        ? R.drawable.omnibox_https_valid_refresh
-                        : R.drawable.omnibox_https_valid;
+                return useLockIconForSecureState
+                        ? R.drawable.omnibox_https_valid
+                        : R.drawable.omnibox_https_valid_refresh;
             default:
                 assert false;
         }

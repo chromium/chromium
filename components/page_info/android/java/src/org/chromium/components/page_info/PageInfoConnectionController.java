@@ -163,7 +163,7 @@ public class PageInfoConnectionController
                         securityLevel,
                         /* isSmallDevice= */ false,
                         /* skipIconForNeutralState= */ false,
-                        /* useUpdatedConnectionSecurityIndicators= */ false);
+                        /* useLockIconForSecureState= */ true);
         rowParams.iconTint = getSecurityIconColor(securityLevel);
         if (hasClickCallback) rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);

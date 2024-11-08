@@ -209,7 +209,6 @@ const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
 
   return location_bar_model::GetSecurityVectorIcon(
       GetSecurityLevel(),
-      delegate_->ShouldUseUpdatedConnectionSecurityIndicators(),
       delegate_->GetVisibleSecurityState()->malicious_content_status);
 }
 
@@ -276,9 +275,4 @@ bool LocationBarModelImpl::IsOfflinePage() const {
 
 bool LocationBarModelImpl::ShouldPreventElision() const {
   return delegate_->ShouldPreventElision();
-}
-
-bool LocationBarModelImpl::ShouldUseUpdatedConnectionSecurityIndicators()
-    const {
-  return delegate_->ShouldUseUpdatedConnectionSecurityIndicators();
 }

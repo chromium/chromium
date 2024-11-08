@@ -136,7 +136,7 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
                 securityLevel,
                 mIsSmallDevice,
                 /* skipIconForNeutralState= */ false,
-                /* useUpdatedConnectionSecurityIndicators= */ false);
+                /* useLockIconForSecureState= */ true);
     }
 
     // Implement PaymentHandlerToolbarMediatorDelegate.

@@ -29,10 +29,8 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
@@ -51,7 +49,6 @@ import org.chromium.url.GURL;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowTrustedCdn.class})
-@DisableFeatures(ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS)
 public class LocationBarModelUnitTest {
     @Implements(TrustedCdn.class)
     static class ShadowTrustedCdn {

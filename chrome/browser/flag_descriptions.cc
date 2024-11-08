@@ -2747,15 +2747,6 @@ const char kOmniboxStarterPackIPHDescription[] =
     "Enables an informational IPH message for the  Site search starter pack "
     "feature";
 
-#if BUILDFLAG(IS_ANDROID)
-const char kOmnibox2023RefreshConnectionSecurityIndicatorsName[] =
-    "Omnibox 2023 refresh connection security indicators";
-const char kOmnibox2023RefreshConnectionSecurityIndicatorsDescription[] =
-    "Use new connection security indicators for https pages in the omnibox. "
-    "When enabled, the icon shown in the onmibox for secure pages is the same "
-    "as shown on desktop when the Chrome 2023 refresh flag is active.";
-#endif  // BUILDFLAG(IS_ANDROID)
-
 const char kWebUIOmniboxPopupName[] = "WebUI Omnibox Popup";
 const char kWebUIOmniboxPopupDescription[] =
     "If enabled, shows the omnibox suggestions popup in WebUI.";

@@ -74,8 +74,3 @@ bool TestLocationBarModel::IsOfflinePage() const {
 bool TestLocationBarModel::ShouldPreventElision() const {
   return should_prevent_elision_;
 }
-
-bool TestLocationBarModel::ShouldUseUpdatedConnectionSecurityIndicators()
-    const {
-  return false;
-}

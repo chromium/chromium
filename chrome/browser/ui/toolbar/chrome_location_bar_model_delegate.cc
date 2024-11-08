@@ -123,12 +123,6 @@ bool ChromeLocationBarModelDelegate::ShouldDisplayURL() const {
   return !profile || !search::IsInstantNTPURL(url, profile);
 }
 
-bool ChromeLocationBarModelDelegate::
-    ShouldUseUpdatedConnectionSecurityIndicators() const {
-  return base::FeatureList::IsEnabled(
-      omnibox::kUpdatedConnectionSecurityIndicators);
-}
-
 security_state::SecurityLevel ChromeLocationBarModelDelegate::GetSecurityLevel()
     const {
   content::WebContents* web_contents = GetActiveWebContents();

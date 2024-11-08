@@ -382,8 +382,6 @@ public abstract class ChromeFeatureList {
             "OmniboxCacheSuggestionResources";
     public static final String AVOID_RELAYOUT_DURING_FOCUS_ANIMATION =
             "AvoidRelayoutDuringFocusAnimation";
-    public static final String OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS =
-            "OmniboxUpdatedConnectionSecurityIndicators";
     public static final String OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS =
             "OptimizationGuidePushNotifications";
     public static final String PAGE_INFO_ABOUT_THIS_SITE_MORE_LANGS =

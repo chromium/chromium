@@ -1574,11 +1574,6 @@ extern const char kOmniboxMaxZeroSuggestMatchesDescription[];
 extern const char kOmniboxUIMaxAutocompleteMatchesName[];
 extern const char kOmniboxUIMaxAutocompleteMatchesDescription[];
 
-#if BUILDFLAG(IS_ANDROID)
-extern const char kOmnibox2023RefreshConnectionSecurityIndicatorsName[];
-extern const char kOmnibox2023RefreshConnectionSecurityIndicatorsDescription[];
-#endif  // BUILDFLAG(IS_ANDROID)
-
 extern const char kWebUIOmniboxPopupName[];
 extern const char kWebUIOmniboxPopupDescription[];
 

@@ -82,11 +82,6 @@ BASE_DECLARE_FEATURE(kWebUIOmniboxPopup);
 // popup).
 BASE_DECLARE_FEATURE(kOmniboxAssistantVoiceSearch);
 
-// Android only flag that controls whether the new security indicator should be
-// used, on non-Android platforms this is controlled through the
-// ChromeRefresh2023 flag.
-BASE_DECLARE_FEATURE(kUpdatedConnectionSecurityIndicators);
-
 // Navigation experiments.
 BASE_DECLARE_FEATURE(kDefaultTypedNavigationsToHttps);
 extern const char kDefaultTypedNavigationsToHttpsTimeoutParam[];

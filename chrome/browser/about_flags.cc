@@ -9265,15 +9265,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kHttpsFirstModeV2ForTypicallySecureUsers)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"omnibox-2023-refresh-connection-security-indicators",
-     flag_descriptions::kOmnibox2023RefreshConnectionSecurityIndicatorsName,
-     flag_descriptions::
-         kOmnibox2023RefreshConnectionSecurityIndicatorsDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kUpdatedConnectionSecurityIndicators)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"enable-drdc", flag_descriptions::kEnableDrDcName,
      flag_descriptions::kEnableDrDcDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kEnableDrDc)},
