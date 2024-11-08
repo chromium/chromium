@@ -15,18 +15,21 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/signin/internal/identity_manager/oauth_multilogin_token_request.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "google_apis/gaia/oauth2_access_token_manager.h"
 
 class SigninClient;
 class ProfileOAuth2TokenService;
 
 namespace signin {
 
+class OAuthMultiloginTokenResponse;
+
 // Fetches multilogin access tokens in parallel for multiple accounts.
 // It is safe to delete this object from within the callbacks.
-class OAuthMultiloginTokenFetcher : public OAuth2AccessTokenManager::Consumer {
+class OAuthMultiloginTokenFetcher {
  public:
   struct AccountIdTokenPair {
     CoreAccountId account_id;
@@ -54,20 +57,18 @@ class OAuthMultiloginTokenFetcher : public OAuth2AccessTokenManager::Consumer {
   OAuthMultiloginTokenFetcher& operator=(const OAuthMultiloginTokenFetcher&) =
       delete;
 
-  ~OAuthMultiloginTokenFetcher() override;
+  ~OAuthMultiloginTokenFetcher();
+
+  void OnTokenRequestComplete(const OAuthMultiloginTokenRequest* request,
+                              OAuthMultiloginTokenRequest::Result result);
 
  private:
   void StartFetchingToken(const CoreAccountId& account_id);
 
-  // Overridden from OAuth2AccessTokenManager::Consumer.
-  void OnGetTokenSuccess(
-      const OAuth2AccessTokenManager::Request* request,
-      const OAuth2AccessTokenConsumer::TokenResponse& token_response) override;
-  void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
-                         const GoogleServiceAuthError& error) override;
-
-  // Helper function to remove a request from token_requests_.
-  void EraseRequest(const OAuth2AccessTokenManager::Request* request);
+  void TokenRequestSucceeded(const CoreAccountId& account_id,
+                             OAuthMultiloginTokenResponse response);
+  void TokenRequestFailed(const CoreAccountId& account_id,
+                          GoogleServiceAuthError error);
 
   raw_ptr<SigninClient> signin_client_;
   raw_ptr<ProfileOAuth2TokenService> token_service_;
@@ -76,8 +77,7 @@ class OAuthMultiloginTokenFetcher : public OAuth2AccessTokenManager::Consumer {
   SuccessCallback success_callback_;
   FailureCallback failure_callback_;
 
-  std::vector<std::unique_ptr<OAuth2AccessTokenManager::Request>>
-      token_requests_;
+  std::vector<std::unique_ptr<OAuthMultiloginTokenRequest>> token_requests_;
   std::map<CoreAccountId, std::string> access_tokens_;
   std::set<CoreAccountId> retried_requests_;  // Requests are retried once.
 

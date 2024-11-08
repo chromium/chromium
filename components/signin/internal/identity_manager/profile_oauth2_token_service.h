@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "build/buildflag.h"
+#include "components/signin/internal/identity_manager/oauth_multilogin_token_request.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -129,9 +130,7 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   // Try to get refresh token from delegate. If it is accessible (i.e. not
   // empty), return it directly, otherwise start request to get access token.
   // Used for getting tokens to send to Gaia Multilogin endpoint.
-  std::unique_ptr<OAuth2AccessTokenManager::Request> StartRequestForMultilogin(
-      const CoreAccountId& account_id,
-      OAuth2AccessTokenManager::Consumer* consumer);
+  void StartRequestForMultilogin(signin::OAuthMultiloginTokenRequest& request);
 
   // This method does the same as |StartRequest| except it uses |client_id| and
   // |client_secret| to identify OAuth client app instead of using

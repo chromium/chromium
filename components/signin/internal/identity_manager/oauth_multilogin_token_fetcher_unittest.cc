@@ -241,19 +241,4 @@ TEST_F(OAuthMultiloginTokenFetcherTest, MultipleAccountsPersistentError) {
   EXPECT_EQ(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS, error().state());
 }
 
-TEST_F(OAuthMultiloginTokenFetcherTest, OneAccountSuccessRefreshToken) {
-  constexpr char kRefreshToken[] = "refresh_token";
-  token_service().UpdateCredentials(kAccountId, kRefreshToken);
-  std::unique_ptr<OAuthMultiloginTokenFetcher> fetcher =
-      CreateFetcher({kAccountId});
-  EXPECT_EQ(FetchStatus::kPending, GetFetchStatus());
-  OAuth2AccessTokenConsumer::TokenResponse success_response;
-  success_response.refresh_token = kRefreshToken;
-  token_service().IssueAllTokensForAccount(kAccountId, success_response);
-  EXPECT_EQ(FetchStatus::kSuccess, GetFetchStatus());
-  // Check result.
-  EXPECT_THAT(account_id_token_pairs(),
-              ElementsAre(AccountIdTokenPair(kAccountId, kRefreshToken)));
-}
-
 }  // namespace signin

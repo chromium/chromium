@@ -11,6 +11,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/signin/internal/identity_manager/oauth_multilogin_token_request.h"
+#include "components/signin/internal/identity_manager/oauth_multilogin_token_response.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/public/base/device_id_helper.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -144,32 +146,24 @@ ProfileOAuth2TokenService::StartRequest(
   return token_manager_->StartRequest(account_id, scopes, consumer);
 }
 
-std::unique_ptr<OAuth2AccessTokenManager::Request>
-ProfileOAuth2TokenService::StartRequestForMultilogin(
-    const CoreAccountId& account_id,
-    OAuth2AccessTokenManager::Consumer* consumer) {
-  const std::string refresh_token =
-      delegate_->GetTokenForMultilogin(account_id);
+void ProfileOAuth2TokenService::StartRequestForMultilogin(
+    signin::OAuthMultiloginTokenRequest& request) {
+  std::string refresh_token =
+      delegate_->GetTokenForMultilogin(request.account_id());
   if (refresh_token.empty()) {
     // If we can't get refresh token from the delegate, start request for access
     // token.
-    OAuth2AccessTokenManager::ScopeSet scopes;
-    scopes.insert(GaiaConstants::kOAuth1LoginScope);
-    return token_manager_->StartRequest(account_id, scopes, consumer);
+    request.StartAccessTokenRequest(*token_manager_,
+                                    {GaiaConstants::kOAuth1LoginScope});
+    return;
   }
-  std::unique_ptr<OAuth2AccessTokenManager::RequestImpl> request(
-      new OAuth2AccessTokenManager::RequestImpl(account_id, consumer));
-  // Create token response from token. Expiration time and id token do not
-  // matter and should not be accessed.
-  OAuth2AccessTokenConsumer::TokenResponse token_response =
-      TokenResponseBuilder().WithRefreshToken(refresh_token).build();
+  // Create multilogin token response from the refresh token.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&OAuth2AccessTokenManager::RequestImpl::InformConsumer,
-                     request.get()->AsWeakPtr(),
-                     GoogleServiceAuthError(GoogleServiceAuthError::NONE),
-                     token_response));
-  return std::move(request);
+      base::BindOnce(
+          &signin::OAuthMultiloginTokenRequest::InvokeCallbackWithResult,
+          request.AsWeakPtr(),
+          signin::OAuthMultiloginTokenResponse(std::move(refresh_token))));
 }
 
 std::unique_ptr<OAuth2AccessTokenManager::Request>
@@ -203,11 +197,10 @@ void ProfileOAuth2TokenService::InvalidateAccessToken(
 void ProfileOAuth2TokenService::InvalidateTokenForMultilogin(
     const CoreAccountId& failed_account,
     const std::string& token) {
-  OAuth2AccessTokenManager::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kOAuth1LoginScope);
   // Remove from cache. This will have no effect on desktop since token is a
   // refresh token and is not in cache.
-  InvalidateAccessToken(failed_account, scopes, token);
+  InvalidateAccessToken(failed_account, {GaiaConstants::kOAuth1LoginScope},
+                        token);
   // For desktop refresh tokens can be invalidated directly in delegate. This
   // will have no effect on mobile.
   delegate_->InvalidateTokenForMultilogin(failed_account);

@@ -23,6 +23,8 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 #include "components/signin/internal/identity_manager/mock_profile_oauth2_token_service_observer.h"
+#include "components/signin/internal/identity_manager/oauth_multilogin_token_request.h"
+#include "components/signin/internal/identity_manager/oauth_multilogin_token_response.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -538,48 +540,69 @@ TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginDesktop) {
       account_id_2,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 
-  MockOAuth2AccessTokenConsumer consumer;
+  {
+    base::test::TestFuture<const signin::OAuthMultiloginTokenRequest*,
+                           signin::OAuthMultiloginTokenRequest::Result>
+        future;
+    signin::OAuthMultiloginTokenRequest request(account_id_,
+                                                future.GetCallback());
+    token_service.StartRequestForMultilogin(request);
+    EXPECT_EQ(future.Get<0>(), &request);
+    ASSERT_TRUE(future.Get<1>().has_value());
+    EXPECT_EQ(future.Get<1>()->oauth_token(), "refreshToken");
+  }
 
-  EXPECT_CALL(consumer, OnGetTokenSuccess(::testing::_, ::testing::_)).Times(1);
-  EXPECT_CALL(
-      consumer,
-      OnGetTokenFailure(
-          ::testing::_,
-          GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP)))
-      .Times(1);
-  EXPECT_CALL(
-      consumer,
-      OnGetTokenFailure(::testing::_,
-                        GoogleServiceAuthError(
-                            GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS)))
-      .Times(1);
+  {
+    base::test::TestFuture<const signin::OAuthMultiloginTokenRequest*,
+                           signin::OAuthMultiloginTokenRequest::Result>
+        future;
+    signin::OAuthMultiloginTokenRequest request(account_id_2,
+                                                future.GetCallback());
+    token_service.StartRequestForMultilogin(request);
+    EXPECT_EQ(future.Get<0>(), &request);
+    ASSERT_FALSE(future.Get<1>().has_value());
+    EXPECT_EQ(future.Get<1>().error(),
+              GoogleServiceAuthError(
+                  GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+  }
 
-  std::unique_ptr<OAuth2AccessTokenManager::Request> request1(
-      token_service.StartRequestForMultilogin(account_id_, &consumer));
-  std::unique_ptr<OAuth2AccessTokenManager::Request> request2(
-      token_service.StartRequestForMultilogin(account_id_2, &consumer));
-  std::unique_ptr<OAuth2AccessTokenManager::Request> request3(
-      token_service.StartRequestForMultilogin(
-          CoreAccountId::FromGaiaId("unknown_account"), &consumer));
-  base::RunLoop().RunUntilIdle();
+  {
+    base::test::TestFuture<const signin::OAuthMultiloginTokenRequest*,
+                           signin::OAuthMultiloginTokenRequest::Result>
+        future;
+    signin::OAuthMultiloginTokenRequest request(
+        CoreAccountId::FromGaiaId("unknown_account"), future.GetCallback());
+    token_service.StartRequestForMultilogin(request);
+    EXPECT_EQ(future.Get<0>(), &request);
+    ASSERT_FALSE(future.Get<1>().has_value());
+    EXPECT_EQ(
+        future.Get<1>().error(),
+        GoogleServiceAuthError(GoogleServiceAuthError::USER_NOT_SIGNED_UP));
+  }
 }
 
 TEST_F(ProfileOAuth2TokenServiceTest, StartRequestForMultiloginMobile) {
   oauth2_service_->GetDelegate()->UpdateCredentials(account_id_,
                                                     "refreshToken");
 
-  std::unique_ptr<OAuth2AccessTokenManager::Request> request(
-      oauth2_service_->StartRequestForMultilogin(account_id_, &consumer_));
+  base::test::TestFuture<const signin::OAuthMultiloginTokenRequest*,
+                         signin::OAuthMultiloginTokenRequest::Result>
+      future;
+  signin::OAuthMultiloginTokenRequest request(account_id_,
+                                              future.GetCallback());
+  oauth2_service_->StartRequestForMultilogin(request);
 
-  base::RunLoop().RunUntilIdle();
-  network::URLLoaderCompletionStatus ok_status(net::OK);
-  auto response_head = network::CreateURLResponseHead(net::HTTP_OK);
-  EXPECT_TRUE(test_url_loader_factory()->SimulateResponseForPendingRequest(
-      GaiaUrls::GetInstance()->oauth2_token_url(), ok_status,
-      std::move(response_head), GetValidTokenResponse("second token", 3600),
-      network::TestURLLoaderFactory::kMostRecentMatch));
-  EXPECT_EQ(1, consumer_.number_of_successful_tokens_);
-  EXPECT_EQ(0, consumer_.number_of_errors_);
+  test_url_loader_factory()->AddResponse(
+      GaiaUrls::GetInstance()->oauth2_token_url(),
+      network::CreateURLResponseHead(net::HTTP_OK),
+      GetValidTokenResponse("second token", 3600),
+      network::URLLoaderCompletionStatus(net::OK),
+      network::TestURLLoaderFactory::Redirects(),
+      network::TestURLLoaderFactory::kResponseDefault);
+
+  EXPECT_EQ(future.Get<0>(), &request);
+  ASSERT_TRUE(future.Get<1>().has_value());
+  EXPECT_EQ(future.Get<1>()->oauth_token(), "second token");
 }
 
 TEST_F(ProfileOAuth2TokenServiceTest, ServiceShutDownBeforeFetchComplete) {
