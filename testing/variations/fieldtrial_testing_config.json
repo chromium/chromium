@@ -6944,6 +6944,21 @@
             ]
         }
     ],
+    "CrOSLockMainProgramText": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLockMainProgramText"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSMglruNoKVMOpt": [
         {
             "platforms": [
