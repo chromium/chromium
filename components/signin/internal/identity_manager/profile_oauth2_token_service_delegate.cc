@@ -73,6 +73,9 @@ std::string SourceToString(SourceForRefreshTokenOperation source) {
     case SourceForRefreshTokenOperation::
         kEnterpriseForcedProfileCreation_UserDecline:
       return "DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult";
+    case SourceForRefreshTokenOperation::
+        kEnterprisePolicy_AccountNotAllowedInContentArea:
+      return "AccountsPolicyManager::RemoveUnallowedAccounts";
   }
 }
 

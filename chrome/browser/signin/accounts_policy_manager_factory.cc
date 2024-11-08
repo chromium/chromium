@@ -2,30 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/signin/primary_account_policy_manager_factory.h"
+#include "chrome/browser/signin/accounts_policy_manager_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 
 // static
-PrimaryAccountPolicyManagerFactory*
-PrimaryAccountPolicyManagerFactory::GetInstance() {
-  static base::NoDestructor<PrimaryAccountPolicyManagerFactory> instance;
+AccountsPolicyManagerFactory* AccountsPolicyManagerFactory::GetInstance() {
+  static base::NoDestructor<AccountsPolicyManagerFactory> instance;
   return instance.get();
 }
 
 // static
-PrimaryAccountPolicyManager* PrimaryAccountPolicyManagerFactory::GetForProfile(
+AccountsPolicyManager* AccountsPolicyManagerFactory::GetForProfile(
     Profile* profile) {
   DCHECK(profile);
-  return static_cast<PrimaryAccountPolicyManager*>(
+  return static_cast<AccountsPolicyManager*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
-PrimaryAccountPolicyManagerFactory::PrimaryAccountPolicyManagerFactory()
+AccountsPolicyManagerFactory::AccountsPolicyManagerFactory()
     : ProfileKeyedServiceFactory(
-          "PrimaryAccountPolicyManager",
+          "AccountsPolicyManager",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               // TODO(crbug.com/41488885): Check if this service is needed for
@@ -36,12 +35,11 @@ PrimaryAccountPolicyManagerFactory::PrimaryAccountPolicyManagerFactory()
   DependsOn(ChromeSigninClientFactory::GetInstance());
 }
 
-PrimaryAccountPolicyManagerFactory::~PrimaryAccountPolicyManagerFactory() =
-    default;
+AccountsPolicyManagerFactory::~AccountsPolicyManagerFactory() = default;
 
 std::unique_ptr<KeyedService>
-PrimaryAccountPolicyManagerFactory::BuildServiceInstanceForBrowserContext(
+AccountsPolicyManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<PrimaryAccountPolicyManager>(profile);
+  return std::make_unique<AccountsPolicyManager>(profile);
 }

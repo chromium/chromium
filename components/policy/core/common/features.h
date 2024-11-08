@@ -14,6 +14,11 @@ namespace policy::features {
 // on WillStartRequest and WillRedirectRequest. See https://crbug.com/349964973.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyBlocklistProceedUntilResponse);
 
+// Enables the fact that the ProfileSeparationDomainExceptionList retroactively
+// signs out accounts that require a new profile. This is used as a kill switch.
+POLICY_EXPORT BASE_DECLARE_FEATURE(
+    kProfileSeparationDomainExceptionListRetroactive);
+
 }  // namespace policy::features
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_FEATURES_H_

@@ -994,6 +994,9 @@ chromium-metrics-reviews@google.com.
   <int value="23"
       label="DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult from
              enterprise forced profile creation dialog"/>
+  <int value="24"
+      label="AccountsPolicyManager::RemoveUnallowedAccounts from
+             ProfileSeparationDomainExceptionList policy."/>
 </enum>
 
 <enum name="SyncButtonClicked">

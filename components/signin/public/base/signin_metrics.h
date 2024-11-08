@@ -483,8 +483,9 @@ enum class SourceForRefreshTokenOperation {
   // DEPRECATED on 05/2024
   // kDiceResponseHandler_PasswordPromoSignin = 22,
   kEnterpriseForcedProfileCreation_UserDecline = 23,
+  kEnterprisePolicy_AccountNotAllowedInContentArea = 24,
 
-  kMaxValue = kEnterpriseForcedProfileCreation_UserDecline,
+  kMaxValue = kEnterprisePolicy_AccountNotAllowedInContentArea,
 };
 
 // Different types of reporting. This is used as a histogram suffix.

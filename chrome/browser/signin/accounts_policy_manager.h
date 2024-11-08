@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SIGNIN_PRIMARY_ACCOUNT_POLICY_MANAGER_H_
-#define CHROME_BROWSER_SIGNIN_PRIMARY_ACCOUNT_POLICY_MANAGER_H_
+#ifndef CHROME_BROWSER_SIGNIN_ACCOUNTS_POLICY_MANAGER_H_
+#define CHROME_BROWSER_SIGNIN_ACCOUNTS_POLICY_MANAGER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -11,23 +11,28 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "base/scoped_observation.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 class Profile;
 
-class PrimaryAccountPolicyManager : public KeyedService {
+class AccountsPolicyManager : public KeyedService,
+                              public signin::IdentityManager::Observer {
  public:
-  explicit PrimaryAccountPolicyManager(Profile* profile);
-  ~PrimaryAccountPolicyManager() override;
+  explicit AccountsPolicyManager(Profile* profile);
+  ~AccountsPolicyManager() override;
 
-  PrimaryAccountPolicyManager(const PrimaryAccountPolicyManager&) = delete;
-  PrimaryAccountPolicyManager& operator=(const PrimaryAccountPolicyManager&) =
-      delete;
+  AccountsPolicyManager(const AccountsPolicyManager&) = delete;
+  AccountsPolicyManager& operator=(const AccountsPolicyManager&) = delete;
 
   void Initialize();
   void Shutdown() override;
 
  private:
-  friend class PrimaryAccountPolicyManagerTest;
+  friend class AccountsPolicyManagerTest;
 
   // Handlers for preference changes.
   void OnSigninAllowedPrefChanged();
@@ -59,6 +64,13 @@ class PrimaryAccountPolicyManager : public KeyedService {
   }
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  void RemoveUnallowedAccounts();
+
+  // IdentityManager::Observer implementation.
+  void OnRefreshTokensLoaded() override;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
   raw_ptr<Profile> profile_;
 
   // Helper object to listen for changes to the signin allowed preference.
@@ -73,7 +85,14 @@ class PrimaryAccountPolicyManager : public KeyedService {
   bool hide_ui_for_testing_ = false;
 #endif
 
-  base::WeakPtrFactory<PrimaryAccountPolicyManager> weak_pointer_factory_{this};
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
+  PrefChangeRegistrar profile_pref_change_registrar_;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  base::WeakPtrFactory<AccountsPolicyManager> weak_pointer_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_SIGNIN_PRIMARY_ACCOUNT_POLICY_MANAGER_H_
+#endif  // CHROME_BROWSER_SIGNIN_ACCOUNTS_POLICY_MANAGER_H_
