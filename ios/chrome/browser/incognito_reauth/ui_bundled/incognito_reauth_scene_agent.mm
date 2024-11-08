@@ -160,51 +160,6 @@
   }
 }
 
-- (void)updateWindowHasIncognitoContent:(SceneState*)sceneState {
-  BOOL hasIncognitoContent = YES;
-  if (sceneState.browserProviderInterface.hasIncognitoBrowserProvider) {
-    hasIncognitoContent =
-        sceneState.browserProviderInterface.incognitoBrowserProvider.browser
-            ->GetWebStateList()
-            ->count() > 0;
-    // If there is no tabs, act as if the user authenticated since last
-    // foreground to avoid issue with multiwindows.
-    if (!hasIncognitoContent)
-      self.authenticatedSinceLastForeground = YES;
-  }
-
-  self.windowHadIncognitoContentWhenBackgrounded = hasIncognitoContent;
-
-  if ([self areLockFeaturesEnabled]) {
-    [self notifyObservers];
-  }
-}
-
-- (void)updateBackgroundedForEnoughTimeOnBackground {
-  if (!IsIOSSoftLockEnabled()) {
-    return;
-  }
-
-  if (!self.isAuthenticationRequired) {
-    self.lastBackgroundedTime = base::Time::Now();
-    self.backgroundedForEnoughTime = NO;
-  }
-}
-
-- (void)updateBackgroundedForEnoughTimeOnForeground {
-  if (!IsIOSSoftLockEnabled()) {
-    return;
-  }
-  if (self.lastBackgroundedTime.is_null()) {
-    self.backgroundedForEnoughTime = NO;
-    return;
-  }
-
-  base::TimeDelta duration = base::Time::Now() - self.lastBackgroundedTime;
-  self.backgroundedForEnoughTime =
-      duration >= kIOSSoftLockBackgroundThreshold.Get();
-}
-
 - (void)setWindowHadIncognitoContentWhenBackgrounded:(BOOL)hadIncognitoContent {
   if (_windowHadIncognitoContentWhenBackgrounded == hadIncognitoContent) {
     return;
@@ -242,17 +197,6 @@
         self.localState->GetTime(prefs::kLastBackgroundedTime);
   }
   return _lastBackgroundedTime;
-}
-
-- (void)notifyObservers {
-  DCHECK([self areLockFeaturesEnabled]);
-  if (IsIOSSoftLockEnabled()) {
-    [self.observers reauthAgent:self
-        didUpdateIncognitoLockState:self.incognitoLockState];
-  } else {
-    [self.observers reauthAgent:self
-        didUpdateAuthenticationRequirement:self.isAuthenticationRequired];
-  }
 }
 
 #pragma mark - SceneStateObserver
@@ -385,6 +329,70 @@
   [self.reauthModule attemptReauthWithLocalizedReason:authReason
                                  canReusePreviousAuth:false
                                               handler:completionHandler];
+}
+
+// Checks whether the window has any Incognito tabs. Called when the browser is
+// backgrounded or foregrounded.
+- (void)updateWindowHasIncognitoContent:(SceneState*)sceneState {
+  BOOL hasIncognitoContent = YES;
+  if (sceneState.browserProviderInterface.hasIncognitoBrowserProvider) {
+    hasIncognitoContent =
+        sceneState.browserProviderInterface.incognitoBrowserProvider.browser
+            ->GetWebStateList()
+            ->count() > 0;
+    // If there is no tabs, act as if the user authenticated since last
+    // foreground to avoid issue with multiwindows.
+    if (!hasIncognitoContent) {
+      self.authenticatedSinceLastForeground = YES;
+    }
+  }
+
+  self.windowHadIncognitoContentWhenBackgrounded = hasIncognitoContent;
+
+  if ([self areLockFeaturesEnabled]) {
+    [self notifyObservers];
+  }
+}
+
+// Stores the current timestamp when the browser is backgrounded. This happens
+// only if authentication is not required as to not wrongly reset the timer.
+- (void)updateBackgroundedForEnoughTimeOnBackground {
+  if (!IsIOSSoftLockEnabled()) {
+    return;
+  }
+
+  if (!self.isAuthenticationRequired) {
+    self.lastBackgroundedTime = base::Time::Now();
+    self.backgroundedForEnoughTime = NO;
+  }
+}
+
+// Checks whether the browser was backgrounded for more than the required soft
+// lock display time.
+- (void)updateBackgroundedForEnoughTimeOnForeground {
+  if (!IsIOSSoftLockEnabled()) {
+    return;
+  }
+  if (self.lastBackgroundedTime.is_null()) {
+    self.backgroundedForEnoughTime = NO;
+    return;
+  }
+
+  base::TimeDelta duration = base::Time::Now() - self.lastBackgroundedTime;
+  self.backgroundedForEnoughTime =
+      duration >= kIOSSoftLockBackgroundThreshold.Get();
+}
+
+// Notifies the observers of changes to the state of isAuthenticationRequired.
+- (void)notifyObservers {
+  DCHECK([self areLockFeaturesEnabled]);
+  if (IsIOSSoftLockEnabled()) {
+    [self.observers reauthAgent:self
+        didUpdateIncognitoLockState:self.incognitoLockState];
+  } else {
+    [self.observers reauthAgent:self
+        didUpdateAuthenticationRequirement:self.isAuthenticationRequired];
+  }
 }
 
 @end
