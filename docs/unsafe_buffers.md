@@ -10,6 +10,9 @@ error: unsafe buffer access [-Werror,-Wunsafe-buffer-usage]
 ```
 and directs developers to this file for more information.
 
+Clang documentation includes a guide to working with unsafe-buffer-usage
+warnings here: https://clang.llvm.org/docs/SafeBuffers.html
+
 [TOC]
 
 ## Suppressions
