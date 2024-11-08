@@ -244,13 +244,13 @@ void ToastView::Init() {
     menu_button_->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_TOAST_MENU_BUTTON_NAME));
     const gfx::Insets insets = menu_button_->GetInsets();
-    const int right_margin =
+    const int left_margin =
         lp->GetDistanceMetric(
             DISTANCE_TOAST_BUBBLE_BETWEEN_LABEL_MENU_BUTTON_SPACING) -
         lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_BETWEEN_CHILD_SPACING) -
         insets.left();
     menu_button_->SetProperty(views::kMarginsKey,
-                              gfx::Insets::TLBR(0, right_margin, 0, 0));
+                              gfx::Insets::TLBR(0, left_margin, 0, 0));
     max_child_height =
         std::max(max_child_height,
                  lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MENU_ICON_SIZE) +
