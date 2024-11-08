@@ -682,9 +682,9 @@ TEST_F(IsolatedWebAppPolicyManagerTest, AppInstalledAtPinnedVersion) {
   install_observer.BeginListening({url_info.app_id()});
 
   PolicyGenerator policy_generator;
-  policy_generator.AddForceInstalledIwa(url_info.web_bundle_id(),
-                                        GURL(kUpdateManifestUrlApp1Pinned),
-                                        std::nullopt, pinned_version);
+  policy_generator.AddForceInstalledIwa(
+      url_info.web_bundle_id(), GURL(kUpdateManifestUrlApp1Pinned),
+      /*update_channel=*/std::nullopt, pinned_version);
 
   profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
                              policy_generator.Generate());
@@ -699,6 +699,29 @@ TEST_F(IsolatedWebAppPolicyManagerTest, AppInstalledAtPinnedVersion) {
   EXPECT_THAT(web_app->GetSources(),
               Eq(WebAppManagementTypes({WebAppManagement::Type::kIwaPolicy})));
 }
+
+TEST_F(IsolatedWebAppPolicyManagerTest, AppNotInstalledIncorrectPinnedVersion) {
+  const base::Version pinned_version = base::Version("1.9.0");
+  auto url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(get_app1_id());
+
+  WebAppTestInstallObserver install_observer(profile());
+  install_observer.BeginListening({url_info.app_id()});
+
+  PolicyGenerator policy_generator;
+  policy_generator.AddForceInstalledIwa(
+      url_info.web_bundle_id(), GURL(kUpdateManifestUrlApp1Pinned),
+      /*update_channel=*/std::nullopt, pinned_version);
+
+  profile()->GetPrefs()->Set(prefs::kIsolatedWebAppInstallForceList,
+                             policy_generator.Generate());
+
+  task_environment()->RunUntilIdle();
+
+  ASSERT_FALSE(
+      fake_provider().registrar_unsafe().IsInstalled(url_info.app_id()));
+}
+
 TEST_F(IsolatedWebAppPolicyManagerTest,
        AppInstalledWhenPreviouslyUserInstalled) {
   auto url_info =

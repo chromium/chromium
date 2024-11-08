@@ -66,7 +66,8 @@ GURL IsolatedWebAppUpdateServerMixin::GetUpdateManifestUrl(
 base::Value::Dict
 IsolatedWebAppUpdateServerMixin::CreateForceInstallPolicyEntry(
     const web_package::SignedWebBundleId& web_bundle_id,
-    const std::optional<UpdateChannel>& update_channel) const {
+    const std::optional<UpdateChannel>& update_channel,
+    const std::optional<base::Version>& pinned_version) const {
   base::Value::Dict policy_entry =
       base::Value::Dict()
           .Set(kPolicyWebBundleIdKey, web_bundle_id.id())
@@ -75,6 +76,11 @@ IsolatedWebAppUpdateServerMixin::CreateForceInstallPolicyEntry(
 
   if (update_channel) {
     policy_entry.Set(kPolicyUpdateChannelKey, update_channel->ToString());
+  }
+
+  if (pinned_version) {
+    policy_entry.Set(kPolicyPinnedVersionKey,
+                     pinned_version.value().GetString());
   }
 
   return policy_entry;

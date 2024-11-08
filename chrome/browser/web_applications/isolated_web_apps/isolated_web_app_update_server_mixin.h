@@ -57,7 +57,8 @@ class IsolatedWebAppUpdateServerMixin : public InProcessBrowserTestMixin {
   // `prefs::kIsolatedWebAppInstallForceList` in order to force-install the IWA.
   base::Value::Dict CreateForceInstallPolicyEntry(
       const web_package::SignedWebBundleId& web_bundle_id,
-      const std::optional<UpdateChannel>& update_channel = std::nullopt) const;
+      const std::optional<UpdateChannel>& update_channel = std::nullopt,
+      const std::optional<base::Version>& pinned_version = std::nullopt) const;
 #endif
 
   // Adds a bundle to the update server and starts tracking it in the
