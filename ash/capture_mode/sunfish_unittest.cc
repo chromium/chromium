@@ -24,6 +24,7 @@
 #include "ash/capture_mode/sunfish_capture_bar_view.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
@@ -85,8 +86,6 @@ using ::testing::WithArg;
 
 constexpr char kSunfishConsentDisclaimerAccepted[] =
     "ash.capture_mode.sunfish_consent_disclaimer_accepted";
-constexpr std::string_view kSunfishEnabledPrefName =
-    "ash.capture_mode.sunfish_enabled";
 constexpr char kCaptureModeTextCopiedToastId[] = "capture_mode_text_copied";
 
 void WaitForImageCapturedForSearch(PerformCaptureType expected_capture_type) {
@@ -162,7 +161,7 @@ TEST_F(SunfishTest, AccelEntryPoint) {
 // false.
 TEST_F(SunfishTest, AccelEntryPointIsNoopIfEnabledPrefIsFalse) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      kSunfishEnabledPrefName, false);
+      prefs::kSunfishEnabled, false);
 
   PressAndReleaseKey(ui::VKEY_8,
                      ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
@@ -1053,7 +1052,7 @@ TEST_F(SunfishTest, SearchActionButton) {
 // if the user has disabled Sunfish.
 TEST_F(SunfishTest, SearchActionButtonNotShownIfEnabledPrefIsFalse) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      kSunfishEnabledPrefName, false);
+      prefs::kSunfishEnabled, false);
   // Start default capture mode *not* region selection.
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kImage);
   auto* controller = CaptureModeController::Get();
@@ -1739,7 +1738,7 @@ TEST_F(ScannerTest,
 // the Sunfish enabled pref is false.
 TEST_F(ScannerTest, NoTextDetectionInDefaultModeIfEnabledPrefIsFalse) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      kSunfishEnabledPrefName, false);
+      prefs::kSunfishEnabled, false);
   StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
 
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),

@@ -928,6 +928,16 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.SunfishEnabled" enum="BooleanToggled"
+    expires_after="2025-10-25">
+  <owner>sophiewen@chromium.org</owner>
+  <owner>curtismcmullan@google.com</owner>
+  <summary>
+    Records when users interact with the Sunfish toggle in the Chrome OS's
+    Search and Assistant settings page.
+  </summary>
+</histogram>
+
 <histogram base="true" name="ChromeOS.Settings.TimeUntilChange" units="ms"
     expires_after="2025-03-23">
 <!-- Name completed by histogram_suffixes name="OsSettingsChangeType" -->

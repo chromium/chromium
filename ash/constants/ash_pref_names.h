@@ -2405,6 +2405,10 @@ inline constexpr char kCaptureModeEducationLastShown[] =
 inline constexpr char kCaptureModePolicySavePath[] =
     "ash.capture_mode.policy_save_path";
 
+// A boolean pref that records whether the Sunfish feature has been enabled or
+// not.
+inline constexpr char kSunfishEnabled[] = "ash.capture_mode.sunfish_enabled";
+
 // A dictionary that stores app icons' light vibrant colors.
 inline constexpr char kAshAppIconLightVibrantColorCache[] =
     "ash.app_icon_light_vibrant_color_cache";

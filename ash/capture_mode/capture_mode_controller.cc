@@ -25,6 +25,7 @@
 #include "ash/capture_mode/null_capture_mode_session.h"
 #include "ash/capture_mode/search_results_panel.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
@@ -135,11 +136,6 @@ constexpr char kShareToYouTubeURL[] = "https://youtube.com/upload";
 // way that the nudge no longer needs to be displayed again.
 constexpr char kCanShowDemoToolsNudge[] =
     "ash.capture_mode.can_show_demo_tools_nudge";
-
-// The name of a boolean pref that records whether the Sunfish feature has been
-// enabled or not.
-constexpr std::string_view kSunfishEnabledPrefName =
-    "ash.capture_mode.sunfish_enabled";
 
 // The name of a boolean pref that records whether the sunfish consent
 // disclaimer has been accepted.
@@ -687,7 +683,7 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 /*default_value=*/false);
   registry->RegisterBooleanPref(kCanShowDemoToolsNudge,
                                 /*default_value=*/true);
-  registry->RegisterBooleanPref(kSunfishEnabledPrefName,
+  registry->RegisterBooleanPref(prefs::kSunfishEnabled,
                                 /*default_value=*/true);
   // TODO(b/367882127): Set to default to true when consent disclaimer is
   // required for the general launch.
@@ -702,7 +698,7 @@ bool CaptureModeController::IsSunfishAllowedAndEnabled() {
          // this function, the active user session has not been started yet.
          // Gracefully handle this case.
          Shell::Get()->session_controller()->IsActiveUserSessionStarted() &&
-         GetActiveUserPrefService()->GetBoolean(kSunfishEnabledPrefName);
+         GetActiveUserPrefService()->GetBoolean(prefs::kSunfishEnabled);
 }
 
 SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
@@ -892,7 +888,7 @@ void CaptureModeController::StartRecordingInstantlyForGameDashboard(
 
 void CaptureModeController::StartSunfishSession() {
   DCHECK(CanStartSunfishSession());
-  if (!GetActiveUserPrefService()->GetBoolean(kSunfishEnabledPrefName)) {
+  if (!GetActiveUserPrefService()->GetBoolean(prefs::kSunfishEnabled)) {
     return;
   }
   StartInternal(SessionType::kReal, CaptureModeEntryType::kSunfish,

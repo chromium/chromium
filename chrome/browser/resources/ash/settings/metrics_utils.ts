@@ -258,6 +258,10 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     setting: Setting.kLobsterOnOff,
     type: PrefType.BOOLEAN,
   },
+  'ash.capture_mode.sunfish_enabled': {
+    setting: Setting.kSunfishOnOff,
+    type: PrefType.BOOLEAN,
+  },
 };
 
 // Converts a given settings pref to a pair of setting ID and setting change

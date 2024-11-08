@@ -11,6 +11,7 @@
 #include "ash/constants/url_constants.h"
 #include "ash/lobster/lobster_controller.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -427,6 +428,9 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isLobsterSettingsToggleVisible",
                           IsLobsterSettingsToggleVisible(profile()));
 
+  html_source->AddBoolean("isSunfishSettingsToggleVisible",
+                          ash::CanStartSunfishSession());
+
   const bool is_assistant_allowed = IsAssistantAllowed();
   html_source->AddBoolean("isAssistantAllowed", is_assistant_allowed);
   html_source->AddLocalizedString("osSearchPageTitle",
@@ -486,6 +490,12 @@ bool SearchSection::LogMetric(mojom::Setting setting,
       base::UmaHistogramBoolean("ChromeOS.Settings.MagicBoost.LobsterEnabled",
                                 value.GetBool());
       return true;
+
+    case mojom::Setting::kSunfishOnOff:
+      base::UmaHistogramBoolean("ChromeOS.Settings.SunfishEnabled",
+                                value.GetBool());
+      return true;
+
     default:
       return false;
   }
@@ -504,6 +514,7 @@ void SearchSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kMahiOnOff);
   generator->RegisterTopLevelSetting(mojom::Setting::kMagicBoostOnOff);
   generator->RegisterTopLevelSetting(mojom::Setting::kLobsterOnOff);
+  generator->RegisterTopLevelSetting(mojom::Setting::kSunfishOnOff);
 
   // Search.
   generator->RegisterTopLevelSubpage(
