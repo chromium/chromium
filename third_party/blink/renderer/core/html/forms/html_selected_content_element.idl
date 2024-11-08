@@ -6,4 +6,4 @@
     Exposed=Window,
     HTMLConstructor,
     RuntimeEnabled=CustomizableSelect
-] interface HTMLSelectedOptionElement : HTMLElement {};
+] interface HTMLSelectedContentElement : HTMLElement {};

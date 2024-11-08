@@ -3801,10 +3801,10 @@
       status: "test",
     },
     {
-      // The selectedoptionelement attribute is for connecting select elements
-      // to arbitrary <selectedoption> elements.
+      // The selectedcontentelement attribute is for connecting select elements
+      // to arbitrary <selectedcontent> elements.
       // https://github.com/openui/open-ui/issues/1063
-      name: "SelectedoptionelementAttribute",
+      name: "SelectedcontentelementAttribute",
       status: "experimental",
       depends_on: ["CustomizableSelect"],
     },

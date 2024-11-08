@@ -1018,8 +1018,8 @@ html element select
     property options
     property reportValidity
     property required
+    property selectedContentElement
     property selectedIndex
-    property selectedOptionElement
     property selectedOptions
     property setCustomValidity
     property showPicker
@@ -1029,7 +1029,7 @@ html element select
     property validity
     property value
     property willValidate
-html element selectedoption
+html element selectedcontent
 html element slot
     property assign
     property assignedElements

@@ -423,7 +423,7 @@ bool IsElementReflectionAttribute(const QualifiedName& name) {
   if (name == html_names::kInteresttargetAttr) {
     return true;
   }
-  if (name == html_names::kSelectedoptionelementAttr) {
+  if (name == html_names::kSelectedcontentelementAttr) {
     return true;
   }
   return false;

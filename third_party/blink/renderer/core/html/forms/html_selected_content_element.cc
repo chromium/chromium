@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/html/forms/html_selected_option_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_selected_content_element.h"
 
 #include "third_party/blink/renderer/core/dom/events/mutation_event_suppression_scope.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
@@ -10,12 +10,12 @@
 
 namespace blink {
 
-HTMLSelectedOptionElement::HTMLSelectedOptionElement(Document& document)
-    : HTMLElement(html_names::kSelectedoptionTag, document) {
+HTMLSelectedContentElement::HTMLSelectedContentElement(Document& document)
+    : HTMLElement(html_names::kSelectedcontentTag, document) {
   CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
 }
 
-void HTMLSelectedOptionElement::CloneContentsFromOptionElement(
+void HTMLSelectedContentElement::CloneContentsFromOptionElement(
     const HTMLOptionElement* option) {
   if (disabled_) {
     return;
@@ -35,9 +35,9 @@ void HTMLSelectedOptionElement::CloneContentsFromOptionElement(
   ReplaceChildren(nodes, ASSERT_NO_EXCEPTION);
 }
 
-Node::InsertionNotificationRequest HTMLSelectedOptionElement::InsertedInto(
+Node::InsertionNotificationRequest HTMLSelectedContentElement::InsertedInto(
     ContainerNode& insertion_point) {
-  // Call SelectedOptionElementInserted on the first ancestor <select> if we
+  // Call SelectedContentElementInserted on the first ancestor <select> if we
   // just got inserted into a <select> and there are no other <select>s in
   // between.
   // TODO(crbug.com/40236878): Use a flat tree traversal here.
@@ -50,8 +50,8 @@ Node::InsertionNotificationRequest HTMLSelectedOptionElement::InsertedInto(
       passed_insertion_point = true;
     }
     if (IsA<HTMLOptionElement>(ancestor) ||
-        IsA<HTMLSelectedOptionElement>(ancestor)) {
-      // Putting a <selectedoption> inside an <option> or another
+        IsA<HTMLSelectedContentElement>(ancestor)) {
+      // Putting a <selectedcontent> inside an <option> or another
       // <seletedoption> can lead to infinite loops.
       disabled_ = true;
     }
@@ -63,20 +63,20 @@ Node::InsertionNotificationRequest HTMLSelectedOptionElement::InsertedInto(
       }
       first_ancestor_select = select;
       if (passed_insertion_point) {
-        select->SelectedOptionElementInserted(this);
+        select->SelectedContentElementInserted(this);
       }
     }
   }
   return HTMLElement::InsertedInto(insertion_point);
 }
 
-void HTMLSelectedOptionElement::RemovedFrom(ContainerNode& container) {
+void HTMLSelectedContentElement::RemovedFrom(ContainerNode& container) {
   HTMLElement::RemovedFrom(container);
-  // Call SelectedOptionElementRemoved on the first ancestor <select> if we just
-  // got detached from it.
+  // Call SelectedContentElementRemoved on the first ancestor <select> if we
+  // just got detached from it.
   if (!Traversal<HTMLSelectElement>::FirstAncestor(*this)) {
     if (auto* select = Traversal<HTMLSelectElement>::FirstAncestor(container)) {
-      select->SelectedOptionElementRemoved(this);
+      select->SelectedContentElementRemoved(this);
     }
   }
   disabled_ = false;

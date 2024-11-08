@@ -6,7 +6,7 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 
-<iframe src="resources/selectedoption-restore-iframe.html"></iframe>
+<iframe src="resources/selectedcontent-restore-iframe.html"></iframe>
 
 <script>
 const iframe = document.querySelector('iframe');
@@ -28,8 +28,8 @@ promise_test(async () => {
 
   assert_equals(iframe.contentDocument.querySelector('select').value, 'two',
     'The selects value should be restored after navigating back.');
-  assert_equals(iframe.contentDocument.querySelector('selectedoption').innerHTML,
+  assert_equals(iframe.contentDocument.querySelector('selectedcontent').innerHTML,
     iframe.contentDocument.querySelector('option[value=two]').innerHTML,
-    'selectedoption.innerHTML should match the selected <option>');
-}, '<selectedoption> should be up to date after form restoration.');
+    'selectedcontent.innerHTML should match the selected <option>');
+}, '<selectedcontent> should be up to date after form restoration.');
 </script>

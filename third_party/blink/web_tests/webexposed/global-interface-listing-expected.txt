@@ -4897,8 +4897,8 @@ interface HTMLSelectElement : HTMLElement
     getter name
     getter options
     getter required
+    getter selectedContentElement
     getter selectedIndex
-    getter selectedOptionElement
     getter selectedOptions
     getter size
     getter type
@@ -4922,11 +4922,11 @@ interface HTMLSelectElement : HTMLElement
     setter multiple
     setter name
     setter required
+    setter selectedContentElement
     setter selectedIndex
-    setter selectedOptionElement
     setter size
     setter value
-interface HTMLSelectedOptionElement : HTMLElement
+interface HTMLSelectedContentElement : HTMLElement
     attribute @@toStringTag
     method constructor
 interface HTMLSlotElement : HTMLElement

@@ -61,7 +61,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_options_collection.h"
-#include "third_party/blink/renderer/core/html/forms/html_selected_option_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_selected_content_element.h"
 #include "third_party/blink/renderer/core/html/forms/select_type.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_hr_element.h"
@@ -172,7 +172,7 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
            IsA<HTMLNoScriptElement>(element) ||
            IsA<HTMLButtonElement>(element) || IsA<HTMLDivElement>(element) ||
            IsA<HTMLSpanElement>(element) ||
-           IsA<HTMLSelectedOptionElement>(element);
+           IsA<HTMLSelectedContentElement>(element);
   }
 
   Member<HTMLSelectElement> select_;
@@ -469,22 +469,22 @@ void HTMLSelectElement::ParseAttribute(
   } else if (params.name == html_names::kAccesskeyAttr) {
     // FIXME: ignore for the moment.
     //
-  } else if (params.name == html_names::kSelectedoptionelementAttr) {
+  } else if (params.name == html_names::kSelectedcontentelementAttr) {
     if (RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-      HTMLSelectedOptionElement* old_selectedoption =
-          DynamicTo<HTMLSelectedOptionElement>(
+      HTMLSelectedContentElement* old_selectedcontent =
+          DynamicTo<HTMLSelectedContentElement>(
               getElementByIdIncludingDisconnected(*this, params.old_value));
-      HTMLSelectedOptionElement* new_selectedoption =
-          DynamicTo<HTMLSelectedOptionElement>(
+      HTMLSelectedContentElement* new_selectedcontent =
+          DynamicTo<HTMLSelectedContentElement>(
               getElementByIdIncludingDisconnected(*this, params.new_value));
-      if (old_selectedoption != new_selectedoption) {
-        if (old_selectedoption) {
-          // Clear out the contents of any <selectedoption> which we are
+      if (old_selectedcontent != new_selectedcontent) {
+        if (old_selectedcontent) {
+          // Clear out the contents of any <selectedcontent> which we are
           // removing the association from.
-          old_selectedoption->CloneContentsFromOptionElement(nullptr);
+          old_selectedcontent->CloneContentsFromOptionElement(nullptr);
         }
-        if (new_selectedoption) {
-          new_selectedoption->CloneContentsFromOptionElement(SelectedOption());
+        if (new_selectedcontent) {
+          new_selectedcontent->CloneContentsFromOptionElement(SelectedOption());
         }
       }
     }
@@ -1079,7 +1079,7 @@ void HTMLSelectElement::SelectOption(HTMLOptionElement* element,
     SetAutofillState(element ? autofill_state : WebAutofillState::kNotFilled);
   }
 
-  UpdateAllSelectedoptions();
+  UpdateAllSelectedcontents();
 }
 
 bool HTMLSelectElement::DispatchFocusEvent(
@@ -1216,7 +1216,7 @@ void HTMLSelectElement::RestoreFormControlState(const FormControlState& state) {
     }
   }
 
-  UpdateAllSelectedoptions();
+  UpdateAllSelectedcontents();
   SetNeedsValidityCheck();
   select_type_->UpdateTextStyleAndContent();
 }
@@ -1460,7 +1460,7 @@ void HTMLSelectElement::Trace(Visitor* visitor) const {
   visitor->Trace(option_slot_);
   visitor->Trace(last_on_change_option_);
   visitor->Trace(suggested_option_);
-  visitor->Trace(descendant_selectedoptions_);
+  visitor->Trace(descendant_selectedcontents_);
   visitor->Trace(select_type_);
   visitor->Trace(descendants_observer_);
   HTMLFormControlElementWithState::Trace(visitor);
@@ -1819,16 +1819,16 @@ bool HTMLSelectElement::IsAppearanceBasePicker() const {
   return select_type_->IsAppearanceBasePicker();
 }
 
-void HTMLSelectElement::SelectedOptionElementInserted(
-    HTMLSelectedOptionElement* selectedoption) {
-  descendant_selectedoptions_.insert(selectedoption);
-  selectedoption->CloneContentsFromOptionElement(SelectedOption());
+void HTMLSelectElement::SelectedContentElementInserted(
+    HTMLSelectedContentElement* selectedcontent) {
+  descendant_selectedcontents_.insert(selectedcontent);
+  selectedcontent->CloneContentsFromOptionElement(SelectedOption());
 }
 
-void HTMLSelectElement::SelectedOptionElementRemoved(
-    HTMLSelectedOptionElement* selectedoption) {
-  descendant_selectedoptions_.erase(selectedoption);
-  selectedoption->CloneContentsFromOptionElement(nullptr);
+void HTMLSelectElement::SelectedContentElementRemoved(
+    HTMLSelectedContentElement* selectedcontent) {
+  descendant_selectedcontents_.erase(selectedcontent);
+  selectedcontent->CloneContentsFromOptionElement(nullptr);
 }
 
 FocusableState HTMLSelectElement::SupportsFocus(
@@ -1914,44 +1914,44 @@ void HTMLSelectElement::SelectAutofillPreviewElement::Trace(
   HTMLDivElement::Trace(visitor);
 }
 
-HTMLSelectedOptionElement* HTMLSelectElement::selectedOptionElement() const {
-  CHECK(RuntimeEnabledFeatures::SelectedoptionelementAttributeEnabled());
-  return DynamicTo<HTMLSelectedOptionElement>(
-      GetElementAttribute(html_names::kSelectedoptionelementAttr));
+HTMLSelectedContentElement* HTMLSelectElement::selectedContentElement() const {
+  CHECK(RuntimeEnabledFeatures::SelectedcontentelementAttributeEnabled());
+  return DynamicTo<HTMLSelectedContentElement>(
+      GetElementAttribute(html_names::kSelectedcontentelementAttr));
 }
 
-void HTMLSelectElement::setSelectedOptionElement(
-    HTMLSelectedOptionElement* new_selectedoption) {
+void HTMLSelectElement::setSelectedContentElement(
+    HTMLSelectedContentElement* new_selectedcontent) {
   CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
-  auto* old_selectedoption = selectedOptionElement();
-  SetElementAttribute(html_names::kSelectedoptionelementAttr,
-                      new_selectedoption);
+  auto* old_selectedcontent = selectedContentElement();
+  SetElementAttribute(html_names::kSelectedcontentelementAttr,
+                      new_selectedcontent);
 
-  if (old_selectedoption != new_selectedoption) {
-    if (old_selectedoption) {
-      // Clear out the contents of any <selectedoption> which we are removing
+  if (old_selectedcontent != new_selectedcontent) {
+    if (old_selectedcontent) {
+      // Clear out the contents of any <selectedcontent> which we are removing
       // the association from.
-      old_selectedoption->CloneContentsFromOptionElement(nullptr);
+      old_selectedcontent->CloneContentsFromOptionElement(nullptr);
     }
-    if (new_selectedoption) {
-      new_selectedoption->CloneContentsFromOptionElement(SelectedOption());
+    if (new_selectedcontent) {
+      new_selectedcontent->CloneContentsFromOptionElement(SelectedOption());
     }
   }
 }
 
-void HTMLSelectElement::UpdateAllSelectedoptions() {
+void HTMLSelectElement::UpdateAllSelectedcontents() {
   if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     return;
   }
   auto* option = SelectedOption();
-  // Create a copy of descendant_selectedoptions_ because it may be modified
+  // Create a copy of descendant_selectedcontents_ because it may be modified
   // while iterating.
-  for (auto& selectedoption :
-       VectorOf<HTMLSelectedOptionElement>(descendant_selectedoptions_)) {
-    selectedoption->CloneContentsFromOptionElement(option);
+  for (auto& selectedcontent :
+       VectorOf<HTMLSelectedContentElement>(descendant_selectedcontents_)) {
+    selectedcontent->CloneContentsFromOptionElement(option);
   }
-  if (auto* attr_selectedoption = selectedOptionElement()) {
-    attr_selectedoption->CloneContentsFromOptionElement(option);
+  if (auto* attr_selectedcontent = selectedContentElement()) {
+    attr_selectedcontent->CloneContentsFromOptionElement(option);
   }
 }
 
