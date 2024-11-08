@@ -7,9 +7,20 @@
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "pdf/pdfium/pdfium_api_wrappers.h"
+#include "pdf/pdfium/pdfium_engine_exports.h"
+#include "pdf/test/test_helpers.h"
+#include "printing/units.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_edit.h"
 #include "third_party/pdfium/public/fpdfview.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColorType.h"
+#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace chrome_pdf {
 
@@ -54,6 +65,30 @@ int GetPdfMarkObjCountForTesting(FPDF_DOCUMENT document,
   }
 
   return matches_count;
+}
+
+// Renders `page` to a bitmap of `size_in_points` and checks if it matches
+// `expected_png_file`.
+void CheckPdfRendering(FPDF_PAGE page,
+                       const gfx::Size& size_in_points,
+                       const base::FilePath& expected_png_file) {
+  SkBitmap page_bitmap;
+  page_bitmap.allocPixels(SkImageInfo::Make(gfx::SizeToSkISize(size_in_points),
+                                            kBGRA_8888_SkColorType,
+                                            kPremul_SkAlphaType));
+
+  PDFiumEngineExports::RenderingSettings settings(
+      gfx::Size(printing::kPointsPerInch, printing::kPointsPerInch),
+      gfx::Rect(size_in_points),
+      /*fit_to_bounds=*/false,
+      /*stretch_to_bounds=*/false,
+      /*keep_aspect_ratio=*/true,
+      /*center_in_bounds=*/false,
+      /*autorotate=*/false, /*use_color=*/true, /*render_for_printing=*/false);
+
+  ASSERT_TRUE(RenderPageToBitmap(page, settings, page_bitmap.getPixels()));
+
+  EXPECT_TRUE(MatchesPngFile(page_bitmap.asImage().get(), expected_png_file));
 }
 
 }  // namespace chrome_pdf
