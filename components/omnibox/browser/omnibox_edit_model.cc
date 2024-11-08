@@ -2840,7 +2840,6 @@ std::u16string OmniboxEditModel::GetText() const {
   if (view_) {
     return view_->GetText();
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return u"";
+    NOTREACHED();
   }
 }

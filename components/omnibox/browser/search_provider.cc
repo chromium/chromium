@@ -1374,8 +1374,7 @@ int SearchProvider::CalculateRelevanceForVerbatimIgnoringKeywordModeState()
       return 850;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 

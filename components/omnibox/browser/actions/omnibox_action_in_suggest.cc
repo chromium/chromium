@@ -49,7 +49,7 @@ constexpr const char* ToUmaUsageHistogramName(
     case omnibox::ActionInfo_ActionType_REVIEWS:
       return "Omnibox.ActionInSuggest.UsageByType.Reviews";
   }
-  NOTREACHED_IN_MIGRATION() << "Unexpected type of Action: " << (int)type;
+  NOTREACHED() << "Unexpected type of Action: " << (int)type;
 }
 
 // Get the UMA action type from ActionInfo::ActionType.
@@ -63,7 +63,7 @@ constexpr ActionInSuggestUmaType ToUmaActionType(
     case omnibox::ActionInfo_ActionType_REVIEWS:
       return ActionInSuggestUmaType::kReviews;
   }
-  NOTREACHED_IN_MIGRATION() << "Unrecognized action type: " << action_type;
+  NOTREACHED() << "Unrecognized action type: " << action_type;
 }
 
 constexpr int ToActionHint(omnibox::ActionInfo::ActionType action_type) {
@@ -75,7 +75,7 @@ constexpr int ToActionHint(omnibox::ActionInfo::ActionType action_type) {
     case omnibox::ActionInfo_ActionType_REVIEWS:
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_HINT;
   }
-  NOTREACHED_IN_MIGRATION() << "Unrecognized action type: " << action_type;
+  NOTREACHED() << "Unrecognized action type: " << action_type;
 }
 
 constexpr int ToActionContents(omnibox::ActionInfo::ActionType action_type) {
@@ -87,7 +87,7 @@ constexpr int ToActionContents(omnibox::ActionInfo::ActionType action_type) {
     case omnibox::ActionInfo_ActionType_REVIEWS:
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS;
   }
-  NOTREACHED_IN_MIGRATION() << "Unrecognized action type: " << action_type;
+  NOTREACHED() << "Unrecognized action type: " << action_type;
 }
 }  // namespace
 
@@ -127,7 +127,7 @@ void OmniboxActionInSuggest::Execute(ExecutionContext& context) const {
   // Note: this is platform-dependent.
   // There's currently no code wiring ActionInSuggest on the Desktop and iOS.
   // TODO(crbug.com/40257536): log searchboxstats metrics.
-  NOTREACHED_IN_MIGRATION() << "Not implemented";
+  NOTREACHED() << "Not implemented";
 }
 
 OmniboxActionId OmniboxActionInSuggest::ActionId() const {

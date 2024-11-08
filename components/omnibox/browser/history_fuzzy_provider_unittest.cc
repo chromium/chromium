@@ -62,8 +62,7 @@ std::ostream& operator<<(std::ostream& os, const fuzzy::Edit& edit) {
       break;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     }
   }
   os << "," << edit.at << "," << static_cast<char>(edit.new_char) << "}";

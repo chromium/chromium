@@ -819,8 +819,7 @@ ACMatchClassifications AutocompleteMatch::ClassificationsFromString(
     int classification_style = ACMatchClassification::NONE;
     if (!base::StringToInt(tokens[i], &classification_offset) ||
         !base::StringToInt(tokens[i + 1], &classification_style)) {
-      NOTREACHED_IN_MIGRATION();
-      return classifications;
+      NOTREACHED();
     }
     classifications.push_back(
         ACMatchClassification(classification_offset, classification_style));
@@ -1152,7 +1151,7 @@ void AutocompleteMatch::LogSearchEngineUsed(
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   } else if (template_url->type() ==
              TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION) {
@@ -1394,8 +1393,7 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
         break;
       case OmniboxActionId::UNKNOWN:
       case OmniboxActionId::LAST:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 

@@ -135,9 +135,7 @@ bool ShouldCacheResultTypeInContext(const ResultType result_type,
                  : base::FeatureList::IsEnabled(
                        omnibox::kZeroSuggestPrefetchingOnWeb);
     case ResultType::kNone:
-      NOTREACHED_IN_MIGRATION()
-          << "kNone is not a valid zero suggest result type.";
-      return false;
+      NOTREACHED() << "kNone is not a valid zero suggest result type.";
   }
 }
 

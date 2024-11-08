@@ -229,8 +229,7 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
       // Clipboard match with no textual clipboard content.
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Get the length of friendly text inserted before the actual suggested match.
