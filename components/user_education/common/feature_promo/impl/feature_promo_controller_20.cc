@@ -16,7 +16,7 @@ DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(kFeaturePromoControllerNotice);
 }
 
 struct FeaturePromoController20::QueuedPromoData {
-  using PromoInfo = FeaturePromoSessionPolicy::PromoInfo;
+  using PromoInfo = FeaturePromoPriorityProvider::PromoPriorityInfo;
 
   QueuedPromoData(FeaturePromoParams params_, PromoInfo info_)
       : params(std::move(params_)), info(info_) {}
@@ -74,8 +74,8 @@ bool FeaturePromoController20::MaybeShowStartupPromo(
     return false;
   }
 
-  queued_promos_.emplace_back(
-      std::move(params), session_policy()->SpecificationToPromoInfo(*spec));
+  queued_promos_.emplace_back(std::move(params),
+                              session_policy()->GetPromoPriorityInfo(*spec));
 
   // This will fire immediately if the tracker is initialized.
   feature_engagement_tracker()->AddOnInitializedCallback(base::BindOnce(
@@ -148,17 +148,17 @@ FeaturePromoResult FeaturePromoController20::CanShowPromoCommon(
 #endif
 
   // Figure out if there's already a promo being shown.
-  std::optional<FeaturePromoSessionPolicy::PromoInfo> current;
+  std::optional<FeaturePromoPriorityProvider::PromoPriorityInfo> current;
   if (current_promo()) {
     current = last_promo_info();
   } else if (bubble_factory_registry()->is_any_bubble_showing()) {
-    current = FeaturePromoSessionPolicy::PromoInfo();
+    current = FeaturePromoPriorityProvider::PromoPriorityInfo();
   }
 
   // When not in demo mode, refer to the session policy to determine if the
   // promo can show.
   if (!for_demo && !in_iph_demo_mode()) {
-    const auto promo_info = session_policy()->SpecificationToPromoInfo(*spec);
+    const auto promo_info = session_policy()->GetPromoPriorityInfo(*spec);
     auto result = session_policy()->CanShowPromo(promo_info, current);
     if (!result) {
       return result;
@@ -286,7 +286,7 @@ void FeaturePromoController20::MaybeShowQueuedPromo() {
 
   // If there is already a promo showing, it may be necessary to hold off trying
   // to show another.
-  const std::optional<FeaturePromoSessionPolicy::PromoInfo> current =
+  const std::optional<FeaturePromoPriorityProvider::PromoPriorityInfo> current =
       current_promo() ? std::make_optional(last_promo_info()) : std::nullopt;
 
   // Also, if the next promo in queue cannot be shown and the current promo is

@@ -22,9 +22,8 @@ namespace test {
 class UserEducationSessionTestUtil;
 }
 
-// Policy that defines how promos are allowed or disallowed due to the state of
-// the current session.
-class FeaturePromoSessionPolicy {
+// Provides priority information about a promo based on its type and subtype.
+class FeaturePromoPriorityProvider {
  public:
   // Describes whether the promotion is heavyweight (comparable to a non-toast
   // IPH in interactivity).
@@ -35,41 +34,53 @@ class FeaturePromoSessionPolicy {
   enum class PromoPriority { kLow, kMedium, kHigh };
 
   // Information about a promo that is either being shown or is trying to show.
-  struct PromoInfo {
+  struct PromoPriorityInfo {
     PromoWeight weight = PromoWeight::kLight;
     PromoPriority priority = PromoPriority::kLow;
   };
 
+  FeaturePromoPriorityProvider() = default;
+  FeaturePromoPriorityProvider(const FeaturePromoPriorityProvider&) = delete;
+  void operator=(const FeaturePromoPriorityProvider&) = delete;
+  virtual ~FeaturePromoPriorityProvider() = default;
+
+  // Gets a promo info from a specification. Different policies might interpret
+  // different specifications differently.
+  //
+  // The default ties weight to type (toast, legacy, rotating are light) and
+  // priority to subtype (legal = high, keyed and actionable = medium, all
+  // others low).
+  virtual PromoPriorityInfo GetPromoPriorityInfo(
+      const FeaturePromoSpecification& spec) const;
+};
+
+// Policy that defines how promos are allowed or disallowed due to the state of
+// the current session.
+class FeaturePromoSessionPolicy : public FeaturePromoPriorityProvider {
+ public:
   // Create a new policy which stores its state in `storage_service` and which
   // uses `session_manager` to determine the state of the current session.
   FeaturePromoSessionPolicy();
-  FeaturePromoSessionPolicy(const FeaturePromoSessionPolicy&) = delete;
-  void operator=(const FeaturePromoSessionPolicy&) = delete;
-  virtual ~FeaturePromoSessionPolicy();
+  ~FeaturePromoSessionPolicy() override;
 
   // Sets up the policy with its storage service.
   virtual void Init(UserEducationSessionManager* session_manager,
                     UserEducationStorageService* storage_service);
 
   // Indicates that a promo is being shown. Value must not be `NoPromo`.
-  virtual void NotifyPromoShown(const PromoInfo& promo_shown);
+  virtual void NotifyPromoShown(const PromoPriorityInfo& promo_shown);
 
   // Indicates that a promo has been dismissed. Value must not be `NoPromo`.
-  virtual void NotifyPromoEnded(const PromoInfo& promo_ended,
+  virtual void NotifyPromoEnded(const PromoPriorityInfo& promo_ended,
                                 FeaturePromoClosedReason close_reason);
-
-  // Gets a promo info from a specification. Different policies might interpret
-  // different specifications differently.
-  virtual PromoInfo SpecificationToPromoInfo(
-      const FeaturePromoSpecification& spec) const;
 
   // Determines whether `to_show` (which must not be `NoPromo`) can be shown.
   // The `currently_showing` parameter represents what kind of promo is
   // currently showing if any. Returns `FeaturePromoResult::Success()` if the
   // promo is allowed; returns a reason for rejecting the promo otherwise.
   virtual FeaturePromoResult CanShowPromo(
-      PromoInfo to_show,
-      std::optional<PromoInfo> currently_showing) const;
+      PromoPriorityInfo to_show,
+      std::optional<PromoPriorityInfo> currently_showing) const;
 
  protected:
   UserEducationSessionManager* session_manager() const {
@@ -96,8 +107,8 @@ class FeaturePromoSessionPolicyV2 : public FeaturePromoSessionPolicy {
 
   // FeaturePromoSessionPolicyCommon:
   FeaturePromoResult CanShowPromo(
-      PromoInfo to_show,
-      std::optional<PromoInfo> currently_showing) const override;
+      PromoPriorityInfo to_show,
+      std::optional<PromoPriorityInfo> currently_showing) const override;
 
  protected:
   FeaturePromoSessionPolicyV2(base::TimeDelta session_start_grace_period,

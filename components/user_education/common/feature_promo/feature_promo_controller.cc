@@ -177,7 +177,7 @@ FeaturePromoResult FeaturePromoControllerCommon::MaybeShowPromoCommon(
 
   // Update the most recent promo info.
   last_promo_info_ =
-      session_policy_->SpecificationToPromoInfo(*outputs.primary_spec);
+      session_policy_->GetPromoPriorityInfo(*outputs.primary_spec);
   session_policy_->NotifyPromoShown(last_promo_info_);
 
   bubble_closed_callback_ = std::move(params.close_callback);

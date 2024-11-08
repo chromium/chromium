@@ -308,7 +308,8 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   const FeaturePromoLifecycle* current_promo() const {
     return current_promo_.get();
   }
-  const FeaturePromoSessionPolicy::PromoInfo& last_promo_info() const {
+  const FeaturePromoPriorityProvider::PromoPriorityInfo& last_promo_info()
+      const {
     return last_promo_info_;
   }
   HelpBubble* promo_bubble() {
@@ -504,7 +505,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 
   // Policy info about the most recent promo that was shown.
   // Updated when a new promo is shown.
-  FeaturePromoSessionPolicy::PromoInfo last_promo_info_;
+  FeaturePromoPriorityProvider::PromoPriorityInfo last_promo_info_;
 
   // Promo that is being continued during a tutorial launched from the promo
   // bubble.

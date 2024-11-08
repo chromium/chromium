@@ -20,6 +20,39 @@ enum class PromoPriority { kNone, kLow, kMedium, kHigh };
 
 }  // namespace
 
+FeaturePromoPriorityProvider::PromoPriorityInfo
+FeaturePromoPriorityProvider::GetPromoPriorityInfo(
+    const FeaturePromoSpecification& spec) const {
+  PromoPriorityInfo promo_info;
+  switch (spec.promo_subtype()) {
+    case FeaturePromoSpecification::PromoSubtype::kLegalNotice:
+      promo_info.priority = PromoPriority::kHigh;
+      break;
+    case FeaturePromoSpecification::PromoSubtype::kActionableAlert:
+    case FeaturePromoSpecification::PromoSubtype::kKeyedNotice:
+      promo_info.priority = PromoPriority::kMedium;
+      break;
+    case FeaturePromoSpecification::PromoSubtype::kNormal:
+      promo_info.priority = PromoPriority::kLow;
+      break;
+  }
+  switch (spec.promo_type()) {
+    case FeaturePromoSpecification::PromoType::kToast:
+    case FeaturePromoSpecification::PromoType::kLegacy:
+    case FeaturePromoSpecification::PromoType::kRotating:
+      promo_info.weight = PromoWeight::kLight;
+      break;
+    case FeaturePromoSpecification::PromoType::kSnooze:
+    case FeaturePromoSpecification::PromoType::kTutorial:
+    case FeaturePromoSpecification::PromoType::kCustomAction:
+      promo_info.weight = PromoWeight::kHeavy;
+      break;
+    case FeaturePromoSpecification::PromoType::kUnspecified:
+      NOTREACHED();
+  }
+  return promo_info;
+}
+
 FeaturePromoSessionPolicy::FeaturePromoSessionPolicy() = default;
 FeaturePromoSessionPolicy::~FeaturePromoSessionPolicy() = default;
 
@@ -30,12 +63,13 @@ void FeaturePromoSessionPolicy::Init(
   storage_service_ = storage_service;
 }
 
-void FeaturePromoSessionPolicy::NotifyPromoShown(const PromoInfo& promo_shown) {
+void FeaturePromoSessionPolicy::NotifyPromoShown(
+    const PromoPriorityInfo& promo_shown) {
   current_promo_shown_time_ = storage_service_->GetCurrentTime();
 }
 
 void FeaturePromoSessionPolicy::NotifyPromoEnded(
-    const PromoInfo& promo_ended,
+    const PromoPriorityInfo& promo_ended,
     FeaturePromoClosedReason close_reason) {
   // The close time may already have been recorded; for example, when a bubble
   // is closed but the promo continues and then ends later.
@@ -80,8 +114,8 @@ void FeaturePromoSessionPolicy::NotifyPromoEnded(
 }
 
 FeaturePromoResult FeaturePromoSessionPolicy::CanShowPromo(
-    PromoInfo to_show,
-    std::optional<PromoInfo> currently_showing) const {
+    PromoPriorityInfo to_show,
+    std::optional<PromoPriorityInfo> currently_showing) const {
   return (!currently_showing || to_show.priority > currently_showing->priority)
              ? FeaturePromoResult::Success()
              : FeaturePromoResult::kBlockedByPromo;
@@ -99,42 +133,9 @@ FeaturePromoSessionPolicyV2::FeaturePromoSessionPolicyV2(
 
 FeaturePromoSessionPolicyV2::~FeaturePromoSessionPolicyV2() = default;
 
-FeaturePromoSessionPolicy::PromoInfo
-FeaturePromoSessionPolicy::SpecificationToPromoInfo(
-    const FeaturePromoSpecification& spec) const {
-  PromoInfo promo_info;
-  switch (spec.promo_subtype()) {
-    case FeaturePromoSpecification::PromoSubtype::kLegalNotice:
-      promo_info.priority = PromoPriority::kHigh;
-      break;
-    case FeaturePromoSpecification::PromoSubtype::kActionableAlert:
-    case FeaturePromoSpecification::PromoSubtype::kKeyedNotice:
-      promo_info.priority = PromoPriority::kMedium;
-      break;
-    case FeaturePromoSpecification::PromoSubtype::kNormal:
-      promo_info.priority = PromoPriority::kLow;
-      break;
-  }
-  switch (spec.promo_type()) {
-    case FeaturePromoSpecification::PromoType::kToast:
-    case FeaturePromoSpecification::PromoType::kLegacy:
-    case FeaturePromoSpecification::PromoType::kRotating:
-      promo_info.weight = PromoWeight::kLight;
-      break;
-    case FeaturePromoSpecification::PromoType::kSnooze:
-    case FeaturePromoSpecification::PromoType::kTutorial:
-    case FeaturePromoSpecification::PromoType::kCustomAction:
-      promo_info.weight = PromoWeight::kHeavy;
-      break;
-    case FeaturePromoSpecification::PromoType::kUnspecified:
-      NOTREACHED();
-  }
-  return promo_info;
-}
-
 FeaturePromoResult FeaturePromoSessionPolicyV2::CanShowPromo(
-    PromoInfo to_show,
-    std::optional<PromoInfo> currently_showing) const {
+    PromoPriorityInfo to_show,
+    std::optional<PromoPriorityInfo> currently_showing) const {
   const auto initial_result =
       FeaturePromoSessionPolicy::CanShowPromo(to_show, currently_showing);
   if (!initial_result) {
