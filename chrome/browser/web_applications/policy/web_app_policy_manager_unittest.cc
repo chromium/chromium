@@ -1218,7 +1218,8 @@ TEST_F(WebAppPolicyManagerTest, DisableSystemWebApps) {
       ash::SystemWebAppType::MEDIA,
       ash::SystemWebAppType::PRINT_MANAGEMENT,
       ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION,
-      ash::SystemWebAppType::RECORDER};
+      ash::SystemWebAppType::RECORDER,
+      ash::SystemWebAppType::GRADUATION};
 
   disabled_apps = policy_manager().GetDisabledSystemWebApps();
   EXPECT_EQ(disabled_apps, expected_disabled_apps);

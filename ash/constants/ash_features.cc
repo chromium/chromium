@@ -1247,7 +1247,7 @@ BASE_FEATURE(kGesturePropertiesDBusService,
 BASE_FEATURE(kGifRecording, "GifRecording", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Graduation app for EDU users if the Graduation policy allows it.
-BASE_FEATURE(kGraduation, "Graduation", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGraduation, "Graduation", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the Graduation app will use a webview-specific endpoint to
 // load the Takeout Transfer tool.

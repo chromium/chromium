@@ -9,6 +9,7 @@
 #include "ash/edusumer/graduation_utils.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
@@ -117,7 +118,10 @@ void GraduationManagerImpl::OnUserSessionStarted(bool is_primary) {
   midnight_timer_ = std::make_unique<base::WallClockTimer>(clock_, tick_clock_);
 
   SystemWebAppManager* swa_manager = SystemWebAppManager::Get(profile_);
-  CHECK(swa_manager);
+  if (!swa_manager) {
+    CHECK_IS_TEST();
+    return;
+  }
   swa_manager->on_apps_synchronized().Post(
       FROM_HERE, base::BindOnce(&GraduationManagerImpl::OnAppsSynchronized,
                                 weak_ptr_factory_.GetWeakPtr()));

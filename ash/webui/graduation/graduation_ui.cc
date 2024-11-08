@@ -100,7 +100,7 @@ void AddResources(content::WebUIDataSource* source) {
 
 bool GraduationUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return features::IsGraduationEnabled() &&
+  return features::IsGraduationEnabled() && Shell::HasInstance() &&
          IsEligibleForGraduation(Shell::Get()
                                      ->session_controller()
                                      ->GetLastActiveUserPrefService());
