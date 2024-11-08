@@ -2098,6 +2098,18 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         ),
         treat_as_error=False,
     ),
+    BanRule(
+        pattern='WebContentsDestroyed',
+        explanation=
+        ('Do not use this method. It is invoked half-way through the '
+         'destructor of WebContentsImpl and using it often results in crashes '
+         'or surprising behavior. Conceptually, this is only necessary by '
+         'objects that depend on, but outlive the WebContents. These objects '
+         'should instead coordinate with the owner of the WebContents which is '
+         'responsible for destroying the WebContents.',
+        ),
+        treat_as_error=False,
+    ),
 )
 
 _DEPRECATED_SYNC_CONSENT_FUNCTION_WARNING = (

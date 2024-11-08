@@ -703,6 +703,12 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // Invoked when the WebContents is being destroyed. Gives subclasses a chance
   // to cleanup. After the whole loop over all WebContentsObservers has been
   // finished, web_contents() returns nullptr.
+  // Do not use this method. It is invoked half-way through the destructor of
+  // WebContentsImpl and using it often results in crashes or surprising
+  // behavior. Conceptually, this is only necessary by objects that depend on,
+  // but outlive the WebContents. These objects should instead coordinate with
+  // the owner of the WebContents which is responsible for destroying the
+  // WebContents.
   virtual void WebContentsDestroyed() {}
 
   // Called when the user agent override for a WebContents has been changed.
