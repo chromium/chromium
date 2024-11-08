@@ -479,7 +479,11 @@ void MediaKeysListenerManagerImpl::UpdateMediaKeysListener() {
 
 bool MediaKeysListenerManagerImpl::ShouldListenToKey(
     const ListeningData& listening_data) const {
-  // TODO(crbug.com/40943399) verify if this needs a PWA check.
+  // We don't need a PWA check here since this is primarily used when the system
+  // media controls are unavailable (see UpdateWhichKeysAreListenedFor),
+  // in which case no PWA system media controls would be listening anyway.
+  // UpdateSystemMediaControlsEnabledControls uses this, but only to update the
+  // browser's enabled controls, not any PWA controls.
   return !listening_data.listeners.empty() ||
          (listening_data.browser_active_media_session_controller_listening &&
           CanActiveMediaSessionControllerReceiveEvents());
