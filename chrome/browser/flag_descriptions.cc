@@ -4238,6 +4238,11 @@ const char kAndroidOpenPdfInlineName[] = "Open PDF Inline on Android";
 const char kAndroidOpenPdfInlineDescription[] =
     "Enable Open PDF Inline on Android.";
 
+const char kAndroidOpenPdfInlineBackportName[] =
+    "Open PDF Inline on Android pre-V";
+const char kAndroidOpenPdfInlineBackportDescription[] =
+    "Enable Open PDF Inline on Android pre-V.";
+
 const char kChromePageInfoSharingName[] = "Page Info Sharing";
 const char kChromePageInfoSharingDescription[] =
     "Enable Page Info Sharing on Android.";

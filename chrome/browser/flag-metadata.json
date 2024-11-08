@@ -199,6 +199,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "android-open-pdf-inline-backport",
+    "owners": [ "shuyng@google.com", "qinmin@chromium.org", "clank-large-form-factors@google.com" ],
+    "expiry_milestone": 137
+  },
+  {
     "name": "android-tab-declutter",
     "owners": [ "wylieb@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 135

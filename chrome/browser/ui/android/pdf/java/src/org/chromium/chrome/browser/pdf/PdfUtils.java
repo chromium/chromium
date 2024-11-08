@@ -5,18 +5,20 @@
 package org.chromium.chrome.browser.pdf;
 
 import android.net.Uri;
+import android.os.Build;
+import android.os.ext.SdkExtensions;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.os.BuildCompat;
 
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -50,6 +52,8 @@ public class PdfUtils {
 
     private static final String TAG = "PdfUtils";
     private static final String PARAM_ANDROID_INLINE_PDF_IN_INCOGNITO = "inline_pdf_in_incognito";
+    private static final String PARAM_ANDROID_INLINE_PDF_BACKPORT_IN_INCOGNITO =
+            "inline_pdf_backport_in_incognito";
     private static boolean sShouldOpenPdfInlineForTesting;
 
     /**
@@ -108,19 +112,35 @@ public class PdfUtils {
     @CalledByNative
     public static boolean shouldOpenPdfInline(boolean isIncognito) {
         if (sShouldOpenPdfInlineForTesting) return true;
-        if (!ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_OPEN_PDF_INLINE)) {
-            return false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            if (!ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_OPEN_PDF_INLINE)) {
+                return false;
+            }
+            if (isIncognito
+                    && !ContentFeatureMap.getInstance()
+                            .getFieldTrialParamByFeatureAsBoolean(
+                                    ContentFeatureList.ANDROID_OPEN_PDF_INLINE,
+                                    PARAM_ANDROID_INLINE_PDF_IN_INCOGNITO,
+                                    false)) {
+                return false;
+            }
+            return true;
         }
-        if (isIncognito
-                && !ContentFeatureMap.getInstance()
-                        .getFieldTrialParamByFeatureAsBoolean(
-                                ContentFeatureList.ANDROID_OPEN_PDF_INLINE,
-                                PARAM_ANDROID_INLINE_PDF_IN_INCOGNITO,
-                                false)) {
-            return false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                && SdkExtensions.getExtensionVersion(Build.VERSION_CODES.S) >= 13) {
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_OPEN_PDF_INLINE_BACKPORT)) {
+                return false;
+            }
+            if (isIncognito
+                    && !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                            ChromeFeatureList.ANDROID_OPEN_PDF_INLINE_BACKPORT,
+                            PARAM_ANDROID_INLINE_PDF_BACKPORT_IN_INCOGNITO,
+                            false)) {
+                return false;
+            }
+            return true;
         }
-        // TODO(https://crbug.com/337674493): Check if pdf viewer is available on pre-V devices.
-        return BuildCompat.isAtLeastV();
+        return false;
     }
 
     /**

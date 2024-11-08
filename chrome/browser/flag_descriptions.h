@@ -2448,6 +2448,9 @@ extern const char kAndroidHubSearchDescription[];
 extern const char kAndroidOpenPdfInlineName[];
 extern const char kAndroidOpenPdfInlineDescription[];
 
+extern const char kAndroidOpenPdfInlineBackportName[];
+extern const char kAndroidOpenPdfInlineBackportDescription[];
+
 extern const char kChromePageInfoSharingName[];
 extern const char kChromePageInfoSharingDescription[];
 

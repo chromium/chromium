@@ -24055,6 +24055,7 @@ from previous Chrome versions.
   <int value="1538052363" label="TabReorganization:enabled"/>
   <int value="1538685213" label="DownloadHomeV2:enabled"/>
   <int value="1538690515" label="OneGoogleBarOnLocalNtp:enabled"/>
+  <int value="1539225325" label="AndroidOpenPdfInlineBackport:enabled"/>
   <int value="1539399467" label="PerAppLanguage:disabled"/>
   <int value="1540395380" label="WebContentsOcclusion:enabled"/>
   <int value="1540487070" label="ContextualSearchDebug:enabled"/>
@@ -25392,6 +25393,7 @@ from previous Chrome versions.
   <int value="2068334402"
       label="AutofillEnableCardBenefitsForCapitalOne:disabled"/>
   <int value="2068914329" label="WebViewXRequestedWithHeader:enabled"/>
+  <int value="2069146088" label="AndroidOpenPdfInlineBackport:disabled"/>
   <int value="2069999572"
       label="AllowSignedHTTPExchangeCertsWithoutExtension:disabled"/>
   <int value="2070207131" label="OpenscreenCastStreamingSession:disabled"/>
