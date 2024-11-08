@@ -37,9 +37,10 @@ public class TrustedWebActivitySettingsNavigation {
         Integer applicationUid = getApplicationUid(context, packageName);
         if (applicationUid == null) return;
 
-        InstalledWebappDataRegister register = new InstalledWebappDataRegister();
-        Collection<String> domains = register.getDomainsForRegisteredUid(applicationUid);
-        Collection<String> origins = register.getOriginsForRegisteredUid(applicationUid);
+        Collection<String> domains =
+                InstalledWebappDataRegister.getDomainsForRegisteredUid(applicationUid);
+        Collection<String> origins =
+                InstalledWebappDataRegister.getOriginsForRegisteredUid(applicationUid);
         if (domains.isEmpty() || origins.isEmpty()) {
             Log.d(TAG, "Package " + packageName + " is not associated with any origins");
             return;

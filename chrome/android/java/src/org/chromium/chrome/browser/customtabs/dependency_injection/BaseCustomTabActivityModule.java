@@ -8,7 +8,6 @@ import dagger.Lazy;
 import dagger.Module;
 import dagger.Provides;
 
-import org.chromium.chrome.browser.browserservices.InstalledWebappDataRegister;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaIntentHandlingStrategy;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
@@ -76,11 +75,6 @@ public class BaseCustomTabActivityModule {
     @Provides
     public CustomTabNightModeStateController provideNightModeController() {
         return mNightModeController;
-    }
-
-    @Provides
-    public InstalledWebappDataRegister provideInstalledWebappDataRegister() {
-        return new InstalledWebappDataRegister();
     }
 
     public interface Factory {

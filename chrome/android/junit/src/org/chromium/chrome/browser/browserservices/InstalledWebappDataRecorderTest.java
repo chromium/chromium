@@ -4,15 +4,13 @@
 
 package org.chromium.chrome.browser.browserservices;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -46,7 +44,6 @@ public class InstalledWebappDataRecorderTest {
     private static final Origin ORIGIN = Origin.create("https://www.example.com/");
     private static final Origin OTHER_ORIGIN = Origin.create("https://www.other.com/");
 
-    @Mock private InstalledWebappDataRegister mRegister;
     @Mock private PackageManager mPackageManager;
 
     private InstalledWebappDataRecorder mRecorder;
@@ -85,7 +82,7 @@ public class InstalledWebappDataRecorderTest {
                     }
                 });
 
-        mRecorder = new InstalledWebappDataRecorder(mRegister);
+        mRecorder = new InstalledWebappDataRecorder();
     }
 
     @After
@@ -120,15 +117,15 @@ public class InstalledWebappDataRecorderTest {
     @Test
     @Feature("TrustedWebActivities")
     public void testMisingPackage() {
+        var uids = InstalledWebappDataRegister.getUids();
         mRecorder.register(MISSING_PACKAGE, ORIGIN);
         // Implicitly checking we don't throw.
-        verify(mRegister, never())
-                .registerPackageForOrigin(anyInt(), anyString(), anyString(), any(), any());
+        assertEquals(uids, InstalledWebappDataRegister.getUids());
     }
 
     private void verifyRegistration(Origin origin) {
-        verify(mRegister)
-                .registerPackageForOrigin(
-                        APP_UID, APP_NAME, APP_PACKAGE, transform(origin.toString()), origin);
+        assertTrue(
+                InstalledWebappDataRegister.getDomainsForRegisteredUid(APP_UID)
+                        .contains(transform(origin.toString())));
     }
 }

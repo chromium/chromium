@@ -34,9 +34,6 @@ import javax.inject.Inject;
 public class InstalledWebappDataRecorder {
     private static final String TAG = "DataRecorder";
 
-    /** Underlying data register. */
-    private final InstalledWebappDataRegister mDataRegister;
-
     /**
      * Cache so we don't send the same request multiple times. {@link #register} is called on each
      * navigation and each call to {@link InstalledWebappDataRegister#registerPackageForOrigin}
@@ -45,15 +42,12 @@ public class InstalledWebappDataRecorder {
     private final Set<String> mCache = new HashSet<>();
 
     @Inject
-    InstalledWebappDataRecorder(InstalledWebappDataRegister dataRegister) {
-        mDataRegister = dataRegister;
-    }
+    InstalledWebappDataRecorder() {}
 
     /**
-     * Calls {@link InstalledWebappDataRegister#registerPackageForOrigin}, looking up the uid
-     * and app name for the |packageName|, extracting the domain from the origin and deduplicating
-     * multiple requests with the same parameters.
-     * Requires native to be loaded.
+     * Calls {@link InstalledWebappDataRegister#registerPackageForOrigin}, looking up the uid and
+     * app name for the |packageName|, extracting the domain from the origin and deduplicating
+     * multiple requests with the same parameters. Requires native to be loaded.
      */
     /* package */ void register(String packageName, Origin origin) {
         if (!mCache.add(combine(packageName, origin))) return;
@@ -78,7 +72,8 @@ public class InstalledWebappDataRecorder {
                             origin.toString(), /* includePrivateRegistries= */ true);
 
             Log.d(TAG, "Registering %d (%s) for %s", ai.uid, appLabel, origin);
-            mDataRegister.registerPackageForOrigin(ai.uid, appLabel, packageName, domain, origin);
+            InstalledWebappDataRegister.registerPackageForOrigin(
+                    ai.uid, appLabel, packageName, domain, origin);
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(TAG, "Couldn't find name for client package %s", packageName);
         }

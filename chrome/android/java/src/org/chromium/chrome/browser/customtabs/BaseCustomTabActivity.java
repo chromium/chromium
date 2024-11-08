@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.KeyboardShortcuts;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.browserservices.InstalledWebappDataRegister;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
@@ -418,6 +419,8 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             this.finishAndRemoveTask();
             return;
         }
+
+        InstalledWebappDataRegister.prefetchPreferences();
 
         mClientPackageNameProvider =
                 new ClientPackageNameProvider(

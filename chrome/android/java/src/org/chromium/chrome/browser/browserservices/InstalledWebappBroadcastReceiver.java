@@ -68,19 +68,16 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
                             Intent.ACTION_PACKAGE_FULLY_REMOVED));
 
     private final ClearDataStrategy mClearDataStrategy;
-    private final InstalledWebappDataRegister mDataRegister;
 
     /** Constructor with default dependencies for Android. */
     @Inject
     public InstalledWebappBroadcastReceiver() {
-        this(new ClearDataStrategy(), new InstalledWebappDataRegister());
+        this(new ClearDataStrategy());
     }
 
     /** Constructor to allow dependency injection in tests. */
-    public InstalledWebappBroadcastReceiver(
-            ClearDataStrategy strategy, InstalledWebappDataRegister dataRegister) {
+    public InstalledWebappBroadcastReceiver(ClearDataStrategy strategy) {
         mClearDataStrategy = strategy;
-        mDataRegister = dataRegister;
     }
 
     @Override
@@ -109,41 +106,37 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
 
         // The {@link InstalledWebappDataRegister} (because it uses Preferences) is loaded
         // lazily, so to time opening the file we must include the first read as well.
-        if (!mDataRegister.chromeHoldsDataForPackage(uid)) {
+        if (!InstalledWebappDataRegister.chromeHoldsDataForPackage(uid)) {
             Log.d(TAG, "Chrome holds no data for package.");
             return;
         }
 
-        mClearDataStrategy.execute(context, mDataRegister, uid, uninstalled);
+        mClearDataStrategy.execute(context, uid, uninstalled);
         clearPreferences(uid, uninstalled);
     }
 
     private void clearPreferences(int uid, boolean uninstalled) {
-        String packageName = mDataRegister.getPackageNameForRegisteredUid(uid);
+        String packageName = InstalledWebappDataRegister.getPackageNameForRegisteredUid(uid);
         BrowserServicesStore.removeTwaDisclosureAcceptanceForPackage(packageName);
         if (uninstalled) {
-            mDataRegister.removePackage(uid);
+            InstalledWebappDataRegister.removePackage(uid);
         }
     }
 
     /** Implemented as a class partially for historic reasons, partially to help testing. */
     static class ClearDataStrategy {
-        public void execute(
-                Context context,
-                InstalledWebappDataRegister dataRegister,
-                int uid,
-                boolean uninstalled) {
+        public void execute(Context context, int uid, boolean uninstalled) {
             // Retrieving domains and origins ahead of time, because the register is about to be
             // cleaned up.
-            Set<String> domains = dataRegister.getDomainsForRegisteredUid(uid);
-            Set<String> origins = dataRegister.getOriginsForRegisteredUid(uid);
+            Set<String> domains = InstalledWebappDataRegister.getDomainsForRegisteredUid(uid);
+            Set<String> origins = InstalledWebappDataRegister.getOriginsForRegisteredUid(uid);
 
             for (String originAsString : origins) {
                 Origin origin = Origin.create(originAsString);
                 if (origin != null) PermissionUpdater.onClientAppUninstalled(origin);
             }
 
-            String appName = dataRegister.getAppNameForRegisteredUid(uid);
+            String appName = InstalledWebappDataRegister.getAppNameForRegisteredUid(uid);
             Intent intent =
                     ClearDataDialogActivity.createIntent(
                             context, appName, domains, origins, uninstalled);
