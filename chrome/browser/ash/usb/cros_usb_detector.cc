@@ -64,6 +64,8 @@ static CrosUsbDetector* g_cros_usb_detector = nullptr;
 
 const char kNotifierUsb[] = "crosusb.connected";
 
+const uint16_t kWacomVendorId = 0x056a;
+
 std::u16string ProductLabelFromDevice(
     const device::mojom::UsbDeviceInfo& device_info) {
   std::u16string product_label =
@@ -99,6 +101,9 @@ uint32_t ClearMatchingInterfaces(
         }
         if (filter.has_protocol_code &&
             alternate_info->protocol_code != filter.protocol_code) {
+          continue;
+        }
+        if (filter.has_vendor_id && device_info.vendor_id != filter.vendor_id) {
           continue;
         }
         if (iface->interface_number >= 32) {
@@ -243,6 +248,13 @@ device::mojom::UsbDeviceFilterPtr UsbFilterByClassAndSubclassCode(
   filter->class_code = device_class;
   filter->has_subclass_code = true;
   filter->subclass_code = device_subclass;
+  return filter;
+}
+
+device::mojom::UsbDeviceFilterPtr UsbFilterByVendorId(uint16_t vendor_id) {
+  auto filter = device::mojom::UsbDeviceFilter::New();
+  filter->has_vendor_id = true;
+  filter->vendor_id = vendor_id;
   return filter;
 }
 
@@ -452,6 +464,14 @@ CrosUsbDetector::CrosUsbDetector() {
   // be shown.
   guest_os_usb_int_any_filter_.emplace_back(UsbFilterByClassAndSubclassCode(
       USB_CLASS_COMM, USB_COMM_SUBCLASS_ETHERNET));
+
+  // Wacom graphics tablets have a storage partition that is usually disabled
+  // when first used on other platforms with their driver. This causes them to
+  // have an interface with USB_CLASS_VENDOR_SPEC which causes the notification
+  // to show up. Their driver does not work on ChromeOS so this notification is
+  // shown every time the peripheral connects.
+  guest_os_usb_int_any_filter_.emplace_back(
+      UsbFilterByVendorId(kWacomVendorId));
 
   CiceroneClient::Get()->AddObserver(this);
   ConciergeClient::Get()->AddVmObserver(this);

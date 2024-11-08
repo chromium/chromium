@@ -450,6 +450,36 @@ TEST_F(CrosUsbDetectorTest, NotificationNotShownForEthernetInterface) {
   ASSERT_FALSE(notification);
 }
 
+TEST_F(CrosUsbDetectorTest, NotificationNotShownForWacomDevices) {
+  ConnectToDeviceManager();
+  base::RunLoop().RunUntilIdle();
+
+  auto device = base::MakeRefCounted<device::FakeUsbDeviceInfo>(
+      0x200, USB_CLASS_VENDOR_SPEC, 0, 0xff, 0x0100, 0x056a, 0x0357, 0, 0,
+      "Wacom", "Intuos M", "SN1337");
+  std::string notification_id =
+      CrosUsbDetector::MakeNotificationId(device->guid());
+
+  // Notifications should not be shown if no VMs enabled.
+  crostini::FakeCrostiniFeatures crostini_features;
+  crostini_features.set_enabled(false);
+  device_manager_.AddDevice(device);
+  base::RunLoop().RunUntilIdle();
+
+  std::optional<message_center::Notification> notification =
+      display_service_->GetNotification(notification_id);
+  EXPECT_FALSE(notification);
+  device_manager_.RemoveDevice(device);
+  base::RunLoop().RunUntilIdle();
+
+  // Notification should never be shown
+  crostini_features.set_enabled(true);
+  device_manager_.AddDevice(device);
+  base::RunLoop().RunUntilIdle();
+  notification = display_service_->GetNotification(notification_id);
+  ASSERT_FALSE(notification);
+}
+
 TEST_F(CrosUsbDetectorTest, NotificationControlledByPolicy) {
   ConnectToDeviceManager();
   base::RunLoop().RunUntilIdle();
