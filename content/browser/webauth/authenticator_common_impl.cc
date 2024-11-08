@@ -1823,21 +1823,8 @@ void AuthenticatorCommonImpl::
     std::move(callback).Run(false);
     return;
   }
-  // Passkeys from a phone can be discovered through conditional mediation. To
-  // avoid leaking bluetooth or sync status, advertise the feature as available.
-  if (GetWebAuthenticationDelegate()->SupportsPasskeyMetadataSyncing()) {
-    std::move(callback).Run(true);
-    return;
-  }
-
-#if BUILDFLAG(IS_MAC)
+  // Desktop Chrome can always show GPM passkeys through conditional mediation.
   std::move(callback).Run(true);
-#elif BUILDFLAG(IS_WIN)
-  device::WinWebAuthnApiAuthenticator::IsConditionalMediationAvailable(
-      device::WinWebAuthnApi::GetDefault(), std::move(callback));
-#else
-  std::move(callback).Run(false);
-#endif
 }
 
 void AuthenticatorCommonImpl::Report(

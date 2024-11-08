@@ -832,8 +832,11 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (syncer::IsWebauthnCredentialSyncEnabled() &&
-      !disabled_types.Has(syncer::WEBAUTHN_CREDENTIAL)) {
+  if (!disabled_types.Has(syncer::WEBAUTHN_CREDENTIAL)
+#if BUILDFLAG(IS_IOS)
+      && syncer::IsWebauthnCredentialSyncEnabled()
+#endif  // BUILDFLAG(IS_IOS)
+  ) {
     syncer::DataTypeControllerDelegate* delegate =
         passkey_model_.value()->GetDataTypeControllerDelegate().get();
 

@@ -85,9 +85,15 @@ Suggestion CreateGenerationEntry() {
 
 // Entry for opting in to password account storage and then filling.
 Suggestion CreateEntryToOptInToAccountStorageThenFill() {
+#if BUILDFLAG(IS_IOS)
+  const bool webauthn_sync_credentials =
+      syncer::IsWebauthnCredentialSyncEnabled();
+#else
+  constexpr bool webauthn_sync_credentials = true;
+#endif  // BUILDFLAG(IS_IOS)
   return Suggestion(
       l10n_util::GetStringUTF8(
-          syncer::IsWebauthnCredentialSyncEnabled()
+          webauthn_sync_credentials
               ? IDS_PASSWORD_MANAGER_OPT_INTO_ACCOUNT_STORE_WITH_PASSKEYS
               : IDS_PASSWORD_MANAGER_OPT_INTO_ACCOUNT_STORE),
       /*label=*/"", Suggestion::Icon::kGoogle,

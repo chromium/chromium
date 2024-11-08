@@ -2011,10 +2011,6 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
     return supports_resident_keys;
   }
 
-  bool SupportsPasskeyMetadataSyncing() override {
-    return supports_passkey_metadata_syncing;
-  }
-
   bool IsFocused(WebContents* web_contents) override { return is_focused; }
 
 #if BUILDFLAG(IS_MAC)
@@ -2056,9 +2052,6 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
   // Indicates whether resident key operations should be permitted by the
   // delegate.
   bool supports_resident_keys = false;
-
-  // Indicates whether metadata syncing should be assumed to be supported.
-  bool supports_passkey_metadata_syncing = false;
 
   // The return value of the focus check issued at the end of a request.
   bool is_focused = true;
@@ -3496,22 +3489,13 @@ TEST_F(AuthenticatorContentBrowserClientTest,
 
 TEST_F(AuthenticatorContentBrowserClientTest,
        GetClientCapabilities_ConditionalGet_ReturnsFalse) {
-  // Conditional mediation should always be available if gpm passkeys are
-  // enabled.
-  test_client_.GetTestWebAuthenticationDelegate()
-      ->supports_passkey_metadata_syncing = true;
   NavigateAndCommit(GURL(kTestOrigin1));
-
   ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
   ExpectCapability(capabilities, client_capabilities::kConditionalGet, true);
 }
 
 TEST_F(AuthenticatorContentBrowserClientTest,
        GPMPasskeys_IsConditionalMediationAvailable) {
-  // Conditional mediation should always be available if gpm passkeys are
-  // enabled.
-  test_client_.GetTestWebAuthenticationDelegate()
-      ->supports_passkey_metadata_syncing = true;
   NavigateAndCommit(GURL(kTestOrigin1));
   ASSERT_TRUE(AuthenticatorIsConditionalMediationAvailable());
 }
@@ -10438,34 +10422,6 @@ TEST_F(AuthenticatorImplWithRequestProxyTest,
   // bypassing the proxy.
   ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
   ExpectCapability(capabilities, client_capabilities::kConditionalGet, false);
-}
-
-// Temporary regression test for crbug.com/1489468.
-// TODO(crbug.com/40284051): Remove after passkey metadata syncing is enabled by
-// default.
-TEST_F(AuthenticatorImplWithRequestProxyTest,
-       IsConditionalMediationAvailable_MetadataSyncing) {
-  test_client_.GetTestWebAuthenticationDelegate()
-      ->supports_passkey_metadata_syncing = true;
-
-  // We can't autofill credentials over the request proxy. Hence, conditional
-  // mediation is unavailable, even if IsUVPAA returns true.
-  NavigateAndCommit(GURL(kTestOrigin1));
-
-  // Ensure there is no test override set and we're testing the real
-  // implementation.
-  ASSERT_EQ(test_client_.GetTestWebAuthenticationDelegate()->is_uvpaa_override,
-            std::nullopt);
-
-  // Proxy says `IsUVPAA()` is true.
-  request_proxy().config().is_uvpaa = true;
-  EXPECT_TRUE(AuthenticatorIsUvpaa());
-  EXPECT_EQ(request_proxy().observations().num_isuvpaa, 1u);
-
-  // But `IsConditionalMediationAvailable()` still returns false, bypassing the
-  // proxy.
-  EXPECT_FALSE(AuthenticatorIsConditionalMediationAvailable());
-  EXPECT_EQ(request_proxy().observations().num_isuvpaa, 1u);
 }
 
 TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential) {

@@ -88,16 +88,7 @@ constexpr bool IsWebauthnCredentialSyncEnabled() {
   return false;
 #endif  // !BUILDFLAG(IOS_PASSKEYS_ENABLED)
 }
-#elif BUILDFLAG(IS_ANDROID)
-constexpr bool IsWebauthnCredentialSyncEnabled() {
-  return false;
-}
-#else  // Not iOS or Android
-// Enables syncing the WEBAUTHN_CREDENTIAL data type.
-// Enabled by default on M123.
-BASE_DECLARE_FEATURE(kSyncWebauthnCredentials);
-bool IsWebauthnCredentialSyncEnabled();
-#endif
+#endif  // BUILDFLAG(IS_IOS)
 
 // If enabled, ignore GetUpdates retry delay command from the server.
 BASE_DECLARE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay);

@@ -79,7 +79,6 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "components/sync/protocol/password_sharing_recipients.pb.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
@@ -949,9 +948,6 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, ChangeCredential_Passkey) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
-
   webauthn::PasskeyModel* passkey_model =
       PasskeyModelFactory::GetForProfile(profile());
   ASSERT_EQ(passkey_model, PasskeyModelFactory::GetForProfile(profile()));
@@ -1610,9 +1606,6 @@ TEST_F(PasswordsPrivateDelegateImplTest, PasswordManagerAppInstalled) {
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, GetPasskeyInGroups) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
-
   auto delegate = CreateDelegate();
 
   webauthn::PasskeyModel* passkey_model =
@@ -1653,9 +1646,6 @@ TEST_F(PasswordsPrivateDelegateImplTest, GetPasskeyInGroups) {
 
 TEST_F(PasswordsPrivateDelegateImplTest, RemovePasskey) {
   base::UserActionTester user_action_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
-
   auto delegate = CreateDelegate();
 
   webauthn::PasskeyModel* passkey_model =
@@ -2323,8 +2313,6 @@ TEST_F(PasswordsPrivateDelegateImplTest, DeleteAllData) {
   SetUpPasswordStores({form_profile, form_account});
   task_environment()->RunUntilIdle();
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
   webauthn::PasskeyModel* passkey_model =
       PasskeyModelFactory::GetForProfile(profile());
   ASSERT_EQ(passkey_model, PasskeyModelFactory::GetForProfile(profile()));
@@ -2348,8 +2336,6 @@ TEST_F(PasswordsPrivateDelegateImplTest, DeleteAllData) {
 
 TEST_F(PasswordsPrivateDelegateImplTest,
        DeleteAllDataRecordsPasswordRemovalReason) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      syncer::kSyncWebauthnCredentials};
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
   auto delegate = CreateDelegate();
 
@@ -2382,8 +2368,6 @@ TEST_F(PasswordsPrivateDelegateImplTest, DeleteAllDataWithReauthFailed) {
   SetUpPasswordStores({form_profile, form_account});
   task_environment()->RunUntilIdle();
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
   webauthn::PasskeyModel* passkey_model =
       PasskeyModelFactory::GetForProfile(profile());
   ASSERT_EQ(passkey_model, PasskeyModelFactory::GetForProfile(profile()));

@@ -19,7 +19,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -173,9 +172,6 @@ class SingleClientWebAuthnCredentialsSyncTest : public SyncTest {
                                                    client_tag_hash),
             client_tag_hash));
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_{
-      syncer::kSyncWebauthnCredentials};
 
   webauthn::PasskeySyncBridge& GetModel() {
     return webauthn_credentials_helper::GetModel(kSingleProfile);

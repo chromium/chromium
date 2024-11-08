@@ -34,7 +34,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -513,32 +512,7 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
   EXPECT_EQ(WaitForReauthResult(), signin::ReauthResult::kUnexpectedResponse);
 }
 
-// TODO(crbug.com/40284051): Remove kNoPasskeySyncing path after metadata
-// syncing is enabled by default.
-enum HasPasskeySyncing {
-  kHasPasskeySyncing,
-  kNoPasskeySyncing,
-};
-
-class SigninReauthViewControllerMessageBrowserTest
-    : public SigninReauthViewControllerBrowserTest,
-      public testing::WithParamInterface<HasPasskeySyncing> {
- public:
-  SigninReauthViewControllerMessageBrowserTest() {
-    if (GetParam() == kHasPasskeySyncing) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kSyncWebauthnCredentials);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          syncer::kSyncWebauthnCredentials);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(SigninReauthViewControllerMessageBrowserTest,
+IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
                        MessageIfPasswordWasSavedLocally) {
   // The AccessPoint specifies that the password was already saved locally
   // before the reauth prompt was shown.
@@ -560,12 +534,10 @@ IN_PROC_BROWSER_TEST_P(SigninReauthViewControllerMessageBrowserTest,
   EXPECT_EQ(
       dialog_message,
       l10n_util::GetStringUTF8(
-          GetParam() == kHasPasskeySyncing
-              ? IDS_ACCOUNT_PASSWORDS_WITH_PASSKEYS_REAUTH_DESC_ALREADY_SAVED_LOCALLY
-              : IDS_ACCOUNT_PASSWORDS_REAUTH_DESC_ALREADY_SAVED_LOCALLY));
+          IDS_ACCOUNT_PASSWORDS_WITH_PASSKEYS_REAUTH_DESC_ALREADY_SAVED_LOCALLY));
 }
 
-IN_PROC_BROWSER_TEST_P(SigninReauthViewControllerMessageBrowserTest,
+IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
                        MessageIfPasswordWasNotSavedLocally) {
   // The AccessPoint specifies that the password was NOT already saved locally
   // before the reauth prompt was shown.
@@ -584,15 +556,8 @@ IN_PROC_BROWSER_TEST_P(SigninReauthViewControllerMessageBrowserTest,
   // The dialog message should be the regular one.
   EXPECT_EQ(dialog_message,
             l10n_util::GetStringUTF8(
-                GetParam() == kHasPasskeySyncing
-                    ? IDS_ACCOUNT_PASSWORDS_WITH_PASSKEYS_REAUTH_DESC
-                    : IDS_ACCOUNT_PASSWORDS_REAUTH_DESC));
+                IDS_ACCOUNT_PASSWORDS_WITH_PASSKEYS_REAUTH_DESC));
 }
-
-INSTANTIATE_TEST_SUITE_P(/* no prefix */,
-                         SigninReauthViewControllerMessageBrowserTest,
-                         testing::Values(kHasPasskeySyncing,
-                                         kNoPasskeySyncing));
 
 class SigninReauthViewControllerDarkModeBrowserTest
     : public SigninReauthViewControllerBrowserTest {

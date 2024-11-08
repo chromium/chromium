@@ -50,7 +50,6 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -142,9 +141,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 
   static const webui::LocalizedString kStrings[] = {
       {"accountStorageToggleLabel",
-       base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)
-           ? IDS_PASSWORD_MANAGER_UI_ACCOUNT_STORAGE_WITH_PASSKEYS_TOGGLE_LABEL
-           : IDS_PASSWORD_MANAGER_UI_ACCOUNT_STORAGE_TOGGLE_LABEL},
+       IDS_PASSWORD_MANAGER_UI_ACCOUNT_STORAGE_WITH_PASSKEYS_TOGGLE_LABEL},
       {"accountStorageToggleSubLabel",
        IDS_PASSWORD_MANAGER_UI_ACCOUNT_STORAGE_TOGGLE_SUB_LABEL},
       {"addPassword", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD_BUTTON},

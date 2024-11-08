@@ -70,7 +70,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/sync/service/sync_service.h"
@@ -539,10 +538,6 @@ bool ChromeWebAuthenticationDelegate::ShouldPermitIndividualAttestation(
 bool ChromeWebAuthenticationDelegate::SupportsResidentKeys(
     content::RenderFrameHost* render_frame_host) {
   return true;
-}
-
-bool ChromeWebAuthenticationDelegate::SupportsPasskeyMetadataSyncing() {
-  return base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials);
 }
 
 bool ChromeWebAuthenticationDelegate::IsFocused(
@@ -1332,9 +1327,8 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
-      (can_use_synced_phone_passkeys_ ||
-       (enclave_controller_ && enclave_controller_->is_active()))) {
+  if (can_use_synced_phone_passkeys_ ||
+      (enclave_controller_ && enclave_controller_->is_active())) {
     GetPhoneContactableGpmPasskeysForRpId(&data.recognized_credentials);
   }
   FilterRecognizedCredentials(&data);

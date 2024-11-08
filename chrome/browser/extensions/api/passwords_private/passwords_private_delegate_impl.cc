@@ -72,7 +72,6 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/navigation_handle.h"
@@ -303,10 +302,7 @@ void MaybeShowProfileSwitchIPH(Profile* profile) {
 
 // Returns a passkey model instance if the feature is enabled.
 webauthn::PasskeyModel* MaybeGetPasskeyModel(Profile* profile) {
-  if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
-    return PasskeyModelFactory::GetInstance()->GetForProfile(profile);
-  }
-  return nullptr;
+  return PasskeyModelFactory::GetInstance()->GetForProfile(profile);
 }
 
 std::string GetGroupIconUrl(const password_manager::AffiliatedGroup& group,

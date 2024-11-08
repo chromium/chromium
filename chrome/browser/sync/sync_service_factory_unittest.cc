@@ -194,9 +194,7 @@ class SyncServiceFactoryTest : public testing::Test {
     datatypes.Put(syncer::SEND_TAB_TO_SELF);
     datatypes.Put(syncer::SHARING_MESSAGE);
 #if !BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
-      datatypes.Put(syncer::WEBAUTHN_CREDENTIAL);
-    }
+    datatypes.Put(syncer::WEBAUTHN_CREDENTIAL);
 #endif  // !BUILDFLAG(IS_ANDROID)
     if (base::FeatureList::IsEnabled(
             data_sharing::features::kDataSharingFeature)) {

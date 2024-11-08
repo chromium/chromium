@@ -112,15 +112,12 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
       syncer::EXTENSION_SETTINGS,
       syncer::DEVICE_INFO,
       syncer::PRIORITY_PREFERENCES,
+      syncer::WEBAUTHN_CREDENTIAL,
       syncer::WEB_APPS,
       syncer::NIGORI};
 
   if (base::FeatureList::IsEnabled(power_bookmarks::kPowerBookmarkBackend)) {
     expected_active_data_types.Put(syncer::POWER_BOOKMARK);
-  }
-
-  if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
-    expected_active_data_types.Put(syncer::WEBAUTHN_CREDENTIAL);
   }
 
   if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletCredentialData)) {

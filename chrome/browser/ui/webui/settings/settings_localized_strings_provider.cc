@@ -1608,9 +1608,7 @@ void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddLocalizedString(
       "passwordsCheckboxLabel",
-      base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)
-          ? IDS_SETTINGS_PASSWORDS_AND_PASSKEYS_CHECKBOX_LABEL
-          : IDS_SETTINGS_PASSWORDS_CHECKBOX_LABEL);
+      IDS_SETTINGS_PASSWORDS_AND_PASSKEYS_CHECKBOX_LABEL);
 
 #if BUILDFLAG(IS_CHROMEOS)
   html_source->AddString(

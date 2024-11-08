@@ -15,14 +15,13 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
-#include "components/sync/base/features.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/data_type_store.h"
@@ -105,7 +104,6 @@ PasskeySyncBridge::PasskeySyncBridge(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::WEBAUTHN_CREDENTIAL,
               /*dump_stack=*/base::DoNothing())) {
-  DCHECK(syncer::IsWebauthnCredentialSyncEnabled());
   std::move(store_factory)
       .Run(syncer::WEBAUTHN_CREDENTIAL,
            base::BindOnce(&PasskeySyncBridge::OnCreateStore,

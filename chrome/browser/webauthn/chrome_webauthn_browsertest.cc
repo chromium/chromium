@@ -43,7 +43,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
-#include "components/sync/base/features.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_change_quota_tracker.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
@@ -570,11 +569,6 @@ class WebAuthnGpmPasskeyTest : public WebAuthnBrowserTest {
         transport_availability_info_;
   };
 
-  WebAuthnGpmPasskeyTest() {
-    scoped_feature_list_.InitWithFeatures({syncer::kSyncWebauthnCredentials},
-                                          /*disabled_features=*/{});
-  }
-
   void SetUpOnMainThread() override {
     WebAuthnBrowserTest::SetUpOnMainThread();
     observer_ = std::make_unique<Observer>();
@@ -607,7 +601,6 @@ class WebAuthnGpmPasskeyTest : public WebAuthnBrowserTest {
   }
 
   std::unique_ptr<Observer> observer_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::CallbackListSubscription subscription_;
 };
 

@@ -56,7 +56,6 @@
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
@@ -424,14 +423,11 @@ AuthenticatorRequestDialogController::AuthenticatorRequestDialogController(
     content::RenderFrameHost* render_frame_host)
     : model_(model), frame_host_id_(render_frame_host->GetGlobalId()) {
   model_->observers.AddObserver(this);
-  if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
-    webauthn::PasskeyModel* passkey_model =
-        PasskeyModelFactory::GetInstance()->GetForProfile(
-            Profile::FromBrowserContext(
-                render_frame_host->GetBrowserContext()));
-    if (passkey_model) {
-      passkey_model_observation_.Observe(passkey_model);
-    }
+  webauthn::PasskeyModel* passkey_model =
+      PasskeyModelFactory::GetInstance()->GetForProfile(
+          Profile::FromBrowserContext(render_frame_host->GetBrowserContext()));
+  if (passkey_model) {
+    passkey_model_observation_.Observe(passkey_model);
   }
 }
 
@@ -2077,9 +2073,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   const bool is_get_assertion =
       transport_availability_.request_type == FidoRequestType::kGetAssertion;
   SetPriorityPhoneIndex(GetIndexOfMostRecentlyUsedPhoneFromSync());
-  bool list_phone_passkeys =
-      is_get_assertion && priority_phone_index_ &&
-      base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials);
+  bool list_phone_passkeys = is_get_assertion && priority_phone_index_;
   bool specific_phones_listed = false;
   bool specific_local_passkeys_listed = false;
   bool enclave_passkeys_shown = false;

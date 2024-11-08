@@ -52,7 +52,6 @@
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
@@ -466,7 +465,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
   const auto v1 = TransportAvailabilityParam::kHasCableV1Extension;
   const auto has_winapi =
       TransportAvailabilityParam::kHasWinNativeAuthenticator;
-  const auto win_hybrid = TransportAvailabilityParam::kWindowsHandlesHybrid;
+  [[maybe_unused]] const auto win_hybrid =
+      TransportAvailabilityParam::kWindowsHandlesHybrid;
   const auto has_plat = TransportAvailabilityParam::kHasPlatformCredential;
   const auto maybe_plat =
       TransportAvailabilityParam::kMaybeHasPlatformCredential;
@@ -481,7 +481,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
   const auto empty_al = TransportAvailabilityParam::kEmptyAllowList;
   [[maybe_unused]] const auto enclave_cred =
       TransportAvailabilityParam::kEnclaveCred;
-  const auto only_internal = TransportAvailabilityParam::kOnlyInternal;
+  [[maybe_unused]] const auto only_internal =
+      TransportAvailabilityParam::kOnlyInternal;
   const auto only_hybrid_or_internal =
       TransportAvailabilityParam::kOnlyHybridOrInternal;
   const auto rk = TransportAvailabilityParam::kRequireResidentKey;
@@ -925,11 +926,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        {},
        {sign_in_again, add, t(internal)},
        mss},
-  };
 
-  // Tests for the new UI that lists synced passkeys mixed with local
-  // credentials.
-  Test kListSyncedPasskeysTests[]{
+      // Tests for the new UI that lists synced passkeys mixed with local
+      // credentials.
       // Mac & Linux:
       // Mix of phone and internal credentials.
       {L,
@@ -1145,9 +1144,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        // And otherwise it doesn't do anything because we generally assume that
        // we can enumerate platform authenticators and do a good job.
        {L, ga, {usb, cable, internal}, {rk, hint_plat}, {}, {add}, qr},
-  };
 
-  Test kListSyncedPasskeysTests_Windows[] {
+#if BUILDFLAG(IS_WIN)
+      // Windows tests.
       // Mix of phone and internal credentials, but no USB/NFC.
       // This should jump to Windows, as there is a match with the local
       // authenticator.
@@ -1196,6 +1195,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
        {},
        {c(wincred1), c(wincred2)},
        plat_ui},
+#endif  // BUILDFLAG(IS_WIN)
   };
   // clang-format on
 #undef L
@@ -1475,17 +1475,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
   for (const auto& test : kTests) {
     RunTest(test);
   }
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({syncer::kSyncWebauthnCredentials},
-                                       /*disabled_features=*/{});
-  for (const auto& test : kListSyncedPasskeysTests) {
-    RunTest(test);
-  }
-#if BUILDFLAG(IS_WIN)
-  for (const auto& test : kListSyncedPasskeysTests_Windows) {
-    RunTest(test);
-  }
-#endif
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -2235,8 +2224,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIPhonePasskey) {
 // request is restarted.
 TEST_F(AuthenticatorRequestDialogControllerTest,
        ConditionalUIPhonePasskeyUpdated) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   auto controller = std::make_unique<AuthenticatorRequestDialogController>(
@@ -2269,9 +2256,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 // request, the list of passkeys is updated.
 TEST_F(AuthenticatorRequestDialogControllerTest,
        ConditionalUITransportAvailabilityUpdated) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
-
   NavigateAndCommit(GURL("rp.com"));
   ChromeWebAuthnCredentialsDelegate* delegate =
       ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents())
@@ -2541,8 +2525,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ContactPriorityPhone_NoSync) {
 // match and no local matches.
 TEST_F(AuthenticatorRequestDialogControllerTest,
        ContactPriorityPhone_WithSync) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      syncer::kSyncWebauthnCredentials};
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   AuthenticatorRequestDialogController controller(model.get(), main_rfh());
@@ -2879,19 +2861,8 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 
 #endif
 
-class ListPasskeysFromSyncTest
-    : public AuthenticatorRequestDialogControllerTest {
- public:
-  ListPasskeysFromSyncTest() {
-    scoped_feature_list_.InitWithFeatures({syncer::kSyncWebauthnCredentials},
-                                          /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(ListPasskeysFromSyncTest, ListGPMPasskeysInConditionalUI) {
+TEST_F(AuthenticatorRequestDialogControllerTest,
+       ListGPMPasskeysInConditionalUI) {
   NavigateAndCommit(GURL("rp.com"));
 
   // Tests that passkeys are listed in conditional UI, but only if there is a
@@ -2961,7 +2932,7 @@ TEST_F(ListPasskeysFromSyncTest, ListGPMPasskeysInConditionalUI) {
   }
 }
 
-TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
+TEST_F(AuthenticatorRequestDialogControllerTest, MechanismsFromUserAccounts) {
   // Set up a model with two local passkeys and a GPM passkey.
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
@@ -3127,7 +3098,8 @@ struct {
 };
 #undef L
 
-TEST_F(ListPasskeysFromSyncTest, WindowsHelloButtonLabel_GetAssertion) {
+TEST_F(AuthenticatorRequestDialogControllerTest,
+       WindowsHelloButtonLabel_GetAssertion) {
   device::FakeWinWebAuthnApi fake_win_webauthn_api;
   device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(
       &fake_win_webauthn_api);
@@ -3210,7 +3182,8 @@ struct {
     {device::AuthenticatorAttachment::kPlatform, kHello},
 };
 
-TEST_F(ListPasskeysFromSyncTest, WindowsHelloButtonLabel_MakeCredential) {
+TEST_F(AuthenticatorRequestDialogControllerTest,
+       WindowsHelloButtonLabel_MakeCredential) {
   device::FakeWinWebAuthnApi fake_win_webauthn_api;
   device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(
       &fake_win_webauthn_api);

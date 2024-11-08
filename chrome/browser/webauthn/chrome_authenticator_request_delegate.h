@@ -117,7 +117,6 @@ class ChromeWebAuthenticationDelegate final
       const std::string& relying_party_id) override;
   bool SupportsResidentKeys(
       content::RenderFrameHost* render_frame_host) override;
-  bool SupportsPasskeyMetadataSyncing() override;
   bool IsFocused(content::WebContents* web_contents) override;
   void IsUserVerifyingPlatformAuthenticatorAvailableOverride(
       content::RenderFrameHost* render_frame_host,

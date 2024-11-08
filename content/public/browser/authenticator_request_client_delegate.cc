@@ -70,10 +70,6 @@ bool WebAuthenticationDelegate::SupportsResidentKeys(
   return false;
 }
 
-bool WebAuthenticationDelegate::SupportsPasskeyMetadataSyncing() {
-  return false;
-}
-
 bool WebAuthenticationDelegate::IsFocused(WebContents* web_contents) {
   return true;
 }

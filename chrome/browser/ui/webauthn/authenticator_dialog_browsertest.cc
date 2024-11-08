@@ -24,7 +24,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/trusted_vault/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
@@ -593,13 +592,6 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_phone_confirmation) {
 // where test_name is the second arg to IN_PROC_BROWSER_TEST_F().
 class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
  public:
-  GPMPasskeysAuthenticatorDialogTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {syncer::kSyncWebauthnCredentials,
-         device::kWebAuthnEnclaveAuthenticator},
-        /*disabled_features=*/{});
-  }
-
   void SetUpOnMainThread() override {
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(browser()->profile()),
@@ -808,7 +800,8 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
  private:
   scoped_refptr<AuthenticatorRequestDialogModel> model_;
   std::unique_ptr<AuthenticatorRequestDialogController> controller_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnEnclaveAuthenticator};
 };
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,

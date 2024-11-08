@@ -175,22 +175,6 @@ void WinWebAuthnApiAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
 }
 
 // static
-void WinWebAuthnApiAuthenticator::IsConditionalMediationAvailable(
-    WinWebAuthnApi* api,
-    base::OnceCallback<void(bool is_available)> callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(
-          [](WinWebAuthnApi* api) {
-            return api && api->IsAvailable() && api->SupportsSilentDiscovery();
-          },
-          api),
-      std::move(callback));
-}
-
-// static
 void WinWebAuthnApiAuthenticator::EnumeratePlatformCredentials(
     WinWebAuthnApi* api,
     base::OnceCallback<

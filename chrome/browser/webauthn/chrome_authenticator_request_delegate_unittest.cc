@@ -40,7 +40,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/sync/test/test_sync_service.h"
@@ -136,12 +135,6 @@ class MockCableDiscoveryFactory : public device::FidoDiscoveryFactory {
 class ChromeAuthenticatorRequestDelegateTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  ChromeAuthenticatorRequestDelegateTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {syncer::kSyncWebauthnCredentials, syncer::kSyncWebauthnCredentials},
-        /*disabled_features=*/{});
-  }
-
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     PasskeyModelFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -160,7 +153,6 @@ class ChromeAuthenticatorRequestDelegateTest
 
  protected:
   Observer observer_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class TestAuthenticatorModelObserver final

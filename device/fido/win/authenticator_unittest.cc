@@ -357,22 +357,6 @@ TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_Supported) {
   EXPECT_EQ(cred.user.display_name, kUserDisplayName);
 }
 
-TEST_F(WinAuthenticatorTest, IsConditionalMediationAvailable) {
-  for (bool silent_discovery : {false, true}) {
-    SCOPED_TRACE(silent_discovery);
-    fake_webauthn_api_->set_supports_silent_discovery(silent_discovery);
-    base::test::TestFuture<bool> future;
-    base::RunLoop run_loop;
-    WinWebAuthnApiAuthenticator::IsConditionalMediationAvailable(
-        fake_webauthn_api_.get(),
-        base::BindLambdaForTesting([&](bool is_available) {
-          EXPECT_EQ(is_available, silent_discovery);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
-}
-
 TEST_F(WinAuthenticatorTest, MakeCredentialLargeBlob) {
   enum Availability : bool {
     kNotAvailable = false,
