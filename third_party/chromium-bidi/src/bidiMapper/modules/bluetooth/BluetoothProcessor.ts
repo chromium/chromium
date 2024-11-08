@@ -36,6 +36,12 @@ export class BluetoothProcessor {
     params: Bluetooth.SimulateAdapterParameters,
   ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
+    // Bluetooth spec requires overriding the existing adapter (step 6). From the CDP
+    // perspective, we need to disable the emulation first.
+    // https://webbluetoothcg.github.io/web-bluetooth/#bluetooth-simulateAdapter-command
+    await context.cdpTarget.browserCdpClient.sendCommand(
+      'BluetoothEmulation.disable',
+    );
     await context.cdpTarget.browserCdpClient.sendCommand(
       'BluetoothEmulation.enable',
       {

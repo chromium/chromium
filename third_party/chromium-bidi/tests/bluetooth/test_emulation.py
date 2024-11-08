@@ -64,6 +64,39 @@ async def setup_device(websocket, context_id):
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("state_1", ["absent", "powered-off", "powered-on"])
+@pytest.mark.parametrize("state_2", ["absent", "powered-off", "powered-on"])
+@pytest.mark.parametrize('capabilities', [{
+    'goog:chromeOptions': {
+        'args': ['--enable-features=WebBluetooth']
+    }
+}],
+                         indirect=True)
+async def test_simulate_adapter_twice(websocket, context_id, state_1, state_2,
+                                      test_headless_mode):
+    if test_headless_mode == "old":
+        pytest.xfail("Old headless mode does not support Bluetooth")
+
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.simulateAdapter',
+            'params': {
+                'context': context_id,
+                'state': state_1,
+            }
+        })
+
+    await execute_command(
+        websocket, {
+            'method': 'bluetooth.simulateAdapter',
+            'params': {
+                'context': context_id,
+                'state': state_2,
+            }
+        })
+
+
+@pytest.mark.asyncio
 @pytest.mark.parametrize('capabilities', [{
     'goog:chromeOptions': {
         'args': ['--enable-features=WebBluetooth']
