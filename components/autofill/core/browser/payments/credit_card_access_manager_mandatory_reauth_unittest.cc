@@ -170,8 +170,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   card->set_cvc(kTestCvc16);
 
-  credit_card_access_manager().PrepareToFetchCreditCard();
-  WaitForCallbacks();
+  PrepareToFetchCreditCardAndWaitForCallbacks();
 
   // TODO(crbug.com/40935048): Extract shared boilerplate code out for
   // CreditCardAccessManagerMandatoryReauthFunctionalTest tests.
@@ -451,8 +450,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
   const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
-  credit_card_access_manager().PrepareToFetchCreditCard();
-  WaitForCallbacks();
+  PrepareToFetchCreditCardAndWaitForCallbacks();
 
   // TODO(crbug.com/40935048): Extract shared boilerplate code out for
   // CreditCardAccessManagerMandatoryReauthTest tests.
@@ -479,8 +477,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   card->set_cvc(u"");
 
-  credit_card_access_manager().PrepareToFetchCreditCard();
-  WaitForCallbacks();
+  PrepareToFetchCreditCardAndWaitForCallbacks();
 
   // TODO(crbug.com/40935048): Extract shared boilerplate code out for
   // CreditCardAccessManagerMandatoryReauthTest tests.
@@ -505,8 +502,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
   const CreditCard* masked_server_card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
-  credit_card_access_manager().PrepareToFetchCreditCard();
-  WaitForCallbacks();
+  PrepareToFetchCreditCardAndWaitForCallbacks();
 
   credit_card_access_manager().FetchCreditCard(
       masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
@@ -541,8 +537,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   masked_server_card->set_cvc(u"");
 
-  credit_card_access_manager().PrepareToFetchCreditCard();
-  WaitForCallbacks();
+  PrepareToFetchCreditCardAndWaitForCallbacks();
 
   credit_card_access_manager().FetchCreditCard(
       masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,

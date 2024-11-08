@@ -184,6 +184,10 @@ class CreditCardAccessManagerTestBase : public testing::Test {
   void OptUserInToFido();
 #endif
 
+  void PrepareToFetchCreditCardAndWaitForCallbacks();
+
+  void FetchCreditCard(const CreditCard* card);
+
   std::unique_ptr<TestAccessor> accessor_;
   base::test::TaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{

@@ -523,4 +523,16 @@ void CreditCardAccessManagerTestBase::OptUserInToFido() {
 }
 #endif
 
+void CreditCardAccessManagerTestBase::
+    PrepareToFetchCreditCardAndWaitForCallbacks() {
+  credit_card_access_manager().PrepareToFetchCreditCard();
+  WaitForCallbacks();
+}
+
+void CreditCardAccessManagerTestBase::FetchCreditCard(const CreditCard* card) {
+  credit_card_access_manager().FetchCreditCard(
+      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                           accessor_->GetWeakPtr()));
+}
+
 }  // namespace autofill
