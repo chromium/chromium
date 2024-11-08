@@ -16,6 +16,21 @@ namespace privacy_sandbox {
 // surfaced only when specific criteria are met.
 class PrivacySandboxSurveyService : public KeyedService {
  public:
+  // Records the survey's status when attempting to surface a
+  // sentiment survey.
+  //
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
+  // LINT.IfChange(PrivacySandboxSentimentSurveyStatus)
+  enum class PrivacySandboxSentimentSurveyStatus {
+    kSurveyShown = 0,          // Survey was successfully shown.
+    kFeatureDisabled = 1,      // Sentiment Survey feature disabled.
+    kHatsServiceFailed = 2,    // Could not initialize HaTS service.
+    kSurveyLaunchFailed = 3,   // Survey invite failed to launch.
+    kInvalidSurveyConfig = 4,  // Failed to initialize survey config.
+    kMaxValue = kInvalidSurveyConfig,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/enums.xml)
+
   explicit PrivacySandboxSurveyService(
       PrefService* pref_service,
       signin::IdentityManager* identity_manager);
@@ -33,6 +48,9 @@ class PrivacySandboxSurveyService : public KeyedService {
 
   // Fetch the required product specific bits for the sentiment survey.
   std::map<std::string, bool> GetSentimentSurveyPsb();
+
+  // Emits the given sentiment survey status.
+  void RecordSentimentSurveyStatus(PrivacySandboxSentimentSurveyStatus status);
 
  private:
   raw_ptr<PrefService> pref_service_;

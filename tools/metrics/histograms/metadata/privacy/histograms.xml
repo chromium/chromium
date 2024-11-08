@@ -1664,6 +1664,15 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.SentimentSurvey.Status"
+    enum="PrivacySandboxSentimentSurveyStatus" expires_after="2025-11-04">
+  <owner>alvingo@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the status when attempting to surface the sentiment survey.
+  </summary>
+</histogram>
+
 <histogram
     name="PrivacySandbox.TrackingProtection.OnboardingStartup.AckedSince"
     units="ms" expires_after="2024-09-30">

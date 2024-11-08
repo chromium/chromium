@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "components/privacy_sandbox/privacy_sandbox_survey_service.h"
 
 namespace privacy_sandbox {
 
@@ -22,11 +23,18 @@ PrivacySandboxSurveyDesktopController::
 void PrivacySandboxSurveyDesktopController::MaybeShowSentimentSurvey(
     Profile* profile) {
   if (!survey_service_->ShouldShowSentimentSurvey()) {
+    survey_service_->RecordSentimentSurveyStatus(
+        PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::
+            kFeatureDisabled);
     return;
   }
   HatsService* hats_service =
-      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+      HatsServiceFactory::GetForProfile(profile,
+                                        /*create_if_necessary=*/true);
   if (!hats_service) {
+    survey_service_->RecordSentimentSurveyStatus(
+        PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::
+            kHatsServiceFailed);
     return;
   }
   hats_service->LaunchSurvey(
@@ -35,15 +43,26 @@ void PrivacySandboxSurveyDesktopController::MaybeShowSentimentSurvey(
       base::BindOnce(
           &PrivacySandboxSurveyDesktopController::OnSentimentSurveyShown,
           weak_ptr_factory_.GetWeakPtr(), profile),
-      // TODO(crbug.com/346991233): Have failures emit an histogram.
-      /*failure_callback=*/base::DoNothing(),
+      /*failure_callback=*/
+      base::BindOnce(
+          &PrivacySandboxSurveyDesktopController::OnSentimentSurveyFailure,
+          weak_ptr_factory_.GetWeakPtr()),
       /*product_specific_bits_data=*/survey_service_->GetSentimentSurveyPsb(),
       /*product_specific_string_data=*/{});
 }
 
 void PrivacySandboxSurveyDesktopController::OnSentimentSurveyShown(
     Profile* profile) {
+  survey_service_->RecordSentimentSurveyStatus(
+      PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::
+          kSurveyShown);
   survey_service_->OnSuccessfulSentimentSurvey();
+}
+
+void PrivacySandboxSurveyDesktopController::OnSentimentSurveyFailure() {
+  survey_service_->RecordSentimentSurveyStatus(
+      PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::
+          kSurveyLaunchFailed);
 }
 
 }  // namespace privacy_sandbox

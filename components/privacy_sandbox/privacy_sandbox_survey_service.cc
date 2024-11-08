@@ -5,6 +5,7 @@
 #include "privacy_sandbox_survey_service.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "privacy_sandbox_prefs.h"
 
@@ -48,6 +49,12 @@ bool PrivacySandboxSurveyService::ShouldShowSentimentSurvey() {
 void PrivacySandboxSurveyService::OnSuccessfulSentimentSurvey() {
   pref_service_->SetTime(prefs::kPrivacySandboxSentimentSurveyLastSeen,
                          base::Time::Now());
+}
+
+void PrivacySandboxSurveyService::RecordSentimentSurveyStatus(
+    PrivacySandboxSentimentSurveyStatus status) {
+  base::UmaHistogramEnumeration("PrivacySandbox.SentimentSurvey.Status",
+                                status);
 }
 
 std::map<std::string, bool>

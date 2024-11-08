@@ -4,6 +4,7 @@
 
 #include "components/privacy_sandbox/privacy_sandbox_survey_service.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
@@ -54,6 +55,7 @@ class PrivacySandboxSurveyServiceTest : public testing::Test {
 
   TestingPrefServiceSimple* prefs() { return &prefs_; }
 
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<PrivacySandboxSurveyService> survey_service_;
@@ -147,6 +149,33 @@ INSTANTIATE_TEST_SUITE_P(PrivacySandboxSurveyServiceSentimentSurveyPsbTest,
                                           testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
+
+class PrivacySandboxSurveyServiceSentimentSurveyStatusHistogramTest
+    : public PrivacySandboxSurveyServiceTest,
+      public testing::WithParamInterface<
+          PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus> {};
+
+TEST_P(PrivacySandboxSurveyServiceSentimentSurveyStatusHistogramTest,
+       EmitsHistogram) {
+  survey_service()->RecordSentimentSurveyStatus(GetParam());
+  histogram_tester_.ExpectBucketCount("PrivacySandbox.SentimentSurvey.Status",
+                                      GetParam(), 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PrivacySandboxSurveyServiceSentimentSurveyStatusHistogramTest,
+    PrivacySandboxSurveyServiceSentimentSurveyStatusHistogramTest,
+    testing::Values(
+        PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::
+            kSurveyShown,
+        PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::
+            kFeatureDisabled,
+        PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::
+            kHatsServiceFailed,
+        PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::
+            kSurveyLaunchFailed,
+        PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::
+            kInvalidSurveyConfig));
 
 }  // namespace
 }  // namespace privacy_sandbox
