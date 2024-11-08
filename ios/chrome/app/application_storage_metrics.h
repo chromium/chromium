@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_APP_PROFILE_APPLICATION_STORAGE_METRICS_H_
-#define IOS_CHROME_APP_PROFILE_APPLICATION_STORAGE_METRICS_H_
+#ifndef IOS_CHROME_APP_APPLICATION_STORAGE_METRICS_H_
+#define IOS_CHROME_APP_APPLICATION_STORAGE_METRICS_H_
 
 #import <Foundation/Foundation.h>
 
@@ -15,4 +15,4 @@
 void LogApplicationStorageMetrics(base::FilePath profile_path,
                                   base::FilePath off_the_record_state_path);
 
-#endif  // IOS_CHROME_APP_PROFILE_APPLICATION_STORAGE_METRICS_H_
+#endif  // IOS_CHROME_APP_APPLICATION_STORAGE_METRICS_H_

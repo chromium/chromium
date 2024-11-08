@@ -30,8 +30,9 @@ void FetchFaviconForURLToPath(FaviconLoader* favicon_loader,
 NSString* GetFaviconFileKey(const GURL& url);
 
 // Update favicons in the Chrome app group storage.
-void UpdateFaviconsStorageForProfile(base::WeakPtr<ProfileIOS> weak_profile,
-                                     bool fallback_to_google_server);
+void UpdateFaviconsStorageForBrowserState(
+    base::WeakPtr<ProfileIOS> weak_profile,
+    bool fallback_to_google_server);
 
 // Returns a dictionary where the keys are favicon file names (they are hashes
 // of the associated URL) and their creation date.

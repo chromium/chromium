@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/app/profile/application_storage_metrics.h"
+#import "ios/chrome/app/application_storage_metrics.h"
 
 #import <Foundation/Foundation.h>
 
