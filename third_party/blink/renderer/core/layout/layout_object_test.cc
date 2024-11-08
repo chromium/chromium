@@ -987,6 +987,26 @@ lime'>
              "\\u0421\\u0440\\u0435\\u045C\\u0435\\u043D "
              "\\u0440\\u043E\\u0434\\u0435\\u043D\\u0434\\u0435\\u043D\\n\""));
 }
+
+TEST_F(LayoutObjectTest, DumpDestroyedLayoutObject) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target"></div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  LayoutObject* layout_object = element->GetLayoutObject();
+  StringBuilder builder;
+  layout_object->DumpLayoutObject(builder, false, 0);
+  String result = builder.ToString();
+  EXPECT_FALSE(result.StartsWith("[DESTROYED] "));
+
+  element->remove();
+  UpdateAllLifecyclePhasesForTest();
+  builder.Clear();
+  layout_object->DumpLayoutObject(builder, false, 0);
+  result = builder.ToString();
+  EXPECT_TRUE(result.StartsWith("[DESTROYED] "));
+}
 #endif  // DCHECK_IS_ON()
 
 TEST_F(LayoutObjectTest, DisplayContentsSVGGElementInHTML) {

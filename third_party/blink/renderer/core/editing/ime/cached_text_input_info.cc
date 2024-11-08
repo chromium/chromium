@@ -93,8 +93,6 @@ void CachedTextInputInfo::DidLayoutSubtree(const LayoutObject& layout_object) {
 #if DCHECK_IS_ON()
   // TODO(crbug.com/375143253): To investigate flaky failures.
   if (layout_object_->is_destroyed_) [[unlikely]] {
-    base::AutoReset<bool> allow_dump(
-        const_cast<bool*>(&layout_object_->is_destroyed_), false);
     DCHECK(false) << layout_object_;
   }
 #endif  // DCHECK_IS_ON()

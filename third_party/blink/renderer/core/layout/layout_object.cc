@@ -2458,7 +2458,18 @@ void LayoutObject::ShowLayoutObject() const {
 void LayoutObject::DumpLayoutObject(StringBuilder& string_builder,
                                     bool dump_address,
                                     unsigned show_tree_character_offset) const {
-  NOT_DESTROYED();
+  // This function doesn't call `NOT_DESTROYED()` to aid debugging.
+#if DCHECK_IS_ON()
+  std::optional<base::AutoReset<bool>> is_destroyed;
+  if (is_destroyed_) {
+    string_builder.Append("[DESTROYED] ");
+
+    // Temporarily reset `is_destroyed_` to make dumping possible. Code and
+    // functions in this function must be safe to call for a destroyed object.
+    is_destroyed.emplace(const_cast<bool*>(&is_destroyed_), false);
+  }
+#endif  // DCHECK_IS_ON()
+
   string_builder.Append(DecoratedName());
 
   if (dump_address)
