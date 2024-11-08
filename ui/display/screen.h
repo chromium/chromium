@@ -219,9 +219,6 @@ class DISPLAY_EXPORT Screen {
 
   // Returns true if the system is in tablet mode.
   bool InTabletMode() const;
-
-  // Overrides tablet state stored in screen and notifies observers.
-  virtual void OverrideTabletStateForTesting(TabletState tablet_state) {}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  protected:

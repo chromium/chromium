@@ -40,9 +40,10 @@ class TestScreen : public ScreenBase {
   gfx::NativeWindow GetWindowAtScreenPoint(const gfx::Point& point) override;
   Display GetDisplayNearestWindow(gfx::NativeWindow window) const override;
   void SetCursorScreenPointForTesting(const gfx::Point& point) override;
+
 #if BUILDFLAG(IS_CHROMEOS)
   TabletState GetTabletState() const override;
-  void OverrideTabletStateForTesting(TabletState state) override;
+  void OverrideTabletStateForTesting(TabletState state);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:

@@ -205,7 +205,7 @@ class SystemInfoProviderTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    display::Screen::GetScreen()->OverrideTabletStateForTesting(
+    test_screen_.OverrideTabletStateForTesting(
         display::TabletState::kInTabletMode);
 
     system_info_provider_ =
