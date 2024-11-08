@@ -7,3 +7,11 @@ features:
 - name: forced-colors
   files:
   - forced-colors.html
+features:
+- name: prefers-contrast
+  files:
+  - prefers-contrast.html
+features:
+- name: prefers-reduced-transparency
+  files:
+  - prefers-reduced-transparency.html

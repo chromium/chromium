@@ -520,6 +520,10 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kCSSColor_SpaceLxx, WebDXFeature::kLab},
           {WebFeature::kCSSColor_SpaceHwb, WebDXFeature::kHwb},
           {WebFeature::kCSSKeywordRevert, WebDXFeature::kRevertValue},
+          {WebFeature::kPrefersContrastMediaFeature,
+           WebDXFeature::kPrefersContrast},
+          {WebFeature::kPrefersReducedTransparencyMediaFeature,
+           WebDXFeature::kPrefersReducedTransparency},
       }};
 
   return *kMap;
