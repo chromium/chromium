@@ -70,8 +70,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.BackupKeysetCleanupResult"
-    enum="CryptohomeBackupKeysetCleanupResult" expires_after="2024-12-08">
-  <owner>betuls@google.com</owner>
+    enum="CryptohomeBackupKeysetCleanupResult" expires_after="2025-12-08">
+  <owner>jadmanski@google.com</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     Records the result of the backup VaultKeyset cleanup for users with mixed
@@ -378,8 +378,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.OOPMountCleanupResult"
-    enum="CryptohomeOOPMountCleanupResult" expires_after="2023-04-01">
-  <owner>betuls@chromium.org</owner>
+    enum="CryptohomeOOPMountCleanupResult" expires_after="2025-04-01">
+  <owner>sarthakkukreti@chromium.org</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     The result of a cryptohome out-of-process mount cleanup. Recorded once per
@@ -388,8 +388,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.OOPMountOperationResult"
-    enum="CryptohomeOOPMountOperationResult" expires_after="2024-04-28">
-  <owner>betuls@chromium.org</owner>
+    enum="CryptohomeOOPMountOperationResult" expires_after="2025-04-28">
+  <owner>sarthakkukreti@chromium.org</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     The result of a cryptohome out-of-process mount operation. Recorded once per
@@ -421,8 +421,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.RestoreSELinuxContextResultForHome"
-    enum="BooleanSuccess" expires_after="2025-04-13">
-  <owner>betuls@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2025-10-01">
+  <owner>hardikgoyal@chromium.org</owner>
   <owner>jorgelo@chromium.org</owner>
   <summary>
     The result of a cryptohome restore SELinux context operation of user home
@@ -432,8 +432,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.RestoreSELinuxContextResultForShadow"
-    enum="BooleanSuccess" expires_after="2024-10-01">
-  <owner>betuls@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2025-10-01">
+  <owner>hardikgoyal@chromium.org</owner>
   <owner>jorgelo@chromium.org</owner>
   <summary>
     The result of a cryptohome restore SELinux context operation of shadow
@@ -506,7 +506,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cryptohome.TimeToMountEx" units="ms"
     expires_after="2025-03-09">
-  <owner>betuls@chromium.org</owner>
+  <owner>sarthakkukreti@chromium.org</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     The amount of time for Chrome OS cryptohome to mount the encrypted home
@@ -515,8 +515,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToMountGuestEx" units="ms"
-    expires_after="2023-06-11">
-  <owner>betuls@chromium.org</owner>
+    expires_after="2025-06-11">
+  <owner>sarthakkukreti@chromium.org</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     The amount of time for Chrome OS cryptohome to mount the encrypted guest
@@ -525,8 +525,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToPerformEphemeralMount" units="ms"
-    expires_after="2023-04-01">
-  <owner>betuls@chromium.org</owner>
+    expires_after="2025-04-01">
+  <owner>sarthakkukreti@chromium.org</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     The amount of time cryptohome spends actively performing mounts when
@@ -537,7 +537,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cryptohome.TimeToPerformMount" units="ms"
     expires_after="2025-03-09">
-  <owner>betuls@chromium.org</owner>
+  <owner>sarthakkukreti@chromium.org</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     The amount of time cryptohome spends performing the mounts for the user's
@@ -548,7 +548,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cryptohome.TimeToRelabelSELinuxContexts" units="ms"
     expires_after="2025-03-09">
-  <owner>betuls@chromium.org</owner>
+  <owner>sarthakkukreti@chromium.org</owner>
   <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     The amount of time for ChromeOS cryptohome to relabel SELinux contexts for
