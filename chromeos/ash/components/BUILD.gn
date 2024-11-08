@@ -43,6 +43,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/login/auth:unit_tests",
     "//chromeos/ash/components/login/login_state:unit_tests",
     "//chromeos/ash/components/login/session:unit_tests",
+    "//chromeos/ash/components/mantis/media_app:unit_tests",
     "//chromeos/ash/components/memory:unit_tests",
     "//chromeos/ash/components/multidevice:unit_tests",
     "//chromeos/ash/components/nearby/common:unit_tests",

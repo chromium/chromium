@@ -9,6 +9,8 @@ assert(is_chromeos_ash)
 component("media_app") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_MANTIS_MEDIA_APP_IMPL" ]
   sources = [
+    "mantis_media_app_untrusted_processor.cc",
+    "mantis_media_app_untrusted_processor.h",
     "mantis_media_app_untrusted_service.cc",
     "mantis_media_app_untrusted_service.h",
   ]
@@ -18,5 +20,19 @@ component("media_app") {
     "//chromeos/ash/components/mantis/mojom",
     "//chromeos/ash/components/mojo_service_manager",
     "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "mantis_media_app_untrusted_service_unittest.cc" ]
+  deps = [
+    ":media_app",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/mantis/mojom",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

@@ -17,7 +17,7 @@ copy("stage_for_mock_tsc") {
     "//ash/webui/media_app_ui/resources/js/media_app.d.ts",
     "app_main.ts",
   ]
-  foreach(file, media_app_mojom_sources) {
+  foreach(file, media_app_mojom_files) {
     sources += [ "$ts_root_dir/$file" ]
   }
   public_deps = [ "//ash/webui/media_app_ui:copy_mojo" ]
@@ -26,7 +26,7 @@ copy("stage_for_mock_tsc") {
 
 ts_library("build_ts") {
   root_dir = mock_ts_root_dir
-  in_files = [ "app_main.ts" ] + media_app_mojom_sources
+  in_files = [ "app_main.ts" ] + media_app_mojom_files
 
   definitions = [ "$mock_ts_root_dir/media_app.d.ts" ]
   out_dir = "${target_gen_dir}/tsc"

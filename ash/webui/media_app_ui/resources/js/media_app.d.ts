@@ -30,6 +30,11 @@ type GetPdfContentResponse =
     import('./media_app_ui_untrusted.mojom-webui.js')
         .MahiUntrustedPage_GetPdfContent_ResponseParams;
 
+type MantisFeatureStatus =
+    import('./mantis_service.mojom-webui.js').MantisFeatureStatus;
+type InitializeResult =
+    import('./mantis_service.mojom-webui.js').InitializeResult;
+
 /**
  * Wraps an HTML File object (or a mock, or media loaded through another means).
  */
@@ -289,7 +294,16 @@ declare interface ClientApiDelegate {
    *     is more zoomed in.
    */
   viewportUpdated(viewportBox: RectF, scaleFactor: number): void;
-
+  /**
+   * Gets Mantis feature status which can be used to restrict Mantis
+   * functionality by returning a status other than kAvailable.
+   */
+  getMantisFeatureStatus(): Promise<MantisFeatureStatus>;
+  /**
+   * Loads Mantis' assets from DLC and initializes the processor for subsequent
+   * queries.
+   */
+  initializeMantis(): Promise<InitializeResult>;
 }
 
 /**

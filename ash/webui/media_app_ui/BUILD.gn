@@ -97,6 +97,7 @@ mojom("mojo_bindings") {
 mojom("mojo_bindings_untrusted") {
   sources = [ "media_app_ui_untrusted.mojom" ]
   public_deps = [
+    "//chromeos/ash/components/mantis/mojom",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
   ]
@@ -108,10 +109,13 @@ copy("copy_mojo") {
     ":build_ts",
     "//ash/webui/media_app_ui/resources/mock/js:stage_for_mock_tsc",
   ]
-  public_deps = [ ":mojo_bindings_untrusted_ts__generator" ]
+  public_deps = [
+    ":mojo_bindings_untrusted_ts__generator",
+    "//chromeos/ash/components/mantis/mojom:mojom_ts__generator",
+  ]
   sources = []
   foreach(file, media_app_mojom_sources) {
-    sources += [ "$target_gen_dir/$file" ]
+    sources += [ "$root_gen_dir/$file" ]
   }
   outputs = [ "${ts_root_dir}/{{source_file_part}}" ]
 }
