@@ -41,7 +41,7 @@ std::string LogTypeToString(MetricsLog::LogType log_type) {
     case MetricsLog::LogType::ONGOING_LOG:
       return "Ongoing";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string EventToString(MetricsLogsEventManager::LogEvent event) {
@@ -59,7 +59,7 @@ std::string EventToString(MetricsLogsEventManager::LogEvent event) {
     case MetricsLogsEventManager::LogEvent::kLogCreated:
       return "Created";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string CreateReasonToString(

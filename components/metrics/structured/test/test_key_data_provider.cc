@@ -60,8 +60,7 @@ std::optional<uint64_t> TestKeyDataProvider::GetId(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return std::nullopt;
 }
@@ -117,8 +116,7 @@ KeyData* TestKeyDataProvider::GetKeyData(const std::string& project_name) {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return nullptr;

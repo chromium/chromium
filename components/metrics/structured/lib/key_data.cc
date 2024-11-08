@@ -49,8 +49,7 @@ uint64_t KeyData::Id(const uint64_t project_name_hash,
   EnsureKeyUpdated(project_name_hash, key_rotation_period);
   const std::optional<std::string_view> key = GetKeyBytes(project_name_hash);
   if (!key) {
-    NOTREACHED_IN_MIGRATION();
-    return 0u;
+    NOTREACHED();
   }
 
   // Compute and return the hash.
@@ -71,8 +70,7 @@ uint64_t KeyData::HmacMetric(const uint64_t project_name_hash,
   EnsureKeyUpdated(project_name_hash, key_rotation_period);
   const std::optional<std::string_view> key = GetKeyBytes(project_name_hash);
   if (!key) {
-    NOTREACHED_IN_MIGRATION();
-    return 0u;
+    NOTREACHED();
   }
 
   // Initialize the HMAC.

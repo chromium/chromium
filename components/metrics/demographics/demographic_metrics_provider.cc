@@ -162,7 +162,7 @@ void DemographicMetricsProvider::LogUserDemographicsStatusInHistogram(
       // DWA doesn't have demographic metrics.
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace metrics

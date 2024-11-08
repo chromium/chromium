@@ -47,11 +47,9 @@ ConvertEffectiveConnectionType(
     case net::EFFECTIVE_CONNECTION_TYPE_OFFLINE:
       return SystemProfileProto::Network::EFFECTIVE_CONNECTION_TYPE_OFFLINE;
     case net::EFFECTIVE_CONNECTION_TYPE_LAST:
-      NOTREACHED_IN_MIGRATION();
-      return SystemProfileProto::Network::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return SystemProfileProto::Network::EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
+  NOTREACHED();
 }
 
 NetworkMetricsProvider::NetworkMetricsProvider(
@@ -192,8 +190,7 @@ NetworkMetricsProvider::GetConnectionType() const {
     case network::mojom::ConnectionType::CONNECTION_BLUETOOTH:
       return SystemProfileProto::Network::CONNECTION_BLUETOOTH;
   }
-  NOTREACHED_IN_MIGRATION();
-  return SystemProfileProto::Network::CONNECTION_UNKNOWN;
+  NOTREACHED();
 }
 
 void NetworkMetricsProvider::OnEffectiveConnectionTypeChanged(

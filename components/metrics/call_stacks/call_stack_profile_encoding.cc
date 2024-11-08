@@ -33,8 +33,7 @@ Process ToExecutionContextProcess(
     case sampling_profiler::ProfilerProcessType::kPpapiPlugin:
       return PPAPI_PLUGIN_PROCESS;
   }
-  NOTREACHED_IN_MIGRATION();
-  return UNKNOWN_PROCESS;
+  NOTREACHED();
 }
 
 Thread ToExecutionContextThread(sampling_profiler::ProfilerThreadType thread) {
@@ -52,8 +51,7 @@ Thread ToExecutionContextThread(sampling_profiler::ProfilerThreadType thread) {
     case sampling_profiler::ProfilerThreadType::kThreadPoolWorker:
       return THREAD_POOL_THREAD;
   }
-  NOTREACHED_IN_MIGRATION();
-  return UNKNOWN_THREAD;
+  NOTREACHED();
 }
 
 SampledProfile::TriggerEvent ToSampledProfileTriggerEvent(
@@ -74,8 +72,7 @@ SampledProfile::TriggerEvent ToSampledProfileTriggerEvent(
         kPeriodicHeapCollection:
       return SampledProfile::PERIODIC_HEAP_COLLECTION;
   }
-  NOTREACHED_IN_MIGRATION();
-  return SampledProfile::UNKNOWN_TRIGGER_EVENT;
+  NOTREACHED();
 }
 
 }  // namespace metrics

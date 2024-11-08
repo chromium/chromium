@@ -78,7 +78,7 @@ SubprocessMetricsProvider::SubprocessMetricsProvider()
 
 SubprocessMetricsProvider::~SubprocessMetricsProvider() {
   // This object should never be deleted since it is leaky.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SubprocessMetricsProvider::RegisterSubprocessAllocator(

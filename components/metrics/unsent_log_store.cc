@@ -157,7 +157,7 @@ void UnsentLogStore::LogInfo::Init(const std::string& log_data,
   hash = base::SHA1HashString(log_data);
 
   if (!ComputeHMACForLog(log_data, signing_key, &signature)) {
-    NOTREACHED_IN_MIGRATION() << "HMAC signing failed";
+    NOTREACHED() << "HMAC signing failed";
   }
 
   timestamp = log_timestamp;

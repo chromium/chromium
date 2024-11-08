@@ -306,12 +306,10 @@ bool EncryptString(const std::string& plaintext, std::string* encrypted) {
   if (!encrypted_messages::EncryptSerializedMessage(
           kServerPublicKey, kServerPublicKeyVersion, kEncryptedMessageLabel,
           plaintext, &encrypted_message)) {
-    NOTREACHED_IN_MIGRATION() << "Error encrypting string.";
-    return false;
+    NOTREACHED() << "Error encrypting string.";
   }
   if (!encrypted_message.SerializeToString(encrypted)) {
-    NOTREACHED_IN_MIGRATION() << "Error serializing encrypted string.";
-    return false;
+    NOTREACHED() << "Error serializing encrypted string.";
   }
   return true;
 }

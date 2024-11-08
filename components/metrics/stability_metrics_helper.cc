@@ -302,8 +302,7 @@ void StabilityMetricsHelper::LogRendererCrash(
       break;
 #endif
     case base::TERMINATION_STATUS_MAX_ENUM:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -336,12 +335,13 @@ void StabilityMetricsHelper::LogRendererCrashImpl(
     CoarseRendererType renderer_type,
     int exit_code) {
   if (renderer_type == CoarseRendererType::kExtension) {
-#if !BUILDFLAG(ENABLE_EXTENSIONS)
-    NOTREACHED_IN_MIGRATION();
-#endif
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     RecordStabilityEvent(StabilityEventType::kExtensionCrash);
     base::UmaHistogramSparse("CrashExitCodes.Extension",
                              MapCrashExitCodeForHistogram(exit_code));
+#else
+    NOTREACHED();
+#endif
   } else {
     IncreaseRendererCrashCount();
     base::UmaHistogramSparse("CrashExitCodes.Renderer",
