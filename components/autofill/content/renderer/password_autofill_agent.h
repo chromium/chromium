@@ -172,8 +172,11 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   bool TextDidChangeInTextField(const blink::WebInputElement& element);
 
   // Called from AutofillAgent::UpdateStateForTextChange() to do
-  // password-manager specific work.
-  void UpdatePasswordStateForTextChange(const blink::WebInputElement& element);
+  // password-manager specific work. `extracted_form`, if not null, is the
+  // updated `FormData` objects where `element` exists as a `FormFieldData`.
+  void UpdatePasswordStateForTextChange(
+      const blink::WebInputElement& element,
+      base::optional_ref<FormData> extracted_form = std::nullopt);
 
   // Instructs `autofill_agent_` to track the autofilled `element`.
   void TrackAutofilledElement(const blink::WebFormControlElement& element);
@@ -240,9 +243,13 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // `form` and `input` are the elements user has just been interacting with
   // before the form save. `form` or `input` can be null but not both at the
   // same time. For example: if the form is unowned, `form` will be null; if the
-  // user has submitted the form, `input` will be null.
-  void InformBrowserAboutUserInput(const blink::WebFormElement& form,
-                                   const blink::WebInputElement& input);
+  // user has submitted the form, `input` will be null. `extracted_form`, if not
+  // null, is the updated `FormData` objects where `input` exists as a
+  // `FormFieldData`.
+  void InformBrowserAboutUserInput(
+      const blink::WebFormElement& form,
+      const blink::WebInputElement& input,
+      base::optional_ref<FormData> extracted_form = std::nullopt);
 
   // Determine whether the current frame is allowed to access the password
   // manager. For example, frames with about:blank documents or documents with

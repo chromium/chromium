@@ -947,6 +947,7 @@ void AutofillAgent::ApplyFieldsAction(
     base::flat_set<FormRendererId> extracted_form_ids;
     std::vector<FormData> filled_forms;
     for (const FormFieldData::FillData& field : fields) {
+      // Inform the browser about all forms that were autofilled.
       if (extracted_form_ids.insert(field.host_form_id).second) {
         std::optional<FormData> form = form_util::ExtractFormData(
             document, form_util::GetFormByRendererId(field.host_form_id),
@@ -964,12 +965,17 @@ void AutofillAgent::ApplyFieldsAction(
     }
 
     // Notify Password Manager of filled fields.
-    for (FieldRendererId filled_field_id : filled_field_ids) {
+    for (const FormFieldData::FillData& field : fields) {
       if (WebInputElement input_element =
-              form_util::GetFormControlByRendererId(filled_field_id)
-                  .DynamicTo<WebInputElement>()) {
-        password_autofill_agent_->UpdatePasswordStateForTextChange(
-            input_element);
+              form_util::GetFormControlByRendererId(field.renderer_id)
+                  .DynamicTo<WebInputElement>();
+          input_element && filled_field_ids.contains(field.renderer_id)) {
+        if (auto form_it = std::ranges::find(filled_forms, field.host_form_id,
+                                             &FormData::renderer_id);
+            form_it != filled_forms.end()) {
+          password_autofill_agent_->UpdatePasswordStateForTextChange(
+              input_element, *form_it);
+        }
       }
     }
 
@@ -1777,13 +1783,12 @@ void AutofillAgent::OnProvisionallySaveForm(
       UpdateLastInteractedElement(form_util::GetFormRendererId(form_element));
       return;
     }
-    std::erase_if(formless_elements_user_edited_,
-                  [](const FieldRendererId field_id) {
-                    WebFormControlElement field =
-                        form_util::GetFormControlByRendererId(field_id);
-                    return field &&
-                           form_util::IsWebElementFocusableForAutofill(field);
-                  });
+    std::erase_if(
+        formless_elements_user_edited_, [](const FieldRendererId field_id) {
+          WebFormControlElement field =
+              form_util::GetFormControlByRendererId(field_id);
+          return field && form_util::IsWebElementFocusableForAutofill(field);
+        });
     formless_elements_user_edited_.insert(
         form_util::GetFieldRendererId(element));
     UpdateLastInteractedElement(form_util::GetFieldRendererId(element));

@@ -892,10 +892,12 @@ void PasswordAutofillAgent::NotifyPasswordManagerAboutFieldModification(
 }
 
 void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
-    const WebInputElement& element) {
+    const WebInputElement& element,
+    base::optional_ref<FormData> extracted_form) {
   NotifyPasswordManagerAboutFieldModification(element);
 
-  InformBrowserAboutUserInput(form_util::GetOwningForm(element), element);
+  InformBrowserAboutUserInput(form_util::GetOwningForm(element), element,
+                              extracted_form);
 }
 
 // LINT.ThenChange(//components/password_manager/core/browser/password_manager.cc:update_password_state_for_text_change)
@@ -1959,22 +1961,31 @@ void PasswordAutofillAgent::CleanupOnDocumentShutdown() {
 
 void PasswordAutofillAgent::InformBrowserAboutUserInput(
     const WebFormElement& form,
-    const WebInputElement& element) {
+    const WebInputElement& element,
+    base::optional_ref<FormData> extracted_form) {
   DCHECK(form || element);
   if (!FrameCanAccessPasswordManager())
     return;
-  std::optional<FormData> form_data =
-      form ? GetFormDataFromWebForm(form)
-           : GetFormDataFromUnownedInputElements();
-  if (!form_data)
-    return;
-
-  // Notify the browser about user inputs if `form` is recognized as a
-  // credential form in the renderer, or if the browser has parsed `element` as
-  // password-related and provided filling data for it.
-  if (IsRendererRecognizedCredentialForm(*form_data) ||
-      (element && web_input_to_password_info_.contains(FieldRef(element)))) {
-    GetPasswordManagerDriver().InformAboutUserInput(*form_data);
+  auto maybe_inform_browser = [&](const FormData& form_data) {
+    // Notify the browser about user inputs if `form` is recognized as a
+    // credential form in the renderer, or if the browser has parsed `element`
+    // as password-related and provided filling data for it.
+    if (IsRendererRecognizedCredentialForm(form_data) ||
+        (element && web_input_to_password_info_.contains(FieldRef(element)))) {
+      GetPasswordManagerDriver().InformAboutUserInput(form_data);
+    }
+  };
+  if (extracted_form) {
+    ProcessFormDataAfterCreation(*extracted_form, form,
+                                 &username_detector_cache_,
+                                 &button_titles_cache_);
+    maybe_inform_browser(*extracted_form);
+  } else if (std::optional<FormData> owned_form =
+                 GetFormDataFromWebForm(form)) {
+    maybe_inform_browser(*owned_form);
+  } else if (std::optional<FormData> unowned_form =
+                 GetFormDataFromUnownedInputElements()) {
+    maybe_inform_browser(*unowned_form);
   }
 }
 
