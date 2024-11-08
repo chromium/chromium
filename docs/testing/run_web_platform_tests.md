@@ -127,9 +127,10 @@ For other use cases, see [these debugging tips].
     * Yes.
       `run_wpt_tests.py` enables the `MojoJS` and `MojoJSTest` features and
       serves `//out/<target>/gen/` as `/gen/` in wptserve.
-      However, in the public WPT suite, testdriver.js APIs backed by standard
-      WebDriver endpoints should be preferred over polyfills backed by MojoJS,
-      which are Chromium-specific.
+      However, in the public WPT suite, testdriver.js APIs must be backed by
+      fully-specified testing APIs (preferably implemented with WebDriver or
+      alternatively with MojoJS). Tests that rely on unspecified testing APIs
+      cannot be put in WPT, but may live in chromium's own wpt_internal.
       See https://github.com/web-platform-tests/rfcs/issues/172 for additional
       discussion.
 
