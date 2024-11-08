@@ -20,7 +20,8 @@ class Widget;
 
 namespace ash {
 
-// Records performance metrics for a session of using Picker, such as latency.
+// Records performance metrics for a session of using Quick Insert, such as
+// latency.
 class ASH_EXPORT PickerPerformanceMetrics {
  public:
   enum class SearchResultsUpdate {
@@ -42,13 +43,13 @@ class ASH_EXPORT PickerPerformanceMetrics {
   ~PickerPerformanceMetrics();
 
   // Starts recording metrics for this session.
-  // `widget` is the widget that contains the Picker UI. It must outlive this
-  // class.
+  // `widget` is the widget that contains the Quick Insert UI. It must outlive
+  // this class.
   void StartRecording(views::Widget& widget);
 
   // Stops recording metrics for this session.
-  // This should be called, for example, when the widget containing the Picker
-  // UI is destroyed.
+  // This should be called, for example, when the widget containing the Quick
+  // Insert UI is destroyed.
   void StopRecording();
 
   // Marks a focus event on the picker search field.

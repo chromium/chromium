@@ -30,8 +30,8 @@ namespace ash {
 class QuickInsertClient;
 class PickerClipboardHistoryProvider;
 
-// Represents a single Picker search query. Constructing this class starts a
-// search, and destructing it stops the search.
+// Represents a single Quick Insert search query. Constructing this class starts
+// a search, and destructing it stops the search.
 class ASH_EXPORT QuickInsertSearchRequest {
  public:
   using SearchResultsCallback =

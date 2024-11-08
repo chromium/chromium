@@ -97,7 +97,7 @@ class QuickInsertClientImpl
     return link_suggester_.get();
   }
 
-  // Returns a bitmask of `AutocompleteProvider::Type` for Picker's
+  // Returns a bitmask of `AutocompleteProvider::Type` for Quick Insert's
   // `SearchController`.
   int LauncherSearchProviderTypes(bool bookmarks, bool history, bool open_tabs);
 

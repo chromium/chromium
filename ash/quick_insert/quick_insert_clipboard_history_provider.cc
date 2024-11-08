@@ -29,7 +29,7 @@ std::optional<QuickInsertClipboardResult::DisplayFormat> GetDisplayFormat(
       return QuickInsertClipboardResult::DisplayFormat::kImage;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
       // TODO: b/348102522 - Show HTML content once it's possible to render them
-      // inside Picker.
+      // inside Quick Insert.
     default:
       return std::nullopt;
   }

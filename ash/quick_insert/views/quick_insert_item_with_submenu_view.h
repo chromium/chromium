@@ -24,7 +24,7 @@ class Label;
 
 namespace ash {
 
-// View for a Picker item which has a submenu.
+// View for a Quick Insert item which has a submenu.
 class ASH_EXPORT PickerItemWithSubmenuView : public QuickInsertItemView {
   METADATA_HEADER(PickerItemWithSubmenuView, QuickInsertItemView)
 

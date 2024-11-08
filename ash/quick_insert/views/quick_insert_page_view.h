@@ -12,7 +12,7 @@
 
 namespace ash {
 
-// View for a page that can act as the main contents of the Picker.
+// View for a page that can act as the main contents of the Quick Insert.
 class ASH_EXPORT PickerPageView : public views::View,
                                   public PickerTraversableItemContainer {
   METADATA_HEADER(PickerPageView, views::View)

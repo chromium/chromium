@@ -44,7 +44,7 @@ gfx::Insets GetPickerScrollBarInsets(PickerLayoutType layout_type) {
   }
 }
 
-// Scroll view to contain the main Picker contents.
+// Scroll view to contain the main Quick Insert contents.
 class PickerScrollView : public views::ScrollView {
   METADATA_HEADER(PickerScrollView, views::ScrollView)
 

@@ -20,7 +20,7 @@ class Widget;
 
 namespace ash {
 
-// Handles outside clicks for the Picker widget.
+// Handles outside clicks for the Quick Insert widget.
 // It closes the given widget if clicking outside of the widget or any of its
 // children.
 class ASH_EXPORT PickerBubbleEventFilter : public BubbleEventFilter {

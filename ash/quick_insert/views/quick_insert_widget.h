@@ -54,7 +54,7 @@ class ASH_EXPORT QuickInsertWidget : public views::Widget {
                              PickerPositionType position_type,
                              base::TimeTicks trigger_event_timestamp);
 
-  // Used to close the Picker widget when the user clicks outside of it.
+  // Used to close the Quick Insert widget when the user clicks outside of it.
   PickerBubbleEventFilter bubble_event_filter_;
 
   raw_ptr<QuickInsertViewDelegate> delegate_;

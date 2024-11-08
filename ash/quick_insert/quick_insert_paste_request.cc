@@ -30,7 +30,7 @@ void PickerPasteRequest::OnWindowFocused(aura::Window* gained_focus,
     return;
   }
 
-  // TODO: b/329309518: Use a dedicated show source for Picker.
+  // TODO: b/329309518: Use a dedicated show source for Quick Insert.
   clipboard_history_controller_->PasteClipboardItemById(
       clipboard_item_id_.ToString(), ui::EF_NONE,
       crosapi::mojom::ClipboardHistoryControllerShowSource::kVirtualKeyboard);

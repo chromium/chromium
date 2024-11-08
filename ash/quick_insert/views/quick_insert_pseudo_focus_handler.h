@@ -13,9 +13,10 @@ enum class PickerPseudoFocusDirection;
 
 // Interface for classes that have pseudo focusable elements, which can look and
 // behave as if they were focused without having actual focus. We use "pseudo
-// focus" since actual view focus generally stays on the Picker search field,
-// which just forwards user actions to be handled by pseudo focused elements if
-// needed (e.g. to select an item when the user presses the enter key).
+// focus" since actual view focus generally stays on the Quick Insert search
+// field, which just forwards user actions to be handled by pseudo focused
+// elements if needed (e.g. to select an item when the user presses the enter
+// key).
 class ASH_EXPORT PickerPseudoFocusHandler {
  public:
   virtual ~PickerPseudoFocusHandler() = default;

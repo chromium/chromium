@@ -21,7 +21,7 @@ class PrefService;
 
 namespace ash {
 
-// Records metrics for a session of using Picker.
+// Records metrics for a session of using Quick Insert.
 class ASH_EXPORT PickerSessionMetrics {
  public:
   // These values are persisted to logs. Entries should not be renumbered and

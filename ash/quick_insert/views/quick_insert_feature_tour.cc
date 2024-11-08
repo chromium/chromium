@@ -244,8 +244,8 @@ void PickerFeatureTour::RunOnWindowDeactivatedIfNeeded() {
   // 1. `OnWindowActivated`, which is called from
   // `wm::FocusController::SetActiveWindow`.
   // When `OnWindowActivated` is called, the active window should be set... but
-  // we cannot activate any other windows (such as Picker) synchronously due to
-  // being in the middle of `wm::FocusController::SetActiveWindow`'s
+  // we cannot activate any other windows (such as Quick Insert) synchronously
+  // due to being in the middle of `wm::FocusController::SetActiveWindow`'s
   // "active window stack".
   // Doing so will cause a `DCHECK` crash in
   // `wm::FocusController::FocusAndActivateWindow` due to the active window

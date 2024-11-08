@@ -27,9 +27,9 @@ bool ASH_EXPORT DoPickerPseudoFocusedActionOnView(views::View* view);
 
 // Gets the next pseudo focusable view in `direction`. The order of pseudo focus
 // traversal is similar to usual view focus traversal, except the textfield is
-// skipped (since the textfield keeps actual focus while the Picker is open).
-// If `should_loop` is true, the next pseudo focusable view loops (i.e. returns
-// to the start/end). If `should_loop` is false, then nullptr is instead
+// skipped (since the textfield keeps actual focus while Quick Insert is
+// open). If `should_loop` is true, the next pseudo focusable view loops (i.e.
+// returns to the start/end). If `should_loop` is false, then nullptr is instead
 // returned at the start/end.
 views::View* ASH_EXPORT
 GetNextPickerPseudoFocusableView(views::View* view,

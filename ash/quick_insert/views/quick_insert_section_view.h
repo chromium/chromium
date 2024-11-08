@@ -37,7 +37,7 @@ class PickerSubmenuController;
 class PickerTraversableItemContainer;
 enum class QuickInsertActionType;
 
-// View for a Picker section with a title and related items.
+// View for a Quick Insert section with a title and related items.
 class ASH_EXPORT QuickInsertSectionView : public views::View {
   METADATA_HEADER(QuickInsertSectionView, views::View)
 

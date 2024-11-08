@@ -13,7 +13,8 @@ class View;
 
 namespace ash {
 
-// Interface implemented by Picker item containers that support item traversal.
+// Interface implemented by Quick Insert item containers that support item
+// traversal.
 class ASH_EXPORT PickerTraversableItemContainer {
  public:
   virtual ~PickerTraversableItemContainer() = default;

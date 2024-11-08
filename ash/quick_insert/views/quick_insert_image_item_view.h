@@ -19,7 +19,7 @@ class ImageView;
 
 namespace ash {
 
-// Picker item which contains just an image.
+// Quick Insert item which contains just an image.
 class ASH_EXPORT PickerImageItemView : public QuickInsertItemView {
   METADATA_HEADER(PickerImageItemView, QuickInsertItemView)
 

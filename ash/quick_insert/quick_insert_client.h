@@ -54,9 +54,9 @@ class ASH_EXPORT QuickInsertClient {
   using FetchFileThumbnailCallback =
       base::OnceCallback<void(const SkBitmap* bitmap, base::File::Error error)>;
 
-  // Gets the SharedURLLoaderFactory to use for Picker network requests, e.g. to
-  // fetch assets. This is the loader factory for the active profile, not the
-  // global browser process one.
+  // Gets the SharedURLLoaderFactory to use for Quick Insert network requests,
+  // e.g. to fetch assets. This is the loader factory for the active profile,
+  // not the global browser process one.
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetSharedURLLoaderFactory() = 0;
 

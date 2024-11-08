@@ -30,7 +30,7 @@ class PickerKeyEventHandler;
 class PickerPerformanceMetrics;
 class PickerSearchBarTextfield;
 
-// View for the Picker search field.
+// View for the Quick Insert search field.
 class ASH_EXPORT QuickInsertSearchFieldView
     : public views::BoxLayoutView,
       public views::TextfieldController,
@@ -137,7 +137,7 @@ class ASH_EXPORT QuickInsertSearchFieldView
   // Gets the start and end indices of the current search query text, to use
   // when moving pseudo focus to and from the textfield. Note that the start and
   // end are swapped in RTL locales since we swapped left and right key events
-  // when traversing the Picker UI in RTL.
+  // when traversing the Quick Insert UI in RTL.
   size_t GetQueryStartIndexForTraversal();
   size_t GetQueryEndIndexForTraversal();
 

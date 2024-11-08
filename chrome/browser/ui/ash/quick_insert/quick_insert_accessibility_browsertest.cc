@@ -57,7 +57,7 @@
 namespace {
 
 // These tests are not meant to be end-to-end tests.
-// They should test Picker view components on a low-level.
+// They should test Quick Insert view components on a low-level.
 // They are browser tests in order to bring in ChromeVox so that we can test
 // announcements.
 class QuickInsertAccessibilityBrowserTest : public InProcessBrowserTest {

@@ -55,7 +55,7 @@ class PickerTraversableItemContainer;
 class QuickInsertViewDelegate;
 class PickerZeroStateView;
 
-// View for the Picker widget.
+// View for the Quick Insert widget.
 class ASH_EXPORT QuickInsertView
     : public views::WidgetDelegateView,
       public PickerZeroStateViewDelegate,
@@ -122,9 +122,9 @@ class ASH_EXPORT QuickInsertView
   // PickerPreviewBubbleController::Observer:
   void OnPreviewBubbleVisibilityChanged(bool visible) override;
 
-  // Returns the target bounds for this Picker view. The target bounds try to
-  // vertically align `search_field_view_` with `anchor_bounds`. `anchor_bounds`
-  // and returned bounds should be in screen coordinates.
+  // Returns the target bounds for this Quick Insert view. The target bounds try
+  // to vertically align `search_field_view_` with `anchor_bounds`.
+  // `anchor_bounds` and returned bounds should be in screen coordinates.
   gfx::Rect GetTargetBounds(const gfx::Rect& anchor_bounds,
                             PickerLayoutType layout_type);
 
@@ -226,8 +226,9 @@ class ASH_EXPORT QuickInsertView
   // Returns true if `view` is contained in a submenu of this QuickInsertView.
   bool IsContainedInSubmenu(views::View* view);
 
-  // Called to indicate that the Picker widget bounds need to be be updated
-  // (e.g. to re-align the Picker search field after results have changed).
+  // Called to indicate that the Quick Insert widget bounds need to be be
+  // updated (e.g. to re-align the Quick Insert search field after results have
+  // changed).
   void SetWidgetBoundsNeedsUpdate();
 
   // The currently selected category.

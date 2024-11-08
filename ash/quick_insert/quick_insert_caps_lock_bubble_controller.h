@@ -23,8 +23,8 @@ namespace ash {
 
 class PickerCapsLockStateView;
 
-// TODO: b/358248370 - This class is not related to Picker. We should move this
-// code to a different directory.
+// TODO: b/358248370 - This class is not related to Quick Insert. We should move
+// this code to a different directory.
 class ASH_EXPORT PickerCapsLockBubbleController
     : public input_method::ImeKeyboard::Observer,
       public ui::EventHandler {

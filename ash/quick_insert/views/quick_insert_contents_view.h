@@ -13,7 +13,7 @@ namespace ash {
 
 enum class PickerLayoutType;
 
-// View for the main contents of the Picker.
+// View for the main contents of Quick Insert.
 // Consists of multiple "pages", with at most one page visible at a time.
 class ASH_EXPORT PickerContentsView : public views::View {
   METADATA_HEADER(PickerContentsView, views::View)

@@ -61,7 +61,7 @@ class QuickInsertModel;
 class PickerPasteRequest;
 class PickerActionOnNextFocusRequest;
 
-// Controls a Picker widget.
+// Controls a Quick Insert widget.
 class ASH_EXPORT QuickInsertController : public QuickInsertViewDelegate,
                                          public views::ViewObserver,
                                          public PickerAssetFetcherImplDelegate {
@@ -73,7 +73,7 @@ class ASH_EXPORT QuickInsertController : public QuickInsertViewDelegate,
 
   // Maximum time to wait for focus to be regained after completing the feature
   // tour. If this timeout is reached, we stop waiting for focus and show the
-  // Picker widget regardless of the focus state.
+  // Quick Insert widget regardless of the focus state.
   static constexpr base::TimeDelta kShowWidgetPostFeatureTourTimeout =
       base::Seconds(2);
 
@@ -99,7 +99,7 @@ class ASH_EXPORT QuickInsertController : public QuickInsertViewDelegate,
   // This should be run when the Prefs from the client is ready.
   void OnClientPrefsSet(PrefService* prefs);
 
-  // Toggles the visibility of the Picker widget.
+  // Toggles the visibility of the Quick Insert widget.
   // This must only be called after `SetClient` is called with a valid client.
   // `trigger_event_timestamp` is the timestamp of the event that triggered the
   // Widget to be toggled. For example, if the feature was triggered by a mouse
@@ -108,7 +108,7 @@ class ASH_EXPORT QuickInsertController : public QuickInsertViewDelegate,
   void ToggleWidget(
       base::TimeTicks trigger_event_timestamp = base::TimeTicks::Now());
 
-  // Returns the Picker widget for tests.
+  // Returns the Quick Insert widget for tests.
   views::Widget* widget_for_testing() { return widget_.get(); }
   PickerFeatureTour& feature_tour_for_testing() { return feature_tour_; }
   PickerCapsLockBubbleController& caps_lock_bubble_controller_for_testing() {
@@ -157,17 +157,17 @@ class ASH_EXPORT QuickInsertController : public QuickInsertViewDelegate,
   static void DisableFeatureTourForTesting();
 
  private:
-  // Trigger source for showing the Picker widget. This is used to determine
-  // how the widget should be shown on the screen.
+  // Trigger source for showing the Quick Insert widget. This is used to
+  // determine how the widget should be shown on the screen.
   enum class WidgetTriggerSource {
-    // The user triggered Picker as part of their usual user flow, e.g. toggled
-    // Picker with a key press.
+    // The user triggered Quick Insert as part of their usual user flow, e.g.
+    // toggled Quick Insert with a key press.
     kDefault,
-    // The user triggered Picker by completing the feature tour.
+    // The user triggered Quick Insert by completing the feature tour.
     kFeatureTour,
   };
 
-  // Active Picker session tied to the lifetime of the QuickInsertWidget.
+  // Active Quick Insert session tied to the lifetime of the QuickInsertWidget.
   struct Session {
     QuickInsertModel model;
     PickerEmojiHistoryModel emoji_history_model;

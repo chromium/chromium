@@ -11,7 +11,7 @@
 namespace ash {
 namespace {
 
-// Padding to separate the Picker window from the caret.
+// Padding to separate the Quick Insert window from the caret.
 constexpr gfx::Outsets kPaddingAroundCaret(4);
 
 }  // namespace

@@ -14,7 +14,7 @@ class Point;
 
 namespace ash {
 
-// How Picker should try to position itself relative to its anchor.
+// How Quick Insert should try to position itself relative to its anchor.
 enum class PickerPositionType {
   // Near the anchor bounds.
   kNearAnchor,
@@ -22,10 +22,10 @@ enum class PickerPositionType {
   kCentered,
 };
 
-// Gets the anchor bounds to use for positioning the Picker. We prefer to anchor
-// at `caret_bounds`, but may use `cursor_point` as a fallback. `caret_bounds`,
-// `cursor_point`, `focused_window_bounds` and returned anchor bounds should be
-// in screen coordinates.
+// Gets the anchor bounds to use for positioning Quick Insert. We prefer to
+// anchor at `caret_bounds`, but may use `cursor_point` as a fallback.
+// `caret_bounds`, `cursor_point`, `focused_window_bounds` and returned anchor
+// bounds should be in screen coordinates.
 gfx::Rect ASH_EXPORT
 GetPickerAnchorBounds(const gfx::Rect& caret_bounds,
                       const gfx::Point& cursor_point,

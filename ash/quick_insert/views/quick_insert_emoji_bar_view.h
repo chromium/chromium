@@ -24,9 +24,9 @@ class IconButton;
 class PickerEmojiBarViewDelegate;
 class SystemShadow;
 
-// View for the Picker emoji bar, which is a small bar above the main Picker
-// container that shows expression search results (i.e. emojis, symbols and
-// emoticons).
+// View for the Quick Insert emoji bar, which is a small bar above the main
+// Quick Insert container that shows expression search results (i.e. emojis,
+// symbols and emoticons).
 class ASH_EXPORT PickerEmojiBarView : public views::View,
                                       public PickerTraversableItemContainer {
   METADATA_HEADER(PickerEmojiBarView, views::View)

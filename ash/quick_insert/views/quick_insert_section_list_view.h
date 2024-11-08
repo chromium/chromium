@@ -15,7 +15,7 @@ class PickerAssetFetcher;
 class QuickInsertSectionView;
 class PickerSubmenuController;
 
-// View which displays Picker sections in a vertical list.
+// View which displays Quick Insert sections in a vertical list.
 class ASH_EXPORT PickerSectionListView : public views::View {
   METADATA_HEADER(PickerSectionListView, views::View)
 

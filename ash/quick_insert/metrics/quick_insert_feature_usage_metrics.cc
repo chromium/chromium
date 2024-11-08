@@ -16,7 +16,7 @@ PickerFeatureUsageMetrics::PickerFeatureUsageMetrics()
 PickerFeatureUsageMetrics::~PickerFeatureUsageMetrics() = default;
 
 bool PickerFeatureUsageMetrics::IsEligible() const {
-  // All devices support Picker.
+  // All devices support Quick Insert.
   return true;
 }
 

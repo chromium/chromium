@@ -15,7 +15,7 @@ namespace ash {
 
 class QuickInsertSearchFieldView;
 
-// The textfield in the Picker search bar view.
+// The textfield in the Quick Insert search bar view.
 class ASH_EXPORT PickerSearchBarTextfield : public views::Textfield {
   METADATA_HEADER(PickerSearchBarTextfield, views::Textfield)
 

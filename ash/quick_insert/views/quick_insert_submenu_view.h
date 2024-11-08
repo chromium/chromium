@@ -20,8 +20,8 @@ namespace ash {
 class QuickInsertListItemView;
 class QuickInsertSectionView;
 
-// View for a Picker submenu, which shows a list of results in a bubble outside
-// the main Picker container.
+// View for a Quick Insert submenu, which shows a list of results in a bubble
+// outside the main Quick Insert container.
 class ASH_EXPORT PickerSubmenuView : public views::WidgetDelegateView,
                                      public PickerTraversableItemContainer {
   METADATA_HEADER(PickerSubmenuView, views::WidgetDelegateView)

@@ -17,7 +17,7 @@ class AnimationAbortHandle;
 
 namespace ash {
 
-// A view for rendering a skeleton loader for Picker.
+// A view for rendering a skeleton loader for Quick Insert.
 // The initial state is a blank view.
 // Calling `StartAnimation` will render a skeleton loader animation after a
 // delay. Calling `StopAnimation` will reset this back to a blank view.

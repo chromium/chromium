@@ -25,7 +25,7 @@ namespace image_util {
 struct AnimationFrame;
 }  // namespace image_util
 
-// Helper for asynchronously fetching Picker assets.
+// Helper for asynchronously fetching Quick Insert assets.
 class ASH_EXPORT PickerAssetFetcher {
  public:
   // TODO: b/316936723 - Pass the frames by reference to avoid a copy.

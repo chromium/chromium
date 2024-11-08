@@ -43,7 +43,7 @@ class ASH_EXPORT PickerFeatureTour : public wm::ActivationChangeObserver {
   PickerFeatureTour& operator=(const PickerFeatureTour&) = delete;
   ~PickerFeatureTour() override;
 
-  // Registers Picker feature tour prefs to the provided `registry`.
+  // Registers Quick Insert feature tour prefs to the provided `registry`.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Disables the feature tour for tests.

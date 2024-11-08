@@ -24,7 +24,7 @@
 
 namespace ash {
 
-// Aggregates search results for a single Picker search request, including
+// Aggregates search results for a single Quick Insert search request, including
 // managing the order of search results and managing when to publish search
 // results (with burn-in logic).
 // Call `HandleSearchSourceResults` with new results once they arrive.

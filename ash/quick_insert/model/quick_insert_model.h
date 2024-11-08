@@ -31,9 +31,9 @@ class ASH_EXPORT QuickInsertModel {
   enum class EditorStatus { kEnabled, kDisabled };
   enum class LobsterStatus { kEnabled, kDisabled };
 
-  // `focused_client` is the input field that was focused when Picker is opened.
-  // It can be null. `ime_keyboard` is used to monitor caps lock state. This
-  // cannot be null.
+  // `focused_client` is the input field that was focused when Quick Insert is
+  // opened. It can be null. `ime_keyboard` is used to monitor caps lock state.
+  // This cannot be null.
   explicit QuickInsertModel(PrefService* prefs,
                             ui::TextInputClient* focused_client,
                             input_method::ImeKeyboard* ime_keyboard,

@@ -10,7 +10,7 @@
 
 namespace ash {
 
-// Tracks Picker feature usage for the Standard Feature Usage Logging
+// Tracks Quick Insert feature usage for the Standard Feature Usage Logging
 // (SFUL) framework.
 class ASH_EXPORT PickerFeatureUsageMetrics
     : public feature_usage::FeatureUsageMetrics::Delegate {

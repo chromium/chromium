@@ -340,7 +340,7 @@ TEST_F(QuickInsertControllerTest,
   EXPECT_TRUE(
       view->search_field_view_for_testing().textfield_for_testing().HasFocus());
 
-  // Dismiss Picker.
+  // Dismiss Quick Insert.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
   views::test::WidgetDestroyedWaiter(controller().widget_for_testing()).Wait();
   EXPECT_EQ(focus_controller->GetActiveWindow(), nullptr);
@@ -385,7 +385,7 @@ TEST_F(QuickInsertControllerTest,
   EXPECT_TRUE(
       view->search_field_view_for_testing().textfield_for_testing().HasFocus());
 
-  // Dismiss Picker.
+  // Dismiss Quick Insert.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
   views::test::WidgetDestroyedWaiter(controller().widget_for_testing()).Wait();
   EXPECT_EQ(focus_controller->GetActiveWindow(),
@@ -439,7 +439,7 @@ TEST_F(QuickInsertControllerTest,
   EXPECT_TRUE(
       view->search_field_view_for_testing().textfield_for_testing().HasFocus());
 
-  // Dismiss Picker.
+  // Dismiss Quick Insert.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
   views::test::WidgetDestroyedWaiter(controller().widget_for_testing()).Wait();
   EXPECT_EQ(focus_controller->GetActiveWindow(),

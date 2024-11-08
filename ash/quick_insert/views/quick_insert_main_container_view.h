@@ -22,8 +22,8 @@ class QuickInsertSearchFieldView;
 class PickerPageView;
 class SystemShadow;
 
-// View for the main Picker container, which consists of the search field and
-// the main contents (e.g. search results page).
+// View for the main Quick Insert container, which consists of the search field
+// and the main contents (e.g. search results page).
 class ASH_EXPORT PickerMainContainerView
     : public views::View,
       public PickerTraversableItemContainer {

@@ -315,14 +315,14 @@ void QuickInsertSearchFieldView::NotifyInitialActiveDescendantForA11y() {
 size_t QuickInsertSearchFieldView::GetQueryStartIndexForTraversal() {
   // The query start index should actually be the same regardless of text
   // direction, but we reverse it here since left / right key events are swapped
-  // when traversing Picker UI in RTL.
+  // when traversing Quick Insert UI in RTL.
   return base::i18n::IsRTL() ? GetQueryText().length() : 0;
 }
 
 size_t QuickInsertSearchFieldView::GetQueryEndIndexForTraversal() {
   // The query end index should actually be the same regardless of text
   // direction, but we reverse it here since left / right key events are swapped
-  // when traversing Picker UI in RTL.
+  // when traversing Quick Insert UI in RTL.
   return base::i18n::IsRTL() ? 0 : GetQueryText().length();
 }
 

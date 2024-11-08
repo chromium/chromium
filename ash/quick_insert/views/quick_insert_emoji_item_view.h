@@ -18,7 +18,7 @@ class Label;
 
 namespace ash {
 
-// Picker item which contains just an emoji.
+// Quick Insert item which contains just an emoji.
 class ASH_EXPORT PickerEmojiItemView : public QuickInsertItemView {
   METADATA_HEADER(PickerEmojiItemView, QuickInsertItemView)
 

@@ -39,8 +39,9 @@ class PickerBadgeView;
 class PickerPreviewBubbleController;
 class PickerShortcutHintView;
 
-// View for a Picker list item with text or an image as its primary contents.
-// Can optionally have other parts such as a leading icon and secondary text.
+// View for a Quick Insert list item with text or an image as its primary
+// contents. Can optionally have other parts such as a leading icon and
+// secondary text.
 class ASH_EXPORT QuickInsertListItemView : public QuickInsertItemView {
   METADATA_HEADER(QuickInsertListItemView, QuickInsertItemView)
 
