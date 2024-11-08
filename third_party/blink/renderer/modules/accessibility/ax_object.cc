@@ -4228,10 +4228,8 @@ bool AXObject::ComputeIsIgnoredButIncludedInTree() {
   // pseudo elements: Specifically, ::first-letter/::backdrop are not visited by
   // LayoutTreeBuilderTraversal, and cannot be in the tree, therefore do not add
   // a special rule to include their parents.
-  if (element && (element->GetPseudoElement(kPseudoIdCheck) ||
-                  element->GetPseudoElement(kPseudoIdBefore) ||
+  if (element && (element->GetPseudoElement(kPseudoIdBefore) ||
                   element->GetPseudoElement(kPseudoIdAfter) ||
-                  element->GetPseudoElement(kPseudoIdSelectArrow) ||
                   element->GetPseudoElement(kPseudoIdMarker) ||
                   element->GetPseudoElement(kPseudoIdScrollNextButton) ||
                   element->GetPseudoElement(kPseudoIdScrollPrevButton) ||
