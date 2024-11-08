@@ -161,9 +161,6 @@ crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 # Vulkan enabled on linux, the crash fallback logic is different.
 crbug.com/1334650 [ linux ] GpuCrash_InfoForHardwareGpu [ Skip ]
 
-# Windows debug causes render process hangs due to slow gpu process restart.
-crbug.com/1416920 [ win debug ] GpuCrash_InfoForHardwareGpu [ Failure ]
-
 ###############################
 # Temporary Skip Expectations #
 ###############################
@@ -208,6 +205,12 @@ crbug.com/355923591 [ mac release nvidia ] GpuCrash_InfoForDualHardwareGpus [ Re
 crbug.com/338574390 [ amd-0x7340 angle-opengl asan graphite-disabled mac ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
 crbug.com/338574390 [ angle-metal asan intel mac ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
 crbug.com/338574390 [ angle-metal asan intel mac ] ContextLost_WebGPUBlockedAfterJSNavigation [ Failure ]
+
+# Windows debug causes render process hangs due to slow gpu process restart.
+crbug.com/1416920 [ win debug ] GpuCrash_InfoForHardwareGpu [ Failure ]
+
+# Flaky crash affects this test in particular for some reason
+crbug.com/365565140 [ win qualcomm ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
