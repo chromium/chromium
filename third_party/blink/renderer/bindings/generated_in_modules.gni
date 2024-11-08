@@ -2380,6 +2380,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_idb_object_store.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_idb_open_db_request.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_idb_open_db_request.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_idb_record.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_idb_record.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_idb_request.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_idb_request.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_idb_transaction.cc",

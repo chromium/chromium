@@ -49,6 +49,11 @@ class FakeBlobRegistry : public mojom::blink::BlobRegistry {
   class DataPipeDrainerClient;
   std::unique_ptr<DataPipeDrainerClient> drainer_client_;
   std::unique_ptr<mojo::DataPipeDrainer> drainer_;
+
+  // Set to true to allow tests to read blobs that contain binary data.  Updates
+  // `Register()` to create fake blobs with binary bodies.  Not implemented for
+  // `RegisterFromStream()` or any other type of body content.
+  bool support_binary_blob_bodies_ = false;
 };
 
 }  // namespace blink

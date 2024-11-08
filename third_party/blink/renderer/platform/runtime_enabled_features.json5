@@ -2376,6 +2376,10 @@
       status: {"Android": "stable"},
     },
     {
+      name: "IndexedDbGetAllRecords",
+      status: "experimental",
+    },
+    {
       name: "InertElementNonEditable",
       status: "stable",
     },
