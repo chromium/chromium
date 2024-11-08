@@ -2003,9 +2003,10 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // not obscure debug rects.
   void PaintFromPaintRoot(const ui::PaintContext& parent_context);
 
-  // Draws a semitransparent rect to indicate the bounds of this view.
-  // Recursively does the same for all children.  Invoked only with
-  // --draw-view-bounds-rects.
+  // Draws a semitransparent red rect to indicate the bounds of this view.
+  // Recursively does the same for all children. Also, draws a blue
+  // semitransparent rect when GetContentBounds() differs from GetLocalBounds().
+  // Invoked only with --draw-view-bounds-rects.
   void PaintDebugRects(const PaintInfo& paint_info);
 
   // Tree operations -----------------------------------------------------------
