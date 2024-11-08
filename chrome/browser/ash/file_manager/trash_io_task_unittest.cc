@@ -19,6 +19,7 @@
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -75,6 +76,9 @@ class TrashIOTaskTest : public TrashBaseTest {
 
   TrashIOTaskTest(const TrashIOTaskTest&) = delete;
   TrashIOTaskTest& operator=(const TrashIOTaskTest&) = delete;
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 void AssertTrashSetup(const base::FilePath& parent_path) {

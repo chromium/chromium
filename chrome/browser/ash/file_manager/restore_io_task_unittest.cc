@@ -91,6 +91,9 @@ class RestoreIOTaskTest : public TrashBaseIOTest {
     task.Execute(progress_callback.Get(), complete_callback.Get());
     run_loop.Run();
   }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(RestoreIOTaskTest, NoSourceUrlsShouldReturnSuccess) {
@@ -327,6 +330,9 @@ class RestoreIOTaskDisconnectMojoTest : public TrashBaseIOTest {
       delete;
   RestoreIOTaskDisconnectMojoTest& operator=(
       const RestoreIOTaskDisconnectMojoTest&) = delete;
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(RestoreIOTaskDisconnectMojoTest,

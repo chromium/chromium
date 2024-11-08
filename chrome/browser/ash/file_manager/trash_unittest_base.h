@@ -22,7 +22,6 @@
 #include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom-forward.h"
 #include "chromeos/ash/components/trash_service/trash_service_impl.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,7 +66,6 @@ class TrashBaseTest : public testing::Test {
 
   bool EnsureTrashDirectorySetup(const base::FilePath& parent_path);
 
-  content::BrowserTaskEnvironment task_environment_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<TestingProfile> profile_;
@@ -91,7 +89,7 @@ class TrashBaseTest : public testing::Test {
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
  private:
-  // Maintains ownership fo the in-process parsing service.
+  // Maintains ownership for the in-process parsing service.
   std::unique_ptr<ash::trash_service::TrashServiceImpl> trash_service_impl_;
 };
 

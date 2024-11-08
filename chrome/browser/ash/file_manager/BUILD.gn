@@ -275,6 +275,7 @@ source_set("unit_tests") {
     "path_util_unittest.cc",
     "restore_io_task_unittest.cc",
     "restore_to_destination_io_task_unittest.cc",
+    "trash_auto_cleanup_unittest.cc",
     "trash_io_task_unittest.cc",
     "trash_unittest_base.cc",
     "trash_unittest_base.h",

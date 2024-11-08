@@ -26,6 +26,7 @@
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -102,6 +103,7 @@ class RestoreToDestinationIOTaskTest : public TrashBaseIOTest {
                          base::TimeFormatAsIso8601(base::Time::UnixEpoch())});
   }
 
+  content::BrowserTaskEnvironment task_environment_;
   // Directory where the files will be restored to.
   base::FilePath destination_path_;
 };

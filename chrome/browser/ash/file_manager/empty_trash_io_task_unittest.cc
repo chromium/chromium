@@ -85,6 +85,9 @@ class EmptyTrashIOTaskTest : public TrashBaseTest {
 
     return directories;
   }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(EmptyTrashIOTaskTest, EnabledTrashDirsAreTrashed) {
