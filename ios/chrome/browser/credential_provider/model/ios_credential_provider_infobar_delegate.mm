@@ -34,11 +34,8 @@ IOSCredentialProviderInfoBarDelegate::IOSCredentialProviderInfoBarDelegate(
       passkey_(std::move(passkey)),
       settings_handler_(settings_handler) {}
 
-IOSCredentialProviderInfoBarDelegate::~IOSCredentialProviderInfoBarDelegate() {
-  if (show_passkey_details_on_exit_) {
-    ShowPasskeyDetails();
-  }
-}
+IOSCredentialProviderInfoBarDelegate::~IOSCredentialProviderInfoBarDelegate() =
+    default;
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 IOSCredentialProviderInfoBarDelegate::GetIdentifier() const {
@@ -72,10 +69,7 @@ std::u16string IOSCredentialProviderInfoBarDelegate::GetButtonLabel(
 }
 
 bool IOSCredentialProviderInfoBarDelegate::Accept() {
-  // Attempting to show the passkey details right away can result in a race
-  // condition between the reauthentication module and the infobar. Delay this
-  // operation until the infobar is fully removed to solve this issue.
-  show_passkey_details_on_exit_ = true;
+  ShowPasskeyDetails();
   return true;
 }
 
@@ -88,5 +82,12 @@ void IOSCredentialProviderInfoBarDelegate::ShowPasskeyDetails() const {
   }
 
   password_manager::CredentialUIEntry credential(passkeyCredentials[0]);
-  [settings_handler_ showPasswordDetailsForCredential:credential inEditMode:NO];
+
+  // Attempting to show the passkey details right away can result in a race
+  // condition between the reauthentication module and the infobar. Dispatching
+  // this ensures it runs after the infobar animation completes.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [settings_handler_ showPasswordDetailsForCredential:credential
+                                             inEditMode:NO];
+  });
 }
