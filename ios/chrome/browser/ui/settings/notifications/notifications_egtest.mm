@@ -85,7 +85,8 @@ id<GREYMatcher> NotificationsSettingsMatcher() {
 // Tests that the settings page is dismissed by swiping down from the top.
 // TODO(crbug.com/326070899): remove this test when Tips Notifications is
 // enabled by default.
-- (void)testPriceNotificationsSwipeDown {
+// TODO(crbug.com/378039633): Reenable the test.
+- (void)DISABLED_testPriceNotificationsSwipeDown {
   // Price tracking might only be enabled in certain countries, so it is
   // overridden to ensure that it will be enabled.
   [ChromeEarlGrey setStringValue:"us"

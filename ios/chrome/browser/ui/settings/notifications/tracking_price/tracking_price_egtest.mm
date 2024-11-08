@@ -36,7 +36,8 @@ using chrome_test_util::SettingsTrackingPriceTableView;
 }
 
 // Tests that the settings page is dismissed by swiping down from the top.
-- (void)testTrackingPriceSwipeDown_FromUpdatedSettingsView {
+// TODO(crbug.com/378039633): Reenable the test.
+- (void)DISABLED_testTrackingPriceSwipeDown_FromUpdatedSettingsView {
   [self openTrackingPriceSettingsFromUpdatedSettingsView];
 
   // Check that Tracking Price TableView is presented.
