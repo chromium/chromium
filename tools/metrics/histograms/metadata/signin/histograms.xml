@@ -2196,18 +2196,25 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
-<histogram name="Signin.SignIn.Offered" enum="SigninAccessPoint"
+<histogram name="Signin.SignIn.Offered{AccountState}" enum="SigninAccessPoint"
     expires_after="2025-04-27">
   <owner>bsazonov@chromium.org</owner>
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
-    Records that the option to sign in to Chrome was offered to the user, and
-    logs the original access point associated with this event.
+    Records that the option to sign in to Chrome was offered to the
+    user{AccountState} and logs the original access point associated with this
+    event.
 
     This histogram is still in development and has a limited coverage of the
     Signin access points for now.
   </summary>
+  <token key="AccountState">
+    <variant name="" summary=""/>
+    <variant name=".NewAccountNoExistingAccount"
+        summary=", with a new account and without having an existing account,"/>
+    <variant name=".WithDefault" summary=", with the default account,"/>
+  </token>
 </histogram>
 
 <histogram name="Signin.SignIn.Started" enum="SigninAccessPoint"

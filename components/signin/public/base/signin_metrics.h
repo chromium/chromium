@@ -578,8 +578,10 @@ void LogSigninAccessPointCompleted(AccessPoint access_point,
 
 // Logs sign in offered events and their associated access points.
 // Access points (or features) are responsible for recording this where relevant
-// for them.
-void LogSignInOffered(AccessPoint access_point);
+// for them. The `promo_action` determines which specific histogram will be
+// recorded based and should be computed based on the signin state when the
+// promo is offered.
+void LogSignInOffered(AccessPoint access_point, PromoAction promo_action);
 
 // Logs sign in start events and their associated access points. The
 // completion events are automatically logged when the primary account state

@@ -480,7 +480,9 @@ void FirstRunFlowControllerDice::Init(
   SwitchToStep(Step::kIntro, /*reset_state=*/true,
                std::move(step_switch_finished_callback));
 
-  signin_metrics::LogSignInOffered(kAccessPoint);
+  signin_metrics::LogSignInOffered(
+      kAccessPoint, signin_metrics::PromoAction::
+                        PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT);
 }
 
 void FirstRunFlowControllerDice::CancelPostSignInFlow() {

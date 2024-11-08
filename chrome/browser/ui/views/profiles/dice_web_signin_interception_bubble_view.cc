@@ -33,6 +33,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -126,7 +127,8 @@ void RecordMetricsChromeSigninInterceptStarted() {
   auto access_point =
       signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE;
   RecordSigninImpressionUserActionForAccessPoint(access_point);
-  signin_metrics::LogSignInOffered(access_point);
+  signin_metrics::LogSignInOffered(
+      access_point, signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT);
 }
 
 std::string_view GetChromeSigninReactionString(

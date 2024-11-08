@@ -714,6 +714,9 @@ void ProfileMenuView::BuildSyncInfo() {
   signin_metrics::AccessPoint access_point =
       signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN;
 
+  signin_metrics::PromoAction promo_action =
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+
   if (!account_info.IsEmpty()) {
     if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
         identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
@@ -750,6 +753,7 @@ void ProfileMenuView::BuildSyncInfo() {
                               : account_info_for_promos.email));
     button_type = ActionableItem::kEnableSyncForWebOnlyAccountButton;
     show_account_card = true;
+    promo_action = signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT;
   } else {
     // Not signed in state.
     if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
@@ -764,7 +768,10 @@ void ProfileMenuView::BuildSyncInfo() {
       button_text = l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
     }
     button_type = ActionableItem::kSigninButton;
+    promo_action = signin_metrics::PromoAction::
+        PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT;
   }
+  signin_metrics::LogSignInOffered(access_point, promo_action);
 
   CHECK(!description.empty());
   CHECK(!button_text.empty());

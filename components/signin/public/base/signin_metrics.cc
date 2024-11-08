@@ -11,12 +11,35 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace signin_metrics {
+
+namespace {
+
+std::string_view GetPromoActionHistogramSuffix(PromoAction promo_action) {
+  switch (promo_action) {
+    case PromoAction::PROMO_ACTION_WITH_DEFAULT:
+      return ".WithDefault";
+    case PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT:
+      return ".NewAccountNoExistingAccount";
+    case PromoAction::PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT:
+    case PromoAction::PROMO_ACTION_NOT_DEFAULT:
+      NOTIMPLEMENTED()
+          << "Those promo actions have no histogram equivalent yet, you need "
+             "to implement the histogram and return the correct histogram "
+             "suffix.";
+      return "NOT IMPLEMENTED";
+    case PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO:
+      NOTREACHED_NORETURN() << "No signin promo should not record metrics.";
+  }
+}
+
+}  // namespace
 
 // These intermediate macros are necessary when we may emit to different
 // histograms from the same logical place in the code. The base histogram macros
@@ -125,9 +148,24 @@ void LogSigninAccessPointCompleted(AccessPoint access_point,
   }
 }
 
-void LogSignInOffered(AccessPoint access_point) {
-  base::UmaHistogramEnumeration("Signin.SignIn.Offered", access_point,
+void LogSignInOffered(AccessPoint access_point, PromoAction promo_action) {
+  // Do not record any histogram if no signin promo.
+  if (promo_action == PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO) {
+    return;
+  }
+
+  static constexpr char signin_offered_base_histogram[] =
+      "Signin.SignIn.Offered";
+
+  // Log the generic offered histogram.
+  base::UmaHistogramEnumeration(signin_offered_base_histogram, access_point,
                                 AccessPoint::ACCESS_POINT_MAX);
+
+  // Log the specific offered histogram based on the `promo_action`.
+  base::UmaHistogramEnumeration(
+      base::StrCat({signin_offered_base_histogram,
+                    GetPromoActionHistogramSuffix(promo_action)}),
+      access_point, AccessPoint::ACCESS_POINT_MAX);
 }
 
 void LogSignInStarted(AccessPoint access_point) {

@@ -76,7 +76,10 @@ BubbleSignInPromoView::BubbleSignInPromoView(
   std::u16string button_text =
       l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
   const int title_max_width = 218;
-  std::u16string accessibility_text = std::u16string();
+  std::u16string accessibility_text;
+
+  signin_metrics::PromoAction promo_action =
+      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (is_autofill_promo) {
@@ -86,11 +89,14 @@ BubbleSignInPromoView::BubbleSignInPromoView(
       case SignedInState::kSignedIn:
       case SignedInState::kSyncing:
       case SignedInState::kSyncPaused:
+        // No signin promo to be shown in those states.
         return;
       case SignedInState::kSignedOut:
         title_resource_id = IDS_AUTOFILL_SIGNIN_PROMO_SUBTITLE_PASSWORD;
         button_text =
             l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON);
+        promo_action = signin_metrics::PromoAction::
+            PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT;
         break;
       case SignedInState::kWebOnlySignedIn:
         title_resource_id = IDS_AUTOFILL_SIGNIN_PROMO_SUBTITLE_PASSWORD;
@@ -100,6 +106,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
         accessibility_text = l10n_util::GetStringFUTF16(
             IDS_SIGNIN_CONTINUE_AS_BUTTON_ACCESSIBILITY_LABEL,
             {base::UTF8ToUTF16(account.email)});
+        promo_action = signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT;
         break;
       case SignedInState::kSignInPending:
         title_resource_id = IDS_AUTOFILL_VERIFY_PROMO_SUBTITLE_PASSWORD;
@@ -122,9 +129,11 @@ BubbleSignInPromoView::BubbleSignInPromoView(
   }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+  signin_metrics::LogSignInOffered(access_point, promo_action);
+
   if (title_resource_id) {
     std::u16string title_text = l10n_util::GetStringUTF16(title_resource_id);
-    views::Label* title = new views::Label(
+    std::unique_ptr<views::Label> title = std::make_unique<views::Label>(
         title_text, views::style::CONTEXT_DIALOG_BODY_TEXT, text_style);
     title->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     title->SetMultiLine(true);
@@ -141,7 +150,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
                                 .bottom(),
                             0));
     }
-    AddChildView(title);
+    AddChildView(std::move(title));
   }
 
   views::Button::PressedCallback callback = base::BindRepeating(
