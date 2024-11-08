@@ -17,9 +17,11 @@ constexpr double kNotSuspiciousScoreTestValue = 0.41;
 
 TestNotificationContentDetectionModel::TestNotificationContentDetectionModel(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+    content::BrowserContext* browser_context)
     : NotificationContentDetectionModel(model_provider,
-                                        background_task_runner) {}
+                                        background_task_runner,
+                                        browser_context) {}
 TestNotificationContentDetectionModel::
     ~TestNotificationContentDetectionModel() = default;
 

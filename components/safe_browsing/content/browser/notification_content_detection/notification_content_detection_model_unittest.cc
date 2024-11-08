@@ -9,13 +9,15 @@
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/permissions/test/test_permissions_client.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/test_model_observer_tracker.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/test_notification_content_detection_model.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
@@ -55,7 +57,8 @@ class NotificationContentDetectionModelTest : public testing::Test {
     notification_content_detection_model_ =
         std::make_unique<TestNotificationContentDetectionModel>(
             model_observer_tracker_.get(),
-            base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+            base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
+            &browser_context_);
   }
 
   void TearDown() override {
@@ -84,11 +87,13 @@ class NotificationContentDetectionModelTest : public testing::Test {
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
-  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestModelObserverTracker> model_observer_tracker_;
   std::unique_ptr<TestNotificationContentDetectionModel>
       notification_content_detection_model_;
   base::HistogramTester histogram_tester_;
+  content::BrowserTaskEnvironment task_environment_;
+  content::TestBrowserContext browser_context_;
+  permissions::TestPermissionsClient client_;
 };
 
 TEST_F(NotificationContentDetectionModelTest, CheckModelUpdateAvailability) {
@@ -142,7 +147,8 @@ TEST_F(NotificationContentDetectionModelTest, LogNotificationSuspiciousScore) {
       action->title = action_title;
       notification_data.actions.push_back(std::move(action));
     }
-    notification_content_detection_model()->Execute(notification_data);
+    notification_content_detection_model()->Execute(
+        notification_data, GURL("url"), /*did_match_allowlist=*/false);
     histogram_tester().ExpectUniqueSample(
         kSuspiciousScoreHistogram, 100 * kSuspiciousScoreTestValue, 1 + i);
     EXPECT_EQ(notification_content_detection_model()->inputs()[i],
@@ -156,7 +162,8 @@ TEST_F(NotificationContentDetectionModelTest,
   SendModelToNotificationContentDetectionModel();
 
   blink::PlatformNotificationData notification_data;
-  notification_content_detection_model()->Execute(notification_data);
+  notification_content_detection_model()->Execute(
+      notification_data, GURL("url"), /*did_match_allowlist=*/false);
   histogram_tester().ExpectUniqueSample(kSuspiciousScoreHistogram,
                                         100 * kSuspiciousScoreTestValue, 1);
   EXPECT_EQ(notification_content_detection_model()->inputs()[0], ",,");

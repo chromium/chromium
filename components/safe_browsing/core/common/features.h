@@ -213,6 +213,10 @@ BASE_DECLARE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings);
 // Killswitch for fetching and executing the notification content detection
 // model. This also gates logging metrics related to this model.
 BASE_DECLARE_FEATURE(kOnDeviceNotificationContentDetectionModel);
+// Determines the percentage of notifications from allowlisted sites that we
+// will check the model for. The value should be between 0 and 100.
+extern const base::FeatureParam<int>
+    kOnDeviceNotificationContentDetectionModelAllowlistSamplingRate;
 
 // Enable movement of password leak toggle out of standard protection and into
 // its own section.

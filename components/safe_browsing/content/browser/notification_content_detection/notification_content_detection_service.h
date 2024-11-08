@@ -14,6 +14,10 @@ namespace blink {
 struct PlatformNotificationData;
 }  // namespace blink
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace safe_browsing {
 
 class NotificationContentDetectionService : public KeyedService {
@@ -21,7 +25,8 @@ class NotificationContentDetectionService : public KeyedService {
   NotificationContentDetectionService(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      scoped_refptr<SafeBrowsingDatabaseManager> database_manager);
+      scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
+      content::BrowserContext* browser_context);
   ~NotificationContentDetectionService() override;
 
   void MaybeCheckNotificationContentDetectionModel(
@@ -37,6 +42,7 @@ class NotificationContentDetectionService : public KeyedService {
   void OnCheckUrlForHighConfidenceAllowlist(
       blink::PlatformNotificationData& notification_data,
       const base::TimeTicks start_time,
+      const GURL& origin,
       bool did_match_allowlist,
       std::optional<SafeBrowsingDatabaseManager::
                         HighConfidenceAllowlistCheckLoggingDetails>

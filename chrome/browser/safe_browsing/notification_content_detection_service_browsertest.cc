@@ -20,7 +20,9 @@
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
 
 namespace safe_browsing {
@@ -112,7 +114,13 @@ IN_PROC_BROWSER_TEST_F(NotificationContentDetectionServiceFactoryBrowserTest,
 class NotificationContentDetectionBrowserTest
     : public NotificationContentDetectionBrowserTestBase {
  public:
-  NotificationContentDetectionBrowserTest() {
+  NotificationContentDetectionBrowserTest() = default;
+  NotificationContentDetectionBrowserTest(
+      const NotificationContentDetectionBrowserTest&) = delete;
+  NotificationContentDetectionBrowserTest& operator=(
+      const NotificationContentDetectionBrowserTest&) = delete;
+
+  void SetUp() override {
     // Disable the `kPreventLongRunningPredictionModels` feature to prevent
     // flaky test failures, since these tests may prompt models and obtaining
     // the result can take a long time.
@@ -121,12 +129,8 @@ class NotificationContentDetectionBrowserTest
                                   kOnDeviceNotificationContentDetectionModel},
         /*disabled_features=*/{
             optimization_guide::features::kPreventLongRunningPredictionModels});
+    NotificationContentDetectionBrowserTestBase::SetUp();
   }
-
-  NotificationContentDetectionBrowserTest(
-      const NotificationContentDetectionBrowserTest&) = delete;
-  NotificationContentDetectionBrowserTest& operator=(
-      const NotificationContentDetectionBrowserTest&) = delete;
 
   void SetUpOnMainThread() override {
     notification_content_detection_service_ =
@@ -204,6 +208,7 @@ class NotificationContentDetectionBrowserTest
 
 IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
                        NonAllowlistedSiteSuccessfullyExecutesModel) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   blink::PlatformNotificationData data = CreateNotificationData(
       u"Non-allowlisted title", u"Hello, world!", {u"Click me!"});
   notification_content_detection_service()
@@ -225,10 +230,17 @@ IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
   // The suspicious score histogram should be logged once, but the actual value
   // in this test is not important.
   histogram_tester().ExpectTotalCount(kSuspiciousScoreHistogram, 1);
+  // Check that we are recording the UKM with the correct metric values.
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::PermissionUsage_NotificationShown::kEntryName);
+  EXPECT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "IsAllowlisted", false);
+  test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SuspiciousScore");
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
-                       AllowlistedSiteDoesNotExecuteModel) {
+                       AllowlistedSiteDoesNotExecuteModel_ByDefault) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   blink::PlatformNotificationData data =
       CreateNotificationData(u"Allowlisted title", u"Hello, world!", {});
   notification_content_detection_service()
@@ -247,7 +259,65 @@ IN_PROC_BROWSER_TEST_F(NotificationContentDetectionBrowserTest,
       "NotificationContentDetection",
       0);
   histogram_tester().ExpectTotalCount(kAllowlistCheckLatencyHistogram, 1);
+  // Check that we are not recording UMA nor UKM data.
   histogram_tester().ExpectTotalCount(kSuspiciousScoreHistogram, 0);
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::PermissionUsage_NotificationShown::kEntryName);
+  EXPECT_EQ(0u, ukm_entries.size());
+}
+
+class NotificationContentDetectionAllowlistedChecksEnabledBrowserTest
+    : public NotificationContentDetectionBrowserTest {
+ public:
+  NotificationContentDetectionAllowlistedChecksEnabledBrowserTest() = default;
+
+  void SetUp() override {
+    // Disable the `kPreventLongRunningPredictionModels` feature to prevent
+    // flaky test failures, since these tests may prompt models and obtaining
+    // the result can take a long time.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{safe_browsing::kOnDeviceNotificationContentDetectionModel,
+          {{"OnDeviceNotificationContentDetectionModelAllowlistSamplingRate",
+            "100"}}}},
+        /*disabled_features=*/{
+            optimization_guide::features::kPreventLongRunningPredictionModels});
+    NotificationContentDetectionBrowserTestBase::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    NotificationContentDetectionAllowlistedChecksEnabledBrowserTest,
+    AllowlistedSiteExecutesModel) {
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  blink::PlatformNotificationData data =
+      CreateNotificationData(u"Allowlisted title", u"Hello, world!", {});
+  notification_content_detection_service()
+      ->MaybeCheckNotificationContentDetectionModel(data,
+                                                    GURL(kAllowlistedUrl));
+  base::RunLoop().RunUntilIdle();
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester(),
+      "OptimizationGuide.ModelExecutor.ExecutionStatus."
+      "NotificationContentDetection",
+      1);
+
+  histogram_tester().ExpectUniqueSample(
+      "OptimizationGuide.ModelExecutor.ExecutionStatus."
+      "NotificationContentDetection",
+      /*kSuccess=*/1, 1);
+  histogram_tester().ExpectTotalCount(kAllowlistCheckLatencyHistogram, 1);
+
+  // The suspicious score histogram should be logged once, but the actual value
+  // in this test is not important.
+  histogram_tester().ExpectTotalCount(kSuspiciousScoreHistogram, 1);
+  // Check that we are recording the UKM with the correct metric values.
+  auto ukm_entries = test_ukm_recorder.GetEntriesByName(
+      ukm::builders::PermissionUsage_NotificationShown::kEntryName);
+  EXPECT_EQ(1u, ukm_entries.size());
+  test_ukm_recorder.ExpectEntryMetric(ukm_entries[0], "IsAllowlisted", true);
+  test_ukm_recorder.EntryHasMetric(ukm_entries[0], "SuspiciousScore");
 }
 
 }  // namespace safe_browsing

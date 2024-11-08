@@ -17,6 +17,10 @@
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "url/gurl.h"
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace optimization_guide {
 class OptimizationGuideModelProvider;
 }
@@ -36,18 +40,29 @@ class NotificationContentDetectionModel
  public:
   NotificationContentDetectionModel(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+      content::BrowserContext* browser_context);
   ~NotificationContentDetectionModel() override;
 
   // Perform inference on the model with the provided notification contents.
   // Pass `PostprocessCategories` as the `ExecuteModelWithInput` callback. This
-  // method is virtual for testing.
-  virtual void Execute(blink::PlatformNotificationData& notification_data);
+  // method is virtual for testing. The `origin` and `did_match_allowlist`
+  // values are used for logging UKMs.
+  virtual void Execute(blink::PlatformNotificationData& notification_data,
+                       const GURL& origin,
+                       bool did_match_allowlist);
 
  private:
   // Log UMA metrics, given the `output` result of model inference.
   void PostprocessCategories(
+      const GURL& origin,
+      bool did_match_allowlist,
       const std::optional<std::vector<tflite::task::core::Category>>& output);
+
+  // Used for logging UKM data. Since the `NotificationContentDetectionModel`
+  // class is only instantiated from a `KeyedService` and the `browser_context_`
+  // is passed directly from it, this is guaranteed to be safe.
+  raw_ptr<content::BrowserContext> browser_context_;
 
   base::WeakPtrFactory<NotificationContentDetectionModel> weak_ptr_factory_{
       this};

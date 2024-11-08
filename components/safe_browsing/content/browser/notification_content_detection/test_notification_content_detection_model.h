@@ -15,7 +15,8 @@ class TestNotificationContentDetectionModel
  public:
   TestNotificationContentDetectionModel(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+      content::BrowserContext* browser_context);
 
   ~TestNotificationContentDetectionModel() override;
 

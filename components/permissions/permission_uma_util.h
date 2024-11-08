@@ -738,6 +738,12 @@ class PermissionUmaUtil {
                                     content::WebContents* web_contents,
                                     const GURL& requesting_origin);
 
+  static void RecordPermissionUsageNotificationShown(
+      bool is_allowlisted,
+      int suspicious_score,
+      content::BrowserContext* browser_context,
+      const GURL& requesting_origin);
+
   static void RecordTimeElapsedBetweenGrantAndUse(
       ContentSettingsType type,
       base::TimeDelta delta,

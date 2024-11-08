@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 
 namespace safe_browsing {
@@ -42,18 +43,23 @@ std::string GetFormattedNotificationContentsForModelInput(
 
 NotificationContentDetectionModel::NotificationContentDetectionModel(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
-    scoped_refptr<base::SequencedTaskRunner> background_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+    content::BrowserContext* browser_context)
     : BertModelHandler(model_provider,
                        background_task_runner,
                        optimization_guide::proto::
                            OPTIMIZATION_TARGET_NOTIFICATION_CONTENT_DETECTION,
-                       std::nullopt) {}
+                       std::nullopt) {
+  browser_context_ = browser_context;
+}
 
 NotificationContentDetectionModel::~NotificationContentDetectionModel() =
     default;
 
 void NotificationContentDetectionModel::Execute(
-    blink::PlatformNotificationData& notification_data) {
+    blink::PlatformNotificationData& notification_data,
+    const GURL& origin,
+    bool did_match_allowlist) {
   // If there is no model version, then there is no valid notification content
   // detection model loaded from the server so don't check the model.
   if (!GetModelInfo() || !GetModelInfo()->GetVersion()) {
@@ -64,11 +70,14 @@ void NotificationContentDetectionModel::Execute(
   // with `contents` as input.
   ExecuteModelWithInput(
       base::BindOnce(&NotificationContentDetectionModel::PostprocessCategories,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), origin,
+                     did_match_allowlist),
       GetFormattedNotificationContentsForModelInput(notification_data));
 }
 
 void NotificationContentDetectionModel::PostprocessCategories(
+    const GURL& origin,
+    bool did_match_allowlist,
     const std::optional<std::vector<tflite::task::core::Category>>& output) {
   // Validate model response and obtain suspicious and not suspicious confidence
   // scores. Crash on debug builds only.
@@ -79,6 +88,8 @@ void NotificationContentDetectionModel::PostprocessCategories(
       // Log "suspicious" score from model's response.
       base::UmaHistogramPercentage(kSuspiciousScoreHistogram,
                                    100 * category.score);
+      permissions::PermissionUmaUtil::RecordPermissionUsageNotificationShown(
+          did_match_allowlist, 100 * category.score, browser_context_, origin);
       return;
     }
   }

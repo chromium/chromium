@@ -380,6 +380,20 @@ void RecordPermissionUsageUkm(ContentSettingsType permission_type,
   builder.Record(ukm::UkmRecorder::Get());
 }
 
+void RecordPermissionUsageNotificationShownUkm(
+    bool is_allowlisted,
+    int suspicious_score,
+    std::optional<ukm::SourceId> source_id) {
+  if (!source_id.has_value()) {
+    return;
+  }
+
+  ukm::builders::PermissionUsage_NotificationShown builder(source_id.value());
+  builder.SetIsAllowlisted(is_allowlisted);
+  builder.SetSuspiciousScore(suspicious_score);
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
 void RecordPermissionActionUkm(
     PermissionAction action,
     PermissionRequestGestureType gesture_type,
@@ -1223,6 +1237,18 @@ void PermissionUmaUtil::RecordPermissionUsage(
   PermissionsClient::Get()->GetUkmSourceId(
       permission_type, browser_context, web_contents, requesting_origin,
       base::BindOnce(&RecordPermissionUsageUkm, permission_type));
+}
+
+void PermissionUmaUtil::RecordPermissionUsageNotificationShown(
+    bool is_allowlisted,
+    int suspicious_score,
+    content::BrowserContext* browser_context,
+    const GURL& requesting_origin) {
+  PermissionsClient::Get()->GetUkmSourceId(
+      ContentSettingsType::NOTIFICATIONS, browser_context, nullptr,
+      requesting_origin,
+      base::BindOnce(&RecordPermissionUsageNotificationShownUkm, is_allowlisted,
+                     suspicious_score));
 }
 
 void PermissionUmaUtil::RecordPermissionAction(

@@ -69,7 +69,7 @@ std::unique_ptr<KeyedService> NotificationContentDetectionServiceFactory::
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   return std::make_unique<NotificationContentDetectionService>(
-      opt_guide, background_task_runner, database_manager);
+      opt_guide, background_task_runner, database_manager, context);
 }
 
 }  // namespace safe_browsing

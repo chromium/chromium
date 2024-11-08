@@ -9,13 +9,16 @@
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/task_environment.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/mock_safe_browsing_database_manager.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/test_model_observer_tracker.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/test_notification_content_detection_model.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
@@ -40,12 +43,16 @@ class MockNotificationContentDetectionModel
  public:
   MockNotificationContentDetectionModel(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
-      scoped_refptr<base::SequencedTaskRunner> background_task_runner)
+      scoped_refptr<base::SequencedTaskRunner> background_task_runner,
+      content::BrowserContext* browser_context)
       : TestNotificationContentDetectionModel(model_provider,
-                                              background_task_runner) {}
+                                              background_task_runner,
+                                              browser_context) {}
 
-  MOCK_METHOD1(Execute,
-               void(blink::PlatformNotificationData& notification_data));
+  MOCK_METHOD3(Execute,
+               void(blink::PlatformNotificationData& notification_data,
+                    const GURL& origin,
+                    bool did_match_allowlist));
 
  private:
   std::vector<blink::PlatformNotificationData> execute_inputs_;
@@ -64,7 +71,7 @@ class NotificationContentDetectionServiceTest : public ::testing::Test {
         std::make_unique<NotificationContentDetectionService>(
             model_observer_tracker_.get(),
             base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
-            database_manager_);
+            database_manager_, &browser_context_);
 
     // Update service with test model.
     SetUpTestNotificationContentDetectionModel();
@@ -80,7 +87,8 @@ class NotificationContentDetectionServiceTest : public ::testing::Test {
     auto test_notification_content_detection_model =
         std::make_unique<MockNotificationContentDetectionModel>(
             model_observer_tracker_.get(),
-            base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+            base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
+            &browser_context_);
 
     base::FilePath model_file_path = GetValidModelFile();
     std::unique_ptr<optimization_guide::ModelInfo> model_info =
@@ -98,6 +106,14 @@ class NotificationContentDetectionServiceTest : public ::testing::Test {
 
     notification_content_detection_service()->SetModelForTesting(
         std::move(test_notification_content_detection_model));
+  }
+
+  void SetAllowistedSiteSampleRateToOneHundred() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        safe_browsing::kOnDeviceNotificationContentDetectionModel,
+        {{"OnDeviceNotificationContentDetectionModelAllowlistSamplingRate",
+          /* Override to 100% to make sure it will be sampled. */
+          "100"}});
   }
 
   scoped_refptr<MockSafeBrowsingDatabaseManager> database_manager() {
@@ -123,9 +139,10 @@ class NotificationContentDetectionServiceTest : public ::testing::Test {
       notification_content_detection_service_;
   raw_ptr<MockNotificationContentDetectionModel>
       notification_content_detection_model_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::BrowserTaskEnvironment task_environment_;
+  content::TestBrowserContext browser_context_;
 };
 
 TEST_F(NotificationContentDetectionServiceTest, DelayedAllowlistCheckCallback) {
@@ -151,7 +168,8 @@ TEST_F(NotificationContentDetectionServiceTest, DelayedAllowlistCheckCallback) {
   delete notification_data;
   EXPECT_CALL(*notification_content_detection_model(),
               Execute(testing::Field(&blink::PlatformNotificationData::title,
-                                     u"Notification title")))
+                                     u"Notification title"),
+                      origin, false))
       .Times(1);
   database_manager()->RestartDelayedCallback(origin);
 }
@@ -164,7 +182,8 @@ TEST_F(NotificationContentDetectionServiceTest,
 
   blink::PlatformNotificationData notification_data;
   SetUpTestNotificationContentDetectionModel();
-  EXPECT_CALL(*notification_content_detection_model(), Execute(testing::_))
+  EXPECT_CALL(*notification_content_detection_model(),
+              Execute(testing::_, origin, false))
       .Times(1);
   notification_content_detection_service()
       ->MaybeCheckNotificationContentDetectionModel(notification_data, origin);
@@ -174,14 +193,35 @@ TEST_F(NotificationContentDetectionServiceTest,
 }
 
 TEST_F(NotificationContentDetectionServiceTest,
-       DontCheckNotificationModelForAllowlistedUrl) {
+       CheckNotificationModelForAllowlistedUrl_FeatureParamRateIsOneHundred) {
+  SetAllowistedSiteSampleRateToOneHundred();
   // Setup allowlisted URL.
   const GURL origin("allowlisted_url.com");
   database_manager()->SetAllowlistLookupDetailsForUrl(origin, /*match=*/true);
 
   blink::PlatformNotificationData notification_data;
   SetUpTestNotificationContentDetectionModel();
-  EXPECT_CALL(*notification_content_detection_model(), Execute(testing::_))
+  EXPECT_CALL(*notification_content_detection_model(),
+              Execute(testing::_, origin, true))
+      .Times(1);
+  notification_content_detection_service()
+      ->MaybeCheckNotificationContentDetectionModel(notification_data, origin);
+
+  // Check that histograms logging happens as expected.
+  histogram_tester().ExpectTotalCount(kAllowlistCheckLatencyHistogram, 1);
+}
+
+TEST_F(NotificationContentDetectionServiceTest,
+       DontCheckNotificationModelForAllowlistedUrl_ByDefault) {
+  // Setup allowlisted URL.
+  const GURL origin("allowlisted_url.com");
+  database_manager()->SetAllowlistLookupDetailsForUrl(origin, /*match=*/true);
+
+  // Model should not be checked.
+  blink::PlatformNotificationData notification_data;
+  SetUpTestNotificationContentDetectionModel();
+  EXPECT_CALL(*notification_content_detection_model(),
+              Execute(testing::_, testing::_, testing::_))
       .Times(0);
   notification_content_detection_service()
       ->MaybeCheckNotificationContentDetectionModel(notification_data, origin);

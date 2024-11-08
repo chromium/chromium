@@ -17612,6 +17612,35 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PermissionUsage.NotificationShown">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Recorded when the notification content detection model is ran on
+    notification contents, which happens on a request to display a persistent
+    notification.
+  </summary>
+  <metric name="IsAllowlisted" enum="Boolean">
+    <summary>
+      A boolean signaling whether the URL is on the high confidence allowlist or
+      not.
+    </summary>
+  </metric>
+  <metric name="SuspiciousScore">
+    <summary>
+      The 'suspicious' score given to notification contents that came from the
+      URL. Ranges from 0 to 100.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Plugins.FlashInstance">
   <owner>tommycli@chromium.org</owner>
   <summary>

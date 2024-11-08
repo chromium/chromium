@@ -229,6 +229,12 @@ BASE_FEATURE(kOnDeviceNotificationContentDetectionModel,
              "OnDeviceNotificationContentDetectionModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+constexpr base::FeatureParam<int>
+    kOnDeviceNotificationContentDetectionModelAllowlistSamplingRate{
+        &kOnDeviceNotificationContentDetectionModel,
+        "OnDeviceNotificationContentDetectionModelAllowlistSamplingRate",
+        /*default_value=*/0};
+
 BASE_FEATURE(kPasswordLeakToggleMove,
              "PasswordLeakToggleMove",
              base::FEATURE_DISABLED_BY_DEFAULT);
