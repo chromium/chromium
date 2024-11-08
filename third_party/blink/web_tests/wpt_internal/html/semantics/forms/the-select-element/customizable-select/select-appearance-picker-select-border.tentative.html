@@ -22,7 +22,8 @@ select::picker(select) {
 
 <script>
 (async () => {
-  await test_driver.click(document.querySelector('select'));
+  await test_driver.bless();
+  document.querySelector('select').showPicker();
   document.documentElement.classList.remove('reftest-wait');
 })();
 </script>

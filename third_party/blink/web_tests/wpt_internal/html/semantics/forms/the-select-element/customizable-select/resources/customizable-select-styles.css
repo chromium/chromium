@@ -8,10 +8,11 @@
 
 .customizable-select-popover {
   overflow: auto;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: solid;
   padding-block: 0.25em;
   padding-inline: 0;
-  background-color: Field;
+  color: CanvasText;
+  background-color: Canvas;
   margin: 0;
   inset: auto;
   min-inline-size: anchor-size(self-inline);
@@ -41,11 +42,11 @@
 }
 
 .customizable-select-button {
-  color: FieldText;
-  background-color: Field;
+  color: inherit;
+  background-color: color-mix(in lab, currentColor 10%, transparent);
   appearance: none;
   padding: 0.25em;
-  border: 1px solid ButtonBorder;
+  border: 1px solid currentColor;
   cursor: default;
   text-align: inherit;
   /* TODO(crbug.com/1511354): Make display match the UA stylesheet. */

@@ -7,6 +7,6 @@
  * forced_colors.css when CustomizableSelect is enabled and the flag is removed.
  */
 
-select {
-  background-color: -internal-appearance-auto-base-select(Canvas, transparent);
+select:not(:-internal-list-box):not(:-internal-select-has-child-button) {
+    background-color: -internal-appearance-auto-base-select(Canvas, color-mix(in lab, currentColor 10%, transparent));
 }

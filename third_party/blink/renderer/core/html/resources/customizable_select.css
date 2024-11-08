@@ -10,6 +10,8 @@
 
 select:not(:-internal-list-box) {
   font: -internal-appearance-auto-base-select(-webkit-small-control, inherit);
+  color: -internal-appearance-auto-base-select(FieldText, inherit);
+  background-color: -internal-appearance-auto-base-select(Field, color-mix(in lab, currentColor 10%, transparent));
 }
 
 /* These rules are intended to apply to appearance:base-select when the author
@@ -33,7 +35,7 @@ select:not(:-internal-list-box):-internal-select-has-child-button {
  * appearance is auto. */
 select:not(:-internal-list-box):not(:-internal-select-has-child-button) {
   padding: -internal-appearance-auto-base-select(0, 0.25em);
-  border: 1px solid -internal-appearance-auto-base-select(light-dark(#767676, #858585), ButtonBorder);
+  border: 1px solid -internal-appearance-auto-base-select(light-dark(#767676, #858585), currentColor);
   /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
    * https://github.com/openui/open-ui/issues/1026
    * https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html */
@@ -48,6 +50,20 @@ select:not(:-internal-list-box):not(:-internal-select-has-child-button) {
    * for the font property instead of -webkit-small-control. */
 }
 
+/* Without this rule, we would be changing the styles for disabled
+ * appearance:auto selects. */
+select:not(:-internal-list-box):disabled {
+  color: -internal-appearance-auto-base-select(light-dark(GrayText, #aaa), inherit);
+  border-color: -internal-appearance-auto-base-select(rgba(118, 118, 118, 0.3), inherit);
+}
+
+select:not(:-internal-list-box):not(:-internal-select-has-child-button):enabled:hover {
+  background-color: -internal-appearance-auto-base-select(Field, color-mix(in lab, currentColor 20%, transparent));
+}
+select:not(:-internal-list-box):not(:-internal-select-has-child-button):enabled:active {
+  background-color: -internal-appearance-auto-base-select(Field, color-mix(in lab, currentColor 30%, transparent));
+}
+
 /* Undo unwanted styles from select rules */
 select:not(:-internal-list-box) > button,
 select::picker(select) {
@@ -57,10 +73,11 @@ select::picker(select) {
 select:not(:-internal-list-box)::picker(select) {
   box-sizing: border-box;
   overflow: auto;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: solid;
   padding-block: 0.25em;
   padding-inline: 0;
-  background-color: Field;
+  color: CanvasText;
+  background-color: Canvas;
   margin: 0;
   inset: auto;
   min-inline-size: anchor-size(self-inline);

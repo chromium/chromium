@@ -5,7 +5,9 @@
 <link rel=match href="select-popover-exit-animation-ref.html">
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
 
+<div>hover target</div>
 <select>
   <option>option</option>
 </select>
@@ -28,6 +30,9 @@ select.animate::picker(select) {
   select.classList.add('animate');
   await test_driver.click(select);
   select.blur();
+  await (new test_driver.Actions()
+    .pointerMove(1, 1, {origin: document.querySelector('div')}))
+    .send();
   await new Promise(requestAnimationFrame);
   await new Promise(requestAnimationFrame);
   document.documentElement.classList.remove('reftest-wait');
