@@ -571,6 +571,15 @@ void MenuController::OnWidgetShowStateChanged(Widget* widget) {
   }
 }
 
+void MenuController::OnWidgetBoundsChanged(Widget* widget, const gfx::Rect&) {
+  DCHECK_EQ(owner_, widget);
+  // When the Widget bounds change there's currently no heuristic for keeping
+  // the menu anchored to something relevant (they are free floating). For now
+  // we'll just close the menu if bounds change, which is likely due to user
+  // input. See crbug.com/376599395.
+  Cancel(ExitType::kAll);
+}
+
 void MenuController::Run(Widget* parent,
                          MenuButtonController* button_controller,
                          MenuItemView* root,
