@@ -2246,6 +2246,7 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="18" label="Snap to replace"/>
   <int value="19" label="Visible on all desks"/>
   <int value="20" label="Select a window in Snap Group in partial Overview"/>
+  <int value="21" label="Move a window in Snap Group to new coral desk"/>
 </enum>
 
 <enum name="SpeechRecognitionEndState">

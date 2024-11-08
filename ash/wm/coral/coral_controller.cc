@@ -13,6 +13,8 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/mru_window_tracker.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "base/command_line.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
@@ -235,13 +237,35 @@ void CoralController::OpenNewDeskWithGroup(CoralResponse::Group group) {
   // Move the apps to the new desk.
   const int new_desk_idx = desks_controller->GetNumberOfDesks() - 1;
   Desk* new_desk = desks_controller->GetDeskAtIndex(new_desk_idx);
+
+  // First place all windows that should be moved in a set, this is so we can
+  // have O(1) lookups for snap groups later.
+  base::flat_set<aura::Window*> windows_set;
   for (const auto& app : tabs_apps.apps) {
-    auto* window = FindAppWindowOnActiveDesk(app.id);
-    if (window) {
-      desks_controller->MoveWindowFromActiveDeskTo(
-          window, new_desk, window->GetRootWindow(),
-          DesksMoveWindowFromActiveDeskSource::kCoral);
+    if (aura::Window* window = FindAppWindowOnActiveDesk(app.id)) {
+      windows_set.insert(window);
     }
+  }
+
+  auto* snap_group_controller = SnapGroupController::Get();
+  for (aura::Window* window : windows_set) {
+    // If a window is part of a snap group, and the other window is not part of
+    // `windows_set` (i.e. not in the group), remove the snap group first
+    // otherwise both windows will be moved.
+    if (SnapGroup* snap_group =
+            snap_group_controller->GetSnapGroupForGivenWindow(window)) {
+      aura::Window* other_window = window == snap_group->window1()
+                                       ? snap_group->window2()
+                                       : snap_group->window1();
+      CHECK(other_window);
+      if (!windows_set.contains(other_window)) {
+        snap_group_controller->RemoveSnapGroup(snap_group,
+                                               SnapGroupExitPoint::kCoral);
+      }
+    }
+    desks_controller->MoveWindowFromActiveDeskTo(
+        window, new_desk, window->GetRootWindow(),
+        DesksMoveWindowFromActiveDeskSource::kCoral);
   }
 
   desks_controller->ActivateDesk(desks_controller->desks().back().get(),

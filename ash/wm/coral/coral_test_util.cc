@@ -56,7 +56,7 @@ coral::mojom::GroupPtr CreateDefaultTestGroup() {
                           {"Figma", GURL("https://www.figma.com/")},
                           {"Notion", GURL("https://www.notion.so/")},
                           {"Settings", "odknhmnlageboeamepcngndbggdpaobj"},
-                          {"Files", "lgnggepjiihbfdbedefdhcffnmhcahbm"}},
+                          {"Files", "fkiggjmkendpmbegkagpmagjepfkpmeb"}},
                          "Coral Group");
 }
 

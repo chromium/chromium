@@ -13,11 +13,14 @@
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/coral/coral_test_util.h"
+#include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/birch/birch_chip_button.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
+#include "ash/wm/snap_group/snap_group_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/views/view_utils.h"
@@ -26,6 +29,14 @@ namespace ash {
 
 class CoralControllerTest : public AshTestBase {
  public:
+  void ClickFirstCoralButton() {
+    DeskSwitchAnimationWaiter waiter;
+    BirchChipButton* coral_button = GetFirstCoralButton();
+    CHECK(coral_button);
+    LeftClickOn(coral_button);
+    waiter.Wait();
+  }
+
   void SetUp() override {
     AshTestBase::SetUp();
 
@@ -91,10 +102,7 @@ TEST_F(CoralControllerTest, VisibleOnAllDesks) {
   // desk.
   Shell::Get()->overview_controller()->StartOverview(
       OverviewStartAction::kTests);
-  DeskSwitchAnimationWaiter waiter;
-  BirchChipButton* coral_button = GetFirstCoralButton();
-  LeftClickOn(coral_button);
-  waiter.Wait();
+  ClickFirstCoralButton();
   auto* desks_controller = DesksController::Get();
   EXPECT_EQ(desks_controller->desks().size(), 2u);
   EXPECT_EQ(desks_controller->GetActiveDeskIndex(), 1);
@@ -103,6 +111,66 @@ TEST_F(CoralControllerTest, VisibleOnAllDesks) {
   // desks.
   EXPECT_TRUE(desks_controller->BelongsToActiveDesk(app_window.get()));
   EXPECT_TRUE(desks_util::IsWindowVisibleOnAllWorkspaces(app_window.get()));
+}
+
+// Tests that when we have a snap group with one window in the coral group, only
+// the window in the coral group gets moved to the new coral desk.
+TEST_F(CoralControllerTest, SnapGroupOneWindowInCoralGroup) {
+  auto app_window_in_group = CreateAppWindow();
+  // This is the property of one of the apps in the group
+  // `CreateDefaultTestGroup()`, which is used in the test setup harness.
+  app_window_in_group->SetProperty(
+      kAppIDKey, std::string("odknhmnlageboeamepcngndbggdpaobj"));
+  auto app_window_not_in_group = CreateAppWindow();
+
+  SnapTwoTestWindows(app_window_in_group.get(), app_window_not_in_group.get(),
+                     /*horizontal=*/true, GetEventGenerator());
+  ASSERT_TRUE(SnapGroupController::Get()->AreWindowsInSnapGroup(
+      app_window_not_in_group.get(), app_window_in_group.get()));
+
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  ClickFirstCoralButton();
+
+  // Tests that the two windows are on separate desks, and that there are no
+  // snap groups.
+  const std::vector<std::unique_ptr<Desk>>& desks =
+      DesksController::Get()->desks();
+  EXPECT_TRUE(
+      base::Contains(desks[0]->windows(), app_window_not_in_group.get()));
+  EXPECT_TRUE(base::Contains(desks[1]->windows(), app_window_in_group.get()));
+  EXPECT_FALSE(SnapGroupController::Get()->AreWindowsInSnapGroup(
+      app_window_not_in_group.get(), app_window_in_group.get()));
+}
+
+// Tests that when we have a snap group with both windows in the coral group,
+// both windows move to the coral desk, and the snap group is maintained.
+TEST_F(CoralControllerTest, SnapGroupTwoWindowsInCoralGroup) {
+  // These are the properties of two of the apps in the group
+  // `CreateDefaultTestGroup()`, which is used in the test setup harness.
+  auto window1 = CreateAppWindow();
+  window1->SetProperty(kAppIDKey,
+                       std::string("odknhmnlageboeamepcngndbggdpaobj"));
+  auto window2 = CreateAppWindow();
+  window2->SetProperty(kAppIDKey,
+                       std::string("fkiggjmkendpmbegkagpmagjepfkpmeb"));
+
+  SnapTwoTestWindows(window1.get(), window2.get(),
+                     /*horizontal=*/true, GetEventGenerator());
+  ASSERT_TRUE(SnapGroupController::Get()->AreWindowsInSnapGroup(window1.get(),
+                                                                window2.get()));
+
+  Shell::Get()->overview_controller()->StartOverview(
+      OverviewStartAction::kTests);
+  ClickFirstCoralButton();
+
+  // Tests that the two windows are on new desk and still in a snap group.
+  const std::vector<std::unique_ptr<Desk>>& desks =
+      DesksController::Get()->desks();
+  EXPECT_TRUE(base::Contains(desks[1]->windows(), window1.get()));
+  EXPECT_TRUE(base::Contains(desks[1]->windows(), window2.get()));
+  EXPECT_TRUE(SnapGroupController::Get()->AreWindowsInSnapGroup(window1.get(),
+                                                                window2.get()));
 }
 
 }  // namespace ash
