@@ -87,7 +87,6 @@ crbug.com/349397104 external/wpt/pointerevents/pointerevent_touch-action-span-no
 crbug.com/349397104 external/wpt/pointerevents/pointerlock/pointerevent_getCoalescedEvents_when_pointerlocked.https.html [ Failure Pass ]
 crbug.com/349397104 external/wpt/pointerevents/pointerlock/pointerevent_pointerlock_after_pointercapture.html [ Failure Pass ]
 
-
 # Incompatible with both Chrome Android and Webview
 # SharedWorker interface
 crbug.com/40290702 external/wpt/background-fetch/idlharness.https.any.sharedworker.html [ Failure ]
@@ -128,7 +127,6 @@ crbug.com/925997 [ Webview ] external/wpt/mediasession/idlharness.window.html [ 
 crbug.com/334063352 [ WebView ] external/wpt/picture-in-picture/idlharness.window.html [ Failure ]
 crbug.com/421921 [ Webview ] external/wpt/push-api/idlharness.https.any.serviceworker.html [ Failure ]
 
-
 # Other failing/timeout tests
 [ Android ] external/wpt/visual-viewport/resize-event-order.html [ Timeout ]
 [ Android ] external/wpt/visual-viewport/viewport-resize-event-on-load-overflowing-page.html [ Failure ]
@@ -147,7 +145,6 @@ external/wpt/webrtc/idlharness.https.window.html [ Skip Timeout ]
 # Flaky tests
 [ Android ] external/wpt/visual-viewport/viewport-scrollbars-cause-resize.html [ Failure Pass ]
 [ Android ] external/wpt/visual-viewport/viewport-unscaled-size.html [ Failure Pass ]
-[ Webview ] external/wpt/idle-detection/idlharness.https.window.html [ Pass Timeout ]
 [ Webview ] external/wpt/largest-contentful-paint/idlharness.html [ Pass Timeout ]
 [ Webview ] external/wpt/storage/idlharness.https.any.worker.html [ Failure Pass ]
 [ Webview ] external/wpt/streams/idlharness.any.worker.html [ Failure Pass Timeout ]
@@ -156,3 +153,9 @@ external/wpt/webrtc/idlharness.https.window.html [ Skip Timeout ]
 [ Webview ] external/wpt/webrtc-encoded-transform/idlharness.https.window.html [ Failure Pass ]
 crbug.com/372119113 [ Webview ] external/wpt/visual-viewport/scroll-event-order.html [ Crash Failure Pass ]  # Flaky output
 crbug.com/372097205 external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Crash Failure Pass ]
+
+# Stack (with nondeterministic memory addresses) is dumped into `*-expected.txt`.
+[ Webview ] external/wpt/idle-detection/idlharness-worker.https.window.html [ Failure ]
+[ Webview ] external/wpt/idle-detection/idlharness.https.window.html [ Failure Timeout ]
+[ Webview ] external/wpt/screen-wake-lock/idlharness.https.window.html [ Failure ]
+[ Webview ] external/wpt/webmidi/idlharness.https.window.html [ Failure ]

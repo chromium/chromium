@@ -252,7 +252,9 @@ class WebDriverTestharnessProtocolPart(TestharnessProtocolPart):
         for window_handle in window_handles:
             try:
                 self.webdriver.window_handle = window_handle
-                self.webdriver.window.close()
+                remaining_windows = self.webdriver.window.close()
+                if window_handle in remaining_windows:
+                    raise Exception("the window remained open after sending the window close command")
             except webdriver_error.NoSuchWindowException:
                 pass
 
