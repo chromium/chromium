@@ -11,6 +11,7 @@ load("./ar.star", "ar")
 load("./clang_all.star", "clang_all")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 load("./config.star", "config")
+load("./fuchsia.star", "fuchsia")
 load("./gn_logs.star", "gn_logs")
 load("./win_sdk.star", "win_sdk")
 
@@ -136,6 +137,8 @@ def __filegroups(ctx):
                     "type": "glob",
                     "includes": ["*"],
                 }
+    if fuchsia.enabled(ctx):
+        fg.update(fuchsia.filegroups(ctx))
     fg.update(clang_all.filegroups(ctx))
     return fg
 
@@ -169,6 +172,9 @@ def __clang_link(ctx, cmd):
             sysroot = ctx.fs.canonpath(sysroot)
         elif arg.startswith("--target="):
             target = arg.removeprefix("--target=")
+        elif arg.startswith("-L"):
+            lib_path = ctx.fs.canonpath(arg.removeprefix("-L"))
+            inputs.append(lib_path + ":link")
     if sysroot:
         inputs.extend([sysroot + ":link"])
 
