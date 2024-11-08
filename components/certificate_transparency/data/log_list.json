@@ -1,6 +1,6 @@
 {
-  "version": "48.25",
-  "log_list_timestamp": "2024-11-07T12:55:39Z",
+  "version": "49.1",
+  "log_list_timestamp": "2024-11-08T12:55:50Z",
   "operators": [
     {
       "name": "Google",
@@ -710,8 +710,8 @@
           "url": "https://oak.ct.letsencrypt.org/2026h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-08-21T00:00:00Z"
+            "usable": {
+              "timestamp": "2024-11-04T00:00:00Z"
             }
           },
           "temporal_interval": {
@@ -726,8 +726,8 @@
           "url": "https://oak.ct.letsencrypt.org/2026h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-08-21T00:00:00Z"
+            "usable": {
+              "timestamp": "2024-11-04T00:00:00Z"
             }
           },
           "temporal_interval": {
