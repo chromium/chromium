@@ -54,6 +54,7 @@ class ScrollbarThemeAuraButtonOverride final : public ScrollbarThemeAura {
   gfx::Rect last_painted_back_button_rect;
   gfx::Rect last_painted_forward_button_rect;
 
+  using ScrollbarThemeAura::ButtonSize;
   using ScrollbarThemeAura::NinePatchTrackAndButtonsAperture;
   using ScrollbarThemeAura::NinePatchTrackAndButtonsCanvasSize;
   using ScrollbarThemeAura::PaintTrackBackgroundAndButtons;
@@ -271,9 +272,12 @@ TEST_P(ScrollbarThemeAuraTest, ScrollbarPartsInvalidationTest) {
 }
 
 // Verify that the NinePatchCanvas function returns the correct minimal image
-// size when the scrollbars are larger and smaller than the minimal size (enough
-// space for two buttons and a pixel in the middle).
-TEST_P(ScrollbarThemeAuraTest, NinePatchCanvas) {
+// size when the scrollbar is larger than the minimal size (enough space for
+// two buttons and a pixel in the middle), and the NinePatchAperture
+// function returns the correct point in the middle of the canvas taking into
+// consideration when the scrollbars' width is even to expand the width of the
+// center-patch.
+TEST_P(ScrollbarThemeAuraTest, NinePatchLargerThanMinimalSize) {
   if (!RuntimeEnabledFeatures::AuraScrollbarUsesNinePatchTrackEnabled()) {
     GTEST_SKIP();
   }
@@ -284,27 +288,26 @@ TEST_P(ScrollbarThemeAuraTest, NinePatchCanvas) {
   Scrollbar* scrollbar = Scrollbar::CreateForTesting(
       mock_scrollable_area, kVerticalScrollbar, &theme);
 
-  // Test that a scrollbar larger than the minimal size is properly shrunk
-  // when asked for the aperture.
-  scrollbar->SetFrameRect(
-      gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() * 3));
-  gfx::Size expected_size(scrollbar->Width(), scrollbar->Width() * 2 + 1);
-  EXPECT_EQ(expected_size,
-            theme.NinePatchTrackAndButtonsCanvasSize(*scrollbar));
+  const int width = scrollbar->Width();
+  scrollbar->SetFrameRect(gfx::Rect(12, 34, width, width * 3));
+  const gfx::Size canvas = theme.NinePatchTrackAndButtonsCanvasSize(*scrollbar);
+  EXPECT_EQ(gfx::Size(width, width * 2 + 1), canvas);
+  const gfx::Rect aperture = theme.NinePatchTrackAndButtonsAperture(*scrollbar);
+  EXPECT_EQ(gfx::Rect(0, width, width, 1), aperture);
+  EXPECT_EQ(gfx::Size(width, width), theme.ButtonSize(*scrollbar));
 
-  // Test that a scrollbar smaller than the minimal size is not shrunk when
-  // asked for the aperture.
-  scrollbar->SetFrameRect(
-      gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() / 3));
-  expected_size = scrollbar->Size();
-  EXPECT_EQ(expected_size,
-            theme.NinePatchTrackAndButtonsCanvasSize(*scrollbar));
+  PaintController paint_controller;
+  paint_controller.UpdateCurrentPaintChunkProperties(PropertyTreeState::Root());
+  GraphicsContext context(paint_controller);
+  theme.PaintTrackBackgroundAndButtons(context, *scrollbar, gfx::Rect(canvas));
+  EXPECT_EQ(gfx::Rect(0, width, width, 1), theme.last_painted_track_rect);
+  EXPECT_EQ(gfx::Rect(0, 0, width, width), theme.last_painted_back_button_rect);
+  EXPECT_EQ(gfx::Rect(0, width + 1, width, width),
+            theme.last_painted_forward_button_rect);
 }
 
-// Verify that the NinePatchAperture function returns the correct point in the
-// middle of the canvas taking into consideration when the scrollbars' width is
-// even to expand the width of the center-patch.
-TEST_P(ScrollbarThemeAuraTest, NinePatchAperture) {
+// Same as above, but the scrollbar is smaller than the minimal size.
+TEST_P(ScrollbarThemeAuraTest, NinePatchSmallerThanMinimalSize) {
   if (!RuntimeEnabledFeatures::AuraScrollbarUsesNinePatchTrackEnabled()) {
     GTEST_SKIP();
   }
@@ -314,15 +317,31 @@ TEST_P(ScrollbarThemeAuraTest, NinePatchAperture) {
   MockScrollableArea* mock_scrollable_area = CreateMockScrollableArea();
   Scrollbar* scrollbar = Scrollbar::CreateForTesting(
       mock_scrollable_area, kVerticalScrollbar, &theme);
-  scrollbar->SetFrameRect(
-      gfx::Rect(0, 0, scrollbar->Width(), scrollbar->Width() * 3));
+
+  const int width = scrollbar->Width();
+  const int height = width / 3;
+  scrollbar->SetFrameRect(gfx::Rect(12, 34, width, height));
   const gfx::Size canvas = theme.NinePatchTrackAndButtonsCanvasSize(*scrollbar);
-  gfx::Rect expected_rect(canvas.width() / 2, canvas.height() / 2, 1, 1);
-  if (canvas.width() % 2 == 0) {
-    expected_rect.set_x(expected_rect.x() - 1);
-    expected_rect.set_width(2);
+  EXPECT_EQ(gfx::Size(width, height), canvas);
+  const gfx::Rect aperture = theme.NinePatchTrackAndButtonsAperture(*scrollbar);
+  EXPECT_EQ(gfx::Rect(canvas), aperture);
+  const gfx::Size button_size = theme.ButtonSize(*scrollbar);
+  EXPECT_EQ(gfx::Size(width, height / 2), button_size);
+
+  PaintController paint_controller;
+  paint_controller.UpdateCurrentPaintChunkProperties(PropertyTreeState::Root());
+  GraphicsContext context(paint_controller);
+  theme.PaintTrackBackgroundAndButtons(context, *scrollbar, gfx::Rect(canvas));
+  if (int track_height = height - button_size.height() * 2) {
+    EXPECT_EQ(track_height, 1);
+    EXPECT_EQ(gfx::Rect(0, button_size.height(), width, track_height),
+              theme.last_painted_track_rect);
   }
-  EXPECT_EQ(expected_rect, theme.NinePatchTrackAndButtonsAperture(*scrollbar));
+  EXPECT_EQ(gfx::Rect(0, 0, width, button_size.height()),
+            theme.last_painted_back_button_rect);
+  EXPECT_EQ(
+      gfx::Rect(0, height - button_size.height(), width, button_size.height()),
+      theme.last_painted_forward_button_rect);
 }
 
 TEST_P(ScrollbarThemeAuraTest, NinePatchTrackWithoutButtons) {

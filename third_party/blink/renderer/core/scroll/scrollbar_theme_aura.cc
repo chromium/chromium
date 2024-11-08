@@ -234,8 +234,9 @@ void ScrollbarThemeAura::PaintTrackBackgroundAndButtons(
     const gfx::Rect& rect) {
   if (rect.size() == scrollbar.FrameRect().size()) {
     // The non-nine-patch code path. The caller should use this code path if
+    // - The nine-patch canvas is the same as the scrollbar rect;
     // - UsesNinePatchTrackAndButtonsResource() is false;
-    // - There are tickmarks; or
+    // - There are tickmarks; OR
     // - Is painting non-composited scrollbars
     //   (from ScrollbarDisplayItem::Paint()).
     ScrollbarTheme::PaintTrackBackgroundAndButtons(context, scrollbar, rect);
@@ -538,42 +539,35 @@ bool ScrollbarThemeAura::UsesNinePatchTrackAndButtonsResource() const {
 gfx::Size ScrollbarThemeAura::NinePatchTrackAndButtonsCanvasSize(
     const Scrollbar& scrollbar) const {
   CHECK(UsesNinePatchTrackAndButtonsResource());
-  const gfx::Size scrollbar_size = scrollbar.Size();
-  gfx::Size canvas_size = ButtonSize(scrollbar);
-  if (canvas_size.IsEmpty()) {
+  const gfx::Size button_size = ButtonSize(scrollbar);
+  if (button_size.IsEmpty()) {
     return gfx::Size(1, 1);
   }
+  const gfx::Size scrollbar_size = scrollbar.Size();
   if (scrollbar.Orientation() == kVerticalScrollbar) {
-    canvas_size.set_height(
-        std::min(scrollbar_size.height(), canvas_size.height() * 2 + 1));
-  } else if (scrollbar.Orientation() == kHorizontalScrollbar) {
-    canvas_size.set_width(
-        std::min(scrollbar_size.width(), canvas_size.width() * 2 + 1));
+    return gfx::Size(
+        button_size.width(),
+        std::min(scrollbar_size.height(), button_size.height() * 2 + 1));
+  } else {
+    return gfx::Size(
+        std::min(scrollbar_size.width(), button_size.width() * 2 + 1),
+        button_size.height());
   }
-  return canvas_size;
 }
 
 gfx::Rect ScrollbarThemeAura::NinePatchTrackAndButtonsAperture(
     const Scrollbar& scrollbar) const {
   CHECK(UsesNinePatchTrackAndButtonsResource());
-  const gfx::Size canvas = NinePatchTrackAndButtonsCanvasSize(scrollbar);
-  static constexpr int kCenterPixelSize = 1;
-  static constexpr int kEvenCenterPixelWidth = 2;
-  gfx::Rect aperture(canvas.width() / 2, canvas.height() / 2, kCenterPixelSize,
-                     kCenterPixelSize);
-
-  // If the scrollbars width is even, the center patch will be two pixels wide
-  // with one pixel on each half of the scrollbar.
-  if (canvas.width() % 2 == 0 &&
-      scrollbar.Orientation() == kVerticalScrollbar) {
-    aperture.set_x(aperture.x() - 1);
-    aperture.set_width(kEvenCenterPixelWidth);
-  } else if (canvas.height() % 2 == 0 &&
-             scrollbar.Orientation() == kHorizontalScrollbar) {
-    aperture.set_y(aperture.y() - 1);
-    aperture.set_height(kEvenCenterPixelWidth);
+  const gfx::Size scrollbar_size = scrollbar.Size();
+  const gfx::Size canvas_size = NinePatchTrackAndButtonsCanvasSize(scrollbar);
+  if (canvas_size == scrollbar_size) {
+    return gfx::Rect(canvas_size);
   }
-  return aperture;
+  if (scrollbar.Orientation() == kVerticalScrollbar) {
+    return gfx::Rect(0, canvas_size.height() / 2, canvas_size.width(), 1);
+  } else {
+    return gfx::Rect(canvas_size.width() / 2, 0, 1, canvas_size.height());
+  }
 }
 
 }  // namespace blink

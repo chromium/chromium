@@ -323,8 +323,10 @@ void ScrollbarTheme::PaintTrackBackgroundAndButtons(GraphicsContext& context,
   }
 
   gfx::Rect track_rect = TrackRect(scrollbar);
-  track_rect.Offset(offset);
-  PaintTrackBackground(context, scrollbar, track_rect);
+  if (!track_rect.IsEmpty()) {
+    track_rect.Offset(offset);
+    PaintTrackBackground(context, scrollbar, track_rect);
+  }
 }
 
 void ScrollbarTheme::PaintTrackAndButtons(GraphicsContext& context,
