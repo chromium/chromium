@@ -252,10 +252,8 @@ PaymentShippingType PaymentRequestSpec::shipping_type() const {
     case payments::mojom::PaymentShippingType::SHIPPING:
       return PaymentShippingType::SHIPPING;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  // Needed for compilation on some platforms.
-  return PaymentShippingType::SHIPPING;
 }
 
 std::u16string PaymentRequestSpec::GetFormattedCurrencyAmount(

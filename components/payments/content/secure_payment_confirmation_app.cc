@@ -145,8 +145,7 @@ bool SecurePaymentConfirmationApp::CanPreselect() const {
 }
 
 std::u16string SecurePaymentConfirmationApp::GetMissingInfoLabel() const {
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 bool SecurePaymentConfirmationApp::HasEnrolledInstrument() const {
@@ -212,11 +211,11 @@ bool SecurePaymentConfirmationApp::IsWaitingForPaymentDetailsUpdate() const {
 
 void SecurePaymentConfirmationApp::UpdateWith(
     mojom::PaymentRequestDetailsUpdatePtr details_update) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SecurePaymentConfirmationApp::OnPaymentDetailsNotUpdated() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SecurePaymentConfirmationApp::AbortPaymentApp(

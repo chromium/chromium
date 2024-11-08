@@ -84,8 +84,7 @@ bool WebAppManifestSectionTable::CreateTablesIfNecessary() {
                      "id VARCHAR, "
                      "min_version INTEGER NOT NULL DEFAULT 0, "
                      "fingerprints BLOB) ")) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   return true;

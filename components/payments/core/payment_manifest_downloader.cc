@@ -165,7 +165,7 @@ GURL PaymentManifestDownloader::FindTestServerURL(const GURL& url) const {
 
 void PaymentManifestDownloader::SetCSPCheckerForTesting(
     base::WeakPtr<CSPChecker> csp_checker) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 PaymentManifestDownloader::Download::Download() = default;

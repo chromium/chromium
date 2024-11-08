@@ -44,8 +44,7 @@ std::u16string GetShippingAddressSelectorInfoMessage(
       return l10n_util::GetStringUTF16(
           IDS_PAYMENTS_SELECT_SHIPPING_ADDRESS_FOR_SHIPPING_METHODS);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
@@ -59,8 +58,7 @@ std::u16string GetShippingAddressSectionString(
     case PaymentShippingType::SHIPPING:
       return l10n_util::GetStringUTF16(IDS_PAYMENTS_SHIPPING_ADDRESS_LABEL);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
@@ -74,8 +72,7 @@ std::u16string GetShippingOptionSectionString(
     case PaymentShippingType::SHIPPING:
       return l10n_util::GetStringUTF16(IDS_PAYMENTS_SHIPPING_OPTION_LABEL);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
