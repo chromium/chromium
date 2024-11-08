@@ -100,11 +100,16 @@
   <slot name="subpage-title-extra"></slot>
 </div>
 
-<template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-  <settings-card id="cardBody">
+<template is="dom-if" if="[[!multiCard]]">
+  <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+    <settings-card id="cardBody">
+      <slot></slot>
+    </settings-card>
+  </template>
+  <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
     <slot></slot>
-  </settings-card>
+  </template>
 </template>
-<template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+<template is="dom-if" if="[[multiCard]]">
   <slot></slot>
 </template>

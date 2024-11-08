@@ -1552,6 +1552,10 @@ IN_PROC_BROWSER_TEST_F(OSSettingsTestSearchBox, OfficialBuild) {
 }
 #endif
 
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsSubpage) {
+  RunSettingsTest("os_settings_subpage/os_settings_subpage_test.js");
+}
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsSettingsUi) {
   RunSettingsTest("os_settings_ui/os_settings_ui_test.js");
 }

@@ -134,6 +134,20 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
         },
         readOnly: true,
       },
+
+      /**
+       * Whether the subpage allows multiple cards or a single card.
+       *
+       * If this property is true, then no card will be populated by default and
+       * the subpages are responsible for organizing content into cards. If this
+       * property is false, then the subpage should populate content directly in
+       * this page into a single card.
+       */
+      multiCard: {
+        type: Boolean,
+        value: false,
+      },
+
     };
   }
 
@@ -147,6 +161,7 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
   hideBackButton: boolean;
   associatedControl: HTMLElement|null;
   preserveSearchTerm: boolean;
+  multiCard: boolean;
   private active_: boolean;
   private lastActiveValue_: boolean = false;
   private eventTracker_: EventTracker|null = null;
