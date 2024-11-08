@@ -10,7 +10,7 @@
 #include <type_traits>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -64,14 +64,16 @@ std::string GetCountryCode() {
   return country_code;
 }
 
-std::tuple<std::string, bool> IsComposeEnabledForCountry(
-    compose::Config config) {
+// Given a set of countries checks if the current variations country is in the
+// list. A list with a single item that is "*" will accept all countries.
+// Return tuple: (current_country_code, enabled_for_country).
+std::tuple<std::string, bool> IsEnabledForCountry(
+    const base::flat_set<std::string>& enabled_countries) {
   std::string country_code = GetCountryCode();
-  if (config.enabled_countries.size() == 1 &&
-      config.enabled_countries[0] == "*") {
+  if (enabled_countries.size() == 1 && enabled_countries.contains("*")) {
     return {country_code, true};
   }
-  return {country_code, base::Contains(config.enabled_countries, country_code)};
+  return {country_code, enabled_countries.contains(country_code)};
 }
 
 }  // namespace
@@ -210,7 +212,7 @@ base::expected<void, compose::ComposeShowStatus> ComposeEnabling::CheckEnabling(
   std::string country_code;
   bool is_enabled_for_country;
   std::tie(country_code, is_enabled_for_country) =
-      IsComposeEnabledForCountry(compose::GetComposeConfig());
+      IsEnabledForCountry(compose::GetComposeConfig().enabled_countries);
   if (!is_enabled_for_country) {
     DVLOG(2) << "not running in an enabled country: \"" << country_code << "\"";
     return base::unexpected(
@@ -261,6 +263,20 @@ ComposeEnabling::ShouldTriggerNoStatePopup(
     const url::Origin& element_frame_origin,
     GURL url,
     bool is_msbb_enabled) {
+  // Check if we're running in a country where the no state popup is enabled.
+  // Note that an empty country code will block the no state popup.
+  std::string country_code;
+  bool is_enabled_for_country;
+  std::tie(country_code, is_enabled_for_country) = IsEnabledForCountry(
+      compose::GetComposeConfig().proactive_nudge_countries);
+  if (!is_enabled_for_country) {
+    DVLOG(2) << "not running in an enabled country: \"" << country_code << "\"";
+    return base::unexpected(
+        country_code.empty()
+            ? compose::ComposeShowStatus::kUndefinedCountry
+            : compose::ComposeShowStatus::kComposeNotEnabledInCountry);
+  }
+
   // TODO(b/319661274): Support fenced frame checks from the Autofill popup
   // entry point.
   bool is_in_fenced_frame = false;

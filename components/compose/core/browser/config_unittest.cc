@@ -22,7 +22,7 @@ class ConfigTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ConfigTest, ConfigUsesDefaultCountryValues) {
+TEST_F(ConfigTest, ConfigUsesDefaultEnabledCountries) {
   compose::Config config = compose::GetComposeConfig();
   EXPECT_THAT(config.enabled_countries,
               testing::UnorderedElementsAre("bd", "ca", "gh", "in", "ke", "my",
@@ -30,7 +30,7 @@ TEST_F(ConfigTest, ConfigUsesDefaultCountryValues) {
                                             "us", "zm", "zw"));
 }
 
-TEST_F(ConfigTest, ConfigUsesCountryFinchValues) {
+TEST_F(ConfigTest, ConfigUsesEnabledCountryFinchValues) {
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
       compose::features::kEnableCompose,
       {{"enabled_countries", " a,b c\td'e\"f\ng "}});
@@ -40,7 +40,7 @@ TEST_F(ConfigTest, ConfigUsesCountryFinchValues) {
               testing::UnorderedElementsAre("a", "b", "c", "d", "e", "f", "g"));
 }
 
-TEST_F(ConfigTest, ConfigFallbackToDefaultsCountriesIfBadFinchValues) {
+TEST_F(ConfigTest, ConfigFallbackToDefaultEnabledCountriesOnEmptyList) {
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
       compose::features::kEnableCompose,
       {{"enabled_countries", ", \t' \n ,\" ,\"\t\n"}});
@@ -50,6 +50,32 @@ TEST_F(ConfigTest, ConfigFallbackToDefaultsCountriesIfBadFinchValues) {
               testing::UnorderedElementsAre("bd", "ca", "gh", "in", "ke", "my",
                                             "ng", "ph", "pk", "sg", "tz", "ug",
                                             "us", "zm", "zw"));
+}
+
+TEST_F(ConfigTest, ConfigUsesDefaultProactiveNudgeCountries) {
+  compose::Config config = compose::GetComposeConfig();
+  EXPECT_THAT(config.proactive_nudge_countries,
+              testing::UnorderedElementsAre("us"));
+}
+
+TEST_F(ConfigTest, ConfigUsesProactiveNudgeCountryFinchValues) {
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      compose::features::kEnableComposeProactiveNudge,
+      {{"proactive_nudge_countries", " a,b c\td'e\"f\ng "}});
+  compose::ResetConfigForTesting();
+  compose::Config config = compose::GetComposeConfig();
+  EXPECT_THAT(config.proactive_nudge_countries,
+              testing::UnorderedElementsAre("a", "b", "c", "d", "e", "f", "g"));
+}
+
+TEST_F(ConfigTest, ConfigFallbackToDefaultProactiveNudgeCountriesOnEmptyList) {
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      compose::features::kEnableComposeProactiveNudge,
+      {{"proactive_nudge_countries", ", \t' \n ,\" ,\"\t\n"}});
+  compose::ResetConfigForTesting();
+  compose::Config config = compose::GetComposeConfig();
+  EXPECT_THAT(config.proactive_nudge_countries,
+              testing::UnorderedElementsAre("us"));
 }
 
 TEST_F(ConfigTest, ConfigUnsignedIntNegativeParams) {
