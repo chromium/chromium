@@ -16236,6 +16236,27 @@
             ]
         }
     ],
+    "ParkableStringsLessAggressiveAndZstd": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LessAggressiveParkableString",
+                        "UseZstdForParkableStrings"
+                    ]
+                }
+            ]
+        }
+    ],
     "PartialPageZeroing": [
         {
             "platforms": [
@@ -16504,6 +16525,26 @@
                     },
                     "enable_features": [
                         "PartitionAllocShadowMetadata"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PartitionAllocShortMemoryReclaim": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PartitionAllocShortMemoryReclaim"
                     ]
                 }
             ]
