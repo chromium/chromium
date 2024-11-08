@@ -54,7 +54,7 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
               base::OnceClosure callback,
               RemovalParams params = RemovalParams::Default()) override;
   // `RemoveInRange` does not record metrics related to the time period deletion
-  // since it's triggered only timestamps.
+  // since it's triggered only with timestamps.
   void RemoveInRange(base::Time start_time,
                      base::Time end_time,
                      BrowsingDataRemoveMask mask,
