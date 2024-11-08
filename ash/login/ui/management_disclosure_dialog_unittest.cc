@@ -38,8 +38,7 @@ TEST_F(ManagementDisclosureDialogTest, CheckStaticTextTest) {
       DeviceEnterpriseInfo{"BestCompanyEver", ManagementDeviceMode::kNone});
 
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
 

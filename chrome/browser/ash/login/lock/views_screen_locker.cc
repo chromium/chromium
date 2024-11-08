@@ -142,11 +142,6 @@ void ViewsScreenLocker::HandleOnFocusPod(const AccountId& account_id) {
   WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
 }
 
-bool ViewsScreenLocker::HandleFocusLockScreenApps(bool reverse) {
-  // TODO(crbug.com/376354347): Remove this method.
-  return false;
-}
-
 void ViewsScreenLocker::HandleFocusOobeDialog() {
   NOTREACHED();
 }

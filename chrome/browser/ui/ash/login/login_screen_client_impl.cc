@@ -172,10 +172,6 @@ void LoginScreenClientImpl::OnFocusPod(const AccountId& account_id) {
   }
 }
 
-void LoginScreenClientImpl::FocusLockScreenApps(bool reverse) {
-  // TODO(crbug.com/376354347): Remove this method.
-}
-
 void LoginScreenClientImpl::FocusOobeDialog() {
   if (delegate_) {
     delegate_->HandleFocusOobeDialog();

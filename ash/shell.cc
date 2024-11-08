@@ -207,7 +207,6 @@
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/touch/ash_touch_transform_controller.h"
 #include "ash/touch/touch_devices_controller.h"
-#include "ash/tray_action/tray_action.h"
 #include "ash/user_education/user_education_controller.h"
 #include "ash/user_education/user_education_delegate.h"
 #include "ash/utility/occlusion_tracker_pauser.h"
@@ -1019,8 +1018,6 @@ Shell::~Shell() {
   toplevel_window_event_handler_.reset();
   visibility_controller_.reset();
 
-  tray_action_.reset();
-
   power_button_controller_.reset();
   lock_state_controller_.reset();
   backlights_forced_off_setter_.reset();
@@ -1578,9 +1575,6 @@ void Shell::Init(
       chromeos::PowerManagerClient::Get(), local_state_);
 
   backlights_forced_off_setter_ = std::make_unique<BacklightsForcedOffSetter>();
-
-  tray_action_ =
-      std::make_unique<TrayAction>(backlights_forced_off_setter_.get());
 
   lock_state_controller_ = std::make_unique<LockStateController>(
       shutdown_controller_.get(), local_state_);

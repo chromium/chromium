@@ -45,7 +45,6 @@ class AccessibilityPanelLayoutManager;
 class AlwaysOnTopController;
 class AppMenuModelAdapter;
 class AshWindowTreeHost;
-class LockScreenActionBackgroundController;
 class RootWindowLayoutManager;
 class ScreenRotationAnimator;
 class Shelf;
@@ -189,11 +188,6 @@ class ASH_EXPORT RootWindowController {
 
   WallpaperWidgetController* wallpaper_widget_controller() {
     return wallpaper_widget_controller_.get();
-  }
-
-  LockScreenActionBackgroundController*
-  lock_screen_action_background_controller() {
-    return lock_screen_action_background_controller_.get();
   }
 
   AshColorProviderSource* color_provider_source() {
@@ -357,9 +351,6 @@ class ASH_EXPORT RootWindowController {
       nullptr;
 
   std::unique_ptr<::wm::ScopedCaptureClient> capture_client_;
-
-  std::unique_ptr<LockScreenActionBackgroundController>
-      lock_screen_action_background_controller_;
 
   std::unique_ptr<views::Widget> ambient_widget_;
 

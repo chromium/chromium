@@ -33,8 +33,7 @@ class LockScreenMediaViewTest : public LoginTestBase {
     LoginTestBase::SetUp();
 
     LockContentsView* lock_contents_view = new LockContentsView(
-        mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-        DataDispatcher(),
+        LockScreen::ScreenType::kLock, DataDispatcher(),
         std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
     LockContentsViewTestApi lock_contents(lock_contents_view);
     SetWidget(CreateWidgetWithContent(lock_contents_view));

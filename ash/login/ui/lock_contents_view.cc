@@ -36,7 +36,6 @@
 #include "ash/login/ui/login_public_account_user_view.h"
 #include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/non_accessible_view.h"
-#include "ash/login/ui/note_action_launch_button.h"
 #include "ash/login/ui/scrollable_users_list_view.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/media/media_controller_impl.h"
@@ -359,12 +358,9 @@ class LockContentsView::LockContentsViewLayout : public views::LayoutManager {
   // Triggered when the children of the top header change contents or
   // visibility.
   void LayoutTopHeader() {
-    const int preferred_width =
-        host_->system_info_->GetPreferredSize().width() +
-        host_->note_action_->GetPreferredSize().width();
+    const int preferred_width = host_->system_info_->GetPreferredSize().width();
     const int preferred_height =
-        std::max(host_->system_info_->GetPreferredSize().height(),
-                 host_->note_action_->GetPreferredSize().height());
+        host_->system_info_->GetPreferredSize().height();
     // Position the top header - the origin is offset to the left from the top
     // right corner of the entire view by the width of this top header view.
     const gfx::Point position =
@@ -433,7 +429,6 @@ class LockContentsView::LockContentsViewLayout : public views::LayoutManager {
 };
 
 LockContentsView::LockContentsView(
-    mojom::TrayActionState initial_note_action_state,
     LockScreen::ScreenType screen_type,
     LoginDataDispatcher* data_dispatcher,
     std::unique_ptr<LoginDetachableBaseModel> detachable_base_model)
@@ -493,9 +488,6 @@ LockContentsView::LockContentsView(
     ShowEnterpriseDomainManager(enterprise_domain_manager);
   }
 
-  note_action_ = top_header_->AddChildView(
-      std::make_unique<NoteActionLaunchButton>(initial_note_action_state));
-
   // Public Session expanded view.
   expanded_view_ =
       AddChildView(std::make_unique<LoginExpandedPublicAccountView>(
@@ -529,7 +521,6 @@ LockContentsView::LockContentsView(
     user_adding_screen_indicator_ =
         AddChildView(std::make_unique<UserAddingScreenIndicator>());
   }
-  OnLockScreenNoteStateChanged(initial_note_action_state);
   chromeos::PowerManagerClient::Get()->AddObserver(this);
   RegisterAccelerators();
 
@@ -780,14 +771,6 @@ void LockContentsView::OnFocus() {
 }
 
 void LockContentsView::AboutToRequestFocusFromTabTraversal(bool reverse) {
-  // The LockContentsView itself doesn't have anything to focus. If it gets
-  // focused we should change the currently focused widget (ie, to the shelf or
-  // status area, or lock screen apps, if they are active).
-  if (reverse && lock_screen_apps_active_) {
-    Shell::Get()->login_screen_controller()->FocusLockScreenApps(reverse);
-    return;
-  }
-
   FocusNextWidget(reverse);
 }
 
@@ -1159,9 +1142,6 @@ void LockContentsView::OnAuthEnabledForUser(const AccountId& user) {
   }
 
   state->disable_auth = false;
-  disable_lock_screen_note_ = state->disable_auth;
-  OnLockScreenNoteStateChanged(
-      Shell::Get()->tray_action()->GetLockScreenNoteState());
 
   LoginBigUserView* big_user =
       TryToFindBigUser(user, true /*require_auth_active*/);
@@ -1180,8 +1160,6 @@ void LockContentsView::OnAuthDisabledForUser(
   }
 
   state->disable_auth = true;
-  disable_lock_screen_note_ = state->disable_auth;
-  OnLockScreenNoteStateChanged(mojom::TrayActionState::kNotAvailable);
 
   if (auth_disabled_data.disable_lock_screen_media) {
     Shell::Get()->media_controller()->SuspendMediaSessions();
@@ -1259,25 +1237,6 @@ void LockContentsView::OnWarningMessageUpdated(const std::u16string& message) {
       CurrentBigUserView()->auth_user()->GetActiveInputView());
   warning_banner_bubble_->SetTextContent(message);
   warning_banner_bubble_->Show();
-}
-
-void LockContentsView::OnLockScreenNoteStateChanged(
-    mojom::TrayActionState state) {
-  if (disable_lock_screen_note_) {
-    state = mojom::TrayActionState::kNotAvailable;
-  }
-
-  bool old_lock_screen_apps_active = lock_screen_apps_active_;
-  lock_screen_apps_active_ = state == mojom::TrayActionState::kActive;
-  note_action_->UpdateVisibility(state);
-  top_header_->InvalidateLayout();
-
-  // If lock screen apps just got deactivated - request focus for primary auth,
-  // which should focus the password field.
-  if (old_lock_screen_apps_active && !lock_screen_apps_active_ &&
-      primary_big_view_) {
-    primary_big_view_->RequestFocus();
-  }
 }
 
 void LockContentsView::OnSystemInfoChanged(
@@ -1431,14 +1390,6 @@ void LockContentsView::OnDetachableBasePairingStatusChanged(
   }
 }
 
-void LockContentsView::OnFocusLeavingLockScreenApps(bool reverse) {
-  if (!reverse || lock_screen_apps_active_) {
-    FocusNextWidget(reverse);
-  } else {
-    FocusFirstOrLastFocusableChild(this, reverse);
-  }
-}
-
 void LockContentsView::OnOobeDialogStateChanged(OobeDialogState state) {
   const bool oobe_dialog_was_visible = oobe_dialog_visible_;
   oobe_dialog_visible_ = state != OobeDialogState::HIDDEN &&
@@ -1491,11 +1442,6 @@ void LockContentsView::OnFocusLeavingSystemTray(bool reverse) {
   // tray) - lock shelf view expect the focus to be taken when it passes it
   // to lock screen view, and can misbehave in case the focus is kept in it.
   FocusFirstOrLastFocusableChild(this, reverse);
-
-  if (lock_screen_apps_active_) {
-    Shell::Get()->login_screen_controller()->FocusLockScreenApps(reverse);
-    return;
-  }
 
   if (oobe_dialog_visible_) {
     Shell::Get()->login_screen_controller()->FocusOobeDialog();

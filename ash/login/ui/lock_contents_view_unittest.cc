@@ -36,7 +36,6 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/reauth_reason.h"
-#include "ash/public/mojom/tray_action.mojom.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/login_shelf_view.h"
@@ -49,7 +48,6 @@
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/power_button_controller.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/tray_action/tray_action.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -192,8 +190,7 @@ class LockContentsMediaViewUnitTest : public LockContentsViewUnitTest {
 TEST_F(LockContentsViewUnitTest, DisplayMode) {
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
@@ -241,8 +238,7 @@ TEST_F(LockContentsViewUnitTest, DisplayMode) {
 // Verifies that the single user view is centered.
 TEST_F(LockContentsViewUnitTest, SingleUserCentered) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
@@ -265,8 +261,7 @@ TEST_F(LockContentsViewUnitTest, SingleUserCentered) {
 TEST_F(LockContentsViewUnitTest, LayoutInSmallScreenSize) {
   // Build lock screen.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   LockContentsViewTestApi lock_contents(contents);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
@@ -326,8 +321,7 @@ TEST_F(LockContentsViewUnitTest, LayoutInSmallScreenSize) {
 TEST_F(LockContentsViewUnitTest, AutoLayoutAfterRotation) {
   // Build lock screen with three users.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   LockContentsViewTestApi lock_contents(contents);
@@ -381,8 +375,7 @@ TEST_F(LockContentsViewUnitTest, AutoLayoutAfterRotation) {
 TEST_F(LockContentsViewUnitTest, AutoLayoutExtraSmallUsersListAfterRotation) {
   // Build lock screen with extra small layout (> 6 users).
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   SetUserCount(9);
@@ -418,8 +411,7 @@ TEST_F(LockContentsViewUnitTest, AutoLayoutExtraSmallUsersListAfterRotation) {
 TEST_F(LockContentsViewUnitTest, AutoLayoutSmallUsersListAfterRotation) {
   // Build lock screen with small layout (3-6 users).
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   SetUserCount(4);
@@ -534,8 +526,7 @@ TEST_F(LockContentsViewKeyboardUnitTest, ShowPinPadForPassword) {
   users()[0].show_pin_pad_for_password = true;
   ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
   LockContentsView* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   ASSERT_NE(nullptr, contents);
@@ -554,8 +545,7 @@ TEST_F(LockContentsViewKeyboardUnitTest, ShowPinPadForPassword) {
 TEST_F(LockContentsViewUnitTest, SwapAuthUsersInTwoUserLayout) {
   // Build lock screen with two users.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   LockContentsViewTestApi test_api(contents);
   SetUserCount(2);
@@ -599,8 +589,7 @@ TEST_F(LockContentsViewUnitTest, SwapAuthUsersInTwoUserLayout) {
 TEST_F(LockContentsViewUnitTest, SwapUserListToPrimaryAuthUser) {
   // Build lock screen with five users.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   LockContentsViewTestApi lock_contents(contents);
@@ -641,13 +630,11 @@ TEST_F(LockContentsViewUnitTest, SwapUserListToPrimaryAuthUser) {
 // Verifies the system info view bounds interaction with the note-taking button.
 TEST_F(LockContentsViewUnitTest, SystemInfoViewBounds) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
 
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
-  gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
   LockContentsViewTestApi test_api(contents);
   // Verify that the system info view is hidden by default.
   EXPECT_FALSE(test_api.system_info()->GetVisible());
@@ -659,21 +646,6 @@ TEST_F(LockContentsViewUnitTest, SystemInfoViewBounds) {
       "Bluetooth adapter", false /*adb_sideloading_enabled*/);
   EXPECT_TRUE(test_api.system_info()->GetVisible());
   EXPECT_FALSE(test_api.bottom_status_indicator()->GetVisible());
-  EXPECT_TRUE(test_api.note_action()->GetVisible());
-  gfx::Size note_action_size = test_api.note_action()->GetPreferredSize();
-  EXPECT_GE(widget_bounds.right() -
-                test_api.system_info()->GetBoundsInScreen().right(),
-            note_action_size.width());
-
-  // Verify that if the note action is disabled, the system info view moves to
-  // the right to fill the empty space.
-  DataDispatcher()->SetLockScreenNoteState(
-      mojom::TrayActionState::kNotAvailable);
-  views::test::RunScheduledLayout(widget.get());
-  EXPECT_FALSE(test_api.note_action()->GetVisible());
-  EXPECT_LT(widget_bounds.right() -
-                test_api.system_info()->GetBoundsInScreen().right(),
-            note_action_size.width());
 
   // Verify that bottom status indicator is invisible if neither adb sideloading
   // is enabled nor the device is enrolled.
@@ -683,8 +655,7 @@ TEST_F(LockContentsViewUnitTest, SystemInfoViewBounds) {
 // Alt-V toggles display of system information.
 TEST_F(LockContentsViewUnitTest, AltVTogglesHiddenSystemInfo) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
 
@@ -716,8 +687,7 @@ TEST_F(LockContentsViewUnitTest, AltVTogglesHiddenSystemInfo) {
 // reveal hidden system info.
 TEST_F(LockContentsViewUnitTest, ShowRevealsHiddenSystemInfo) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
 
@@ -756,8 +726,7 @@ TEST_F(LockContentsViewUnitTest, ShowRevealsHiddenSystemInfo) {
 // Show bottom status indicator if ADB sideloading is enabled.
 TEST_F(LockContentsViewUnitTest, ShowStatusIndicatorIfAdbSideloadingEnabled) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
 
@@ -786,8 +755,7 @@ TEST_F(LockContentsViewUnitTest, ShowStatusIndicatorIfEnrolledDevice) {
       DeviceEnterpriseInfo{"BestCompanyEver", ManagementDeviceMode::kNone});
 
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
 
@@ -811,8 +779,7 @@ TEST_F(LockContentsViewUnitTest, ShowManagementBubbleOnClickIfEnrolledDevice) {
       DeviceEnterpriseInfo{"BestCompanyEver", ManagementDeviceMode::kNone});
 
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
 
@@ -846,8 +813,7 @@ TEST_F(LockContentsViewUnitTest, DoNotShowManagementBubbleOnClickIfAdb) {
       DeviceEnterpriseInfo{"BestCompanyEver", ManagementDeviceMode::kNone});
 
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
 
@@ -879,8 +845,7 @@ TEST_F(LockContentsViewUnitTest, DoNotShowManagementBubbleOnClickIfAdb) {
 TEST_F(LockContentsViewUnitTest, ShowErrorBubbleOnAuthFailure) {
   // Build lock screen with a single user.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   SetWidget(CreateWidgetWithContent(contents));
@@ -904,8 +869,7 @@ TEST_F(LockContentsViewUnitTest, ShowErrorBubbleOnAuthFailure) {
 TEST_F(LockContentsViewUnitTest, AuthErrorLockscreenLearnMoreButton) {
   // Build lock screen with a single user.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
 
@@ -960,8 +924,7 @@ TEST_F(LockContentsViewUnitTest, AuthErrorLockscreenLearnMoreButton) {
 
 TEST_F(LockContentsViewUnitTest, AuthErrorLoginScreenRecoverUserButton) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLogin, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
 
@@ -1021,8 +984,7 @@ TEST_F(LockContentsViewUnitTest, AuthErrorLoginScreenRecoverUserButton) {
 TEST_F(LockContentsViewUnitTest, GaiaNeverShownOnLockAfterFailedAuth) {
   // Build lock screen with a single user.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   SetWidget(CreateWidgetWithContent(contents));
@@ -1049,8 +1011,7 @@ TEST_F(LockContentsViewUnitTest, GaiaNeverShownOnLockAfterFailedAuth) {
 TEST_F(LockContentsViewUnitTest, GaiaNeverShownAfterFirstFailedLoginAttempt) {
   // Build lock screen with two users.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLogin, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(2);
   SetWidget(CreateWidgetWithContent(contents));
@@ -1135,9 +1096,9 @@ TEST_F(LockContentsViewUnitTest, ErrorBubbleOnUntrustedDetachableBase) {
       fake_detachable_base_model.get();
 
   // Build lock screen with 2 users.
-  auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(), std::move(fake_detachable_base_model));
+  auto* contents =
+      new LockContentsView(LockScreen::ScreenType::kLock, DataDispatcher(),
+                           std::move(fake_detachable_base_model));
   SetUserCount(2);
 
   const AccountId& kFirstUserAccountId = users()[0].basic_user_info.account_id;
@@ -1215,9 +1176,9 @@ TEST_F(LockContentsViewUnitTest, ErrorBubbleForUnauthenticatedDetachableBase) {
       fake_detachable_base_model.get();
 
   // Build lock screen with 2 users.
-  auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(), std::move(fake_detachable_base_model));
+  auto* contents =
+      new LockContentsView(LockScreen::ScreenType::kLock, DataDispatcher(),
+                           std::move(fake_detachable_base_model));
   SetUserCount(2);
 
   const AccountId& kFirstUserAccountId = users()[0].basic_user_info.account_id;
@@ -1276,9 +1237,9 @@ TEST_F(LockContentsViewUnitTest,
       fake_detachable_base_model.get();
 
   // Build lock screen with 2 users.
-  auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(), std::move(fake_detachable_base_model));
+  auto* contents =
+      new LockContentsView(LockScreen::ScreenType::kLock, DataDispatcher(),
+                           std::move(fake_detachable_base_model));
   SetUserCount(1);
 
   const AccountId& kUserAccountId = users()[0].basic_user_info.account_id;
@@ -1312,9 +1273,9 @@ TEST_F(LockContentsViewUnitTest, DetachableBaseErrorClearsAuthError) {
       fake_detachable_base_model.get();
 
   // Build lock screen with a single user.
-  auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(), std::move(fake_detachable_base_model));
+  auto* contents =
+      new LockContentsView(LockScreen::ScreenType::kLock, DataDispatcher(),
+                           std::move(fake_detachable_base_model));
   SetUserCount(1);
 
   const AccountId& kUserAccountId = users()[0].basic_user_info.account_id;
@@ -1362,9 +1323,9 @@ TEST_F(LockContentsViewUnitTest, AuthErrorDoesNotRemoveDetachableBaseError) {
       fake_detachable_base_model.get();
 
   // Build lock screen with a single user.
-  auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(), std::move(fake_detachable_base_model));
+  auto* contents =
+      new LockContentsView(LockScreen::ScreenType::kLock, DataDispatcher(),
+                           std::move(fake_detachable_base_model));
   SetUserCount(1);
 
   const AccountId& kUserAccountId = users()[0].basic_user_info.account_id;
@@ -1595,8 +1556,7 @@ TEST_F(LockContentsViewUnitTest, SwapAuthAndPublicAccountUserInTwoUserLayout) {
   // Build lock screen with two users: one public account user and one regular
   // user.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   AddPublicAccountUsers(1);
@@ -1655,8 +1615,7 @@ TEST_F(LockContentsViewUnitTest, SwapUserListToPrimaryBigUser) {
   // Build lock screen with 4 users: two public account users and two regular
   // users.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   AddPublicAccountUsers(2);
@@ -1777,8 +1736,7 @@ TEST_F(LockContentsViewUnitTest, SwapUserListToPrimaryBigUser) {
 // Validates that swapping between two auth users also changes password focus.
 TEST_F(LockContentsViewUnitTest, AuthUserSwapFocusesPassword) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   AddUsers(2);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
@@ -1807,8 +1765,7 @@ TEST_F(LockContentsViewUnitTest, AuthUserSwapFocusesPassword) {
 // Validates that tapping on an auth user will refocus the password.
 TEST_F(LockContentsViewUnitTest, TapOnAuthUserFocusesPassword) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
 
@@ -1850,8 +1807,7 @@ TEST_F(LockContentsViewUnitTest, TapOnAuthUserFocusesPassword) {
 // Validates that swapping between users in user lists maintains password focus.
 TEST_F(LockContentsViewUnitTest, UserListUserSwapFocusesPassword) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   LockContentsViewTestApi contents_test_api(contents);
@@ -1876,9 +1832,9 @@ TEST_F(LockContentsViewUnitTest, BadDetachableBaseUnfocusesPasswordView) {
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher());
   FakeLoginDetachableBaseModel* detachable_base_model =
       fake_detachable_base_model.get();
-  auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(), std::move(fake_detachable_base_model));
+  auto* contents =
+      new LockContentsView(LockScreen::ScreenType::kLock, DataDispatcher(),
+                           std::move(fake_detachable_base_model));
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   SetUserCount(3);
 
@@ -1906,8 +1862,7 @@ TEST_F(LockContentsViewUnitTest, ExpandedPublicSessionView) {
   // Build lock screen with 3 users: one public account user and two regular
   // users.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   LockContentsViewTestApi lock_contents(contents);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
@@ -1946,8 +1901,7 @@ TEST_F(LockContentsViewUnitTest, ExpandedPublicSessionView) {
 
 TEST_F(LockContentsViewUnitTest, OnAuthEnabledForUserChanged) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   SetWidget(CreateWidgetWithContent(contents));
@@ -1997,8 +1951,7 @@ TEST_F(LockContentsViewUnitTest, OnAuthEnabledForUserChanged) {
 
 TEST_F(LockContentsViewUnitTest, ShowReasonOnAuthDisabled) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   SetWidget(CreateWidgetWithContent(contents));
@@ -2051,8 +2004,7 @@ TEST_F(LockContentsViewUnitTest, ShowReasonOnAuthDisabled) {
 
 TEST_F(LockContentsViewUnitTest, DisabledAuthMessageFocusBehavior) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   SetWidget(CreateWidgetWithContent(contents));
@@ -2090,8 +2042,7 @@ TEST_F(LockContentsViewUnitTest, DisabledAuthMessageFocusBehavior) {
 // after media session changes to playing.
 TEST_F(LockContentsMediaViewUnitTest, DisableAuthAfterMediaSessionChanged) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
@@ -2117,8 +2068,7 @@ TEST_F(LockContentsMediaViewUnitTest, DisableAuthAfterMediaSessionChanged) {
 // before media session changes to playing.
 TEST_F(LockContentsMediaViewUnitTest, DisableAuthBeforeMediaSessionChanged) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
@@ -2142,8 +2092,7 @@ TEST_F(LockContentsMediaViewUnitTest, DisableAuthBeforeMediaSessionChanged) {
 
 TEST_F(LockContentsMediaViewUnitTest, DisableAuthAllowMediaControls) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
@@ -2168,8 +2117,7 @@ TEST_F(LockContentsMediaViewUnitTest, DisableAuthAllowMediaControls) {
 // Tests parent access dialog showing/hiding and focus behavior.
 TEST_F(LockContentsViewUnitTest, ParentAccessDialog) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   AddChildUsers(1);
   SetWidget(CreateWidgetWithContent(contents));
@@ -2206,8 +2154,7 @@ TEST_F(LockContentsViewUnitTest, ParentAccessButton) {
       session_manager::SessionState::LOCKED);
 
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   AddChildUsers(1);
   const AccountId child_id = users()[0].basic_user_info.account_id;
@@ -2374,8 +2321,7 @@ TEST_F(LockContentsViewUnitTest, UserSwapFocusesBigView) {
 
 TEST_F(LockContentsViewUnitTest, PowerwashShortcutSendsMojoCall) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLogin, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   SetWidget(CreateWidgetWithContent(contents));
@@ -2391,8 +2337,7 @@ TEST_F(LockContentsViewUnitTest, PowerwashShortcutSendsMojoCall) {
 
 TEST_F(LockContentsViewUnitTest, UsersChangedRetainsExistingState) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(2);
   SetWidget(CreateWidgetWithContent(contents));
@@ -2416,8 +2361,7 @@ TEST_F(LockContentsViewUnitTest, UsersChangedRetainsExistingState) {
 TEST_F(LockContentsViewUnitTest, ShowHideWarningBannerBubble) {
   // Build lock screen with a single user.
   auto* lock = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   SetWidget(CreateWidgetWithContent(lock));
@@ -2463,8 +2407,7 @@ TEST_F(LockContentsViewUnitTest, ShowHideWarningBannerBubble) {
 TEST_F(LockContentsViewUnitTest, RemoveUserFocusMovesBackToPrimaryUser) {
   // Build lock screen with one public account and one normal user.
   auto* lock = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   AddPublicAccountUsers(1);
   AddUsers(1);
@@ -2508,8 +2451,7 @@ TEST_F(LockContentsViewUnitTest,
 
   // Show lock screen with one normal user.
   auto* lock = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   AddUsers(1);
   SetWidget(CreateWidgetWithContent(lock));
@@ -2539,8 +2481,7 @@ TEST_F(LockContentsViewUnitTest,
 
   // Show lock screen with one normal user.
   auto* lock = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   AddUsers(1);
   SetWidget(CreateWidgetWithContent(lock));
@@ -2563,8 +2504,7 @@ TEST_F(LockContentsViewUnitTest,
 TEST_F(LockContentsViewUnitTest, RightAndLeftAcceleratorsWithNoUser) {
   // Show lock screen but do *not* initialize any users.
   auto* lock = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetWidget(CreateWidgetWithContent(lock));
 
@@ -2575,8 +2515,7 @@ TEST_F(LockContentsViewUnitTest, RightAndLeftAcceleratorsWithNoUser) {
 
 TEST_F(LockContentsViewUnitTest, OnFocusLeavingSystemTrayWithNoUsers) {
   auto* lock = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetWidget(CreateWidgetWithContent(lock));
 
@@ -2589,8 +2528,7 @@ TEST_F(LockContentsViewUnitTest, OnFocusLeavingSystemTrayWithNoUsers) {
 
 TEST_F(LockContentsViewUnitTest, OnFocusLeavingSystemTrayWithOobeDialogOpen) {
   auto* lock = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetWidget(CreateWidgetWithContent(lock));
 
@@ -2604,8 +2542,7 @@ TEST_F(LockContentsViewUnitTest, OnFocusLeavingSystemTrayWithOobeDialogOpen) {
 
 TEST_F(LockContentsViewUnitTest, OnFocusLeavingSystemTrayWithOobeDialogClosed) {
   auto* lock = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetWidget(CreateWidgetWithContent(lock));
 
@@ -2619,8 +2556,7 @@ TEST_F(LockContentsViewUnitTest, OnFocusLeavingSystemTrayWithOobeDialogClosed) {
 
 TEST_F(LockContentsViewUnitTest, LoginNotReactingOnEventsWithOobeDialogShown) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLogin, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetWidget(CreateWidgetWithContent(contents));
   SetUserCount(3);
@@ -2665,8 +2601,7 @@ TEST_F(LockContentsMediaViewUnitTest,
        LockScreenMediaControlsShownIfMediaPlaying) {
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
@@ -2683,8 +2618,7 @@ TEST_F(LockContentsMediaViewUnitTest,
 TEST_F(LockContentsMediaViewUnitTest, LockScreenMediaControlsHiddenAfterDelay) {
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
@@ -2718,8 +2652,7 @@ TEST_F(LockContentsMediaViewUnitTest,
        MediaControlsHiddenIfScreenLockedWhileMediaPaused) {
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
@@ -2736,8 +2669,7 @@ TEST_F(LockContentsMediaViewUnitTest,
 TEST_F(LockContentsMediaViewUnitTest, KeepMediaControlsShownWithinDelay) {
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
@@ -2761,8 +2693,7 @@ TEST_F(LockContentsMediaViewUnitTest, KeepMediaControlsShownWithinDelay) {
 TEST_F(LockContentsMediaViewUnitTest, LockScreenMediaControlsHiddenNoMedia) {
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
@@ -2779,8 +2710,7 @@ TEST_F(LockContentsMediaViewUnitTest,
        ShowMediaControlsIfPausedAndAlreadyShowing) {
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
@@ -2807,8 +2737,7 @@ TEST_F(LockContentsMediaViewUnitTest,
 
   // Build lock screen with 1 user.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
@@ -2825,8 +2754,7 @@ TEST_F(LockContentsMediaViewUnitTest,
 TEST_F(LockContentsMediaViewUnitTest, MediaControlsHiddenOnLoginScreen) {
   // Build login screen with 1 user.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLogin, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
@@ -2849,8 +2777,7 @@ TEST_F(LockContentsViewUnitTest, NoNavigationOrHotseatOnLockScreen) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
   LockContentsView* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
 
@@ -2865,8 +2792,7 @@ TEST_F(LockContentsViewUnitTest, NoNavigationOrHotseatOnLockScreen) {
 TEST_F(LockContentsViewUnitTest, NoUsersToShow) {
   // Build lock screen with 0 users.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   LockContentsViewTestApi test_api(contents);
@@ -2880,8 +2806,7 @@ TEST_F(LockContentsViewUnitTest, NoUsersToShow) {
 
 TEST_F(LockContentsViewUnitTest, ToggleGaiaOnUsersChanged) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLogin, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
   LockContentsViewTestApi test_api(contents);
@@ -2897,8 +2822,7 @@ TEST_F(LockContentsViewUnitTest, UpdatingSmartLockStateSetsAuthMethod) {
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLogin, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   AddUsers(1);
   SetWidget(CreateWidgetWithContent(contents));
@@ -2932,8 +2856,7 @@ TEST_F(LockContentsViewUnitTest, SmartLockStateHidesPasswordView) {
 
   // Build login screen with 1 user.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLogin, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   LockContentsViewTestApi test_api(contents);
   AddUsers(1);
@@ -2992,8 +2915,7 @@ TEST_F(LockContentsViewUnitTest, SmartLockStateHidesAuthErrorMessage) {
 TEST_F(LockContentsViewUnitTest,
        LoginNotReactingOnEventsWithLoginExtensionUiShown) {
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLogin, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetWidget(CreateWidgetWithContent(contents));
   SetUserCount(3);
@@ -3041,8 +2963,7 @@ TEST_F(LockContentsViewUnitTest, LoginExtensionUiWithUsers) {
       DeviceEnterpriseInfo{"BestCompanyEver", ManagementDeviceMode::kNone});
 
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLogin, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetWidget(CreateWidgetWithContent(contents));
   SetUserCount(3);
@@ -3077,8 +2998,7 @@ TEST_F(LockContentsViewUnitTest, LoginExtensionUiWithNoUsers) {
       DeviceEnterpriseInfo{"BestCompanyEver", ManagementDeviceMode::kNone});
 
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLogin, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetWidget(CreateWidgetWithContent(contents));
   SetUserCount(0);
@@ -3289,8 +3209,7 @@ TEST_F(LockContentsViewUnitTest, MetricsRecordedOnSuccessfulLoginAttempt) {
   base::HistogramTester histogram_tester;
   // Build lock screen with a single user.
   auto contents = std::make_unique<LockContentsView>(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLogin, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   SetWidget(CreateWidgetWithContent(contents.get()));
@@ -3327,8 +3246,7 @@ TEST_F(LockContentsViewUnitTest, MetricsRecordedOnFirstSuccessfulLoginAttempt) {
   base::HistogramTester histogram_tester;
   // Build lock screen with a single user.
   auto contents = std::make_unique<LockContentsView>(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLogin, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   SetWidget(CreateWidgetWithContent(contents.get()));
@@ -3361,8 +3279,7 @@ TEST_F(LockContentsViewUnitTest, MetricsRecordedOnFailedLoginAttempt) {
   base::HistogramTester histogram_tester;
   // Build lock screen with a single user.
   auto contents = std::make_unique<LockContentsView>(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLogin, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   SetWidget(CreateWidgetWithContent(contents.get()));
@@ -3394,8 +3311,7 @@ TEST_F(LockContentsViewUnitTest, MetricsRecordedOnFailedLoginAttempt) {
 
 TEST_F(LockContentsViewUnitTest, LoginAccessibleProperties) {
   auto contents = std::make_unique<LockContentsView>(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLogin, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetWidget(CreateWidgetWithContent(contents.get()));
   Shelf* shelf = Shelf::ForWindow(contents->GetWidget()->GetNativeWindow());
@@ -3413,8 +3329,7 @@ TEST_F(LockContentsViewUnitTest, LoginAccessibleProperties) {
 
 TEST_F(LockContentsViewUnitTest, LockAccessibleProperties) {
   auto contents = std::make_unique<LockContentsView>(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetWidget(CreateWidgetWithContent(contents.get()));
   Shelf* shelf = Shelf::ForWindow(contents->GetWidget()->GetNativeWindow());
@@ -3432,8 +3347,7 @@ TEST_F(LockContentsViewUnitTest, LockAccessibleProperties) {
 
 TEST_F(LockContentsViewUnitTest, LoginToolTipViewAccessibleProperties) {
   auto contents = std::make_unique<LockContentsView>(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLogin,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLogin, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetWidget(CreateWidgetWithContent(contents.get()));
   LockContentsViewTestApi test_api(contents.get());

@@ -43,28 +43,6 @@ views::View* GetLoginShelfContentsView(gfx::NativeWindow native_window) {
   return shelf->login_shelf_widget()->GetContentsView();
 }
 
-class LockScreenAppFocuser {
- public:
-  explicit LockScreenAppFocuser(views::Widget* lock_screen_app_widget)
-      : lock_screen_app_widget_(lock_screen_app_widget) {}
-
-  LockScreenAppFocuser(const LockScreenAppFocuser&) = delete;
-  LockScreenAppFocuser& operator=(const LockScreenAppFocuser&) = delete;
-
-  ~LockScreenAppFocuser() = default;
-
-  bool reversed_tab_order() const { return reversed_tab_order_; }
-
-  void FocusLockScreenApp(bool reverse) {
-    reversed_tab_order_ = reverse;
-    lock_screen_app_widget_->Activate();
-  }
-
- private:
-  bool reversed_tab_order_ = false;
-  raw_ptr<views::Widget> lock_screen_app_widget_;
-};
-
 testing::AssertionResult VerifyFocused(views::View* view) {
   if (!view->GetWidget()->IsActive()) {
     return testing::AssertionFailure() << "Widget not active.";
@@ -91,8 +69,7 @@ testing::AssertionResult VerifyNotFocused(views::View* view) {
 TEST_F(LockScreenSanityTest, PasswordIsInitiallyFocused) {
   // Build lock screen.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
 
   // The lock screen requires at least one user.
@@ -110,8 +87,7 @@ TEST_F(LockScreenSanityTest, PasswordIsInitiallyFocused) {
 TEST_F(LockScreenSanityTest, PasswordSubmitCallsLoginScreenClient) {
   // Build lock screen.
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
 
   // The lock screen requires at least one user.
@@ -137,8 +113,7 @@ TEST_F(LockScreenSanityTest,
   auto client = std::make_unique<MockLoginScreenClient>();
 
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
@@ -194,8 +169,7 @@ TEST_F(LockScreenSanityTest, TabGoesFromLockToShelfAndBackToLock) {
 
   // Create lock screen.
   auto* lock = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(lock);
@@ -226,8 +200,7 @@ TEST_F(LockScreenSanityTest, ShiftTabGoesFromLockToStatusAreaAndBackToLock) {
       session_manager::SessionState::LOCKED);
 
   auto* lock = new LockContentsView(
-      mojom::TrayActionState::kNotAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(lock);
@@ -256,8 +229,7 @@ TEST_F(LockScreenSanityTest, RemoveUser) {
   auto client = std::make_unique<MockLoginScreenClient>();
 
   auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
+      LockScreen::ScreenType::kLock, DataDispatcher(),
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
 
   // Add two users, the first of which can be removed.

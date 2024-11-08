@@ -25,7 +25,6 @@
 #include "ash/keyboard/ui/keyboard_layout_manager.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/virtual_keyboard_container_layout_manager.h"
-#include "ash/lock_screen_action/lock_screen_action_background_controller.h"
 #include "ash/login_status.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -56,7 +55,6 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/fullscreen_window_finder.h"
-#include "ash/wm/lock_action_handler_layout_manager.h"
 #include "ash/wm/lock_layout_manager.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overlay_layout_manager.h"
@@ -243,7 +241,6 @@ void ReparentAllWindows(aura::Window* src, aura::Window* dst) {
       kShellWindowId_FloatContainer,
       kShellWindowId_PipContainer,
       kShellWindowId_SystemModalContainer,
-      kShellWindowId_LockActionHandlerContainer,
       kShellWindowId_LockSystemModalContainer,
       kShellWindowId_MenuContainer,
       kShellWindowId_LiveCaptionContainer,
@@ -721,7 +718,6 @@ void RootWindowController::Shutdown(aura::Window* destination_root) {
   }
   window_parenting_controller_.reset();
   security_curtain_widget_controller_.reset();
-  lock_screen_action_background_controller_.reset();
   aura::client::SetScreenPositionClient(root_window, nullptr);
 
   // The targeter may still on the stack, so delete it later.
@@ -967,8 +963,6 @@ RootWindowController::RootWindowController(AshWindowTreeHost* ash_host)
     : ash_host_(ash_host),
       window_tree_host_(ash_host->AsWindowTreeHost()),
       shelf_(std::make_unique<Shelf>()),
-      lock_screen_action_background_controller_(
-          LockScreenActionBackgroundController::Create()),
       work_area_insets_(std::make_unique<WorkAreaInsets>(this)) {
   DCHECK(ash_host_);
   DCHECK(window_tree_host_);
@@ -1089,16 +1083,6 @@ void RootWindowController::InitLayoutManagers(
   lock_modal_container->SetLayoutManager(
       std::make_unique<SystemModalContainerLayoutManager>(
           lock_modal_container));
-
-  aura::Window* lock_action_handler_container =
-      GetContainer(kShellWindowId_LockActionHandlerContainer);
-  DCHECK(lock_action_handler_container);
-  lock_screen_action_background_controller_->SetParentWindow(
-      lock_action_handler_container);
-  lock_action_handler_container->SetLayoutManager(
-      std::make_unique<LockActionHandlerLayoutManager>(
-          lock_action_handler_container,
-          lock_screen_action_background_controller_.get()));
 
   aura::Window* lock_container =
       GetContainer(kShellWindowId_LockScreenContainer);
@@ -1274,13 +1258,6 @@ void RootWindowController::CreateContainers() {
       CreateContainer(kShellWindowId_LockScreenContainer, "LockScreenContainer",
                       lock_screen_containers);
   lock_container->SetProperty(::wm::kUsesScreenCoordinatesKey, true);
-
-  aura::Window* lock_action_handler_container =
-      CreateContainer(kShellWindowId_LockActionHandlerContainer,
-                      "LockActionHandlerContainer", lock_screen_containers);
-  ::wm::SetChildWindowVisibilityChangesAnimated(lock_action_handler_container);
-  lock_action_handler_container->SetProperty(::wm::kUsesScreenCoordinatesKey,
-                                             true);
 
   aura::Window* lock_modal_container =
       CreateContainer(kShellWindowId_LockSystemModalContainer,

@@ -70,11 +70,6 @@ const ShelfButtonClickMapping kShelfTargets[] = {
      LoginMetricsRecorder::LockScreenUserClickTarget::kTargetCount,
      LoginMetricsRecorder::LoginScreenUserClickTarget::kAddUserButton,
      LoginMetricsRecorder::OobeUserClickTarget::kTargetCount},
-    // |kCloseNoteButton|
-    {LoginMetricsRecorder::ShelfButtonClickTarget::kCloseNoteButton,
-     LoginMetricsRecorder::LockScreenUserClickTarget::kCloseNoteButton,
-     LoginMetricsRecorder::LoginScreenUserClickTarget::kTargetCount,
-     LoginMetricsRecorder::OobeUserClickTarget::kTargetCount},
     // |kParentAccessButton|
     {LoginMetricsRecorder::ShelfButtonClickTarget::kParentAccessButton,
      LoginMetricsRecorder::LockScreenUserClickTarget::kParentAccessButton,
@@ -131,11 +126,6 @@ const TrayClickMapping kTrayTargets[] = {
     // |kNotificationTray|
     {LoginMetricsRecorder::TrayClickTarget::kNotificationTray,
      LoginMetricsRecorder::LockScreenUserClickTarget::kNotificationTray,
-     LoginMetricsRecorder::LoginScreenUserClickTarget::kTargetCount,
-     LoginMetricsRecorder::OobeUserClickTarget::kTargetCount},
-    // |kTrayActionNoteButton|
-    {LoginMetricsRecorder::TrayClickTarget::kTrayActionNoteButton,
-     LoginMetricsRecorder::LockScreenUserClickTarget::kTrayActionNoteButton,
      LoginMetricsRecorder::LoginScreenUserClickTarget::kTargetCount,
      LoginMetricsRecorder::OobeUserClickTarget::kTargetCount},
 };

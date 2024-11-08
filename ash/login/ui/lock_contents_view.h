@@ -66,12 +66,7 @@ class LoginCameraTimeoutView;
 class LoginDetachableBaseModel;
 class LoginExpandedPublicAccountView;
 class LoginUserView;
-class NoteActionLaunchButton;
 class ScrollableUsersListView;
-
-namespace mojom {
-enum class TrayActionState;
-}
 
 enum class BottomIndicatorState {
   kNone,
@@ -112,7 +107,6 @@ class ASH_EXPORT LockContentsView
   static const int kLoginAttemptsBeforeGaiaDialog;
 
   LockContentsView(
-      mojom::TrayActionState initial_note_action_state,
       LockScreen::ScreenType screen_type,
       LoginDataDispatcher* data_dispatcher,
       std::unique_ptr<LoginDetachableBaseModel> detachable_base_model);
@@ -173,7 +167,6 @@ class ASH_EXPORT LockContentsView
   void OnSetTpmLockedState(const AccountId& user,
                            bool is_locked,
                            base::TimeDelta time_left) override;
-  void OnLockScreenNoteStateChanged(mojom::TrayActionState state) override;
   void OnForceOnlineSignInForUser(const AccountId& user) override;
   void OnWarningMessageUpdated(const std::u16string& message) override;
   void OnSystemInfoChanged(bool show,
@@ -197,7 +190,6 @@ class ASH_EXPORT LockContentsView
       bool show_full_management_disclosure) override;
   void OnDetachableBasePairingStatusChanged(
       DetachableBasePairingStatus pairing_status) override;
-  void OnFocusLeavingLockScreenApps(bool reverse) override;
   void OnOobeDialogStateChanged(OobeDialogState state) override;
 
   void MaybeUpdateExpandedView(const AccountId& account_id,
@@ -426,9 +418,6 @@ class ASH_EXPORT LockContentsView
   // other views.
   raw_ptr<views::View> top_header_ = nullptr;
 
-  // View for launching a note taking action handler from the lock screen.
-  raw_ptr<NoteActionLaunchButton> note_action_ = nullptr;
-
   // View for showing the version, enterprise and bluetooth info.
   raw_ptr<views::View> system_info_ = nullptr;
 
@@ -482,16 +471,8 @@ class ASH_EXPORT LockContentsView
   base::flat_map<AccountId, int> unlock_attempt_by_user_;
   base::flat_map<AccountId, int> pin_unlock_attempt_by_user_;
 
-  // Whether a lock screen app is currently active (i.e. lock screen note action
-  // state is reported as kActive by the data dispatcher).
-  bool lock_screen_apps_active_ = false;
-
   // Tracks the visibility of the OOBE dialog.
   bool oobe_dialog_visible_ = false;
-
-  // Whether the lock screen note is disabled. Used to override the actual lock
-  // screen note state.
-  bool disable_lock_screen_note_ = false;
 
   // Whether the device is enrolled with Kiosk SKU.
   bool kiosk_license_mode_ = false;

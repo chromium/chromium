@@ -83,14 +83,6 @@ class ASH_PUBLIC_EXPORT LoginScreenClient {
   // User with |account_id| has reached maximum incorrect password attempts.
   virtual void OnMaxIncorrectPasswordAttempted(const AccountId& account_id) = 0;
 
-  // Should pass the focus to the active lock screen app window, if there is
-  // one. This is called when a lock screen app is reported to be active (using
-  // tray_action mojo interface), and is next in the tab order.
-  // |HandleFocusLeavingLockScreenApps| should be called to return focus to the
-  // lock screen.
-  // |reverse|:   Whether the tab order is reversed.
-  virtual void FocusLockScreenApps(bool reverse) = 0;
-
   // Passes focus to the OOBE dialog if it is showing. No-op otherwise.
   virtual void FocusOobeDialog() = 0;
 

@@ -72,9 +72,6 @@ void LoginDataDispatcher::Observer::OnTapToUnlockEnabledForUserChanged(
 void LoginDataDispatcher::Observer::OnForceOnlineSignInForUser(
     const AccountId& user) {}
 
-void LoginDataDispatcher::Observer::OnLockScreenNoteStateChanged(
-    mojom::TrayActionState state) {}
-
 void LoginDataDispatcher::Observer::OnWarningMessageUpdated(
     const std::u16string& message) {}
 
@@ -107,9 +104,6 @@ void LoginDataDispatcher::Observer::
 
 void LoginDataDispatcher::Observer::OnDetachableBasePairingStatusChanged(
     DetachableBasePairingStatus pairing_status) {}
-
-void LoginDataDispatcher::Observer::OnFocusLeavingLockScreenApps(bool reverse) {
-}
 
 void LoginDataDispatcher::Observer::OnOobeDialogStateChanged(
     OobeDialogState state) {}
@@ -239,12 +233,6 @@ void LoginDataDispatcher::ForceOnlineSignInForUser(const AccountId& user) {
   }
 }
 
-void LoginDataDispatcher::SetLockScreenNoteState(mojom::TrayActionState state) {
-  for (auto& observer : observers_) {
-    observer.OnLockScreenNoteStateChanged(state);
-  }
-}
-
 void LoginDataDispatcher::SetSmartLockState(const AccountId& user,
                                             SmartLockState state) {
   for (auto& observer : observers_) {
@@ -313,12 +301,6 @@ void LoginDataDispatcher::SetDetachableBasePairingStatus(
     DetachableBasePairingStatus pairing_status) {
   for (auto& observer : observers_) {
     observer.OnDetachableBasePairingStatusChanged(pairing_status);
-  }
-}
-
-void LoginDataDispatcher::HandleFocusLeavingLockScreenApps(bool reverse) {
-  for (auto& observer : observers_) {
-    observer.OnFocusLeavingLockScreenApps(reverse);
   }
 }
 

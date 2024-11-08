@@ -32,8 +32,7 @@ enum class TrayActionState;
 // Contains the debug UI row (ie, add user, toggle PIN buttons).
 class LockDebugView : public views::View {
  public:
-  LockDebugView(mojom::TrayActionState initial_note_action_state,
-                LockScreen::ScreenType screen_type);
+  LockDebugView(LockScreen::ScreenType screen_type);
 
   LockDebugView(const LockDebugView&) = delete;
   LockDebugView& operator=(const LockDebugView&) = delete;

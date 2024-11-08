@@ -11,8 +11,6 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/focus_cycler.h"
-#include "ash/lock_screen_action/lock_screen_action_background_controller.h"
-#include "ash/lock_screen_action/test_lock_screen_action_background_controller.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/mock_login_screen_client.h"
 #include "ash/login/ui/login_test_base.h"
@@ -33,7 +31,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
-#include "ash/tray_action/tray_action.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/command_line.h"
@@ -85,24 +82,12 @@ class LoginShelfViewTest : public LoginTestBase {
   ~LoginShelfViewTest() override = default;
 
   void SetUp() override {
-    action_background_controller_factory_ = base::BindRepeating(
-        &LoginShelfViewTest::CreateActionBackgroundController,
-        base::Unretained(this));
-    LockScreenActionBackgroundController::SetFactoryCallbackForTesting(
-        &action_background_controller_factory_);
-
     // Guest Button is visible while session hasn't started.
     LoginTestBase::SetUp();
     login_shelf_view_ = GetPrimaryShelf()->shelf_widget()->GetLoginShelfView();
     // Set initial states.
     NotifySessionStateChanged(SessionState::OOBE);
     NotifyShutdownPolicyChanged(false);
-  }
-
-  void TearDown() override {
-    LockScreenActionBackgroundController::SetFactoryCallbackForTesting(nullptr);
-    action_background_controller_ = nullptr;
-    LoginTestBase::TearDown();
   }
 
  protected:
@@ -114,10 +99,6 @@ class LoginShelfViewTest : public LoginTestBase {
   void NotifyShutdownPolicyChanged(bool reboot_on_shutdown) {
     Shell::Get()->shutdown_controller()->SetRebootOnShutdown(
         reboot_on_shutdown);
-  }
-
-  void NotifyLockScreenNoteStateChanged(mojom::TrayActionState state) {
-    Shell::Get()->tray_action()->UpdateLockScreenNoteState(state);
   }
 
   // Simulates a click event on the button.
@@ -199,27 +180,6 @@ class LoginShelfViewTest : public LoginTestBase {
 
   raw_ptr<LoginShelfView, DanglingUntriaged> login_shelf_view_ =
       nullptr;  // Unowned.
-
-  TestLockScreenActionBackgroundController* action_background_controller() {
-    return action_background_controller_;
-  }
-
- private:
-  std::unique_ptr<LockScreenActionBackgroundController>
-  CreateActionBackgroundController() {
-    auto result = std::make_unique<TestLockScreenActionBackgroundController>();
-    EXPECT_FALSE(action_background_controller_);
-    action_background_controller_ = result.get();
-    return result;
-  }
-
-  LockScreenActionBackgroundController::FactoryCallback
-      action_background_controller_factory_;
-
-  // LockScreenActionBackgroundController created by
-  // |CreateActionBackgroundController|.
-  raw_ptr<TestLockScreenActionBackgroundController>
-      action_background_controller_ = nullptr;
 };
 
 // Checks the login shelf updates UI after session state changes.

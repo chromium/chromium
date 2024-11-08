@@ -233,13 +233,6 @@ void LoginScreenController::OnMaxIncorrectPasswordAttempted(
   client_->OnMaxIncorrectPasswordAttempted(account_id);
 }
 
-void LoginScreenController::FocusLockScreenApps(bool reverse) {
-  if (!client_) {
-    return;
-  }
-  client_->FocusLockScreenApps(reverse);
-}
-
 void LoginScreenController::ShowGaiaSignin(const AccountId& prefilled_account) {
   if (!client_) {
     return;

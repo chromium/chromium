@@ -88,9 +88,8 @@ LoginShelfWidget::LoginShelfWidget(Shelf* shelf, aura::Window* container)
       delegate_(new LoginShelfWidgetDelegate(shelf)),
       scoped_session_observer_(this) {
   DCHECK(container);
-  login_shelf_view_ = delegate_->AddChildView(std::make_unique<LoginShelfView>(
-      RootWindowController::ForWindow(container)
-          ->lock_screen_action_background_controller()));
+  login_shelf_view_ =
+      delegate_->AddChildView(std::make_unique<LoginShelfView>());
 
   views::Widget::InitParams params(
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,

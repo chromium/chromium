@@ -10,7 +10,6 @@
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_test_utils.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/mojom/tray_action.mojom.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"

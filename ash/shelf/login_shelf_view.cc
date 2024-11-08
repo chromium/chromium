@@ -12,7 +12,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/focus_cycler.h"
-#include "ash/lock_screen_action/lock_screen_action_background_state.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/metrics/login_metrics_recorder.h"
@@ -90,7 +89,6 @@ constexpr LoginShelfView::ButtonId kButtonIds[] = {
     LoginShelfView::kShutdown,
     LoginShelfView::kRestart,
     LoginShelfView::kSignOut,
-    LoginShelfView::kCloseNote,
     LoginShelfView::kCancel,
     LoginShelfView::kParentAccess,
     LoginShelfView::kBrowseAsGuest,
@@ -109,8 +107,6 @@ LoginMetricsRecorder::ShelfButtonClickTarget GetUserClickTarget(int button_id) {
       return LoginMetricsRecorder::ShelfButtonClickTarget::kRestartButton;
     case LoginShelfView::kSignOut:
       return LoginMetricsRecorder::ShelfButtonClickTarget::kSignOutButton;
-    case LoginShelfView::kCloseNote:
-      return LoginMetricsRecorder::ShelfButtonClickTarget::kCloseNoteButton;
     case LoginShelfView::kBrowseAsGuest:
       return LoginMetricsRecorder::ShelfButtonClickTarget::kBrowseAsGuestButton;
     case LoginShelfView::kAddUser:
@@ -235,9 +231,7 @@ void LoginShelfView::RequestShutdown() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-LoginShelfView::LoginShelfView(
-    LockScreenActionBackgroundController* lock_screen_action_background)
-    : lock_screen_action_background_(lock_screen_action_background) {
+LoginShelfView::LoginShelfView() {
   ShelfConfig::Get()->AddObserver(this);
   // We reuse the focusable state on this view as a signal that focus should
   // switch to the lock screen or status area. This view should otherwise not
@@ -304,12 +298,6 @@ LoginShelfView::LoginShelfView(
   login_shelf_buttons_.push_back(
       static_cast<LoginShelfButton*>(kiosk_apps_button_));
 
-  add_button(kCloseNote,
-             base::BindRepeating(
-                 &TrayAction::CloseLockScreenNote,
-                 base::Unretained(Shell::Get()->tray_action()),
-                 mojom::CloseLockScreenNoteReason::kUnlockButtonPressed),
-             IDS_ASH_SHELF_UNLOCK_BUTTON, kShelfUnlockButtonIcon);
   add_button(kCancel,
              base::BindRepeating(
                  [](LoginShelfView* shelf) {
@@ -372,10 +360,7 @@ LoginShelfView::LoginShelfView(
              IDS_ASH_SHELF_OS_INSTALL_BUTTON, kShelfOsInstallButtonIcon);
 
   // Adds observers for states that affect the visibility of different buttons.
-  tray_action_observation_.Observe(Shell::Get()->tray_action());
   shutdown_controller_observation_.Observe(Shell::Get()->shutdown_controller());
-  lock_screen_action_background_observation_.Observe(
-      lock_screen_action_background);
   login_data_dispatcher_observation_.Observe(
       Shell::Get()->login_screen_controller()->data_dispatcher());
   enterprise_domain_model_observation_.Observe(
@@ -570,16 +555,6 @@ LoginShelfView::GetScopedGuestButtonBlocker() {
       weak_ptr_factory_.GetWeakPtr());
 }
 
-void LoginShelfView::OnLockScreenNoteStateChanged(
-    mojom::TrayActionState state) {
-  UpdateUi();
-}
-
-void LoginShelfView::OnLockScreenActionBackgroundStateChanged(
-    LockScreenActionBackgroundState state) {
-  UpdateUi();
-}
-
 void LoginShelfView::OnShutdownPolicyChanged(bool reboot_on_shutdown) {
   UpdateUi();
 }
@@ -621,13 +596,6 @@ LoginShelfView::GetShutdownConfirmationBubbleForTesting() {
   return test_shutdown_confirmation_bubble_;
 }
 
-bool LoginShelfView::LockScreenActionBackgroundAnimating() const {
-  return lock_screen_action_background_->state() ==
-             LockScreenActionBackgroundState::kShowing ||
-         lock_screen_action_background_->state() ==
-             LockScreenActionBackgroundState::kHiding;
-}
-
 void LoginShelfView::SetButtonVisible(ButtonId button_id, bool visible) {
   GetButtonContainerByID(button_id)->SetVisible(visible);
   GetViewByID(button_id)->SetVisible(visible);
@@ -656,23 +624,14 @@ void LoginShelfView::UpdateUi() {
 
   const gfx::Size old_preferred_size = GetPreferredSize();
   bool show_reboot = Shell::Get()->shutdown_controller()->reboot_on_shutdown();
-  mojom::TrayActionState tray_action_state =
-      Shell::Get()->tray_action()->GetLockScreenNoteState();
   bool is_locked = (session_state == SessionState::LOCKED);
-  bool is_lock_screen_note_in_foreground =
-      (tray_action_state == mojom::TrayActionState::kActive ||
-       tray_action_state == mojom::TrayActionState::kLaunching) &&
-      !LockScreenActionBackgroundAnimating();
 
   SetButtonVisible(kShutdown, !show_reboot &&
-                                  !is_lock_screen_note_in_foreground &&
                                   ShouldShowShutdownButton());
 
   SetButtonVisible(kRestart, show_reboot &&
-                                 !is_lock_screen_note_in_foreground &&
                                  ShouldShowShutdownButton());
-  SetButtonVisible(kSignOut, is_locked && !is_lock_screen_note_in_foreground);
-  SetButtonVisible(kCloseNote, is_locked && is_lock_screen_note_in_foreground);
+  SetButtonVisible(kSignOut, is_locked);
   SetButtonVisible(kCancel, session_state == SessionState::LOGIN_SECONDARY);
   SetButtonVisible(kParentAccess, is_locked && show_parent_access_);
 
