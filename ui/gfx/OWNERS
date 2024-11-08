@@ -23,21 +23,16 @@ per-file color_conversions*=aaronhk@chromium.org
 per-file display*=oshima@chromium.org
 per-file screen*=oshima@chromium.org
 
-# Canvas painting.
-per-file canvas*=danakj@chromium.org
-
 # Overlay states, configurations, etc.
 per-file overlay*=spang@chromium.org
 
 # Transform, interpolated transform and transform util.
-per-file transform*=danakj@chromium.org
 per-file transform*=vollick@chromium.org
-per-file interpolated_transform*=danakj@chromium.org
 per-file interpolated_transform*=vollick@chromium.org
 
 # Skia geometry helpers.
-per-file skia_util*=danakj@chromium.org
-per-file skia_paint_util*=danakj@chromium.org
+per-file skia_util*=kylechar@chromium.org
+per-file skia_paint_util*=kylechar@chromium.org
 
 # Skia span helpers.
 per-file skia_span_util*=kylechar@chromium.org
