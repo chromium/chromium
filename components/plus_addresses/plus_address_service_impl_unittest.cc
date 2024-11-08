@@ -733,6 +733,7 @@ TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestion) {
   base::test::ScopedFeatureList feature_list{
       features::kPlusAddressInlineCreation};
   base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   base::test::TestFuture<std::vector<Suggestion>,
                          AutofillSuggestionTriggerSource>
       update_callback;
@@ -757,6 +758,9 @@ TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestion) {
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kCreateNewPlusAddressInlineChosen, 1);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.OfferedPlusAddressAccepted"),
+            1);
   url_loader_factory().SimulateResponseForPendingRequest(
       kCreatePlusAddressEndpoint, test::MakeCreationResponse(profile));
 
