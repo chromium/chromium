@@ -26,8 +26,6 @@ TabListView::TabListView(TabListModel* tab_list_model)
       views::View::SetLayoutManager(std::make_unique<views::FlexLayout>());
   flex_layout->SetOrientation(views::LayoutOrientation::kVertical);
 
-  views::FocusManager::set_arrow_key_traversal_enabled(true);
-
   for (resource_attribution::PageContext context :
        tab_list_model->page_contexts()) {
     AddChildView(std::make_unique<TabListRowView>(
