@@ -3224,8 +3224,7 @@ void FederatedAuthRequestImpl::LoginToIdP(bool can_append_hints,
   }
   permission_delegate_->AddIdpSigninStatusObserver(this);
 
-  if (idp_infos_.size() > 1u ||
-      IsFedCmUseOtherAccountEnabled(rp_mode_ == RpMode::kActive)) {
+  if (idp_infos_.size() > 1u || IsFedCmUseOtherAccountEnabled()) {
     account_ids_before_login_.clear();
     for (const auto& account : accounts_) {
       if (account->identity_provider->idp_metadata.idp_login_url == login_url) {
@@ -3339,8 +3338,7 @@ void FederatedAuthRequestImpl::MaybeCreateFedCmMetrics() {
 
 bool FederatedAuthRequestImpl::IsNewlyLoggedIn(
     const IdentityRequestAccount& account) {
-  if (idp_infos_.size() <= 1u &&
-      !IsFedCmUseOtherAccountEnabled(rp_mode_ == RpMode::kActive)) {
+  if (idp_infos_.size() <= 1u && !IsFedCmUseOtherAccountEnabled()) {
     return false;
   }
   if (login_url_.is_empty() ||

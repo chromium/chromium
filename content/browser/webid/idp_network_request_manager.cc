@@ -584,7 +584,7 @@ void OnConfigParsed(const GURL& provider,
     }
   }
 
-  if (IsFedCmUseOtherAccountEnabled(rp_mode == blink::mojom::RpMode::kActive)) {
+  if (IsFedCmUseOtherAccountEnabled()) {
     const base::Value::Dict* modes_dict = response.FindDict(kModesKey);
     const base::Value::Dict* selected_mode_dict = nullptr;
     if (modes_dict) {

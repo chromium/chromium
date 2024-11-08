@@ -1026,7 +1026,9 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigSupportsOtherAccountBothModes) {
 
 TEST_F(IdpNetworkRequestManagerTest, ParseConfigUseOtherAccountDisabled) {
   base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmUseOtherAccount);
+  // Disables both flags since this feature can be enabled by the other.
+  list.InitWithFeatures(
+      {}, {features::kFedCmUseOtherAccount, features::kFedCmButtonMode});
 
   const char test_json[] = R"({
   "modes": {

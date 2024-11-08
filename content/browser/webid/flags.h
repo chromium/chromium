@@ -50,7 +50,7 @@ bool IsFedCmWithoutWellKnownEnforcementEnabled();
 bool IsWebIdentityDigitalCredentialsEnabled();
 
 // Whether "Use Other Account" is enabled.
-bool IsFedCmUseOtherAccountEnabled(bool is_active_mode);
+bool IsFedCmUseOtherAccountEnabled();
 
 // Whether the ActiveMode feature is enabled.
 bool IsFedCmActiveModeEnabled();

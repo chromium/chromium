@@ -59,12 +59,10 @@ bool IsWebIdentityDigitalCredentialsEnabled() {
   return base::FeatureList::IsEnabled(features::kWebIdentityDigitalCredentials);
 }
 
-bool IsFedCmUseOtherAccountEnabled(bool is_active_mode) {
-  // TODO(crbug.com/328470597): this feature is bundled with the active mode at
-  // the moment. We should decouple them when supporting the feature in the
-  // passive flow.
+bool IsFedCmUseOtherAccountEnabled() {
+  // The active mode origin trial can also enable this feature at this moment.
   return base::FeatureList::IsEnabled(features::kFedCmUseOtherAccount) ||
-         (IsFedCmActiveModeEnabled() && is_active_mode);
+         IsFedCmActiveModeEnabled();
 }
 
 bool IsFedCmActiveModeEnabled() {
