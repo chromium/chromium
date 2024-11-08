@@ -31,7 +31,6 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
   ~WaylandSurfaceFactory() override;
 
   // SurfaceFactoryOzone overrides:
-  bool SupportsOverlays() override;
   std::vector<gl::GLImplementationParts> GetAllowedGLImplementations() override;
   GLOzone* GetGLOzone(const gl::GLImplementationParts& implementation) override;
 #if BUILDFLAG(ENABLE_VULKAN)

@@ -37,7 +37,6 @@
 #if BUILDFLAG(IS_OZONE)
 #include "gpu/config/gpu_finch_features.h"
 #include "ui/ozone/public/ozone_platform.h"
-#include "ui/ozone/public/surface_factory_ozone.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

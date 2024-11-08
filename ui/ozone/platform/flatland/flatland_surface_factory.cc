@@ -122,10 +122,6 @@ void FlatlandSurfaceFactory::Shutdown() {
   flatland_sysmem_buffer_manager_.Shutdown();
 }
 
-bool FlatlandSurfaceFactory::SupportsOverlays() {
-  return true;
-}
-
 std::vector<gl::GLImplementationParts>
 FlatlandSurfaceFactory::GetAllowedGLImplementations() {
   return std::vector<gl::GLImplementationParts>{
