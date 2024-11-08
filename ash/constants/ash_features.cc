@@ -916,12 +916,6 @@ BASE_FEATURE(kFastPairSavedDevicesNicknames,
 const base::FeatureParam<double> kFastPairDeviceLostNotificationTimeoutMinutes{
     &kFastPair, "fast-pair-device-lost-notification-timeout-minutes", 5};
 
-// Enables Fast Pair sub feature to prevent notifications for recently lost
-// devices for |kFastPairDeviceLostNotificationTimeout|.
-BASE_FEATURE(kFastPairPreventNotificationsForRecentlyLostDevice,
-             "FastPairPreventNotificationsForRecentlyLostDevice",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables link to Progressive Web Application companion app to configure
 // Pixel Buds after Fast Pair.
 BASE_FEATURE(kFastPairPwaCompanion,
@@ -3741,11 +3735,6 @@ bool IsFastPairSavedDevicesNicknamesEnabled() {
 
 bool IsFastPairPwaCompanionEnabled() {
   return base::FeatureList::IsEnabled(kFastPairPwaCompanion);
-}
-
-bool IsFastPairPreventNotificationsForRecentlyLostDeviceEnabled() {
-  return base::FeatureList::IsEnabled(
-      kFastPairPreventNotificationsForRecentlyLostDevice);
 }
 
 bool IsFastPairSavedDevicesEnabled() {
