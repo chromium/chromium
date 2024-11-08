@@ -160,6 +160,10 @@ void ChromeEnterpriseRealTimeUrlLookupService::OnGetAccessToken(
     base::TimeTicks get_token_start_time,
     SessionID tab_id,
     const std::string& access_token) {
+  if (shutting_down()) {
+    return;
+  }
+
   MaybeSendRequest(url, access_token, std::move(response_callback),
                    std::move(callback_task_runner),
                    /* is_sampled_report */ false, tab_id);
@@ -219,8 +223,8 @@ std::string ChromeEnterpriseRealTimeUrlLookupService::GetMetricSuffix() const {
 }
 
 void ChromeEnterpriseRealTimeUrlLookupService::Shutdown() {
-  token_fetcher_.reset();
   RealTimeUrlLookupServiceBase::Shutdown();
+  token_fetcher_.reset();
 }
 
 bool ChromeEnterpriseRealTimeUrlLookupService::CanCheckUrl(const GURL& url) {

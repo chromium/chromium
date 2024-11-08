@@ -698,6 +698,8 @@ void RealTimeUrlLookupServiceBase::OnResponseUnauthorized(
     const std::string& invalid_access_token) {}
 
 void RealTimeUrlLookupServiceBase::Shutdown() {
+  shutting_down_ = true;
+
   pending_requests_.clear();
 
   // Clear references to other KeyedServices.
