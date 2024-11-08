@@ -85,6 +85,7 @@ class EditorMenuView : public PreTargetHandlerView,
   const TextAndImageMode text_and_image_mode_;
 
   void InitLayout(const PresetTextQueries& preset_text_queries);
+  gfx::Insets GetTitleContainerInsets() const;
   void AddTitleContainer();
   void AddChipsContainer(const PresetTextQueries& preset_text_queries);
   void AddTextfield();

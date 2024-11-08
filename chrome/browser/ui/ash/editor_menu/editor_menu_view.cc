@@ -56,18 +56,22 @@ constexpr char kWidgetName[] = "EditorMenuViewWidget";
 constexpr char16_t kCardShownAnnouncement[] =
     u"Help Me Write, press tab to focus the Help Me Write card.";
 
-constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(12, 16, 12, 14);
+constexpr gfx::Insets kTabsTitleContainerInsets =
+    gfx::Insets::TLBR(8, 10, 0, 8);
+constexpr gfx::Insets kNoTabsTitleContainerInsets =
+    gfx::Insets::TLBR(10, 16, 0, 8);
 
 constexpr int kBadgeHorizontalPadding = 8;
+
+constexpr gfx::Insets kSettingsButtonPadding = gfx::Insets(4);
 
 // Spacing to apply between and around chips.
 constexpr int kChipsHorizontalPadding = 8;
 constexpr int kChipsVerticalPadding = 12;
 
-constexpr gfx::Insets kChipsContainerInsets = gfx::Insets::TLBR(0, 16, 16, 16);
+constexpr gfx::Insets kChipsContainerInsets = gfx::Insets::TLBR(8, 16, 0, 16);
 
-constexpr gfx::Insets kTextfieldContainerInsets =
-    gfx::Insets::TLBR(0, 16, 12, 16);
+constexpr gfx::Insets kTextfieldContainerInsets = gfx::Insets(16);
 
 constexpr gfx::Size kTabbedPaneSize = gfx::Size(180, 36);
 
@@ -191,7 +195,7 @@ gfx::Size EditorMenuView::CalculatePreferredSize(
   }
 
   const int title_height_with_padding =
-      title_container_->height() + kTitleContainerInsets.height();
+      title_container_->height() + GetTitleContainerInsets().height();
   const int chips_height_with_padding =
       GetChipsContainerHeightWithPaddings(chip_height, num_rows);
   const int textfield_height_with_padding =
@@ -257,6 +261,21 @@ void EditorMenuView::InitLayout(const PresetTextQueries& preset_text_queries) {
   AddTextfield();
 }
 
+gfx::Insets EditorMenuView::GetTitleContainerInsets() const {
+  switch (text_and_image_mode_) {
+    case TextAndImageMode::kEditorWriteAndLobster:
+      return kTabsTitleContainerInsets;
+    case TextAndImageMode::kEditorWriteOnly:
+    case TextAndImageMode::kLobsterOnly:
+    case TextAndImageMode::kEditorRewriteOnly:
+    case TextAndImageMode::kEditorRewriteAndLobster:
+      return kNoTabsTitleContainerInsets;
+    case TextAndImageMode::kBlocked:
+    default:
+      return gfx::Insets();
+  }
+}
+
 void EditorMenuView::AddTitleContainer() {
   title_container_ = AddChildView(std::make_unique<views::View>());
   views::BoxLayout* layout =
@@ -309,8 +328,9 @@ void EditorMenuView::AddTitleContainer() {
           base::BindRepeating(&EditorMenuView::OnSettingsButtonPressed,
                               weak_factory_.GetWeakPtr()),
           vector_icons::kSettingsOutlineIcon, GetEditorMenuSettingsTooltip()));
+  settings_button_->SetProperty(views::kMarginsKey, kSettingsButtonPadding);
 
-  title_container_->SetProperty(views::kMarginsKey, kTitleContainerInsets);
+  title_container_->SetProperty(views::kMarginsKey, GetTitleContainerInsets());
 }
 
 void EditorMenuView::AddChipsContainer(
