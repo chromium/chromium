@@ -473,9 +473,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // Gets the pref state of input noise cancellation.
   bool GetNoiseCancellationState() const;
 
-  // Refreshes the input device noise cancellation state.
-  void RefreshNoiseCancellationState();
-
   // Updates noise cancellation state in `CrasAudioClient` and
   // `AudioDevicesPrefHandler` to the provided value. `source` records to
   // metrics who changed the noise cancellation state.
@@ -496,9 +493,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
 
   // Gets the pref state of input style transfer.
   bool GetStyleTransferState() const;
-
-  // Refreshes the input device style transfer state.
-  void RefreshStyleTransferState();
 
   // Updates style transfer state in `CrasAudioClient` and
   // `AudioDevicesPrefHandler` to the provided value.

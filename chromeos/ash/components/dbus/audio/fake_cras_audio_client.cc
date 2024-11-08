@@ -278,7 +278,7 @@ void FakeCrasAudioClient::SetNoiseCancellationSupported(
 
 void FakeCrasAudioClient::SetNoiseCancellationEnabled(
     bool noise_cancellation_on) {
-  noise_cancellation_enabled_ = noise_cancellation_on;
+  SetVoiceIsolationUIEnabled(noise_cancellation_on);
   ++noise_cancellation_enabled_counter_;
 }
 
@@ -288,7 +288,7 @@ void FakeCrasAudioClient::GetNoiseCancellationSupported(
 }
 
 uint32_t FakeCrasAudioClient::GetNoiseCancellationEnabledCount() {
-  return noise_cancellation_enabled_counter_;
+  return GetVoiceIsolationUIEnabled();
 }
 
 void FakeCrasAudioClient::SetStyleTransferSupported(
@@ -297,7 +297,7 @@ void FakeCrasAudioClient::SetStyleTransferSupported(
 }
 
 void FakeCrasAudioClient::SetStyleTransferEnabled(bool style_transfer_on) {
-  style_transfer_enabled_ = style_transfer_on;
+  SetVoiceIsolationUIEnabled(style_transfer_on);
 }
 
 void FakeCrasAudioClient::GetStyleTransferSupported(
@@ -306,7 +306,7 @@ void FakeCrasAudioClient::GetStyleTransferSupported(
 }
 
 bool FakeCrasAudioClient::GetStyleTransferEnabled() {
-  return style_transfer_enabled_;
+  return GetVoiceIsolationUIEnabled();
 }
 
 void FakeCrasAudioClient::SetNumberOfNonChromeOutputStreams(int32_t streams) {

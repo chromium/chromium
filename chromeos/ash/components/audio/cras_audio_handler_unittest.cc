@@ -574,36 +574,21 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
     base::RunLoop().RunUntilIdle();
   }
 
-  void SetUpCrasAudioHandlerWithPrimaryActiveNodeAndNoiseCancellationState(
+  void SetUpCrasAudioHandlerWithPrimaryActiveNodeAndVoiceIsolationState(
       const AudioNodeList& audio_nodes,
       const AudioNode& primary_active_node,
-      bool noise_cancellation_enabled) {
+      bool voice_isolation_enabled,
+      bool noise_cancellation_supported,
+      bool style_transfer_supported) {
     CrasAudioClient::InitializeFake();
     fake_cras_audio_client()->SetAudioNodesForTesting(audio_nodes);
     fake_cras_audio_client()->SetActiveOutputNode(primary_active_node.id);
     fake_cras_audio_client()->SetNoiseCancellationSupported(
-        /*noise_cancellation_supported=*/true);
-    audio_pref_handler_ = base::MakeRefCounted<AudioDevicesPrefHandlerStub>();
-    audio_pref_handler_->SetNoiseCancellationState(noise_cancellation_enabled);
-    CrasAudioHandler::Initialize(fake_manager_->MakeRemote(),
-                                 audio_pref_handler_);
-    cras_audio_handler_ = CrasAudioHandler::Get();
-    test_observer_ = std::make_unique<TestObserver>();
-    cras_audio_handler_->AddAudioObserver(test_observer_.get());
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void SetUpCrasAudioHandlerWithPrimaryActiveNodeAndStyleTransferState(
-      const AudioNodeList& audio_nodes,
-      const AudioNode& primary_active_node,
-      bool style_transfer_enabled) {
-    CrasAudioClient::InitializeFake();
-    fake_cras_audio_client()->SetAudioNodesForTesting(audio_nodes);
-    fake_cras_audio_client()->SetActiveOutputNode(primary_active_node.id);
+        /*noise_cancellation_supported=*/noise_cancellation_supported);
     fake_cras_audio_client()->SetStyleTransferSupported(
-        /*style_transfer_supported=*/true);
+        /*style_transfer_supported=*/style_transfer_supported);
     audio_pref_handler_ = base::MakeRefCounted<AudioDevicesPrefHandlerStub>();
-    audio_pref_handler_->SetStyleTransferState(style_transfer_enabled);
+    audio_pref_handler_->SetVoiceIsolationState(voice_isolation_enabled);
     CrasAudioHandler::Initialize(fake_manager_->MakeRemote(),
                                  audio_pref_handler_);
     cras_audio_handler_ = CrasAudioHandler::Get();
@@ -1791,136 +1776,6 @@ TEST_P(CrasAudioHandlerTest, RefreshVoiceIsolationPreferredEffect) {
   cras_audio_handler_->RequestVoiceIsolationUIAppearance();
   cras_audio_handler_->RefreshVoiceIsolationPreferredEffect();
   EXPECT_EQ(fake_cras_audio_client()->GetVoiceIsolationUIPreferredEffect(), 0u);
-}
-
-TEST_P(CrasAudioHandlerTest, NoiseCancellationRefreshPrefEnabledNoNC) {
-  AudioNodeList audio_nodes = GenerateAudioNodeList({});
-  // Set up initial audio devices, only with internal mic.
-  AudioNode internalMic = GenerateAudioNode(kInternalMic);
-  // Clear the audio effect, no Noise Cancellation supported.
-  internalMic.audio_effect = 0u;
-  audio_nodes.push_back(internalMic);
-  // Simulate enable pref for noise cancellation.
-  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndNoiseCancellationState(
-      audio_nodes, internalMic, /*noise_cancellation_enabled=*/true);
-
-  // Noise cancellation should still be disabled despite the pref being enabled
-  // since the audio_effect of the internal mic is unavailable.
-  EXPECT_FALSE(fake_cras_audio_client()->noise_cancellation_enabled());
-  EXPECT_TRUE(audio_pref_handler_->GetNoiseCancellationState());
-}
-
-TEST_P(CrasAudioHandlerTest, NoiseCancellationRefreshPrefEnabledWithNC) {
-  AudioNodeList audio_nodes = GenerateAudioNodeList({});
-  // Set up initial audio devices, only with internal mic.
-  AudioNode internalMic = GenerateAudioNode(kInternalMic);
-  // Enable noise cancellation effect.
-  internalMic.audio_effect = cras::EFFECT_TYPE_NOISE_CANCELLATION;
-  audio_nodes.push_back(internalMic);
-  // Simulate enable pref for noise cancellation.
-  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndNoiseCancellationState(
-      audio_nodes, internalMic, /*noise_cancellation_enabled=*/true);
-
-  // Noise Cancellation is enabled.
-  EXPECT_TRUE(fake_cras_audio_client()->noise_cancellation_enabled());
-  EXPECT_TRUE(audio_pref_handler_->GetNoiseCancellationState());
-}
-
-TEST_P(CrasAudioHandlerTest, NoiseCancellationRefreshPrefDisableNoNC) {
-  AudioNodeList audio_nodes = GenerateAudioNodeList({});
-  // Set up initial audio devices, only with internal mic.
-  AudioNode internalMic = GenerateAudioNode(kInternalMic);
-  // Clear audio effect, no noise cancellation.
-  internalMic.audio_effect = 0u;
-  audio_nodes.push_back(internalMic);
-  // Simulate enable pref for noise cancellation.
-  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndNoiseCancellationState(
-      audio_nodes, internalMic, /*noise_cancellation_enabled=*/false);
-
-  // Noise cancellation should still be disabled since the pref is disabled.
-  EXPECT_FALSE(fake_cras_audio_client()->noise_cancellation_enabled());
-  EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
-}
-
-TEST_P(CrasAudioHandlerTest, NoiseCancellationRefreshPrefDisableWithNC) {
-  AudioNodeList audio_nodes = GenerateAudioNodeList({});
-  // Set up initial audio devices, only with internal mic.
-  AudioNode internalMic = GenerateAudioNode(kInternalMic);
-  // Enable noise cancellation effect.
-  internalMic.audio_effect = cras::EFFECT_TYPE_NOISE_CANCELLATION;
-  audio_nodes.push_back(internalMic);
-  // Simulate enable pref for noise cancellation.
-  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndNoiseCancellationState(
-      audio_nodes, internalMic, /*noise_cancellation_enabled=*/false);
-
-  // Noise cancellation should still be disabled since the pref is disabled.
-  EXPECT_FALSE(fake_cras_audio_client()->noise_cancellation_enabled());
-  EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
-}
-
-TEST_P(CrasAudioHandlerTest, StyleTransferRefreshPrefEnabledNoStyleTransfer) {
-  AudioNodeList audio_nodes = GenerateAudioNodeList({});
-  // Set up initial audio devices, only with internal mic.
-  AudioNode internalMic = GenerateAudioNode(kInternalMic);
-  // Clear the audio effect, no style transfer supported.
-  internalMic.audio_effect = 0u;
-  audio_nodes.push_back(internalMic);
-  // Simulate enable pref for style transfer.
-  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndStyleTransferState(
-      audio_nodes, internalMic, /*style_transfer_enabled=*/true);
-
-  // Style transfer should still be disabled despite the pref being enabled
-  // since the audio_effect of the internal mic is unavailable.
-  EXPECT_FALSE(fake_cras_audio_client()->style_transfer_enabled());
-  EXPECT_TRUE(audio_pref_handler_->GetStyleTransferState());
-}
-
-TEST_P(CrasAudioHandlerTest, StyleTransferRefreshPrefEnabledWithStyleTransfer) {
-  AudioNodeList audio_nodes = GenerateAudioNodeList({});
-  // Set up initial audio devices, only with internal mic.
-  AudioNode internalMic = GenerateAudioNode(kInternalMic);
-  // Enable style transfer effect.
-  internalMic.audio_effect = cras::EFFECT_TYPE_STYLE_TRANSFER;
-  audio_nodes.push_back(internalMic);
-  // Simulate enable pref for style transfer.
-  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndStyleTransferState(
-      audio_nodes, internalMic, /*style_transfer_enabled=*/true);
-
-  // Style transfer is enabled.
-  EXPECT_TRUE(fake_cras_audio_client()->style_transfer_enabled());
-  EXPECT_TRUE(audio_pref_handler_->GetStyleTransferState());
-}
-
-TEST_P(CrasAudioHandlerTest, StyleTransferRefreshPrefDisableNoStyleTransfer) {
-  AudioNodeList audio_nodes = GenerateAudioNodeList({});
-  // Set up initial audio devices, only with internal mic.
-  AudioNode internalMic = GenerateAudioNode(kInternalMic);
-  // Clear audio effect, no style transfer.
-  internalMic.audio_effect = 0u;
-  audio_nodes.push_back(internalMic);
-  // Simulate enable pref for style transfer.
-  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndStyleTransferState(
-      audio_nodes, internalMic, /*style_transfer_enabled=*/false);
-
-  // Style transfer should still be disabled since the pref is disabled.
-  EXPECT_FALSE(fake_cras_audio_client()->style_transfer_enabled());
-  EXPECT_FALSE(audio_pref_handler_->GetStyleTransferState());
-}
-
-TEST_P(CrasAudioHandlerTest, StyleTransferRefreshPrefDisableWithStyleTransfer) {
-  AudioNodeList audio_nodes = GenerateAudioNodeList({});
-  // Set up initial audio devices, only with internal mic.
-  AudioNode internalMic = GenerateAudioNode(kInternalMic);
-  // Enable style transfer effect.
-  internalMic.audio_effect = cras::EFFECT_TYPE_STYLE_TRANSFER;
-  audio_nodes.push_back(internalMic);
-  // Simulate enable pref for style transfer.
-  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndStyleTransferState(
-      audio_nodes, internalMic, /*style_transfer_enabled=*/false);
-
-  // Style transfer should still be disabled since the pref is disabled.
-  EXPECT_FALSE(fake_cras_audio_client()->style_transfer_enabled());
-  EXPECT_FALSE(audio_pref_handler_->GetStyleTransferState());
 }
 
 TEST_P(CrasAudioHandlerTest, HfpMicSrRefreshPrefEnabledNoHfpMicSr) {
@@ -6098,9 +5953,11 @@ TEST_P(CrasAudioHandlerTest, IsNoiseCancellationSupportedForDeviceNoNC) {
   internalMic.audio_effect = 0u;
   audio_nodes.push_back(internalMic);
   // Disable noise cancellation for board.
-  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndNoiseCancellationState(
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndVoiceIsolationState(
       audio_nodes, /*primary_active_node=*/audio_nodes[0],
-      /*noise_cancellation_enabled=*/false);
+      /*voice_isolation_enabled=*/false,
+      /*noise_cancellation_supported=*/true,
+      /*style_transfer_supported=*/false);
 
   EXPECT_FALSE(cras_audio_handler_->IsNoiseCancellationSupportedForDevice(
       kInternalMicId));
@@ -6122,9 +5979,11 @@ TEST_P(CrasAudioHandlerTest, IsNoiseCancellationSupportedForDeviceWithNC) {
   audio_nodes.push_back(internalSpeaker);
 
   // Enable noise cancellation for board.
-  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndNoiseCancellationState(
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndVoiceIsolationState(
       audio_nodes, /*primary_active_node=*/audio_nodes[0],
-      /*noise_cancellation_enabled=*/true);
+      /*voice_isolation_enabled=*/true,
+      /*noise_cancellation_supported=*/true,
+      /*style_transfer_supported=*/false);
 
   EXPECT_TRUE(cras_audio_handler_->IsNoiseCancellationSupportedForDevice(
       kInternalMicId));
@@ -6143,9 +6002,11 @@ TEST_P(CrasAudioHandlerTest,
   audio_nodes.push_back(internalMic);
 
   // Enable noise cancellation for board.
-  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndNoiseCancellationState(
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndVoiceIsolationState(
       audio_nodes, /*primary_active_node=*/audio_nodes[0],
-      /*noise_cancellation_enabled=*/true);
+      /*voice_isolation_enabled=*/true,
+      /*noise_cancellation_supported=*/true,
+      /*style_transfer_supported=*/false);
 
   EXPECT_TRUE(audio_pref_handler_->GetNoiseCancellationState());
   EXPECT_TRUE(fake_cras_audio_client()->noise_cancellation_enabled());
@@ -6181,9 +6042,11 @@ TEST_P(CrasAudioHandlerTest, SetNoiseCancellationStateObserver) {
   audio_nodes.push_back(internalMic);
 
   // Enable noise cancellation for board.
-  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndNoiseCancellationState(
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndVoiceIsolationState(
       audio_nodes, /*primary_active_node=*/audio_nodes[0],
-      /*noise_cancellation_enabled=*/true);
+      /*voice_isolation_enabled=*/true,
+      /*noise_cancellation_supported=*/true,
+      /*style_transfer_supported=*/false);
 
   EXPECT_EQ(0, test_observer_->noise_cancellation_state_change_count());
 
@@ -6205,9 +6068,11 @@ TEST_P(CrasAudioHandlerTest, IsStyleTransferSupportedForDevice) {
   micJack.audio_effect = 0u;  // no style transfer supported.
   audio_nodes.push_back(micJack);
 
-  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndStyleTransferState(
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndVoiceIsolationState(
       audio_nodes, /*primary_active_node=*/audio_nodes[0],
-      /*style_transfer_enabled=*/true);
+      /*voice_isolation_enabled=*/true,
+      /*noise_cancellation_supported=*/false,
+      /*style_transfer_supported=*/true);
 
   EXPECT_TRUE(
       cras_audio_handler_->IsStyleTransferSupportedForDevice(kInternalMicId));
@@ -6223,9 +6088,11 @@ TEST_P(CrasAudioHandlerTest, SetStyleTransferStateUpdatesAudioPrefAndClient) {
   audio_nodes.push_back(internalMic);
 
   // On.
-  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndStyleTransferState(
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndVoiceIsolationState(
       audio_nodes, /*primary_active_node=*/audio_nodes[0],
-      /*style_transfer_enabled=*/true);
+      /*voice_isolation_enabled=*/true,
+      /*noise_cancellation_supported=*/false,
+      /*style_transfer_supported=*/true);
 
   EXPECT_TRUE(audio_pref_handler_->GetStyleTransferState());
   EXPECT_TRUE(fake_cras_audio_client()->style_transfer_enabled());
@@ -6250,9 +6117,11 @@ TEST_P(CrasAudioHandlerTest, SetStyleTransferStateObserver) {
   internalMic.audio_effect = cras::EFFECT_TYPE_STYLE_TRANSFER;
   audio_nodes.push_back(internalMic);
 
-  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndStyleTransferState(
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndVoiceIsolationState(
       audio_nodes, /*primary_active_node=*/audio_nodes[0],
-      /*style_transfer_enabled=*/true);
+      /*voice_isolation_enabled=*/true,
+      /*noise_cancellation_supported=*/false,
+      /*style_transfer_supported=*/true);
 
   EXPECT_EQ(0, test_observer_->style_transfer_state_change_count());
 

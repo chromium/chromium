@@ -458,22 +458,22 @@ void AudioDevicesPrefHandlerImpl::SetVoiceIsolationPreferredEffect(
 }
 
 bool AudioDevicesPrefHandlerImpl::GetNoiseCancellationState() {
-  return local_state_->GetBoolean(prefs::kInputNoiseCancellationEnabled);
+  return local_state_->GetBoolean(prefs::kInputVoiceIsolationEnabled);
 }
 
 void AudioDevicesPrefHandlerImpl::SetNoiseCancellationState(
     bool noise_cancellation_state) {
-  local_state_->SetBoolean(prefs::kInputNoiseCancellationEnabled,
+  local_state_->SetBoolean(prefs::kInputVoiceIsolationEnabled,
                            noise_cancellation_state);
 }
 
 bool AudioDevicesPrefHandlerImpl::GetStyleTransferState() const {
-  return local_state_->GetBoolean(prefs::kInputStyleTransferEnabled);
+  return local_state_->GetBoolean(prefs::kInputVoiceIsolationEnabled);
 }
 
 void AudioDevicesPrefHandlerImpl::SetStyleTransferState(
     bool style_transfer_state) {
-  local_state_->SetBoolean(prefs::kInputStyleTransferEnabled,
+  local_state_->SetBoolean(prefs::kInputVoiceIsolationEnabled,
                            style_transfer_state);
 }
 

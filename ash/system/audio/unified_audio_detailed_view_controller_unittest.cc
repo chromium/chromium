@@ -666,6 +666,7 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
       VoiceIsolationUIAppearance(cras::EFFECT_TYPE_NOISE_CANCELLATION,
                                  cras::EFFECT_TYPE_NOISE_CANCELLATION, false));
   cras_audio_handler_->RequestVoiceIsolationUIAppearance();
+  audio_pref_handler_->SetVoiceIsolationState(true);
 
   cras_audio_handler_->SwitchToDevice(
       AudioDevice(GenerateAudioNode(kInternalMic)), true,

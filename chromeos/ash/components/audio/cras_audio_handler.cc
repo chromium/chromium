@@ -719,30 +719,11 @@ bool CrasAudioHandler::GetNoiseCancellationState() const {
   return audio_pref_handler_->GetNoiseCancellationState();
 }
 
-void CrasAudioHandler::RefreshNoiseCancellationState() {
-  if (!noise_cancellation_supported()) {
-    return;
-  }
-
-  const AudioDevice* internal_mic =
-      GetDeviceByType(AudioDeviceType::kInternalMic);
-
-  if (!internal_mic) {
-    return;
-  }
-
-  // Refresh should only update the state in CRAS and leave the preference
-  // as-is.
-  CrasAudioClient::Get()->SetNoiseCancellationEnabled(
-      GetNoiseCancellationState() &&
-      (internal_mic->audio_effect & cras::EFFECT_TYPE_NOISE_CANCELLATION));
-}
-
 void CrasAudioHandler::SetNoiseCancellationState(
     bool noise_cancellation_on,
     AudioSettingsChangeSource source) {
-  CrasAudioClient::Get()->SetNoiseCancellationEnabled(noise_cancellation_on);
-  audio_pref_handler_->SetNoiseCancellationState(noise_cancellation_on);
+  CrasAudioClient::Get()->SetVoiceIsolationUIEnabled(noise_cancellation_on);
+  audio_pref_handler_->SetVoiceIsolationState(noise_cancellation_on);
 
   for (auto& observer : observers_) {
     observer.OnNoiseCancellationStateChanged();
@@ -797,31 +778,12 @@ bool CrasAudioHandler::IsStyleTransferSupportedForDevice(uint64_t device_id) {
 }
 
 bool CrasAudioHandler::GetStyleTransferState() const {
-  return audio_pref_handler_->GetStyleTransferState();
-}
-
-void CrasAudioHandler::RefreshStyleTransferState() {
-  if (!style_transfer_supported()) {
-    return;
-  }
-
-  const AudioDevice* internal_mic =
-      GetDeviceByType(AudioDeviceType::kInternalMic);
-
-  if (!internal_mic) {
-    return;
-  }
-
-  // Refresh should only update the state in CRAS and leave the preference
-  // as-is.
-  CrasAudioClient::Get()->SetStyleTransferEnabled(
-      GetStyleTransferState() &&
-      (internal_mic->audio_effect & cras::EFFECT_TYPE_STYLE_TRANSFER));
+  return audio_pref_handler_->GetVoiceIsolationState();
 }
 
 void CrasAudioHandler::SetStyleTransferState(bool style_transfer_on) {
-  CrasAudioClient::Get()->SetStyleTransferEnabled(style_transfer_on);
-  audio_pref_handler_->SetStyleTransferState(style_transfer_on);
+  CrasAudioClient::Get()->SetVoiceIsolationUIEnabled(style_transfer_on);
+  audio_pref_handler_->SetVoiceIsolationState(style_transfer_on);
 
   for (auto& observer : observers_) {
     observer.OnStyleTransferStateChanged();
@@ -1980,6 +1942,9 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
     SetInputMute(true, InputMuteChangeMethod::kPhysicalShutter);
   }
 
+  // Refreshes voice isolation state in CRAS, in case CRAS restarts.
+  RefreshVoiceIsolationState();
+
   // Sets speak-on-mute detection enabled based on local variable, it re-applies
   // the previous state if CRAS restarts.
   CrasAudioClient::Get()->SetSpeakOnMuteDetection(speak_on_mute_detection_on_);
@@ -2917,12 +2882,6 @@ void CrasAudioHandler::HandleGetNodes(std::optional<AudioNodeList> node_list) {
   }
 
   UpdateDevicesAndSwitchActive(node_list.value());
-
-  // Always set the input noise cancellation state on NodesChange event.
-  RefreshNoiseCancellationState();
-
-  // Always set the input style transfer state on NodesChange event.
-  RefreshStyleTransferState();
 
   // Always set the hfp_mic_sr state on NodesChange event.
   RefreshHfpMicSrState();

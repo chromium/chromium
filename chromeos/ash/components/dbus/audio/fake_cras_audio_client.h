@@ -194,10 +194,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void disable_gain_change_events() { enable_gain_change_events_ = false; }
 
   bool noise_cancellation_enabled() const {
-    return noise_cancellation_enabled_;
+    return voice_isolation_ui_enabled_;
   }
 
-  bool style_transfer_enabled() const { return style_transfer_enabled_; }
+  bool style_transfer_enabled() const { return voice_isolation_ui_enabled_; }
 
   bool speak_on_mute_detection_enabled() const {
     return speak_on_mute_detection_enabled_;
@@ -231,8 +231,6 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   int32_t number_non_chrome_output_streams_ = 0;
   bool voice_isolation_ui_enabled_ = false;
   uint32_t voice_isolation_preferred_effect_ = 0;
-  bool noise_cancellation_enabled_ = false;
-  bool style_transfer_enabled_ = false;
   bool speak_on_mute_detection_enabled_ = false;
   bool ewma_power_report_enabled_ = false;
   bool sidetone_enabled_ = false;

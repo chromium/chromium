@@ -11,6 +11,8 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler.h"
+#include "chromeos/ash/components/audio/audio_devices_pref_handler_stub.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
@@ -84,6 +86,10 @@ TEST_F(AudioDetailedViewPixelTest, ShowNoiseCancellationButton) {
   node_list.push_back(internal_mic_node);
   client->SetAudioNodesAndNotifyObserversForTesting(node_list);
   client->SetNoiseCancellationSupported(true);
+  scoped_refptr<AudioDevicesPrefHandlerStub> audio_pref_handler_ =
+      base::MakeRefCounted<AudioDevicesPrefHandlerStub>();
+  audio_pref_handler_->SetVoiceIsolationState(true);
+  audio_handler->SetPrefHandlerForTesting(audio_pref_handler_);
   audio_handler->RequestNoiseCancellationSupported(base::DoNothing());
   audio_handler->RequestVoiceIsolationUIAppearance();
   audio_handler->SwitchToDevice(AudioDevice(internal_mic_node), true,
