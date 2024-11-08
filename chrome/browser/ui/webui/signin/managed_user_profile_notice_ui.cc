@@ -177,7 +177,7 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
       IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_WORK_TITLE);
   source->AddLocalizedString(
       "valuePropositionTitle",
-      IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_TEXT);
+      IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_SUGGESTED_TITLE);
   source->AddLocalizedString("valuePropSubtitle",
                              IDS_ENTERPRISE_VALUE_PROPOSITION_SUBTITLE);
 
