@@ -95,6 +95,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableCardBenefitsForAmericanExpress,
     &autofill::features::kAutofillEnableCardBenefitsForCapitalOne,
     &autofill::features::kAutofillEnableCardProductName,
+    &autofill::features::kAutofillEnablePaymentSettingsCardPromoAndScanCard,
     &autofill::features::kAutofillEnableLocalIban,
     &autofill::features::kAutofillEnablePaymentSettingsCardPromoAndScanCard,
     &autofill::features::kAutofillEnableServerIban,

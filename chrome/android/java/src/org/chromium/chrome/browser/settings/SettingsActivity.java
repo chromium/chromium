@@ -57,7 +57,10 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
@@ -120,6 +123,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     // This is only used on automotive.
     private @Nullable MissingDeviceLockLauncher mMissingDeviceLockLauncher;
+
+    // Used to show new intents through the window's IntentRequestTracker.
+    private ActivityWindowAndroid mWindowAndroid;
 
     private static final String MAIN_FRAGMENT_TAG = "settings_main";
 
@@ -353,6 +359,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     @Override
     protected void onDestroy() {
+        if (mWindowAndroid != null) {
+            mWindowAndroid.destroy();
+        }
         mScrim.destroy();
         super.onDestroy();
     }
@@ -365,6 +374,30 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @VisibleForTesting
     public Fragment getMainFragment() {
         return getSupportFragmentManager().findFragmentById(R.id.content);
+    }
+
+    /**
+     * Returns the window Android for the Settings Activity. If a window Android does not exist yet
+     * create one and return that.
+     *
+     * @return WindowAndroid The window Android associated with the Settings Activity.
+     */
+    // TODO: crbug.com/378097139 - Replace with an IntentRequestTracker.
+    public @NonNull WindowAndroid getWindowAndroid() {
+        if (mWindowAndroid == null) {
+            mWindowAndroid =
+                    new ActivityWindowAndroid(
+                            /* context= */ this,
+                            /* listenToActivityState= */ false,
+                            IntentRequestTracker.createFromActivity(this),
+                            getInsetObserver());
+        }
+        return mWindowAndroid;
+    }
+
+    /** Returns the window Android for the Settings Activity for tests. */
+    public WindowAndroid getWindowAndroidForTesting() {
+        return mWindowAndroid;
     }
 
     @Override
@@ -407,6 +440,16 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (mWindowAndroid != null) {
+            mWindowAndroid
+                    .getIntentRequestTracker()
+                    .onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     private void initBackPressHandler() {
