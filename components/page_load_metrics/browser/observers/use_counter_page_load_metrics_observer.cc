@@ -634,6 +634,7 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kTextWrap, WebDXFeature::kTextWrap},
           {CSSSampleId::kTextWrapStyle, WebDXFeature::kTextWrapStyle},
           {CSSSampleId::kOffsetPath, WebDXFeature::kMotionPath},
+          {CSSSampleId::kOutline, WebDXFeature::kOutline},
       }};
 
   return *kMap;
