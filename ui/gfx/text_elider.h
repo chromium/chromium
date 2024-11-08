@@ -25,9 +25,10 @@ class FilePath;
 namespace gfx {
 class FontList;
 
-GFX_EXPORT extern const char kEllipsis[];
-GFX_EXPORT extern const char16_t kEllipsisUTF16[];
-GFX_EXPORT extern const char16_t kForwardSlash;
+// U+2026 in utf8
+inline constexpr char kEllipsis[] = "\xE2\x80\xA6";
+inline constexpr char16_t kEllipsisUTF16[] = {0x2026, 0};
+inline constexpr char16_t kForwardSlash = '/';
 
 // Helper class to split + elide text, while respecting UTF-16 surrogate pairs
 // and combining character sequences.

@@ -115,11 +115,6 @@ bool GetDefaultWhitespaceElision(bool elide_in_middle,
 
 }  // namespace
 
-// U+2026 in utf8
-const char kEllipsis[] = "\xE2\x80\xA6";
-const char16_t kEllipsisUTF16[] = {0x2026, 0};
-const char16_t kForwardSlash = '/';
-
 StringSlicer::StringSlicer(const std::u16string& text,
                            const std::u16string& ellipsis,
                            bool elide_in_middle,
