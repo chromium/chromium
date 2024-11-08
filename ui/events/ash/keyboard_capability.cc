@@ -798,10 +798,6 @@ void KeyboardCapability::SetKeyboardInfoForTesting(
   keyboard_info_map_.insert_or_assign(keyboard.id, std::move(keyboard_info));
 }
 
-bool KeyboardCapability::IsModifierSplitEnabled() const {
-  return ash::features::IsModifierSplitEnabled();
-}
-
 void KeyboardCapability::DisableKeyboardInfoTrimmingForTesting() {
   should_disable_trimming_ = true;
 }

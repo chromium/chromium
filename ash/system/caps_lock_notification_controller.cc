@@ -17,13 +17,9 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/metrics/user_metrics.h"
-#include "build/branding_buildflags.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
 #include "ui/events/ash/pref_names.h"
 #include "ui/message_center/message_center.h"
@@ -75,7 +71,7 @@ int GetMessageStringId() {
 
 std::unique_ptr<Notification> CreateNotification() {
   const gfx::VectorIcon& capslock_icon =
-      Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()
+      features::IsModifierSplitEnabled()
           ? kModifierSplitNotificationCapslockIcon
           : kNotificationCapslockIcon;
   std::unique_ptr<Notification> notification = ash::CreateSystemNotificationPtr(

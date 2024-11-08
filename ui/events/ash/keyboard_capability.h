@@ -388,8 +388,6 @@ class KeyboardCapability : public InputDeviceEventObserver {
     return keyboard_info_map_;
   }
 
-  bool IsModifierSplitEnabled() const;
-
  private:
   const KeyboardInfo* GetKeyboardInfo(const KeyboardDevice& keyboard) const;
   void TrimKeyboardInfoMap();

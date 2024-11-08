@@ -5,12 +5,9 @@
 #include "ash/webui/common/shortcut_input_key_strings.h"
 
 #include "ash/shell.h"
-#include "build/branding_buildflags.h"
-#include "build/buildflag.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/events/ash/keyboard_capability.h"
 
 namespace ash {
 
@@ -98,7 +95,7 @@ void AddShortcutInputKeyStrings(content::WebUIDataSource* html_source) {
       {"inputKeyPlaceholder", IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER},
   };
 
-  if (Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
+  if (features::IsModifierSplitEnabled()) {
     html_source->AddLocalizedString("iconLabelRightAlt",
                                     IDS_KEYBOARD_QUICK_INSERT_LABEL);
   } else {

@@ -25,9 +25,6 @@
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager.h"
 #include "ash/webui/shortcut_customization_ui/shortcuts_app_manager_factory.h"
 #include "ash/webui/shortcut_customization_ui/url_constants.h"
-#include "build/branding_buildflags.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -247,7 +244,7 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
   };
 
   // For official builds, only add the real string if the feature is enabled.
-  if (Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
+  if (features::IsModifierSplitEnabled()) {
     source->AddLocalizedString(
         "blockRightAltKey",
         IDS_SHORTCUT_CUSTOMIZATION_BLOCK_QUICK_INSERT_KEY_ERROR_MESSAGE);

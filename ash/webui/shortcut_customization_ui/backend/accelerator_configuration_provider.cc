@@ -36,9 +36,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/branding_buildflags.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -57,10 +54,6 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 
@@ -599,7 +592,7 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
   // data that provides additional details for the app for styling.
   // Also create a cached shortcut description lookup.
   for (const auto& layout_id : kAcceleratorLayouts) {
-    std::optional<AcceleratorLayoutDetails> layout =
+    const std::optional<AcceleratorLayoutDetails> layout =
         GetAcceleratorLayout(layout_id);
     if (!layout) {
       LOG(ERROR) << "Unexpectedly could not find layout for id: " << layout_id;

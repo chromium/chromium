@@ -6473,10 +6473,6 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_DISABLED" desc="In keyboard remap keys subpage, the dropdown list item for a disabled key.">
     Disabled
   </message>
-   <!-- TODO(b:329880993): Translate following strings before launch. -->
-  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_RIGHT_ALT" translateable="false" desc="In keyboard remap keys subpage, the dropdown list item for a right alt key.">
-    right alt
-  </message>
   <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_FUNCTION" desc="In keyboard remap keys subpage, the dropdown list item for a function key.">
     fn
   </message>
