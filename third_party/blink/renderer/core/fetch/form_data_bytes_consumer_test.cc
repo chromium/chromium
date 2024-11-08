@@ -146,7 +146,7 @@ class FormDataBytesConsumerTest : public PageTestBase {
     auto* reader = MakeGarbageCollected<BytesConsumerTestReader>(consumer);
     std::pair<BytesConsumer::Result, Vector<char>> result = reader->Run();
     EXPECT_EQ(Result::kDone, result.first);
-    return BytesConsumerTestUtil::CharVectorToString(result.second);
+    return String(result.second);
   }
 
   scoped_refptr<EncodedFormData> DrainAsFormData(
@@ -174,8 +174,7 @@ TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromString) {
            MakeGarbageCollected<FormDataBytesConsumer>("hello, world")))
           ->Run();
   EXPECT_EQ(Result::kDone, result.first);
-  EXPECT_EQ("hello, world",
-            BytesConsumerTestUtil::CharVectorToString(result.second));
+  EXPECT_EQ("hello, world", String(result.second));
 }
 
 TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromStringNonLatin) {
@@ -184,8 +183,7 @@ TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromStringNonLatin) {
                      MakeGarbageCollected<FormDataBytesConsumer>(String(kCs))))
                     ->Run();
   EXPECT_EQ(Result::kDone, result.first);
-  EXPECT_EQ("\xe3\x81\x82",
-            BytesConsumerTestUtil::CharVectorToString(result.second));
+  EXPECT_EQ("\xe3\x81\x82", String(result.second));
 }
 
 TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromArrayBuffer) {
@@ -228,8 +226,7 @@ TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromSimpleFormData) {
                          GetFrame().DomWindow(), data)))
                     ->Run();
   EXPECT_EQ(Result::kDone, result.first);
-  EXPECT_EQ("foohoge",
-            BytesConsumerTestUtil::CharVectorToString(result.second));
+  EXPECT_EQ("foohoge", String(result.second));
 }
 
 TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromComplexFormData) {
@@ -488,7 +485,7 @@ TEST_F(FormDataBytesConsumerTest, DataPipeFormData) {
   std::pair<BytesConsumer::Result, Vector<char>> result = reader->Run();
   EXPECT_EQ(Result::kDone, result.first);
   EXPECT_EQ("foo hello world here's another data pipe bar baz",
-            BytesConsumerTestUtil::CharVectorToString(result.second));
+            String(result.second));
 }
 
 // Tests DrainAsFormData() on an EncodedFormData with data pipe elements.
@@ -527,7 +524,7 @@ TEST_F(FormDataBytesConsumerTest,
   std::pair<BytesConsumer::Result, Vector<char>> result = reader->Run();
   EXPECT_EQ(Result::kDone, result.first);
   EXPECT_EQ(" hello world here's another data pipe bar baz",
-            BytesConsumerTestUtil::CharVectorToString(result.second));
+            String(result.second));
 }
 
 void AppendDataPipe(scoped_refptr<EncodedFormData> data, String content) {
@@ -597,7 +594,7 @@ TEST_F(FormDataBytesConsumerTest, InvalidType2) {
     str.AppendSpan(buffer);
     EXPECT_EQ(BytesConsumer::Result::kOk, consumer->EndRead(buffer.size()));
   }
-  EXPECT_EQ("foo", BytesConsumerTestUtil::CharVectorToString(str));
+  EXPECT_EQ("foo", String(str));
 
   {
     base::span<const char> buffer;

@@ -31,8 +31,4 @@ BytesConsumerTestUtil::MockBytesConsumer::MockBytesConsumer() {
   ON_CALL(*this, DrainAsFormData()).WillByDefault(Return(ByMove(nullptr)));
 }
 
-String BytesConsumerTestUtil::CharVectorToString(const Vector<char>& v) {
-  return String(v.data(), v.size());
-}
-
 }  // namespace blink

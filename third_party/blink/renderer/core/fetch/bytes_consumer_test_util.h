@@ -67,8 +67,6 @@ class BytesConsumerTestUtil {
       DidFetchDataLoadedFormDataMock(FormData);
     }
   };
-
-  static String CharVectorToString(const Vector<char>&);
 };
 
 }  // namespace blink

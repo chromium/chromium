@@ -75,12 +75,6 @@ String::String(const UChar* str) {
 String::String(base::span<const LChar> latin1_data)
     : impl_(latin1_data.data() ? StringImpl::Create(latin1_data) : nullptr) {}
 
-String::String(const char* characters, unsigned length)
-    : impl_(characters
-                ? StringImpl::Create(
-                      {reinterpret_cast<const LChar*>(characters), length})
-                : nullptr) {}
-
 int CodeUnitCompare(const String& a, const String& b) {
   return CodeUnitCompare(a.Impl(), b.Impl());
 }

@@ -313,7 +313,7 @@ TEST(KURLTest, EncodeWithURLEscapeSequences) {
   }
 
   // Our encode escapes NULLs for safety, so we need to check that too.
-  String input("\x00\x01", 2u);
+  String input(base::span_from_cstring("\x00\x01"));
   String reference("%00%01");
 
   String output = EncodeWithURLEscapeSequences(input);

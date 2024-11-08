@@ -4247,20 +4247,21 @@ WebGLActiveInfo* WebGL2RenderingContextBase::getTransformFeedbackVarying(
   if (max_name_length <= 0) {
     return nullptr;
   }
-  auto name = std::make_unique<GLchar[]>(max_name_length);
+  auto name = base::HeapArray<GLchar>::WithSize(max_name_length);
   GLsizei length = 0;
   GLsizei size = 0;
   GLenum type = 0;
   ContextGL()->GetTransformFeedbackVarying(ObjectOrZero(program), index,
                                            max_name_length, &length, &size,
-                                           &type, name.get());
+                                           &type, name.data());
 
   if (length <= 0 || size == 0 || type == 0) {
     return nullptr;
   }
 
   return MakeGarbageCollected<WebGLActiveInfo>(
-      String(name.get(), static_cast<uint32_t>(length)), type, size);
+      String(base::span(name).first(static_cast<uint32_t>(length))), type,
+      size);
 }
 
 void WebGL2RenderingContextBase::pauseTransformFeedback() {
@@ -4654,16 +4655,16 @@ String WebGL2RenderingContextBase::getActiveUniformBlockName(
                       "invalid uniform block index");
     return String();
   }
-  auto name = std::make_unique<GLchar[]>(max_name_length);
+  auto name = base::HeapArray<GLchar>::WithSize(max_name_length);
 
   GLsizei length = 0;
   ContextGL()->GetActiveUniformBlockName(ObjectOrZero(program),
                                          uniform_block_index, max_name_length,
-                                         &length, name.get());
+                                         &length, name.data());
 
   if (length <= 0)
     return String();
-  return String(name.get(), static_cast<uint32_t>(length));
+  return String(base::span(name).first(static_cast<uint32_t>(length)));
 }
 
 void WebGL2RenderingContextBase::uniformBlockBinding(

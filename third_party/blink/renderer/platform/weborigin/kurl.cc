@@ -512,7 +512,7 @@ bool KURL::SetProtocol(const String& protocol) {
   const wtf_size_t protocol_length =
       base::checked_cast<wtf_size_t>(protocol_component.len);
   const String new_protocol_canon =
-      String(canon_protocol.data(), protocol_length);
+      String(base::span(canon_protocol.view()).first(protocol_length));
 
   if (SchemeRegistry::IsSpecialScheme(Protocol())) {
     // https://url.spec.whatwg.org/#scheme-state
@@ -811,7 +811,7 @@ String EncodeWithURLEscapeSequences(const StringView& not_encoded_string) {
     buffer.Resize(input_length * 3);
 
   url::EncodeURIComponent(utf8, &buffer);
-  String escaped(buffer.data(), static_cast<unsigned>(buffer.length()));
+  String escaped(base::span(buffer.view()));
   // Unescape '/'; it's safe and much prettier.
   escaped.Replace("%2F", "/");
   return escaped;

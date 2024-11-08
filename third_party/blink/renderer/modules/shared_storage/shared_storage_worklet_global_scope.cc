@@ -968,9 +968,7 @@ SharedStorageWorkletGlobalScope::interestGroups(
                         *mojom_group->interest_group->additional_bid_key),
                     original_additional_bid_key);
 
-                group->setAdditionalBidKey(
-                    String(original_additional_bid_key.data(),
-                           original_additional_bid_key.size()));
+                group->setAdditionalBidKey(String(original_additional_bid_key));
               }
 
               ProtectedAudiencePrivateAggregationConfig* pa_config =

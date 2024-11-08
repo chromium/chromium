@@ -87,7 +87,7 @@ static void AppendMailtoPostFormDataToURL(KURL& url,
   body_data.AppendSpan(base::span_from_cstring("body="));
   FormDataEncoder::EncodeStringAsFormData(body_data, body.Utf8(),
                                           FormDataEncoder::kNormalizeCRLF);
-  body = String(body_data.data(), body_data.size()).Replace('+', "%20");
+  body = String(body_data).Replace('+', "%20");
 
   StringBuilder query;
   query.Append(url.Query());

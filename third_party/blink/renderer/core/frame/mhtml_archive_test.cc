@@ -291,7 +291,7 @@ TEST_F(MHTMLArchiveTest, TestMHTMLPartsWithBinaryEncoding) {
 
   // Read the MHTML data line per line and do some pseudo-parsing to make sure
   // the right encoding is used for the different sections.
-  LineReader line_reader(String(mhtml_data().data(), mhtml_data().size()));
+  LineReader line_reader{String(mhtml_data())};
   int part_count = 0;
   String line, last_line;
   while (line_reader.GetNextLine(&line)) {

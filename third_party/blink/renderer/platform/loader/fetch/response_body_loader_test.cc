@@ -755,7 +755,7 @@ TEST_F(ResponseBodyLoaderTest, DrainAsBytesConsumer) {
 
   auto result = reader->Run(task_runner.get());
   EXPECT_EQ(result.first, BytesConsumer::Result::kDone);
-  EXPECT_EQ(String(result.second.data(), result.second.size()), "hello");
+  EXPECT_EQ(String(result.second), "hello");
   EXPECT_FALSE(client->LoadingIsCancelled());
   EXPECT_TRUE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
@@ -786,7 +786,7 @@ TEST_F(ResponseBodyLoaderTest, CancelDrainedBytesConsumer) {
 
   auto result = reader->Run(task_runner.get());
   EXPECT_EQ(result.first, BytesConsumer::Result::kDone);
-  EXPECT_EQ(String(result.second.data(), result.second.size()), String());
+  EXPECT_EQ(String(result.second), String());
 
   EXPECT_FALSE(client->LoadingIsCancelled());
   EXPECT_FALSE(client->LoadingIsFinished());
@@ -841,7 +841,7 @@ TEST_F(ResponseBodyLoaderTest, DrainAsBytesConsumerWithError) {
 
   auto result = reader->Run(task_runner.get());
   EXPECT_EQ(result.first, BytesConsumer::Result::kError);
-  EXPECT_EQ(String(result.second.data(), result.second.size()), "hello");
+  EXPECT_EQ(String(result.second), "hello");
   EXPECT_FALSE(client->LoadingIsCancelled());
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_TRUE(client->LoadingIsFailed());
@@ -1291,7 +1291,7 @@ TEST_F(ResponseBodyLoaderTestAllowDrainAsBytesConsumerInBFCache,
 
   auto result = reader->Run(task_runner.get());
   EXPECT_EQ(result.first, BytesConsumer::Result::kDone);
-  EXPECT_EQ(String(result.second.data(), result.second.size()), "helloworld");
+  EXPECT_EQ(String(result.second), "helloworld");
   // Check that `DidFinishLoadingBody()` has not been called.
   EXPECT_FALSE(client->LoadingIsCancelled());
   EXPECT_FALSE(client->LoadingIsFinished());

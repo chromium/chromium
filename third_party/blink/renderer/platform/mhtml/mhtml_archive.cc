@@ -195,7 +195,7 @@ String ConvertToPrintableCharacters(const String& text) {
   std::string utf8_text = text.Utf8();
   Vector<char> encoded_text;
   QuotedPrintableEncode(utf8_text, true /* is_header */, encoded_text);
-  return String(encoded_text.data(), encoded_text.size());
+  return String(encoded_text);
 }
 
 }  // namespace

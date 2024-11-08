@@ -52,7 +52,7 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripBytes) {
   ASSERT_EQ(1u, dest.FormBody()->Elements().size());
   const FormDataElement& e = dest.FormBody()->Elements()[0];
   EXPECT_EQ(e.type_, FormDataElement::kData);
-  EXPECT_EQ("hello", String(e.data_.data(), e.data_.size()));
+  EXPECT_EQ("hello", String(e.data_));
 }
 
 TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripFile) {

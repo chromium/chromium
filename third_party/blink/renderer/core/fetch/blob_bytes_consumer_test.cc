@@ -83,8 +83,7 @@ TEST_F(BlobBytesConsumerTest, TwoPhaseRead) {
   auto result =
       (MakeGarbageCollected<BytesConsumerTestReader>(consumer))->Run();
   EXPECT_EQ(Result::kDone, result.first);
-  EXPECT_EQ("hello, world",
-            BytesConsumerTestUtil::CharVectorToString(result.second));
+  EXPECT_EQ("hello, world", String(result.second));
 }
 
 TEST_F(BlobBytesConsumerTest, CancelBeforeStarting) {

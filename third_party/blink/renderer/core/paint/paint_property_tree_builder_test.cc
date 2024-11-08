@@ -37,7 +37,7 @@ void PaintPropertyTreeBuilderTest::LoadTestData(const char* file_name) {
   full_path.Append("/renderer/core/paint/test_data/");
   full_path.Append(file_name);
   const Vector<char> input_buffer = *test::ReadFromFile(full_path.ToString());
-  SetBodyInnerHTML(String(input_buffer.data(), input_buffer.size()));
+  SetBodyInnerHTML(String(input_buffer));
 }
 
 const TransformPaintPropertyNode*

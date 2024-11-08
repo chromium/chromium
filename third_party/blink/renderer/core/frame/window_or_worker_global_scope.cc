@@ -93,7 +93,7 @@ String WindowOrWorkerGlobalScope::atob(const String& encoded_string,
     return String();
   }
 
-  return String(out.data(), out.size());
+  return String(out);
 }
 
 bool WindowOrWorkerGlobalScope::crossOriginIsolated() {
