@@ -51,6 +51,8 @@ class TestFrameNavigationObserver : public WebContentsObserver {
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void DidStopLoading() override;
 
+  void GuestDidStopLoading();
+
   // The id of the FrameTreeNode in which navigations are peformed.
   FrameTreeNodeId frame_tree_node_id_;
 
@@ -76,6 +78,9 @@ class TestFrameNavigationObserver : public WebContentsObserver {
 
   // The RunLoop used to spin the message loop.
   base::RunLoop run_loop_;
+
+  // Used to observe load stops if the frame is in a guest.
+  base::CallbackListSubscription guest_on_load_subscription_;
 };
 
 }  // namespace content

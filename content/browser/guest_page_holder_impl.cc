@@ -113,6 +113,7 @@ void GuestPageHolderImpl::DidStopLoading() {
   if (delegate_) {
     delegate_->GuestDidStopLoading();
   }
+  load_stop_callbacks_for_testing_.Notify();
 }
 
 bool GuestPageHolderImpl::IsHidden() {
@@ -225,6 +226,12 @@ GuestPageHolderImpl* GuestPageHolderImpl::FromRenderFrameHost(
   }
 
   return holder;
+}
+
+base::CallbackListSubscription
+GuestPageHolderImpl::RegisterLoadStopCallbackForTesting(
+    base::RepeatingClosure callback) {
+  return load_stop_callbacks_for_testing_.Add(callback);
 }
 
 }  // namespace content
