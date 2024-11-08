@@ -482,6 +482,9 @@ class MockSearchResultsPanel : public SearchResultsPanel {
     }
   }
 
+  MOCK_METHOD(void, SetSearchBoxImage, (const gfx::ImageSkia&));
+  MOCK_METHOD(void, Navigate, (const GURL&));
+
   bool mouse_events_received() const { return mouse_events_received_; }
 
  private:
@@ -1069,6 +1072,34 @@ TEST_F(SunfishTest, SearchActionButtonNotShownIfEnabledPrefIsFalse) {
   EXPECT_THAT(session_test_api.GetActionButtons(), IsEmpty());
 }
 
+// Tests that receiving a newly fetched URL updates the panel. Regression test
+// for http://b/378019622.
+TEST_F(SunfishTest, SendMultimodalSearch) {
+  // Start default mode.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  VerifyActiveBehavior(BehaviorType::kDefault);
+
+  // Open the search results panel to end the session.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500));
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
+  LeftClickOn(session_test_api.GetActionButtons()[0]);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSearch);
+  ASSERT_FALSE(controller->IsActive());
+
+  auto* search_results_panel =
+      controller->search_results_panel_widget()->SetContentsView(
+          std::make_unique<MockSearchResultsPanel>());
+
+  // Mock getting a new response from the server. Test the panel is updated.
+  EXPECT_CALL(*search_results_panel, SetSearchBoxImage(testing::_));
+  EXPECT_CALL(*search_results_panel, Navigate(testing::_));
+
+  controller->ShowSearchResultsPanel(gfx::ImageSkia(), GURL("kTestUrl2"));
+}
+
 TEST_F(SunfishTest, SearchBoxInDefaultMode) {
   auto* controller = CaptureModeController::Get();
   auto* test_delegate =
@@ -1087,6 +1118,7 @@ TEST_F(SunfishTest, SearchBoxInDefaultMode) {
   LeftClickOn(session_test_api.GetActionButtons()[0]);
   WaitForImageCapturedForSearch(PerformCaptureType::kSearch);
   auto* search_results_panel = controller->GetSearchResultsPanel();
+  ASSERT_FALSE(controller->IsActive());
   ASSERT_TRUE(search_results_panel);
 
   // Click on the search box.

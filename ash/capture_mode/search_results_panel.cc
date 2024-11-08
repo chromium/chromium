@@ -243,6 +243,10 @@ views::Textfield* SearchResultsPanel::GetSearchBoxTextfield() const {
   return search_box_view_->textfield_;
 }
 
+void SearchResultsPanel::Navigate(const GURL& url) {
+  search_results_view_->Navigate(url);
+}
+
 void SearchResultsPanel::SetSearchBoxImage(const gfx::ImageSkia& image) {
   search_box_view_->SetImage(image);
 }

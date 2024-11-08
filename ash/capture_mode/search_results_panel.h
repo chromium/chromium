@@ -42,8 +42,9 @@ class ASH_EXPORT SearchResultsPanel : public SystemPanelView {
 
   views::Textfield* GetSearchBoxTextfield() const;
 
-  // Sets the search box image thumbnail.
-  void SetSearchBoxImage(const gfx::ImageSkia& image);
+  // Sets the search box URL, image thumbnail, and text.
+  virtual void Navigate(const GURL& url);
+  virtual void SetSearchBoxImage(const gfx::ImageSkia& image);
   void SetSearchBoxText(const std::u16string& text);
 
   // SystemPanelView:

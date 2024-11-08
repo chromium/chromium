@@ -714,14 +714,15 @@ SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
 
 void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
                                                    GURL url) {
-  // A session must be active when the panel is first loaded, because it is used
-  // to determine the panel bounds. If the user ends the session before the
-  // panel loads, it will not be shown.
-  if (!IsActive()) {
-    return;
-  }
   DCHECK(IsSunfishFeatureEnabledWithFeatureKey());
+  const bool is_active = IsActive();
   if (!search_results_panel_widget_) {
+    // A session must be active when the panel is first loaded, because it is
+    // used to determine the panel bounds. If the user ends the session before
+    // the panel loads, it will not be shown.
+    if (!is_active) {
+      return;
+    }
     const gfx::Rect panel_bounds = CalculateSearchResultPanelBounds(
         capture_mode_session_->current_root(),
         capture_mode_session_->GetFeedbackWidgetScreenBounds());
@@ -729,11 +730,12 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
         capture_mode_session_->current_root(), panel_bounds);
     search_results_panel_widget_->Show();
   }
+  // Note at this point the session may no longer be active.
   auto* search_results_panel = GetSearchResultsPanel();
   search_results_panel->SetSearchBoxImage(image);
-  search_results_panel->search_results_view()->Navigate(url);
-  if (capture_mode_session_->active_behavior()
-          ->ShouldEndSessionOnShowingSearchResults()) {
+  search_results_panel->Navigate(url);
+  if (is_active && capture_mode_session_->active_behavior()
+                       ->ShouldEndSessionOnShowingSearchResults()) {
     Stop();
   }
 }
