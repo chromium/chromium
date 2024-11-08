@@ -20,6 +20,7 @@
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_service.h"
@@ -141,6 +142,12 @@ class RecentTabsSubMenuModelTest : public BrowserWithTestWindowTest {
     sync_processor_ = std::move(activation_response->type_processor);
 
     EnableSync();
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return {TestingProfile::TestingFactory{
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory()}};
   }
 
   void EnableSync() {
