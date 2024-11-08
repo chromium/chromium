@@ -89,7 +89,7 @@ void NativeInputMethodEngine::Initialize(
           : nullptr;
 
   LobsterEventSink* lobster_event_sink =
-      ash::features::IsLobsterEnabled() && ash::LobsterController::IsEnabled()
+      ash::features::IsLobsterEnabled()
           ? LobsterServiceProvider::GetForProfile(profile)
           : nullptr;
 

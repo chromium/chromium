@@ -54,8 +54,6 @@ class ASH_EXPORT LobsterController {
   LobsterController();
   ~LobsterController();
 
-  static bool IsEnabled();
-
   void SetClientFactory(LobsterClientFactory* client_factory);
 
   std::unique_ptr<Trigger> CreateTrigger(LobsterEntryPoint entry_point,

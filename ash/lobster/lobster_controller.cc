@@ -18,14 +18,6 @@
 #include "base/hash/sha1.h"
 
 namespace ash {
-namespace {
-
-constexpr std::string_view kLobsterKey(
-    "\xB3\x3A\x4C\xFC\x84\xA0\x2B\xBE\xAC\x88\x48\x09\xCF\x5E\xD6\xD9\x28\xEC"
-    "\x20\x2A",
-    base::kSHA1Length);
-
-}  // namespace
 
 LobsterController::Trigger::Trigger(LobsterController* controller,
                                     std::unique_ptr<LobsterClient> client,
@@ -53,17 +45,6 @@ LobsterController::LobsterController() = default;
 
 LobsterController::~LobsterController() = default;
 
-bool LobsterController::IsEnabled() {
-  // Command line looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/tmp123
-  //  --lobster-feature-key="INSERT KEY HERE" --enable-features=Lobster
-  static const bool is_enabled =
-      base::SHA1HashString(
-          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-              switches::kLobsterFeatureKey)) == kLobsterKey;
-  return is_enabled;
-}
-
 void LobsterController::SetClientFactory(LobsterClientFactory* client_factory) {
   client_factory_ = client_factory;
 }
@@ -74,9 +55,8 @@ std::unique_ptr<LobsterController::Trigger> LobsterController::CreateTrigger(
   if (client_factory_ == nullptr) {
     return nullptr;
   }
-
   std::unique_ptr<LobsterClient> client = client_factory_->CreateClient();
-  if (client == nullptr) {
+  if (client == nullptr || !client->UserHasAccess()) {
     return nullptr;
   }
 
@@ -93,6 +73,9 @@ void LobsterController::StartSession(std::unique_ptr<LobsterClient> client,
                                      std::optional<std::string> query,
                                      LobsterEntryPoint entry_point,
                                      LobsterMode mode) {
+  if (!client->UserHasAccess()) {
+    return;
+  }
   // Before creating a new session, we need to inform the lobster client and
   // lobster session to clear their pointer to the session that is about to be
   // destroyed. This is to prevent them from holding a dangling pointer to the

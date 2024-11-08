@@ -390,8 +390,7 @@ QuickInsertClientImpl::CacheEditorContext() {
 
 QuickInsertClientImpl::ShowLobsterCallback
 QuickInsertClientImpl::CacheLobsterContext(bool support_image_insertion) {
-  if (!ash::features::IsLobsterEnabled() ||
-      !ash::LobsterController::IsEnabled()) {
+  if (!ash::features::IsLobsterEnabled()) {
     return base::NullCallback();
   }
 

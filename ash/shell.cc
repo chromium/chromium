@@ -1832,7 +1832,7 @@ void Shell::Init(
 
   quick_insert_controller_ = std::make_unique<QuickInsertController>();
 
-  if (features::IsLobsterEnabled() && LobsterController::IsEnabled()) {
+  if (features::IsLobsterEnabled()) {
     lobster_controller_ = std::make_unique<LobsterController>();
   }
 
