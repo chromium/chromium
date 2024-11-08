@@ -82,3 +82,12 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, NoticeRestricted) {
 IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, Mixin) {
   RunTestSuite("Mixin");
 }
+
+IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest,
+                       CombinedAdsApiUxEnhancementDisabled) {
+  RunTestSuite("CombinedAdsApiUxEnhancementDisabled");
+}
+
+IN_PROC_BROWSER_TEST_P(PrivacySandboxDialogTest, CombinedAdsApiUxEnhancement) {
+  RunTestSuite("CombinedAdsApiUxEnhancement");
+}

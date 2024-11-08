@@ -100,7 +100,9 @@ PlusAddressCreationDialogWithNoticeTest.ShowNoticeAndCancel
 *PopupViewViewsBrowsertest*
 *PopupViewViewsPlusAddressSuggestionBrowsertest*
 PrivacySandboxDialogViewBrowserTest.*
+PrivacySandboxDialogViewAdsApiUxEnhancementBrowserTest.*
 PrivacySandboxDialogViewPrivacyPolicyBrowserTest.*
+PrivacySandboxDialogViewAdsApiUxEnhancementPrivacyPolicyBrowserTest.*
 PrivacySandboxNoticeBubbleBrowserTest.*
 PrivacySandboxSettingsTopicsInteractiveTest.*
 ProfileMenuViewPixelTest.*
