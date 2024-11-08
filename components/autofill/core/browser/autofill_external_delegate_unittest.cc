@@ -2358,6 +2358,25 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
   external_delegate().OnSuggestionsShown(suggestions());
 }
 
+// Tests that displaying an address suggestion that contains a plus address
+// email override records the corresponding user action.
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+       PlusAddressEmailOverrideUserAction) {
+  IssueOnQuery();
+  base::UserActionTester user_action_tester;
+  Suggestion suggestion(SuggestionType::kAddressEntry);
+  suggestion.payload = Suggestion::AutofillProfilePayload(
+      Suggestion::Guid("123"), u"test_override");
+
+  std::vector<Suggestion> suggestions = {suggestion};
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+
+  external_delegate().OnSuggestionsShown(suggestions);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.AddressFillSuggestionShown"),
+            1);
+}
+
 // Tests that selecting an inline plus address suggestion previews the value
 // stored in the payload.
 TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
