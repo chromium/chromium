@@ -446,7 +446,7 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
     };
     [self registerForTraitChanges:traits withHandler:handler];
 
-    traits = TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.self ]);
+    traits = TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
     [self registerForTraitChanges:traits
                        withAction:@selector(selectImageForCurrentStyle)];
   }
