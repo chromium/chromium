@@ -40,6 +40,12 @@ class GoogleGroupsManager : public KeyedService,
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  // Returns whether `feature` is group controlled, i.e. whether the study that
+  // is connected to this feature has a non-empty `google_groups` filter. This
+  // will always return `false` if called before experiment parameters are
+  // registered.
+  static bool IsFeatureGroupControlled(const base::Feature& feature);
+
   // Returns whether `feature` is enabled and, if the study that is connected to
   // this feature has a non-empty `google_groups` filter, whether the
   // BrowserContext associated with `this` KeyedService is in at least one of
