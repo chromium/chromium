@@ -560,9 +560,19 @@ void BirchCoralProvider::HandleCoralResponse(
     // Set a placeholder to item title. The chip title will be directly fetched
     // from group title.
     // TODO(zxdan): Localize the strings.
+    std::u16string subtitle;
+    switch (response_->source()) {
+      case CoralSource::kPostLogin:
+        subtitle = u"Resume suggested group";
+        break;
+      case CoralSource::kInSession:
+        subtitle = u"Organize in a new desk";
+        break;
+      case CoralSource::kUnknown:
+        break;
+    }
     items.emplace_back(/*title=*/kTitlePlaceholder,
-                       /*subtitle=*/u"Resume suggested group",
-                       response_->source(),
+                       /*subtitle=*/subtitle, response_->source(),
                        /*group_id=*/group->id);
   }
   Shell::Get()->birch_model()->SetCoralItems(items);
