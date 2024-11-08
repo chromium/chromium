@@ -55,7 +55,8 @@ BASE_FEATURE(kProfileBasedThemeService,
 
 // static
 ThemeService* ThemeServiceFactory::GetForProfile(Profile* profile) {
-  TRACE_EVENT0("loading", "ThemeServiceFactory::GetForProfile");
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("loading"),
+              "ThemeServiceFactory::GetForProfile");
   if (base::FeatureList::IsEnabled(kProfileBasedThemeService)) {
     if (!profile->theme_service()) {
       profile->set_theme_service(static_cast<ThemeService*>(

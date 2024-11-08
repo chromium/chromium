@@ -247,7 +247,8 @@ ResourceRequest::WebBundleTokenParams::CloneHandle() const {
 
 ResourceRequest::ResourceRequest() = default;
 ResourceRequest::ResourceRequest(const ResourceRequest& request) {
-  TRACE_EVENT("loading", "ResourceRequest::ResourceRequest.copy_constructor");
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("loading"),
+              "ResourceRequest::ResourceRequest.copy_constructor");
   *this = request;
 }
 ResourceRequest& ResourceRequest::operator=(const ResourceRequest& other) =

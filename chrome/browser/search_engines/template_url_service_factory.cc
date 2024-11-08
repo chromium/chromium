@@ -40,7 +40,8 @@
 
 // static
 TemplateURLService* TemplateURLServiceFactory::GetForProfile(Profile* profile) {
-  TRACE_EVENT0("loading", "TemplateURLServiceFactory::GetForProfile");
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("loading"),
+              "TemplateURLServiceFactory::GetForProfile");
 
   return static_cast<TemplateURLService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
