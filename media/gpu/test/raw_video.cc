@@ -111,7 +111,8 @@ class RawVideo::VP9Decoder {
                                     base::Unretained(this), &result, &event));
       event.Wait();
       LOG_ASSERT(result.is_ok())
-          << "Failed to initialize VpxVideoDecoder: " << MediaSerialize(result)
+          << "Failed to initialize VpxVideoDecoder: "
+          << MediaSerializeForTesting(result)
           << "with config=" << config_.AsHumanReadableString();
     }
 
@@ -221,7 +222,7 @@ class RawVideo::VP9Decoder {
                          &decode_status));
       LOG_ASSERT(decode_status.is_ok())
           << "Failed to decode the " << i
-          << "-th vp9 chunk: " << MediaSerialize(decode_status);
+          << "-th vp9 chunk: " << MediaSerializeForTesting(decode_status);
       LOG_ASSERT(!!last_decoded_frame_)
           << "|last_decoded_frame_| is not filled";
       auto buffer = CreateBufferFromFrame(*last_decoded_frame_);

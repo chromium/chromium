@@ -537,8 +537,7 @@ bool MediaCodecAudioDecoder::OnOutputFormatChanged() {
   MediaCodecResult result =
       media_codec->GetOutputSamplingRate(&new_sampling_rate);
   if (!result.is_ok()) {
-    DLOG(ERROR) << "GetOutputSamplingRate failed, result: "
-                << MediaSerialize(result);
+    DLOG(ERROR) << "GetOutputSamplingRate failed, result: " << result.message();
     return false;
   }
   if (new_sampling_rate != sample_rate_) {
@@ -560,8 +559,7 @@ bool MediaCodecAudioDecoder::OnOutputFormatChanged() {
   int new_channel_count = 0;
   result = media_codec->GetOutputChannelCount(&new_channel_count);
   if (!result.is_ok() || !new_channel_count) {
-    DLOG(ERROR) << "GetOutputChannelCount failed, result: "
-                << MediaSerialize(result);
+    DLOG(ERROR) << "GetOutputChannelCount failed, result: " << result.message();
     return false;
   }
 

@@ -1015,7 +1015,7 @@ bool MediaCodecVideoDecoder::QueueInput() {
              ? 3
              : 2))
       << "QueueInput(" << pending_buffer->AsHumanReadableString()
-      << ") status=" << MediaSerialize(status);
+      << ") status=" << status.message();
 
   switch (status.code()) {
     case CodecWrapper::QueueStatus::Codes::kOk:

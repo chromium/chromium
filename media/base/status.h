@@ -618,8 +618,11 @@ class MEDIA_EXPORT TypedStatus {
   template <typename StatusEnum, typename DataView>
   friend struct mojo::StructTraits;
 
-  // Allow media-serialization
-  friend struct internal::MediaSerializer<TypedStatus<T>>;
+  // Allow media log to access the internals to generate debug info for users.
+  friend class MediaLog;
+
+  // Allow dumping TypedStatus<T> to string for debugging in tests.
+  friend struct internal::MediaSerializerDebug<TypedStatus<T>>;
 
   // Allow AddCause.
   template <typename StatusEnum>

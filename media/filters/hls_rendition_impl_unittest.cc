@@ -165,7 +165,7 @@ class HlsRenditionImplUnittest : public testing::Test {
     auto uri = GURL("https://example.com/manifest.m3u8");
     auto parsed = hls::MediaPlaylist::Parse(content, uri, version, nullptr);
     if (!parsed.has_value()) {
-      LOG(ERROR) << MediaSerialize(std::move(parsed).error());
+      LOG(ERROR) << MediaSerializeForTesting(std::move(parsed).error());
       return nullptr;
     }
     auto playlist = std::move(parsed).value();
@@ -183,7 +183,7 @@ class HlsRenditionImplUnittest : public testing::Test {
     constexpr hls::types::DecimalInteger version = 3;
     auto parsed = hls::MediaPlaylist::Parse(content, uri, version, nullptr);
     if (!parsed.has_value()) {
-      LOG(ERROR) << MediaSerialize(std::move(parsed).error());
+      LOG(ERROR) << MediaSerializeForTesting(std::move(parsed).error());
       return nullptr;
     }
     media_log_ = std::make_unique<NiceMock<media::MockMediaLog>>();
@@ -537,7 +537,7 @@ TEST_F(HlsRenditionImplUnittest, TestPauseAndUnpause) {
   ASSERT_EQ(rendition->GetDuration(), std::nullopt);
 
   ON_CALL(*mock_mdeh_, OnError(_)).WillByDefault([](PipelineStatus st) {
-    LOG(ERROR) << MediaSerialize(st);
+    LOG(ERROR) << MediaSerializeForTesting(st);
   });
 
   // CheckState will start with a paused player. It will query BufferedRanges
@@ -701,7 +701,7 @@ TEST_F(HlsRenditionImplUnittest, TestAES128Content) {
   ASSERT_EQ(rendition->GetDuration(), base::Seconds(12));
 
   ON_CALL(*mock_mdeh_, OnError(_)).WillByDefault([](PipelineStatus st) {
-    LOG(ERROR) << MediaSerialize(st);
+    LOG(ERROR) << MediaSerializeForTesting(st);
   });
 
   std::string cleartext = "some kind of ts content.";

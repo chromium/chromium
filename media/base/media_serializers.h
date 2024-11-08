@@ -430,7 +430,7 @@ struct MediaSerializer<SerializableBufferingState<T>> {
 
 // Class (complex)
 template <typename T>
-struct MediaSerializer<TypedStatus<T>> {
+struct MediaSerializerDebug<TypedStatus<T>> {
   static base::Value Serialize(const TypedStatus<T>& status) {
     // TODO: replace this with some kind of static "description"
     // of the default type, instead of "Ok".

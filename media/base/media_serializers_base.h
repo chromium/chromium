@@ -23,6 +23,15 @@ struct MediaSerializer {
   static inline base::Value Serialize(T value) { return base::Value(value); }
 };
 
+// A debug struct for converting things which should only be serialized during
+// unittests.
+template <typename T>
+struct MediaSerializerDebug {
+  static inline base::Value Serialize(T value) {
+    return MediaSerializer<T>::Serialize(std::move(value));
+  }
+};
+
 // a special serializer for strings, because base::Value checks
 // IsStringUTF8AllowingNoncharacters.
 template <>
@@ -39,6 +48,11 @@ struct MediaSerializer<std::string> {
 template <typename T>
 base::Value MediaSerialize(const T& t) {
   return internal::MediaSerializer<T>::Serialize(t);
+}
+
+template <typename T>
+base::Value MediaSerializeForTesting(const T& t) {
+  return internal::MediaSerializerDebug<T>::Serialize(t);
 }
 
 }  // namespace media

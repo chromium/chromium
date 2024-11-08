@@ -57,7 +57,7 @@ void ErrorTest(std::optional<std::string_view> content,
   ASSERT_FALSE(result.has_value()) << from.ToString();
   auto error = std::move(result).error();
   EXPECT_EQ(error.code(), expected_status)
-      << "Actual Error: " << MediaSerialize(error) << "\n"
+      << "Actual Error: " << MediaSerializeForTesting(error) << "\n"
       << from.ToString();
 }
 
@@ -97,7 +97,7 @@ OkTestResult<T> OkTest(std::optional<std::string> content,
   auto result = T::Parse(tag, variable_dict, sub_buffer);
   if (!result.has_value()) {
     CHECK(false) << from.ToString() << "\n"
-                 << MediaSerialize(std::move(result).error());
+                 << MediaSerializeForTesting(std::move(result).error());
     NOTREACHED();
   }
   return OkTestResult<T>{.tag = std::move(result).value(),

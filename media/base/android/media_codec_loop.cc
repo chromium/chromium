@@ -159,7 +159,7 @@ MediaCodecLoop::InputBuffer MediaCodecLoop::DequeueInputBuffer() {
       break;
 
     case MediaCodecResult::Codes::kError:
-      DLOG(ERROR) << __func__ << ": " << MediaSerialize(result);
+      DLOG(ERROR) << __func__ << ": " << result.message();
       SetState(STATE_ERROR);
       break;
 
@@ -168,7 +168,7 @@ MediaCodecLoop::InputBuffer MediaCodecLoop::DequeueInputBuffer() {
 
     default:
       NOTREACHED() << "Unexpected DequeueInputBuffer result: "
-                   << MediaSerialize(result);
+                   << result.message();
   }
 
   return InputBuffer(input_buf_index, false);
@@ -213,7 +213,7 @@ void MediaCodecLoop::EnqueueInputBuffer(const InputBuffer& input_buffer) {
       DLOG(ERROR)
           << __func__
           << ": MediaCodecResult::Codes::kError from QueueInputBuffer : "
-          << MediaSerialize(result);
+          << result.message();
       client_->OnInputDataQueued(false);
       // Transition to the error state after running the completion cb, to keep
       // it in order if the client chooses to flush its queue.
@@ -240,7 +240,7 @@ void MediaCodecLoop::EnqueueInputBuffer(const InputBuffer& input_buffer) {
 
     default:
       NOTREACHED() << "Unknown Queue(Secure)InputBuffer status "
-                   << MediaSerialize(result);
+                   << result.message();
   }
 }
 
@@ -301,13 +301,13 @@ bool MediaCodecLoop::ProcessOneOutputBuffer() {
       DLOG(ERROR) << __func__
                   << ": MediaCodecResult::Codes::kError from "
                      "DequeueOutputBuffer, result: "
-                  << MediaSerialize(result);
+                  << result.message();
       SetState(STATE_ERROR);
       break;
 
     default:
       NOTREACHED() << "Unexpected DequeueOutputBuffer result: "
-                   << MediaSerialize(result);
+                   << result.message();
   }
 
   return did_work;
