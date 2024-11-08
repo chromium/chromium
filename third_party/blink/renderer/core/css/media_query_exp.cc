@@ -418,12 +418,12 @@ MediaQueryExp::MediaQueryExp(const String& media_feature,
                              const MediaQueryExpBounds& bounds)
     : media_feature_(media_feature), bounds_(bounds) {}
 
-MediaQueryExp MediaQueryExp::Create(const String& media_feature,
+MediaQueryExp MediaQueryExp::Create(const AtomicString& media_feature,
                                     CSSParserTokenStream& stream,
                                     const CSSParserContext& context) {
-  String feature = AttemptStaticStringCreation(media_feature);
-  if (auto value = MediaQueryExpValue::Consume(feature, stream, context)) {
-    return MediaQueryExp(feature, *value);
+  if (auto value =
+          MediaQueryExpValue::Consume(media_feature, stream, context)) {
+    return MediaQueryExp(media_feature, *value);
   }
   return Invalid();
 }
@@ -539,7 +539,7 @@ const char* MediaQueryOperatorToString(MediaQueryOperator op) {
 
 }  // namespace
 
-MediaQueryExp MediaQueryExp::Create(const String& media_feature,
+MediaQueryExp MediaQueryExp::Create(const AtomicString& media_feature,
                                     const MediaQueryExpBounds& bounds) {
   return MediaQueryExp(media_feature, bounds);
 }

@@ -216,14 +216,10 @@ MediaQueryEvaluatorTestCase g_float_viewport_test_cases[] = {
 };
 
 MediaQueryEvaluatorTestCase g_float_non_friendly_viewport_test_cases[] = {
-    {"(min-width: 821px)", true},
-    {"(max-width: 821px)", true},
-    {"(width: 821px)", true},
-    {"(min-height: 821px)", true},
-    {"(max-height: 821px)", true},
-    {"(height: 821px)", true},
-    {"(width: 100vw)", true},
-    {"(height: 100vh)", true},
+    {"(min-width: 821px)", true},  {"(max-width: 821px)", true},
+    {"(width: 821px)", true},      {"(min-height: 821px)", true},
+    {"(max-height: 821px)", true}, {"(height: 821px)", true},
+    {"(width: 100vw)", true},      {"(height: 100vh)", true},
 };
 
 MediaQueryEvaluatorTestCase g_print_test_cases[] = {
@@ -353,12 +349,9 @@ MediaQueryEvaluatorTestCase g_double_vertical_viewport_segment_cases[] = {
 };
 
 MediaQueryEvaluatorTestCase g_device_posture_none_cases[] = {
-    {"(device-posture)", true},
-    {"(device-posture: continuous)", true},
-    {"(device-posture: folded)", false},
-    {"(device-posture: 15)", false},
-    {"(device-posture: 2px)", false},
-    {"(device-posture: 16/9)", false},
+    {"(device-posture)", true},          {"(device-posture: continuous)", true},
+    {"(device-posture: folded)", false}, {"(device-posture: 15)", false},
+    {"(device-posture: 2px)", false},    {"(device-posture: 16/9)", false},
 };
 
 MediaQueryEvaluatorTestCase g_device_posture_folded_cases[] = {
@@ -411,23 +404,17 @@ MediaQueryEvaluatorTestCase g_video_dynamic_range_feature_disabled_cases[] = {
 
 // Tests when the output device is print.
 MediaQueryEvaluatorTestCase g_overflow_with_print_device_test_cases[] = {
-    {"(overflow-inline)", false},
-    {"(overflow-block)", true},
-    {"(overflow-inline: none)", true},
-    {"(overflow-block: none)", false},
-    {"(overflow-block: paged)", true},
-    {"(overflow-inline: scroll)", false},
+    {"(overflow-inline)", false},        {"(overflow-block)", true},
+    {"(overflow-inline: none)", true},   {"(overflow-block: none)", false},
+    {"(overflow-block: paged)", true},   {"(overflow-inline: scroll)", false},
     {"(overflow-block: scroll)", false},
 };
 
 // Tests when the output device is scrollable.
 MediaQueryEvaluatorTestCase g_overflow_with_scrollable_device_test_cases[] = {
-    {"(overflow-inline)", true},
-    {"(overflow-block)", true},
-    {"(overflow-inline: none)", false},
-    {"(overflow-block: none)", false},
-    {"(overflow-block: paged)", false},
-    {"(overflow-inline: scroll)", true},
+    {"(overflow-inline)", true},        {"(overflow-block)", true},
+    {"(overflow-inline: none)", false}, {"(overflow-block: none)", false},
+    {"(overflow-block: paged)", false}, {"(overflow-inline: scroll)", true},
     {"(overflow-block: scroll)", true},
 };
 
@@ -992,154 +979,170 @@ TEST(MediaQueryEvaluatorTest, RangedValues) {
 
   // (width < 600px)
   EXPECT_TRUE(eval(MediaQueryExp::Create(
-      "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                   PxValue(600), MediaQueryOperator::kLt)))));
+      AtomicString("width"), MediaQueryExpBounds(MediaQueryExpComparison(
+                                 PxValue(600), MediaQueryOperator::kLt)))));
 
   // (width < 501px)
   EXPECT_TRUE(eval(MediaQueryExp::Create(
-      "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                   PxValue(501), MediaQueryOperator::kLt)))));
+      AtomicString("width"), MediaQueryExpBounds(MediaQueryExpComparison(
+                                 PxValue(501), MediaQueryOperator::kLt)))));
 
   // (width < 500px)
   EXPECT_FALSE(eval(MediaQueryExp::Create(
-      "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                   PxValue(500), MediaQueryOperator::kLt)))));
+      AtomicString("width"), MediaQueryExpBounds(MediaQueryExpComparison(
+                                 PxValue(500), MediaQueryOperator::kLt)))));
 
   // (width > 500px)
   EXPECT_FALSE(eval(MediaQueryExp::Create(
-      "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                   PxValue(500), MediaQueryOperator::kGt)))));
+      AtomicString("width"), MediaQueryExpBounds(MediaQueryExpComparison(
+                                 PxValue(500), MediaQueryOperator::kGt)))));
 
   // (width < 501px)
   EXPECT_TRUE(eval(MediaQueryExp::Create(
-      "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                   PxValue(501), MediaQueryOperator::kLt)))));
+      AtomicString("width"), MediaQueryExpBounds(MediaQueryExpComparison(
+                                 PxValue(501), MediaQueryOperator::kLt)))));
 
   // (width <= 500px)
   EXPECT_TRUE(eval(MediaQueryExp::Create(
-      "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                   PxValue(500), MediaQueryOperator::kLe)))));
+      AtomicString("width"), MediaQueryExpBounds(MediaQueryExpComparison(
+                                 PxValue(500), MediaQueryOperator::kLe)))));
 
   // (400px < width)
   EXPECT_TRUE(eval(MediaQueryExp::Create(
-      "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                                       PxValue(400), MediaQueryOperator::kLt),
-                                   MediaQueryExpComparison()))));
+      AtomicString("width"),
+      MediaQueryExpBounds(
+          MediaQueryExpComparison(PxValue(400), MediaQueryOperator::kLt),
+          MediaQueryExpComparison()))));
 
   // (600px < width)
   EXPECT_FALSE(eval(MediaQueryExp::Create(
-      "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                                       PxValue(600), MediaQueryOperator::kLt),
-                                   MediaQueryExpComparison()))));
+      AtomicString("width"),
+      MediaQueryExpBounds(
+          MediaQueryExpComparison(PxValue(600), MediaQueryOperator::kLt),
+          MediaQueryExpComparison()))));
 
   // (400px > width)
   EXPECT_FALSE(eval(MediaQueryExp::Create(
-      "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                                       PxValue(400), MediaQueryOperator::kGt),
-                                   MediaQueryExpComparison()))));
+      AtomicString("width"),
+      MediaQueryExpBounds(
+          MediaQueryExpComparison(PxValue(400), MediaQueryOperator::kGt),
+          MediaQueryExpComparison()))));
 
   // (600px > width)
   EXPECT_TRUE(eval(MediaQueryExp::Create(
-      "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                                       PxValue(600), MediaQueryOperator::kGt),
-                                   MediaQueryExpComparison()))));
+      AtomicString("width"),
+      MediaQueryExpBounds(
+          MediaQueryExpComparison(PxValue(600), MediaQueryOperator::kGt),
+          MediaQueryExpComparison()))));
 
   // (400px <= width)
   EXPECT_TRUE(eval(MediaQueryExp::Create(
-      "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                                       PxValue(400), MediaQueryOperator::kLe),
-                                   MediaQueryExpComparison()))));
+      AtomicString("width"),
+      MediaQueryExpBounds(
+          MediaQueryExpComparison(PxValue(400), MediaQueryOperator::kLe),
+          MediaQueryExpComparison()))));
 
   // (600px <= width)
   EXPECT_FALSE(eval(MediaQueryExp::Create(
-      "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                                       PxValue(600), MediaQueryOperator::kLe),
-                                   MediaQueryExpComparison()))));
+      AtomicString("width"),
+      MediaQueryExpBounds(
+          MediaQueryExpComparison(PxValue(600), MediaQueryOperator::kLe),
+          MediaQueryExpComparison()))));
 
   // (400px >= width)
   EXPECT_FALSE(eval(MediaQueryExp::Create(
-      "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                                       PxValue(400), MediaQueryOperator::kGe),
-                                   MediaQueryExpComparison()))));
+      AtomicString("width"),
+      MediaQueryExpBounds(
+          MediaQueryExpComparison(PxValue(400), MediaQueryOperator::kGe),
+          MediaQueryExpComparison()))));
 
   // (600px >= width)
   EXPECT_TRUE(eval(MediaQueryExp::Create(
-      "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                                       PxValue(600), MediaQueryOperator::kGe),
-                                   MediaQueryExpComparison()))));
+      AtomicString("width"),
+      MediaQueryExpBounds(
+          MediaQueryExpComparison(PxValue(600), MediaQueryOperator::kGe),
+          MediaQueryExpComparison()))));
 
   // (width = 500px)
   EXPECT_TRUE(eval(MediaQueryExp::Create(
-      "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                   PxValue(500), MediaQueryOperator::kEq)))));
+      AtomicString("width"), MediaQueryExpBounds(MediaQueryExpComparison(
+                                 PxValue(500), MediaQueryOperator::kEq)))));
 
   // (width = 400px)
   EXPECT_FALSE(eval(MediaQueryExp::Create(
-      "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                   PxValue(400), MediaQueryOperator::kEq)))));
+      AtomicString("width"), MediaQueryExpBounds(MediaQueryExpComparison(
+                                 PxValue(400), MediaQueryOperator::kEq)))));
 
   // (500px = width)
   EXPECT_TRUE(eval(MediaQueryExp::Create(
-      "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                                       PxValue(500), MediaQueryOperator::kEq),
-                                   MediaQueryExpComparison()))));
+      AtomicString("width"),
+      MediaQueryExpBounds(
+          MediaQueryExpComparison(PxValue(500), MediaQueryOperator::kEq),
+          MediaQueryExpComparison()))));
 
   // (400px = width)
   EXPECT_FALSE(eval(MediaQueryExp::Create(
-      "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                                       PxValue(400), MediaQueryOperator::kEq),
-                                   MediaQueryExpComparison()))));
+      AtomicString("width"),
+      MediaQueryExpBounds(
+          MediaQueryExpComparison(PxValue(400), MediaQueryOperator::kEq),
+          MediaQueryExpComparison()))));
 
   // (400px < width < 600px)
   EXPECT_TRUE(eval(MediaQueryExp::Create(
-      "width",
+      AtomicString("width"),
       MediaQueryExpBounds(
           MediaQueryExpComparison(PxValue(400), MediaQueryOperator::kLt),
           MediaQueryExpComparison(PxValue(600), MediaQueryOperator::kLt)))));
 
   // (550px < width < 600px)
   EXPECT_FALSE(eval(MediaQueryExp::Create(
-      "width",
+      AtomicString("width"),
       MediaQueryExpBounds(
           MediaQueryExpComparison(PxValue(550), MediaQueryOperator::kLt),
           MediaQueryExpComparison(PxValue(600), MediaQueryOperator::kLt)))));
 
   // (400px < width < 450px)
   EXPECT_FALSE(eval(MediaQueryExp::Create(
-      "width",
+      AtomicString("width"),
       MediaQueryExpBounds(
           MediaQueryExpComparison(PxValue(400), MediaQueryOperator::kLt),
           MediaQueryExpComparison(PxValue(450), MediaQueryOperator::kLt)))));
 
   // (aspect-ratio = 2/1)
-  EXPECT_TRUE(eval(MediaQueryExp::Create(
-      "aspect-ratio", MediaQueryExpBounds(MediaQueryExpComparison(
-                          RatioValue(2, 1), MediaQueryOperator::kEq)))));
+  EXPECT_TRUE(eval(
+      MediaQueryExp::Create(AtomicString("aspect-ratio"),
+                            MediaQueryExpBounds(MediaQueryExpComparison(
+                                RatioValue(2, 1), MediaQueryOperator::kEq)))));
 
   // (aspect-ratio = 3/1)
-  EXPECT_FALSE(eval(MediaQueryExp::Create(
-      "aspect-ratio", MediaQueryExpBounds(MediaQueryExpComparison(
-                          RatioValue(3, 1), MediaQueryOperator::kEq)))));
+  EXPECT_FALSE(eval(
+      MediaQueryExp::Create(AtomicString("aspect-ratio"),
+                            MediaQueryExpBounds(MediaQueryExpComparison(
+                                RatioValue(3, 1), MediaQueryOperator::kEq)))));
 
   // (aspect-ratio < 1/1)
-  EXPECT_FALSE(eval(MediaQueryExp::Create(
-      "aspect-ratio", MediaQueryExpBounds(MediaQueryExpComparison(
-                          RatioValue(1, 1), MediaQueryOperator::kLt)))));
+  EXPECT_FALSE(eval(
+      MediaQueryExp::Create(AtomicString("aspect-ratio"),
+                            MediaQueryExpBounds(MediaQueryExpComparison(
+                                RatioValue(1, 1), MediaQueryOperator::kLt)))));
 
   // (aspect-ratio < 3/1)
-  EXPECT_TRUE(eval(MediaQueryExp::Create(
-      "aspect-ratio", MediaQueryExpBounds(MediaQueryExpComparison(
-                          RatioValue(3, 1), MediaQueryOperator::kLt)))));
+  EXPECT_TRUE(eval(
+      MediaQueryExp::Create(AtomicString("aspect-ratio"),
+                            MediaQueryExpBounds(MediaQueryExpComparison(
+                                RatioValue(3, 1), MediaQueryOperator::kLt)))));
 
   // (aspect-ratio > 1/1)
-  EXPECT_TRUE(eval(MediaQueryExp::Create(
-      "aspect-ratio", MediaQueryExpBounds(MediaQueryExpComparison(
-                          RatioValue(1, 1), MediaQueryOperator::kGt)))));
+  EXPECT_TRUE(eval(
+      MediaQueryExp::Create(AtomicString("aspect-ratio"),
+                            MediaQueryExpBounds(MediaQueryExpComparison(
+                                RatioValue(1, 1), MediaQueryOperator::kGt)))));
 
   // (aspect-ratio > 3/1)
-  EXPECT_FALSE(eval(MediaQueryExp::Create(
-      "aspect-ratio", MediaQueryExpBounds(MediaQueryExpComparison(
-                          RatioValue(3, 1), MediaQueryOperator::kGt)))));
+  EXPECT_FALSE(eval(
+      MediaQueryExp::Create(AtomicString("aspect-ratio"),
+                            MediaQueryExpBounds(MediaQueryExpComparison(
+                                RatioValue(3, 1), MediaQueryOperator::kGt)))));
 }
 
 TEST(MediaQueryEvaluatorTest, ExpNode) {
@@ -1152,16 +1155,16 @@ TEST(MediaQueryEvaluatorTest, ExpNode) {
 
   auto* width_lt_400 =
       MakeGarbageCollected<MediaQueryFeatureExpNode>(MediaQueryExp::Create(
-          "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                       PxValue(400), MediaQueryOperator::kLt))));
+          AtomicString("width"), MediaQueryExpBounds(MediaQueryExpComparison(
+                                     PxValue(400), MediaQueryOperator::kLt))));
   auto* width_lt_600 =
       MakeGarbageCollected<MediaQueryFeatureExpNode>(MediaQueryExp::Create(
-          "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                       PxValue(600), MediaQueryOperator::kLt))));
+          AtomicString("width"), MediaQueryExpBounds(MediaQueryExpComparison(
+                                     PxValue(600), MediaQueryOperator::kLt))));
   auto* width_lt_800 =
       MakeGarbageCollected<MediaQueryFeatureExpNode>(MediaQueryExp::Create(
-          "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                       PxValue(800), MediaQueryOperator::kLt))));
+          AtomicString("width"), MediaQueryExpBounds(MediaQueryExpComparison(
+                                     PxValue(800), MediaQueryOperator::kLt))));
 
   EXPECT_EQ(KleeneValue::kTrue, media_query_evaluator->Eval(*width_lt_600));
   EXPECT_EQ(KleeneValue::kFalse, media_query_evaluator->Eval(*width_lt_400));
@@ -1210,19 +1213,19 @@ TEST(MediaQueryEvaluatorTest, DependentResults) {
   // Viewport-dependent:
   auto* width_lt_400 =
       MakeGarbageCollected<MediaQueryFeatureExpNode>(MediaQueryExp::Create(
-          "width", MediaQueryExpBounds(MediaQueryExpComparison(
-                       PxValue(400), MediaQueryOperator::kLt))));
+          AtomicString("width"), MediaQueryExpBounds(MediaQueryExpComparison(
+                                     PxValue(400), MediaQueryOperator::kLt))));
 
   // Device-dependent:
-  auto* device_width_lt_600 =
-      MakeGarbageCollected<MediaQueryFeatureExpNode>(MediaQueryExp::Create(
-          "device-width", MediaQueryExpBounds(MediaQueryExpComparison(
-                              PxValue(600), MediaQueryOperator::kLt))));
+  auto* device_width_lt_600 = MakeGarbageCollected<MediaQueryFeatureExpNode>(
+      MediaQueryExp::Create(AtomicString("device-width"),
+                            MediaQueryExpBounds(MediaQueryExpComparison(
+                                PxValue(600), MediaQueryOperator::kLt))));
 
   // Neither viewport- nor device-dependent:
   auto* color =
       MakeGarbageCollected<MediaQueryFeatureExpNode>(MediaQueryExp::Create(
-          "color",
+          AtomicString("color"),
           MediaQueryExpBounds(MediaQueryExpComparison(MediaQueryExpValue()))));
 
   // "(color)" should not be dependent on anything.
