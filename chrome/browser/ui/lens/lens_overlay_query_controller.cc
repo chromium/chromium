@@ -88,10 +88,13 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
           trigger: "The user triggered a Lens Overlay Flow by entering "
             "the experience via the right click menu option for "
             "searching images on the page."
-          data: "Image and user interaction data. Only the screenshot "
-            "of the current webpage viewport (image bytes) and user "
-            "interaction data (coordinates of a box within the "
-            "screenshot or tapped object-id) are sent."
+          data: "If the contextual searchbox is enabled, the viewport "
+            "screenshot, page content, page URL and user interaction data are "
+            "sent to the server. Page content refers to the page the user is "
+            "on, extracted, and sent to the server as bytes. If the contextual "
+            "searchbox is disabled, only the screenshot of the current webpage "
+            "viewport (image bytes) and user interaction data (coordinates of "
+            "a box within the screenshot or tapped object-id) are sent."
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
@@ -105,7 +108,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
             type: USER_CONTENT
             type: WEB_CONTENT
           }
-          last_reviewed: "2024-04-11"
+          last_reviewed: "2024-11-06"
         }
         policy {
           cookies_allowed: YES
@@ -114,8 +117,8 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
             "nothing without explicit user action, so there is no setting to "
             "disable the feature."
           chrome_policy {
-            LensOverlaySettings {
-              LensOverlaySettings: 1
+            GenAiLensOverlaySettings {
+              GenAiLensOverlaySettings: 1
             }
           }
         }

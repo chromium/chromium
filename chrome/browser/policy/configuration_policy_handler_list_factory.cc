@@ -2295,11 +2295,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     client_certificates::prefs::kProvisionManagedClientCertificateForUserPrefs,
     base::Value::Type::INTEGER },
 #endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
-#if !BUILDFLAG(IS_ANDROID)
-  { key::kLensOverlaySettings,
-    lens::prefs::kLensOverlaySettings,
-    base::Value::Type::INTEGER},
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   { key::kDeviceAuthenticationFlowAutoReloadInterval,
@@ -3225,6 +3220,14 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       gen_ai_default_policies;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_ASH)
+  handlers->AddHandler(std::make_unique<SimpleDeprecatingPolicyHandler>(
+      /*legacy_policy_handler=*/std::make_unique<SimplePolicyHandler>(
+          key::kLensOverlaySettings, lens::prefs::kLensOverlaySettings,
+          base::Value::Type::INTEGER),
+      /*new_policy_handler=*/std::make_unique<SimplePolicyHandler>(
+          key::kGenAiLensOverlaySettings,
+          lens::prefs::kGenAiLensOverlaySettings, base::Value::Type::INTEGER)));
+
   gen_ai_default_policies.emplace_back(
       key::kAutofillPredictionSettings,
       optimization_guide::prefs::
@@ -3246,6 +3249,8 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   gen_ai_default_policies.emplace_back(
       key::kTabCompareSettings,
       optimization_guide::prefs::kProductSpecificationsEnterprisePolicyAllowed);
+  gen_ai_default_policies.emplace_back(key::kGenAiLensOverlaySettings,
+                                       lens::prefs::kGenAiLensOverlaySettings);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS)

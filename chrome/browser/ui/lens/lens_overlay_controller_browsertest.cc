@@ -3782,7 +3782,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, FindBarClosesOverlay) {
       [&]() { return controller->state() == State::kOff; }));
 }
 
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, EnterprisePolicy) {
+// Even though this policy is deprecated, it is still used by some enterprise
+// customers.
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       DeprecatedEnterprisePolicy) {
   Profile* profile = browser()->profile();
 
   // The default policy is to allow the feature to be enabled.
@@ -3802,6 +3805,34 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, EnterprisePolicy) {
   profile->GetPrefs()->SetInteger(
       lens::prefs::kLensOverlaySettings,
       static_cast<int>(lens::prefs::LensOverlaySettingsPolicyValue::kEnabled));
+  EXPECT_TRUE(browser()
+                  ->GetFeatures()
+                  .lens_overlay_entry_point_controller()
+                  ->IsEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, EnterprisePolicy) {
+  Profile* profile = browser()->profile();
+
+  // The default policy is to allow the feature to be enabled.
+  EXPECT_TRUE(browser()
+                  ->GetFeatures()
+                  .lens_overlay_entry_point_controller()
+                  ->IsEnabled());
+
+  profile->GetPrefs()->SetInteger(
+      lens::prefs::kGenAiLensOverlaySettings,
+      static_cast<int>(
+          lens::prefs::GenAiLensOverlaySettingsPolicyValue::kDisabled));
+  EXPECT_FALSE(browser()
+                   ->GetFeatures()
+                   .lens_overlay_entry_point_controller()
+                   ->IsEnabled());
+
+  profile->GetPrefs()->SetInteger(
+      lens::prefs::kGenAiLensOverlaySettings,
+      static_cast<int>(lens::prefs::GenAiLensOverlaySettingsPolicyValue::
+                           kAllowedWithoutLogging));
   EXPECT_TRUE(browser()
                   ->GetFeatures()
                   .lens_overlay_entry_point_controller()

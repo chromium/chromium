@@ -1496,6 +1496,13 @@ void LensOverlayController::StorePageContentAndContinueIntialization(
 
 void LensOverlayController::GetPageContextualization(
     PageContentRetrievedCallback callback) {
+  // If the contextual searchbox is disabled, exit early.
+  if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
+    std::move(callback).Run(std::vector<uint8_t>(),
+                            lens::PageContentMimeType::kNone);
+    return;
+  }
+
 #if BUILDFLAG(ENABLE_PDF)
   // Try and fetch the PDF bytes if enabled.
   pdf::PDFDocumentHelper* pdf_helper =
@@ -1629,6 +1636,9 @@ void LensOverlayController::TryUpdatePageContextualization() {
 void LensOverlayController::UpdatePageContextualization(
     std::vector<uint8_t> bytes,
     lens::PageContentMimeType content_type) {
+  if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
+    return;
+  }
   initialization_data_->page_content_bytes_ = bytes;
   initialization_data_->page_content_type_ = content_type;
 

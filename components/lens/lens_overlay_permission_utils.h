@@ -31,6 +31,22 @@ enum class LensOverlaySettingsPolicyValue {
 inline constexpr char kLensOverlaySettings[] =
     "lens.policy.lens_overlay_settings";
 
+// The possible values for the GenAI Lens Overlay enterprise policy. Currently,
+// 0 and 1 are treated the same, since no server-side logging is done for the
+// Lens Overlay. If this changes in the future, and the server needs to
+// log, this policy will control whether logging is allowed for a request.
+enum class GenAiLensOverlaySettingsPolicyValue {
+  kAllowed = 0,
+  kAllowedWithoutLogging = 1,
+  kDisabled = 2,
+};
+
+// An integer setting indicating whether the Lens Overlay feature is enabled or
+// disabled by the 'GenAiLensOverlaySettings' enterprise policy. This policy
+// deprecated the old kLensOverlaySettings policy above.
+inline constexpr char kGenAiLensOverlaySettings[] =
+    "lens.policy.gen_ai_lens_overlay_settings";
+
 // A boolean indicating whether the whether the user has permitted sharing page
 // screenshot with the Lens Overlay server.
 inline constexpr char kLensSharingPageScreenshotEnabled[] =

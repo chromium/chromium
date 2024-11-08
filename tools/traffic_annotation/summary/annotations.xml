@@ -447,7 +447,7 @@ Refer to README.md for content description and update process.
  <item id="wallpaper_request" added_in_milestone="125" content_hash_code="0192ac19" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.cc" />
  <item id="cws_fetch_item_snippet" added_in_milestone="124" content_hash_code="05d82ce1" os_list="linux,windows,chromeos" file_path="chrome/browser/extensions/webstore_data_fetcher.cc" />
  <item id="remoting_cloud_provision_gce_instance" added_in_milestone="125" content_hash_code="020ad462" os_list="linux,windows,android,chromeos" file_path="remoting/base/cloud_service_client.cc" />
- <item id="lens_overlay" added_in_milestone="125" content_hash_code="004895e8" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/lens/lens_overlay_query_controller.cc" />
+ <item id="lens_overlay" added_in_milestone="125" content_hash_code="07dab263" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/lens/lens_overlay_query_controller.cc" />
  <item id="register_push_notification_service" added_in_milestone="124" type="partial" second_id="oauth2_api_call_flow" content_hash_code="04e0c60d" os_list="chromeos" semantics_fields="1,2,3,4,5,7,8,9" policy_fields="3,4" file_path="chrome/browser/push_notification/server_client/push_notification_server_client_desktop_impl.cc" />
  <item id="youtube_music_integration" added_in_milestone="126" content_hash_code="0168e5a0" os_list="chromeos" file_path="ash/system/focus_mode/sounds/youtube_music/youtube_music_client.cc" />
  <item id="personalized_recommended_apps_download" added_in_milestone="127" content_hash_code="0216d0f6" os_list="chromeos" file_path="chrome/browser/ash/login/oobe_apps_service/oobe_apps_almanac_endpoint.cc" />
