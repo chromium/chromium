@@ -247,8 +247,8 @@ MLOperand* BuildConstant(ScriptState* script_state,
 MLOperand* BuildConv2d(
     V8TestingScope& scope,
     MLGraphBuilder* builder,
-    const MLOperand* input,
-    const MLOperand* filter,
+    MLOperand* input,
+    MLOperand* filter,
     const MLConv2dOptions* options = MLConv2dOptions::Create()) {
   auto* output =
       builder->conv2d(input, filter, options, scope.GetExceptionState());
@@ -264,8 +264,8 @@ MLOperand* BuildConv2d(
 
 MLOperand* BuildGemm(V8TestingScope& scope,
                      MLGraphBuilder* builder,
-                     const MLOperand* a,
-                     const MLOperand* b,
+                     MLOperand* a,
+                     MLOperand* b,
                      const MLGemmOptions* options = MLGemmOptions::Create()) {
   auto* output = builder->gemm(a, b, options, scope.GetExceptionState());
   EXPECT_THAT(output, testing::NotNull());
@@ -281,8 +281,8 @@ MLOperand* BuildGemm(V8TestingScope& scope,
 MLOperand* BuildElementWiseBinaryOperator(
     MLGraphBuilder* builder,
     V8TestingScope& scope,
-    const MLOperand* a,
-    const MLOperand* b,
+    MLOperand* a,
+    MLOperand* b,
     webnn::mojom::blink::ElementWiseBinary::Kind kind,
     const MLOperatorOptions* options) {
   switch (kind) {
@@ -323,8 +323,8 @@ MLOperand* BuildElementWiseBinary(
     V8TestingScope& scope,
     MLGraphBuilder* builder,
     webnn::mojom::blink::ElementWiseBinary::Kind kind,
-    const MLOperand* a,
-    const MLOperand* b,
+    MLOperand* a,
+    MLOperand* b,
     const MLOperatorOptions* options = MLOperatorOptions::Create()) {
   MLOperand* output =
       BuildElementWiseBinaryOperator(builder, scope, a, b, kind, options);

@@ -85,7 +85,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
   // connected by operands (edges). This method connects the operator with its
   // input and output operands during a computational graph building session. An
   // operator is only allowed to be connected once.
-  void Connect(HeapVector<Member<const MLOperand>> inputs,
+  void Connect(HeapVector<Member<MLOperand>> inputs,
                HeapVector<Member<const MLOperand>> outputs);
 
  private:

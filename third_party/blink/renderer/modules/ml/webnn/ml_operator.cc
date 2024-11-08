@@ -311,11 +311,15 @@ const HeapVector<Member<const MLOperand>>& MLOperator::Outputs() const {
   return outputs_;
 }
 
-void MLOperator::Connect(HeapVector<Member<const MLOperand>> inputs,
+void MLOperator::Connect(HeapVector<Member<MLOperand>> inputs,
                          HeapVector<Member<const MLOperand>> outputs) {
   DCHECK(!inputs.empty());
   DCHECK(!outputs.empty());
-  inputs_ = std::move(inputs);
+  for (auto& input : inputs) {
+    input->AddDependentOperator(this);
+  }
+
+  inputs_ = static_cast<HeapVector<Member<const MLOperand>>>(std::move(inputs));
   outputs_ = std::move(outputs);
 }
 

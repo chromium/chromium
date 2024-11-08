@@ -100,22 +100,22 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                       ExceptionState& exception_state);
 
   // The order of operations declaration is the same as spec.
-  MLOperand* argMin(const MLOperand* input,
+  MLOperand* argMin(MLOperand* input,
                     const uint32_t axis,
                     const MLArgMinMaxOptions* options,
                     ExceptionState& exception_state);
-  MLOperand* argMax(const MLOperand* input,
+  MLOperand* argMax(MLOperand* input,
                     const uint32_t axis,
                     const MLArgMinMaxOptions* options,
                     ExceptionState& exception_state);
 
-  MLOperand* batchNormalization(const MLOperand* input,
-                                const MLOperand* mean,
-                                const MLOperand* variance,
+  MLOperand* batchNormalization(MLOperand* input,
+                                MLOperand* mean,
+                                MLOperand* variance,
                                 const MLBatchNormalizationOptions* options,
                                 ExceptionState& exception_state);
 
-  MLOperand* clamp(const MLOperand* input,
+  MLOperand* clamp(MLOperand* input,
                    const MLClampOptions* options,
                    ExceptionState& exception_state);
 
@@ -124,380 +124,379 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                     const MLOperatorOptions* options,
                     ExceptionState& exception_state);
 
-  MLOperand* conv2d(const MLOperand* input,
-                    const MLOperand* filter,
+  MLOperand* conv2d(MLOperand* input,
+                    MLOperand* filter,
                     const MLConv2dOptions* options,
                     ExceptionState& exception_state);
 
-  MLOperand* convTranspose2d(const MLOperand* input,
-                             const MLOperand* filter,
+  MLOperand* convTranspose2d(MLOperand* input,
+                             MLOperand* filter,
                              const MLConvTranspose2dOptions* options,
                              ExceptionState& exception_state);
 
-  MLOperand* cumulativeSum(const MLOperand* input,
+  MLOperand* cumulativeSum(MLOperand* input,
                            const uint32_t axis,
                            const MLCumulativeSumOptions* options,
                            ExceptionState& exception_state);
 
   // Element-wise binary operations
-  MLOperand* add(const MLOperand* a,
-                 const MLOperand* b,
+  MLOperand* add(MLOperand* a,
+                 MLOperand* b,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);
-  MLOperand* sub(const MLOperand* a,
-                 const MLOperand* b,
+  MLOperand* sub(MLOperand* a,
+                 MLOperand* b,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);
-  MLOperand* mul(const MLOperand* a,
-                 const MLOperand* b,
+  MLOperand* mul(MLOperand* a,
+                 MLOperand* b,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);
-  MLOperand* div(const MLOperand* a,
-                 const MLOperand* b,
+  MLOperand* div(MLOperand* a,
+                 MLOperand* b,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);
-  MLOperand* max(const MLOperand* a,
-                 const MLOperand* b,
+  MLOperand* max(MLOperand* a,
+                 MLOperand* b,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);
-  MLOperand* min(const MLOperand* a,
-                 const MLOperand* b,
+  MLOperand* min(MLOperand* a,
+                 MLOperand* b,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);
-  MLOperand* pow(const MLOperand* a,
-                 const MLOperand* b,
+  MLOperand* pow(MLOperand* a,
+                 MLOperand* b,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);
-  MLOperand* equal(const MLOperand* a,
-                   const MLOperand* b,
+  MLOperand* equal(MLOperand* a,
+                   MLOperand* b,
                    const MLOperatorOptions* options,
                    ExceptionState& exception_state);
-  MLOperand* greater(const MLOperand* a,
-                     const MLOperand* b,
+  MLOperand* greater(MLOperand* a,
+                     MLOperand* b,
                      const MLOperatorOptions* options,
                      ExceptionState& exception_state);
-  MLOperand* greaterOrEqual(const MLOperand* a,
-                            const MLOperand* b,
+  MLOperand* greaterOrEqual(MLOperand* a,
+                            MLOperand* b,
                             const MLOperatorOptions* options,
                             ExceptionState& exception_state);
-  MLOperand* lesser(const MLOperand* a,
-                    const MLOperand* b,
+  MLOperand* lesser(MLOperand* a,
+                    MLOperand* b,
                     const MLOperatorOptions* options,
                     ExceptionState& exception_state);
-  MLOperand* lesserOrEqual(const MLOperand* a,
-                           const MLOperand* b,
+  MLOperand* lesserOrEqual(MLOperand* a,
+                           MLOperand* b,
                            const MLOperatorOptions* options,
                            ExceptionState& exception_state);
-  MLOperand* logicalAnd(const MLOperand* a,
-                        const MLOperand* b,
+  MLOperand* logicalAnd(MLOperand* a,
+                        MLOperand* b,
                         const MLOperatorOptions* options,
                         ExceptionState& exception_state);
-  MLOperand* logicalOr(const MLOperand* a,
-                       const MLOperand* b,
+  MLOperand* logicalOr(MLOperand* a,
+                       MLOperand* b,
                        const MLOperatorOptions* options,
                        ExceptionState& exception_state);
-  MLOperand* logicalXor(const MLOperand* a,
-                        const MLOperand* b,
+  MLOperand* logicalXor(MLOperand* a,
+                        MLOperand* b,
                         const MLOperatorOptions* options,
                         ExceptionState& exception_state);
 
   // Element-wise unary operations
-  MLOperand* abs(const MLOperand* input,
+  MLOperand* abs(MLOperand* input,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);
-  MLOperand* ceil(const MLOperand* input,
+  MLOperand* ceil(MLOperand* input,
                   const MLOperatorOptions* options,
                   ExceptionState& exception_state);
-  MLOperand* cos(const MLOperand* input,
+  MLOperand* cos(MLOperand* input,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);
-  MLOperand* exp(const MLOperand* input,
+  MLOperand* exp(MLOperand* input,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);
-  MLOperand* floor(const MLOperand* input,
+  MLOperand* floor(MLOperand* input,
                    const MLOperatorOptions* options,
                    ExceptionState& exception_state);
-  MLOperand* log(const MLOperand* input,
+  MLOperand* log(MLOperand* input,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);
-  MLOperand* neg(const MLOperand* input,
+  MLOperand* neg(MLOperand* input,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);
-  MLOperand* sign(const MLOperand* input,
+  MLOperand* sign(MLOperand* input,
                   const MLOperatorOptions* options,
                   ExceptionState& exception_state);
-  MLOperand* sin(const MLOperand* input,
+  MLOperand* sin(MLOperand* input,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);
-  MLOperand* tan(const MLOperand* input,
+  MLOperand* tan(MLOperand* input,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);
-  MLOperand* erf(const MLOperand* input,
+  MLOperand* erf(MLOperand* input,
                  const MLOperatorOptions* options,
                  ExceptionState& exception_state);
-  MLOperand* identity(const MLOperand* input,
+  MLOperand* identity(MLOperand* input,
                       const MLOperatorOptions* options,
                       ExceptionState& exception_state);
-  MLOperand* logicalNot(const MLOperand* input,
+  MLOperand* logicalNot(MLOperand* input,
                         const MLOperatorOptions* options,
                         ExceptionState& exception_state);
-  MLOperand* reciprocal(const MLOperand* input,
+  MLOperand* reciprocal(MLOperand* input,
                         const MLOperatorOptions* options,
                         ExceptionState& exception_state);
-  MLOperand* sqrt(const MLOperand* input,
+  MLOperand* sqrt(MLOperand* input,
                   const MLOperatorOptions* options,
                   ExceptionState& exception_state);
 
-  MLOperand* cast(const MLOperand* input,
+  MLOperand* cast(MLOperand* input,
                   const V8MLOperandDataType output_data_type,
                   const MLOperatorOptions* options,
                   ExceptionState& exception_state);
 
-  MLOperand* dequantizeLinear(const MLOperand* input,
-                              const MLOperand* scale,
-                              const MLOperand* zeroPoint,
+  MLOperand* dequantizeLinear(MLOperand* input,
+                              MLOperand* scale,
+                              MLOperand* zeroPoint,
                               const MLOperatorOptions* options,
                               ExceptionState& exception_state);
 
-  MLOperand* elu(const MLOperand* input,
+  MLOperand* elu(MLOperand* input,
                  const MLEluOptions* options,
                  ExceptionState& exception_state);
 
-  MLOperand* expand(const MLOperand* input,
+  MLOperand* expand(MLOperand* input,
                     const Vector<uint32_t>& new_shape,
                     const MLOperatorOptions* options,
                     ExceptionState& exception_state);
 
-  MLOperand* gather(const MLOperand* input,
-                    const MLOperand* indices,
+  MLOperand* gather(MLOperand* input,
+                    MLOperand* indices,
                     const MLGatherOptions* options,
                     ExceptionState& exception_state);
 
-  MLOperand* gatherElements(const MLOperand* input,
-                            const MLOperand* indices,
+  MLOperand* gatherElements(MLOperand* input,
+                            MLOperand* indices,
                             const MLGatherOptions* options,
                             ExceptionState& exception_state);
 
-  MLOperand* gatherND(const MLOperand* input,
-                      const MLOperand* indices,
+  MLOperand* gatherND(MLOperand* input,
+                      MLOperand* indices,
                       const MLOperatorOptions* options,
                       ExceptionState& exception_state);
 
-  MLOperand* gelu(const MLOperand* input,
+  MLOperand* gelu(MLOperand* input,
                   const MLOperatorOptions* options,
                   ExceptionState& exception_state);
 
-  MLOperand* gemm(const MLOperand* a,
-                  const MLOperand* b,
+  MLOperand* gemm(MLOperand* a,
+                  MLOperand* b,
                   const MLGemmOptions* options,
                   ExceptionState& exception_state);
 
-  HeapVector<Member<const MLOperand>> gru(const MLOperand* input,
-                                          const MLOperand* weight,
-                                          const MLOperand* recurrent_weight,
+  HeapVector<Member<const MLOperand>> gru(MLOperand* input,
+                                          MLOperand* weight,
+                                          MLOperand* recurrent_weight,
                                           const uint32_t steps,
                                           const uint32_t hidden_size,
                                           MLGruOptions* options,
                                           ExceptionState& exception_state);
 
-  MLOperand* gruCell(const MLOperand* input,
-                     const MLOperand* weight,
-                     const MLOperand* recurrent_weight,
-                     const MLOperand* hidden_state,
+  MLOperand* gruCell(MLOperand* input,
+                     MLOperand* weight,
+                     MLOperand* recurrent_weight,
+                     MLOperand* hidden_state,
                      const uint32_t hidden_size,
                      MLGruCellOptions* options,
                      ExceptionState& exception_state);
 
-  MLOperand* hardSigmoid(const MLOperand* input,
+  MLOperand* hardSigmoid(MLOperand* input,
                          const MLHardSigmoidOptions* options,
                          ExceptionState& exception_state);
 
-  MLOperand* hardSwish(const MLOperand* input,
+  MLOperand* hardSwish(MLOperand* input,
                        const MLOperatorOptions* options,
                        ExceptionState& exception_state);
 
   MLOperand* instanceNormalization(
-      const MLOperand* input,
+      MLOperand* input,
       const MLInstanceNormalizationOptions* options,
       ExceptionState& exception_state);
 
-  MLOperand* layerNormalization(const MLOperand* input,
+  MLOperand* layerNormalization(MLOperand* input,
                                 const MLLayerNormalizationOptions* options,
                                 ExceptionState& exception_state);
 
-  MLOperand* leakyRelu(const MLOperand* input,
+  MLOperand* leakyRelu(MLOperand* input,
                        const MLLeakyReluOptions* options,
                        ExceptionState& exception_state);
 
-  MLOperand* linear(const MLOperand* input,
+  MLOperand* linear(MLOperand* input,
                     const MLLinearOptions* options,
                     ExceptionState& exception_state);
 
-  HeapVector<Member<const MLOperand>> lstm(const MLOperand* input,
-                                           const MLOperand* weight,
-                                           const MLOperand* recurrent_weight,
+  HeapVector<Member<const MLOperand>> lstm(MLOperand* input,
+                                           MLOperand* weight,
+                                           MLOperand* recurrent_weight,
                                            const uint32_t steps,
                                            const uint32_t hidden_size,
                                            MLLstmOptions* options,
                                            ExceptionState& exception_state);
 
-  HeapVector<Member<const MLOperand>> lstmCell(
-      const MLOperand* input,
-      const MLOperand* weight,
-      const MLOperand* recurrent_weight,
-      const MLOperand* hidden_state,
-      const MLOperand* cell_state,
-      uint32_t hidden_size,
-      MLLstmCellOptions* options,
-      ExceptionState& exception_state);
+  HeapVector<Member<const MLOperand>> lstmCell(MLOperand* input,
+                                               MLOperand* weight,
+                                               MLOperand* recurrent_weight,
+                                               MLOperand* hidden_state,
+                                               MLOperand* cell_state,
+                                               uint32_t hidden_size,
+                                               MLLstmCellOptions* options,
+                                               ExceptionState& exception_state);
 
-  MLOperand* matmul(const MLOperand* a,
-                    const MLOperand* b,
+  MLOperand* matmul(MLOperand* a,
+                    MLOperand* b,
                     const MLOperatorOptions* options,
                     ExceptionState& exception_state);
 
   MLOperand* pad(ScriptState* script_state,
-                 const MLOperand* input,
+                 MLOperand* input,
                  const Vector<uint32_t>& beginningPadding,
                  const Vector<uint32_t>& endingPadding,
                  const MLPadOptions* options,
                  ExceptionState& exception_state);
 
   // Pooling operations
-  MLOperand* averagePool2d(const MLOperand* input,
+  MLOperand* averagePool2d(MLOperand* input,
                            const MLPool2dOptions* options,
                            ExceptionState& exception_state);
-  MLOperand* l2Pool2d(const MLOperand* input,
+  MLOperand* l2Pool2d(MLOperand* input,
                       const MLPool2dOptions* options,
                       ExceptionState& exception_state);
-  MLOperand* maxPool2d(const MLOperand* input,
+  MLOperand* maxPool2d(MLOperand* input,
                        const MLPool2dOptions* options,
                        ExceptionState& exception_state);
 
-  MLOperand* prelu(const MLOperand* input,
-                   const MLOperand* slope,
+  MLOperand* prelu(MLOperand* input,
+                   MLOperand* slope,
                    const MLOperatorOptions* options,
                    ExceptionState& exception_state);
 
-  MLOperand* quantizeLinear(const MLOperand* input,
-                            const MLOperand* scale,
-                            const MLOperand* zeroPoint,
+  MLOperand* quantizeLinear(MLOperand* input,
+                            MLOperand* scale,
+                            MLOperand* zeroPoint,
                             const MLOperatorOptions* options,
                             ExceptionState& exception_state);
 
   // Reduction operations
-  MLOperand* reduceL1(const MLOperand* input,
+  MLOperand* reduceL1(MLOperand* input,
                       const MLReduceOptions* options,
                       ExceptionState& exception_state);
-  MLOperand* reduceL2(const MLOperand* input,
+  MLOperand* reduceL2(MLOperand* input,
                       const MLReduceOptions* options,
                       ExceptionState& exception_state);
-  MLOperand* reduceLogSum(const MLOperand* input,
+  MLOperand* reduceLogSum(MLOperand* input,
                           const MLReduceOptions* options,
                           ExceptionState& exception_state);
-  MLOperand* reduceLogSumExp(const MLOperand* input,
+  MLOperand* reduceLogSumExp(MLOperand* input,
                              const MLReduceOptions* options,
                              ExceptionState& exception_state);
-  MLOperand* reduceMax(const MLOperand* input,
+  MLOperand* reduceMax(MLOperand* input,
                        const MLReduceOptions* options,
                        ExceptionState& exception_state);
-  MLOperand* reduceMean(const MLOperand* input,
+  MLOperand* reduceMean(MLOperand* input,
                         const MLReduceOptions* options,
                         ExceptionState& exception_state);
-  MLOperand* reduceMin(const MLOperand* input,
+  MLOperand* reduceMin(MLOperand* input,
                        const MLReduceOptions* options,
                        ExceptionState& exception_state);
-  MLOperand* reduceProduct(const MLOperand* input,
+  MLOperand* reduceProduct(MLOperand* input,
                            const MLReduceOptions* options,
                            ExceptionState& exception_state);
-  MLOperand* reduceSum(const MLOperand* input,
+  MLOperand* reduceSum(MLOperand* input,
                        const MLReduceOptions* options,
                        ExceptionState& exception_state);
-  MLOperand* reduceSumSquare(const MLOperand* input,
+  MLOperand* reduceSumSquare(MLOperand* input,
                              const MLReduceOptions* options,
                              ExceptionState& exception_state);
 
-  MLOperand* relu(const MLOperand* input,
+  MLOperand* relu(MLOperand* input,
                   const MLOperatorOptions* options,
                   ExceptionState& exception_state);
 
-  MLOperand* reshape(const MLOperand* input,
+  MLOperand* reshape(MLOperand* input,
                      const Vector<uint32_t>& new_shape,
                      const MLOperatorOptions* options,
                      ExceptionState& exception_state);
 
   MLOperand* resample2d(ScriptState* script_state,
-                        const MLOperand* input,
+                        MLOperand* input,
                         const MLResample2dOptions* options,
                         ExceptionState& exception_state);
 
-  MLOperand* scatterElements(const MLOperand* input,
-                             const MLOperand* indices,
-                             const MLOperand* updates,
+  MLOperand* scatterElements(MLOperand* input,
+                             MLOperand* indices,
+                             MLOperand* updates,
                              const MLScatterOptions* options,
                              ExceptionState& exception_state);
 
-  MLOperand* scatterND(const MLOperand* input,
-                       const MLOperand* indices,
-                       const MLOperand* updates,
+  MLOperand* scatterND(MLOperand* input,
+                       MLOperand* indices,
+                       MLOperand* updates,
                        const MLOperatorOptions* options,
                        ExceptionState& exception_state);
 
-  MLOperand* sigmoid(const MLOperand* input,
+  MLOperand* sigmoid(MLOperand* input,
                      const MLOperatorOptions* options,
                      ExceptionState& exception_state);
 
-  MLOperand* slice(const MLOperand* input,
+  MLOperand* slice(MLOperand* input,
                    const Vector<uint32_t>& starts,
                    const Vector<uint32_t>& sizes,
                    const MLSliceOptions* options,
                    ExceptionState& exception_state);
 
-  MLOperand* softmax(const MLOperand* input,
+  MLOperand* softmax(MLOperand* input,
                      uint32_t axis,
                      const MLOperatorOptions* options,
                      ExceptionState& exception_state);
-  MLOperand* softmax(const MLOperand* input,
+  MLOperand* softmax(MLOperand* input,
                      const MLOperatorOptions* options,
                      ExceptionState& exception_state);
 
-  MLOperand* softplus(const MLOperand* input,
+  MLOperand* softplus(MLOperand* input,
                       const MLOperatorOptions* options,
                       ExceptionState& exception_state);
 
-  MLOperand* softsign(const MLOperand* input,
+  MLOperand* softsign(MLOperand* input,
                       const MLOperatorOptions* options,
                       ExceptionState& exception_state);
 
-  HeapVector<Member<const MLOperand>> split(const MLOperand* input,
+  HeapVector<Member<const MLOperand>> split(MLOperand* input,
                                             const uint32_t splits,
                                             const MLSplitOptions* options,
                                             ExceptionState& exception_state);
-  HeapVector<Member<const MLOperand>> split(const MLOperand* input,
+  HeapVector<Member<const MLOperand>> split(MLOperand* input,
                                             const Vector<uint32_t>& splits,
                                             const MLSplitOptions* options,
                                             ExceptionState& exception_state);
 
-  MLOperand* tanh(const MLOperand* input,
+  MLOperand* tanh(MLOperand* input,
                   const MLOperatorOptions* options,
                   ExceptionState& exception_state);
 
-  MLOperand* tile(const MLOperand* input,
+  MLOperand* tile(MLOperand* input,
                   const Vector<uint32_t>& repetitions,
                   const MLOperatorOptions* options,
                   ExceptionState& exception_state);
 
-  MLOperand* transpose(const MLOperand* input,
+  MLOperand* transpose(MLOperand* input,
                        const MLTransposeOptions* options,
                        ExceptionState& exception_state);
 
-  MLOperand* triangular(const MLOperand* input,
+  MLOperand* triangular(MLOperand* input,
                         const MLTriangularOptions* options,
                         ExceptionState& exception_state);
 
-  MLOperand* where(const MLOperand* condition,
-                   const MLOperand* true_value,
-                   const MLOperand* false_value,
+  MLOperand* where(MLOperand* condition,
+                   MLOperand* true_value,
+                   MLOperand* false_value,
                    const MLOperatorOptions* options,
                    ExceptionState& exception_state);
 
@@ -526,7 +525,7 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
       const MLOperand* input);
   // Convenience method to validate several inputs at once.
   [[nodiscard]] base::expected<void, String> ValidateInputs(
-      const HeapVector<Member<const MLOperand>>& inputs);
+      const HeapVector<Member<MLOperand>>& inputs);
 
   // Releases the memory held by all constant operands associated with this
   // builder. This should be called when the builder is no longer able to make a
