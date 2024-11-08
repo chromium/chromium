@@ -59,6 +59,10 @@
 #include "pdf/flatten_pdf_result.h"
 #endif
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+#include "pdf/pdf_ink_ids.h"
+#endif
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "pdf/pdfium/pdfium_searchify.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom-forward.h"
@@ -71,6 +75,12 @@ class WebMouseEvent;
 class WebTouchEvent;
 struct WebPrintParams;
 }  // namespace blink
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+namespace ink {
+class Stroke;
+}  // namespace ink
+#endif
 
 namespace chrome_pdf {
 
@@ -357,7 +367,23 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 #if BUILDFLAG(ENABLE_PDF_INK2)
   // Virtual to support testing.
   virtual gfx::Size GetThumbnailSize(int page_index, float device_pixel_ratio);
-#endif
+
+  // Writes the supplied stroke for the page at `page_index`.  The same `id`
+  // gets used with `UpdateStrokeUsage()`.  Must provide a valid `page_index`.
+  // Virtual to support testing.
+  virtual void ApplyStroke(int page_index,
+                           InkStrokeId id,
+                           const ink::Stroke& stroke);
+
+  // Modifies an existing stroke identified by `id` on the page at `page_index`
+  // to become either active or inactive.  The caller must pass the same
+  // consistent and valid `page_index`/`id` pair as was provided to
+  // `ApplyStroke()`.
+  // Stroke objects that become inactive will no longer be included for
+  // rendering or saving out to PDF data.  Their inclusion can be restored if
+  // another call makes them active again.  Virtual to support testing.
+  virtual void UpdateStrokeActive(int page_index, InkStrokeId id, bool active);
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   // DocumentLoader::Client:
   std::unique_ptr<URLLoaderWrapper> CreateURLLoader() override;
@@ -1070,6 +1096,12 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   gfx::Point range_selection_base_;
 
   bool edit_mode_ = false;
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  // The handles for stroke path page objects within the PDF document, mapped
+  // using the `InkStrokeId` provided during stroke creation.
+  std::map<InkStrokeId, FPDF_PAGEOBJECT> ink_stroke_objects_map_;
+#endif
 
   // When true, interactive portions of the content, such as forms and links,
   // are restricted.

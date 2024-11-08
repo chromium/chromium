@@ -94,6 +94,10 @@
 #include "gin/public/cppgc.h"
 #endif
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+#include "third_party/ink/src/ink/strokes/stroke.h"
+#endif
+
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "pdf/pdfium/pdfium_on_demand_searchifier.h"
 #include "ui/accessibility/ax_features.mojom-features.h"
@@ -4359,7 +4363,39 @@ gfx::Size PDFiumEngine::GetThumbnailSize(int page_index,
   CHECK(PageIndexInBounds(page_index));
   return pages_[page_index]->GetThumbnailSize(device_pixel_ratio);
 }
-#endif
+
+void PDFiumEngine::ApplyStroke(int page_index,
+                               InkStrokeId id,
+                               const ink::Stroke& stroke) {
+  // Saving a stroke will have the same page bounds limitations as the original
+  // document.
+  PDFiumPage* pdfium_page = GetPage(page_index);
+  CHECK(pdfium_page);
+  FPDF_PAGE page = pdfium_page->GetPage();
+  CHECK(page);
+
+  // TODO(crbug.com/335517469): Write the stroke to the page.  Requires
+  // invalidation, page regeneration, and page unloading prevention support.
+
+  bool inserted =
+      ink_stroke_objects_map_.insert({id, /*page_object=*/nullptr}).second;
+  CHECK(inserted);  // Stroke IDs should be unique when added.
+
+  // TODO(crbug.com/335517469): Once a real stroke object is referenced in
+  // `ink_stroke_objects_map_`, will need to ensure the page stays in memory
+  // to avoid a stale pointer if PDFiumPage::Unload() gets called.
+}
+
+void PDFiumEngine::UpdateStrokeActive(int page_index,
+                                      InkStrokeId id,
+                                      bool active) {
+  CHECK(PageIndexInBounds(page_index));
+  auto it = ink_stroke_objects_map_.find(id);
+  CHECK(it != ink_stroke_objects_map_.end());
+  // TODO(crbug.com/335517469): Update the page object's active state and
+  // note that this page will require content regeneration.
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 PDFiumEngine::ProgressivePaint::ProgressivePaint(int index,
                                                  const gfx::Rect& rect)

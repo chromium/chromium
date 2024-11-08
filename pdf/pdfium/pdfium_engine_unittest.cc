@@ -11,6 +11,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -53,6 +55,17 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+#include <array>
+
+#include "pdf/pdf_ink_brush.h"
+#include "pdf/pdf_ink_constants.h"
+#include "pdf/pdfium/pdfium_test_helpers.h"
+#include "pdf/test/pdf_ink_test_helpers.h"
+#include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
+#include "third_party/ink/src/ink/strokes/stroke.h"
+#endif
 
 namespace chrome_pdf {
 
@@ -2026,6 +2039,127 @@ TEST_P(PDFiumEngineAnnotationModeTest, CannotSelectText) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineAnnotationModeTest, testing::Bool());
+
+using PDFiumEngineInkStrokesTest = PDFiumTestBase;
+
+TEST_P(PDFiumEngineInkStrokesTest, NoStrokeData) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+
+  EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
+                                         kInkAnnotationIdentifierKeyV2),
+            0);
+}
+
+TEST_P(PDFiumEngineInkStrokesTest, StrokeData) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  int page_count = FPDF_GetPageCount(engine->doc());
+  ASSERT_EQ(page_count, 1);
+
+  // Original document drawn on has no stroke data.
+  EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
+                                         kInkAnnotationIdentifierKeyV2),
+            0);
+
+  std::vector<uint8_t> saved_pdf_data = engine->GetSaveData();
+  ASSERT_FALSE(saved_pdf_data.empty());
+  constexpr int kPageIndex = 0;
+  constexpr gfx::Size kPageSizeInPoints(200, 200);
+  const base::FilePath kBlankPngFilePath(FILE_PATH_LITERAL("blank.png"));
+  CheckPdfRendering(saved_pdf_data, kPageIndex, kPageSizeInPoints,
+                    kBlankPngFilePath);
+
+  // Draw 2 strokes.
+  auto brush = std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen,
+                                             SK_ColorRED, /*size=*/4.0f);
+  constexpr auto kInputs1 = std::to_array<PdfInkInputData>({
+      {{5.0f, 5.0f}, base::Seconds(0.0f)},
+      {{50.0f, 5.0f}, base::Seconds(0.1f)},
+  });
+  constexpr auto kInputs2 = std::to_array<PdfInkInputData>({
+      {{75.0f, 5.0f}, base::Seconds(0.0f)},
+      {{75.0f, 60.0f}, base::Seconds(0.1f)},
+  });
+  std::optional<ink::StrokeInputBatch> inputs1 = CreateInkInputBatch(kInputs1);
+  ASSERT_TRUE(inputs1.has_value());
+  std::optional<ink::StrokeInputBatch> inputs2 = CreateInkInputBatch(kInputs2);
+  ASSERT_TRUE(inputs2.has_value());
+  ink::Stroke stroke1(brush->ink_brush(), inputs1.value());
+  ink::Stroke stroke2(brush->ink_brush(), inputs2.value());
+  constexpr InkStrokeId kStrokeId1(1);
+  constexpr InkStrokeId kStrokeId2(2);
+  engine->ApplyStroke(kPageIndex, kStrokeId1, stroke1);
+  engine->ApplyStroke(kPageIndex, kStrokeId2, stroke2);
+
+  PDFiumPage& page = GetPDFiumPageForTest(*engine, kPageIndex);
+
+  // Verify the visibility of strokes for in-memory PDF.
+  // TODO(crbug.com/335517469): Should match a PNG with 2 strokes, after strokes
+  // are actually applied in-memory.
+  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kBlankPngFilePath);
+
+  // Getting the save data should now have the new strokes.
+  // Verify visibility of strokes in that copy.  Must call GetSaveData()
+  // before checking mark objects count, so that the PDF gets regenerated.
+  saved_pdf_data = engine->GetSaveData();
+  ASSERT_FALSE(saved_pdf_data.empty());
+  // TODO(crbug.com/335517469): Should match a PNG with 2 strokes, after strokes
+  // are actually applied in-memory.
+  CheckPdfRendering(saved_pdf_data, kPageIndex, kPageSizeInPoints,
+                    kBlankPngFilePath);
+  // TODO(crbug.com/crbug.com/335517469): Update to 2 after strokes are actually
+  // applied in-memory.
+  EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
+                                         kInkAnnotationIdentifierKeyV2),
+            0);
+
+  // Perform equivalent of an "undo", to cause stroke to be inactive.
+  // This causes a stroke to no longer be included in the saved PDF data.
+  engine->UpdateStrokeActive(kPageIndex, kStrokeId2, /*active=*/false);
+  // TODO(crbug.com/335517469): Should match a PNG with 1 stroke, after strokes
+  // are actually applied in-memory.
+  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kBlankPngFilePath);
+  saved_pdf_data = engine->GetSaveData();
+  ASSERT_FALSE(saved_pdf_data.empty());
+  // TODO(crbug.com/335517469): Should match a PNG with 1 stroke, after strokes
+  // are actually applied in-memory.
+  CheckPdfRendering(saved_pdf_data, kPageIndex, kPageSizeInPoints,
+                    kBlankPngFilePath);
+  // TODO(crbug.com/crbug.com/335517469): Update to 1 after strokes are actually
+  // applied in-memory.
+  EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
+                                         kInkAnnotationIdentifierKeyV2),
+            0);
+
+  // Perform equivalent of a "redo", to cause stroke to become active again.
+  // This causes the streok to be included in saved PDF data again.
+  engine->UpdateStrokeActive(kPageIndex, kStrokeId2, /*active=*/true);
+  // TODO(crbug.com/335517469): Should match a PNG with 2 strokes, after strokes
+  // are actually applied in-memory.
+  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kBlankPngFilePath);
+  saved_pdf_data = engine->GetSaveData();
+  ASSERT_FALSE(saved_pdf_data.empty());
+  // TODO(crbug.com/335517469): Should match a PNG with 2 strokes, after strokes
+  // are actually applied in-memory.
+  CheckPdfRendering(saved_pdf_data, kPageIndex, kPageSizeInPoints,
+                    kBlankPngFilePath);
+  // TODO(crbug.com/crbug.com/335517469): Update to 2 after strokes are actually
+  // applied in-memory.
+  EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
+                                         kInkAnnotationIdentifierKeyV2),
+            0);
+}
+
+// Don't be concerned about any slight rendering differences in AGG vs. Skia,
+// covering one of these is sufficient for checking how data is written out.
+INSTANTIATE_TEST_SUITE_P(All,
+                         PDFiumEngineInkStrokesTest,
+                         testing::Values(false));
 
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
