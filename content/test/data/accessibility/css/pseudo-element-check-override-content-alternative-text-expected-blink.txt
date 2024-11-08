@@ -1,0 +1,8 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++comboBoxSelect name='Pets' value='Dog'
+++++++++menuListPopup activedescendantId=menuListOption ispopup=auto
+++++++++++menuListOption name='Dog' selected=true
+++++++++++menuListOption name='Cat' selected=false
+++++++++++menuListOption name='Donkey' selected=false

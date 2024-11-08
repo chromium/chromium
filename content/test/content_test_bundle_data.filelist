@@ -2058,6 +2058,12 @@ data/accessibility/css/pseudo-element-alternative-text-expected-android.txt
 data/accessibility/css/pseudo-element-alternative-text-expected-auralinux.txt
 data/accessibility/css/pseudo-element-alternative-text-expected-blink.txt
 data/accessibility/css/pseudo-element-alternative-text.html
+data/accessibility/css/pseudo-element-check-expected-blink.txt
+data/accessibility/css/pseudo-element-check-override-content-alternative-text-expected-blink.txt
+data/accessibility/css/pseudo-element-check-override-content-alternative-text.html
+data/accessibility/css/pseudo-element-check-override-content-expected-blink.txt
+data/accessibility/css/pseudo-element-check-override-content.html
+data/accessibility/css/pseudo-element-check.html
 data/accessibility/css/pseudo-element-highlight-expected-blink.txt
 data/accessibility/css/pseudo-element-highlight.html
 data/accessibility/css/pseudo-element-positioned-expected-android-assist-data.txt
@@ -2066,6 +2072,12 @@ data/accessibility/css/pseudo-element-positioned-expected-android.txt
 data/accessibility/css/pseudo-element-positioned-expected-blink.txt
 data/accessibility/css/pseudo-element-positioned-expected-mac.txt
 data/accessibility/css/pseudo-element-positioned.html
+data/accessibility/css/pseudo-element-select-arrow-expected-blink.txt
+data/accessibility/css/pseudo-element-select-arrow-override-content-alternative-text-expected-blink.txt
+data/accessibility/css/pseudo-element-select-arrow-override-content-alternative-text.html
+data/accessibility/css/pseudo-element-select-arrow-override-content-expected-blink.txt
+data/accessibility/css/pseudo-element-select-arrow-override-content.html
+data/accessibility/css/pseudo-element-select-arrow.html
 data/accessibility/css/pseudo-elements-expected-android-assist-data.txt
 data/accessibility/css/pseudo-elements-expected-android-external.txt
 data/accessibility/css/pseudo-elements-expected-android.txt
