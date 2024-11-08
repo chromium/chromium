@@ -3919,10 +3919,16 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kSqrt:
       case CSSValueID::kHypot:
       case CSSValueID::kLog:
-      case CSSValueID::kExp:
+      case CSSValueID::kExp: {
         DCHECK(RuntimeEnabledFeatures::CSSExponentialFunctionsEnabled());
-        return CSSMathExpressionOperation::CreateExponentialFunction(
-            std::move(nodes), function_id);
+        CSSMathExpressionNode* node =
+            CSSMathExpressionOperation::CreateExponentialFunction(
+                std::move(nodes), function_id);
+        if (node) {
+          context_.Count(WebFeature::kCSSExponentialFunctions);
+        }
+        return node;
+      }
       case CSSValueID::kRound:
       case CSSValueID::kMod:
       case CSSValueID::kRem: {
