@@ -105,9 +105,7 @@ let lastVisitedURL: string;
  */
 export function visitURL(url: string): void {
   lastVisitedURL = url;
-  // openURL opens URLs in the primary browser (ash vs lacros) as opposed to
-  // window.open which always opens URLs in ash-chrome.
-  chrome.fileManagerPrivate.openURL(url);
+  window.open(url);
 }
 
 /**

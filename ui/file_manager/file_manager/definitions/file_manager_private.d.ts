@@ -1020,8 +1020,6 @@ declare global {
 
       export function notifyDriveDialogResult(result: DriveDialogResult): void;
 
-      export function openURL(url: string): void;
-
       export function openWindow(
           params: OpenWindowParams, callback: (result: boolean) => void): void;
 
