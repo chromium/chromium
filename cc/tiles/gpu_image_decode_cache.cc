@@ -3365,8 +3365,17 @@ bool GpuImageDecodeCache::IsCompatible(const ImageData* image_data,
   const bool scale_is_compatible =
       CalculateUploadScaleMipLevel(draw_image, AuxImage::kDefault) >=
       image_data->upload_scale_mip_level;
-  const bool quality_is_compatible =
-      CalculateDesiredFilterQuality(draw_image) <= image_data->quality;
+  auto desired_quality = CalculateDesiredFilterQuality(draw_image);
+  bool quality_is_compatible = desired_quality <= image_data->quality;
+  if (base::FeatureList::IsEnabled(
+          features::kPreserveDiscardableImageMapQuality)) {
+    // Nearest neighbor is used for `image-rendering: pixelated` which is not
+    // compatible with higher qualities.
+    if (desired_quality == PaintFlags::FilterQuality::kNone &&
+        image_data->quality != PaintFlags::FilterQuality::kNone) {
+      quality_is_compatible = false;
+    }
+  }
   if (is_scaled && (!scale_is_compatible || !quality_is_compatible)) {
     return false;
   }
