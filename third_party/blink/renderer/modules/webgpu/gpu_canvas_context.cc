@@ -251,11 +251,12 @@ bool GPUCanvasContext::PushFrame() {
   // If it was possible to prepare the transferable resource, the
   // ClientSharedImage must also be valid.
   CHECK(client_si);
+  CHECK_EQ(client_si->surface_origin(), kTopLeft_GrSurfaceOrigin);
   auto canvas_resource = ExternalCanvasResource::Create(
       std::move(client_si), transferable_resource, std::move(release_callback),
       GetContextProviderWeakPtr(), /*resource_provider=*/nullptr,
       filter_quality_,
-      /*is_origin_top_left=*/kBottomLeft_GrSurfaceOrigin);
+      /*is_origin_top_left=*/true);
   if (!canvas_resource)
     return false;
 
@@ -335,13 +336,14 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
       texture_descriptor_.size.width, texture_descriptor_.size.height,
       sk_color_type, kPremul_SkAlphaType);
 
+  CHECK_EQ(client_si->surface_origin(), kTopLeft_GrSurfaceOrigin);
   return MakeGarbageCollected<ImageBitmap>(
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
           std::move(client_si), sk_image_sync_token,
           /* shared_image_texture_id = */ 0, sk_image_info,
           transferable_resource.texture_target(),
-          /* is_origin_top_left = */ kBottomLeft_GrSurfaceOrigin,
-          GetContextProviderWeakPtr(), base::PlatformThread::CurrentRef(),
+          /* is_origin_top_left = */ true, GetContextProviderWeakPtr(),
+          base::PlatformThread::CurrentRef(),
           ThreadScheduler::Current()->CleanupTaskRunner(),
           std::move(release_callback),
           /*supports_display_compositing=*/true,
