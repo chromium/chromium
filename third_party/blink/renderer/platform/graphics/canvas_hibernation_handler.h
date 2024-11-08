@@ -22,6 +22,25 @@ PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvasHibernationSnapshotZstd);
 // All the fields are main-thread only. See DCheckInvariant() for invariants.
 class PLATFORM_EXPORT CanvasHibernationHandler {
  public:
+  // The values of the enum entries must not change because they are used for
+  // usage metrics histograms. New values can be added to the end.
+  enum HibernationEvent {
+    kHibernationScheduled = 0,
+    kHibernationAbortedDueToDestructionWhileHibernatePending = 1,
+    // kHibernationAbortedDueToPendingDestruction = 2, (obsolete)
+    kHibernationAbortedDueToVisibilityChange = 3,
+    kHibernationAbortedDueGpuContextLoss = 4,
+    kHibernationAbortedDueToSwitchToUnacceleratedRendering = 5,
+    // kHibernationAbortedDueToAllocationFailure = 6, (obsolete)
+    kHibernationAbortedDueSnapshotFailure = 7,
+    kHibernationEndedNormally = 8,
+    kHibernationEndedWithSwitchToBackgroundRendering = 9,
+    kHibernationEndedWithFallbackToSW = 10,
+    kHibernationEndedWithTeardown = 11,
+    kHibernationAbortedBecauseNoSurface = 12,
+    kMaxValue = kHibernationAbortedBecauseNoSurface,
+  };
+
   ~CanvasHibernationHandler();
   // Semi-arbitrary threshold. Some past experiments (e.g. tile discard) have
   // shown that taking action after 5 minutes has a positive impact on memory,

@@ -1984,15 +1984,16 @@ HTMLCanvasElement::GetOrCreateCanvasResourceProviderFor2DContext(
 
   if (resource_provider->IsAccelerated()) {
     Canvas2DLayerBridge::ReportHibernationEvent(
-        Canvas2DLayerBridge::kHibernationEndedNormally);
+        CanvasHibernationHandler::HibernationEvent::kHibernationEndedNormally);
   } else {
     if (!IsPageVisible()) {
       Canvas2DLayerBridge::ReportHibernationEvent(
-          Canvas2DLayerBridge::
+          CanvasHibernationHandler::HibernationEvent::
               kHibernationEndedWithSwitchToBackgroundRendering);
     } else {
       Canvas2DLayerBridge::ReportHibernationEvent(
-          Canvas2DLayerBridge::kHibernationEndedWithFallbackToSW);
+          CanvasHibernationHandler::HibernationEvent::
+              kHibernationEndedWithFallbackToSW);
     }
   }
 
