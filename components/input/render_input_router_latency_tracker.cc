@@ -77,8 +77,7 @@ const char* GetTraceNameFromType(blink::WebInputEvent::Type type) {
     CASE_TYPE(PointerCausedUaAction);
   }
 #undef CASE_TYPE
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 }  // namespace
 

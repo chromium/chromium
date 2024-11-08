@@ -82,8 +82,7 @@ bool RenderWidgetHostViewInput::TransformPointToCoordSpaceForView(
     const gfx::PointF& point,
     input::RenderWidgetHostViewInput* target_view,
     gfx::PointF* transformed_point) {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 bool RenderWidgetHostViewInput::GetTransformToViewCoordSpace(
@@ -289,7 +288,7 @@ void RenderWidgetHostViewInput::ForwardTouchpadZoomEventIfNecessary(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

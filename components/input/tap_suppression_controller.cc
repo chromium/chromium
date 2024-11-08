@@ -52,8 +52,7 @@ bool TapSuppressionController::ShouldSuppressTapDown() {
       state_ = NOTHING;
       return false;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid state";
-  return false;
+  NOTREACHED() << "Invalid state";
 }
 
 bool TapSuppressionController::ShouldSuppressTapEnd() {

@@ -186,8 +186,7 @@ bool ChildFrameInputHelper::TransformPointToCoordSpaceForView(
 void ChildFrameInputHelper::TransformPointToRootSurface(gfx::PointF* point) {
   // This function is called by RenderWidgetHostInputEventRouter only for
   // root-views.
-  NOTREACHED_IN_MIGRATION();
-  return;
+  NOTREACHED();
 }
 
 blink::mojom::InputEventResultState ChildFrameInputHelper::FilterInputEvent(
@@ -314,7 +313,7 @@ void ChildFrameInputHelper::ForwardTouchpadZoomEventIfNecessary(
     blink::mojom::InputEventResultState ack_result) {
   // ACKs of synthetic wheel events for touchpad pinch or double tap are
   // processed in the root RWHV.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ChildFrameInputHelper::ProcessTouchpadZoomEventAckInRoot(

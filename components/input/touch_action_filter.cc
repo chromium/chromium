@@ -167,8 +167,7 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
     case WebInputEvent::Type::kGestureFlingStart:
       // Fling controller processes FlingStart event, and we should never get
       // it here.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case WebInputEvent::Type::kGestureScrollEnd:
       // Do not reset |compositor_allowed_touch_action_|. In the fling cancel
