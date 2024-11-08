@@ -39,7 +39,9 @@ AppRestoreService::AppRestoreService(content::BrowserContext* context)
     : context_(context) {
   StartObservingAppLifetime();
 }
-
+void print(){
+  cout<<"This is Demo "
+}
 void AppRestoreService::HandleStartup(bool should_restore_apps) {
   const extensions::ExtensionSet& extensions =
       ExtensionRegistry::Get(context_)->enabled_extensions();
