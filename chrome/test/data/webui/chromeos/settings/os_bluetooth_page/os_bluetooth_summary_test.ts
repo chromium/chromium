@@ -78,25 +78,25 @@ suite('<os-settings-bluetooth-summary>', () => {
     assertTrue(!!enableBluetoothToggle);
 
     const enableBluetooth = async () => {
-      assertTrue(
-          bluetoothSummary.systemProperties.systemState ===
-          BluetoothSystemState.kDisabled);
+      assertEquals(
+          BluetoothSystemState.kDisabled,
+          bluetoothSummary.systemProperties.systemState);
 
       // Simulate clicking toggle.
       enableBluetoothToggle.click();
       await flushTasks();
 
       // Toggle should be on since systemState is enabling.
-      assertTrue(
-          bluetoothSummary.systemProperties.systemState ===
-          BluetoothSystemState.kEnabling);
+      assertEquals(
+          BluetoothSystemState.kEnabling,
+          bluetoothSummary.systemProperties.systemState);
 
       // Mock operation success.
       bluetoothConfig.completeSetBluetoothEnabledState(/*success=*/ true);
       await flushTasks();
-      assertTrue(
-          bluetoothSummary.systemProperties.systemState ===
-          BluetoothSystemState.kEnabled);
+      assertEquals(
+          BluetoothSystemState.kEnabled,
+          bluetoothSummary.systemProperties.systemState);
     };
 
     await enableBluetooth();
@@ -110,16 +110,16 @@ suite('<os-settings-bluetooth-summary>', () => {
 
     assertTrue(enableBluetoothToggle.checked);
     assertEquals(hidPreservingController.getDialogShownCount(), 1);
-    assertTrue(
-        bluetoothSummary.systemProperties.systemState ===
-        BluetoothSystemState.kEnabled);
+    assertEquals(
+        BluetoothSystemState.kEnabled,
+        bluetoothSummary.systemProperties.systemState);
     hidPreservingController.completeShowDialog(true);
     await flushTasks();
 
     assertFalse(enableBluetoothToggle.checked);
-    assertTrue(
-        bluetoothSummary.systemProperties.systemState ===
-        BluetoothSystemState.kDisabling);
+    assertEquals(
+        BluetoothSystemState.kDisabling,
+        bluetoothSummary.systemProperties.systemState);
     bluetoothConfig.completeSetBluetoothEnabledState(/*success=*/ true);
     await flushTasks();
     await enableBluetooth();
@@ -133,9 +133,9 @@ suite('<os-settings-bluetooth-summary>', () => {
 
     assertTrue(enableBluetoothToggle.checked);
     assertEquals(hidPreservingController.getDialogShownCount(), 2);
-    assertTrue(
-        bluetoothSummary.systemProperties.systemState ===
-        BluetoothSystemState.kEnabled);
+    assertEquals(
+        BluetoothSystemState.kEnabled,
+        bluetoothSummary.systemProperties.systemState);
     hidPreservingController.completeShowDialog(false);
 
     await flushTasks();

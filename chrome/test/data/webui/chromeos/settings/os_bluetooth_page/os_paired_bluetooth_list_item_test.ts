@@ -31,9 +31,9 @@ suite('<os-settings-paired-bluetooth-list-item>', () => {
       Promise<void> {
     pairedBluetoothListItem.set('device.deviceProperties.batteryInfo', {
       defaultProperties: {batteryPercentage},
-      leftBudInfo: undefined,
-      rightBudInfo: undefined,
-      caseInfo: undefined,
+      leftBudInfo: null,
+      rightBudInfo: null,
+      caseInfo: null,
     });
     await flushTasks();
   }
@@ -132,9 +132,9 @@ suite('<os-settings-paired-bluetooth-list-item>', () => {
         const batteryPercentage = 60;
         device.deviceProperties.batteryInfo = {
           defaultProperties: {batteryPercentage},
-          leftBudInfo: undefined,
-          rightBudInfo: undefined,
-          caseInfo: undefined,
+          leftBudInfo: null,
+          rightBudInfo: null,
+          caseInfo: null,
         };
         pairedBluetoothListItem.set('device', {...device});
         await flushTasks();

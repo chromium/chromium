@@ -29,11 +29,11 @@ export function createDefaultBluetoothDevice(
       audioCapability: audioCapability,
       connectionState: connectionState,
       isBlockedByPolicy: isBlockedByPolicy,
-      batteryInfo: undefined,
-      imageInfo: undefined,
+      batteryInfo: null,
+      imageInfo: null,
     },
-    nickname: nickname,
-    fastPairableDevicePairingState: undefined,
+    nickname: nickname || null,
+    fastPairableDevicePairingState: null,
   };
 }
 
@@ -49,7 +49,7 @@ interface Response {
 /**
  * @fileoverview Fake implementation of CrosBluetoothConfig for testing.
  */
-export class FakeBluetoothConfig extends CrosBluetoothConfigInterface {
+export class FakeBluetoothConfig implements CrosBluetoothConfigInterface {
   systemProperties: BluetoothSystemProperties;
   discoveredDevices: BluetoothDeviceProperties[] = [];
   systemPropertiesObservers: SystemPropertiesObserverInterface[] = [];
@@ -80,7 +80,6 @@ export class FakeBluetoothConfig extends CrosBluetoothConfigInterface {
   numStartDiscoveryCalls: number = 0;
 
   constructor() {
-    super();
     this.systemProperties = {
       systemState: BluetoothSystemState.kDisabled,
       modificationState: BluetoothModificationState.kCannotModifyBluetooth,
@@ -89,26 +88,27 @@ export class FakeBluetoothConfig extends CrosBluetoothConfigInterface {
     };
   }
 
-  override observeSystemProperties(observer: SystemPropertiesObserverInterface):
-      void {
+  setBluetoothEnabledWithoutPersistence() {}
+
+  observeSystemProperties(observer: SystemPropertiesObserverInterface): void {
     this.systemPropertiesObservers.push(observer);
     this.notifyObserversPropertiesUpdated_();
   }
 
-  override observeDeviceStatusChanges(
-      observer: BluetoothDeviceStatusObserverInterface): void {
+  observeDeviceStatusChanges(observer: BluetoothDeviceStatusObserverInterface):
+      void {
     this.bluetoothDeviceStatusObservers.push(observer);
   }
 
 
-  override observeDiscoverySessionStatusChanges(
+  observeDiscoverySessionStatusChanges(
       observer: DiscoverySessionStatusObserverInterface): void {
     // This method is left unimplemented since the observer is not used in JS.
     assertFalse(!!observer);
     assertNotReached();
   }
 
-  override startDiscovery(delegate: BluetoothDiscoveryDelegateInterface): void {
+  startDiscovery(delegate: BluetoothDiscoveryDelegateInterface): void {
     this.lastDiscoveryDelegate = delegate;
     this.notifyDiscoveryStarted_();
     this.notifyDelegatesPropertiesUpdated_();
@@ -122,7 +122,7 @@ export class FakeBluetoothConfig extends CrosBluetoothConfigInterface {
    * requested state. This method should be followed by a call to
    * completeSetBluetoothEnabledState() to complete the operation.
    */
-  override setBluetoothEnabledState(enabled: boolean): void {
+  setBluetoothEnabledState(enabled: boolean): void {
     const bluetoothSystemState = BluetoothSystemState;
     const systemState = this.systemProperties.systemState;
     if ((enabled && systemState === bluetoothSystemState.kEnabled) ||
@@ -140,7 +140,7 @@ export class FakeBluetoothConfig extends CrosBluetoothConfigInterface {
     assertNotReached();
   }
 
-  override setBluetoothHidDetectionInactive(isUsingBluetooth: boolean): void {
+  setBluetoothHidDetectionInactive(isUsingBluetooth: boolean): void {
     // This method is left unimplemented as it is only used in OOBE.
     assertTrue(isUsingBluetooth === undefined);
     assertNotReached();
@@ -150,7 +150,7 @@ export class FakeBluetoothConfig extends CrosBluetoothConfigInterface {
    * Initiates connecting to a device with id |deviceId|. To finish the
    * operation, call completeConnect().
    */
-  override connect(deviceId: string): Promise<Response> {
+  connect(deviceId: string): Promise<Response> {
     assertFalse(!!this.pendingConnectRequest);
 
     const device = this.systemProperties.pairedDevices.find(
@@ -175,7 +175,7 @@ export class FakeBluetoothConfig extends CrosBluetoothConfigInterface {
    * Initiates disconnecting from a device with id |deviceId|. To finish the
    * operation, call completeDisconnect().
    */
-  override disconnect(deviceId: string): Promise<Response> {
+  disconnect(deviceId: string): Promise<Response> {
     assertFalse(!!this.pendingDisconnectRequest);
     return new Promise((resolve) => {
       this.pendingDisconnectRequest = {
@@ -189,7 +189,7 @@ export class FakeBluetoothConfig extends CrosBluetoothConfigInterface {
    * Initiates forgetting a device with id |deviceId|. To finish the
    * operation, call completeForget().
    */
-  override forget(deviceId: string): Promise<Response> {
+  forget(deviceId: string): Promise<Response> {
     assertFalse(!!this.pendingForgetRequest);
     return new Promise((resolve) => {
       this.pendingForgetRequest = {
@@ -199,7 +199,7 @@ export class FakeBluetoothConfig extends CrosBluetoothConfigInterface {
     });
   }
 
-  override setDeviceNickname(deviceId: string, nickname: string): void {
+  setDeviceNickname(deviceId: string, nickname: string): void {
     const device = this.systemProperties.pairedDevices.find(
         d => d.deviceProperties.id === deviceId);
     device!.nickname = nickname;

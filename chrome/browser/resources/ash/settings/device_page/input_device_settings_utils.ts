@@ -120,10 +120,10 @@ export function createBluetoothDeviceProperties(
     isBlockedByPolicy: false,
     batteryInfo: {
       defaultProperties: {batteryPercentage},
-      leftBudInfo: undefined,
-      rightBudInfo: undefined,
-      caseInfo: undefined,
+      leftBudInfo: null,
+      rightBudInfo: null,
+      caseInfo: null,
     },
-    imageInfo: undefined,
+    imageInfo: null,
   };
 }

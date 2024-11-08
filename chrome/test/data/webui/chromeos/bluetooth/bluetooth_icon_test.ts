@@ -82,7 +82,7 @@ suite('CrComponentsBluetoothIconTest', function() {
       defaultImageUrl: {
         url: fakeUrl,
       },
-      trueWirelessImages: undefined,
+      trueWirelessImages: null,
     };
 
     bluetoothIcon.device = device.deviceProperties;

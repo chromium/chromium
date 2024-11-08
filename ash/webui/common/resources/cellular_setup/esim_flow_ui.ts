@@ -277,7 +277,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         break;
     }
 
-    if (this.isOffline_ && resultCode !== ProfileInstallResult.kSuccess) {
+    if (this.isOffline_ && resultCode !== EsimSetupFlowResult.SUCCESS) {
       resultCode = EsimSetupFlowResult.NO_NETWORK;
     }
 

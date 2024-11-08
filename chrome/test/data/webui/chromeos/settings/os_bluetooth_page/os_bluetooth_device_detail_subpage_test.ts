@@ -103,10 +103,10 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
 
   function getDefaultDeviceBatteryInfo(): DeviceBatteryInfo {
     return {
-        defaultProperties: undefined,
-        leftBudInfo: undefined,
-        rightBudInfo: undefined,
-        caseInfo: undefined,
+      defaultProperties: null,
+      leftBudInfo: null,
+      rightBudInfo: null,
+      caseInfo: null,
     };
   }
 
@@ -270,7 +270,7 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     // Try again with just default image.
     device.deviceProperties.imageInfo = {
       defaultImageUrl: fakeUrl,
-      trueWirelessImages: undefined,
+      trueWirelessImages: null,
     };
     bluetoothConfig.updatePairedDevice(device);
     await flushTasks();

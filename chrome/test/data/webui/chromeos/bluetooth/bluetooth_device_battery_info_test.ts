@@ -32,9 +32,9 @@ suite('CrComponentsBluetoothDeviceBatteryInfoTest', function() {
       Promise<null> {
     bluetoothDeviceBatteryInfo.device.batteryInfo = {
       defaultProperties: {batteryPercentage: batteryPercentage},
-      leftBudInfo: undefined,
-      rightBudInfo: undefined,
-      caseInfo: undefined,
+      leftBudInfo: null,
+      rightBudInfo: null,
+      caseInfo: null,
     };
     bluetoothDeviceBatteryInfo.device =
         Object.assign({}, bluetoothDeviceBatteryInfo.device);
@@ -44,7 +44,7 @@ suite('CrComponentsBluetoothDeviceBatteryInfoTest', function() {
   async function setMultipleBatteryPercentage(batteryPercentage: number):
       Promise<null> {
     bluetoothDeviceBatteryInfo.device.batteryInfo = {
-      defaultProperties: undefined,
+      defaultProperties: null,
       leftBudInfo: {batteryPercentage: batteryPercentage},
       caseInfo: {batteryPercentage: batteryPercentage},
       rightBudInfo: {batteryPercentage: batteryPercentage},

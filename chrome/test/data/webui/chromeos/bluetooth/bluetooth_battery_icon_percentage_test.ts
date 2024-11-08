@@ -32,26 +32,26 @@ suite('CrComponentsBluetoothBatteryIconPercentageTest', function() {
   async function setBatteryTypePercentage(
       batteryType: BatteryType, batteryPercentage: number) {
     bluetoothBatteryIconPercentage.device.batteryInfo = {
-      defaultProperties: undefined,
-      leftBudInfo: undefined,
-      rightBudInfo: undefined,
-      caseInfo: undefined,
+      defaultProperties: null,
+      leftBudInfo: null,
+      rightBudInfo: null,
+      caseInfo: null,
     };
 
     if (batteryType === BatteryType.DEFAULT) {
-      bluetoothBatteryIconPercentage.device.batteryInfo.defaultProperties = {
+      bluetoothBatteryIconPercentage.device.batteryInfo!.defaultProperties = {
         batteryPercentage: batteryPercentage,
       };
     } else if (batteryType === BatteryType.LEFT_BUD) {
-      bluetoothBatteryIconPercentage.device.batteryInfo.leftBudInfo = {
+      bluetoothBatteryIconPercentage.device.batteryInfo!.leftBudInfo = {
         batteryPercentage: batteryPercentage,
       };
     } else if (batteryType === BatteryType.CASE) {
-      bluetoothBatteryIconPercentage.device.batteryInfo.caseInfo = {
+      bluetoothBatteryIconPercentage.device.batteryInfo!.caseInfo = {
         batteryPercentage: batteryPercentage,
       };
     } else if (batteryType === BatteryType.RIGHT_BUD) {
-      bluetoothBatteryIconPercentage.device.batteryInfo.rightBudInfo = {
+      bluetoothBatteryIconPercentage.device.batteryInfo!.rightBudInfo = {
         batteryPercentage: batteryPercentage,
       };
     }

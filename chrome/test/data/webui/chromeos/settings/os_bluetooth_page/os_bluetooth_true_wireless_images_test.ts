@@ -31,10 +31,10 @@ suite('<os-settings-bluetooth-true-wireless-images>', () => {
       batteryType: BatteryType, batteryPercentage: number): Promise<void> {
     if (!bluetoothTrueWirelessImages.device.batteryInfo) {
       bluetoothTrueWirelessImages.device.batteryInfo = {
-        defaultProperties: undefined,
-        leftBudInfo: undefined,
-        caseInfo: undefined,
-        rightBudInfo: undefined,
+        defaultProperties: null,
+        leftBudInfo: null,
+        caseInfo: null,
+        rightBudInfo: null,
       };
     }
 
