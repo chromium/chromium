@@ -152,7 +152,7 @@
 
 - (BOOL)presentationControllerShouldDismiss:
     (UIPresentationController*)presentationController {
-  return [_autofillProfileEditTableViewController canDismissImmediately];
+  return [_autofillProfileEditMediator canDismissImmediately];
 }
 
 - (void)presentationControllerDidDismiss:
@@ -162,7 +162,7 @@
 
 - (void)presentationControllerDidAttemptToDismiss:
     (UIPresentationController*)presentationController {
-  if (![_autofillProfileEditTableViewController
+  if (![_autofillProfileEditMediator
           shouldShowConfirmationDialogOnDismissBySwiping]) {
     return;
   }

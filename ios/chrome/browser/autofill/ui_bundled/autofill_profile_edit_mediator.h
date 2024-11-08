@@ -41,6 +41,13 @@ class PersonalDataManager;
 // Called when the country is selected from a dropdown.
 - (void)didSelectCountry:(CountryItem*)countryItem;
 
+// Returns YES if the view can be dismissed immediately.
+- (BOOL)canDismissImmediately;
+
+// Returns YES if a confirmation dialog should be shown when the view is
+// dismissed.
+- (BOOL)shouldShowConfirmationDialogOnDismissBySwiping;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_PROFILE_EDIT_MEDIATOR_H_

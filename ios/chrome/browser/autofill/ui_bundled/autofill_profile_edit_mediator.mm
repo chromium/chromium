@@ -78,6 +78,12 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 
   // Stores the value displayed in the fields.
   NSMutableDictionary<NSString*, NSString*>* _currentValuesMap;
+
+  // Yes if `kAutofillDynamicallyLoadsFieldsForAddressInput` is enabled.
+  BOOL _dynamicallyLoadInputFieldsEnabled;
+
+  // Stores the fields that were edited.
+  NSMutableSet<NSString*>* _editedFields;
 }
 
 - (instancetype)initWithDelegate:
@@ -97,6 +103,9 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
     _selectedCountryCode =
         base::SysUTF8ToNSString(autofill::data_util::GetCountryCodeWithFallback(
             *autofillProfile, GetApplicationContext()->GetApplicationLocale()));
+    _dynamicallyLoadInputFieldsEnabled = base::FeatureList::IsEnabled(
+        kAutofillDynamicallyLoadsFieldsForAddressInput);
+    _editedFields = [[NSMutableSet<NSString*> alloc] init];
 
     [self loadCountries];
   }
@@ -129,7 +138,21 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
 
   [self fetchAndSetInputAddressFields];
   [self fetchAndUpdateFieldRequirements];
+  [self
+      computeFieldWasEdited:base::SysUTF8ToNSString(autofill::FieldTypeToString(
+                                autofill::ADDRESS_HOME_COUNTRY))
+                      value:countryItem.text];
   [self.consumer didSelectCountry:countryItem.text];
+}
+
+- (BOOL)canDismissImmediately {
+  CHECK(_dynamicallyLoadInputFieldsEnabled);
+  return !self.errorSectionPresented && ![_editedFields count];
+}
+
+- (BOOL)shouldShowConfirmationDialogOnDismissBySwiping {
+  CHECK(_dynamicallyLoadInputFieldsEnabled);
+  return !self.errorSectionPresented && [_editedFields count] > 0;
 }
 
 #pragma mark - AutofillSettingsProfileEditTableViewControllerDelegate
@@ -261,6 +284,25 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
   [_consumer updateButtonStatus:!shouldShowError];
 }
 
+- (void)computeFieldWasEdited:(NSString*)editedFieldType
+                        value:(NSString*)value {
+  if (!_dynamicallyLoadInputFieldsEnabled) {
+    return;
+  }
+
+  BOOL contains = [_editedFields containsObject:editedFieldType];
+  autofill::FieldType serverFieldType =
+      [self typeNameToFieldType:editedFieldType];
+  NSString* fieldOriginalValue =
+      base::SysUTF16ToNSString(_autofillProfile->GetInfo(
+          serverFieldType, GetApplicationContext()->GetApplicationLocale()));
+  if (contains && [fieldOriginalValue isEqualToString:value]) {
+    [_editedFields removeObject:editedFieldType];
+  } else if (!contains && ![fieldOriginalValue isEqualToString:value]) {
+    [_editedFields addObject:editedFieldType];
+  }
+}
+
 #pragma mark - Private
 
 // Returns true if the `autofillFieldType` belongs to a required field.
@@ -350,8 +392,7 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
   NSMutableArray<AutofillProfileAddressField*>* addressFields =
       [[NSMutableArray alloc] init];
 
-  if (base::FeatureList::IsEnabled(
-          kAutofillDynamicallyLoadsFieldsForAddressInput)) {
+  if (_dynamicallyLoadInputFieldsEnabled) {
     i18n::addressinput::Localization localization;
     localization.SetGetter(l10n_util::GetStringUTF8);
     std::string best_language_tag_unused;
@@ -427,6 +468,7 @@ constexpr std::array<autofill::FieldType, 5> kStaticFieldsTypes = {
   }
 
   _currentValuesMap = fieldValuesMap;
+  [_editedFields removeAllObjects];
 }
 
 // Returns YES if `autofillProfile` is an account profile.

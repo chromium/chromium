@@ -74,9 +74,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
   // Yes if `kAutofillDynamicallyLoadsFieldsForAddressInput` is enabled.
   BOOL _dynamicallyLoadInputFieldsEnabled;
-
-  // `YES` if any of the fields are edited.
-  BOOL _edited;
 }
 
 #pragma mark - Initialization
@@ -99,14 +96,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
 
   return self;
-}
-
-- (BOOL)canDismissImmediately {
-  return ![_delegate errorSectionPresented] && !_edited;
-}
-
-- (BOOL)shouldShowConfirmationDialogOnDismissBySwiping {
-  return ![_delegate errorSectionPresented] && _edited;
 }
 
 #pragma mark - AutofillProfileEditHandler
@@ -391,14 +380,12 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewItem {
-  if (_dynamicallyLoadInputFieldsEnabled) {
-    _edited = YES;
-  }
-
+  AutofillProfileEditItem* profileItem =
+      base::apple::ObjCCastStrict<AutofillProfileEditItem>(tableViewItem);
+  [_delegate computeFieldWasEdited:profileItem.autofillFieldType
+                             value:tableViewItem.textFieldValue];
   if ((self.accountProfile || self.migrationPrompt ||
        _moveToAccountFromSettings)) {
-    AutofillProfileEditItem* profileItem =
-        base::apple::ObjCCastStrict<AutofillProfileEditItem>(tableViewItem);
     tableViewItem.hasValidText = [_delegate
           fieldContainsValidValue:profileItem.autofillFieldType
                     hasEmptyValue:(profileItem.textFieldValue.length == 0)
@@ -423,9 +410,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (void)didSelectCountry:(NSString*)country {
   // Remove the previously inserted fields.
   TableViewModel* model = _controller.tableViewModel;
-  if (_dynamicallyLoadInputFieldsEnabled) {
-    _edited = YES;
-  }
   if (_dynamicallyLoadInputFieldsEnabled) {
     [model deleteAllItemsFromSectionWithIdentifier:
                AutofillProfileDetailsSectionIdentifierAddress];

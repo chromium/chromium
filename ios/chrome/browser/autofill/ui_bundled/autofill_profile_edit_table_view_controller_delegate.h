@@ -58,8 +58,8 @@
 // Also, updates the button status if the error is shown/removed.
 - (void)validateFieldsAndUpdateButtonStatus;
 
-// TODO(crbug.com/377270834): Remove once it is entirely moved to mediator.
-- (BOOL)errorSectionPresented;
+// Computes the fields that were edited in the view.
+- (void)computeFieldWasEdited:(NSString*)editedFieldType value:(NSString*)value;
 
 @end
 
