@@ -274,9 +274,8 @@ abstract class ModelLoader<T> extends ModelLoaderBase<T> {
 
   override async loadAndExecute(content: string, language: LanguageCode):
     Promise<ModelResponse<T>> {
-    // TODO: b/357526521 - Create and use `UNSUPPORTED_LANGUAGE` error.
     if (!this.platformHandler.getLangPackInfo(language).isGenAiSupported) {
-      return {kind: 'error', error: ModelResponseError.GENERAL};
+      return {kind: 'error', error: ModelResponseError.UNSUPPORTED_LANGUAGE};
     }
 
     const wordCount = getWordCount(content, language);

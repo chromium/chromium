@@ -57,7 +57,21 @@ export class GenaiError extends ReactiveLitElement {
         imageName = 'genai_error_general';
         message = i18n.genAiErrorGeneralLabel;
         break;
-
+      case ModelResponseError.UNSUPPORTED_LANGUAGE: {
+        imageName = 'genai_error_unsafe';
+        const resultType = assertExists(this.resultType);
+        switch (resultType) {
+          case GenaiResultType.SUMMARY:
+            message = i18n.genAiErrorSummaryLanguageUnsupportedLabel;
+            break;
+          case GenaiResultType.TITLE_SUGGESTION:
+            message = i18n.genAiErrorTitleSuggestionLanguageUnsupportedLabel;
+            break;
+          default:
+            assertExhaustive(resultType);
+        }
+        break;
+      }
       case ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT: {
         imageName = 'genai_error_general';
         const resultType = assertExists(this.resultType);

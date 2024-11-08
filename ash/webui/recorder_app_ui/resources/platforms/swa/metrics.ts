@@ -161,6 +161,8 @@ function convertToModelResultStatus(
       return UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT;
     case ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG:
       return UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG;
+    case ModelResponseError.UNSUPPORTED_LANGUAGE:
+      return CrOSEvents_RecorderAppModelResultStatus.UNSUPPORTED_LANGUAGE;
     default:
       assertExhaustive(responseError);
   }

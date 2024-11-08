@@ -47,6 +47,9 @@
   <message desc="Error message for general error in generative AI features." name="IDS_RECORDER_GEN_AI_ERROR_GENERAL_LABEL">
     Something went wrong
   </message>
+  <message desc="Error message for unsupported transcript language input for summary." name="IDS_RECORDER_GEN_AI_ERROR_SUMMARY_LANGUAGE_UNSUPPORTED_LABEL">
+    Can’t create summary for this transcript language
+  </message>
   <message desc="Error message for too-long transcript input for summary." name="IDS_RECORDER_GEN_AI_ERROR_SUMMARY_TRANSCRIPT_TOO_LONG_LABEL">
     Can’t summarize a transcript longer than <ph name="MAX_WORD_LENGTH">$1<ex>1461</ex></ph> words
   </message>
@@ -55,6 +58,9 @@
   </message>
   <message desc="Error message for trust and safety related error for summary generative AI feature." name="IDS_RECORDER_GEN_AI_ERROR_SUMMARY_TRUST_AND_SAFETY_LABEL">
     Can’t create summary for this content
+  </message>
+  <message desc="Error message for unsupported transcript language input for title suggestion." name="IDS_RECORDER_GEN_AI_ERROR_TITLE_SUGGESTION_LANGUAGE_UNSUPPORTED_LABEL">
+    Can't create recording names for this transcript language
   </message>
   <message desc="Error message for too-long transcript input for title suggestion." name="IDS_RECORDER_GEN_AI_ERROR_TITLE_SUGGESTION_TRANSCRIPT_TOO_LONG_LABEL">
     Can’t create names for a transcript longer than <ph name="MAX_WORD_LENGTH">$1<ex>1461</ex></ph> words

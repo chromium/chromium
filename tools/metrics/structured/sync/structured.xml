@@ -1316,6 +1316,7 @@
     <variant value="2">UNSAFE</variant>
     <variant value="3">UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT</variant>
     <variant value="4">UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG</variant>
+    <variant value="5">UNSUPPORTED_LANGUAGE</variant>
   </enum>
 
   <enum name="RecorderAppModelFeedback">

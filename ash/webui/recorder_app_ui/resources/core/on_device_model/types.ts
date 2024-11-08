@@ -30,6 +30,9 @@ export enum ModelResponseError {
   // General error.
   GENERAL = 'GENERAL',
 
+  // The transcription language is not supported.
+  UNSUPPORTED_LANGUAGE = 'UNSUPPORTED_LANGUAGE',
+
   // The transcription word count is less than the minimum length.
   UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT =
     'UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT',
