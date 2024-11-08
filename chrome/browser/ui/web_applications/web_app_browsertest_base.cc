@@ -41,6 +41,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -222,6 +223,13 @@ content::WebContents* WebAppBrowserTestBase::OpenApplication(
 
 GURL WebAppBrowserTestBase::GetInstallableAppURL() {
   return https_server()->GetURL("/banners/manifest_test_page.html");
+}
+
+GURL WebAppBrowserTestBase::GetAppURLWithManifest(
+    const std::string& manifest_url) {
+  GURL url = GetInstallableAppURL();
+  return net::AppendQueryParameter(url, "manifest",
+                                   https_server()->GetURL(manifest_url).spec());
 }
 
 // static

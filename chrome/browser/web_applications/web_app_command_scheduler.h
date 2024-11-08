@@ -94,6 +94,9 @@ class WebAppCommandScheduler {
                      CleanupOrphanedIsolatedWebAppsCommandError>)>;
   using WebAppIconDiagnosticResultCallback =
       base::OnceCallback<void(std::optional<WebAppIconDiagnosticResult>)>;
+  using WebInstallFromUrlCommandCallback =
+      base::OnceCallback<void(const GURL& manifest_id,
+                              webapps::InstallResultCode code)>;
 
   explicit WebAppCommandScheduler(Profile& profile);
   virtual ~WebAppCommandScheduler();
@@ -504,6 +507,14 @@ class WebAppCommandScheduler {
       const webapps::AppId& app_id,
       WebAppIconDiagnosticResultCallback result_callback,
       const base::Location& location = FROM_HERE);
+
+  // Installs the web content at `install_url`, verifying that it has the
+  // given resolved `manifest_id`. Returns the `InstallResultCode` and the
+  // computed manifest id if successful. Used by Web Install API.
+  void InstallAppFromUrl(const GURL& manifest_id,
+                         const GURL& install_url,
+                         WebInstallFromUrlCommandCallback installed_callback,
+                         const base::Location& location = FROM_HERE);
 
   base::WeakPtr<WebAppCommandScheduler> GetWeakPtr();
 

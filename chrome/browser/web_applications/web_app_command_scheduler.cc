@@ -46,6 +46,7 @@
 #include "chrome/browser/web_applications/commands/update_protocol_handler_approval_command.h"
 #include "chrome/browser/web_applications/commands/web_app_icon_diagnostic_command.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
+#include "chrome/browser/web_applications/commands/web_install_from_url_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/check_isolated_web_app_bundle_installability_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/cleanup_orphaned_isolated_web_apps_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/get_controlled_frame_partition_command.h"
@@ -630,6 +631,18 @@ void WebAppCommandScheduler::RunIconDiagnosticsForApp(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<WebAppIconDiagnosticCommand>(&profile_.get(), app_id,
                                                     std::move(result_callback)),
+      location);
+}
+
+void WebAppCommandScheduler::InstallAppFromUrl(
+    const GURL& manifest_id,
+    const GURL& install_url,
+    WebInstallFromUrlCommandCallback installed_callback,
+    const base::Location& location) {
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<WebInstallFromUrlCommand>(profile_.get(), manifest_id,
+                                                 install_url,
+                                                 std::move(installed_callback)),
       location);
 }
 

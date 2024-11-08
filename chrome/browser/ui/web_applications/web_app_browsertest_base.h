@@ -114,6 +114,7 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
       content::BrowserContext* context) {}
 
   GURL GetInstallableAppURL();
+  GURL GetAppURLWithManifest(const std::string& manifest_url);
   static const char* GetInstallableAppName();
 
   // InProcessBrowserTest:
