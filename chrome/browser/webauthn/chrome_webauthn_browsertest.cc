@@ -188,7 +188,25 @@ class WebAuthnBrowserTest : public CertVerifierBrowserTest {
     testing::Mock::AllowLeak(mock_bluetooth_adapter_.get());
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &WebAuthnBrowserTest::OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+  }
+
  protected:
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    PasskeyModelFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<webauthn::TestPasskeyModel>();
+            }));
+  }
+
+  base::CallbackListSubscription subscription_;
   scoped_refptr<device::MockBluetoothAdapter> mock_bluetooth_adapter_ = nullptr;
   device::FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls always_allow_ble_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
@@ -520,139 +538,7 @@ IN_PROC_BROWSER_TEST_F(WinWebAuthnBrowserTest,
 
 #endif  // BUILDFLAG(IS_WIN)
 
-class WebAuthnGpmPasskeyTest : public WebAuthnBrowserTest {
- public:
-  class Observer : public ChromeAuthenticatorRequestDelegate::TestObserver {
-   public:
-    virtual ~Observer() = default;
-
-    std::optional<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
-    transport_availability_info() {
-      return transport_availability_info_;
-    }
-
-    void WaitForUI() { run_loop_.Run(); }
-
-    // ChromeAuthenticatorRequestDelegate::TestObserver:
-    void Created(ChromeAuthenticatorRequestDelegate* delegate) override {}
-
-    std::vector<std::unique_ptr<device::cablev2::Pairing>>
-    GetCablePairingsFromSyncedDevices() override {
-      std::vector<std::unique_ptr<device::cablev2::Pairing>> ret;
-      ret.emplace_back(TestPhone("phone", /*public_key=*/0,
-                                 /*last_updated=*/base::Time::FromTimeT(1),
-                                 /*channel_priority=*/1));
-      return ret;
-    }
-
-    void OnTransportAvailabilityEnumerated(
-        ChromeAuthenticatorRequestDelegate* delegate,
-        device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai)
-        override {
-      transport_availability_info_ = *tai;
-    }
-
-    void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {
-      run_loop_.Quit();
-    }
-
-    void CableV2ExtensionSeen(
-        base::span<const uint8_t> server_link_data) override {}
-
-    void AccountSelectorShown(
-        const std::vector<device::AuthenticatorGetAssertionResponse>& responses)
-        override {}
-
-   private:
-    base::RunLoop run_loop_;
-    std::optional<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
-        transport_availability_info_;
-  };
-
-  void SetUpOnMainThread() override {
-    WebAuthnBrowserTest::SetUpOnMainThread();
-    observer_ = std::make_unique<Observer>();
-    ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(
-        observer_.get());
-  }
-
-  void PostRunTestOnMainThread() override {
-    ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(nullptr);
-    WebAuthnBrowserTest::PostRunTestOnMainThread();
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    WebAuthnBrowserTest::SetUpInProcessBrowserTestFixture();
-    subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &WebAuthnGpmPasskeyTest::OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
-  }
-
- protected:
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    PasskeyModelFactory::GetInstance()->SetTestingFactory(
-        context,
-        base::BindRepeating(
-            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<webauthn::TestPasskeyModel>();
-            }));
-  }
-
-  std::unique_ptr<Observer> observer_;
-  base::CallbackListSubscription subscription_;
-};
-
-// Tests that chrome filters out GPM passkeys that don't appear on a request
-// allow list.
-IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, FilterGPMPasskeys) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
-
-  // Set up two GPM passkeys.
-  auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
-      PasskeyModelFactory::GetForProfile(browser()->profile()));
-  passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
-      kCredentialID, kUserId1, kUsername1, kDisplayName1));
-  passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
-      kCredentialID2, kUserId2, kUsername2, kDisplayName2));
-
-  auto virtual_device_factory =
-      std::make_unique<device::test::VirtualFidoDeviceFactory>();
-  virtual_device_factory->SetTransport(device::FidoTransportProtocol::kHybrid);
-  virtual_device_factory->mutable_state()->InjectResidentKey(
-      kCredentialID, "www.example.com", kUserId1, kUsername1, kDisplayName1);
-  virtual_device_factory->mutable_state()->InjectResidentKey(
-      kCredentialID2, "www.example.com", kUserId2, kUsername2, kDisplayName2);
-  virtual_device_factory->mutable_state()->fingerprints_enrolled = true;
-  device::VirtualCtap2Device::Config config;
-  config.resident_key_support = true;
-  config.internal_uv_support = true;
-  virtual_device_factory->SetCtap2Config(std::move(config));
-  auto auth_env =
-      std::make_unique<content::ScopedAuthenticatorEnvironmentForTesting>(
-          std::move(virtual_device_factory));
-
-  // Request an assertion with a credential ID matching only the first passkey.
-  content::ExecuteScriptAsync(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      kGetAssertionCredID1234);
-
-  observer_->WaitForUI();
-
-  // Only the first passkey should be in the recognized credentials list.
-  device::DiscoverableCredentialMetadata expected(
-      device::AuthenticatorType::kPhone, "www.example.com",
-      device::fido_parsing_utils::Materialize(kCredentialID),
-      device::PublicKeyCredentialUserEntity(
-          device::fido_parsing_utils::Materialize(kUserId1), kUsername1,
-          kDisplayName1));
-  EXPECT_THAT(observer_->transport_availability_info()->recognized_credentials,
-              testing::ElementsAre(expected));
-}
-
-IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
+IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest,
                        SignalUnknownCredentialGPMPasskeys) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
@@ -673,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
       passkey_model->GetPasskeysForRelyingPartyId("www.example.com").empty());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
+IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest,
                        SignalAllAcceptedCredsNoPasskeyDeletion) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
@@ -705,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
   EXPECT_EQ(model_state, password_manager::ui::INACTIVE_STATE);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
+IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest,
                        SignalAllAcceptedCredsPasskeyDeletion) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
@@ -742,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
   EXPECT_EQ(model_state, password_manager::ui::PASSKEY_NOT_ACCEPTED_STATE);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportInvalidStrings) {
+IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ReportInvalidStrings) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
 
@@ -799,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportInvalidStrings) {
       testing::HasSubstr("Invalid base64url string for credentialId."));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
+IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest,
                        SignalCurrentUserDetailsGPMPasskeys) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
@@ -842,7 +728,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
             password_manager::ui::PASSKEY_UPDATED_CONFIRMATION_STATE);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, SignalCurrentUserDetailsQuota) {
+IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, SignalCurrentUserDetailsQuota) {
   constexpr char kRequest[] = R"(
     PublicKeyCredential.signalCurrentUserDetails({
       rpId: "www.example.com",
@@ -884,7 +770,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, SignalCurrentUserDetailsQuota) {
   EXPECT_NE(passkey->user_name(), kUsername1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
+IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest,
                        SignalCurrentUserDetailsWithNoChanges) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
@@ -1269,6 +1155,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnCableExtension, ServerLink) {
 // It mocks out the discovery process and thus allows the caBLE UI to be tested.
 // It uses a trace-based approach: events are recorded (as strings) in an event
 // trace which is then compared against the expected trace at the end.
+// TODO(crbug.com/372493822): remove when hybrid linking is cleaned up.
 class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
  public:
   WebAuthnCableSecondFactor() {
@@ -1528,6 +1415,8 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
   device::WinWebAuthnApi::ScopedOverride override_win_webauthn_api_{
       &fake_win_webauthn_api_};
 #endif
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnHybridLinking};
 };
 
 // TODO(crbug.com/40186172): this test is flaky on Mac.

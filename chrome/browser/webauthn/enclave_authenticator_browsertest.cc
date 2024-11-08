@@ -94,6 +94,7 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/features.h"
+#include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
@@ -392,6 +393,16 @@ static constexpr char kGetAssertionUvDiscouraged[] = R"((() => {
     timeout: 10000,
     userVerification: 'discouraged',
     allowCredentials: [],
+  }}).then(c => window.domAutomationController.send('webauthn: OK'),
+           e => window.domAutomationController.send('error ' + e));
+})())";
+
+static constexpr char kGetAssertionCredId1[] = R"((() => {
+  const credId = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
+  return navigator.credentials.get({ publicKey: {
+    challenge: new Uint8Array([0]),
+    timeout: 10000,
+    allowCredentials: [{type: 'public-key', id: new Uint8Array(credId)}],
   }}).then(c => window.domAutomationController.send('webauthn: OK'),
            e => window.domAutomationController.send('error ' + e));
 })())";
@@ -2829,6 +2840,57 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithoutPinBrowserTest,
     ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
     delegate_observer()->WaitForDelegateDestruction();
   }
+}
+
+// Tests that an allow list filters the available GPM credentials.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       GetAssertionWithAllowList) {
+  const std::vector<uint8_t> kCredId1 = {1, 2,  3,  4,  5,  6,  7,  8,
+                                         9, 10, 11, 12, 13, 14, 15, 16};
+  constexpr char kUserName1[] = "ruby";
+  const std::vector<uint8_t> kCredId2 = {16, 15, 14, 13, 12, 11, 10, 9,
+                                         8,  7,  6,  5,  4,  3,  2,  1};
+  constexpr char kUserName2[] = "yang";
+
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+  security_domain_service_->pretend_there_are_members();
+
+  sync_pb::WebauthnCredentialSpecifics passkey1;
+  CHECK(passkey1.ParseFromArray(kTestProtobuf, sizeof(kTestProtobuf)));
+  passkey1.set_sync_id(kCredId1.data(), kCredId1.size());
+  passkey1.set_credential_id(kCredId1.data(), kCredId1.size());
+  passkey1.set_user_id(kCredId1.data(), kCredId1.size());
+  passkey1.set_user_name(kUserName1);
+  passkey1.set_user_display_name(kUserName1);
+  passkey_model()->AddNewPasskeyForTesting(passkey1);
+
+  sync_pb::WebauthnCredentialSpecifics passkey2;
+  CHECK(passkey2.ParseFromArray(kTestProtobuf, sizeof(kTestProtobuf)));
+  passkey1.set_sync_id(kCredId2.data(), kCredId2.size());
+  passkey2.set_credential_id(kCredId2.data(), kCredId2.size());
+  passkey2.set_user_id(kCredId2.data(), kCredId2.size());
+  passkey2.set_user_name(kUserName2);
+  passkey1.set_user_display_name(kUserName2);
+  passkey_model()->AddNewPasskeyForTesting(passkey2);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kGetAssertionCredId1);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kPreSelectSingleAccount);
+
+  // Only the first passkey should be in the recognized credentials list.
+  device::DiscoverableCredentialMetadata expected(
+      device::AuthenticatorType::kPhone, "www.example.com", kCredId1,
+      device::PublicKeyCredentialUserEntity(kCredId1, kUserName1, kUserName1));
+  EXPECT_THAT(dialog_model()->creds, testing::ElementsAre(expected));
 }
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
