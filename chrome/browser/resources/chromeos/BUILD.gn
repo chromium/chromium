@@ -94,7 +94,6 @@ group("closure_compile") {
     "crostini_installer:closure_compile",
     "crostini_upgrader:closure_compile",
     "emulator:closure_compile",
-    "gaia_action_buttons:closure_compile",
     "multidevice_internals:closure_compile",
     "multidevice_setup:closure_compile",
     "password_change:closure_compile",

@@ -132,6 +132,7 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       'ash/webui/shimless_rma/',
       # TODO(b/267329383): Migrate A11y to TypeScript.
       'chrome/browser/resources/chromeos/accessibility',
+      'chrome/browser/resources/chromeos/gaia_action_buttons',
       'ui/file_manager/',
   ]
   for directory in ash_directories:

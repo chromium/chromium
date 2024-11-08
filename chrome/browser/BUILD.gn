@@ -8979,7 +8979,6 @@ grit("resources") {
       "//chrome/browser/resources/chromeos/crostini_installer:html_wrapper_files",
       "//chrome/browser/resources/chromeos/crostini_upgrader:html_wrapper_files",
       "//chrome/browser/resources/chromeos/emulator:web_components",
-      "//chrome/browser/resources/chromeos/gaia_action_buttons:web_components",
       "//chrome/browser/resources/chromeos/password_change:html_wrapper_files",
       "//chrome/browser/resources/chromeos/smb_shares:web_components",
       "//chrome/browser/resources/chromeos/vm:web_components",
