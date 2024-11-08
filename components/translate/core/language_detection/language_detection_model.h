@@ -15,6 +15,17 @@
 #include "partition_alloc/pointers/raw_ref.h"
 
 namespace translate {
+
+// Exposed for testing.
+
+// The number of characters to sample and provide as a buffer to the model
+// for determining its language.
+inline constexpr size_t kTextSampleLength = 256;
+
+// The number of samples of |kTextSampleLength| to evaluate the model when
+// determining the language of the page content.
+inline constexpr int kNumTextSamples = 3;
+
 BASE_DECLARE_FEATURE(kTruncateLanguageDetectionSample);
 
 // A language detection model that will use a TFLite model to determine the
