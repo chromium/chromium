@@ -84,6 +84,10 @@ void RecordUKMSessionEndMetrics(
     std::optional<base::TimeDelta> session_foreground_duration = std::nullopt,
     std::optional<int> generated_tab_count = std::nullopt);
 
+// Records the duration between the time a lens request is started and the time
+// a response is generated.
+void RecordLensResponseTime(base::TimeDelta response_time);
+
 }  // namespace lens
 
 #endif  // COMPONENTS_LENS_LENS_OVERLAY_METRICS_H_

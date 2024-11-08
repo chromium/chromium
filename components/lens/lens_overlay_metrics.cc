@@ -247,4 +247,8 @@ void RecordUKMSessionEndMetrics(
       .Record(ukm::UkmRecorder::Get());
 }
 
+void RecordLensResponseTime(base::TimeDelta response_time) {
+  base::UmaHistogramTimes("Lens.Overlay.LensResponseTime", response_time);
+}
+
 }  // namespace lens

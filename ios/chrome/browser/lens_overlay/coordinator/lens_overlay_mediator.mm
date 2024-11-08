@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/timer/elapsed_timer.h"
 #import "components/lens/lens_overlay_metrics.h"
 #import "components/lens/proto/server/lens_overlay_response.pb.h"
 #import "components/search_engines/template_url_service.h"
@@ -50,6 +51,8 @@
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
   /// Orchestrates the navigation in the bottom sheet of the lens result page.
   std::unique_ptr<LensOverlayNavigationManager> _navigationManager;
+  /// Time where lens started the search request.
+  base::ElapsedTimer _lensStartSearchRequestTime;
 }
 
 - (instancetype)initWithIsIncognito:(BOOL)isIncognito {
@@ -149,6 +152,7 @@
 // The lens overlay started searching for a result.
 - (void)lensOverlayDidStartSearchRequest:(id<ChromeLensOverlay>)lensOverlay {
   [self.resultConsumer handleSearchRequestStarted];
+  _lensStartSearchRequestTime = base::ElapsedTimer();
 }
 
 // The lens overlay search request produced an error.
@@ -160,6 +164,7 @@
 - (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
     didGenerateResult:(id<ChromeLensOverlayResult>)result {
   RecordAction(base::UserMetricsAction("Mobile.LensOverlay.NewResult"));
+  lens::RecordLensResponseTime(_lensStartSearchRequestTime.Elapsed());
   if (_navigationManager) {
     _navigationManager->LensOverlayDidGenerateResult(result);
   }
