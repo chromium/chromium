@@ -678,9 +678,6 @@ extern const char kManagedProfileRequiredInterstitialDescription[];
 extern const char kEnableExperimentalCookieFeaturesName[];
 extern const char kEnableExperimentalCookieFeaturesDescription[];
 
-extern const char kEnableRawDrawName[];
-extern const char kEnableRawDrawDescription[];
-
 extern const char kEnableDelegatedCompositingName[];
 extern const char kEnableDelegatedCompositingDescription[];
 

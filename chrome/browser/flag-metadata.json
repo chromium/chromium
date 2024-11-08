@@ -3738,11 +3738,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "enable-raw-draw",
-    "owners": [ "penghuang@chromium.org" ],
-    "expiry_milestone": 114
-  },
-  {
     "name": "enable-reader-mode-in-cct",
     "owners": [ "mdjones@chromium.org", "wychen@chromium.org" ],
     // This flag is a utility for disabling Reader Mode in CCT without using

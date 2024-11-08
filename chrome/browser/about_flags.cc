@@ -9426,10 +9426,6 @@ const FeatureEntry kFeatureEntries[] = {
      STRING_VALUE_TYPE(switches::kDemoModeTestTag, "")},
 #endif
 
-    {"enable-raw-draw", flag_descriptions::kEnableRawDrawName,
-     flag_descriptions::kEnableRawDrawDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kRawDraw)},
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
     {"enable-delegated-compositing",
      flag_descriptions::kEnableDelegatedCompositingName,
