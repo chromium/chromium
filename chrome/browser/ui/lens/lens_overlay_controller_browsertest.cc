@@ -3361,9 +3361,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   histogram_tester.ExpectTotalCount(
       "Lens.Overlay.ByInvocationSource.AppMenu.SessionDuration",
       /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ByDocumentType.Unspecified.Invoked",
-      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("Lens.Overlay.ByDocumentType.Web.Invoked",
+                                    /*expected_count=*/1);
   entries = test_ukm_recorder.GetEntriesByName(
       ukm::builders::Lens_Overlay_SessionEnd::kEntryName);
   EXPECT_EQ(1u, entries.size());
@@ -4354,6 +4353,8 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
                        LargePdfNotIncludedInRequest) {
+  base::HistogramTester histogram_tester;
+
   // Verify the document is over the size limit.
   auto file_size = GetFileSizeForTestDataFile(kPdfDocument12KbFileName);
   ASSERT_TRUE(file_size.has_value());
@@ -4388,6 +4389,41 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
   ASSERT_TRUE(fake_controller);
   EXPECT_FALSE(fake_controller->fake_overlay_page_
                    .last_received_should_show_contextual_searchbox_);
+
+  // Verify the histogram recorded the searchbox was not shown.
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Pdf.Shown",
+      /*sample*/ false,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
+                       Histograms) {
+  base::HistogramTester histogram_tester;
+
+  const GURL url = embedded_test_server()->GetURL(kPdfDocument);
+  LoadPdfGetExtensionHost(url);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  histogram_tester.ExpectUniqueSample("Lens.Overlay.ByDocumentType.Pdf.Invoked",
+                                      /*sample*/ true,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample("Lens.Overlay.ContextualSearchBox.Shown",
+                                      /*sample*/ true,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Pdf.Shown",
+      /*sample*/ true,
+      /*expected_bucket_count=*/1);
 }
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
@@ -4734,6 +4770,34 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       WebDocumentTypeHistograms) {
+  base::HistogramTester histogram_tester;
+
+  WaitForPaint(kDocumentWithNonAsciiCharacters);
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Open the overlay.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  histogram_tester.ExpectUniqueSample("Lens.Overlay.ByDocumentType.Web.Invoked",
+                                      /*sample*/ true,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample("Lens.Overlay.ContextualSearchBox.Shown",
+                                      /*sample*/ true,
+                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Web.Shown",
+      /*sample*/ true,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        ContextualQueryInBackStackRequest) {
   WaitForPaint(kDocumentWithNonAsciiCharacters);
 
@@ -4929,6 +4993,8 @@ class LensOverlayControllerInnerTextEnabledSmallByteLimitTest
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerTextEnabledSmallByteLimitTest,
                        InnerTextOverLimitNotIncludedInRequest) {
+  base::HistogramTester histogram_tester;
+
   WaitForPaint(kDocumentWithNonAsciiCharacters);
 
   // State should start in off.
@@ -4952,6 +5018,12 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerTextEnabledSmallByteLimitTest,
   ASSERT_TRUE(fake_controller);
   EXPECT_FALSE(fake_controller->fake_overlay_page_
                    .last_received_should_show_contextual_searchbox_);
+
+  // Verify the histogram recorded the searchbox was not shown.
+  histogram_tester.ExpectUniqueSample(
+      "Lens.Overlay.ContextualSearchBox.ByDocumentType.Web.Shown",
+      /*sample*/ false,
+      /*expected_bucket_count=*/1);
 }
 
 class LensOverlayControllerInnerHtmlEnabledSmallByteLimitTest

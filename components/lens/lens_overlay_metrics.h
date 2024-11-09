@@ -88,6 +88,12 @@ void RecordUKMSessionEndMetrics(
 // a response is generated.
 void RecordLensResponseTime(base::TimeDelta response_time);
 
+// Records whether the contextual search box is shown when the contextual search
+// box feature is enabled.
+void MaybeRecordContextualSearchBoxShown(
+    bool shown,
+    lens::PageContentMimeType page_content_type);
+
 }  // namespace lens
 
 #endif  // COMPONENTS_LENS_LENS_OVERLAY_METRICS_H_

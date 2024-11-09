@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
+#include "components/lens/lens_features.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace lens {
@@ -249,6 +250,22 @@ void RecordUKMSessionEndMetrics(
 
 void RecordLensResponseTime(base::TimeDelta response_time) {
   base::UmaHistogramTimes("Lens.Overlay.LensResponseTime", response_time);
+}
+
+void MaybeRecordContextualSearchBoxShown(
+    bool shown,
+    lens::PageContentMimeType page_content_type) {
+  // Only record if the contextual search box feature is enabled.
+  if (!lens::features::IsLensOverlayContextualSearchboxEnabled()) {
+    return;
+  }
+  base::UmaHistogramBoolean("Lens.Overlay.ContextualSearchBox.Shown", shown);
+
+  // UMA Invocation sliced by document type.
+  const auto sliced_invoked_histogram_name =
+      "Lens.Overlay.ContextualSearchBox.ByDocumentType." +
+      DocumentTypeToString(page_content_type) + ".Shown";
+  base::UmaHistogramBoolean(sliced_invoked_histogram_name, shown);
 }
 
 }  // namespace lens

@@ -1487,10 +1487,8 @@ void LensOverlayController::StorePageContentAndContinueIntialization(
     std::unique_ptr<OverlayInitializationData> initialization_data,
     std::vector<uint8_t> bytes,
     lens::PageContentMimeType content_type) {
-  if (!bytes.empty()) {
-    initialization_data->page_content_bytes_ = bytes;
-    initialization_data->page_content_type_ = content_type;
-  }
+  initialization_data->page_content_bytes_ = bytes;
+  initialization_data->page_content_type_ = content_type;
   InitializeOverlay(std::move(initialization_data));
 }
 
@@ -1550,7 +1548,7 @@ void LensOverlayController::OnPdfBytesReceived(
   // TODO(b/370530197): Show user error message if status is not success.
   if (status != pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess) {
     std::move(callback).Run(std::vector<uint8_t>(),
-                            lens::PageContentMimeType::kNone);
+                            lens::PageContentMimeType::kPdf);
     return;
   }
   std::move(callback).Run(bytes, lens::PageContentMimeType::kPdf);
@@ -1563,7 +1561,7 @@ void LensOverlayController::OnInnerTextReceived(
   if (!result || result->inner_text.size() >
                      lens::features::GetLensOverlayFileUploadLimitBytes()) {
     std::move(callback).Run(std::vector<uint8_t>(),
-                            lens::PageContentMimeType::kNone);
+                            lens::PageContentMimeType::kPlainText);
     return;
   }
   std::move(callback).Run(std::vector<uint8_t>(result->inner_text.begin(),
@@ -1577,7 +1575,7 @@ void LensOverlayController::OnInnerHtmlReceived(
   if (!result.has_value() ||
       result->size() > lens::features::GetLensOverlayFileUploadLimitBytes()) {
     std::move(callback).Run(std::vector<uint8_t>(),
-                            lens::PageContentMimeType::kNone);
+                            lens::PageContentMimeType::kHtml);
     return;
   }
   std::move(callback).Run(std::vector<uint8_t>(result->begin(), result->end()),
@@ -1848,6 +1846,10 @@ void LensOverlayController::InitializeOverlay(
   InitializeOverlayUI(*initialization_data_);
   base::UmaHistogramBoolean("Lens.Overlay.Shown", true);
 
+  // UMA invocation.
+  lens::RecordInvocation(invocation_source_,
+                         initialization_data_->page_content_type_);
+
   // Show the preselection overlay now that the overlay is initialized and ready
   // to be shown.
   if (!pending_region_ && !lens::features::IsLensOverlaySearchBubbleEnabled()) {
@@ -1896,7 +1898,11 @@ void LensOverlayController::InitializeOverlayUI(
   // TODO(b/371593619), it would be more efficent to send all initialization
   // data to the overlay web UI in a single message.
   page_->ThemeReceived(CreateTheme(init_data.color_palette_));
-  page_->ShouldShowContextualSearchBox(!init_data.page_content_bytes_.empty());
+
+  bool should_show_contextual_search_box =
+      !init_data.page_content_bytes_.empty();
+  page_->ShouldShowContextualSearchBox(should_show_contextual_search_box);
+
   page_->ScreenshotDataReceived(init_data.current_rgb_screenshot_);
   if (!init_data.objects_.empty()) {
     SendObjects(CopyObjects(init_data.objects_));
@@ -1907,6 +1913,9 @@ void LensOverlayController::InitializeOverlayUI(
   if (pending_region_) {
     page_->SetPostRegionSelection(pending_region_->Clone());
   }
+
+  MaybeRecordContextualSearchBoxShown(should_show_contextual_search_box,
+                                      init_data.page_content_type_);
 }
 
 std::unique_ptr<views::View> LensOverlayController::CreateViewForOverlay() {
@@ -2661,12 +2670,6 @@ void LensOverlayController::RecordTimeToFirstInteraction(
 
 void LensOverlayController::RecordEndOfSessionMetrics(
     lens::LensOverlayDismissalSource dismissal_source) {
-  // UMA invocation.
-  auto page_content_type = initialization_data_
-                               ? initialization_data_->page_content_type_
-                               : lens::PageContentMimeType::kNone;
-  lens::RecordInvocation(invocation_source_, page_content_type);
-
   // UMA unsliced Dismissed.
   lens::RecordDismissal(dismissal_source);
 
