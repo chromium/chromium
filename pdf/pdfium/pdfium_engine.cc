@@ -24,6 +24,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -95,6 +96,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
+#include "pdf/pdfium/pdfium_ink_reader.h"
 #include "pdf/pdfium/pdfium_ink_writer.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
 #endif
@@ -4418,6 +4420,29 @@ void PDFiumEngine::UpdateStrokeActive(int page_index,
   bool result = FPDFPageObj_SetIsActive(it->second, active);
   CHECK(result);
   ink_stroked_pages_needing_regeneration_.insert(page_index);
+}
+
+std::map<InkModeledShapeId, ink::ModeledShape>
+PDFiumEngine::LoadV2InkPathsForPage(int page_index) {
+  CHECK(PageIndexInBounds(page_index));
+
+#if DCHECK_IS_ON()
+  const bool inserted =
+      pages_with_loaded_v2_ink_paths_.insert(page_index).second;
+  CHECK(inserted);
+#endif  // DCHECK_IS_ON()
+
+  std::map<InkModeledShapeId, ink::ModeledShape> page_shape_map;
+
+  std::vector<ReadV2InkPathResult> read_results =
+      ReadV2InkPathsFromPageAsModeledShapes(pages_[page_index]->GetPage());
+  for (auto& read_result : read_results) {
+    InkModeledShapeId id(next_ink_modeled_shape_id_++);
+    page_shape_map[id] = std::move(read_result.shape);
+    ink_modeled_shape_map_[id] = read_result.page_object;
+  }
+
+  return page_shape_map;
 }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 

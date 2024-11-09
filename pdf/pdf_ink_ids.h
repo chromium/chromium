@@ -14,6 +14,9 @@
 
 namespace chrome_pdf {
 
+// Identifies ink::ModeledShape objects.
+using InkModeledShapeId = base::StrongAlias<class InkModeledShapeIdTag, size_t>;
+
 // Identifies ink::Stroke objects.
 using InkStrokeId = base::StrongAlias<class InkStrokeIdTag, size_t>;
 

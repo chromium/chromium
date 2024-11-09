@@ -2003,9 +2003,9 @@ TEST_P(PDFiumEngineReadOnlyTest, UnselectText) {
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineReadOnlyTest, testing::Bool());
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-using PDFiumEngineAnnotationModeTest = PDFiumTestBase;
+using PDFiumEngineInkTest = PDFiumTestBase;
 
-TEST_P(PDFiumEngineAnnotationModeTest, KillFormFocus) {
+TEST_P(PDFiumEngineInkTest, KillFormFocusInAnnotationMode) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
@@ -2020,7 +2020,7 @@ TEST_P(PDFiumEngineAnnotationModeTest, KillFormFocus) {
   engine->UpdateFocus(true);
 }
 
-TEST_P(PDFiumEngineAnnotationModeTest, CannotSelectText) {
+TEST_P(PDFiumEngineInkTest, CannotSelectTextInAnnotationMode) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
@@ -2038,7 +2038,30 @@ TEST_P(PDFiumEngineAnnotationModeTest, CannotSelectText) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 }
 
-INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineAnnotationModeTest, testing::Bool());
+TEST_P(PDFiumEngineInkTest, LoadV2InkPathsForPage) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("ink_v2.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+  EXPECT_TRUE(engine->ink_modeled_shape_map_for_testing().empty());
+
+  std::map<InkModeledShapeId, ink::ModeledShape> ink_shapes =
+      engine->LoadV2InkPathsForPage(/*page_index=*/0);
+  ASSERT_EQ(1u, ink_shapes.size());
+  const auto ink_shapes_it = ink_shapes.begin();
+
+  const std::map<InkModeledShapeId, FPDF_PAGEOBJECT>& pdf_shapes =
+      engine->ink_modeled_shape_map_for_testing();
+  ASSERT_EQ(1u, pdf_shapes.size());
+  const auto pdf_shapes_it = pdf_shapes.begin();
+
+  EXPECT_EQ(ink_shapes_it->first, pdf_shapes_it->first);
+  EXPECT_EQ(1u, ink_shapes_it->second.Meshes().size());
+  EXPECT_TRUE(pdf_shapes_it->second);
+}
+
+INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineInkTest, testing::Bool());
 
 using PDFiumEngineInkStrokesTest = PDFiumTestBase;
 

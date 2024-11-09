@@ -46,9 +46,11 @@
 using testing::_;
 using testing::ElementsAre;
 using testing::ElementsAreArray;
+using testing::Field;
 using testing::InSequence;
 using testing::Pair;
 using testing::Pointwise;
+using testing::Return;
 using testing::SizeIs;
 
 namespace chrome_pdf {
@@ -204,6 +206,11 @@ class FakeClient : public PdfInkModuleClient {
     return base::Contains(visible_page_indices_, page_index);
   }
 
+  MOCK_METHOD(PdfInkModuleClient::DocumentV2InkPathShapesMap,
+              LoadV2InkPathsFromPdf,
+              (),
+              (override));
+
   MOCK_METHOD(void, PostMessage, (base::Value::Dict message), (override));
 
   MOCK_METHOD(void,
@@ -298,6 +305,8 @@ class PdfInkModuleTest : public testing::Test {
   FakeClient client_;
   PdfInkModule ink_module_{client_};
 };
+
+}  // namespace
 
 TEST_F(PdfInkModuleTest, UnknownMessage) {
   base::Value::Dict message;
@@ -529,6 +538,25 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
 }
 
 TEST_F(PdfInkModuleTest, HandleSetAnnotationModeMessage) {
+  EXPECT_CALL(client(), LoadV2InkPathsFromPdf())
+      .WillOnce(Return(PdfInkModuleClient::DocumentV2InkPathShapesMap{
+          {0,
+           PdfInkModuleClient::PageV2InkPathShapesMap{
+               {InkModeledShapeId(0), ink::ModeledShape()},
+               {InkModeledShapeId(1), ink::ModeledShape()}}},
+          {3,
+           PdfInkModuleClient::PageV2InkPathShapesMap{
+               {InkModeledShapeId(2), ink::ModeledShape()}}},
+      }));
+
+  const auto kShapeMapMatcher = ElementsAre(
+      Pair(0, ElementsAre(Field(&PdfInkModule::LoadedV2ShapeState::id,
+                                InkModeledShapeId(0)),
+                          Field(&PdfInkModule::LoadedV2ShapeState::id,
+                                InkModeledShapeId(1)))),
+      Pair(3, ElementsAre(Field(&PdfInkModule::LoadedV2ShapeState::id,
+                                InkModeledShapeId(2)))));
+
   EXPECT_FALSE(ink_module().enabled());
 
   base::Value::Dict message =
@@ -536,14 +564,17 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationModeMessage) {
 
   EXPECT_TRUE(ink_module().OnMessage(message));
   EXPECT_FALSE(ink_module().enabled());
+  EXPECT_TRUE(ink_module().loaded_v2_shapes_.empty());
 
   message.Set("enable", true);
   EXPECT_TRUE(ink_module().OnMessage(message));
   EXPECT_TRUE(ink_module().enabled());
+  EXPECT_THAT(ink_module().loaded_v2_shapes_, kShapeMapMatcher);
 
   message.Set("enable", false);
   EXPECT_TRUE(ink_module().OnMessage(message));
   EXPECT_FALSE(ink_module().enabled());
+  EXPECT_THAT(ink_module().loaded_v2_shapes_, kShapeMapMatcher);
 }
 
 TEST_F(PdfInkModuleTest, MaybeSetCursorWhenTogglingAnnotationMode) {
@@ -1728,7 +1759,5 @@ TEST_F(PdfInkModuleGetVisibleStrokesTest, MultiplePageStrokes) {
           Pair(1, Pointwise(InkStrokeEq(brush->ink_brush()),
                             {expected_page1_horz_line_input_batch.value()}))));
 }
-
-}  // namespace
 
 }  // namespace chrome_pdf

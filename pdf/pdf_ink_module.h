@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -20,6 +21,7 @@
 #include "pdf/pdf_ink_ids.h"
 #include "pdf/pdf_ink_undo_redo_model.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/ink/src/ink/geometry/modeled_shape.h"
 #include "third_party/ink/src/ink/strokes/in_progress_stroke.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
@@ -168,6 +170,34 @@ class PdfInkModule {
       const;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PdfInkModuleTest, HandleSetAnnotationModeMessage);
+
+  // A shape that was loaded from a "V2" path from the PDF itself, its ID, and
+  // whether it should be drawn or not.
+  struct LoadedV2ShapeState {
+    LoadedV2ShapeState(ink::ModeledShape shape, InkModeledShapeId id);
+    LoadedV2ShapeState(const LoadedV2ShapeState&) = delete;
+    LoadedV2ShapeState& operator=(const LoadedV2ShapeState&) = delete;
+    LoadedV2ShapeState(LoadedV2ShapeState&&) noexcept;
+    LoadedV2ShapeState& operator=(LoadedV2ShapeState&&) noexcept;
+    ~LoadedV2ShapeState();
+
+    // Coordinates for each shape are stored in a canonical format specified in
+    // pdf_ink_transform.h.
+    ink::ModeledShape shape;
+
+    // A unique ID to identify this shape.
+    InkModeledShapeId id;
+
+    bool should_draw = true;
+  };
+
+  // Like PageStrokes, but for shapes created from "V2" paths in the PDF.
+  using PageV2InkPathShapes = std::vector<LoadedV2ShapeState>;
+
+  // Like DocumentStrokesMap, but for PageV2InkPathShapes.
+  using DocumentV2InkPathShapesMap = std::map<int, PageV2InkPathShapes>;
+
   struct DrawingStrokeState {
     DrawingStrokeState();
     DrawingStrokeState(const DrawingStrokeState&) = delete;
@@ -306,6 +336,11 @@ class PdfInkModule {
   const raw_ref<PdfInkModuleClient> client_;
 
   bool enabled_ = false;
+
+  bool loaded_data_from_pdf_ = false;
+
+  // Shapes loaded from the PDF.
+  DocumentV2InkPathShapesMap loaded_v2_shapes_;
 
   // Generates IDs for use in FinishedStrokeState and PdfInkUndoRedoModel.
   StrokeIdGenerator stroke_id_generator_;

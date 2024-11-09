@@ -5,9 +5,12 @@
 #ifndef PDF_PDF_INK_MODULE_CLIENT_H_
 #define PDF_PDF_INK_MODULE_CLIENT_H_
 
+#include <map>
+
 #include "pdf/buildflags.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_ink_ids.h"
+#include "third_party/ink/src/ink/geometry/modeled_shape.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -26,6 +29,14 @@ namespace chrome_pdf {
 
 class PdfInkModuleClient {
  public:
+  // Key: ID to identify a shape.
+  // Value: The Ink shape.
+  using PageV2InkPathShapesMap = std::map<InkModeledShapeId, ink::ModeledShape>;
+
+  // Key: 0-based page index.
+  // Value: Map of shapes on the page.
+  using DocumentV2InkPathShapesMap = std::map<int, PageV2InkPathShapesMap>;
+
   virtual ~PdfInkModuleClient() = default;
 
   // Gets the current page orientation.
@@ -53,6 +64,9 @@ class PdfInkModuleClient {
 
   // Returns whether the page at `page_index` is visible or not.
   virtual bool IsPageVisible(int page_index) = 0;
+
+  // Asks the client to load Ink data from the PDF.
+  virtual DocumentV2InkPathShapesMap LoadV2InkPathsFromPdf() = 0;
 
   // Notifies the client whether annotation mode is enabled or not.
   virtual void OnAnnotationModeToggled(bool enable) {}

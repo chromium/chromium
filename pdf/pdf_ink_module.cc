@@ -745,6 +745,18 @@ void PdfInkModule::HandleSetAnnotationModeMessage(
     const base::Value::Dict& message) {
   enabled_ = message.FindBool("enable").value();
   client_->OnAnnotationModeToggled(enabled_);
+  if (enabled_ && !loaded_data_from_pdf_) {
+    loaded_data_from_pdf_ = true;
+    PdfInkModuleClient::DocumentV2InkPathShapesMap loaded_v2_shapes =
+        client_->LoadV2InkPathsFromPdf();
+    for (auto& [page_index, page_shape_map] : loaded_v2_shapes) {
+      PageV2InkPathShapes& page_shapes = loaded_v2_shapes_[page_index];
+      page_shapes.reserve(page_shape_map.size());
+      for (auto& [shape_id, shape] : page_shape_map) {
+        page_shapes.emplace_back(shape, shape_id);
+      }
+    }
+  }
   MaybeSetCursor();
 }
 
@@ -987,6 +999,18 @@ PdfInkModule::FinishedStrokeState& PdfInkModule::FinishedStrokeState::operator=(
     PdfInkModule::FinishedStrokeState&&) noexcept = default;
 
 PdfInkModule::FinishedStrokeState::~FinishedStrokeState() = default;
+
+PdfInkModule::LoadedV2ShapeState::LoadedV2ShapeState(ink::ModeledShape shape,
+                                                     InkModeledShapeId id)
+    : shape(std::move(shape)), id(id) {}
+
+PdfInkModule::LoadedV2ShapeState::LoadedV2ShapeState(
+    PdfInkModule::LoadedV2ShapeState&&) noexcept = default;
+
+PdfInkModule::LoadedV2ShapeState& PdfInkModule::LoadedV2ShapeState::operator=(
+    PdfInkModule::LoadedV2ShapeState&&) noexcept = default;
+
+PdfInkModule::LoadedV2ShapeState::~LoadedV2ShapeState() = default;
 
 PdfInkModule::StrokeIdGenerator::StrokeIdGenerator() = default;
 

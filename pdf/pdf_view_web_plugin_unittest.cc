@@ -108,6 +108,7 @@ using ::testing::IsFalse;
 using ::testing::IsTrue;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
+using ::testing::Pair;
 using ::testing::Pointwise;
 using ::testing::Return;
 using ::testing::SaveArg;
@@ -2515,6 +2516,40 @@ TEST_F(PdfViewWebPluginInkTest, Invalidate) {
   EXPECT_EQ(0u, plugin_->deferred_invalidates_for_testing().size());
   SetUpWithTrivialInkStrokes();
   EXPECT_EQ(3u, plugin_->deferred_invalidates_for_testing().size());
+}
+
+TEST_F(PdfViewWebPluginInkTest, LoadV2InkPathsForPage) {
+  const std::map<InkModeledShapeId, ink::ModeledShape> kEmptyMap;
+  const std::map<InkModeledShapeId, ink::ModeledShape> kMap0{
+      {InkModeledShapeId(0), ink::ModeledShape()},
+  };
+  const std::map<InkModeledShapeId, ink::ModeledShape> kMap1{
+      {InkModeledShapeId(1), ink::ModeledShape()},
+      {InkModeledShapeId(2), ink::ModeledShape()},
+  };
+  const std::map<InkModeledShapeId, ink::ModeledShape> kMap2{
+      {InkModeledShapeId(3), ink::ModeledShape()},
+      {InkModeledShapeId(4), ink::ModeledShape()},
+      {InkModeledShapeId(5), ink::ModeledShape()},
+  };
+
+  EXPECT_CALL(*engine_ptr_, LoadV2InkPathsForPage(testing::Lt(12)))
+      .Times(12)
+      .WillOnce(Return(kMap0))
+      .WillOnce(Return(kMap1))
+      .WillRepeatedly(Return(kEmptyMap));
+  EXPECT_CALL(*engine_ptr_, LoadV2InkPathsForPage(12)).WillOnce(Return(kMap2));
+
+  const PdfInkModuleClient::DocumentV2InkPathShapesMap result =
+      plugin_->ink_module_client_for_testing()->LoadV2InkPathsFromPdf();
+  EXPECT_THAT(
+      result,
+      ElementsAre(Pair(0, ElementsAre(Pair(InkModeledShapeId(0), _))),
+                  Pair(1, ElementsAre(Pair(InkModeledShapeId(1), _),
+                                      Pair(InkModeledShapeId(2), _))),
+                  Pair(12, ElementsAre(Pair(InkModeledShapeId(3), _),
+                                       Pair(InkModeledShapeId(4), _),
+                                       Pair(InkModeledShapeId(5), _)))));
 }
 
 TEST_F(PdfViewWebPluginInkTest, SendThumbnailUpdatesInkThumbnail) {
