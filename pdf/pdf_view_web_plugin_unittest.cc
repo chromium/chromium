@@ -1984,6 +1984,7 @@ TEST_F(PdfViewWebPluginSaveTest, AnnotationInNonEditMode) {
 }
 
 TEST_F(PdfViewWebPluginSaveTest, AnnotationInEditMode) {
+  EXPECT_CALL(pdf_host_, SetPluginCanSave(true));
   plugin_->EnteredEditMode();
   pdf_receiver_.FlushForTesting();
 
@@ -1996,7 +1997,6 @@ TEST_F(PdfViewWebPluginSaveTest, AnnotationInEditMode) {
   AddDataToValue(base::make_span(TestPDFiumEngine::kSaveData),
                  expected_response);
 
-  EXPECT_CALL(pdf_host_, SetPluginCanSave(true));
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
   EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
 
@@ -2014,10 +2014,8 @@ TEST_F(PdfViewWebPluginSaveTest, OriginalInNonEditMode) {
   {
     InSequence pdf_host_sequence;
 
-    EXPECT_CALL(pdf_host_, SetPluginCanSave(false));
     EXPECT_CALL(pdf_host_, SaveUrlAs(GURL(kPdfUrl),
                                      network::mojom::ReferrerPolicy::kDefault));
-    EXPECT_CALL(pdf_host_, SetPluginCanSave(false));
   }
 
   ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
