@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
@@ -338,19 +339,44 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, CrossOriginWindowOpen) {
 
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
+  // Test that always opens a non-auxiliary context.
   GURL expected_url = https_server()->GetURL("/simple.html");
-  content::TestNavigationObserver navigation_observer(expected_url);
-  navigation_observer.StartWatchingNewWebContents();
-  ui_test_utils::TabAddedWaiter tab_waiter(browser());
-  ASSERT_TRUE(
-      ExecJs(app_frame, content::JsReplace("window.open($1)", expected_url)));
-  content::WebContents* popup_contents = tab_waiter.Wait();
-  navigation_observer.WaitForNavigationFinished();
+  {
+    content::TestNavigationObserver navigation_observer(expected_url);
+    navigation_observer.StartWatchingNewWebContents();
+    ui_test_utils::TabAddedWaiter tab_waiter(browser());
+    ASSERT_TRUE(ExecJs(
+        app_frame,
+        content::JsReplace("window.open($1, '', 'noopener')", expected_url)));
+    content::WebContents* popup_contents = tab_waiter.Wait();
+    navigation_observer.WaitForNavigationFinished();
 
-  ASSERT_NE(popup_contents, nullptr);
-  content::RenderFrameHost* popup_frame = popup_contents->GetPrimaryMainFrame();
-  EXPECT_EQ(popup_frame->GetLastCommittedURL(), expected_url);
-  EXPECT_EQ(EvalJs(popup_frame, "window.opener === null"), true);
+    ASSERT_NE(popup_contents, nullptr);
+    content::RenderFrameHost* popup_frame =
+        popup_contents->GetPrimaryMainFrame();
+    EXPECT_EQ(popup_frame->GetLastCommittedURL(), expected_url);
+    EXPECT_EQ(EvalJs(popup_frame, "window.opener === null"), true);
+    popup_contents->Close();
+  }
+
+  // Test auxiliary contexts, which can open in a new app window if navigation
+  // capturing is enabled.
+  {
+    apps::test::NavigationCommittedForUrlObserver navigation_committed_observer(
+        expected_url);
+    ASSERT_TRUE(
+        ExecJs(app_frame, content::JsReplace("window.open($1)", expected_url)));
+    navigation_committed_observer.Wait();
+    content::WebContents* popup_contents =
+        navigation_committed_observer.web_contents();
+    ASSERT_TRUE(popup_contents);
+
+    ASSERT_NE(popup_contents, nullptr);
+    content::RenderFrameHost* popup_frame =
+        popup_contents->GetPrimaryMainFrame();
+    EXPECT_EQ(popup_frame->GetLastCommittedURL(), expected_url);
+    EXPECT_EQ(EvalJs(popup_frame, "window.opener === null"), true);
+  }
 }
 
 // TODO(b/366524200): Find out why the navigation isn't opening in an IWA window
