@@ -884,6 +884,8 @@ void CaptureModeController::StartRecordingInstantlyForGameDashboard(
 }
 
 void CaptureModeController::StartSunfishSession() {
+  RecordScannerFeatureUserState(
+      ScannerFeatureUserState::kSunfishScreenEnteredViaShortcut);
   DCHECK(CanStartSunfishSession());
   if (!GetActiveUserPrefService()->GetBoolean(prefs::kSunfishEnabled)) {
     return;

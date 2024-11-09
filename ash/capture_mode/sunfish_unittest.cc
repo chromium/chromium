@@ -171,6 +171,16 @@ TEST_F(SunfishTest, AccelEntryPointIsNoopIfEnabledPrefIsFalse) {
   EXPECT_FALSE(controller->IsActive());
 }
 
+TEST_F(SunfishTest, RecordsStartSunfishSessionMetric) {
+  base::HistogramTester histogram_tester;
+
+  CaptureModeController::Get()->StartSunfishSession();
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kSunfishScreenEnteredViaShortcut, 1);
+}
+
 // Tests that the ESC key ends capture mode session.
 TEST_F(SunfishTest, PressEscapeKey) {
   auto* controller = CaptureModeController::Get();
