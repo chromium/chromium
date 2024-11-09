@@ -724,8 +724,8 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
         capture_mode_session_->GetFeedbackWidgetScreenBounds());
     search_results_panel_widget_ = SearchResultsPanel::CreateWidget(
         capture_mode_session_->current_root(), panel_bounds);
-    search_results_panel_widget_->Show();
   }
+  search_results_panel_widget_->Show();
   // Note at this point the session may no longer be active.
   auto* search_results_panel = GetSearchResultsPanel();
   search_results_panel->SetSearchBoxImage(image);
@@ -736,15 +736,13 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
   }
 }
 
-void CaptureModeController::OnModifyingRegionSelection() {
-  if (auto* panel = GetSearchResultsPanel()) {
+void CaptureModeController::OnLocatedEventDragged() {
+  if (IsSearchResultsPanelInteractable()) {
     // Clear the search box text for the next time the panel is opened. Note we
     // don't need to reset the image or URL since the panel will always be
     // re-opened with those.
-    panel->SetSearchBoxText(std::u16string());
-    capture_mode_util::AnimateToOpacity(
-        search_results_panel_widget_->GetLayer(),
-        /*opacity=*/0.f);
+    GetSearchResultsPanel()->SetSearchBoxText(std::u16string());
+    search_results_panel_widget_->Hide();
   }
 }
 

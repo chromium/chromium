@@ -855,16 +855,6 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
   if (feedback_button_widget_) {
     widget_opacity_map[feedback_button_widget_.get()] = 1.f;
   }
-  // Although the results panel does not belong to the session, it behaves like
-  // a capture mode UI while the session is active.
-  // TODO(crbug.com/364718714): See if this needs to belong here, since in
-  // default mode with other capture mode UI, showing the panel will end capture
-  // mode session and the panel most likely won't need to interact with them.
-  views::Widget* search_results_panel_widget =
-      controller_->search_results_panel_widget();
-  if (search_results_panel_widget) {
-    widget_opacity_map[search_results_panel_widget] = 1.f;
-  }
 
   const bool is_settings_visible = capture_mode_settings_widget_ &&
                                    capture_mode_settings_widget_->IsVisible();
@@ -933,25 +923,6 @@ void CaptureModeSession::MaybeUpdateCaptureUisOpacity(
 
     if (IsWidgetOverlappedWithCameraPreview(widget)) {
       opacity = capture_mode::kCaptureUiOverlapOpacity;
-    }
-
-    if (widget == search_results_panel_widget) {
-      // If drag for capture region is in progress, action buttons should be
-      // hidden.
-      if (is_drag_in_progress_) {
-        opacity = 0.f;
-        continue;
-      }
-
-      // TODO: crbug.com/375075185 - Add a unit test for when the capture source
-      // is not `kRegion`.
-      // If our capture source is not `kRegion`, or the region is empty, hide
-      // the action buttons.
-      if (controller_->source() != CaptureModeSource::kRegion ||
-          controller_->user_capture_region().IsEmpty()) {
-        opacity = 0.f;
-        continue;
-      }
     }
 
     if (ShouldHideFeedbackWidget(widget)) {
@@ -2266,8 +2237,8 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   // This must be done after `MaybeUpdateCaptureUisOpacity()` which will hide
   // the panel if a drag is in progress and before running
   // `deferred_cursor_updater` to allow the panel to update the cursor type.
-  if (controller_->IsEventOnSearchResultsPanel(screen_location) &&
-      controller_->IsSearchResultsPanelInteractable()) {
+  if (controller_->IsSearchResultsPanelInteractable() &&
+      controller_->IsEventOnSearchResultsPanel(screen_location)) {
     if (cursor_setter_) {
       cursor_setter_->ResetCursor();
     }
@@ -2537,6 +2508,7 @@ void CaptureModeSession::OnLocatedEventDragged(
     const gfx::Point& location_in_root) {
   const gfx::Point previous_location_in_root = previous_location_in_root_;
   previous_location_in_root_ = location_in_root;
+  controller_->OnLocatedEventDragged();
 
   // For the select phase, the select region is the rectangle formed by the
   // press location and the current location.

@@ -255,7 +255,7 @@ TEST_F(SunfishTest, OnRegionSelectedOrAdjusted) {
   WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
   auto* search_results_panel_widget = controller->search_results_panel_widget();
   EXPECT_TRUE(search_results_panel_widget);
-  EXPECT_EQ(search_results_panel_widget->GetLayer()->GetTargetOpacity(), 1.f);
+  EXPECT_TRUE(search_results_panel_widget->IsVisible());
 
   // Test that the region selection UI remains visible.
   auto* session_layer = controller->capture_mode_session()->layer();
@@ -272,13 +272,14 @@ TEST_F(SunfishTest, OnRegionSelectedOrAdjusted) {
             cursor_manager->GetCursor().type());
   event_generator->PressLeftButton();
   event_generator->MoveMouseTo(gfx::Point(50, 50));
-  EXPECT_EQ(search_results_panel_widget->GetLayer()->GetTargetOpacity(), 0.f);
+  ASSERT_TRUE(controller->capture_mode_session()->is_drag_in_progress());
+  EXPECT_FALSE(search_results_panel_widget->IsVisible());
   event_generator->ReleaseLeftButton();
   EXPECT_NE(controller->user_capture_region(), old_region);
 
   WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
   EXPECT_TRUE(search_results_panel_widget);
-  EXPECT_EQ(search_results_panel_widget->GetLayer()->GetTargetOpacity(), 1.f);
+  EXPECT_TRUE(search_results_panel_widget->IsVisible());
 
   // Reposition the region.
   old_region = controller->user_capture_region();
@@ -286,13 +287,42 @@ TEST_F(SunfishTest, OnRegionSelectedOrAdjusted) {
   EXPECT_EQ(ui::mojom::CursorType::kMove, cursor_manager->GetCursor().type());
   event_generator->PressLeftButton();
   event_generator->MoveMouseTo(gfx::Point(200, 200));
-  EXPECT_EQ(search_results_panel_widget->GetLayer()->GetTargetOpacity(), 0.f);
+  ASSERT_TRUE(controller->capture_mode_session()->is_drag_in_progress());
+  EXPECT_FALSE(search_results_panel_widget->IsVisible());
   event_generator->ReleaseLeftButton();
   EXPECT_NE(controller->user_capture_region(), old_region);
 
   WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
   EXPECT_TRUE(controller->search_results_panel_widget());
-  EXPECT_EQ(search_results_panel_widget->GetLayer()->GetTargetOpacity(), 1.f);
+  EXPECT_TRUE(search_results_panel_widget->IsVisible());
+  event_generator->ReleaseLeftButton();
+}
+
+// Tests that the panel is not hidden on mouse down.
+TEST_F(SunfishTest, DoNotHidePanelOnMousePressed) {
+  // Start sunfish and open the panel.
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  auto* generator = GetEventGenerator();
+  SelectCaptureModeRegion(generator, gfx::Rect(50, 50, 400, 400),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  ASSERT_TRUE(controller->search_results_panel_widget());
+
+  // Press the sunfish bar close button.
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+  auto* close_button = test_api.GetCaptureModeBarView()->close_button();
+  ASSERT_TRUE(close_button);
+
+  // Press down on a location. Test the panel is still visible.
+  generator->MoveMouseTo(10, 10);
+  generator->PressLeftButton();
+  ASSERT_TRUE(controller->capture_mode_session()->is_drag_in_progress());
+  ASSERT_TRUE(controller->search_results_panel_widget());
+  EXPECT_TRUE(controller->search_results_panel_widget()->IsVisible());
+  EXPECT_EQ(
+      controller->search_results_panel_widget()->GetLayer()->GetTargetOpacity(),
+      1.f);
 }
 
 // Tests the sunfish capture label view.
@@ -653,7 +683,8 @@ TEST_F(SunfishTest, IsSearchResultsPanelInteractable) {
   auto* cursor_manager = Shell::Get()->cursor_manager();
   EXPECT_EQ(ui::mojom::CursorType::kCell, cursor_manager->GetCursor().type());
 
-  SelectCaptureModeRegion(generator, gfx::Rect(50, 50, 400, 400),
+  // Select a capture region that will not overlap with the panel.
+  SelectCaptureModeRegion(generator, gfx::Rect(10, 10, 50, 50),
                           /*release_mouse=*/true, /*verify_region=*/true);
   WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
   views::Widget* widget = controller->search_results_panel_widget();
@@ -662,12 +693,17 @@ TEST_F(SunfishTest, IsSearchResultsPanelInteractable) {
   ASSERT_TRUE(controller->IsActive());
   const gfx::Rect panel_bounds(widget->GetWindowBoundsInScreen());
 
-  // Mouse over where the panel was shown.
-  generator->MoveMouseTo(panel_bounds.x() - 10, panel_bounds.y() - 10);
+  // Start selecting a new region obviously outside the panel.
+  generator->MoveMouseTo(panel_bounds.x() - 50, panel_bounds.y() - 50);
+  ASSERT_FALSE(controller->user_capture_region().Contains(
+      generator->current_screen_location()));
   generator->PressLeftButton();
-  generator->MoveMouseTo(panel_bounds.CenterPoint());
-  ASSERT_TRUE(controller->capture_mode_session()->is_drag_in_progress());
-  ASSERT_EQ(widget->GetLayer()->GetTargetOpacity(), 0.f);
+  generator->MoveMouseTo(panel_bounds.CenterPoint(), /*count=*/10);
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  ASSERT_TRUE(session->is_drag_in_progress());
+  ASSERT_TRUE(session->is_selecting_region());
+  EXPECT_FALSE(controller->search_results_panel_widget()->IsVisible());
 
   // Test the panel does not receive events.
   EXPECT_EQ(ui::mojom::CursorType::kSouthEastResize,
@@ -1047,6 +1083,10 @@ TEST_F(SunfishTest, SearchActionButton) {
   WaitForImageCapturedForSearch(PerformCaptureType::kSearch);
   EXPECT_TRUE(controller->search_results_panel_widget());
   EXPECT_FALSE(controller->IsActive());
+
+  // Restart capture mode session. The panel will be reset.
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  EXPECT_FALSE(controller->search_results_panel_widget());
 }
 
 // Tests that the search action button is not shown in the default capture mode

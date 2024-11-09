@@ -146,7 +146,10 @@ class ASH_EXPORT CaptureModeController
   // Shows the results panel with the captured region as `image` and the search
   // results `url`.
   void ShowSearchResultsPanel(const gfx::ImageSkia& image, GURL url);
-  void OnModifyingRegionSelection();
+
+  // Called explicitly by `CaptureModeSession` on a mouse drag, to hide the
+  // panel.
+  void OnLocatedEventDragged();
 
   // Returns true if a capture mode session is currently active. If you only
   // need to call this method, but don't need the rest of the controller, use
