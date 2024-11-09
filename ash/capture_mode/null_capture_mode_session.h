@@ -51,6 +51,7 @@ class ASH_EXPORT NullCaptureModeSession : public BaseCaptureModeSession {
       PerformCaptureType capture_type) override;
   void OnPerformCaptureForSearchEnded(PerformCaptureType capture_type) override;
   std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
+  base::WeakPtr<BaseCaptureModeSession> GetImageSearchToken() override;
   ActionButtonView* AddActionButton(views::Button::PressedCallback callback,
                                     std::u16string text,
                                     const gfx::VectorIcon* icon,

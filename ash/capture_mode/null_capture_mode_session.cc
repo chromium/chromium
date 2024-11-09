@@ -119,6 +119,11 @@ void NullCaptureModeSession::OnPerformCaptureForSearchStarting(
 void NullCaptureModeSession::OnPerformCaptureForSearchEnded(
     PerformCaptureType capture_type) {}
 
+base::WeakPtr<BaseCaptureModeSession>
+NullCaptureModeSession::GetImageSearchToken() {
+  return nullptr;
+}
+
 ActionButtonView* NullCaptureModeSession::AddActionButton(
     views::Button::PressedCallback callback,
     std::u16string text,

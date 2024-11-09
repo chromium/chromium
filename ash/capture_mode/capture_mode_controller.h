@@ -522,15 +522,17 @@ class ASH_EXPORT CaptureModeController
   void OnImageCapturedForSearch(
       PerformCaptureType capture_type,
       bool was_cursor_originally_blocked,
+      base::WeakPtr<BaseCaptureModeSession> image_search_token,
       scoped_refptr<base::RefCountedMemory> jpeg_bytes);
 
   // Called back when text detection is complete to show copy text and smart
-  // actions buttons if needed. `captured_region` is the selected region at the
-  // time of the text detection request. If the selected region has changed
-  // since the request was made, then the detected text result is discarded and
-  // no buttons are shown.
-  void OnTextDetectionComplete(const gfx::Rect& captured_region,
-                               std::string detected_text);
+  // actions buttons if needed. `image_search_token` is a weak pointer which is
+  // invalidated every time the selected region or session changes. If the
+  // selected region or session has changed since the request was made, then the
+  // detected text result is discarded and no buttons are shown.
+  void OnTextDetectionComplete(
+      base::WeakPtr<BaseCaptureModeSession> image_search_token,
+      std::string detected_text);
 
   // Called back when the copy text button is clicked. This will copy `text` to
   // clipboard, show a notification, and close the capture session.
@@ -546,8 +548,7 @@ class ASH_EXPORT CaptureModeController
   // Called back when the Scanner feature has processed a captured image to
   // suggest available Scanner actions.
   void OnScannerActionsFetched(
-      const gfx::Rect& captured_region,
-      base::TimeTicks capture_region_update_time,
+      base::WeakPtr<BaseCaptureModeSession> image_search_token,
       std::vector<ScannerActionViewModel> scanner_actions);
 
   // Called back when an attempt to save the image file has been completed, with

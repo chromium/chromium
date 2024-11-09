@@ -1088,6 +1088,14 @@ void CaptureModeController::PerformImageSearch(
   const std::optional<CaptureParams> capture_params = GetCaptureParams();
   CHECK(capture_params);
 
+  base::WeakPtr<BaseCaptureModeSession> image_search_token =
+      capture_mode_session_->GetImageSearchToken();
+  if (!image_search_token) {
+    // In theory, this should only be possible if the capture mode session is
+    // the null session, which should not be able to perform image searches.
+    return;
+  }
+
   const bool was_cursor_originally_blocked = MaybeLockCursor();
   capture_mode_session_->OnPerformCaptureForSearchStarting(capture_type);
 
@@ -1097,7 +1105,7 @@ void CaptureModeController::PerformImageSearch(
       capture_params->window, capture_params->bounds,
       base::BindOnce(&CaptureModeController::OnImageCapturedForSearch,
                      weak_ptr_factory_.GetWeakPtr(), capture_type,
-                     was_cursor_originally_blocked));
+                     was_cursor_originally_blocked, image_search_token));
 
   delegate_->OnCaptureImageAttempted(capture_params->window,
                                      capture_params->bounds);
@@ -1880,6 +1888,7 @@ void CaptureModeController::OnImageCaptured(
 void CaptureModeController::OnImageCapturedForSearch(
     PerformCaptureType capture_type,
     bool was_cursor_originally_blocked,
+    base::WeakPtr<BaseCaptureModeSession> image_search_token,
     scoped_refptr<base::RefCountedMemory> jpeg_bytes) {
   absl::Cleanup run_test_callback_on_return = [this, capture_type] {
     if (on_image_captured_for_search_callback_for_test_) {
@@ -1889,9 +1898,9 @@ void CaptureModeController::OnImageCapturedForSearch(
   // From here on, no matter where the function exits, the cursor must be
   // unlocked and re-shown.
   MaybeUnlockCursor(was_cursor_originally_blocked);
-  // Capture mode session may end before the `jpeg_bytes` are received, no-op if
-  // the session is no longer active.
-  if (!IsActive()) {
+  // The capture parameters / region / session may have changed before
+  // `jpeg_bytes` were received.
+  if (!image_search_token) {
     return;
   }
   capture_mode_session_->OnPerformCaptureForSearchEnded(capture_type);
@@ -1901,7 +1910,7 @@ void CaptureModeController::OnImageCapturedForSearch(
     delegate_->DetectTextInImage(
         bitmap,
         base::BindOnce(&CaptureModeController::OnTextDetectionComplete,
-                       weak_ptr_factory_.GetWeakPtr(), user_capture_region_));
+                       weak_ptr_factory_.GetWeakPtr(), image_search_token));
   }
 
   if (ShouldFetchScannerActions(capture_type)) {
@@ -1919,8 +1928,7 @@ void CaptureModeController::OnImageCapturedForSearch(
     Shell::Get()->scanner_controller()->FetchActionsForImage(
         jpeg_bytes,
         base::BindOnce(&CaptureModeController::OnScannerActionsFetched,
-                       weak_ptr_factory_.GetWeakPtr(), user_capture_region_,
-                       last_capture_region_update_time_));
+                       weak_ptr_factory_.GetWeakPtr(), image_search_token));
   }
 
   if (ShouldSendRegionSearch(capture_type)) {
@@ -1936,12 +1944,9 @@ void CaptureModeController::OnImageCapturedForSearch(
 }
 
 void CaptureModeController::OnTextDetectionComplete(
-    const gfx::Rect& captured_region,
+    base::WeakPtr<BaseCaptureModeSession> image_search_token,
     std::string detected_text) {
-  // TODO(crbug.com/376168016): We should also return early if the session has
-  // changed since the text detection request.
-  if (!IsActive() || captured_region != user_capture_region_ ||
-      detected_text.empty()) {
+  if (!image_search_token || detected_text.empty()) {
     return;
   }
 
@@ -2001,30 +2006,9 @@ void CaptureModeController::OnDisclaimerAction(bool accepted) {
 }
 
 void CaptureModeController::OnScannerActionsFetched(
-    const gfx::Rect& captured_region,
-    base::TimeTicks capture_region_update_time,
+    base::WeakPtr<BaseCaptureModeSession> image_search_token,
     std::vector<ScannerActionViewModel> scanner_actions) {
-  // The session may have been stopped before the Scanner actions have been
-  // received. Defensively check to ensure that we do not dereference a null
-  // pointer here.
-  if (!IsActive()) {
-    return;
-  }
-  // Use the captured region and the capture region update time - set from
-  // `OnImageCapturedForSearch()` - as a proxy to detect whether the current
-  // selection changed or not since the Scanner action request was sent.
-  // Note that when the region is being selected, the capture region and the
-  // update time is continuously being updated.
-  //
-  // This does not catch the case when:
-  // - the region + update time changed between `PerformImageSearch()` and
-  //   `OnImageCapturedForSearch()`. This will likely result in two sets of
-  //   Scanner actions being added to the region - stale actions for the old
-  //   image search and the new actions for the current image search.
-  // - the session ended and a new one started with `ShouldClearCaptureRegion()`
-  //   false. This will result in stale actions being added to the new session.
-  if (captured_region != user_capture_region_ ||
-      capture_region_update_time != last_capture_region_update_time_) {
+  if (!image_search_token) {
     return;
   }
   capture_mode_session_->AddScannerActionButtons(std::move(scanner_actions));

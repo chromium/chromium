@@ -26,6 +26,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/public/cpp/system/toast_manager.h"
@@ -1512,6 +1513,46 @@ TEST_F(ScannerTest, DoesNotCreateActionButtonsForNewerSameRegionBeingSelected) {
 }
 
 // Tests that action buttons for a stale Scanner request are not added to region
+// that was fine-tuned, but did not change.
+TEST_F(ScannerTest, DoesNotCreateActionButtonsForFineTuneNoop) {
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_actions_future;
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .Times(2)
+      .WillRepeatedly(WithArg<1>(InvokeFuture(fetch_actions_future)));
+  constexpr auto kCaptureRegion = gfx::Rect(100, 100, 600, 500);
+
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  const CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  SelectCaptureModeRegion(GetEventGenerator(), kCaptureRegion,
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  manta::ScannerProvider::ScannerProtoResponseCallback stale_fetch_actions =
+      fetch_actions_future.Take();
+  ASSERT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+  const gfx::Point drag_affordance_location =
+      capture_mode_util::GetLocationForFineTunePosition(
+          kCaptureRegion, FineTunePosition::kBottomRightVertex);
+  GetEventGenerator()->MoveMouseTo(drag_affordance_location);
+  GetEventGenerator()->ClickLeftButton();
+  ASSERT_TRUE(fetch_actions_future.Wait())
+      << "Fetch actions was not called again after fine-tune";
+  ASSERT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects = *output->add_objects();
+  objects.add_actions()->mutable_new_event()->set_title("Event 1");
+  objects.add_actions()->mutable_new_event()->set_title("Event 2");
+  std::move(stale_fetch_actions).Run(std::move(output), manta::MantaStatus());
+
+  // The callback for the stale actions should not affect the current actions.
+  EXPECT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+}
+
+// Tests that action buttons for a stale Scanner request are not added to region
 // that is currently being selected, that is identical to the region that was
 // selected for the stale Scanner request.
 TEST_F(ScannerTest,
@@ -1823,6 +1864,37 @@ TEST_F(ScannerTest, NoCopyTextButtonIfSelectedRegionChanges) {
   OnTextDetectionComplete callback = detect_text_future.Take();
   SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 50, 50),
                           /*release_mouse=*/true, /*verify_region=*/true);
+  std::move(callback).Run("detected text");
+
+  const CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  EXPECT_THAT(session_test_api.GetActionButtons(),
+              Not(Contains(ActionButtonTypeIs(ActionButtonType::kCopyText))));
+}
+
+// Tests that the copy text button is not shown if the selected region is
+// fine-tuned, but does not change, before text detection completes.
+TEST_F(ScannerTest, NoCopyTextButtonIfSelectedRegionChangesByFineTuneNoop) {
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .Times(2)
+      .WillRepeatedly(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  constexpr auto kCaptureRegion = gfx::Rect(0, 0, 50, 50);
+  SelectCaptureModeRegion(GetEventGenerator(), kCaptureRegion,
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  OnTextDetectionComplete callback = detect_text_future.Take();
+  const gfx::Point drag_affordance_location =
+      capture_mode_util::GetLocationForFineTunePosition(
+          kCaptureRegion, FineTunePosition::kBottomRightVertex);
+  GetEventGenerator()->MoveMouseTo(drag_affordance_location);
+  GetEventGenerator()->ClickLeftButton();
+  ASSERT_TRUE(detect_text_future.Wait())
+      << "Detect text was not called again after fine-tune";
   std::move(callback).Run("detected text");
 
   const CaptureModeSessionTestApi session_test_api(

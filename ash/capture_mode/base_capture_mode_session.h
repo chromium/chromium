@@ -13,6 +13,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/scanner/scanner_action_view_model.h"
 #include "ash/shell_observer.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/views/controls/button/button.h"
 
@@ -169,6 +170,13 @@ class ASH_EXPORT BaseCaptureModeSession : public ui::LayerOwner,
   // This will reshow capture UI widgets if needed.
   virtual void OnPerformCaptureForSearchEnded(
       PerformCaptureType capture_type) = 0;
+
+  // Gets a weak pointer to a "token" which is automatically reset when any
+  // parameters relating to the capture (type, source, bounds - excluding
+  // window) change.
+  // Used for invalidating any image searches when these parameters change.
+  // Will be null if the session is shutting down.
+  virtual base::WeakPtr<BaseCaptureModeSession> GetImageSearchToken() = 0;
 
   // Adds an action button below the selected region during an active session.
   // Returns a pointer to the added button, or nullptr if no button was added.

@@ -152,6 +152,26 @@ class ASH_EXPORT CaptureModeSession
   // `current_root_` is different`.
   void RefreshBarWidgetBounds();
 
+  // Invalidates all pointers previously returned from `GetImageSearchToken()`.
+  // This should be called whenever any parameters relating to the capture
+  // (type, source, bounds - excluding window) change:
+  //
+  // - when `controller_->SetUserCaptureRegion()` is called
+  //   (`UpdateCaptureRegion()` and `ClampCaptureRegionToRootWindowSize()`)
+  // - when `is_drag_in_progress_` is modified (`OnLocatedEventPressed()` and
+  //   `EndSelection()`). Note that this does not directly affect parameters
+  //   relating to the capture (`CaptureModeController::GetCaptureParams()`).
+  // - when the source changes (`OnCaptureSourceChanged()`)
+  // - when the type changes (`OnCaptureTypeChanged()`). Note that this does not
+  //   directly affect parameters relating to the capture
+  //   (`CaptureModeController::GetCaptureParams()`).
+  // - when `current_root_` changes (indirectly from `MaybeChangeRoot()`, as it
+  //   calls `UpdateCaptureRegion()`)
+  // - when the session starts (indirectly from `InitInternal()`, as it calls
+  //   `ClampCaptureRegionToRootWindowSize()`)
+  // - when `is_shutting_down_` is set (`ShutdownInternal()`)
+  void InvalidateImageSearchTokens();
+
   // BaseCaptureModeSession:
   views::Widget* GetCaptureModeBarWidget() override;
   aura::Window* GetSelectedWindow() const override;
@@ -182,6 +202,7 @@ class ASH_EXPORT CaptureModeSession
   void OnPerformCaptureForSearchStarting(
       PerformCaptureType capture_type) override;
   void OnPerformCaptureForSearchEnded(PerformCaptureType capture_type) override;
+  base::WeakPtr<BaseCaptureModeSession> GetImageSearchToken() override;
   ActionButtonView* AddActionButton(views::Button::PressedCallback callback,
                                     std::u16string text,
                                     const gfx::VectorIcon* icon,
@@ -591,6 +612,10 @@ class ASH_EXPORT CaptureModeSession
   // Controls creating, destroying or updating the visibility of the capture
   // toast.
   CaptureModeToastController capture_toast_controller_;
+
+  // Weak pointers from this factory are invalidated when any parameters
+  // relating to the capture (type, source, bounds - excluding window) change.
+  base::WeakPtrFactory<CaptureModeSession> weak_token_factory_{this};
 
   base::WeakPtrFactory<CaptureModeSession> weak_ptr_factory_{this};
 };

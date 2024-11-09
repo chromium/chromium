@@ -58,6 +58,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -980,6 +981,10 @@ void CaptureModeSession::RefreshBarWidgetBounds() {
   capture_toast_controller_.MaybeRepositionCaptureToast();
 }
 
+void CaptureModeSession::InvalidateImageSearchTokens() {
+  weak_token_factory_.InvalidateWeakPtrs();
+}
+
 views::Widget* CaptureModeSession::GetCaptureModeBarWidget() {
   return capture_mode_bar_widget_.get();
 }
@@ -1025,6 +1030,7 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
   A11yAlertCaptureSource(/*trigger_now=*/true);
 
   MaybeReparentCameraPreviewWidget();
+  InvalidateImageSearchTokens();
 }
 
 void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
@@ -1036,6 +1042,7 @@ void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
                /*is_touch=*/false);
 
   A11yAlertCaptureType();
+  InvalidateImageSearchTokens();
 }
 
 void CaptureModeSession::OnRecordingTypeChanged() {
@@ -1371,6 +1378,11 @@ void CaptureModeSession::OnPerformCaptureForSearchEnded(
     return;
   }
   ShowAllWidgets();
+}
+
+base::WeakPtr<BaseCaptureModeSession>
+CaptureModeSession::GetImageSearchToken() {
+  return is_shutting_down_ ? nullptr : weak_token_factory_.GetWeakPtr();
 }
 
 // TODO(crbug.com/372740410): Determine behavior when we add a button with the
@@ -2469,6 +2481,8 @@ void CaptureModeSession::OnLocatedEventPressed(
   wm::ConvertPointToScreen(current_root_, &screen_location);
   MaybeUpdateCaptureUisOpacity(screen_location);
 
+  InvalidateImageSearchTokens();
+
   // Run `MaybeUpdateCameraPreviewBounds` at the exit of this function's
   // scope since the camera preview should be hidden if user is dragging to
   // update the capture region. The reason we want to run it at the exit of this
@@ -2656,6 +2670,7 @@ void CaptureModeSession::UpdateCaptureRegion(
   UpdateDimensionsLabelWidget(is_resizing);
   UpdateCaptureLabelWidget(CaptureLabelAnimation::kNone);
   UpdateActionContainerWidget();
+  InvalidateImageSearchTokens();
 }
 
 void CaptureModeSession::UpdateDimensionsLabelWidget(bool is_resizing) {
@@ -2998,6 +3013,7 @@ void CaptureModeSession::ClampCaptureRegionToRootWindowSize() {
   gfx::Rect new_capture_region = controller_->user_capture_region();
   new_capture_region.AdjustToFit(current_root_->bounds());
   controller_->SetUserCaptureRegion(new_capture_region, /*by_user=*/false);
+  InvalidateImageSearchTokens();
 }
 
 void CaptureModeSession::EndSelection(
@@ -3012,6 +3028,7 @@ void CaptureModeSession::EndSelection(
   UpdateActionContainerWidget();
   UpdateDimensionsLabelWidget(/*is_resizing=*/false);
   CloseMagnifierGlass();
+  InvalidateImageSearchTokens();
 }
 
 void CaptureModeSession::RepaintRegion() {
@@ -3470,6 +3487,7 @@ void CaptureModeSession::InitInternal() {
 void CaptureModeSession::ShutdownInternal() {
   aura::Env::GetInstance()->RemovePreTargetHandler(this);
   capture_region_overlay_controller_.reset();
+  InvalidateImageSearchTokens();
   display_observer_.reset();
   user_nudge_controller_.reset();
   capture_window_observer_.reset();
