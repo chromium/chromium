@@ -711,6 +711,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter label
 [Worker] interface GPUDevice : EventTarget
 [Worker]     attribute @@toStringTag
+[Worker]     getter adapterInfo
 [Worker]     getter features
 [Worker]     getter label
 [Worker]     getter limits

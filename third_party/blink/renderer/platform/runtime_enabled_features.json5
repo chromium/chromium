@@ -4817,6 +4817,10 @@
       public: true,
     },
     {
+      name: "WebGPUDeviceAdapterInfo",
+      status: "stable",
+    },
+    {
       // WebGPU experimental features are meant for features that would
       // eventually land in the WebGPU spec.
       name: "WebGPUExperimentalFeatures",
