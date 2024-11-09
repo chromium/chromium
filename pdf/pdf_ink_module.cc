@@ -140,45 +140,22 @@ void PdfInkModule::Draw(SkCanvas& canvas) {
   const PageOrientation rotation = client_->GetOrientation();
   const float zoom = client_->GetZoom();
 
-  for (const auto& [page_index, page_strokes] : strokes_) {
-    if (!client_->IsPageVisible(page_index)) {
-      continue;
-    }
-
-    // Use an updated transform based on the page and its position in the
-    // viewport.
-    const gfx::Rect content_rect = client_->GetPageContentsRect(page_index);
-    const ink::AffineTransform transform =
-        GetInkRenderTransform(origin_offset, rotation, content_rect, zoom);
-
-    SkAutoCanvasRestore save_restore(&canvas, /*doSave=*/true);
-    canvas.clipRect(GetDrawPageClipRect(content_rect, origin_offset));
-    for (const auto& finished_stroke : page_strokes) {
-      if (!finished_stroke.should_draw) {
-        continue;
-      }
-
-      auto status = skia_renderer.Draw(nullptr, finished_stroke.stroke,
-                                       transform, canvas);
-      CHECK(status.ok());
-    }
+  auto in_progress_stroke = CreateInProgressStrokeSegmentsFromInputs();
+  if (in_progress_stroke.empty()) {
+    return;
   }
 
-  auto in_progress_stroke = CreateInProgressStrokeSegmentsFromInputs();
-  if (!in_progress_stroke.empty()) {
-    DrawingStrokeState& state = drawing_stroke_state();
+  DrawingStrokeState& state = drawing_stroke_state();
 
-    const gfx::Rect content_rect =
-        client_->GetPageContentsRect(state.page_index);
-    const ink::AffineTransform transform =
-        GetInkRenderTransform(origin_offset, rotation, content_rect, zoom);
+  const gfx::Rect content_rect = client_->GetPageContentsRect(state.page_index);
+  const ink::AffineTransform transform =
+      GetInkRenderTransform(origin_offset, rotation, content_rect, zoom);
 
-    SkAutoCanvasRestore save_restore(&canvas, /*doSave=*/true);
-    canvas.clipRect(GetDrawPageClipRect(content_rect, origin_offset));
-    for (const auto& segment : in_progress_stroke) {
-      auto status = skia_renderer.Draw(nullptr, segment, transform, canvas);
-      CHECK(status.ok());
-    }
+  SkAutoCanvasRestore save_restore(&canvas, /*doSave=*/true);
+  canvas.clipRect(GetDrawPageClipRect(content_rect, origin_offset));
+  for (const auto& segment : in_progress_stroke) {
+    auto status = skia_renderer.Draw(nullptr, segment, transform, canvas);
+    CHECK(status.ok());
   }
 }
 

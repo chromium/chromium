@@ -2099,60 +2099,46 @@ TEST_P(PDFiumEngineInkStrokesTest, StrokeData) {
   PDFiumPage& page = GetPDFiumPageForTest(*engine, kPageIndex);
 
   // Verify the visibility of strokes for in-memory PDF.
-  // TODO(crbug.com/335517469): Should match a PNG with 2 strokes, after strokes
-  // are actually applied in-memory.
-  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kBlankPngFilePath);
+  const base::FilePath kAppliedStroke2FilePath(
+      GetInkTestDataFilePath("applied_stroke2.png"));
+  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedStroke2FilePath);
 
   // Getting the save data should now have the new strokes.
   // Verify visibility of strokes in that copy.  Must call GetSaveData()
   // before checking mark objects count, so that the PDF gets regenerated.
   saved_pdf_data = engine->GetSaveData();
   ASSERT_FALSE(saved_pdf_data.empty());
-  // TODO(crbug.com/335517469): Should match a PNG with 2 strokes, after strokes
-  // are actually applied in-memory.
   CheckPdfRendering(saved_pdf_data, kPageIndex, kPageSizeInPoints,
-                    kBlankPngFilePath);
-  // TODO(crbug.com/crbug.com/335517469): Update to 2 after strokes are actually
-  // applied in-memory.
+                    kAppliedStroke2FilePath);
   EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
                                          kInkAnnotationIdentifierKeyV2),
-            0);
+            2);
 
   // Perform equivalent of an "undo", to cause stroke to be inactive.
   // This causes a stroke to no longer be included in the saved PDF data.
   engine->UpdateStrokeActive(kPageIndex, kStrokeId2, /*active=*/false);
-  // TODO(crbug.com/335517469): Should match a PNG with 1 stroke, after strokes
-  // are actually applied in-memory.
-  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kBlankPngFilePath);
+  const base::FilePath kAppliedStroke1FilePath(
+      GetInkTestDataFilePath("applied_stroke1.png"));
+  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedStroke1FilePath);
   saved_pdf_data = engine->GetSaveData();
   ASSERT_FALSE(saved_pdf_data.empty());
-  // TODO(crbug.com/335517469): Should match a PNG with 1 stroke, after strokes
-  // are actually applied in-memory.
   CheckPdfRendering(saved_pdf_data, kPageIndex, kPageSizeInPoints,
-                    kBlankPngFilePath);
-  // TODO(crbug.com/crbug.com/335517469): Update to 1 after strokes are actually
-  // applied in-memory.
+                    kAppliedStroke1FilePath);
   EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
                                          kInkAnnotationIdentifierKeyV2),
-            0);
+            1);
 
   // Perform equivalent of a "redo", to cause stroke to become active again.
   // This causes the streok to be included in saved PDF data again.
   engine->UpdateStrokeActive(kPageIndex, kStrokeId2, /*active=*/true);
-  // TODO(crbug.com/335517469): Should match a PNG with 2 strokes, after strokes
-  // are actually applied in-memory.
-  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kBlankPngFilePath);
+  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedStroke2FilePath);
   saved_pdf_data = engine->GetSaveData();
   ASSERT_FALSE(saved_pdf_data.empty());
-  // TODO(crbug.com/335517469): Should match a PNG with 2 strokes, after strokes
-  // are actually applied in-memory.
   CheckPdfRendering(saved_pdf_data, kPageIndex, kPageSizeInPoints,
-                    kBlankPngFilePath);
-  // TODO(crbug.com/crbug.com/335517469): Update to 2 after strokes are actually
-  // applied in-memory.
+                    kAppliedStroke2FilePath);
   EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
                                          kInkAnnotationIdentifierKeyV2),
-            0);
+            2);
 }
 
 // Don't be concerned about any slight rendering differences in AGG vs. Skia,

@@ -95,6 +95,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
+#include "pdf/pdfium/pdfium_ink_writer.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
 #endif
 
@@ -591,6 +592,10 @@ PDFiumEngine::~PDFiumEngine() {
   // Clear all the containers that can prevent unloading.
   find_results_.clear();
   selection_.clear();
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  ink_stroke_objects_map_.clear();
+  stroked_pages_unload_preventers_.clear();
+#endif
 
   for (auto& page : pages_)
     page->Unload();
@@ -810,6 +815,15 @@ void PDFiumEngine::AppendPage(PDFiumEngine* engine, int index) {
 }
 
 std::vector<uint8_t> PDFiumEngine::GetSaveData() {
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  for (int page_index : ink_stroked_pages_needing_regeneration_) {
+    FPDF_PAGE page = GetPage(page_index)->GetPage();
+    bool result = FPDFPage_GenerateContent(page);
+    CHECK(result);
+  }
+  ink_stroked_pages_needing_regeneration_.clear();
+#endif
+
   PDFiumMemBufferFileWrite output_file_write;
   if (!FPDF_SaveAsCopy(doc(), &output_file_write, 0))
     return std::vector<uint8_t>();
@@ -4379,16 +4393,20 @@ void PDFiumEngine::ApplyStroke(int page_index,
   FPDF_PAGE page = pdfium_page->GetPage();
   CHECK(page);
 
-  // TODO(crbug.com/335517469): Write the stroke to the page.  Requires
-  // invalidation, page regeneration, and page unloading prevention support.
+  FPDF_PAGEOBJECT page_object = WriteStrokeToPage(doc(), page, stroke);
+  CHECK(page_object);
+  ink_stroked_pages_needing_regeneration_.insert(page_index);
 
-  bool inserted =
-      ink_stroke_objects_map_.insert({id, /*page_object=*/nullptr}).second;
+  bool inserted = ink_stroke_objects_map_.insert({id, page_object}).second;
   CHECK(inserted);  // Stroke IDs should be unique when added.
 
-  // TODO(crbug.com/335517469): Once a real stroke object is referenced in
-  // `ink_stroke_objects_map_`, will need to ensure the page stays in memory
-  // to avoid a stale pointer if PDFiumPage::Unload() gets called.
+  // Since there is now a page reference in `ink_stroke_objects_map_`, ensure
+  // that this page has a ScopedUnloadPreventer so that the reference doesn't
+  // becomes stale if PDFiumPage::Unload() gets called.
+  if (!stroked_pages_unload_preventers_.contains(page_index)) {
+    stroked_pages_unload_preventers_.insert(
+        {page_index, PDFiumPage::ScopedUnloadPreventer(pdfium_page)});
+  }
 }
 
 void PDFiumEngine::UpdateStrokeActive(int page_index,
@@ -4397,8 +4415,9 @@ void PDFiumEngine::UpdateStrokeActive(int page_index,
   CHECK(PageIndexInBounds(page_index));
   auto it = ink_stroke_objects_map_.find(id);
   CHECK(it != ink_stroke_objects_map_.end());
-  // TODO(crbug.com/335517469): Update the page object's active state and
-  // note that this page will require content regeneration.
+  bool result = FPDFPageObj_SetIsActive(it->second, active);
+  CHECK(result);
+  ink_stroked_pages_needing_regeneration_.insert(page_index);
 }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 

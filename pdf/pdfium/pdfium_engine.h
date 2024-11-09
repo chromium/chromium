@@ -1098,9 +1098,24 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   bool edit_mode_ = false;
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
+  // Map of zero-based page indices with Ink strokes to page unload preventers.
+  // Pages with Ink strokes have page references in `ink_stroke_objects_map_`,
+  // so these unload preventers ensure those page pointers stay valid by
+  // keeping the pages in memory.  Entries don't get deleted from
+  // `ink_stroke_objects_map_`, so just need one preventer per page instead of
+  // per stroke.
+  std::map<int, PDFiumPage::ScopedUnloadPreventer>
+      stroked_pages_unload_preventers_;
+
   // The handles for stroke path page objects within the PDF document, mapped
-  // using the `InkStrokeId` provided during stroke creation.
+  // using the `InkStrokeId` provided during stroke creation.  The handles are
+  // protected against becoming stale from page unloads by
+  // `stroked_pages_unload_preventers_`.
   std::map<InkStrokeId, FPDF_PAGEOBJECT> ink_stroke_objects_map_;
+
+  // Tracks the pages which need to be regenerated before saving due to Ink
+  // stroke changes.
+  std::set<int> ink_stroked_pages_needing_regeneration_;
 #endif
 
   // When true, interactive portions of the content, such as forms and links,
