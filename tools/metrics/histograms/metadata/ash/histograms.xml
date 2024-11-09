@@ -2520,6 +2520,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Ash.CaptureModeController.SearchButtonPressed.{TabletOrClamshell}"
+    enum="Boolean" expires_after="2025-05-07">
+  <owner>hewer@chromium.org</owner>
+  <owner>sophiewen@google.com</owner>
+  <summary>
+    Recorded each time the Search button is pressed in a default capture session
+    in {TabletOrClamshell}.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.SearchButtonShown.{TabletOrClamshell}"
+    enum="Boolean" expires_after="2025-05-07">
+  <owner>hewer@chromium.org</owner>
+  <owner>sophiewen@google.com</owner>
+  <summary>
+    Recorded each time the Search button is shown to a user in a default capture
+    session in {TabletOrClamshell}.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
 <histogram name="Ash.CaptureModeController.SwitchesFromInitialCaptureMode"
     enum="Boolean" expires_after="2025-01-08">
   <owner>afakhry@chromium.org</owner>

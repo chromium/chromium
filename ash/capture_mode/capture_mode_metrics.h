@@ -232,6 +232,13 @@ void RecordCameraPositionOnStart(CameraPreviewSnapPosition camera_position);
 void RecordRecordingStartsWithDemoTools(bool demo_tools_enabled,
                                         const CaptureModeBehavior* behavior);
 
+// Records that the Search button was pressed in a default capture session.
+void RecordSearchButtonPressed();
+
+// Records that the Search button was shown to a user in a default capture
+// session.
+void RecordSearchButtonShown();
+
 // Prepends the common prefix to the `root_word` and optionally inserts the
 // client's metric component (as specified by the given `behavior`) or appends
 // the ui mode suffix to build the full histogram name.

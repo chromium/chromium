@@ -1982,6 +1982,7 @@ void CaptureModeSession::DoPerformCapture() {
 }
 
 void CaptureModeSession::OnSearchButtonPressed() {
+  RecordSearchButtonPressed();
   // See if we can move this to `PerformImageSearch()`.
   controller_->PerformCapture(
       PerformCaptureType::kSearch);  // `this` can be deleted after this.
@@ -2619,6 +2620,7 @@ void CaptureModeSession::OnLocatedEventReleased(
   // TODO(b/367882127): May also need to check if the user has opted in.
   if (active_behavior_->ShouldShowDefaultActionButtonsAfterRegionSelected()) {
     if (IsSunfishFeatureEnabledWithFeatureKey()) {
+      RecordSearchButtonShown();
       capture_mode_util::AddActionButton(
           base::BindRepeating(&CaptureModeSession::OnSearchButtonPressed,
                               weak_ptr_factory_.GetWeakPtr()),

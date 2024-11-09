@@ -1255,6 +1255,45 @@ TEST_F(SunfishTest, IsCursorVisible) {
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
 }
 
+// Tests the search button shown and pressed metrics are being properly
+// recorded.
+TEST_F(SunfishTest, RecordSearchButtonShownAndPressed) {
+  base::HistogramTester histogram_tester;
+  constexpr char kSearchButtonPressedHistogram[] =
+      "Ash.CaptureModeController.SearchButtonPressed.ClamshellMode";
+  constexpr char kSearchButtonShownHistogram[] =
+      "Ash.CaptureModeController.SearchButtonShown.ClamshellMode";
+
+  histogram_tester.ExpectBucketCount(kSearchButtonShownHistogram, true, 0);
+  histogram_tester.ExpectBucketCount(kSearchButtonPressedHistogram, true, 0);
+
+  // Start default capture mode.
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  VerifyActiveBehavior(BehaviorType::kDefault);
+
+  // Select a region, which should show the search button.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi session_test_api(session);
+  ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
+  auto* container_widget = session_test_api.GetActionContainerWidget();
+  ASSERT_TRUE(container_widget);
+
+  histogram_tester.ExpectBucketCount(kSearchButtonShownHistogram, true, 1);
+  histogram_tester.ExpectBucketCount(kSearchButtonPressedHistogram, true, 0);
+
+  // Click on the search button.
+  LeftClickOn(session_test_api.GetActionButtons()[0]);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSearch);
+  EXPECT_TRUE(controller->search_results_panel_widget());
+
+  histogram_tester.ExpectBucketCount(kSearchButtonShownHistogram, true, 1);
+  histogram_tester.ExpectBucketCount(kSearchButtonPressedHistogram, true, 1);
+}
+
 class ScannerTest : public AshTestBase {
  public:
   ScannerTest() = default;
