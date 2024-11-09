@@ -88,15 +88,6 @@ std::optional<ink::Mesh> CreateInkMeshFromPolyline(
   return *mesh;
 }
 
-// Creates an ink::Mesh from `polyline`. If it is valid, append it to `meshes`.
-void AppendPolylineToMeshesList(std::vector<ink::Mesh>& meshes,
-                                const std::vector<ink::Point>& polyline) {
-  auto mesh = ink::CreateMeshFromPolyline(polyline);
-  if (mesh.ok()) {
-    meshes.push_back(*mesh);
-  }
-}
-
 std::optional<ink::ModeledShape> ReadV2InkModeledShapeFromPath(
     FPDF_PAGEOBJECT path,
     const gfx::AxisTransform2d& transform) {
@@ -107,8 +98,8 @@ std::optional<ink::ModeledShape> ReadV2InkModeledShapeFromPath(
     return std::nullopt;
   }
 
-  std::vector<ink::Point> current_polyline;
-  current_polyline.reserve(segment_count);
+  std::vector<ink::Point> polyline;
+  polyline.reserve(segment_count);
 
   {
     // The first segment must be a move. Check it outside of the for-loop to
@@ -122,42 +113,32 @@ std::optional<ink::ModeledShape> ReadV2InkModeledShapeFromPath(
     }
 
     gfx::PointF point = GetSegmentPoint(segment);
-    current_polyline.push_back(GetTransformedInkPoint(transform, point));
+    polyline.push_back(GetTransformedInkPoint(transform, point));
   }
 
-  std::vector<ink::Mesh> meshes;
   for (int i = 1; i < segment_count; ++i) {
     FPDF_PATHSEGMENT segment = FPDFPath_GetPathSegment(path, i);
     CHECK(segment);
 
-    const int type = FPDFPathSegment_GetType(segment);
-    if (type == FPDF_SEGMENT_UNKNOWN || type == FPDF_SEGMENT_BEZIERTO) {
+    // Remaining entries must all be line-to segments, as "V2" shapes only have
+    // a single mesh inside.
+    if (FPDFPathSegment_GetType(segment) != FPDF_SEGMENT_LINETO) {
       return std::nullopt;
     }
 
     gfx::PointF point = GetSegmentPoint(segment);
-    if (type == FPDF_SEGMENT_LINETO) {
-      // Keep appending to the current polyline.
-      current_polyline.push_back(GetTransformedInkPoint(transform, point));
-      continue;
-    }
-
-    // Sanity check the `type` value.
-    CHECK_EQ(type, FPDF_SEGMENT_MOVETO);
-
-    AppendPolylineToMeshesList(meshes, current_polyline);
-
-    // Clear `current_polyline` and start populating the next one.
-    current_polyline.clear();
-    current_polyline.push_back(GetTransformedInkPoint(transform, point));
+    polyline.push_back(GetTransformedInkPoint(transform, point));
   }
 
-  // After the loop is done, take care of the remaining values.
-  AppendPolylineToMeshesList(meshes, current_polyline);
+  std::optional<ink::Mesh> mesh = CreateInkMeshFromPolyline(polyline);
+  if (!mesh.has_value()) {
+    return std::nullopt;
+  }
 
   // Note that `shape` only has enough data for use with ink::Intersects(). It
   // has no outline.
-  auto shape = ink::ModeledShape::FromMeshes(meshes, /*outlines=*/{});
+  auto shape = ink::ModeledShape::FromMeshes(base::span_from_ref(mesh.value()),
+                                             /*outlines=*/{});
   if (!shape.ok()) {
     return std::nullopt;
   }
