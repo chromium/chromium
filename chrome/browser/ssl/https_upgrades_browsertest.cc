@@ -59,6 +59,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/test_data_directory.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -3982,4 +3983,64 @@ IN_PROC_BROWSER_TEST_P(
 
   // Engagement heuristic shouldn't handle any navigation events.
   histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 0);
+}
+
+// Minimal test fixture for testing the interaction between the
+// SecureOriginAllowlist (set via the command-line switch
+// `switches::kUnsafelyTreatInsecureOriginAsSecure`) and HTTPS-First Balanced
+// Mode.
+class HttpsUpgradesSecureOriginAllowlistBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  HttpsUpgradesSecureOriginAllowlistBrowserTest() = default;
+  ~HttpsUpgradesSecureOriginAllowlistBrowserTest() override = default;
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        features::kHttpsFirstBalancedModeAutoEnable);
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(embedded_test_server()->Start());
+    HttpsUpgradesInterceptor::SetHttpPortForTesting(
+        embedded_test_server()->port());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // This sets a wildcard entry in the allowlist, because we can't specify
+    // an exact origin as we don't yet have the embedded test server's port
+    // (it isn't started until later).
+    command_line->AppendSwitchASCII(
+        network::switches::kUnsafelyTreatInsecureOriginAsSecure,
+        "*.example.com");
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesSecureOriginAllowlistBrowserTest,
+                       HostInAllowlistExemptedFromHttpsFirstMode) {
+  GURL url_in_allowlist =
+      embedded_test_server()->GetURL("test.example.com", "/simple.html");
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(content::NavigateToURL(contents, url_in_allowlist));
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+}
+
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesSecureOriginAllowlistBrowserTest,
+                       HostNotInAllowlistShowWarning) {
+  GURL url_not_in_allowlist =
+      embedded_test_server()->GetURL("not-example.com", "/simple.html");
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(content::NavigateToURL(contents, url_not_in_allowlist));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
 }

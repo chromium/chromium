@@ -38,6 +38,7 @@
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/url_request/redirect_info.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -500,6 +501,17 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   PrefService* prefs = profile->GetPrefs();
   if (IsHostnameInHttpAllowlist(tentative_resource_request.url,
                                 profile->GetPrefs())) {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kAllowlisted);
+    std::move(callback).Run({});
+    return;
+  }
+
+  // Check if the origin is specified in the
+  // `--unsafely-treat-insecure-origin-as-secure` command-line flag or
+  // `OverrideSecurityRestrictionsOnInsecureOrigin` policy.
+  if (network::SecureOriginAllowlist::GetInstance().IsOriginAllowlisted(
+          url::Origin::Create(tentative_resource_request.url))) {
     RecordNavigationRequestSecurityLevel(
         NavigationRequestSecurityLevel::kAllowlisted);
     std::move(callback).Run({});
