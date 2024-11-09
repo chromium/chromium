@@ -55,7 +55,7 @@ virtual/threaded/fast/idleToBlob/OffscreenCanvas-convertToBlob-webgl-worker.html
 virtual/threaded/printing/offscreencanvas-webgl-printing.html [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
-virtual/gpu-rasterization/external/wpt/css/css-images/cross-fade-premultiplied-alpha.html [ Failure ]
+crbug.com/377955852 virtual/gpu-rasterization/external/wpt/css/css-images/cross-fade-premultiplied-alpha.html [ Failure ]
 crbug.com/369270133 virtual/threaded/external/wpt/css/css-view-transitions/new-content-captures-different-size.html [ Failure ]
 crbug.com/369270133 virtual/threaded/external/wpt/css/css-view-transitions/old-content-captures-different-size.html [ Failure ]
 crbug.com/369270133 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/new-content-captures-different-size.html [ Failure ]
