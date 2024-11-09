@@ -5762,6 +5762,7 @@ static_library("browser") {
     if (is_cfm) {
       deps += [
         "//chrome/browser/ash/chromebox_for_meetings/browser",
+        "//chrome/browser/ash/chromebox_for_meetings/meet_browser",
         "//chrome/browser/ash/chromebox_for_meetings/xu_camera",
       ]
 
@@ -5769,6 +5770,7 @@ static_library("browser") {
       # "browser_public_dependencies".
       allow_circular_includes_from += [
         "//chrome/browser/ash/chromebox_for_meetings/browser",
+        "//chrome/browser/ash/chromebox_for_meetings/meet_browser",
         "//chrome/browser/ash/chromebox_for_meetings/xu_camera",
       ]
     }

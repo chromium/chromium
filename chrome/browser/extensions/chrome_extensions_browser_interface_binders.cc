@@ -49,6 +49,7 @@
 #endif
 
 #if BUILDFLAG(PLATFORM_CFM)
+#include "chrome/browser/ash/chromebox_for_meetings/meet_browser/meet_browser_service.h"
 #include "chrome/browser/ash/chromebox_for_meetings/xu_camera/xu_camera_service.h"
 #include "chromeos/ash/components/chromebox_for_meetings/features.h"
 #endif
@@ -124,6 +125,10 @@ void BindCfmServiceContext(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   chromeos::cfm::ServiceConnection::GetInstance()->BindServiceContext(
       std::move(receiver));
+#if BUILDFLAG(PLATFORM_CFM)
+  ash::cfm::MeetBrowserService::Get()->SetMeetGlobalRenderFrameToken(
+      render_frame_host->GetGlobalFrameToken());
+#endif  // BUILDFLAG(PLATFORM_CFM)
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -226,11 +231,11 @@ void PopulateChromeFrameBindersForExtension(
         base::BindRepeating(&BindCfmServiceContext));
 
 #if !BUILDFLAG(PLATFORM_CFM)
-// On first launch some older devices may be running on none-CfM
-// images. For those devices reject all requests until they are
-// rebooted to the CfM image variant for their device.
-// This applies to LaCrOS and none CfM Ash builds
-// TODO(b/341493979): Deprecate after CfM LaCrOS migration is completed.
+    // On first launch some older devices may be running on none-CfM
+    // images. For those devices reject all requests until they are
+    // rebooted to the CfM image variant for their device.
+    // This applies to LaCrOS and none CfM Ash builds
+    // TODO(crbug.com/341493979): Deprecate after CfM LaCrOS migration.
     binder_map->Add<ash::cfm::mojom::XuCamera>(base::BindRepeating(
         [](content::RenderFrameHost* frame_host,
            mojo::PendingReceiver<ash::cfm::mojom::XuCamera> receiver) {
