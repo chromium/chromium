@@ -148,10 +148,19 @@ export class ViewerDownloadControlsElement extends CrLitElement {
   }
 
   protected onDownloadEditedClick_() {
+    this.$.menu.close();
+
+    // <if expr="enable_pdf_ink2">
+    // Only save as annotation when there are edits.
+    if (this.hasInk2Edits) {
+      this.dispatchSaveEvent_(SaveRequestType.ANNOTATION);
+      return;
+    }
+    // </if>
+
     this.dispatchSaveEvent_(
         this.hasEnteredAnnotationMode ? SaveRequestType.ANNOTATION :
                                         SaveRequestType.EDITED);
-    this.$.menu.close();
   }
 }
 
