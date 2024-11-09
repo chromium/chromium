@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.junit.Assert.assertEquals;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,37 +22,51 @@ import android.widget.FrameLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.test.filters.SmallTest;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** On-device unit tests for {@link MinimizedCardCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class MinimizedCardCoordinatorTest extends BlankUiTestActivityTestCase {
+public class MinimizedCardCoordinatorTest {
     private static final String TITLE = "Google";
     private static final String URL = "google.com";
 
+    @ClassRule
+    public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
     private MinimizedCardCoordinator mCoordinator;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivityTestRule.launchActivity(null);
+        sActivity = ThreadUtils.runOnUiThreadBlocking(() -> sActivityTestRule.getActivity());
+    }
 
+    @Before
+    public void setUp() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var layoutParams =
                             new FrameLayout.LayoutParams(
                                     LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-                    ViewGroup content = new FrameLayout(getActivity());
-                    getActivity().setContentView(content, layoutParams);
-                    CoordinatorLayout coordinator = new CoordinatorLayout(getActivity());
+                    ViewGroup content = new FrameLayout(sActivity);
+                    sActivity.setContentView(content, layoutParams);
+                    CoordinatorLayout coordinator = new CoordinatorLayout(sActivity);
                     coordinator.setId(R.id.coordinator);
                     coordinator.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
                     content.addView(coordinator);
@@ -63,7 +78,7 @@ public class MinimizedCardCoordinatorTest extends BlankUiTestActivityTestCase {
                                     .with(MinimizedCardProperties.URL, URL)
                                     .with(MinimizedCardProperties.FAVICON, favicon)
                                     .build();
-                    mCoordinator = new MinimizedCardCoordinator(getActivity(), content, model);
+                    mCoordinator = new MinimizedCardCoordinator(sActivity, content, model);
                 });
     }
 
@@ -76,7 +91,7 @@ public class MinimizedCardCoordinatorTest extends BlankUiTestActivityTestCase {
                 () -> {
                     assertEquals(
                             View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS,
-                            getActivity()
+                            sActivity
                                     .findViewById(R.id.coordinator)
                                     .getImportantForAccessibility());
                 });
@@ -89,7 +104,7 @@ public class MinimizedCardCoordinatorTest extends BlankUiTestActivityTestCase {
                 () -> {
                     assertEquals(
                             View.IMPORTANT_FOR_ACCESSIBILITY_YES,
-                            getActivity()
+                            sActivity
                                     .findViewById(R.id.coordinator)
                                     .getImportantForAccessibility());
                 });
