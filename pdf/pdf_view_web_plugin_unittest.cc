@@ -2514,7 +2514,7 @@ TEST_F(PdfViewWebPluginInkTest, Invalidate) {
   plugin_->set_in_paint_for_testing(true);
   EXPECT_EQ(0u, plugin_->deferred_invalidates_for_testing().size());
   SetUpWithTrivialInkStrokes();
-  EXPECT_EQ(2u, plugin_->deferred_invalidates_for_testing().size());
+  EXPECT_EQ(3u, plugin_->deferred_invalidates_for_testing().size());
 }
 
 TEST_F(PdfViewWebPluginInkTest, SendThumbnailUpdatesInkThumbnail) {

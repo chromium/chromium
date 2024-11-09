@@ -518,15 +518,21 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
   auto in_progress_stroke_segments = CreateInProgressStrokeSegmentsFromInputs();
   if (!in_progress_stroke_segments.empty()) {
     CHECK_GE(state.page_index, 0);
+    ink::Envelope invalidate_envelope;
     for (const auto& segment : in_progress_stroke_segments) {
       InkStrokeId id = stroke_id_generator_.GetIdAndAdvance();
       ink::Stroke stroke = segment.CopyToStroke();
       client_->StrokeAdded(state.page_index, id, stroke);
+      invalidate_envelope.Add(stroke.GetShape().Bounds());
       strokes_[state.page_index].push_back(
           FinishedStrokeState(std::move(stroke), id));
       bool undo_redo_success = undo_redo_model_.Draw(id);
       CHECK(undo_redo_success);
     }
+
+    client_->Invalidate(CanonicalInkEnvelopeToExpandedInvalidationScreenRect(
+        invalidate_envelope, client_->GetOrientation(),
+        client_->GetPageContentsRect(state.page_index), client_->GetZoom()));
   }
 
   client_->StrokeFinished();
