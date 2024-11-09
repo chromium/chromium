@@ -1456,10 +1456,8 @@ void Shell::Init(
 
   // `GameDashboardController` has dependencies on `OverviewController` and
   // `CaptureModeController`.
-  if (features::IsGameDashboardEnabled()) {
-    game_dashboard_controller_ = std::make_unique<GameDashboardController>(
-        shell_delegate_->CreateGameDashboardDelegate());
-  }
+  game_dashboard_controller_ = std::make_unique<GameDashboardController>(
+      shell_delegate_->CreateGameDashboardDelegate());
 
   // `SnapGroupController` has dependencies on `OverviewController` and
   // `TabletModeController`.

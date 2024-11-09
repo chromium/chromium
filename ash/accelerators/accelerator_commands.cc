@@ -693,9 +693,6 @@ bool CanToggleFloatingWindow() {
 }
 
 bool CanToggleGameDashboard() {
-  if (!features::IsGameDashboardEnabled()) {
-    return false;
-  }
   aura::Window* window = GetTargetWindow();
   return window && GameDashboardController::ReadyForAccelerator(window);
 }
@@ -1601,7 +1598,6 @@ void ToggleFullscreenMagnifier() {
 }
 
 void ToggleGameDashboard() {
-  DCHECK(features::IsGameDashboardEnabled());
   aura::Window* window = GetTargetWindow();
   DCHECK(window);
   if (auto* context =

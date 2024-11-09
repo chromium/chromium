@@ -17,9 +17,7 @@ namespace ash {
 GameDashboardTestBase::GameDashboardTestBase()
     : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
   scoped_feature_list_.InitWithFeatures(
-      {features::kGameDashboard,
-       features::kFeatureManagementGameDashboardRecordGame},
-      {});
+      {features::kFeatureManagementGameDashboardRecordGame}, {});
 }
 
 void GameDashboardTestBase::SetUp() {
@@ -27,7 +25,6 @@ void GameDashboardTestBase::SetUp() {
   UpdateDisplay(base::StringPrintf("%d+%d-%dx%d", kScreenBounds.x(),
                                    kScreenBounds.y(), kScreenBounds.width(),
                                    kScreenBounds.height()));
-  EXPECT_TRUE(features::IsGameDashboardEnabled());
 }
 
 void GameDashboardTestBase::AdvanceClock(base::TimeDelta delta) {

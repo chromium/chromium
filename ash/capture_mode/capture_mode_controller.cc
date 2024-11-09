@@ -533,7 +533,6 @@ BehaviorType ToBehaviorType(CaptureModeEntryType entry_type) {
     case CaptureModeEntryType::kProjector:
       return BehaviorType::kProjector;
     case CaptureModeEntryType::kGameDashboard:
-      CHECK(features::IsGameDashboardEnabled());
       return BehaviorType::kGameDashboard;
     case CaptureModeEntryType::kSunfish:
       DCHECK(CanStartSunfishSession());

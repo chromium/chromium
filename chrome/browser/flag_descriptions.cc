@@ -6855,9 +6855,6 @@ const char kFuseBoxDebugName[] = "Debugging UI for ChromeOS FuseBox service";
 const char kFuseBoxDebugDescription[] =
     "Show additional debugging UI for ChromeOS FuseBox service.";
 
-const char kGameDashboard[] = "Game Dashboard";
-const char kGameDashboardDescription[] = "Enables the Game Dashboard.";
-
 const char kGameDashboardGamepadSupport[] = "Game Dashboard gamepad support.";
 const char kGameDashboardGamepadSupportDescription[] =
     "Enables gamepad support in game controls.";

@@ -8152,10 +8152,6 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(switches::kEnableWebGPUDeveloperFeatures)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"game-dashboard", flag_descriptions::kGameDashboard,
-     flag_descriptions::kGameDashboardDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kGameDashboard)},
-
     {"game-dashboard-game-pwas", flag_descriptions::kGameDashboardGamePWAs,
      flag_descriptions::kGameDashboardGamePWAsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kGameDashboardGamePWAs)},

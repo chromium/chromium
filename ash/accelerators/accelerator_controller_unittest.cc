@@ -3832,29 +3832,7 @@ TEST_P(MediaSessionAcceleratorTest,
   }
 }
 
-// TODO(b:332383246): Remove once the feature is enabled permanently.
-class AcceleratorControllerGameDashboardTests
-    : public AcceleratorControllerTest {
- public:
-  AcceleratorControllerGameDashboardTests() = default;
-  AcceleratorControllerGameDashboardTests(
-      const AcceleratorControllerTestWithClamshellSplitView&) = delete;
-  AcceleratorControllerGameDashboardTests& operator=(
-      const AcceleratorControllerGameDashboardTests&) = delete;
-  ~AcceleratorControllerGameDashboardTests() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kGameDashboard);
-    AcceleratorControllerTest::SetUp();
-    EXPECT_TRUE(features::IsGameDashboardEnabled());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(AcceleratorControllerGameDashboardTests,
-       ToggleGameDashboardAccelerator) {
+TEST_F(AcceleratorControllerTest, ToggleGameDashboardAccelerator) {
   const ui::Accelerator accelerator(ui::VKEY_G, ui::EF_COMMAND_DOWN);
 
   // No active window.

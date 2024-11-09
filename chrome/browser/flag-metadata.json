@@ -4847,15 +4847,6 @@
     "expiry_milestone": 138
   },
   {
-    "name": "game-dashboard",
-    "owners": [
-      "phshah@chromium.org",
-      "cuicuiruan@google.com",
-      "arc-gaming@google.com"
-    ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "game-dashboard-game-pwas",
     "owners": [
       "gdomergue@google.com",

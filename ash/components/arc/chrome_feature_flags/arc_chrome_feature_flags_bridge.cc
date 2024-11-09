@@ -90,7 +90,6 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
   flags->enable_pip_double_tap = ash::features::IsPipDoubleTapToResizeEnabled();
   flags->render_arc_notifications_by_chrome =
       ash::features::IsRenderArcNotificationsByChromeEnabled();
-  flags->game_dashboard = ash::features::IsGameDashboardEnabled();
   flags->resize_compat = base::FeatureList::IsEnabled(arc::kResizeCompat);
   flags->ignore_hover_event_anr =
       base::FeatureList::IsEnabled(arc::kIgnoreHoverEventAnr);

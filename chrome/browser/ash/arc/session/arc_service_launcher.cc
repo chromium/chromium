@@ -261,9 +261,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcIioSensorBridge::GetForBrowserContext(profile);
   ArcImeService::GetForBrowserContext(profile);
   ArcInputMethodManagerService::GetForBrowserContext(profile);
-  if (ash::features::IsGameDashboardEnabled()) {
-    input_overlay::ArcInputOverlayManager::GetForBrowserContext(profile);
-  }
+  input_overlay::ArcInputOverlayManager::GetForBrowserContext(profile);
   ArcInstanceThrottle::GetForBrowserContext(profile);
   {
     auto* intent_helper = ArcIntentHelperBridge::GetForBrowserContext(profile);

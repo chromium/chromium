@@ -27,9 +27,9 @@ namespace ash {
 namespace {
 
 // The total number of Ash accelerators.
-constexpr int kAshAcceleratorsTotalNum = 159;
+constexpr int kAshAcceleratorsTotalNum = 160;
 // The hash of Ash accelerators.
-constexpr char kAshAcceleratorsHash[] = "c1532bc1212cd1f1545f3d84727ff864";
+constexpr char kAshAcceleratorsHash[] = "ccd847ce7ee2f2fbcf083ca8322ce2f0";
 
 std::string ToActionName(ash::AcceleratorAction action) {
   return base::StrCat(

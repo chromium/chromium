@@ -158,13 +158,6 @@ std::vector<ash::AcceleratorData> GetDefaultAccelerators() {
             ash::kEnableWithSameAppWindowCycleAcceleratorDataLength));
   }
 
-  if (ash::features::IsGameDashboardEnabled()) {
-    AppendAcceleratorData(
-        accelerators,
-        base::make_span(ash::kToggleGameDashboardAcceleratorData,
-                        ash::kToggleGameDashboardAcceleratorDataLength));
-  }
-
   if (ash::features::IsTilingWindowResizeEnabled()) {
     AppendAcceleratorData(
         accelerators,

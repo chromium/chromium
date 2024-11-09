@@ -267,13 +267,6 @@ class ScalableIphBrowserTestNoIph
 
 class ScalableIphBrowserTestGame : public ScalableIphBrowserTest {
  public:
-  void AppendTestSpecificFeatures(
-      std::vector<base::test::FeatureRefAndParams>& enabled_features,
-      std::vector<base::test::FeatureRef>& disabled_features) override {
-    enabled_features.push_back(
-        base::test::FeatureRefAndParams(ash::features::kGameDashboard, {}));
-  }
-
   void SetUpOnMainThread() override {
     ScalableIphBrowserTest::SetUpOnMainThread();
 

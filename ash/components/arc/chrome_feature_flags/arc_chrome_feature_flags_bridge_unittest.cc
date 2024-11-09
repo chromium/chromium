@@ -136,18 +136,6 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyPipDoubleTapToResize_Disabled) {
   EXPECT_FALSE(instance()->flags_called_value()->enable_pip_double_tap);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyGameDashboard_Enabled) {
-  scoped_feature_list()->InitAndEnableFeature(ash::features::kGameDashboard);
-  Connect();
-  EXPECT_TRUE(instance()->flags_called_value()->game_dashboard);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyGameDashboard_Disabled) {
-  scoped_feature_list()->InitAndDisableFeature(ash::features::kGameDashboard);
-  Connect();
-  EXPECT_FALSE(instance()->flags_called_value()->game_dashboard);
-}
-
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyResizeCompat_Enabled) {
   scoped_feature_list()->InitAndEnableFeature(arc::kResizeCompat);
   Connect();

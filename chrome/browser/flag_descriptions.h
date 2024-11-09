@@ -3946,9 +3946,6 @@ extern const char kForceReSyncDriveDescription[];
 extern const char kFuseBoxDebugName[];
 extern const char kFuseBoxDebugDescription[];
 
-extern const char kGameDashboard[];
-extern const char kGameDashboardDescription[];
-
 extern const char kGameDashboardGamepadSupport[];
 extern const char kGameDashboardGamepadSupportDescription[];
 

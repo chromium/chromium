@@ -1198,9 +1198,6 @@ BASE_FEATURE(kGaiaRecordAccountCreation,
              "GaiaRecordAccountCreation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the Game Dashboard.
-BASE_FEATURE(kGameDashboard, "GameDashboard", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables Gamepad Support.
 BASE_FEATURE(kGameDashboardGamepadSupport,
              "GameDashboardGamepadSupport",
@@ -4146,10 +4143,6 @@ bool IsLobsterEnabled() {
 bool IsLockScreenHideSensitiveNotificationsSupported() {
   return base::FeatureList::IsEnabled(
       kLockScreenHideSensitiveNotificationsSupport);
-}
-
-bool IsGameDashboardEnabled() {
-  return base::FeatureList::IsEnabled(kGameDashboard);
 }
 
 bool IsGameDashboardGamepadSupportEnabled() {
