@@ -558,7 +558,7 @@ DataSharingService::ParseUrlResult DataSharingServiceImpl::ParseDataSharingUrl(
     return base::unexpected(ParseUrlStatus::kQueryMissingFailure);
   }
 
-  return GroupToken(GroupId(group_id), access_token);
+  return base::ok(GroupToken(GroupId(group_id), access_token));
 }
 
 void DataSharingServiceImpl::EnsureGroupVisibility(

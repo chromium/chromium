@@ -27,6 +27,7 @@ namespace {
 const char kUserGaia[] = "gaia_id";
 const char kUserEmail[] = "test@email.com";
 const char kGroupId[] = "/?-group_id";
+const char kAccessToken[] = "/?-access_token";
 
 }  // namespace
 
@@ -36,27 +37,29 @@ class CollaborationServiceImplTest : public testing::Test {
 
   ~CollaborationServiceImplTest() override = default;
 
+  void SetUp() override { InitService(); }
+
+  void TearDown() override { service_.reset(); }
+
+  void InitService() {
+    service_ = std::make_unique<CollaborationServiceImpl>(
+        /*tab_group_sync_service=*/nullptr, &mock_data_sharing_service_,
+        identity_test_env_.identity_manager(),
+        /*sync_service=*/nullptr);
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  data_sharing::MockDataSharingService mock_data_sharing_service_;
   signin::IdentityTestEnvironment identity_test_env_;
+  data_sharing::MockDataSharingService mock_data_sharing_service_;
+  std::unique_ptr<CollaborationServiceImpl> service_;
 };
 
 TEST_F(CollaborationServiceImplTest, ConstructionAndEmptyServiceCheck) {
-  auto service = std::make_unique<CollaborationServiceImpl>(
-      /*tab_group_sync_service=*/nullptr,
-      /*data_sharing_service=*/nullptr,
-      /*identity_manager=*/nullptr,
-      /*sync_service=*/nullptr);
-  EXPECT_FALSE(service->IsEmptyService());
+  EXPECT_FALSE(service_->IsEmptyService());
 }
 
 TEST_F(CollaborationServiceImplTest, GetCurrentUserRoleForGroup) {
-  auto service = std::make_unique<CollaborationServiceImpl>(
-      /*tab_group_sync_service=*/nullptr, &mock_data_sharing_service_,
-      identity_test_env_.identity_manager(),
-      /*sync_service=*/nullptr);
-
   GroupData group_data = GroupData();
   GroupMember group_member = GroupMember();
   group_member.gaia_id = kUserGaia;
@@ -69,30 +72,24 @@ TEST_F(CollaborationServiceImplTest, GetCurrentUserRoleForGroup) {
   EXPECT_CALL(mock_data_sharing_service_, ReadGroup(group_id))
       .WillOnce(Return(std::nullopt));
 
-  EXPECT_EQ(service->GetCurrentUserRoleForGroup(group_id),
+  EXPECT_EQ(service_->GetCurrentUserRoleForGroup(group_id),
             MemberRole::kUnknown);
 
   // No current primary account should return unknown role.
   EXPECT_CALL(mock_data_sharing_service_, ReadGroup(group_id))
       .WillRepeatedly(Return(group_data));
-  EXPECT_EQ(service->GetCurrentUserRoleForGroup(group_id),
+  EXPECT_EQ(service_->GetCurrentUserRoleForGroup(group_id),
             MemberRole::kUnknown);
 
   identity_test_env_.MakeAccountAvailable(
       kUserEmail,
       {.primary_account_consent_level = signin::ConsentLevel::kSignin,
        .gaia_id = kUserGaia});
-  EXPECT_EQ(service->GetCurrentUserRoleForGroup(group_id), MemberRole::kOwner);
+  EXPECT_EQ(service_->GetCurrentUserRoleForGroup(group_id), MemberRole::kOwner);
 }
 
 TEST_F(CollaborationServiceImplTest, GetServiceStatus_Disabled) {
-  auto service = std::make_unique<CollaborationServiceImpl>(
-      /*tab_group_sync_service=*/nullptr,
-      /*data_sharing_service=*/nullptr,
-      /*identity_manager=*/nullptr,
-      /*sync_service=*/nullptr);
-
-  EXPECT_EQ(service->GetServiceStatus().collaboration_status,
+  EXPECT_EQ(service_->GetServiceStatus().collaboration_status,
             CollaborationStatus::kDisabled);
 }
 
@@ -100,14 +97,9 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_JoinOnly) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       data_sharing::features::kDataSharingJoinOnly);
+  InitService();
 
-  auto service = std::make_unique<CollaborationServiceImpl>(
-      /*tab_group_sync_service=*/nullptr,
-      /*data_sharing_service=*/nullptr,
-      /*identity_manager=*/nullptr,
-      /*sync_service=*/nullptr);
-
-  EXPECT_EQ(service->GetServiceStatus().collaboration_status,
+  EXPECT_EQ(service_->GetServiceStatus().collaboration_status,
             CollaborationStatus::kAllowedToJoin);
 }
 
@@ -115,14 +107,9 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_Create) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       data_sharing::features::kDataSharingFeature);
+  InitService();
 
-  auto service = std::make_unique<CollaborationServiceImpl>(
-      /*tab_group_sync_service=*/nullptr,
-      /*data_sharing_service=*/nullptr,
-      /*identity_manager=*/nullptr,
-      /*sync_service=*/nullptr);
-
-  EXPECT_EQ(service->GetServiceStatus().collaboration_status,
+  EXPECT_EQ(service_->GetServiceStatus().collaboration_status,
             CollaborationStatus::kEnabledCreateAndJoin);
 }
 
@@ -131,15 +118,35 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_CreateOverridesJoinOnly) {
   feature_list.InitWithFeatures({data_sharing::features::kDataSharingJoinOnly,
                                  data_sharing::features::kDataSharingFeature},
                                 {});
+  InitService();
 
-  auto service = std::make_unique<CollaborationServiceImpl>(
-      /*tab_group_sync_service=*/nullptr,
-      /*data_sharing_service=*/nullptr,
-      /*identity_manager=*/nullptr,
-      /*sync_service=*/nullptr);
-
-  EXPECT_EQ(service->GetServiceStatus().collaboration_status,
+  EXPECT_EQ(service_->GetServiceStatus().collaboration_status,
             CollaborationStatus::kEnabledCreateAndJoin);
+}
+
+TEST_F(CollaborationServiceImplTest, StartJoinFlow) {
+  GURL url("http://www.example.com/");
+  data_sharing::GroupToken token(data_sharing::GroupId(kGroupId), kAccessToken);
+
+  EXPECT_CALL(mock_data_sharing_service_, ParseDataSharingUrl(url))
+      .WillOnce(Return(
+          base::unexpected(data_sharing::MockDataSharingService::
+                               ParseUrlStatus::kHostOrPathMismatchFailure)));
+
+  // Invalid url parsing will not start new join flow.
+  service_->StartJoinFlow(/*delegate=*/nullptr, url);
+  EXPECT_EQ(service_->GetJoinControllersForTesting().size(), 0u);
+
+  EXPECT_CALL(mock_data_sharing_service_, ParseDataSharingUrl(url))
+      .WillRepeatedly(Return(base::ok(token)));
+
+  // New join flow will be appended.
+  service_->StartJoinFlow(/*delegate=*/nullptr, url);
+  EXPECT_EQ(service_->GetJoinControllersForTesting().size(), 1u);
+
+  // Existing join flow should not start new flow.
+  service_->StartJoinFlow(/*delegate=*/nullptr, url);
+  EXPECT_EQ(service_->GetJoinControllersForTesting().size(), 1u);
 }
 
 }  // namespace collaboration

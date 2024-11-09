@@ -63,7 +63,7 @@ struct GroupMemberPartialData {
 struct GroupToken {
   GroupToken();
 
-  GroupToken(GroupId group_id, std::string access_token);
+  GroupToken(GroupId group_id, const std::string& access_token);
 
   GroupToken(const GroupToken&);
   GroupToken& operator=(const GroupToken&);
@@ -158,6 +158,10 @@ struct SharedDataPreview {
 // Only takes `group_id` into account, used to allow storing GroupData in
 // std::set.
 bool operator<(const GroupData& lhs, const GroupData& rhs);
+
+// Used to allow storing GroupToken in arrays.
+bool operator==(const GroupToken& lhs, const GroupToken& rhs);
+bool operator<(const GroupToken& lhs, const GroupToken& rhs);
 
 }  // namespace data_sharing
 

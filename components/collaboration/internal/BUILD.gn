@@ -25,6 +25,8 @@ static_library("core_internal") {
   ]
 
   sources = [
+    "collaboration_controller.cc",
+    "collaboration_controller.h",
     "collaboration_service_impl.cc",
     "collaboration_service_impl.h",
     "empty_collaboration_service.cc",

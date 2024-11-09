@@ -46,7 +46,7 @@ GroupMemberPartialData::~GroupMemberPartialData() = default;
 
 GroupToken::GroupToken() = default;
 
-GroupToken::GroupToken(GroupId group_id, std::string access_token)
+GroupToken::GroupToken(GroupId group_id, const std::string& access_token)
     : group_id(std::move(group_id)), access_token(std::move(access_token)) {}
 
 GroupToken::GroupToken(const GroupToken&) = default;
@@ -116,6 +116,14 @@ SharedTabGroupPreview::~SharedTabGroupPreview() = default;
 
 bool operator<(const GroupData& lhs, const GroupData& rhs) {
   return lhs.group_token.group_id < rhs.group_token.group_id;
+}
+
+bool operator==(const GroupToken& lhs, const GroupToken& rhs) {
+  return lhs.group_id == rhs.group_id && lhs.access_token == rhs.access_token;
+}
+
+bool operator<(const GroupToken& lhs, const GroupToken& rhs) {
+  return lhs.group_id < rhs.group_id;
 }
 
 }  // namespace data_sharing

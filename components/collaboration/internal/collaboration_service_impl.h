@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_COLLABORATION_INTERNAL_COLLABORATION_SERVICE_IMPL_H_
 #define COMPONENTS_COLLABORATION_INTERNAL_COLLABORATION_SERVICE_IMPL_H_
 
+#include <string>
+
 #include "components/collaboration/public/collaboration_service.h"
 
 namespace data_sharing {
@@ -24,6 +26,7 @@ class TabGroupSyncService;
 }  // namespace tab_groups
 
 namespace collaboration {
+class CollaborationController;
 
 // The internal implementation of the CollborationService.
 class CollaborationServiceImpl : public CollaborationService {
@@ -45,6 +48,11 @@ class CollaborationServiceImpl : public CollaborationService {
   data_sharing::MemberRole GetCurrentUserRoleForGroup(
       const data_sharing::GroupId& group_id) override;
 
+  // For testing.
+  const std::map<data_sharing::GroupToken,
+                 std::unique_ptr<CollaborationController>>&
+  GetJoinControllersForTesting();
+
  private:
   ServiceStatus current_status_;
 
@@ -59,6 +67,11 @@ class CollaborationServiceImpl : public CollaborationService {
 
   // Service providing information about sync.
   const raw_ptr<syncer::SyncService> sync_service_;
+
+  // Started flows.
+  // Join controllers: <GroupId, CollaborationController>
+  std::map<data_sharing::GroupToken, std::unique_ptr<CollaborationController>>
+      join_controllers_;
 };
 
 }  // namespace collaboration
