@@ -247,11 +247,17 @@ void ExtensionsRendererClient::WillSendRequest(
     }
   }
 
+  // TODO(devlin): Is this check necessary?
+  // Any (cross-origin) navigations or requests should also be checked in the
+  // browser process, since the renderer is less trusted. That will rewrite
+  // these requests as necessary to chrome-extension://invalid. Additionally,
+  // having this check here could (potentially) be used in timing attacks to
+  // determine if a given extension is installed.
   if (!extension_id.empty()) {
     const extensions::RendererExtensionRegistry* extension_registry =
         extensions::RendererExtensionRegistry::Get();
-    const Extension* extension = extension_registry->GetByID(extension_id);
-    if (!extension) {
+    if (!extension_registry->Contains(extension_id) &&
+        !extension_registry->ContainsGUID(extension_id)) {
       // If there is no extension installed for the origin, it may be from a
       // recently uninstalled extension.  The tabs of such extensions are
       // automatically closed, but subframes and content scripts may stick

@@ -56,6 +56,10 @@ class RendererExtensionRegistry {
   ExtensionIdSet GetIDs() const;
   bool ExtensionBindingsAllowed(const GURL& url) const;
 
+  // Returns true if an extension with the given `guid` is in the set of
+  // extensions the renderer knows about.
+  bool ContainsGUID(const std::string& guid) const;
+
   // Activation token-related methods.
   //
   // Sets the activation token for a Service Worker based |extension|.

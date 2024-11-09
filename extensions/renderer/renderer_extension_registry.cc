@@ -121,6 +121,11 @@ bool RendererExtensionRegistry::ExtensionBindingsAllowed(
   return extensions_.ExtensionBindingsAllowed(url);
 }
 
+bool RendererExtensionRegistry::ContainsGUID(const std::string& guid) const {
+  base::AutoLock lock(lock_);
+  return !!extensions_.GetByGUID(guid);
+}
+
 void RendererExtensionRegistry::SetWorkerActivationToken(
     const scoped_refptr<const Extension>& extension,
     base::UnguessableToken worker_activation_token) {
