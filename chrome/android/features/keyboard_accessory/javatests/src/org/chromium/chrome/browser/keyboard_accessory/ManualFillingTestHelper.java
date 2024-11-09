@@ -16,7 +16,7 @@ import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryStartedHiding;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryStartedShowing;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryViewFullyHidden;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryViewFullyShown;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.checkThatAccessoryViewFullyShown;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_INVISIBLE;
@@ -296,7 +296,7 @@ public class ManualFillingTestHelper {
 
     public void waitForKeyboardAccessoryToBeShown(boolean waitForSuggestionsToLoad) {
         pollInstrumentationThread(() -> accessoryStartedShowing(getKeyboardAccessoryBar()));
-        pollUiThread(() -> accessoryViewFullyShown(mActivityTestRule.getActivity()));
+        pollUiThread(() -> checkThatAccessoryViewFullyShown(mActivityTestRule.getActivity()));
         if (waitForSuggestionsToLoad) {
             pollUiThread(
                     () -> {
