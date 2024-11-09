@@ -79,14 +79,13 @@ Response TargetHandler::CreateTarget(const std::string& url,
 
 Response TargetHandler::CloseTarget(const std::string& target_id,
                                     bool* out_success) {
-  HeadlessWebContents* web_contents =
-      browser_->GetWebContentsForDevToolsAgentHostId(target_id);
-  *out_success = false;
-  if (web_contents) {
-    web_contents->Close();
-    *out_success = true;
+  auto agent_host = content::DevToolsAgentHost::GetForId(target_id);
+  if (!agent_host) {
+    return Response::InvalidParams("No target found for targetId");
   }
+  *out_success = agent_host->Close();
   return Response::Success();
 }
+
 }  // namespace protocol
 }  // namespace headless

@@ -387,7 +387,7 @@ class HeadlessWebContentsBeginFrameControlTest : public HeadlessBrowserTest {
     ASSERT_FALSE(targetId.empty());
 
     web_contents_ = HeadlessWebContentsImpl::From(
-        browser()->GetWebContentsForDevToolsAgentHostId(targetId));
+        content::DevToolsAgentHost::GetForId(targetId)->GetWebContents());
 
     devtools_client_.AttachToWebContents(web_contents_->web_contents());
     devtools_client_.AddEventHandler("Page.loadEventFired",

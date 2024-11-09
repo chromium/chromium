@@ -305,17 +305,6 @@ base::WeakPtr<HeadlessBrowserImpl> HeadlessBrowserImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-HeadlessWebContents* HeadlessBrowserImpl::GetWebContentsForDevToolsAgentHostId(
-    const std::string& devtools_agent_host_id) {
-  for (HeadlessBrowserContext* context : GetAllBrowserContexts()) {
-    HeadlessWebContents* web_contents =
-        context->GetWebContentsForDevToolsAgentHostId(devtools_agent_host_id);
-    if (web_contents)
-      return web_contents;
-  }
-  return nullptr;
-}
-
 HeadlessWebContentsImpl* HeadlessBrowserImpl::GetWebContentsForWindowId(
     const int window_id) {
   for (HeadlessBrowserContext* context : GetAllBrowserContexts()) {

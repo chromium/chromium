@@ -22,6 +22,10 @@
 #include "headless/public/headless_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace headless {
 class HeadlessBrowserImpl;
 class HeadlessClientHintsControllerDelegate;
@@ -48,8 +52,6 @@ class HEADLESS_EXPORT HeadlessBrowserContextImpl final
   // HeadlessBrowserContext implementation:
   HeadlessWebContents::Builder CreateWebContentsBuilder() override;
   std::vector<HeadlessWebContents*> GetAllWebContents() override;
-  HeadlessWebContents* GetWebContentsForDevToolsAgentHostId(
-      const std::string& devtools_agent_host_id) override;
   void Close() override;
   const std::string& Id() override;
 
@@ -85,6 +87,8 @@ class HEADLESS_EXPORT HeadlessBrowserContextImpl final
   void RegisterWebContents(
       std::unique_ptr<HeadlessWebContentsImpl> web_contents);
   void DestroyWebContents(HeadlessWebContentsImpl* web_contents);
+  HeadlessWebContentsImpl* GetHeadlessWebContents(
+      const content::WebContents* web_contents);
 
   HeadlessBrowserImpl* browser() const;
   const HeadlessBrowserContextOptions* options() const;
@@ -109,7 +113,7 @@ class HEADLESS_EXPORT HeadlessBrowserContextImpl final
   std::unique_ptr<HeadlessBrowserContextOptions> context_options_;
   base::FilePath path_;
 
-  std::unordered_map<std::string, std::unique_ptr<HeadlessWebContents>>
+  std::unordered_map<uintptr_t, std::unique_ptr<HeadlessWebContentsImpl>>
       web_contents_map_;
 
   std::unique_ptr<content::PermissionControllerDelegate>

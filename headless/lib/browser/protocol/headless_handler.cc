@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/base_switches.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
@@ -125,9 +126,9 @@ void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
                                  Maybe<bool> in_no_display_updates,
                                  Maybe<ScreenshotParams> screenshot,
                                  std::unique_ptr<BeginFrameCallback> callback) {
-  HeadlessWebContentsImpl* headless_contents =
-      HeadlessWebContentsImpl::From(browser_, web_contents_);
-  if (!headless_contents->begin_frame_control_enabled()) {
+  auto& headless_contents =
+      CHECK_DEREF(HeadlessWebContentsImpl::From(web_contents_));
+  if (!headless_contents.begin_frame_control_enabled()) {
     callback->sendFailure(Response::ServerError(
         "Command is only supported if BeginFrameControl is enabled."));
     return;
@@ -182,7 +183,7 @@ void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
   }
 
   const bool capture_screenshot = !!encoder;
-  headless_contents->BeginFrame(
+  headless_contents.BeginFrame(
       frame_time_ticks, deadline, interval, no_display_updates,
       capture_screenshot,
       base::BindOnce(&OnBeginFrameFinished, std::move(encoder),

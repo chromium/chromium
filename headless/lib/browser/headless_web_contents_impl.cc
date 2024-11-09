@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -96,11 +97,13 @@ HeadlessWebContentsImpl* HeadlessWebContentsImpl::From(
 
 // static
 HeadlessWebContentsImpl* HeadlessWebContentsImpl::From(
-    HeadlessBrowser* browser,
     content::WebContents* contents) {
-  return HeadlessWebContentsImpl::From(
-      browser->GetWebContentsForDevToolsAgentHostId(
-          content::DevToolsAgentHost::GetOrCreateFor(contents)->GetId()));
+  if (!contents) {
+    return nullptr;
+  }
+  auto& browser_context = CHECK_DEREF(
+      HeadlessBrowserContextImpl::From(contents->GetBrowserContext()));
+  return browser_context.GetHeadlessWebContents(contents);
 }
 
 class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
@@ -122,10 +125,9 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
   }
 
   void CloseContents(content::WebContents* source) override {
-    auto* const headless_contents =
-        HeadlessWebContentsImpl::From(browser(), source);
-    DCHECK(headless_contents);
-    headless_contents->Close();
+    auto& headless_contents =
+        CHECK_DEREF(HeadlessWebContentsImpl::From(source));
+    headless_contents.Close();
   }
 
   content::WebContents* AddNewContents(

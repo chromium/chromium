@@ -31,7 +31,6 @@ class Rect;
 }
 
 namespace headless {
-class HeadlessBrowser;
 class HeadlessBrowserImpl;
 
 // Exported for tests.
@@ -47,8 +46,7 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
   ~HeadlessWebContentsImpl() override;
 
   static HeadlessWebContentsImpl* From(HeadlessWebContents* web_contents);
-  static HeadlessWebContentsImpl* From(HeadlessBrowser* browser,
-                                       content::WebContents* contents);
+  static HeadlessWebContentsImpl* From(content::WebContents* web_contents);
 
   static std::unique_ptr<HeadlessWebContentsImpl> Create(
       HeadlessWebContents::Builder* builder);
@@ -135,7 +133,7 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
   std::unique_ptr<HeadlessWindowTreeHost> window_tree_host_;
   int window_id_ = 0;
   std::string window_state_;
-  std::unique_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<content::WebContents> const web_contents_;
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   bool devtools_target_ready_notification_sent_ = false;
   bool use_tab_target_ = false;
