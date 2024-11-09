@@ -21595,6 +21595,7 @@ from previous Chrome versions.
   <int value="550387510" label="NTPAssetDownloadSuggestions:disabled"/>
   <int value="550411207" label="enable-webgpu-developer-features"/>
   <int value="550741462" label="WebAppBorderless:disabled"/>
+  <int value="551314032" label="ChangeUnfocusedPriority:enabled"/>
   <int value="552143503"
       label="AdaptiveButtonInTopToolbarAddToBookmarks:disabled"/>
   <int value="552158955" label="NotificationPermissionBottomSheet:enabled"/>
@@ -22488,6 +22489,7 @@ from previous Chrome versions.
   <int value="909685129" label="ReduceUserAgentMinorVersion:disabled"/>
   <int value="910363543" label="ArcSyncInstallPriority:disabled"/>
   <int value="910725730" label="WebRtcHWVP9Encoding:disabled"/>
+  <int value="910964036" label="ChangeUnfocusedPriority:disabled"/>
   <int value="911256399" label="GlobalMediaControlsModernUI:enabled"/>
   <int value="912119426" label="InfiniteSessionRestore:disabled"/>
   <int value="913138924" label="RecurrentInterstitialFeature:disabled"/>

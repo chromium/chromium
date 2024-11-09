@@ -1450,6 +1450,11 @@
     "expiry_milestone": 134
   },
   {
+    "name": "change-unfocused-priority",
+    "owners": [ "asriniva@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "chrome-cart-dom-based-heuristics",
     "owners": [ "yuezhanggg@chromium.org", "wychen@chromium.org"],
     "expiry_milestone": 122

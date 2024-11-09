@@ -125,6 +125,11 @@ extern const char kCOLRV1FontsDescription[];
 extern const char kCertVerificationNetworkTimeName[];
 extern const char kCertVerificationNetworkTimeDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kChangeUnfocusedPriorityName[];
+extern const char kChangeUnfocusedPriorityDescription[];
+#endif
+
 extern const char kClassifyUrlOnProcessResponseEventName[];
 extern const char kClassifyUrlOnProcessResponseEventDescription[];
 

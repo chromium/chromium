@@ -162,6 +162,13 @@ const char kCertVerificationNetworkTimeDescription[] =
     "If certificate verification fails with the network time, it will fall back"
     " to system time.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kChangeUnfocusedPriorityName[] = "Change Unfocused Priority";
+const char kChangeUnfocusedPriorityDescription[] =
+    "Lower process priority for processes with only unfocused windows, "
+    "allowing them to be discarded sooner.";
+#endif
+
 const char kClassifyUrlOnProcessResponseEventName[] =
     "Classify Url on process response event";
 const char kClassifyUrlOnProcessResponseEventDescription[] =

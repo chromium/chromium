@@ -6338,6 +6338,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"disable-instance-limit", flag_descriptions::kDisableInstanceLimitName,
      flag_descriptions::kDisableInstanceLimitDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDisableInstanceLimit)},
+
+    {"change-unfocused-priority",
+     flag_descriptions::kChangeUnfocusedPriorityName,
+     flag_descriptions::kChangeUnfocusedPriorityDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kChangeUnfocusedPriority)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"most-visited-tiles-new-scoring",

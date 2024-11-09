@@ -134,6 +134,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kBackForwardCache,
     &features::kBoardingPassDetector,
     &features::kNetworkServiceInProcess,
+    &features::kChangeUnfocusedPriority,
     &features::kElasticOverscroll,
     &features::kLinkedServicesSetting,
     &features::kLoadingPredictorLimitPreconnectSocketCount,
