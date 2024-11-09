@@ -199,13 +199,6 @@ void LockedSessionWindowTracker::TabChangedAt(content::WebContents* contents,
   }
 
   if (browser_ && browser_->tab_strip_model()->active_index() == index) {
-    // This is only needed to clean up tabs that were created with previously
-    // cancelled navigations.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&LockedSessionWindowTracker::MaybeCloseWebContents,
-                       weak_pointer_factory_.GetWeakPtr(),
-                       contents->GetWeakPtr()));
     // Only fire for active tab.
     for (auto& observer : observers_) {
       observer.OnActiveTabChanged(contents->GetTitle());
@@ -226,13 +219,6 @@ void LockedSessionWindowTracker::OnTabStripModelChanged(
   if (selection.active_tab_changed()) {
     RefreshUrlBlocklist();
     if (selection.new_contents) {
-      // This is only needed to clean up tabs that were created with previously
-      // cancelled navigations.
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&LockedSessionWindowTracker::MaybeCloseWebContents,
-                         weak_pointer_factory_.GetWeakPtr(),
-                         selection.new_contents->GetWeakPtr()));
       for (auto& observer : observers_) {
         observer.OnActiveTabChanged(selection.new_contents->GetTitle());
       }
