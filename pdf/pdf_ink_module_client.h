@@ -87,6 +87,12 @@ class PdfInkModuleClient {
   // Asks the client to change the cursor to `bitmap`.
   virtual void UpdateInkCursorImage(SkBitmap bitmap) {}
 
+  // Notifies that an existing shape identified by `id` on the page at
+  // `page_index` should update its active state.
+  virtual void UpdateShapeActive(int page_index,
+                                 InkModeledShapeId id,
+                                 bool active) {}
+
   // Notifies that an existing stroke identified by `id` on the page at
   // `page_index` should update its active state.
   virtual void UpdateStrokeActive(int page_index, InkStrokeId id, bool active) {

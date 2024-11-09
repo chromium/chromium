@@ -343,6 +343,12 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
         ui::Cursor::NewCustom(std::move(bitmap), std::move(hotspot));
   }
 
+  void UpdateShapeActive(int page_index,
+                         InkModeledShapeId id,
+                         bool active) override {
+    plugin_->engine_->UpdateShapeActive(page_index, id, active);
+  }
+
   void UpdateStrokeActive(int page_index,
                           InkStrokeId id,
                           bool active) override {

@@ -2518,7 +2518,7 @@ TEST_F(PdfViewWebPluginInkTest, Invalidate) {
   EXPECT_EQ(3u, plugin_->deferred_invalidates_for_testing().size());
 }
 
-TEST_F(PdfViewWebPluginInkTest, LoadV2InkPathsForPage) {
+TEST_F(PdfViewWebPluginInkTest, LoadV2InkPathsForPageAndUpdateShapeActive) {
   const std::map<InkModeledShapeId, ink::ModeledShape> kEmptyMap;
   const std::map<InkModeledShapeId, ink::ModeledShape> kMap0{
       {InkModeledShapeId(0), ink::ModeledShape()},
@@ -2550,6 +2550,11 @@ TEST_F(PdfViewWebPluginInkTest, LoadV2InkPathsForPage) {
                   Pair(12, ElementsAre(Pair(InkModeledShapeId(3), _),
                                        Pair(InkModeledShapeId(4), _),
                                        Pair(InkModeledShapeId(5), _)))));
+
+  EXPECT_CALL(*engine_ptr_, UpdateShapeActive(0, InkModeledShapeId(0), false));
+  plugin_->ink_module_client_for_testing()->UpdateShapeActive(
+      /*page_index=*/0, InkModeledShapeId(0),
+      /*active=*/false);
 }
 
 TEST_F(PdfViewWebPluginInkTest, SendThumbnailUpdatesInkThumbnail) {
@@ -2667,7 +2672,7 @@ TEST_F(PdfViewWebPluginInkTest, UpdateThumbnailWithNoStrokes) {
   plugin_->ink_module_client_for_testing()->UpdateThumbnail(/*page_index=*/0);
 }
 
-TEST_F(PdfViewWebPluginInkTest, StrokeAddedAndUpdated) {
+TEST_F(PdfViewWebPluginInkTest, AddAndUpdateStroke) {
   const PdfInkBrush kBrush(PdfInkBrush::Type::kPen, SK_ColorRED, /*size=*/4.0f);
   constexpr InkStrokeId kStrokeId(1);
   constexpr int kPageIndex = 0;
