@@ -106,6 +106,10 @@ chromium-metrics-reviews@google.com.
   <int value="76" label="CopySearchified"/>
   <int value="77" label="FindInPageSearchifiedFirst"/>
   <int value="78" label="FindInPageSearchified"/>
+  <int value="79" label="EnterInk2AnnotationModeFirst"/>
+  <int value="80" label="EnterInk2AnnotationMode"/>
+  <int value="81" label="ExitInk2AnnotationModeFirst"/>
+  <int value="82" label="ExitInk2AnnotationMode"/>
 </enum>
 
 <enum name="ChromePDFViewerLoadStatus">

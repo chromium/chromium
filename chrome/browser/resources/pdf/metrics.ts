@@ -220,7 +220,15 @@ export enum UserAction {
   FIND_IN_PAGE_SEARCHIFIED_FIRST = 77,
   FIND_IN_PAGE_SEARCHIFIED = 78,
 
-  NUMBER_OF_ACTIONS = 79,
+  // Recorded when the user enters Ink2 annotation mode.
+  ENTER_INK2_ANNOTATION_MODE_FIRST = 79,
+  ENTER_INK2_ANNOTATION_MODE = 80,
+
+  // Recorded when the user exits Ink2 annotation mode.
+  EXIT_INK2_ANNOTATION_MODE_FIRST = 81,
+  EXIT_INK2_ANNOTATION_MODE = 82,
+
+  NUMBER_OF_ACTIONS = 83,
 }
 
 function createFirstMap(): Map<UserAction, UserAction> {

@@ -514,8 +514,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     if (this.pdfInk2Enabled_) {
       if (!this.restoreAnnotationMode_) {
         record(
-            annotationMode ? UserAction.ENTER_ANNOTATION_MODE :
-                             UserAction.EXIT_ANNOTATION_MODE);
+            annotationMode ? UserAction.ENTER_INK2_ANNOTATION_MODE :
+                             UserAction.EXIT_INK2_ANNOTATION_MODE);
       }
       this.pluginController_.setAnnotationMode(annotationMode);
       if (!this.hasInitializedBrush_) {

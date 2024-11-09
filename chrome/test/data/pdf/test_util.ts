@@ -5,7 +5,7 @@
 // Utilities that are used in multiple tests.
 
 import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {resetForTesting as resetMetricsForTesting, UserAction, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
 import type {AnnotationBrush, BeforeUnloadProxy, InkBrushSelectorElement, InkColorSelectorElement, InkSizeSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {AnnotationBrushType, BeforeUnloadProxyImpl, PluginController, PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
@@ -266,6 +266,39 @@ customElements.define(TestBookmarksElement.is, TestBookmarksElement);
  */
 export function createBookmarksForTest(): TestBookmarksElement {
   return document.createElement('test-bookmarks');
+}
+
+export class MockMetricsPrivate {
+  actionCounter: Map<UserAction, number> = new Map();
+
+  recordValue(metric: chrome.metricsPrivate.MetricType, value: number) {
+    chrome.test.assertEq('PDF.Actions', metric.metricName);
+    chrome.test.assertEq(
+        chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG, metric.type);
+    chrome.test.assertEq(1, metric.min);
+    chrome.test.assertEq(UserAction.NUMBER_OF_ACTIONS, metric.max);
+    chrome.test.assertEq(UserAction.NUMBER_OF_ACTIONS + 1, metric.buckets);
+
+    const counter = this.actionCounter.get(value) || 0;
+    this.actionCounter.set(value, counter + 1);
+  }
+
+  assertCount(action: UserAction, count: number) {
+    chrome.test.assertEq(count, this.actionCounter.get(action) || 0);
+  }
+
+  reset() {
+    resetMetricsForTesting();
+    this.actionCounter.clear();
+  }
+}
+
+export function setupMockMetricsPrivate(): MockMetricsPrivate {
+  resetMetricsForTesting();
+  const mockMetricsPrivate = new MockMetricsPrivate();
+  chrome.metricsPrivate.recordValue =
+      mockMetricsPrivate.recordValue.bind(mockMetricsPrivate);
+  return mockMetricsPrivate;
 }
 
 /**
