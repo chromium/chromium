@@ -890,18 +890,28 @@ ValidateScaleZeroPointOperandShapeIsCompatibleWithInput(
     base::span<const uint32_t> scale_shape,
     base::span<const uint32_t> zero_point_shape,
     std::string_view label) {
-  if (!BroadcastShapes(scale_shape, input_shape, /*bidirectional=*/false)) {
+  // Check whether `scale_shape` is a subsample of `input_shape`.
+  if (scale_shape.size() > input_shape.size()) {
     return base::unexpected(ErrorWithLabel(
-        label,
-        "The shape of scale is not broadcastable to the shape of input."));
-  }
-  if (!BroadcastShapes(zero_point_shape, input_shape,
-                       /*bidirectional=*/false)) {
-    return base::unexpected(ErrorWithLabel(
-        label,
-        "The shape of zeroPoint is not broadcastable to the shape of input."));
+        label, "The rank of scale is larger than the rank of input."));
   }
 
+  for (size_t i = 0; i < scale_shape.size(); ++i) {
+    auto scale_dim = scale_shape[scale_shape.size() - i - 1];
+    auto input_dim = input_shape[input_shape.size() - i - 1];
+    // The block_size should be an integer where block_size = dim_input /
+    // dim_scale along the axis.
+    if (input_dim % scale_dim != 0) {
+      return base::unexpected(ErrorWithLabel(
+          label,
+          "The shape of scale is not a subsample of the shape of input."));
+    }
+  }
+
+  if (!base::ranges::equal(scale_shape, zero_point_shape)) {
+    return base::unexpected(ErrorWithLabel(
+        label, "The shape of scale and zero point must be the same."));
+  }
   return base::ok();
 }
 

@@ -5,15 +5,17 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'input', must be one of [float32, float16, int32]."
 [FAIL] [dequantizeLinear] Test scale's shape = [] and zeroPoint's shape = [] which is unidirectionally broadcastable to input's shape.
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand named 'input', must be one of [float32, float16, int32]."
-[FAIL] [dequantizeLinear] Throw if the shape of scale is not broadcastable to the shape of input.
+[FAIL] [dequantizeLinear] Test block-wise quantization with block_size = [2, 2, 5].
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand named 'input', must be one of [float32, float16, int32]."
-[FAIL] [dequantizeLinear] Throw if the shape of zero_point is not broadcastable to the shape of input.
+[FAIL] [dequantizeLinear] Throw if the scale size is not a factor of input size.
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand named 'input', must be one of [float32, float16, int32]."
+[FAIL] [dequantizeLinear] Throw if the shape of zero_point is not the same as the shape of input.
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand named 'input', must be one of [float32, float16, int32]."
 [FAIL] [dequantizeLinear] Throw if the data type of zeroPoint is not the same as the data type of input.
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'input', must be one of [float32, float16, int32]."
-[FAIL] [dequantizeLinear] Throw if the data type of input is not int8 or uint8.
+[FAIL] [dequantizeLinear] Throw if the data type of input is not one of {int4, uint4, int8, uint8}.
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'zeroPoint', must be one of [float32, float16, int32]."
-[FAIL] [dequantizeLinear] Throw if the data type of zero_point is not int8 or uint8.
+[FAIL] [dequantizeLinear] Throw if the data type of zero_point is not one of {int4, uint4, int8, uint8}.
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type int8 for input operand named 'input', must be one of [float32, float16, int32]."
 [FAIL] [dequantizeLinear] Throw if the data type of scale is float32.
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'input' on 'MLGraphBuilder': Unsupported data type uint8 for input operand named 'input', must be one of [float32, float16, int32]."

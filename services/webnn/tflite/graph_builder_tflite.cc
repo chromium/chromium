@@ -4126,6 +4126,15 @@ auto GraphBuilderTflite::SerializeDequantizeLinear(
                                     builder_.CreateVector<int32_t>(op_inputs),
                                     builder_.CreateVector<int32_t>(op_outputs));
   } else {
+    // TODO(crbug.com/377172670): Add emulation support for block-wise
+    // dequantizeLinear.
+    if (!BroadcastShapes(
+            GetOperand(dequantize_linear.scale_operand_id).descriptor.shape(),
+            GetOperand(dequantize_linear.input_operand_id).descriptor.shape(),
+            /*bidirectional=*/false)) {
+      return base::unexpected("DequantizeLinear can't support block-wise.");
+    }
+
     // Emulate the dequantize operation whose calculation follows the expression
     // `output = (input - zeroPoint) * scale`.
     ASSIGN_OR_RETURN(

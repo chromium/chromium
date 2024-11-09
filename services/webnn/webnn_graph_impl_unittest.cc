@@ -1687,7 +1687,7 @@ TEST_F(WebNNGraphImplTest, DequantizeLinearTest) {
     DequantizeLinearTester{
         .input = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
         .scale = {.type = OperandDataType::kFloat32, .dimensions = {5}},
-        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {5}},
         .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
         .expected = true}
         .Test();
@@ -1697,17 +1697,7 @@ TEST_F(WebNNGraphImplTest, DequantizeLinearTest) {
     DequantizeLinearTester{
         .input = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
         .scale = {.type = OperandDataType::kFloat32, .dimensions = {3, 1, 1}},
-        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
-        .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
-        .expected = true}
-        .Test();
-  }
-  {
-    // Test dequantizeLinear operator with a broadcastable zeroPoint.
-    DequantizeLinearTester{
-        .input = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
-        .scale = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
-        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {3, 1, 1}},
         .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
         .expected = true}
         .Test();
@@ -1717,16 +1707,16 @@ TEST_F(WebNNGraphImplTest, DequantizeLinearTest) {
     DequantizeLinearTester{
         .input = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
         .scale = {.type = OperandDataType::kFloat32, .dimensions = {2}},
-        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {2}},
         .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
         .expected = false}
         .Test();
   }
   {
-    // Test the invalid graph with an invalid zero_point.
+    // Test the invalid graph with different scale_shape and zero_point_shape.
     DequantizeLinearTester{
         .input = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
-        .scale = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {5}},
         .zero_point = {.type = OperandDataType::kInt8, .dimensions = {2}},
         .output = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
         .expected = false}
@@ -5255,26 +5245,16 @@ TEST_F(WebNNGraphImplTest, QuantizeLinearTest) {
     QuantizeLinearTester{
         .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
         .scale = {.type = OperandDataType::kFloat32, .dimensions = {5}},
-        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
-        .output = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
-        .expected = true}
-        .Test();
-  }
-  {
-    // Test quantizeLinear operator with a broadcastable zeroPoint.
-    QuantizeLinearTester{
-        .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
-        .scale = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
         .zero_point = {.type = OperandDataType::kInt8, .dimensions = {5}},
         .output = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
         .expected = true}
         .Test();
   }
   {
-    // Test quantizeLinear operator with a broadcastable zeroPoint.
+    // Test quantizeLinear operator with a broadcastable scale.
     QuantizeLinearTester{
         .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
-        .scale = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
+        .scale = {.type = OperandDataType::kFloat32, .dimensions = {3, 1, 1}},
         .zero_point = {.type = OperandDataType::kInt8, .dimensions = {3, 1, 1}},
         .output = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
         .expected = true}
@@ -5285,13 +5265,13 @@ TEST_F(WebNNGraphImplTest, QuantizeLinearTest) {
     QuantizeLinearTester{
         .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
         .scale = {.type = OperandDataType::kFloat32, .dimensions = {3, 5}},
-        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {5}},
+        .zero_point = {.type = OperandDataType::kInt8, .dimensions = {3, 5}},
         .output = {.type = OperandDataType::kInt8, .dimensions = {3, 2, 5}},
         .expected = false}
         .Test();
   }
   {
-    // Test the invalid graph with an invalid zero_point.
+    // Test the invalid graph with different scale_shape and zero_point_shape.
     QuantizeLinearTester{
         .input = {.type = OperandDataType::kFloat32, .dimensions = {3, 2, 5}},
         .scale = {.type = OperandDataType::kFloat32, .dimensions = {5}},
