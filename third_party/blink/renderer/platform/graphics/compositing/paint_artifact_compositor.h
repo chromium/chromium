@@ -196,6 +196,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   void ShowDebugData();
 #endif
 
+  void ForAllContentLayersForTesting(
+      base::FunctionRef<void(ContentLayerClientImpl*)> func) const;
   // Returns the ith ContentLayerClientImpl for testing.
   ContentLayerClientImpl* ContentLayerClientForTesting(wtf_size_t i) const;
 

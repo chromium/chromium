@@ -77,6 +77,17 @@ const ScrollPaintPropertyNode* PaintPropertyTreeBuilderTest::DocScroll(
   return document->GetLayoutView()->FirstFragment().PaintProperties()->Scroll();
 }
 
+const EffectPaintPropertyNode* PaintPropertyTreeBuilderTest::DocEffect(
+    const Document* document) {
+  if (!document) {
+    document = &GetDocument();
+  }
+  return document->GetLayoutView()
+      ->FirstFragment()
+      .PaintProperties()
+      ->ViewTransitionEffect();
+}
+
 const ObjectPaintProperties*
 PaintPropertyTreeBuilderTest::PaintPropertiesForElement(const char* name) {
   return GetDocument()
@@ -1047,8 +1058,7 @@ TEST_P(PaintPropertyTreeBuilderTest, EffectNodesInSVG) {
       PaintPropertiesForElement("groupWithOpacity");
   EXPECT_EQ(0.6f, group_with_opacity_properties->Effect()->Opacity());
   EXPECT_EQ(svg_clip, group_with_opacity_properties->Effect()->OutputClip());
-  EXPECT_EQ(&EffectPaintPropertyNode::Root(),
-            group_with_opacity_properties->Effect()->Parent());
+  EXPECT_EQ(DocEffect(), group_with_opacity_properties->Effect()->Parent());
 
   EXPECT_EQ(nullptr, PaintPropertiesForElement("rectWithoutOpacity"));
 
@@ -4721,7 +4731,7 @@ TEST_P(PaintPropertyTreeBuilderTest, Reflection) {
             filter_properties->PaintOffsetTranslation()->Parent());
   EXPECT_EQ(gfx::Vector2dF(8, 8),
             filter_properties->PaintOffsetTranslation()->Get2dTranslation());
-  EXPECT_TRUE(filter_properties->Filter()->Parent()->IsRoot());
+  EXPECT_EQ(filter_properties->Filter()->Parent(), DocEffect());
   EXPECT_EQ(filter_properties->PaintOffsetTranslation(),
             &filter_properties->Filter()->LocalTransformSpace());
   EXPECT_EQ(DocContentClip(), filter_properties->Filter()->OutputClip());
@@ -4734,7 +4744,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SimpleFilter) {
   const ObjectPaintProperties* filter_properties =
       GetLayoutObjectByElementId("filter")->FirstFragment().PaintProperties();
   EXPECT_FALSE(filter_properties->PaintOffsetTranslation());
-  EXPECT_TRUE(filter_properties->Filter()->Parent()->IsRoot());
+  EXPECT_EQ(filter_properties->Filter()->Parent(), DocEffect());
   EXPECT_FALSE(filter_properties->PixelMovingFilterClipExpander());
   EXPECT_EQ(DocScrollTranslation(),
             &filter_properties->Filter()->LocalTransformSpace());
@@ -4751,7 +4761,7 @@ TEST_P(PaintPropertyTreeBuilderTest, PixelMovingFilter) {
 
   auto* filter = filter_properties->Filter();
   ASSERT_TRUE(filter);
-  EXPECT_TRUE(filter->Parent()->IsRoot());
+  EXPECT_EQ(filter->Parent(), DocEffect());
   EXPECT_TRUE(filter->HasFilterThatMovesPixels());
   EXPECT_EQ(DocScrollTranslation(), &filter->LocalTransformSpace());
   EXPECT_EQ(DocContentClip(), filter->OutputClip());
@@ -4806,7 +4816,7 @@ TEST_P(PaintPropertyTreeBuilderTest, FilterReparentClips) {
       GetLayoutObjectByElementId("clip")->FirstFragment().PaintProperties();
   const ObjectPaintProperties* filter_properties =
       GetLayoutObjectByElementId("filter")->FirstFragment().PaintProperties();
-  EXPECT_TRUE(filter_properties->Filter()->Parent()->IsRoot());
+  EXPECT_TRUE(DocEffect());
   EXPECT_EQ(clip_properties->OverflowClip(),
             filter_properties->Filter()->OutputClip());
   EXPECT_EQ(DocScrollTranslation(),
@@ -5048,7 +5058,7 @@ TEST_P(PaintPropertyTreeBuilderTest, MaskSimple) {
 
   EXPECT_EQ(properties->Effect(),
             &target->FirstFragment().LocalBorderBoxProperties().Effect());
-  EXPECT_TRUE(properties->Effect()->Parent()->IsRoot());
+  EXPECT_TRUE(DocEffect());
   EXPECT_EQ(SkBlendMode::kSrcOver, properties->Effect()->BlendMode());
   EXPECT_EQ(mask_clip->Parent(), properties->Effect()->OutputClip());
 
@@ -5077,7 +5087,7 @@ TEST_P(PaintPropertyTreeBuilderTest, MaskWithOutset) {
 
   EXPECT_EQ(properties->Effect(),
             &target->FirstFragment().LocalBorderBoxProperties().Effect());
-  EXPECT_TRUE(properties->Effect()->Parent()->IsRoot());
+  EXPECT_TRUE(DocEffect());
   EXPECT_EQ(SkBlendMode::kSrcOver, properties->Effect()->BlendMode());
   EXPECT_EQ(mask_clip->Parent(), properties->Effect()->OutputClip());
 
@@ -5131,7 +5141,7 @@ TEST_P(PaintPropertyTreeBuilderTest, MaskEscapeClip) {
 
   EXPECT_EQ(target_properties->Effect(),
             &target->FirstFragment().LocalBorderBoxProperties().Effect());
-  EXPECT_TRUE(target_properties->Effect()->Parent()->IsRoot());
+  EXPECT_TRUE(DocEffect());
   EXPECT_EQ(SkBlendMode::kSrcOver, target_properties->Effect()->BlendMode());
   EXPECT_EQ(nullptr, target_properties->Effect()->OutputClip());
 
@@ -5174,7 +5184,7 @@ TEST_P(PaintPropertyTreeBuilderTest, MaskInline) {
 
   EXPECT_EQ(properties->Effect(),
             &target->FirstFragment().LocalBorderBoxProperties().Effect());
-  EXPECT_TRUE(properties->Effect()->Parent()->IsRoot());
+  EXPECT_TRUE(DocEffect());
   EXPECT_EQ(SkBlendMode::kSrcOver, properties->Effect()->BlendMode());
   EXPECT_EQ(mask_clip->Parent(), properties->Effect()->OutputClip());
 
@@ -5275,8 +5285,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGBlending) {
   ASSERT_TRUE(svg_root_properties->Effect());
   EXPECT_EQ(SkBlendMode::kSrcOver, svg_root_properties->Effect()->BlendMode());
 
-  EXPECT_EQ(&EffectPaintPropertyNode::Root(),
-            svg_root_properties->Effect()->Parent());
+  EXPECT_EQ(DocEffect(), svg_root_properties->Effect()->Parent());
   EXPECT_EQ(svg_root_properties->Effect(), rect_properties->Effect()->Parent());
 }
 
@@ -5298,8 +5307,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootBlending) {
   ASSERT_TRUE(svg_root_properties->Effect());
   EXPECT_EQ(SkBlendMode::kMultiply, svg_root_properties->Effect()->BlendMode());
 
-  EXPECT_EQ(&EffectPaintPropertyNode::Root(),
-            html_properties->Effect()->Parent());
+  EXPECT_EQ(DocEffect(), html_properties->Effect()->Parent());
   EXPECT_EQ(html_properties->Effect(), svg_root_properties->Effect()->Parent());
 }
 
@@ -6415,7 +6423,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootCompositedClipPathSimple) {
 
   const auto* effect = properties->Effect();
   ASSERT_NE(nullptr, effect);
-  EXPECT_EQ(&EffectPaintPropertyNode::Root(), effect->Parent());
+  EXPECT_EQ(DocEffect(), effect->Parent());
   EXPECT_EQ(transform, &effect->LocalTransformSpace());
   EXPECT_EQ(clip_path_clip, effect->OutputClip());
   EXPECT_EQ(SkBlendMode::kSrcOver, effect->BlendMode());
@@ -6453,7 +6461,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootCompositedClipPathComplex) {
   const auto* effect = properties->Effect();
   ASSERT_NE(nullptr, effect);
   EXPECT_TRUE(effect->HasDirectCompositingReasons());
-  EXPECT_EQ(&EffectPaintPropertyNode::Root(), effect->Parent());
+  EXPECT_EQ(DocEffect(), effect->Parent());
   EXPECT_EQ(transform, &effect->LocalTransformSpace());
   EXPECT_EQ(clip_path_clip, effect->OutputClip());
   EXPECT_EQ(SkBlendMode::kSrcOver, effect->BlendMode());

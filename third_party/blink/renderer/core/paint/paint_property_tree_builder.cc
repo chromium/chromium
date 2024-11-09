@@ -1834,25 +1834,32 @@ void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionEffect() {
         properties_->ViewTransitionEffect()
             ->SelfOrAncestorParticipatesInViewTransition();
 
-    const bool needs_view_transition_effect =
+    const bool is_view_transition_element =
         full_context_.direct_compositing_reasons &
         CompositingReason::kViewTransitionElement;
+
+    const bool needs_view_transition_effect =
+        is_view_transition_element ||
+        (object_.IsLayoutView() && !IsInLocalSubframe(object_) &&
+         !object_.GetDocument().IsSVGDocument());
 
     if (needs_view_transition_effect) {
       auto* transition =
           ViewTransitionUtils::GetTransition(object_.GetDocument());
-      DCHECK(transition);
+      DCHECK(!is_view_transition_element || transition);
 
       EffectPaintPropertyNode::State state;
-      state.direct_compositing_reasons =
-          CompositingReason::kViewTransitionElement;
       state.local_transform_space = context_.current.transform;
       state.output_clip = context_.current.clip;
       state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
           object_.UniqueId(),
           CompositorElementIdNamespace::kViewTransitionElement);
-      state.view_transition_element_resource_id =
-          transition->GetSnapshotId(object_);
+      if (is_view_transition_element) {
+        state.direct_compositing_reasons =
+            CompositingReason::kViewTransitionElement;
+        state.view_transition_element_resource_id =
+            transition->GetSnapshotId(object_);
+      }
 
       // The value isn't set on the root, since clipping rules are different for
       // the root view transition element.

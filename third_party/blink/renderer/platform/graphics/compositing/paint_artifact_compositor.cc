@@ -1482,6 +1482,15 @@ void PaintArtifactCompositor::ShowDebugData() {
 }
 #endif
 
+void PaintArtifactCompositor::ForAllContentLayersForTesting(
+    base::FunctionRef<void(ContentLayerClientImpl*)> func) const {
+  for (auto& pending_layer : pending_layers_) {
+    if (auto* client = pending_layer.GetContentLayerClient()) {
+      func(client);
+    }
+  }
+}
+
 ContentLayerClientImpl* PaintArtifactCompositor::ContentLayerClientForTesting(
     wtf_size_t i) const {
   for (auto& pending_layer : pending_layers_) {
