@@ -624,6 +624,7 @@ std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfoForWebApp(
 
   shortcut_info->app_id = app->app_id();
   shortcut_info->url = app->start_url();
+  shortcut_info->is_diy_app = app->is_diy_app();
   shortcut_info->title = base::UTF8ToUTF16(
       provider_->registrar_unsafe().GetAppShortName(app->app_id()));
   shortcut_info->description = base::UTF8ToUTF16(

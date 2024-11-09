@@ -900,6 +900,7 @@ source_set("web_applications_unit_tests") {
     sources += [
       "os_integration/mac/app_shim_registry_unittest.cc",
       "os_integration/mac/icns_encoder_unittest.cc",
+      "os_integration/mac/icon_utils_unittest.mm",
       "os_integration/mac/shortcuts_versioning_mac_unittest.cc",
       "os_integration/mac/web_app_run_on_os_login_mac_unittest.mm",
       "os_integration/mac/web_app_shortcut_creator_unittest.mm",

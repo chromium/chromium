@@ -1009,7 +1009,11 @@ bool WebAppShortcutCreator::UpdateIcon(const base::FilePath& app_path) const {
   if (!has_valid_icons) {
     for (gfx::ImageFamily::const_iterator it = info_->favicon.begin();
          it != info_->favicon.end(); ++it) {
-      if (icns_encoder.AddImage(*it)) {
+      if (info_->is_diy_app) {
+        if (icns_encoder.AddImage(MaskDiyAppIcon(*it))) {
+          has_valid_icons = true;
+        }
+      } else if (icns_encoder.AddImage(*it)) {
         has_valid_icons = true;
       }
     }

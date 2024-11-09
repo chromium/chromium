@@ -70,6 +70,10 @@ struct ShortcutInfo {
   std::set<std::string> file_handler_extensions;
   std::set<std::string> file_handler_mime_types;
   std::set<std::string> protocol_handlers;
+  // Icons from DIY apps may get custom masking, as they have not "opted-in" to
+  // the installed PWA experience and thus the icons are not designed to be
+  // displayed on an OS dock.
+  bool is_diy_app = false;
 #if BUILDFLAG(IS_LINUX)
   std::set<DesktopActionInfo> actions;
 #endif  // BUILDFLAG(IS_LINUX)
