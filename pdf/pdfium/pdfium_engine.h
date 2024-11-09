@@ -402,6 +402,19 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   virtual std::map<InkModeledShapeId, ink::ModeledShape> LoadV2InkPathsForPage(
       int page_index);
 
+  // Modifies an existing shape identified by `id` on the page at `page_index`
+  // to become either active or inactive. The caller must pass the same
+  // consistent and valid `page_index`/`id` pair as was provided by
+  // `LoadV2InkPathsForPage()`.
+  // Shape objects that become inactive will no longer be included for
+  // rendering or saving out to PDF data. Their inclusion can be restored if
+  // another call makes them active again.
+  //
+  // Virtual to support testing.
+  virtual void UpdateShapeActive(int page_index,
+                                 InkModeledShapeId id,
+                                 bool active);
+
   const std::map<InkModeledShapeId, FPDF_PAGEOBJECT>&
   ink_modeled_shape_map_for_testing() const {
     return ink_modeled_shape_map_;
