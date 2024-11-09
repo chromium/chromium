@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_contexts_are_isolated
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+Harness: the test ran to completion.
