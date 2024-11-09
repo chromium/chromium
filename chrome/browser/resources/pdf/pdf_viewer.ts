@@ -1340,8 +1340,19 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     switch (requestType) {
       case SaveRequestType.ANNOTATION:
         record(UserAction.SAVE_WITH_ANNOTATION);
+        // <if expr="enable_pdf_ink2">
+        if (this.pdfInk2Enabled_) {
+          record(UserAction.SAVE_WITH_INK2_ANNOTATION);
+        }
+        // </if>
         break;
       case SaveRequestType.ORIGINAL:
+        // <if expr="enable_pdf_ink2">
+        if (this.hasInk2Edits_) {
+          record(UserAction.SAVE_ORIGINAL);
+          break;
+        }
+        // </if>
         record(
             this.hasEdits_ ? UserAction.SAVE_ORIGINAL :
                              UserAction.SAVE_ORIGINAL_ONLY);
