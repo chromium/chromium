@@ -2218,7 +2218,8 @@ void NetworkContext::PreconnectSockets(
     uint32_t num_streams,
     const GURL& original_url,
     mojom::CredentialsMode credentials_mode,
-    const net::NetworkAnonymizationKey& network_anonymization_key) {
+    const net::NetworkAnonymizationKey& network_anonymization_key,
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK(!require_network_anonymization_key_ ||
          !network_anonymization_key.IsEmpty());
 
@@ -2247,6 +2248,7 @@ void NetworkContext::PreconnectSockets(
   request_info.method = net::HttpRequestHeaders::kGetMethod;
   request_info.extra_headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
                                        user_agent);
+  request_info.traffic_annotation = traffic_annotation;
 
   switch (credentials_mode) {
     case mojom::CredentialsMode::kOmit:

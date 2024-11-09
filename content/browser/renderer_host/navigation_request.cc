@@ -2042,7 +2042,8 @@ NavigationRequest::NavigationRequest(
           frame_tree_node_->current_frame_host()->GetStoragePartition();
       storage_partition->GetNetworkContext()->PreconnectSockets(
           1, common_params_->url, network::mojom::CredentialsMode::kInclude,
-          GetIsolationInfo().network_anonymization_key());
+          GetIsolationInfo().network_anonymization_key(),
+          net::MutableNetworkTrafficAnnotationTag());
     }
   }
 

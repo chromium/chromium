@@ -730,9 +730,9 @@ void AdAuctionServiceImpl::PreconnectSocket(
   render_frame_host()
       .GetStoragePartition()
       ->GetNetworkContext()
-      ->PreconnectSockets(/*num_streams=*/1, url,
-                          network::mojom::CredentialsMode::kOmit,
-                          network_anonymization_key);
+      ->PreconnectSockets(
+          /*num_streams=*/1, url, network::mojom::CredentialsMode::kOmit,
+          network_anonymization_key, net::MutableNetworkTrafficAnnotationTag());
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -1214,7 +1214,8 @@ void AdAuctionServiceImpl::OnGotAuctionDataAndKey(base::Uuid request_id) {
           network::mojom::CredentialsMode::kInclude,
           render_frame_host()
               .GetIsolationInfoForSubresources()
-              .network_anonymization_key());
+              .network_anonymization_key(),
+          net::MutableNetworkTrafficAnnotationTag());
 
   AdAuctionPageData* ad_auction_page_data = GetAdAuctionPageData();
   if (!ad_auction_page_data) {

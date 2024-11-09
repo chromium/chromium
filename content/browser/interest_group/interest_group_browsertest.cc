@@ -21150,11 +21150,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
         : expected_url_(std::move(expected_url)) {}
     ~PreconnectCheckingNetworkContext() override = default;
 
-    void PreconnectSockets(uint32_t num_streams,
-                           const GURL& url,
-                           network::mojom::CredentialsMode credentials_mode,
-                           const net::NetworkAnonymizationKey&
-                               network_anonymization_key) override {
+    void PreconnectSockets(
+        uint32_t num_streams,
+        const GURL& url,
+        network::mojom::CredentialsMode credentials_mode,
+        const net::NetworkAnonymizationKey& network_anonymization_key,
+        const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+        override {
       EXPECT_EQ(1u, num_streams);
       EXPECT_EQ(expected_url_, url);
       EXPECT_EQ(credentials_mode, network::mojom::CredentialsMode::kInclude);

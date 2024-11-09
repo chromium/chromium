@@ -1420,14 +1420,17 @@ interface NetworkContext {
   // configuration summary written out at the end of the log.
   CreateNetLogExporter(pending_receiver<NetLogExporter> receiver);
 
-  // Tries to preconnect to |url|. |num_streams| may be used to request more
+  // Tries to preconnect to `url`. `num_streams` may be used to request more
   // than one connection be established in parallel.
   // The sockets will only be used for requests which share the same values for
-  // |credentials_mode| and |network_anonymization_key|.
+  // `credentials_mode` and `network_anonymization_key`.
+  // `traffic_annotation` will be used to distinguish where the preconnect was
+  // initiated from.
   PreconnectSockets(uint32 num_streams,
                     url.mojom.Url url,
                     network.mojom.CredentialsMode credentials_mode,
-                    NetworkAnonymizationKey network_anonymization_key);
+                    NetworkAnonymizationKey network_anonymization_key,
+                    MutableNetworkTrafficAnnotationTag traffic_annotation);
 
   // Creates a P2PSocketManager instance, used for WebRTC.
   // `network_anonymization_key` is the network cache shard to associate with

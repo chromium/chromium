@@ -218,7 +218,8 @@ void PreconnectManager::PreconnectUrl(
       num_sockets, url,
       allow_credentials ? network::mojom::CredentialsMode::kInclude
                         : network::mojom::CredentialsMode::kOmit,
-      network_anonymization_key);
+      network_anonymization_key,
+      net::MutableNetworkTrafficAnnotationTag(traffic_annotation));
 }
 
 std::unique_ptr<ResolveHostClientImpl> PreconnectManager::PreresolveUrl(

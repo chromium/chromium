@@ -164,12 +164,13 @@ class MockNetworkContext : public network::TestNetworkContext {
   void EnableProxyTesting() { enabled_proxy_testing_ = true; }
 
   MOCK_METHOD1(ResolveHostProxy, void(const std::string& host));
-  MOCK_METHOD4(
+  MOCK_METHOD5(
       PreconnectSockets,
       void(uint32_t num_streams,
            const GURL& url,
            network::mojom::CredentialsMode credentials_mode,
-           const net::NetworkAnonymizationKey& network_anonymization_key));
+           const net::NetworkAnonymizationKey& network_anonymization_key,
+           const net::MutableNetworkTrafficAnnotationTag& traffic_annotation));
 
  private:
   bool IsHangingHost(const GURL& url) const {
@@ -269,10 +270,13 @@ TEST_F(PreconnectManagerTest, TestStartOneUrlPreconnect) {
   preconnect_manager_->Start(
       main_frame_url,
       {PreconnectRequest(origin_to_preconnect, 1, network_anonymization_key)});
-  EXPECT_CALL(*mock_network_context_,
-              PreconnectSockets(1, origin_to_preconnect.GetURL(),
-                                network::mojom::CredentialsMode::kInclude,
-                                network_anonymization_key));
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(1, origin_to_preconnect.GetURL(),
+                        network::mojom::CredentialsMode::kInclude,
+                        network_anonymization_key,
+                        net::MutableNetworkTrafficAnnotationTag(
+                            kLoadingPredictorPreconnectTrafficAnnotation)));
   EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url));
   mock_network_context_->CompleteHostLookup(origin_to_preconnect.host(),
                                             network_anonymization_key, net::OK);
@@ -297,10 +301,13 @@ TEST_F(PreconnectManagerTest, TestLimitPreconnectCount) {
   preconnect_manager_->Start(
       main_frame_url,
       {PreconnectRequest(origin_to_preconnect, 2, network_anonymization_key)});
-  EXPECT_CALL(*mock_network_context_,
-              PreconnectSockets(1, origin_to_preconnect.GetURL(),
-                                network::mojom::CredentialsMode::kInclude,
-                                network_anonymization_key));
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(1, origin_to_preconnect.GetURL(),
+                        network::mojom::CredentialsMode::kInclude,
+                        network_anonymization_key,
+                        net::MutableNetworkTrafficAnnotationTag(
+                            kLoadingPredictorPreconnectTrafficAnnotation)));
   EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url));
   mock_network_context_->CompleteHostLookup(origin_to_preconnect.host(),
                                             network_anonymization_key, net::OK);
@@ -322,10 +329,13 @@ TEST_F(PreconnectManagerTest,
   preconnect_manager_->Start(
       main_frame_url,
       {PreconnectRequest(origin_to_preconnect, 1, network_anonymization_key)});
-  EXPECT_CALL(*mock_network_context_,
-              PreconnectSockets(1, origin_to_preconnect.GetURL(),
-                                network::mojom::CredentialsMode::kInclude,
-                                network_anonymization_key));
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(1, origin_to_preconnect.GetURL(),
+                        network::mojom::CredentialsMode::kInclude,
+                        network_anonymization_key,
+                        net::MutableNetworkTrafficAnnotationTag(
+                            kLoadingPredictorPreconnectTrafficAnnotation)));
   EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url));
   mock_network_context_->CompleteHostLookup(origin_to_preconnect.host(),
                                             network_anonymization_key, net::OK);
@@ -369,20 +379,26 @@ TEST_F(PreconnectManagerTest, TestStartOneUrlPreconnect_MultipleTimes) {
   EXPECT_CALL(
       *mock_delegate_,
       PreconnectInitiated(main_frame_url, requests.back().origin.GetURL()));
-  EXPECT_CALL(*mock_network_context_,
-              PreconnectSockets(1, requests.back().origin.GetURL(),
-                                network::mojom::CredentialsMode::kInclude,
-                                network_anonymization_key));
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(1, requests.back().origin.GetURL(),
+                        network::mojom::CredentialsMode::kInclude,
+                        network_anonymization_key,
+                        net::MutableNetworkTrafficAnnotationTag(
+                            kLoadingPredictorPreconnectTrafficAnnotation)));
   EXPECT_CALL(*mock_network_context_,
               ResolveHostProxy(requests.back().origin.host()));
   for (size_t i = 0; i < count; ++i) {
     EXPECT_CALL(
         *mock_delegate_,
         PreconnectInitiated(main_frame_url, requests[i].origin.GetURL()));
-    EXPECT_CALL(*mock_network_context_,
-                PreconnectSockets(1, requests[i].origin.GetURL(),
-                                  network::mojom::CredentialsMode::kInclude,
-                                  network_anonymization_key));
+    EXPECT_CALL(
+        *mock_network_context_,
+        PreconnectSockets(1, requests[i].origin.GetURL(),
+                          network::mojom::CredentialsMode::kInclude,
+                          network_anonymization_key,
+                          net::MutableNetworkTrafficAnnotationTag(
+                              kLoadingPredictorPreconnectTrafficAnnotation)));
     EXPECT_CALL(*mock_network_context_,
                 ResolveHostProxy(requests[i].origin.host()));
   }
@@ -431,10 +447,13 @@ TEST_F(PreconnectManagerTest, TestTwoConcurrentMainFrameUrls_MultipleTimes) {
   }
   EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url_1));
   for (size_t i = 0; i < count - 1; ++i) {
-    EXPECT_CALL(*mock_network_context_,
-                PreconnectSockets(1, requests[i].origin.GetURL(),
-                                  network::mojom::CredentialsMode::kInclude,
-                                  network_anonymization_key));
+    EXPECT_CALL(
+        *mock_network_context_,
+        PreconnectSockets(1, requests[i].origin.GetURL(),
+                          network::mojom::CredentialsMode::kInclude,
+                          network_anonymization_key,
+                          net::MutableNetworkTrafficAnnotationTag(
+                              kLoadingPredictorPreconnectTrafficAnnotation)));
   }
 
   preconnect_manager_->Start(
@@ -476,14 +495,20 @@ TEST_F(PreconnectManagerTest, TestTwoConcurrentMainFrameUrls_MultipleTimes) {
                              std::vector<PreconnectRequest>(
                                  requests.begin() + count - 1, requests.end()));
 
-  EXPECT_CALL(*mock_network_context_,
-              PreconnectSockets(1, requests[count - 1].origin.GetURL(),
-                                network::mojom::CredentialsMode::kInclude,
-                                network_anonymization_key));
-  EXPECT_CALL(*mock_network_context_,
-              PreconnectSockets(1, requests[count].origin.GetURL(),
-                                network::mojom::CredentialsMode::kInclude,
-                                network_anonymization_key));
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(1, requests[count - 1].origin.GetURL(),
+                        network::mojom::CredentialsMode::kInclude,
+                        network_anonymization_key,
+                        net::MutableNetworkTrafficAnnotationTag(
+                            kLoadingPredictorPreconnectTrafficAnnotation)));
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(1, requests[count].origin.GetURL(),
+                        network::mojom::CredentialsMode::kInclude,
+                        network_anonymization_key,
+                        net::MutableNetworkTrafficAnnotationTag(
+                            kLoadingPredictorPreconnectTrafficAnnotation)));
 
   mock_network_context_->CompleteHostLookup(requests[count - 1].origin.host(),
                                             network_anonymization_key, net::OK);
@@ -563,14 +588,20 @@ TEST_F(PreconnectManagerTest,
   EXPECT_CALL(*mock_network_context_,
               ResolveHostProxy(origin_to_preconnect_2.host()));
   EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url_2));
-  EXPECT_CALL(*mock_network_context_,
-              PreconnectSockets(1, origin_to_preconnect_1.GetURL(),
-                                network::mojom::CredentialsMode::kInclude,
-                                network_anonymization_key_2));
-  EXPECT_CALL(*mock_network_context_,
-              PreconnectSockets(1, origin_to_preconnect_2.GetURL(),
-                                network::mojom::CredentialsMode::kInclude,
-                                network_anonymization_key_2));
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(1, origin_to_preconnect_1.GetURL(),
+                        network::mojom::CredentialsMode::kInclude,
+                        network_anonymization_key_2,
+                        net::MutableNetworkTrafficAnnotationTag(
+                            kLoadingPredictorPreconnectTrafficAnnotation)));
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(1, origin_to_preconnect_2.GetURL(),
+                        network::mojom::CredentialsMode::kInclude,
+                        network_anonymization_key_2,
+                        net::MutableNetworkTrafficAnnotationTag(
+                            kLoadingPredictorPreconnectTrafficAnnotation)));
   preconnect_manager_->Start(main_frame_url_2,
                              {PreconnectRequest(origin_to_preconnect_1, 1,
                                                 network_anonymization_key_2),
@@ -631,14 +662,20 @@ TEST_F(PreconnectManagerTest,
               ResolveHostProxy(origin_to_preconnect_1.host()));
   EXPECT_CALL(*mock_network_context_,
               ResolveHostProxy(origin_to_preconnect_2.host()));
-  EXPECT_CALL(*mock_network_context_,
-              PreconnectSockets(1, origin_to_preconnect_1.GetURL(),
-                                network::mojom::CredentialsMode::kInclude,
-                                network_anonymization_key));
-  EXPECT_CALL(*mock_network_context_,
-              PreconnectSockets(1, origin_to_preconnect_2.GetURL(),
-                                network::mojom::CredentialsMode::kInclude,
-                                network_anonymization_key));
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(1, origin_to_preconnect_1.GetURL(),
+                        network::mojom::CredentialsMode::kInclude,
+                        network_anonymization_key,
+                        net::MutableNetworkTrafficAnnotationTag(
+                            kLoadingPredictorPreconnectTrafficAnnotation)));
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(1, origin_to_preconnect_2.GetURL(),
+                        network::mojom::CredentialsMode::kInclude,
+                        network_anonymization_key,
+                        net::MutableNetworkTrafficAnnotationTag(
+                            kLoadingPredictorPreconnectTrafficAnnotation)));
   EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url));
   preconnect_manager_->Start(
       main_frame_url,
@@ -797,10 +834,13 @@ TEST_F(PreconnectManagerTest, TestTwoConcurrentMainFrameUrls) {
 
   preconnect_manager_->Stop(main_frame_url2);
   // Stopping the second url shouldn't stop the first one.
-  EXPECT_CALL(*mock_network_context_,
-              PreconnectSockets(1, origin_to_preconnect1.GetURL(),
-                                network::mojom::CredentialsMode::kInclude,
-                                network_anonymization_key1));
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(1, origin_to_preconnect1.GetURL(),
+                        network::mojom::CredentialsMode::kInclude,
+                        network_anonymization_key1,
+                        net::MutableNetworkTrafficAnnotationTag(
+                            kLoadingPredictorPreconnectTrafficAnnotation)));
   EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url1));
   mock_network_context_->CompleteHostLookup(
       origin_to_preconnect1.host(), network_anonymization_key1, net::OK);
@@ -841,17 +881,23 @@ TEST_F(PreconnectManagerTest, TestTwoConcurrentSameHostMainFrameUrls) {
                              {PreconnectRequest(origin_to_preconnect2, 1,
                                                 network_anonymization_key2)});
 
-  EXPECT_CALL(*mock_network_context_,
-              PreconnectSockets(1, origin_to_preconnect1.GetURL(),
-                                network::mojom::CredentialsMode::kInclude,
-                                network_anonymization_key1));
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(1, origin_to_preconnect1.GetURL(),
+                        network::mojom::CredentialsMode::kInclude,
+                        network_anonymization_key1,
+                        net::MutableNetworkTrafficAnnotationTag(
+                            kLoadingPredictorPreconnectTrafficAnnotation)));
   EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url1));
   mock_network_context_->CompleteHostLookup(
       origin_to_preconnect1.host(), network_anonymization_key1, net::OK);
-  EXPECT_CALL(*mock_network_context_,
-              PreconnectSockets(1, origin_to_preconnect2.GetURL(),
-                                network::mojom::CredentialsMode::kInclude,
-                                network_anonymization_key2));
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(1, origin_to_preconnect2.GetURL(),
+                        network::mojom::CredentialsMode::kInclude,
+                        network_anonymization_key2,
+                        net::MutableNetworkTrafficAnnotationTag(
+                            kLoadingPredictorPreconnectTrafficAnnotation)));
   EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url2));
   mock_network_context_->CompleteHostLookup(
       origin_to_preconnect2.host(), network_anonymization_key2, net::OK);
@@ -940,7 +986,9 @@ TEST_F(PreconnectManagerTest, TestStartPreconnectUrl) {
   EXPECT_CALL(
       *mock_network_context_,
       PreconnectSockets(1, origin, network::mojom::CredentialsMode::kOmit,
-                        network_anonymization_key));
+                        network_anonymization_key,
+                        net::MutableNetworkTrafficAnnotationTag(
+                            kLoadingPredictorPreconnectTrafficAnnotation)));
   mock_network_context_->CompleteHostLookup(origin.host(),
                                             network_anonymization_key, net::OK);
 
@@ -984,7 +1032,9 @@ TEST_F(PreconnectManagerTest, TestStartPreconnectUrlWithNetworkIsolationKey) {
   EXPECT_CALL(
       *mock_network_context_,
       PreconnectSockets(1, origin, network::mojom::CredentialsMode::kOmit,
-                        network_anonymization_key));
+                        network_anonymization_key,
+                        net::MutableNetworkTrafficAnnotationTag(
+                            kLoadingPredictorPreconnectTrafficAnnotation)));
   mock_network_context_->CompleteHostLookup(origin.host(),
                                             network_anonymization_key, net::OK);
 }
@@ -1055,10 +1105,13 @@ TEST_F(PreconnectManagerTest, TestSuccessfulProxyLookup) {
       main_frame_url,
       {PreconnectRequest(origin_to_preconnect, 1, network_anonymization_key)});
 
-  EXPECT_CALL(*mock_network_context_,
-              PreconnectSockets(1, origin_to_preconnect.GetURL(),
-                                network::mojom::CredentialsMode::kInclude,
-                                network_anonymization_key));
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(1, origin_to_preconnect.GetURL(),
+                        network::mojom::CredentialsMode::kInclude,
+                        network_anonymization_key,
+                        net::MutableNetworkTrafficAnnotationTag(
+                            kLoadingPredictorPreconnectTrafficAnnotation)));
   EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url));
   mock_network_context_->CompleteProxyLookup(origin_to_preconnect.GetURL(),
                                              GetIndirectProxyInfo());
@@ -1113,14 +1166,20 @@ TEST_F(PreconnectManagerTest, TestSuccessfulHostLookupAfterProxyLookupFailure) {
                                              std::nullopt);
   Mock::VerifyAndClearExpectations(mock_network_context_.get());
 
-  EXPECT_CALL(*mock_network_context_,
-              PreconnectSockets(1, origin_to_preconnect.GetURL(),
-                                network::mojom::CredentialsMode::kInclude,
-                                network_anonymization_key));
-  EXPECT_CALL(*mock_network_context_,
-              PreconnectSockets(1, origin_to_preconnect2.GetURL(),
-                                network::mojom::CredentialsMode::kInclude,
-                                network_anonymization_key));
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(1, origin_to_preconnect.GetURL(),
+                        network::mojom::CredentialsMode::kInclude,
+                        network_anonymization_key,
+                        net::MutableNetworkTrafficAnnotationTag(
+                            kLoadingPredictorPreconnectTrafficAnnotation)));
+  EXPECT_CALL(
+      *mock_network_context_,
+      PreconnectSockets(1, origin_to_preconnect2.GetURL(),
+                        network::mojom::CredentialsMode::kInclude,
+                        network_anonymization_key,
+                        net::MutableNetworkTrafficAnnotationTag(
+                            kLoadingPredictorPreconnectTrafficAnnotation)));
   EXPECT_CALL(*mock_delegate_, PreconnectFinishedProxy(main_frame_url));
   mock_network_context_->CompleteHostLookup(origin_to_preconnect.host(),
                                             network_anonymization_key, net::OK);

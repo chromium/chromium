@@ -481,7 +481,9 @@ void NavigationEarlyHintsManager::MaybePreconnect(
       /*num_streams=*/1, link->href,
       allow_credentials ? network::mojom::CredentialsMode::kInclude
                         : network::mojom::CredentialsMode::kOmit,
-      isolation_info_.network_anonymization_key());
+      isolation_info_.network_anonymization_key(),
+      net::MutableNetworkTrafficAnnotationTag(
+          kEarlyHintsPreloadTrafficAnnotation));
   preconnect_entries_.insert(std::move(entry));
 }
 

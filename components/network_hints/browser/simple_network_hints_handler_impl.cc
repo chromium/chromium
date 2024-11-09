@@ -168,11 +168,11 @@ void SimpleNetworkHintsHandlerImpl::Preconnect(const url::SchemeHostPort& url,
 
   render_frame_host->GetStoragePartition()
       ->GetNetworkContext()
-      ->PreconnectSockets(/*num_streams=*/1, url.GetURL(),
-                          allow_credentials
-                              ? network::mojom::CredentialsMode::kInclude
-                              : network::mojom::CredentialsMode::kOmit,
-                          network_anonymization_key);
+      ->PreconnectSockets(
+          /*num_streams=*/1, url.GetURL(),
+          allow_credentials ? network::mojom::CredentialsMode::kInclude
+                            : network::mojom::CredentialsMode::kOmit,
+          network_anonymization_key, net::MutableNetworkTrafficAnnotationTag());
 }
 
 }  // namespace network_hints
