@@ -3437,6 +3437,9 @@ extern const char kAshPickerGridDescription[];
 extern const char kAshSplitKeyboardRefactorName[];
 extern const char kAshSplitKeyboardRefactorDescription[];
 
+extern const char kAshNullTopRowFixName[];
+extern const char kAshNullTopRowFixDescription[];
+
 extern const char kAssistantIphName[];
 extern const char kAssistantIphDescription[];
 

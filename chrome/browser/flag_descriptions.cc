@@ -5966,11 +5966,15 @@ const char kAshPickerGifsName[] = "Picker GIFs search";
 const char kAshPickerGifsDescription[] = "Enable GIf search for Picker.";
 
 const char kAshPickerGridName[] = "Picker grid UI";
-const char kAshPickerGridDescription[] = "Eanble the grid UI for Picker.";
+const char kAshPickerGridDescription[] = "Enable the grid UI for Picker.";
 
 const char kAshSplitKeyboardRefactorName[] = "Split keyboard refactor";
 const char kAshSplitKeyboardRefactorDescription[] =
     "Enable split keyboard refactor on ChromeOS.";
+
+const char kAshNullTopRowFixName[] = "Null top row fix";
+const char kAshNullTopRowFixDescription[] =
+    "Enable the bugfix for keyboards with a null top row descriptor.";
 
 const char kAssistantIphName[] = "Assistant IPH";
 const char kAssistantIphDescription[] =

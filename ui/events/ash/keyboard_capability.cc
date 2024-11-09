@@ -26,6 +26,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -339,7 +340,6 @@ KeyboardCapability::DeviceType IdentifyKeyboardType(
                : KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
   }
 
-  if (has_chromeos_top_row) {
     if (has_null_top_row) {
       VLOG(1) << "External Null Top Row keyboard '" << keyboard_device.name
               << "' connected: id=" << keyboard_device.id;
@@ -347,12 +347,13 @@ KeyboardCapability::DeviceType IdentifyKeyboardType(
           kDeviceExternalNullTopRowChromeOsKeyboard;
     }
 
-    // If the device was tagged as having Chrome OS top row layout it must be a
-    // Chrome OS keyboard.
-    VLOG(1) << "External Chrome OS keyboard '" << keyboard_device.name
-            << "' connected: id=" << keyboard_device.id;
-    return KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard;
-  }
+    if (has_chromeos_top_row) {
+      // If the device was tagged as having Chrome OS top row layout it must be
+      // a Chrome OS keyboard.
+      VLOG(1) << "External Chrome OS keyboard '" << keyboard_device.name
+              << "' connected: id=" << keyboard_device.id;
+      return KeyboardCapability::DeviceType::kDeviceExternalChromeOsKeyboard;
+    }
 
   const std::vector<std::string> tokens =
       base::SplitString(keyboard_device.name, " .", base::KEEP_WHITESPACE,
@@ -399,12 +400,21 @@ IdentifyKeyboardInfo(const KeyboardDevice& keyboard) {
   KeyboardTopRowLayout layout;
   std::vector<uint32_t> top_row_scan_codes = GetTopRowScanCodeVector(keyboard);
   bool null_top_row = false;
+  // Top row scancode vectors which are all null should empty the array so it is
+  // not considered a custom top row keyboard.
   if (!top_row_scan_codes.empty()) {
-    layout = KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
     null_top_row =
         base::ranges::all_of(top_row_scan_codes, [](const uint32_t scancode) {
           return scancode == kCustomNullScanCode;
         });
+    if (base::FeatureList::IsEnabled(ash::features::kNullTopRowFix) &&
+        null_top_row) {
+      top_row_scan_codes.clear();
+    }
+  }
+
+  if (!top_row_scan_codes.empty()) {
+    layout = KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
   } else if (!GetTopRowLayoutProperty(keyboard, layout_string) ||
              !ParseKeyboardTopRowLayout(layout_string, layout)) {
     return {KeyboardCapability::DeviceType::kDeviceUnknown,

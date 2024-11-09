@@ -10818,6 +10818,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAshSplitKeyboardRefactorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSplitKeyboardRefactor)},
 
+    {"ash-null-top-row-fix", flag_descriptions::kAshNullTopRowFixName,
+     flag_descriptions::kAshNullTopRowFixDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kNullTopRowFix)},
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID)

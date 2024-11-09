@@ -18270,6 +18270,7 @@ from previous Chrome versions.
   <int value="-799395788" label="SearchPrefetchServicePrefetching:disabled"/>
   <int value="-798200573" label="NotificationInteractionHistory:disabled"/>
   <int value="-798187384" label="try-supported-channel-layouts"/>
+  <int value="-797986633" label="NullTopRowFix:enabled"/>
   <int value="-797520931" label="ExtensionsToolbarMenu:disabled"/>
   <int value="-797457946" label="EnableAIPromptAPIForWebPlatform:enabled"/>
   <int value="-797310986" label="CSSFragmentIdentifiers:disabled"/>
@@ -22008,6 +22009,7 @@ from previous Chrome versions.
       label="KeepAliveRendererForKeepaliveRequests:disabled"/>
   <int value="719614898" label="LensEnableRegionSearchOnPdfViewer:enabled"/>
   <int value="719922283" label="MessagesForAndroidSaveCard:enabled"/>
+  <int value="720890283" label="NullTopRowFix:disabled"/>
   <int value="720931007" label="WebAuthenticationBle:enabled"/>
   <int value="721159683" label="CrosMallSwa:disabled"/>
   <int value="721715561"

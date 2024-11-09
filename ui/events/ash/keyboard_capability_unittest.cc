@@ -1195,6 +1195,24 @@ TEST_P(KeyboardCapabilityTest, TopRowLayoutWilco) {
 }
 
 TEST_P(KeyboardCapabilityTest, NullTopRowDescriptor) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(ash::features::kNullTopRowFix);
+
+  KeyboardDevice input_device(kDeviceId1, INPUT_DEVICE_BLUETOOTH,
+                              "External Keyboard");
+  fake_keyboard_manager_->AddFakeKeyboard(input_device,
+                                          "C0000 C0000 C0000 C0000",
+                                          /*has_custom_top_row=*/true);
+  EXPECT_EQ(
+      KeyboardCapability::DeviceType::kDeviceExternalNullTopRowChromeOsKeyboard,
+      keyboard_capability_->GetDeviceType(input_device));
+  EXPECT_TRUE(keyboard_capability_->HasCapsLockKey(input_device));
+}
+
+TEST_P(KeyboardCapabilityTest, NullTopRowDescriptorWithFix) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(ash::features::kNullTopRowFix);
+
   KeyboardDevice input_device(kDeviceId1, INPUT_DEVICE_BLUETOOTH,
                               "External Keyboard");
   fake_keyboard_manager_->AddFakeKeyboard(input_device,

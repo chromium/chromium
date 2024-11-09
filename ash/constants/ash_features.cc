@@ -1985,6 +1985,9 @@ BASE_FEATURE(kNotifierCollision,
              "NotifierCollision",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables a bugfix for devices with a null custom top row property.
+BASE_FEATURE(kNullTopRowFix, "NullTopRowFix", base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether new Lockscreen reauth layout is shown or not.
 BASE_FEATURE(kNewLockScreenReauthLayout,
              "NewLockScreenReauthLayout",
