@@ -99,6 +99,13 @@ class TestPDFiumEngine : public PDFiumEngine {
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
   MOCK_METHOD(gfx::Size, GetThumbnailSize, (int, float), (override));
+
+  MOCK_METHOD(void,
+              ApplyStroke,
+              (int, InkStrokeId, const ink::Stroke&),
+              (override));
+
+  MOCK_METHOD(void, UpdateStrokeActive, (int, InkStrokeId, bool), (override));
 #endif
 
   std::vector<uint8_t> GetSaveData() override;

@@ -308,6 +308,12 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     plugin_->client_->PostMessage(std::move(message));
   }
 
+  void StrokeAdded(int page_index,
+                   InkStrokeId id,
+                   const ink::Stroke& stroke) override {
+    plugin_->engine_->ApplyStroke(page_index, id, stroke);
+  }
+
   void StrokeFinished() override {
     base::Value::Dict message;
     message.Set("type", "finishInkStroke");
@@ -319,6 +325,12 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
     plugin_->cursor_ =
         ui::Cursor::NewCustom(std::move(bitmap), std::move(hotspot));
+  }
+
+  void UpdateStrokeActive(int page_index,
+                          InkStrokeId id,
+                          bool active) override {
+    plugin_->engine_->UpdateStrokeActive(page_index, id, active);
   }
 
   void UpdateThumbnail(int page_index) override {

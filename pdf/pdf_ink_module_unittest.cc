@@ -206,9 +206,19 @@ class FakeClient : public PdfInkModuleClient {
 
   MOCK_METHOD(void, PostMessage, (base::Value::Dict message), (override));
 
+  MOCK_METHOD(void,
+              StrokeAdded,
+              (int page_index, InkStrokeId id, const ink::Stroke& stroke),
+              (override));
+
   void StrokeFinished() override { ++stroke_finished_count_; }
 
   MOCK_METHOD(void, UpdateInkCursorImage, (SkBitmap bitmap), (override));
+
+  MOCK_METHOD(void,
+              UpdateStrokeActive,
+              (int page_index, InkStrokeId id, bool active),
+              (override));
 
   void UpdateThumbnail(int page_index) override {
     updated_thumbnail_page_indices_.push_back(page_index);
@@ -785,6 +795,29 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
     return ink_module().GetVisibleStrokesInputPositionsForTesting();
   }
 
+  void ExpectStrokesAdded(int strokes_affected) {
+    CHECK_GT(strokes_affected, 0);
+    EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(strokes_affected);
+  }
+
+  void ExpectNoStrokeAdded() {
+    EXPECT_CALL(client(), StrokeAdded(_, _, _)).Times(0);
+  }
+
+  void ExpectUpdateStrokesActive(int strokes_affected, bool expected_active) {
+    CHECK_GT(strokes_affected, 0);
+    EXPECT_CALL(client(), UpdateStrokeActive(_, _, expected_active))
+        .Times(strokes_affected);
+  }
+
+  void ExpectNoUpdateStrokeActive() {
+    EXPECT_CALL(client(), UpdateStrokeActive(_, _, _)).Times(0);
+  }
+
+  void VerifyAndClearExpectations() {
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
  private:
   void ApplyStrokeWithMouseAtPointsMaybeHandled(
       const gfx::PointF& mouse_down_point,
@@ -1099,6 +1132,8 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeEntirelyOffPage) {
 
 TEST_F(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
   InitializeSimpleSinglePageBasicLayout();
+  ExpectStrokesAdded(/*strokes_affected=*/2);
+  ExpectNoUpdateStrokeActive();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
   // Draw a second stroke.
@@ -1134,6 +1169,9 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokeErasesTwoStrokes) {
   // Stroke with the eraser tool again at `kMousePoints`, but now with a much
   // bigger eraser size. This will actually intersect with both strokes.
   SelectEraserToolOfSize(8.0f);
+  VerifyAndClearExpectations();
+  ExpectNoStrokeAdded();
+  ExpectUpdateStrokesActive(/*strokes_affected=*/2, /*expected_active=*/false);
   ApplyStrokeWithMouseAtPoints(
       kMouseMovePoint, base::span_from_ref(kMouseMovePoint), kMouseMovePoint);
 
@@ -1153,6 +1191,9 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokesAcrossTwoPages) {
   const std::vector<int>& updated_thumbnail_page_indices =
       client().updated_thumbnail_page_indices();
   EXPECT_TRUE(updated_thumbnail_page_indices.empty());
+
+  ExpectStrokesAdded(/*strokes_affected=*/2);
+  ExpectNoUpdateStrokeActive();
 
   // A stroke in the first page generates a stroke only for that page.
   ApplyStrokeWithMouseAtPoints(
@@ -1175,6 +1216,9 @@ TEST_F(PdfInkModuleStrokeTest, EraseStrokesAcrossTwoPages) {
 
   // Erasing across the two pages should erase everything.
   SelectEraserToolOfSize(3.0f);
+  VerifyAndClearExpectations();
+  ExpectNoStrokeAdded();
+  ExpectUpdateStrokesActive(/*strokes_affected=*/2, /*expected_active=*/false);
   ApplyStrokeWithMouseAtPoints(
       kTwoPageVerticalLayoutPoint1InsidePage0,
       std::vector<gfx::PointF>{kTwoPageVerticalLayoutPoint2InsidePage0,
@@ -1315,6 +1359,8 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoEmpty) {
 
 TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
   InitializeSimpleSinglePageBasicLayout();
+  ExpectStrokesAdded(/*strokes_affected=*/1);
+  ExpectUpdateStrokesActive(/*strokes_affected=*/1, /*expect_active=*/false);
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
 
   const auto kMatcher =
@@ -1335,12 +1381,18 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
   EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
 
   // Spurious undo message is a no-op.
+  VerifyAndClearExpectations();
+  ExpectNoStrokeAdded();
+  ExpectNoUpdateStrokeActive();
   PerformUndo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
   EXPECT_EQ(1, client().stroke_finished_count());
   EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0));
 
+  VerifyAndClearExpectations();
+  ExpectNoStrokeAdded();
+  ExpectUpdateStrokesActive(/*strokes_affected=*/1, /*expect_active=*/true);
   PerformRedo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);
@@ -1348,6 +1400,9 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBasic) {
   EXPECT_THAT(updated_thumbnail_page_indices, ElementsAre(0, 0, 0));
 
   // Spurious redo message is a no-op.
+  VerifyAndClearExpectations();
+  ExpectNoStrokeAdded();
+  ExpectNoUpdateStrokeActive();
   PerformRedo();
   EXPECT_THAT(StrokeInputPositions(), kMatcher);
   EXPECT_THAT(VisibleStrokeInputPositions(), kMatcher);

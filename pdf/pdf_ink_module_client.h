@@ -7,6 +7,7 @@
 
 #include "pdf/buildflags.h"
 #include "pdf/page_orientation.h"
+#include "pdf/pdf_ink_ids.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -15,6 +16,10 @@ static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
 namespace gfx {
 class PointF;
+}
+
+namespace ink {
+class Stroke;
 }
 
 namespace chrome_pdf {
@@ -55,11 +60,23 @@ class PdfInkModuleClient {
   // Asks the client to post `message`.
   virtual void PostMessage(base::Value::Dict message) {}
 
+  // Notifies that a stroke has been added to the page at `page_index`.
+  // Provides an `id` that identifies the `stroke` object.  The `id` can be
+  // used later with `UpdateStrokeActive()`.
+  virtual void StrokeAdded(int page_index,
+                           InkStrokeId id,
+                           const ink::Stroke& stroke) {}
+
   // Notifies the client that a stroke has finished drawing or erasing.
   virtual void StrokeFinished() {}
 
   // Asks the client to change the cursor to `bitmap`.
   virtual void UpdateInkCursorImage(SkBitmap bitmap) {}
+
+  // Notifies that an existing stroke identified by `id` on the page at
+  // `page_index` should update its active state.
+  virtual void UpdateStrokeActive(int page_index, InkStrokeId id, bool active) {
+  }
 
   // Asks the client to update the thumbnail for `page_index`.
   virtual void UpdateThumbnail(int page_index) {}

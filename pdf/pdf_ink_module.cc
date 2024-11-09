@@ -520,8 +520,10 @@ bool PdfInkModule::FinishStroke(const gfx::PointF& position,
     CHECK_GE(state.page_index, 0);
     for (const auto& segment : in_progress_stroke_segments) {
       InkStrokeId id = stroke_id_generator_.GetIdAndAdvance();
+      ink::Stroke stroke = segment.CopyToStroke();
+      client_->StrokeAdded(state.page_index, id, stroke);
       strokes_[state.page_index].push_back(
-          FinishedStrokeState(segment.CopyToStroke(), id));
+          FinishedStrokeState(std::move(stroke), id));
       bool undo_redo_success = undo_redo_model_.Draw(id);
       CHECK(undo_redo_success);
     }
@@ -637,6 +639,7 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
     }
 
     stroke.should_draw = false;
+    client_->UpdateStrokeActive(page_index, stroke.id, /*active=*/false);
 
     invalidate_envelope.Add(shape.Bounds());
 
@@ -893,6 +896,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(std::set<InkStrokeId> ids,
       auto& stroke = *it;
       CHECK_NE(stroke.should_draw, should_draw);
       stroke.should_draw = should_draw;
+      client_->UpdateStrokeActive(page_index, id, should_draw);
 
       invalidate_envelope.Add(stroke.stroke.GetShape().Bounds());
 
