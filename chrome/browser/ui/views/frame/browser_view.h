@@ -631,7 +631,7 @@ class BrowserView : public BrowserWindow,
       const base::Feature& iph_feature) const override;
   void MaybeShowFeaturePromo(
       user_education::FeaturePromoParams params) override;
-  bool MaybeShowStartupFeaturePromo(
+  void MaybeShowStartupFeaturePromo(
       user_education::FeaturePromoParams params) override;
   bool AbortFeaturePromo(const base::Feature& iph_feature) override;
   user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(

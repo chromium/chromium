@@ -47,7 +47,7 @@ FeaturePromoController20::~FeaturePromoController20() {
   FailQueuedPromos();
 }
 
-bool FeaturePromoController20::MaybeShowStartupPromo(
+void FeaturePromoController20::MaybeShowStartupPromo(
     FeaturePromoParams params) {
   const base::Feature* const iph_feature = &params.feature.get();
 
@@ -55,25 +55,27 @@ bool FeaturePromoController20::MaybeShowStartupPromo(
   if (!in_iph_demo_mode() && !base::FeatureList::IsEnabled(*iph_feature)) {
     RecordPromoNotShown(iph_feature->name,
                         FeaturePromoResult::kFeatureDisabled);
-    return false;
+    PostShowPromoResult(std::move(params.show_promo_result_callback),
+                        FeaturePromoResult::kFeatureDisabled);
+    return;
   }
 
-  // If the promo is currently running, fail.
-  if (GetCurrentPromoFeature() == iph_feature) {
-    return false;
+  // If the promo is currently running or already queued, fail.
+  if (GetCurrentPromoFeature() == iph_feature || IsPromoQueued(*iph_feature)) {
+    PostShowPromoResult(std::move(params.show_promo_result_callback),
+                        FeaturePromoResult::kAlreadyQueued);
+    return;
   }
 
-  // If the promo is already queued, fail.
-  if (IsPromoQueued(*iph_feature)) {
-    return false;
+  // Get the specification.
+  const auto* spec = registry()->GetParamsForFeature(*iph_feature);
+  if (!spec) {
+    PostShowPromoResult(std::move(params.show_promo_result_callback),
+                        FeaturePromoResult::kError);
+    return;
   }
 
   // Queue the promo.
-  const auto* spec = registry()->GetParamsForFeature(*iph_feature);
-  if (!spec) {
-    return false;
-  }
-
   queued_promos_.emplace_back(std::move(params),
                               session_policy()->GetPromoPriorityInfo(*spec));
 
@@ -81,11 +83,6 @@ bool FeaturePromoController20::MaybeShowStartupPromo(
   feature_engagement_tracker()->AddOnInitializedCallback(base::BindOnce(
       &FeaturePromoController20::OnFeatureEngagementTrackerInitialized,
       weak_ptr_factory_.GetWeakPtr()));
-
-  // The promo has been successfully queued. Once the FE backend is initialized,
-  // MaybeShowPromo() will be called to see if the promo should actually be
-  // shown.
-  return true;
 }
 
 FeaturePromoResult FeaturePromoController20::CanShowPromoCommon(

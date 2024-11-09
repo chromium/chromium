@@ -27,10 +27,8 @@ FeaturePromoController25::FeaturePromoController25(
 
 FeaturePromoController25::~FeaturePromoController25() = default;
 
-bool FeaturePromoController25::MaybeShowStartupPromo(
-    FeaturePromoParams params) {
-  return false;
-}
+void FeaturePromoController25::MaybeShowStartupPromo(
+    FeaturePromoParams params) {}
 
 void FeaturePromoController25::MaybeShowPromo(FeaturePromoParams params) {
   MaybeShowStartupPromo(std::move(params));

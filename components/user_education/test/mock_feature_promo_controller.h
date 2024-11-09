@@ -26,7 +26,7 @@ class MockFeaturePromoController : public FeaturePromoController {
               (const FeaturePromoParams&),
               (const, override));
   MOCK_METHOD(void, MaybeShowPromo, (FeaturePromoParams), (override));
-  MOCK_METHOD(bool, MaybeShowStartupPromo, (FeaturePromoParams), (override));
+  MOCK_METHOD(void, MaybeShowStartupPromo, (FeaturePromoParams), (override));
   MOCK_METHOD(FeaturePromoResult,
               MaybeShowPromoForDemoPage,
               (FeaturePromoParams),

@@ -108,24 +108,23 @@ class FeaturePromoController {
   // Tries to start the promo at a time when the Feature Engagement backend may
   // not yet be initialized. Once it is initialized (which could be
   // immediately), attempts to show the promo and calls
-  // `params.startup_callback` with the result. If EndPromo() is called before
-  // the promo is shown, the promo is canceled immediately.
+  // `params.show_promo_result_callback` with the result. If EndPromo() is
+  // called before the promo is shown, the promo is canceled immediately.
   //
-  // Returns whether the promo was queued, not whether it was actually shown.
   // A promo may be queued and then not show due to its Feature Engagement
   // conditions not being satisfied. For example, if multiple promos with a
   // session limit of 1 are queued, both may queue successfully, but only one
   // will actually show. If you care about whether the promo is actually shown,
-  // set an appropriate `startup_callback`.
+  // set an appropriate `show_promo_result_callback`.
   //
-  // Note: Since `startup_callback` is asynchronous and can theoretically still
-  // be pending after the caller's scope disappears, care must be taken to avoid
-  // a UAF on callback; the caller should prefer to either not bind transient
-  // objects (e.g. only use the callback for things like UMA logging) or use a
-  // weak pointer to avoid this situation.
+  // Note: Since `show_promo_result_callback` is asynchronous and can
+  // theoretically still be pending after the caller's scope disappears, care
+  // must be taken to avoid a UAF on callback; the caller should prefer to
+  // either not bind transient objects (e.g. only use the callback for things
+  // like UMA logging) or use a weak pointer to avoid this situation.
   //
   // Otherwise, this is identical to MaybeShowPromo().
-  virtual bool MaybeShowStartupPromo(FeaturePromoParams params) = 0;
+  virtual void MaybeShowStartupPromo(FeaturePromoParams params) = 0;
 
   // Gets the current status of the promo associated with `iph_feature`.
   virtual FeaturePromoStatus GetPromoStatus(

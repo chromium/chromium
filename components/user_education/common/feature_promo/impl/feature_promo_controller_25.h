@@ -31,7 +31,7 @@ class FeaturePromoController25 : public FeaturePromoControllerCommon {
   ~FeaturePromoController25() override;
 
   // FeaturePromoControllerCommon:
-  bool MaybeShowStartupPromo(FeaturePromoParams params) override;
+  void MaybeShowStartupPromo(FeaturePromoParams params) override;
   void MaybeShowPromo(FeaturePromoParams params) override;
   FeaturePromoResult MaybeShowPromoForDemoPage(
       FeaturePromoParams params) override;

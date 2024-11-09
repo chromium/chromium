@@ -545,7 +545,7 @@ TEST_F(BrowserFeaturePromoController20Test, AsksBackendToShowStartupPromo) {
 
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          callback);
-  EXPECT_CALL_IN_SCOPE(
+  EXPECT_ASYNC_CALL_IN_SCOPE(
       callback, Run(FeaturePromoResult(FeaturePromoResult::kError)),
       controller_->MaybeShowStartupPromo(
           MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get())));
@@ -553,7 +553,7 @@ TEST_F(BrowserFeaturePromoController20Test, AsksBackendToShowStartupPromo) {
 
 TEST_F(BrowserFeaturePromoController20Test,
        DoesNotAskBackendWhenShowingFromDemoPage) {
-  EXPECT_TRUE(controller_->MaybeShowPromoForDemoPage(kTestIPHFeature));
+  controller_->MaybeShowPromoForDemoPage(kTestIPHFeature);
   EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
   EXPECT_NE(nullptr, GetPromoBubble());
 }
@@ -592,8 +592,8 @@ TEST_F(BrowserFeaturePromoController20Test, ShowsStartupBubble) {
 
   EXPECT_CALL_IN_SCOPE(
       callback, Run(FeaturePromoResult::Success()),
-      EXPECT_TRUE(controller_->MaybeShowStartupPromo(
-          MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()))));
+      controller_->MaybeShowStartupPromo(
+          MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get())));
   EXPECT_EQ(FeaturePromoStatus::kBubbleShowing,
             controller_->GetPromoStatus(kTestIPHFeature));
   EXPECT_TRUE(GetPromoBubble());
@@ -608,8 +608,8 @@ TEST_F(BrowserFeaturePromoController20Test,
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          callback);
 
-  EXPECT_TRUE(controller_->MaybeShowStartupPromo(
-      MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get())));
+  controller_->MaybeShowStartupPromo(
+      MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()));
   EXPECT_EQ(FeaturePromoStatus::kQueuedForStartup,
             controller_->GetPromoStatus(kTestIPHFeature));
   EXPECT_CALL_IN_SCOPE(callback,
@@ -630,8 +630,8 @@ TEST_F(BrowserFeaturePromoController20Test,
   UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
                          callback);
 
-  EXPECT_TRUE(controller_->MaybeShowStartupPromo(
-      MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get())));
+  controller_->MaybeShowStartupPromo(
+      MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get()));
   EXPECT_EQ(FeaturePromoStatus::kQueuedForStartup,
             controller_->GetPromoStatus(kTestIPHFeature));
   EXPECT_CALL_IN_SCOPE(callback, Run(FeaturePromoResult::Success()),
@@ -642,47 +642,65 @@ TEST_F(BrowserFeaturePromoController20Test,
 
 TEST_F(BrowserFeaturePromoController20Test,
        ShowStartupBubbleFailsWhenAlreadyShowing) {
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         callback);
+
   SetTrackerInitBehavior(true, TrackerCallbackBehavior::kImmediate);
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))
       .WillOnce(Return(true));
 
-  EXPECT_TRUE(controller_->MaybeShowStartupPromo(kTestIPHFeature));
+  controller_->MaybeShowStartupPromo(kTestIPHFeature);
   EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
-  EXPECT_FALSE(controller_->MaybeShowStartupPromo(kTestIPHFeature));
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      callback, Run(FeaturePromoResult(FeaturePromoResult::kAlreadyQueued)),
+      controller_->MaybeShowStartupPromo(
+          MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get())));
   EXPECT_TRUE(controller_->IsPromoActive(kTestIPHFeature));
 }
 
 TEST_F(BrowserFeaturePromoController20Test,
        ShowStartupBubbleFailsWhenAlreadyPending) {
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         callback);
+
   SetTrackerInitBehavior(true, TrackerCallbackBehavior::kNever);
 
-  EXPECT_TRUE(controller_->MaybeShowStartupPromo(kTestIPHFeature));
-  EXPECT_FALSE(controller_->MaybeShowStartupPromo(kTestIPHFeature));
+  controller_->MaybeShowStartupPromo(kTestIPHFeature);
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      callback, Run(FeaturePromoResult(FeaturePromoResult::kAlreadyQueued)),
+      controller_->MaybeShowStartupPromo(
+          MakeParams(kTestIPHFeature, base::DoNothing(), callback.Get())));
   EXPECT_EQ(FeaturePromoStatus::kQueuedForStartup,
             controller_->GetPromoStatus(kTestIPHFeature));
 }
 
 TEST_F(BrowserFeaturePromoController20Test, CancelPromoBeforeStartup) {
+  UNCALLED_MOCK_CALLBACK(FeaturePromoController::ShowPromoResultCallback,
+                         result_callback);
+
   tracker_initialized_ = false;
-  feature_engagement::Tracker::OnInitializedCallback callback;
+  feature_engagement::Tracker::OnInitializedCallback initialized_callback;
   EXPECT_CALL(*mock_tracker_, AddOnInitializedCallback)
       .WillOnce([&](feature_engagement::Tracker::OnInitializedCallback cb) {
-        callback = std::move(cb);
+        initialized_callback = std::move(cb);
       });
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI).Times(0);
 
-  EXPECT_TRUE(controller_->MaybeShowStartupPromo(kTestIPHFeature));
+  controller_->MaybeShowStartupPromo(
+      MakeParams(kTestIPHFeature, base::DoNothing(), result_callback.Get()));
   EXPECT_EQ(FeaturePromoStatus::kQueuedForStartup,
             controller_->GetPromoStatus(kTestIPHFeature));
-  controller_->EndPromo(kTestIPHFeature,
-                        user_education::EndFeaturePromoReason::kAbortPromo);
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      result_callback, Run(FeaturePromoResult(FeaturePromoResult::kCanceled)),
+      controller_->EndPromo(
+          kTestIPHFeature, user_education::EndFeaturePromoReason::kAbortPromo));
   EXPECT_EQ(FeaturePromoStatus::kNotRunning,
             controller_->GetPromoStatus(kTestIPHFeature));
 
   // Now, indicate that startup has completed and verify that the promo does
   // not show.
   tracker_initialized_ = true;
-  std::move(callback).Run(true);
+  std::move(initialized_callback).Run(true);
   EXPECT_EQ(FeaturePromoStatus::kNotRunning,
             controller_->GetPromoStatus(kTestIPHFeature));
 }
@@ -2064,22 +2082,18 @@ class BrowserFeaturePromoController20PriorityTest
     registry()->RegisterFeature(std::move(spec));
   }
 
-  auto MaybeShowStartupPromo(user_education::FeaturePromoParams params,
-                             bool expected = true) {
+  auto MaybeShowStartupPromo(user_education::FeaturePromoParams params) {
     std::ostringstream desc;
-    desc << "MaybeShowStartupPromo(" << params.feature->name << ", "
-         << (expected ? "true" : "false") << ")";
-    return CheckResult(
-        [this, p = std::move(params), expected]() mutable {
-          if (expected) {
-            // This is insurance, a parameter could be added to specify whether
-            // the feature is expected to check the tracker or not.
-            EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(*p.feature)))
-                .WillRepeatedly(Return(true));
-          }
-          return controller_->MaybeShowStartupPromo(std::move(p));
-        },
-        expected, desc.str());
+    desc << "MaybeShowStartupPromo(" << params.feature->name << ")";
+    return std::move(Do([this, p = std::move(params)]() mutable {
+                       // This is insurance, a parameter could be added to
+                       // specify whether the feature is expected to check the
+                       // tracker or not.
+                       EXPECT_CALL(*mock_tracker_,
+                                   ShouldTriggerHelpUI(Ref(*p.feature)))
+                           .WillRepeatedly(Return(true));
+                       controller_->MaybeShowStartupPromo(std::move(p));
+                     }).SetDescription(desc.str()));
   }
 
   auto ExpectShowingPromo(const base::Feature* feature) {
