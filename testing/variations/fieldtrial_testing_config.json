@@ -21339,7 +21339,41 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_0",
+                    "params": {
+                        "InSessionPollingIntervalInSeconds": "0",
+                        "IndefinitePollingIntervalInSeconds": "0"
+                    },
+                    "enable_features": [
+                        "BocaCustomPolling"
+                    ]
+                },
+                {
+                    "name": "Enabled_10",
+                    "params": {
+                        "InSessionPollingIntervalInSeconds": "10",
+                        "IndefinitePollingIntervalInSeconds": "10"
+                    },
+                    "enable_features": [
+                        "BocaCustomPolling"
+                    ]
+                },
+                {
+                    "name": "Enabled_60",
+                    "params": {
+                        "InSessionPollingIntervalInSeconds": "60",
+                        "IndefinitePollingIntervalInSeconds": "60"
+                    },
+                    "enable_features": [
+                        "BocaCustomPolling"
+                    ]
+                },
+                {
+                    "name": "Enabled_300",
+                    "params": {
+                        "InSessionPollingIntervalInSeconds": "300",
+                        "IndefinitePollingIntervalInSeconds": "300"
+                    },
                     "enable_features": [
                         "BocaCustomPolling"
                     ]
