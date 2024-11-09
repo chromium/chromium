@@ -189,7 +189,6 @@ bool VideoFrameLayout::FitsInContiguousBufferOfSize(size_t data_size) const {
     return false;
   }
 
-  base::CheckedNumeric<size_t> required_size = 0;
   for (const auto& plane : planes_) {
     if (plane.offset > data_size || plane.size > data_size) {
       return false;
@@ -201,12 +200,6 @@ bool VideoFrameLayout::FitsInContiguousBufferOfSize(size_t data_size) const {
     if (!plane_end.IsValid() || plane_end.ValueOrDie() > data_size) {
       return false;
     }
-
-    required_size += plane.size;
-  }
-
-  if (!required_size.IsValid() || required_size.ValueOrDie() > data_size) {
-    return false;
   }
 
   return true;

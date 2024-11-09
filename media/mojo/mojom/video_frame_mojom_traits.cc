@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/mojo/mojom/video_frame_mojom_traits.h"
 
 #include <utility>
@@ -90,13 +85,15 @@ base::ReadOnlySharedMemoryRegion CreateRegion(const media::VideoFrame& frame,
   }
 
   base::WritableSharedMemoryMapping& dst_mapping = mapped_region.mapping;
-  uint8_t* dst_data = dst_mapping.GetMemoryAs<uint8_t>();
+  auto dst_data = dst_mapping.GetMemoryAsSpan<uint8_t>();
   // The data from |frame| may not be consecutive between planes. Copy data into
   // a shared memory buffer which is tightly packed. Padding inside each planes
   // are preserved.
   for (size_t i = 0; i < num_planes; ++i) {
-    memcpy(dst_data + offsets[i], static_cast<const void*>(frame.data(i)),
-           sizes[i]);
+    // TODO(crbug.com/338570700): Remove when VideoFrame::data() is a span
+    auto frame_data =
+        UNSAFE_TODO(base::span<const uint8_t>(frame.data(i), sizes[i]));
+    dst_data.subspan(offsets[i], sizes[i]).copy_from(frame_data);
   }
 
   return std::move(mapped_region.region);
@@ -236,16 +233,29 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       return false;
     }
 
-    uint8_t* addr[3] = {};
+    auto mapped_region = mapping.GetMemoryAsSpan<uint8_t>();
+    std::array<base::span<const uint8_t>, 3> plane_data;
     std::vector<media::ColorPlaneLayout> planes(num_planes);
     for (size_t i = 0; i < num_planes; i++) {
-      addr[i] =
-          const_cast<uint8_t*>(mapping.GetMemoryAs<uint8_t>()) + offsets[i];
+      if (offsets[i] > mapped_region.size()) {
+        DLOG(ERROR) << "Plane's offset is out of bounds. "
+                    << " offset: " << offsets[i]
+                    << " size: " << mapped_region.size();
+        return false;
+      }
+
       planes[i].stride = strides[i];
       planes[i].offset = base::strict_cast<size_t>(offsets[i]);
-      planes[i].size = i + 1 < num_planes
-                           ? offsets[i + 1] - offsets[i]
-                           : mapping.size() - offsets[num_planes - 1];
+      const size_t space_till_mapping_end = mapping.size() - offsets[i];
+      const size_t calculated_plane_size =
+          media::VideoFrame::Rows(i, format, coded_size.height()) * strides[i];
+
+      // TODO(crbug.com/378046071) For H.264 content Widevine outputs planes
+      // in IMC4 pixel format. Since Y and V planes in IMC4 overlap,
+      // the distance to the next plane can't be used to determent the size of
+      // the current plane.
+      planes[i].size = std::min(calculated_plane_size, space_till_mapping_end);
+      plane_data[i] = mapped_region.subspan(offsets[i], planes[i].size);
     }
 
     auto layout = media::VideoFrameLayout::CreateWithPlanes(format, coded_size,
@@ -256,8 +266,8 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     }
 
     frame = media::VideoFrame::WrapExternalYuvDataWithLayout(
-        *layout, visible_rect, natural_size, addr[0], addr[1], addr[2],
-        timestamp);
+        *layout, visible_rect, natural_size, plane_data[0].data(),
+        plane_data[1].data(), plane_data[2].data(), timestamp);
     if (frame) {
       frame->BackWithOwnedSharedMemory(std::move(region), std::move(mapping));
     }

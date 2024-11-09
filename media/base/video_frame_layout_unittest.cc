@@ -344,7 +344,7 @@ TEST(VideoFrameLayout, FitsInContiguousBufferOfSize) {
   EXPECT_FALSE(layout->FitsInContiguousBufferOfSize(sizes[0]));
 
   // Validate overflow.
-  planes[0].offset = 0;
+  planes[0].offset = std::numeric_limits<size_t>::max() / 2 + 2;
   planes[0].size = planes[1].size = planes[2].size =
       std::numeric_limits<size_t>::max() / 2;
   layout =
