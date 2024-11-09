@@ -2194,4 +2194,43 @@ TEST_F(InputDeviceSettingsControllerTest, MarketingNameOverridesGeneric) {
   ASSERT_EQ("M720 Triathlon", mouse_with_marketing_name->name);
 }
 
+TEST_F(InputDeviceSettingsControllerTest, DefaultButtonWithMetadata) {
+  // Use a graphics tablet with default button remappings.
+  ui::InputDevice graphics_tablet_base_device = kSampleGraphicsTablet;
+  graphics_tablet_base_device.vendor_id = 0x056a;
+  graphics_tablet_base_device.product_id = 0x0374;
+
+  // Add two mice, one with a known marketing name and one without.
+  fake_device_manager_->AddFakeGraphicsTablet(graphics_tablet_base_device);
+
+  auto* graphics_tablet =
+      controller_->GetGraphicsTablet(graphics_tablet_base_device.id);
+  auto default_action = graphics_tablet->settings->tablet_button_remappings[0]
+                            ->remapping_action.Clone();
+  ASSERT_FALSE(default_action.is_null());
+
+  // Set the button to something other than the default and verify it its set as
+  // expected.
+  auto modified_settings = graphics_tablet->settings->Clone();
+  modified_settings->tablet_button_remappings[0]->remapping_action =
+      mojom::RemappingAction::NewStaticShortcutAction(
+          mojom::StaticShortcutAction::kCopy);
+  controller_->SetGraphicsTabletSettings(graphics_tablet->id,
+                                         std::move(modified_settings));
+  ASSERT_EQ(
+      mojom::RemappingAction::NewStaticShortcutAction(
+          mojom::StaticShortcutAction::kCopy),
+      graphics_tablet->settings->tablet_button_remappings[0]->remapping_action);
+
+  // When the button is reset back to default (nullptr), it should be replaced
+  // by the OEM default instead.
+  modified_settings = graphics_tablet->settings->Clone();
+  modified_settings->tablet_button_remappings[0]->remapping_action = nullptr;
+  controller_->SetGraphicsTabletSettings(graphics_tablet->id,
+                                         std::move(modified_settings));
+  ASSERT_EQ(
+      default_action,
+      graphics_tablet->settings->tablet_button_remappings[0]->remapping_action);
+}
+
 }  // namespace ash

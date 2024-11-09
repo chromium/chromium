@@ -40,6 +40,7 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_tree.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -502,6 +503,29 @@ void RecordSetMouseSettingsValidMetric(bool is_valid) {
       "ChromeOS.Settings.Device.Mouse.SetSettingsSucceeded", is_valid);
 }
 
+void RefreshKeyDisplayInRemappingList(
+    std::vector<mojom::ButtonRemappingPtr>& remappings) {
+  for (const auto& remapping : remappings) {
+    if (!remapping->remapping_action ||
+        !remapping->remapping_action->is_key_event()) {
+      continue;
+    }
+    mojom::KeyEvent& key_event = *remapping->remapping_action->get_key_event();
+    key_event.key_display = base::UTF16ToUTF8(GetKeyDisplay(key_event.vkey));
+  }
+}
+
+void RefreshKeyDisplayMouse(mojom::Mouse& mouse) {
+  RefreshKeyDisplayInRemappingList(mouse.settings->button_remappings);
+}
+
+void RefreshKeyDisplayGraphicsTablet(mojom::GraphicsTablet& graphics_tablet) {
+  RefreshKeyDisplayInRemappingList(
+      graphics_tablet.settings->tablet_button_remappings);
+  RefreshKeyDisplayInRemappingList(
+      graphics_tablet.settings->pen_button_remappings);
+}
+
 // Check the list of keyboards to see if any have the same |device_key|.
 // If so, their settings need to also be updated.
 template <typename T>
@@ -515,6 +539,40 @@ void UpdateDuplicateDeviceSettings(
     if (device_id != updated_device.id &&
         device->device_key == updated_device.device_key) {
       device->settings = updated_device.settings->Clone();
+      settings_updated_callback.Run(device_id);
+    }
+  }
+}
+
+template <>
+void UpdateDuplicateDeviceSettings<mojom::Mouse>(
+    const mojom::Mouse& updated_mouse,
+    base::flat_map<InputDeviceSettingsControllerImpl::DeviceId,
+                   mojo::StructPtr<mojom::Mouse>>& mice,
+    base::RepeatingCallback<void(InputDeviceSettingsControllerImpl::DeviceId)>
+        settings_updated_callback) {
+  for (const auto& [device_id, mouse] : mice) {
+    if (device_id != updated_mouse.id &&
+        mouse->device_key == updated_mouse.device_key) {
+      mouse->settings = updated_mouse.settings->Clone();
+      RefreshKeyDisplayMouse(*mouse);
+      settings_updated_callback.Run(device_id);
+    }
+  }
+}
+
+template <>
+void UpdateDuplicateDeviceSettings<mojom::GraphicsTablet>(
+    const mojom::GraphicsTablet& updated_graphics_tablet,
+    base::flat_map<InputDeviceSettingsControllerImpl::DeviceId,
+                   mojo::StructPtr<mojom::GraphicsTablet>>& mice,
+    base::RepeatingCallback<void(InputDeviceSettingsControllerImpl::DeviceId)>
+        settings_updated_callback) {
+  for (const auto& [device_id, graphics_tablet] : mice) {
+    if (device_id != updated_graphics_tablet.id &&
+        graphics_tablet->device_key == updated_graphics_tablet.device_key) {
+      graphics_tablet->settings = updated_graphics_tablet.settings->Clone();
+      RefreshKeyDisplayGraphicsTablet(*graphics_tablet);
       settings_updated_callback.Run(device_id);
     }
   }
@@ -605,33 +663,68 @@ void DeleteLoginScreenButtonRemappingListPrefWhenPeripheralCustomizationDisabled
                      std::nullopt);
 }
 
-void RefreshKeyDisplayInRemappingList(
-    std::vector<mojom::ButtonRemappingPtr>& remappings) {
-  for (const auto& remapping : remappings) {
-    if (!remapping->remapping_action ||
-        !remapping->remapping_action->is_key_event()) {
-      continue;
-    }
-    mojom::KeyEvent& key_event = *remapping->remapping_action->get_key_event();
-    key_event.key_display = base::UTF16ToUTF8(GetKeyDisplay(key_event.vkey));
-  }
-}
-
-void RefreshKeyDisplayMouse(mojom::Mouse& mouse) {
-  RefreshKeyDisplayInRemappingList(mouse.settings->button_remappings);
-}
-
-void RefreshKeyDisplayGraphicsTablet(mojom::GraphicsTablet& graphics_tablet) {
-  RefreshKeyDisplayInRemappingList(
-      graphics_tablet.settings->tablet_button_remappings);
-  RefreshKeyDisplayInRemappingList(
-      graphics_tablet.settings->pen_button_remappings);
-}
-
 bool BatteryInfoChanged(const mojom::BatteryInfo& existing_info,
                         const mojom::BatteryInfo& new_info) {
   return existing_info.battery_percentage != new_info.battery_percentage ||
          existing_info.charge_state != new_info.charge_state;
+}
+
+void ApplyDefaultsToButtonRemappingList(
+    const std::vector<mojom::ButtonRemappingPtr>& default_button_remappings,
+    std::vector<mojom::ButtonRemappingPtr>& button_remappings) {
+  for (auto& button_remapping : button_remappings) {
+    auto matching_remapping_iter = base::ranges::find(
+        default_button_remappings, *button_remapping->button,
+        [](const mojom::ButtonRemappingPtr& button_remapping) {
+          return *button_remapping->button;
+        });
+    if (matching_remapping_iter == default_button_remappings.end()) {
+      continue;
+    }
+
+    // If the button is already assigned to some action, do not attempt to
+    // reassign it back to the OEM default. This reassignment should only happen
+    // if the button is not assigned to anything yet AND the OEM decided that
+    // the button has a default action assigned.
+    if (!button_remapping->remapping_action.is_null()) {
+      continue;
+    }
+
+    const auto& matching_remapping = *matching_remapping_iter;
+    if (!matching_remapping->remapping_action) {
+      continue;
+    }
+
+    button_remapping->remapping_action =
+        matching_remapping->remapping_action->Clone();
+  }
+}
+
+void ApplyDefaultsToMouseButtons(mojom::Mouse& mouse) {
+  if (mouse.mouse_button_config == mojom::MouseButtonConfig::kNoConfig) {
+    return;
+  }
+
+  ApplyDefaultsToButtonRemappingList(
+      GetButtonRemappingListForConfig(mouse.mouse_button_config),
+      mouse.settings->button_remappings);
+}
+
+void ApplyDefaultsToGraphicsTabletButtons(
+    mojom::GraphicsTablet& graphics_tablet) {
+  if (graphics_tablet.graphics_tablet_button_config ==
+      mojom::GraphicsTabletButtonConfig::kNoConfig) {
+    return;
+  }
+
+  ApplyDefaultsToButtonRemappingList(
+      GetTabletButtonRemappingListForConfig(
+          graphics_tablet.graphics_tablet_button_config),
+      graphics_tablet.settings->tablet_button_remappings);
+  ApplyDefaultsToButtonRemappingList(
+      GetPenButtonRemappingListForConfig(
+          graphics_tablet.graphics_tablet_button_config),
+      graphics_tablet.settings->pen_button_remappings);
 }
 
 }  // namespace
@@ -1651,10 +1744,14 @@ bool InputDeviceSettingsControllerImpl::SetMouseSettings(
             WelcomeExperienceNotificationEventType::kSettingChanged);
     welcome_notification_clicked_device_keys_.erase(it);
   }
+
   const auto old_settings = std::move(found_mouse.settings);
   found_mouse.settings = settings.Clone();
+  ApplyDefaultsToMouseButtons(found_mouse);
   mouse_pref_handler_->UpdateMouseSettings(
       active_pref_service_, policy_handler_->mouse_policies(), found_mouse);
+  RefreshKeyDisplayMouse(found_mouse);
+
   PR_LOG(INFO, Feature::IDS) << GetMouseSettingsLog("Updated", found_mouse);
   metrics_manager_->RecordMouseChangedMetrics(found_mouse, *old_settings);
   DispatchMouseSettingsChanged(id);
@@ -1730,10 +1827,14 @@ bool InputDeviceSettingsControllerImpl::SetGraphicsTabletSettings(
             WelcomeExperienceNotificationEventType::kSettingChanged);
     welcome_notification_clicked_device_keys_.erase(it);
   }
+
   const auto old_settings = std::move(found_graphics_tablet.settings);
   found_graphics_tablet.settings = settings.Clone();
+  ApplyDefaultsToGraphicsTabletButtons(found_graphics_tablet);
   graphics_tablet_pref_handler_->UpdateGraphicsTabletSettings(
       active_pref_service_, found_graphics_tablet);
+  RefreshKeyDisplayGraphicsTablet(found_graphics_tablet);
+
   PR_LOG(INFO, Feature::IDS)
       << GetGraphicsTabletSettingsLog("Updated", found_graphics_tablet);
   metrics_manager_->RecordGraphicsTabletChangedMetrics(found_graphics_tablet,
