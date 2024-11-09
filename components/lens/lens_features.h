@@ -667,6 +667,10 @@ extern base::TimeDelta GetLensOverlaySupportedLanguagesCacheTimeoutMs();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShowContextualSearchboxSearchSuggest();
 
+// The amount of recent languages to show in the language pickers.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayTranslateRecentLanguagesAmount();
+
 }  // namespace lens::features
 
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

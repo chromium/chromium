@@ -92,6 +92,8 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       "translateTo", IDS_LENS_OVERLAY_TARGET_LANGUAGE_PICKER_MENU_TITLE);
   html_source->AddLocalizedString("allLanguages",
                                   IDS_LENS_OVERLAY_ALL_LANGUAGES_LABEL);
+  html_source->AddLocalizedString("recentLanguages",
+                                  IDS_LENS_OVERLAY_RECENT_LANGUAGES_LABEL);
   html_source->AddLocalizedString("languagePickerAriaLabel",
                                   IDS_LENS_OVERLAY_LANGUAGE_PICKER_LABEL);
   html_source->AddLocalizedString(
@@ -200,6 +202,9 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       "languagesCacheTimeout",
       lens::features::GetLensOverlaySupportedLanguagesCacheTimeoutMs()
           .InMilliseconds());
+  html_source->AddInteger(
+      "recentLanguagesAmount",
+      lens::features::GetLensOverlayTranslateRecentLanguagesAmount());
 
   // Controller doesn't exist in unsupported context but WebUI should still
   // load.

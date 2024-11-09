@@ -247,6 +247,11 @@
     width: 18px;
   }
 
+  :host(:not([should-show-recent-source-languages])) #recentSourceLanguagesSection,
+  :host(:not([should-show-recent-target-languages])) #recentTargetLanguagesSection {
+    display: none;
+  }
+
   #sourceLanguageButton {
     gap: 6px;
     margin-inline-start: 5px;
@@ -506,7 +511,25 @@
         <span id="languagePickerMenuStarsIcon" slot="suffix-icon"></span>
       </cr-button>
     </div>
-    <div class="language-picker-menu-section">
+    <div id="recentSourceLanguagesSection" class="language-picker-menu-section">
+      <h3 role="heading" aria-level="2" class="language-picker-menu-header">
+        $i18n{recentLanguages}
+      </h3>
+      <template id="recentSourceLanguagesContainer" is="dom-repeat"
+        items="[[recentSourceLanguages]]" as="language">
+        <cr-button class="button language-picker-menu-button"
+            on-click="onRecentSourceLanguageClick">
+          <cr-icon icon="cr:check" slot="prefix-icon"
+              class$="checked-icon [[getLanguageCheckedClass(
+              language, sourceLanguage)]]">
+          </cr-icon>
+          <span class="language-picker-menu-button-label">
+            [[language.name]]
+          </span>
+        </cr-button>
+      </template>
+    </div>
+    <div id="allSourceLanguagesMenu" class="language-picker-menu-section">
       <h3 role="heading" aria-level="2" class="language-picker-menu-header">
         $i18n{allLanguages}
       </h3>
@@ -537,7 +560,25 @@
         $i18n{translateTo}
       </div>
     </div>
-    <div class="language-picker-menu-section">
+    <div id="recentTargetLanguagesSection" class="language-picker-menu-section">
+      <h3 role="heading" aria-level="2" class="language-picker-menu-header">
+        $i18n{recentLanguages}
+      </h3>
+      <template id="recentTargetLanguagesContainer" is="dom-repeat"
+        items="[[recentTargetLanguages]]" as="language">
+        <cr-button class="button language-picker-menu-button"
+            on-click="onRecentTargetLanguageClick">
+          <cr-icon icon="cr:check" slot="prefix-icon"
+              class$="checked-icon [[getLanguageCheckedClass(
+              language, targetLanguage)]]">
+          </cr-icon>
+          <span class="language-picker-menu-button-label">
+            [[language.name]]
+          </span>
+        </cr-button>
+      </template>
+    </div>
+    <div id="allTargetLanguagesMenu" class="language-picker-menu-section">
       <h3 role="heading" aria-level="2" class="language-picker-menu-header">
         $i18n{allLanguages}
       </h3>

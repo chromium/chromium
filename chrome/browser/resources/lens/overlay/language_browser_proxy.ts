@@ -16,6 +16,8 @@ const LAST_FETCH_SUPPORTED_LANGUAGES_TIME_KEY =
     'lastFetchSupportedLanguagesTime';
 const LAST_USED_SOURCE_LANGUAGE_KEY = 'lastUsedSourceLanguage';
 const LAST_USED_TARGET_LANGUAGE_KEY = 'lastUsedTargetLanguage';
+const RECENT_SOURCE_LANGUAGES_KEY = 'recentSourceLangauges';
+const RECENT_TARGET_LANGAUGES_KEY = 'recentTargetLanguages';
 const SUPPORTED_LANGUAGES_LOCALE_KEY = 'supportedLanguagesLocale';
 const SUPPORTED_SOURCE_LANGUAGES_KEY = 'supportedSourceLanguages';
 const SUPPORTED_TARGET_LANGUAGES_KEY = 'supportedTargetLanguages';
@@ -25,6 +27,8 @@ export interface LanguageBrowserProxy {
   getLastUsedSourceLanguage(): string|null;
   getLastUsedTargetLanguage(): string|null;
   getTranslateTargetLanguage(): Promise<string>;
+  getRecentSourceLanguages(): string[];
+  getRecentTargetLanguages(): string[];
   getStoredServerLanguages(browserProxy: BrowserProxy):
       Promise<{sourceLanguages: Language[], targetLanguages: Language[]}>;
   storeLanguages(
@@ -32,6 +36,8 @@ export interface LanguageBrowserProxy {
       targetLanguages: Language[]): void;
   storeLastUsedSourceLanguage(sourceLanguageCode: string|null): void;
   storeLastUsedTargetLanguage(targetLanguageCode: string|null): void;
+  storeRecentSourceLanguages(languages: string[]): void;
+  storeRecentTargetLanguages(languages: string[]): void;
 }
 
 export class LanguageBrowserProxyImpl implements LanguageBrowserProxy {
@@ -63,6 +69,24 @@ export class LanguageBrowserProxyImpl implements LanguageBrowserProxy {
 
   getTranslateTargetLanguage(): Promise<string> {
     return chrome.languageSettingsPrivate.getTranslateTargetLanguage();
+  }
+
+  getRecentSourceLanguages(): string[] {
+    const sourceLanguagesJSON =
+        window.localStorage.getItem(RECENT_SOURCE_LANGUAGES_KEY);
+    if (!sourceLanguagesJSON) {
+      return [];
+    }
+    return JSON.parse(sourceLanguagesJSON) as string[];
+  }
+
+  getRecentTargetLanguages(): string[] {
+    const targetLanguagesJSON =
+        window.localStorage.getItem(RECENT_TARGET_LANGAUGES_KEY);
+    if (!targetLanguagesJSON) {
+      return [];
+    }
+    return JSON.parse(targetLanguagesJSON) as string[];
   }
 
   getStoredServerLanguages(browserProxy: BrowserProxy):
@@ -116,6 +140,16 @@ export class LanguageBrowserProxyImpl implements LanguageBrowserProxy {
 
     window.localStorage.setItem(
         LAST_USED_TARGET_LANGUAGE_KEY, targetLanguageCode);
+  }
+
+  storeRecentSourceLanguages(languages: string[]) {
+    window.localStorage.setItem(
+        RECENT_SOURCE_LANGUAGES_KEY, JSON.stringify(languages));
+  }
+
+  storeRecentTargetLanguages(languages: string[]) {
+    window.localStorage.setItem(
+        RECENT_TARGET_LANGAUGES_KEY, JSON.stringify(languages));
   }
 
   private onServerLanguageListFetched(response: {

@@ -48,8 +48,14 @@ export interface TranslateState {
 
 export interface TranslateButtonElement {
   $: {
+    allSourceLanguagesMenu: HTMLDivElement,
+    allTargetLanguagesMenu: HTMLDivElement,
     menuDetectedLanguage: HTMLDivElement,
     languagePicker: HTMLDivElement,
+    recentSourceLanguagesContainer: DomRepeat,
+    recentSourceLanguagesSection: HTMLDivElement,
+    recentTargetLanguagesContainer: DomRepeat,
+    recentTargetLanguagesSection: HTMLDivElement,
     sourceAutoDetectButton: CrButtonElement,
     sourceLanguageButton: CrButtonElement,
     sourceLanguagePickerBackButton: CrIconButtonElement,
@@ -92,6 +98,18 @@ export class TranslateButtonElement extends PolymerElement {
         computed: `computeLanguagePickerButtonsVisible(
               isTranslateModeEnabled, sourceLanguageMenuVisible,
               targetLanguageMenuVisible)`,
+      },
+      recentSourceLanguages: Array,
+      recentTargetLanguages: Array,
+      shouldShowRecentSourceLanguages: {
+        type: Boolean,
+        computed: 'shouldShowRecentLanguages(recentSourceLanguages)',
+        reflectToAttribute: true,
+      },
+      shouldShowRecentTargetLanguages: {
+        type: Boolean,
+        computed: 'shouldShowRecentLanguages(recentTargetLanguages)',
+        reflectToAttribute: true,
       },
       shouldShowStarsIcon: {
         type: Boolean,
@@ -159,7 +177,15 @@ export class TranslateButtonElement extends PolymerElement {
   private serverSourceLanguageList: Language[] = [];
   // The list of target translate languages provided by the server.
   private serverTargetLanguageList: Language[] = [];
-  // The content language code received from the lext layer.
+  // The recent languages that the user has selected as source language.
+  private recentSourceLanguages: Language[] = [];
+  // The recent languages that the user has selected as target language.
+  private recentTargetLanguages: Language[] = [];
+  // Whether we should show the recent source languages in the picker.
+  private shouldShowRecentSourceLanguages: boolean = false;
+  // Whether we should show the recent target languages in the picker.
+  private shouldShowRecentTargetLanguages: boolean = false;
+  // The content language code received from the text layer.
   private contentLanguage: string = '';
   // A browser proxy for communicating with the C++ Lens overlay controller.
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
@@ -321,6 +347,9 @@ export class TranslateButtonElement extends PolymerElement {
     // Last used source and target languages are stored in local storage if
     // feature enabled.
     if (loadTimeData.getBoolean('shouldFetchSupportedLanguages')) {
+      // Set the recent languages for source and target language pickers. If
+      // there are none, this is a no-op.
+      this.maybeSetRecentLanguages();
       const sourceLanguageCode =
           this.languageBrowserProxy.getLastUsedSourceLanguage();
       const targetLanguageCode =
@@ -347,6 +376,26 @@ export class TranslateButtonElement extends PolymerElement {
     // display name.
     this.languageBrowserProxy.getTranslateTargetLanguage().then(
         this.onTargetLanguageRetrieved.bind(this));
+  }
+
+  private maybeSetRecentLanguages() {
+    const recentSourceLanguageCodes =
+        this.languageBrowserProxy.getRecentSourceLanguages();
+    if (recentSourceLanguageCodes.length > 0) {
+      this.recentSourceLanguages =
+          this.getSourceLanguageList().filter((language: Language) => {
+            return recentSourceLanguageCodes.includes(language.languageCode);
+          });
+    }
+
+    const recentTargetLanguageCodes =
+        this.languageBrowserProxy.getRecentTargetLanguages();
+    if (recentTargetLanguageCodes.length > 0) {
+      this.recentTargetLanguages =
+          this.getTargetLanguageList().filter((language: Language) => {
+            return recentTargetLanguageCodes.includes(language.languageCode);
+          });
+    }
   }
 
   private onTargetLanguageRetrieved(targetLanguageCode: string) {
@@ -397,9 +446,23 @@ export class TranslateButtonElement extends PolymerElement {
     assertInstanceof(event.target, HTMLElement);
     const newSourceLanguage =
         this.$.sourceLanguagePickerContainer.itemForElement(event.target);
-    this.sourceLanguage = newSourceLanguage;
-    this.languageBrowserProxy.storeLastUsedSourceLanguage(
-        newSourceLanguage ? newSourceLanguage.languageCode : null);
+    this.setNewSourceLanguage(newSourceLanguage);
+  }
+
+  private onRecentSourceLanguageClick(event: PointerEvent) {
+    assertInstanceof(event.target, HTMLElement);
+    const newSourceLanguage =
+        this.$.recentSourceLanguagesContainer.itemForElement(event.target);
+    this.setNewSourceLanguage(newSourceLanguage);
+  }
+
+  private setNewSourceLanguage(sourceLanguage: Language|null) {
+    this.sourceLanguage = sourceLanguage;
+    if (loadTimeData.getBoolean('shouldFetchSupportedLanguages')) {
+      this.languageBrowserProxy.storeLastUsedSourceLanguage(
+          sourceLanguage ? sourceLanguage.languageCode : null);
+      this.addRecentSourceLanguage(sourceLanguage);
+    }
     this.hideLanguagePickerMenus();
     this.maybeIssueTranslateRequest();
     recordLensOverlayInteraction(
@@ -410,9 +473,23 @@ export class TranslateButtonElement extends PolymerElement {
     assertInstanceof(event.target, HTMLElement);
     const newTargetLanguage =
         this.$.targetLanguagePickerContainer.itemForElement(event.target);
-    this.targetLanguage = newTargetLanguage;
-    this.languageBrowserProxy.storeLastUsedTargetLanguage(
-        newTargetLanguage ? newTargetLanguage.languageCode : null);
+    this.setNewTargetLanguage(newTargetLanguage);
+  }
+
+  private onRecentTargetLanguageClick(event: PointerEvent) {
+    assertInstanceof(event.target, HTMLElement);
+    const newTargetLanguage =
+        this.$.recentTargetLanguagesContainer.itemForElement(event.target);
+    this.setNewTargetLanguage(newTargetLanguage);
+  }
+
+  private setNewTargetLanguage(targetLanguage: Language) {
+    this.targetLanguage = targetLanguage;
+    if (loadTimeData.getBoolean('shouldFetchSupportedLanguages')) {
+      this.languageBrowserProxy.storeLastUsedTargetLanguage(
+          targetLanguage ? targetLanguage.languageCode : null);
+      this.addRecentTargetLanguage(targetLanguage);
+    }
     this.hideLanguagePickerMenus();
     this.maybeIssueTranslateRequest();
     recordLensOverlayInteraction(
@@ -621,8 +698,18 @@ export class TranslateButtonElement extends PolymerElement {
   }
 
   private getLanguageCheckedClass(
-      language: Language, selectedLanguage: Language): string {
-    return selectedLanguage === language ? 'selected' : '';
+      language: Language, selectedLanguage: Language|null): string {
+    if (!selectedLanguage) {
+      return '';
+    }
+
+    return selectedLanguage.languageCode === language.languageCode ?
+        'selected' :
+        '';
+  }
+
+  private shouldShowRecentLanguages(recentLanguages: Language[]) {
+    return recentLanguages.length > 0;
   }
 
   private updateTranslateModeState(shouldUnselectWords: boolean) {
@@ -635,6 +722,57 @@ export class TranslateButtonElement extends PolymerElement {
         shouldUnselectWords: shouldUnselectWords,
       },
     }));
+  }
+
+  private addRecentSourceLanguage(language: Language|null) {
+    if (!language) {
+      return;
+    }
+    this.prepareRecentLanguageListForAddition(
+        this.recentSourceLanguages, language);
+
+    // This needs to happen this way in order for properties to properly update
+    // the HTML.
+    this.recentSourceLanguages = [language, ...this.recentSourceLanguages];
+    this.languageBrowserProxy.storeRecentSourceLanguages(
+        this.recentSourceLanguages.map((language: Language) => {
+          return language.languageCode;
+        }));
+  }
+
+  private addRecentTargetLanguage(language: Language) {
+    assert(language);
+    this.prepareRecentLanguageListForAddition(
+        this.recentTargetLanguages, language);
+
+    // This needs to happen this way in order for properties to properly update
+    // the HTML.
+    this.recentTargetLanguages = [language, ...this.recentTargetLanguages];
+    this.languageBrowserProxy.storeRecentTargetLanguages(
+        this.recentTargetLanguages.map((language: Language) => {
+          return language.languageCode;
+        }));
+  }
+
+  // Prepares the recent language list for addition by removing the language if
+  // it is already in the list or popping languages if its length is above the
+  // max.
+  private prepareRecentLanguageListForAddition(
+      languageList: Language[], language: Language) {
+    // If the language is already present in the queue, remove it and then
+    // re-add it so it's at the top. If the slots are full, then we should
+    // dequeue languages until it is not and then add the most recent language.
+    const index = languageList.findIndex(
+        (recentLanguage: Language) =>
+            recentLanguage.languageCode === language.languageCode);
+
+    if (index > -1) {
+      languageList.splice(index, 1);
+    }
+    while (languageList.length >=
+           loadTimeData.getInteger('recentLanguagesAmount')) {
+      languageList.pop();
+    }
   }
 
   private getSourceLanguageList(): Language[] {

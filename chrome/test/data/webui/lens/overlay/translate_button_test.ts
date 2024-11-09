@@ -252,7 +252,7 @@ suite('OverlayTranslateButton', function() {
     // Get a menu item button from the source language picker menu to click.
     testBrowserProxy.handler.reset();
     const sourceLanguageMenuItem =
-        overlayTranslateButtonElement.$.sourceLanguagePickerMenu
+        overlayTranslateButtonElement.$.allSourceLanguagesMenu
             .querySelector<CrButtonElement>(
                 'cr-button:not(#sourceAutoDetectButton)');
     assertTrue(sourceLanguageMenuItem !== null);
@@ -345,7 +345,7 @@ suite('OverlayTranslateButton', function() {
     // Make sure it's not the same menu item that is already selected.
     testBrowserProxy.handler.reset();
     const targetLanguageMenuItems =
-        overlayTranslateButtonElement.$.targetLanguagePickerMenu
+        overlayTranslateButtonElement.$.allTargetLanguagesMenu
             .querySelectorAll<CrButtonElement>('cr-button');
     assertTrue(targetLanguageMenuItems !== null);
     const filteredMenuItems =
@@ -795,7 +795,7 @@ suite('OverlayTranslateButton', function() {
 
 
     const sourceLanguageMenuItems =
-        overlayTranslateButtonElement.$.sourceLanguagePickerMenu
+        overlayTranslateButtonElement.$.allSourceLanguagesMenu
             .querySelectorAll<CrButtonElement>('cr-button');
     const swahiliMenuItem: CrButtonElement =
         Array.from(sourceLanguageMenuItems).filter((item: CrButtonElement) => {
@@ -841,7 +841,7 @@ suite('OverlayTranslateButton', function() {
         isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
 
     const targetLanguageMenuItems =
-        overlayTranslateButtonElement.$.targetLanguagePickerMenu
+        overlayTranslateButtonElement.$.allTargetLanguagesMenu
             .querySelectorAll<CrButtonElement>('cr-button');
     const swahiliMenuItem: CrButtonElement =
         Array.from(targetLanguageMenuItems).filter((item: CrButtonElement) => {
@@ -930,7 +930,7 @@ suite('OverlayTranslateButtonLanguages', function() {
     // Check the language picker list as it should be using the server language
     // list.
     const sourceLanguageMenuItems =
-        Array.from(overlayTranslateButtonElement.$.sourceLanguagePickerMenu
+        Array.from(overlayTranslateButtonElement.$.allSourceLanguagesMenu
                        .querySelectorAll<CrButtonElement>(
                            'cr-button:not(#sourceAutoDetectButton)'));
     assertTrue(sourceLanguageMenuItems !== null);
@@ -941,7 +941,7 @@ suite('OverlayTranslateButtonLanguages', function() {
     });
 
     const targetLanguageMenuItems =
-        Array.from(overlayTranslateButtonElement.$.targetLanguagePickerMenu
+        Array.from(overlayTranslateButtonElement.$.allTargetLanguagesMenu
                        .querySelectorAll<CrButtonElement>('cr-button'));
     assertTrue(targetLanguageMenuItems !== null);
     assertTrue(targetLanguageMenuItems.length > 0);
@@ -975,7 +975,7 @@ suite('OverlayTranslateButtonLanguages', function() {
     // Check the language picker list as it should be using the server language
     // list. Make sure it only uses the correct filtered languages.
     const sourceLanguageMenuItems =
-        Array.from(overlayTranslateButtonElement.$.sourceLanguagePickerMenu
+        Array.from(overlayTranslateButtonElement.$.allSourceLanguagesMenu
                        .querySelectorAll<CrButtonElement>(
                            'cr-button:not(#sourceAutoDetectButton)'));
     assertTrue(sourceLanguageMenuItems !== null);
@@ -985,7 +985,7 @@ suite('OverlayTranslateButtonLanguages', function() {
     });
 
     const targetLanguageMenuItems =
-        Array.from(overlayTranslateButtonElement.$.targetLanguagePickerMenu
+        Array.from(overlayTranslateButtonElement.$.allTargetLanguagesMenu
                        .querySelectorAll<CrButtonElement>('cr-button'));
     assertTrue(targetLanguageMenuItems !== null);
     assertEquals(targetLanguageMenuItems.length, 2);
@@ -1017,7 +1017,7 @@ suite('OverlayTranslateButtonLanguages', function() {
     // list since a server language list could not be fetched. Make sure it only
     // uses the correct filtered languages.
     const sourceLanguageMenuItems =
-        Array.from(overlayTranslateButtonElement.$.sourceLanguagePickerMenu
+        Array.from(overlayTranslateButtonElement.$.allSourceLanguagesMenu
                        .querySelectorAll<CrButtonElement>(
                            'cr-button:not(#sourceAutoDetectButton)'));
     assertTrue(sourceLanguageMenuItems !== null);
@@ -1027,7 +1027,7 @@ suite('OverlayTranslateButtonLanguages', function() {
     });
 
     const targetLanguageMenuItems =
-        Array.from(overlayTranslateButtonElement.$.targetLanguagePickerMenu
+        Array.from(overlayTranslateButtonElement.$.allTargetLanguagesMenu
                        .querySelectorAll<CrButtonElement>('cr-button'));
     assertTrue(targetLanguageMenuItems !== null);
     assertEquals(targetLanguageMenuItems.length, 2);
@@ -1056,7 +1056,7 @@ suite('OverlayTranslateButtonLanguages', function() {
     // Check the language picker list as it should be using the client language
     // list since a server language list could not be fetched.
     const sourceLanguageMenuItems =
-        Array.from(overlayTranslateButtonElement.$.sourceLanguagePickerMenu
+        Array.from(overlayTranslateButtonElement.$.allSourceLanguagesMenu
                        .querySelectorAll<CrButtonElement>(
                            'cr-button:not(#sourceAutoDetectButton)'));
     assertTrue(sourceLanguageMenuItems !== null);
@@ -1066,7 +1066,7 @@ suite('OverlayTranslateButtonLanguages', function() {
     });
 
     const targetLanguageMenuItems =
-        Array.from(overlayTranslateButtonElement.$.targetLanguagePickerMenu
+        Array.from(overlayTranslateButtonElement.$.allTargetLanguagesMenu
                        .querySelectorAll<CrButtonElement>('cr-button'));
     assertTrue(targetLanguageMenuItems !== null);
     assertTrue(targetLanguageMenuItems.length > 0);
@@ -1106,7 +1106,7 @@ suite('OverlayTranslateButtonLanguages', function() {
     // Check the language picker list as it should be using the server language
     // list.
     const sourceLanguageMenuItems =
-        Array.from(overlayTranslateButtonElement.$.sourceLanguagePickerMenu
+        Array.from(overlayTranslateButtonElement.$.allSourceLanguagesMenu
                        .querySelectorAll<CrButtonElement>(
                            'cr-button:not(#sourceAutoDetectButton)'));
     assertTrue(sourceLanguageMenuItems !== null);
@@ -1117,7 +1117,7 @@ suite('OverlayTranslateButtonLanguages', function() {
     });
 
     const targetLanguageMenuItems =
-        Array.from(overlayTranslateButtonElement.$.targetLanguagePickerMenu
+        Array.from(overlayTranslateButtonElement.$.allTargetLanguagesMenu
                        .querySelectorAll<CrButtonElement>('cr-button'));
     assertTrue(targetLanguageMenuItems !== null);
     assertTrue(targetLanguageMenuItems.length > 0);
@@ -1157,7 +1157,7 @@ suite('OverlayTranslateButtonLanguages', function() {
 
     // Get a menu item button from the source language picker menu to click.
     const sourceLanguageMenuItem =
-        overlayTranslateButtonElement.$.sourceLanguagePickerMenu
+        overlayTranslateButtonElement.$.allSourceLanguagesMenu
             .querySelector<CrButtonElement>(
                 'cr-button:not(#sourceAutoDetectButton)');
     assertTrue(sourceLanguageMenuItem !== null);
@@ -1207,7 +1207,7 @@ suite('OverlayTranslateButtonLanguages', function() {
 
     // Get a menu item button from the target language picker menu to click.
     const targetLanguageMenuItem =
-        overlayTranslateButtonElement.$.targetLanguagePickerMenu
+        overlayTranslateButtonElement.$.allTargetLanguagesMenu
             .querySelector<CrButtonElement>('cr-button');
     assertTrue(targetLanguageMenuItem !== null);
     targetLanguageMenuItem.click();
@@ -1270,4 +1270,232 @@ suite('OverlayTranslateButtonLanguages', function() {
     assertEquals(
         1, testBrowserProxy.handler.getCallCount('fetchSupportedLanguages'));
   });
+
+  test('RecentSourceLanguageClick', async () => {
+    loadTimeData.overrideValues({'recentLanguagesAmount': 2});
+    const storedRecentLanguageCode = TEST_FETCH_LANGUAGES[1]!.languageCode;
+    testLanguageBrowserProxy.storeRecentSourceLanguages(
+        [storedRecentLanguageCode]);
+    testBrowserProxy.handler.setLanguagesToFetchForTesting(
+        'en-US', TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+    await addTranslateButtonElement();
+    assertTrue(
+        testLanguageBrowserProxy.getRecentSourceLanguages().length === 1);
+
+    const recentSourceLanguageMenuItem =
+        overlayTranslateButtonElement.$.recentSourceLanguagesSection
+            .querySelector<CrButtonElement>('cr-button');
+    assertTrue(recentSourceLanguageMenuItem !== null);
+    assertNotEquals(
+        recentSourceLanguageMenuItem.innerText.trim(),
+        overlayTranslateButtonElement.$.sourceLanguageButton.innerText);
+
+    // Click on the recent language menu item.
+    recentSourceLanguageMenuItem.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // Recent language list should not be added to.
+    assertTrue(
+        testLanguageBrowserProxy.getRecentSourceLanguages().length === 1);
+    assertEquals(
+        recentSourceLanguageMenuItem.innerText.trim(),
+        overlayTranslateButtonElement.$.sourceLanguageButton.innerText);
+  });
+
+  test('RecentTargetLanguageClick', async () => {
+    loadTimeData.overrideValues({'recentLanguagesAmount': 2});
+    const storedRecentLanguageCode = TEST_FETCH_LANGUAGES[1]!.languageCode;
+    testLanguageBrowserProxy.storeRecentTargetLanguages(
+        [storedRecentLanguageCode]);
+    testBrowserProxy.handler.setLanguagesToFetchForTesting(
+        'en-US', TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+    await addTranslateButtonElement();
+    assertTrue(
+        testLanguageBrowserProxy.getRecentTargetLanguages().length === 1);
+
+    const recentTargetLanguageMenuItem =
+        overlayTranslateButtonElement.$.recentTargetLanguagesSection
+            .querySelector<CrButtonElement>('cr-button');
+    assertTrue(recentTargetLanguageMenuItem !== null);
+    assertNotEquals(
+        recentTargetLanguageMenuItem.innerText.trim(),
+        overlayTranslateButtonElement.$.targetLanguageButton.innerText);
+
+    // Click on the recent language menu item.
+    recentTargetLanguageMenuItem.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // Recent language list should not be added to.
+    assertTrue(
+        testLanguageBrowserProxy.getRecentTargetLanguages().length === 1);
+    assertEquals(
+        recentTargetLanguageMenuItem.innerText.trim(),
+        overlayTranslateButtonElement.$.targetLanguageButton.innerText);
+  });
+
+  test('AutoDetectLanguageNotAddedToRecents', async () => {
+    loadTimeData.overrideValues({'recentLanguagesAmount': 2});
+    testBrowserProxy.handler.setLanguagesToFetchForTesting(
+        'en-US', TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+    await addTranslateButtonElement();
+    assertTrue(
+        testLanguageBrowserProxy.getRecentSourceLanguages().length === 0);
+
+    // Get a menu item button from the source language picker menu to click.
+    const sourceLanguageMenuItem =
+        overlayTranslateButtonElement.$.allSourceLanguagesMenu
+            .querySelector<CrButtonElement>(
+                'cr-button:not(#sourceAutoDetectButton)');
+    assertTrue(sourceLanguageMenuItem !== null);
+    sourceLanguageMenuItem.click();
+    const sourceLanguage =
+        overlayTranslateButtonElement.$.sourceLanguagePickerContainer
+            .itemForElement(sourceLanguageMenuItem);
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // The source language button should be updated with the text of the new
+    // source language.
+    assertEquals(
+        overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
+        sourceLanguageMenuItem.innerText.trim());
+    let recentLanguages = testLanguageBrowserProxy.getRecentSourceLanguages();
+    const firstRecentLanguage = recentLanguages[0]!;
+    assertTrue(recentLanguages.length === 1);
+    assertEquals(firstRecentLanguage, sourceLanguage.languageCode);
+
+    overlayTranslateButtonElement.$.sourceAutoDetectButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    assertEquals(
+        overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
+        loadTimeData.getString('detectLanguage'));
+    assertTrue(recentLanguages.length === 1);
+    recentLanguages = testLanguageBrowserProxy.getRecentSourceLanguages();
+    const secondRecentLanguage = recentLanguages[0]!;
+    assertTrue(secondRecentLanguage === firstRecentLanguage);
+    assertNotEquals(secondRecentLanguage, 'auto');
+  });
+
+  test('StoreRecentSourceLanguages', async () => {
+    testBrowserProxy.handler.setLanguagesToFetchForTesting(
+        'en-US', TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+    await addTranslateButtonElement();
+    assertTrue(
+        testLanguageBrowserProxy.getRecentSourceLanguages().length === 0);
+
+    // Get a menu item button from the source language picker menu to click.
+    const sourceLanguageMenuItem =
+        overlayTranslateButtonElement.$.allSourceLanguagesMenu
+            .querySelector<CrButtonElement>(
+                'cr-button:not(#sourceAutoDetectButton)');
+    assertTrue(sourceLanguageMenuItem !== null);
+    sourceLanguageMenuItem.click();
+    const sourceLanguage =
+        overlayTranslateButtonElement.$.sourceLanguagePickerContainer
+            .itemForElement(sourceLanguageMenuItem);
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // The source language button should be updated with the text of the new
+    // source language.
+    assertEquals(
+        overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
+        sourceLanguageMenuItem.innerText.trim());
+    let recentLanguages = testLanguageBrowserProxy.getRecentSourceLanguages();
+    const firstRecentLanguage = recentLanguages[0]!;
+    assertTrue(recentLanguages.length === 1);
+    assertEquals(firstRecentLanguage, sourceLanguage.languageCode);
+
+    // Make sure the recent languages do not exceed the max.
+    loadTimeData.overrideValues({'recentLanguagesAmount': 1});
+    const sourceLanguageMenuItems =
+        overlayTranslateButtonElement.$.allSourceLanguagesMenu
+            .querySelectorAll<CrButtonElement>(
+                'cr-button:not(#sourceAutoDetectButton)');
+    const filteredMenuItems =
+        Array.from(sourceLanguageMenuItems).filter((item: CrButtonElement) => {
+          return item.innerText.trim() !==
+              sourceLanguageMenuItem.innerText.trim();
+        });
+    assertTrue(filteredMenuItems.length > 0);
+    const otherSourceLanguageMenuItem = filteredMenuItems[0] as CrButtonElement;
+    const secondSourceLanguage =
+        overlayTranslateButtonElement.$.sourceLanguagePickerContainer
+            .itemForElement(otherSourceLanguageMenuItem);
+    assertTrue(otherSourceLanguageMenuItem !== null);
+    assertTrue(
+        otherSourceLanguageMenuItem.innerText.trim() !==
+        sourceLanguageMenuItem.innerText.trim());
+    otherSourceLanguageMenuItem.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    recentLanguages = testLanguageBrowserProxy.getRecentSourceLanguages();
+    const secondRecentLanguage = recentLanguages[0]!;
+    assertTrue(recentLanguages.length === 1);
+    assertFalse(secondRecentLanguage === firstRecentLanguage);
+    assertEquals(secondRecentLanguage, secondSourceLanguage.languageCode);
+  });
+
+  test('StoreRecentTargetLanguages', async () => {
+    testBrowserProxy.handler.setLanguagesToFetchForTesting(
+        'en-US', TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+    await addTranslateButtonElement();
+    assertTrue(
+        testLanguageBrowserProxy.getRecentTargetLanguages().length === 0);
+
+    // Get a menu item button from the target language picker menu to click.
+    const targetLanguageMenuItems =
+        overlayTranslateButtonElement.$.allTargetLanguagesMenu
+            .querySelectorAll<CrButtonElement>('cr-button');
+    assertTrue(targetLanguageMenuItems !== null);
+    const filteredMenuItems =
+        Array.from(targetLanguageMenuItems).filter((item: CrButtonElement) => {
+          return item.innerText.trim() !==
+              overlayTranslateButtonElement.$.targetLanguageButton.innerText;
+        });
+    assertTrue(filteredMenuItems.length > 0);
+    const targetLanguageMenuItem = filteredMenuItems[0] as CrButtonElement;
+    assertTrue(targetLanguageMenuItem !== null);
+    const targetLanguage =
+        overlayTranslateButtonElement.$.targetLanguagePickerContainer
+            .itemForElement(targetLanguageMenuItem);
+    targetLanguageMenuItem.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // The target language button should be updated with the text of the new
+    // target language.
+    assertEquals(
+        overlayTranslateButtonElement.$.targetLanguageButton.innerText,
+        targetLanguageMenuItem.innerText.trim());
+    let recentLanguages = testLanguageBrowserProxy.getRecentTargetLanguages();
+    const firstRecentLanguage = recentLanguages[0]!;
+    assertTrue(recentLanguages.length === 1);
+    assertEquals(firstRecentLanguage, targetLanguage.languageCode);
+
+    // Make sure the recent languages do not exceed the max.
+    loadTimeData.overrideValues({'recentLanguagesAmount': 1});
+    const newFilteredMenuItems =
+        Array.from(targetLanguageMenuItems).filter((item: CrButtonElement) => {
+          return item.innerText.trim() !==
+              targetLanguageMenuItem.innerText.trim();
+        });
+    assertTrue(newFilteredMenuItems.length > 0);
+    const otherTargetLanguageMenuItem =
+        newFilteredMenuItems[0] as CrButtonElement;
+    assertTrue(otherTargetLanguageMenuItem !== null);
+    const secondTargetLanguage =
+        overlayTranslateButtonElement.$.targetLanguagePickerContainer
+            .itemForElement(otherTargetLanguageMenuItem);
+    assertTrue(
+        otherTargetLanguageMenuItem.innerText.trim() !==
+        targetLanguageMenuItem.innerText.trim());
+    otherTargetLanguageMenuItem.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    recentLanguages = testLanguageBrowserProxy.getRecentTargetLanguages();
+    const secondRecentLanguage = recentLanguages[0]!;
+    assertTrue(recentLanguages.length === 1);
+    assertFalse(secondRecentLanguage === firstRecentLanguage);
+    assertEquals(secondRecentLanguage, secondTargetLanguage.languageCode);
+  });
+
 });

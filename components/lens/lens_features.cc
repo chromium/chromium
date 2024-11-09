@@ -359,6 +359,8 @@ constexpr base::FeatureParam<std::string> kSupportedTargetTranslateLanguages{
 constexpr base::FeatureParam<base::TimeDelta> kSupportedLanguagesCacheTimeoutMs{
     &kLensOverlayTranslateLanguages, "supported-languages-cache-timeout-ms",
     base::Days(30)};
+constexpr base::FeatureParam<int> kRecentLanguagesAmount{
+    &kLensOverlayTranslateLanguages, "recent-languages-amount", 5};
 
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
@@ -850,6 +852,10 @@ base::TimeDelta GetLensOverlaySupportedLanguagesCacheTimeoutMs() {
 
 bool ShowContextualSearchboxSearchSuggest() {
   return kShowContextualSearchboxSearchSuggest.Get();
+}
+
+int GetLensOverlayTranslateRecentLanguagesAmount() {
+  return kRecentLanguagesAmount.Get();
 }
 
 }  // namespace lens::features
