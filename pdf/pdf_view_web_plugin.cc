@@ -1380,7 +1380,7 @@ void PdfViewWebPlugin::SelectionChanged(const gfx::Rect& left,
 
 void PdfViewWebPlugin::EnteredEditMode() {
   edit_mode_ = true;
-  SetPluginCanSave(true);
+  pdf_host_->SetPluginCanSave(true);
 
   base::Value::Dict message;
   message.Set("type", "setIsEditing");
@@ -1690,19 +1690,17 @@ void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
 #if BUILDFLAG(ENABLE_INK)
       // In annotation mode, assume the user will make edits and prefer saving
       // using the plugin data.
-      SetPluginCanSave(true);
+      pdf_host_->SetPluginCanSave(true);
       SaveToBuffer(token);
       return;
 #else
       NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_INK)
-    case SaveRequestType::kOriginal: {
-      const bool can_save = plugin_can_save_ || edit_mode_;
-      SetPluginCanSave(false);
+    case SaveRequestType::kOriginal:
+      pdf_host_->SetPluginCanSave(false);
       SaveToFile(token);
-      SetPluginCanSave(can_save);
+      pdf_host_->SetPluginCanSave(edit_mode_);
       return;
-    }
     case SaveRequestType::kEdited:
       SaveToBuffer(token);
       return;
@@ -1909,15 +1907,6 @@ void PdfViewWebPlugin::SaveToFile(const std::string& token) {
   client_->PostMessage(std::move(message));
 
   pdf_host_->SaveUrlAs(GURL(url_), network::mojom::ReferrerPolicy::kDefault);
-}
-
-void PdfViewWebPlugin::SetPluginCanSave(bool can_save) {
-  if (plugin_can_save_ == can_save) {
-    return;
-  }
-
-  plugin_can_save_ = can_save;
-  pdf_host_->SetPluginCanSave(can_save);
 }
 
 void PdfViewWebPlugin::InvalidatePluginContainer() {
