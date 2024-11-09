@@ -519,23 +519,24 @@ class OperationValidationContext {
   STACK_ALLOCATED();
 
  public:
-  static bool ValidateOperations(
+  // If `operations` are valid given the passed members as context, returns a
+  // mapping of operands to the operations which depend on it.
+  static std::optional<DependentOperationsMap>
+  ValidateOperationsAndGetDependencies(
+      const std::vector<mojom::OperationPtr>& operations,
       const ContextProperties& context_properties,
       const IdToOperandMap& id_to_operand_map,
-      DependentOperationsMap& operand_to_dependent_operations,
-      base::flat_set<uint64_t> processed_operands,
-      const std::vector<mojom::OperationPtr>& operations);
+      base::flat_set<uint64_t> processed_operands);
 
  private:
-  OperationValidationContext(
-      const ContextProperties& context_properties,
-      const IdToOperandMap& id_to_operand_map,
-      DependentOperationsMap& operand_to_dependent_operations,
-      base::flat_set<uint64_t> processed_operands)
+  OperationValidationContext(const ContextProperties& context_properties,
+                             const IdToOperandMap& id_to_operand_map,
+                             base::flat_set<uint64_t> processed_operands)
       : context_properties_(context_properties),
         id_to_operand_map_(id_to_operand_map),
-        operand_to_dependent_operations_(operand_to_dependent_operations),
-        processed_operands_(std::move(processed_operands)) {}
+        processed_operands_(std::move(processed_operands)) {
+    operands_to_dependent_operations_.reserve(id_to_operand_map.size());
+  }
 
   const mojom::Operand* GetMojoOperand(uint64_t operand_id);
 
@@ -623,9 +624,9 @@ class OperationValidationContext {
   const base::raw_ref<const ContextProperties> context_properties_;
   const base::raw_ref<const IdToOperandMap> id_to_operand_map_;
 
-  base::raw_ref<DependentOperationsMap> operand_to_dependent_operations_;
-
   base::flat_set<uint64_t> processed_operands_;
+
+  DependentOperationsMap operands_to_dependent_operations_;
 };
 
 const mojom::Operand* OperationValidationContext::GetMojoOperand(
@@ -635,29 +636,32 @@ const mojom::Operand* OperationValidationContext::GetMojoOperand(
 
 void OperationValidationContext::NoteDependency(uint64_t operand_id,
                                                 size_t operation_id) {
-  auto it = operand_to_dependent_operations_->find(operand_id);
-  CHECK(it != operand_to_dependent_operations_->end());
-
-  it->second.insert(operation_id);
+  auto it = operands_to_dependent_operations_.find(operand_id);
+  if (it == operands_to_dependent_operations_.end()) {
+    operands_to_dependent_operations_.emplace(operand_id,
+                                              std::vector({operation_id}));
+  } else {
+    it->second.insert(operation_id);
+  }
 }
 
 // static
-bool OperationValidationContext::ValidateOperations(
+std::optional<DependentOperationsMap>
+OperationValidationContext::ValidateOperationsAndGetDependencies(
+    const std::vector<mojom::OperationPtr>& operations,
     const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
-    DependentOperationsMap& operand_to_dependent_operations,
-    base::flat_set<uint64_t> processed_operands,
-    const std::vector<mojom::OperationPtr>& operations) {
+    base::flat_set<uint64_t> processed_operands) {
   OperationValidationContext context(context_properties, id_to_operand_map,
-                                     operand_to_dependent_operations,
                                      processed_operands);
 
   for (size_t i = 0; i < operations.size(); i++) {
     if (!context.ValidateOperation(*operations[i], /*operation_id=*/i)) {
-      return false;
+      return std::nullopt;
     }
   }
-  return true;
+
+  return context.operands_to_dependent_operations_;
 }
 
 template <typename Operation>
@@ -2676,9 +2680,6 @@ WebNNGraphBuilderImpl::ValidateGraph(
   inputs.reserve(graph_info.input_operands.size());
   outputs.reserve(graph_info.output_operands.size());
 
-  DependentOperationsMap operand_to_dependent_operations;
-  operand_to_dependent_operations.reserve(graph_info.id_to_operand_map.size());
-
   // Validate all operands in the graph for the dimensions and the byte length
   // of operand that can't be out of range, and hold the temporary information
   // of inputs, constants, outputs for further validation.
@@ -2697,7 +2698,6 @@ WebNNGraphBuilderImpl::ValidateGraph(
     if (id != expected_operand_id++) {
       return std::nullopt;
     }
-    operand_to_dependent_operations[id] = {};
     const std::optional<std::string>& name = operand->name;
     switch (operand->kind) {
       case mojom::Operand::Kind::kInput: {
@@ -2779,16 +2779,17 @@ WebNNGraphBuilderImpl::ValidateGraph(
   }
 
   // Validate the operations which are sorted in the topological order.
-  if (!OperationValidationContext::ValidateOperations(
-          context_properties, graph_info.id_to_operand_map,
-          operand_to_dependent_operations, processed_operands,
-          graph_info.operations)) {
+  std::optional<DependentOperationsMap> operands_to_dependent_operations =
+      OperationValidationContext::ValidateOperationsAndGetDependencies(
+          graph_info.operations, context_properties,
+          graph_info.id_to_operand_map, std::move(processed_operands));
+  if (!operands_to_dependent_operations.has_value()) {
     return std::nullopt;
   }
 
   return WebNNGraphImpl::ComputeResourceInfo(
       std::move(inputs), std::move(outputs),
-      std::move(operand_to_dependent_operations),
+      *std::move(operands_to_dependent_operations),
       base::PassKey<WebNNGraphBuilderImpl>());
 }
 
