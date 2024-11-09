@@ -118,6 +118,10 @@ chromium-metrics-reviews@google.com.
   <int value="88" label="SelectInk2BrushHighlighter"/>
   <int value="89" label="SelectInk2BrushPenFirst"/>
   <int value="90" label="SelectInk2BrushPen"/>
+  <int value="91" label="UndoInk2First"/>
+  <int value="92" label="UndoInk2"/>
+  <int value="93" label="RedoInk2First"/>
+  <int value="94" label="RedoInk2"/>
 </enum>
 
 <enum name="ChromePDFViewerLoadStatus">

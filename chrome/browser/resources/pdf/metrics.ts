@@ -245,7 +245,15 @@ export enum UserAction {
   SELECT_INK2_BRUSH_PEN_FIRST = 89,
   SELECT_INK2_BRUSH_PEN = 90,
 
-  NUMBER_OF_ACTIONS = 91,
+  // Recorded when the user undos an Ink2 action.
+  UNDO_INK2_FIRST = 91,
+  UNDO_INK2 = 92,
+
+  // Recorded when the user redos an Ink2 action.
+  REDO_INK2_FIRST = 93,
+  REDO_INK2 = 94,
+
+  NUMBER_OF_ACTIONS = 95,
 }
 
 function createFirstMap(): Map<UserAction, UserAction> {

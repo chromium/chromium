@@ -484,6 +484,7 @@ export class ViewerToolbarElement extends CrLitElement {
     this.dispatchEvent(new CustomEvent(
         'strokes-updated',
         {detail: this.currentStroke, bubbles: true, composed: true}));
+    record(UserAction.UNDO_INK2);
   }
 
   /**
@@ -503,6 +504,7 @@ export class ViewerToolbarElement extends CrLitElement {
     this.dispatchEvent(new CustomEvent(
         'strokes-updated',
         {detail: this.currentStroke, bubbles: true, composed: true}));
+    record(UserAction.REDO_INK2);
   }
 
   /**
