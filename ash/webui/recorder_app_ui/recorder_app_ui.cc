@@ -150,8 +150,16 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
 
   if (speech::IsOnDeviceSpeechRecognitionSupported()) {
     speech::SodaInstaller::GetInstance()->AddObserver(this);
-    // TODO(hsuanling): Use `GetAvailableLanguages`.
-    available_languages_.insert(kDefaultLanguageCode);
+    if (base::FeatureList::IsEnabled(
+            ash::features::kConchExpandTranscriptionLanguage)) {
+      auto language_list =
+          speech::SodaInstaller::GetInstance()->GetAvailableLanguages();
+      for (auto language : language_list) {
+        available_languages_.insert(speech::GetLanguageCode(language));
+      }
+    } else {
+      available_languages_.insert(kDefaultLanguageCode);
+    }
     // TODO(hsuanling): Set up feature flag to add ja-JP;
     gen_ai_supported_languages_.insert(kDefaultLanguageCode);
     if (base::FeatureList::IsEnabled(
