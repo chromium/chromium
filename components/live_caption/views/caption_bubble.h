@@ -258,6 +258,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   std::u16string GetSourceLanguageName() const;
   std::u16string GetTargetLanguageName() const;
 
+  bool IsLiveTranslateEnabled();
+
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Unowned. Owned by views hierarchy.
@@ -335,6 +337,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 
   std::unique_ptr<ui::SimpleMenuModel> translation_menu_model_;
   std::unique_ptr<views::MenuRunner> translation_menu_runner_;
+
+  bool live_translate_enabled_by_context_ = false;
 
   base::WeakPtrFactory<CaptionBubble> weak_ptr_factory_{this};
 };

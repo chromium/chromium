@@ -56,6 +56,8 @@ using OnCaptionBubbleClosedCallback =
 //
 class CaptionBubbleModel {
  public:
+  static constexpr char kBocaWithTranslationSessionId[] = "BocaWithTranslation";
+
   using Id = base::IdTypeU64<CaptionBubbleModel>;
 
   CaptionBubbleModel(CaptionBubbleContext* context,
@@ -112,6 +114,8 @@ class CaptionBubbleModel {
   Id unique_id() const { return unique_id_; }
 
   void SetLanguage(const std::string& language_code);
+
+  bool CanUseLiveTranslate();
 
  private:
   // Generates the next unique id.

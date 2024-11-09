@@ -47,7 +47,8 @@ std::unique_ptr<boca::BabelOrcaManager> CreateBabelOrcaManager(
     bool is_consumer) {
   // Passing `DoNothing` since we do not currently show settings for BabelOrca.
   auto caption_bubble_context =
-      std::make_unique<babelorca::CaptionBubbleContextBoca>(base::DoNothing());
+      std::make_unique<babelorca::CaptionBubbleContextBoca>(
+          base::DoNothing(), /*translation_enabled=*/is_consumer);
   if (is_consumer) {
     auto babel_orca_translator =
         std::make_unique<babelorca::BabelOrcaCaptionTranslator>(

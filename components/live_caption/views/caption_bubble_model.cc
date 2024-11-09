@@ -175,6 +175,10 @@ void CaptionBubbleModel::SetLanguage(const std::string& language_code) {
   OnAutoDetectedLanguageChanged();
 }
 
+bool CaptionBubbleModel::CanUseLiveTranslate() {
+  return context_->GetSessionId() == std::string(kBocaWithTranslationSessionId);
+}
+
 // static
 CaptionBubbleModel::Id CaptionBubbleModel::GetNextId() {
   static Id::Generator generator;
