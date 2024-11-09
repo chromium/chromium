@@ -85,6 +85,7 @@ class FeaturePromoQueue {
   void FailAll(FeaturePromoResult::Failure failure_reason);
 
  private:
+  friend class FeaturePromoQueueSet;
   friend class FeaturePromoQueueTest;
 
   using Queue = std::list<internal::QueuedFeaturePromo>;

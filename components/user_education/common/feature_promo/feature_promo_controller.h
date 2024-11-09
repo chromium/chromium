@@ -536,6 +536,7 @@ struct FeaturePromoParams {
   FeaturePromoParams(const base::Feature& iph_feature,
                      const std::string& key = std::string());
   FeaturePromoParams(FeaturePromoParams&& other) noexcept;
+  FeaturePromoParams& operator=(FeaturePromoParams&& other) noexcept;
   ~FeaturePromoParams();
 
   // The feature for the IPH to show. Must be an IPH feature defined in

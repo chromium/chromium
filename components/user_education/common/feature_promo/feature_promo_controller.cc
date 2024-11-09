@@ -797,6 +797,8 @@ FeaturePromoParams::FeaturePromoParams(const base::Feature& iph_feature,
     : feature(iph_feature), key(promo_key) {}
 FeaturePromoParams::FeaturePromoParams(FeaturePromoParams&& other) noexcept =
     default;
+FeaturePromoParams& FeaturePromoParams::operator=(
+    FeaturePromoParams&& other) noexcept = default;
 FeaturePromoParams::~FeaturePromoParams() = default;
 
 std::ostream& operator<<(std::ostream& os, FeaturePromoStatus status) {
