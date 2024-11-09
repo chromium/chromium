@@ -651,6 +651,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
   }
 
   SetProperty(views::kElementIdentifierKey, kTopView);
+  RequestFocus();
 }
 
 ManagePasswordsDetailsView::~ManagePasswordsDetailsView() = default;
