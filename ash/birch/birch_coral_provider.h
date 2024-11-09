@@ -75,6 +75,8 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
 
   // aura::WindowObserver:
   void OnWindowDestroyed(aura::Window* window) override;
+  void OnWindowParentChanged(aura::Window* window,
+                             aura::Window* parent) override;
 
   // OverviewObserver:
   void OnOverviewModeEnded() override;
@@ -125,6 +127,12 @@ class ASH_EXPORT BirchCoralProvider : public BirchDataProvider,
 
   // Observes all the valid app and browser windows associated with `response_`.
   void ObserveAllWindowsInResponse();
+
+  // Called when the `tab_item` is removed or moved to another inactive desk.
+  void OnTabRemovedFromActiveDesk(TabClusterUIItem* tab_item);
+
+  // Called when an `app_window` is removed or moved to another inactive desk.
+  void OnAppWindowRemovedFromActiveDesk(aura::Window* app_window);
 
   // Removes the entity corresponding to the given `entity_identifier` from
   // current in-session `response_`.

@@ -384,21 +384,7 @@ void BirchCoralProvider::OnTabItemRemoved(TabClusterUIItem* tab_item) {
     return;
   }
 
-  const std::string url = tab_item->current_info().source;
-
-  // Don't modify the groups if there are multiple tabs with the same url to be
-  // removed.
-  if (base::ranges::count_if(
-          Shell::Get()->tab_cluster_ui_controller()->tab_items(),
-          [&](const auto& tab) {
-            return windows_observation_.IsObservingSource(
-                       tab->current_info().browser_window) &&
-                   tab->current_info().source == url;
-          }) > 1) {
-    return;
-  }
-
-  RemoveEntity(url);
+  OnTabRemovedFromActiveDesk(tab_item);
 }
 
 void BirchCoralProvider::TitleUpdated(const base::Token& id,
@@ -415,24 +401,40 @@ void BirchCoralProvider::TitleUpdated(const base::Token& id,
 }
 
 void BirchCoralProvider::OnWindowDestroyed(aura::Window* window) {
+  if (!IsBrowserWindow(window)) {
+    OnAppWindowRemovedFromActiveDesk(window);
+  }
+
+  // Note, we should remove the window from observing list after modifying the
+  // response.
   windows_observation_.RemoveObservation(window);
+}
+
+void BirchCoralProvider::OnWindowParentChanged(aura::Window* window,
+                                               aura::Window* parent) {
+  // If an observed window is moved to another desk, remove the associated
+  // entities from the `response_`. When parent is null, the window may be in
+  // the middle of changing parent.
+  if (!parent || desks_util::BelongsToActiveDesk(window)) {
+    return;
+  }
 
   if (IsBrowserWindow(window)) {
-    return;
+    // Removes the entities corresponding to the tabs in the moved browser
+    // window from `response_`.
+    for (const auto& tab_item :
+         Shell::Get()->tab_cluster_ui_controller()->tab_items()) {
+      if (tab_item->current_info().browser_window == window) {
+        OnTabRemovedFromActiveDesk(tab_item.get());
+      }
+    }
+  } else {
+    OnAppWindowRemovedFromActiveDesk(window);
   }
 
-  // Don't modify groups if there are multiple of the same app on the active
-  // desk.
-  const std::string app_id = *(window->GetProperty(kAppIDKey));
-  if (base::ranges::count_if(windows_observation_.sources(),
-                             [&app_id](const auto& app_window) {
-                               return *(app_window->GetProperty(kAppIDKey)) ==
-                                      app_id;
-                             })) {
-    return;
-  }
-
-  RemoveEntity(app_id);
+  // Note, we should remove the window from observing list after modifying the
+  // response.
+  windows_observation_.RemoveObservation(window);
 }
 
 void BirchCoralProvider::OnOverviewModeEnded() {
@@ -675,6 +677,38 @@ void BirchCoralProvider::ObserveAllWindowsInResponse() {
           windows_observation_.AddObservation(window);
         }
       });
+}
+
+void BirchCoralProvider::OnTabRemovedFromActiveDesk(
+    TabClusterUIItem* tab_item) {
+  const std::string url = tab_item->current_info().source;
+
+  // Don't modify the groups if there are multiple tabs with the same url to be
+  // removed.
+  if (base::ranges::count_if(
+          Shell::Get()->tab_cluster_ui_controller()->tab_items(),
+          [&](const auto& tab) {
+            return windows_observation_.IsObservingSource(
+                       tab->current_info().browser_window) &&
+                   tab->current_info().source == url;
+          }) == 1) {
+    RemoveEntity(url);
+  }
+}
+
+void BirchCoralProvider::OnAppWindowRemovedFromActiveDesk(
+    aura::Window* app_window) {
+  CHECK(!IsBrowserWindow(app_window));
+
+  // Don't modify groups if there are multiple of the same app on the active
+  // desk.
+  const std::string app_id = *(app_window->GetProperty(kAppIDKey));
+  if (base::ranges::count_if(
+          windows_observation_.sources(), [&app_id](const auto& window) {
+            return *(window->GetProperty(kAppIDKey)) == app_id;
+          }) == 1) {
+    RemoveEntity(app_id);
+  }
 }
 
 void BirchCoralProvider::RemoveEntity(std::string_view entity_identifier) {

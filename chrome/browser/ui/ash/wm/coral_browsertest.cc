@@ -581,6 +581,100 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseDeskRemoveAllChips) {
   EXPECT_EQ(0u, GetBirchChipsNum());
 }
 
+// Tests that moving a window to another desk would update the groups and chips.
+IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveWindowToOtherDeskUpdateChip) {
+  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
+
+  // TODO(crbug.com/378159705): move this to a test helper.
+  // Create a browser containing 8 tabs.
+  test::CreateAndShowBrowser(
+      primary_profile,
+      {GURL("https://mail.google.com"), GURL("https://youtube.com"),
+       GURL("https://google.com"), GURL("https://earth.google.com"),
+       GURL("https://maps.google.com"), GURL("https://docs.google.com"),
+       GURL("https://calendar.google.com"), GURL("https://chat.google.com")});
+
+  test::InstallSystemAppsForTesting(primary_profile);
+
+  // Open a File window and a PWA window.
+  test::CreateSystemWebApp(primary_profile, SystemWebAppType::FILE_MANAGER);
+  test::InstallAndLaunchPWA(primary_profile, GURL("https://www.youtube.com/"),
+                            /*launch_in_browser=*/false,
+                            /*app_title=*/u"YouTube");
+
+  // Create two fake coral groups.
+  std::vector<coral::mojom::GroupPtr> test_groups;
+  test_groups.push_back(
+      CreateTestGroup({{"mail.google.com", GURL("https://mail.google.com")},
+                       {"youtube.com", GURL("https://youtube.com")},
+                       {"google.com", GURL("https://google.com")},
+                       {"YouTube", "adnlfjpnmidfimlkaohpidplnoimahfh"}},
+                      "Coral desk 1", /*id=*/base::Token(1, 2)));
+  test_groups.push_back(CreateTestGroup(
+      {{"maps.google.com", GURL("https://maps.google.com")},
+       {"docs.google.com", GURL("https://docs.google.com")},
+       {"calendar.google.com", GURL("https://calendar.google.com")},
+       {"Files", "fkiggjmkendpmbegkagpmagjepfkpmeb"}},
+      "Coral desk 2", /*id=*/base::Token(2, 3)));
+
+  OverrideTestResponse(std::move(test_groups));
+
+  // Set up a callback for a birch data fetch.
+  base::RunLoop birch_data_fetch_waiter;
+  Shell::Get()->birch_model()->SetDataFetchCallbackForTest(
+      birch_data_fetch_waiter.QuitClosure());
+
+  // Create another desk.
+  NewDesk();
+
+  ToggleOverview();
+  WaitForOverviewEntered();
+
+  // Wait for fetch callback to complete.
+  birch_data_fetch_waiter.Run();
+
+  // The birch bar is created with two coral chips.
+  ASSERT_EQ(GetBirchChipsNum(), 2u);
+
+  // Both groups initially have 4 entities.
+  const auto& group_1 =
+      BirchCoralProvider::Get()->GetGroupById(base::Token(1, 2));
+  EXPECT_EQ(group_1->entities.size(), 4u);
+
+  const auto& group_2 =
+      BirchCoralProvider::Get()->GetGroupById(base::Token(2, 3));
+  EXPECT_EQ(group_2->entities.size(), 4u);
+
+  auto* browser_list = BrowserList::GetInstance();
+
+  auto* desks_controller = DesksController::Get();
+
+  auto* new_desk = desks_controller->GetDeskAtIndex(1);
+
+  // Move the browser window to another desk.
+  ASSERT_EQ(8, browser_list->get(0)->tab_strip_model()->GetTabCount());
+  auto* browser_window = browser_list->get(0)->window()->GetNativeWindow();
+  desks_controller->MoveWindowFromActiveDeskTo(
+      browser_window, new_desk, browser_window->GetRootWindow(),
+      DesksMoveWindowFromActiveDeskSource::kSendToDesk);
+  EXPECT_FALSE(desks_controller->BelongsToActiveDesk(browser_window));
+
+  // Both groups are reduced to 1 entity.
+  EXPECT_EQ(group_1->entities.size(), 1u);
+  EXPECT_EQ(group_2->entities.size(), 1u);
+
+  // Move the Files app to another desk.
+  auto* file_window = browser_list->get(1)->window()->GetNativeWindow();
+  ASSERT_EQ(file_window->GetTitle(), u"Files");
+  desks_controller->MoveWindowFromActiveDeskTo(
+      file_window, new_desk, file_window->GetRootWindow(),
+      DesksMoveWindowFromActiveDeskSource::kSendToDesk);
+  EXPECT_FALSE(desks_controller->BelongsToActiveDesk(file_window));
+
+  // The first chip is removed.
+  EXPECT_EQ(GetBirchChipsNum(), 1u);
+}
+
 // Tests that the same coral chip will not show up again if we just created a
 // desk from it.
 IN_PROC_BROWSER_TEST_F(CoralBrowserTest, NoRepeatChipAfterLaunchGroup) {
