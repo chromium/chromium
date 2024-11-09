@@ -90,7 +90,7 @@ class CORE_EXPORT LayoutShiftTracker final
   double WeightedScore() const { return weighted_score_; }
   float OverallMaxDistance() const { return overall_max_distance_; }
   bool ObservedInputOrScroll() const { return observed_input_or_scroll_; }
-  void Dispose() { timer_.Stop(); }
+  void Dispose();
   base::TimeTicks MostRecentInputTimestamp() {
     return most_recent_input_timestamp_;
   }
@@ -184,7 +184,9 @@ class CORE_EXPORT LayoutShiftTracker final
   // "Layout Shift Regions" option).
   void SendLayoutShiftRectsToHud(const Vector<gfx::Rect>& rects);
 
-  void UpdateInputTimestamp(base::TimeTicks timestamp);
+  void UpdateInputTimestamps(base::TimeTicks timestamp);
+  bool HasRecentInput();
+
   LayoutShift::AttributionList CreateAttributionList() const;
   void SubmitPerformanceEntry(double score_delta, bool input_detected) const;
   void NotifyPrePaintFinishedInternal();
@@ -246,6 +248,10 @@ class CORE_EXPORT LayoutShiftTracker final
   // User input includes window resizing but not scrolling.
   base::TimeTicks most_recent_input_timestamp_;
   bool most_recent_input_timestamp_initialized_;
+
+  // Timestamp used to run an imaginary timer for tracking period since last
+  // input processed. It resets 500ms after the most recent input is processed.
+  base::TimeTicks most_recent_input_processing_timestamp_;
 
   struct Attribution {
     DOMNodeId node_id = kInvalidDOMNodeId;

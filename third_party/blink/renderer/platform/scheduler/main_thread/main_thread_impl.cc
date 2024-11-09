@@ -36,5 +36,9 @@ void MainThreadImpl::RemoveTaskTimeObserver(
   scheduler_->RemoveTaskTimeObserver(task_time_observer);
 }
 
+base::TimeTicks MainThreadImpl::CurrentTaskStartTime() const {
+  return scheduler_->CurrentTaskStartTime();
+}
+
 }  // namespace scheduler
 }  // namespace blink

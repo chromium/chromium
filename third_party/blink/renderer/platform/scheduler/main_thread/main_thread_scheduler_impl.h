@@ -368,6 +368,10 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     return main_thread_only().current_policy.find_in_page_priority;
   }
 
+  base::TimeTicks CurrentTaskStartTime() const {
+    return main_thread_only().current_task_start_time;
+  }
+
  protected:
   // ThreadSchedulerBase implementation:
   WTF::Vector<base::OnceClosure>& GetOnTaskCompletionCallbacks() override;

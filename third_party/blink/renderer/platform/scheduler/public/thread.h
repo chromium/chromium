@@ -134,6 +134,13 @@ class PLATFORM_EXPORT Thread {
   virtual void RemoveTaskTimeObserver(
       base::sequence_manager::TaskTimeObserver*) {}
 
+  // Returns the start time for the current task. Can be used instead of
+  // TaskTimeObserver if only task start time is needed.
+  virtual base::TimeTicks CurrentTaskStartTime() const {
+    NOTIMPLEMENTED();
+    return base::TimeTicks();
+  }
+
   // Returns the scheduler associated with the thread.
   virtual ThreadScheduler* Scheduler() = 0;
 

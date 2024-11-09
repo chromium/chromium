@@ -4296,6 +4296,10 @@
       base_feature: "none",
     },
     {
+      name: "TimestampBasedCLSTracking",
+      status: "experimental"
+    },
+    {
       name: "TimeZoneChangeEvent",
       status: "experimental",
     },
