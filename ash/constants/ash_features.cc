@@ -232,7 +232,7 @@ BASE_FEATURE(kBocaConsumer, "BocaConsumer", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables Boca custom polling interval on ChromeOS.
 BASE_FEATURE(kBocaCustomPolling,
-             "kBocaCustomPolling",
+             "BocaCustomPolling",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Time interval to do indefinite session polling.
