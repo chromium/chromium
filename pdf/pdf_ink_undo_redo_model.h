@@ -31,15 +31,21 @@ class PdfInkUndoRedoModel {
     kErase,
   };
 
-  // Set of IDs to draw/erase.
+  // Set of IDs to draw/erase. There are multiple types of IDs:
+  // - `InkStrokeId` is for strokes that are first drawn, and maybe erased
+  //   later.
+  // - `InkModeledShapeId` is for modeled shapes that are pre-existing and can
+  //   be erased.
+  using IdType = absl::variant<InkStrokeId, InkModeledShapeId>;
   using DrawCommands =
-      base::StrongAlias<class DrawCommandsTag, std::set<InkStrokeId>>;
+      base::StrongAlias<class DrawCommandsTag, std::set<IdType>>;
   using EraseCommands =
-      base::StrongAlias<class EraseCommandsTag, std::set<InkStrokeId>>;
+      base::StrongAlias<class EraseCommandsTag, std::set<IdType>>;
 
   using Commands = absl::variant<absl::monostate, DrawCommands, EraseCommands>;
 
-  // Set of IDs used for drawing to discard.
+  // Set of IDs used for drawing to discard. This does not use `IdType`, because
+  // model shapes are pre-existing and cannot be discarded.
   using DiscardedDrawCommands = std::set<InkStrokeId>;
 
   PdfInkUndoRedoModel();
@@ -48,12 +54,12 @@ class PdfInkUndoRedoModel {
   ~PdfInkUndoRedoModel();
 
   // For all Draw / Erase methods:
-  // - The expected usage is: 1 StartOp call, any number of Op calls, 1 FinishOp
-  //   call.
+  // - The expected usage is: 1 StartOp call, any number of Op(Variant) calls,
+  //   1 FinishOp call.
   // - StartOp returns a non-null, but possible empty value on success. Returns
   //   nullopt if any requirements are not met.
-  // - Op and FinishOp return true on success. Return false if any requirements
-  //   are not met.
+  // - Op(Variant) and FinishOp return true on success. Return false if any
+  //   requirements are not met.
   // - Must not return false in production code. Returning false is only allowed
   //   in tests to check failure modes without resorting to death tests.
 
@@ -76,14 +82,22 @@ class PdfInkUndoRedoModel {
   // not at the top of the stack, then this discards all entries from the
   // current position to the top of the stack. The caller can discard its
   // entries with IDs that match the returned values.
-  // Must be called before Erase().
+  // Must be called before EraseStroke() and EraseShape().
   // Must not be called while another draw/erase has been started.
   [[nodiscard]] std::optional<DiscardedDrawCommands> StartErase();
   // Records erasing a stroke identified by `id`.
   // Must be called between StartErase() and FinishErase().
   // `id` must be in a `DrawCommands` on the commands stack.
   // `id` must not be in any `EraseCommands` on the commands stack.
-  [[nodiscard]] bool Erase(InkStrokeId id);
+  [[nodiscard]] bool EraseStroke(InkStrokeId id);
+  // Records erasing a shape identified by `id`.
+  // Must be called between StartErase() and FinishErase().
+  // `id` must not be in any `EraseCommands` on the commands stack.
+  // Unlike EraseStroke(), EraseShape() has no corresponding draw method, so it
+  // relies on the caller to pass in valid `id` values. If the caller passes in
+  // invalid values, `PdfInkUndoRedoModel` will faithfully give them back during
+  // undo/redo operations.
+  [[nodiscard]] bool EraseShape(InkModeledShapeId id);
   // Finishes recording erase commands and pushes a new element onto the stack.
   // Must be called after StartErase().
   [[nodiscard]] bool FinishErase();
@@ -103,8 +117,8 @@ class PdfInkUndoRedoModel {
   std::optional<DiscardedDrawCommands> StartImpl();
 
   bool IsAtTopOfStackWithGivenCommandType(CommandsType type) const;
-  bool HasIdInDrawCommands(InkStrokeId id) const;
-  bool HasIdInEraseCommands(InkStrokeId id) const;
+  bool HasIdInDrawCommands(IdType id) const;
+  bool HasIdInEraseCommands(IdType id) const;
 
   // Invariants:
   // (1) Never empty.
@@ -116,10 +130,14 @@ class PdfInkUndoRedoModel {
   //     `EraseCommands` elements.
   // (6) IDs added to a `EraseCommands` must exist in some `DrawCommands`
   //     element.
+  // (7) `DrawCommands` only contains `InkStrokeId` elements here. The reason
+  //     `DrawCommands` can hold `InkModeledShapeId` is to undo an
+  //     `InkModeledShapeId` erasure, where the caller needs to know they need
+  //     to draw the shape.
   std::vector<Commands> commands_stack_ = {absl::monostate()};
 
   // Invariants:
-  // (7) Always less than the size of `commands_stack_`.
+  // (8) Always less than the size of `commands_stack_`.
   size_t stack_position_ = 0;
 };
 

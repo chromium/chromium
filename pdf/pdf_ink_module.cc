@@ -626,7 +626,7 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
 
     invalidate_envelope.Add(shape.Bounds());
 
-    bool undo_redo_success = undo_redo_model_.Erase(stroke.id);
+    bool undo_redo_success = undo_redo_model_.EraseStroke(stroke.id);
     CHECK(undo_redo_success);
   }
 
@@ -861,10 +861,24 @@ void PdfInkModule::ApplyUndoRedoCommands(
   NOTREACHED();
 }
 
-void PdfInkModule::ApplyUndoRedoCommandsHelper(std::set<InkStrokeId> ids,
-                                               bool should_draw) {
+void PdfInkModule::ApplyUndoRedoCommandsHelper(
+    std::set<PdfInkUndoRedoModel::IdType> ids,
+    bool should_draw) {
   CHECK(!strokes_.empty());
   CHECK(!ids.empty());
+
+  std::set<InkStrokeId> stroke_ids;
+  std::set<InkModeledShapeId> shape_ids;
+  for (PdfInkUndoRedoModel::IdType id : ids) {
+    bool inserted;
+    if (absl::holds_alternative<InkStrokeId>(id)) {
+      inserted = stroke_ids.insert(absl::get<InkStrokeId>(id)).second;
+    } else {
+      CHECK(absl::holds_alternative<InkModeledShapeId>(id));
+      inserted = shape_ids.insert(absl::get<InkModeledShapeId>(id)).second;
+    }
+    CHECK(inserted);
+  }
 
   for (auto& [page_index, page_ink_strokes] : strokes_) {
     std::vector<InkStrokeId> page_ids;
@@ -874,7 +888,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(std::set<InkStrokeId> ids,
     }
 
     std::vector<InkStrokeId> ids_to_apply_command;
-    base::ranges::set_intersection(ids, page_ids,
+    base::ranges::set_intersection(stroke_ids, page_ids,
                                    std::back_inserter(ids_to_apply_command));
     if (ids_to_apply_command.empty()) {
       continue;
@@ -895,7 +909,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(std::set<InkStrokeId> ids,
 
       invalidate_envelope.Add(stroke.stroke.GetShape().Bounds());
 
-      ids.erase(id);
+      stroke_ids.erase(id);
     }
 
     client_->Invalidate(CanonicalInkEnvelopeToExpandedInvalidationScreenRect(
@@ -903,10 +917,12 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(std::set<InkStrokeId> ids,
         client_->GetPageContentsRect(page_index), client_->GetZoom()));
     client_->UpdateThumbnail(page_index);
 
-    if (ids.empty()) {
-      return;  // Return early if there is nothing left to apply.
+    if (stroke_ids.empty()) {
+      break;  // Break out of loop if there is no stroke remaining to apply.
     }
   }
+
+  // TODO(crbug.com/377820805): Handle `shape_ids`.
 }
 
 void PdfInkModule::ApplyUndoRedoDiscards(

@@ -326,7 +326,8 @@ class PdfInkModule {
                             base::TimeTicks timestamp);
 
   void ApplyUndoRedoCommands(const PdfInkUndoRedoModel::Commands& commands);
-  void ApplyUndoRedoCommandsHelper(std::set<InkStrokeId> ids, bool should_draw);
+  void ApplyUndoRedoCommandsHelper(std::set<PdfInkUndoRedoModel::IdType> ids,
+                                   bool should_draw);
 
   void ApplyUndoRedoDiscards(
       const PdfInkUndoRedoModel::DiscardedDrawCommands& discards);
