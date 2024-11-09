@@ -97,6 +97,16 @@ class CAPTURE_EXPORT VideoCaptureEffectsProcessor {
       VideoCaptureBufferType out_buffer_type,
       VideoCaptureEffectsProcessor::PostProcessDoneCallback post_process_cb);
 
+  // On-GPU variant. Creates shared images backed by `in_buffer` and
+  // `out_buffer`. Invokes the processor. (Mainly used on MacOS)
+  void PostProcessExternalBuffer(
+      CapturedExternalVideoBuffer in_buffer,
+      mojom::VideoFrameInfoPtr frame_info,
+      VideoCaptureDevice::Client::Buffer out_buffer,
+      const VideoCaptureFormat& out_buffer_format,
+      VideoCaptureBufferType out_buffer_type,
+      VideoCaptureEffectsProcessor::PostProcessDoneCallback post_process_cb);
+
   base::WeakPtr<VideoCaptureEffectsProcessor> GetWeakPtr();
 
  private:

@@ -23,10 +23,39 @@
 namespace media {
 namespace {
 
-// Helper, creates VideoBufferHandle for the given buffer.
-// `shared_image` will be populated if the returned buffer handle refers to a
-// GPU memory buffer. This is needed to ensure that the caller can maintain
+// Helper, creates VideoBufferHandle for GPU memory buffer by populating
+// `shared_image`. This is needed to ensure that the caller can maintain
 // ownership of the shared image while it's in use.
+mojom::VideoBufferHandlePtr CreateGpuMemoryBufferHandle(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    const mojom::VideoFrameInfo& frame_info,
+    scoped_refptr<gpu::ClientSharedImage>& shared_image) {
+  CHECK_EQ(frame_info.pixel_format, VideoPixelFormat::PIXEL_FORMAT_NV12);
+
+  auto sii =
+      VideoCaptureGpuChannelHost::GetInstance().GetSharedImageInterface();
+  CHECK(sii);
+
+  // Create a single shared image to back a multiplanar video frame.
+  gpu::SharedImageInfo info(
+      viz::MultiPlaneFormat::kNV12, frame_info.coded_size,
+      frame_info.color_space,
+      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+          gpu::SHARED_IMAGE_USAGE_RASTER_READ,
+      "VideoCaptureEffectsProcessorMultiPlanarSharedImage");
+  shared_image =
+      sii->CreateSharedImage(std::move(info), std::move(buffer_handle));
+  CHECK(shared_image);
+
+  auto sync_token = sii->GenVerifiedSyncToken();
+  auto shared_image_set = mojom::SharedImageBufferHandleSet::New(
+      shared_image->Export(), sync_token);
+
+  return mojom::VideoBufferHandle::NewSharedImageHandle(
+      std::move(shared_image_set));
+}
+
+// Helper, creates VideoBufferHandle for the given buffer.
 mojom::VideoBufferHandlePtr CreateBufferHandle(
     const VideoCaptureDevice::Client::Buffer& buffer,
     const mojom::VideoFrameInfo& frame_info,
@@ -39,31 +68,10 @@ mojom::VideoBufferHandlePtr CreateBufferHandle(
       // option to return `ReadOnlySharedMemoryRegion`.
       return mojom::VideoBufferHandle::NewUnsafeShmemRegion(
           buffer.handle_provider->DuplicateAsUnsafeRegion());
-    case VideoCaptureBufferType::kGpuMemoryBuffer: {
-      CHECK_EQ(frame_info.pixel_format, VideoPixelFormat::PIXEL_FORMAT_NV12);
-
-      auto sii =
-          VideoCaptureGpuChannelHost::GetInstance().GetSharedImageInterface();
-      CHECK(sii);
-
-      // Create a single shared image to back a multiplanar video frame.
-      gpu::SharedImageInfo info(
-          viz::MultiPlaneFormat::kNV12, frame_info.coded_size,
-          frame_info.color_space,
-          gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-              gpu::SHARED_IMAGE_USAGE_RASTER_READ,
-          "VideoCaptureEffectsProcessorMultiPlanarSharedImage");
-      shared_image = sii->CreateSharedImage(
-          std::move(info), buffer.handle_provider->GetGpuMemoryBufferHandle());
-      CHECK(shared_image);
-
-      auto sync_token = sii->GenVerifiedSyncToken();
-      auto shared_image_set = mojom::SharedImageBufferHandleSet::New(
-          shared_image->Export(), sync_token);
-
-      return mojom::VideoBufferHandle::NewSharedImageHandle(
-          std::move(shared_image_set));
-    }
+    case VideoCaptureBufferType::kGpuMemoryBuffer:
+      return CreateGpuMemoryBufferHandle(
+          buffer.handle_provider->GetGpuMemoryBufferHandle(), frame_info,
+          shared_image);
     default:
       NOTREACHED();
   }
@@ -147,6 +155,41 @@ void VideoCaptureEffectsProcessor::PostProcessBuffer(
       out_buffer, *out_frame_info, out_buffer_type, out_shared_image);
 
   PostProcessContext context(std::move(in_buffer), std::move(in_shared_image),
+                             std::move(out_buffer), std::move(out_shared_image),
+                             std::move(post_process_cb));
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+      "PostProcessContext::PostProcessContext()", context.trace_id);
+
+  effects_processor_->PostProcess(
+      std::move(in_buffer_handle), std::move(frame_info),
+      std::move(out_buffer_handle), out_buffer_format.pixel_format,
+      base::BindOnce(&VideoCaptureEffectsProcessor::OnPostProcess,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(context)));
+}
+
+void VideoCaptureEffectsProcessor::PostProcessExternalBuffer(
+    CapturedExternalVideoBuffer in_buffer,
+    mojom::VideoFrameInfoPtr frame_info,
+    VideoCaptureDevice::Client::Buffer out_buffer,
+    const VideoCaptureFormat& out_buffer_format,
+    VideoCaptureBufferType out_buffer_type,
+    VideoCaptureEffectsProcessor::PostProcessDoneCallback post_process_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  scoped_refptr<gpu::ClientSharedImage> in_shared_image;
+  mojom::VideoBufferHandlePtr in_buffer_handle = CreateGpuMemoryBufferHandle(
+      std::move(in_buffer.handle), *frame_info, in_shared_image);
+
+  auto out_frame_info = frame_info->Clone();
+  out_frame_info->pixel_format = out_buffer_format.pixel_format;
+
+  scoped_refptr<gpu::ClientSharedImage> out_shared_image;
+  mojom::VideoBufferHandlePtr out_buffer_handle = CreateBufferHandle(
+      out_buffer, *out_frame_info, out_buffer_type, out_shared_image);
+
+  PostProcessContext context(std::nullopt, std::move(in_shared_image),
                              std::move(out_buffer), std::move(out_shared_image),
                              std::move(post_process_cb));
 
