@@ -1238,9 +1238,15 @@ class CONTENT_EXPORT InterestGroupAuction
       BiddingAndAuctionResponse response,
       std::optional<SingleStorageInterestGroup> maybe_group);
 
-  void OnLoadedWinningGroupImpl(
+  void OnLoadedGhostWinnerGroup(
       BiddingAndAuctionResponse response,
-      std::optional<SingleStorageInterestGroup> maybe_group);
+      std::optional<SingleStorageInterestGroup> maybe_group,
+      std::optional<SingleStorageInterestGroup> maybe_ghost_group);
+
+  void OnLoadedGhostWinnerGroupImpl(
+      BiddingAndAuctionResponse response,
+      std::optional<SingleStorageInterestGroup> maybe_group,
+      std::optional<SingleStorageInterestGroup> maybe_ghost_group);
 
   void MaybeLoadDebugReportLockoutAndCooldowns();
 
@@ -1249,6 +1255,9 @@ class CONTENT_EXPORT InterestGroupAuction
           debug_report_lockout_and_cooldowns);
 
   void CreateBidFromServerResponse();
+  std::unique_ptr<InterestGroupAuction::Bid> CreatePrimaryBidFromServerResponse(
+      auction_worklet::mojom::BidRole bid_role);
+  std::unique_ptr<InterestGroupAuction::Bid> CreateGhostBidFromServerResponse();
 
   // Completion callback for AdAuctionPageData::ParseAndFindAdAuctionSignals().
   // Sets `direct_from_seller_signals_header_ad_slot_`, and sets

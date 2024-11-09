@@ -107,7 +107,9 @@ bool KAnonIsEnabled() {
     return false;
   }
   return base::FeatureList::IsEnabled(
-      blink::features::kFledgeConsiderKAnonymity);
+             blink::features::kFledgeConsiderKAnonymity) &&
+         base::FeatureList::IsEnabled(
+             blink::features::kFledgeEnforceKAnonymity);
 }
 
 constexpr std::size_t constexpr_strlen(const char* s) {

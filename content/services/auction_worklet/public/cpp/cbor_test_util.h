@@ -23,6 +23,9 @@ std::vector<uint8_t> ToCborVector(std::string_view json);
 // Helper to convert a JSON string to a CBOR string. CHECKs on error.
 std::string ToCborString(std::string_view json);
 
+// Helper to convert a base::Value to a CBOR vector. CHECKS on error.
+std::vector<uint8_t> ToCborVector(const base::Value& value);
+
 // Helper to convert a JSON string to a CBOR string, but designed to handle KVv2
 // responses. Any dictionary entry with a key of "content" will have its value
 // converted to a binary CBOR string. For trusted key-value V2 responses, each

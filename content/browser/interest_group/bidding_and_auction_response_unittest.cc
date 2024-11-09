@@ -604,13 +604,20 @@ TEST(BiddingAndAuctionResponseTest, ParseFails) {
       base::Value(base::Value::Dict().Set("isChaff", 1)),      // wrong type
       base::Value(base::Value::Dict().Set("isChaff", false)),  // missing fields
       base::Value(
+          CreateValidResponseDict().Set("adRenderURL", 1)),  // not a string
+      base::Value(
           CreateValidResponseDict().Set("adRenderURL", "not a valid URL")),
       base::Value(CreateValidResponseDict().Set("components", "not a list")),
       base::Value(CreateValidResponseDict().Set(
+          "components", base::Value(base::Value::List().Append(5)))),
+      base::Value(CreateValidResponseDict().Set(
           "components",
           base::Value(base::Value::List().Append("not a valid URL")))),
+      base::Value(CreateValidResponseDict().Set("interestGroupOwner", 2)),
+
       base::Value(CreateValidResponseDict().Set("interestGroupOwner",
                                                 "not a valid origin")),
+      base::Value(CreateValidResponseDict().Set("interestGroupName", 4)),
       base::Value(CreateValidResponseDict().Set("biddingGroups", "not a dict")),
       base::Value(CreateValidResponseDict().Set(
           "biddingGroups",

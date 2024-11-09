@@ -88,6 +88,12 @@ std::vector<uint8_t> ToCborVector(std::string_view json) {
   return std::move(out).value();
 }
 
+std::vector<uint8_t> ToCborVector(const base::Value& value) {
+  std::optional<std::vector<uint8_t>> out = cbor::Writer::Write(ToCbor(value));
+  CHECK(out);
+  return std::move(out).value();
+}
+
 std::string ToCborString(std::string_view json) {
   std::vector<uint8_t> vector = ToCborVector(json);
   return std::string(vector.begin(), vector.end());

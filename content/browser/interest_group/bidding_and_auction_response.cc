@@ -123,14 +123,17 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
   }
   output.is_chaff = false;
 
-  std::string* maybe_render_url = input_dict->FindString("adRenderURL");
-  if (!maybe_render_url) {
-    return std::nullopt;
-  }
-  output.ad_render_url = GURL(*maybe_render_url);
-  if (!output.ad_render_url.is_valid() ||
-      !network::IsUrlPotentiallyTrustworthy(output.ad_render_url)) {
-    return std::nullopt;
+  base::Value* maybe_render_url_value = input_dict->Find("adRenderURL");
+  if (maybe_render_url_value) {
+    std::string* maybe_render_url = maybe_render_url_value->GetIfString();
+    if (!maybe_render_url) {
+      return std::nullopt;
+    }
+    output.ad_render_url = GURL(*maybe_render_url);
+    if (!output.ad_render_url.is_valid() ||
+        !network::IsUrlPotentiallyTrustworthy(output.ad_render_url)) {
+      return std::nullopt;
+    }
   }
   base::Value* components_value = input_dict->Find("components");
   if (components_value) {
@@ -151,19 +154,25 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
       output.ad_components.emplace_back(std::move(component));
     }
   }
-  std::string* maybe_name = input_dict->FindString("interestGroupName");
-  if (!maybe_name) {
-    return std::nullopt;
+  base::Value* maybe_name_value = input_dict->Find("interestGroupName");
+  if (maybe_name_value) {
+    std::string* maybe_name = maybe_name_value->GetIfString();
+    if (!maybe_name) {
+      return std::nullopt;
+    }
+    output.interest_group_name = *maybe_name;
   }
-  output.interest_group_name = *maybe_name;
 
-  std::string* maybe_owner = input_dict->FindString("interestGroupOwner");
-  if (!maybe_owner) {
-    return std::nullopt;
-  }
-  output.interest_group_owner = url::Origin::Create(GURL(*maybe_owner));
-  if (!network::IsOriginPotentiallyTrustworthy(output.interest_group_owner)) {
-    return std::nullopt;
+  base::Value* maybe_owner_value = input_dict->Find("interestGroupOwner");
+  if (maybe_owner_value) {
+    std::string* maybe_owner = maybe_owner_value->GetIfString();
+    if (!maybe_owner) {
+      return std::nullopt;
+    }
+    output.interest_group_owner = url::Origin::Create(GURL(*maybe_owner));
+    if (!network::IsOriginPotentiallyTrustworthy(output.interest_group_owner)) {
+      return std::nullopt;
+    }
   }
 
   base::Value::Dict* bidding_groups = input_dict->FindDict("biddingGroups");
