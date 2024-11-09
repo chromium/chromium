@@ -233,7 +233,19 @@ export enum UserAction {
   SAVE_WITH_INK2_ANNOTATION_FIRST = 83,
   SAVE_WITH_INK2_ANNOTATION = 84,
 
-  NUMBER_OF_ACTIONS = 85,
+  // Recorded when the user selects an Ink2 eraser.
+  SELECT_INK2_BRUSH_ERASER_FIRST = 85,
+  SELECT_INK2_BRUSH_ERASER = 86,
+
+  // Recorded when the user selects an Ink2 highlighter.
+  SELECT_INK2_BRUSH_HIGHLIGHTER_FIRST = 87,
+  SELECT_INK2_BRUSH_HIGHLIGHTER = 88,
+
+  // Recorded when the user selects an Ink2 pen.
+  SELECT_INK2_BRUSH_PEN_FIRST = 89,
+  SELECT_INK2_BRUSH_PEN = 90,
+
+  NUMBER_OF_ACTIONS = 91,
 }
 
 function createFirstMap(): Map<UserAction, UserAction> {

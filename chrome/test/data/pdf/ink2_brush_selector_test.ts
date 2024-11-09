@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AnnotationBrushType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationBrushType, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {InkBrushSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+
+import {setupMockMetricsPrivate} from './test_util.js';
+
+const mockMetricsPrivate = setupMockMetricsPrivate();
 
 function createSelector(): InkBrushSelectorElement {
   const selector = document.createElement('ink-brush-selector');
@@ -76,30 +80,55 @@ function assertSelectedBrush(
 
 chrome.test.runTests([
   async function testSelectPen() {
+    mockMetricsPrivate.reset();
+
     const selector = createSelector();
     selector.$.pen.click();
     await microtasksFinished();
 
     assertBrushIcons(selector, AnnotationBrushType.PEN);
     assertSelectedBrush(selector, AnnotationBrushType.PEN);
+    mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_PEN, 0);
     chrome.test.succeed();
   },
   async function testSelectHighlighter() {
+    mockMetricsPrivate.reset();
+
     const selector = createSelector();
     selector.$.highlighter.click();
     await microtasksFinished();
 
     assertBrushIcons(selector, AnnotationBrushType.HIGHLIGHTER);
     assertSelectedBrush(selector, AnnotationBrushType.HIGHLIGHTER);
+    mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_HIGHLIGHTER, 1);
     chrome.test.succeed();
   },
   async function testSelectEraser() {
+    mockMetricsPrivate.reset();
+
     const selector = createSelector();
     selector.$.eraser.click();
     await microtasksFinished();
 
     assertBrushIcons(selector, AnnotationBrushType.ERASER);
     assertSelectedBrush(selector, AnnotationBrushType.ERASER);
+    mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_ERASER, 1);
+    chrome.test.succeed();
+  },
+  async function testSelectBackToPen() {
+    mockMetricsPrivate.reset();
+
+    const selector = createSelector();
+    selector.$.eraser.click();
+    await microtasksFinished();
+
+    selector.$.pen.click();
+    await microtasksFinished();
+
+    assertBrushIcons(selector, AnnotationBrushType.PEN);
+    assertSelectedBrush(selector, AnnotationBrushType.PEN);
+    mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_ERASER, 1);
+    mockMetricsPrivate.assertCount(UserAction.SELECT_INK2_BRUSH_PEN, 1);
     chrome.test.succeed();
   },
 ]);

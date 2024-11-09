@@ -5,6 +5,7 @@
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AnnotationBrushType} from '../constants.js';
+import {record, UserAction} from '../metrics.js';
 
 import {getCss} from './ink_brush_selector.css.js';
 import {getHtml} from './ink_brush_selector.html.js';
@@ -50,7 +51,23 @@ export class InkBrushSelectorElement extends CrLitElement {
   protected onBrushClick_(e: Event) {
     const targetElement = e.currentTarget as HTMLElement;
     const newType = targetElement.dataset['brush'] as AnnotationBrushType;
+    if (this.currentType === newType) {
+      return;
+    }
+
     this.currentType = newType;
+
+    switch (newType) {
+      case AnnotationBrushType.ERASER:
+        record(UserAction.SELECT_INK2_BRUSH_ERASER);
+        break;
+      case AnnotationBrushType.HIGHLIGHTER:
+        record(UserAction.SELECT_INK2_BRUSH_HIGHLIGHTER);
+        break;
+      case AnnotationBrushType.PEN:
+        record(UserAction.SELECT_INK2_BRUSH_PEN);
+        break;
+    }
   }
 
   protected getIcon_(type: AnnotationBrushType): string {

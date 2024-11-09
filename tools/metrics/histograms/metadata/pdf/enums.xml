@@ -112,6 +112,12 @@ chromium-metrics-reviews@google.com.
   <int value="82" label="ExitInk2AnnotationMode"/>
   <int value="83" label="SaveWithInk2AnnotationFirst"/>
   <int value="84" label="SaveWithInk2Annotation"/>
+  <int value="85" label="SelectInk2BrushEraserFirst"/>
+  <int value="86" label="SelectInk2BrushEraser"/>
+  <int value="87" label="SelectInk2BrushHighlighterFirst"/>
+  <int value="88" label="SelectInk2BrushHighlighter"/>
+  <int value="89" label="SelectInk2BrushPenFirst"/>
+  <int value="90" label="SelectInk2BrushPen"/>
 </enum>
 
 <enum name="ChromePDFViewerLoadStatus">
