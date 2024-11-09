@@ -388,7 +388,7 @@ class AttributionStorageSqlTest : public testing::Test {
 
     static constexpr char kStoreReportSql[] =
         "INSERT INTO reports "
-        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+        "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)";
     sql::Statement statement(raw_db.GetUniqueStatement(kStoreReportSql));
     statement.BindInt64(0, record.report_id);
     statement.BindInt64(1, record.source_id);
@@ -408,6 +408,7 @@ class AttributionStorageSqlTest : public testing::Test {
 
     statement.BindInt(10, record.report_type);
     statement.BindBlob(11, record.metadata);
+    statement.BindString(12, record.context_origin);
     ASSERT_TRUE(statement.Run());
   }
 

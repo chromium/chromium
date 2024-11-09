@@ -69,11 +69,11 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 66;
+  static constexpr int kCurrentVersionNumber = 67;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 66;
+  static constexpr int kCompatibleVersionNumber = 67;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
@@ -365,8 +365,11 @@ class CONTENT_EXPORT AttributionStorageSql {
       StoredSource::Id source_id);
 
   // Returns a negative value on failure.
-  int64_t CountReportsWithDestinationSite(const net::SchemefulSite& destination,
-                                          AttributionReport::Type);
+  int64_t CountEventLevelReportsWithDestinationSite(
+      const net::SchemefulSite& destination);
+  // Returns a negative value on failure.
+  int64_t CountAggregatableReportsWithDestinationSite(
+      const net::SchemefulSite& destination);
 
   // Stores the data associated with the aggregatable report, e.g. budget
   // consumed and dedup keys. The report itself will be stored in

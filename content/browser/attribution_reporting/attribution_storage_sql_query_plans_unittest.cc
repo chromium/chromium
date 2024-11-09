@@ -132,11 +132,18 @@ TEST_F(AttributionSqlQueryPlanTest, kGetRateLimitDataKeysSql) {
               base::test::HasValue());
 }
 
-TEST_F(AttributionSqlQueryPlanTest, kCountReportsForDestinationSql) {
+TEST_F(AttributionSqlQueryPlanTest, kCountEventLevelReportsForDestinationSql) {
   EXPECT_THAT(
-      GetPlan(attribution_queries::kCountReportsForDestinationSql),
+      GetPlan(attribution_queries::kCountEventLevelReportsForDestinationSql),
       ValueIs(AllOf(UsesCoveringIndex("sources_by_destination_site"),
                     UsesCoveringIndex("reports_by_source_id_report_type"))));
+}
+
+TEST_F(AttributionSqlQueryPlanTest,
+       kCountAggregatableReportsForDestinationSql) {
+  EXPECT_THAT(
+      GetPlan(attribution_queries::kCountAggregatableReportsForDestinationSql),
+      ValueIs(UsesCoveringIndex("reports_by_context_site")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kNextReportTimeSql) {

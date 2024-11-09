@@ -887,24 +887,24 @@ TEST_F(AttributionResolverTest,
               {net::SchemefulSite::Deserialize("https://a.test"),
                net::SchemefulSite::Deserialize("https://b.test")})
           .Build());
-  storage()->StoreSource(
-      source_builder
-          .SetDestinationSites(
-              {net::SchemefulSite::Deserialize("https://a.test"),
-               net::SchemefulSite::Deserialize("https://c.test")})
-          .Build());
 
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
                   DefaultAggregatableTriggerBuilder()
                       .SetDestinationOrigin(
                           *SuitableOrigin::Deserialize("https://a.test"))
                       .Build()),
-              AllOf(CreateReportEventLevelStatusIs(
-                        AttributionTrigger::EventLevelResult::kSuccess),
-                    CreateReportAggregatableStatusIs(
-                        AttributionTrigger::AggregatableResult::kSuccess),
-                    CreateReportMaxEventLevelReportsLimitIs(std::nullopt),
-                    CreateReportMaxAggregatableReportsLimitIs(std::nullopt)));
+              AllOf(CreateReportAggregatableStatusIs(
+                  AttributionTrigger::AggregatableResult::kSuccess)));
+
+  // Verify that only the effective destination is used for the limit in
+  // aggregatable reports.
+  EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
+                  DefaultAggregatableTriggerBuilder()
+                      .SetDestinationOrigin(
+                          *SuitableOrigin::Deserialize("https://b.test"))
+                      .Build()),
+              AllOf(CreateReportAggregatableStatusIs(
+                  AttributionTrigger::AggregatableResult::kSuccess)));
 
   // Verify that MaxReportsPerDestination is enforced.
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(
@@ -912,14 +912,9 @@ TEST_F(AttributionResolverTest,
                       .SetDestinationOrigin(
                           *SuitableOrigin::Deserialize("https://a.test"))
                       .Build()),
-              AllOf(CreateReportEventLevelStatusIs(
-                        AttributionTrigger::EventLevelResult::kSuccess),
-                    CreateReportAggregatableStatusIs(
+              AllOf(CreateReportAggregatableStatusIs(
                         AttributionTrigger::AggregatableResult::
                             kNoCapacityForConversionDestination),
-                    ReplacedEventLevelReportIs(IsNull()),
-                    DroppedEventLevelReportIs(IsNull()),
-                    CreateReportMaxEventLevelReportsLimitIs(std::nullopt),
                     CreateReportMaxAggregatableReportsLimitIs(1)));
 }
 

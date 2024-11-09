@@ -536,6 +536,104 @@ bool To66(sql::Database& db) {
   return db.Execute(kNamedBudgetsColumnSql);
 }
 
+bool To67(sql::Database& db) {
+  static constexpr char kReportsTableSql[] =
+      "CREATE TABLE new_reports("
+      "report_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+      "source_id INTEGER NOT NULL,"
+      "trigger_time INTEGER NOT NULL,"
+      "report_time INTEGER NOT NULL,"
+      "initial_report_time INTEGER NOT NULL,"
+      "failed_send_attempts INTEGER NOT NULL,"
+      "external_report_id TEXT NOT NULL,"
+      "debug_key INTEGER,"
+      "context_origin TEXT NOT NULL,"
+      "reporting_origin TEXT NOT NULL,"
+      "report_type INTEGER NOT NULL,"
+      "metadata BLOB NOT NULL,"
+      "context_site TEXT NOT NULL)";
+  if (!db.Execute(kReportsTableSql)) {
+    return false;
+  }
+
+  static constexpr char kPopulateExistingRecordsSql[] =
+      "INSERT INTO new_reports SELECT "
+      "report_id,source_id,trigger_time,report_time,"
+      "initial_report_time,failed_send_attempts,external_report_id,"
+      "debug_key,context_origin,reporting_origin,report_type,metadata,'' "
+      "FROM reports";
+  if (!db.Execute(kPopulateExistingRecordsSql)) {
+    return false;
+  }
+
+  if (!db.Execute("DROP TABLE reports")) {
+    return false;
+  }
+
+  if (!db.Execute("ALTER TABLE new_reports RENAME TO reports")) {
+    return false;
+  }
+
+  static constexpr char kGetContextSite[] =
+      "SELECT report_id,context_origin FROM reports";
+  sql::Statement get_statement(db.GetUniqueStatement(kGetContextSite));
+
+  static constexpr char kSetReportingSiteSql[] =
+      "UPDATE reports SET context_site=? WHERE report_id=?";
+  sql::Statement set_statement(db.GetUniqueStatement(kSetReportingSiteSql));
+
+  while (get_statement.Step()) {
+    AttributionReport::Id report_id(get_statement.ColumnInt64(0));
+    auto context_origin = DeserializeOrigin(get_statement.ColumnStringView(1));
+
+    set_statement.Reset(/*clear_bound_vars=*/true);
+    set_statement.BindString(0, net::SchemefulSite(context_origin).Serialize());
+    set_statement.BindInt64(1, *report_id);
+    if (!set_statement.Run()) {
+      return false;
+    }
+  }
+
+  if (!get_statement.Succeeded()) {
+    return false;
+  }
+
+  static constexpr char kReportsByReportTimeIndexSql[] =
+      "CREATE INDEX reports_by_report_time ON reports(report_time)";
+  if (!db.Execute(kReportsByReportTimeIndexSql)) {
+    return false;
+  }
+
+  static constexpr char kReportsBySourceIdReportTypeIndexSql[] =
+      "CREATE INDEX reports_by_source_id_report_type "
+      "ON reports(source_id,report_type)";
+  if (!db.Execute(kReportsBySourceIdReportTypeIndexSql)) {
+    return false;
+  }
+
+  static constexpr char kReportsByTriggerTimeIndexSql[] =
+      "CREATE INDEX reports_by_trigger_time ON reports(trigger_time)";
+  if (!db.Execute(kReportsByTriggerTimeIndexSql)) {
+    return false;
+  }
+
+  static constexpr char kReportsByReportingOriginIndexSql[] =
+      "CREATE INDEX reports_by_reporting_origin "
+      "ON reports(reporting_origin)WHERE report_type=2";
+  if (!db.Execute(kReportsByReportingOriginIndexSql)) {
+    return false;
+  }
+
+  static constexpr char kReportsByContextSiteIndexSql[] =
+      "CREATE INDEX reports_by_context_site "
+      "ON reports(context_site)WHERE report_type=1";
+  if (!db.Execute(kReportsByContextSiteIndexSql)) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
@@ -560,14 +658,15 @@ bool UpgradeAttributionStorageSqlSchema(AttributionStorageSql& storage,
             MaybeMigrate(db, meta_table, 62, &To63) &&
             MaybeMigrate(db, meta_table, 63, &To64) &&
             MaybeMigrate(db, meta_table, 64, &To65) &&
-            MaybeMigrate(db, meta_table, 65, &To66);
+            MaybeMigrate(db, meta_table, 65, &To66) &&
+            MaybeMigrate(db, meta_table, 66, &To67);
   if (!ok) {
     return false;
   }
 
   DeleteCorruptedReports(storage);
 
-  static_assert(AttributionStorageSql::kCurrentVersionNumber == 66,
+  static_assert(AttributionStorageSql::kCurrentVersionNumber == 67,
                 "Add migration(s) above.");
 
   if (base::ThreadTicks::IsSupported()) {

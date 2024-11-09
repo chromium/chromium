@@ -938,9 +938,8 @@ AttributionResolverImpl::MaybeCreateAggregatableAttributionReport(
     return CreateReportResult::NoHistograms();
   }
 
-  if (int64_t count = storage_.CountReportsWithDestinationSite(
-          net::SchemefulSite(attribution_info.context_origin),
-          AttributionReport::Type::kAggregatableAttribution);
+  if (int64_t count = storage_.CountAggregatableReportsWithDestinationSite(
+          net::SchemefulSite(attribution_info.context_origin));
       count < 0) {
     return CreateReportResult::InternalError();
   } else if (int max = delegate_->GetMaxReportsPerDestination(
@@ -1392,10 +1391,10 @@ AttributionResolverImpl::MaybeStoreEventLevelReport(
                     CreateReportResult::InternalError());
             }
 
-            if (int64_t count = storage_.CountReportsWithDestinationSite(
-                    net::SchemefulSite(
-                        report.attribution_info().context_origin),
-                    AttributionReport::Type::kEventLevel);
+            if (int64_t count =
+                    storage_.CountEventLevelReportsWithDestinationSite(
+                        net::SchemefulSite(
+                            report.attribution_info().context_origin));
                 count < 0) {
               return CreateReportResult::EventLevel(
                   CreateReportResult::InternalError());

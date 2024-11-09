@@ -23,6 +23,7 @@
 #include "content/browser/attribution_reporting/attribution_resolver_impl.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/browser/attribution_reporting/sql_utils.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
 #include "content/browser/attribution_reporting/test/configurable_storage_delegate.h"
 #include "sql/database.h"
@@ -667,6 +668,77 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion65ToCurrent) {
     ASSERT_TRUE(s.Step());
     EXPECT_EQ(sql::ColumnType::kNull, s.GetColumnType(0));
     ASSERT_FALSE(s.Step());
+  }
+
+  // DB creation histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
+TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion66ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(GetVersionFilePath(66), DbPath());
+
+  // Test Setup. This is done here to avoid corrupted fields within the inserted
+  // report, which would result in being deleted otherwise.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    sql::Statement insert_source(db.GetUniqueStatement(
+        "INSERT INTO sources VALUES("
+        "1,2,'https://a.s.test','https://r.test',5,6,7,8,0,0,0,0,13,"
+        "'https://s.test',15,16,17,'','',?,21,22,NULL,NULL)"));
+
+    // Calling `mutable_trigger_data()` forces creation of the field, even
+    // when `trigger_specs.empty()` below, so that the presence check in
+    // `DeserializeTriggerSpecs()` doesn't mistakenly use the defaults
+    // corresponding to the field being absent, as opposed to its inner list
+    // being empty.
+    proto::AttributionReadOnlySourceData msg_source;
+    msg_source.mutable_trigger_data();
+
+    insert_source.BindBlob(0, msg_source.SerializeAsString());
+    ASSERT_TRUE(insert_source.Run());
+
+    static constexpr char kInsertSourceDestination[] =
+        "INSERT INTO source_destinations VALUES(1,'https://d.test')";
+    ASSERT_TRUE(db.Execute(kInsertSourceDestination));
+
+    sql::Statement insert_report(db.GetUniqueStatement(
+        "INSERT INTO reports VALUES("
+        "0,1,2,3,4,5,'21abd97f-73e8-4b88-9389-a9fee6abda5e',7,"
+        "'https://a.r.test','https://r.test',0,?)"));
+    insert_report.BindBlob(0, SerializeEventLevelReportMetadata(
+                                  /*trigger_data=*/1, /*priority=*/1));
+    ASSERT_TRUE(insert_report.Run());
+  }
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+    sql::Statement s(
+        db.GetUniqueStatement("SELECT context_origin FROM reports"));
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ("https://a.r.test", s.ColumnStringView(0));
+  }
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    CheckVersionNumbers(&db);
+
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
+
+    sql::Statement s(db.GetUniqueStatement("SELECT context_site FROM reports"));
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ("https://r.test", s.ColumnStringView(0));
   }
 
   // DB creation histograms should be recorded.

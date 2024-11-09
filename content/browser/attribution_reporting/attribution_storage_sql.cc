@@ -1266,7 +1266,7 @@ bool AttributionStorageSql::IncrementNumAttributions(StoredSource::Id id) {
 base::expected<AttributionReport,
                AttributionStorageSql::ReportCorruptionStatusSetAndIds>
 AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
-  DCHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 11);
+  DCHECK_EQ(statement.ColumnCount(), kSourceColumnCount + 12);
 
   int col = kSourceColumnCount;
   AttributionReport::Id report_id(statement.ColumnInt64(col++));
@@ -1784,15 +1784,29 @@ int64_t AttributionStorageSql::CountActiveSourcesWithSourceOrigin(
   return statement.ColumnInt64(0);
 }
 
-int64_t AttributionStorageSql::CountReportsWithDestinationSite(
-    const net::SchemefulSite& destination,
-    AttributionReport::Type report_type) {
+int64_t AttributionStorageSql::CountEventLevelReportsWithDestinationSite(
+    const net::SchemefulSite& destination) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sql::Statement statement(db_.GetCachedStatement(
-      SQL_FROM_HERE, attribution_queries::kCountReportsForDestinationSql));
+      SQL_FROM_HERE,
+      attribution_queries::kCountEventLevelReportsForDestinationSql));
   statement.BindString(0, destination.Serialize());
-  statement.BindInt(1, SerializeReportType(report_type));
+
+  if (!statement.Step()) {
+    return -1;
+  }
+  return statement.ColumnInt64(0);
+}
+
+int64_t AttributionStorageSql::CountAggregatableReportsWithDestinationSite(
+    const net::SchemefulSite& destination) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE,
+      attribution_queries::kCountAggregatableReportsForDestinationSql));
+  statement.BindString(0, destination.Serialize());
 
   if (!statement.Step()) {
     return -1;
@@ -2244,6 +2258,10 @@ bool AttributionStorageSql::CreateSchema() {
   // as the |reporting_origin| of its associated source.
   // |report_type| indicates whether it's an event-level or aggregatable report.
   // |metadata| encodes the report type-specific data.
+  // |context_site| is the site where the report was created. For
+  // real reports and null reports, it is the destination site on which the
+  // trigger was registered. For fake event-level reports, it is the source
+  // site. Used for checking report destination storing limit.
   //
   // |id| uses AUTOINCREMENT to ensure that IDs aren't reused over
   // the lifetime of the DB.
@@ -2260,7 +2278,8 @@ bool AttributionStorageSql::CreateSchema() {
       "context_origin TEXT NOT NULL,"
       "reporting_origin TEXT NOT NULL,"
       "report_type INTEGER NOT NULL,"
-      "metadata BLOB NOT NULL)";
+      "metadata BLOB NOT NULL,"
+      "context_site TEXT NOT NULL)";
   if (!db_.Execute(kReportsTableSql)) {
     return false;
   }
@@ -2303,6 +2322,19 @@ bool AttributionStorageSql::CreateSchema() {
       "ON reports(reporting_origin)"
       "WHERE report_type=2";
   if (!db_.Execute(kReportsReportTypeReportingOriginIndexSql)) {
+    return false;
+  }
+
+  // Optimizes report look up by effective destination site.
+  static_assert(
+      static_cast<int>(
+          attribution_reporting::mojom::ReportType::kAggregatableAttribution) ==
+          1,
+      "update `report_type=1` clause below");
+  static constexpr char kReportsContextSiteIndexSql[] =
+      "CREATE INDEX reports_by_context_site "
+      "ON reports(context_site)WHERE report_type=1";
+  if (!db_.Execute(kReportsContextSiteIndexSql)) {
     return false;
   }
 
@@ -2712,8 +2744,8 @@ AttributionStorageSql::StoreAttributionReport(
       "INSERT INTO reports"
       "(source_id,trigger_time,report_time,initial_report_time,"
       "failed_send_attempts,external_report_id,debug_key,context_origin,"
-      "reporting_origin,report_type,metadata)"
-      "VALUES(?,?,?,?,0,?,?,?,?,?,?)";
+      "reporting_origin,report_type,metadata,context_site)"
+      "VALUES(?,?,?,?,0,?,?,?,?,?,?,?)";
   sql::Statement store_report_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kStoreReportSql));
 
@@ -2731,6 +2763,8 @@ AttributionStorageSql::StoreAttributionReport(
   store_report_statement.BindString(7, reporting_origin.Serialize());
   store_report_statement.BindInt(8, SerializeReportType(report_type));
   store_report_statement.BindBlob(9, serialized_metadata);
+  store_report_statement.BindString(
+      10, net::SchemefulSite(context_origin).Serialize());
 
   if (!store_report_statement.Run()) {
     return std::nullopt;

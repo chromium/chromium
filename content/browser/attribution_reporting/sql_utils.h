@@ -92,8 +92,9 @@ std::string SerializeAggregationKeys(
 std::optional<attribution_reporting::AggregationKeys>
 DeserializeAggregationKeys(sql::Statement&, int col);
 
-std::string SerializeEventLevelReportMetadata(uint32_t trigger_data,
-                                              int64_t priority);
+CONTENT_EXPORT std::string SerializeEventLevelReportMetadata(
+    uint32_t trigger_data,
+    int64_t priority);
 
 std::string SerializeAggregatableReportMetadata(
     const std::optional<attribution_reporting::SuitableOrigin>&
