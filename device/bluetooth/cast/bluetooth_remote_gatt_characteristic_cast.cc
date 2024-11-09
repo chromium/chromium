@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/queue.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -140,7 +141,7 @@ void BluetoothRemoteGattCharacteristicCast::ReadRemoteCharacteristic(
 }
 
 void BluetoothRemoteGattCharacteristicCast::WriteRemoteCharacteristic(
-    const std::vector<uint8_t>& value,
+    base::span<const uint8_t> value,
     WriteType write_type,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
@@ -156,24 +157,27 @@ void BluetoothRemoteGattCharacteristicCast::WriteRemoteCharacteristic(
       break;
   }
 
+  std::vector<uint8_t> value_vector = base::ToVector(value);
+
   remote_characteristic_->WriteAuth(
       chromecast::bluetooth_v2_shlib::Gatt::Client::AUTH_REQ_NONE,
-      chromecast_write_type, value,
+      chromecast_write_type, value_vector,
       base::BindOnce(
           &BluetoothRemoteGattCharacteristicCast::OnWriteRemoteCharacteristic,
-          weak_factory_.GetWeakPtr(), value, std::move(callback),
+          weak_factory_.GetWeakPtr(), value_vector, std::move(callback),
           std::move(error_callback)));
 }
 
 void BluetoothRemoteGattCharacteristicCast::DeprecatedWriteRemoteCharacteristic(
-    const std::vector<uint8_t>& value,
+    base::span<const uint8_t> value,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
+  std::vector<uint8_t> value_vector = base::ToVector(value);
   remote_characteristic_->Write(
-      value,
+      value_vector,
       base::BindOnce(
           &BluetoothRemoteGattCharacteristicCast::OnWriteRemoteCharacteristic,
-          weak_factory_.GetWeakPtr(), value, std::move(callback),
+          weak_factory_.GetWeakPtr(), value_vector, std::move(callback),
           std::move(error_callback)));
 }
 

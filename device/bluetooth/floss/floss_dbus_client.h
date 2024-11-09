@@ -624,6 +624,14 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusClient {
     writer->CloseContainer(&array);
   }
 
+  // Specialized write for base::span<const uint8_t>.
+  static void WriteDBusParam(dbus::MessageWriter* writer,
+                             base::span<const uint8_t> value) {
+    dbus::MessageWriter array_writer(nullptr);
+    writer->AppendArrayOfBytes(value);
+    writer->CloseContainer(&array_writer);
+  }
+
   // Optional container type needs to be explicitly listed here.
   template <typename T>
   static void WriteDBusParam(dbus::MessageWriter* writer,

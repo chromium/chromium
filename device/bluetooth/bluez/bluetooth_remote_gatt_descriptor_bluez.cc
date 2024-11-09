@@ -25,8 +25,8 @@ namespace bluez {
 
 namespace {
 
-// Stream operator for logging vector<uint8_t>.
-std::ostream& operator<<(std::ostream& out, const std::vector<uint8_t> bytes) {
+// Stream operator for logging span<uint8_t>.
+std::ostream& operator<<(std::ostream& out, base::span<const uint8_t> bytes) {
   out << "[";
   for (auto iter = bytes.begin(); iter != bytes.end(); ++iter) {
     out << base::StringPrintf("%02X", *iter);
@@ -96,7 +96,7 @@ void BluetoothRemoteGattDescriptorBlueZ::ReadRemoteDescriptor(
 }
 
 void BluetoothRemoteGattDescriptorBlueZ::WriteRemoteDescriptor(
-    const std::vector<uint8_t>& new_value,
+    base::span<const uint8_t> new_value,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   DVLOG(1) << "Sending GATT characteristic descriptor write request to "

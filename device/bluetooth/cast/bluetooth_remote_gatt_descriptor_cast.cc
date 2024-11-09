@@ -5,8 +5,10 @@
 #include "device/bluetooth/cast/bluetooth_remote_gatt_descriptor_cast.h"
 
 #include <stdint.h>
+
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chromecast/device/bluetooth/le/remote_descriptor.h"
@@ -57,14 +59,15 @@ void BluetoothRemoteGattDescriptorCast::ReadRemoteDescriptor(
 }
 
 void BluetoothRemoteGattDescriptorCast::WriteRemoteDescriptor(
-    const std::vector<uint8_t>& new_value,
+    base::span<const uint8_t> new_value,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
+  std::vector<uint8_t> new_value_vector = base::ToVector(new_value);
   remote_descriptor_->Write(
-      new_value,
+      new_value_vector,
       base::BindOnce(
           &BluetoothRemoteGattDescriptorCast::OnWriteRemoteDescriptor,
-          weak_factory_.GetWeakPtr(), new_value, std::move(callback),
+          weak_factory_.GetWeakPtr(), new_value_vector, std::move(callback),
           std::move(error_callback)));
 }
 

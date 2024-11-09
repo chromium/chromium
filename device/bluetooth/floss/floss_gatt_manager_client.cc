@@ -415,7 +415,7 @@ void FlossGattManagerClient::WriteCharacteristic(
     const int32_t handle,
     const WriteType write_type,
     const AuthRequired auth_required,
-    const std::vector<uint8_t> data) {
+    base::span<const uint8_t> data) {
   CallGattMethod(std::move(callback), gatt::kWriteCharacteristic, client_id_,
                  remote_device, handle, write_type, auth_required, data);
 }
@@ -432,7 +432,7 @@ void FlossGattManagerClient::WriteDescriptor(ResponseCallback<Void> callback,
                                              const std::string& remote_device,
                                              const int32_t handle,
                                              const AuthRequired auth_required,
-                                             const std::vector<uint8_t> data) {
+                                             base::span<const uint8_t> data) {
   CallGattMethod<Void>(std::move(callback), gatt::kWriteDescriptor, client_id_,
                        remote_device, handle, auth_required, data);
 }
