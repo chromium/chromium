@@ -578,7 +578,7 @@ bool PdfInkModule::StartEraseStroke(const gfx::PointF& position) {
   ApplyUndoRedoDiscards(discards.value());
 
   if (EraseHelper(position, page_index)) {
-    state.page_indices_with_erased_strokes.insert(page_index);
+    state.page_indices_with_erasures.insert(page_index);
   }
   return true;
 }
@@ -599,7 +599,7 @@ bool PdfInkModule::ContinueEraseStroke(const gfx::PointF& position) {
   }
 
   if (EraseHelper(position, page_index)) {
-    state.page_indices_with_erased_strokes.insert(page_index);
+    state.page_indices_with_erasures.insert(page_index);
   }
   return true;
 }
@@ -616,52 +616,50 @@ bool PdfInkModule::FinishEraseStroke(const gfx::PointF& position) {
 
   CHECK(is_erasing_stroke());
   EraserState& state = erasing_stroke_state();
-  if (!state.page_indices_with_erased_strokes.empty()) {
+  if (!state.page_indices_with_erasures.empty()) {
     client_->StrokeFinished();
-    for (int page_index : state.page_indices_with_erased_strokes) {
+    for (int page_index : state.page_indices_with_erasures) {
       client_->UpdateThumbnail(page_index);
     }
   }
 
   // Reset `state` now that the erase operation is done.
   state.erasing = false;
-  state.page_indices_with_erased_strokes.clear();
+  state.page_indices_with_erasures.clear();
   return true;
 }
 
 bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
   CHECK_GE(page_index, 0);
-  auto it = strokes_.find(page_index);
-  if (it == strokes_.end()) {
-    // Nothing to erase on the page.
-    return false;
-  }
 
-  gfx::PointF canonical_position =
+  const gfx::PointF canonical_position =
       ConvertEventPositionToCanonicalPosition(position, page_index);
   const ink::Rect eraser_rect = GetEraserRect(canonical_position, eraser_size_);
   ink::Envelope invalidate_envelope;
-  for (auto& stroke : it->second) {
-    if (!stroke.should_draw) {
-      // Already erased.
-      continue;
+
+  if (auto stroke_it = strokes_.find(page_index); stroke_it != strokes_.end()) {
+    for (auto& stroke : stroke_it->second) {
+      if (!stroke.should_draw) {
+        // Already erased.
+        continue;
+      }
+
+      // No transform needed, as `eraser_rect` is already using transformed
+      // coordinates from `canonical_position`.
+      static constexpr ink::AffineTransform kIdentityTransform;
+      const ink::ModeledShape& shape = stroke.stroke.GetShape();
+      if (!ink::Intersects(eraser_rect, shape, kIdentityTransform)) {
+        continue;
+      }
+
+      stroke.should_draw = false;
+      client_->UpdateStrokeActive(page_index, stroke.id, /*active=*/false);
+
+      invalidate_envelope.Add(shape.Bounds());
+
+      bool undo_redo_success = undo_redo_model_.EraseStroke(stroke.id);
+      CHECK(undo_redo_success);
     }
-
-    // No transform needed, as `eraser_rect` is already using transformed
-    // coordinates from `canonical_position`.
-    static constexpr ink::AffineTransform kIdentityTransform;
-    const ink::ModeledShape& shape = stroke.stroke.GetShape();
-    if (!ink::Intersects(eraser_rect, shape, kIdentityTransform)) {
-      continue;
-    }
-
-    stroke.should_draw = false;
-    client_->UpdateStrokeActive(page_index, stroke.id, /*active=*/false);
-
-    invalidate_envelope.Add(shape.Bounds());
-
-    bool undo_redo_success = undo_redo_model_.EraseStroke(stroke.id);
-    CHECK(undo_redo_success);
   }
 
   if (invalidate_envelope.IsEmpty()) {
@@ -914,6 +912,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
     CHECK(inserted);
   }
 
+  std::set<int> page_indices_with_thumbnail_updates;
   for (auto& [page_index, page_ink_strokes] : strokes_) {
     std::vector<InkStrokeId> page_ids;
     page_ids.reserve(page_ink_strokes.size());
@@ -949,7 +948,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
     client_->Invalidate(CanonicalInkEnvelopeToExpandedInvalidationScreenRect(
         invalidate_envelope, client_->GetOrientation(),
         client_->GetPageContentsRect(page_index), client_->GetZoom()));
-    client_->UpdateThumbnail(page_index);
+    page_indices_with_thumbnail_updates.insert(page_index);
 
     if (stroke_ids.empty()) {
       break;  // Break out of loop if there is no stroke remaining to apply.
@@ -957,6 +956,10 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
   }
 
   // TODO(crbug.com/377820805): Handle `shape_ids`.
+
+  for (int page_index : page_indices_with_thumbnail_updates) {
+    client_->UpdateThumbnail(page_index);
+  }
 }
 
 void PdfInkModule::ApplyUndoRedoDiscards(

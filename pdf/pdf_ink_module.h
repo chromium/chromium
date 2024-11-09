@@ -257,7 +257,7 @@ class PdfInkModule {
     ~EraserState();
 
     bool erasing = false;
-    base::flat_set<int> page_indices_with_erased_strokes;
+    base::flat_set<int> page_indices_with_erasures;
   };
 
   // Returns whether the event was handled or not.
@@ -284,7 +284,7 @@ class PdfInkModule {
   bool ContinueEraseStroke(const gfx::PointF& position);
   bool FinishEraseStroke(const gfx::PointF& position);
 
-  // Shared code for the Erase methods above. Returns if stroke(s) got erased or
+  // Shared code for the Erase methods above. Returns if something got erased or
   // not.
   bool EraseHelper(const gfx::PointF& position, int page_index);
 
