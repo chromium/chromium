@@ -872,6 +872,16 @@ export class AppElement extends AppElementBase {
     }
 
     const newVoicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
+    // If the previous status is the same as the new status, no need to update
+    // any state. Updating to an installed state will cause a language to be
+    // automatically enabled because we want the newly downloaded language to be
+    // available in the voice menu. Thus we only want to mark it installed if
+    // it's newly installed, otherwise we may enable a language that was
+    // previously installed but disabled.
+    if (this.getVoicePackServerStatus_(lang)?.code ===
+        newVoicePackStatus.code) {
+      return;
+    }
 
     // Keep the server responses
     this.setVoicePackServerStatus_(lang, newVoicePackStatus);
