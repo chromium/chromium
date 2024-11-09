@@ -7,6 +7,9 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/types/expected.h"
+#include "build/build_config.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -122,6 +125,10 @@ class NavigationCapturingDataTransferBrowserTest
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;
     const webapps::AppId app_id = web_app::test::InstallWebApp(
         browser()->profile(), std::move(web_app_info));
+#if BUILDFLAG(IS_CHROMEOS)
+    EXPECT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_id),
+              base::ok());
+#endif
     return app_id;
   }
 

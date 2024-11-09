@@ -27,6 +27,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -710,9 +711,88 @@ static const base::flat_set<std::string> disabled_flaky_tests = {
 #elif BUILDFLAG(IS_LINUX)
 #elif BUILDFLAG(IS_WIN)
 #elif BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/359600606): Enable on CrOS if navigation capturing needs
-    // to be supported.
-    "*"
+    // TODO(crbug.com/359600606): Fix failures of AppBBrowser/BothBrowser tests
+    // on ChromeOS.
+    "AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_Direct_ViaButton_"
+    "LeftClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_Direct_ViaButton_"
+    "MiddleClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_Direct_ViaButton_"
+    "ShiftClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_"
+    "LeftClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_"
+    "MiddleClick_WithOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_"
+    "MiddleClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_"
+    "ShiftClick_WithOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_Direct_ViaLink_"
+    "ShiftClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_"
+    "ViaLink_MiddleClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_ServerSideViaA_"
+    "ViaLink_ShiftClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_ServerSideViaB_"
+    "ViaLink_MiddleClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_ServerSideViaB_"
+    "ViaLink_ShiftClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_ServerSideViaX_"
+    "ViaLink_ShiftClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaButton_"
+    "LeftClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaButton_"
+    "MiddleClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaButton_"
+    "ShiftClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_LeftClick_"
+    "WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_"
+    "MiddleClick_WithOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_"
+    "MiddleClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_"
+    "ShiftClick_WithOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_"
+    "ShiftClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_"
+    "LeftClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_ServerSideViaB_ViaLink_"
+    "LeftClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_ServerSideViaB_ViaLink_"
+    "MiddleClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_ServerSideViaB_ViaLink_"
+    "ShiftClick_WithoutOpener_TargetBlank",
+    "AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_ServerSideViaX_ViaLink_"
+    "LeftClick_WithoutOpener_TargetBlank",
+    "BothBrowser_CaptureOn_Tab_ScopeA2A_Direct_ViaLink_LeftClick_WithoutOpener_"
+    "TargetBlank",
+    "BothBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_LeftClick_WithoutOpener_"
+    "TargetBlank",
+    "FocusExisting_AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_Direct_"
+    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
+    "FocusExisting_AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_Direct_"
+    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
+    "FocusExisting_AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_Direct_"
+    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
+    "FocusExisting_AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_Direct_"
+    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
+    "FocusExisting_AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_"
+    "ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+    "FocusExisting_BothBrowser_CaptureOn_Tab_ScopeA2A_Direct_ViaLink_LeftClick_"
+    "WithoutOpener_TargetBlank",
+    "FocusExisting_BothBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_LeftClick_"
+    "WithoutOpener_TargetBlank",
+    "FocusExisting_BothBrowser_CaptureOn_Tab_ScopeA2B_ServerSideViaA_ViaLink_"
+    "LeftClick_WithoutOpener_TargetBlank",
+    "NavigateExisting_AppAStandaloneAppBBrowser_CaptureOn_AppWnd_ScopeA2B_"
+    "Direct_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+    "NavigateExisting_AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_Direct_"
+    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
+    "NavigateExisting_BothBrowser_CaptureOn_Tab_ScopeA2A_Direct_ViaLink_"
+    "LeftClick_WithoutOpener_TargetBlank",
+    "NavigateExisting_BothBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_"
+    "LeftClick_WithoutOpener_TargetBlank",
 #endif
 };
 
@@ -1437,11 +1517,21 @@ class WebAppLinkCapturingParameterizedBrowserTest
     const webapps::AppId app_b = InstallTestWebApp(
         embedded_test_server()->GetURL(kDestinationPageScopeB), client_mode_b);
 
-    if (GetLinkCapturing() == LinkCapturing::kDisabled) {
-      ASSERT_EQ(apps::test::DisableLinkCapturingByUser(profile(), app_a),
-                base::ok());
-      ASSERT_EQ(apps::test::DisableLinkCapturingByUser(profile(), app_b),
-                base::ok());
+    switch (GetLinkCapturing()) {
+      case LinkCapturing::kEnabled:
+#if BUILDFLAG(IS_CHROMEOS)
+        ASSERT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_a),
+                  base::ok());
+        ASSERT_EQ(apps::test::EnableLinkCapturingByUser(profile(), app_b),
+                  base::ok());
+#endif
+        break;
+      case LinkCapturing::kDisabled:
+        ASSERT_EQ(apps::test::DisableLinkCapturingByUser(profile(), app_a),
+                  base::ok());
+        ASSERT_EQ(apps::test::DisableLinkCapturingByUser(profile(), app_b),
+                  base::ok());
+        break;
     }
 
     DLOG(INFO) << "Setting up.";

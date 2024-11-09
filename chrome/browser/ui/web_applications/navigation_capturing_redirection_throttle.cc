@@ -31,6 +31,11 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace web_app {
 
 namespace {
@@ -90,6 +95,22 @@ void ReparentWebContentsToTabbedBrowser(content::WebContents* old_web_contents,
 
   ReparentWebContentsIntoBrowserImpl(source_browser, old_web_contents,
                                      target_browser_window);
+}
+
+std::optional<webapps::AppId> GetWebAppControllingUrl(
+    Profile* profile,
+    const WebAppProvider* provider,
+    const GURL& url) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return std::nullopt;
+  }
+  return apps::FindAppIdsToLaunchForUrl(
+             apps::AppServiceProxyFactory::GetForProfile(profile), url)
+      .preferred;
+#else
+  return provider->registrar_unsafe().FindAppThatCapturesLinksInScope(url);
+#endif
 }
 
 }  // namespace
@@ -185,7 +206,7 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
       WebAppProvider::GetForWebContents(web_contents_for_navigation);
   WebAppRegistrar& registrar = provider->registrar_unsafe();
   std::optional<webapps::AppId> target_app_id =
-      registrar.FindAppThatCapturesLinksInScope(final_url);
+      GetWebAppControllingUrl(&profile_.get(), provider, final_url);
 
   // "Same first navigation state" case:
   // First, we can exit early if the first navigation app id matches the target

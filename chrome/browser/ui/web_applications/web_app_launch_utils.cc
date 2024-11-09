@@ -101,6 +101,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_browser_controller_ash.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
@@ -432,6 +433,22 @@ std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
     case blink::mojom::DisplayMode::kPictureInPicture:
       NOTREACHED_NORETURN();
   }
+}
+
+std::optional<webapps::AppId> GetWebAppControllingUrl(
+    Profile* profile,
+    const WebAppProvider* provider,
+    const GURL& url) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return std::nullopt;
+  }
+  return apps::FindAppIdsToLaunchForUrl(
+             apps::AppServiceProxyFactory::GetForProfile(profile), url)
+      .preferred;
+#else
+  return provider->registrar_unsafe().FindAppThatCapturesLinksInScope(url);
+#endif
 }
 
 }  // namespace
@@ -1403,7 +1420,7 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
           ? std::optional(params.browser->app_controller()->app_id())
           : std::nullopt;
   std::optional<webapps::AppId> controlling_app_id =
-      registrar.FindAppThatCapturesLinksInScope(params.url);
+      GetWebAppControllingUrl(profile, provider, params.url);
   std::optional<DisplayMode> controlling_app_display_mode;
   if (controlling_app_id) {
     controlling_app_display_mode =
@@ -1451,7 +1468,7 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
 
   std::optional<webapps::AppId> referrer_app_id =
       params.referrer.url.is_valid()
-          ? registrar.FindAppThatCapturesLinksInScope(params.referrer.url)
+          ? GetWebAppControllingUrl(profile, provider, params.referrer.url)
           : std::nullopt;
   debug_data.Set("referrer.url", params.referrer.url.possibly_invalid_spec());
   debug_data.Set("referrer.controlling_app_id",
