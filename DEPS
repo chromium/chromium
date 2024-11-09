@@ -296,7 +296,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
-  'boringssl_revision': '52a2c003d9622a78d6b791c10ea456eabaf6f52a',
+  'boringssl_revision': '571c76e919c0c48219ced35bef83e1fc83b00eed',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Fuchsia sdk
   # and whatever else without interference from each other.
