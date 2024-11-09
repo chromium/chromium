@@ -14,10 +14,7 @@ export function getHtml(this: ShortcutInputElement) {
       aria-label="${this.computeInputAriaLabel_()}"
       .placeholder="${this.computePlaceholder_()}"
       ?invalid="${this.getIsInvalid_()}"
-      .errorMessage="${this.getErrorString_(
-          '$i18nPolymer{shortcutIncludeStartModifier}',
-          '$i18nPolymer{shortcutTooManyModifiers}',
-          '$i18nPolymer{shortcutNeedCharacter}')}"
+      .errorMessage="${this.getErrorString_()}"
       .value="${this.computeText_()}">
     <cr-icon-button id="edit" title="$i18n{edit}"
         aria-label="${this.computeEditButtonAriaLabel_()}"

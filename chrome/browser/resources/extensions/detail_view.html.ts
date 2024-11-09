@@ -100,8 +100,7 @@ this text can be found by Ctrl + F because it isn't hidden. -->
 
     <div class="cr-row first control-line" id="enable-section">
       <span class="${this.computeEnabledStyle_()}">
-        ${this.computeEnabledText_(this.data.state, '$i18nPolymer{itemOn}',
-            '$i18nPolymer{itemOff}')}
+        ${this.computeEnabledText_()}
       </span>
       <div class="layout-horizontal">
         <cr-tooltip-icon ?hidden="${!this.data.controlledInfo}"
@@ -205,8 +204,7 @@ this text can be found by Ctrl + F because it isn't hidden. -->
         $i18n{itemDescriptionLabel}
       </div>
       <div class="section-content" id="description">
-        ${this.getDescription_(
-            this.data.description, '$i18nPolymer{noDescription}')}
+        ${this.getDescription_()}
       </div>
     </div>
     <div class="section hr">

@@ -143,12 +143,11 @@ export class ExtensionsCodeSectionElement extends
     this.scrollToHighlight_(visibleLineCountBefore);
   }
 
-  protected getLinesNotShownLabel_(
-      lineCount: number, stringSingular: string,
-      stringPluralTemplate: string): string {
+  protected getLinesNotShownLabel_(lineCount: number): string {
     return lineCount === 1 ?
-        stringSingular :
-        loadTimeData.substituteString(stringPluralTemplate, lineCount);
+        loadTimeData.getString('errorLinesNotShownSingular') :
+        loadTimeData.substituteString(
+            loadTimeData.getString('errorLinesNotShownPlural'), lineCount);
   }
 
   private setLineNumbers_(start: number, end: number) {

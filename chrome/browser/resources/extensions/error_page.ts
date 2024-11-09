@@ -157,11 +157,10 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
     chrome.metricsPrivate.recordUserAction('Options_ViewExtensionErrors');
   }
 
-  protected getContextUrl_(error: ManifestError|RuntimeError, unknown: string):
-      string {
+  protected getContextUrl_(error: ManifestError|RuntimeError): string {
     return (error as RuntimeError).contextUrl ?
         getRelativeUrl((error as RuntimeError).contextUrl, error) :
-        unknown;
+        loadTimeData.getString('errorContextUnknown');
   }
 
   protected onCloseButtonClick_() {

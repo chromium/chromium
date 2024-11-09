@@ -59,8 +59,7 @@ export function getHtml(this: ExtensionsErrorPageElement) {
                     $i18n{errorContext}
                   </div>
                   <span class="context-url">
-                    ${this.getContextUrl_(
-                        entry, '$i18nPolymer{errorContextUnknown}')}
+                    ${this.getContextUrl_(entry)}
                   </span>
                   <div class="details-heading cr-title-text" role="heading"
                       aria-level="3">

@@ -171,16 +171,14 @@ export class ExtensionsShortcutInputElement extends
     this.handleKey_(e);
   }
 
-  protected getErrorString_(
-      includeStartModifier: string, tooManyModifiers: string,
-      needCharacter: string): string {
+  protected getErrorString_(): string {
     switch (this.error_) {
       case ShortcutError.INCLUDE_START_MODIFIER:
-        return includeStartModifier;
+        return this.i18n('shortcutIncludeStartModifier');
       case ShortcutError.TOO_MANY_MODIFIERS:
-        return tooManyModifiers;
+        return this.i18n('shortcutTooManyModifiers');
       case ShortcutError.NEED_CHARACTER:
-        return needCharacter;
+        return this.i18n('shortcutNeedCharacter');
       default:
         assert(this.error_ === ShortcutError.NO_ERROR);
         return '';

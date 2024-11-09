@@ -23,10 +23,7 @@ export function getHtml(this: ExtensionsCodeSectionElement) {
     </div>
     <div id="source">
       <div class="more-code before" ?hidden="${!this.truncatedBefore_}">
-        ${this.getLinesNotShownLabel_(
-            this.truncatedBefore_,
-            '$i18nPolymer{errorLinesNotShownSingular}',
-            '$i18nPolymer{errorLinesNotShownPlural}')}
+        ${this.getLinesNotShownLabel_(this.truncatedBefore_)}
       </div>
       <span><!-- Whitespace is preserved in this span. Ignore new lines.
         --><span>${this.before_}</span><!--
@@ -36,10 +33,7 @@ export function getHtml(this: ExtensionsCodeSectionElement) {
         --><span>${this.after_}</span><!--
       --></span>
       <div class="more-code after" ?hidden="${!this.truncatedAfter_}">
-        ${this.getLinesNotShownLabel_(
-            this.truncatedAfter_,
-            '$i18nPolymer{errorLinesNotShownSingular}',
-            '$i18nPolymer{errorLinesNotShownPlural}')}
+        ${this.getLinesNotShownLabel_(this.truncatedAfter_)}
       </div>
     </div>
   </div>

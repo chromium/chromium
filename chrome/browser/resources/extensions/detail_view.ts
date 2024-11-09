@@ -195,8 +195,8 @@ export class ExtensionsDetailViewElement extends
     navigation.navigateTo({page: Page.ACTIVITY_LOG, extensionId: this.data.id});
   }
 
-  protected getDescription_(description: string, fallback: string): string {
-    return description || fallback;
+  protected getDescription_(): string {
+    return this.data.description || loadTimeData.getString('noDescription');
   }
 
   protected getBackButtonAriaLabel_(): string {
@@ -251,11 +251,10 @@ export class ExtensionsDetailViewElement extends
     return this.isEnabled_() ? 'enabled-text' : '';
   }
 
-  protected computeEnabledText_(
-      state: chrome.developerPrivate.ExtensionState, onText: string,
-      offText: string): string {
+  protected computeEnabledText_(): string {
     // TODO(devlin): Get the full spectrum of these strings from bettes.
-    return isEnabled(state) ? onText : offText;
+    return loadTimeData.getString(
+        isEnabled(this.data.state) ? 'itemOn' : 'itemOff');
   }
 
   protected computeInspectLabel_(view: chrome.developerPrivate.ExtensionView):
