@@ -58,6 +58,10 @@ namespace chrome_pdf {
 
 namespace {
 
+// TODO(crbug.com/377733396): Determine if it possible to differentiate between
+// touch and pen. Defaulting to touch for now.
+constexpr auto kTouchOrPenToolType = ink::StrokeInput::ToolType::kTouch;
+
 PdfInkModule::StrokeInputPoints GetStrokePointsForTesting(  // IN-TEST
     const ink::StrokeInputBatch& input_batch) {
   PdfInkModule::StrokeInputPoints stroke_points;
@@ -296,6 +300,27 @@ PdfInkModule::GetVisibleStrokesInputPositionsForTesting() const {
   return all_strokes_points;
 }
 
+int PdfInkModule::GetInputOfTypeCountForPageForTesting(
+    int page_index,
+    ink::StrokeInput::ToolType tool_type) const {
+  CHECK_GE(page_index, 0);
+  auto it = strokes_.find(page_index);
+  if (it == strokes_.end()) {
+    return 0;
+  }
+
+  int count = 0;
+  for (const FinishedStrokeState& stroke_state : it->second) {
+    const ink::StrokeInputBatch& input_batch = stroke_state.stroke.GetInputs();
+    for (ink::StrokeInput input : input_batch) {
+      if (input.tool_type == tool_type) {
+        ++count;
+      }
+    }
+  }
+  return count;
+}
+
 bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
   CHECK(enabled());
 
@@ -305,7 +330,8 @@ bool PdfInkModule::OnMouseDown(const blink::WebMouseEvent& event) {
   }
 
   gfx::PointF position = normalized_event.PositionInWidget();
-  return is_drawing_stroke() ? StartStroke(position, event.TimeStamp())
+  return is_drawing_stroke() ? StartStroke(position, event.TimeStamp(),
+                                           ink::StrokeInput::ToolType::kMouse)
                              : StartEraseStroke(position);
 }
 
@@ -317,7 +343,8 @@ bool PdfInkModule::OnMouseUp(const blink::WebMouseEvent& event) {
   }
 
   gfx::PointF position = event.PositionInWidget();
-  return is_drawing_stroke() ? FinishStroke(position, event.TimeStamp())
+  return is_drawing_stroke() ? FinishStroke(position, event.TimeStamp(),
+                                            ink::StrokeInput::ToolType::kMouse)
                              : FinishEraseStroke(position);
 }
 
@@ -325,8 +352,10 @@ bool PdfInkModule::OnMouseMove(const blink::WebMouseEvent& event) {
   CHECK(enabled());
 
   gfx::PointF position = event.PositionInWidget();
-  return is_drawing_stroke() ? ContinueStroke(position, event.TimeStamp())
-                             : ContinueEraseStroke(position);
+  return is_drawing_stroke()
+             ? ContinueStroke(position, event.TimeStamp(),
+                              ink::StrokeInput::ToolType::kMouse)
+             : ContinueEraseStroke(position);
 }
 
 bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
@@ -337,8 +366,9 @@ bool PdfInkModule::OnTouchStart(const blink::WebTouchEvent& event) {
   }
 
   gfx::PointF position = event.touches[0].PositionInWidget();
-  return is_drawing_stroke() ? StartStroke(position, event.TimeStamp())
-                             : StartEraseStroke(position);
+  return is_drawing_stroke()
+             ? StartStroke(position, event.TimeStamp(), kTouchOrPenToolType)
+             : StartEraseStroke(position);
 }
 
 bool PdfInkModule::OnTouchEnd(const blink::WebTouchEvent& event) {
@@ -349,8 +379,9 @@ bool PdfInkModule::OnTouchEnd(const blink::WebTouchEvent& event) {
   }
 
   gfx::PointF position = event.touches[0].PositionInWidget();
-  return is_drawing_stroke() ? FinishStroke(position, event.TimeStamp())
-                             : FinishEraseStroke(position);
+  return is_drawing_stroke()
+             ? FinishStroke(position, event.TimeStamp(), kTouchOrPenToolType)
+             : FinishEraseStroke(position);
 }
 
 bool PdfInkModule::OnTouchMove(const blink::WebTouchEvent& event) {
@@ -361,12 +392,14 @@ bool PdfInkModule::OnTouchMove(const blink::WebTouchEvent& event) {
   }
 
   gfx::PointF position = event.touches[0].PositionInWidget();
-  return is_drawing_stroke() ? ContinueStroke(position, event.TimeStamp())
-                             : ContinueEraseStroke(position);
+  return is_drawing_stroke()
+             ? ContinueStroke(position, event.TimeStamp(), kTouchOrPenToolType)
+             : ContinueEraseStroke(position);
 }
 
 bool PdfInkModule::StartStroke(const gfx::PointF& position,
-                               base::TimeTicks timestamp) {
+                               base::TimeTicks timestamp,
+                               ink::StrokeInput::ToolType tool_type) {
   int page_index = client_->VisiblePageIndexFromPoint(position);
   if (page_index < 0) {
     // Do not draw when not on a page.
@@ -384,11 +417,10 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position,
   state.page_index = page_index;
 
   // Start of the first segment of a stroke.
-  // TODO(crbug.com/353942909): Set the tool type appropriately.
   ink::StrokeInputBatch segment;
-  auto result = segment.Append(
-      CreateInkStrokeInput(ink::StrokeInput::ToolType::kMouse, page_position,
-                           /*elapsed_time=*/base::TimeDelta()));
+  auto result =
+      segment.Append(CreateInkStrokeInput(tool_type, page_position,
+                                          /*elapsed_time=*/base::TimeDelta()));
   CHECK(result.ok());
   state.inputs.push_back(std::move(segment));
 
@@ -409,7 +441,8 @@ bool PdfInkModule::StartStroke(const gfx::PointF& position,
 }
 
 bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
-                                  base::TimeTicks timestamp) {
+                                  base::TimeTicks timestamp,
+                                  ink::StrokeInput::ToolType tool_type) {
   CHECK(is_drawing_stroke());
   DrawingStrokeState& state = drawing_stroke_state();
   if (!state.start_time.has_value()) {
@@ -443,7 +476,7 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
     if (boundary_position != last_position) {
       // Record the last point before leaving the page, if `last_position` was
       // not already on the page boundary.
-      RecordStrokePosition(boundary_position, timestamp);
+      RecordStrokePosition(boundary_position, timestamp, tool_type);
       client_->Invalidate(GetDrawingBrush().GetInvalidateArea(
           last_position, boundary_position));
     }
@@ -464,12 +497,12 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
         last_position);
     if (boundary_position != position) {
       // Record the first point after entering the page.
-      RecordStrokePosition(boundary_position, timestamp);
+      RecordStrokePosition(boundary_position, timestamp, tool_type);
       invalidation_position = boundary_position;
     }
   }
 
-  RecordStrokePosition(position, timestamp);
+  RecordStrokePosition(position, timestamp, tool_type);
 
   // Invalidate area covering a straight line between this position and the
   // previous one.
@@ -483,10 +516,11 @@ bool PdfInkModule::ContinueStroke(const gfx::PointF& position,
 }
 
 bool PdfInkModule::FinishStroke(const gfx::PointF& position,
-                                base::TimeTicks timestamp) {
+                                base::TimeTicks timestamp,
+                                ink::StrokeInput::ToolType tool_type) {
   // Process `position` as though it was the last point of movement first,
   // before moving on to various bookkeeping tasks.
-  if (!ContinueStroke(position, timestamp)) {
+  if (!ContinueStroke(position, timestamp, tool_type)) {
     return false;
   }
 
@@ -827,15 +861,15 @@ gfx::PointF PdfInkModule::ConvertEventPositionToCanonicalPosition(
 }
 
 void PdfInkModule::RecordStrokePosition(const gfx::PointF& position,
-                                        base::TimeTicks timestamp) {
+                                        base::TimeTicks timestamp,
+                                        ink::StrokeInput::ToolType tool_type) {
   CHECK(is_drawing_stroke());
   DrawingStrokeState& state = drawing_stroke_state();
   gfx::PointF canonical_position =
       ConvertEventPositionToCanonicalPosition(position, state.page_index);
   base::TimeDelta time_diff = timestamp - state.start_time.value();
-  // TODO(crbug.com/353942909): Set the tool type appropriately.
-  auto result = state.inputs.back().Append(CreateInkStrokeInput(
-      ink::StrokeInput::ToolType::kMouse, canonical_position, time_diff));
+  auto result = state.inputs.back().Append(
+      CreateInkStrokeInput(tool_type, canonical_position, time_diff));
   CHECK(result.ok());
 }
 

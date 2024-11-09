@@ -902,31 +902,55 @@ class PdfInkModuleStrokeTest : public PdfInkModuleTest {
 TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithMouseIfNotEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/false);
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
 }
 
 TEST_F(PdfInkModuleStrokeTest, AnnotationWithMouseIfEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+  EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
 }
 
 TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithTouchIfNotEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeTouchCheckTest(/*annotation_mode_enabled=*/false);
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
 }
 
 TEST_F(PdfInkModuleStrokeTest, AnnotationWithTouchIfEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeTouchCheckTest(/*annotation_mode_enabled=*/true);
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  EXPECT_EQ(3, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
 }
 
 TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithMultiTouchIfNotEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeMultiTouchCheckTest(/*annotation_mode_enabled=*/false);
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
 }
 
 TEST_F(PdfInkModuleStrokeTest, NoAnnotationWithMultiTouchIfEnabled) {
   InitializeSimpleSinglePageBasicLayout();
   RunStrokeMultiTouchCheckTest(/*annotation_mode_enabled=*/true);
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kMouse));
+  EXPECT_EQ(0, ink_module().GetInputOfTypeCountForPageForTesting(
+                   /*page_index=*/0, ink::StrokeInput::ToolType::kTouch));
 }
 
 TEST_F(PdfInkModuleStrokeTest, CanonicalAnnotationPoints) {

@@ -23,6 +23,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/ink/src/ink/geometry/modeled_shape.h"
 #include "third_party/ink/src/ink/strokes/in_progress_stroke.h"
+#include "third_party/ink/src/ink/strokes/input/stroke_input.h"
 #include "third_party/ink/src/ink/strokes/input/stroke_input_batch.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -169,6 +170,13 @@ class PdfInkModule {
   DocumentStrokeInputPointsMap GetVisibleStrokesInputPositionsForTesting()
       const;
 
+  // For testing only. Returns the number of stroke inputs of a particular
+  // `tool_type` for a given page at `page_index`. The `page_index` must be
+  // non-negative.
+  int GetInputOfTypeCountForPageForTesting(
+      int page_index,
+      ink::StrokeInput::ToolType tool_type) const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(PdfInkModuleTest, HandleSetAnnotationModeMessage);
 
@@ -260,12 +268,18 @@ class PdfInkModule {
   bool OnTouchEnd(const blink::WebTouchEvent& event);
   bool OnTouchMove(const blink::WebTouchEvent& event);
 
-  // Return values have the same semantics as OnMouse()* above.
-  bool StartStroke(const gfx::PointF& position, base::TimeTicks timestamp);
-  bool ContinueStroke(const gfx::PointF& position, base::TimeTicks timestamp);
-  bool FinishStroke(const gfx::PointF& position, base::TimeTicks timestamp);
+  // Return values have the same semantics as On{Mouse,Touch}*() above.
+  bool StartStroke(const gfx::PointF& position,
+                   base::TimeTicks timestamp,
+                   ink::StrokeInput::ToolType tool_type);
+  bool ContinueStroke(const gfx::PointF& position,
+                      base::TimeTicks timestamp,
+                      ink::StrokeInput::ToolType tool_type);
+  bool FinishStroke(const gfx::PointF& position,
+                    base::TimeTicks timestamp,
+                    ink::StrokeInput::ToolType tool_type);
 
-  // Return values have the same semantics as OnMouse*() above.
+  // Return values have the same semantics as On{Mouse,Touch}*() above.
   bool StartEraseStroke(const gfx::PointF& position);
   bool ContinueEraseStroke(const gfx::PointF& position);
   bool FinishEraseStroke(const gfx::PointF& position);
@@ -320,10 +334,11 @@ class PdfInkModule {
       int page_index);
 
   // Helper to convert `position` to a canonical position and record it into
-  // `current_tool_state_` for the indicated time. Can only be called when
-  // drawing.
+  // `current_tool_state_` for the indicated `timestamp` and `tool_type`.
+  // Can only be called when drawing.
   void RecordStrokePosition(const gfx::PointF& position,
-                            base::TimeTicks timestamp);
+                            base::TimeTicks timestamp,
+                            ink::StrokeInput::ToolType tool_type);
 
   void ApplyUndoRedoCommands(const PdfInkUndoRedoModel::Commands& commands);
   void ApplyUndoRedoCommandsHelper(std::set<PdfInkUndoRedoModel::IdType> ids,
