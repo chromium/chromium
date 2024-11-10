@@ -13,13 +13,13 @@
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/overlay_transform.h"
 
@@ -31,7 +31,7 @@ typedef struct ASurfaceTransaction ASurfaceTransaction;
 namespace gfx {
 class ColorSpace;
 
-class GFX_EXPORT SurfaceControl {
+class COMPONENT_EXPORT(GFX) SurfaceControl {
  public:
   // Check if the platform is capable of supporting the low-level SurfaceControl
   // API. See also gpu/config/gpu_util's GetAndroidSurfaceControlFeatureStatus
@@ -65,13 +65,13 @@ class GFX_EXPORT SurfaceControl {
   static bool SupportsOnCommit();
 
   // Returns true if tagging a transaction with vsync id is supported.
-  static GFX_EXPORT bool SupportsSetFrameTimeline();
+  static COMPONENT_EXPORT(GFX) bool SupportsSetFrameTimeline();
 
   // Returns true if APIs to convert Java SurfaceControl to ASurfaceControl.
-  static GFX_EXPORT bool SupportsSurfacelessControl();
+  static COMPONENT_EXPORT(GFX) bool SupportsSurfacelessControl();
 
   // Returns true if API to enable back pressure is supported.
-  static GFX_EXPORT bool SupportsSetEnableBackPressure();
+  static COMPONENT_EXPORT(GFX) bool SupportsSetEnableBackPressure();
 
   // Applies transaction. Used to emulate webview functor interface, where we
   // pass raw ASurfaceTransaction object. For use inside Chromium use
@@ -80,7 +80,7 @@ class GFX_EXPORT SurfaceControl {
 
   static void SetStubImplementationForTesting();
 
-  class GFX_EXPORT Surface : public base::RefCounted<Surface> {
+  class COMPONENT_EXPORT(GFX) Surface : public base::RefCounted<Surface> {
    public:
     // Wraps ASurfaceControl, but doesn't transfer ownership. Will not release
     // in dtor.
@@ -105,7 +105,7 @@ class GFX_EXPORT SurfaceControl {
     raw_ptr<ASurfaceControl> owned_surface_ = nullptr;
   };
 
-  struct GFX_EXPORT SurfaceStats {
+  struct COMPONENT_EXPORT(GFX) SurfaceStats {
     SurfaceStats();
     ~SurfaceStats();
 
@@ -119,7 +119,7 @@ class GFX_EXPORT SurfaceControl {
     base::ScopedFD fence;
   };
 
-  struct GFX_EXPORT TransactionStats {
+  struct COMPONENT_EXPORT(GFX) TransactionStats {
    public:
     TransactionStats();
 
@@ -138,7 +138,7 @@ class GFX_EXPORT SurfaceControl {
     base::TimeTicks latch_time;
   };
 
-  class GFX_EXPORT Transaction {
+  class COMPONENT_EXPORT(GFX) Transaction {
    public:
     Transaction();
 

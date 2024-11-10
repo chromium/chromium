@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/i18n/rtl.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/ubidi_deleter.h"
 
 namespace ui {
@@ -20,7 +20,7 @@ namespace gfx {
 // A simple wrapper class for the bidirectional iterator of ICU.
 // This class uses the bidirectional iterator of ICU to split a line of
 // bidirectional texts into visual runs in its display order.
-class GFX_EXPORT BiDiLineIterator {
+class COMPONENT_EXPORT(GFX) BiDiLineIterator {
  public:
   BiDiLineIterator();
 

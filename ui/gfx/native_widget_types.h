@@ -8,10 +8,10 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
+#include "base/component_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "ui/gfx/gfx_export.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -131,7 +131,7 @@ using NativeEvent = base::apple::OwnedNSEvent;
 // function call (GetNativeNSView or GetNativeNSWindow) to retrieve the
 // underlying NSView or NSWindow <https://crbug.com/893719>. These are wrapper
 // classes only and do not maintain any ownership, thus the __unsafe_unretained.
-class GFX_EXPORT NativeView {
+class COMPONENT_EXPORT(GFX) NativeView {
  public:
   constexpr NativeView() = default;
   // TODO(ccameron): Make this constructor explicit.
@@ -162,7 +162,7 @@ class GFX_EXPORT NativeView {
   RAW_PTR_EXCLUSION NSView* ns_view_ = nullptr;
 #endif
 };
-class GFX_EXPORT NativeWindow {
+class COMPONENT_EXPORT(GFX) NativeWindow {
  public:
   constexpr NativeWindow() = default;
   // TODO(ccameron): Make this constructor explicit.

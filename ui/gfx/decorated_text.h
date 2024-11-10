@@ -8,17 +8,17 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "ui/gfx/font.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/range/range.h"
 
 namespace gfx {
 
 // Encapsulates styling information for some given text.
-struct GFX_EXPORT DecoratedText {
+struct COMPONENT_EXPORT(GFX) DecoratedText {
   // Describes the various text decoration attributes applicable to a given
   // range of text.
-  struct GFX_EXPORT RangedAttribute {
+  struct COMPONENT_EXPORT(GFX) RangedAttribute {
     // Disallow default construction of Font, since that's slow.
     RangedAttribute() = delete;
     RangedAttribute(const Range& range, const Font& font);

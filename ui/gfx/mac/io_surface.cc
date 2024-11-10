@@ -355,8 +355,8 @@ void IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
   }
 }
 
-GFX_EXPORT base::apple::ScopedCFTypeRef<IOSurfaceRef>
-IOSurfaceMachPortToIOSurface(
+COMPONENT_EXPORT(GFX)
+base::apple::ScopedCFTypeRef<IOSurfaceRef> IOSurfaceMachPortToIOSurface(
     ScopedRefCountedIOSurfaceMachPort io_surface_mach_port) {
   base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface;
   if (!io_surface_mach_port) {

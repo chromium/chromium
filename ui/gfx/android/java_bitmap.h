@@ -9,10 +9,10 @@
 #include <stdint.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
@@ -31,7 +31,7 @@ enum BitmapFormat {
 // This class wraps a JNI AndroidBitmap object to make it easier to use. It
 // handles locking and unlocking of the underlying pixels, along with wrapping
 // various JNI methods.
-class GFX_EXPORT JavaBitmap {
+class COMPONENT_EXPORT(GFX) JavaBitmap {
  public:
   explicit JavaBitmap(const base::android::JavaRef<jobject>& bitmap);
 
@@ -64,17 +64,20 @@ enum class OomBehavior {
 // Converts |skbitmap| to a Java-backed bitmap (android.graphics.Bitmap).
 // Note: |skbitmap| is assumed to be non-null, non-empty and one of RGBA_8888 or
 // RGB_565 formats.
-GFX_EXPORT base::android::ScopedJavaLocalRef<jobject> ConvertToJavaBitmap(
+COMPONENT_EXPORT(GFX)
+base::android::ScopedJavaLocalRef<jobject> ConvertToJavaBitmap(
     const SkBitmap& skbitmap,
     OomBehavior reaction = OomBehavior::kCrashOnOom);
 
 // Converts |bitmap| to an SkBitmap of the same size and format.
 // Note: |jbitmap| is assumed to be non-null, non-empty and of format RGBA_8888.
-GFX_EXPORT SkBitmap CreateSkBitmapFromJavaBitmap(const JavaBitmap& jbitmap);
+COMPONENT_EXPORT(GFX)
+SkBitmap CreateSkBitmapFromJavaBitmap(const JavaBitmap& jbitmap);
 
 // Returns a Skia color type value for the requested input java Bitmap.Config.
-GFX_EXPORT SkColorType
-ConvertToSkiaColorType(const base::android::JavaRef<jobject>& jbitmap_config);
+COMPONENT_EXPORT(GFX)
+SkColorType ConvertToSkiaColorType(
+    const base::android::JavaRef<jobject>& jbitmap_config);
 
 }  // namespace gfx
 
@@ -83,15 +86,15 @@ namespace jni_zero {
 // Note: |j_bitmap| is assumed to be non-null, non-empty and of format
 // RGBA_8888.
 template <>
-GFX_EXPORT SkBitmap FromJniType<SkBitmap>(JNIEnv* env,
-                                          const JavaRef<jobject>& j_bitmap);
+COMPONENT_EXPORT(GFX)
+SkBitmap FromJniType<SkBitmap>(JNIEnv* env, const JavaRef<jobject>& j_bitmap);
 
 // Converts |skbitmap| to a Java-backed bitmap (android.graphics.Bitmap).
 // Note: return nullptr jobject if |skbitmap| is null or empty.
 template <>
-GFX_EXPORT ScopedJavaLocalRef<jobject> ToJniType<SkBitmap>(
-    JNIEnv* env,
-    const SkBitmap& skbitmap);
+COMPONENT_EXPORT(GFX)
+ScopedJavaLocalRef<jobject> ToJniType<SkBitmap>(JNIEnv* env,
+                                                const SkBitmap& skbitmap);
 }  // namespace jni_zero
 
 #endif  // UI_GFX_ANDROID_JAVA_BITMAP_H_

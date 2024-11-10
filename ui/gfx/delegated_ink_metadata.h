@@ -7,10 +7,10 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
@@ -28,7 +28,7 @@ inline constexpr int kMaximumNumberOfDelegatedInkPoints = 128;
 //
 // Explainer for the feature:
 // https://github.com/WICG/ink-enhancement/blob/main/README.md
-class GFX_EXPORT DelegatedInkMetadata {
+class COMPONENT_EXPORT(GFX) DelegatedInkMetadata {
  public:
   DelegatedInkMetadata() = default;
   bool operator==(const DelegatedInkMetadata& o) const = default;

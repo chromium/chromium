@@ -9,10 +9,10 @@
 #include <optional>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
@@ -31,7 +31,7 @@ class DelegatedInkPointDataView;
 //
 // Explainer for the feature:
 // https://github.com/WICG/ink-enhancement/blob/main/README.md
-class GFX_EXPORT DelegatedInkPoint {
+class COMPONENT_EXPORT(GFX) DelegatedInkPoint {
  public:
   DelegatedInkPoint() = default;
   bool operator==(const DelegatedInkPoint& o) const = default;

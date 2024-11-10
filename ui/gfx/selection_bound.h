@@ -5,9 +5,9 @@
 #ifndef UI_GFX_SELECTION_BOUND_H_
 #define UI_GFX_SELECTION_BOUND_H_
 
+#include "base/component_export.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
@@ -15,7 +15,7 @@ class Rect;
 class RectF;
 
 // Bound of a selection end-point.
-class GFX_EXPORT SelectionBound {
+class COMPONENT_EXPORT(GFX) SelectionBound {
  public:
   enum Type {
     // The LEFT and RIGHT hand side of a selection bound.
@@ -80,20 +80,22 @@ class GFX_EXPORT SelectionBound {
   bool visible_;
 };
 
-GFX_EXPORT bool operator==(const SelectionBound& lhs,
-                           const SelectionBound& rhs);
-GFX_EXPORT bool operator!=(const SelectionBound& lhs,
-                           const SelectionBound& rhs);
+COMPONENT_EXPORT(GFX)
+bool operator==(const SelectionBound& lhs, const SelectionBound& rhs);
+COMPONENT_EXPORT(GFX)
+bool operator!=(const SelectionBound& lhs, const SelectionBound& rhs);
 
-GFX_EXPORT gfx::Rect RectBetweenSelectionBounds(const SelectionBound& b1,
-                                                const SelectionBound& b2);
+COMPONENT_EXPORT(GFX)
+gfx::Rect RectBetweenSelectionBounds(const SelectionBound& b1,
+                                     const SelectionBound& b2);
 
-GFX_EXPORT gfx::RectF RectFBetweenSelectionBounds(const SelectionBound& b1,
-                                                  const SelectionBound& b2);
+COMPONENT_EXPORT(GFX)
+gfx::RectF RectFBetweenSelectionBounds(const SelectionBound& b1,
+                                       const SelectionBound& b2);
 
-GFX_EXPORT gfx::RectF RectFBetweenVisibleSelectionBounds(
-    const SelectionBound& b1,
-    const SelectionBound& b2);
+COMPONENT_EXPORT(GFX)
+gfx::RectF RectFBetweenVisibleSelectionBounds(const SelectionBound& b1,
+                                              const SelectionBound& b2);
 
 // This is declared here for use in gtest-based unit tests but is defined in
 // the //ui/gfx:test_support target. Depend on that to use this in your unit

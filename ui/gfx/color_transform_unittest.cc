@@ -7,18 +7,19 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "ui/gfx/color_transform.h"
+
 #include <tuple>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/logging.h"
 #include "base/test/scoped_feature_list.h"
 #include "skia/ext/skcolorspace_trfn.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/effects/SkRuntimeEffect.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/skia_color_space_util.h"
 #include "ui/gfx/test/icc_profiles.h"
@@ -30,7 +31,7 @@ constexpr float kMathEpsilon = 0.001f;
 constexpr float kMathLargeEpsilon = 0.025f;
 
 // Internal functions, exposted for testing.
-GFX_EXPORT Transform GetTransferMatrix(ColorSpace::MatrixID id);
+COMPONENT_EXPORT(GFX) Transform GetTransferMatrix(ColorSpace::MatrixID id);
 
 ColorSpace::PrimaryID all_primaries[] = {
     ColorSpace::PrimaryID::BT709,        ColorSpace::PrimaryID::BT470M,

@@ -61,7 +61,7 @@ namespace internal {
 class TextRunList;
 
 // Internal helper class used by derived classes to draw text through Skia.
-class GFX_EXPORT SkiaTextRenderer {
+class COMPONENT_EXPORT(GFX) SkiaTextRenderer {
  public:
   explicit SkiaTextRenderer(Canvas* canvas);
   SkiaTextRenderer(const SkiaTextRenderer&) = delete;
@@ -228,7 +228,7 @@ void ApplyRenderParams(const FontRenderParams& params,
 // visual layout. Support is built in for a cursor, selections, simple styling,
 // complex scripts, and bi-directional text. Implementations provide mechanisms
 // for rendering and translation between logical and visual data.
-class GFX_EXPORT RenderText {
+class COMPONENT_EXPORT(GFX) RenderText {
  public:
 #if BUILDFLAG(IS_APPLE)
   // On Mac, while selecting text if the cursor is outside the vertical text

@@ -4,7 +4,6 @@
 
 component("geometry") {
   sources = [
-    "../gfx_export.h",
     "axis_transform2d.cc",
     "axis_transform2d.h",
     "box_f.cc",

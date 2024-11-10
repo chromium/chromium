@@ -7,7 +7,7 @@
 
 #include <sys/types.h>
 
-#include "ui/gfx/gfx_export.h"
+#include "base/component_export.h"
 
 extern "C" {
 typedef struct AChoreographer AChoreographer;
@@ -47,8 +47,8 @@ using pAChoreographerFrameCallbackData_getFrameTimelineDeadlineNanos =
 
 namespace gfx {
 
-struct GFX_EXPORT AChoreographerCompat {
-  static GFX_EXPORT const AChoreographerCompat& Get();
+struct COMPONENT_EXPORT(GFX) AChoreographerCompat {
+  static COMPONENT_EXPORT(GFX) const AChoreographerCompat& Get();
 
   bool supported = true;
   pAChoreographer_getInstance AChoreographer_getInstanceFn = nullptr;
@@ -63,8 +63,8 @@ struct GFX_EXPORT AChoreographerCompat {
   AChoreographerCompat();
 };
 
-struct GFX_EXPORT AChoreographerCompat33 {
-  static GFX_EXPORT const AChoreographerCompat33& Get();
+struct COMPONENT_EXPORT(GFX) AChoreographerCompat33 {
+  static COMPONENT_EXPORT(GFX) const AChoreographerCompat33& Get();
 
   bool supported = true;
   pAChoreographer_postVsyncCallback AChoreographer_postVsyncCallbackFn =

@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
@@ -51,7 +52,7 @@ class Vector2d;
 // source and destination colors are combined. Unless otherwise specified,
 // the variant that does not take a SkBlendMode uses a transfer mode
 // of kSrcOver_Mode.
-class GFX_EXPORT Canvas {
+class COMPONENT_EXPORT(GFX) Canvas {
  public:
   enum {
     // Specifies the alignment for text rendered with the DrawStringRect method.

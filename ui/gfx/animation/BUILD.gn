@@ -74,7 +74,6 @@ component("animation") {
     "//base",
     "//build:chromeos_buildflags",
     "//skia",
-    "//ui/gfx:gfx_export",
     "//ui/gfx:gfx_switches",
     "//ui/gfx/geometry",
     "//ui/gfx/geometry:geometry_skia",

@@ -8,9 +8,9 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/win/msg_util.h"
 
@@ -37,7 +37,7 @@ class MessageMapInterface {
 //  Windows.
 //
 ///////////////////////////////////////////////////////////////////////////////
-class GFX_EXPORT WindowImpl : public MessageMapInterface {
+class COMPONENT_EXPORT(GFX) WindowImpl : public MessageMapInterface {
  public:
   // |debugging_id| is reported with crashes to help attribute the code that
   // created the WindowImpl.

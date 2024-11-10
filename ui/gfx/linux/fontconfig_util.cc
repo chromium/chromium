@@ -48,7 +48,7 @@ constexpr base::FilePath::CharType kImageloaderMountBase[] =
 // configuration reference counter is incremented to avoid the deletion of the
 // structure while being used. This class is single-threaded and should only be
 // used on the UI-Thread.
-class GFX_EXPORT GlobalFontConfig {
+class COMPONENT_EXPORT(GFX) GlobalFontConfig {
  public:
   GlobalFontConfig() {
     TRACE_EVENT0("ui", "GlobalFontConfig::GlobalFontConfig");

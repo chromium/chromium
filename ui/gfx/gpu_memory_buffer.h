@@ -8,12 +8,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/component_export.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "build/build_config.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/gfx_export.h"
 
 #if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "ui/gfx/native_pixmap_handle.h"
@@ -58,7 +58,7 @@ using DXGIHandleToken = base::TokenType<class DXGIHandleTokenTypeMarker>;
 // TODO(crbug.com/40584691): Convert this to a proper class to ensure the state
 // is always consistent, particularly that the only one handle is set at the
 // same time and it corresponds to |type|.
-struct GFX_EXPORT GpuMemoryBufferHandle {
+struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
   static constexpr GpuMemoryBufferId kInvalidId = GpuMemoryBufferId(-1);
 
   GpuMemoryBufferHandle();
@@ -91,7 +91,7 @@ struct GFX_EXPORT GpuMemoryBufferHandle {
 // This interface typically correspond to a type of shared memory that is also
 // shared with the GPU. A GPU memory buffer can be written to directly by
 // regular CPU code, but can also be read by the GPU.
-class GFX_EXPORT GpuMemoryBuffer {
+class COMPONENT_EXPORT(GFX) GpuMemoryBuffer {
  public:
   virtual ~GpuMemoryBuffer() {}
 
