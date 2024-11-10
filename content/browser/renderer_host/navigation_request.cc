@@ -11022,10 +11022,28 @@ void NavigationRequest::SanitizeDocumentIsolationPolicyHeader() {
     return;
   }
 
-  // Set DocumentIsolationPolicy to its default value if the feature is not
-  // enabled.
-  if (!base::FeatureList::IsEnabled(
-          network::features::kDocumentIsolationPolicy)) {
+  // First check if the document we're navigating to can be used
+  // Document-Isolation-Policy. This is the case if the DocumentIsolationPolicy
+  // feature is enabled.
+  bool can_use_dip =
+      base::FeatureList::IsEnabled(network::features::kDocumentIsolationPolicy);
+
+  // If the Origin Trial for DocumentIsolationPolicy is
+  // enabled and the navigation has a valid Origin Trial token, the document can
+  // also use Document-Isolation-Policy.
+  if (base::FeatureList::IsEnabled(
+          features::kDocumentIsolationPolicyOriginTrial) &&
+      response_head_->headers.get()) {
+    bool has_valid_ot_token =
+        blink::TrialTokenValidator().RequestEnablesFeature(
+            GetURL(), response_head_->headers.get(), "DocumentIsolationPolicy",
+            base::Time::Now());
+    can_use_dip |= has_valid_ot_token;
+  }
+
+  // If the document cannot use DocumentIsolationPolicy, set its
+  // DocumentIsolationPolicy to its default value.
+  if (!can_use_dip) {
     response_head_->parsed_headers->document_isolation_policy =
         network::DocumentIsolationPolicy();
     return;

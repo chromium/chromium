@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -1772,6 +1773,132 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
 
 // TODO(crbug.com/349104385): Add a test checking that the
 // Document-Isolation-Policy header is ignored on redirect responses.
+
+class DocumentIsolationPolicyOriginTrialBrowserTest
+    : public base::test::WithFeatureOverride,
+      public ContentBrowserTest {
+ public:
+  DocumentIsolationPolicyOriginTrialBrowserTest()
+      : base::test::WithFeatureOverride(
+            features::kDocumentIsolationPolicyOriginTrial) {}
+
+  // Origin Trials key generated with:
+  //
+  // tools/origin_trials/generate_token.py --expire-days 3000 --version 3
+  // https://dip.security:9999 DocumentIsolationPolicy
+  static std::string OriginTrialToken() {
+    return "Az6HDJNOX2Q2dxlqF5Nqd+VpPghvLYWzBtdJju+"
+           "eejQRTjW4XA4TJmLBgrHCZ22rnsiKr5iOg0iY4BMUwuRuSAYAAABjeyJvcmlnaW4iOi"
+           "AiaHR0cHM6Ly9kaXAuc2VjdXJpdHk6OTk5OSIsICJmZWF0dXJlIjogIkRvY3VtZW50S"
+           "XNvbGF0aW9uUG9saWN5IiwgImV4cGlyeSI6IDE5OTAyNzM3NjF9";
+  }
+
+  // The OriginTrial token is bound to a given origin. Since the
+  // EmbeddedTestServer's port changes after every test run, it can't be used.
+  // As a result, response must be served using a URLLoaderInterceptor.
+  GURL OriginTrialURL() { return GURL("https://dip.security:9999"); }
+
+  WebContentsImpl* web_contents() const {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+  RenderFrameHostImpl* current_frame_host() {
+    return web_contents()->GetPrimaryMainFrame();
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  GURL OtherURL() { return GURL("https://a.test"); }
+
+ private:
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    SetupCrossSiteRedirector(https_server());
+    net::test_server::RegisterDefaultHandlers(&https_server_);
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ContentBrowserTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    ContentBrowserTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
+  ContentMockCertVerifier mock_cert_verifier_;
+  net::EmbeddedTestServer https_server_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    DocumentIsolationPolicyOriginTrialBrowserTest);
+
+IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyOriginTrialBrowserTest,
+                       ValidToken) {
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        DCHECK_EQ(params->url_request.url, OriginTrialURL());
+        URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\n"
+            "Content-type: text/html\n"
+            "Document-Isolation-Policy: isolate-and-require-corp\n"
+            "Origin-Trial: " +
+                OriginTrialToken() + "\n\n",
+            "", params->client.get());
+        return true;
+      }));
+  EXPECT_TRUE(NavigateToURL(shell(), OriginTrialURL()));
+#if !BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(
+      current_frame_host()
+          ->policy_container_host()
+          ->policies()
+          .document_isolation_policy.value,
+      IsParamFeatureEnabled()
+          ? network::mojom::DocumentIsolationPolicyValue::kIsolateAndRequireCorp
+          : network::mojom::DocumentIsolationPolicyValue::kNone);
+#else
+  EXPECT_EQ(current_frame_host()
+                ->policy_container_host()
+                ->policies()
+                .document_isolation_policy.value,
+            network::mojom::DocumentIsolationPolicyValue::kNone);
+#endif
+}
+
+IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyOriginTrialBrowserTest,
+                       TokenOriginMismatched) {
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        DCHECK_EQ(params->url_request.url, OtherURL());
+        URLLoaderInterceptor::WriteResponse(
+            "HTTP/1.1 200 OK\n"
+            "Content-type: text/html\n"
+            "Document-Isolation-Policy: isolate-and-require-corp\n"
+            "Origin-Trial: " +
+                OriginTrialToken() + "\n\n",
+            "", params->client.get());
+        return true;
+      }));
+  EXPECT_TRUE(NavigateToURL(shell(), OtherURL()));
+  EXPECT_EQ(current_frame_host()
+                ->policy_container_host()
+                ->policies()
+                .document_isolation_policy.value,
+            network::mojom::DocumentIsolationPolicyValue::kNone);
+}
 
 static auto kTestParams =
     testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),

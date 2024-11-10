@@ -10870,6 +10870,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5184" label="CSSSelectorPseudoFileSelectorButton"/>
   <int value="5185" label="WebAuthnGetClientCapabilities"/>
   <int value="5186" label="VisitedColumnRuleColor"/>
+  <int value="5187" label="DocumentIsolationPolicyRequireCorp"/>
+  <int value="5188" label="DocumentIsolationPolicyCredentialless"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

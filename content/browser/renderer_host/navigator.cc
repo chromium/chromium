@@ -70,6 +70,8 @@ using CrossOriginOpenerPolicyValue =
     network::mojom::CrossOriginOpenerPolicyValue;
 using CrossOriginEmbedderPolicyValue =
     network::mojom::CrossOriginEmbedderPolicyValue;
+using DocumentIsolationPolicyValue =
+    network::mojom::DocumentIsolationPolicyValue;
 
 // Map Cross-Origin-Opener-Policy header value to its corresponding WebFeature.
 std::optional<WebFeature> FeatureCoop(CrossOriginOpenerPolicyValue value) {
@@ -137,6 +139,18 @@ std::optional<WebFeature> FeatureCoepRO(CrossOriginEmbedderPolicyValue value) {
   }
 }
 
+// Map Document-Isolation-Policy header value to its corresponding WebFeature.
+std::optional<WebFeature> FeatureDip(DocumentIsolationPolicyValue value) {
+  switch (value) {
+    case DocumentIsolationPolicyValue::kNone:
+      return std::nullopt;
+    case DocumentIsolationPolicyValue::kIsolateAndRequireCorp:
+      return WebFeature::kDocumentIsolationPolicyRequireCorp;
+    case DocumentIsolationPolicyValue::kIsolateAndCredentialless:
+      return WebFeature::kDocumentIsolationPolicyCredentialless;
+  }
+}
+
 ukm::SourceId GetPageUkmSourceId(RenderFrameHost& rfh) {
   // RenderFrameHost::GetPageUkmSourceId does not support being called in the
   // prerendering state, because our data collection policy disallows collecting
@@ -178,6 +192,11 @@ void RecordWebPlatformSecurityMetrics(RenderFrameHostImpl* rfh,
   // [COEP]
   log(FeatureCoep(rfh->cross_origin_embedder_policy().value));
   log(FeatureCoepRO(rfh->cross_origin_embedder_policy().report_only_value));
+
+  // Document-Isolation-Policy
+  log(FeatureDip(rfh->policy_container_host()
+                     ->policies()
+                     .document_isolation_policy.value));
 
   // Record iframes embedded in cross-origin contexts without a CSP
   // frame-ancestor directive.

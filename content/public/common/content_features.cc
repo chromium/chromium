@@ -399,6 +399,11 @@ BASE_FEATURE(kDisconnectExtensionMessagePortWhenPageEntersBFCache,
              "DisconnectExtensionMessagePortWhenPageEntersBFCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the Origin Trial of Document-Isolation-Policy.
+BASE_FEATURE(kDocumentIsolationPolicyOriginTrial,
+             "DocumentIsolationPolicyOriginTrial",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable drawing under System Bars within DisplayCutout.
 BASE_FEATURE(kDrawCutoutEdgeToEdge,
              "DrawCutoutEdgeToEdge",
