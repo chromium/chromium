@@ -356,13 +356,6 @@ scoped_refptr<StringImpl> StringImpl::Create8BitIfPossible(
   return string;
 }
 
-scoped_refptr<StringImpl> StringImpl::Create(const LChar* string) {
-  if (!string)
-    return empty_;
-  std::string_view view(reinterpret_cast<const char*>(string));
-  return Create(base::as_byte_span(view));
-}
-
 bool StringImpl::ContainsOnlyWhitespaceOrEmpty() {
   // FIXME: The definition of whitespace here includes a number of characters
   // that are not whitespace from the point of view of LayoutText; I wonder if

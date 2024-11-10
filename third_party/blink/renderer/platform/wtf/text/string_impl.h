@@ -171,10 +171,6 @@ class WTF_EXPORT StringImpl {
       base::span<const char> s) {
     return Create(base::as_bytes(s));
   }
-  static scoped_refptr<StringImpl> Create(const LChar*);
-  ALWAYS_INLINE static scoped_refptr<StringImpl> Create(const char* s) {
-    return Create(reinterpret_cast<const LChar*>(s));
-  }
 
   // Create a StringImpl with space for `length` LChar characters. `data` will
   // be the character data allocated, and _must_be_completely_filled_in_ by the

@@ -38,7 +38,8 @@
 namespace WTF {
 
 TEST(StringImplTest, Create8Bit) {
-  scoped_refptr<StringImpl> test_string_impl = StringImpl::Create("1224");
+  scoped_refptr<StringImpl> test_string_impl =
+      StringImpl::Create(base::span_from_cstring("1224"));
   EXPECT_TRUE(test_string_impl->Is8Bit());
 }
 
@@ -51,32 +52,48 @@ TEST(StringImplTest, Latin1CaseFoldTable) {
 }
 
 TEST(StringImplTest, LowerASCII) {
-  scoped_refptr<StringImpl> test_string_impl = StringImpl::Create("link");
+  scoped_refptr<StringImpl> test_string_impl =
+      StringImpl::Create(base::span_from_cstring("link"));
   EXPECT_TRUE(test_string_impl->Is8Bit());
-  EXPECT_TRUE(StringImpl::Create("a\xE1")->Is8Bit());
+  EXPECT_TRUE(StringImpl::Create(base::span_from_cstring("a\xE1"))->Is8Bit());
 
-  EXPECT_TRUE(Equal(test_string_impl.get(),
-                    StringImpl::Create("link")->LowerASCII().get()));
-  EXPECT_TRUE(Equal(test_string_impl.get(),
-                    StringImpl::Create("LINK")->LowerASCII().get()));
-  EXPECT_TRUE(Equal(test_string_impl.get(),
-                    StringImpl::Create("lInk")->LowerASCII().get()));
+  EXPECT_TRUE(Equal(
+      test_string_impl.get(),
+      StringImpl::Create(base::span_from_cstring("link"))->LowerASCII().get()));
+  EXPECT_TRUE(Equal(
+      test_string_impl.get(),
+      StringImpl::Create(base::span_from_cstring("LINK"))->LowerASCII().get()));
+  EXPECT_TRUE(Equal(
+      test_string_impl.get(),
+      StringImpl::Create(base::span_from_cstring("lInk"))->LowerASCII().get()));
 
   CaseMap case_map(g_empty_atom);
-  EXPECT_TRUE(Equal(case_map.ToLower(StringImpl::Create("LINK")).Impl(),
-                    StringImpl::Create("LINK")->LowerASCII().get()));
-  EXPECT_TRUE(Equal(case_map.ToLower(StringImpl::Create("lInk")).Impl(),
-                    StringImpl::Create("lInk")->LowerASCII().get()));
+  EXPECT_TRUE(Equal(
+      case_map.ToLower(StringImpl::Create(base::span_from_cstring("LINK")))
+          .Impl(),
+      StringImpl::Create(base::span_from_cstring("LINK"))->LowerASCII().get()));
+  EXPECT_TRUE(Equal(
+      case_map.ToLower(StringImpl::Create(base::span_from_cstring("lInk")))
+          .Impl(),
+      StringImpl::Create(base::span_from_cstring("lInk"))->LowerASCII().get()));
 
-  EXPECT_TRUE(Equal(StringImpl::Create("a\xE1").get(),
-                    StringImpl::Create("A\xE1")->LowerASCII().get()));
-  EXPECT_TRUE(Equal(StringImpl::Create("a\xC1").get(),
-                    StringImpl::Create("A\xC1")->LowerASCII().get()));
+  EXPECT_TRUE(Equal(StringImpl::Create(base::span_from_cstring("a\xE1")).get(),
+                    StringImpl::Create(base::span_from_cstring("A\xE1"))
+                        ->LowerASCII()
+                        .get()));
+  EXPECT_TRUE(Equal(StringImpl::Create(base::span_from_cstring("a\xC1")).get(),
+                    StringImpl::Create(base::span_from_cstring("A\xC1"))
+                        ->LowerASCII()
+                        .get()));
 
-  EXPECT_FALSE(Equal(StringImpl::Create("a\xE1").get(),
-                     StringImpl::Create("a\xC1")->LowerASCII().get()));
-  EXPECT_FALSE(Equal(StringImpl::Create("A\xE1").get(),
-                     StringImpl::Create("A\xC1")->LowerASCII().get()));
+  EXPECT_FALSE(Equal(StringImpl::Create(base::span_from_cstring("a\xE1")).get(),
+                     StringImpl::Create(base::span_from_cstring("a\xC1"))
+                         ->LowerASCII()
+                         .get()));
+  EXPECT_FALSE(Equal(StringImpl::Create(base::span_from_cstring("A\xE1")).get(),
+                     StringImpl::Create(base::span_from_cstring("A\xC1"))
+                         ->LowerASCII()
+                         .get()));
 
   static const UChar kTest[4] = {0x006c, 0x0069, 0x006e, 0x006b};  // link
   static const UChar kTestCapitalized[4] = {0x004c, 0x0049, 0x004e,
@@ -108,32 +125,48 @@ TEST(StringImplTest, LowerASCII) {
 }
 
 TEST(StringImplTest, UpperASCII) {
-  scoped_refptr<StringImpl> test_string_impl = StringImpl::Create("LINK");
+  scoped_refptr<StringImpl> test_string_impl =
+      StringImpl::Create(base::span_from_cstring("LINK"));
   EXPECT_TRUE(test_string_impl->Is8Bit());
-  EXPECT_TRUE(StringImpl::Create("a\xE1")->Is8Bit());
+  EXPECT_TRUE(StringImpl::Create(base::span_from_cstring("a\xE1"))->Is8Bit());
 
-  EXPECT_TRUE(Equal(test_string_impl.get(),
-                    StringImpl::Create("link")->UpperASCII().get()));
-  EXPECT_TRUE(Equal(test_string_impl.get(),
-                    StringImpl::Create("LINK")->UpperASCII().get()));
-  EXPECT_TRUE(Equal(test_string_impl.get(),
-                    StringImpl::Create("lInk")->UpperASCII().get()));
+  EXPECT_TRUE(Equal(
+      test_string_impl.get(),
+      StringImpl::Create(base::span_from_cstring("link"))->UpperASCII().get()));
+  EXPECT_TRUE(Equal(
+      test_string_impl.get(),
+      StringImpl::Create(base::span_from_cstring("LINK"))->UpperASCII().get()));
+  EXPECT_TRUE(Equal(
+      test_string_impl.get(),
+      StringImpl::Create(base::span_from_cstring("lInk"))->UpperASCII().get()));
 
   CaseMap case_map(g_empty_atom);
-  EXPECT_TRUE(Equal(case_map.ToUpper(StringImpl::Create("LINK")).Impl(),
-                    StringImpl::Create("LINK")->UpperASCII().get()));
-  EXPECT_TRUE(Equal(case_map.ToUpper(StringImpl::Create("lInk")).Impl(),
-                    StringImpl::Create("lInk")->UpperASCII().get()));
+  EXPECT_TRUE(Equal(
+      case_map.ToUpper(StringImpl::Create(base::span_from_cstring("LINK")))
+          .Impl(),
+      StringImpl::Create(base::span_from_cstring("LINK"))->UpperASCII().get()));
+  EXPECT_TRUE(Equal(
+      case_map.ToUpper(StringImpl::Create(base::span_from_cstring("lInk")))
+          .Impl(),
+      StringImpl::Create(base::span_from_cstring("lInk"))->UpperASCII().get()));
 
-  EXPECT_TRUE(Equal(StringImpl::Create("A\xE1").get(),
-                    StringImpl::Create("a\xE1")->UpperASCII().get()));
-  EXPECT_TRUE(Equal(StringImpl::Create("A\xC1").get(),
-                    StringImpl::Create("a\xC1")->UpperASCII().get()));
+  EXPECT_TRUE(Equal(StringImpl::Create(base::span_from_cstring("A\xE1")).get(),
+                    StringImpl::Create(base::span_from_cstring("a\xE1"))
+                        ->UpperASCII()
+                        .get()));
+  EXPECT_TRUE(Equal(StringImpl::Create(base::span_from_cstring("A\xC1")).get(),
+                    StringImpl::Create(base::span_from_cstring("a\xC1"))
+                        ->UpperASCII()
+                        .get()));
 
-  EXPECT_FALSE(Equal(StringImpl::Create("A\xE1").get(),
-                     StringImpl::Create("a\xC1")->UpperASCII().get()));
-  EXPECT_FALSE(Equal(StringImpl::Create("A\xE1").get(),
-                     StringImpl::Create("A\xC1")->UpperASCII().get()));
+  EXPECT_FALSE(Equal(StringImpl::Create(base::span_from_cstring("A\xE1")).get(),
+                     StringImpl::Create(base::span_from_cstring("a\xC1"))
+                         ->UpperASCII()
+                         .get()));
+  EXPECT_FALSE(Equal(StringImpl::Create(base::span_from_cstring("A\xE1")).get(),
+                     StringImpl::Create(base::span_from_cstring("A\xC1"))
+                         ->UpperASCII()
+                         .get()));
 
   static const UChar kTest[4] = {0x006c, 0x0069, 0x006e, 0x006b};  // link
   static const UChar kTestCapitalized[4] = {0x004c, 0x0049, 0x004e,
