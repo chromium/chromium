@@ -484,6 +484,10 @@ void LocalPasswordSetupBackAction() {
   test::OobeJS().ClickOnPath(kLocalPasswordSetupBackButton);
 }
 
+UIPath LocalPasswordSetupBackActionPath() {
+  return kLocalPasswordSetupBackButton;
+}
+
 void LocalPasswordSetupExpectFirstInput() {
   test::OobeJS().ExpectVisiblePath(kLocalPasswordSetupFirstInput);
 }

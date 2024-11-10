@@ -176,6 +176,7 @@ void LocalPasswordSetupExpectNextButton();
 void LocalPasswordSetupNextAction();
 void LocalPasswordSetupExpectBackButton();
 void LocalPasswordSetupBackAction();
+UIPath LocalPasswordSetupBackActionPath();
 void LocalPasswordSetupExpectFirstInput();
 void LocalPasswordSetupTypeFirstPassword(const std::string& pw);
 void LocalPasswordSetupExpectConfirmInput();

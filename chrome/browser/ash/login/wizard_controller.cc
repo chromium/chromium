@@ -2478,7 +2478,19 @@ void WizardController::OnLocalPasswordSetupScreenExit(
                LocalPasswordSetupScreen::GetResultString(result));
   switch (result) {
     case LocalPasswordSetupScreen::Result::kBack:
-      ShowPasswordSelectionScreen();
+      // Go back to the PasswordSelectionScreen if the user had a choice between
+      // local vs. online password.
+      if (!wizard_context_->knowledge_factor_setup.local_password_forced) {
+        ShowPasswordSelectionScreen();
+        return;
+      }
+
+      // The user could not choose between an online vs. local password because
+      // they went through a passwordless signin. In that case, going back is
+      // only possible for returning to the PinSetupScreen as a main factor.
+      CHECK_EQ(wizard_context_->knowledge_factor_setup.pin_setup_mode,
+               WizardContext::PinSetupMode::kUserChosePasswordInstead);
+      ShowPinSetupScreenAsMainFactor();
       return;
     case LocalPasswordSetupScreen::Result::kDone:
     case LocalPasswordSetupScreen::Result::kNotApplicable:

@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/screen_manager.h"
+#include "chrome/browser/ash/login/test/auth_ui_utils.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/local_password_setup_handler.h"
 #include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/pin_setup_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
@@ -259,7 +261,16 @@ class PinSetupScreenTest : public OobeBaseTest {
       ASSERT_TRUE(user_policy_mixin_.RequestPolicyUpdate());
       login_manager_mixin_.LoginAsNewEnterpriseUser();
     } else {
-      login_manager_mixin_.LoginAsNewRegularUser();
+      if (simulate_passwordless_signin_) {
+        auto user_context = LoginManagerMixin::CreateDefaultUserContext(
+            LoginManagerMixin::TestUserInfo(
+                AccountId::FromUserEmailGaiaId(test::kTestEmail,
+                                               test::kTestGaiaId),
+                /*factors=*/{}));
+        login_manager_mixin_.LoginAsNewRegularUser(std::move(user_context));
+      } else {
+        login_manager_mixin_.LoginAsNewRegularUser();
+      }
     }
 
     ASSERT_TRUE(cryptohome_recovery_setup_result_waiter_.Wait());
@@ -349,6 +360,10 @@ class PinSetupScreenTest : public OobeBaseTest {
  protected:
   // Whether to login as a regular user, or as an enterprise user.
   bool login_as_enterprise_ = false;
+
+  // Used for simulating that the user went through Gaia signin using a
+  // passwordless method.
+  bool simulate_passwordless_signin_ = false;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -813,6 +828,78 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactorEnterprise,
   TapSkipButton();
   ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
   CheckCredentialsWereCleared();
+}
+
+class PinSetupScreenTestAsMainFactorPasswordlessSignin
+    : public PinSetupScreenTestAsMainFactor {
+ public:
+  PinSetupScreenTestAsMainFactorPasswordlessSignin() {
+    simulate_passwordless_signin_ = true;
+  }
+  ~PinSetupScreenTestAsMainFactorPasswordlessSignin() override = default;
+};
+
+// Tests that the 'Back' button logic on the LocalPasswordSetupScreen can bring
+// the user back to PIN as a main factor setup when the user did not have an
+// opportunity to choose between an online vs. local password. This is the case
+// when the user goes through Gaia using a passwordless method.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactorPasswordlessSignin,
+                       BackButtonLogicWorks) {
+  ShowPinSetupScreen();
+  WaitForScreenShown();
+
+  // Skip the screen manually.
+  TapSkipButton();
+  ExpectExitResult(PinSetupScreen::Result::kUserChosePassword);
+
+  // The user did not go through Gaia using a password, thus they do not have
+  // the option to choose between an online vs. local password and land on the
+  // LocalPasswordSetupScreen directly.
+  OobeScreenWaiter(LocalPasswordSetupView::kScreenId).Wait();
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true,
+                              test::LocalPasswordSetupBackActionPath())
+      ->Wait();
+
+  // Clicking on 'Back' should bring us back to main factor PIN setup.
+  test::LocalPasswordSetupBackAction();
+  WaitForScreenShown();
+
+  // Skip again and verify the proper exit result and transition.
+  TapSkipButton();
+  ExpectExitResult(PinSetupScreen::Result::kUserChosePassword);
+  OobeScreenWaiter(LocalPasswordSetupView::kScreenId).Wait();
+}
+
+class PinSetupScreenTestAsMainFactorWithoutLoginSupportPasswordlessSignin
+    : public PinSetupScreenTestAsMainFactorWithoutLoginSupport {
+ public:
+  PinSetupScreenTestAsMainFactorWithoutLoginSupportPasswordlessSignin() {
+    simulate_passwordless_signin_ = true;
+  }
+
+  ~PinSetupScreenTestAsMainFactorWithoutLoginSupportPasswordlessSignin()
+      override = default;
+};
+
+// Without hardware support, the PIN screen is not shown for setting up a PIN
+// as the main factor. Additionally, when the user goes through Gaia without
+// using a password, they land directly on the LocalPasswordSetupScreen. In that
+// case, there isn't a back button.
+IN_PROC_BROWSER_TEST_F(
+    PinSetupScreenTestAsMainFactorWithoutLoginSupportPasswordlessSignin,
+    NoBackButtonOnLocalPasswordSetup) {
+  ShowPinSetupScreen();
+  WaitForScreenExit();
+
+  // Wait for the password selection screen to be surfaced.
+  ExpectSkipReason(PinSetupScreen::SkipReason::kUsupportedHardware);
+  ExpectExitResultAndMetric(
+      PinSetupScreen::Result::kNotApplicableAsPrimaryFactor);
+  OobeScreenWaiter(LocalPasswordSetupView::kScreenId).Wait();
+
+  // Expect the back button to be hidden.
+  test::OobeJS().ExpectHiddenPath(test::LocalPasswordSetupBackActionPath());
 }
 
 }  // namespace ash

@@ -21,8 +21,6 @@ UserAuthConfig::~UserAuthConfig() = default;
 
 UserAuthConfig UserAuthConfig::Create(
     std::initializer_list<ash::AshAuthFactor> factors_list) {
-  CHECK_NE(factors_list.size(), 0u)
-      << "Existing users should have at least one AuthFactor";
   AuthFactorsSet factors{factors_list};
   UserAuthConfig result;
   if (factors.Has(ash::AshAuthFactor::kGaiaPassword)) {
