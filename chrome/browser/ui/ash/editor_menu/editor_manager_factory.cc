@@ -16,7 +16,10 @@ namespace chromeos::editor_menu {
 
 std::unique_ptr<EditorManager> CreateEditorManager(
     content::BrowserContext* context) {
-  CHECK(chromeos::features::IsOrcaEnabled());
+  if (!chromeos::features::IsOrcaEnabled()) {
+    return nullptr;
+  }
+
   ash::input_method::EditorMediator* editor_mediator =
       ash::input_method::EditorMediatorFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(context));

@@ -321,11 +321,15 @@ EditorMenuControllerImpl::EditorCardSession::EditorCardSession(
     : controller_(controller),
       editor_manager_(std::move(editor_manager)),
       lobster_manager_(std::move(lobster_manager)) {
-  editor_manager_->AddObserver(this);
+  if (editor_manager_) {
+    editor_manager_->AddObserver(this);
+  }
 }
 
 EditorMenuControllerImpl::EditorCardSession::~EditorCardSession() {
-  editor_manager_->RemoveObserver(this);
+  if (editor_manager_) {
+    editor_manager_->RemoveObserver(this);
+  }
 }
 
 void EditorMenuControllerImpl::EditorCardSession::OnEditorModeChanged(
