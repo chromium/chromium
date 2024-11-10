@@ -19,6 +19,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/input_method/editor_helpers.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
+#include "chrome/browser/ash/lobster/lobster_service.h"
 #include "chrome/browser/ash/lobster/lobster_service_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/mako/url_constants.h"
@@ -155,9 +156,10 @@ void MakoUntrustedUI::BindInterface(
   }
 
   Profile* profile = Profile::FromWebUI(web_ui());
-
+  LobsterService* lobster_service =
+      LobsterServiceProvider::GetForProfile(profile);
   LobsterSession* active_session =
-      LobsterServiceProvider::GetForProfile(profile)->active_session();
+      lobster_service == nullptr ? nullptr : lobster_service->active_session();
 
   if (active_session == nullptr) {
     mojo::ReportBadMessage("No active session found.");
