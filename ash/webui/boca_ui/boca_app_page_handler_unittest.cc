@@ -223,6 +223,7 @@ class BocaAppPageHandlerTest : public testing::Test {
     ON_CALL(*boca_app_client_, GetIdentityManager())
         .WillByDefault(Return(nullptr));
 
+    EXPECT_CALL(*session_client_impl(), GetSession(_)).Times(1);
     session_manager_ =
         std::make_unique<StrictMock<MockSessionManager>>(&session_client_impl_);
 

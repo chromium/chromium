@@ -211,6 +211,13 @@ class BocaSessionManagerTest : public BocaSessionManagerTestBase {
     session_1->set_session_id(kInitialSessionId);
     EXPECT_CALL(*session_client_impl(), GetSession(_))
         .WillOnce(testing::InvokeWithoutArgs([&]() {
+          // The first fetch at construction time will fail due to refresh token
+          // not ready.
+          boca_session_manager_->ParseSessionResponse(
+              base::unexpected<google_apis::ApiErrorCode>(
+                  google_apis::ApiErrorCode::NOT_READY));
+        }))
+        .WillOnce(testing::InvokeWithoutArgs([&]() {
           boca_session_manager_->ParseSessionResponse(std::move(session_1));
         }));
 
@@ -1050,6 +1057,14 @@ class BocaSessionManagerNoPollingTest : public BocaSessionManagerTestBase {
           "0"}});
     auto account_id =
         AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestGaiaId);
+    EXPECT_CALL(*session_client_impl(), GetSession(_))
+        .WillOnce(testing::InvokeWithoutArgs([&]() {
+          // The first fetch at construction time will fail due to refresh token
+          // not ready.
+          boca_session_manager_->ParseSessionResponse(
+              base::unexpected<google_apis::ApiErrorCode>(
+                  google_apis::ApiErrorCode::NOT_READY));
+        }));
     boca_session_manager_ = std::make_unique<BocaSessionManager>(
         session_client_impl(), account_id, /*is_producer=*/true);
   }

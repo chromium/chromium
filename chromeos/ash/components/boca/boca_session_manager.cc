@@ -60,6 +60,7 @@ BocaSessionManager::BocaSessionManager(SessionClientImpl* session_client_impl,
     user_manager::UserManager::Get()->AddSessionStateObserver(this);
   }
   LoadInitialNetworkState();
+  LoadCurrentSession();
   StartSessionPolling(/*in_session=*/false);
 }
 
