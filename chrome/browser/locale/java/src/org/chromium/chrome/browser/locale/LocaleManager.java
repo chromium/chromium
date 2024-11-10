@@ -93,6 +93,11 @@ public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
         mDelegate.setSnackbarManager(manager);
     }
 
+    /** Shows a snackbar notifying the user that the default search engine has changed. */
+    public void showSnackbarForDeviceSearchEngineUpdate() {
+        mDelegate.showSnackbarForDeviceSearchEngineUpdate();
+    }
+
     /** Returns whether and which search engine promo should be shown. */
     public @SearchEnginePromoType int getSearchEnginePromoShowType() {
         return mDelegate.getSearchEnginePromoShowType();

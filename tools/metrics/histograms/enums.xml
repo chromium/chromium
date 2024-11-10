@@ -31935,6 +31935,7 @@ Called by update_net_error_codes.py.-->
   <int value="70" label="UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS"/>
   <int value="71" label="UMA_SETTINGS_BATCH_UPLOAD"/>
   <int value="72" label="UMA_REVOKE_FILE_EDIT_GRANT"/>
+  <int value="73" label="UMA_SEARCH_ENGINE_CHANGED_NOTIFICATION"/>
 </enum>
 
 <enum name="SnapshotItemId">
