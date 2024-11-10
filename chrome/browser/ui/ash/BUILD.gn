@@ -320,6 +320,7 @@ group("browser_tests") {
     "//chrome/browser/ui/ash/holding_space:browser_tests",
     "//chrome/browser/ui/ash/keyboard:browser_tests",
     "//chrome/browser/ui/ash/login:browser_tests",
+    "//chrome/browser/ui/ash/management_disclosure:browser_tests",
     "//chrome/browser/ui/ash/network:browser_tests",
     "//chrome/browser/ui/ash/new_window:browser_tests",
     "//chrome/browser/ui/ash/projector:browser_tests",

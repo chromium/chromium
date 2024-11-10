@@ -11,6 +11,9 @@ include_rules = [
   "+chrome/browser/ui/webui/management/management_ui_handler_chromeos.h",
   "+chrome/browser/ui/webui/management/management_ui.h",
   "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/ash/login/lock/screen_locker_tester.h",
+  "+chrome/browser/ash/login/login_manager_test.h",
+  "+chrome/browser/ash/login/test/login_manager_mixin.h",
 
   # Existing dependencies within //chrome. There is an active effort to
   # refactor ash codes in //chrome to break these dependencies; see b/332804822.

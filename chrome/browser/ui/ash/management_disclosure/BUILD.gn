@@ -22,3 +22,29 @@ static_library("management_disclosure") {
     "//chrome/browser/profiles:profile",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "management_disclosure_browsertest.cc" ]
+
+  deps = [
+    ":management_disclosure",
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/login:test_support",
+    "//chrome/browser/ash/login/lock",
+    "//chrome/browser/ash/login/lock:test_support",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ui",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
