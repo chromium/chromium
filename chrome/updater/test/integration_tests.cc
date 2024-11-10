@@ -23,6 +23,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -1552,6 +1553,34 @@ TEST_F(IntegrationTest, GetAppStates) {
 
   ASSERT_NO_FATAL_FAILURE(GetAppStates(expected_app_states));
 
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, GetAppStates_AppIdsAlwaysLowercase) {
+  ScopedServer test_server(test_commands_);
+  ASSERT_NO_FATAL_FAILURE(Install());
+
+  base::Value::Dict expected_app_states;
+  for (const std::string appid :
+       {"test1", "TEST2", "Test3", "TeSt4", "tEsT5"}) {
+    const base::Version v1("0.1");
+    ASSERT_NO_FATAL_FAILURE(InstallApp(appid));
+
+    ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(appid, v1));
+
+    base::Value::Dict expected_app_state;
+    expected_app_state.Set("app_id", base::ToLowerASCII(appid));
+    expected_app_state.Set("version", v1.GetString());
+    expected_app_state.Set("ap", "");
+    expected_app_state.Set("brand_code", "");
+    expected_app_state.Set("brand_path", "");
+    expected_app_state.Set("ecp", "");
+    expected_app_state.Set("cohort", "");
+    expected_app_states.Set(appid, std::move(expected_app_state));
+  }
+
+  ASSERT_NO_FATAL_FAILURE(GetAppStates(expected_app_states));
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
