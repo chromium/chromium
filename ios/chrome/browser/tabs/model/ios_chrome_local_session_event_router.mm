@@ -72,7 +72,11 @@ void IOSChromeLocalSessionEventRouter::Observer::WebStateListDidChange(
       const WebStateListChangeDetach& detach_change =
           change.As<WebStateListChangeDetach>();
       web::WebState* detached_web_state = detach_change.detached_web_state();
-      router_->OnWebStateChange(detached_web_state);
+      if (detach_change.is_closing()) {
+        router_->OnWebStateClosed();
+      } else {
+        router_->OnWebStateChange(detached_web_state);
+      }
       detached_web_state->RemoveObserver(this);
       break;
     }
@@ -141,7 +145,7 @@ void IOSChromeLocalSessionEventRouter::Observer::DidChangeBackForwardState(
 
 void IOSChromeLocalSessionEventRouter::Observer::WebStateDestroyed(
     web::WebState* web_state) {
-  router_->OnWebStateChange(web_state);
+  router_->OnWebStateClosed();
   web_state->RemoveObserver(this);
 }
 
@@ -200,6 +204,19 @@ void IOSChromeLocalSessionEventRouter::OnWebStateChange(
   }
   if (!tab->ShouldSync(sessions_client_)) {
     return;
+  }
+
+  if (!flare_.is_null()) {
+    std::move(flare_).Run(syncer::SESSIONS);
+  }
+}
+
+void IOSChromeLocalSessionEventRouter::OnWebStateClosed() {
+  if (batch_in_progress_) {
+    return;
+  }
+  if (handler_) {
+    handler_->OnLocalTabClosed();
   }
 
   if (!flare_.is_null()) {

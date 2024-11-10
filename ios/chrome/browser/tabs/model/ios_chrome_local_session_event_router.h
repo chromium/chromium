@@ -89,6 +89,9 @@ class IOSChromeLocalSessionEventRouter
   // Called on observation of a change in `web_state`.
   void OnWebStateChange(web::WebState* web_state);
 
+  // Called when a `web_state` is closed.
+  void OnWebStateClosed();
+
   // Observation registrar for the associated browser list; owns an instance
   // of IOSChromeLocalSessionEventRouter::Observer.
   std::unique_ptr<AllWebStateListObservationRegistrar> const registrar_;
