@@ -21,10 +21,9 @@ using emoji_text_iter_t = UTF16RagelIterator;
 #include "third_party/emoji-segmenter/src/emoji_presentation_scanner.c"
 }  // namespace
 
-SymbolsIterator::SymbolsIterator(const UChar* buffer, unsigned buffer_size)
-    : cursor_(0), next_token_end_(0), next_token_emoji_(false) {
-  if (buffer_size) {
-    buffer_iterator_ = UTF16RagelIterator(buffer, buffer_size);
+SymbolsIterator::SymbolsIterator(base::span<const UChar> buffer) {
+  if (!buffer.empty()) {
+    buffer_iterator_ = UTF16RagelIterator(buffer);
 
     next_token_end_ = cursor_ + (scan_emoji_presentation(
                                      buffer_iterator_, buffer_iterator_.end(),

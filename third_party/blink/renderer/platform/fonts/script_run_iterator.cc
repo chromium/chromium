@@ -223,11 +223,10 @@ const ICUScriptData* ICUScriptData::Instance() {
   return &icu_script_data_instance;
 }
 
-ScriptRunIterator::ScriptRunIterator(const UChar* text,
-                                     wtf_size_t length,
+ScriptRunIterator::ScriptRunIterator(base::span<const UChar> text,
                                      const ScriptData* data)
-    : text_(text),
-      length_(length),
+    : text_(text.data()),
+      length_(base::checked_cast<wtf_size_t>(text.size())),
       brackets_fixup_depth_(0),
       next_set_(std::make_unique<UScriptCodeList>()),
       ahead_set_(std::make_unique<UScriptCodeList>()),
@@ -236,7 +235,7 @@ ScriptRunIterator::ScriptRunIterator(const UChar* text,
       ahead_pos_(0),
       common_preferred_(USCRIPT_COMMON),
       script_data_(data) {
-  DCHECK(text);
+  DCHECK(text.data());
   DCHECK(data);
 
   if (ahead_pos_ < length_) {
@@ -250,8 +249,8 @@ ScriptRunIterator::ScriptRunIterator(const UChar* text,
   }
 }
 
-ScriptRunIterator::ScriptRunIterator(const UChar* text, wtf_size_t length)
-    : ScriptRunIterator(text, length, ICUScriptData::Instance()) {}
+ScriptRunIterator::ScriptRunIterator(base::span<const UChar> text)
+    : ScriptRunIterator(text, ICUScriptData::Instance()) {}
 
 bool ScriptRunIterator::Consume(unsigned* limit, UScriptCode* script) {
   if (current_set_.empty()) {

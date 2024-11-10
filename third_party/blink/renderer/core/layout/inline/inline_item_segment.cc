@@ -177,9 +177,9 @@ unsigned InlineItemSegments::AppendMixedFontOrientation(
     unsigned end_offset,
     unsigned segment_index) {
   DCHECK_LT(start_offset, end_offset);
-  OrientationIterator iterator(text_content.Characters16() + start_offset,
-                               end_offset - start_offset,
-                               FontOrientation::kVerticalMixed);
+  OrientationIterator iterator(
+      text_content.Span16().subspan(start_offset, end_offset - start_offset),
+      FontOrientation::kVerticalMixed);
   unsigned original_start_offset = start_offset;
   OrientationIterator::RenderOrientation orientation;
   for (; iterator.Consume(&end_offset, &orientation);

@@ -355,15 +355,13 @@ static unsigned FindBreakIndexBetween(const StringBuilder& string,
   if (string.Is8Bit())
     return proposed_break_index;
 
-  const UChar* break_search_characters =
-      string.Characters16() + current_position;
   // We need at least two characters look-ahead to account for UTF-16
   // surrogates, but can't search off the end of the buffer!
   unsigned break_search_length =
       std::min(proposed_break_index - current_position + 2,
                string.length() - current_position);
-  NonSharedCharacterBreakIterator it(break_search_characters,
-                                     break_search_length);
+  NonSharedCharacterBreakIterator it(
+      string.Span16().subspan(current_position, break_search_length));
 
   if (it.IsBreak(proposed_break_index - current_position))
     return proposed_break_index;

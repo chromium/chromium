@@ -16,15 +16,14 @@
 
 namespace blink {
 
-RunSegmenter::RunSegmenter(const UChar* buffer,
-                           unsigned buffer_size,
+RunSegmenter::RunSegmenter(base::span<const UChar> buffer,
                            FontOrientation run_orientation)
-    : buffer_size_(buffer_size),
-      script_run_iterator_(buffer, buffer_size),
-      symbols_iterator_(buffer, buffer_size),
-      at_end_(!buffer_size) {
+    : buffer_size_(base::checked_cast<wtf_size_t>(buffer.size())),
+      script_run_iterator_(buffer),
+      symbols_iterator_(buffer),
+      at_end_(buffer.empty()) {
   if (run_orientation == FontOrientation::kVerticalMixed) [[unlikely]] {
-    orientation_iterator_.emplace(buffer, buffer_size, run_orientation);
+    orientation_iterator_.emplace(buffer, run_orientation);
   }
 }
 

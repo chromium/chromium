@@ -9,12 +9,11 @@
 
 #include "third_party/blink/renderer/platform/fonts/utf16_ragel_iterator.h"
 
-#include <unicode/unistr.h>
-
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode_string.h"
 
 namespace blink {
 
@@ -53,16 +52,14 @@ TEST(UTF16RagelIteratorTest, CharacterClasses) {
       EmojiSegmentationCategory::EMOJI_EMOJI_PRESENTATION,
       EmojiSegmentationCategory::EMOJI_TEXT_PRESENTATION};
   UTF16RagelIterator ragel_iterator(
-      reinterpret_cast<const UChar*>(class_examples_unicode_string.getBuffer()),
-      class_examples_unicode_string.length());
+      WTF::unicode::ToSpan(class_examples_unicode_string));
   for (const EmojiSegmentationCategory& category : categories) {
     CHECK_EQ(category, *ragel_iterator);
     ragel_iterator++;
   }
 
   UTF16RagelIterator reverse_ragel_iterator(
-      reinterpret_cast<const UChar*>(class_examples_unicode_string.getBuffer()),
-      class_examples_unicode_string.length(),
+      WTF::unicode::ToSpan(class_examples_unicode_string),
       class_examples_unicode_string.length() - 1);
   size_t i = std::size(categories) - 1;
   while (reverse_ragel_iterator.Cursor() > 0) {
@@ -83,8 +80,7 @@ TEST(UTF16RagelIteratorTest, ArithmeticOperators) {
                                     std::size(class_examples_codepoints));
 
   UTF16RagelIterator ragel_iterator(
-      reinterpret_cast<const UChar*>(class_examples_unicode_string.getBuffer()),
-      class_examples_unicode_string.length());
+      WTF::unicode::ToSpan(class_examples_unicode_string));
 
   CHECK_EQ(*ragel_iterator, EmojiSegmentationCategory::VS15);
   CHECK_EQ(*(ragel_iterator + 2), EmojiSegmentationCategory::VS15);
@@ -122,9 +118,7 @@ TEST(UTF16RagelIteratorTest, CursorPositioning) {
 
   icu::UnicodeString flags_unicode_string = icu::UnicodeString::fromUTF32(
       flags_codepoints, std::size(flags_codepoints));
-  UTF16RagelIterator ragel_iterator(
-      reinterpret_cast<const UChar*>(flags_unicode_string.getBuffer()),
-      flags_unicode_string.length());
+  UTF16RagelIterator ragel_iterator(WTF::unicode::ToSpan(flags_unicode_string));
 
   CHECK_EQ(ragel_iterator.end().Cursor(), 8u);
 

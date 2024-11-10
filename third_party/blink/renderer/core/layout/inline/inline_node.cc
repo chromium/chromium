@@ -1203,8 +1203,7 @@ void InlineNode::SegmentScriptRuns(InlineNodeData* data,
   // Segment by script and Emoji.
   // Orientation is segmented separately, because it may vary by items.
   text_content.Ensure16Bit();
-  RunSegmenter segmenter(text_content.Characters16(), text_content.length(),
-                         FontOrientation::kHorizontal);
+  RunSegmenter segmenter(text_content.Span16(), FontOrientation::kHorizontal);
 
   RunSegmenter::RunSegmenterRange range;
   bool consumed = segmenter.Consume(&range);

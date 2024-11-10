@@ -9,11 +9,10 @@
 
 namespace blink {
 
-SmallCapsIterator::SmallCapsIterator(const UChar* buffer, unsigned buffer_size)
-    : utf16_iterator_(buffer, buffer_size),
-      buffer_size_(buffer_size),
+SmallCapsIterator::SmallCapsIterator(base::span<const UChar> buffer)
+    : utf16_iterator_(buffer),
       next_u_char32_(0),
-      at_end_(buffer_size == 0),
+      at_end_(buffer.empty()),
       current_small_caps_behavior_(kSmallCapsInvalid) {}
 
 bool SmallCapsIterator::Consume(unsigned* caps_limit,
@@ -41,7 +40,7 @@ bool SmallCapsIterator::Consume(unsigned* caps_limit,
     }
     utf16_iterator_.Advance();
   }
-  *caps_limit = buffer_size_;
+  *caps_limit = utf16_iterator_.Size();
   *small_caps_behavior = current_small_caps_behavior_;
   at_end_ = true;
   return true;

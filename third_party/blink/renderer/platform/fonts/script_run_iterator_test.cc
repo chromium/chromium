@@ -312,7 +312,7 @@ class ScriptRunIteratorTest : public testing::Test {
       text.Append(String::FromUTF8(run.text));
       expect.push_back(ScriptExpectedRun(text.length(), run.code));
     }
-    ScriptRunIterator script_run_iterator(text.Characters16(), text.length());
+    ScriptRunIterator script_run_iterator(text.Span16());
     VerifyRuns(&script_run_iterator, expect);
   }
 
@@ -327,7 +327,7 @@ class ScriptRunIteratorTest : public testing::Test {
       expect.push_back(ScriptExpectedRun(text.length(), run.code));
     }
 
-    ScriptRunIterator script_run_iterator(text.Characters16(), text.length(),
+    ScriptRunIterator script_run_iterator(text.Span16(),
                                           MockScriptData::Instance());
     VerifyRuns(&script_run_iterator, expect);
   }
@@ -345,7 +345,7 @@ class ScriptRunIteratorTest : public testing::Test {
 
 TEST_F(ScriptRunIteratorTest, Empty) {
   String empty(g_empty_string16_bit);
-  ScriptRunIterator script_run_iterator(empty.Characters16(), empty.length());
+  ScriptRunIterator script_run_iterator(empty.Span16());
   unsigned limit = 0;
   UScriptCode code = USCRIPT_INVALID_CODE;
   DCHECK(!script_run_iterator.Consume(&limit, &code));

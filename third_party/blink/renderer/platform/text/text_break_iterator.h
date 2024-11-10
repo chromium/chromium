@@ -327,7 +327,7 @@ class PLATFORM_EXPORT NonSharedCharacterBreakIterator final {
 
  public:
   explicit NonSharedCharacterBreakIterator(const StringView&);
-  NonSharedCharacterBreakIterator(const UChar*, unsigned length);
+  explicit NonSharedCharacterBreakIterator(base::span<const UChar>);
   NonSharedCharacterBreakIterator(const NonSharedCharacterBreakIterator&) =
       delete;
   NonSharedCharacterBreakIterator& operator=(
@@ -344,7 +344,7 @@ class PLATFORM_EXPORT NonSharedCharacterBreakIterator final {
   bool operator!() const { return !is_8bit_ && !iterator_; }
 
  private:
-  void CreateIteratorForBuffer(const UChar*, unsigned length);
+  void CreateIteratorForBuffer(base::span<const UChar>);
 
   unsigned ClusterLengthStartingAt(unsigned offset) const {
     DCHECK(is_8bit_);

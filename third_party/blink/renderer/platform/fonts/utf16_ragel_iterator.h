@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_UTF16_RAGEL_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_UTF16_RAGEL_ITERATOR_H_
 
 #include <unicode/uchar.h>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/emoji_segmentation_category.h"
 #include "third_party/blink/renderer/platform/text/emoji_segmentation_category_inline_header.h"
@@ -33,30 +29,26 @@ class PLATFORM_EXPORT UTF16RagelIterator {
 
  public:
   UTF16RagelIterator()
-      : buffer_(nullptr),
-        buffer_size_(0),
-        cursor_(0),
+      : cursor_(0),
         cached_category_(EmojiSegmentationCategory::kInvalidCacheEntry) {}
 
-  UTF16RagelIterator(const UChar* buffer,
-                     unsigned buffer_size,
-                     unsigned cursor = 0)
+  explicit UTF16RagelIterator(base::span<const UChar> buffer,
+                              unsigned cursor = 0)
       : buffer_(buffer),
-        buffer_size_(buffer_size),
         cursor_(cursor),
         cached_category_(EmojiSegmentationCategory::kInvalidCacheEntry) {}
 
   UTF16RagelIterator end() {
     UTF16RagelIterator ret = *this;
-    ret.cursor_ = buffer_size_;
+    ret.cursor_ = static_cast<unsigned>(buffer_.size());
     return ret;
   }
 
-  unsigned size() { return buffer_size_; }
+  size_t size() { return buffer_.size(); }
 
   UTF16RagelIterator& SetCursor(unsigned new_cursor) {
     DCHECK_GE(new_cursor, 0u);
-    DCHECK_LT(new_cursor, buffer_size_);
+    DCHECK_LT(new_cursor, buffer_.size());
     cursor_ = new_cursor;
     InvalidateCache();
     return *this;
@@ -66,7 +58,7 @@ class PLATFORM_EXPORT UTF16RagelIterator {
 
   UTF16RagelIterator& operator+=(int v) {
     if (v > 0) {
-      U16_FWD_N(buffer_, cursor_, buffer_size_, v);
+      U16_FWD_N(buffer_, cursor_, buffer_.size(), v);
     } else if (v < 0) {
       U16_BACK_N(buffer_, 0, cursor_, -v);
     }
@@ -89,8 +81,8 @@ class PLATFORM_EXPORT UTF16RagelIterator {
   }
 
   UTF16RagelIterator& operator++() {
-    DCHECK_LT(cursor_, buffer_size_);
-    U16_FWD_1(buffer_, cursor_, buffer_size_);
+    DCHECK_LT(cursor_, buffer_.size());
+    U16_FWD_1(buffer_, cursor_, buffer_.size());
     InvalidateCache();
     return *this;
   }
@@ -124,10 +116,10 @@ class PLATFORM_EXPORT UTF16RagelIterator {
   }
 
   EmojiSegmentationCategory operator*() {
-    DCHECK(buffer_size_);
+    DCHECK(!buffer_.empty());
     if (cached_category_ == EmojiSegmentationCategory::kInvalidCacheEntry) {
       UChar32 codepoint;
-      U16_GET(buffer_, 0, cursor_, buffer_size_, codepoint);
+      U16_GET(buffer_, 0, cursor_, buffer_.size(), codepoint);
       cached_category_ = GetEmojiSegmentationCategory(codepoint);
     }
     return cached_category_;
@@ -138,8 +130,8 @@ class PLATFORM_EXPORT UTF16RagelIterator {
   }
 
   bool operator==(const UTF16RagelIterator& other) const {
-    return buffer_ == other.buffer_ && buffer_size_ == other.buffer_size_ &&
-           cursor_ == other.cursor_;
+    return buffer_.data() == other.buffer_.data() &&
+           buffer_.size() == other.buffer_.size() && cursor_ == other.cursor_;
   }
 
   bool operator!=(const UTF16RagelIterator& other) const {
@@ -159,16 +151,15 @@ class PLATFORM_EXPORT UTF16RagelIterator {
   UChar32 PeekCodepoint() {
     UChar32 output = kReplacementCharacter;
     unsigned temp_cursor = cursor_;
-    U16_FWD_1(buffer_, temp_cursor, buffer_size_);
-    if (temp_cursor < buffer_size_) {
-      U16_GET(buffer_, 0, temp_cursor, buffer_size_, output);
+    U16_FWD_1(buffer_, temp_cursor, buffer_.size());
+    if (temp_cursor < buffer_.size()) {
+      U16_GET(buffer_, 0, temp_cursor, buffer_.size(), output);
     }
     return output;
   }
 
  private:
-  const UChar* buffer_;
-  unsigned buffer_size_;
+  base::span<const UChar> buffer_;
   unsigned cursor_;
   EmojiSegmentationCategory cached_category_;
 };

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SYMBOLS_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SYMBOLS_ITERATOR_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/utf16_ragel_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -40,7 +41,7 @@ class PLATFORM_EXPORT SymbolsIterator {
   STACK_ALLOCATED();
 
  public:
-  SymbolsIterator(const UChar* buffer, unsigned buffer_size);
+  explicit SymbolsIterator(base::span<const UChar> buffer);
   SymbolsIterator(const SymbolsIterator&) = delete;
   SymbolsIterator& operator=(const SymbolsIterator&) = delete;
 
