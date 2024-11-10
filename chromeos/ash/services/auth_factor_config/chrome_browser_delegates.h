@@ -44,6 +44,11 @@ class PinBackendDelegate {
                    const std::string& pin,
                    BoolCallback did_set) = 0;
 
+  virtual void UpdateCryptohomePin(const AccountId& account_id,
+                                   const std::string& auth_token,
+                                   const std::string& pin,
+                                   BoolCallback did_update) = 0;
+
   virtual void Remove(const AccountId& account_id,
                       const std::string& auth_token,
                       BoolCallback did_remove) = 0;

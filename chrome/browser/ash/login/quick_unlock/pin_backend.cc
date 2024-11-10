@@ -228,6 +228,44 @@ void PinBackend::Set(const AccountId& account_id,
   }
 }
 
+void PinBackend::UpdateCryptohomePin(const AccountId& account_id,
+                                     const std::string& token,
+                                     const std::string& pin,
+                                     BoolCallback did_update) {
+  if (resolving_backend_) {
+    on_cryptohome_support_received_.push_back(
+        base::BindOnce(&PinBackend::UpdateCryptohomePin, base::Unretained(this),
+                       account_id, token, pin, std::move(did_update)));
+    return;
+  }
+
+  if (!ash::AuthSessionStorage::Get()->IsValid(token)) {
+    PostResponse(std::move(did_update), false);
+    return;
+  }
+  ash::AuthSessionStorage::Get()->BorrowAsync(
+      FROM_HERE, token,
+      base::BindOnce(&PinBackend::UpdateCryptohomePinWithContext,
+                     base::Unretained(this), account_id, token, pin,
+                     std::move(did_update)));
+}
+
+void PinBackend::UpdateCryptohomePinWithContext(
+    const AccountId& account_id,
+    const std::string& token,
+    const std::string& pin,
+    BoolCallback did_set,
+    std::unique_ptr<UserContext> user_context) {
+  if (!user_context) {
+    PostResponse(std::move(did_set), false);
+    return;
+  }
+
+  cryptohome_backend_->SetPin(
+      std::move(user_context), pin, std::nullopt,
+      base::BindOnce(&PinBackend::OnAuthOperation, token, std::move(did_set)));
+}
+
 void PinBackend::SetWithContext(const AccountId& account_id,
                                 const std::string& token,
                                 const std::string& pin,

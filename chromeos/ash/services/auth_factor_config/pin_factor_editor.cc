@@ -112,10 +112,11 @@ void PinFactorEditor::UpdatePinWithContext(
 
   ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
 
-  pin_backend_->Set(account_id, auth_token, pin,
-                    base::BindOnce(&PinFactorEditor::OnPinConfigured,
-                                   weak_factory_.GetWeakPtr(), auth_token,
-                                   std::move(callback)));
+  pin_backend_->UpdateCryptohomePin(
+      account_id, auth_token, pin,
+      base::BindOnce(&PinFactorEditor::OnPinConfigured,
+                     weak_factory_.GetWeakPtr(), auth_token,
+                     std::move(callback)));
 }
 
 void PinFactorEditor::RemovePinWithContext(
