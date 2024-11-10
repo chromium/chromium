@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
@@ -13,6 +14,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
@@ -95,6 +97,14 @@ class OneDriveMigrationCoordinatorTest : public SkyvaultOneDriveTest {
  public:
   OneDriveMigrationCoordinatorTest() = default;
 
+  void SetUpOnMainThread() override {
+    SkyvaultOneDriveTest::SetUpOnMainThread();
+
+    base::FilePath home_dir;
+    CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
+    error_log_path_ = home_dir.AppendASCII(kErrorLogFileName);
+  }
+
   OneDriveMigrationCoordinatorTest(const OneDriveMigrationCoordinatorTest&) =
       delete;
   OneDriveMigrationCoordinatorTest& operator=(
@@ -132,6 +142,7 @@ class OneDriveMigrationCoordinatorTest : public SkyvaultOneDriveTest {
     return std::move(uploader);
   }
 
+  base::FilePath error_log_path_;
   // Local pointer to the instance created by the factory method. Should be used
   // for single file uploads, as only the last created pointer is stored.
   // The lifetime is managed by the Upload method after which the instance is
@@ -184,6 +195,11 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, SuccessfulUpload) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     CHECK(!base::PathExists(dir_path.AppendASCII(nested_file)));
     CHECK(!base::PathExists(file_path));
+
+    ASSERT_TRUE(base::PathExists(error_log_path_));
+    std::string error_log;
+    ASSERT_TRUE(base::ReadFileToString(error_log_path_, &error_log));
+    EXPECT_EQ("", error_log);
   }
 }
 
@@ -212,6 +228,16 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest,
   ASSERT_EQ(error->second, MigrationUploadError::kCloudQuotaFull);
 
   CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(file));
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::PathExists(error_log_path_));
+    std::string error_log;
+    ASSERT_TRUE(base::ReadFileToString(error_log_path_, &error_log));
+    EXPECT_EQ(absl::StrFormat("%s - %s\n", file_path.AsUTF8Unsafe(),
+                              "Free up space in OneDrive to move this file"),
+              error_log);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, EmptyUrls) {
@@ -228,6 +254,12 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, EmptyUrls) {
   ASSERT_TRUE(errors.empty());
   // The path won't get populated if no upload is triggered.
   EXPECT_EQ(base::FilePath(), upload_root_path);
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    // Log file isn't created if no uploads are needed.
+    EXPECT_FALSE(base::PathExists(error_log_path_));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, CancelUpload) {
@@ -249,10 +281,16 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, CancelUpload) {
   ASSERT_TRUE(run_future.Wait());
   EXPECT_TRUE(odfs_uploader_);
   EXPECT_CALL(*odfs_uploader_, Cancel).Times(1);
-  coordinator.Cancel();
+  coordinator.Cancel(base::DoNothing());
 
   // Check that the source file has NOT been moved to OneDrive.
   CheckPathNotFoundOnODFS(base::FilePath("/").AppendASCII(test_file_name));
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    // File is deleted on cancellation.
+    EXPECT_FALSE(base::PathExists(error_log_path_));
+  }
 }
 
 class GoogleDriveMigrationCoordinatorTest : public SkyvaultGoogleDriveTest {
@@ -269,6 +307,14 @@ class GoogleDriveMigrationCoordinatorTest : public SkyvaultGoogleDriveTest {
   GoogleDriveMigrationCoordinatorTest& operator=(
       const GoogleDriveMigrationCoordinatorTest&) = delete;
 
+  void SetUpOnMainThread() override {
+    SkyvaultGoogleDriveTest::SetUpOnMainThread();
+
+    base::FilePath home_dir;
+    CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
+    error_log_path_ = home_dir.AppendASCII(kErrorLogFileName);
+  }
+
   base::FilePath observed_relative_drive_path(const FileInfo& info) override {
     base::FilePath observed_relative_drive_path;
     drive_integration_service()->GetRelativeDrivePath(
@@ -283,6 +329,7 @@ class GoogleDriveMigrationCoordinatorTest : public SkyvaultGoogleDriveTest {
   SyncStatus sync_status_ = SyncStatus::kCompleted;
   // Invoked when the copy is in progress.
   base::RepeatingClosure on_transfer_in_progress_callback_;
+  base::FilePath error_log_path_;
 
  private:
   // IOTaskController::Observer:
@@ -421,6 +468,11 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, SuccessfulUpload) {
         my_files_dir().AppendASCII(dir).AppendASCII(nested_file)));
     CheckPathExistsOnDrive(observed_relative_drive_path(
         source_files_.find(nested_file_path)->second));
+
+    ASSERT_TRUE(base::PathExists(error_log_path_));
+    std::string error_log;
+    ASSERT_TRUE(base::ReadFileToString(error_log_path_, &error_log));
+    EXPECT_EQ("", error_log);
   }
 }
 
@@ -457,6 +509,13 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, FailedUpload) {
     EXPECT_TRUE(base::PathExists(my_files_dir().AppendASCII(file)));
     CheckPathNotFoundOnDrive(
         observed_relative_drive_path(source_files_.find(file_path)->second));
+
+    ASSERT_TRUE(base::PathExists(error_log_path_));
+    std::string error_log;
+    ASSERT_TRUE(base::ReadFileToString(error_log_path_, &error_log));
+    EXPECT_EQ(absl::StrFormat("%s - %s\n", file_path.AsUTF8Unsafe(),
+                              "Something went wrong. Try again."),
+              error_log);
   }
 }
 
@@ -472,8 +531,8 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, CancelUpload) {
   coordinator.SetCancelledCallbackForTesting(
       base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
 
-  on_transfer_in_progress_callback_ =
-      base::BindLambdaForTesting([&coordinator] { coordinator.Cancel(); });
+  on_transfer_in_progress_callback_ = base::BindLambdaForTesting(
+      [&coordinator] { coordinator.Cancel(base::DoNothing()); });
   coordinator.Run(CloudProvider::kGoogleDrive, {file_path}, kUploadRootPrefix,
                   base::DoNothing());
   run_loop.Run();
@@ -484,6 +543,9 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, CancelUpload) {
     EXPECT_TRUE(base::PathExists(my_files_dir().AppendASCII(file)));
     CheckPathNotFoundOnDrive(
         observed_relative_drive_path(source_files_.find(file_path)->second));
+
+    // File is deleted on cancellation.
+    EXPECT_FALSE(base::PathExists(error_log_path_));
   }
 }
 

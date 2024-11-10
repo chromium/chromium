@@ -326,11 +326,26 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
   SkyVaultMigrationEnabledHistogram(cloud_provider_, true);
 
   // If the destination changed, stop ongoing migration or timers if any.
-  if (cloud_provider_ != cloud_provider_old) {
+  if (cloud_provider_ != cloud_provider_old &&
+      IsMigrationEnabled(cloud_provider_old)) {
     // Don't close the dialog as it'll be reshown.
-    MaybeStopMigration(cloud_provider_old, /*close_dialog=*/false);
+    MaybeStopMigration(
+        cloud_provider_old, /*close_dialog=*/false,
+        base::BindOnce(&LocalFilesMigrationManager::OnMigrationStopped,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+  OnMigrationStopped(/*log_file_deleted=*/true);
+}
+
+void LocalFilesMigrationManager::OnMigrationStopped(bool log_file_deleted) {
+  LOG_IF(ERROR, !log_file_deleted) << "Log file couldn't be deleted";
+
+  if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
+    return;
   }
 
+  Profile* profile = Profile::FromBrowserContext(context_);
   if (IsMigrationMisconfigured(profile, cloud_provider_)) {
     LOG(WARNING) << "Local files migration policy is set to use "
                  << (cloud_provider_ == CloudProvider::kGoogleDrive
@@ -642,13 +657,12 @@ void LocalFilesMigrationManager::OnFilesWriteRestricted(
 
 void LocalFilesMigrationManager::MaybeStopMigration(
     CloudProvider previous_provider,
-    bool close_dialog) {
+    bool close_dialog,
+    MigrationStoppedCallback on_stopped_cb) {
   // Stop the timer. No-op if not running.
   scheduling_timer_->Stop();
 
-  if (coordinator_->IsRunning()) {
-    coordinator_->Cancel();
-  }
+  coordinator_->Cancel(std::move(on_stopped_cb));
 
   notification_manager_->CloseNotifications();
   if (close_dialog) {

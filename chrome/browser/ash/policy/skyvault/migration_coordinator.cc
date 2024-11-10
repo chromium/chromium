@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/skyvault/drive_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/histogram_helper.h"
+#include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/download/download_dir_util.h"
@@ -124,7 +125,7 @@ void LogError(base::File& error_log_file,
 base::FilePath GetLogPath() {
   base::FilePath home_dir;
   CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
-  return home_dir.AppendASCII("local_files_upload");
+  return home_dir.AppendASCII(kErrorLogFileName);
 }
 
 }  // namespace
@@ -159,13 +160,17 @@ void MigrationCoordinator::Run(CloudProvider cloud_provider,
   uploader_->Run();
 }
 
-void MigrationCoordinator::Cancel() {
+void MigrationCoordinator::Cancel(MigrationStoppedCallback callback) {
   if (uploader_) {
     MigrationCloudUploader* uploader_ptr = uploader_.get();
     uploader_ptr->Cancel(base::BindOnce(&OnMigrationStopped,
                                         std::move(uploader_),
                                         std::move(cancelled_cb_for_testing_)));
   }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&base::DeleteFile, GetLogPath()), std::move(callback));
 }
 
 bool MigrationCoordinator::IsRunning() const {
@@ -256,9 +261,6 @@ void OneDriveMigrationUploader::OnLogFileReady(base::File log_file) {
 void OneDriveMigrationUploader::Cancel(base::OnceClosure callback) {
   cancelled_callback_ = std::move(callback);
   cancelled_ = true;
-
-  // TODO(aidazolic): Delete the log file.
-
   // Create a copy of the keys to iterate over. This is necessary because
   // calling Cancel() on the uploader may trigger OnUploadDone(), which
   // modifies the |uploaders_| map, potentially invalidating iterators.
@@ -360,9 +362,6 @@ void GoogleDriveMigrationUploader::OnLogFileReady(base::File log_file) {
 void GoogleDriveMigrationUploader::Cancel(base::OnceClosure callback) {
   cancelled_callback_ = std::move(callback);
   cancelled_ = true;
-
-  // TODO(aidazolic): Delete the log file.
-
   // Create a copy of the keys to iterate over. This is necessary because
   // calling Cancel() on the uploader may trigger OnUploadDone(), which
   // modifies the |uploaders_| map, potentially invalidating iterators.

@@ -29,6 +29,10 @@ using MigrationDoneCallback =
                             base::FilePath,
                             std::optional<base::FilePath>)>;
 
+// Callback to signal that migration has completely stopped and can be
+// restarted.
+using MigrationStoppedCallback = base::OnceCallback<void(bool)>;
+
 class MigrationCloudUploader;
 
 // Handles the upload of local files to a specified cloud storage destination.
@@ -52,7 +56,7 @@ class MigrationCoordinator {
                    MigrationDoneCallback callback);
 
   // Cancels any ongoing file uploads.
-  virtual void Cancel();
+  virtual void Cancel(MigrationStoppedCallback callback);
 
   // Returns whether any file uploads are currently in progress.
   virtual bool IsRunning() const;

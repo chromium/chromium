@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -85,6 +86,9 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // policy::local_user_files::Observer overrides:
   void OnLocalUserFilesPolicyChanged() override;
 
+  // Called after migration is stopped and can be started again.
+  void OnMigrationStopped(bool log_file_deleted);
+
   // Called after contents of MyFiles are checked. If empty, removes the volume
   // and restricts write access, otherwise initiates the migration based on the
   // current state.
@@ -143,7 +147,8 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
 
   // Stops the migration if currently ongoing.
   void MaybeStopMigration(CloudProvider previous_provider,
-                          bool close_dialog = true);
+                          bool close_dialog = true,
+                          MigrationStoppedCallback = base::DoNothing());
 
   // Sets and stores the state on the device.
   void SetState(State new_state);

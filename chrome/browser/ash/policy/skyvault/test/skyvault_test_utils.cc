@@ -44,7 +44,11 @@ MockMigrationCoordinator::MockMigrationCoordinator(Profile* profile)
                 base::Minutes(5));  // Delay 5 minutes
       });
 
-  ON_CALL(*this, Cancel).WillByDefault([this]() { is_running_ = false; });
+  ON_CALL(*this, Cancel)
+      .WillByDefault([this](MigrationStoppedCallback callback) {
+        is_running_ = false;
+        std::move(callback).Run(true);
+      });
 }
 
 MockMigrationCoordinator::~MockMigrationCoordinator() = default;

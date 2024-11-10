@@ -22,6 +22,9 @@ inline constexpr char kUploadRootPrefix[] = "ChromeOS device";
 // The maximum number of retries before failing the migration.
 inline constexpr int kMaxRetryCount = 5;
 
+// The name of the log file for migration upload errors.
+inline constexpr char kErrorLogFileName[] = "local_files_upload";
+
 }  // namespace policy::local_user_files
 
 #endif  // CHROME_BROWSER_POLICY_LOCAL_USER_FILES_LOCAL_FILES_MIGRATION_CONSTANTS_H_
