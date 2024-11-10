@@ -49,7 +49,7 @@ class ASH_EXPORT QuickInsertSearchResultsView : public PickerPageView {
   // must remain valid for the lifetime of this class.
   explicit QuickInsertSearchResultsView(
       QuickInsertSearchResultsViewDelegate* delegate,
-      int picker_view_width,
+      int quick_insert_view_width,
       PickerAssetFetcher* asset_fetcher,
       PickerSubmenuController* submenu_controller,
       PickerPreviewBubbleController* preview_controller);

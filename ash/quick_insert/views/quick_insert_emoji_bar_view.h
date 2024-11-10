@@ -34,7 +34,7 @@ class ASH_EXPORT PickerEmojiBarView : public views::View,
  public:
   // `delegate` must remain valid for the lifetime of this class.
   PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
-                     int picker_view_width,
+                     int quick_insert_view_width,
                      bool is_gifs_enabled = false);
   PickerEmojiBarView(const PickerEmojiBarView&) = delete;
   PickerEmojiBarView& operator=(const PickerEmojiBarView&) = delete;
@@ -87,7 +87,7 @@ class ASH_EXPORT PickerEmojiBarView : public views::View,
   raw_ptr<PickerEmojiBarViewDelegate> delegate_;
 
   // The width of the QuickInsertView that contains this emoji bar.
-  int picker_view_width_ = 0;
+  int quick_insert_view_width_ = 0;
 
   // Contains the item views corresponding to each search result.
   raw_ptr<views::View> item_row_ = nullptr;

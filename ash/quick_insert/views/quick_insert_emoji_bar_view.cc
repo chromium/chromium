@@ -212,9 +212,9 @@ END_METADATA
 }  // namespace
 
 PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
-                                       int picker_view_width,
+                                       int quick_insert_view_width,
                                        bool is_gifs_enabled)
-    : delegate_(delegate), picker_view_width_(picker_view_width) {
+    : delegate_(delegate), quick_insert_view_width_(quick_insert_view_width) {
   SetUseDefaultFillLayout(true);
   GetViewAccessibility().SetRole(ax::mojom::Role::kGrid);
   GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
@@ -287,7 +287,7 @@ PickerEmojiBarView::~PickerEmojiBarView() = default;
 
 gfx::Size PickerEmojiBarView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return gfx::Size(picker_view_width_, kPickerEmojiBarHeight);
+  return gfx::Size(quick_insert_view_width_, kPickerEmojiBarHeight);
 }
 
 views::View* PickerEmojiBarView::GetTopItem() {
@@ -378,7 +378,7 @@ void PickerEmojiBarView::OpenGifs() {
 }
 
 int PickerEmojiBarView::CalculateAvailableWidthForItemRow() {
-  return picker_view_width_ - kEmojiBarMargins.width() -
+  return quick_insert_view_width_ - kEmojiBarMargins.width() -
          kItemRowAndGifsSpacing - gifs_button_->GetPreferredSize().width() -
          kGifsAndMoreEmojisSpacing -
          more_emojis_button_->GetPreferredSize().width();

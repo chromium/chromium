@@ -44,7 +44,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   explicit PickerZeroStateView(
       PickerZeroStateViewDelegate* delegate,
       base::span<const QuickInsertCategory> available_categories,
-      int picker_view_width,
+      int quick_insert_view_width,
       PickerAssetFetcher* asset_fetcher,
       PickerSubmenuController* submenu_controller,
       PickerPreviewBubbleController* preview_controller);

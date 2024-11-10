@@ -93,7 +93,7 @@ EditorSubmenu GetEditorSubmenu(
 PickerZeroStateView::PickerZeroStateView(
     PickerZeroStateViewDelegate* delegate,
     base::span<const QuickInsertCategory> available_categories,
-    int picker_view_width,
+    int quick_insert_view_width,
     PickerAssetFetcher* asset_fetcher,
     PickerSubmenuController* submenu_controller,
     PickerPreviewBubbleController* preview_controller)
@@ -104,7 +104,7 @@ PickerZeroStateView::PickerZeroStateView(
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
   section_list_view_ = AddChildView(std::make_unique<PickerSectionListView>(
-      picker_view_width, asset_fetcher, submenu_controller_));
+      quick_insert_view_width, asset_fetcher, submenu_controller_));
 
   for (QuickInsertCategory category : available_categories) {
     // kEditorRewrite and LobsterWithSelectedText are not visible in the

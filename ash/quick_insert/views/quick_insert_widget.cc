@@ -47,7 +47,7 @@ views::Widget::InitParams CreateInitParams(
     const gfx::Rect& anchor_bounds,
     PickerPositionType position_type,
     const base::TimeTicks trigger_event_timestamp) {
-  auto picker_view = std::make_unique<QuickInsertView>(
+  auto quick_insert_view = std::make_unique<QuickInsertView>(
       delegate, anchor_bounds, GetLayoutType(anchor_bounds, position_type),
       position_type, trigger_event_timestamp);
 
@@ -64,7 +64,7 @@ views::Widget::InitParams CreateInitParams(
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   // TODO(b/309706053): Replace this with the finalized string.
   params.name = "Picker";
-  params.delegate = picker_view.release();
+  params.delegate = quick_insert_view.release();
   return params;
 }
 

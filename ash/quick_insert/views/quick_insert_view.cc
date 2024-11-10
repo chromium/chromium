@@ -101,43 +101,45 @@ std::unique_ptr<views::BubbleBorder> CreateBorder() {
 
 // Gets the preferred Quick Insert view bounds in screen coordinates. We try to
 // place the Quick Insert view close to `anchor_bounds`, while taking into
-// account `layout_type`, `picker_view_size` and available space on the screen.
-// `picker_view_search_field_vertical_offset` is the vertical offset from the
-// top of the Quick Insert view to the center of the search field, which we use
-// to try to vertically align the search field with the center of the anchor
-// bounds. `anchor_bounds` and returned bounds should be in screen coordinates.
+// account `layout_type`, `quick_insert_view_size` and available space on the
+// screen. `quick_insert_view_search_field_vertical_offset` is the vertical
+// offset from the top of the Quick Insert view to the center of the search
+// field, which we use to try to vertically align the search field with the
+// center of the anchor bounds. `anchor_bounds` and returned bounds should be in
+// screen coordinates.
 gfx::Rect GetQuickInsertViewBoundsWithoutSelectedText(
     const gfx::Rect& anchor_bounds,
     PickerLayoutType layout_type,
-    const gfx::Size& picker_view_size,
-    int picker_view_search_field_vertical_offset) {
+    const gfx::Size& quick_insert_view_size,
+    int quick_insert_view_search_field_vertical_offset) {
   gfx::Rect screen_work_area = display::Screen::GetScreen()
                                    ->GetDisplayMatching(anchor_bounds)
                                    .work_area();
   screen_work_area.Inset(kPaddingFromScreenEdge);
-  gfx::Rect picker_view_bounds(picker_view_size);
-  if (anchor_bounds.right() + picker_view_size.width() <=
+  gfx::Rect quick_insert_view_bounds(quick_insert_view_size);
+  if (anchor_bounds.right() + quick_insert_view_size.width() <=
       screen_work_area.right()) {
     // If there is space, place Quick Insert to the right of the anchor,
     // vertically aligning the center of the Quick Insert search field with the
     // center of the anchor.
-    picker_view_bounds.set_origin(anchor_bounds.right_center());
-    picker_view_bounds.Offset(0, -picker_view_search_field_vertical_offset);
+    quick_insert_view_bounds.set_origin(anchor_bounds.right_center());
+    quick_insert_view_bounds.Offset(
+        0, -quick_insert_view_search_field_vertical_offset);
   } else {
     switch (layout_type) {
       case PickerLayoutType::kMainResultsBelowSearchField:
         // Try to place Quick Insert at the right edge of the screen, below
         // the anchor.
-        picker_view_bounds.set_origin(
-            {screen_work_area.right() - picker_view_size.width(),
+        quick_insert_view_bounds.set_origin(
+            {screen_work_area.right() - quick_insert_view_size.width(),
              anchor_bounds.bottom()});
         break;
       case PickerLayoutType::kMainResultsAboveSearchField:
         // Try to place Quick Insert at the right edge of the screen, above
         // the anchor.
-        picker_view_bounds.set_origin(
-            {screen_work_area.right() - picker_view_size.width(),
-             anchor_bounds.y() - picker_view_size.height()});
+        quick_insert_view_bounds.set_origin(
+            {screen_work_area.right() - quick_insert_view_size.width(),
+             anchor_bounds.y() - quick_insert_view_size.height()});
         break;
     }
   }
@@ -145,40 +147,41 @@ gfx::Rect GetQuickInsertViewBoundsWithoutSelectedText(
   // Adjust if necessary to keep the whole Quick Insert view onscreen. Note that
   // the non client area of Quick Insert, e.g. the shadows, are allowed to
   // be offscreen.
-  picker_view_bounds.AdjustToFit(screen_work_area);
-  return picker_view_bounds;
+  quick_insert_view_bounds.AdjustToFit(screen_work_area);
+  return quick_insert_view_bounds;
 }
 
 // Gets the preferred Quick Insert view bounds in the case that there is
 // selected text. We try to left align the Quick Insert view above or below
-// `anchor_bounds`, while taking into account `layout_type`, `picker_view_size`
-// and available space on the screen. `anchor_bounds` and returned bounds should
-// be in screen coordinates.
+// `anchor_bounds`, while taking into account `layout_type`,
+// `quick_insert_view_size` and available space on the screen. `anchor_bounds`
+// and returned bounds should be in screen coordinates.
 gfx::Rect GetQuickInsertViewBoundsWithSelectedText(
     const gfx::Rect& anchor_bounds,
     PickerLayoutType layout_type,
-    const gfx::Size& picker_view_size) {
+    const gfx::Size& quick_insert_view_size) {
   gfx::Rect screen_work_area = display::Screen::GetScreen()
                                    ->GetDisplayMatching(anchor_bounds)
                                    .work_area();
   screen_work_area.Inset(kPaddingFromScreenEdge);
-  gfx::Rect picker_view_bounds(picker_view_size);
+  gfx::Rect quick_insert_view_bounds(quick_insert_view_size);
   switch (layout_type) {
     case PickerLayoutType::kMainResultsBelowSearchField:
       // Left aligned below the anchor.
-      picker_view_bounds.set_origin(
+      quick_insert_view_bounds.set_origin(
           gfx::Point(anchor_bounds.x(), anchor_bounds.bottom()));
       break;
     case PickerLayoutType::kMainResultsAboveSearchField:
       // Left aligned above the anchor.
-      picker_view_bounds.set_origin(gfx::Point(
-          anchor_bounds.x(), anchor_bounds.y() - picker_view_size.height()));
+      quick_insert_view_bounds.set_origin(
+          gfx::Point(anchor_bounds.x(),
+                     anchor_bounds.y() - quick_insert_view_size.height()));
       break;
   }
 
   // Adjust if necessary to keep the whole Quick Insert view onscreen.
-  picker_view_bounds.AdjustToFit(screen_work_area);
-  return picker_view_bounds;
+  quick_insert_view_bounds.AdjustToFit(screen_work_area);
+  return quick_insert_view_bounds;
 }
 
 QuickInsertCategory GetCategoryForMoreResults(QuickInsertSectionType type) {

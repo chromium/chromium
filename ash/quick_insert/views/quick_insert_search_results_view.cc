@@ -90,7 +90,7 @@ QuickInsertSectionView::LocalFileResultStyle ConvertLocalFileResultStyle(
 
 QuickInsertSearchResultsView::QuickInsertSearchResultsView(
     QuickInsertSearchResultsViewDelegate* delegate,
-    int picker_view_width,
+    int quick_insert_view_width,
     PickerAssetFetcher* asset_fetcher,
     PickerSubmenuController* submenu_controller,
     PickerPreviewBubbleController* preview_controller)
@@ -102,7 +102,7 @@ QuickInsertSearchResultsView::QuickInsertSearchResultsView(
   GetViewAccessibility().SetContainerLiveStatus("polite");
 
   section_list_view_ = AddChildView(std::make_unique<PickerSectionListView>(
-      picker_view_width, asset_fetcher, submenu_controller));
+      quick_insert_view_width, asset_fetcher, submenu_controller));
   no_results_view_ = AddChildView(
       views::Builder<views::BoxLayoutView>()
           .SetVisible(false)
