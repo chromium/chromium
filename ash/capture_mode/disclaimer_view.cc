@@ -27,12 +27,14 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/range/range.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -93,6 +95,38 @@ std::u16string GetTextDeclineButton() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
+std::u16string GetBodyTextParagraphOne() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(
+      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_ONE);
+#else
+  return u"This is the disclaimer view for a capture mode feature.";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+std::u16string GetBodyTextParagraphTwo() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(
+      IDS_CAPTURE_SEARCH_SAMPLE_DISCLAIMER_PARAGRAPH_TWO);
+#else
+  return u"Read the terms and conditions.";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+views::Builder<views::StyledLabel> GetTextBodyBuilder(
+    const std::u16string& text) {
+  views::StyledLabel::RangeStyleInfo style;
+  style.custom_font = TypographyProvider::Get()->ResolveTypographyToken(
+      TypographyToken::kCrosBody1);
+  style.override_color_id = static_cast<ui::ColorId>(ui::kColorSysOnSurface);
+
+  return views::Builder<views::StyledLabel>()
+      .SetText(text)
+      .AddStyleRange(gfx::Range(0, text.length()), style)
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .SetAutoColorReadabilityEnabled(false);
+}
+
 }  // namespace
 
 DisclaimerView::DisclaimerView(
@@ -135,7 +169,9 @@ DisclaimerView::DisclaimerView(
                           .SetHorizontalAlignment(
                               gfx::HorizontalAlignment::ALIGN_LEFT)
                           .SetText(GetTextTitle())
-                          .CopyAddressTo(&title_)))
+                          .CopyAddressTo(&title_),
+                      GetTextBodyBuilder(GetBodyTextParagraphOne()),
+                      GetTextBodyBuilder(GetBodyTextParagraphTwo())))
           .Build());
 
   AddChildView(
