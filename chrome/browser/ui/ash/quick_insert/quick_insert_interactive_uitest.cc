@@ -176,17 +176,18 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertEmoji) {
       chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kFirstEmojiResultName = "FirstEmojiResult";
   constexpr std::u16string_view kExpectedFirstEmoji = u"👍";
-  views::Textfield* picker_search_field = nullptr;
+  views::Textfield* quick_insert_search_field = nullptr;
 
   RunTestSequence(
       InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kPickerSearchFieldTextfieldElementId,
-                [&picker_search_field](ui::TrackedElement* el) {
-                  picker_search_field = AsView<views::Textfield>(el);
+                [&quick_insert_search_field](ui::TrackedElement* el) {
+                  quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
-      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      ObserveState(kSearchFieldFocusedState,
+                   std::ref(quick_insert_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"thumbs up"),
       WaitForShow(ash::kPickerEmojiItemElementId,
@@ -208,17 +209,18 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertSymbol) {
       chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kFirstSymbolResultName = "FirstSymbolResult";
   constexpr std::u16string_view kExpectedFirstSymbol = u"α";
-  views::Textfield* picker_search_field = nullptr;
+  views::Textfield* quick_insert_search_field = nullptr;
 
   RunTestSequence(
       InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kPickerSearchFieldTextfieldElementId,
-                [&picker_search_field](ui::TrackedElement* el) {
-                  picker_search_field = AsView<views::Textfield>(el);
+                [&quick_insert_search_field](ui::TrackedElement* el) {
+                  quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
-      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      ObserveState(kSearchFieldFocusedState,
+                   std::ref(quick_insert_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
       EnterText(ash::kPickerSearchFieldTextfieldElementId,
                 u"greek letter alpha"),
@@ -241,17 +243,18 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertEmoticon) {
       chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kFirstEmoticonResultName = "FirstEmoticonResult";
   constexpr std::u16string_view kExpectedFirstEmoticon = u"ಠωಠ";
-  views::Textfield* picker_search_field = nullptr;
+  views::Textfield* quick_insert_search_field = nullptr;
 
   RunTestSequence(
       InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kPickerSearchFieldTextfieldElementId,
-                [&picker_search_field](ui::TrackedElement* el) {
-                  picker_search_field = AsView<views::Textfield>(el);
+                [&quick_insert_search_field](ui::TrackedElement* el) {
+                  quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
-      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      ObserveState(kSearchFieldFocusedState,
+                   std::ref(quick_insert_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
       EnterText(ash::kPickerSearchFieldTextfieldElementId,
                 u"denko of disapproval"),
@@ -271,17 +274,18 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
   const ui::ElementContext browser_context =
       chrome::FindLastActive()->window()->GetElementContext();
-  views::Textfield* picker_search_field = nullptr;
+  views::Textfield* quick_insert_search_field = nullptr;
 
   RunTestSequence(
       InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kPickerSearchFieldTextfieldElementId,
-                [&picker_search_field](ui::TrackedElement* el) {
-                  picker_search_field = AsView<views::Textfield>(el);
+                [&quick_insert_search_field](ui::TrackedElement* el) {
+                  quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
-      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      ObserveState(kSearchFieldFocusedState,
+                   std::ref(quick_insert_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"thumbs"),
       WaitForShow(ash::kPickerMoreEmojisElementId),
@@ -295,17 +299,18 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchGifs) {
       GURL("data:text/html,<input type=\"text\" autofocus/>")));
   const ui::ElementContext browser_context =
       chrome::FindLastActive()->window()->GetElementContext();
-  views::Textfield* picker_search_field = nullptr;
+  views::Textfield* quick_insert_search_field = nullptr;
 
   RunTestSequence(
       InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kPickerSearchFieldTextfieldElementId,
-                [&picker_search_field](ui::TrackedElement* el) {
-                  picker_search_field = AsView<views::Textfield>(el);
+                [&quick_insert_search_field](ui::TrackedElement* el) {
+                  quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
-      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      ObserveState(kSearchFieldFocusedState,
+                   std::ref(quick_insert_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"happy"),
       WaitForShow(ash::kPickerGifElementId),
@@ -320,17 +325,18 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchBrowsingHistory) {
   const ui::ElementContext browser_context =
       chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kHistoryResultName = "HistoryResult";
-  views::Textfield* picker_search_field = nullptr;
+  views::Textfield* quick_insert_search_field = nullptr;
 
   RunTestSequence(
       InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kPickerSearchFieldTextfieldElementId,
-                [&picker_search_field](ui::TrackedElement* el) {
-                  picker_search_field = AsView<views::Textfield>(el);
+                [&quick_insert_search_field](ui::TrackedElement* el) {
+                  quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
-      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      ObserveState(kSearchFieldFocusedState,
+                   std::ref(quick_insert_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"foo.com"),
       WaitForShow(ash::kPickerSearchResultsPageElementId),
@@ -354,17 +360,18 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
   constexpr std::string_view kHistoryCategoryResultName =
       "HistoryCategoryResult";
   constexpr std::string_view kHistoryResultName = "HistoryResult";
-  views::Textfield* picker_search_field = nullptr;
+  views::Textfield* quick_insert_search_field = nullptr;
 
   RunTestSequence(
       InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kPickerSearchFieldTextfieldElementId,
-                [&picker_search_field](ui::TrackedElement* el) {
-                  picker_search_field = AsView<views::Textfield>(el);
+                [&quick_insert_search_field](ui::TrackedElement* el) {
+                  quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
-      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      ObserveState(kSearchFieldFocusedState,
+                   std::ref(quick_insert_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"history"),
       WaitForShow(ash::kPickerSearchResultsPageElementId),
@@ -396,17 +403,18 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchLocalFile) {
   const ui::ElementContext browser_context =
       chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kFileResultName = "FileResult";
-  views::Textfield* picker_search_field = nullptr;
+  views::Textfield* quick_insert_search_field = nullptr;
 
   RunTestSequence(
       InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kPickerSearchFieldTextfieldElementId,
-                [&picker_search_field](ui::TrackedElement* el) {
-                  picker_search_field = AsView<views::Textfield>(el);
+                [&quick_insert_search_field](ui::TrackedElement* el) {
+                  quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
-      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      ObserveState(kSearchFieldFocusedState,
+                   std::ref(quick_insert_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"test"),
       WaitForShow(ash::kPickerSearchResultsPageElementId),
@@ -427,17 +435,18 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchLocalFileCategory) {
       chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kFileCategoryResultName = "FileCategoryResult";
   constexpr std::string_view kFileResultName = "FileResult";
-  views::Textfield* picker_search_field = nullptr;
+  views::Textfield* quick_insert_search_field = nullptr;
 
   RunTestSequence(
       InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kPickerSearchFieldTextfieldElementId,
-                [&picker_search_field](ui::TrackedElement* el) {
-                  picker_search_field = AsView<views::Textfield>(el);
+                [&quick_insert_search_field](ui::TrackedElement* el) {
+                  quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
-      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      ObserveState(kSearchFieldFocusedState,
+                   std::ref(quick_insert_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
       // Search for the file category
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"file"),
@@ -467,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertDate) {
       chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kDateResultName = "DateResult";
   constexpr std::u16string_view kExpectedDate = u"Feb 19";
-  views::Textfield* picker_search_field = nullptr;
+  views::Textfield* quick_insert_search_field = nullptr;
   base::subtle::ScopedTimeClockOverrides time_override(
       []() {
         base::Time date;
@@ -483,10 +492,11 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertDate) {
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kPickerSearchFieldTextfieldElementId,
-                [&picker_search_field](ui::TrackedElement* el) {
-                  picker_search_field = AsView<views::Textfield>(el);
+                [&quick_insert_search_field](ui::TrackedElement* el) {
+                  quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
-      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      ObserveState(kSearchFieldFocusedState,
+                   std::ref(quick_insert_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"today"),
       WaitForShow(ash::kPickerSearchResultsPageElementId),
@@ -510,17 +520,18 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
       chrome::FindLastActive()->window()->GetElementContext();
   constexpr std::string_view kMathResultName = "MathResult";
   constexpr std::u16string_view kExpectedResult = u"2";
-  views::Textfield* picker_search_field = nullptr;
+  views::Textfield* quick_insert_search_field = nullptr;
 
   RunTestSequence(
       InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kPickerSearchFieldTextfieldElementId,
-                [&picker_search_field](ui::TrackedElement* el) {
-                  picker_search_field = AsView<views::Textfield>(el);
+                [&quick_insert_search_field](ui::TrackedElement* el) {
+                  quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
-      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      ObserveState(kSearchFieldFocusedState,
+                   std::ref(quick_insert_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"1 + 1"),
       WaitForShow(ash::kPickerSearchResultsPageElementId),
@@ -546,17 +557,18 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
   constexpr std::string_view kFile1Name = "File1";
   constexpr std::string_view kFile2Name = "File2";
   constexpr std::string_view kFile3Name = "File3";
-  views::Textfield* picker_search_field = nullptr;
+  views::Textfield* quick_insert_search_field = nullptr;
 
   RunTestSequence(
       InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kPickerSearchFieldTextfieldElementId,
-                [&picker_search_field](ui::TrackedElement* el) {
-                  picker_search_field = AsView<views::Textfield>(el);
+                [&quick_insert_search_field](ui::TrackedElement* el) {
+                  quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
-      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      ObserveState(kSearchFieldFocusedState,
+                   std::ref(quick_insert_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
       WaitForShow(ash::kPickerSearchResultsImageRowElementId),
       WaitForViewProperty(ash::kPickerSearchResultsImageRowElementId,
@@ -586,17 +598,18 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
   constexpr std::string_view kItem2Name = "Item2";
   constexpr std::string_view kEmoji1Name = "Emoji1";
   constexpr std::string_view kEmoji2Name = "Emoji2";
-  views::Textfield* picker_search_field = nullptr;
+  views::Textfield* quick_insert_search_field = nullptr;
 
   RunTestSequence(
       InContext(browser_context, Steps(InstrumentTab(kWebContentsElementId),
                                        WaitForWebInputFieldFocus())),
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kPickerSearchFieldTextfieldElementId,
-                [&picker_search_field](ui::TrackedElement* el) {
-                  picker_search_field = AsView<views::Textfield>(el);
+                [&quick_insert_search_field](ui::TrackedElement* el) {
+                  quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
-      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      ObserveState(kSearchFieldFocusedState,
+                   std::ref(quick_insert_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
       NameDescendantViewByType<ash::QuickInsertListItemView>(
           ash::kPickerElementId, kItem1Name, 0),
@@ -650,15 +663,16 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, LocalFilePreview) {
   ASSERT_TRUE(AddLocalFileToDownloads(GetActiveUserProfile(), "test.png"));
   constexpr std::string_view kFileResultName = "FileResult";
-  views::Textfield* picker_search_field = nullptr;
+  views::Textfield* quick_insert_search_field = nullptr;
 
   RunTestSequence(
       Do([]() { TogglePickerByAccelerator(); }),
       AfterShow(ash::kPickerSearchFieldTextfieldElementId,
-                [&picker_search_field](ui::TrackedElement* el) {
-                  picker_search_field = AsView<views::Textfield>(el);
+                [&quick_insert_search_field](ui::TrackedElement* el) {
+                  quick_insert_search_field = AsView<views::Textfield>(el);
                 }),
-      ObserveState(kSearchFieldFocusedState, std::ref(picker_search_field)),
+      ObserveState(kSearchFieldFocusedState,
+                   std::ref(quick_insert_search_field)),
       WaitForState(kSearchFieldFocusedState, true),
       EnterText(ash::kPickerSearchFieldTextfieldElementId, u"test"),
       WaitForShow(ash::kPickerSearchResultsPageElementId),

@@ -95,15 +95,16 @@ void PickerLinkSuggester::OnGetBrowsingHistory(SuggestedLinksCallback callback,
     }
   } else {
     // Fallback to placeholder icon if favicon service is not available.
-    std::vector<ash::QuickInsertSearchResult> picker_search_results;
+    std::vector<ash::QuickInsertSearchResult> quick_insert_search_results;
     for (const auto& result : filtered_results) {
-      picker_search_results.push_back(ash::QuickInsertBrowsingHistoryResult(
-          result.url(), result.title(),
-          ui::ImageModel::FromVectorIcon(ash::kOmniboxGenericIcon,
-                                         cros_tokens::kCrosSysOnSurface),
-          false));
+      quick_insert_search_results.push_back(
+          ash::QuickInsertBrowsingHistoryResult(
+              result.url(), result.title(),
+              ui::ImageModel::FromVectorIcon(ash::kOmniboxGenericIcon,
+                                             cros_tokens::kCrosSysOnSurface),
+              false));
     }
-    std::move(callback).Run(picker_search_results);
+    std::move(callback).Run(quick_insert_search_results);
   }
 }
 
