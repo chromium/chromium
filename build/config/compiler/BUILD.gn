@@ -1996,7 +1996,7 @@ config("default_warnings") {
 
         if (llvm_force_head_revision) {
           # TODO(crbug.com/376641662): Fix and re-enable.
-          cflags_cc += [ "-Wno-nontrivial-memaccess" ]
+          cflags += [ "-Wno-nontrivial-memaccess" ]
         }
       }
     }
