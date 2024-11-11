@@ -32,6 +32,16 @@ class FilterConfig;
 
 using FiltersDisjunction = std::vector<FilterConfig>;
 
+enum class FilterValuesError {
+  kListWrongType,
+  kValueWrongType,
+  kTooManyKeys,
+  kKeyTooLong,
+  kKeyReserved,
+  kListTooLong,
+  kValueTooLong,
+};
+
 // Set on sources.
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
  public:
@@ -51,6 +61,9 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) FilterData {
   // equivalent behavior in `FromJSON()`. This will be easier to accomplish once
   // the value type of `FilterValues` is changed to `base::flat_set`.
   static std::optional<FilterData> Create(FilterValues);
+
+  static base::expected<FilterData, FilterValuesError> CreateForTesting(
+      FilterValues);
 
   static base::expected<FilterData, mojom::SourceRegistrationError> FromJSON(
       base::Value*);
@@ -158,6 +171,9 @@ FiltersFromJSONForTesting(base::Value* input_value);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::Value::List ToJsonForTesting(const FiltersDisjunction& filters);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::Value::Dict FilterValuesToJson(const FilterValues&);
 
 }  // namespace attribution_reporting
 

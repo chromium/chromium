@@ -38,44 +38,35 @@ namespace {
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
-enum class FilterValuesError {
-  kListWrongType,
-  kValueWrongType,
-  kTooManyKeys,
-  kKeyTooLong,
-  kKeyReserved,
-  kListTooLong,
-  kValueTooLong,
-};
-
 constexpr char kNotFilters[] = "not_filters";
 
-bool IsValidForSource(const FilterValues& filter_values) {
+base::expected<void, FilterValuesError> ValidateForSource(
+    const FilterValues& filter_values) {
   if (filter_values.contains(FilterData::kSourceTypeFilterKey)) {
-    return false;
+    return base::unexpected(FilterValuesError::kKeyReserved);
   }
 
   if (filter_values.size() > kMaxFiltersPerSource) {
-    return false;
+    return base::unexpected(FilterValuesError::kTooManyKeys);
   }
 
   for (const auto& [filter, values] : filter_values) {
     if (filter.size() > kMaxBytesPerFilterString) {
-      return false;
+      return base::unexpected(FilterValuesError::kKeyTooLong);
     }
 
     if (values.size() > kMaxValuesPerFilter) {
-      return false;
+      return base::unexpected(FilterValuesError::kListTooLong);
     }
 
     for (const auto& value : values) {
       if (value.size() > kMaxBytesPerFilterString) {
-        return false;
+        return base::unexpected(FilterValuesError::kValueTooLong);
       }
     }
   }
 
-  return true;
+  return base::ok();
 }
 
 // Records the Conversions.FiltersPerFilterData metric.
@@ -154,6 +145,8 @@ base::expected<FilterValues, FilterValuesError> ParseFilterValuesFromJSON(
   return FilterValues(base::sorted_unique, std::move(filter_values));
 }
 
+}  // namespace
+
 base::Value::Dict FilterValuesToJson(const FilterValues& filter_values) {
   base::Value::Dict dict;
   for (const auto& [key, values] : filter_values) {
@@ -166,14 +159,19 @@ base::Value::Dict FilterValuesToJson(const FilterValues& filter_values) {
   return dict;
 }
 
-}  // namespace
-
 // static
 std::optional<FilterData> FilterData::Create(FilterValues filter_values) {
-  if (!IsValidForSource(filter_values)) {
+  if (!ValidateForSource(filter_values).has_value()) {
     return std::nullopt;
   }
 
+  return FilterData(std::move(filter_values));
+}
+
+// static
+base::expected<FilterData, FilterValuesError> FilterData::CreateForTesting(
+    FilterValues filter_values) {
+  RETURN_IF_ERROR(ValidateForSource(filter_values));
   return FilterData(std::move(filter_values));
 }
 
@@ -224,7 +222,7 @@ FilterData::FilterData() = default;
 
 FilterData::FilterData(FilterValues filter_values)
     : filter_values_(std::move(filter_values)) {
-  CHECK(IsValidForSource(filter_values_));
+  CHECK(ValidateForSource(filter_values_).has_value());
 }
 
 FilterData::~FilterData() = default;
