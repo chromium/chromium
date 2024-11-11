@@ -146,6 +146,9 @@ AuthenticatorRequestClientDelegate::~AuthenticatorRequestClientDelegate() =
 void AuthenticatorRequestClientDelegate::SetRelyingPartyId(const std::string&) {
 }
 
+void AuthenticatorRequestClientDelegate::SetUIPresentation(
+    UIPresentation ui_presentation) {}
+
 bool AuthenticatorRequestClientDelegate::DoesBlockRequestOnFailure(
     InterestingFailureReason reason) {
   return false;
@@ -192,12 +195,6 @@ void AuthenticatorRequestClientDelegate::SelectAccount(
   std::move(callback).Run(std::move(responses.at(0)));
 }
 
-void AuthenticatorRequestClientDelegate::DisableUI() {}
-
-bool AuthenticatorRequestClientDelegate::IsWebAuthnUIEnabled() {
-  return false;
-}
-
 void AuthenticatorRequestClientDelegate::SetVirtualEnvironment(
     bool virtual_environment) {
   virtual_environment_ = virtual_environment;
@@ -206,9 +203,6 @@ void AuthenticatorRequestClientDelegate::SetVirtualEnvironment(
 bool AuthenticatorRequestClientDelegate::IsVirtualEnvironmentEnabled() {
   return virtual_environment_;
 }
-
-void AuthenticatorRequestClientDelegate::SetConditionalRequest(
-    bool is_conditional) {}
 
 void AuthenticatorRequestClientDelegate::SetAmbientCredentialTypes(
     int credential_type_flags) {}

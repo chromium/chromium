@@ -234,6 +234,7 @@ class ChromeAuthenticatorRequestDelegate
 
   // content::AuthenticatorRequestClientDelegate:
   void SetRelyingPartyId(const std::string& rp_id) override;
+  void SetUIPresentation(UIPresentation ui_presentation) override;
   bool DoesBlockRequestOnFailure(InterestingFailureReason reason) override;
   void RegisterActionCallbacks(
       base::OnceClosure cancel_callback,
@@ -264,9 +265,6 @@ class ChromeAuthenticatorRequestDelegate
       std::vector<device::AuthenticatorGetAssertionResponse> responses,
       base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
           callback) override;
-  void DisableUI() override;
-  bool IsWebAuthnUIEnabled() override;
-  void SetConditionalRequest(bool is_conditional) override;
   void SetAmbientCredentialTypes(int credential_type_flags) override;
   void SetCredentialIdFilter(std::vector<device::PublicKeyCredentialDescriptor>
                                  credential_list) override;
@@ -325,6 +323,8 @@ class ChromeAuthenticatorRequestDelegate
   content::RenderFrameHost* GetRenderFrameHost() const;
 
   content::BrowserContext* GetBrowserContext() const;
+
+  bool webauthn_ui_enabled() const;
 
   void ShowUI(device::FidoRequestHandlerBase::TransportAvailabilityInfo data);
 
@@ -397,15 +397,6 @@ class ChromeAuthenticatorRequestDelegate
   AccountPreselectedCallback account_preselected_callback_;
   device::FidoRequestHandlerBase::RequestCallback request_callback_;
 
-  // If in the TransportAvailabilityInfo reported by the request handler,
-  // disable_embedder_ui is set, this will be set to true. No UI must be
-  // rendered and all request handler callbacks will be ignored.
-  bool disable_ui_ = false;
-
-  // If true, show a more subtle UI unless the user has platform discoverable
-  // credentials on the device.
-  bool is_conditional_ = false;
-
   // The number of credential types that have been requested to be displayed
   // in the Ambient credential UI.
   int ambient_credential_types_ =
@@ -415,7 +406,6 @@ class ChromeAuthenticatorRequestDelegate
   // non-matching passkeys will not be displayed during conditional mediation
   // requests. When empty, no filter is applied and all passkeys are displayed.
   std::vector<device::PublicKeyCredentialDescriptor> credential_filter_;
-
 
   // cable_device_ready_ is true if a caBLE handshake has completed. At this
   // point we assume that any errors were communicated on the caBLE device and

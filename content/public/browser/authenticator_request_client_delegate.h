@@ -242,6 +242,19 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
     kInternal,
   };
 
+  // Distinguishes different types of UI that can be shown for a WebAuthn
+  // request.
+  enum class UIPresentation {
+    // The default tab-modal dialog shown for .get() and .create() request.
+    kModal,
+    // Passkey autofill UI for .get() requests with `mediation = "conditional"`.
+    kAutofill,
+    // No WebAuthn UI shown. This is used for some internal requests that
+    // originate outside of WebAuthn (e.g. payments) and provide their own
+    // request UI.
+    kDisabled,
+  };
+
   AuthenticatorRequestClientDelegate();
 
   AuthenticatorRequestClientDelegate(
@@ -258,6 +271,9 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
   // |WebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride| may return
   // other forms of strings.
   virtual void SetRelyingPartyId(const std::string& rp_id);
+
+  // Configures the type of UI to be shown for this request.
+  virtual void SetUIPresentation(UIPresentation ui_presentation);
 
   // Called when the request fails for the given |reason|.
   //
@@ -346,21 +362,12 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
       base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
           callback);
 
-  // Disables the WebAuthn request modal dialog UI.
-  virtual void DisableUI();
-
-  virtual bool IsWebAuthnUIEnabled();
-
   // Configures whether a virtual authenticator environment is enabled. The
   // embedder might choose to e.g. automate account selection under a virtual
   // environment.
   void SetVirtualEnvironment(bool virtual_environment);
 
   bool IsVirtualEnvironmentEnabled();
-
-  // Set to true to enable a mode where a priori discovered credentials are
-  // shown alongside autofilled passwords, instead of the modal flow.
-  virtual void SetConditionalRequest(bool is_conditional);
 
   // Set the credential types that are expected by the Ambient UI.
   // Credential types are defined in `credential_types.mojom`.

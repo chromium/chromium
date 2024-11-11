@@ -154,8 +154,9 @@ class ChromeWebAuthnCredentialsDelegateTest
     device::FidoRequestHandlerBase::TransportAvailabilityInfo tai;
     tai.request_type = device::FidoRequestType::kGetAssertion;
     tai.recognized_credentials = std::move(creds);
-    dialog_controller()->StartFlow(std::move(tai),
-                                   /*is_conditional_mediation=*/true);
+    dialog_controller()->set_ui_presentation(
+        content::AuthenticatorRequestClientDelegate::UIPresentation::kAutofill);
+    dialog_controller()->StartFlow(std::move(tai));
 #else
     delegate_->OnWebAuthnRequestPending(
         main_rfh(), creds, /*is_conditional_request=*/true,

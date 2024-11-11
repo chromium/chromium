@@ -96,8 +96,7 @@ class AuthenticatorRequestDialogController
   //
   // Valid action when at step: kNotStarted.
   void StartFlow(device::FidoRequestHandlerBase::TransportAvailabilityInfo
-                     transport_availability,
-                 bool is_conditional_mediation);
+                     transport_availability);
 
   // Starts a modal WebAuthn flow (i.e. what you normally get if you call
   // WebAuthn with no mediation parameter) from a conditional request.
@@ -352,6 +351,11 @@ class AuthenticatorRequestDialogController
 
   void set_ambient_credential_types(int types);
 
+  content::AuthenticatorRequestClientDelegate::UIPresentation ui_presentation()
+      const;
+  void set_ui_presentation(
+      content::AuthenticatorRequestClientDelegate::UIPresentation modality);
+
   base::WeakPtr<AuthenticatorRequestDialogController> GetWeakPtr();
 
  private:
@@ -418,7 +422,7 @@ class AuthenticatorRequestDialogController
   void ContactPhoneAfterOffTheRecordInterstitial(std::string name);
   void ContactPhoneAfterBleIsPowered(std::string name);
 
-  void StartConditionalMediationRequest();
+  void StartAutofillRequest();
 
   void DispatchRequestAsync(AuthenticatorReference* authenticator);
 
@@ -508,9 +512,8 @@ class AuthenticatorRequestDialogController
   base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
       selection_callback_;
 
-  // True if this request should display credentials on the password autofill
-  // prompt instead of the page-modal, regular UI.
-  bool use_conditional_mediation_ = false;
+  content::AuthenticatorRequestClientDelegate::UIPresentation ui_presentation_ =
+      content::AuthenticatorRequestClientDelegate::UIPresentation::kModal;
 
   // cable_extension_provided_ indicates whether the request included a caBLE
   // extension.

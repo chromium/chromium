@@ -101,6 +101,8 @@ using Mechanism = AuthenticatorRequestDialogModel::Mechanism;
 using Step = AuthenticatorRequestDialogModel::Step;
 using TransportAvailabilityInfo =
     device::FidoRequestHandlerBase::TransportAvailabilityInfo;
+using UIPresentation =
+    content::AuthenticatorRequestClientDelegate::UIPresentation;
 using device::AuthenticatorType;
 using device::FidoRequestType;
 
@@ -498,7 +500,7 @@ void AuthenticatorRequestDialogController::OnRecoverSecurityDomainClosed() {
   // dismissed the recovery window. This will ensure the users to have a backup
   // such as hybrid.
   if (transport_availability_.request_type == FidoRequestType::kGetAssertion &&
-      !use_conditional_mediation_ &&
+      ui_presentation_ == UIPresentation::kModal &&
       model_->step() == Step::kRecoverSecurityDomain) {
     model_->StartOver();
     return;
@@ -542,13 +544,13 @@ void AuthenticatorRequestDialogController::CancelAuthenticatorRequest() {
       model_->step() == Step::kGPMChangePin) {
     ChangePinControllerImpl::RecordHistogram(ChangePinEvent::kNewPinCancelled);
   }
-  if (use_conditional_mediation_) {
+  if (ui_presentation_ == UIPresentation::kAutofill) {
     // Conditional UI requests are never cancelled, they restart silently.
     ResetEphemeralState();
     for (auto& observer : model_->observers) {
       observer.OnStartOver();
     }
-    StartConditionalMediationRequest();
+    StartAutofillRequest();
     return;
   }
 
@@ -562,7 +564,7 @@ void AuthenticatorRequestDialogController::CancelAuthenticatorRequest() {
 }
 
 void AuthenticatorRequestDialogController::OnRequestComplete() {
-  if (use_conditional_mediation_) {
+  if (ui_presentation_ == UIPresentation::kAutofill) {
     auto* render_frame_host = GetRenderFrameHost();
     auto* web_contents =
         content::WebContents::FromRenderFrameHost(render_frame_host);
@@ -677,8 +679,7 @@ bool AuthenticatorRequestDialogController::is_request_complete() const {
 }
 
 void AuthenticatorRequestDialogController::StartFlow(
-    TransportAvailabilityInfo transport_availability,
-    bool use_conditional_mediation) {
+    TransportAvailabilityInfo transport_availability) {
   DCHECK(!started_);
   DCHECK_EQ(model_->step(), Step::kNotStarted);
   DCHECK_EQ(
@@ -688,7 +689,6 @@ void AuthenticatorRequestDialogController::StartFlow(
   started_ = true;
   transport_availability_ = std::move(transport_availability);
   UpdateModelForTransportAvailability();
-  use_conditional_mediation_ = use_conditional_mediation;
   // All recognised credentials that are "Chrome implemented" are from the
   // same source, i.e. a platform never has two Chrome implemented platform
   // authenticators.
@@ -712,9 +712,9 @@ void AuthenticatorRequestDialogController::StartFlow(
   PopulateMechanisms();
   model_->priority_mechanism_index = IndexOfPriorityMechanism();
 
-  if (use_conditional_mediation_) {
+  if (ui_presentation_ == UIPresentation::kAutofill) {
     // This is a conditional mediation request.
-    StartConditionalMediationRequest();
+    StartAutofillRequest();
   } else {
     StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection();
   }
@@ -1023,7 +1023,7 @@ void AuthenticatorRequestDialogController::OnTransportAvailabilityChanged(
   model_->mechanisms.clear();
   PopulateMechanisms();
   model_->priority_mechanism_index = IndexOfPriorityMechanism();
-  StartConditionalMediationRequest();
+  StartAutofillRequest();
 }
 
 void AuthenticatorRequestDialogController::OnPhoneContactFailed(
@@ -1258,7 +1258,7 @@ void AuthenticatorRequestDialogController::OnAuthenticatorStorageFull() {
 }
 
 void AuthenticatorRequestDialogController::OnUserConsentDenied() {
-  if (use_conditional_mediation_) {
+  if (ui_presentation_ == UIPresentation::kAutofill) {
     // Do not show a page-modal retry error sheet if the user cancelled out of
     // their platform authenticator during a conditional UI request.
     // Instead, retry silently.
@@ -1306,7 +1306,7 @@ void AuthenticatorRequestDialogController::OnUserConsentDenied() {
 
 bool AuthenticatorRequestDialogController::OnWinUserCancelled() {
 #if BUILDFLAG(IS_WIN)
-  if (use_conditional_mediation_) {
+  if (ui_presentation_ == UIPresentation::kAutofill) {
     // Do not show a page-modal retry error sheet if the user cancelled out of
     // their platform authenticator during a conditional UI request.
     // Instead, retry silently.
@@ -1660,8 +1660,8 @@ void AuthenticatorRequestDialogController::RecordMacOsStartedHistogram() {
                     kStartedCreateForProfileAuthenticatorICloudDriveDisabled;
     }
   } else if (transport_availability_.request_type ==
-                 FidoRequestType::kGetAssertion &&
-             !use_conditional_mediation_) {
+                 device::FidoRequestType::kGetAssertion &&
+             ui_presentation_ == UIPresentation::kModal) {
     const bool profile =
         transport_availability_.has_platform_authenticator_credential ==
         device::FidoRequestHandlerBase::RecognizedCredential::
@@ -1739,6 +1739,16 @@ void AuthenticatorRequestDialogController::set_has_icloud_drive_enabled(
 void AuthenticatorRequestDialogController::set_ambient_credential_types(
     int types) {
   ambient_credential_types_ = types;
+}
+
+content::AuthenticatorRequestClientDelegate::UIPresentation
+AuthenticatorRequestDialogController::ui_presentation() const {
+  return ui_presentation_;
+}
+
+void AuthenticatorRequestDialogController::set_ui_presentation(
+    UIPresentation modality) {
+  ui_presentation_ = modality;
 }
 
 base::WeakPtr<AuthenticatorRequestDialogController>
@@ -1881,7 +1891,7 @@ void AuthenticatorRequestDialogController::ContactPhoneAfterBleIsPowered(
   SetCurrentStep(Step::kCableActivate);
 }
 
-void AuthenticatorRequestDialogController::StartConditionalMediationRequest() {
+void AuthenticatorRequestDialogController::StartAutofillRequest() {
   model_->creds = transport_availability_.recognized_credentials;
 
   auto* render_frame_host = GetRenderFrameHost();
@@ -2077,7 +2087,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   bool specific_phones_listed = false;
   bool specific_local_passkeys_listed = false;
   bool enclave_passkeys_shown = false;
-  if (is_get_assertion && !use_conditional_mediation_) {
+  if (is_get_assertion && ui_presentation_ == UIPresentation::kModal) {
     // List passkeys instead of mechanisms for platform & GPM authenticators.
     for (const auto& cred : transport_availability_.recognized_credentials) {
       if (cred.source == AuthenticatorType::kPhone && !list_phone_passkeys) {
@@ -2119,7 +2129,7 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   // platform credential directly. This is true for both conditional requests
   // and the new passkey selector UI.
   bool did_enumerate_local_passkeys = false;
-  if (use_conditional_mediation_) {
+  if (ui_presentation_ == UIPresentation::kAutofill) {
     did_enumerate_local_passkeys = true;
   } else if (is_get_assertion) {
     switch (transport_availability_.has_platform_authenticator_credential) {
@@ -2190,7 +2200,8 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   }
   if (enclave_enabled_status_ ==
           EnclaveEnabledStatus::kEnabledAndReauthNeeded &&
-      !use_conditional_mediation_ && model_->relying_party_id != "google.com") {
+      ui_presentation_ == UIPresentation::kModal &&
+      model_->relying_party_id != "google.com") {
     // Show a button that lets the user sign in again to restore sync. This
     // cancels the request, so we can't do it for conditional UI requests.
     // TODO(crbug.com/345413738): add support for conditional UI.
@@ -2266,7 +2277,8 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
         transport_availability_.has_icloud_keychain_credential ==
             device::FidoRequestHandlerBase::RecognizedCredential::
                 kNoRecognizedCredential &&
-        paired_phones_.size() == 1 && !use_conditional_mediation_ &&
+        paired_phones_.size() == 1 &&
+        ui_presentation_ == UIPresentation::kModal &&
         transport_availability_.is_only_hybrid_or_internal;
     if (skip_to_phone_confirmation) {
       FIDO_LOG(EVENT)
@@ -2338,7 +2350,7 @@ AuthenticatorRequestDialogController::IndexOfPriorityMechanism() {
   // button.
   if (enclave_enabled_status_ ==
           EnclaveEnabledStatus::kEnabledAndReauthNeeded &&
-      !use_conditional_mediation_) {
+      ui_presentation_ == UIPresentation::kModal) {
     return std::nullopt;
   }
 

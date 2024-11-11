@@ -365,8 +365,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     }
 #endif
 
-    controller_->StartFlow(std::move(transport_availability),
-                           /*is_conditional_mediation=*/false);
+    controller_->StartFlow(std::move(transport_availability));
     if (name.ends_with("_disabled")) {
       model_->ui_disabled_ = true;
       model_->OnSheetModelChanged();
@@ -789,8 +788,7 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
     } else {
       NOTREACHED();
     }
-    controller_->StartFlow(std::move(transport_availability),
-                           /*is_conditional_mediation=*/false);
+    controller_->StartFlow(std::move(transport_availability));
     if (name.ends_with("_disabled")) {
       model_->ui_disabled_ = true;
       model_->OnSheetModelChanged();

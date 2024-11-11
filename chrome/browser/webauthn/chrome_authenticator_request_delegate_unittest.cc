@@ -86,6 +86,8 @@ static constexpr char kRpId[] = "example.com";
 
 using TransportAvailabilityInfo =
     device::FidoRequestHandlerBase::TransportAvailabilityInfo;
+using UIPresentation =
+    content::AuthenticatorRequestClientDelegate::UIPresentation;
 
 std::vector<uint8_t> ToByteVector(std::string_view string) {
   return std::vector<uint8_t>(string.begin(), string.end());
@@ -416,7 +418,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, NoExtraDiscoveriesWithoutUI) {
     ChromeAuthenticatorRequestDelegate delegate(main_rfh());
     delegate.SetRelyingPartyId(rp_id);
     if (disable_ui) {
-      delegate.DisableUI();
+      delegate.SetUIPresentation(UIPresentation::kDisabled);
     }
     MockCableDiscoveryFactory discovery_factory;
     delegate.ConfigureDiscoveries(
@@ -449,7 +451,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
   // the beginning of a request. An omnibar icon might be shown instead.
   for (bool conditional_ui : {true, false}) {
     ChromeAuthenticatorRequestDelegate delegate(main_rfh());
-    delegate.SetConditionalRequest(conditional_ui);
+    delegate.SetUIPresentation(conditional_ui ? UIPresentation::kAutofill
+                                              : UIPresentation::kModal);
     delegate.SetRelyingPartyId(/*rp_id=*/"example.com");
     AuthenticatorRequestDialogModel* model = delegate.dialog_model();
     TestAuthenticatorModelObserver observer(model);

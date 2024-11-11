@@ -7108,7 +7108,8 @@ class ResidentKeyTestAuthenticatorRequestDelegate
     // The user ID of the account that should be selected by `SelectAccount()`.
     std::vector<uint8_t> selected_user_id;
 
-    // Indicates whether `SetConditional(true)` is expected to be called.
+    // Indicates whether `SetUIPresentation(kAutofill)` is expected to be
+    // called.
     bool expect_conditional = false;
 
     // If set, indicates that `DoesBlockRequestOnFailure()` is expected to be
@@ -7128,8 +7129,8 @@ class ResidentKeyTestAuthenticatorRequestDelegate
       : config_(std::move(config)) {}
 
   ~ResidentKeyTestAuthenticatorRequestDelegate() override {
-    DCHECK(!config_.expect_conditional || expect_conditional_satisfied_)
-        << "SetConditionalRequest() expected but not called";
+    CHECK(!config_.expect_conditional || expect_conditional_satisfied_)
+        << "SetUIPresentation(kAutofill) expected but not called";
     DCHECK(!config_.expected_failure_reason ||
            expected_failure_reason_satisfied_)
         << "DoesRequestBlockOnFailure() expected but not called";
@@ -7206,8 +7207,12 @@ class ResidentKeyTestAuthenticatorRequestDelegate
         reason);
   }
 
-  void SetConditionalRequest(bool is_conditional) override {
-    EXPECT_EQ(config_.expect_conditional, is_conditional);
+  void SetUIPresentation(UIPresentation ui_presentation) override {
+    if (config_.expect_conditional) {
+      EXPECT_EQ(ui_presentation, UIPresentation::kAutofill);
+    } else {
+      EXPECT_EQ(ui_presentation, UIPresentation::kModal);
+    }
     EXPECT_TRUE(!expect_conditional_satisfied_);
     expect_conditional_satisfied_ = true;
   }

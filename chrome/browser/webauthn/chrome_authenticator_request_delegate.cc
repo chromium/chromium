@@ -944,9 +944,14 @@ void ChromeAuthenticatorRequestDelegate::SetRelyingPartyId(
   dialog_model_->relying_party_id = rp_id;
 }
 
+void ChromeAuthenticatorRequestDelegate::SetUIPresentation(
+    UIPresentation ui_presentation) {
+  dialog_controller_->set_ui_presentation(ui_presentation);
+}
+
 bool ChromeAuthenticatorRequestDelegate::DoesBlockRequestOnFailure(
     InterestingFailureReason reason) {
-  if (!IsWebAuthnUIEnabled()) {
+  if (!webauthn_ui_enabled()) {
     return false;
   }
 
@@ -1085,7 +1090,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
 
   // Without the UI enabled, discoveries like caBLE, Android AOA, iCloud
   // keychain, and the enclave, don't make sense.
-  if (disable_ui_) {
+  if (!webauthn_ui_enabled()) {
     return;
   }
 
@@ -1266,7 +1271,7 @@ void ChromeAuthenticatorRequestDelegate::SelectAccount(
     std::vector<device::AuthenticatorGetAssertionResponse> responses,
     base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
         callback) {
-  if (disable_ui_) {
+  if (!webauthn_ui_enabled()) {
     // Requests with UI disabled should never reach account selection.
     DCHECK(IsVirtualEnvironmentEnabled());
 
@@ -1287,23 +1292,8 @@ void ChromeAuthenticatorRequestDelegate::SelectAccount(
   dialog_controller_->SelectAccount(std::move(responses), std::move(callback));
 }
 
-void ChromeAuthenticatorRequestDelegate::DisableUI() {
-  disable_ui_ = true;
-}
-
-bool ChromeAuthenticatorRequestDelegate::IsWebAuthnUIEnabled() {
-  // The UI is fully disabled for the entire request duration if either:
-  // 1) The UI was temporarily hidden, e.g. while showing the native Windows
-  // WebAuthn UI. But in those cases the UI is still enabled and can be shown
-  // e.g. for an attestation consent prompt.
-  // 2) A specialized UI is replacing the default WebAuthn UI, such as Secure
-  // Payment Confirmation or Autofill.
-  return !disable_ui_;
-}
-
-void ChromeAuthenticatorRequestDelegate::SetConditionalRequest(
-    bool is_conditional) {
-  is_conditional_ = is_conditional;
+bool ChromeAuthenticatorRequestDelegate::webauthn_ui_enabled() const {
+  return dialog_controller_->ui_presentation() != UIPresentation::kDisabled;
 }
 
 void ChromeAuthenticatorRequestDelegate::SetAmbientCredentialTypes(
@@ -1323,7 +1313,7 @@ void ChromeAuthenticatorRequestDelegate::SetUserEntityForMakeCredentialRequest(
 
 void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {
-  if (disable_ui_) {
+  if (!webauthn_ui_enabled()) {
     return;
   }
 
@@ -1351,7 +1341,7 @@ bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
   // request to an authenticator immediately after it has been
   // discovered, or whether the embedder/UI takes charge of that by
   // invoking its RequestCallback.
-  if (!IsWebAuthnUIEnabled()) {
+  if (!webauthn_ui_enabled()) {
     // There is no UI to handle request dispatch.
     return false;
   }
@@ -1359,7 +1349,7 @@ bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
     return false;
   }
 
-  if (is_conditional_ &&
+  if (dialog_controller_->ui_presentation() == UIPresentation::kAutofill &&
       (dialog_model_->step() ==
            AuthenticatorRequestDialogModel::Step::kConditionalMediation ||
        dialog_model_->step() ==
@@ -1376,7 +1366,7 @@ bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
 
 void ChromeAuthenticatorRequestDelegate::FidoAuthenticatorAdded(
     const device::FidoAuthenticator& authenticator) {
-  if (!IsWebAuthnUIEnabled()) {
+  if (!webauthn_ui_enabled()) {
     return;
   }
 
@@ -1385,7 +1375,7 @@ void ChromeAuthenticatorRequestDelegate::FidoAuthenticatorAdded(
 
 void ChromeAuthenticatorRequestDelegate::FidoAuthenticatorRemoved(
     std::string_view authenticator_id) {
-  if (!IsWebAuthnUIEnabled()) {
+  if (!webauthn_ui_enabled()) {
     return;
   }
 
@@ -1510,7 +1500,7 @@ void ChromeAuthenticatorRequestDelegate::ShowUI(
 
   dialog_controller_->set_ambient_credential_types(ambient_credential_types_);
 
-  dialog_controller_->StartFlow(std::move(tai), is_conditional_);
+  dialog_controller_->StartFlow(std::move(tai));
 
   if (g_observer) {
     g_observer->UIShown(this);
