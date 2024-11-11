@@ -154,11 +154,12 @@ void BackgroundTracingHelper::MaybeEmitBackgroundTracingPerformanceMarkEvent(
 
   // For additional context, also emit a paired event marking *when* the
   // performance.mark was actually created.
-  TRACE_EVENT_INSTANT("blink", "performance.mark.created", event_lambda);
+  TRACE_EVENT_INSTANT("blink,latency", "performance.mark.created",
+                      event_lambda);
 
   // Emit an event with the actual timestamp associated with the mark.
-  TRACE_EVENT_INSTANT("blink", "performance.mark", mark.UnsafeTimeForTraces(),
-                      event_lambda);
+  TRACE_EVENT_INSTANT("blink,latency", "performance.mark",
+                      mark.UnsafeTimeForTraces(), event_lambda);
 
   base::trace_event::EmitNamedTrigger(GenerateFullTrigger(site_, mark_name),
                                       mark_and_id.second);

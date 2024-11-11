@@ -329,6 +329,7 @@
   X("blink,blink.resource")                                                   \
   X("blink,blink_style")                                                      \
   X("blink,devtools.timeline")                                                \
+  X("blink,latency")                                                          \
   X("blink,loading")                                                          \
   X("blink,rail")                                                             \
   X("blink.animations,devtools.timeline,benchmark,rail")                      \
