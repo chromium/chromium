@@ -5,12 +5,18 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_AUTO_SLEEP_DEVICE_WEEKLY_SCHEDULED_SUSPEND_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_APP_MODE_AUTO_SLEEP_DEVICE_WEEKLY_SCHEDULED_SUSPEND_CONTROLLER_H_
 
+#include <memory>
+#include <optional>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/repeating_time_interval_task_executor.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;

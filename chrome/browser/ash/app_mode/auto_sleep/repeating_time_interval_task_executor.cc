@@ -5,17 +5,22 @@
 #include "chrome/browser/ash/app_mode/auto_sleep/repeating_time_interval_task_executor.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/policy/scheduled_task_handler/scoped_wake_lock.h"
+#include "base/timer/wall_clock_timer.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
-#include "chromeos/dbus/power/native_timer.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "third_party/cros_system_api/dbus/power_manager/dbus-constants.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace ash {
 

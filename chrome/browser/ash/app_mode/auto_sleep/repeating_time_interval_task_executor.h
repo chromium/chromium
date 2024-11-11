@@ -6,18 +6,21 @@
 #define CHROME_BROWSER_ASH_APP_MODE_AUTO_SLEEP_REPEATING_TIME_INTERVAL_TASK_EXECUTOR_H_
 
 #include <memory>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scoped_wake_lock.h"
+#include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
-#include "chromeos/dbus/power/native_timer.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace ash {
 
