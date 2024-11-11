@@ -284,6 +284,10 @@ ci.builder(
 # disabled tests.
 ci.builder(
     name = "android-pie-x86-fyi-rel",
+    # Set to an empty list to avoid chromium-gitiles-trigger triggering new
+    # builds. Also we don't set any `schedule` since this builder is for
+    # reference only and should not run any new builds.
+    triggered_by = [],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
