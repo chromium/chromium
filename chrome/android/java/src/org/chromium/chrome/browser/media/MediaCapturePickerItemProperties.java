@@ -18,8 +18,10 @@ public class MediaCapturePickerItemProperties {
     public static final PropertyModel.WritableObjectPropertyKey<String> TAB_NAME =
             new PropertyModel.WritableObjectPropertyKey<>();
 
+    /** Whether this tab is currently selected or not. */
+    public static final PropertyModel.WritableBooleanPropertyKey SELECTED =
+            new PropertyModel.WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {
-                CLICK_LISTENER, TAB_NAME,
-            };
+            new PropertyKey[] {CLICK_LISTENER, TAB_NAME, SELECTED};
 }

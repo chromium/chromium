@@ -38,28 +38,40 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
     private final View mDialogView;
     private final ModelList mModelList = new ModelList();
     private final Map<Tab, TabItemState> mTabItemStateMap = new HashMap<>();
-    @Nullable private Tab mLastSelectedTab;
+    @Nullable private TabItemState mLastSelectedTabItemState;
     @Nullable private Callback<WebContents> mCallback;
 
     private class TabItemState {
+        private final Tab mTab;
         private final ModelListAdapter.ListItem mItem;
+        private final PropertyModel mModel;
 
         TabItemState(Tab tab) {
-            PropertyModel itemModel =
+            mTab = tab;
+            mModel =
                     new PropertyModel.Builder(MediaCapturePickerItemProperties.ALL_KEYS)
-                            .with(
-                                    MediaCapturePickerItemProperties.CLICK_LISTENER,
-                                    (view) -> {
-                                        mLastSelectedTab = tab;
-                                    })
+                            .with(MediaCapturePickerItemProperties.CLICK_LISTENER, this::onClick)
                             .with(MediaCapturePickerItemProperties.TAB_NAME, tab.getTitle())
+                            .with(MediaCapturePickerItemProperties.SELECTED, false)
                             .build();
-            mItem = new ModelListAdapter.ListItem(EntryType.DEFAULT, itemModel);
+            mItem = new ModelListAdapter.ListItem(EntryType.DEFAULT, mModel);
             mModelList.add(mItem);
+        }
+
+        private void onClick(View view) {
+            if (mLastSelectedTabItemState != null) {
+                mLastSelectedTabItemState.mModel.set(
+                        MediaCapturePickerItemProperties.SELECTED, false);
+            }
+            mModel.set(MediaCapturePickerItemProperties.SELECTED, true);
+            mLastSelectedTabItemState = this;
         }
 
         void destroy() {
             mModelList.remove(mItem);
+            if (mLastSelectedTabItemState == this) {
+                mLastSelectedTabItemState = null;
+            }
         }
     }
 
@@ -130,10 +142,10 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
                     @Override
                     public void onClick(PropertyModel model, int buttonType) {
                         boolean picked = buttonType == ModalDialogProperties.ButtonType.POSITIVE;
-                        if (picked && mLastSelectedTab != null) {
-                            mLastSelectedTab.loadIfNeeded(
-                                    TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER);
-                            var webContents = mLastSelectedTab.getWebContents();
+                        if (picked && mLastSelectedTabItemState != null) {
+                            var tab = mLastSelectedTabItemState.mTab;
+                            tab.loadIfNeeded(TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER);
+                            var webContents = tab.getWebContents();
                             assert webContents != null;
                             mCallback.onResult(webContents);
                         } else {

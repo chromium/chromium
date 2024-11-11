@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -19,6 +20,14 @@ public class MediaCapturePickerItemViewBinder {
             TextView titleView = (TextView) view.findViewById(R.id.tab_title);
             String text = model.get(MediaCapturePickerItemProperties.TAB_NAME);
             titleView.setText(text);
+        } else if (MediaCapturePickerItemProperties.SELECTED == propertyKey) {
+            if (model.get(MediaCapturePickerItemProperties.SELECTED)) {
+                view.setBackgroundColor(
+                        ChromeColors.getSurfaceColor(
+                                view.getContext(), R.dimen.default_elevation_4));
+            } else {
+                view.setBackgroundResource(android.R.color.transparent);
+            }
         }
     }
 }
