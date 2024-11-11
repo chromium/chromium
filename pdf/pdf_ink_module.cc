@@ -62,8 +62,6 @@ namespace {
 // touch and pen. Defaulting to touch for now.
 constexpr auto kTouchOrPenToolType = ink::StrokeInput::ToolType::kTouch;
 
-constexpr ink::AffineTransform kIdentityTransform;
-
 PdfInkModule::StrokeInputPoints GetStrokePointsForTesting(  // IN-TEST
     const ink::StrokeInputBatch& input_batch) {
   PdfInkModule::StrokeInputPoints stroke_points;
@@ -648,6 +646,7 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
 
       // No transform needed, as `eraser_rect` is already using transformed
       // coordinates from `canonical_position`.
+      static constexpr ink::AffineTransform kIdentityTransform;
       const ink::ModeledShape& shape = stroke.stroke.GetShape();
       if (!ink::Intersects(eraser_rect, shape, kIdentityTransform)) {
         continue;
@@ -659,31 +658,6 @@ bool PdfInkModule::EraseHelper(const gfx::PointF& position, int page_index) {
       invalidate_envelope.Add(shape.Bounds());
 
       bool undo_redo_success = undo_redo_model_.EraseStroke(stroke.id);
-      CHECK(undo_redo_success);
-    }
-  }
-
-  if (auto shape_it = loaded_v2_shapes_.find(page_index);
-      shape_it != loaded_v2_shapes_.end()) {
-    for (auto& shape_state : shape_it->second) {
-      if (!shape_state.should_draw) {
-        // Already erased.
-        continue;
-      }
-
-      // No transform needed, as `eraser_rect` is already using transformed
-      // coordinates from `canonical_position`.
-      if (!ink::Intersects(eraser_rect, shape_state.shape,
-                           kIdentityTransform)) {
-        continue;
-      }
-
-      shape_state.should_draw = false;
-      client_->UpdateShapeActive(page_index, shape_state.id, /*active=*/false);
-
-      invalidate_envelope.Add(shape_state.shape.Bounds());
-
-      bool undo_redo_success = undo_redo_model_.EraseShape(shape_state.id);
       CHECK(undo_redo_success);
     }
   }
@@ -922,6 +896,7 @@ void PdfInkModule::ApplyUndoRedoCommands(
 void PdfInkModule::ApplyUndoRedoCommandsHelper(
     std::set<PdfInkUndoRedoModel::IdType> ids,
     bool should_draw) {
+  CHECK(!strokes_.empty());
   CHECK(!ids.empty());
 
   std::set<InkStrokeId> stroke_ids;
@@ -935,15 +910,6 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
       inserted = shape_ids.insert(absl::get<InkModeledShapeId>(id)).second;
     }
     CHECK(inserted);
-  }
-
-  // Sanity check strokes/shapes exist, if this method is being asked to erase
-  // them.
-  if (!stroke_ids.empty()) {
-    CHECK(!strokes_.empty());
-  }
-  if (!shape_ids.empty()) {
-    CHECK(!loaded_v2_shapes_.empty());
   }
 
   std::set<int> page_indices_with_thumbnail_updates;
@@ -989,47 +955,7 @@ void PdfInkModule::ApplyUndoRedoCommandsHelper(
     }
   }
 
-  for (auto& [page_index, page_ink_shapes] : loaded_v2_shapes_) {
-    std::vector<InkModeledShapeId> page_ids;
-    page_ids.reserve(page_ink_shapes.size());
-    for (const auto& shape : page_ink_shapes) {
-      page_ids.push_back(shape.id);
-    }
-
-    std::vector<InkModeledShapeId> ids_to_apply_command;
-    base::ranges::set_intersection(shape_ids, page_ids,
-                                   std::back_inserter(ids_to_apply_command));
-    if (ids_to_apply_command.empty()) {
-      continue;
-    }
-
-    // `it` is always valid, because all the IDs in `ids_to_apply_command` are
-    // in `page_ink_shapes`.
-    auto it = page_ink_shapes.begin();
-    ink::Envelope invalidate_envelope;
-    for (InkModeledShapeId id : ids_to_apply_command) {
-      it = base::ranges::lower_bound(
-          it, page_ink_shapes.end(), id, {},
-          [](const LoadedV2ShapeState& state) { return state.id; });
-      auto& shape_state = *it;
-      CHECK_NE(shape_state.should_draw, should_draw);
-      shape_state.should_draw = should_draw;
-      client_->UpdateShapeActive(page_index, shape_state.id, should_draw);
-
-      invalidate_envelope.Add(shape_state.shape.Bounds());
-
-      shape_ids.erase(id);
-    }
-
-    client_->Invalidate(CanonicalInkEnvelopeToExpandedInvalidationScreenRect(
-        invalidate_envelope, client_->GetOrientation(),
-        client_->GetPageContentsRect(page_index), client_->GetZoom()));
-    page_indices_with_thumbnail_updates.insert(page_index);
-
-    if (shape_ids.empty()) {
-      break;  // Break out of loop if there is no shape remaining to apply.
-    }
-  }
+  // TODO(crbug.com/377820805): Handle `shape_ids`.
 
   for (int page_index : page_indices_with_thumbnail_updates) {
     client_->UpdateThumbnail(page_index);
