@@ -12,7 +12,9 @@
 #include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
 #include "ash/public/cpp/lobster/lobster_session.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
+#include "ash/test/ash_test_base.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -82,22 +84,27 @@ class MockLobsterClient : public LobsterClient {
   MOCK_METHOD(bool, UserHasAccess, (), (override));
 };
 
-class LobsterSessionImplTest : public testing::Test {
+class LobsterSessionImplTest : public AshTestBase {
  public:
-  LobsterSessionImplTest() {}
+  LobsterSessionImplTest() = default;
   LobsterSessionImplTest(const LobsterSessionImplTest&) = delete;
   LobsterSessionImplTest& operator=(const LobsterSessionImplTest&) = delete;
-
   ~LobsterSessionImplTest() override = default;
 
-  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+  void SetUp() override {
+    AshTestBase::SetUp();
+    ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
+  }
+
+  base::FilePath GetDownloadPath() { return scoped_temp_dir_.GetPath(); }
+
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
   ui::InputMethod& ime() { return ime_; }
 
  private:
   InputMethodAsh ime_{nullptr};
-  base::test::TaskEnvironment task_environment_;
+  base::ScopedTempDir scoped_temp_dir_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -175,13 +182,12 @@ TEST_F(LobsterSessionImplTest, CanNotDownloadACandidateIfItIsNotCached) {
                              LobsterEntryPoint::kPicker);
 
   base::test::TestFuture<bool> future;
-  session.DownloadCandidate(/*id=*/2, base::FilePath("dummy_path"),
-                            future.GetCallback());
+  session.DownloadCandidate(/*id=*/2, GetDownloadPath(), future.GetCallback());
 
   EXPECT_FALSE(future.Get());
 }
 
-TEST_F(LobsterSessionImplTest, CanDownloadACandiateIfItIsInCache) {
+TEST_F(LobsterSessionImplTest, CanDownloadACandidateIfItIsInCache) {
   auto lobster_client = std::make_unique<MockLobsterClient>();
   LobsterCandidateStore store = GetDummyLobsterCandidateStore();
 
@@ -190,7 +196,7 @@ TEST_F(LobsterSessionImplTest, CanDownloadACandiateIfItIsInCache) {
       .WillByDefault([](uint32_t seed, std::string_view query,
                         InflateCandidateCallback done_callback) {
         std::vector<LobsterImageCandidate> inflated_candidates = {
-            LobsterImageCandidate(/*id=*/0, /*image_bytes=*/"a1b2c3",
+            LobsterImageCandidate(/*id=*/1, /*image_bytes=*/"a1b2c3",
                                   /*seed=*/30,
                                   /*query=*/"a nice strawberry")};
         std::move(done_callback).Run(std::move(inflated_candidates));
@@ -200,14 +206,14 @@ TEST_F(LobsterSessionImplTest, CanDownloadACandiateIfItIsInCache) {
                              LobsterEntryPoint::kPicker);
   session.RequestCandidates("a nice strawberry", 2,
                             base::BindOnce([](const LobsterResult&) {}));
-  RunUntilIdle();
 
   base::test::TestFuture<bool> future;
 
-  session.DownloadCandidate(/*id=*/1, base::FilePath("dummy_path"),
-                            future.GetCallback());
+  session.DownloadCandidate(/*id=*/1, GetDownloadPath(), future.GetCallback());
 
   EXPECT_TRUE(future.Get());
+  EXPECT_TRUE(
+      base::PathExists(GetDownloadPath().Append("a nice strawberry-1.jpeg")));
 }
 
 TEST_F(LobsterSessionImplTest,
@@ -344,9 +350,7 @@ TEST_F(LobsterSessionImplTest,
 
   base::test::TestFuture<bool> future;
 
-  session.DownloadCandidate(/*id=*/1, base::FilePath("dummy_path"),
-                            future.GetCallback());
-  RunUntilIdle();
+  session.DownloadCandidate(/*id=*/1, GetDownloadPath(), future.GetCallback());
 
   EXPECT_TRUE(future.Get());
 
@@ -374,9 +378,7 @@ TEST_F(LobsterSessionImplTest, RecordMetricsWhenFailingToDownloadCandidate) {
 
   base::test::TestFuture<bool> future;
 
-  session.DownloadCandidate(/*id=*/1, base::FilePath("dummy_path"),
-                            future.GetCallback());
-  RunUntilIdle();
+  session.DownloadCandidate(/*id=*/1, GetDownloadPath(), future.GetCallback());
 
   EXPECT_FALSE(future.Get());
 
@@ -415,7 +417,6 @@ TEST_F(LobsterSessionImplTest, RecordMetricsWhenCommittingAsInsert) {
   base::test::TestFuture<bool> future;
 
   session.CommitAsInsert(/*id=*/1, future.GetCallback());
-  RunUntilIdle();
 
   EXPECT_TRUE(future.Get());
   histogram_tester().ExpectBucketCount("Ash.Lobster.State",
@@ -443,7 +444,6 @@ TEST_F(LobsterSessionImplTest, RecordMetricsWhenFailingToCommitAsInsert) {
   base::test::TestFuture<bool> future;
 
   session.CommitAsInsert(/*id=*/1, future.GetCallback());
-  RunUntilIdle();
 
   EXPECT_FALSE(future.Get());
   histogram_tester().ExpectBucketCount("Ash.Lobster.State",
@@ -474,9 +474,7 @@ TEST_F(LobsterSessionImplTest, RecordMetricsWhenCommittingAsDownload) {
 
   base::test::TestFuture<bool> future;
 
-  session.CommitAsDownload(/*id=*/1, base::FilePath("dummy_path"),
-                           future.GetCallback());
-  RunUntilIdle();
+  session.CommitAsDownload(/*id=*/1, GetDownloadPath(), future.GetCallback());
 
   EXPECT_TRUE(future.Get());
   histogram_tester().ExpectBucketCount(
@@ -503,9 +501,7 @@ TEST_F(LobsterSessionImplTest, RecordMetricsWhenFailingToCommitAsDownload) {
 
   base::test::TestFuture<bool> future;
 
-  session.CommitAsDownload(/*id=*/1, base::FilePath("dummy_path"),
-                           future.GetCallback());
-  RunUntilIdle();
+  session.CommitAsDownload(/*id=*/1, GetDownloadPath(), future.GetCallback());
 
   EXPECT_FALSE(future.Get());
   histogram_tester().ExpectBucketCount(

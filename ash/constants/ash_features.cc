@@ -1814,6 +1814,11 @@ BASE_FEATURE(kLobsterFeedback,
              "LobsterFeedback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables lobster feedback form.
+BASE_FEATURE(kLobsterFileNamingImprovement,
+             "LobsterFileNamingImprovement",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables lobster entry point in quick insert zero state.
 BASE_FEATURE(kLobsterQuickInsertZeroState,
              "LobsterQuickInsertZeroState",

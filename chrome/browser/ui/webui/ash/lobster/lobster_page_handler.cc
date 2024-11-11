@@ -49,10 +49,9 @@ void LobsterPageHandler::BindInterface(
 void LobsterPageHandler::DownloadCandidate(uint32_t candidate_id,
                                            DownloadCandidateCallback callback) {
   // TODO: b:359361699 - Implements smarter file naming
-  session_->DownloadCandidate(
-      candidate_id,
-      GetDownloadDirectoryForProfile(profile_).Append("sample.jpeg"),
-      std::move(callback));
+  session_->DownloadCandidate(candidate_id,
+                              GetDownloadDirectoryForProfile(profile_),
+                              std::move(callback));
 }
 
 void LobsterPageHandler::CommitAsInsert(uint32_t candidate_id,
@@ -63,10 +62,9 @@ void LobsterPageHandler::CommitAsInsert(uint32_t candidate_id,
 void LobsterPageHandler::CommitAsDownload(uint32_t candidate_id,
                                           CommitAsDownloadCallback callback) {
   // TODO: b:359361699 - Implements smarter file naming
-  session_->CommitAsDownload(
-      candidate_id,
-      GetDownloadDirectoryForProfile(profile_).Append("sample.jpeg"),
-      std::move(callback));
+  session_->CommitAsDownload(candidate_id,
+                             GetDownloadDirectoryForProfile(profile_),
+                             std::move(callback));
 }
 
 void LobsterPageHandler::RequestCandidates(const std::string& query,

@@ -9,17 +9,44 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/lobster/lobster_entry_point_enums.h"
 #include "ash/lobster/lobster_image_actuator.h"
 #include "ash/lobster/lobster_metrics_recorder.h"
 #include "ash/public/cpp/lobster/lobster_client.h"
 #include "ash/public/cpp/lobster/lobster_image_candidate.h"
 #include "ash/public/cpp/lobster/lobster_metrics_state_enums.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/i18n/file_util_icu.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 
 namespace ash {
+
+namespace {
+
+constexpr int kQueryCharLimit = 230;
+
+std::string BuildDownloadFileName(const std::string& query, uint32_t id) {
+  std::string sanitized_file_name = query;
+
+  base::i18n::ReplaceIllegalCharactersInPath(&sanitized_file_name, '-');
+
+  return base::StringPrintf("%s-%d.jpeg",
+                            sanitized_file_name.substr(0, kQueryCharLimit), id);
+}
+
+base::FilePath CreateDownloadFilePath(const base::FilePath& download_dir,
+                                      const std::string& file_name) {
+  return download_dir.Append(
+      base::FeatureList::IsEnabled(features::kLobsterFileNamingImprovement)
+          ? file_name
+          : "");
+}
+
+}  // namespace
 
 LobsterSessionImpl::LobsterSessionImpl(
     std::unique_ptr<LobsterClient> client,
@@ -47,7 +74,7 @@ LobsterSessionImpl::LobsterSessionImpl(std::unique_ptr<LobsterClient> client,
 LobsterSessionImpl::~LobsterSessionImpl() = default;
 
 void LobsterSessionImpl::DownloadCandidate(int candidate_id,
-                                           const base::FilePath& file_path,
+                                           const base::FilePath& download_dir,
                                            StatusCallback status_callback) {
   RecordLobsterState(LobsterMetricState::kCandidateDownload);
 
@@ -64,7 +91,7 @@ void LobsterSessionImpl::DownloadCandidate(int candidate_id,
   client_->InflateCandidate(
       candidate->seed, candidate->query,
       base::BindOnce(
-          [](LobsterClient* lobster_client, const base::FilePath& file_path,
+          [](LobsterClient* lobster_client, const base::FilePath& download_dir,
              StatusCallback status_callback, const LobsterResult& result) {
             if (!result.has_value() || result->size() == 0) {
               LOG(ERROR) << "No image candidate";
@@ -73,8 +100,13 @@ void LobsterSessionImpl::DownloadCandidate(int candidate_id,
               return;
             }
 
+            const LobsterImageCandidate& image_candidate = (*result)[0];
+
             WriteImageToPath(
-                file_path, (*result)[0].image_bytes,
+                CreateDownloadFilePath(
+                    download_dir, BuildDownloadFileName(image_candidate.query,
+                                                        image_candidate.id)),
+                image_candidate.image_bytes,
                 base::BindOnce(
                     [](StatusCallback status_callback, bool success) {
                       std::move(status_callback).Run(success);
@@ -85,7 +117,7 @@ void LobsterSessionImpl::DownloadCandidate(int candidate_id,
                     },
                     std::move(status_callback)));
           },
-          client_.get(), file_path, std::move(status_callback)));
+          client_.get(), download_dir, std::move(status_callback)));
 }
 
 void LobsterSessionImpl::RequestCandidates(const std::string& query,
@@ -143,7 +175,7 @@ void LobsterSessionImpl::CommitAsInsert(int candidate_id,
 }
 
 void LobsterSessionImpl::CommitAsDownload(int candidate_id,
-                                          const base::FilePath& file_path,
+                                          const base::FilePath& download_dir,
                                           StatusCallback status_callback) {
   RecordLobsterState(LobsterMetricState::kCommitAsDownload);
 
@@ -160,7 +192,7 @@ void LobsterSessionImpl::CommitAsDownload(int candidate_id,
   client_->InflateCandidate(
       candidate->seed, candidate->query,
       base::BindOnce(
-          [](LobsterClient* lobster_client, const base::FilePath& file_path,
+          [](LobsterClient* lobster_client, const base::FilePath& download_dir,
              StatusCallback status_callback, const LobsterResult& result) {
             if (!result.has_value() || result->size() == 0) {
               LOG(ERROR) << "No image candidate";
@@ -169,8 +201,13 @@ void LobsterSessionImpl::CommitAsDownload(int candidate_id,
               return;
             }
 
+            const LobsterImageCandidate& image_candidate = (*result)[0];
+
             WriteImageToPath(
-                file_path, (*result)[0].image_bytes,
+                CreateDownloadFilePath(
+                    download_dir, BuildDownloadFileName(image_candidate.query,
+                                                        image_candidate.id)),
+                image_candidate.image_bytes,
                 base::BindOnce(
                     [](LobsterClient* lobster_client,
                        StatusCallback status_callback, bool success) {
@@ -183,7 +220,7 @@ void LobsterSessionImpl::CommitAsDownload(int candidate_id,
                     },
                     lobster_client, std::move(status_callback)));
           },
-          client_.get(), file_path, std::move(status_callback)));
+          client_.get(), download_dir, std::move(status_callback)));
 }
 
 void LobsterSessionImpl::PreviewFeedback(

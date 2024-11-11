@@ -40,12 +40,12 @@ class ASH_EXPORT LobsterSessionImpl : public LobsterSession {
 
   // LobsterSession overrides
   void DownloadCandidate(int candidate_id,
-                         const base::FilePath& file_path,
+                         const base::FilePath& download_dir_path,
                          StatusCallback callback) override;
   void CommitAsInsert(int candidate_id,
                       StatusCallback callback) override;
   void CommitAsDownload(int candidate_id,
-                        const base::FilePath& file_path,
+                        const base::FilePath& download_dir_path,
                         StatusCallback callback) override;
   void RequestCandidates(const std::string& query,
                          int num_candidates,
