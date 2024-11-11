@@ -8,7 +8,7 @@ import type {SettingsAiLoggingInfoBullet} from 'chrome://settings/settings.js';
 import {loadTimeData, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 
 type PrefObject = chrome.settingsPrivate.PrefObject;
 
@@ -35,9 +35,8 @@ suite('LoggingInfoBullet', function() {
     assertTrue(!!li);
     assertEquals(
         li.innerText, loadTimeData.getString('aiSubpageSublabelReviewers'));
-    const crIcon = li.querySelector('cr-icon');
-    assertTrue(!!crIcon);
-    assertEquals(crIcon.icon, 'settings20:account-box');
+    assertTrue(!!li.querySelector('cr-icon'));
+    assertFalse(!!li.querySelector('cr-policy-pref-indicator'));
   });
 
   test('infoBulletManaged', async () => {
@@ -45,6 +44,8 @@ suite('LoggingInfoBullet', function() {
       key: 'some_ai_feature_enterprise_pref',
       type: chrome.settingsPrivate.PrefType.NUMBER,
       value: ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
     };
     await createRow(pref);
 
@@ -53,8 +54,7 @@ suite('LoggingInfoBullet', function() {
     assertEquals(
         li.innerText,
         loadTimeData.getString('aiSubpageSublabelLoggingManagedDisabled'));
-    const crIcon = li.querySelector('cr-icon');
-    assertTrue(!!crIcon);
-    assertEquals(crIcon.icon, loadTimeData.getString('managedByIcon'));
+    assertFalse(!!li.querySelector('cr-icon'));
+    assertTrue(!!li.querySelector('cr-policy-pref-indicator'));
   });
 });

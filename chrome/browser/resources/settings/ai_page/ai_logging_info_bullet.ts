@@ -34,11 +34,6 @@ export class SettingsAiLoggingInfoBullet extends
 
   static get properties() {
     return {
-      icon_: {
-        type: String,
-        computed: 'computeIcon_(pref.value)',
-      },
-
       label_: {
         type: String,
         computed: 'computeLabel_(pref.value)',
@@ -46,18 +41,11 @@ export class SettingsAiLoggingInfoBullet extends
     };
   }
 
-  private icon_: string;
   private label_: string;
 
   private isLoggingDisabledByPolicy_(): boolean {
     return this.pref?.value ===
         ModelExecutionEnterprisePolicyValue.ALLOW_WITHOUT_LOGGING;
-  }
-
-  private computeIcon_(): string {
-    return this.isLoggingDisabledByPolicy_() ?
-        loadTimeData.getString('managedByIcon') :
-        'settings20:account-box';
   }
 
   private computeLabel_(): string {

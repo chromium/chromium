@@ -10,6 +10,12 @@
   }
 </style>
 <li>
-  <cr-icon icon="[[icon_]]" aria-hidden="true"></cr-icon>
+  <template is="dom-if" if="[[!isLoggingDisabledByPolicy_(pref)]]" restamp>
+    <cr-icon icon="settings20:account-box" aria-hidden="true"></cr-icon>
+  </template>
+  <template is="dom-if" if="[[isLoggingDisabledByPolicy_(pref)]]" restamp>
+    <cr-policy-pref-indicator id="policyIndicator" pref="[[pref]]">
+    </cr-policy-pref-indicator>
+  </template>
   <div class="secondary">[[label_]]</div>
 </li>
