@@ -4958,6 +4958,74 @@ pub struct BuildError {
     kind: BuildErrorKind,
 }
 
+#[cfg(feature = "dfa-build")]
+impl BuildError {
+    /// Returns true if and only if this error corresponds to an error with DFA
+    /// construction that occurred because of exceeding a size limit.
+    ///
+    /// While this can occur when size limits like [`Config::dfa_size_limit`]
+    /// or [`Config::determinize_size_limit`] are exceeded, this can also occur
+    /// when the number of states or patterns exceeds a hard-coded maximum.
+    /// (Where these maximums are derived based on the values representable by
+    /// [`StateID`] and [`PatternID`].)
+    ///
+    /// This predicate is useful in contexts where you want to distinguish
+    /// between errors related to something provided by an end user (for
+    /// example, an invalid regex pattern) and errors related to configured
+    /// heuristics. For example, building a DFA might be an optimization that
+    /// you want to skip if construction fails because of an exceeded size
+    /// limit, but where you want to bubble up an error if it fails for some
+    /// other reason.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// # if cfg!(miri) { return Ok(()); } // miri takes too long
+    /// # if !cfg!(target_pointer_width = "64") { return Ok(()); } // see #1039
+    /// use regex_automata::{dfa::{dense, Automaton}, Input};
+    ///
+    /// let err = dense::Builder::new()
+    ///     .configure(dense::Config::new()
+    ///         .determinize_size_limit(Some(100_000))
+    ///     )
+    ///     .build(r"\w{20}")
+    ///     .unwrap_err();
+    /// // This error occurs because a size limit was exceeded.
+    /// // But things are otherwise valid.
+    /// assert!(err.is_size_limit_exceeded());
+    ///
+    /// let err = dense::Builder::new()
+    ///     .build(r"\bxyz\b")
+    ///     .unwrap_err();
+    /// // This error occurs because a Unicode word boundary
+    /// // was used without enabling heuristic support for it.
+    /// // So... not related to size limits.
+    /// assert!(!err.is_size_limit_exceeded());
+    ///
+    /// let err = dense::Builder::new()
+    ///     .build(r"(xyz")
+    ///     .unwrap_err();
+    /// // This error occurs because the pattern is invalid.
+    /// // So... not related to size limits.
+    /// assert!(!err.is_size_limit_exceeded());
+    ///
+    /// # Ok::<(), Box<dyn std::error::Error>>(())
+    /// ```
+    #[inline]
+    pub fn is_size_limit_exceeded(&self) -> bool {
+        use self::BuildErrorKind::*;
+
+        match self.kind {
+            NFA(_) | Unsupported(_) => false,
+            TooManyStates
+            | TooManyStartStates
+            | TooManyMatchPatternIDs
+            | DFAExceededSizeLimit { .. }
+            | DeterminizeExceededSizeLimit { .. } => true,
+        }
+    }
+}
+
 /// The kind of error that occurred during the construction of a DFA.
 ///
 /// Note that this error is non-exhaustive. Adding new variants is not
