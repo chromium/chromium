@@ -259,54 +259,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(2, preresolve_done_count_);
 }
 
-class NavigationPredictorSameDocumentPreconnectClientBrowserTest
-    : public NavigationPredictorPreconnectClientBrowserTest {
- public:
-  NavigationPredictorSameDocumentPreconnectClientBrowserTest()
-      : NavigationPredictorPreconnectClientBrowserTest() {
-    // Configure kDelayRequestsOnMultiplexedConnections experiment params.
-    base::FieldTrialParams params_kNetUnusedIdleSocketTimeout;
-    params_kNetUnusedIdleSocketTimeout["unused_idle_socket_timeout_seconds"] =
-        "0";
-
-    // Configure kThrottleDelayable experiment params.
-    base::FieldTrialParams
-        params_kNavigationPredictorEnablePreconnectOnSameDocumentNavigations;
-    feature_list_.InitWithFeaturesAndParameters(
-        {{net::features::kNetUnusedIdleSocketTimeout,
-          params_kNetUnusedIdleSocketTimeout},
-         {features::
-              kNavigationPredictorEnablePreconnectOnSameDocumentNavigations,
-          params_kNavigationPredictorEnablePreconnectOnSameDocumentNavigations}},
-        {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Test that we preconnect after the last preconnect timed out.
-IN_PROC_BROWSER_TEST_F(
-    NavigationPredictorSameDocumentPreconnectClientBrowserTest,
-    SameDocumentNavigation) {
-  const GURL& url = GetTestURL("/page_with_same_host_anchor_element.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  WaitForPreresolveCount(3);
-  EXPECT_LE(3, preresolve_done_count_);
-
-  // Expect another one.
-  WaitForPreresolveCount(4);
-  EXPECT_LE(4, preresolve_done_count_);
-
-  const GURL& same_document_url =
-      GetTestURL("/page_with_same_host_anchor_element.html#foobar");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), same_document_url));
-  // Expect another one.
-  WaitForPreresolveCount(8);
-  EXPECT_LE(8, preresolve_done_count_);
-}
-
 namespace {
 // Feature to control preconnect to search.
 BASE_FEATURE(kPreconnectToSearchTest,

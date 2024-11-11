@@ -79,10 +79,7 @@ void NavigationPredictorPreconnectClient::DidFinishNavigation(
     }
   }
 
-  if ((!base::FeatureList::IsEnabled(
-           features::
-               kNavigationPredictorEnablePreconnectOnSameDocumentNavigations) &&
-       navigation_handle->IsSameDocument())) {
+  if (navigation_handle->IsSameDocument()) {
     return;
   }
 
