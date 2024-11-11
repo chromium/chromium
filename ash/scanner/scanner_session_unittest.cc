@@ -155,6 +155,26 @@ TEST(ScannerSessionTest, FetchActionsForImageNoActionRecordsMetrics) {
       ScannerFeatureUserState::kNoActionsDetected, 1);
 }
 
+TEST(ScannerSessionTest, FetchActionsForImageRecordsTimerMetric) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME);
+  base::HistogramTester histogram_tester;
+  FetchActionsForImageFuture future;
+  FakeScannerProfileScopedDelegate delegate;
+  EXPECT_CALL(delegate, FetchActionsForImage).WillOnce(InvokeFuture(future));
+
+  ScannerSession session(&delegate);
+  session.FetchActionsForImage(nullptr, base::DoNothing());
+  task_environment.FastForwardBy(base::Milliseconds(500));
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  output->add_objects();
+  auto [ignored, callback] = future.Take();
+  std::move(callback).Run(std::move(output), manta::MantaStatus());
+
+  histogram_tester.ExpectBucketCount(kScannerFeatureTimerFetchActionsForImage,
+                                     500, 1);
+}
+
 TEST(ScannerSessionTest,
      FetchActionsForImageReturnsEqualNumberOfActionsAsProtoResponse) {
   FakeScannerProfileScopedDelegate delegate;

@@ -8298,6 +8298,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.ScannerFeature.Timer.{Type}" units="ms"
+    expires_after="2025-05-04">
+  <owner>jhtin@google.com</owner>
+  <summary>
+    Measures the time between the start of a request for {Type} and when a
+    response is recieved.
+  </summary>
+  <token key="Type">
+    <variant name="FetchActionsForImage"
+        summary="when a image is sent to fetch actions via scanner server"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.ScannerFeature.UserState" enum="ScannerFeatureUserState"
     expires_after="2025-03-01">
   <owner>jhtin@google.com</owner>

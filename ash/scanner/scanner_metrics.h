@@ -5,9 +5,14 @@
 #ifndef ASH_SCANNER_SCANNER_METRICS_H_
 #define ASH_SCANNER_SCANNER_METRICS_H_
 
+#include <string_view>
+
 #include "ash/ash_export.h"
 
 namespace ash {
+
+inline constexpr std::string_view kScannerFeatureTimerFetchActionsForImage =
+    "Ash.ScannerFeature.Timer.FetchActionsForImage";
 
 // Enum for histogram. Stores what state the user is in.
 // LINT.IfChange(ScannerFeatureUserState)

@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
 
@@ -55,6 +56,7 @@ class ASH_EXPORT ScannerSession : public ScannerCommandDelegate {
  private:
   void OnActionsReturned(
       scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
+      base::TimeTicks request_start_time,
       FetchActionsCallback callback,
       std::unique_ptr<manta::proto::ScannerOutput> output,
       manta::MantaStatus status);

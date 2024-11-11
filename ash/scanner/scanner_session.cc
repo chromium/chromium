@@ -25,8 +25,10 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "components/manta/manta_status.h"
 #include "components/manta/proto/scanner.pb.h"
 #include "skia/ext/image_operations.h"
@@ -190,14 +192,18 @@ void ScannerSession::FetchActionsForImage(
       downscaled_jpeg_bytes,
       base::BindOnce(&ScannerSession::OnActionsReturned,
                      weak_ptr_factory_.GetWeakPtr(), downscaled_jpeg_bytes,
-                     std::move(callback)));
+                     base::TimeTicks::Now(), std::move(callback)));
 }
 
 void ScannerSession::OnActionsReturned(
     scoped_refptr<base::RefCountedMemory> downscaled_jpeg_bytes,
+    base::TimeTicks request_start_time,
     FetchActionsCallback callback,
     std::unique_ptr<manta::proto::ScannerOutput> output,
     manta::MantaStatus status) {
+  base::UmaHistogramMediumTimes(kScannerFeatureTimerFetchActionsForImage,
+                                base::TimeTicks::Now() - request_start_time);
+
   if (output == nullptr) {
     // TODO(b/363100868): Handle error case
     std::move(callback).Run({});
