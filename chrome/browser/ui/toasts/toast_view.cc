@@ -219,8 +219,9 @@ void ToastView::Init() {
         lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE),
         ui::kColorToastForeground));
     // Override the image button's border with the appropriate icon border size.
-    close_button_->SetBorder(views::CreateEmptyBorder(
-        lp->GetInsetsMetric(views::InsetsMetric::INSETS_ICON_BUTTON)));
+    const gfx::Insets insets =
+        lp->GetInsetsMetric(views::InsetsMetric::INSETS_VECTOR_IMAGE_BUTTON);
+    close_button_->SetBorder(views::CreateEmptyBorder(insets));
     views::InstallCircleHighlightPathGenerator(close_button_);
     close_button_->SetAccessibleName(l10n_util::GetStringUTF16(IDS_CLOSE));
     close_button_->SetProperty(views::kElementIdentifierKey, kToastCloseButton);
@@ -229,6 +230,10 @@ void ToastView::Init() {
     if (!HasConfiguredInitiallyFocusedView()) {
       SetInitiallyFocusedView(close_button_);
     }
+    max_child_height =
+        std::max(max_child_height,
+                 lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE) +
+                     insets.height());
   }
 
   if (menu_model_) {
