@@ -283,6 +283,10 @@ ClipPathOperation* StyleBuilderConverter::ConvertClipPath(
       if (list->length() == 2) {
         geometry_box_value = DynamicTo<CSSIdentifierValue>(list->Item(1));
       }
+      if (geometry_box_value) {
+        UseCounter::Count(state.GetDocument(),
+                          WebFeature::kClipPathGeometryBox);
+      }
       // If <geometry-box> is omitted, default to border-box.
       GeometryBox geometry_box =
           geometry_box_value ? geometry_box_value->ConvertTo<GeometryBox>()
@@ -290,6 +294,7 @@ ClipPathOperation* StyleBuilderConverter::ConvertClipPath(
       return MakeGarbageCollected<ShapeClipPathOperation>(
           BasicShapeForValue(state, shape_value), geometry_box);
     }
+    UseCounter::Count(state.GetDocument(), WebFeature::kClipPathGeometryBox);
     auto& geometry_box_value = To<CSSIdentifierValue>(list->First());
     GeometryBox geometry_box = geometry_box_value.ConvertTo<GeometryBox>();
     return MakeGarbageCollected<GeometryBoxClipPathOperation>(geometry_box);

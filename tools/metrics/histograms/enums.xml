@@ -10872,6 +10872,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5186" label="VisitedColumnRuleColor"/>
   <int value="5187" label="DocumentIsolationPolicyRequireCorp"/>
   <int value="5188" label="DocumentIsolationPolicyCredentialless"/>
+  <int value="5189" label="ClipPathGeometryBox"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -33921,6 +33922,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="212" label="HyphenateLimitChars"/>
   <int value="213" label="Quotes"/>
   <int value="214" label="BaselineSource"/>
+  <int value="215" label="ClipPathGeometryBox"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

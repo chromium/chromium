@@ -539,6 +539,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
           {WebFeature::kUpdateMediaQuery, WebDXFeature::kUpdate},
           {WebFeature::kCSSSelectorPseudoFileSelectorButton,
            WebDXFeature::kFileSelectorButton},
+          {WebFeature::kClipPathGeometryBox,
+           WebDXFeature::kClipPathGeometryBox},
       }};
 
   return *kMap;
