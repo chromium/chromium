@@ -11,7 +11,6 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -102,9 +101,7 @@ class ViewAndroid;
 #endif
 class SkBitmap;
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 extern "C" {
 struct _AtkObject;
 using AtkObject = struct _AtkObject;
@@ -217,9 +214,7 @@ using NativeViewAccessible = id;
 #else
 using NativeViewAccessible = struct objc_object*;
 #endif
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
 // Linux doesn't have a native font type.
 using NativeViewAccessible = AtkObject*;
 #else

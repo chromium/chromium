@@ -48,7 +48,7 @@ COMPONENT_EXPORT(GFX)
 void GetFontRenderParamsFromFcPattern(FcPattern* pattern,
                                       FontRenderParams* param_out);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Adds a given directory to the available fonts in the application.
 // Directory must start with `/run/imageloader/` (guaranteed by DLC).
 // Returns whether the fonts were added or not. Will not add the same directory

@@ -621,7 +621,7 @@ void Connection::InitializeExtensions() {
   if (auto response = shm_future.Sync()) {
     shm_version_ = {response->major_version, response->minor_version};
   }
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Chrome for ChromeOS can be run with X11 on a Linux desktop. In this case,
   // NotifySwapAfterResize is never called as the compositor does not notify
   // about swaps after resize. Thus, simply disable usage of XSyncCounter on

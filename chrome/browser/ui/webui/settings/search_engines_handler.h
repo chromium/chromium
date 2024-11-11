@@ -93,7 +93,7 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
   // Called from WebUI.
   void HandleSearchEngineEditCompleted(const base::Value::List& args);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Request the browser to open its search settings.
   void HandleOpenBrowserSearchSettings(const base::Value::List& args);
 #endif

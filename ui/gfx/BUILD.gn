@@ -321,7 +321,6 @@ component("gfx") {
     "//base:base_static",
     "//base:i18n",
     "//build:blink_buildflags",
-    "//build:chromeos_buildflags",
     "//device/vr/buildflags",
     "//mojo/public/cpp/bindings:struct_traits",
     "//skia",
@@ -471,7 +470,6 @@ component("color_space") {
     ]
   }
   deps = [
-    "//build:chromeos_buildflags",
     "//skia:skcms",
     "//ui/gfx:buffer_types",
     "//ui/gfx/geometry:geometry_skia",
@@ -527,8 +525,6 @@ source_set("native_widget_types_sources") {
   public = [ "native_widget_types.h" ]
 
   public_deps = [ "//base" ]
-
-  deps = [ "//build:chromeos_buildflags" ]
 
   configs += [ ":gfx_impl_define" ]
 
@@ -635,7 +631,6 @@ source_set("memory_buffer_sources") {
     ":gfx_switches",
     "//base",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//gpu/vulkan:buildflags",
     "//ui/gfx/geometry",
   ]
@@ -890,7 +885,6 @@ test("gfx_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//skia",
     "//skia:rusty_png_feature_detection",
     "//skia:skcms",
@@ -1035,7 +1029,6 @@ fuzzer_test("render_text_api_fuzzer") {
     ":gfx",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
   ]
 
   dict = "test/data/render_text/unicode_text_fuzzer.dict"
