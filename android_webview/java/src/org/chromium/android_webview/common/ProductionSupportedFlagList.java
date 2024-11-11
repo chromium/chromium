@@ -388,6 +388,9 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.COMPOSITE_BG_COLOR_ANIMATION,
                 "When enabled, the background-color animation runs on the compositor thread."),
         Flag.baseFeature(
+                CcFeatures.DEFER_IMPL_INVALIDATION,
+                "Allow main thread additional time to respond before creating a pending tree"),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE,
                 "Upload UMA metrics logs through MetricsUploadService not via GMS-core"
                         + " directly."),
