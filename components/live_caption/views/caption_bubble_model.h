@@ -56,6 +56,9 @@ using OnCaptionBubbleClosedCallback =
 //
 class CaptionBubbleModel {
  public:
+  // TODO(crbug.com/378469298): Gate Boca strings and functions behind ChromeOS
+  // build flag.
+  static constexpr char kBocaNoTranslationSessionId[] = "BocaNoTranslation";
   static constexpr char kBocaWithTranslationSessionId[] = "BocaWithTranslation";
 
   using Id = base::IdTypeU64<CaptionBubbleModel>;
@@ -116,6 +119,8 @@ class CaptionBubbleModel {
   void SetLanguage(const std::string& language_code);
 
   bool CanUseLiveTranslate();
+
+  bool SkipPrefChangeOnClose();
 
  private:
   // Generates the next unique id.

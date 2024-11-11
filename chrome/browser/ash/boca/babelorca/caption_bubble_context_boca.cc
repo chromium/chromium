@@ -23,7 +23,7 @@ CaptionBubbleContextBoca::~CaptionBubbleContextBoca() = default;
 const std::string CaptionBubbleContextBoca::GetSessionId() const {
   return translation_enabled_
              ? ::captions::CaptionBubbleModel::kBocaWithTranslationSessionId
-             : "BocaNoTranslation";
+             : ::captions::CaptionBubbleModel::kBocaNoTranslationSessionId;
 }
 
 }  // namespace ash::babelorca

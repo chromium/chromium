@@ -339,6 +339,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
   std::unique_ptr<views::MenuRunner> translation_menu_runner_;
 
   bool live_translate_enabled_by_context_ = false;
+  bool skip_pref_change_on_close_ = false;
 
   base::WeakPtrFactory<CaptionBubble> weak_ptr_factory_{this};
 };

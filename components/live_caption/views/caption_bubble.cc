@@ -1008,6 +1008,9 @@ void CaptionBubble::CloseButtonPressed() {
     model_->CloseButtonPressed();
 
 #if BUILDFLAG(IS_CHROMEOS)
+  if (skip_pref_change_on_close_) {
+    return;
+  }
   profile_prefs_->SetBoolean(prefs::kLiveCaptionEnabled, false);
 #endif
 }
@@ -1050,6 +1053,7 @@ void CaptionBubble::SetModel(CaptionBubbleModel* model) {
     model_->SetObserver(this);
     back_to_tab_button_->SetVisible(model_->GetContext()->IsActivatable());
     UpdateLanguageLabelText();
+    skip_pref_change_on_close_ = model_->SkipPrefChangeOnClose();
     if (live_translate_enabled_by_context_ != model_->CanUseLiveTranslate()) {
       live_translate_enabled_by_context_ = model->CanUseLiveTranslate();
       OnLanguageChanged();
