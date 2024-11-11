@@ -78,7 +78,7 @@ void CheckForUpdatesTask::Run(base::OnceClosure callback) {
     return;
   }
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
           std::move(update_checker_),
@@ -88,8 +88,7 @@ void CheckForUpdatesTask::Run(base::OnceClosure callback) {
                 VLOG(0) << task_name << " task complete: " << result;
                 std::move(closure).Run();
               },
-              std::move(callback), task_name_)),
-      config_->InitialDelay());
+              std::move(callback), task_name_)));
 }
 
 }  // namespace updater

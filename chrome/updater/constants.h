@@ -588,7 +588,7 @@ inline constexpr int kErrorFailedToMoveDownloadedFile = 5;
 // Error occurred during file writing.
 inline constexpr int kErrorFailedToWriteFile = 6;
 
-inline constexpr base::TimeDelta kInitialDelay = base::Minutes(1);
+inline constexpr base::TimeDelta kInitialDelay = base::Seconds(1);
 inline constexpr base::TimeDelta kServerKeepAliveTime = base::Seconds(10);
 
 inline constexpr base::TimeDelta kCecaConnectionTimeout = base::Seconds(30);
