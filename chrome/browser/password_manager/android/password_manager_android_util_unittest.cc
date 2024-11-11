@@ -676,7 +676,10 @@ TEST_F(PasswordManagerAndroidUtilTest,
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,
-       SetUsesSplitStoresAndUPMForLocal_SyncingHealthy) {
+       SetUsesSplitStoresAndUPMForLocal_DbRename_SyncingHealthy) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kDropLoginDbRenameForUpmSyncingUsers);
   auto histogram_tester = std::make_unique<base::HistogramTester>();
   SetPasswordSyncEnabledPref(true);
   pref_service()->SetInteger(
@@ -701,6 +704,46 @@ TEST_F(PasswordManagerAndroidUtilTest,
   EXPECT_FALSE(base::PathExists(login_db_directory().Append(
       password_manager::kLoginDataForProfileFileName)));
   EXPECT_TRUE(base::PathExists(login_db_directory().Append(
+      password_manager::kLoginDataForAccountFileName)));
+  histogram_tester->ExpectUniqueSample(
+      "PasswordManager.LocalUpmActivationError.Syncing", ActivationError::kNone,
+      1);
+  histogram_tester->ExpectUniqueSample("PasswordManager.LocalUpmActivated",
+                                       true, 1);
+  histogram_tester->ExpectUniqueSample(
+      "PasswordManager.LocalUpmActivationStatus", kOn, 1);
+}
+
+TEST_F(PasswordManagerAndroidUtilTest,
+       SetUsesSplitStoresAndUPMForLocal_NoDbRename_SyncingHealthy) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kDropLoginDbRenameForUpmSyncingUsers);
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  SetPasswordSyncEnabledPref(true);
+  pref_service()->SetInteger(
+      password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
+      1);
+  // Custom password manager settings should not matter for syncing users.
+  pref_service()->SetBoolean(
+      password_manager::prefs::kCredentialsEnableAutosignin, false);
+  ASSERT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
+            static_cast<int>(kOff));
+  ASSERT_TRUE(base::PathExists(login_db_directory().Append(
+      password_manager::kLoginDataForProfileFileName)));
+  ASSERT_FALSE(base::PathExists(login_db_directory().Append(
+      password_manager::kLoginDataForAccountFileName)));
+
+  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory());
+
+  // The user should've been activated.
+  EXPECT_EQ(pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
+            static_cast<int>(kOn));
+  // The profile DB is no longer renamed (no fallback needed anymore)
+  // and will be anyway deleted on the next startup.
+  EXPECT_TRUE(base::PathExists(login_db_directory().Append(
+      password_manager::kLoginDataForProfileFileName)));
+  EXPECT_FALSE(base::PathExists(login_db_directory().Append(
       password_manager::kLoginDataForAccountFileName)));
   histogram_tester->ExpectUniqueSample(
       "PasswordManager.LocalUpmActivationError.Syncing", ActivationError::kNone,
@@ -742,6 +785,9 @@ TEST_F(PasswordManagerAndroidUtilTest,
 
 TEST_F(PasswordManagerAndroidUtilTest,
        SetUsesSplitStoresAndUPMForLocal_DeactivatingSyncUserMovesDBFile) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      password_manager::features::kDropLoginDbRenameForUpmSyncingUsers);
   // Set up a healthy syncing user that got previously activated.
   pref_service()->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
                              static_cast<int>(kOn));

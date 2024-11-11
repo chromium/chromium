@@ -219,18 +219,22 @@ void MaybeActivateSplitStoresAndLocalUpm(
         state_to_set_on_success = kOffAndMigrationPending;
         break;
       }
-      // Move the "profile" login DB to the "account" path, the latter is the
-      // synced one after activation. We could rely on a redownload instead, but
-      // a) this is a safety net, and b)it spares traffic.
-      base::FilePath profile_db_path = login_db_directory.Append(
-          password_manager::kLoginDataForProfileFileName);
-      if (!base::ReplaceFile(
-              profile_db_path,
-              login_db_directory.Append(
-                  password_manager::kLoginDataForAccountFileName),
-              /*error=*/nullptr)) {
-        error = ActivationError::kLoginDbFileMoveFailed;
-        break;
+      if (!base::FeatureList::IsEnabled(
+              password_manager::features::
+                  kDropLoginDbRenameForUpmSyncingUsers)) {
+        // Move the "profile" login DB to the "account" path, the latter is the
+        // synced one after activation. We could rely on a redownload instead,
+        // but a) this is a safety net, and b)it spares traffic.
+        base::FilePath profile_db_path = login_db_directory.Append(
+            password_manager::kLoginDataForProfileFileName);
+        if (!base::ReplaceFile(
+                profile_db_path,
+                login_db_directory.Append(
+                    password_manager::kLoginDataForAccountFileName),
+                /*error=*/nullptr)) {
+          error = ActivationError::kLoginDbFileMoveFailed;
+          break;
+        }
       }
       break;
     }
@@ -329,6 +333,8 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
       login_db_directory.Append(password_manager::kLoginDataForProfileFileName);
   base::FilePath account_db_path =
       login_db_directory.Append(password_manager::kLoginDataForAccountFileName);
+  // Note: with kDropLoginDbRenameForUpmSyncingUsers enabled, some users won't
+  // have an account login db to rename, but for those who do, keep this logic.
   if (GetSplitStoresAndLocalUpmPrefValue(pref_service) == kOn &&
       IsPasswordSyncEnabled(pref_service) &&
       base::PathExists(account_db_path) &&
