@@ -404,6 +404,8 @@ public abstract class ChromeFeatureList {
     public static final String PRICE_INSIGHTS = "PriceInsights";
     public static final String PRIVACY_SANDBOX_ACTIVITY_TYPE_STORAGE =
             "PrivacySandboxActivityTypeStorage";
+    public static final String PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS =
+            "PrivacySandboxAdsApiUxEnhancements";
     public static final String PRIVACY_SANDBOX_ADS_NOTICE_CCT = "PrivacySandboxAdsNoticeCCT";
     public static final String PRIVACY_SANDBOX_FPS_UI = "PrivacySandboxFirstPartySetsUI";
     public static final String PRIVACY_SANDBOX_RELATED_WEBSITE_SETS_UI =
