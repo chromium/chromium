@@ -342,7 +342,8 @@ suite('VoiceSelectionMenu', () => {
       // The spinner should be visible and the preview button should be
       // disabled.
       assertTrue(spinnerVoice0.classList.contains('item-invisible-false'));
-      assertTrue(previewButton.disabled);
+      assertTrue(previewButton.classList.contains('clickable-false'));
+      assertTrue(hasStyle(previewButton, 'pointer-events', 'none'));
 
       // Set the previewVoicePlaying to the voice, to simulate onstart
       // being called on the preview SpeechSynthesisUtterance.
@@ -352,7 +353,8 @@ suite('VoiceSelectionMenu', () => {
       // After onstart, the spinner shouldn't be showing and the buttons
       // shouldn't be disabled.
       assertTrue(spinnerVoice0.classList.contains('item-invisible-true'));
-      assertFalse(previewButton.disabled);
+      assertFalse(previewButton.classList.contains('clickable-false'));
+      assertFalse(hasStyle(previewButton, 'pointer-events', 'none'));
     });
 
     test('it shows preview-playing button when preview plays', async () => {

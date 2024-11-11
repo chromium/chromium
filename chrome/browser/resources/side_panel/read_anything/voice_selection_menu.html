@@ -45,7 +45,8 @@
 
               <cr-icon-button id="preview-icon"
                   tabindex="${this.voiceItemTabIndex_(groupIndex, voiceIndex)}"
-                  ?disabled="${this.shouldDisableButton_(voice)}"
+                  aria-disabled="${this.shouldDisableButton_(voice)}"
+                  class="clickable-${!this.shouldDisableButton_(voice)}"
                   @click="${this.onVoicePreviewClick_}"
                   data-group-index="${groupIndex}"
                   data-voice-index="${voiceIndex}"
