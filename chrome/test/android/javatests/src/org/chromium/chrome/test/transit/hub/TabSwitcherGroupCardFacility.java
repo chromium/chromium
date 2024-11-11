@@ -19,6 +19,7 @@ import org.hamcrest.Matcher;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupExistsCondition;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUtil;
@@ -36,8 +37,8 @@ import java.util.List;
  * the expected background color to build the matcher.
  */
 public class TabSwitcherGroupCardFacility extends Facility<TabSwitcherStation> {
-    public static final Matcher<View> CARD = withId(R.id.card_view);
-
+    public static final Matcher<View> CARD_MATCHER = withId(R.id.card_view);
+    private final ViewSpec mCardTitleSpec;
     private final List<Integer> mTabIdsToGroup;
     private final String mTitle;
 
@@ -51,19 +52,26 @@ public class TabSwitcherGroupCardFacility extends Facility<TabSwitcherStation> {
         mTabIdsToGroup = new ArrayList<>(tabIdsToGroup);
         Collections.sort(mTabIdsToGroup);
         mTitle = title;
+
+        mCardTitleSpec = viewSpec(allOf(withText(mTitle), withId(R.id.tab_title),
+                withParent(CARD_MATCHER)));
     }
 
     @Override
     public void declareElements(Elements.Builder elements) {
         String titleElementId = "Tab Group card title: " + mTitle;
-        elements.declareView(
-                viewSpec(allOf(withText(mTitle), withId(R.id.tab_title), withParent(CARD))),
-                ViewElement.elementIdOption(titleElementId));
+        elements.declareView(mCardTitleSpec, ViewElement.elementIdOption(titleElementId));
 
         elements.declareEnterCondition(
                 new TabGroupExistsCondition(
                         mHostStation.isIncognito(),
                         mTabIdsToGroup,
                         mHostStation.getTabModelSelectorSupplier()));
+    }
+
+    /** Clicks the group card to open the tab group dialog. */
+    public TabGroupDialogFacility<TabSwitcherStation> clickCard() {
+        return mHostStation.enterFacilitySync(
+                new TabGroupDialogFacility<>(mTabIdsToGroup), mCardTitleSpec::click);
     }
 }
