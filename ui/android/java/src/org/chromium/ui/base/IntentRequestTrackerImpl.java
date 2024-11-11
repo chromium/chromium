@@ -56,8 +56,8 @@ import java.util.HashMap;
         return requestCode;
     }
 
-    /* package */ int showCancelableIntent(
-            Intent intent, IntentCallback callback, Integer errorId) {
+    @Override
+    public int showCancelableIntent(Intent intent, IntentCallback callback, Integer errorId) {
         int requestCode = generateNextRequestCode();
 
         if (!mDelegate.startActivityForResult(intent, requestCode)) {

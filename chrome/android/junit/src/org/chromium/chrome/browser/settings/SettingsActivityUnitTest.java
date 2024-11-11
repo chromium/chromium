@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Intent;
@@ -92,11 +91,7 @@ public class SettingsActivityUnitTest {
         assertTrue(
                 "SettingsActivity is using a wrong fragment.",
                 mSettingsActivity.getMainFragment() instanceof TestEmbeddableFragment);
-
-        // The window Android should be lazily created when calling getWindowAndroid().
-        assertNull(mSettingsActivity.getWindowAndroidForTesting());
-        mSettingsActivity.getWindowAndroid();
-        assertNotNull(mSettingsActivity.getWindowAndroidForTesting());
+        assertNotNull(mSettingsActivity.getIntentRequestTracker());
     }
 
     @Test
@@ -108,11 +103,7 @@ public class SettingsActivityUnitTest {
         assertTrue(
                 "SettingsActivity is using a wrong fragment.",
                 mSettingsActivity.getMainFragment() instanceof TestEmbeddableFragment);
-
-        // The window Android should be lazily created when calling getWindowAndroid().
-        assertNull(mSettingsActivity.getWindowAndroidForTesting());
-        mSettingsActivity.getWindowAndroid();
-        assertNotNull(mSettingsActivity.getWindowAndroidForTesting());
+        assertNotNull(mSettingsActivity.getIntentRequestTracker());
     }
 
     @Test

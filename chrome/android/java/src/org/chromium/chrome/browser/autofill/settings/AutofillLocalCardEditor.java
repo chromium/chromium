@@ -151,7 +151,8 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
                             @Override
                             public void onClick(View v) {
                                 mScanner.scan(
-                                        ((SettingsActivity) getActivity()).getWindowAndroid());
+                                        ((SettingsActivity) getActivity())
+                                                .getIntentRequestTracker());
                             }
                         });
             }

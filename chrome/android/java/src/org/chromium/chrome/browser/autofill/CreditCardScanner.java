@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.autofill;
 
-import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 
 /**
  * Helper for detecting whether the device supports scanning credit cards and for scanning credit
@@ -89,9 +89,9 @@ public class CreditCardScanner {
     /**
      * Scans a credit card. Will invoke a delegate callback with the result.
      *
-     * @param window The window used to show the scanner intent.
+     * @param tracker The intent request tracker used to show the scanner intent.
      */
-    public void scan(WindowAndroid window) {
+    public void scan(IntentRequestTracker tracker) {
         mDelegate.onScanCancelled();
     }
 }

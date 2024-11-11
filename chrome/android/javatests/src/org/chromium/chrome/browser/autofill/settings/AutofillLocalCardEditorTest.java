@@ -1167,7 +1167,7 @@ public class AutofillLocalCardEditorTest {
                 (AutofillLocalCardEditor) activity.getMainFragment();
 
         performButtonClickOnEditor(autofillLocalCardEditorFragment.mScanButton);
-        verify(mScanner).scan(activity.getWindowAndroid());
+        verify(mScanner).scan(activity.getIntentRequestTracker());
     }
 
     @Test

@@ -10,14 +10,14 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 
 /** Native bridge for credit card scanner. */
 @JNINamespace("autofill")
 public class CreditCardScannerBridge implements CreditCardScanner.Delegate {
     private final long mNativeScanner;
     private final CreditCardScanner mScanner;
-    private final WindowAndroid mWindow;
+    private final IntentRequestTracker mIntentRequestTracker;
 
     @CalledByNative
     private static CreditCardScannerBridge create(long nativeScanner, WebContents webContents) {
@@ -27,10 +27,10 @@ public class CreditCardScannerBridge implements CreditCardScanner.Delegate {
     private CreditCardScannerBridge(long nativeScanner, WebContents webContents) {
         mNativeScanner = nativeScanner;
         mScanner = CreditCardScanner.create(this);
-        if (webContents != null) {
-            mWindow = webContents.getTopLevelNativeWindow();
+        if (webContents != null && webContents.getTopLevelNativeWindow() != null) {
+            mIntentRequestTracker = webContents.getTopLevelNativeWindow().getIntentRequestTracker();
         } else {
-            mWindow = null;
+            mIntentRequestTracker = null;
         }
     }
 
@@ -41,7 +41,7 @@ public class CreditCardScannerBridge implements CreditCardScanner.Delegate {
 
     @CalledByNative
     private void scan() {
-        mScanner.scan(mWindow);
+        mScanner.scan(mIntentRequestTracker);
     }
 
     @Override
