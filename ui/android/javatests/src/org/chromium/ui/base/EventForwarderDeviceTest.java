@@ -26,7 +26,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.ui.MotionEventUtils;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Tests logic in the {@link EventForwarder} class.
@@ -37,7 +36,7 @@ import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class EventForwarderDeviceTest extends BlankUiTestActivityTestCase {
+public class EventForwarderDeviceTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mocker = new JniMocker();
 

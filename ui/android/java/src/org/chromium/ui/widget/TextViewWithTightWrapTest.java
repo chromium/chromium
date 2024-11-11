@@ -13,22 +13,33 @@ import android.widget.Button;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.ui.R;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
 
 /** Render tests for {@link TextViewWithTightWrap}. */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class TextViewWithTightWrapTest extends BlankUiTestActivityTestCase {
+@Batch(Batch.PER_CLASS)
+public class TextViewWithTightWrapTest {
     private static final int RENDER_TEST_REVISION = 2;
     private static final String RENDER_TEST_REVISION_DESCRIPTION = "Update the text style.";
+
+    @ClassRule
+    public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     private TextViewWithTightWrap mTextView;
     private View mView;
@@ -41,19 +52,24 @@ public class TextViewWithTightWrapTest extends BlankUiTestActivityTestCase {
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE)
                     .build();
 
+    @BeforeClass
+    public static void setupSuite() {
+        sActivityTestRule.launchActivity(null);
+        sActivity = ThreadUtils.runOnUiThreadBlocking(() -> sActivityTestRule.getActivity());
+    }
+
     @Before
     public void setup() {
         // Setup the UI.
-        Activity activity = getActivity();
-        mView = LayoutInflater.from(activity).inflate(R.layout.textbubble_text, null, false);
+        mView = LayoutInflater.from(sActivity).inflate(R.layout.textbubble_text, null, false);
         LayoutParams params =
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         mTextView = mView.findViewById(R.id.message);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mView.setBackgroundColor(activity.getColor(R.color.filled_button_bg));
+                    mView.setBackgroundColor(sActivity.getColor(R.color.filled_button_bg));
                     mTextView.setText("First line\nVery very very very long second line");
-                    getActivity().setContentView(mView, params);
+                    sActivity.setContentView(mView, params);
                 });
     }
 

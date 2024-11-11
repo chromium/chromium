@@ -43,13 +43,17 @@ import java.util.concurrent.Callable;
  * A TestRule for creating Render Tests. The comparison is performed using the Skia Gold image
  * diffing service on the host.
  *
- * General usage:
+ * <p>General usage:
  *
  * <pre>
  * {@code
  *
  * @RunWith(BaseJUnit4ClassRunner.class)
- * public class MyTest extends BlankUiTestActivityTestCase {
+ * public class MyTest {
+ *     @ClassRule
+ *     public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+ *             new BaseActivityTestRule<>(BlankUiTestActivity.class);
+ *
  *     @Rule
  *     public RenderTestRule mRenderTestRule = new RenderTestRule.Builder()
  *             // Required. If using ANDROID_RENDER_TESTS_PUBLIC, the Builder can be created with
