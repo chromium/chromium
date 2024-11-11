@@ -303,7 +303,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "libc"
-version = "0.2.161"
+version = "0.2.162"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
