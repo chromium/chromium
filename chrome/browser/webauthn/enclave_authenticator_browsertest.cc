@@ -578,6 +578,10 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
 
     bool ui_shown() { return ui_shown_; }
 
+    bool on_transport_availability_enumerated_called() {
+      return on_transport_availability_enumerated_called_;
+    }
+
     // ChromeAuthenticatorRequestDelegate::TestObserver:
     void Created(ChromeAuthenticatorRequestDelegate* delegate) override {
       test_instance_->UpdateRequestDelegate(delegate);
@@ -618,6 +622,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
       if (additional_transport_.has_value()) {
         tai->available_transports.insert(*additional_transport_);
       }
+      on_transport_availability_enumerated_called_ = true;
       tai_run_loop_->QuitWhenIdle();
     }
 
@@ -639,6 +644,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     std::unique_ptr<trusted_vault::TrustedVaultConnection> pending_connection_;
     bool use_synced_device_cable_pairing_ = false;
     bool ui_shown_ = false;
+    bool on_transport_availability_enumerated_called_ = false;
     std::unique_ptr<base::RunLoop> run_loop_;
     std::unique_ptr<base::RunLoop> tai_run_loop_;
     std::unique_ptr<base::RunLoop> pre_tai_run_loop_;
@@ -2435,6 +2441,55 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
   delegate_observer()->WaitForUI();
   EXPECT_EQ(dialog_model()->step(),
             AuthenticatorRequestDialogModel::Step::kTrustThisComputerCreation);
+}
+
+// Verifies that if the enclave activation takes a while and transport
+// enumeration completes, the request is still successful.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
+                       DelayedEnclaveActivation) {
+  // Set up a trusted vault connection that lets us control the time it
+  // resolves, so enclave manager initialization can be delayed.
+  base::OnceCallback<void(
+      trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult)>
+      connection_cb;
+  std::unique_ptr<testing::NiceMock<MockTrustedVaultConnection>> connection =
+      std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
+  EXPECT_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
+                               testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&connection_cb](
+              const CoreAccountInfo&,
+              base::OnceCallback<void(
+                  trusted_vault::
+                      DownloadAuthenticationFactorsRegistrationStateResult)>
+                  callback,
+              base::RepeatingClosure _) mutable {
+            connection_cb = std::move(callback);
+            return std::make_unique<
+                trusted_vault::TrustedVaultConnection::Request>();
+          });
+  delegate_observer_->SetPendingTrustedVaultConnection(std::move(connection));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+
+  // Wait for the transport availability to be enumerated. The UI won't be shown
+  // yet because the enclave is not ready.
+  delegate_observer()->WaitForPreTransportAvailabilityEnumerated();
+
+  EXPECT_FALSE(
+      delegate_observer()->on_transport_availability_enumerated_called());
+  EXPECT_FALSE(delegate_observer()->ui_shown());
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kRecoverable;
+  registration_state_result.key_version = kSecretVersion;
+  std::move(connection_cb).Run(std::move(registration_state_result));
+
+  delegate_observer()->WaitForUI();
 }
 
 #if BUILDFLAG(IS_MAC)
