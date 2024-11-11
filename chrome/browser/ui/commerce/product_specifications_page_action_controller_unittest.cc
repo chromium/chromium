@@ -430,6 +430,40 @@ TEST_F(ProductSpecificationsPageActionControllerUnittest,
   ASSERT_FALSE(controller_->ShouldShowForNavigation().value());
 }
 
+TEST_F(ProductSpecificationsPageActionControllerUnittest,
+       OnProductSpecificationsSetUpdated_AddedToOtherSet) {
+  // Set up ClusterManager to trigger page action.
+  auto product_group = CreateProductGroup();
+  mock_cluster_manager_->SetResponseForGetProductGroupForCandidateProduct(
+      product_group);
+  shopping_service_->SetResponseForGetProductInfoForUrl(
+      CreateProductInfo(kClusterId));
+
+  // Trigger page action.
+  controller_->ResetForNewNavigation(GURL(kTestUrl1));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().value());
+  ASSERT_FALSE(controller_->IsInRecommendedSet());
+
+  EXPECT_CALL(notify_host_callback_, Run()).Times(1);
+  // Create a new set that is different from the recommended set.
+  const base::Uuid& uuid = base::Uuid::GenerateRandomV4();
+  ProductSpecificationsSet set1 = ProductSpecificationsSet(
+      uuid.AsLowercaseString(), 0, 0, {GURL(kTestUrl2)}, "set");
+  ProductSpecificationsSet set2 =
+      ProductSpecificationsSet(uuid.AsLowercaseString(), 0, 0,
+                               {GURL(kTestUrl1), GURL(kTestUrl2)}, "set");
+
+  // Notify the controller that the current page has been added to a set that is
+  // not the recommended set.
+  controller_->OnProductSpecificationsSetUpdate(set1, set2);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(controller_->ShouldShowForNavigation().has_value());
+  ASSERT_FALSE(controller_->ShouldShowForNavigation().value());
+  ASSERT_FALSE(controller_->IsInRecommendedSet());
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          ProductSpecificationsPageActionControllerUnittest,
                          testing::Bool());

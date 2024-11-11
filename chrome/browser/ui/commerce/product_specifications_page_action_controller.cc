@@ -117,11 +117,20 @@ void ProductSpecificationsPageActionController::
     OnProductSpecificationsSetUpdate(
         const ProductSpecificationsSet& before_set,
         const ProductSpecificationsSet& after_set) {
-  if (!product_group_for_page_.has_value() ||
-      product_group_for_page_->uuid != after_set.uuid()) {
+  if (!product_group_for_page_.has_value()) {
     return;
   }
   bool is_in_set = base::Contains(after_set.urls(), current_url_);
+  // Hide the page action if the page has been added to a set that is not
+  // recommended set.
+  if (product_group_for_page_->uuid != after_set.uuid()) {
+    if (is_in_set) {
+      product_group_for_page_ = std::nullopt;
+      is_in_recommended_set_ = false;
+      NotifyHost();
+    }
+    return;
+  }
   if (is_in_set != is_in_recommended_set_ ||
       after_set.url_infos().size() >= kMaxTableSize) {
     is_in_recommended_set_ = is_in_set;
