@@ -24,8 +24,12 @@ try_.defaults.set(
     orchestrator_siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_enabled = True,
+    # crbug.com/372192123 - downloading with "minimum" strategy doesn't work
+    # well for Fuchsia builds because some packaging steps require executables.
+    siso_output_local_strategy = "greedy",
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
+    siso_remote_linking = True,
 )
 
 consoles.list_view(
