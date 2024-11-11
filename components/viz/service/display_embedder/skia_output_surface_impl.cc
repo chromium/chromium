@@ -1455,9 +1455,9 @@ void SkiaOutputSurfaceImpl::FlushGpuTasksWithImpl(
         base::Unretained(impl_on_gpu_.get()));
   }
 
-  gpu_task_scheduler_->ScheduleGpuTask(std::move(callback),
-                                       std::move(gpu_task_sync_tokens_),
-                                       std::move(reporting_callback));
+  gpu_task_scheduler_->ScheduleGpuTask(
+      std::move(callback), std::move(gpu_task_sync_tokens_), gpu::SyncToken(),
+      std::move(reporting_callback));
 
   make_current_ = false;
   need_framebuffer_ = false;

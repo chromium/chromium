@@ -36,7 +36,8 @@ void GpuTaskSchedulerHelper::Initialize(
 
 void GpuTaskSchedulerHelper::ScheduleGpuTask(
     base::OnceClosure callback,
-    std::vector<gpu::SyncToken> sync_tokens,
+    std::vector<gpu::SyncToken> sync_token_fences,
+    const SyncToken& release,
     SingleTaskSequence::ReportingCallback report_callback) {
   // There are two places where this function is called: inside
   // SkiaOutputSurface, where |using_command_buffer_| is false, or by other
@@ -47,16 +48,17 @@ void GpuTaskSchedulerHelper::ScheduleGpuTask(
   if (command_buffer_helper_)
     command_buffer_helper_->Flush();
 
-  task_sequence_->ScheduleTask(std::move(callback), std::move(sync_tokens),
-                               SyncToken(), std::move(report_callback));
+  task_sequence_->ScheduleTask(std::move(callback),
+                               std::move(sync_token_fences), release,
+                               std::move(report_callback));
 }
 
 void GpuTaskSchedulerHelper::ScheduleOrRetainGpuTask(
     base::OnceClosure task,
-    std::vector<SyncToken> sync_tokens) {
+    std::vector<SyncToken> sync_token_fences) {
   DCHECK(!using_command_buffer_);
   DCHECK(!command_buffer_helper_);
-  task_sequence_->ScheduleOrRetainTask(std::move(task), sync_tokens,
+  task_sequence_->ScheduleOrRetainTask(std::move(task), sync_token_fences,
                                        SyncToken());
 }
 
@@ -64,6 +66,13 @@ SequenceId GpuTaskSchedulerHelper::GetSequenceId() {
   DCHECK(!using_command_buffer_);
   DCHECK(!command_buffer_helper_);
   return task_sequence_->GetSequenceId();
+}
+
+ScopedSyncPointClientState GpuTaskSchedulerHelper::CreateSyncPointClientState(
+    CommandBufferNamespace namespace_id,
+    CommandBufferId command_buffer_id) {
+  return task_sequence_->CreateSyncPointClientState(namespace_id,
+                                                    command_buffer_id);
 }
 
 gpu::SingleTaskSequence* GpuTaskSchedulerHelper::GetTaskSequence() const {
