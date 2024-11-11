@@ -25872,7 +25872,8 @@
     "WebGPUUseTintIR": [
         {
             "platforms": [
-                "mac"
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
