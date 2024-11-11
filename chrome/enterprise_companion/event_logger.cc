@@ -103,9 +103,7 @@ class EventLoggerDelegate : public EventTelemetryLogger::Delegate {
       : net_thread_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
         url_loader_factory_(url_loader_factory) {}
 
-  ~EventLoggerDelegate() override {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  }
+  ~EventLoggerDelegate() override = default;
 
   // Overrides of EventLogger:Delegate.
   // This is a long-live app and doesn't actually store the next allowed time
@@ -143,10 +141,8 @@ class EventLoggerDelegate : public EventTelemetryLogger::Delegate {
 
  private:
   void SendLogRequest(const std::string& request_body,
-                      HttpRequestCallback callback) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    CHECK(!url_loader_) << "Overlapping log requests are not permitted.";
-
+                      HttpRequestCallback callback) const {
+    CHECK(net_thread_runner_->BelongsToCurrentThread());
     const GURL event_logging_url =
         GetGlobalConstants()->EnterpriseCompanionEventLoggingURL();
 
@@ -158,25 +154,24 @@ class EventLoggerDelegate : public EventTelemetryLogger::Delegate {
     resource_request->site_for_cookies =
         net::SiteForCookies::FromUrl(event_logging_url);
     resource_request->method = net::HttpRequestHeaders::kPostMethod;
-    url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                   kTrafficAnnotation);
-    url_loader_->SetAllowHttpErrorResults(true);
-    url_loader_->AttachStringForUpload(request_body);
-    url_loader_->DownloadToString(
+
+    std::unique_ptr<network::SimpleURLLoader> url_loader =
+        network::SimpleURLLoader::Create(std::move(resource_request),
+                                         kTrafficAnnotation);
+    url_loader->SetAllowHttpErrorResults(true);
+    url_loader->AttachStringForUpload(request_body);
+    url_loader->DownloadToString(
         url_loader_factory_.get(),
         base::BindOnce(&EventLoggerDelegate::OnLogResponseReceived,
-                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(url_loader),
                        base::BindPostTaskToCurrentDefault(std::move(callback))),
         1024 * 1024 /* 1 MiB */);
   }
 
-  void OnLogResponseReceived(HttpRequestCallback callback,
-                             std::optional<std::string> response_body) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    std::unique_ptr<network::SimpleURLLoader> url_loader =
-        std::move(url_loader_);
-    CHECK(url_loader);
-
+  static void OnLogResponseReceived(
+      std::unique_ptr<network::SimpleURLLoader> url_loader,
+      HttpRequestCallback callback,
+      std::optional<std::string> response_body) {
     if (url_loader->NetError() != net::OK) {
       LOG(ERROR) << "Logging request failed "
                  << net::ErrorToString(url_loader->NetError());
@@ -191,10 +186,8 @@ class EventLoggerDelegate : public EventTelemetryLogger::Delegate {
     std::move(callback).Run(http_status, response_body);
   }
 
-  SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<base::SingleThreadTaskRunner> net_thread_runner_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<network::SimpleURLLoader> url_loader_;
   base::WeakPtrFactory<EventLoggerDelegate> weak_ptr_factory_{this};
 };
 
