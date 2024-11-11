@@ -7,7 +7,7 @@
 
 #include <ostream>
 
-#include "components/autofill_ai/core/browser/autofill_ai_filling_engine.h"
+#include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 
 namespace autofill_ai {
 

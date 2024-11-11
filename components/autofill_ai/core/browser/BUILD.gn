@@ -22,10 +22,6 @@ if (is_win || is_mac || is_linux || is_chromeos) {
     sources = [
       "autofill_ai_annotation_prompt_strike_database.h",
       "autofill_ai_client.h",
-      "autofill_ai_filling_engine.cc",
-      "autofill_ai_filling_engine.h",
-      "autofill_ai_filling_engine_impl.cc",
-      "autofill_ai_filling_engine_impl.h",
       "autofill_ai_logger.cc",
       "autofill_ai_logger.h",
       "autofill_ai_manager.cc",
@@ -34,6 +30,10 @@ if (is_win || is_mac || is_linux || is_chromeos) {
       "autofill_ai_utils.h",
       "autofill_ai_value_filter.cc",
       "autofill_ai_value_filter.h",
+      "suggestion/autofill_ai_model_executor.cc",
+      "suggestion/autofill_ai_model_executor.h",
+      "suggestion/autofill_ai_model_executor_impl.cc",
+      "suggestion/autofill_ai_model_executor_impl.h",
       "suggestion/autofill_ai_suggestions.cc",
       "suggestion/autofill_ai_suggestions.h",
     ]
@@ -75,11 +75,11 @@ if (is_win || is_mac || is_linux || is_chromeos) {
     testonly = true
     sources = [
       "autofill_ai_features_unittest.cc",
-      "autofill_ai_filling_engine_impl_unittest.cc",
       "autofill_ai_logger_unittest.cc",
       "autofill_ai_manager_unittest.cc",
       "autofill_ai_utils_unittest.cc",
       "autofill_ai_value_filter_unittest.cc",
+      "suggestion/autofill_ai_model_executor_impl_unittest.cc",
     ]
     deps = [
       ":browser",

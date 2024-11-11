@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_ai/core/browser/autofill_ai_filling_engine.h"
+#include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 
 #include <string>
 

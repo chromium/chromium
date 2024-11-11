@@ -17,8 +17,8 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill_ai/core/browser/autofill_ai_annotation_prompt_strike_database.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
-#include "components/autofill_ai/core/browser/autofill_ai_filling_engine.h"
 #include "components/autofill_ai/core/browser/autofill_ai_logger.h"
+#include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {

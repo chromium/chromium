@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_FILLING_ENGINE_H_
-#define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_FILLING_ENGINE_H_
+#ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_SUGGESTION_AUTOFILL_AI_MODEL_EXECUTOR_H_
+#define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_SUGGESTION_AUTOFILL_AI_MODEL_EXECUTOR_H_
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
@@ -64,4 +64,4 @@ class AutofillAiFillingEngine {
 
 }  // namespace autofill_ai
 
-#endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_FILLING_ENGINE_H_
+#endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_SUGGESTION_AUTOFILL_AI_MODEL_EXECUTOR_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_FILLING_ENGINE_IMPL_H_
-#define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_FILLING_ENGINE_IMPL_H_
+#ifndef COMPONENTS_AUTOFILL_AI_CORE_BROWSER_SUGGESTION_AUTOFILL_AI_MODEL_EXECUTOR_IMPL_H_
+#define COMPONENTS_AUTOFILL_AI_CORE_BROWSER_SUGGESTION_AUTOFILL_AI_MODEL_EXECUTOR_IMPL_H_
 
 #include <memory>
 
@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "components/autofill_ai/core/browser/autofill_ai_filling_engine.h"
+#include "components/autofill_ai/core/browser/suggestion/autofill_ai_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/user_annotations/user_annotations_types.h"
 
@@ -79,4 +79,4 @@ class AutofillAiFillingEngineImpl : public AutofillAiFillingEngine {
 
 }  // namespace autofill_ai
 
-#endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_AUTOFILL_AI_FILLING_ENGINE_IMPL_H_
+#endif  // COMPONENTS_AUTOFILL_AI_CORE_BROWSER_SUGGESTION_AUTOFILL_AI_MODEL_EXECUTOR_IMPL_H_
