@@ -302,6 +302,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4567424176335768812">Vous êtes connecté avec l'adresse e-mail <ph name="USER_EMAIL_ADDRESS" />. Vous pouvez maintenant accéder à vos favoris, à l'historique et aux autres paramètres sur tous les appareils sur lesquels vous êtes connecté.</translation>
 <translation id="4571503333518166079">Accéder aux paramètres de notification de Chrome</translation>
 <translation id="4575717501879784448">Chrome peut désactiver ces onglets pour améliorer votre expérience de navigation et libérer des ressources.</translation>
+<translation id="4595162648538023956">Vous pouvez vous connecter pour accéder à vos données, ou utiliser Chrome sans compte</translation>
 <translation id="459622048091363950">Une fois l'accès à une ressource accordé à Chrome, les sites Web sont également en mesure de vous demander l'accès.</translation>
 <translation id="4600710005438004015">Échec de l'installation de la dernière version de Chrome. Vous ne disposez donc pas des nouvelles fonctionnalités, ni des correctifs de sécurité.</translation>
 <translation id="4601439950572737842">Vos données sont chiffrées avec votre phrase secrète. Saisissez-la pour utiliser et enregistrer les données Chrome dans votre compte Google.</translation>
@@ -453,6 +454,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6497147134301593682">Chrome a été fermé automatiquement</translation>
 <translation id="6506909944137591434">Pour créer un plan 3D de votre environnement, Chrome a besoin de l'autorisation d'accéder à la caméra</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome pour les développeurs</translation>
+<translation id="6515549163407364048">Pour avoir vos extensions sur tous vos ordinateurs, connectez-vous à Chrome</translation>
 <translation id="6520670145826811516">Pour que Chrome puisse utiliser votre position, autorisez-le à y accéder dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Dans le Gestionnaire de mots de passe Google sur cet appareil</translation>
 <translation id="6600016381025017075">Recherchez ce que vous voulez sur cette page</translation>

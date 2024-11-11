@@ -10276,12 +10276,6 @@ En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.
 
       Consulta https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage para obtener información sobre los tipos de medios JavaScript/ECMAScript.
       </translation>
-<translation id="8668202868357089313">Lens Overlay permite a los usuarios hacer búsquedas de Google interactuando con una captura de pantalla de la página actual superpuesta al contenido web.
-
-No hay ninguna configuración de usuario para controlar esta función, que generalmente está disponible para todos los usuarios que tienen Google como buscador predeterminado a menos que esta política la inhabilite.
-
-Si se le asigna el valor 0 - Habilitado a esta política o no se define, la función estará disponible para los usuarios.
-Si se le asigna el valor 1 - Inhabilitado a esta política, la función no estará disponible.</translation>
 <translation id="8668928485126473293">Te permite definir si <ph name="PRODUCT_NAME" /> ejecutará el motor V8 de JavaScript con más optimizaciones avanzadas de JavaScript habilitadas.
 
 Si se inhabilitan las optimizaciones de JavaScript (asignando el valor 2 a esta política), es posible que <ph name="PRODUCT_NAME" /> renderice el contenido web más lentamente.

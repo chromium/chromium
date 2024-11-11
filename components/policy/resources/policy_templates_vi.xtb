@@ -10415,12 +10415,6 @@ Chính sách này luôn có hiệu lực đối với <ph name="PRODUCT_OS_NAME"
 
       Xem https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage để biết chi tiết về các loại phương tiện JavaScript/ECMAScript.
       </translation>
-<translation id="8668202868357089313">Lớp phủ Ống kính cho phép người dùng tìm kiếm trên Google bằng cách tương tác với ảnh chụp màn hình trang hiện tại được phủ lên nội dung thực tế trên web.
-
-Tính năng này không bị kiểm soát bởi bất cứ chế độ cài đặt nào của người dùng và thường được cung cấp cho tất cả người dùng đặt Google làm công cụ tìm kiếm mặc định, trừ phi bị tắt theo chính sách này.
-
-Khi bạn đặt chính sách thành 0 – Bật hoặc không đặt, người dùng sẽ có thể sử dụng tính năng này.
-Khi bạn đặt chính sách này thành 1 – Tắt, người dùng sẽ không thể sử dụng tính năng này.</translation>
 <translation id="8668928485126473293">Cho phép bạn thiết lập liệu <ph name="PRODUCT_NAME" /> có chạy công cụ JavaScript v8 trong khi bật tính năng tối ưu hoá JavaScript nâng cao hơn hay không.
 
 Việc tắt tính năng tối ưu hoá JavaScript (bằng cách đặt giá trị của chính sách này thành 2) có thể khiến <ph name="PRODUCT_NAME" /> hiển thị nội dung trên web chậm hơn.

@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Koden er skannet</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} fane}other{{count} faner}}</translation>
 <translation id="1084365883616172403">Facebook-innlegget er fullført.</translation>
+<translation id="1085677983426914530"><ph name="FILENAME" /> kunne ikke åpnes</translation>
 <translation id="1096992026380844478">Synkroniseringsinnstillingene dine gjenopprettes basert på den forrige sikkerhetskopien. <ph name="BEGIN_LINK" />Se hva du kan synkronisere<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Oversett alltid <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Loggsynkronisering</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Nei takk</translation>
 <translation id="2320166752086256636">Skjul tastaturet</translation>
 <translation id="2321086116217818302">Klargjør passordene …</translation>
+<translation id="2323697864063408084">Få varsler på låseskjermen og som bannere, slik at du aldri går glipp av det som er viktig for deg</translation>
 <translation id="2326302612031521902">Enhetsvelger</translation>
 <translation id="2330607597130465898">Ingen beskyttelse</translation>
 <translation id="233375395665273385">Slett og logg av</translation>
@@ -384,6 +386,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2671423594960767771">Del gruppe</translation>
 <translation id="2673508731173059946">Besøk den kopierte linken</translation>
 <translation id="2687403674020088961">Blokkér alle informasjonskapsler (anbefales ikke)</translation>
+<translation id="2688535388040882469">Bannere</translation>
 <translation id="2690858294534178585">Kameraet er i bruk</translation>
 <translation id="2691653761409724435">Ikke tilgjengelig uten nett</translation>
 <translation id="2696180352517415858">Du blir ikke logget av Google-kontoen din. <ph name="BEGIN_LINK" />Andre typer aktiviteter<ph name="END_LINK" /> kan bli lagret i Google-kontoen din når du er pålogget. Du kan slette dem når som helst.
@@ -635,6 +638,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3986739045730058129">Gå til fanen</translation>
 <translation id="3992684624889376114">Om denne siden</translation>
 <translation id="3994422733891749358">Velg hvilke varsler du vil motta</translation>
+<translation id="3994522032746736727">Logg på som <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Fremdriftslinje for sideinnlasting, <ph name="EMAIL" /> er lastet inn.</translation>
 <translation id="3997522473364371632">Administratoren din har slått av passorddeling.</translation>
 <translation id="4002066346123236978">Tittel</translation>
@@ -841,6 +845,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4936354130727646074">Flytt aldri</translation>
 <translation id="4937410517508563815">Lagre passord i kontoen</translation>
 <translation id="4938338714234463591">Dette gjør det mulig å bruke stemmen med bestemte funksjoner på nettsteder.</translation>
+<translation id="4938716880833771969">Varsler leveres lydløst</translation>
 <translation id="4941089862236492464">Det oppsto et problem under delingen av artikkelen.</translation>
 <translation id="4944543191714094452">Finn på siden</translation>
 <translation id="4945756290001680296">Åpne passordinnstillingene</translation>
@@ -1607,6 +1612,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8319076807703933069">Nytt søk</translation>
 <translation id="8343993175958086504">Sikkerhetskopier tingene dine, og bruk dem på alle enheter.</translation>
 <translation id="8349305172487531364">Bokmerkerad</translation>
+<translation id="8364563001733875155">For å endre PIN-koden må du først konfigurere en adgangskode på enheten.</translation>
 <translation id="8366466717204352506">Sjekken har aldri vært kjørt</translation>
 <translation id="8368001212524806591">Spor prisen</translation>
 <translation id="8370406443343902172">Gå til Innstillinger…</translation>

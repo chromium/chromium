@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">En firewall blev registreret</translation>
 <translation id="1075811647922107217">Sidestørrelse</translation>
-<translation id="108084407137234521">Det er ikke muligt at opsummere en transskription på færre end <ph name="MIN_WORD_LENGTH" /> ord</translation>
 <translation id="1082009148392559545">Downloader pauseskærmen</translation>
 <translation id="1094693127011229778">IP-adresse er ikke tilgængelig</translation>
 <translation id="1100902271996134409">Opretter af billeder…</translation>
@@ -420,7 +419,6 @@
 <translation id="3031560714565892478">Enheden er et videokamera.</translation>
 <translation id="3042927241478734594">Vil du afslutte optagelsen?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">Det er ikke muligt at opsummere en transskription på mere end <ph name="MAX_WORD_LENGTH" /> ord</translation>
 <translation id="3056720590588772262">Slutpunkt</translation>
 <translation id="3060579846059757016">Oversigter</translation>
 <translation id="3061850252076394168">aktivér Tekstoplæsning</translation>
@@ -459,7 +457,6 @@
 <translation id="3226657629376379887">Handlingsmenu for layout</translation>
 <translation id="3227186760713762082">Divider værdien for <ph name="CATEGORY_TEXT" /> med <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Omskriv</translation>
-<translation id="3245518008592055173">Der kan ikke oprettes navne til en transskription på færre end <ph name="MIN_WORD_LENGTH" /> ord</translation>
 <translation id="3246869037381808805">Udskriftjobs, der er ældre end 1 dag, fjernes</translation>
 <translation id="324961752321393509">Din administrator tillader ikke lukning af denne app</translation>
 <translation id="3263941347294171263">Tag stikket ud af <ph name="DEVICE_NAME" />, og sæt det derefter i igen for at fortsætte opdateringsprocessen</translation>
@@ -624,7 +621,6 @@
 <translation id="409427325554347132">Gem testoplysninger</translation>
 <translation id="409469431304488632">Eksperiment</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">Der kan ikke oprettes navne til en transskription på mere end <ph name="MAX_WORD_LENGTH" /> ord</translation>
 <translation id="4110686435123617899">Vælg albummet <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-touchplade</translation>
 <translation id="4113067922640381334">Du har nu adgang til nye <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />baggrunde<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>

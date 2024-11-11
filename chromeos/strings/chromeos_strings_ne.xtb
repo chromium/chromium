@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">फायरवाल पत्ता लाग्यो</translation>
 <translation id="1075811647922107217">पेजको आकार</translation>
-<translation id="108084407137234521"><ph name="MIN_WORD_LENGTH" /> भन्दा कम शब्द भएको ट्रान्स्क्रिप्टको सारांश बनाउन सकिँदैन</translation>
 <translation id="1082009148392559545">स्क्रिन सेभर डाउनलोड गरिँदै छ</translation>
 <translation id="1094693127011229778">IP ठेगाना उपलब्ध छैन</translation>
 <translation id="1100902271996134409">थम्बनेलहरू लोड हुँदै छन्…</translation>
@@ -421,7 +420,6 @@
 <translation id="3031560714565892478">यो डिभाइस भिडियो क्यामेरा हो।</translation>
 <translation id="3042927241478734594">रेकर्ड गर्ने डायलगबाट बाहिरिने हो?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744"><ph name="MAX_WORD_LENGTH" /> भन्दा बढी शब्द भएको ट्रान्स्क्रिप्टको सारांश बनाउन सकिँदैन</translation>
 <translation id="3056720590588772262">इन्डपोइन्ट</translation>
 <translation id="3060579846059757016">आउटलाइन</translation>
 <translation id="3061850252076394168">सेलेक्ट टु स्पिक अन गर्नुहोस्</translation>
@@ -461,7 +459,6 @@
 <translation id="3226657629376379887">लेआउट एक्सन मेनु</translation>
 <translation id="3227186760713762082"><ph name="CONVERSION_RATE" /> ले <ph name="CATEGORY_TEXT" /> लाई भाग गर्नुहोस्</translation>
 <translation id="3237710083340813756">फेरि लेख्नुहोस्</translation>
-<translation id="3245518008592055173"><ph name="MIN_WORD_LENGTH" /> भन्दा कम शब्द भएको ट्रान्स्क्रिप्टको नाम तयार पार्न सकिँदैन</translation>
 <translation id="3246869037381808805">१ दिनभन्दा पहिलेका प्रिन्टसम्बन्धी कार्यहरू हटाइने छन्</translation>
 <translation id="324961752321393509">तपाईंका एड्मिन यो एप बन्द गर्ने अनुमति दिनुहुन्न</translation>
 <translation id="3263941347294171263">अपडेट गर्ने प्रक्रिया जारी राख्न <ph name="DEVICE_NAME" /> निकालेर फेरि जोड्नुहोस्</translation>
@@ -627,7 +624,6 @@
 <translation id="409427325554347132">जाँचसम्बन्धी विवरण सेभ गर्नुहोस्</translation>
 <translation id="409469431304488632">परीक्षण</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881"><ph name="MAX_WORD_LENGTH" /> भन्दा बढी शब्द भएको ट्रान्स्क्रिप्टको नाम तयार पार्न सकिँदैन</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> एल्बम चयन गर्नुहोस्</translation>
 <translation id="4111761024568264522">USB टचप्याड</translation>
 <translation id="4113067922640381334">तपाईं अब नयाँ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />वालपेपरहरू<ph name="END_LINK_WALLPAPER_SUBPAGE" /> प्रयोग गर्न सक्नुहुन्छ</translation>

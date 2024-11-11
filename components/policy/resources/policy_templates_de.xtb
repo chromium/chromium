@@ -10199,12 +10199,6 @@ Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</tran
 
       Weitere Informationen zu den Medientypen JavaScript/ECMAScript findest du unter https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage.
       </translation>
-<translation id="8668202868357089313">Mit „Lens Overlay“ können Nutzer Google-Suchanfragen ausführen, indem sie mit einem Screenshot der aktuellen Seite interagieren, der über den tatsächlichen Webinhalten eingeblendet wird.
-
-Es gibt keine Nutzereinstellung, mit der diese Funktion gesteuert werden kann. Sie ist für alle Nutzer, die Google als Standardsuchmaschine verwenden, standardmäßig verfügbar, sofern sie nicht durch diese Richtlinie deaktiviert wurde.
-
-Wenn die Richtlinie auf „0 – Aktiviert“ festgelegt oder nicht konfiguriert ist, ist die Funktion für Nutzer verfügbar.
-Ist die Richtlinie auf „1 – Deaktiviert“ festgelegt, ist die Funktion nicht verfügbar.</translation>
 <translation id="8668928485126473293">Mit dieser Richtlinie kannst du festlegen, ob <ph name="PRODUCT_NAME" /> die JavaScript-Engine V8 mit erweiterten JavaScript-Optimierungen ausführt.
 
 Wenn JavaScript-Optimierungen deaktiviert sind (indem du den Wert dieser Richtlinie auf 2 setzt), rendert <ph name="PRODUCT_NAME" /> Webinhalte möglicherweise langsamer.

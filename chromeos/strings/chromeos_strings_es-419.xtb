@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Se detectó un firewall</translation>
 <translation id="1075811647922107217">Tamaño de la página</translation>
-<translation id="108084407137234521">No se puede resumir una transcripción con menos de <ph name="MIN_WORD_LENGTH" /> palabras</translation>
 <translation id="1082009148392559545">Descargando el protector de pantalla</translation>
 <translation id="1094693127011229778">La dirección IP no está disponible</translation>
 <translation id="1100902271996134409">Creando imágenes…</translation>
@@ -421,7 +420,6 @@
 <translation id="3031560714565892478">El dispositivo es una videocámara.</translation>
 <translation id="3042927241478734594">¿Quieres salir de la grabación?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">No se puede resumir una transcripción con más de <ph name="MAX_WORD_LENGTH" /> palabras</translation>
 <translation id="3056720590588772262">Extremo</translation>
 <translation id="3060579846059757016">Puntos destacados</translation>
 <translation id="3061850252076394168">habilita Seleccionar para pronunciar</translation>
@@ -461,7 +459,6 @@
 <translation id="3226657629376379887">Menú de acciones de diseño</translation>
 <translation id="3227186760713762082">Divide el valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Volver a escribir</translation>
-<translation id="3245518008592055173">No se pueden crear nombres para una transcripción con menos de <ph name="MIN_WORD_LENGTH" /> palabras</translation>
 <translation id="3246869037381808805">Se quitarán los trabajos de impresión que tengan más de 1 día</translation>
 <translation id="324961752321393509">Tu administrador no permite cerrar esta app</translation>
 <translation id="3263941347294171263">Desconecta y vuelve a conectar el dispositivo <ph name="DEVICE_NAME" /> para continuar con el proceso de actualización</translation>
@@ -627,7 +624,6 @@
 <translation id="409427325554347132">Guardar los detalles de la prueba</translation>
 <translation id="409469431304488632">Experimento</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
-<translation id="4105182082354119881">No se pueden crear nombres para una transcripción con más de <ph name="MAX_WORD_LENGTH" /> palabras</translation>
 <translation id="4110686435123617899">Seleccionar álbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Panel táctil con conexión USB</translation>
 <translation id="4113067922640381334">Ahora tienes acceso a nuevos <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fondos de pantalla<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>

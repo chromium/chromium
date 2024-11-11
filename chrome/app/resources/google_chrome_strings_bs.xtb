@@ -303,7 +303,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="4567424176335768812">Prijavljeni ste kao <ph name="USER_EMAIL_ADDRESS" />. Sada možete pristupiti svojim oznakama, historiji i drugim postavkama na svim uređajima na kojima ste prijavljeni.</translation>
 <translation id="4571503333518166079">Idi u postavke obavještenja Chromea</translation>
 <translation id="4575717501879784448">Chrome može učiniti ove kartice neaktivnima da poboljša iskustvo pregledanja i oslobodi izvore.</translation>
-<translation id="4595162648538023956">Možete se prijaviti da biste pristupili svojim sadržajima ili koristiti Chrome bez računa</translation>
+<translation id="4595162648538023956">Možete se prijaviti da pristupite svojim stvarima ili koristite Chrome bez računa</translation>
 <translation id="459622048091363950">Kada Chrome dobije pristup, web lokacije će od vas moći tražiti pristup.</translation>
 <translation id="4600710005438004015">Ažuriranje Chromea na najnoviju verziju nije uspjelo, tako da propuštate nove funkcije i ispravke sigurnosnih propusta.</translation>
 <translation id="4601439950572737842">Vaši podaci su šifrirani pristupnim izrazom. Unesite ga da koristite i sačuvate podatke Chromea na Google računu.</translation>
@@ -455,7 +455,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6497147134301593682">Chrome se automatski zatvorio</translation>
 <translation id="6506909944137591434">Chromeu je potrebno odobrenje za kameru radi kreiranja 3D mape vašeg okruženja</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
-<translation id="6515549163407364048">Da biste imali svoja proširenja na svim svojim računalima, prijavite se u Chromium</translation>
+<translation id="6515549163407364048">Da dobijete ekstenzije na svim svojim računarima, prijavite se u Chrome</translation>
 <translation id="6520670145826811516">Da koristite lokaciju, odobrite Chromeu pristup u <ph name="BEGIN_LINK" />postavkama sistema<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">U Googleovom Upravitelju lozinki na ovom uređaju</translation>
 <translation id="6600016381025017075">Pretražite bilo šta na ovoj stranici</translation>

@@ -170,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> Website in der Gruppe von <ph name="RWS_OWNER" />, die deine Aktivitäten in der Gruppe sehen kann}other{<ph name="RWS_MEMBERS_COUNT" /> Websites in der Gruppe von <ph name="RWS_OWNER" />, die deine Aktivitäten in der Gruppe sehen können}}</translation>
 <translation id="3697164069658504920">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie USB-Geräte verwenden dürfen. Wenn er deaktiviert ist, können Websites keine USB-Geräte verwenden.</translation>
 <translation id="3707034683772193706">Von dir besuchte Websites können eine kleine Datenmenge in Chrome speichern, die hauptsächlich dazu dienen, zu belegen, dass du kein Bot bist</translation>
+<translation id="3709818294139939629">Dateizugriff der Website entfernt</translation>
 <translation id="3721953990244350188">Schließen und nächste verfügbare Aktion anzeigen</translation>
 <translation id="3744111561329211289">Hintergrundsynchronisierung</translation>
 <translation id="3763247130972274048">Tippe links oder rechts im Video doppelt, um 10 s zu überspringen</translation>
@@ -432,6 +433,7 @@
 <translation id="7425915948813553151">Dunkles Design für Websites</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Wenn dieser Schalter aktiviert ist, können Websites Aufforderungen zur Anmeldung anzeigen. Wenn er deaktiviert ist, können Websites keine Aufforderungen zur Anmeldung anzeigen.</translation>
+<translation id="7553211568594248088">Hub-Suche beenden</translation>
 <translation id="7554752735887601236">Eine Website verwendet dein Mikrofon</translation>
 <translation id="7561196759112975576">Immer</translation>
 <translation id="757524316907819857">Wiedergabe von geschützten Inhalten für Websites blockieren</translation>

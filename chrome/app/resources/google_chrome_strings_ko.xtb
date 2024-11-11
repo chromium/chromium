@@ -302,6 +302,7 @@
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" />(으)로 로그인되어 있습니다. 이제 로그인한 모든 기기에서 북마크, 방문 기록 및 기타 설정에 액세스할 수 있습니다.</translation>
 <translation id="4571503333518166079">Chrome 알림 설정으로 이동</translation>
 <translation id="4575717501879784448">Chrome은 이러한 탭을 비활성화하여 탐색 환경을 개선하고 리소스를 확보할 수 있습니다.</translation>
+<translation id="4595162648538023956">로그인하여 내 정보를 가져오거나 계정 없이 Chrome을 사용할 수 있습니다.</translation>
 <translation id="459622048091363950">Chrome에 액세스 권한을 부여하면 웹사이트에서 액세스 권한을 요청할 수 있게 됩니다.</translation>
 <translation id="4600710005438004015">Chrome을 최신 버전으로 업데이트하지 못했기 때문에 새로운 기능과 보안 수정 사항이 적용되지 않았습니다.</translation>
 <translation id="4601439950572737842">데이터가 암호로 암호화되어 있습니다. Google 계정에서 Chrome 데이터를 사용하고 저장하려면 암호를 입력하세요.</translation>
@@ -453,6 +454,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6497147134301593682">Chrome이 자동으로 종료되었습니다</translation>
 <translation id="6506909944137591434">Chrome에서 주변의 3D 지도를 만들려면 카메라 권한이 필요합니다.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - 개발자용 Chrome</translation>
+<translation id="6515549163407364048">어느 컴퓨터에서나 내 확장 프로그램을 사용하려면 Chrome에 로그인하세요.</translation>
 <translation id="6520670145826811516">위치를 사용하려면 <ph name="BEGIN_LINK" />시스템 설정<ph name="END_LINK" />에서 Chrome에 액세스 권한을 부여하세요.</translation>
 <translation id="659498884637196217">이 기기의 Google 비밀번호 관리자에서</translation>
 <translation id="6600016381025017075">이 페이지에 표시된 모든 항목을 검색하세요</translation>

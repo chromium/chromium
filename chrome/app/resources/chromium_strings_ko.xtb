@@ -20,6 +20,7 @@
 <translation id="1185134272377778587">Chromium 정보</translation>
 <translation id="1188705220418984327">창을 공유하려면 시스템 환경설정에서 Chromium의 화면 녹화를 허용하세요</translation>
 <translation id="1203500561924088507">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 브라우저를 다시 시작해야 합니다.</translation>
+<translation id="1235768345431527125">로그인하여 내 정보를 가져오거나 계정 없이 Chromium을 사용할 수 있습니다.</translation>
 <translation id="1262876892872089030">이 탭이 비활성 상태인 동안 Chromium의 속도를 빠르게 유지하기 위해 메모리를 확보했습니다. 이 사이트가 비활성 상태가 되지 않도록 항상 제외할 수 있습니다.</translation>
 <translation id="1265577313130862557">위험한 파일이므로 Chromium에서 이 다운로드를 차단했습니다.</translation>
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> 계정으로 Gmail 또는 YouTube와 같은 Google 서비스에 로그인하면 동일한 계정으로 Chromium에 자동으로 로그인할 수 있습니다.</translation>
@@ -328,6 +329,7 @@
 <translation id="549669000822060376">Chromium에서 최신 시스템 업데이트를 설치하는 동안 잠시 기다려 주세요.</translation>
 <translation id="5496810170689441661">Chromium에서 비밀번호를 수정하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="5527463683072221100">Chromium에서 PDF 열기</translation>
+<translation id="5568136785038042132">어느 컴퓨터에서나 내 확장 프로그램을 사용하려면 Chromium에 로그인하세요.</translation>
 <translation id="5575418445468216473">비밀번호 및 기타 Chromium 데이터가 Google 계정에 저장되며 이 기기에서 삭제됩니다. 나중에 사용하려면 Chromium에 다시 로그인하세요</translation>
 <translation id="5579324208890605088">시작 오류: 관리자가 아닌 일반 사용자로 설치 프로그램을 실행하세요.</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>

@@ -301,6 +301,7 @@
 <translation id="4567424176335768812">Olete sisse logitud aadressiga <ph name="USER_EMAIL_ADDRESS" />. Nüüd on teil juurdepääs oma järjehoidjatele, ajaloole ja muudele seadetele kõigis seadmetes, kuhu olete sisse logitud.</translation>
 <translation id="4571503333518166079">Ava Chrome'i märguandeseaded</translation>
 <translation id="4575717501879784448">Chrome võib teha need vahelehed interaktiivseks, mis täiustab teie sirvimiskogemust ja vabastab ressursse.</translation>
+<translation id="4595162648538023956">Saate oma asjade hankimiseks sisse logida või kasutada Chrome'i ilma kontota</translation>
 <translation id="459622048091363950">Kui annate Chrome'ile juurdepääsu, saavad veebisaidid küsida teilt juurdepääsuluba.</translation>
 <translation id="4600710005438004015">Chrome'i ei saanud uusimale versioonile värskendada, mistõttu jääte ilma uutest funktsioonidest ja turvaparandustest.</translation>
 <translation id="4601439950572737842">Teie andmed on krüpteeritud teie parooliga. Chrome’i andmete kasutamiseks ja salvestamiseks oma Google’i kontole sisestage parool.</translation>
@@ -450,6 +451,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6497147134301593682">Chrome suleti automaatselt</translation>
 <translation id="6506909944137591434">Chrome vajab kaamera kasutamise luba, et luua teie ümbruskonnast 3D-kaart</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
+<translation id="6515549163407364048">Oma laienduste nägemiseks kõigis arvutites logige Chrome'i sisse</translation>
 <translation id="6520670145826811516">Asukoha kasutamiseks andke Chrome'ile <ph name="BEGIN_LINK" />süsteemiseadetes<ph name="END_LINK" /> juurdepääs</translation>
 <translation id="659498884637196217">Selle seadme Google'i paroolihalduris</translation>
 <translation id="6600016381025017075">Otsige sellelt lehelt mida tahes</translation>

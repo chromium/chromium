@@ -18,6 +18,7 @@
 <translation id="1185134272377778587">Tentang Chromium</translation>
 <translation id="1188705220418984327">Untuk membagikan jendela Anda, izinkan perekaman layar untuk Chromium di Preferensi Sistem.</translation>
 <translation id="1203500561924088507">Terima kasih telah menginstal. Anda harus memulai ulang browser sebelum menggunakan <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1235768345431527125">Anda dapat login untuk mengakses data Anda, atau menggunakan Chromium tanpa akun</translation>
 <translation id="1262876892872089030">Saat tab ini tidak aktif, memori akan dikosongkan agar Chromium tetap cepat. Anda dapat memilih untuk selalu mengecualikan situs ini agar tetap aktif.</translation>
 <translation id="1265577313130862557">Chromium memblokir download ini karena file tersebut berbahaya</translation>
 <translation id="126567311906253476">Saat login ke layanan Google seperti Gmail atau YouTube dengan <ph name="USER_EMAIL" />, Anda dapat login otomatis ke Chromium dengan akun yang sama</translation>
@@ -327,6 +328,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="549669000822060376">Harap tunggu selagi Chromium memasang pembaruan sistem terkini.</translation>
 <translation id="5496810170689441661">Chromium mencoba mengedit sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="5527463683072221100">Buka PDF di Chromium</translation>
+<translation id="5568136785038042132">Agar dapat mengakses ekstensi Anda di semua komputer, login ke Chromium</translation>
 <translation id="5575418445468216473">Sandi dan data Chromium Anda lainnya disimpan di Akun Google Anda, dan akan dihapus dari perangkat ini. Untuk menggunakannya di masa mendatang, login kembali ke Chromium.</translation>
 <translation id="5579324208890605088">Error saat sistem dimulai: jalankan penginstal sebagai pengguna biasa, bukan sebagai administrator.</translation>
 <translation id="5596627076506792578">Opsi lainnya</translation>

@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Oppdaget en brannmur</translation>
 <translation id="1075811647922107217">Sidestørrelse</translation>
-<translation id="108084407137234521">Kan ikke oppsummere transkripsjoner på mindre enn <ph name="MIN_WORD_LENGTH" /> ord</translation>
 <translation id="1082009148392559545">Laster ned skjermspareren</translation>
 <translation id="1094693127011229778">IP-adressen er ikke tilgjengelig</translation>
 <translation id="1100902271996134409">Oppretter bilder …</translation>
@@ -360,6 +359,7 @@
 <translation id="2589921777872778654">Rediger og slett-meny</translation>
 <translation id="2597774443162333062">Filene sendes til Google for feilsøking</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skanningen er fullført. 1 side er skannet}other{Skanningen er fullført. {NUMBER_OF_PAGES} sider er skannet}}</translation>
+<translation id="261322795497077164">Identifisering av personer som snakker</translation>
 <translation id="2617397783536231890">bomull</translation>
 <translation id="2618015542787108131">sanddyne</translation>
 <translation id="2619761439309613843">Daglig oppdatering</translation>
@@ -420,7 +420,6 @@
 <translation id="3031560714565892478">Enheten er et videokamera.</translation>
 <translation id="3042927241478734594">Vil du avslutte opptaket?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">Kan ikke oppsummere transkripsjoner på mer enn <ph name="MAX_WORD_LENGTH" /> ord</translation>
 <translation id="3056720590588772262">Sluttpunkt</translation>
 <translation id="3060579846059757016">Omriss</translation>
 <translation id="3061850252076394168">slå på tekstopplesing</translation>
@@ -441,6 +440,7 @@
 <translation id="3140130301071865159">snø</translation>
 <translation id="3146655726035122603">Kun på <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobildata</translation>
+<translation id="3153094818810437149">Du kan endre dette senere i Lydopptaker-innstillingene</translation>
 <translation id="3156511682997763015">Spol 10 sekunder frem</translation>
 <translation id="3156846309055100599">Skanner side <ph name="PAGE_NUMBER" /> …</translation>
 <translation id="315738237743207937">Oppdaget en obligatorisk side</translation>
@@ -459,7 +459,6 @@
 <translation id="3226657629376379887">Handlingsmeny for layout</translation>
 <translation id="3227186760713762082">Divider <ph name="CATEGORY_TEXT" />-verdien med <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Skriv om</translation>
-<translation id="3245518008592055173">Kan ikke opprette navn for transkripsjoner på mindre enn <ph name="MIN_WORD_LENGTH" /> ord</translation>
 <translation id="3246869037381808805">Utskriftsjobber som er eldre enn 1 dag, blir fjernet</translation>
 <translation id="324961752321393509">Administratoren din tillater ikke lukking av denne appen</translation>
 <translation id="3263941347294171263">Koble <ph name="DEVICE_NAME" /> fra og koble den til igjen for å fortsette oppdateringsprosessen</translation>
@@ -562,6 +561,7 @@
 <translation id="3785643128701396311">pikselkunst</translation>
 <translation id="3799381533888781854">AV – Denne innstillingen administreres av administratoren din.</translation>
 <translation id="380097101658023925">RGB-kontroller</translation>
+<translation id="380493988330050229">Kan ikke opprette sammendrag for dette transkripsjonsspråket</translation>
 <translation id="38114475217616659">Tøm hele loggen</translation>
 <translation id="3820172043799983114">Ugyldig PIN-kode</translation>
 <translation id="382043424867370667">Bakgrunn: Solnedgang</translation>
@@ -624,7 +624,6 @@
 <translation id="409427325554347132">Lagre testdetaljer</translation>
 <translation id="409469431304488632">Eksperiment</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">Kan ikke opprette navn for transkripsjoner på mer enn <ph name="MAX_WORD_LENGTH" /> ord</translation>
 <translation id="4110686435123617899">Velg albumet <ph name="TITLE" /> med <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-styreflate</translation>
 <translation id="4113067922640381334">Nå har du tilgang til nye <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />bakgrunner<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
@@ -734,6 +733,7 @@
 <translation id="458794348635939462">Kunne ikke finne tilknytning til alle vertene</translation>
 <translation id="4593212453765072419">Godkjenning av mellomtjener kreves</translation>
 <translation id="4594021849294327751">Opprett en transkripsjon</translation>
+<translation id="4594541568452132351">Velg transkripsjonsspråk, og last ned modellen</translation>
 <translation id="4607282946861182308">Kan ikke lage bilder av dette. Prøv en annen forespørsel.</translation>
 <translation id="4609350030397390689">Tastaturlysstyrke ned</translation>
 <translation id="4623061655523261501">Opptaksnavnene er generert</translation>
@@ -1096,6 +1096,7 @@
 <translation id="6359919876285606596">Denne handlingen er permanent og kan ikke angres</translation>
 <translation id="6368342879959028556">Når du velger «Opprett med AI», skriver du en egendefinert forespørsel. Du kan også velge «AI-bakgrunn», velge et tema og deretter velge de understrekede ordene for å tilpasse AI-bakgrunnen.</translation>
 <translation id="636850387210749493">Bedriftsregistrering</translation>
+<translation id="6369221585240879141">Kan ikke opprette opptaksnavn for dette transkripsjonsspråket</translation>
 <translation id="6373461326814131011">dam</translation>
 <translation id="6379086450106841622">Berøringsskjerm</translation>
 <translation id="6381741036071372448">Test tastaturet</translation>
@@ -1269,6 +1270,7 @@
 <translation id="7130438335435247835">Navn på tilgangspunkt (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Navnetjener}other{Navnetjenere}}</translation>
 <translation id="7135814714616751706">Søkesnarveier</translation>
+<translation id="7138614237884624401">Forenklet tekst</translation>
 <translation id="7141470099673912333">Innholdsoverføring</translation>
 <translation id="7143207342074048698">Kobler til</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>
@@ -1690,6 +1692,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="9100765901046053179">Avanserte innstillinger</translation>
 <translation id="910415269708673980">Oppdater saken for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skanner side <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">Lydopptaker kan lage transkripsjoner av opptak med tale. I neste trinn må du velge transkripsjonsspråket og laste ned modellen (opptil 100 MB).</translation>
 <translation id="9111102763498581341">Lås opp</translation>
 <translation id="9122492456897874028">Oppsummer innhold, få definisjoner med mer</translation>
 <translation id="9122602430962285795">For å koble til på nytt, gå til Innstillinger</translation>

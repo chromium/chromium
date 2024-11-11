@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Tűzfal észlelve</translation>
 <translation id="1075811647922107217">Oldal mérete</translation>
-<translation id="108084407137234521">Az átiratnak legalább <ph name="MIN_WORD_LENGTH" /> szavasnak kell lennie, hogy össze lehessen foglalni</translation>
 <translation id="1082009148392559545">Képernyővédő letöltése</translation>
 <translation id="1094693127011229778">Az IP-cím nem áll rendelkezésre</translation>
 <translation id="1100902271996134409">Képek létrehozása…</translation>
@@ -420,7 +419,6 @@
 <translation id="3031560714565892478">Az eszköz egy videokamera.</translation>
 <translation id="3042927241478734594">Kilép a felvételből?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">Az átirat legfeljebb <ph name="MAX_WORD_LENGTH" /> szót tartalmazhat, hogy össze lehessen foglalni</translation>
 <translation id="3056720590588772262">Befejező pont</translation>
 <translation id="3060579846059757016">Főbb pontok</translation>
 <translation id="3061850252076394168">felolvasás engedélyezése</translation>
@@ -459,7 +457,6 @@
 <translation id="3226657629376379887">Elrendezésműveletek menüje</translation>
 <translation id="3227186760713762082">Ossza el a(z) <ph name="CATEGORY_TEXT" /> értékét ennyivel: <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Átírás</translation>
-<translation id="3245518008592055173">A(z) <ph name="MIN_WORD_LENGTH" /> szónál rövidebb átiratokhoz nem lehet nevet létrehozni</translation>
 <translation id="3246869037381808805">Az 1 napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="324961752321393509">A rendszergazda nem engedélyezi az alkalmazás bezárását</translation>
 <translation id="3263941347294171263">Húzza ki, majd csatlakoztassa újra a(z) <ph name="DEVICE_NAME" /> eszközt a frissítési folyamat folytatásához</translation>
@@ -624,7 +621,6 @@
 <translation id="409427325554347132">Tesztadatok mentése</translation>
 <translation id="409469431304488632">Kísérlet</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">A(z) <ph name="MAX_WORD_LENGTH" /> szónál hosszabb átiratokhoz nem lehet nevet létrehozni</translation>
 <translation id="4110686435123617899">A következő album kiválasztása: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-érintőpad</translation>
 <translation id="4113067922640381334">Mostantól új <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />háttérképekhez<ph name="END_LINK_WALLPAPER_SUBPAGE" /> férhet hozzá</translation>

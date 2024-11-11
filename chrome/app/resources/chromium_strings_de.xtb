@@ -18,6 +18,7 @@
 <translation id="1185134272377778587">Über Chromium</translation>
 <translation id="1188705220418984327">Wenn du dein Fenster teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chromium zulassen.</translation>
 <translation id="1203500561924088507">Vielen Dank für die Installation. Du musst deinen Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
+<translation id="1235768345431527125">Du kannst dich anmelden, um deine Inhalte abzurufen, oder Chromium ohne Konto verwenden</translation>
 <translation id="1262876892872089030">Während dieser Tab inaktiv war, wurde Arbeitsspeicher freigegeben, damit Chromium schnell bleibt. Du kannst festlegen, dass diese Website nie inaktiv sein soll.</translation>
 <translation id="1265577313130862557">Chromium hat diesen Download blockiert, weil die Datei gefährlich ist</translation>
 <translation id="126567311906253476">Wenn du dich mit <ph name="USER_EMAIL" /> in Google-Diensten wie Gmail oder YouTube anmeldest, kannst du dich mit demselben Konto automatisch in Chromium anmelden</translation>
@@ -326,6 +327,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="549669000822060376">Bitte warte, bis die aktuellen Systemupdates von Chromium installiert wurden.</translation>
 <translation id="5496810170689441661">Chromium versucht, Passwörter zu bearbeiten. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="5527463683072221100">PDFs in Chromium öffnen</translation>
+<translation id="5568136785038042132">Wenn deine Erweiterungen auf allen deinen Computern verfügbar sein sollen, melde dich in Chromium an</translation>
 <translation id="5575418445468216473">Deine Passwörter und anderen Chromium-Daten werden in deinem Google-Konto gespeichert und von diesem Gerät entfernt. Wenn du sie in Zukunft verwenden möchtest, melde dich wieder in Chromium an.</translation>
 <translation id="5579324208890605088">Fehler beim Starten: Bitte führe das Installationsprogramm als normaler Nutzer statt als Administrator aus.</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>

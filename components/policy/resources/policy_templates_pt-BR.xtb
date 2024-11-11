@@ -10618,12 +10618,6 @@ Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 
       Consulte https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage (link em inglês) para ver detalhes sobre os tipos de mídia JavaScript / ECMAScript.
       </translation>
-<translation id="8668202868357089313">Com a sobreposição do Lens, os usuários podem fazer pesquisas no Google interagindo com uma captura de tela da página atual sobreposta ao conteúdo da Web.
-
-Não há uma configuração do usuário para controlar esse recurso. Ele geralmente fica disponível para todos os usuários que têm o Google como mecanismo de pesquisa padrão, a menos que seja desativado por esta política.
-
-Quando a política for ativada (definida como 1) ou deixada sem definição, o recurso ficará disponível para os usuários.
-Quando for desativada (definida como 0), o recurso não ficará disponível.</translation>
 <translation id="8668928485126473293">Permite definir se o <ph name="PRODUCT_NAME" />
 vai executar o mecanismo JavaScript V8 com otimizações do JavaScript mais avançadas ativadas.
 

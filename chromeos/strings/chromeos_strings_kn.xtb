@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ಫೈರ್‌ವಾಲ್ ಅನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="1075811647922107217">ಪುಟದ ಗಾತ್ರ</translation>
-<translation id="108084407137234521"><ph name="MIN_WORD_LENGTH" /> ಪದಗಳಿಗಿಂತ ಕಡಿಮೆ ಇರುವ ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್‌ ಅನ್ನು ಸಾರಾಂಶ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="1082009148392559545">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1094693127011229778">IP ವಿಳಾಸ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="1100902271996134409">ಚಿತ್ರಗಳನ್ನು ರಚಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -421,7 +420,6 @@
 <translation id="3031560714565892478">ಸಾಧನವು ವೀಡಿಯೊ ಕ್ಯಾಮರಾ ಆಗಿದೆ.</translation>
 <translation id="3042927241478734594">ರೆಕಾರ್ಡಿಂಗ್‌ನಿಂದ ನಿರ್ಗಮಿಸಬೇಕೇ?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744"><ph name="MAX_WORD_LENGTH" /> ಪದಗಳಿಗಿಂತ ದೀರ್ಘವಾದ ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್‌ ಅನ್ನು ಸಾರಾಂಶ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="3056720590588772262">ಅಂತಿಮ ಬಿಂದು</translation>
 <translation id="3060579846059757016">ಬಾಹ್ಯರೇಖೆಗಳು</translation>
 <translation id="3061850252076394168">ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿ ಎಂಬುದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -461,7 +459,6 @@
 <translation id="3226657629376379887">ಲೇಔಟ್ ಕ್ರಿಯೆಗಳ ಮೆನು</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> ನ ಮೌಲ್ಯವನ್ನು <ph name="CONVERSION_RATE" /> ಸಂಖ್ಯೆಯಿಂದ ಭಾಗಿಸಿ</translation>
 <translation id="3237710083340813756">ಪುನಃ ಬರೆಯಿರಿ</translation>
-<translation id="3245518008592055173"><ph name="MIN_WORD_LENGTH" /> ಪದಗಳಿಗಿಂತ ಕಡಿಮೆ ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್‌ ಗಾಗಿ ಹೆಸರುಗಳನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="3246869037381808805">1 ದಿನಕ್ಕಿಂತ ಹಳೆಯದಾದ ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="324961752321393509">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಈ ಆ್ಯಪ್ ಅನ್ನು ಮುಚ್ಚಲು ಅನುಮತಿಸುವುದಿಲ್ಲ</translation>
 <translation id="3263941347294171263">ಅಪ್‌ಡೇಟ್ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಮುಂದುವರಿಸಲು <ph name="DEVICE_NAME" /> ಅನ್ನು ಅನ್‌ಪ್ಲಗ್ ಮಾಡಿ ಮತ್ತು ಮರುಪ್ಲಗ್ ಮಾಡಿ</translation>
@@ -627,7 +624,6 @@
 <translation id="409427325554347132">ಪರೀಕ್ಷಾ ವಿವರಗಳನ್ನು ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="409469431304488632">ಪ್ರಯೋಗ</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881"><ph name="MAX_WORD_LENGTH" /> ಪದಗಳಿಗಿಂತ ಉದ್ದವಾದ ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್‌ಗಾಗಿ ಹೆಸರುಗಳನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="4110686435123617899">ಆಲ್ಬಮ್ ಆಯ್ಕೆ ಮಾಡಿ <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB ಟಚ್‌ಪ್ಯಾಡ್</translation>
 <translation id="4113067922640381334">ನೀವೀಗ ಹೊಸ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ವಾಲ್‌ಪೇಪರ್‌ಗಳಿಗೆ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ಆ್ಯಕ್ಸೆಸ್ ಹೊಂದಿದ್ದೀರಿ</translation>

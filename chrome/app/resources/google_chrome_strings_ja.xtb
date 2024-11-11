@@ -298,6 +298,7 @@
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" /> としてログインしています。ログインしているすべてのデバイスで、ブックマーク、履歴、その他の設定にアクセスできます。</translation>
 <translation id="4571503333518166079">Chrome の通知設定に移動</translation>
 <translation id="4575717501879784448">Chrome では、これらのタブを非アクティブにして、ブラウジング環境を改善し、リソースを解放できます。</translation>
+<translation id="4595162648538023956">ログインしてご自分の設定やデータを使用することや、アカウントなしで Chrome を使用することができます</translation>
 <translation id="459622048091363950">Chrome にアクセスを許可すると、ウェブサイトからアクセスをリクエストできるようになります。</translation>
 <translation id="4600710005438004015">Chrome を最新版に更新できませんでした。新しい機能とセキュリティ修正は適用されていません。</translation>
 <translation id="4601439950572737842">データはパスフレーズで暗号化されます。Google アカウントで Chrome のデータを使用、保存するには、パスフレーズを入力してください。</translation>
@@ -445,6 +446,7 @@
 <translation id="6497147134301593682">Chrome は自動的に終了しました</translation>
 <translation id="6506909944137591434">周囲の 3D マップを作成するには、Chrome にカメラの使用を許可する必要があります</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6515549163407364048">お使いのどのパソコンでも同じ拡張機能を使用するには、Chrome にログインします</translation>
 <translation id="6520670145826811516">位置情報を使用するには、<ph name="BEGIN_LINK" />システム設定<ph name="END_LINK" />で Chrome にアクセスを許可してください</translation>
 <translation id="659498884637196217">このデバイスの Google パスワード マネージャー</translation>
 <translation id="6600016381025017075">このページの内容を検索</translation>

@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Canfuwyd wal dân</translation>
 <translation id="1075811647922107217">Maint y dudalen</translation>
-<translation id="108084407137234521">Methu â chrynhoi trawsgrifiad sy'n fyrrach na <ph name="MIN_WORD_LENGTH" /> o eiriau</translation>
 <translation id="1082009148392559545">Wrthi'n lawrlwytho'r arbedwr sgrîn</translation>
 <translation id="1094693127011229778">Nid yw'r cyfeiriad IP ar gael</translation>
 <translation id="1100902271996134409">Wrthi'n creu lluniau…</translation>
@@ -420,7 +419,6 @@
 <translation id="3031560714565892478">Mae'r ddyfais yn gamera fideo.</translation>
 <translation id="3042927241478734594">Gadael y recordiad?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744">Methu â chrynhoi trawsgrifiad sy'n hwy na <ph name="MAX_WORD_LENGTH" /> o eiriau</translation>
 <translation id="3056720590588772262">Diweddbwynt</translation>
 <translation id="3060579846059757016">Amlinelliadau</translation>
 <translation id="3061850252076394168">galluogi dewis i siarad</translation>
@@ -459,7 +457,6 @@
 <translation id="3226657629376379887">Dewislen gweithredoedd cynllun</translation>
 <translation id="3227186760713762082">Rhannu'r gwerth <ph name="CATEGORY_TEXT" /> â <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Ailysgrifennu</translation>
-<translation id="3245518008592055173">Methu â chreu enwau ar gyfer trawsgrifiad sy'n llai na <ph name="MIN_WORD_LENGTH" /> o eiriau</translation>
 <translation id="3246869037381808805">Bydd tasgau argraffu sy'n hŷn nag 1 diwrnod yn cael eu dileu</translation>
 <translation id="324961752321393509">Nid yw eich gweinyddwr yn caniatáu cau'r ap hwn</translation>
 <translation id="3263941347294171263">Dadblygiwch ac ail-blygiwch <ph name="DEVICE_NAME" /> i barhau â'r broses ddiweddaru</translation>
@@ -624,7 +621,6 @@
 <translation id="409427325554347132">Cadw manylion y prawf</translation>
 <translation id="409469431304488632">Arbrawf</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">Methu â chreu enwau ar gyfer trawsgrifiad sy'n hwy na <ph name="MAX_WORD_LENGTH" /> o eiriau</translation>
 <translation id="4110686435123617899">Dewiswch albwm <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Sgrîn gyffwrdd USB</translation>
 <translation id="4113067922640381334">Mae bellach gennych fynediad at <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />bapurau wal<ph name="END_LINK_WALLPAPER_SUBPAGE" /> newydd</translation>

@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">فائروال کا پتا چلا</translation>
 <translation id="1075811647922107217">صفحہ کا سائز</translation>
-<translation id="108084407137234521"><ph name="MIN_WORD_LENGTH" /> الفاظ سے کم ٹرانسکرپٹ کا خلاصہ نہیں کیا جا سکتا</translation>
 <translation id="1082009148392559545">اسکرین سیور ڈاؤن لوڈ ہو رہا ہے</translation>
 <translation id="1094693127011229778">‏IP پتہ دستیاب نہیں ہے</translation>
 <translation id="1100902271996134409">تصاویر تخلیق ہو رہی ہے...</translation>
@@ -421,7 +420,6 @@
 <translation id="3031560714565892478">آلہ ایک ویڈیو کیمرا ہے۔</translation>
 <translation id="3042927241478734594">ریکارڈنگ سے باہر نکلیں؟</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744"><ph name="MAX_WORD_LENGTH" /> الفاظ سے زیادہ طویل ٹرانسکرپٹ کا خلاصہ نہیں کیا جا سکتا</translation>
 <translation id="3056720590588772262">اینڈ پوائنٹ</translation>
 <translation id="3060579846059757016">آؤٹ لائنز</translation>
 <translation id="3061850252076394168">سننے کیلئے منتخب کریں کو فعال کریں</translation>
@@ -461,7 +459,6 @@
 <translation id="3226657629376379887">لے آؤٹ کارروائیوں کا مینیو</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> قدر کو <ph name="CONVERSION_RATE" /> سے تقسیم کریں</translation>
 <translation id="3237710083340813756">دوبارہ لکھیں</translation>
-<translation id="3245518008592055173"><ph name="MIN_WORD_LENGTH" /> الفاظ سے کم ٹرانسکرپٹ کے لیے نام تخلیق نہیں کیے جا سکتے</translation>
 <translation id="3246869037381808805">1 دن سے پرانی پرنٹ جابز کو ہٹا دیا جائے گا</translation>
 <translation id="324961752321393509">آپ کا منتظم اس ایپ کو بند کرنے کی اجازت نہیں دیتا ہے</translation>
 <translation id="3263941347294171263">اپ ڈیٹ ہونے کے عمل کو جاری رکھنے کے لیے <ph name="DEVICE_NAME" /> کو ان پلگ کریں اور دوبارہ پلگ ان کریں</translation>
@@ -627,7 +624,6 @@
 <translation id="409427325554347132">ٹیسٹ کی تفصیلات محفوظ کریں</translation>
 <translation id="409469431304488632">تجربہ</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881"><ph name="MAX_WORD_LENGTH" /> الفاظ سے زیادہ طویل ٹرانسکرپٹ کے لیے نام تخلیق نہیں کیے جا سکتے</translation>
 <translation id="4110686435123617899">البم <ph name="TITLE" /> <ph name="DESC" /> منتخب کریں</translation>
 <translation id="4111761024568264522">‏USB ٹچ پیڈ</translation>
 <translation id="4113067922640381334">اب آپ کو نئے <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />وال پیپرز<ph name="END_LINK_WALLPAPER_SUBPAGE" /> تک رسائی حاصل ہے</translation>

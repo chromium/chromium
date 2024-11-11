@@ -10400,12 +10400,6 @@ Bu politika yalnızca <ph name="PRODUCT_NAME" /> için makinenin <ph name="CLOUD
 
       JavaScript/ECMAScript medya türleriyle ilgili ayrıntılı bilgi edinmek için https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage adresine göz atın.
       </translation>
-<translation id="8668202868357089313">Yer Paylaşımlı Lens özelliğinde mevcut sayfanın ekran görüntüsü, asıl web içeriğinin üzerine yerleştirilir ve kullanıcılar bu görüntüyle etkileşimde bulunarak Google araması yapabilirler.
-
-Bu özelliği kontrol eden bir kullanıcı ayarı yoktur. Bu politika ile devre dışı bırakılmadığı sürece, genellikle varsayılan arama motoru Google olan herkes tarafından kullanılabilir.
-
-Politika, 0 - Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa bu özellik kullanıcılara sunulur.
-Politika, 1 - Devre Dışı değerine ayarlanırsa bu özellik kullanılamaz.</translation>
 <translation id="8668928485126473293"><ph name="PRODUCT_NAME" /> tarayıcının, V8 JavaScript motorunu daha gelişmiş JavaScript optimizasyonları etkinken çalıştırıp çalıştırmayacağını ayarlamanıza olanak tanır.
 
 Bu politikanın değerinin 2'ye ayarlanarak JavaScript optimizasyonlarının devre dışı bırakılması, <ph name="PRODUCT_NAME" /> tarayıcının web içeriğini daha yavaş oluşturabileceği anlamına gelir.

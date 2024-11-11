@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Zaznan je požarni zid</translation>
 <translation id="1075811647922107217">Velikost strani</translation>
-<translation id="108084407137234521">Ni mogoče povzeti prepisa, krajšega od toliko besed: <ph name="MIN_WORD_LENGTH" /></translation>
 <translation id="1082009148392559545">Prenos ohranjevalnika zaslona</translation>
 <translation id="1094693127011229778">Naslov IP ni na voljo.</translation>
 <translation id="1100902271996134409">Ustvarjanje slik …</translation>
@@ -307,6 +306,7 @@
 <translation id="2308243864813041101">Če želite nadaljevati postopek posodobitve, odklopite kabel USB naprave <ph name="DEVICE_NAME" /></translation>
 <translation id="2320295602967756579">Omogočanje svetle teme</translation>
 <translation id="2323506179655536734">PRESKOČENO</translation>
+<translation id="2323755382216917952">Za to posodobitev morate znova zagnati računalnik, da dokončate namestitev. Ta posodobitev lahko traja nekaj minut. Med posodabljanjem vdelane programske opreme ne odklopite ali zaustavite računalnika.</translation>
 <translation id="2324354238778375592">Plavajoči gumb</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> pik na palec</translation>
 <translation id="2346474577291266260">Odlična (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -420,7 +420,6 @@
 <translation id="3031560714565892478">Naprava je videokamera.</translation>
 <translation id="3042927241478734594">Želite zapreti posnetek?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">Ni mogoče povzeti prepisa, daljšega od toliko besed: <ph name="MAX_WORD_LENGTH" /></translation>
 <translation id="3056720590588772262">Končna točka</translation>
 <translation id="3060579846059757016">Orisi</translation>
 <translation id="3061850252076394168">omogočanje storitve Izberite in poslušajte</translation>
@@ -450,6 +449,7 @@
 <translation id="3178532070248519384">avantgarda</translation>
 <translation id="3182676044300231689">Vnesite poziv, kot je »naj bo bolj samozavestno«</translation>
 <translation id="3188257591659621405">Moje datoteke</translation>
+<translation id="3188931456353313123">To posodobitev zagotavlja proizvajalec naprave in je Google ni preveril.</translation>
 <translation id="319101249942218879">Slika avatarja je spremenjena</translation>
 <translation id="3192947282887913208">Zvočne datoteke</translation>
 <translation id="3199982728237701504">Podajalnik dokumentov (dvostransko)</translation>
@@ -459,7 +459,6 @@
 <translation id="3226657629376379887">Meni z dejanji za postavitev</translation>
 <translation id="3227186760713762082">Deljenje vrednosti kategorije »<ph name="CATEGORY_TEXT" />« s/z: <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Preoblikovanje</translation>
-<translation id="3245518008592055173">Ni mogoče ustvariti imen za prepis, krajši od toliko besed: <ph name="MIN_WORD_LENGTH" /></translation>
 <translation id="3246869037381808805">Izbrisana bodo tiskalna opravila, starejša od 1 dneva</translation>
 <translation id="324961752321393509">Skrbnik ne dovoli zapiranja te aplikacije</translation>
 <translation id="3263941347294171263">Če želite nadaljevati postopek posodobitve, odklopite in znova priklopite napravo <ph name="DEVICE_NAME" /></translation>
@@ -508,6 +507,7 @@
 <translation id="3488065109653206955">Delno aktivirano</translation>
 <translation id="3492882532495507361">Pisarna v slogu <ph name="OFFICE_STYLE" /> z odtenki <ph name="OFFICE_COLOR" /> barve</translation>
 <translation id="3493187369049186498">Podatke meri Chromebook. To se morda razlikuje od podatkov ponudnika.</translation>
+<translation id="349570724365779960">Orodja za šolo so povezana z učenci</translation>
 <translation id="3502426834823382181">prikaži vse aplikacije</translation>
 <translation id="3510890413042482857">Pošlji <ph name="BEGIN_LINK1" />podatke za sledenje učinkovitosti delovanja<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Posodobitev sistema Chrome OS</translation>
@@ -624,7 +624,6 @@
 <translation id="409427325554347132">Shrani podrobnosti preizkusa</translation>
 <translation id="409469431304488632">Preizkus</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
-<translation id="4105182082354119881">Ni mogoče ustvariti imen za prepis, daljši od toliko besed: <ph name="MAX_WORD_LENGTH" /></translation>
 <translation id="4110686435123617899">Izberite album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Sledilna ploščica USB</translation>
 <translation id="4113067922640381334">Zdaj imate dostop do novih <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />zaslonskih ozadij<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
@@ -757,6 +756,7 @@
 <translation id="473775607612524610">Posodobi</translation>
 <translation id="4744944742468440486">Podatki, povezani z vašim izborom</translation>
 <translation id="4771607256327216405">posvetlitev osvetlitve tipkovnice</translation>
+<translation id="4771923071974529837">jutri</translation>
 <translation id="4773299976671772492">Ustavljeno</translation>
 <translation id="4778082030331381943">ametist</translation>
 <translation id="4782311465517282004">Zagotovite si definicije, prevode ali pretvorbe enot, ko besedilo kliknete z desnim gumbom ali se ga dotaknete in pridržite.</translation>
@@ -820,6 +820,7 @@
 <translation id="500920857929044050">Ustavi preizkus</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Barva teme</translation>
+<translation id="5037240652947866174">danes</translation>
 <translation id="5038292761217083259">večbarvna osvetlitev tipkovnice</translation>
 <translation id="5039804452771397117">Dovoli</translation>
 <translation id="5049856988445523908">Kartica SIM je zaklenjena (<ph name="LOCK_TYPE" />)</translation>

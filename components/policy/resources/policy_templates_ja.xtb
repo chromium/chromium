@@ -9782,12 +9782,6 @@ Kiosk Vision フレームワークが起動し、オーディエンス テレメ
 
       JavaScript と ECMAScript のメディアタイプについて詳しくは、https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage をご覧ください。
       </translation>
-<translation id="8668202868357089313">レンズ オーバーレイを使用すると、実際のウェブ コンテンツに重ねた現在のページのスクリーンショットを操作して Google で検索することができます。
-
-この機能を制御するユーザー設定はありません。通常、このポリシーで無効にしない限り、Google をデフォルトの検索エンジンに設定しているすべてのユーザーが使用できます。
-
-このポリシーを 0（有効）に設定するか未設定のままにした場合、ユーザーはこの機能を使用できます。
-このポリシーを 1（無効）に設定した場合、この機能は使用できません。</translation>
 <translation id="8668928485126473293"><ph name="PRODUCT_NAME" /> で JavaScript のさらに高度な最適化を有効にした V8 JavaScript エンジンを実行するかどうかを設定できます。
 
 JavaScript の最適化を無効にした場合（このポリシーの値を 2 に設定）、<ph name="PRODUCT_NAME" /> でウェブ コンテンツの表示に時間がかかる可能性があります。

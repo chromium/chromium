@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ఫైర్‌వాల్ గుర్తించబడింది</translation>
 <translation id="1075811647922107217">పేజీ సైజ్‌</translation>
-<translation id="108084407137234521"><ph name="MIN_WORD_LENGTH" /> కంటే తక్కువ పదాలు ఉన్న టైప్ చేసిన మాటల ఫైల్‌ను సారాంశీకరించడం సాధ్యం కాలేదు</translation>
 <translation id="1082009148392559545">స్క్రీన్ సేవర్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="1094693127011229778">IP అడ్రస్ అందుబాటులో లేదు</translation>
 <translation id="1100902271996134409">ఇమేజ్‌లు క్రియేట్ అవుతున్నాయి...</translation>
@@ -361,6 +360,7 @@
 <translation id="2589921777872778654">మెనూను ఎడిట్ చేయండి, తొలగించండి</translation>
 <translation id="2597774443162333062">డీబగ్గింగ్ కోసం ఫైల్స్ Googleకు పంపబడతాయి</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{స్కాన్ చేయడం పూర్తయింది. 1 పేజీ స్కాన్ చేయబడింది}other{స్కాన్ చేయడం పూర్తయింది. {NUMBER_OF_PAGES} పేజీలు స్కాన్ చేయబడ్డాయి}}</translation>
+<translation id="261322795497077164">స్పీకర్ గుర్తింపు</translation>
 <translation id="2617397783536231890">కాటన్</translation>
 <translation id="2618015542787108131">ఇసుక మేట</translation>
 <translation id="2619761439309613843">రోజూ రిఫ్రెష్ అవుతుంది</translation>
@@ -421,7 +421,6 @@
 <translation id="3031560714565892478">పరికర రకం వీడియో కెమెరా.</translation>
 <translation id="3042927241478734594">రికార్డింగ్ నుండి ఎగ్జిట్ కావాలా?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744"><ph name="MAX_WORD_LENGTH" /> కంటే ఎక్కువ పదాలు ఉన్న టైప్ చేసిన మాటల ఫైల్‌ను సారాంశీకరించడం సాధ్యం కాలేదు</translation>
 <translation id="3056720590588772262">ముగింపుపాయింట్</translation>
 <translation id="3060579846059757016">అవుట్‌లైన్‌లు</translation>
 <translation id="3061850252076394168">'వినడానికి-ఎంచుకోండి'ని ఎనేబుల్ చేయండి</translation>
@@ -442,6 +441,7 @@
 <translation id="3140130301071865159">మంచు</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> కోసం ప్రత్యేకమైనది</translation>
 <translation id="315116470104423982">మొబైల్ డేటా</translation>
+<translation id="3153094818810437149">మీరు దీన్ని తర్వాత Recorder సెట్టింగ్‌లలో మార్చవచ్చు</translation>
 <translation id="3156511682997763015">10 సెకన్లు ఫార్వర్డ్ చేయండి</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />వ పేజీని స్కాన్ చేస్తోంది...</translation>
 <translation id="315738237743207937">క్యాప్టివ్ పోర్టల్ గుర్తించబడింది</translation>
@@ -461,7 +461,6 @@
 <translation id="3226657629376379887">లేఅవుట్ చర్యల మెనూ</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> విలువను <ph name="CONVERSION_RATE" />తో భాగించండి</translation>
 <translation id="3237710083340813756">మళ్లీ రాయండి</translation>
-<translation id="3245518008592055173"><ph name="MIN_WORD_LENGTH" /> కంటే తక్కువ పదాలు ఉన్న టైప్ చేసిన మాటల ఫైల్ కోసం పేర్లను క్రియేట్ చేయడం సాధ్యం కాదు</translation>
 <translation id="3246869037381808805">1 రోజుకు పైగా ఉన్న ప్రింట్ టాస్క్‌లు తీసివేయబడతాయి</translation>
 <translation id="324961752321393509">మీ అడ్మినిస్ట్రేటర్ ఈ యాప్‌ను మూసివేయడానికి అనుమతించడం లేదు</translation>
 <translation id="3263941347294171263">అప్‌డేట్ ప్రాసెస్‌ను కొనసాగించడానికి, <ph name="DEVICE_NAME" />‌ను అన్‌ప్లగ్ చేసి, మళ్లీ ప్లగ్ చేయండి</translation>
@@ -565,6 +564,7 @@
 <translation id="3785643128701396311">పిక్సెల్ ఆర్ట్</translation>
 <translation id="3799381533888781854">ఆఫ్‌లో ఉంది - ఈ సెట్టింగ్ మీ అడ్మినిస్ట్రేటర్ ద్వారా మేనేజ్ చేయబడుతుంది.</translation>
 <translation id="380097101658023925">rgb కంట్రోల్స్</translation>
+<translation id="380493988330050229">ఈ టైప్ చేసిన మాటల ఫైల్‌ భాష కోసం సారాంశాన్ని క్రియేట్ చేయడం సాధ్యపడదు</translation>
 <translation id="38114475217616659">హిస్టరీ మొత్తాన్ని క్లియర్ చేయండి</translation>
 <translation id="3820172043799983114">PIN చెల్లదు.</translation>
 <translation id="382043424867370667">'సూర్యాస్తమయం' వాల్‌పేపర్</translation>
@@ -627,7 +627,6 @@
 <translation id="409427325554347132">టెస్ట్ వివరాలను సేవ్ చేయండి</translation>
 <translation id="409469431304488632">ప్రయోగం</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881"><ph name="MAX_WORD_LENGTH" /> కంటే ఎక్కువ పదాలు ఉన్న టైప్ చేసిన మాటల ఫైల్ కోసం పేర్లను క్రియేట్ చేయడం సాధ్యం కాదు</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> ఆల్బమ్‌ను ఎంచుకోండి</translation>
 <translation id="4111761024568264522">USB టచ్‌ప్యాడ్</translation>
 <translation id="4113067922640381334">మీకు ఇప్పుడు కొత్త <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />వాల్‌పేపర్‌ల<ph name="END_LINK_WALLPAPER_SUBPAGE" />కు యాక్సెస్ ఉంది</translation>
@@ -737,6 +736,7 @@
 <translation id="458794348635939462">హోస్ట్‌లను పరిష్కరించడంలో విఫలమైంది</translation>
 <translation id="4593212453765072419">ప్రాక్సీ ప్రామాణీకరణ అవసరం</translation>
 <translation id="4594021849294327751">టైప్ చేసిన మాటల ఫైల్‌ను క్రియేట్ చేయండి</translation>
+<translation id="4594541568452132351">మాటల టైపింగ్ భాషను ఎంచుకుని, మోడల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="4607282946861182308">దీని ఇమేజ్‌లను క్రియేట్ చేయడం సాధ్యం కాదు. మరొక ప్రాంప్ట్‌ను ట్రై చేయండి.</translation>
 <translation id="4609350030397390689">కీబోర్డ్ బ్రైట్‌నెస్‌ను తగ్గించండి</translation>
 <translation id="4623061655523261501">రికార్డ్ చేసిన పేర్లను జెనరేట్ చేయడం విజయవంతమైంది</translation>
@@ -1101,6 +1101,7 @@
 <translation id="6359919876285606596">ఈ చర్య శాశ్వతమైనది, దీన్ని రద్దు చేయడం సాధ్యం కాదు</translation>
 <translation id="6368342879959028556">“AIతో క్రియేట్ చేయండి”ని ఎంచుకున్నప్పుడు, అనుకూల ప్రాంప్ట్‌ను రాయండి. లేదా మీరు థీమ్‌ను ఎంచుకోవడానికి “AI వాల్‌పేపర్‌లు” ఎంచుకోవచ్చు, ఆపై మీ AI వాల్‌పేపర్‌ను వ్యక్తిగతీకరించడానికి అండర్‌లైన్ చేసిన పదాలను ఎంచుకోవచ్చు.</translation>
 <translation id="636850387210749493">ఎంటర్‌ప్రైజ్ నమోదు</translation>
+<translation id="6369221585240879141">ఈ టైప్ చేసిన మాటల ఫైల్‌ భాష కోసం రికార్డింగ్ పేర్లను క్రియేట్ చేయడం సాధ్యపడదు</translation>
 <translation id="6373461326814131011">కొలను</translation>
 <translation id="6379086450106841622">టచ్‌స్క్రీన్</translation>
 <translation id="6381741036071372448">మీ కీబోర్డ్‌ను టెస్ట్ చేయండి</translation>
@@ -1274,6 +1275,7 @@
 <translation id="7130438335435247835">యాక్సెస్ స్థానం పేరు (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{సర్వర్ పేరు}other{సర్వర్‌ల పేరు}}</translation>
 <translation id="7135814714616751706">షార్ట్‌కట్‌ల కోసం సెర్చ్ చేయండి</translation>
+<translation id="7138614237884624401">సరళీకరించిన టెక్స్ట్</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">కనెక్ట్ అవుతో.</translation>
 <translation id="7144878232160441200">మళ్లీ ట్రై చేయండి</translation>
@@ -1695,6 +1697,7 @@
 <translation id="9100765901046053179">అధునాతన సెట్టింగ్‌లు</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> సంబంధిత టిక్కెట్‌ను రిఫ్రెష్ చేయండి</translation>
 <translation id="9106415115617144481">పేజీ <ph name="PAGE_NUMBER" />ని స్కాన్ చేస్తోంది</translation>
+<translation id="9108856746036501072">Recorder స్పీచ్‌తో ఉన్న రికార్డింగ్‌ల కోసం మాటల టైపింగ్‌లను క్రియేట్ చేయగలదు. తర్వాతి దశలో, మీరు మాటల టైపింగ్ భాషను ఎంచుకుని, మోడల్‌ను డౌన్‌లోడ్ చేయాలి (గరిష్ఠంగా 100MB వరకు).</translation>
 <translation id="9111102763498581341">అన్‌లాక్ చేయి</translation>
 <translation id="9122492456897874028">కంటెంట్ సారాంశాన్ని, నిర్వచనాలను, మరిన్ని ప్రయోజనాలను పొందండి</translation>
 <translation id="9122602430962285795">తిరిగి కనెక్ట్ చేయడానికి, సెట్టింగ్‌లకు వెళ్లండి</translation>

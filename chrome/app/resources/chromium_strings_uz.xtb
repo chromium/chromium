@@ -18,6 +18,7 @@
 <translation id="1185134272377778587">Chromium haqida</translation>
 <translation id="1188705220418984327">Oynani ulashish uchun tizim sozlamalarida Chromium brauzeriga ekranni yozib olish uchun ruxsat bering.</translation>
 <translation id="1203500561924088507">Oʻrnatganingiz uchun tashakkur! <ph name="BUNDLE_NAME" />ni ishlatishdan oldin brauzerni qayta ishga tushirishingiz lozim.</translation>
+<translation id="1235768345431527125">Shaxsiy maʼlumotlarga ruxsat olish uchun hisobga kiring yoki Chromiumdan hisobga kirmay foydalaning</translation>
 <translation id="1262876892872089030">Bu varaq nonfaol boʻlganida Chromium tezroq ishlashi uchun xotira boʻshatiladi. Bu saytni har doim nofaol boʻlmasligini tanlash mumkin.</translation>
 <translation id="1265577313130862557">Chromium bu yuklamani blokladi, chunki bu fayl xavfli</translation>
 <translation id="126567311906253476">Gmail yoki YouTube kabi Google xizmatlariga <ph name="USER_EMAIL" /> hisobidan avtomatik kirganda Chromeʼga ham shu hisobdan kirishingiz mumkin</translation>
@@ -324,6 +325,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="549669000822060376">Chromium tizimning oxirgi yangilanishlarini o‘rnatib olgunicha kutib turing.</translation>
 <translation id="5496810170689441661">Chromium parollarni tahrirlashga urinmoqda. Ruxsat berish uchun Windows parolingizni kiriting.</translation>
 <translation id="5527463683072221100">PDF fayllarni Chromium bilan ochish</translation>
+<translation id="5568136785038042132">Kengaytmalardan barcha qurilmalarda foydalanish uchun Chromiumga kiring</translation>
 <translation id="5575418445468216473">Parollar va boshqa Chromium maʼlumotlaringiz Google hisobiga saqlandi, ammo bu qurilmadan oʻchiriladi. Kelgusida ulardan foydalanish uchun Chromiumga kiring.</translation>
 <translation id="5579324208890605088">Ishga tushirishda xato: oʻrnatish faylini oddiy foydalanuvchi (administrator emas) nomidan ishga tushiring.</translation>
 <translation id="5596627076506792578">Boshqa sozlamalar</translation>

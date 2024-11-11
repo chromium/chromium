@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Pare-feu détecté</translation>
 <translation id="1075811647922107217">Taille de la page</translation>
-<translation id="108084407137234521">Impossible de résumer une transcription de moins de <ph name="MIN_WORD_LENGTH" /> mots</translation>
 <translation id="1082009148392559545">Téléchargement de l'écran de veille en cours…</translation>
 <translation id="1094693127011229778">L'adresse IP est inaccessible</translation>
 <translation id="1100902271996134409">Création d'images en cours…</translation>
@@ -307,6 +306,7 @@
 <translation id="2308243864813041101">Débranchez le câble USB de l'appareil <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>
 <translation id="2320295602967756579">Activer le thème clair</translation>
 <translation id="2323506179655536734">IGNORÉ</translation>
+<translation id="2323755382216917952">Cette mise à jour nécessite le redémarrage de votre ordinateur pour terminer l'installation. Cette mise à jour peut prendre quelques minutes. Pendant la mise à jour du micrologiciel, ne débranchez pas et n'éteignez pas votre ordinateur.</translation>
 <translation id="2324354238778375592">Superposer</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2346474577291266260">Excellent (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -420,7 +420,6 @@
 <translation id="3031560714565892478">L'appareil est une caméra vidéo.</translation>
 <translation id="3042927241478734594">Quitter l'enregistrement?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">Impossible de résumer une transcription de plus de <ph name="MAX_WORD_LENGTH" /> mots</translation>
 <translation id="3056720590588772262">Point d'extrémité</translation>
 <translation id="3060579846059757016">Contours</translation>
 <translation id="3061850252076394168">Activer Sélectionner pour énoncer</translation>
@@ -450,6 +449,7 @@
 <translation id="3178532070248519384">avant-garde</translation>
 <translation id="3182676044300231689">Saisissez une requête telle que « emploie un ton plus confiant »</translation>
 <translation id="3188257591659621405">Mes fichiers</translation>
+<translation id="3188931456353313123">Cette mise à jour est fournie par le fabricant de l'appareil et n'a pas été vérifiée par Google.</translation>
 <translation id="319101249942218879">Image d'avatar changée</translation>
 <translation id="3192947282887913208">Fichiers audio</translation>
 <translation id="3199982728237701504">Chargeur de document (recto verso)</translation>
@@ -459,7 +459,6 @@
 <translation id="3226657629376379887">Menu des actions de mise en page</translation>
 <translation id="3227186760713762082">Diviser la valeur <ph name="CATEGORY_TEXT" /> par <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Reformuler</translation>
-<translation id="3245518008592055173">Impossible de créer des noms pour une transcription de moins de <ph name="MIN_WORD_LENGTH" /> mots</translation>
 <translation id="3246869037381808805">Les tâches d'impression de plus d'un jour seront retirées</translation>
 <translation id="324961752321393509">Votre administrateur n'autorise pas la fermeture de cette application</translation>
 <translation id="3263941347294171263">Débranchez et rebranchez l'appareil <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>
@@ -508,6 +507,7 @@
 <translation id="3488065109653206955">Partiellement activé</translation>
 <translation id="3492882532495507361">Un bureau <ph name="OFFICE_STYLE" /> avec tons <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">C'est votre Chromebook qui mesure les données. Ces mesures peuvent différer des données du fournisseur.</translation>
+<translation id="349570724365779960">Les élèves sont connectés à l'appli School Tools</translation>
 <translation id="3502426834823382181">afficher toutes les applications</translation>
 <translation id="3510890413042482857">Envoyer des <ph name="BEGIN_LINK1" />données de suivi des performances<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Mise à jour Chrome OS</translation>
@@ -624,7 +624,6 @@
 <translation id="409427325554347132">Enregistrer les détails du test</translation>
 <translation id="409469431304488632">Test</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
-<translation id="4105182082354119881">Impossible de créer des noms pour une transcription de plus de <ph name="MAX_WORD_LENGTH" /> mots</translation>
 <translation id="4110686435123617899">Sélectionner un album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Pavé tactile USB</translation>
 <translation id="4113067922640381334">Vous avez désormais accès à de nouveaux <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fonds d'écran<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
@@ -757,6 +756,7 @@
 <translation id="473775607612524610">Mise à jour</translation>
 <translation id="4744944742468440486">Renseignements concernant votre sélection</translation>
 <translation id="4771607256327216405">augmenter la luminosité du clavier</translation>
+<translation id="4771923071974529837">demain</translation>
 <translation id="4773299976671772492">Arrêté</translation>
 <translation id="4778082030331381943">améthyste</translation>
 <translation id="4782311465517282004">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous faites un clic droit ou que vous maintenez le doigt sur le texte</translation>
@@ -820,6 +820,7 @@
 <translation id="500920857929044050">Arrêter le test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Couleur du thème</translation>
+<translation id="5037240652947866174">aujourd'hui</translation>
 <translation id="5038292761217083259">clavier multicolore</translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5049856988445523908">Carte SIM verrouillée (<ph name="LOCK_TYPE" />)</translation>

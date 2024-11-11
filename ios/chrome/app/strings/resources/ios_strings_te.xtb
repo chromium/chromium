@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">కోడ్ స్కాన్ చేయబడింది</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} ట్యాబ్}other{{count} ట్యాబ్‌లు}}</translation>
 <translation id="1084365883616172403">Facebook పోస్ట్ పూర్తయింది.</translation>
+<translation id="1085677983426914530"><ph name="FILENAME" />‌ను తెరవడం సాధ్యపడలేదు</translation>
 <translation id="1096992026380844478">మీ చివరి బ్యాకప్ ఆధారంగా మీ సింక్ సెట్టింగ్‌లు రీస్టోర్ చేయబడతాయి. <ph name="BEGIN_LINK" />మీరు వేటిని సింక్ చేయగలరో చూడండి<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />‌ను ఎల్లప్పుడూ అనువదించండి</translation>
 <translation id="1108938384783527433">హిస్టరీ సింక్</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">వద్దు, ధన్యవాదాలు</translation>
 <translation id="2320166752086256636">కీబోర్డ్‌ను దాచు</translation>
 <translation id="2321086116217818302">పాస్‌వర్డ్‌లను సిద్ధం చేస్తోంది…</translation>
+<translation id="2323697864063408084">మీకు ముఖ్యమైన వాటిని ఎప్పటికీ కోల్పోకుండా మీ లాక్ స్క్రీన్‌పై, బ్యానర్‌లుగా నోటిఫికేషన్‌లను పొందండి</translation>
 <translation id="2326302612031521902">యూనిట్ ఎంపిక సాధనం</translation>
 <translation id="2330607597130465898">రక్షణ లేదు</translation>
 <translation id="233375395665273385">తొలగించి, సైన్ అవుట్ చేయండి</translation>
@@ -384,6 +386,7 @@
 <translation id="2671423594960767771">గ్రూప్‌ను షేర్ చేయండి</translation>
 <translation id="2673508731173059946">కాపీ చేసిన లింక్‌కు వెళ్లండి</translation>
 <translation id="2687403674020088961">అన్ని కుక్కీలను బ్లాక్ చేయండి (సిఫార్సు చేయడం లేదు)</translation>
+<translation id="2688535388040882469">బ్యానర్‌లు</translation>
 <translation id="2690858294534178585">కెమెరా వినియోగంలో ఉంది</translation>
 <translation id="2691653761409724435">ఆఫ్‌లైన్‌లో అందుబాటులో లేదు</translation>
 <translation id="2696180352517415858">మీరు మీ Google ఖాతా నుండి సైన్ అవుట్ చేయబడరు. మీరు సైన్ ఇన్ చేసినప్పుడు, <ph name="BEGIN_LINK" />ఇతర రకాల యాక్టివిటీ<ph name="END_LINK" /> మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు. మీరు వాటిని ఎప్పుడైనా తొలగించవచ్చు.
@@ -636,6 +639,7 @@
 <translation id="3986739045730058129">ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="3992684624889376114">ఈ పేజీ గురించి</translation>
 <translation id="3994422733891749358">మీరు స్వీకరించాలనుకుంటున్న నోటిఫికేషన్‌లను ఎంచుకోండి</translation>
+<translation id="3994522032746736727"><ph name="EMAIL" />గా సైన్ ఇన్ చేయండి</translation>
 <translation id="3995521777587992544">పేజీ లోడ్ పురోగతి బార్, <ph name="EMAIL" /> లోడ్ చేయబడింది.</translation>
 <translation id="3997522473364371632">పాస్‌వర్డ్ షేరింగ్‌ను మీ అడ్మినిస్ట్రేటర్ డిజేబుల్ చేస్తారు.</translation>
 <translation id="4002066346123236978">శీర్షిక</translation>
@@ -843,6 +847,7 @@
 <translation id="4936354130727646074">ఎప్పటికీ తరలించవద్దు</translation>
 <translation id="4937410517508563815">ఖాతాలో పాస్‌వర్డ్‌లను సేవ్ చేయండి</translation>
 <translation id="4938338714234463591">ఇది వెబ్‌సైట్‌లలోని నిర్దిష్ట ఫీచర్‌లతో మీ వాయిస్‌ను ఉపయోగించడానికి మిమ్మల్ని అనుమతిస్తుంది.</translation>
+<translation id="4938716880833771969">మీ నోటిఫికేషన్‌లు నిశ్శబ్దంగా డెలివరీ చేయబడుతున్నాయి</translation>
 <translation id="4941089862236492464">క్షమించండి, మీ అంశాన్ని భాగస్వామ్యం చేయడంలో సమస్య ఉంది.</translation>
 <translation id="4944543191714094452">పేజీలో కనుగొనండి…</translation>
 <translation id="4945756290001680296">పాస్‌వర్డ్ సెట్టింగ్‌లను యాక్సెస్ చేయండి</translation>
@@ -1610,6 +1615,7 @@
 <translation id="8319076807703933069">కొత్త శోధన</translation>
 <translation id="8343993175958086504">మీ అంశాలను బ్యాకప్ చేసి, వాటిని ఏ పరికరంలో అయినా ఉపయోగించండి.</translation>
 <translation id="8349305172487531364">బుక్‌మార్క్‌ల బార్‌</translation>
+<translation id="8364563001733875155">మీ PINను మార్చడానికి, ముందుగా మీ పరికరంలో పాస్‌కోడ్‌ను సెటప్ చేయండి.</translation>
 <translation id="8366466717204352506">ఎప్పుడూ చెక్ చేయలేదు</translation>
 <translation id="8368001212524806591">ధరను ట్రాక్ చేయండి</translation>
 <translation id="8370406443343902172">సెట్టింగ్‌లకు వెళ్లండి...</translation>

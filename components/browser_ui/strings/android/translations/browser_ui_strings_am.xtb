@@ -170,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{በ<ph name="RWS_OWNER" /> ጣቢያ ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከት <ph name="RWS_MEMBERS_COUNT" /> ጣቢያ}one{በ<ph name="RWS_OWNER" /> ጣቢያ ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከት <ph name="RWS_MEMBERS_COUNT" /> ጣቢያ}other{በ<ph name="RWS_OWNER" /> ጣቢያዎች ቡድን ውስጥ በቡድኑ ውስጥ ያለዎትን እንቅስቃሴ የሚመለከቱ <ph name="RWS_MEMBERS_COUNT" /> ጣቢያዎች}}</translation>
 <translation id="3697164069658504920">ሲበራ፣ ጣቢያዎች የUSB መሳሪያዎችን ለመጠቀም ሊጠይቁ ይችላሉ። ሲጠፋ፣ ጣቢያዎች የUSB መሳሪያዎችን መጠቀም አይችሉም።</translation>
 <translation id="3707034683772193706">እርስዎ የሚጎበኙት ጣቢያ በዋነኛነት እርስዎ ቦት አለመሆንዎን ለማረጋገጥ በChrome ትንሽ መጠን ያለው መረጃ ሊያስቀምጥ ይችላል</translation>
+<translation id="3709818294139939629">የተወገደ የጣቢያው የፋይል መዳረሻ</translation>
 <translation id="3721953990244350188">ያሰናብቱ እና የሚገኘውን ቀጣይ ያሳዩ</translation>
 <translation id="3744111561329211289">የዳራ ስምረት</translation>
 <translation id="3763247130972274048">10 ሴ ለመዝለል ቪዲዮ ወደ ግራ ወይም ቀኝ ላይ ሁለቴ መታ ያድርጉ</translation>
@@ -432,6 +433,7 @@
 <translation id="7425915948813553151">ለጣቢያዎች ጠቆር ያለ ገጽታ</translation>
 <translation id="7521387064766892559">ጃቫስክሪፕት</translation>
 <translation id="7547989957535180761">ሲበራ፣ ጣቢያዎች የመግባት ጥያቄዎችን ሊያሳዩ ይችላሉ። ሲጠፋ፣ ጣቢያዎች የመግባት ጥያቄዎችን ማሳየት አይችሉም።</translation>
+<translation id="7553211568594248088">ከማዕከል ፍለጋ ውጣ</translation>
 <translation id="7554752735887601236">አንድ ጣቢያ የእርስዎን ማይክሮፎን እየተጠቀመ ነው</translation>
 <translation id="7561196759112975576">ሁልጊዜ</translation>
 <translation id="757524316907819857">ጣቢያዎች ጥበቃ የሚደረግለትን ይዘት እንዳያጫውቱ ያግዱ</translation>

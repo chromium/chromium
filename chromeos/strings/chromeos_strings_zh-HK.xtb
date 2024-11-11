@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">偵測到防火牆</translation>
 <translation id="1075811647922107217">頁面大小</translation>
-<translation id="108084407137234521">無法為少於 <ph name="MIN_WORD_LENGTH" /> 個字的轉錄文字撮要</translation>
 <translation id="1082009148392559545">下載緊螢幕保護程式</translation>
 <translation id="1094693127011229778">缺少 IP 位址</translation>
 <translation id="1100902271996134409">正在建立圖片…</translation>
@@ -307,6 +306,7 @@
 <translation id="2308243864813041101">請拔除「<ph name="DEVICE_NAME" />」的 USB 連接線，以繼續更新程序</translation>
 <translation id="2320295602967756579">啟用淺色主題背景</translation>
 <translation id="2323506179655536734">已略過</translation>
+<translation id="2323755382216917952">這次更新需要重新啟動電腦才能完成安裝。更新可能需時幾分鐘。韌體更新時，請勿拔除或關閉電腦。</translation>
 <translation id="2324354238778375592">浮動</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">非常好 (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -420,7 +420,6 @@
 <translation id="3031560714565892478">裝置類型係攝影機。</translation>
 <translation id="3042927241478734594">要退出錄製嗎？</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744">無法為超過 <ph name="MAX_WORD_LENGTH" /> 個字的轉錄文字撮要</translation>
 <translation id="3056720590588772262">端點</translation>
 <translation id="3060579846059757016">概要</translation>
 <translation id="3061850252076394168">啟用揀選朗讀內容</translation>
@@ -450,6 +449,7 @@
 <translation id="3178532070248519384">前衛</translation>
 <translation id="3182676044300231689">輸入提示，例如「使用較堅定的語氣」</translation>
 <translation id="3188257591659621405">我的檔案</translation>
+<translation id="3188931456353313123">此更新由裝置製造商提供，尚未經 Google 驗證。</translation>
 <translation id="319101249942218879">改咗顯示圖片</translation>
 <translation id="3192947282887913208">音效檔案</translation>
 <translation id="3199982728237701504">文件送紙器 (雙面)</translation>
@@ -459,7 +459,6 @@
 <translation id="3226657629376379887">版面配置操作選單</translation>
 <translation id="3227186760713762082">將<ph name="CATEGORY_TEXT" />的數值除以 <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">重寫</translation>
-<translation id="3245518008592055173">無法為少於 <ph name="MIN_WORD_LENGTH" /> 個字的轉錄文字命名</translation>
 <translation id="3246869037381808805">超過 1 天前的列印工作將被移除</translation>
 <translation id="324961752321393509">管理員不允許關閉此應用程式</translation>
 <translation id="3263941347294171263">請拔除然後重新插上「<ph name="DEVICE_NAME" />」，以繼續更新程序</translation>
@@ -508,6 +507,7 @@
 <translation id="3488065109653206955">部分已啟用</translation>
 <translation id="3492882532495507361">帶有<ph name="OFFICE_COLOR" />色調的<ph name="OFFICE_STYLE" />辦公室</translation>
 <translation id="3493187369049186498">數據用量由 Chromebook 計算。這可能會與流動網絡供應商的數據用量不同。</translation>
+<translation id="349570724365779960">School Tools 已連接學生裝置</translation>
 <translation id="3502426834823382181">睇所有應用程式</translation>
 <translation id="3510890413042482857">傳送<ph name="BEGIN_LINK1" />效能追蹤資料<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS 更新</translation>
@@ -624,7 +624,6 @@
 <translation id="409427325554347132">儲存測試詳細資料</translation>
 <translation id="409469431304488632">實驗</translation>
 <translation id="4095829376260267438">WPA2 和 WPA3</translation>
-<translation id="4105182082354119881">無法為超過 <ph name="MAX_WORD_LENGTH" /> 個字的轉錄文字命名</translation>
 <translation id="4110686435123617899">揀相簿 <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB 觸控板</translation>
 <translation id="4113067922640381334">您現可使用全新<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />桌布<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
@@ -757,6 +756,7 @@
 <translation id="473775607612524610">更新</translation>
 <translation id="4744944742468440486">所揀內容嘅相關資料</translation>
 <translation id="4771607256327216405">提高鍵盤亮度</translation>
+<translation id="4771923071974529837">明天</translation>
 <translation id="4773299976671772492">已停止</translation>
 <translation id="4778082030331381943">紫水晶</translation>
 <translation id="4782311465517282004">按住文字或在文字上按一下右鍵後，就能取得定義、翻譯或單位轉換結果</translation>
@@ -820,6 +820,7 @@
 <translation id="500920857929044050">停止測試</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">主題顏色</translation>
+<translation id="5037240652947866174">今天</translation>
 <translation id="5038292761217083259">多色鍵盤</translation>
 <translation id="5039804452771397117">允許</translation>
 <translation id="5049856988445523908">SIM 卡已鎖定 (<ph name="LOCK_TYPE" />)</translation>

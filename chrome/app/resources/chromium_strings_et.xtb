@@ -18,6 +18,7 @@
 <translation id="1185134272377778587">Teave Chromiumi kohta</translation>
 <translation id="1188705220418984327">Oma akna jagamiseks lubage süsteemieelistustes Chromiumi ekraanisalvesti.</translation>
 <translation id="1203500561924088507">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate selle taaskäivitama.</translation>
+<translation id="1235768345431527125">Saate oma asjade hankimiseks sisse logida või kasutada Chromiumi ilma kontota</translation>
 <translation id="1262876892872089030">Ajal, mil see vaheleht oli inaktiivne, vabastati mälu, et Chromium oleks jätkuvalt kiire. Soovi korral võite selle saidi inaktiivseks muutumise alati välistada.</translation>
 <translation id="1265577313130862557">Chromium blokeeris selle allalaadimise, kuna fail on ohtlik</translation>
 <translation id="126567311906253476">E-posti aadressiga <ph name="USER_EMAIL" /> Google'i teenustesse (nt Gmaili või Youtube'i) sisse logides saate Chromiumi automaatselt sisse logida sama kontoga</translation>
@@ -327,6 +328,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="549669000822060376">Oodake, kuni Chromium installib uusimad süsteemivärskendused.</translation>
 <translation id="5496810170689441661">Chromium püüab paroole muuta. Selle lubamiseks sisestage Windowsi parool.</translation>
 <translation id="5527463683072221100">Ava PDF-id Chromiumis</translation>
+<translation id="5568136785038042132">Oma laienduste nägemiseks kõigis arvutites logige Chromiumi sisse</translation>
 <translation id="5575418445468216473">Teie paroolid ja muud Chromiumi andmed salvestatakse teie Google'i kontole ja eemaldatakse sellest seadmest. Selleks et neid edaspidi kasutada, logige uuesti Chromiumi sisse.</translation>
 <translation id="5579324208890605088">Käivitamisel ilmnes viga: käitage installiprogrammi tavakasutajana, mitte administraatorina.</translation>
 <translation id="5596627076506792578">Rohkem valikuid</translation>

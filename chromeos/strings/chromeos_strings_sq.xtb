@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">U zbulua mur mbrojtës</translation>
 <translation id="1075811647922107217">Madhësia e faqes</translation>
-<translation id="108084407137234521">Nuk mund të përmblidhet një transkript me më pak se <ph name="MIN_WORD_LENGTH" /> fjalë</translation>
 <translation id="1082009148392559545">Mbrojtësi i ekranit po shkarkohet</translation>
 <translation id="1094693127011229778">Adresa IP nuk ofrohet</translation>
 <translation id="1100902271996134409">Imazhet po krijohen...</translation>
@@ -420,7 +419,6 @@
 <translation id="3031560714565892478">Pajisja është një video-kamerë.</translation>
 <translation id="3042927241478734594">Dëshiron të dalësh nga regjistrimi?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">Nuk mund të përmblidhet një transkript me më shumë se <ph name="MAX_WORD_LENGTH" /> fjalë</translation>
 <translation id="3056720590588772262">Pika përfundimtare</translation>
 <translation id="3060579846059757016">Përvijimet</translation>
 <translation id="3061850252076394168">aktivizo "Zgjidh që të thuhet"</translation>
@@ -459,7 +457,6 @@
 <translation id="3226657629376379887">Menyja e veprimeve të strukturës</translation>
 <translation id="3227186760713762082">Pjesëto vlerën <ph name="CATEGORY_TEXT" /> me <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Rishkruaj</translation>
-<translation id="3245518008592055173">Nuk mund të krijohen emra për një transkript me më shumë se <ph name="MIN_WORD_LENGTH" /> fjalë</translation>
 <translation id="3246869037381808805">Printimet më të vjetra se 1 ditë do të hiqen</translation>
 <translation id="324961752321393509">Administratori yt nuk e lejon mbylljen e këtij aplikacioni</translation>
 <translation id="3263941347294171263">Hiq dhe fut sërish në prizë pajisjen "<ph name="DEVICE_NAME" />" për të vazhduar procesin e përditësimit</translation>
@@ -624,7 +621,6 @@
 <translation id="409427325554347132">Ruaj detajet e testit</translation>
 <translation id="409469431304488632">Eksperiment</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">Nuk mund të krijohen emra për një transkript me më shumë se <ph name="MAX_WORD_LENGTH" /> fjalë</translation>
 <translation id="4110686435123617899">Zgjidh albumin <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Blloku me prekje USB</translation>
 <translation id="4113067922640381334">Tani ke qasje tek <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imazhet e reja të sfondit<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>

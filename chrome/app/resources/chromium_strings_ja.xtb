@@ -18,6 +18,7 @@
 <translation id="1185134272377778587">Chromium について</translation>
 <translation id="1188705220418984327">ウィンドウを共有するには、[システム環境設定] で Chromium に画面の録画を許可してください。</translation>
 <translation id="1203500561924088507">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはブラウザを再起動してください。</translation>
+<translation id="1235768345431527125">ログインしてご自分の設定やデータを使用することや、アカウントなしで Chromium を使用することができます</translation>
 <translation id="1262876892872089030">Chromium を高速に保つため、このタブがアクティブでないときにメモリを解放しました。このサイトを常にアクティブにするよう選択できます。</translation>
 <translation id="1265577313130862557">危険なファイルであるため、このダウンロードは Chromium でブロックされました</translation>
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> で Gmail や YouTube などの Google サービスにログインするときに、同じアカウントで Chromium に自動的にログインできます</translation>
@@ -326,6 +327,7 @@
 <translation id="549669000822060376">Chromium は最新のシステム アップデートをインストールしています。しばらくお待ちください。</translation>
 <translation id="5496810170689441661">Chromium でパスワードを編集しようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="5527463683072221100">Chromium で PDF を開く</translation>
+<translation id="5568136785038042132">お使いのどのパソコンでも同じ拡張機能を使用するには、Chromium にログインします</translation>
 <translation id="5575418445468216473">パスワードなどの Chromium データは Google アカウントに保存され、このデバイスから削除されます。今後これらのデータを使用するには、Chromium にログインしてください。</translation>
 <translation id="5579324208890605088">起動エラー: 管理者ではなく標準ユーザーとしてインストーラを実行してください。</translation>
 <translation id="5596627076506792578">その他のオプション</translation>

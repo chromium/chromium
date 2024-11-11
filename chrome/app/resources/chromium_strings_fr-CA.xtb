@@ -20,6 +20,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1185134272377778587">À propos de Chromium</translation>
 <translation id="1188705220418984327">Pour partager votre fenêtre, autorisez la fonctionnalité Enregistreur d'écran pour Chromium dans les préférences système.</translation>
 <translation id="1203500561924088507">Merci pour l'installation. Vous devez redémarrer votre navigateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1235768345431527125">Vous pouvez vous connecter pour récupérer votre contenu ou utiliser Chromium sans compte</translation>
 <translation id="1262876892872089030">Pendant que cet onglet était inactif, de la mémoire a été libérée pour maintenir la rapidité de Chromium. Vous pouvez choisir de toujours exclure ce site de l'inactivité.</translation>
 <translation id="1265577313130862557">Chromium a bloqué ce téléchargement, car le fichier est dangereux</translation>
 <translation id="126567311906253476">Lorsque vous vous connectez à des services Google comme Gmail ou YouTube avec <ph name="USER_EMAIL" />, vous pouvez vous connecter automatiquement à Chromium avec le même compte</translation>
@@ -328,6 +329,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="549669000822060376">Veuillez patienter pendant que Chromium installe les dernières mises à jour système.</translation>
 <translation id="5496810170689441661">Chromium essaie de modifier des mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="5527463683072221100">Ouvrir les PDF dans Chromium</translation>
+<translation id="5568136785038042132">Pour obtenir vos extensions sur tous vos ordinateurs, connectez-vous à Chromium</translation>
 <translation id="5575418445468216473">Vos mots de passe et autres données Chromium sont enregistrés dans votre compte Google et seront retirés de cet appareil. Pour les utiliser ultérieurement, reconnectez-vous à Chromium.</translation>
 <translation id="5579324208890605088">Erreur de démarrage : veuillez exécuter le programme d'installation en tant qu'utilisateur normal et non en tant qu'administrateur.</translation>
 <translation id="5596627076506792578">Autres options</translation>

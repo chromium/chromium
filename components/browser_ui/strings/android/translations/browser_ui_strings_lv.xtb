@@ -170,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> vietne domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}zero{<ph name="RWS_MEMBERS_COUNT" /> vietņu domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}one{<ph name="RWS_MEMBERS_COUNT" /> vietne domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}other{<ph name="RWS_MEMBERS_COUNT" /> vietnes domēna <ph name="RWS_OWNER" /> vietņu grupā, kurai piederīgo vietņu īpašniekiem ir redzamas jebkurā grupas vietnē veiktās darbības}}</translation>
 <translation id="3697164069658504920">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izmantot USB ierīces. Kad šis slēdzis ir izslēgts, vietnes nevar izmantot USB ierīces.</translation>
 <translation id="3707034683772193706">Vietne, ko apmeklējat, pārlūkā Chrome var saglabāt nelielu informācijas daudzumu, galvenokārt, lai apstiprinātu, ka neesat robots</translation>
+<translation id="3709818294139939629">Noņemta vietnes piekļuve failam</translation>
 <translation id="3721953990244350188">Noraidīt un rādīt nākamo pieejamo darbību</translation>
 <translation id="3744111561329211289">Sinhronizācija fonā</translation>
 <translation id="3763247130972274048">Divreiz pieskarieties videoklipam pa labi vai pa kreisi, lai izlaistu 10 s.</translation>
@@ -432,6 +433,7 @@
 <translation id="7425915948813553151">Tumšā motīva lietošana vietnēs</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kad šis slēdzis ir ieslēgts, vietnēs var rādīt pierakstīšanās uzvednes. Kad šis slēdzis ir izslēgts, vietnēs nevar rādīt pierakstīšanās uzvednes.</translation>
+<translation id="7553211568594248088">izietu no meklēšanas mezglā</translation>
 <translation id="7554752735887601236">Kāda vietne izmanto jūsu mikrofonu</translation>
 <translation id="7561196759112975576">Vienmēr</translation>
 <translation id="757524316907819857">Neļaut vietnēm atskaņot aizsargātu saturu</translation>

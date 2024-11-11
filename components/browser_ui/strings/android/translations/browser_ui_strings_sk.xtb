@@ -170,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> web v skupine webov vlastníka <ph name="RWS_OWNER" />, ktorým sa zobrazuje vaša aktivita v nej}few{<ph name="RWS_MEMBERS_COUNT" /> weby v skupine webov vlastníka <ph name="RWS_OWNER" />, ktorým sa zobrazuje vaša aktivita v nej}many{<ph name="RWS_MEMBERS_COUNT" /> sites in <ph name="RWS_OWNER" />'s group of sites that can see your activity in the group}other{<ph name="RWS_MEMBERS_COUNT" /> webov v skupine webov vlastníka <ph name="RWS_OWNER" />, ktorým sa zobrazuje vaša aktivita v nej}}</translation>
 <translation id="3697164069658504920">Keď je táto možnosť zapnutá, weby môžu žiadať o povolenie používať zariadenia s rozhraním USB. Keď je táto možnosť vypnutá, weby nemôžu používať zariadenia s rozhraním USB.</translation>
 <translation id="3707034683772193706">Web, ktorý navštívite, môže v Chrome uložiť malé množstvo informácií, najmä na overenie, že nie ste robot</translation>
+<translation id="3709818294139939629">Odstránený prístup webu k súboru</translation>
 <translation id="3721953990244350188">Zavrieť a zobraziť ďalšiu dostupnú akciu</translation>
 <translation id="3744111561329211289">Synchronizácia na pozadí</translation>
 <translation id="3763247130972274048">Dvojitým klepnutím doľava alebo doprava preskočíte vo videu o 10 s</translation>
@@ -432,6 +433,7 @@
 <translation id="7425915948813553151">Tmavý motív pre weby</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Keď je táto možnosť zapnutá, weby môžu zobrazovať výzvy na prihlásenie. Keď je táto možnosť vypnutá, weby nemôžu zobrazovať výzvy na prihlásenie.</translation>
+<translation id="7553211568594248088">Ukončiť vyhľadávanie v centre</translation>
 <translation id="7554752735887601236">Váš mikrofón používa nejaký web</translation>
 <translation id="7561196759112975576">Vždy</translation>
 <translation id="757524316907819857">Brániť webom prehrávať chránený obsah</translation>

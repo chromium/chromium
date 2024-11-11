@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Aptikta užkarda</translation>
 <translation id="1075811647922107217">Puslapio dydis</translation>
-<translation id="108084407137234521">Negalima apibendrinti transkribuoto teksto, kuriame yra mažiau nei <ph name="MIN_WORD_LENGTH" /> ž.</translation>
 <translation id="1082009148392559545">Atsisiunčiama ekrano užsklanda</translation>
 <translation id="1094693127011229778">IP adresas nepasiekiamas</translation>
 <translation id="1100902271996134409">Kuriami vaizdai...</translation>
@@ -139,6 +138,7 @@
 <translation id="1604959087182679653">Slėpti transkribuotą tekstą</translation>
 <translation id="160633243685262989">Peržiūrėti vaizdą</translation>
 <translation id="1611649489706141841">persiųsti</translation>
+<translation id="1615144046047995187">Nepavyko atsisiųsti. Bandykite dar kartą arba paleiskite „Chromebook“ iš naujo.</translation>
 <translation id="1615335640928990664">Duomenų naudojimas nuo <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Temos naudojimas</translation>
 <translation id="1621067168122174824">Vykdyti įkrovimo bandymą</translation>
@@ -361,6 +361,7 @@
 <translation id="2589921777872778654">Redagavimo ir ištrynimo meniu</translation>
 <translation id="2597774443162333062">Failai bus išsiųsti į sistemą „Google“, kad būtų suderinti</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Nuskaitymas baigtas. Nuskaitytas vienas puslapis}one{Nuskaitymas baigtas. Nuskaitytas {NUMBER_OF_PAGES} puslapis}few{Nuskaitymas baigtas. Nuskaityti {NUMBER_OF_PAGES} puslapiai}many{Nuskaitymas baigtas. Nuskaityta {NUMBER_OF_PAGES} puslapio}other{Nuskaitymas baigtas. Nuskaityta {NUMBER_OF_PAGES} puslapių}}</translation>
+<translation id="261322795497077164">Garsiakalbio identifikavimas</translation>
 <translation id="2617397783536231890">medvilnės</translation>
 <translation id="2618015542787108131">smėlio kopa</translation>
 <translation id="2619761439309613843">Atnaujinimas per dieną</translation>
@@ -421,7 +422,6 @@
 <translation id="3031560714565892478">Įrenginys yra vaizdo kamera.</translation>
 <translation id="3042927241478734594">Išeiti iš įrašymo?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">Negalima apibendrinti transkribuoto teksto, kuriame yra daugiau nei <ph name="MAX_WORD_LENGTH" /> ž.</translation>
 <translation id="3056720590588772262">Galutinis taškas</translation>
 <translation id="3060579846059757016">Kontūrai</translation>
 <translation id="3061850252076394168">įgalinti funkciją „Teksto ištarimas“</translation>
@@ -442,6 +442,7 @@
 <translation id="3140130301071865159">sniegas</translation>
 <translation id="3146655726035122603">Taikoma tik „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="315116470104423982">Duomenys mobiliesiems</translation>
+<translation id="3153094818810437149">Tai galėsite pakeisti vėliau garso įrašytuvo nustatymuose</translation>
 <translation id="3156511682997763015">Persukti dešimt sekundžių pirmyn</translation>
 <translation id="3156846309055100599">Nuskaitomas <ph name="PAGE_NUMBER" /> puslapis...</translation>
 <translation id="315738237743207937">Aptiktas fiksuotasis portalas</translation>
@@ -461,7 +462,6 @@
 <translation id="3226657629376379887">Išdėstymo veiksmų meniu</translation>
 <translation id="3227186760713762082">Reikia padalyti kategorijos „<ph name="CATEGORY_TEXT" />“ vertę iš <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Perrašyti</translation>
-<translation id="3245518008592055173">Negalima sukurti transkribuoto teksto, kuriame yra mažiau nei <ph name="MIN_WORD_LENGTH" /> ž., pavadinimų</translation>
 <translation id="3246869037381808805">Senesnės nei 1 dienos spausdinimo užduotys bus pašalintos</translation>
 <translation id="324961752321393509">Administratorius neleidžia uždaryti šios programos</translation>
 <translation id="3263941347294171263">Jei norite tęsti atnaujinimo procesą, atjunkite ir iš naujo prijunkite „<ph name="DEVICE_NAME" />“</translation>
@@ -565,6 +565,7 @@
 <translation id="3785643128701396311">taškinė grafika</translation>
 <translation id="3799381533888781854">IŠJUNGTA. Šį nustatymą valdo jūsų administratorius.</translation>
 <translation id="380097101658023925">RGB valdikliai</translation>
+<translation id="380493988330050229">Negalima sukurti šio transkribuoto teksto kalbos suvestinės</translation>
 <translation id="38114475217616659">Išvalyti visą istoriją</translation>
 <translation id="3820172043799983114">Netinkamas PIN kodas.</translation>
 <translation id="382043424867370667">Saulėlydžio ekrano fonas</translation>
@@ -588,6 +589,7 @@
 <translation id="3885327323343477505">Keisti ekrano užsklandą</translation>
 <translation id="3889914174935857450">Nustatyti datą iš naujo</translation>
 <translation id="3897092660631435901">Meniu</translation>
+<translation id="3902271751020176019">Transkribavimo kalba</translation>
 <translation id="391412459402535266">Nepavyko išbandyti įrenginio. Perjunkite į nešiojamojo kompiuterio režimą, kad išbandytumėte.</translation>
 <translation id="3916998944874125962">padaryti ekrano kopiją</translation>
 <translation id="3923184630988645767">Duomenų naudojimas</translation>
@@ -627,7 +629,6 @@
 <translation id="409427325554347132">Išsaugoti išsamią testo informaciją</translation>
 <translation id="409469431304488632">Eksperimentas</translation>
 <translation id="4095829376260267438">WPA2 / WPA3</translation>
-<translation id="4105182082354119881">Negalima sukurti transkribuoto teksto, kuriame yra daugiau nei <ph name="MAX_WORD_LENGTH" /> ž., pavadinimų</translation>
 <translation id="4110686435123617899">Pasirinkti albumą „<ph name="TITLE" />“ (<ph name="DESC" />)</translation>
 <translation id="4111761024568264522">USB jutiklinė dalis</translation>
 <translation id="4113067922640381334">Dabar galite pasiekti naujus <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ekrano fonus<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
@@ -737,6 +738,7 @@
 <translation id="458794348635939462">Nepavyko nustatyti jokių prieglobų pavadinimų</translation>
 <translation id="4593212453765072419">Būtina autentifikuoti įgaliotąjį serverį</translation>
 <translation id="4594021849294327751">Sukurti transkribuotą tekstą</translation>
+<translation id="4594541568452132351">Pasirinkite transkribavimo kalbą ir atsisiųskite modelį</translation>
 <translation id="4607282946861182308">Negalima sukurti vaizdų. Bandykite kitą užklausą.</translation>
 <translation id="4609350030397390689">Sumažinti klaviatūros šviesumą</translation>
 <translation id="4623061655523261501">Įrašų pavadinimai sėkmingai sugeneruoti</translation>
@@ -941,6 +943,7 @@
 <translation id="5606865426897221650">Tabuliavimo klavišas</translation>
 <translation id="5613201299517339763">Buvote atjungti</translation>
 <translation id="5620281292257375798">Tik vidiniams naudotojams</translation>
+<translation id="5628106863521633649">Pasiekiamos kalbos</translation>
 <translation id="5630438231335788050">bauhauzas</translation>
 <translation id="5631759159893697722">santrauka</translation>
 <translation id="5655283760733841251">Padidinti klaviatūros šviesumą</translation>
@@ -1101,6 +1104,7 @@
 <translation id="6359919876285606596">Šis veiksmas atliekamas visam laikui ir jo anuliuoti negalima</translation>
 <translation id="6368342879959028556">Jei pasirinkote „Kurti naudojant DI“, parašykite tinkintą raginimą. Arba pasirinkite „DI ekrano fonai“, tada pasirinkite temą ir pabrauktus žodžius, kad suasmenintumėte DI ekrano foną.</translation>
 <translation id="636850387210749493">Įmonės registracija</translation>
+<translation id="6369221585240879141">Negalima sukurti šio transkribuoto teksto kalbos įrašų pavadinimų</translation>
 <translation id="6373461326814131011">tvenkinys</translation>
 <translation id="6379086450106841622">Jutiklinis ekranas</translation>
 <translation id="6381741036071372448">Klaviatūros išbandymas</translation>
@@ -1265,6 +1269,7 @@
 <translation id="710028965487274708">Nepavyko – patvirtinti nepavyko</translation>
 <translation id="7101959270679078188">Atrakinkite „<ph name="DEVICE_NAME" />“, kad galėtumėte tęsti atnaujinimo procesą</translation>
 <translation id="7103252855940681301"><ph name="INDEX" /> įrenginys iš <ph name="COUNT" /> pav. „<ph name="NAME" />“.</translation>
+<translation id="7103793063702494489">Pasirinkta kalba</translation>
 <translation id="7107255225945990211">Pasirinkite „<ph name="PRODUCT_NAME" />“ išskirtinius meno kūrinius</translation>
 <translation id="7108668606237948702">įvesti</translation>
 <translation id="7117228822971127758">Vėliau bandykite dar kartą</translation>
@@ -1274,6 +1279,7 @@
 <translation id="7130438335435247835">Prieigos taško pavadinimas (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Pavadinimų serveris}one{Pavadinimų serveriai}few{Pavadinimų serveriai}many{Pavadinimų serveriai}other{Pavadinimų serveriai}}</translation>
 <translation id="7135814714616751706">Ieškoti sparčiųjų klavišų</translation>
+<translation id="7138614237884624401">Supaprastintas tekstas</translation>
 <translation id="7141470099673912333">Turinio perkėlimas</translation>
 <translation id="7143207342074048698">Jungiama</translation>
 <translation id="7144878232160441200">Kartoti</translation>
@@ -1695,6 +1701,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="9100765901046053179">Išplėstiniai nustatymai</translation>
 <translation id="910415269708673980">Atnaujinkite <ph name="PRINCIPAL_NAME" /> bilietą</translation>
 <translation id="9106415115617144481">Nuskaitomas <ph name="PAGE_NUMBER" /> psl.</translation>
+<translation id="9108856746036501072">Garso įrašytuvas gali kurti įrašų, kuriuose kalbama, transkribuotus tekstus. Atlikdami kitą veiksmą turite pasirinkti transkribavimo kalbą ir atsisiųsti modelį (iki 100 MB).</translation>
 <translation id="9111102763498581341">Atrakinti</translation>
 <translation id="9122492456897874028">Apibendrinkite turinį, gaukite apibrėžčių ir kt.</translation>
 <translation id="9122602430962285795">Norėdami prisijungti iš naujo, eikite į Nustatymus</translation>

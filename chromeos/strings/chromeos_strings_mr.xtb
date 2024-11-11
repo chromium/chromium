@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">फायरवॉल डिटेक्ट केली</translation>
 <translation id="1075811647922107217">पेजचा आकार</translation>
-<translation id="108084407137234521"><ph name="MIN_WORD_LENGTH" /> हून कमी शब्दांच्या ट्रान्स्क्रिप्टचा सारांश देऊ शकत नाही</translation>
 <translation id="1082009148392559545">स्क्रीन सेव्हर डाउनलोड करत आहे</translation>
 <translation id="1094693127011229778">आयपी अ‍ॅड्रेस उपलब्ध नाही</translation>
 <translation id="1100902271996134409">इमेज तयार करत आहे...</translation>
@@ -421,7 +420,6 @@
 <translation id="3031560714565892478">डिव्हाइस हे व्हिडिओ कॅमेरा आहे.</translation>
 <translation id="3042927241478734594">रेकॉर्डिंगमधून बाहेर पडायचे आहे का?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744"><ph name="MAX_WORD_LENGTH" /> हून अधिक शब्दांच्या ट्रान्स्क्रिप्टचा सारांश देऊ शकत नाही</translation>
 <translation id="3056720590588772262">एंडपॉइंट</translation>
 <translation id="3060579846059757016">रूपरेषा</translation>
 <translation id="3061850252076394168">बोलण्यासाठी निवडा सुरू करा</translation>
@@ -461,7 +459,6 @@
 <translation id="3226657629376379887">लेआउट अ‍ॅक्‍शन मेनू</translation>
 <translation id="3227186760713762082"><ph name="CONVERSION_RATE" /> ने <ph name="CATEGORY_TEXT" /> मूल्याचा भागाकार करा</translation>
 <translation id="3237710083340813756">पुन्हा लिहा</translation>
-<translation id="3245518008592055173"><ph name="MIN_WORD_LENGTH" /> हून कमी शब्दांच्या ट्रान्स्क्रिप्टसाठी नावे तयार करू शकत नाही</translation>
 <translation id="3246869037381808805">एक दिवसापेक्षा जुने प्रिंट जॉब काढून टाकले जातील</translation>
 <translation id="324961752321393509">तुमचा अ‍ॅडमिनिस्ट्रेटर हे अ‍ॅप बंद करण्याची अनुमती देत नाही</translation>
 <translation id="3263941347294171263">अपडेट करण्याची प्रक्रिया पुढे सुरू ठेवण्यासाठी, <ph name="DEVICE_NAME" /> अनप्लग करून पुन्हा प्लग करा</translation>
@@ -627,7 +624,6 @@
 <translation id="409427325554347132">चाचणीचे तपशील सेव्ह करा</translation>
 <translation id="409469431304488632">प्रयोग</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881"><ph name="MAX_WORD_LENGTH" /> हून अधिक शब्दांच्या ट्रान्स्क्रिप्टसाठी नावे तयार करू शकत नाही</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /><ph name="DESC" /> अल्बम निवडा</translation>
 <translation id="4111761024568264522">USB टचपॅड</translation>
 <translation id="4113067922640381334">तुम्हाला आता नवीन <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />वॉलपेपर<ph name="END_LINK_WALLPAPER_SUBPAGE" /> चा अ‍ॅक्सेस आहे</translation>

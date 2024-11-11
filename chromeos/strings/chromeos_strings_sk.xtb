@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Bol zistený firewall</translation>
 <translation id="1075811647922107217">Veľkosť stránky</translation>
-<translation id="108084407137234521">Prepis kratší ako <ph name="MIN_WORD_LENGTH" /> slov sa nedá zhrnúť</translation>
 <translation id="1082009148392559545">Sťahuje sa šetrič obrazovky</translation>
 <translation id="1094693127011229778">Adresa IP nie je k dispozícii</translation>
 <translation id="1100902271996134409">Vytvárajú sa obrázky…</translation>
@@ -307,6 +306,7 @@
 <translation id="2308243864813041101">Ak chcete pokračovať v aktualizácii, odpojte kábel USB zariadenia <ph name="DEVICE_NAME" /></translation>
 <translation id="2320295602967756579">Zapnúť svetlý motív</translation>
 <translation id="2323506179655536734">PRESKOČENÉ</translation>
+<translation id="2323755382216917952">Táto aktualizácia vyžaduje reštart počítača, aby sa mohla dokončiť inštalácia. Dokončenie aktualizácie môže trvať niekoľko minút. Počas aktualizácie firmvéru neodpájajte počítač ani ho nevypínajte.</translation>
 <translation id="2324354238778375592">Plávajúce</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Vynikajúce (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -420,7 +420,6 @@
 <translation id="3031560714565892478">Zariadenie je videokamera.</translation>
 <translation id="3042927241478734594">Chcete ukončiť nahrávanie?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">Prepis dlhší ako <ph name="MAX_WORD_LENGTH" /> slov sa nedá zhrnúť</translation>
 <translation id="3056720590588772262">Konečný bod</translation>
 <translation id="3060579846059757016">Ohraničenie</translation>
 <translation id="3061850252076394168">povoliť počúvanie vybraného textu</translation>
@@ -450,6 +449,7 @@
 <translation id="3178532070248519384">avantgardy</translation>
 <translation id="3182676044300231689">Zadajte pokyn, napríklad „uprav to, aby to pôsobilo istejšie“</translation>
 <translation id="3188257591659621405">Moje súbory</translation>
+<translation id="3188931456353313123">Túto aktualizáciu poskytuje výrobca zariadenia a Google ju neoveril.</translation>
 <translation id="319101249942218879">Obrázok avatara bol zmenený</translation>
 <translation id="3192947282887913208">Zvukové súbory</translation>
 <translation id="3199982728237701504">Podávač dokumentov (obojstranný)</translation>
@@ -459,7 +459,6 @@
 <translation id="3226657629376379887">Ponuka akcií rozloženia</translation>
 <translation id="3227186760713762082">Hodnotu <ph name="CATEGORY_TEXT" /> vydeľte číslom <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Prepísať</translation>
-<translation id="3245518008592055173">Pre prepis kratší ako <ph name="MIN_WORD_LENGTH" /> slov sa nedajú vytvoriť názvy</translation>
 <translation id="3246869037381808805">Tlačové úlohy staršie ako deň budú odstránené</translation>
 <translation id="324961752321393509">Váš správca nepovoľuje zavretie tejto aplikácie</translation>
 <translation id="3263941347294171263">Ak chcete pokračovať v aktualizácii, odpojte zariadenie <ph name="DEVICE_NAME" /> a znova ho pripojte</translation>
@@ -508,6 +507,7 @@
 <translation id="3488065109653206955">Čiastočne aktivované</translation>
 <translation id="3492882532495507361">Kancelária v štýle <ph name="OFFICE_STYLE" /> v odtieňoch <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Dáta meria Chromebook. Namerané dáta sa môžu líšiť od dát poskytovateľa.</translation>
+<translation id="349570724365779960">Školské nástroje sú pripojené k študentom</translation>
 <translation id="3502426834823382181">zobrazenie všetkých aplikácií</translation>
 <translation id="3510890413042482857">Odosielať <ph name="BEGIN_LINK1" />údaje o sledovaní výkonnosti<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Aktualiz. ChromeOS</translation>
@@ -624,7 +624,6 @@
 <translation id="409427325554347132">Uložiť podrobnosti o teste</translation>
 <translation id="409469431304488632">Experiment</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">Pre prepis dlhší ako <ph name="MAX_WORD_LENGTH" /> slov sa nedajú vytvoriť názvy</translation>
 <translation id="4110686435123617899">Vyberte album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
 <translation id="4113067922640381334">Teraz máte prístup k novým <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />tapetám<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
@@ -757,6 +756,7 @@
 <translation id="473775607612524610">Aktualizovať</translation>
 <translation id="4744944742468440486">Informácie súvisiace s vaším výberom</translation>
 <translation id="4771607256327216405">zjasnenie klávesnice</translation>
+<translation id="4771923071974529837">zajtra</translation>
 <translation id="4773299976671772492">Zastavené</translation>
 <translation id="4778082030331381943">ametyst</translation>
 <translation id="4782311465517282004">Získavajte definície, preklady alebo prevody jednotiek kliknutím pravým tlačidlom alebo pridržaním textu</translation>
@@ -820,6 +820,7 @@
 <translation id="500920857929044050">Zastaviť test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Farba motívu</translation>
+<translation id="5037240652947866174">dnes</translation>
 <translation id="5038292761217083259">klávesnica s viacerými farbami</translation>
 <translation id="5039804452771397117">Povoliť</translation>
 <translation id="5049856988445523908">SIM karta je uzamknutá (<ph name="LOCK_TYPE" />)</translation>

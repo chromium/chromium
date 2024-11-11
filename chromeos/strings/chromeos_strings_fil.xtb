@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">May na-detect na firewall</translation>
 <translation id="1075811647922107217">Laki ng page</translation>
-<translation id="108084407137234521">Hindi makakapagbuod ng transcript na wala pang <ph name="MIN_WORD_LENGTH" /> (na) salita</translation>
 <translation id="1082009148392559545">Dina-download ang screen saver</translation>
 <translation id="1094693127011229778">Hindi available ang IP address</translation>
 <translation id="1100902271996134409">Gumagawa ng mga larawan...</translation>
@@ -421,7 +420,6 @@
 <translation id="3031560714565892478">Video camera ang device.</translation>
 <translation id="3042927241478734594">Lumabas sa pag-record?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744">Hindi makakapagbuod ng transcript na lampas <ph name="MAX_WORD_LENGTH" /> (na) salita</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3060579846059757016">Mga outline</translation>
 <translation id="3061850252076394168">i-enable ang select to speak</translation>
@@ -461,7 +459,6 @@
 <translation id="3226657629376379887">Menu ng mga pagkilos sa layout</translation>
 <translation id="3227186760713762082">I-divide ang value ng <ph name="CATEGORY_TEXT" /> sa <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">I-rewrite</translation>
-<translation id="3245518008592055173">Hindi makakagawa ng mga pangalan para sa transcript na wala pang <ph name="MIN_WORD_LENGTH" /> (na) salita</translation>
 <translation id="3246869037381808805">Aalisin ang mga pag-print na lampas 1 araw na</translation>
 <translation id="324961752321393509">Hindi pinapayagan ng iyong administrator na isara ang app na ito</translation>
 <translation id="3263941347294171263">Bunutin at isaksak ulit ang <ph name="DEVICE_NAME" /> para ituloy ang proseso ng pag-update</translation>
@@ -627,7 +624,6 @@
 <translation id="409427325554347132">I-save ang mga detalye ng pagsubok</translation>
 <translation id="409469431304488632">Eksperimento</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">Hindi makakagawa ng mga pangalan para sa transcript na lampas <ph name="MAX_WORD_LENGTH" /> (na) salita</translation>
 <translation id="4110686435123617899">Piliin ang album na <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB na touchpad</translation>
 <translation id="4113067922640381334">May access ka na ngayon sa mga bagong <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpaper<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>

@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Đã phát hiện thấy tường lửa</translation>
 <translation id="1075811647922107217">Kích thước trang</translation>
-<translation id="108084407137234521">Không thể tóm tắt bản chép lời ngắn hơn <ph name="MIN_WORD_LENGTH" /> từ</translation>
 <translation id="1082009148392559545">Đang tải trình bảo vệ màn hình xuống</translation>
 <translation id="1094693127011229778">Địa chỉ IP không có sẵn</translation>
 <translation id="1100902271996134409">Đang tạo hình ảnh...</translation>
@@ -421,7 +420,6 @@
 <translation id="3031560714565892478">Thiết bị là máy quay video.</translation>
 <translation id="3042927241478734594">Bạn muốn thoát chế độ ghi âm?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">Không thể tóm tắt bản chép lời dài hơn <ph name="MAX_WORD_LENGTH" /> từ</translation>
 <translation id="3056720590588772262">Điểm cuối</translation>
 <translation id="3060579846059757016">Dàn ý</translation>
 <translation id="3061850252076394168">bật tính năng chọn để nói</translation>
@@ -461,7 +459,6 @@
 <translation id="3226657629376379887">Trình đơn thao tác của bố cục</translation>
 <translation id="3227186760713762082">Lấy giá trị <ph name="CATEGORY_TEXT" /> chia cho <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Tinh chỉnh</translation>
-<translation id="3245518008592055173">Không thể tạo tên cho bản chép lời ngắn hơn <ph name="MIN_WORD_LENGTH" /> từ</translation>
 <translation id="3246869037381808805">Các lệnh in quá 1 ngày sẽ bị xóa</translation>
 <translation id="324961752321393509">Quản trị viên của bạn không cho phép đóng ứng dụng này</translation>
 <translation id="3263941347294171263">Hãy rút <ph name="DEVICE_NAME" /> ra rồi cắm lại để tiếp tục quá trình cập nhật</translation>
@@ -627,7 +624,6 @@
 <translation id="409427325554347132">Lưu thông tin chi tiết của quá trình kiểm tra</translation>
 <translation id="409469431304488632">Thử nghiệm</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">Không thể tạo tên cho bản chép lời dài hơn <ph name="MAX_WORD_LENGTH" /> từ</translation>
 <translation id="4110686435123617899">Chọn album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Bàn di chuột USB</translation>
 <translation id="4113067922640381334">Giờ đây, bạn có thể sử dụng các <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />hình nền<ph name="END_LINK_WALLPAPER_SUBPAGE" /> mới</translation>

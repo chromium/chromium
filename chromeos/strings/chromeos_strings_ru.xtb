@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">обнаружен брандмауэр</translation>
 <translation id="1075811647922107217">Размер страницы</translation>
-<translation id="108084407137234521">Невозможно создать краткий пересказ, поскольку расшифровка слишком короткая. Минимальное число слов: <ph name="MIN_WORD_LENGTH" />.</translation>
 <translation id="1082009148392559545">Скачивание заставки</translation>
 <translation id="1094693127011229778">IP-адрес недоступен.</translation>
 <translation id="1100902271996134409">Создание изображений…</translation>
@@ -421,7 +420,6 @@
 <translation id="3031560714565892478">Это видеокамера.</translation>
 <translation id="3042927241478734594">Завершить запись?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
-<translation id="3055176406666937744">Невозможно создать краткий пересказ, поскольку расшифровка слишком длинная. Максимальное число слов: <ph name="MAX_WORD_LENGTH" />.</translation>
 <translation id="3056720590588772262">Конечная точка</translation>
 <translation id="3060579846059757016">Описание</translation>
 <translation id="3061850252076394168">включить озвучивание при нажатии</translation>
@@ -461,7 +459,6 @@
 <translation id="3226657629376379887">Меню действий, связанных с раскладкой</translation>
 <translation id="3227186760713762082">Разделите значение "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Переписать</translation>
-<translation id="3245518008592055173">Невозможно создать название, поскольку расшифровка слишком короткая. Минимальное число слов: <ph name="MIN_WORD_LENGTH" />.</translation>
 <translation id="3246869037381808805">Задания печати, хранящиеся дольше 1 дня, будут удалены</translation>
 <translation id="324961752321393509">Администратор запретил закрывать это приложение</translation>
 <translation id="3263941347294171263">Чтобы продолжить обновление, отключите и снова подключите устройство "<ph name="DEVICE_NAME" />".</translation>
@@ -627,7 +624,6 @@
 <translation id="409427325554347132">Сохранить данные</translation>
 <translation id="409469431304488632">Эксперимент</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
-<translation id="4105182082354119881">Невозможно создать название, поскольку расшифровка слишком длинная. Максимальное число слов: <ph name="MAX_WORD_LENGTH" />.</translation>
 <translation id="4110686435123617899">Выбрать альбом "<ph name="TITLE" />" с описанием "<ph name="DESC" />"</translation>
 <translation id="4111761024568264522">Сенсорная панель USB</translation>
 <translation id="4113067922640381334">Вам доступны новые <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />обои<ph name="END_LINK_WALLPAPER_SUBPAGE" />.</translation>
@@ -1377,7 +1373,7 @@
 <translation id="757747079855995705">камень</translation>
 <translation id="7590883480672980941">Настройки ввода</translation>
 <translation id="7595982850646262331">Ещё <ph name="TIME_VALUE" /></translation>
-<translation id="7600430297804876776">Администратор <ph name="MANAGER" /> ограничил время использования <ph name="DEVICE_TYPE" />.</translation>
+<translation id="7600430297804876776">Администратор <ph name="MANAGER" /> ограничил время использования этого устройства (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="7613724632293948900">Измените положение с помощью мыши или клавиш со стрелками.</translation>
 <translation id="7618774594543487847">Нейтральные цвета</translation>
 <translation id="7620771111601174153">Узнать больше в Справочном центре</translation>

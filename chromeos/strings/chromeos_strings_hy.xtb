@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Հայտնաբերվել է հրապատ</translation>
 <translation id="1075811647922107217">Էջի չափսը</translation>
-<translation id="108084407137234521">Հնարավոր չէ ամփոփել <ph name="MIN_WORD_LENGTH" /> բառից կարճ գրադարձումը</translation>
 <translation id="1082009148392559545">Էկրանապահի ներբեռնում</translation>
 <translation id="1094693127011229778">IP հասցեն անհասանելի է</translation>
 <translation id="1100902271996134409">Պատկերների ստեղծում…</translation>
@@ -420,7 +419,6 @@
 <translation id="3031560714565892478">Սարքը տեսախցիկ է։</translation>
 <translation id="3042927241478734594">Դուրս գա՞լ ձայնագրությունից</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> մԱ</translation>
-<translation id="3055176406666937744">Հնարավոր չէ ամփոփել <ph name="MAX_WORD_LENGTH" /> բառից երկար գրադարձումը</translation>
 <translation id="3056720590588772262">Վերջնակետ</translation>
 <translation id="3060579846059757016">Հիմնական կետեր</translation>
 <translation id="3061850252076394168">միացնել «Ընտրեք և լսեք» գործառույթը</translation>
@@ -459,7 +457,6 @@
 <translation id="3226657629376379887">Դասավորության գործողությունների ընտրացանկ</translation>
 <translation id="3227186760713762082">Բաժանեք «<ph name="CATEGORY_TEXT" />» արժեքը <ph name="CONVERSION_RATE" />-ի</translation>
 <translation id="3237710083340813756">Նորից գրել</translation>
-<translation id="3245518008592055173">Հնարավոր չէ անվանումներ ստեղծել <ph name="MIN_WORD_LENGTH" /> բառից կարճ գրադարձման համար</translation>
 <translation id="3246869037381808805">Տպման առաջադրանքները, որոնք 1 օրից հին են, կհեռացվեն</translation>
 <translation id="324961752321393509">Ձեր ադմինիստրատորը թույլ չի տալիս փակել այս հավելվածը</translation>
 <translation id="3263941347294171263">Թարմացումը շարունակելու համար անջատեք հոսանքի լարը ձեր <ph name="DEVICE_NAME" /> սարքից և նորից միացրեք</translation>
@@ -624,7 +621,6 @@
 <translation id="409427325554347132">Պահել թեստի մանրամասները</translation>
 <translation id="409469431304488632">Փորձարկում</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">Հնարավոր չէ անվանումներ ստեղծել <ph name="MAX_WORD_LENGTH" /> բառից երկար գրադարձման համար</translation>
 <translation id="4110686435123617899">Ընտրեք ալբոմը՝ «<ph name="TITLE" />» (<ph name="DESC" />)</translation>
 <translation id="4111761024568264522">USB հպահարթակ</translation>
 <translation id="4113067922640381334">Այժմ ձեզ հասանելի են նոր <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />պաստառներ<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>

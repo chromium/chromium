@@ -298,6 +298,7 @@
 <translation id="4567424176335768812">Du bist als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Auf allen Geräten, auf denen du angemeldet bist, sind nun deine Lesezeichen, dein Verlauf und andere Einstellungen verfügbar.</translation>
 <translation id="4571503333518166079">Chrome-Benachrichtigungseinstellungen aufrufen</translation>
 <translation id="4575717501879784448">Chrome kann diese Tabs deaktivieren, um ein besseres Surfen zu ermöglichen und Ressourcen freizugeben.</translation>
+<translation id="4595162648538023956">Du kannst dich anmelden, um deine Inhalte abzurufen, oder Chrome ohne Konto verwenden</translation>
 <translation id="459622048091363950">Sobald Chrome Zugriff hat, können Websites dich um Zugriff bitten.</translation>
 <translation id="4600710005438004015">Chrome konnte nicht auf die neueste Version aktualisiert werden. In deiner Version fehlen daher einige neue Funktionen und Sicherheitspatches.</translation>
 <translation id="4601439950572737842">Deine Daten werden mit deiner Passphrase verschlüsselt. Gib sie ein, um Chrome-Daten in deinem Google-Konto zu verwenden und zu speichern.</translation>
@@ -445,6 +446,7 @@
 <translation id="6497147134301593682">Chrome wurde automatisch geschlossen</translation>
 <translation id="6506909944137591434">Chrome benötigt die Kameraberechtigung, um eine 3D-Karte deiner Umgebung zu erstellen</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
+<translation id="6515549163407364048">Wenn deine Erweiterungen auf allen deinen Computern verfügbar sein sollen, melde dich in Chrome an</translation>
 <translation id="6520670145826811516">Wenn du deinen Standort verwenden möchtest, erlaube Chrome über die <ph name="BEGIN_LINK" />Systemeinstellungen<ph name="END_LINK" /> den Zugriff darauf</translation>
 <translation id="659498884637196217">Im Google Passwortmanager auf diesem Gerät</translation>
 <translation id="6600016381025017075">Nach beliebigen Inhalten auf dieser Seite suchen</translation>

@@ -18,6 +18,7 @@
 <translation id="1185134272377778587">Par Chromium</translation>
 <translation id="1188705220418984327">Lai kopīgotu logu, sistēmas preferencēs atļaujiet ekrāna ierakstīšanu pārlūkā Chromium.</translation>
 <translation id="1203500561924088507">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē pārlūkprogramma.</translation>
+<translation id="1235768345431527125">Varat pierakstīties, lai piekļūtu savam saturam, vai izmantot pārlūku Chromium, nepierakstoties kontā.</translation>
 <translation id="1262876892872089030">Kamēr šī cilne bija neaktīva, tika atbrīvota atmiņa pārlūka Chromium ātrākai darbībai. Varat izvēlēties vienmēr saglabāt šo vietni aktīvu.</translation>
 <translation id="1265577313130862557">Pārlūkā Chromium šī lejupielāde tika bloķēta, jo fails ir bīstams.</translation>
 <translation id="126567311906253476">Ja pierakstāties Google pakalpojumos, piemēram, Gmail vai YouTube, ar kontu <ph name="USER_EMAIL" />, varat automātiski pierakstīties pārlūkā Chromium ar to pašu kontu.</translation>
@@ -326,6 +327,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="549669000822060376">Lūdzu, uzgaidiet, kamēr Chromium instalē jaunākos sistēmas atjauninājumus.</translation>
 <translation id="5496810170689441661">Chromium mēģina rediģēt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="5527463683072221100">Atvērt PDF failus pārlūkā Chromium</translation>
+<translation id="5568136785038042132">Lai paplašinājumiem piekļūtu visos savos datoros, pierakstieties pārlūkā Chromium.</translation>
 <translation id="5575418445468216473">Jūsu paroles un citi Chromium dati ir saglabāti jūsu Google kontā un tiks noņemti no šīs ierīces. Lai turpmāk tos izmantotu, atkal pierakstieties pārlūkā Chromium.</translation>
 <translation id="5579324208890605088">Palaišanas kļūda: lūdzu, palaidiet instalēšanas programmu kā parasts lietotājs, nevis kā administrators.</translation>
 <translation id="5596627076506792578">Citas opcijas</translation>

@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Palomuuri havaittu</translation>
 <translation id="1075811647922107217">Sivun koko</translation>
-<translation id="108084407137234521">Alle <ph name="MIN_WORD_LENGTH" /> sanan pituisesta transkriptiosta ei voi tehdä yhteenvetoa</translation>
 <translation id="1082009148392559545">Ladataan näytönsäästäjää</translation>
 <translation id="1094693127011229778">IP-osoite ei ole käytettävissä</translation>
 <translation id="1100902271996134409">Luodaan kuvia…</translation>
@@ -420,7 +419,6 @@
 <translation id="3031560714565892478">Laite on videokamera.</translation>
 <translation id="3042927241478734594">Lopetetaanko tallennus?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">Yli <ph name="MAX_WORD_LENGTH" /> sanan pituisesta transkriptiosta ei voi tehdä yhteenvetoa</translation>
 <translation id="3056720590588772262">Päätepiste</translation>
 <translation id="3060579846059757016">Osioiden yhteenvedot</translation>
 <translation id="3061850252076394168">ota teksti puhuttuna käyttöön</translation>
@@ -459,7 +457,6 @@
 <translation id="3226657629376379887">Asettelun toimintovalikko</translation>
 <translation id="3227186760713762082">Jaa <ph name="CATEGORY_TEXT" /> tällä luvulla: <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Kirjoita uudelleen</translation>
-<translation id="3245518008592055173">Alle <ph name="MIN_WORD_LENGTH" /> sanan pituiseen transkriptioon ei voi lisätä nimiä</translation>
 <translation id="3246869037381808805">Yli päivän vanhat tulostustyöt poistetaan</translation>
 <translation id="324961752321393509">Järjestelmänvalvoja ei salli tämän sovelluksen sulkemista</translation>
 <translation id="3263941347294171263">Irrota johto (<ph name="DEVICE_NAME" />) ja kytke se takaisin jatkaaksesi päivitysprosessia</translation>
@@ -624,7 +621,6 @@
 <translation id="409427325554347132">Tallenna testin tulokset</translation>
 <translation id="409469431304488632">Kokeilu</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">Yli <ph name="MAX_WORD_LENGTH" /> sanan pituiseen transkriptioon ei voi lisätä nimiä</translation>
 <translation id="4110686435123617899">Valitse albumi <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-kosketuslevy</translation>
 <translation id="4113067922640381334">Voit nyt käyttää uusia <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />taustakuvia<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>

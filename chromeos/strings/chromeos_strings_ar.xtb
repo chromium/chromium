@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">تم العثور على جدار حماية.</translation>
 <translation id="1075811647922107217">حجم الصفحة</translation>
-<translation id="108084407137234521">يجب ألا يقل عدد كلمات الطلبات الصوتية عن <ph name="MIN_WORD_LENGTH" /> ليتم تلخيصها</translation>
 <translation id="1082009148392559545">جارٍ تنزيل شاشة الاستراحة</translation>
 <translation id="1094693127011229778">‏عنوان IP غير متوفّر.</translation>
 <translation id="1100902271996134409">جارٍ إنشاء الصور...</translation>
@@ -421,7 +420,6 @@
 <translation id="3031560714565892478">الجهاز هو كاميرا فيديو.</translation>
 <translation id="3042927241478734594">هل تريد إنهاء التسجيل؟</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ميلي أمبير</translation>
-<translation id="3055176406666937744">يجب ألا يزيد عدد كلمات الطلبات الصوتية عن <ph name="MAX_WORD_LENGTH" /> ليتم تلخيصها</translation>
 <translation id="3056720590588772262">نقطة النهاية</translation>
 <translation id="3060579846059757016">المخططات</translation>
 <translation id="3061850252076394168">تفعيل ميزة "سماع الاختيار"</translation>
@@ -461,7 +459,6 @@
 <translation id="3226657629376379887">قائمة إجراءات التصميم</translation>
 <translation id="3227186760713762082">قسمة قيمة <ph name="CATEGORY_TEXT" /> على <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">إعادة الكتابة</translation>
-<translation id="3245518008592055173">يتعذّر إنشاء أسماء للطلبات الصوتية التي يقلّ عدد كلماتها عن <ph name="MIN_WORD_LENGTH" /></translation>
 <translation id="3246869037381808805">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من يوم.</translation>
 <translation id="324961752321393509">لا يسمح المشرف بإغلاق هذا التطبيق.</translation>
 <translation id="3263941347294171263">عليك فصل "<ph name="DEVICE_NAME" />" عن مصدر الطاقة ثم إعادة توصيله به لمواصلة عملية التحديث</translation>
@@ -627,7 +624,6 @@
 <translation id="409427325554347132">حفظ تفاصيل الاختبار</translation>
 <translation id="409469431304488632">ميزة تجريبية</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">يتعذّر إنشاء أسماء للطلبات الصوتية التي يزيد عدد كلماتها عن <ph name="MAX_WORD_LENGTH" /></translation>
 <translation id="4110686435123617899">اختيار ألبوم <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">‏لوحة لمس USB</translation>
 <translation id="4113067922640381334">يمكنك الآن الوصول إلى <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />خلفيات<ph name="END_LINK_WALLPAPER_SUBPAGE" /> جديدة.</translation>

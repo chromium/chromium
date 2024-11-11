@@ -170,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> saytlar guruhidagi <ph name="RWS_MEMBERS_COUNT" /> ta sayt guruhdagi faoliyatingizni kuzatishi mumkin}other{<ph name="RWS_OWNER" /> saytlar guruhidagi <ph name="RWS_MEMBERS_COUNT" /> ta sayt guruhdagi faoliyatingizni kuzatishi mumkin}}</translation>
 <translation id="3697164069658504920">Yoqilsa, saytlar USB qurilmalardan foydalanishni soʻrashi mumkin. Oʻchirilsa, bunday qurilmalardan foydalana olmaydi.</translation>
 <translation id="3707034683772193706">Siz ochadigan sayt Chrome orqali real foydalanuvchi ekaningizni tasdiqlovchi axborotni saqlashi mumkin.</translation>
+<translation id="3709818294139939629">Saytning faylga ruxsati yopildi</translation>
 <translation id="3721953990244350188">Yopish va keyingi mavjud amalni koʻrsatish</translation>
 <translation id="3744111561329211289">Orqa fonda sinxronlash</translation>
 <translation id="3763247130972274048">10 soniya oʻtkazish uchun chap yoki oʻng tomoniga ikki marta bosing</translation>
@@ -432,6 +433,7 @@
 <translation id="7425915948813553151">Saytlar uchun tungi mavzu</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Yoqilsa, saytlar kirish soʻrovlarini koʻrsatishi mumkin. Oʻchirilsa, koʻrsata olmaydi.</translation>
+<translation id="7553211568594248088">Qidiruv sahifasini tark etish</translation>
 <translation id="7554752735887601236">Sayt mikrofondan foydalanmoqda</translation>
 <translation id="7561196759112975576">Har doim</translation>
 <translation id="757524316907819857">Saytlarga himoyalangan kontent ijrosini taqiqlash</translation>

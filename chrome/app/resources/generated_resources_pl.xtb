@@ -320,6 +320,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1206832039833782423">Kod zabezpieczający znajduje się na odwrocie karty</translation>
 <translation id="1208339823324516598">{GROUP_COUNT,plural, =1{Usuń grupę}few{Usuń grupy}many{Usuń grupy}other{Usuń grupy}}</translation>
 <translation id="1208392090861059168">Bieżący harmonogram jest ustawiony na <ph name="SUNRISE" />–<ph name="SUNSET" />. Aby automatycznie aktualizować godziny zachodu i wschodu słońca, <ph name="BEGIN_LINK" />włącz w systemie dostęp do lokalizacji<ph name="END_LINK" />.</translation>
+<translation id="1210376751550516429">Wybierz wyjściowe urządzenie audio</translation>
 <translation id="1210678701920254279">Wyświetl lub dodaj drukarki i sprawdź aktywne zadania drukowania</translation>
 <translation id="1211769675100312947">Ty wybierasz skróty</translation>
 <translation id="1213254615020057352">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. Pomóż ulepszyć działanie Androida na urządzeniu dziecka, automatycznie wysyłając do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Nie zostaną one użyte do zidentyfikowania Twojego dziecka. Wykorzystamy je, by poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To ustawienie jest wymuszone przez właściciela. Właściciel może zezwolić na wysyłanie do Google danych diagnostycznych i informacji o używaniu tego urządzenia. Jeśli na koncie Google dziecka włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na jego koncie.</translation>
@@ -404,6 +405,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1264083566674525434">Edytuj uprawnienia witryny</translation>
 <translation id="1264337193001759725">Aby zobaczyć dzienniki UI sieci, otwórz tę stronę: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1264956950255940376">Zmrużenie lewego oka</translation>
+<translation id="1265094893042958831">Generuję sugestie dotyczące tej strony…</translation>
 <translation id="1265279736024499987">Twoje aplikacje i ustawienia będą synchronizować się na wszystkich urządzeniach z ChromeOS Flex, na których zalogujesz się na swoje konto Google. Opcje synchronizacji przeglądarki znajdziesz w <ph name="LINK_BEGIN" />ustawieniach Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Język tłumaczenia:</translation>
 <translation id="1267649802567297774">Wygenerowany obraz: <ph name="INDEX" />, temat: <ph name="SUBJECT" />, styl: <ph name="STYLE" />, nastrój: <ph name="MOOD" />.</translation>
@@ -4377,6 +4379,7 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4047345532928475040">Nd.</translation>
 <translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Wróć do ekranu głównego</translation>
+<translation id="4048295959689903187">Wybierz wyjście audio</translation>
 <translation id="4048384495227695211">Pokaż plik <ph name="FILE_NAME" /> w folderze</translation>
 <translation id="404894744863342743">Gdy skończysz korzystać z pobranego pliku, usuń go, aby Twoje hasła nie były widoczne dla innych osób używających tego urządzenia.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt jest niedostępny. Aby skorzystać z funkcji Udostępnianie w pobliżu, dodaj do kontaktów adres e-mail powiązany z kontem Google tej osoby.}few{# kontakty są niedostępne. Aby skorzystać z funkcji Udostępnianie w pobliżu, dodaj do kontaktów adresy e-mail powiązane z kontami Google tych osób.}many{# kontaktów jest niedostępnych. Aby skorzystać z funkcji Udostępnianie w pobliżu, dodaj do kontaktów adresy e-mail powiązane z kontami Google tych osób.}other{# kontaktu jest niedostępne. Aby skorzystać z funkcji Udostępnianie w pobliżu, dodaj do kontaktów adresy e-mail powiązane z kontami Google tych osób.}}</translation>
@@ -5282,6 +5285,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4730492586225682674">Ostatnia notatka zapisana rysikiem na ekranie blokady</translation>
 <translation id="4730888769809690665">Witryna <ph name="SITE" /> może wysyłać powiadomienia</translation>
 <translation id="4731306954230393087">Z uprawnieniami do używania zapisanych informacji o Tobie</translation>
+<translation id="4732799736617504962">Podłączony mikrofon może obsługiwać tylko redukcję szumów</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (lewa)</translation>
 <translation id="4733793249294335256">Lokalizacja</translation>
 <translation id="473546211690256853">To konto jest zarządzane w domenie <ph name="DOMAIN" /></translation>
@@ -5354,6 +5358,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4789348252524569426">Nie udało się zainstalować plików z mową. Urządzenie wymaga aktualizacji. Uruchom je ponownie i spróbuj jeszcze raz.</translation>
 <translation id="4789550509729954245">Pokazuj powiadomienie, gdy urządzenia udostępniają coś w pobliżu</translation>
 <translation id="4791037424585594169">(UDP)</translation>
+<translation id="4791200512372376561">Brak dostępnych sugestii. Poproś o coś, na przykład: „podsumuj tę stronę”, albo zadaj pytanie.</translation>
 <translation id="4791793693640849493">Zapisuj elementy na koncie</translation>
 <translation id="4792290259143007505">Włącz przyspieszenie TrackPointa</translation>
 <translation id="4792711294155034829">&amp;Zgłaszanie problemu...</translation>
@@ -6035,6 +6040,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5276357196618041410">Nie można zapisać konfiguracji bez wcześniejszego zalogowania</translation>
 <translation id="5277127016695466621">Pokaż panel boczny</translation>
 <translation id="5278823018825269962">Identyfikator stanu</translation>
+<translation id="5279214046729249716">Tak, przechowuj je oddzielnie</translation>
 <translation id="5279600392753459966">Blokuj wszystkie</translation>
 <translation id="5280064835262749532">Zaktualizuj dane logowania do <ph name="SHARE_PATH" /></translation>
 <translation id="5280335021886535443">Naciśnij |<ph name="ACCELERATOR" />|, aby zaznaczyć ten dymek.</translation>

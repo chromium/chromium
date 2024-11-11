@@ -302,6 +302,7 @@
 <translation id="4567424176335768812">您已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入，可以在所有登入的裝置上使用您的書籤、記錄和其他設定。</translation>
 <translation id="4571503333518166079">前往 Chrome 通知設定</translation>
 <translation id="4575717501879784448">Chrome 可讓這些分頁處於閒置狀態，改善瀏覽體驗並釋出資源。</translation>
+<translation id="4595162648538023956">登入可以存取你的項目，但不登入帳戶也可以使用 Chrome</translation>
 <translation id="459622048091363950">Chrome 獲得存取權後，網站便可向您要求存取權。</translation>
 <translation id="4600710005438004015">由於 Chrome 無法更新至最新版本，因此您無法使用最新功能和安全性修正。</translation>
 <translation id="4601439950572737842">你已使用密碼短語加密資料。如要在 Google 帳戶中使用及儲存 Chrome 資料，請輸入密碼短語。</translation>
@@ -453,6 +454,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6497147134301593682">Chrome 已自動關閉</translation>
 <translation id="6506909944137591434">Chrome 需要相機權限，才能根據您身處的環境製作 3D 地圖</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 開發人員版</translation>
+<translation id="6515549163407364048">如要在所有電腦上取得你的擴充程式，請登入 Chrome</translation>
 <translation id="6520670145826811516">如要使用位置，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中向 Chrome 授予存取權</translation>
 <translation id="659498884637196217">前往此裝置的「Google 密碼管理工具」進行更新</translation>
 <translation id="6600016381025017075">搜尋此頁的任何內容</translation>

@@ -18,6 +18,7 @@
 <translation id="1185134272377778587">关于 Chromium</translation>
 <translation id="1188705220418984327">若要共享窗口，请在“系统偏好设置”中为 Chromium 启用屏幕录制功能。</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="1235768345431527125">您可以登录以获取您的数据，或者选择不使用账号登录而直接使用 Chromium</translation>
 <translation id="1262876892872089030">当此标签页处于闲置状态时，系统会释放一些内存，以让 Chromium 保持快速运行。您可以选择始终不让此网站处于闲置状态。</translation>
 <translation id="1265577313130862557">由于该文件具有危险性，Chromium 阻止了这次下载</translation>
 <translation id="126567311906253476">使用 <ph name="USER_EMAIL" /> 登录 Gmail 或 YouTube 等 Google 服务时，您可以使用同一账号自动登录 Chromium</translation>
@@ -326,6 +327,7 @@
 <translation id="549669000822060376">Chromium正在安装最新的系统更新，请稍候。</translation>
 <translation id="5496810170689441661">Chromium 正在尝试修改密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="5527463683072221100">在 Chromium 中打开 PDF 文件</translation>
+<translation id="5568136785038042132">若要在所有计算机上使用您的扩展程序，请登录 Chromium</translation>
 <translation id="5575418445468216473">您的密码和其他 Chromium 数据已保存在您的 Google 账号中，并将从此设备中移除。如需日后使用这些数据，请重新登录 Chromium。</translation>
 <translation id="5579324208890605088">启动错误：请以普通用户身份（非管理员身份）运行安装程序。</translation>
 <translation id="5596627076506792578">更多选项</translation>

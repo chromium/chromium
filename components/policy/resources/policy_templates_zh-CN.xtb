@@ -10137,12 +10137,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如需详细了解 JavaScript/ECMAScript 媒体类型，请参阅 https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage。
       </translation>
-<translation id="8668202868357089313">智能镜头叠加功能可让用户与叠加在实际 Web 内容上的当前网页的屏幕截图进行交互，以发起 Google 搜索。
-
-此功能不受用户设置控制，通常面向所有将 Google 设为默认搜索引擎的用户提供，除非此政策已将其停用。
-
-如果此政策设为 0 - 已启用或未设置，用户将可以使用此功能。
-如果此政策设为 1 - 已停用，此功能将不可用。</translation>
 <translation id="8668928485126473293">让您能够设置 <ph name="PRODUCT_NAME" /> 是否将在运行 v8 JavaScript 引擎时启用更高级的 JavaScript 优化功能。
 
 停用 JavaScript 优化功能（通过将此政策的值设为 2）后，<ph name="PRODUCT_NAME" /> 渲染 Web 内容的速度可能会变慢。

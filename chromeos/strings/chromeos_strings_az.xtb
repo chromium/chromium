@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Qoruyucu divar aşkarlandı</translation>
 <translation id="1075811647922107217">Səhifə ölçüsü</translation>
-<translation id="108084407137234521"><ph name="MIN_WORD_LENGTH" /> sözdən az transkripti ümumiləşdirmək mümkün deyil</translation>
 <translation id="1082009148392559545">Ekran qoruyucusu endirilir</translation>
 <translation id="1094693127011229778">İP ünvanı əlçatan deyil</translation>
 <translation id="1100902271996134409">Şəkillər yaradılır...</translation>
@@ -420,7 +419,6 @@
 <translation id="3031560714565892478">Cihaz video kameradır.</translation>
 <translation id="3042927241478734594">Səsyazmadan çıxılsın?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744"><ph name="MAX_WORD_LENGTH" /> sözdən artıq transkripti ümumiləşdirmək mümkün deyil</translation>
 <translation id="3056720590588772262">Son nöqtə</translation>
 <translation id="3060579846059757016">Haşiyələr</translation>
 <translation id="3061850252076394168">"basıb dinləyin" seçimini aktivləşdirin</translation>
@@ -459,7 +457,6 @@
 <translation id="3226657629376379887">Tərtibat üzrə əməliyyatlar menyusu</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> dəyərini <ph name="CONVERSION_RATE" /> ilə bölün</translation>
 <translation id="3237710083340813756">Yenidən yazın</translation>
-<translation id="3245518008592055173"><ph name="MIN_WORD_LENGTH" /> sözdən az transkript üçün ad yaratmaq mümkün deyil</translation>
 <translation id="3246869037381808805">1 gündən köhnə çap işləri silinəcək</translation>
 <translation id="324961752321393509">Administrator bu tətbiqi bağlamağa icazə vermir</translation>
 <translation id="3263941347294171263">Güncəllənmə prosesinə davam etmək üçün <ph name="DEVICE_NAME" /> cihazını ayırın və yenidən taxın</translation>
@@ -624,7 +621,6 @@
 <translation id="409427325554347132">Test məlumatlarını yadda saxlayın</translation>
 <translation id="409469431304488632">Təcrübə</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881"><ph name="MAX_WORD_LENGTH" /> sözdən çox transkript üçün ad yaratmaq mümkün deyil</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> albomunu seçin</translation>
 <translation id="4111761024568264522">USB taçped</translation>
 <translation id="4113067922640381334">Yeni <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />divar kağızlarına<ph name="END_LINK_WALLPAPER_SUBPAGE" /> giriş imkanınız var</translation>

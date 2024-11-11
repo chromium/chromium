@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ตรวจพบไฟร์วอลล์</translation>
 <translation id="1075811647922107217">ขนาดหน้า</translation>
-<translation id="108084407137234521">สรุปข้อความถอดเสียงที่มีจำนวนคำน้อยกว่า <ph name="MIN_WORD_LENGTH" /> คำไม่ได้</translation>
 <translation id="1082009148392559545">กำลังดาวน์โหลดโปรแกรมรักษาหน้าจอ</translation>
 <translation id="1094693127011229778">ที่อยู่ IP ไม่พร้อมใช้งาน</translation>
 <translation id="1100902271996134409">กำลังสร้างรูปภาพ...</translation>
@@ -139,6 +138,7 @@
 <translation id="1604959087182679653">ซ่อนข้อความถอดเสียง</translation>
 <translation id="160633243685262989">แสดงตัวอย่างรูปภาพ</translation>
 <translation id="1611649489706141841">ไปข้างหน้า</translation>
+<translation id="1615144046047995187">ดาวน์โหลดไม่ได้ โปรดลองอีกครั้งหรือรีสตาร์ท Chromebook</translation>
 <translation id="1615335640928990664">ปริมาณการใช้อินเทอร์เน็ตตั้งแต่ <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">ใช้ธีม</translation>
 <translation id="1621067168122174824">ทดสอบการชาร์จแบตเตอรี่</translation>
@@ -421,7 +421,6 @@
 <translation id="3031560714565892478">อุปกรณ์เป็นกล้องวิดีโอ</translation>
 <translation id="3042927241478734594">ออกจากการบันทึกใช่ไหม</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744">สรุปข้อความถอดเสียงที่มีจำนวนคำมากกว่า <ph name="MAX_WORD_LENGTH" /> คำไม่ได้</translation>
 <translation id="3056720590588772262">ปลายทาง</translation>
 <translation id="3060579846059757016">โครงร่าง</translation>
 <translation id="3061850252076394168">เปิดใช้ฟีเจอร์เลือกเพื่อให้อ่าน</translation>
@@ -461,7 +460,6 @@
 <translation id="3226657629376379887">เมนูการทำงานสำหรับเลย์เอาต์</translation>
 <translation id="3227186760713762082">นำค่า <ph name="CATEGORY_TEXT" /> มาหารด้วย <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">เขียนใหม่</translation>
-<translation id="3245518008592055173">สร้างชื่อสำหรับข้อความถอดเสียงที่มีจำนวนคำน้อยกว่า <ph name="MIN_WORD_LENGTH" /> คำไม่ได้</translation>
 <translation id="3246869037381808805">ระบบจะนำงานพิมพ์ที่เก่ากว่า 1 วันออก</translation>
 <translation id="324961752321393509">ผู้ดูแลระบบไม่อนุญาตให้ปิดแอปนี้</translation>
 <translation id="3263941347294171263">ถอดสายของ <ph name="DEVICE_NAME" /> แล้วเสียบใหม่เพื่ออัปเดตต่อ</translation>
@@ -588,6 +586,7 @@
 <translation id="3885327323343477505">เปลี่ยนโปรแกรมรักษาหน้าจอ</translation>
 <translation id="3889914174935857450">วันที่รีเซ็ต</translation>
 <translation id="3897092660631435901">เมนู</translation>
+<translation id="3902271751020176019">ภาษาของการถอดเสียงเป็นคำ</translation>
 <translation id="391412459402535266">ทดสอบอุปกรณ์ไม่ได้ เปลี่ยนเป็นโหมดแล็ปท็อปเพื่อทดสอบ</translation>
 <translation id="3916998944874125962">จับภาพหน้าจอ</translation>
 <translation id="3923184630988645767">การใช้อินเทอร์เน็ต</translation>
@@ -627,7 +626,6 @@
 <translation id="409427325554347132">บันทึกรายละเอียดการทดสอบ</translation>
 <translation id="409469431304488632">เวอร์ชันทดลอง</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">สร้างชื่อสำหรับข้อความถอดเสียงที่มีจำนวนคำมากกว่า <ph name="MAX_WORD_LENGTH" /> คำไม่ได้</translation>
 <translation id="4110686435123617899">เลือกอัลบั้ม <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">ทัชแพด USB</translation>
 <translation id="4113067922640381334">ตอนนี้คุณเข้าถึง<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />วอลเปเปอร์<ph name="END_LINK_WALLPAPER_SUBPAGE" />ใหม่ได้แล้ว</translation>
@@ -941,6 +939,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">คุณออกจากระบบแล้ว</translation>
 <translation id="5620281292257375798">ภายในเท่านั้น</translation>
+<translation id="5628106863521633649">ภาษาที่พร้อมให้บริการ</translation>
 <translation id="5630438231335788050">สถาบันเบาเฮาส์</translation>
 <translation id="5631759159893697722">บทคัดย่อ</translation>
 <translation id="5655283760733841251">เพิ่มความสว่างของแป้นพิมพ์</translation>
@@ -1265,6 +1264,7 @@
 <translation id="710028965487274708">ไม่สำเร็จ - การให้สิทธิ์ไม่สำเร็จ</translation>
 <translation id="7101959270679078188">ปลดล็อก <ph name="DEVICE_NAME" /> เพื่ออัปเดตต่อ</translation>
 <translation id="7103252855940681301">อุปกรณ์ <ph name="INDEX" /> จาก <ph name="COUNT" /> มีชื่อว่า <ph name="NAME" /></translation>
+<translation id="7103793063702494489">ภาษาที่เลือก</translation>
 <translation id="7107255225945990211">เลือกงานศิลปะพิเศษเฉพาะคุณจาก <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">Enter</translation>
 <translation id="7117228822971127758">โปรดลองอีกครั้งในภายหลัง</translation>

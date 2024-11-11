@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Откривен је заштитни зид</translation>
 <translation id="1075811647922107217">Величина странице</translation>
-<translation id="108084407137234521">Не можемо да резимирамо транскрипт који има мање од <ph name="MIN_WORD_LENGTH" /> речи</translation>
 <translation id="1082009148392559545">Чувар екрана се преузима</translation>
 <translation id="1094693127011229778">IP адреса није доступна</translation>
 <translation id="1100902271996134409">Праве се слике...</translation>
@@ -421,7 +420,6 @@
 <translation id="3031560714565892478">Уређај је видео камера.</translation>
 <translation id="3042927241478734594">Желите да затворите снимање?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">Не можемо да резимирамо транскрипт који има више од <ph name="MAX_WORD_LENGTH" /> речи</translation>
 <translation id="3056720590588772262">Крајња тачка</translation>
 <translation id="3060579846059757016">Оквири</translation>
 <translation id="3061850252076394168">омогућите услугу Изаберите за говор</translation>
@@ -461,7 +459,6 @@
 <translation id="3226657629376379887">Мени са радњама за распоред</translation>
 <translation id="3227186760713762082">Вредност (<ph name="CATEGORY_TEXT" />) дели се бројем <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Преради</translation>
-<translation id="3245518008592055173">Не можемо да именујемо транскрипт који има мање од <ph name="MIN_WORD_LENGTH" /> речи</translation>
 <translation id="3246869037381808805">Задаци штампања старији од 1 дана се уклањају</translation>
 <translation id="324961752321393509">Администратор не дозвољава затварање ове апликације</translation>
 <translation id="3263941347294171263">Искључите и поново прикључите уређај <ph name="DEVICE_NAME" /> да бисте наставили процес ажурирања</translation>
@@ -627,7 +624,6 @@
 <translation id="409427325554347132">Сачувај детаље теста</translation>
 <translation id="409469431304488632">Експеримент</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">Не можемо да именујемо транскрипт који има више од <ph name="MAX_WORD_LENGTH" /> речи</translation>
 <translation id="4110686435123617899">Изаберите албум <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB тачпед</translation>
 <translation id="4113067922640381334">Сада имате приступ новим <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />позадинама<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>

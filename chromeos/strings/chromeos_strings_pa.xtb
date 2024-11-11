@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall ਦਾ ਪਤਾ ਲੱਗਾ</translation>
 <translation id="1075811647922107217">ਪੰਨੇ ਦਾ ਆਕਾਰ</translation>
-<translation id="108084407137234521"><ph name="MIN_WORD_LENGTH" /> ਨਾਲੋਂ ਘੱਟ ਸ਼ਬਦਾਂ ਵਾਲੀ ਪ੍ਰਤੀਲਿਪੀ ਦਾ ਸਾਰਾਂਸ਼ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਦਾ</translation>
 <translation id="1082009148392559545">ਸਕ੍ਰੀਨ ਸੇਵਰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="1094693127011229778">IP ਪਤਾ ਉਪਲਬਧ ਨਹੀਂ</translation>
 <translation id="1100902271996134409">ਚਿੱਤਰ ਬਣਾਏ ਜਾ ਰਹੇ ਹਨ...</translation>
@@ -421,7 +420,6 @@
 <translation id="3031560714565892478">ਡੀਵਾਈਸ ਇੱਕ ਵੀਡੀਓ ਕੈਮਰਾ ਹੈ।</translation>
 <translation id="3042927241478734594">ਕੀ ਰਿਕਾਰਡਿੰਗ ਤੋਂ ਬਾਹਰ ਜਾਣਾ ਹੈ?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744"><ph name="MAX_WORD_LENGTH" /> ਨਾਲੋਂ ਜ਼ਿਆਦਾ ਸ਼ਬਦਾਂ ਵਾਲੀ ਪ੍ਰਤੀਲਿਪੀ ਦਾ ਸਾਰਾਂਸ਼ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਦਾ</translation>
 <translation id="3056720590588772262">ਅਖੀਰਲਾ ਬਿੰਦੂ</translation>
 <translation id="3060579846059757016">ਖਾਕੇ</translation>
 <translation id="3061850252076394168">'ਚੁਣੋ ਅਤੇ ਸੁਣੋ' ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
@@ -461,7 +459,6 @@
 <translation id="3226657629376379887">ਖਾਕਾ ਕਾਰਵਾਈ ਮੀਨੂ</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> ਮੁੱਲ ਨੂੰ <ph name="CONVERSION_RATE" /> ਨਾਲ ਭਾਗ ਕਰੋ</translation>
 <translation id="3237710083340813756">ਦੁਬਾਰਾ ਲਿਖੋ</translation>
-<translation id="3245518008592055173"><ph name="MIN_WORD_LENGTH" /> ਨਾਲੋਂ ਘੱਟ ਸ਼ਬਦਾਂ ਵਾਲੀ ਪ੍ਰਤੀਲਿਪੀ ਦੇ ਨਾਮ ਨਹੀਂ ਬਣਾਏ ਜਾ ਸਕਦੇ</translation>
 <translation id="3246869037381808805">1 ਦਿਨ ਤੋਂ ਜ਼ਿਆਦਾ ਪੁਰਾਣੀਆਂ ਪ੍ਰਿੰਟ ਜੌਬਾਂ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="324961752321393509">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਇਸ ਐਪ ਨੂੰ ਬੰਦ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਦਿੰਦਾ</translation>
 <translation id="3263941347294171263">ਅੱਪਡੇਟ ਦੀ ਪ੍ਰਕਿਰਿਆ ਜਾਰੀ ਰੱਖਣ ਲਈ <ph name="DEVICE_NAME" /> ਨੂੰ ਅਣਪਲੱਗ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਲਗਾਓ</translation>
@@ -627,7 +624,6 @@
 <translation id="409427325554347132">ਟੈਸਟ ਦੇ ਵੇਰਵੇ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="409469431304488632">ਪ੍ਰਯੋਗ</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881"><ph name="MAX_WORD_LENGTH" /> ਨਾਲੋਂ ਜ਼ਿਆਦਾ ਸ਼ਬਦਾਂ ਵਾਲੀ ਪ੍ਰਤੀਲਿਪੀ ਦੇ ਨਾਮ ਨਹੀਂ ਬਣਾਏ ਜਾ ਸਕਦੇ</translation>
 <translation id="4110686435123617899">ਐਲਬਮ ਚੁਣੋ <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB ਟੱਚਪੈਡ</translation>
 <translation id="4113067922640381334">ਤੁਹਾਡੇ ਕੋਲ ਹੁਣ ਨਵੇਂ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ਵਾਲਪੇਪਰਾਂ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ਤੱਕ ਪਹੁੰਚ ਹੈ</translation>

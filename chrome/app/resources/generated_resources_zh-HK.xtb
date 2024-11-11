@@ -302,6 +302,7 @@
 <translation id="1197088940767939838">橙色</translation>
 <translation id="11978075283960463">儲存在應用程式中的資料大小：<ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">低視力語音工具</translation>
+<translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" />已移除「<ph name="WEBSITE_TITLE" />」分頁</translation>
 <translation id="119944043368869598">全部清除</translation>
 <translation id="1199814941632954229">正在為這些憑證設定檔佈建憑證</translation>
 <translation id="120069043972472860">無法觀看</translation>
@@ -1011,6 +1012,7 @@
 <translation id="1692210323591458290">深紫色</translation>
 <translation id="1692713444215319269">色彩反轉、放大鏡和顯示設定</translation>
 <translation id="169341880170235617">系統現在會自動儲存分頁群組</translation>
+<translation id="1694470329618537745">此群組最近的更新</translation>
 <translation id="1695487653372841667">您可控制要與 Google 分享哪些資料。您隨時可以在「設定」中變更此設定。</translation>
 <translation id="1695510246756136088">無法連接互聯網，請再試一次。</translation>
 <translation id="1696555181932908973">你可嘗試在「<ph name="SITE_ETLD_PLUS_ONE" />」上透過其他方法繼續操作。</translation>
@@ -2413,6 +2415,7 @@
 <translation id="2653659639078652383">提交</translation>
 <translation id="265390580714150011">欄位值</translation>
 <translation id="2654553774144920065">列印要求</translation>
+<translation id="265680054508313161">以<ph name="USERNAME" />的身分繼續</translation>
 <translation id="265748523151262387">透過手機保持連線</translation>
 <translation id="2657612187216250073">指標無障礙設定</translation>
 <translation id="2658510146844889864">密鑰和安全密鑰</translation>
@@ -2567,6 +2570,7 @@
 <translation id="2754825024506485820">在 Google Play 商店上尋找您需要的應用程式，從提升工作效率到娛樂，種類一應俱全。您可隨時安裝應用程式。</translation>
 <translation id="2755349111255270002">重設此 <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">管理無障礙功能</translation>
+<translation id="2755485474385016903">所有群組成員都可查看所作的變更</translation>
 <translation id="275662540872599901">螢幕已關閉</translation>
 <translation id="2756754491396884324">要封鎖並離開群組嗎？</translation>
 <translation id="2756936198272359372">不允許使用 JavaScript</translation>
@@ -2578,6 +2582,7 @@
 <translation id="2764920001292228569">請輸入設定檔名稱</translation>
 <translation id="2765100602267695013">請聯絡流動裝置供應商</translation>
 <translation id="2765217105034171413">小</translation>
+<translation id="2765349783094807040"><ph name="MEMBER_FIRST_NAME" />已移除分頁</translation>
 <translation id="2765820627968019645">淺色</translation>
 <translation id="276582196519778359">輸入家長監控 PIN</translation>
 <translation id="2766006623206032690">貼上及前往(&amp;S)</translation>
@@ -2617,6 +2622,7 @@
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">確定</translation>
+<translation id="2790112944253231361">已變更此分頁</translation>
 <translation id="2790750268015892264">「隔離的網絡應用程式」無法控制智能讀卡器，因此無法存取任何智能卡。</translation>
 <translation id="2791529110887957050">移除 Linux</translation>
 <translation id="2791952154587244007">發生錯誤，系統無法在這部裝置上自動啟動 Kiosk 應用程式。</translation>
@@ -3061,6 +3067,7 @@
 <translation id="3109724472072898302">已收合</translation>
 <translation id="310979712355504754">全部刪除</translation>
 <translation id="3112292765614504292">應用程式大小：<ph name="APP_SIZE" /></translation>
+<translation id="311347022006935575">已加入此分頁</translation>
 <translation id="311394601889664316">不允許網站編輯裝置上的檔案或資料夾</translation>
 <translation id="3113970906450647715">按鈕取消咗固定</translation>
 <translation id="3115147772012638511">等候快取…</translation>
@@ -3452,6 +3459,7 @@
 <translation id="3416468988018290825">一律顯示完整網址</translation>
 <translation id="3417835166382867856">搜尋分頁</translation>
 <translation id="3417836307470882032">24 小時制</translation>
+<translation id="3418798368381485936">你無法使用此帳戶登入</translation>
 <translation id="3420501302812554910">必須重設內部安全密鑰</translation>
 <translation id="3421387094817716717">橢圓曲線公開金鑰</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人與您的聲音相似或有您的錄音，便可存取您的個人化結果或「Google 助理」。</translation>
@@ -3659,6 +3667,7 @@
 <translation id="3566211766752891194">顯示分頁記憶體用量</translation>
 <translation id="3566325075220776093">此裝置中的密碼</translation>
 <translation id="3566721612727112615">沒有新增任何網站</translation>
+<translation id="3566788242120166275">現有瀏覽資料會保留在現有設定檔中。這個新設定檔不會載有任何之前的瀏覽資料。</translation>
 <translation id="3567168891086460374">儲存其他方式</translation>
 <translation id="3567284462585300767">如要與附近的使用者互相傳送檔案，請將裝置設為可供偵測狀態</translation>
 <translation id="356738834800832239">已儲存密碼</translation>
@@ -3826,6 +3835,7 @@
 <translation id="3685598397738512288">Linux 的 USB 偏好設定</translation>
 <translation id="3687598459967813435">一律批准接收嚟自 <ph name="WEBSITE" /> 嘅通知</translation>
 <translation id="368789413795732264">嘗試寫入檔案時發生錯誤：<ph name="ERROR_TEXT" />。</translation>
+<translation id="3687957587012862163">否，移到這個新設定檔</translation>
 <translation id="3688507211863392146">寫入您在應用程式中開啟的檔案和資料夾</translation>
 <translation id="3688526734140524629">變更版本</translation>
 <translation id="3688578402379768763">最新狀態</translation>
@@ -3921,6 +3931,7 @@
 <translation id="3735039640698208086">播放音訊時…</translation>
 <translation id="3735740477244556633">排序方式</translation>
 <translation id="3735827758948958091">使用 metered connection 時無法開啟「<ph name="FILE_NAMES" />」</translation>
+<translation id="3737058101969549870">要將現有瀏覽資料與新設定檔分開嗎？</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> 資料將在 24 小時後被刪除</translation>
 <translation id="3738924763801731196"><ph name="OID" />：</translation>
 <translation id="3739254215541673094">要開啟「<ph name="APPLICATION" />」嗎？</translation>
@@ -3989,6 +4000,7 @@
 <translation id="3778208826288864398">由於您輸入太多次錯誤的 PIN，因此安全密鑰已被鎖定。您需要重設安全密鑰。</translation>
 <translation id="3778740492972734840">開發人員工具(&amp;D)</translation>
 <translation id="3778868487658107119">度身訂造的「Google 助理」隨時為您提供協助，不但可根據您的問題提供解答，還可以按指令執行各種操作。</translation>
+<translation id="3779244863011082655">使用其他 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 帳戶</translation>
 <translation id="3780542776224651912">「<ph name="BRAND" />」無法檢查您的密碼是否受資料外洩影響。請稍後再試。</translation>
 <translation id="3781742599892759500">Linux 的麥克風存取權</translation>
 <translation id="3783640748446814672">Alt</translation>
@@ -4135,6 +4147,7 @@
 <translation id="3872991219937722530">請釋出磁碟的儲存空間，否則裝置將無法回應。</translation>
 <translation id="3873315167136380065">如要啟用此功能，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" />以移除同步密碼短語</translation>
 <translation id="3873423927483480833">顯示 PIN</translation>
+<translation id="3873893412864594794"><ph name="MEMBER_FIRST_NAME" />已加入分頁</translation>
 <translation id="3873915545594852654">ARC++ 發生問題。</translation>
 <translation id="3874164307099183178">開啟「Google 助理」</translation>
 <translation id="3875511946736639169">顯示圖片</translation>
@@ -4263,6 +4276,7 @@
 <translation id="3958821725268247062">已安裝「<ph name="APP_NAME" />」</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">可以對　<ph name="IBAN_DESCRIPTION" />　執行嘅其他操作</translation>
+<translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" />已離開群組</translation>
 <translation id="3963753386716096475">使用其他手機、平板電腦或安全密鑰</translation>
 <translation id="3964480518399667971">關閉流動網絡</translation>
 <translation id="3965965397408324205">退出「<ph name="PROFILE_NAME" />」</translation>
@@ -4341,6 +4355,7 @@
 <translation id="4015163439792426608">您有使用擴充程式嗎？集中<ph name="BEGIN_LINK" />管理擴充程式<ph name="END_LINK" />，輕鬆又方便。</translation>
 <translation id="4016762287427926315">如果你將權限授予「<ph name="APP_NAME" />」，這些應用程式亦會取得同樣的權限。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">為此連結建立 QR 碼</translation>
+<translation id="4019150221059185859">從清單移除「<ph name="TAB_TITLE" />」</translation>
 <translation id="4019983356493507433">編輯書籤清單</translation>
 <translation id="4020327272915390518">選項選單</translation>
 <translation id="4021279097213088397">–</translation>
@@ -6012,6 +6027,7 @@
 <translation id="5256174546894739043">在網站想追蹤手部動作時詢問你</translation>
 <translation id="52566111838498928">正在載入字型…</translation>
 <translation id="5256861893479663409">在所有網站上</translation>
+<translation id="5258473597674772367">「<ph name="GROUP_NAME" />」分頁群組已無法查看</translation>
 <translation id="5258992782919386492">在此裝置上安裝</translation>
 <translation id="5260334392110301220">智能引號</translation>
 <translation id="5260508466980570042">抱歉，系統無法驗證您的電郵地址或密碼，請再試一次。</translation>
@@ -6368,6 +6384,7 @@
 <translation id="5503982651688210506">繼續允許 <ph name="HOST" /> 使用和移動相機，以及使用麥克風</translation>
 <translation id="5505307013568720083">墨水用完</translation>
 <translation id="5507756662695126555">不可否認性</translation>
+<translation id="5508864312047847614">要將現有瀏覽資料與學校設定檔分開嗎？</translation>
 <translation id="5509693895992845810">另存為(&amp;A)…</translation>
 <translation id="5509914365760201064">發行者：<ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">從 Google 取得圖片說明</translation>
@@ -6900,6 +6917,7 @@
 <translation id="5911533659001334206">快速鍵檢視器</translation>
 <translation id="5911545422157959623">在訪客模式下無法使用書籤</translation>
 <translation id="5914016309240354769">大自然</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" />已加入此分頁</translation>
 <translation id="5914724413750400082">模數 (<ph name="MODULUS_NUM_BITS" /> 位元)：
   <ph name="MODULUS_HEX_DUMP" />
 
@@ -7713,6 +7731,7 @@
 <translation id="6519689855001245063">正在檢查資格</translation>
 <translation id="6520087076882753524">您可在「Google 密碼管理工具」查看和管理已儲存的密碼</translation>
 <translation id="6520115099532274511"><ph name="SITE" /> 想驗證你的身分。請輸入由英數字元組成的「Google 密碼管理工具」PIN</translation>
+<translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" />已加入「<ph name="GROUP_NAME" />」分頁群組</translation>
 <translation id="6520876759015997832"><ph name="LIST_SIZE" /> 項搜尋結果的第 <ph name="LIST_POSITION" /> 項：<ph name="SEARCH_RESULT_TEXT" />。按下 Enter 鍵即可前往該部分。</translation>
 <translation id="6521214596282732365">為了讓您透過網上的設計及圖像工具建立高傳真度的內容，網站通常會使用您的字型</translation>
 <translation id="6523574494641144162">「Google 密碼管理工具」無法將這些密碼儲存在您的 Google 帳戶中，您可改為儲存至此裝置。</translation>
@@ -8631,6 +8650,8 @@
 <translation id="7180865173735832675">自訂</translation>
 <translation id="7181117767881540376">隱藏書籤列(&amp;H)</translation>
 <translation id="7181329571386134105">如要讓<ph name="CHILD_NAME" />之後可直接安裝擴充程式，不需經過你核准，請在裝置上開啟 Family Link 應用程式，並更新<ph name="CHILD_NAME" />的 Google Chrome 設定。</translation>
+<translation id="7181840534454431748">加入<ph name="OWNER_FIRST_NAME" />所在的分頁群組
+              {NUM_OTHER_MEMBERS,plural, =0{加入<ph name="OWNER_FIRST_NAME" />所在的分頁群組}=1{加入<ph name="OWNER_FIRST_NAME" />和另外 # 人所在的分頁群組}other{加入<ph name="OWNER_FIRST_NAME" />和另外 # 人所在的分頁群組}}</translation>
 <translation id="7182051712900867547">使用另一個帳戶</translation>
 <translation id="7182063559013288142">即時熱點</translation>
 <translation id="7182791023900310535">遷移密碼</translation>
@@ -8643,6 +8664,7 @@
 <translation id="7189234443051076392">確保您的裝置上有足夠的儲存空間</translation>
 <translation id="7189451821249468368">您沒有足夠升級，無法註冊這部裝置。如要購買更多升級，請與銷售人員聯絡。如果您認為這則訊息有誤，請與支援團隊聯絡。</translation>
 <translation id="7189965711416741966">已加入指紋。</translation>
+<translation id="7190883804815364931">此分頁最近的更新</translation>
 <translation id="7191063546666816478">部分支援連結將仍會在 <ph name="APP_NAME" />、<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" /> 和另外 <ph name="NUMBER_OF_OTHER_APPS" /> 個應用程式中開啟。</translation>
 <translation id="7191159667348037">不明打印機 (USB)</translation>
 <translation id="7191631508323321927">走廊</translation>
@@ -8975,6 +8997,7 @@
 <translation id="742130257665691897">移除咗書籤</translation>
 <translation id="7421925624202799674">檢視網頁原始碼(&amp;V)</translation>
 <translation id="7422192691352527311">偏好設定…</translation>
+<translation id="7422516375032300779"><ph name="MEMBER_FIRST_NAME" />已更改群組名稱</translation>
 <translation id="7423425410216218516">分享設定在 <ph name="MINUTES" /> 分鐘內開啟</translation>
 <translation id="7423513079490750513">移除<ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372">需要權限才能執行 <ph name="APP_NAME" /></translation>
@@ -9026,6 +9049,7 @@
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746216226901520237">下次您便可使用手機來解鎖 <ph name="DEVICE_TYPE" />。您可在「設定」中停用 Smart Lock。</translation>
 <translation id="746329643760972486">MacOS</translation>
+<translation id="7464645554245611385">此分頁最近的更新</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{已開啟 # 個分頁，按下即可切換標籤列}other{已開啟 # 個分頁，按下即可切換標籤列}}</translation>
 <translation id="7465635034594602553">發生錯誤，請等候數分鐘，然後再次執行 <ph name="APP_NAME" />。</translation>
 <translation id="7465777686629334728">移除受管開發環境 (<ph name="SPECIFIC_NAME" />)</translation>
@@ -9462,6 +9486,7 @@
 <translation id="7772032839648071052">確認複雜密碼</translation>
 <translation id="7772127298218883077">關於 <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">工作階段儲存空間</translation>
+<translation id="7773887159761725143"><ph name="MEMBER_FIRST_NAME" />已加入群組</translation>
 <translation id="7774365994322694683">鳥</translation>
 <translation id="7774581652827321413">取得與此頁面的摘要、相關搜尋內容和其他實用資料</translation>
 <translation id="7774792847912242537">要求數量過多。</translation>
@@ -9580,6 +9605,7 @@
 <translation id="7851716364080026749">永遠封鎖存取相機和麥克風</translation>
 <translation id="7851720427268294554">IPP 剖析器</translation>
 <translation id="78526636422538552">新增更多 Google 帳戶功能已停用</translation>
+<translation id="785371335555334021">點擊即可離開「<ph name="TITLE" />」</translation>
 <translation id="7853747251428735">更多工具(&amp;L)</translation>
 <translation id="7855678561139483478">把分頁移至新視窗</translation>
 <translation id="7857004848504343806">您的電腦具有安全模組，ChromeOS Flex 需要透過該模組來執行許多重要的安全防護功能。如要瞭解詳情，請瀏覽 Chromebook 說明中心：https://support.google.com/chromebook/?p=sm</translation>
@@ -9773,6 +9799,7 @@
 <translation id="7981662863948574132">顯示裝置 EID 同 QR 碼彈出式視窗</translation>
 <translation id="7981670705071137488">軟件日後會在背景中更新。您可在「設定」中查看更新偏好設定。</translation>
 <translation id="7982083145464587921">請重新啟動裝置以修正這個錯誤。</translation>
+<translation id="7982578888426609524">此群組最近的更新</translation>
 <translation id="7982789257301363584">網絡</translation>
 <translation id="7982878511129296052">正在關閉…</translation>
 <translation id="7984068253310542383">鏡射「<ph name="DISPLAY_NAME" />」</translation>
@@ -11058,6 +11085,7 @@
 <translation id="8888253246822647887">升級完成後，應用程式隨即啟動。升級過程可能需時幾分鐘。</translation>
 <translation id="8888459276890791557">你可固定此側面板以方便存取</translation>
 <translation id="8889294078294184559">您隨後瀏覽的網站可從 Chrome 取得前一個網站提供的資料，確認您應該是真人</translation>
+<translation id="88895904696396879"><ph name="MEMBER_FIRST_NAME" />已更改群組顏色</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> 可編輯以下檔案和資料夾</translation>
 <translation id="8890170499370378450">您可能需要支付流動數據費用</translation>
 <translation id="8890516388109605451">來源</translation>
@@ -11206,6 +11234,7 @@
 <translation id="8991520179165052608">網站可以使用您的麥克風</translation>
 <translation id="8991694323904646277">沒有相機</translation>
 <translation id="8991766915726096402">本機資料復原</translation>
+<translation id="8992268506092808992">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> 分鐘前}=1{<ph name="TIME_COUNT" /> 小時前}other{<ph name="TIME_COUNT" /> 天前}}</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - 記憶體用量 - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">即使忘記 <ph name="DEVICE_TYPE" /> 密碼，您仍可還原本機資料。您需要登入 Google 帳戶或使用復原帳戶功能。</translation>
 <translation id="8993198843374358393">複製「<ph name="CERT_NAME" />」的憑證雜湊</translation>
@@ -11498,6 +11527,7 @@
 <translation id="918352324374649435">{COUNT,plural, =1{應用程式}other{# 個應用程式}}</translation>
 <translation id="9186963452600581158">使用子女的 Google 帳戶登入</translation>
 <translation id="9187967020623675250">按鍵不符。按下任意鍵即可<ph name="RESPONSE" />。</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" />已變更此分頁</translation>
 <translation id="9192019773545828776">使用朗讀功能，讓您無需查看螢幕亦可使用裝置。您可透過已連接裝置使用點字功能。使用 Ctrl + Alt + Z 鍵即可開啟或關閉 ChromeVox。使用搜尋鍵 + 向左箭咀或向右箭咀即可瀏覽。使用搜尋鍵 + 空格鍵即可選取 (亦即啟用)。</translation>
 <translation id="9195969368671142407">如果機構限制你儲存內容至 Google 帳戶，你便無法分享或加入分頁群組</translation>
 <translation id="919686179725692564">進一步瞭解如何備份應用程式</translation>
@@ -11610,6 +11640,7 @@
 <translation id="973558314812359997">滑鼠大小</translation>
 <translation id="973788791897303708">此分頁群組已滿</translation>
 <translation id="97381968209917373">刪除憑證「<ph name="CERT_NAME" />」</translation>
+<translation id="973825986436797073"><ph name="MEMBER_FIRST_NAME" />已變更分頁</translation>
 <translation id="975893173032473675">翻譯目標語言</translation>
 <translation id="976499800099896273">針對「<ph name="TYPED_WORD" />」更正做「<ph name="CORRECTED_WORD" />」，顯示復原自動更正內容對話框。㩒向上箭咀就可以存取，㩒 Esc 掣就可以忽略。</translation>
 <translation id="976572010712028687">驗證你的家長身分</translation>

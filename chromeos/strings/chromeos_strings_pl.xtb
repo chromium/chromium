@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">wykryto zaporę sieciową</translation>
 <translation id="1075811647922107217">Rozmiar strony</translation>
-<translation id="108084407137234521">Nie można podsumować transkrypcji złożonej z mniej niż <ph name="MIN_WORD_LENGTH" /> słów</translation>
 <translation id="1082009148392559545">Pobieram wygaszacz ekranu</translation>
 <translation id="1094693127011229778">Adres IP jest niedostępny</translation>
 <translation id="1100902271996134409">Tworzę obrazy…</translation>
@@ -139,6 +138,7 @@
 <translation id="1604959087182679653">Ukryj transkrypcję</translation>
 <translation id="160633243685262989">Podgląd obrazu</translation>
 <translation id="1611649489706141841">do przodu</translation>
+<translation id="1615144046047995187">Nie udało się pobrać. Spróbuj jeszcze raz lub uruchom ponownie Chromebooka.</translation>
 <translation id="1615335640928990664">Użycie danych od <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Użyj motywu</translation>
 <translation id="1621067168122174824">Przeprowadź test ładowania</translation>
@@ -421,7 +421,6 @@
 <translation id="3031560714565892478">Urządzenie to kamera wideo.</translation>
 <translation id="3042927241478734594">Zakończyć nagrywanie?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">Nie można podsumować transkrypcji złożonej z ponad <ph name="MAX_WORD_LENGTH" /> słów</translation>
 <translation id="3056720590588772262">Punkt końcowy</translation>
 <translation id="3060579846059757016">Kontury</translation>
 <translation id="3061850252076394168">Włącz funkcję Przeczytaj na głos</translation>
@@ -461,7 +460,6 @@
 <translation id="3226657629376379887">Menu działań dotyczących układu</translation>
 <translation id="3227186760713762082">Podziel wartość <ph name="CATEGORY_TEXT" /> przez <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Przeredaguj</translation>
-<translation id="3245518008592055173">Nie można nadawać nazw transkrypcjom złożonym z mniej niż <ph name="MIN_WORD_LENGTH" /> słów</translation>
 <translation id="3246869037381808805">Zadania drukowania starsze niż 1 dzień zostaną usunięte</translation>
 <translation id="324961752321393509">Administrator nie zezwala na zamknięcie tej aplikacji</translation>
 <translation id="3263941347294171263">Aby kontynuować proces aktualizacji, odłącz od zasilania urządzenie <ph name="DEVICE_NAME" /> i podłącz je ponownie</translation>
@@ -588,6 +586,7 @@
 <translation id="3885327323343477505">Zmień wygaszacz ekranu</translation>
 <translation id="3889914174935857450">Resetuj datę</translation>
 <translation id="3897092660631435901">Menu</translation>
+<translation id="3902271751020176019">Język transkrypcji</translation>
 <translation id="391412459402535266">Nie udało się przetestować urządzenia. Aby uruchomić test, włącz tryb laptopa.</translation>
 <translation id="3916998944874125962">zapisz zrzut ekranu</translation>
 <translation id="3923184630988645767">Transmisja danych</translation>
@@ -627,7 +626,6 @@
 <translation id="409427325554347132">Zapisz szczegóły testu</translation>
 <translation id="409469431304488632">Eksperyment</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
-<translation id="4105182082354119881">Nie można nadawać nazw transkrypcjom złożonym z ponad <ph name="MAX_WORD_LENGTH" /> słów</translation>
 <translation id="4110686435123617899">Wybierz album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
 <translation id="4113067922640381334">Teraz masz dostęp do nowych <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />tapet<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
@@ -941,6 +939,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Wylogowaliśmy Cię</translation>
 <translation id="5620281292257375798">Na użytek wewnętrzny</translation>
+<translation id="5628106863521633649">Dostępne języki</translation>
 <translation id="5630438231335788050">Bauhausu</translation>
 <translation id="5631759159893697722">streszczenie</translation>
 <translation id="5655283760733841251">Zwiększ jasność klawiatury</translation>
@@ -1265,6 +1264,7 @@
 <translation id="710028965487274708">Niepowodzenie – nieudana autoryzacja</translation>
 <translation id="7101959270679078188">Aby kontynuować proces aktualizacji, odblokuj urządzenie <ph name="DEVICE_NAME" /></translation>
 <translation id="7103252855940681301">Urządzenie <ph name="INDEX" /> z <ph name="COUNT" /> o nazwie <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Wybrany język</translation>
 <translation id="7107255225945990211">Wybierz wyjątkowe obrazy na urządzenie <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">wpisz</translation>
 <translation id="7117228822971127758">Spróbuj ponownie później</translation>

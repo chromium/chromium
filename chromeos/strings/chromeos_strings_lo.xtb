@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ກວດເຫັນ Firewall</translation>
 <translation id="1075811647922107217">ຂະຫນາດຫນ້າ</translation>
-<translation id="108084407137234521">ບໍ່ສາມາດສະຫຼຸບການຖອດຂໍ້ຄວາມຈາກສຽງທີ່ມີຈຳນວນຄຳໜ້ອຍກວ່າ <ph name="MIN_WORD_LENGTH" /> ຄຳໄດ້</translation>
 <translation id="1082009148392559545">ກຳລັງດາວໂຫຼດພາບພັກໜ້າຈໍ</translation>
 <translation id="1094693127011229778">ທີ່ຢູ່ IP ບໍ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="1100902271996134409">ກຳລັງສ້າງຮູບພາບ...</translation>
@@ -139,6 +138,7 @@
 <translation id="1604959087182679653">ເຊື່ອງການຖອດຂໍ້ຄວາມຈາກສຽງ</translation>
 <translation id="160633243685262989">ຮູບຕົວຢ່າງ</translation>
 <translation id="1611649489706141841">ສົ່ງຕໍ່</translation>
+<translation id="1615144046047995187">ບໍ່ສາມາດດາວໂຫຼດໄດ້. ກະລຸນາລອງໃໝ່ ຫຼື ຣີສະຕາດ Chromebook ຂອງທ່ານ.</translation>
 <translation id="1615335640928990664">ການນຳໃຊ້ອິນເຕີເນັດນັບຕັ້ງແຕ່ <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">ໃຊ້ຮູບແບບສີສັນ</translation>
 <translation id="1621067168122174824">ເອີ້ນໃຊ້ການທົດສອບການສາກ</translation>
@@ -421,7 +421,6 @@
 <translation id="3031560714565892478">ອຸປະກອນແມ່ນກ້ອງຖ່າຍວິດີໂອ.</translation>
 <translation id="3042927241478734594">ອອກຈາກການບັນທຶກບໍ?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744">ບໍ່ສາມາດສະຫຼຸບການຖອດຂໍ້ຄວາມຈາກສຽງທີ່ມີຈຳນວນຄຳຫຼາຍກວ່າ <ph name="MAX_WORD_LENGTH" /> ຄຳໄດ້</translation>
 <translation id="3056720590588772262">ຈຸດສິ້ນສຸດ</translation>
 <translation id="3060579846059757016">ໂຄງຮ່າງ</translation>
 <translation id="3061850252076394168">ເປີດການນຳໃຊ້ຄຸນສົມບັດເລືອກເພື່ອເວົ້າ</translation>
@@ -461,7 +460,6 @@
 <translation id="3226657629376379887">ເມນູຄຳສັ່ງໂຄງຮ່າງ</translation>
 <translation id="3227186760713762082">ຫານ <ph name="CATEGORY_TEXT" /> ດ້ວຍ <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">ຂຽນໃໝ່</translation>
-<translation id="3245518008592055173">ບໍ່ສາມາດສ້າງຊື່ສຳລັບການຖອດຂໍ້ຄວາມຈາກສຽງທີ່ມີຈຳນວນຄຳໜ້ອຍກວ່າ <ph name="MIN_WORD_LENGTH" /> ຄຳໄດ້</translation>
 <translation id="3246869037381808805">ວຽກພິມທີ່ເກົ່າກວ່າ 1 ມື້ຈະຖືກລຶບອອກ</translation>
 <translation id="324961752321393509">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານບໍ່ອະນຸຍາດໃຫ້ປິດແອັບນີ້</translation>
 <translation id="3263941347294171263">ຖອດປລັກ ແລ້ວສຽບປລັກ <ph name="DEVICE_NAME" /> ຄືນໃໝ່ເພື່ອສືບຕໍ່ຂັ້ນຕອນການອັບເດດ</translation>
@@ -588,6 +586,7 @@
 <translation id="3885327323343477505">ປ່ຽນພາບພັກໜ້າຈໍ</translation>
 <translation id="3889914174935857450">ວັນທີທີ່ຣີເຊັດ</translation>
 <translation id="3897092660631435901">ເມ​ນູ</translation>
+<translation id="3902271751020176019">ພາສາຂອງການຖອດຖ່າຍຂໍ້ຄວາມ</translation>
 <translation id="391412459402535266">ບໍ່ສາມາດທົດສອບອຸປະກອນໄດ້. ສະຫຼັບໄປໃຊ້ໂໝດແລັບທັອບເພື່ອທົດສອບ.</translation>
 <translation id="3916998944874125962">ຖ່າຍຮູບໜ້າຈໍ</translation>
 <translation id="3923184630988645767">ການນຳໃຊ້ອິນເຕີເນັດ</translation>
@@ -627,7 +626,6 @@
 <translation id="409427325554347132">ບັນທຶກລາຍລະອຽດຜົນທົດສອບ</translation>
 <translation id="409469431304488632">ຮຸ່ນທົດລອງ</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">ບໍ່ສາມາດສ້າງຊື່ສຳລັບການຖອດຂໍ້ຄວາມຈາກສຽງທີ່ມີຈຳນວນຄຳຫຼາຍກວ່າ <ph name="MAX_WORD_LENGTH" /> ຄຳໄດ້</translation>
 <translation id="4110686435123617899">ເລືອກອະລະບ້ຳ <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">ແຜ່ນສໍາຜັດ USB</translation>
 <translation id="4113067922640381334">ຕອນນີ້ທ່ານມີສິດເຂົ້າເຖິງ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ຮູບພື້ນຫຼັງ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ໃໝ່ແລ້ວ</translation>
@@ -941,6 +939,7 @@
 <translation id="5606865426897221650">ແຖບ</translation>
 <translation id="5613201299517339763">ທ່ານອອກຈາກລະບົບແລ້ວ</translation>
 <translation id="5620281292257375798">ສະ​ເພາະ​ພາຍ​ໃນ​ເທົ່າ​ນັ້ນ</translation>
+<translation id="5628106863521633649">ພາສາທີ່ສາມາດໃຊ້ໄດ້</translation>
 <translation id="5630438231335788050">ສະຖາບັນເບົາເຮົາສ໌</translation>
 <translation id="5631759159893697722">ບົດຄັດຫຍໍ້</translation>
 <translation id="5655283760733841251">ແປ້ນພິມເພີ່ມຄວາມສະຫວ່າງ</translation>
@@ -1266,6 +1265,7 @@
 <translation id="710028965487274708">ບໍ່ສຳເລັດ, ການມອບສິດບໍ່ສຳເລັດ</translation>
 <translation id="7101959270679078188">ປົດລັອກ <ph name="DEVICE_NAME" /> ເພື່ອສືບຕໍ່ຂັ້ນຕອນການອັບເດດ</translation>
 <translation id="7103252855940681301">ອຸປະກອນທີ <ph name="INDEX" /> ຈາກທັງໝົດ <ph name="COUNT" /> ຊື່ <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">ພາສາທີ່ເລືອກ</translation>
 <translation id="7107255225945990211">ເລືອກໜ້າປົກພິເສດສະເພາະສຳລັບ <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">ປ້ອນເຂົ້າ</translation>
 <translation id="7117228822971127758">ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ</translation>

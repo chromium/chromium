@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall terdeteksi</translation>
 <translation id="1075811647922107217">Ukuran halaman</translation>
-<translation id="108084407137234521">Tidak dapat membuat ringkasan untuk transkrip yang berisi kurang dari <ph name="MIN_WORD_LENGTH" /> kata</translation>
 <translation id="1082009148392559545">Mendownload screensaver</translation>
 <translation id="1094693127011229778">Alamat IP tidak tersedia</translation>
 <translation id="1100902271996134409">Membuat gambar...</translation>
@@ -307,6 +306,7 @@
 <translation id="2308243864813041101">Cabut kabel USB <ph name="DEVICE_NAME" /> untuk melanjutkan proses update</translation>
 <translation id="2320295602967756579">Aktifkan tema terang</translation>
 <translation id="2323506179655536734">DILEWATI</translation>
+<translation id="2323755382216917952">Update ini mengharuskan Anda untuk memulai ulang komputer guna menyelesaikan penginstalan. Mungkin perlu waktu beberapa menit untuk menyelesaikan proses update ini. Saat firmware sedang diupdate, jangan mencabut atau mematikan komputer.</translation>
 <translation id="2324354238778375592">Mengambang</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Sangat baik (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -397,7 +397,7 @@
 <translation id="2855718259207180827">wol</translation>
 <translation id="2859243502336719778">Update penting</translation>
 <translation id="2860473693272905224">Letakkan halaman lain pada pemindai</translation>
-<translation id="286265581261662583">Klik kanan atau tekan dan tahan untuk mendapatkan definisi, terjemahan, atau konversi unit</translation>
+<translation id="286265581261662583">Klik kanan atau tekan lama untuk mendapatkan definisi, terjemahan, atau konversi unit</translation>
 <translation id="2872961005593481000">Matikan</translation>
 <translation id="2873483161362553159">Navigasi browser</translation>
 <translation id="2874939134665556319">Lagu sebelumnya</translation>
@@ -420,7 +420,6 @@
 <translation id="3031560714565892478">Perangkat adalah kamera video.</translation>
 <translation id="3042927241478734594">Keluar dari rekaman?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">Tidak dapat membuat ringkasan untuk transkrip yang berisi lebih dari <ph name="MAX_WORD_LENGTH" /> kata</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3060579846059757016">Kerangka</translation>
 <translation id="3061850252076394168">aktifkan fitur klik untuk diucapkan</translation>
@@ -450,6 +449,7 @@
 <translation id="3178532070248519384">avant-garde</translation>
 <translation id="3182676044300231689">Masukkan perintah seperti "buat terdengar lebih percaya diri"</translation>
 <translation id="3188257591659621405">File saya</translation>
+<translation id="3188931456353313123">Update ini disediakan oleh produsen perangkat dan belum diverifikasi oleh Google.</translation>
 <translation id="319101249942218879">Gambar avatar diubah</translation>
 <translation id="3192947282887913208">File Audio</translation>
 <translation id="3199982728237701504">Pengumpan Dokumen (Dua Sisi)</translation>
@@ -459,7 +459,6 @@
 <translation id="3226657629376379887">Menu tindakan tata letak</translation>
 <translation id="3227186760713762082">Bagi nilai <ph name="CATEGORY_TEXT" /> dengan <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Tulis ulang</translation>
-<translation id="3245518008592055173">Tidak dapat membuat nama untuk transkrip yang berisi kurang dari <ph name="MIN_WORD_LENGTH" /> kata</translation>
 <translation id="3246869037381808805">Tugas pencetakan yang sudah lebih dari 1 hari akan dihapus</translation>
 <translation id="324961752321393509">Administrator tidak mengizinkan penutupan aplikasi ini</translation>
 <translation id="3263941347294171263">Cabut dan colokkan kembali <ph name="DEVICE_NAME" /> untuk melanjutkan proses update</translation>
@@ -508,6 +507,7 @@
 <translation id="3488065109653206955">Diaktifkan sebagian</translation>
 <translation id="3492882532495507361">Kantor <ph name="OFFICE_STYLE" /> dengan warna <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Data diukur oleh Chromebook Anda. Data ini mungkin berbeda dari data operator.</translation>
+<translation id="349570724365779960">School Tools terhubung ke siswa</translation>
 <translation id="3502426834823382181">lihat semua aplikasi</translation>
 <translation id="3510890413042482857">Kirim <ph name="BEGIN_LINK1" />data trace performa<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Update Chrome OS</translation>
@@ -624,7 +624,6 @@
 <translation id="409427325554347132">Simpan detail pengujian</translation>
 <translation id="409469431304488632">Eksperimen</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
-<translation id="4105182082354119881">Tidak dapat membuat nama untuk transkrip yang berisi lebih dari <ph name="MAX_WORD_LENGTH" /> kata</translation>
 <translation id="4110686435123617899">Pilih album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
 <translation id="4113067922640381334">Anda kini memiliki akses ke <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpaper<ph name="END_LINK_WALLPAPER_SUBPAGE" /> baru</translation>
@@ -757,6 +756,7 @@
 <translation id="473775607612524610">Update</translation>
 <translation id="4744944742468440486">Info terkait pilihan Anda</translation>
 <translation id="4771607256327216405">cerahkan keyboard</translation>
+<translation id="4771923071974529837">besok</translation>
 <translation id="4773299976671772492">Dihentikan</translation>
 <translation id="4778082030331381943">ametis</translation>
 <translation id="4782311465517282004">Dapatkan definisi, terjemahan, atau konversi unit saat Anda mengklik kanan atau menyentuh lama teks</translation>
@@ -820,6 +820,7 @@
 <translation id="500920857929044050">Hentikan pengujian</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Warna tema</translation>
+<translation id="5037240652947866174">hari ini</translation>
 <translation id="5038292761217083259">keyboard multiwarna</translation>
 <translation id="5039804452771397117">Izinkan</translation>
 <translation id="5049856988445523908">SIM Dikunci (<ph name="LOCK_TYPE" />)</translation>

@@ -170,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> のサイトグループに属する <ph name="RWS_MEMBERS_COUNT" /> 件のサイトが、グループでのあなたのアクティビティを確認できます}other{<ph name="RWS_OWNER" /> のサイトグループに属する <ph name="RWS_MEMBERS_COUNT" /> 件のサイトが、グループでのあなたのアクティビティを確認できます}}</translation>
 <translation id="3697164069658504920">オンにすると、サイトは USB デバイスの使用を要求できます。オフにすると、サイトは USB デバイスを使用できません。</translation>
 <translation id="3707034683772193706">アクセス先のサイトは、主にあなたが bot でないことを確認する少量の情報を Chrome に保存できます。</translation>
+<translation id="3709818294139939629">ファイルへのサイトのアクセス権を削除しました</translation>
 <translation id="3721953990244350188">非表示にして、次に実行可能なアクションを表示</translation>
 <translation id="3744111561329211289">バックグラウンド同期</translation>
 <translation id="3763247130972274048">動画の左または右をダブルタップすると 10 秒スキップします</translation>
@@ -432,6 +433,7 @@
 <translation id="7425915948813553151">サイトのダークモード</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">オンにすると、サイトはログイン メッセージを表示できます。オフにすると、サイトはログイン メッセージを表示できません。</translation>
+<translation id="7553211568594248088">ハブ検索を終了</translation>
 <translation id="7554752735887601236">サイトでマイクが使用されています</translation>
 <translation id="7561196759112975576">常に使用</translation>
 <translation id="757524316907819857">サイトでの保護されたコンテンツの再生をブロックする</translation>

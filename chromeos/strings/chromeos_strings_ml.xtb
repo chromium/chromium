@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ഫയര്‍വാള്‍ കണ്ടെത്തി</translation>
 <translation id="1075811647922107217">പേജിന്റെ വലുപ്പം</translation>
-<translation id="108084407137234521"><ph name="MIN_WORD_LENGTH" />-ൽ കുറവ് വാക്കുകളുള്ള ട്രാൻസ്‌ക്രിപ്റ്റ് സംഗ്രഹിക്കാനാകില്ല</translation>
 <translation id="1082009148392559545">സ്ക്രീൻ സേവർ ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
 <translation id="1094693127011229778">IP വിലാസം ലഭ്യമല്ല</translation>
 <translation id="1100902271996134409">ചിത്രങ്ങൾ സൃഷ്‌ടിക്കുന്നു...</translation>
@@ -420,7 +419,6 @@
 <translation id="3031560714565892478">ഉപകരണം ഒരു വീഡിയോ ക്യാമറയാണ്.</translation>
 <translation id="3042927241478734594">റെക്കോർഡിംഗിൽ നിന്ന് പുറത്ത് കടക്കണോ?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744"><ph name="MAX_WORD_LENGTH" />-ൽ കൂടുതൽ വാക്കുകളുള്ള ട്രാൻസ്‌ക്രിപ്റ്റ് സംഗ്രഹിക്കാനാകില്ല</translation>
 <translation id="3056720590588772262">എൻഡ്പോയിന്റ്</translation>
 <translation id="3060579846059757016">ഔട്ട്ലൈനുകൾ</translation>
 <translation id="3061850252076394168">'വായിച്ചുകേൾക്കാൻ തിരഞ്ഞെടുക്കുക' പ്രവർത്തനക്ഷമമാക്കുക</translation>
@@ -459,7 +457,6 @@
 <translation id="3226657629376379887">ലേഔട്ട് പ്രവർത്തന മെനു</translation>
 <translation id="3227186760713762082"><ph name="CONVERSION_RATE" /> കൊണ്ട് <ph name="CATEGORY_TEXT" /> എന്ന മൂല്യത്തെ ഭാഗിക്കുക</translation>
 <translation id="3237710083340813756">മാറ്റിയെഴുതുക</translation>
-<translation id="3245518008592055173"><ph name="MIN_WORD_LENGTH" />-ൽ കുറവ് വാക്കുകളുള്ള ട്രാൻസ്‌ക്രിപ്റ്റിന് പേരുകൾ സൃഷ്ടിക്കാനാകില്ല</translation>
 <translation id="3246869037381808805">1 ദിവസം മുമ്പുള്ള പ്രിന്റ് ജോലികൾ നീക്കം ചെയ്യും</translation>
 <translation id="324961752321393509">ഈ ആപ്പ് അടയ്‌ക്കാൻ നിങ്ങളുടെ അഡ്‌മിൻ അനുവദിക്കുന്നില്ല</translation>
 <translation id="3263941347294171263">അപ്‌ഡേറ്റ് പ്രക്രിയ തുടരുന്നതിന് <ph name="DEVICE_NAME" /> അൺപ്ലഗ് ചെയ്ത ശേഷം വീണ്ടും പ്ലഗ് ചെയ്യുക</translation>
@@ -624,7 +621,6 @@
 <translation id="409427325554347132">ടെസ്‌റ്റ് വിശദാംശങ്ങൾ സംരക്ഷിക്കുക</translation>
 <translation id="409469431304488632">പരീക്ഷണം</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881"><ph name="MAX_WORD_LENGTH" />-ൽ കൂടുതൽ വാക്കുകളുള്ള ട്രാൻസ്‌ക്രിപ്റ്റിന് പേരുകൾ സൃഷ്ടിക്കാനാകില്ല</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> ആൽബം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4111761024568264522">USB ടച്ച്പാഡ്</translation>
 <translation id="4113067922640381334">നിങ്ങൾക്ക് ഇപ്പോൾ പുതിയ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />വാൾപേപ്പറുകളിലേക്ക്<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ആക്സസ് ഉണ്ട്</translation>

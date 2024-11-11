@@ -300,6 +300,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4567424176335768812">Ste prihlásený/-á ako <ph name="USER_EMAIL_ADDRESS" />. Teraz môžete na všetkých zariadeniach, kde ste prihlásený/-á, pristupovať k svojim záložkám, histórii a ďalším nastaveniam.</translation>
 <translation id="4571503333518166079">Prejsť do nastavení upozornení Chromu</translation>
 <translation id="4575717501879784448">Chrome môže tieto karty deaktivovať, aby zlepšil prehliadanie a uvoľnil zdroje.</translation>
+<translation id="4595162648538023956">Môžete sa prihlásiť a získať prístup k svojmu obsahu alebo používať Chrome bez účtu</translation>
 <translation id="459622048091363950">Keď Chrome získa prístup, weby vás budú môcť žiadať o prístup.</translation>
 <translation id="4600710005438004015">Chrome sa nepodarilo aktualizovať na najnovšiu verziu. K dispozícii tak nie sú niektoré nové funkcie a bezpečnostné opravy.</translation>
 <translation id="4601439950572737842">Údaje sú šifrované pomocou vašej prístupovej frázy. Ak chcete používať a ukladať údaje Chromu do svojho účtu Google, zadajte ju.</translation>
@@ -451,6 +452,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6497147134301593682">Chrome bol automaticky zavretý</translation>
 <translation id="6506909944137591434">Chrome vyžaduje na vytvorenie 3D mapy vášho okolia povolený prístup ku kamere</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
+<translation id="6515549163407364048">Ak chcete mať prístup k rozšíreniam vo všetkých svojich počítačoch, prihláste sa do Chromu</translation>
 <translation id="6520670145826811516">Ak chcete používať polohu, udeľte Chromu prístup v <ph name="BEGIN_LINK" />nastaveniach systému<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">V správcovi hesiel Google v tomto zariadení</translation>
 <translation id="6600016381025017075">Vyhľadať ľubovoľný obsah tejto stránky</translation>

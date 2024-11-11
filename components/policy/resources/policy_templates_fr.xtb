@@ -10217,12 +10217,6 @@ Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
 
       Pour en savoir plus sur les types de contenus JavaScript/ECMAScript, consultez https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage.
       </translation>
-<translation id="8668202868357089313">Lens Overlay permet aux utilisateurs de lancer des recherches Google en interagissant avec une capture d'écran de la page actuelle superposée au contenu Web réel.
-
-Aucun paramètre utilisateur ne permet de contrôler cette fonctionnalité. Elle est généralement disponible pour tous les utilisateurs dont le moteur de recherche par défaut est Google, sauf si cette règle la désactive.
-
-Si cette règle est définie sur 0 - Enabled ou n'est pas configurée, la fonctionnalité est disponible pour les utilisateurs.
-Si la règle est définie sur 1 - Disabled, la fonctionnalité n'est pas disponible.</translation>
 <translation id="8668928485126473293">Permet de définir si <ph name="PRODUCT_NAME" /> exécutera le moteur JavaScript V8 avec des optimisations JavaScript plus avancées activées.
 
 Si vous désactivez les optimisations JavaScript (en définissant la valeur de cette règle sur 2), <ph name="PRODUCT_NAME" /> peut afficher le contenu Web plus lentement.

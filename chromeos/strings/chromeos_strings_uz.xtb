@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Himoya devori aniqlandi</translation>
 <translation id="1075811647922107217">Sahifa hajmi</translation>
-<translation id="108084407137234521">Transkripsiyani xulosalash uchun minimum <ph name="MIN_WORD_LENGTH" /> ta soʻz kiritish kerak</translation>
 <translation id="1082009148392559545">Ekran lavhasi yuklab olinmoqda</translation>
 <translation id="1094693127011229778">IP manzil mavjud emas</translation>
 <translation id="1100902271996134409">Rasmlar yaratilmoqda...</translation>
@@ -307,6 +306,7 @@
 <translation id="2308243864813041101">Yangilashda davom etish uchun <ph name="DEVICE_NAME" /> USB kabelini uzing</translation>
 <translation id="2320295602967756579">Kunduzgi mavzuni yoqish</translation>
 <translation id="2323506179655536734">TASHLAB KETILDI</translation>
+<translation id="2323755382216917952">Bu yangilanish oʻrnatishni yakunlash uchun kompyuterni qayta ishga tushirishni talab etiladi. Bu yangilanish oʻrnatilishi bir necha daqiqa vaqt oladi. Mikrodastur yangilanayotganda qurilmani uzmay va kompyuterni oʻchirmay turing.</translation>
 <translation id="2324354238778375592">Pufakli</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Aʼlo (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -420,7 +420,6 @@
 <translation id="3031560714565892478">Qurilma — video kamera.</translation>
 <translation id="3042927241478734594">Yozuvdan chiqilsinmi?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744">Transkripsiyani xulosalash uchun maksimum <ph name="MAX_WORD_LENGTH" /> ta soʻz kiritish kerak</translation>
 <translation id="3056720590588772262">Oxirgi nuqta</translation>
 <translation id="3060579846059757016">Konturlar</translation>
 <translation id="3061850252076394168">teginib tinglashni yoqish</translation>
@@ -450,6 +449,7 @@
 <translation id="3178532070248519384">avangard</translation>
 <translation id="3182676044300231689">“Matn ohangini yanada ishonchli qilish” kabi soʻrov kiriting</translation>
 <translation id="3188257591659621405">Fayllarim</translation>
+<translation id="3188931456353313123">Bu yangilanish qurilma ishlab chiqaruvchisi tomonidan taqdim etilgan va Google tomonidan tasdiqlanmagan.</translation>
 <translation id="319101249942218879">Avatar rasmi oʻzgardi</translation>
 <translation id="3192947282887913208">Audio fayllar</translation>
 <translation id="3199982728237701504">Hujjat tasmasi (Ikki tomonlama)</translation>
@@ -459,7 +459,6 @@
 <translation id="3226657629376379887">Interfeys amallari menyusi</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> qiymatini <ph name="CONVERSION_RATE" /> ga boʻling</translation>
 <translation id="3237710083340813756">Qayta yozish</translation>
-<translation id="3245518008592055173">Transkripsiyani nomlash uchun minimum <ph name="MIN_WORD_LENGTH" /> ta soʻz kiritish kerak</translation>
 <translation id="3246869037381808805">1 kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
 <translation id="324961752321393509">Administrator bu ilovani yopishni taqiqlagan</translation>
 <translation id="3263941347294171263">Yangilashda davom etish uchun <ph name="DEVICE_NAME" /> kabelini uzib, qayta ulang</translation>
@@ -508,6 +507,7 @@
 <translation id="3488065109653206955">Qisman faollashtirilgan</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> tusdagi <ph name="OFFICE_STYLE" /> ofis</translation>
 <translation id="3493187369049186498">Trafik sarfi Chromebook tomonidan hisoblanadi. Bu hisob provayder trafigi bilan farq qilishi mumkin.</translation>
+<translation id="349570724365779960">School Tools ilovasidan faqat oʻquvchilar foydalanishi mumkin.</translation>
 <translation id="3502426834823382181">barcha ilovalarni koʻrish</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Unumdorlik kuzatuvi maʼlumotlarini<ph name="END_LINK1" /> joʻnatish</translation>
 <translation id="3517001332549868749">ChromeOS yangilanishi</translation>
@@ -624,7 +624,6 @@
 <translation id="409427325554347132">Test tafsilotlarini saqlash</translation>
 <translation id="409469431304488632">Tajriba</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">Transkripsiyani nomlash uchun maksimum <ph name="MAX_WORD_LENGTH" /> ta soʻz kiritish kerak</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> nomli albomni tanlang</translation>
 <translation id="4111761024568264522">USB sensorli panel</translation>
 <translation id="4113067922640381334">Endi yangi <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fon rasmlarini<ph name="END_LINK_WALLPAPER_SUBPAGE" /> ishlatish mumkin</translation>
@@ -757,6 +756,7 @@
 <translation id="473775607612524610">Yangilash</translation>
 <translation id="4744944742468440486">Tanlovga aloqador axborot</translation>
 <translation id="4771607256327216405">klaviatura yorqinligi</translation>
+<translation id="4771923071974529837">ertaga</translation>
 <translation id="4773299976671772492">To‘xtatildi</translation>
 <translation id="4778082030331381943">safsar</translation>
 <translation id="4782311465517282004">Tavsif olish, tarjima qilish yoki birlik konversiyasi uchun matn ustiga oʻng klik yoki biroz bosib turing</translation>
@@ -820,6 +820,7 @@
 <translation id="500920857929044050">Tekshiruvni toʻxtatish</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Mavzu rangi</translation>
+<translation id="5037240652947866174">bugun</translation>
 <translation id="5038292761217083259">multi-rangli klaviatura</translation>
 <translation id="5039804452771397117">Ruxsat berish</translation>
 <translation id="5049856988445523908">Qulflangan SIM (<ph name="LOCK_TYPE" />)</translation>

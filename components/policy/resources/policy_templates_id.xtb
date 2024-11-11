@@ -10634,12 +10634,6 @@ Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 
       Lihat https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage untuk detail tentang jenis media JavaScript/ECMAScript.
       </translation>
-<translation id="8668202868357089313">Overlay Lens memungkinkan pengguna memunculkan penelusuran Google dengan berinteraksi menggunakan screenshot halaman saat ini yang berada di atas konten web sebenarnya.
-
-Tidak ada setelan pengguna untuk mengontrol fitur ini. Fitur ini biasanya tersedia bagi semua pengguna yang menggunakan Google sebagai mesin telusur default, kecuali jika dinonaktifkan oleh kebijakan ini.
-
-Jika kebijakan disetel ke 0 - Aktif atau tidak disetel, fitur tersebut akan tersedia bagi pengguna.
-Jika kebijakan disetel ke 1 - Nonaktif, fitur tersebut tidak akan tersedia.</translation>
 <translation id="8668928485126473293">Memungkinkan Anda menyetel apakah <ph name="PRODUCT_NAME" />
 akan menjalankan mesin JavaScript v8 yang mengaktifkan pengoptimalan JavaScript yang lebih canggih.
 

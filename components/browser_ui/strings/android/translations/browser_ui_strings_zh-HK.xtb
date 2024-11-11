@@ -170,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> 網站群組的 <ph name="RWS_MEMBERS_COUNT" /> 個網站可查看你在群組中的活動}other{<ph name="RWS_OWNER" /> 網站群組的 <ph name="RWS_MEMBERS_COUNT" /> 個網站可查看你在群組中的活動}}</translation>
 <translation id="3697164069658504920">開咗之後，網站可以要求使用 USB 裝置。閂咗之後，網站唔可以使用 USB 裝置。</translation>
 <translation id="3707034683772193706">您瀏覽的網站可將少量資料儲存至 Chrome，主要用來證明您不是機器人</translation>
+<translation id="3709818294139939629">已移除網站對檔案的存取權</translation>
 <translation id="3721953990244350188">閂同顯示下一個可以執行嘅操作</translation>
 <translation id="3744111561329211289">背景同步處理</translation>
 <translation id="3763247130972274048">輕按影片的左或右面兩下即可略過 10 秒</translation>
@@ -432,6 +433,7 @@
 <translation id="7425915948813553151">網站深色主題背景</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">開咗之後，網站可以顯示登入提示。閂咗之後，網站唔可以顯示登入提示。</translation>
+<translation id="7553211568594248088">結束中樞搜尋</translation>
 <translation id="7554752735887601236">有網站正在使用您的麥克風</translation>
 <translation id="7561196759112975576">永遠使用</translation>
 <translation id="757524316907819857">禁止網站播放受保護內容</translation>

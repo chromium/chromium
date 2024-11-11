@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ஃபயர்வால் கண்டறியப்பட்டது</translation>
 <translation id="1075811647922107217">பக்க அளவு</translation>
-<translation id="108084407137234521"><ph name="MIN_WORD_LENGTH" /> வார்த்தைகளுக்குக் குறைவாக உள்ள டிரான்ஸ்கிரிப்ட்டைச் சுருக்க முடியாது</translation>
 <translation id="1082009148392559545">ஸ்கிரீன் சேவரைப் பதிவிறக்குகிறது</translation>
 <translation id="1094693127011229778">IP முகவரி கிடைக்கவில்லை</translation>
 <translation id="1100902271996134409">படங்களை உருவாக்குகிறது...</translation>
@@ -307,6 +306,7 @@
 <translation id="2308243864813041101">புதுப்பிப்பைத் தொடர <ph name="DEVICE_NAME" /> இன் USB கேபிளை அகற்றவும்</translation>
 <translation id="2320295602967756579">லைட் தீமினை இயக்குதல்</translation>
 <translation id="2323506179655536734">தவிர்க்கப்பட்டது</translation>
+<translation id="2323755382216917952">இந்தப் புதுப்பிப்பு நிறுவலை நிறைவுசெய்ய உங்கள் கம்ப்யூட்டரை மீண்டும் தொடங்க வேண்டும். இந்தப் புதுப்பிப்பு நிறைவடைய சில நிமிடங்கள் ஆகலாம். நிலைபொருளைப் புதுப்பிக்கும்போது உங்கள் கம்ப்யூட்டரின் மின் இணைப்பைத் துண்டிக்கவோ அதை ஷட் டவுன் செய்யவோ கூடாது.</translation>
 <translation id="2324354238778375592">மிதக்கும் பட்டன்</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">மிக நன்றாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -420,7 +420,6 @@
 <translation id="3031560714565892478">சாதனம் ஒரு வீடியோ கேமரா.</translation>
 <translation id="3042927241478734594">ரெக்கார்டிங்கில் இருந்து வெளியேற வேண்டுமா?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744"><ph name="MAX_WORD_LENGTH" /> வார்த்தைகளுக்கு அதிகமாக உள்ள டிரான்ஸ்கிரிப்ட்டைச் சுருக்க முடியாது</translation>
 <translation id="3056720590588772262">எண்ட்பாயிண்ட்</translation>
 <translation id="3060579846059757016">அவுட்லைன்கள்</translation>
 <translation id="3061850252076394168">பேசும் திரையை இயக்கும்</translation>
@@ -450,6 +449,7 @@
 <translation id="3178532070248519384">அவன்ட்-கார்டு</translation>
 <translation id="3182676044300231689">"இன்னும் உறுதியாகச் சொல்" போன்ற ப்ராம்ப்ட்டை டைப் செய்யவும்</translation>
 <translation id="3188257591659621405">எனது ஃபைல்கள் </translation>
+<translation id="3188931456353313123">இந்தப் புதுப்பிப்பைச் சாதன உற்பத்தியாளர் வழங்கியிருக்கிறார், இதை Google சரிபார்க்கவில்லை.</translation>
 <translation id="319101249942218879">தோற்றப் படம் மாற்றப்பட்டது</translation>
 <translation id="3192947282887913208">ஆடியோ ஃபைல்கள் </translation>
 <translation id="3199982728237701504">டாக்குமெண்ட் ஃபீடர் (இரண்டு பக்கமும்)</translation>
@@ -459,7 +459,6 @@
 <translation id="3226657629376379887">தளவமைப்புகளுக்கான செயல்பாட்டு மெனு</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> மதிப்பை <ph name="CONVERSION_RATE" /> ஆல் வகுக்கவும்</translation>
 <translation id="3237710083340813756">மீண்டும் எழுதுதல்</translation>
-<translation id="3245518008592055173"><ph name="MIN_WORD_LENGTH" /> வார்த்தைகளுக்குக் குறைவாக உள்ள டிரான்ஸ்கிரிப்ட்டிற்குத் தலைப்புகளை உருவாக்க முடியாது</translation>
 <translation id="3246869037381808805">1 நாளுக்கும் முன்னதாக உள்ள பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
 <translation id="324961752321393509">இந்த ஆப்ஸை மூடுவதை உங்கள் நிர்வாகி அனுமதிக்கவில்லை</translation>
 <translation id="3263941347294171263">புதுப்பிப்பைத் தொடர <ph name="DEVICE_NAME" /> ஐ அகற்றிவிட்டு மீண்டும் செருகவும்</translation>
@@ -508,6 +507,7 @@
 <translation id="3488065109653206955">பகுதியளவு செயலாக்கப்பட்டது</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> வண்ணங்களுடைய <ph name="OFFICE_STYLE" /> அலுவலகம்</translation>
 <translation id="3493187369049186498">டேட்டாவை உங்கள் Chromebook அளவிடுகிறது. இது வழங்குநர் டேட்டாவிலிருந்து வேறுபடலாம்.</translation>
+<translation id="349570724365779960">School Toolsஸில் மாணவர்கள் இணைந்துள்ளனர்</translation>
 <translation id="3502426834823382181">அனைத்து ஆப்ஸையும் காட்டும்</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />செயல்திறன் டிரேஸ் தரவை <ph name="END_LINK1" /> அனுப்பு</translation>
 <translation id="3517001332549868749">ChromeOS அப்டேட்</translation>
@@ -624,7 +624,6 @@
 <translation id="409427325554347132">பரிசோதனை விவரங்களைச் சேமி</translation>
 <translation id="409469431304488632">பரிசோதனை</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881"><ph name="MAX_WORD_LENGTH" /> வார்த்தைகளுக்கு அதிகமாக உள்ள டிரான்ஸ்கிரிப்ட்டிற்குத் தலைப்புகளை உருவாக்க முடியாது</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> ஆல்பத்தைத் தேர்வுசெய்யும்</translation>
 <translation id="4111761024568264522">USB டச்பேட்</translation>
 <translation id="4113067922640381334">இப்போது நீங்கள் புதிய <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />வால்பேப்பர்களை<ph name="END_LINK_WALLPAPER_SUBPAGE" /> அணுகலாம்</translation>
@@ -757,6 +756,7 @@
 <translation id="473775607612524610">புதுப்பி</translation>
 <translation id="4744944742468440486">உங்கள் தேர்வுடன் தொடர்புடைய தகவல்கள்</translation>
 <translation id="4771607256327216405">கீபோர்டு ஒளிர்வை அதிகரித்தல்</translation>
+<translation id="4771923071974529837">நாளை</translation>
 <translation id="4773299976671772492">நிறுத்தப்பட்டது</translation>
 <translation id="4778082030331381943">செவ்வந்திக்கல்</translation>
 <translation id="4782311465517282004">வார்த்தையை வலது கிளிக் செய்தோ தொட்டுப் பிடித்தோ அதற்கான வரையறைகள், மொழிபெயர்ப்புகள், அலகு மாற்றங்கள் ஆகியவற்றைத் தெரிந்துகொள்ளலாம்</translation>
@@ -820,6 +820,7 @@
 <translation id="500920857929044050">சோதனையை நிறுத்து</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">தீமின் வண்ணம்</translation>
+<translation id="5037240652947866174">இன்று</translation>
 <translation id="5038292761217083259">கீபோர்டு பலவண்ணம்</translation>
 <translation id="5039804452771397117">அனுமதி</translation>
 <translation id="5049856988445523908">சிம் லாக் செய்யப்பட்டுள்ளது (<ph name="LOCK_TYPE" />)</translation>

@@ -170,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> situs di grup situs <ph name="RWS_OWNER" /> yang dapat melihat aktivitas Anda di grup tersebut}other{<ph name="RWS_MEMBERS_COUNT" /> situs di grup situs <ph name="RWS_OWNER" /> yang dapat melihat aktivitas Anda di grup tersebut}}</translation>
 <translation id="3697164069658504920">Jika diaktifkan, situs dapat meminta untuk menggunakan perangkat USB. Jika dinonaktifkan, situs tidak dapat menggunakan perangkat USB.</translation>
 <translation id="3707034683772193706">Situs yang Anda buka dapat menyimpan info dalam jumlah kecil dengan Chrome, terutama untuk memvalidasi bahwa Anda bukan bot</translation>
+<translation id="3709818294139939629">Akses situs ke file dihapus</translation>
 <translation id="3721953990244350188">Tutup dan tampilkan tindakan berikutnya yang tersedia</translation>
 <translation id="3744111561329211289">Sinkronisasi latar belakang</translation>
 <translation id="3763247130972274048">Ketuk video dua kali di kiri atau kanan untuk melewati 10 detik</translation>
@@ -432,6 +433,7 @@
 <translation id="7425915948813553151">Tema gelap untuk situs</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Jika diaktifkan, situs dapat menampilkan perintah login. Jika dinonaktifkan, situs tidak dapat menampilkan perintah login.</translation>
+<translation id="7553211568594248088">Keluar dari penelusuran hub</translation>
 <translation id="7554752735887601236">Situs menggunakan mikrofon Anda</translation>
 <translation id="7561196759112975576">Selalu</translation>
 <translation id="757524316907819857">Blokir situs agar tidak memutar konten yang dilindungi</translation>

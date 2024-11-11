@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Konstatēts ugunsmūris</translation>
 <translation id="1075811647922107217">Lapas lielums</translation>
-<translation id="108084407137234521">Nevar apkopot transkripciju, kuras vārdu skaits ir mazāks nekā <ph name="MIN_WORD_LENGTH" />.</translation>
 <translation id="1082009148392559545">Notiek ekrānsaudzētāja lejupielāde</translation>
 <translation id="1094693127011229778">IP adrese nav pieejama</translation>
 <translation id="1100902271996134409">Notiek attēlu izveide…</translation>
@@ -307,6 +306,7 @@
 <translation id="2308243864813041101">Lai turpinātu atjaunināšanas procesu, atvienojiet ierīces (<ph name="DEVICE_NAME" />) USB vadu.</translation>
 <translation id="2320295602967756579">Iespējot gaišo motīvu</translation>
 <translation id="2323506179655536734">IZLAISTA</translation>
+<translation id="2323755382216917952">Lai pabeigtu instalēšanu, jums ir jārestartē dators. Šī atjaunināšana var ilgt dažas minūtes. Kamēr notiek aparātprogrammatūras atjaunināšana, neatvienojiet datoru no barošanas avota un neizslēdziet to.</translation>
 <translation id="2324354238778375592">Peldošais režīms</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Izcils (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -420,7 +420,6 @@
 <translation id="3031560714565892478">Ierīce ir videokamera.</translation>
 <translation id="3042927241478734594">Vai iziet no ierakstīšanas režīma?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">Nevar apkopot transkripciju, kuras vārdu skaits pārsniedz <ph name="MAX_WORD_LENGTH" />.</translation>
 <translation id="3056720590588772262">Beigu punkts</translation>
 <translation id="3060579846059757016">Struktūras</translation>
 <translation id="3061850252076394168">iespējot funkciju “Atlasīt, lai izrunātu”</translation>
@@ -450,6 +449,7 @@
 <translation id="3178532070248519384">avangards</translation>
 <translation id="3182676044300231689">Ievadiet uzvedni, piemēram, “padarīt to pārliecinošāku”.</translation>
 <translation id="3188257591659621405">Mani faili</translation>
+<translation id="3188931456353313123">Šo atjauninājumu nodrošina ierīces ražotājs, un uzņēmums Google to nav verificējis.</translation>
 <translation id="319101249942218879">Iemiesojuma attēls ir nomainīts</translation>
 <translation id="3192947282887913208">Audio faili</translation>
 <translation id="3199982728237701504">Dokumentu padevējs (divpusēji)</translation>
@@ -459,7 +459,6 @@
 <translation id="3226657629376379887">Izkārtojuma darbību izvēlne</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> jādala ar <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Pārrakstīšana</translation>
-<translation id="3245518008592055173">Nevar izveidot nosaukumus transkripcijai, kuras vārdu skaits ir mazāks nekā <ph name="MIN_WORD_LENGTH" />.</translation>
 <translation id="3246869037381808805">Drukas uzdevumi, kas ir vecāki par vienu dienu, tiks noņemti</translation>
 <translation id="324961752321393509">Jūsu administrators neļauj aizvērt šo lietotni.</translation>
 <translation id="3263941347294171263">Lai turpinātu atjaunināšanas procesu, atvienojiet un atkārtoti pievienojiet ierīci (<ph name="DEVICE_NAME" />).</translation>
@@ -508,6 +507,7 @@
 <translation id="3488065109653206955">Daļēji aktivizēts</translation>
 <translation id="3492882532495507361">Birojs (<ph name="OFFICE_STYLE" />) šādos toņos: <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Datu lietojums tiek noteikts Chromebook datorā. Šie dati var atšķirties no pakalpojumu sniedzēja datiem.</translation>
+<translation id="349570724365779960">Lietotne School Tools ir savienota ar skolēniem.</translation>
 <translation id="3502426834823382181">skatīt visas lietotnes</translation>
 <translation id="3510890413042482857">Sūtīt <ph name="BEGIN_LINK1" />veiktspējas izsekošanas datus<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS atjauninājums</translation>
@@ -624,7 +624,6 @@
 <translation id="409427325554347132">Saglabāt testa informāciju</translation>
 <translation id="409469431304488632">Eksperiments</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
-<translation id="4105182082354119881">Nevar izveidot nosaukumus transkripcijai, kuras vārdu skaits pārsniedz <ph name="MAX_WORD_LENGTH" />.</translation>
 <translation id="4110686435123617899">Atlasīt albumu <ph name="TITLE" />: <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB skārienpaliktnis</translation>
 <translation id="4113067922640381334">Tagad varat piekļūt jaunām <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fona tapetēm<ph name="END_LINK_WALLPAPER_SUBPAGE" />.</translation>
@@ -757,6 +756,7 @@
 <translation id="473775607612524610">Atjaunināt</translation>
 <translation id="4744944742468440486">Ar atlasīto saturu saistīta informācija</translation>
 <translation id="4771607256327216405">palielināt tastatūras spilgtumu</translation>
+<translation id="4771923071974529837">rīt</translation>
 <translation id="4773299976671772492">Pārtraukts</translation>
 <translation id="4778082030331381943">ametists</translation>
 <translation id="4782311465517282004">Iegūstiet definīcijas vai tulkojumus vai izsakiet vērtības citās mērvienībās, noklikšķinot uz teksta ar peles labo pogu vai pieskaroties tekstam un to turot</translation>
@@ -820,6 +820,7 @@
 <translation id="500920857929044050">Apturēt pārbaudi</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Motīva krāsa</translation>
+<translation id="5037240652947866174">šodien</translation>
 <translation id="5038292761217083259">daudzkrāsaina tastatūra</translation>
 <translation id="5039804452771397117">Atļaut</translation>
 <translation id="5049856988445523908">SIM karte bloķēta (<ph name="LOCK_TYPE" />)</translation>

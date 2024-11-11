@@ -170,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> 的网站群组中有 <ph name="RWS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}other{<ph name="RWS_OWNER" /> 的网站群组中有 <ph name="RWS_MEMBERS_COUNT" /> 个网站能查看您在该群组中的活动记录}}</translation>
 <translation id="3697164069658504920">开启此设置后，网站可以请求使用 USB 设备。关闭此设置后，网站无法使用 USB 设备。</translation>
 <translation id="3707034683772193706">您访问的网站可将少量信息保存在 Chrome 中，主要用于验证您不是机器人</translation>
+<translation id="3709818294139939629">已撤消网站对文件的访问权限</translation>
 <translation id="3721953990244350188">关闭此操作并显示下一项可查看的操作</translation>
 <translation id="3744111561329211289">后台同步</translation>
 <translation id="3763247130972274048">在视频左侧或右侧点按两次即可跳过 10 秒</translation>
@@ -432,6 +433,7 @@
 <translation id="7425915948813553151">为网站开启深色主题</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">开启此设置后，网站可以显示登录提示。关闭此设置后，网站无法显示登录提示。</translation>
+<translation id="7553211568594248088">退出集中搜索</translation>
 <translation id="7554752735887601236">有一个网站正在使用您的麦克风</translation>
 <translation id="7561196759112975576">永远</translation>
 <translation id="757524316907819857">禁止网站播放受保护的内容</translation>

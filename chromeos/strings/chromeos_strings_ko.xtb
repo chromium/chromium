@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">방화벽 감지됨</translation>
 <translation id="1075811647922107217">페이지 크기</translation>
-<translation id="108084407137234521">길이가 <ph name="MIN_WORD_LENGTH" />단어(영문 기준) 미만인 스크립트는 요약할 수 없습니다.</translation>
 <translation id="1082009148392559545">화면 보호기 다운로드 중</translation>
 <translation id="1094693127011229778">IP 주소를 사용할 수 없습니다.</translation>
 <translation id="1100902271996134409">이미지 만드는 중…</translation>
@@ -307,6 +306,7 @@
 <translation id="2308243864813041101">업데이트를 계속하려면 <ph name="DEVICE_NAME" />에서 USB 케이블을 분리하세요.</translation>
 <translation id="2320295602967756579">밝은 테마 사용 설정</translation>
 <translation id="2323506179655536734">건너뜀</translation>
+<translation id="2323755382216917952">이 업데이트의 경우 설치를 완료하려면 컴퓨터를 다시 시작해야 합니다. 이 업데이트에는 몇 분 정도 소요될 수 있습니다. 펌웨어 업데이트 도중에 컴퓨터의 전원을 뽑거나 컴퓨터를 종료하지 마세요.</translation>
 <translation id="2324354238778375592">플로팅</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" />dpi</translation>
 <translation id="2346474577291266260">우수(<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -420,7 +420,6 @@
 <translation id="3031560714565892478">비디오 카메라 기기입니다.</translation>
 <translation id="3042927241478734594">녹음을 종료하시겠습니까?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744">길이가 <ph name="MAX_WORD_LENGTH" />단어(영문 기준)를 초과하는 스크립트는 요약할 수 없습니다.</translation>
 <translation id="3056720590588772262">엔드포인트</translation>
 <translation id="3060579846059757016">개요</translation>
 <translation id="3061850252076394168">텍스트 읽어주기 사용 설정</translation>
@@ -450,6 +449,7 @@
 <translation id="3178532070248519384">아방가르드</translation>
 <translation id="3182676044300231689">'더 자신 있게 표현해 줘'와 같은 프롬프트를 입력해 보세요</translation>
 <translation id="3188257591659621405">내 파일</translation>
+<translation id="3188931456353313123">이 업데이트는 기기 제조업체에서 제공하며, Google의 확인을 거치지 않았습니다.</translation>
 <translation id="319101249942218879">아바타 이미지 변경됨</translation>
 <translation id="3192947282887913208">오디오 파일</translation>
 <translation id="3199982728237701504">서류 급지(양면)</translation>
@@ -459,7 +459,6 @@
 <translation id="3226657629376379887">레이아웃 작업 메뉴</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> 값을 <ph name="CONVERSION_RATE" />(으)로 나눕니다.</translation>
 <translation id="3237710083340813756">재작성하기</translation>
-<translation id="3245518008592055173">길이가 <ph name="MIN_WORD_LENGTH" />단어 미만인 스크립트의 이름은 생성할 수 없습니다.</translation>
 <translation id="3246869037381808805">1일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="324961752321393509">관리자가 이 앱의 종료를 허용하지 않습니다.</translation>
 <translation id="3263941347294171263">업데이트를 계속하려면 <ph name="DEVICE_NAME" />에서 전원을 분리했다가 다시 연결하세요.</translation>
@@ -508,6 +507,7 @@
 <translation id="3488065109653206955">부분적으로 활성화됨</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> 톤으로 된 <ph name="OFFICE_STYLE" /> 느낌의 사무실</translation>
 <translation id="3493187369049186498">데이터는 Chromebook에서 측정됩니다. 이는 제공업체 데이터와 다를 수 있습니다.</translation>
+<translation id="349570724365779960">School Tools가 학생에게 연결되어 있습니다.</translation>
 <translation id="3502426834823382181">모든 앱 보기</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />성능 추적 데이터<ph name="END_LINK1" /> 전송</translation>
 <translation id="3517001332549868749">Chrome OS 업데이트</translation>
@@ -624,7 +624,6 @@
 <translation id="409427325554347132">테스트 세부정보 저장</translation>
 <translation id="409469431304488632">실험 버전</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">길이가 <ph name="MAX_WORD_LENGTH" />단어(영문 기준)를 초과하는 스크립트의 이름은 생성할 수 없습니다.</translation>
 <translation id="4110686435123617899">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택</translation>
 <translation id="4111761024568264522">USB 터치패드</translation>
 <translation id="4113067922640381334">이제 새로운 <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />배경화면<ph name="END_LINK_WALLPAPER_SUBPAGE" />에 액세스할 수 있습니다.</translation>
@@ -757,6 +756,7 @@
 <translation id="473775607612524610">업데이트</translation>
 <translation id="4744944742468440486">선택 항목 관련 정보</translation>
 <translation id="4771607256327216405">키보드 밝게</translation>
+<translation id="4771923071974529837">내일</translation>
 <translation id="4773299976671772492">중지됨</translation>
 <translation id="4778082030331381943">자수정</translation>
 <translation id="4782311465517282004">텍스트를 마우스 오른쪽 버튼으로 클릭하거나 길게 터치하여 정의 또는 번역을 확인하거나 단위를 변환합니다</translation>
@@ -820,6 +820,7 @@
 <translation id="500920857929044050">테스트 중지</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">테마 색상</translation>
+<translation id="5037240652947866174">오늘</translation>
 <translation id="5038292761217083259">키보드 여러 색상</translation>
 <translation id="5039804452771397117">허용</translation>
 <translation id="5049856988445523908">SIM 잠김(<ph name="LOCK_TYPE" />)</translation>

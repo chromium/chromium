@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall တွေ့ရှိသည်</translation>
 <translation id="1075811647922107217">စာမျက်နှာ အရွယ်အစား</translation>
-<translation id="108084407137234521">စာလုံး <ph name="MIN_WORD_LENGTH" /> လုံးထက်နည်းသော စာသားမှတ်တမ်းကို အကျဉ်းချုပ်၍မရပါ</translation>
 <translation id="1082009148392559545">စခရင်နားချိန်ပုံ ဒေါင်းလုဒ်လုပ်နေသည်</translation>
 <translation id="1094693127011229778">IP လိပ်စာ မရနိုင်ပါ</translation>
 <translation id="1100902271996134409">ပုံများကို ပြုလုပ်နေသည်…</translation>
@@ -420,7 +419,6 @@
 <translation id="3031560714565892478">ကိရိယာသည် ဗီဒီယိုကင်မရာ ဖြစ်သည်။</translation>
 <translation id="3042927241478734594">အသံသွင်းခြင်းမှ ထွက်မလား။</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744">စာလုံး <ph name="MAX_WORD_LENGTH" /> လုံးထက်ရှည်သော စာသားမှတ်တမ်းကို အကျဉ်းချုပ်၍မရပါ</translation>
 <translation id="3056720590588772262">အဆုံးမှတ်</translation>
 <translation id="3060579846059757016">အကြမ်းဖော်ပြချက်</translation>
 <translation id="3061850252076394168">စကားပြော ရွေးရန်ကို ဖွင့်ပါ</translation>
@@ -459,7 +457,6 @@
 <translation id="3226657629376379887">အပြင်အဆင် လုပ်ဆောင်ချက် မီနူး</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> ကို <ph name="CONVERSION_RATE" /> နှင့်စားပါ</translation>
 <translation id="3237710083340813756">ပြန်ရေးရန်</translation>
-<translation id="3245518008592055173">စာလုံး <ph name="MIN_WORD_LENGTH" /> လုံးထက်နည်းသော စာသားမှတ်တမ်းအတွက် အမည်များ ပြုလုပ်၍မရပါ</translation>
 <translation id="3246869037381808805">1 ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
 <translation id="324961752321393509">သင့်စီမံခန့်ခွဲသူသည် ဤအက်ပ်ကို ခွင့်မပြုပါ</translation>
 <translation id="3263941347294171263">အပ်ဒိတ်လုပ်ငန်းစဉ် ရှေ့ဆက်ရန် <ph name="DEVICE_NAME" /> ကို ပလတ်ဖြုတ်ပြီး ပြန်တပ်ပါ</translation>
@@ -624,7 +621,6 @@
 <translation id="409427325554347132">စာသားအသေးစိတ် သိမ်းရန်</translation>
 <translation id="409469431304488632">စမ်းသပ်မှု</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">စာလုံး <ph name="MAX_WORD_LENGTH" /> လုံးထက်ရှည်သော စာသားမှတ်တမ်းအတွက် အမည်များ ပြုလုပ်၍မရပါ</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> အယ်လ်ဘမ်ရွေးရန်</translation>
 <translation id="4111761024568264522">USB တာ့ချ်ပက်</translation>
 <translation id="4113067922640381334"><ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />နောက်ခံ<ph name="END_LINK_WALLPAPER_SUBPAGE" /> အသစ်များကို ယခု သင်သုံးနိုင်ပြီ</translation>

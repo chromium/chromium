@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Tembok api dikesan</translation>
 <translation id="1075811647922107217">Saiz halaman</translation>
-<translation id="108084407137234521">Tidak dapat meringkaskan transkrip kurang daripada<ph name="MIN_WORD_LENGTH" /> perkataan</translation>
 <translation id="1082009148392559545">Memuat turun penyelamat skrin</translation>
 <translation id="1094693127011229778">Alamat IP tidak tersedia</translation>
 <translation id="1100902271996134409">Membuat imej...</translation>
@@ -139,6 +138,7 @@
 <translation id="1604959087182679653">Sembunyikan transkrip</translation>
 <translation id="160633243685262989">Pratonton Imej</translation>
 <translation id="1611649489706141841">ke hadapan</translation>
+<translation id="1615144046047995187">Tidak dapat memuat turun. Cuba lagi atau mulakan semula Chromebook anda.</translation>
 <translation id="1615335640928990664">Penggunaan data sejak <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Gunakan tema</translation>
 <translation id="1621067168122174824">Jalankan Ujian cas</translation>
@@ -422,7 +422,6 @@
 <translation id="3031560714565892478">Peranti ialah kamera video.</translation>
 <translation id="3042927241478734594">Keluar daripada rakaman?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">Tidak dapat meringkaskan transkrip lebih daripada <ph name="MAX_WORD_LENGTH" /> perkataan</translation>
 <translation id="3056720590588772262">Titik akhir</translation>
 <translation id="3060579846059757016">Rangka</translation>
 <translation id="3061850252076394168">dayakan pilih untuk bercakap</translation>
@@ -463,7 +462,6 @@
 <translation id="3226657629376379887">Menu tindakan reka letak</translation>
 <translation id="3227186760713762082">Bahagikan nilai <ph name="CATEGORY_TEXT" /> dengan <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Tulis semula</translation>
-<translation id="3245518008592055173">Tidak dapat membuat nama untuk transkrip kurang daripada <ph name="MIN_WORD_LENGTH" /> perkataan</translation>
 <translation id="3246869037381808805">Tugas cetak yang melebihi 1 hari akan dialih keluar</translation>
 <translation id="324961752321393509">Pentadbir anda tidak membenarkan apl ini ditutup</translation>
 <translation id="3263941347294171263">Cabut dan palamkan semula <ph name="DEVICE_NAME" /> untuk meneruskan proses kemaskinian</translation>
@@ -591,6 +589,7 @@
 <translation id="3885327323343477505">Tukar penyelamat skrin</translation>
 <translation id="3889914174935857450">Tetapkan semula tarikh</translation>
 <translation id="3897092660631435901">Menu</translation>
+<translation id="3902271751020176019">Bahasa transkripsi</translation>
 <translation id="391412459402535266">Tidak dapat menguji peranti. Tukar kepada mod komputer riba untuk menguji.</translation>
 <translation id="3916998944874125962">ambil tangkapan skrin</translation>
 <translation id="3923184630988645767">Penggunaan data</translation>
@@ -630,7 +629,6 @@
 <translation id="409427325554347132">Simpan butiran ujian</translation>
 <translation id="409469431304488632">Percubaan</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">Tidak dapat membuat nama untuk transkrip lebih daripada <ph name="MAX_WORD_LENGTH" /> perkataan</translation>
 <translation id="4110686435123617899">Pilih album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Pad sentuh USB</translation>
 <translation id="4113067922640381334">Kini anda boleh mengakses <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />hiasan latar<ph name="END_LINK_WALLPAPER_SUBPAGE" /> baharu</translation>
@@ -945,6 +943,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Anda telah dilog keluar</translation>
 <translation id="5620281292257375798">Dalaman sahaja</translation>
+<translation id="5628106863521633649">Bahasa yang tersedia</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrak</translation>
 <translation id="5655283760733841251">Meningkatkan kecerahan papan kekunci</translation>
@@ -1270,6 +1269,7 @@
 <translation id="710028965487274708">Gagal - Pemberian Keizinan Gagal</translation>
 <translation id="7101959270679078188">Buka kunci <ph name="DEVICE_NAME" /> untuk meneruskan proses kemaskinian</translation>
 <translation id="7103252855940681301">Peranti <ph name="INDEX" /> daripada <ph name="COUNT" /> bernama <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Bahasa yang dipilih</translation>
 <translation id="7107255225945990211">Pilih kerja seni eksklusif <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7117228822971127758">Sila cuba sebentar lagi</translation>

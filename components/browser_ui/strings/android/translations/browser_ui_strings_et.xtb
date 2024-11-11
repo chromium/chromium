@@ -170,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sait domeeni <ph name="RWS_OWNER" /> saidigrupis, mis näeb teie tegevusi grupis}other{<ph name="RWS_MEMBERS_COUNT" /> saiti domeeni <ph name="RWS_OWNER" /> saidigrupis, mis näevad teie tegevusi grupis}}</translation>
 <translation id="3697164069658504920">Kui see on sisse lülitatud, võivad saidid küsida luba USB-seadmete kasutamiseks. Kui see on välja lülitatud, ei saa saidid USB-seadmeid kasutada.</translation>
 <translation id="3707034683772193706">Külastatav sait võib Chrome’iga salvestada väikese hulga teavet, peamiselt kinnitamaks, et te pole robot.</translation>
+<translation id="3709818294139939629">Saidi juurdepääs failile on eemaldatud</translation>
 <translation id="3721953990244350188">Loobu ja kuva järgmine saadaolev toiming</translation>
 <translation id="3744111561329211289">Taustal sünkroonimine</translation>
 <translation id="3763247130972274048">10 sekundi võrra kerimiseks topeltpuudutage videos vasakul või paremal</translation>
@@ -432,6 +433,7 @@
 <translation id="7425915948813553151">Tume teema saitide jaoks</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kui see on sisse lülitatud, saavad saidid sisselogimisviipasid kuvada. Kui see on välja lülitatud, ei saa saidid sisselogimisviipasid kuvada.</translation>
+<translation id="7553211568594248088">Välju Hubi otsingust</translation>
 <translation id="7554752735887601236">Sait kasutab teie mikrofoni</translation>
 <translation id="7561196759112975576">Alati</translation>
 <translation id="757524316907819857">Saitidel kaitstud sisu esitamise blokeerimine</translation>

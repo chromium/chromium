@@ -10649,12 +10649,6 @@ Esta política siempre será válida para <ph name="PRODUCT_OS_NAME" />.</transl
 
       Consulta https://html.spec.whatwg.org/multipage/scripting.html#scriptingLanguage para obtener detalles sobre los tipos de medios JavaScript y ECMAScript.
       </translation>
-<translation id="8668202868357089313">La función Lens Overlay permite a los usuarios realizar búsquedas en Google interactuando con una captura de pantalla de la página actual que se muestra sobre el contenido web real.
-
-No hay un parámetro de configuración del usuario para controlar esta función. Por lo general, está disponible para todos los usuarios que tienen Google como motor de búsqueda predeterminado, a menos que esta política la inhabilite.
-
-Si estableces la política con el valor "0" (habilitada) o no la estableces, los usuarios podrán acceder a la función.
-Si la estableces con el valor "1" (inhabilitada), la función no estará disponible.</translation>
 <translation id="8668928485126473293">Te permite establecer si <ph name="PRODUCT_NAME" />
 ejecutará el motor v8 de JavaScript con las optimizaciones de JavaScript más avanzadas habilitadas.
 

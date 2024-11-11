@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">זוהתה חומת אש</translation>
 <translation id="1075811647922107217">גודל הדף</translation>
-<translation id="108084407137234521">לא ניתן לסכם תמליל שכולל פחות מ-<ph name="MIN_WORD_LENGTH" /> מילים</translation>
 <translation id="1082009148392559545">שומר המסך בהורדה</translation>
 <translation id="1094693127011229778">‏כתובת ה-IP לא זמינה</translation>
 <translation id="1100902271996134409">התמונות נוצרות…</translation>
@@ -421,7 +420,6 @@
 <translation id="3031560714565892478">המכשיר הוא מצלמת וידאו.</translation>
 <translation id="3042927241478734594">לצאת מההקלטה?</translation>
 <translation id="3054177598518735801">mA<ph name="CURRENT_VALUE" /></translation>
-<translation id="3055176406666937744">לא ניתן לסכם תמליל שכולל יותר מ-<ph name="MAX_WORD_LENGTH" /> מילים</translation>
 <translation id="3056720590588772262">‏נקודת קצה (endpoint)</translation>
 <translation id="3060579846059757016">נקודות עיקריות</translation>
 <translation id="3061850252076394168">הפעלת התכונה 'הקראה'</translation>
@@ -461,7 +459,6 @@
 <translation id="3226657629376379887">תפריט הפעולות בפריסה</translation>
 <translation id="3227186760713762082">צריך לחלק את הערך של <ph name="CATEGORY_TEXT" /> ב-<ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">שכתוב</translation>
-<translation id="3245518008592055173">אי אפשר ליצור שמות לתמליל שכולל פחות מ-<ph name="MIN_WORD_LENGTH" /> מילים</translation>
 <translation id="3246869037381808805">משימות הדפסה בנות יותר מיום אחד יוסרו</translation>
 <translation id="324961752321393509">אין אישור מהאדמין שלך לסגור את האפליקציה הזו</translation>
 <translation id="3263941347294171263">כדי להמשיך בתהליך העדכון, צריך לנתק את <ph name="DEVICE_NAME" /> ולחבר אותו מחדש</translation>
@@ -627,7 +624,6 @@
 <translation id="409427325554347132">שמירה של פרטי הבדיקה</translation>
 <translation id="409469431304488632">תכונה ניסיונית</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">אי אפשר ליצור שמות לתמליל שכולל יותר מ-<ph name="MAX_WORD_LENGTH" /> מילים</translation>
 <translation id="4110686435123617899">בחירת האלבום <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">‏לוח מגע של USB</translation>
 <translation id="4113067922640381334">יש לך עכשיו גישה ל<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />טפטים<ph name="END_LINK_WALLPAPER_SUBPAGE" /> חדשים</translation>

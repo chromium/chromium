@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Галт хана илрүүлсэн</translation>
 <translation id="1075811647922107217">Хуудасны хэмжээ</translation>
-<translation id="108084407137234521"><ph name="MIN_WORD_LENGTH" />-с цөөн үгтэй сийрүүлгийг хураангуйлах боломжгүй</translation>
 <translation id="1082009148392559545">Дэлгэц амраагчийг татаж байна</translation>
 <translation id="1094693127011229778">IP хаяг боломжгүй байна</translation>
 <translation id="1100902271996134409">Зургууд үүсгэж байна...</translation>
@@ -307,6 +306,7 @@
 <translation id="2308243864813041101">Шинэчлэх явцыг үргэлжлүүлэхийн тулд <ph name="DEVICE_NAME" />-н USB кабелийг салгана уу</translation>
 <translation id="2320295602967756579">Цайвар загварыг идэвхжүүлэх</translation>
 <translation id="2323506179655536734">АЛГАССАН</translation>
+<translation id="2323755382216917952">Энэ шинэчлэлт нь танаас суулгаж дуусгахын тулд компьютероо дахин эхлүүлэхийг шаарддаг. Энэ шинэчлэлтийг дуусгахад цөөн хэдэн минут зарцуулж болно. Жижиг программыг шинэчилж байхад компьютероо салгаж эсвэл унтрааж болохгүй.</translation>
 <translation id="2324354238778375592">Хөвөгч</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Маш сайн (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -420,7 +420,6 @@
 <translation id="3031560714565892478">Төхөөрөмж нь видео камер байна.</translation>
 <translation id="3042927241478734594">Бичлэгээс гарах уу?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />мA</translation>
-<translation id="3055176406666937744"><ph name="MAX_WORD_LENGTH" />-с олон үгтэй сийрүүлгийг хураангуйлах боломжгүй</translation>
 <translation id="3056720590588772262">Төгсгөлийн цэг</translation>
 <translation id="3060579846059757016">Тойм</translation>
 <translation id="3061850252076394168">ярихаар сонгохыг идэвхжүүлэх</translation>
@@ -450,6 +449,7 @@
 <translation id="3178532070248519384">авангард</translation>
 <translation id="3182676044300231689">"Илүү итгэлтэй болго" зэрэг заавар оруулна уу</translation>
 <translation id="3188257591659621405">Миний файл</translation>
+<translation id="3188931456353313123">Энэ шинэчлэлтийг төхөөрөмж үйлдвэрлэгчээс олгосон бөгөөд Google-с баталгаажуулаагүй.</translation>
 <translation id="319101249942218879">Аватар зургийг өөрчилсөн</translation>
 <translation id="3192947282887913208">Аудио файлууд</translation>
 <translation id="3199982728237701504">Документыг дамжуулах тавиур (Хоёр талаар нь)</translation>
@@ -459,7 +459,6 @@
 <translation id="3226657629376379887">Бүдүүвчийн үйлдлийн цэс</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />-н утгыг <ph name="CONVERSION_RATE" />-д хуваана уу</translation>
 <translation id="3237710083340813756">Дахин бичих</translation>
-<translation id="3245518008592055173"><ph name="MIN_WORD_LENGTH" />-с цөөн үгтэй сийрүүлэгт нэр үүсгэх боломжгүй</translation>
 <translation id="3246869037381808805">1 хоногоос дээш хугацаагаар хадгалсан хэвлэлийн ажлуудыг хасах болно</translation>
 <translation id="324961752321393509">Танай администратор энэ аппыг хаахыг зөвшөөрдөггүй</translation>
 <translation id="3263941347294171263">Шинэчлэх явцыг үргэлжлүүлэхийн тулд <ph name="DEVICE_NAME" />-г салгаад, дахин залгана уу</translation>
@@ -508,6 +507,7 @@
 <translation id="3488065109653206955">Хагас идэвхжсэн</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> өнгөтэй <ph name="OFFICE_STYLE" /> оффис</translation>
 <translation id="3493187369049186498">Датаг таны Chromebook-с хэмждэг. Энэ нь үйлчилгээ үзүүлэгчийн датанаас өөр байж болно.</translation>
+<translation id="349570724365779960">Сургуулийн хэрэгсэл сурагчидтай холбогдсон байна</translation>
 <translation id="3502426834823382181">бүх аппыг харах</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Гүйцэтгэлийн ул мөрийн өгөгдлийг<ph name="END_LINK1" /> илгээх</translation>
 <translation id="3517001332549868749">ChromeOS-н шинэчлэлт</translation>
@@ -624,7 +624,6 @@
 <translation id="409427325554347132">Туршилтын дэлгэрэнгүйг хадгалах</translation>
 <translation id="409469431304488632">Туршилт</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881"><ph name="MAX_WORD_LENGTH" />-с олон үгтэй сийрүүлэгт нэр үүсгэх боломжгүй</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> цомгийг <ph name="DESC" /> сонгох</translation>
 <translation id="4111761024568264522">USB мэдрэгч самбар</translation>
 <translation id="4113067922640381334">Та одоо шинэ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />дэлгэцийн зургуудад<ph name="END_LINK_WALLPAPER_SUBPAGE" /> хандах эрхтэй</translation>
@@ -757,6 +756,7 @@
 <translation id="473775607612524610">Шинэчлэх</translation>
 <translation id="4744944742468440486">Таны сонголттой холбоотой мэдээлэл</translation>
 <translation id="4771607256327216405">гарыг илүү гэрэлтүүлэх</translation>
+<translation id="4771923071974529837">маргааш</translation>
 <translation id="4773299976671772492">Зогссон</translation>
 <translation id="4778082030331381943">ягаан болор</translation>
 <translation id="4782311465517282004">Та баруун талыг товших эсвэл текстийг удаан дарах үедээ тодорхойлолт, орчуулга эсвэл нэгж хөрвүүлэлт аваарай</translation>
@@ -820,6 +820,7 @@
 <translation id="500920857929044050">Туршилтыг зогсоох</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Загварын өнгө</translation>
+<translation id="5037240652947866174">өнөөдөр</translation>
 <translation id="5038292761217083259">гарын олон өнгө</translation>
 <translation id="5039804452771397117">Зөвшөөрөх</translation>
 <translation id="5049856988445523908">SIM-г түгжсэн (<ph name="LOCK_TYPE" />)</translation>

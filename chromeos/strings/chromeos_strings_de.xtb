@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall erkannt</translation>
 <translation id="1075811647922107217">Seitengröße</translation>
-<translation id="108084407137234521">Transkripte mit weniger als <ph name="MIN_WORD_LENGTH" /> Wörtern können nicht zusammengefasst werden</translation>
 <translation id="1082009148392559545">Bildschirmschoner wird herunterladen</translation>
 <translation id="1094693127011229778">IP-Adresse ist nicht verfügbar</translation>
 <translation id="1100902271996134409">Bilder werden erstellt…</translation>
@@ -307,6 +306,7 @@
 <translation id="2308243864813041101">Ziehe zum Fortsetzen des Updates das USB-Kabel des Geräts „<ph name="DEVICE_NAME" />“ ab</translation>
 <translation id="2320295602967756579">Helles Design aktivieren</translation>
 <translation id="2323506179655536734">ÜBERSPRUNGEN</translation>
+<translation id="2323755382216917952">Bei diesem Update musst du deinen Computer neu starten, um die Installation abzuschließen. Das Update kann einige Minuten dauern. Während die Firmware aktualisiert wird, darf der Computer nicht vom Stromnetz getrennt oder heruntergefahren werden.</translation>
 <translation id="2324354238778375592">Unverankert</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Sehr gut (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -420,7 +420,6 @@
 <translation id="3031560714565892478">Das Gerät ist eine Videokamera.</translation>
 <translation id="3042927241478734594">Soll die Aufnahme beendet werden?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">Transkripte mit mehr als <ph name="MAX_WORD_LENGTH" /> Wörtern können nicht zusammengefasst werden</translation>
 <translation id="3056720590588772262">Endpunkt</translation>
 <translation id="3060579846059757016">Übersicht</translation>
 <translation id="3061850252076394168">Funktion „Vorlesen“ aktivieren</translation>
@@ -450,6 +449,7 @@
 <translation id="3178532070248519384">Avantgarde</translation>
 <translation id="3182676044300231689">Gib einen Prompt wie „verwende einen selbstbewussteren Tonfall“ ein</translation>
 <translation id="3188257591659621405">Meine Dateien</translation>
+<translation id="3188931456353313123">Dieses Update wird vom Hersteller des Geräts bereitgestellt und wurde nicht von Google überprüft.</translation>
 <translation id="319101249942218879">Avatarbild geändert</translation>
 <translation id="3192947282887913208">Audiodateien</translation>
 <translation id="3199982728237701504">Dokumenteneinzug (beidseitig)</translation>
@@ -459,7 +459,6 @@
 <translation id="3226657629376379887">Layout-Aktionsmenü</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> durch <ph name="CONVERSION_RATE" /> dividieren</translation>
 <translation id="3237710083340813756">Umformulieren</translation>
-<translation id="3245518008592055173">Für Transkripte mit weniger als <ph name="MIN_WORD_LENGTH" /> Wörtern können keine Namen erstellt werden</translation>
 <translation id="3246869037381808805">Druckaufträge, die älter als 1 Tag sind, werden entfernt</translation>
 <translation id="324961752321393509">Dein Administrator lässt das Schließen dieser App nicht zu</translation>
 <translation id="3263941347294171263">Trenne zum Fortsetzen des Updates die Verbindung des Geräts „<ph name="DEVICE_NAME" />“ und stell sie dann wieder her</translation>
@@ -508,6 +507,7 @@
 <translation id="3488065109653206955">Teilweise aktiviert</translation>
 <translation id="3492882532495507361">Büro (<ph name="OFFICE_STYLE" />) mit <ph name="OFFICE_COLOR" />en Farbtönen</translation>
 <translation id="3493187369049186498">Die Daten werden von deinem Chromebook gemessen. Sie können sich von den Anbieterdaten unterscheiden.</translation>
+<translation id="349570724365779960">Tools der Bildungseinrichtung sind mit Schülern/Studenten verbunden</translation>
 <translation id="3502426834823382181">Alle Apps anzeigen</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Leistungs-Trace-Daten<ph name="END_LINK1" /> senden</translation>
 <translation id="3517001332549868749">Chrome OS-Update</translation>
@@ -624,7 +624,6 @@
 <translation id="409427325554347132">Testdetails speichern</translation>
 <translation id="409469431304488632">Test</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
-<translation id="4105182082354119881">Für Transkripte mit mehr als <ph name="MAX_WORD_LENGTH" /> Wörtern können keine Namen erstellt werden</translation>
 <translation id="4110686435123617899">Album <ph name="TITLE" /> <ph name="DESC" /> auswählen</translation>
 <translation id="4111761024568264522">USB-Touchpad</translation>
 <translation id="4113067922640381334">Neue <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />Hintergründe<ph name="END_LINK_WALLPAPER_SUBPAGE" /> jetzt verfügbar</translation>
@@ -757,6 +756,7 @@
 <translation id="473775607612524610">Aktualisieren</translation>
 <translation id="4744944742468440486">Informationen in Bezug auf deine Auswahl</translation>
 <translation id="4771607256327216405">Tastatur aufhellen</translation>
+<translation id="4771923071974529837">morgen</translation>
 <translation id="4773299976671772492">Angehalten</translation>
 <translation id="4778082030331381943">Amethyst</translation>
 <translation id="4782311465517282004">Du kannst Definitionen oder Übersetzungen anzeigen oder Einheiten umrechnen lassen, indem du Text gedrückt hältst oder mit der rechten Maustaste darauf klickst</translation>
@@ -820,6 +820,7 @@
 <translation id="500920857929044050">Test beenden</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Designfarbe</translation>
+<translation id="5037240652947866174">heute</translation>
 <translation id="5038292761217083259">Mehrfarbige Tastatur</translation>
 <translation id="5039804452771397117">Zulassen</translation>
 <translation id="5049856988445523908">SIM-Karte gesperrt (<ph name="LOCK_TYPE" />)</translation>

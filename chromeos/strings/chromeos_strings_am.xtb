@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ኬላ ተገኝቷል</translation>
 <translation id="1075811647922107217">የገጽ መጠን</translation>
-<translation id="108084407137234521">ከ<ph name="MIN_WORD_LENGTH" /> ቃላት የሚያንስ ጽሁፍ ግልባጭ ማጠቃለል አይቻልም</translation>
 <translation id="1082009148392559545">ማያ ገፅ ቆጣቢውን በማውረድ ላይ</translation>
 <translation id="1094693127011229778">የአይፒ አድራሻ አይገኝም</translation>
 <translation id="1100902271996134409">ምስሎች በመፍጠር ላይ...</translation>
@@ -307,6 +306,7 @@
 <translation id="2308243864813041101">የማዘመን ሂደቱን ለመቀጠል የ<ph name="DEVICE_NAME" /> ዩኤስቢ ገመዱን ይንቀሉት</translation>
 <translation id="2320295602967756579">ነጣ ያለ ገጽታን አንቃ</translation>
 <translation id="2323506179655536734">ተዘሏል</translation>
+<translation id="2323755382216917952">ይህ ዝማኔ ጭነትን ለማጠናቀቅ ኮምፒተርዎን እንደገና እንዲያስጀምሩት ይጠይቃል። ይህ ዝማኔ ለማጠናቀቅ ጥቂት ደቂቃዎችን ሊወስድ ይችላል። ፊርምዌሩ በማዘመን ላይ ሳለ ኮምፒውተርዎን አይንቀሉት ወይም አይዝጉት።</translation>
 <translation id="2324354238778375592">ተንሳፋፊ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">እጅግ በጣም ጥሩ (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -420,7 +420,6 @@
 <translation id="3031560714565892478">መሣሪያ የቪዲዮ ካሜራ ነው።</translation>
 <translation id="3042927241478734594">ከመቅዳት ይውጡ?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ሚአ</translation>
-<translation id="3055176406666937744">ከ<ph name="MAX_WORD_LENGTH" /> ቃላት የሚረዝም ጽሁፍ ግልባጭ ማጠቃለል አይቻልም</translation>
 <translation id="3056720590588772262">የማለቂያ ነጥብ</translation>
 <translation id="3060579846059757016">መግለጫዎች</translation>
 <translation id="3061850252076394168">ለመናገር ምረጥን ያንቁ</translation>
@@ -450,6 +449,7 @@
 <translation id="3178532070248519384">አቫንት-ጋርዴ</translation>
 <translation id="3182676044300231689">እንደ «የበለጠ በራስ መተማመን ያለው አድርግ» የሚል ጥያቄ ያስገቡ</translation>
 <translation id="3188257591659621405">የእኔ ፋይሎች</translation>
+<translation id="3188931456353313123">ይህ ዝማኔ የቀረበው በመሣሪያ አምራች ነው እና በGoogle አልተረጋገጠም።</translation>
 <translation id="319101249942218879">የአምሳያ ምስል ተለውጧል</translation>
 <translation id="3192947282887913208">የድምጽ ፋይሎች</translation>
 <translation id="3199982728237701504">ሰነድ መጋቢ (ባለሁለት ጎን)</translation>
@@ -459,7 +459,6 @@
 <translation id="3226657629376379887">የአቀማመጥ እርምጃዎች ምናሌ</translation>
 <translation id="3227186760713762082">የ<ph name="CATEGORY_TEXT" /> እሴቱን በ<ph name="CONVERSION_RATE" /> ያካፍሉት</translation>
 <translation id="3237710083340813756">እንደገና ይጻፉ</translation>
-<translation id="3245518008592055173">ከ<ph name="MIN_WORD_LENGTH" /> ቃላት ለሚያንስ ጽሁፍ ግልባጭ ስሞች መፍጠር አይቻልም</translation>
 <translation id="3246869037381808805">ከ1 ቀን በላይ ዕድሜ ያላቸው የህትመት ሥራዎች ይወገዳሉ</translation>
 <translation id="324961752321393509">አስተዳዳሪዎ ይህን መተግበሪያ መዝጋትን አይፈቅድም</translation>
 <translation id="3263941347294171263">የማዘመን ሂደቱን ለመቀጠል <ph name="DEVICE_NAME" />ን ይንቀሉ እና እንደገና ይሰኩት</translation>
@@ -508,6 +507,7 @@
 <translation id="3488065109653206955">በከፊል ገብሯል</translation>
 <translation id="3492882532495507361">የ<ph name="OFFICE_COLOR" /> ቃና ያለው የ<ph name="OFFICE_STYLE" /> ቢሮ</translation>
 <translation id="3493187369049186498">ውሂብ የሚለካው በእርስዎ Chromebook ነው። ይህ ከአቅራቢው ውሂብ የተለየ ሊሆን ይችላል።</translation>
+<translation id="349570724365779960">የትምህርት ቤት መሣሪያዎች ከተማሪዎች ጋር የተገናኘ ነው</translation>
 <translation id="3502426834823382181">ሁሉንም መተግበሪያዎች ይመልከቱ</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />የአፈጻጸም መከታተያ ውሂብ<ph name="END_LINK1" />ን ይላኩ</translation>
 <translation id="3517001332549868749">የChromeOS ዝማኔ</translation>
@@ -624,7 +624,6 @@
 <translation id="409427325554347132">የሙከራ ዝርዝሮችን አስቀምጥ</translation>
 <translation id="409469431304488632">ሙከራ</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">ከ<ph name="MAX_WORD_LENGTH" /> ቃላት ለሚረዝም ጽሁፍ ግልባጭ ስሞች መፍጠር አይቻልም</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" />ን አልበም ይምረጡ</translation>
 <translation id="4111761024568264522">የዩኤስቢ መዳሰሻ ሰሌዳ</translation>
 <translation id="4113067922640381334">እርስዎ አሁን ለአዲስ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ልጣፎች<ph name="END_LINK_WALLPAPER_SUBPAGE" /> መዳረሻ አለዎት</translation>
@@ -757,6 +756,7 @@
 <translation id="473775607612524610">አዘምን</translation>
 <translation id="4744944742468440486">ከእርስዎ ምርጫ ጋር የተዛመደ መረጃ</translation>
 <translation id="4771607256327216405">የቁልፍ ሰሌዳ ፈካ ማለት</translation>
+<translation id="4771923071974529837">ነገ</translation>
 <translation id="4773299976671772492">ቆሟል</translation>
 <translation id="4778082030331381943">አሜቲስት</translation>
 <translation id="4782311465517282004">ጽሑፍን በቀኝ ጠቅ ሲያደርጉ ወይም ነክተው ሲይዙ ፍቺዎችን፣ ትርጉሞችን ወይም የአሃድ ልወጣዎችን ያግኙ</translation>
@@ -820,6 +820,7 @@
 <translation id="500920857929044050">ሙከራን አቁም</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">የገጽታ ቀለም</translation>
+<translation id="5037240652947866174">ዛሬ</translation>
 <translation id="5038292761217083259">የቁልፍ ሰሌዳ ባለ ብዙ ቀለም</translation>
 <translation id="5039804452771397117">ፍቀድ</translation>
 <translation id="5049856988445523908">ሲም ተቆልፏል (<ph name="LOCK_TYPE" />)</translation>

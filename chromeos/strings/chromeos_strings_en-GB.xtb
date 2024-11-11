@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall detected</translation>
 <translation id="1075811647922107217">Page size</translation>
-<translation id="108084407137234521">Can't summarise a transcript fewer than <ph name="MIN_WORD_LENGTH" /> words</translation>
 <translation id="1082009148392559545">Downloading the screen saver</translation>
 <translation id="1094693127011229778">IP address is unavailable</translation>
 <translation id="1100902271996134409">Creating images…</translation>
@@ -421,7 +420,6 @@
 <translation id="3031560714565892478">Device is a video camera.</translation>
 <translation id="3042927241478734594">Exit recording?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744">Can't summarise a transcript longer than <ph name="MAX_WORD_LENGTH" /> words</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3060579846059757016">Outlines</translation>
 <translation id="3061850252076394168">enable Select to Speak</translation>
@@ -461,7 +459,6 @@
 <translation id="3226657629376379887">Layout actions menu</translation>
 <translation id="3227186760713762082">Divide the <ph name="CATEGORY_TEXT" /> value by <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Rewrite</translation>
-<translation id="3245518008592055173">Can't create names for a transcript fewer than <ph name="MIN_WORD_LENGTH" /> words</translation>
 <translation id="3246869037381808805">Print jobs older than 1 day will be removed</translation>
 <translation id="324961752321393509">Your administrator doesn't allow closing this app</translation>
 <translation id="3263941347294171263">Unplug and replug the <ph name="DEVICE_NAME" /> to continue the update process</translation>
@@ -627,7 +624,6 @@
 <translation id="409427325554347132">Save test details</translation>
 <translation id="409469431304488632">Experiment</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
-<translation id="4105182082354119881">Can't create names for a transcript longer than <ph name="MAX_WORD_LENGTH" /> words</translation>
 <translation id="4110686435123617899">Select album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB touchpad</translation>
 <translation id="4113067922640381334">You now have access to new <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpapers<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>

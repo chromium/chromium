@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall detetada</translation>
 <translation id="1075811647922107217">Tamanho da página</translation>
-<translation id="108084407137234521">Não é possível resumir uma transcrição com menos de <ph name="MIN_WORD_LENGTH" /> palavras</translation>
 <translation id="1082009148392559545">A transferir a proteção de ecrã</translation>
 <translation id="1094693127011229778">O endereço IP está indisponível</translation>
 <translation id="1100902271996134409">A criar imagens…</translation>
@@ -421,7 +420,6 @@
 <translation id="3031560714565892478">O dispositivo é uma câmara de vídeo.</translation>
 <translation id="3042927241478734594">Sair da gravação?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">Não é possível resumir uma transcrição com mais de <ph name="MAX_WORD_LENGTH" /> palavras</translation>
 <translation id="3056720590588772262">Ponto final</translation>
 <translation id="3060579846059757016">Destaques</translation>
 <translation id="3061850252076394168">ative a funcionalidade Selecionar para falar</translation>
@@ -461,7 +459,6 @@
 <translation id="3226657629376379887">Menu de ações do esquema</translation>
 <translation id="3227186760713762082">Divida o valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Reescrever</translation>
-<translation id="3245518008592055173">Não é possível criar nomes para uma transcrição com menos de <ph name="MIN_WORD_LENGTH" /> palavras</translation>
 <translation id="3246869037381808805">As tarefas de impressão com mais de um 1 dia serão removidas.</translation>
 <translation id="324961752321393509">O seu administrador não permite fechar esta app</translation>
 <translation id="3263941347294171263">Desligue e volte a ligar o dispositivo <ph name="DEVICE_NAME" /> para continuar o processo de atualização</translation>
@@ -627,7 +624,6 @@
 <translation id="409427325554347132">Guardar detalhes do teste</translation>
 <translation id="409469431304488632">Experiência</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">Não é possível criar nomes para uma transcrição com mais de <ph name="MAX_WORD_LENGTH" /> palavras</translation>
 <translation id="4110686435123617899">Selecionar o álbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
 <translation id="4113067922640381334">Agora, tem acesso a novas <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />imagens de fundo<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>

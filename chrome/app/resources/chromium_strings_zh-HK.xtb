@@ -20,6 +20,7 @@
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1188705220418984327">如要分享視窗，請前往「系統偏好設定」允許 Chromium 螢幕錄影。</translation>
 <translation id="1203500561924088507">多謝安裝。您必須先重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="1235768345431527125">登入可以存取你的項目，但不登入帳戶也可以使用 Chromium</translation>
 <translation id="1262876892872089030">當此分頁處於閒置狀態時，系統會釋出記憶體，加快 Chromium 的運作速度。您可選擇一律不讓此網站進入閒置狀態。</translation>
 <translation id="1265577313130862557">由於此檔案有危險，因此 Chromium 已禁止下載</translation>
 <translation id="126567311906253476">使用 <ph name="USER_EMAIL" /> 登入 Gmail 或 YouTube 等 Google 服務時，你可使用同一個帳戶自動登入 Chromium</translation>
@@ -328,6 +329,7 @@
 <translation id="549669000822060376">請稍候，Chromium 正在安裝最新的系統更新。</translation>
 <translation id="5496810170689441661">Chromium 正在嘗試編輯密碼。如果您同意的話，請輸入 Windows 密碼。</translation>
 <translation id="5527463683072221100">在 Chromium 中開啟 PDF</translation>
+<translation id="5568136785038042132">如要在所有電腦上取得你的擴充程式，請登入 Chromium</translation>
 <translation id="5575418445468216473">你現時儲存在 Google 帳戶的密碼和其他 Chromium 資料，將會從這部裝置移除。如想日後使用，請再次登入 Chromium。</translation>
 <translation id="5579324208890605088">啟動錯誤：請以一般使用者 (而非管理員) 身分執行安裝程式。</translation>
 <translation id="5596627076506792578">更多選項</translation>

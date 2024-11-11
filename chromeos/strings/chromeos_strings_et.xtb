@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Tuvastati tulemüür</translation>
 <translation id="1075811647922107217">Lehe suurus</translation>
-<translation id="108084407137234521">Alla <ph name="MIN_WORD_LENGTH" /> sõna pikkusega transkriptsioonist ei saa kokkuvõtet luua</translation>
 <translation id="1082009148392559545">Ekraanisäästja allalaadimine</translation>
 <translation id="1094693127011229778">IP-aadress pole saadaval</translation>
 <translation id="1100902271996134409">Kujutiste loomine …</translation>
@@ -307,6 +306,7 @@
 <translation id="2308243864813041101">Eemaldage seadme <ph name="DEVICE_NAME" /> USB-kaabel, et värskendamist jätkata</translation>
 <translation id="2320295602967756579">Heleda teema lubamine</translation>
 <translation id="2323506179655536734">VAHELE JÄETUD</translation>
+<translation id="2323755382216917952">See värskendus nõuab installimise lõpuleviimiseks teie arvuti taaskäivitamist. Selle värskenduse lõpulejõudmiseks võib kuluda mõni minut. Püsivara värskendamise ajal ärge arvutit vooluvõrgust eemaldage ega välja lülitage.</translation>
 <translation id="2324354238778375592">Hõljukaken</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Suurepärane (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -420,7 +420,6 @@
 <translation id="3031560714565892478">Seade on videokaamera.</translation>
 <translation id="3042927241478734594">Kas väljuda salvestamisest?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744">Üle <ph name="MAX_WORD_LENGTH" /> sõna pikkusega transkriptsioonist ei saa kokkuvõtet luua</translation>
 <translation id="3056720590588772262">Lõpp-punkt</translation>
 <translation id="3060579846059757016">Põhipunktid</translation>
 <translation id="3061850252076394168">luba funktsioon Vali ja kuula</translation>
@@ -450,6 +449,7 @@
 <translation id="3178532070248519384">avangard</translation>
 <translation id="3182676044300231689">Sisestage päring, nt „muuda see enesekindlamaks“</translation>
 <translation id="3188257591659621405">Minu failid</translation>
+<translation id="3188931456353313123">Selle värskenduse esitas seadme tootja ja Google pole seda kinnitanud.</translation>
 <translation id="319101249942218879">Avatari pilti muudeti</translation>
 <translation id="3192947282887913208">Helifailid</translation>
 <translation id="3199982728237701504">Dokumendisöötur (kahepoolne)</translation>
@@ -459,7 +459,6 @@
 <translation id="3226657629376379887">Paigutuse toimingute menüü</translation>
 <translation id="3227186760713762082">Jagage <ph name="CATEGORY_TEXT" /> arvuga <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Ümberkirjutamine</translation>
-<translation id="3245518008592055173">Alla <ph name="MIN_WORD_LENGTH" /> sõna pikkusega transkriptsioonile ei saa nimesid luua</translation>
 <translation id="3246869037381808805">Prinditööd, mis on vanemad kui 1 päev, eemaldatakse</translation>
 <translation id="324961752321393509">Teie administraator ei luba seda rakendust sulgeda</translation>
 <translation id="3263941347294171263">Katkestage seadme <ph name="DEVICE_NAME" /> ühendus ja ühendage see uuesti, et värskendamist jätkata</translation>
@@ -508,6 +507,7 @@
 <translation id="3488065109653206955">Osaliselt aktiveeritud</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> kontor, mis on <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Andmekasutust mõõdab teie Chromebook. See võib erineda teenusepakkuja andmetest.</translation>
+<translation id="349570724365779960">School Tools on ühendatud õpilastega</translation>
 <translation id="3502426834823382181">kõikide rakenduste kuvamine</translation>
 <translation id="3510890413042482857">Saada <ph name="BEGIN_LINK1" />toimivuse jälgimiseandmeid<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS-i värsken.</translation>
@@ -624,7 +624,6 @@
 <translation id="409427325554347132">Salvesta testi üksikasjad</translation>
 <translation id="409469431304488632">Eksperiment</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881">Üle <ph name="MAX_WORD_LENGTH" /> sõna pikkusega transkriptsioonile ei saa nimesid luua</translation>
 <translation id="4110686435123617899">Valige album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-puuteplaat</translation>
 <translation id="4113067922640381334">Teil on nüüd juurdepääs uutele <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />taustapiltidele<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
@@ -757,6 +756,7 @@
 <translation id="473775607612524610">Värskenda</translation>
 <translation id="4744944742468440486">Teie valikuga seotud teave</translation>
 <translation id="4771607256327216405">klaviatuuri heledamaks muutmine</translation>
+<translation id="4771923071974529837">homme</translation>
 <translation id="4773299976671772492">Peatatud</translation>
 <translation id="4778082030331381943">ametüstist</translation>
 <translation id="4782311465517282004">Hankige tekstil paremklõpsates või seda pikalt puudutades definitsioone, tõlkeid või ühikute teisendusi.</translation>
@@ -820,6 +820,7 @@
 <translation id="500920857929044050">Lõpeta test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Teema värv</translation>
+<translation id="5037240652947866174">täna</translation>
 <translation id="5038292761217083259">mitmevärviline klaviatuur</translation>
 <translation id="5039804452771397117">Luba</translation>
 <translation id="5049856988445523908">SIM on lukus (<ph name="LOCK_TYPE" />)</translation>

@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Брандмаэур анықталды.</translation>
 <translation id="1075811647922107217">Бет өлшемі</translation>
-<translation id="108084407137234521"><ph name="MIN_WORD_LENGTH" /> сөзге жетпейтін транскрипцияны қорытындылау мүмкін емес.</translation>
 <translation id="1082009148392559545">Скринсейверді жүктеп алу</translation>
 <translation id="1094693127011229778">IP мекенжайы жоқ.</translation>
 <translation id="1100902271996134409">Суреттер жасалып жатыр...</translation>
@@ -420,7 +419,6 @@
 <translation id="3031560714565892478">Бұл — бейнекамера.</translation>
 <translation id="3042927241478734594">Жазудан шығу керек пе?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
-<translation id="3055176406666937744"><ph name="MAX_WORD_LENGTH" /> сөзден асатын транскрипцияны қорытындылау мүмкін емес.</translation>
 <translation id="3056720590588772262">Соңғы нүкте</translation>
 <translation id="3060579846059757016">Негізгі қағидалар</translation>
 <translation id="3061850252076394168">Select to Speak функциясын қосу</translation>
@@ -459,7 +457,6 @@
 <translation id="3226657629376379887">Форматтың әрекеттер мәзірі</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> мәнін <ph name="CONVERSION_RATE" /> санына бөлу</translation>
 <translation id="3237710083340813756">Қайта жазу</translation>
-<translation id="3245518008592055173"><ph name="MIN_WORD_LENGTH" /> сөзге жетпейтін транскрипция үшін атаулар жасау мүмкін емес.</translation>
 <translation id="3246869037381808805">1 күннен асқан баспа жұмыстары өшіріледі.</translation>
 <translation id="324961752321393509">Әкімшіңіз бұл қолданбаны жабуға рұқсат бермейді</translation>
 <translation id="3263941347294171263">Жаңарту процесін жалғастыру үшін <ph name="DEVICE_NAME" /> құрылғысын ажыратып, қайта жалғаңыз.</translation>
@@ -624,7 +621,6 @@
 <translation id="409427325554347132">Сынақ мәліметтерін сақтау</translation>
 <translation id="409469431304488632">Эксперименттік</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881"><ph name="MAX_WORD_LENGTH" /> сөзден асатын транскрипция үшін атаулар жасау мүмкін емес.</translation>
 <translation id="4110686435123617899">"<ph name="TITLE" />" альбомын таңдаңыз (<ph name="DESC" />).</translation>
 <translation id="4111761024568264522">USB сенсорлық тақтасы</translation>
 <translation id="4113067922640381334">Енді жаңа <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />тұсқағаздар<ph name="END_LINK_WALLPAPER_SUBPAGE" /> пайдалана алатын боласыз</translation>

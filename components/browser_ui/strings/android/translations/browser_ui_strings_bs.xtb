@@ -170,7 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}one{<ph name="RWS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}few{<ph name="RWS_MEMBERS_COUNT" /> web lokacije u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}other{<ph name="RWS_MEMBERS_COUNT" /> web lokacija u grupi web lokacija čiji je vlasnik <ph name="RWS_OWNER" /> koje mogu vidjeti vašu aktivnost u grupi}}</translation>
 <translation id="3697164069658504920">Kada je postavka uključena, web lokacije mogu zatražiti da koriste USB uređaje. Kada je postavka isključena, web lokacije ne mogu koristiti USB uređaje.</translation>
 <translation id="3707034683772193706">Web lokacija koju posjećujete može putem Chromea sačuvati malu količinu informacija uglavnom da potvrdi da niste bot</translation>
-<translation id="3709818294139939629">Uklonjen je pristup web-lokacije datoteci</translation>
+<translation id="3709818294139939629">Pristup fajlu je uklonjen</translation>
 <translation id="3721953990244350188">Odbacivanje i prikazivanje sljedeće dostupne radnje</translation>
 <translation id="3744111561329211289">Sinhronizacija u pozadini</translation>
 <translation id="3763247130972274048">Dvaput dodirnite videozapis lijevo ili desno da preskočite 10 s</translation>
@@ -433,7 +433,7 @@
 <translation id="7425915948813553151">Tamna tema za web lokacije</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kada je postavka uključena, web lokacije mogu prikazivati upite za prijavu. Kada je postavka isključena, web lokacije ne mogu prikazivati upite za prijavu.</translation>
-<translation id="7553211568594248088">Zatvori pretraživanje centra</translation>
+<translation id="7553211568594248088">Izlaz iz pretraživanja središta</translation>
 <translation id="7554752735887601236">Web lokacija koristi vaš mikrofon</translation>
 <translation id="7561196759112975576">Uvijek</translation>
 <translation id="757524316907819857">Blokirajte reproduciranje zaštićenog sadržaja na web lokacijama</translation>

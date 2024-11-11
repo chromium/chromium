@@ -21,7 +21,6 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ফায়ারওয়াল শনাক্ত করা হয়েছে</translation>
 <translation id="1075811647922107217">পৃষ্ঠার সাইজ</translation>
-<translation id="108084407137234521"><ph name="MIN_WORD_LENGTH" />টির কম শব্দের ট্রান্সক্রিপ্ট সংক্ষিপ্ত করা যাবে না</translation>
 <translation id="1082009148392559545">স্ক্রিন সেভার ডাউনলোড করা হচ্ছে</translation>
 <translation id="1094693127011229778">IP অ্যাড্রেস উপলভ্য নয়</translation>
 <translation id="1100902271996134409">ছবি তৈরি হচ্ছে...</translation>
@@ -420,7 +419,6 @@
 <translation id="3031560714565892478">ডিভাইস একটি ভিডিও ক্যামেরা।</translation>
 <translation id="3042927241478734594">রেকর্ডিং থেকে বেরিয়ে আসতে চান?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
-<translation id="3055176406666937744"><ph name="MAX_WORD_LENGTH" />টির বেশি শব্দের ট্রান্সক্রিপ্ট সংক্ষিপ্ত করা যাবে না</translation>
 <translation id="3056720590588772262">এন্ডপয়েন্ট</translation>
 <translation id="3060579846059757016">আউটলাইন</translation>
 <translation id="3061850252076394168">বাছুন ও শুনুন ফিচার চালু করুন</translation>
@@ -459,7 +457,6 @@
 <translation id="3226657629376379887">লেআউট অ্যাকশন মেনু</translation>
 <translation id="3227186760713762082"><ph name="CONVERSION_RATE" /> মান দ্বারা <ph name="CATEGORY_TEXT" /> ভাগ করুন</translation>
 <translation id="3237710083340813756">আবার লিখুন</translation>
-<translation id="3245518008592055173"><ph name="MIN_WORD_LENGTH" />টির কম শব্দের ট্রান্সক্রিপ্টের নাম তৈরি করা যাবে না</translation>
 <translation id="3246869037381808805">১ দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
 <translation id="324961752321393509">আপনার অ্যাডমিনিস্ট্রেটর এই অ্যাপ বন্ধ করার অনুমতি দেয় না</translation>
 <translation id="3263941347294171263">প্রসেস আপডেট করা চালিয়ে যেতে <ph name="DEVICE_NAME" /> আনপ্লাগ করে প্লাগপয়েন্টে আবার লাগিয়ে দিন</translation>
@@ -624,7 +621,6 @@
 <translation id="409427325554347132">ডায়গনোসিস করে পাওয়া টেস্টের বিবরণ সেভ করুন</translation>
 <translation id="409469431304488632">পরীক্ষা</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
-<translation id="4105182082354119881"><ph name="MAX_WORD_LENGTH" />টির বেশি শব্দের ট্রান্সক্রিপ্টের নাম তৈরি করা যাবে না</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> অ্যালবাম বেছে নিন</translation>
 <translation id="4111761024568264522">ইউএসবি টাচপ্যাড</translation>
 <translation id="4113067922640381334">নতুন <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ওয়ালপেপারে<ph name="END_LINK_WALLPAPER_SUBPAGE" /> আপনার অ্যাকশন রয়েছে</translation>
