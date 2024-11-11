@@ -11,7 +11,7 @@
                 "abridged": false
             },
             "blink_perf.css": {
-                "end": 3,
+                "end": 4,
                 "abridged": false
             },
             "jetstream2": {
@@ -29,7 +29,7 @@
     "1": {
         "benchmarks": {
             "blink_perf.css": {
-                "begin": 3,
+                "begin": 4,
                 "abridged": false
             },
             "blink_perf.dom": {
@@ -39,7 +39,7 @@
                 "abridged": false
             },
             "blink_perf.image_decoder": {
-                "end": 2,
+                "end": 4,
                 "abridged": false
             },
             "jetstream2": {
@@ -57,11 +57,11 @@
     "2": {
         "benchmarks": {
             "blink_perf.image_decoder": {
-                "begin": 2,
+                "begin": 4,
                 "abridged": false
             },
             "blink_perf.layout": {
-                "end": 108,
+                "end": 110,
                 "abridged": false
             },
             "jetstream2": {
@@ -79,7 +79,7 @@
     "3": {
         "benchmarks": {
             "blink_perf.layout": {
-                "begin": 108,
+                "begin": 110,
                 "abridged": false
             },
             "blink_perf.owp_storage": {
@@ -112,6 +112,14 @@
             "speedometer3": {
                 "abridged": false,
                 "pageset_repeat": 4
+            }
+        },
+        "executables": {
+            "components_perftests": {
+                "arguments": [
+                    "--xvfb"
+                ],
+                "path": "components_perftests"
             }
         }
     },
@@ -147,12 +155,12 @@
                 "pageset_repeat": 4
             }
         },
-        "executables": {
-            "components_perftests": {
+        "crossbench": {
+            "loadline-phone": {
+                "display_name": "loadline_phone.crossbench",
                 "arguments": [
-                    "--xvfb"
-                ],
-                "path": "components_perftests"
+                    "--repeat=1"
+                ]
             }
         }
     },
@@ -294,15 +302,15 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1124,
-        "predicted_min_shard_time": 4126.0,
-        "predicted_min_shard_index": 0,
+        "num_stories": 1125,
+        "predicted_min_shard_time": 4136.0,
+        "predicted_min_shard_index": 5,
         "predicted_max_shard_time": 4467.0,
         "predicted_max_shard_index": 13,
-        "shard #0": 4126.0,
-        "shard #1": 4150.0,
-        "shard #2": 4153.0,
-        "shard #3": 4143.0,
+        "shard #0": 4177.0,
+        "shard #1": 4166.0,
+        "shard #2": 4150.0,
+        "shard #3": 4139.0,
         "shard #4": 4162.0,
         "shard #5": 4136.0,
         "shard #6": 4167.0,

@@ -394,6 +394,13 @@ def _crossbench_jetstream2_1(estimated_runtime=180):
                           estimated_runtime=estimated_runtime)
 
 
+def _crossbench_loadline_phone(estimated_runtime=60, arguments=None):
+  return CrossbenchConfig('loadline_phone.crossbench',
+                          'loadline-phone',
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
+
+
 _CROSSBENCH_JETSTREAM_SPEEDOMETER = frozenset([
     _crossbench_jetstream2_1(),
     _crossbench_speedometer3_0(),
@@ -411,8 +418,9 @@ _CROSSBENCH_BENCHMARKS_ALL = frozenset([
 ])
 
 # TODO(b/338630584): Remove it when other benchmarks can be run on Android.
-_CROSSBENCH_SPEEDOMETER = frozenset([
+_CROSSBENCH_ANDROID = frozenset([
     _crossbench_speedometer3_0(arguments=['--fileserver']),
+    _crossbench_loadline_phone(arguments=['--repeat=1']),
 ])
 
 _CHROME_HEALTH_BENCHMARK_CONFIGS_DESKTOP = PerfSuite(
@@ -882,7 +890,7 @@ ANDROID_PIXEL6 = PerfPlatform('android-pixel6-perf',
                               14,
                               'android',
                               executables=_ANDROID_PIXEL6_EXECUTABLE_CONFIGS,
-                              crossbench=_CROSSBENCH_SPEEDOMETER)
+                              crossbench=_CROSSBENCH_ANDROID)
 ANDROID_PIXEL6_PGO = PerfPlatform(
     'android-pixel6-perf-pgo',
     'Android U',
@@ -890,7 +898,7 @@ ANDROID_PIXEL6_PGO = PerfPlatform(
     8,
     'android',
     executables=_ANDROID_PIXEL6_PGO_EXECUTABLE_CONFIGS,
-    crossbench=_CROSSBENCH_SPEEDOMETER)
+    crossbench=_CROSSBENCH_ANDROID)
 ANDROID_PIXEL6_PRO = PerfPlatform(
     'android-pixel6-pro-perf',
     'Android T',
