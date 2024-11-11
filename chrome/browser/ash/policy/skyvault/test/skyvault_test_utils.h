@@ -69,7 +69,7 @@ class MockMigrationCoordinator : public MigrationCoordinator {
   void OnMigrationDone(MigrationDoneCallback callback,
                        std::map<base::FilePath, MigrationUploadError> errors,
                        base::FilePath upload_root_path,
-                       std::optional<base::FilePath> error_log_path) override;
+                       base::FilePath error_log_path) override;
 
   // By default waits some minutes and completes the upload successfully.
   MOCK_METHOD(void,

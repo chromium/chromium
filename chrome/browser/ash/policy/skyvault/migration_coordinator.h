@@ -27,7 +27,7 @@ namespace policy::local_user_files {
 using MigrationDoneCallback =
     base::OnceCallback<void(std::map<base::FilePath, MigrationUploadError>,
                             base::FilePath,
-                            std::optional<base::FilePath>)>;
+                            base::FilePath)>;
 
 // Callback to signal that migration has completely stopped and can be
 // restarted.
@@ -63,6 +63,7 @@ class MigrationCoordinator {
 
   // Sets the `cb` to be invoked when all the uploads are stopped.
   void SetCancelledCallbackForTesting(base::OnceClosure cb);
+  void SetErrorLogPathForTesting(const base::FilePath& path);
 
  private:
   // Called after underlying upload operation completes.
@@ -70,10 +71,12 @@ class MigrationCoordinator {
       MigrationDoneCallback callback,
       std::map<base::FilePath, MigrationUploadError> errors,
       base::FilePath upload_root_path,
-      std::optional<base::FilePath> error_log_path);
+      base::FilePath error_log_path);
 
   // Profile for which this instance was created.
   raw_ptr<Profile> profile_;
+
+  base::FilePath error_log_path_;
 
   // The implementation of the upload process, specific to the
   // `cloud_provider` argument passed to the `Run` method.
@@ -93,6 +96,7 @@ class MigrationCloudUploader {
   MigrationCloudUploader(Profile* profile,
                          std::vector<base::FilePath> files,
                          const std::string& upload_root,
+                         const base::FilePath& error_log_path,
                          MigrationDoneCallback callback);
   MigrationCloudUploader(const MigrationCloudUploader&) = delete;
   MigrationCloudUploader& operator=(const MigrationCloudUploader&) = delete;
@@ -145,6 +149,7 @@ class OneDriveMigrationUploader : public MigrationCloudUploader {
   OneDriveMigrationUploader(Profile* profile,
                             std::vector<base::FilePath> files,
                             const std::string& upload_root,
+                            const base::FilePath& error_log_path,
                             MigrationDoneCallback callback);
   OneDriveMigrationUploader(const OneDriveMigrationUploader&) = delete;
   OneDriveMigrationUploader& operator=(const OneDriveMigrationUploader&) =
@@ -184,6 +189,7 @@ class GoogleDriveMigrationUploader : public MigrationCloudUploader {
   GoogleDriveMigrationUploader(Profile* profile,
                                std::vector<base::FilePath> files,
                                const std::string& upload_root,
+                               const base::FilePath& error_log_path,
                                MigrationDoneCallback callback);
   GoogleDriveMigrationUploader(const GoogleDriveMigrationUploader&) = delete;
   GoogleDriveMigrationUploader& operator=(const GoogleDriveMigrationUploader&) =

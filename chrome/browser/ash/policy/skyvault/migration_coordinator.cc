@@ -18,7 +18,6 @@
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
-#include "base/path_service.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
@@ -104,7 +103,6 @@ base::File CreateOrOpenLogFile(Profile* profile, base::FilePath path) {
   if (!error_log_file_.IsValid()) {
     PLOG(ERROR) << "Failed to open migration error log file.";
   }
-  // TODO(aidazolic): Do we need a header?
   return error_log_file_;
 }
 
@@ -122,16 +120,13 @@ void LogError(base::File& error_log_file,
   error_log_file.WriteAtCurrentPos(log_entry.c_str(), log_entry.size());
 }
 
-base::FilePath GetLogPath() {
-  base::FilePath home_dir;
-  CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
-  return home_dir.AppendASCII(kErrorLogFileName);
-}
-
 }  // namespace
 
 MigrationCoordinator::MigrationCoordinator(Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile) {
+  error_log_path_ =
+      base::FilePath(kErrorLogFileBasePath).Append(kErrorLogFileName);
+}
 
 MigrationCoordinator::~MigrationCoordinator() = default;
 
@@ -147,11 +142,13 @@ void MigrationCoordinator::Run(CloudProvider cloud_provider,
   switch (cloud_provider) {
     case CloudProvider::kGoogleDrive:
       uploader_ = std::make_unique<GoogleDriveMigrationUploader>(
-          profile_, std::move(files), upload_root, std::move(wrapped_callback));
+          profile_, std::move(files), upload_root, error_log_path_,
+          std::move(wrapped_callback));
       break;
     case CloudProvider::kOneDrive:
       uploader_ = std::make_unique<OneDriveMigrationUploader>(
-          profile_, std::move(files), upload_root, std::move(wrapped_callback));
+          profile_, std::move(files), upload_root, error_log_path_,
+          std::move(wrapped_callback));
       break;
     case CloudProvider::kNotSpecified:
       NOTREACHED()
@@ -170,7 +167,7 @@ void MigrationCoordinator::Cancel(MigrationStoppedCallback callback) {
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&base::DeleteFile, GetLogPath()), std::move(callback));
+      base::BindOnce(&base::DeleteFile, error_log_path_), std::move(callback));
 }
 
 bool MigrationCoordinator::IsRunning() const {
@@ -183,11 +180,17 @@ void MigrationCoordinator::SetCancelledCallbackForTesting(
   cancelled_cb_for_testing_ = std::move(cb);
 }
 
+void MigrationCoordinator::SetErrorLogPathForTesting(
+    const base::FilePath& path) {
+  CHECK_IS_TEST();
+  error_log_path_ = path;
+}
+
 void MigrationCoordinator::OnMigrationDone(
     MigrationDoneCallback callback,
     std::map<base::FilePath, MigrationUploadError> errors,
     base::FilePath upload_root_path,
-    std::optional<base::FilePath> error_log_path) {
+    base::FilePath error_log_path) {
   uploader_.reset();
   std::move(callback).Run(std::move(errors), upload_root_path, error_log_path);
 }
@@ -196,11 +199,13 @@ MigrationCloudUploader::MigrationCloudUploader(
     Profile* profile,
     std::vector<base::FilePath> files,
     const std::string& upload_root,
+    const base::FilePath& error_log_path,
     MigrationDoneCallback callback)
     : profile_(profile),
       files_(std::move(files)),
       upload_root_(upload_root),
       done_callback_(std::move(callback)),
+      error_log_path_(error_log_path),
       log_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {}
@@ -218,7 +223,6 @@ void MigrationCloudUploader::Run() {
     return;
   }
 
-  error_log_path_ = GetLogPath();
   log_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&CreateOrOpenLogFile, profile_, error_log_path_),
@@ -230,10 +234,12 @@ OneDriveMigrationUploader::OneDriveMigrationUploader(
     Profile* profile,
     std::vector<base::FilePath> files,
     const std::string& upload_root,
+    const base::FilePath& error_log_path,
     MigrationDoneCallback callback)
     : MigrationCloudUploader(profile,
                              std::move(files),
                              upload_root,
+                             error_log_path,
                              std::move(callback)) {}
 
 OneDriveMigrationUploader::~OneDriveMigrationUploader() = default;
@@ -333,10 +339,12 @@ GoogleDriveMigrationUploader::GoogleDriveMigrationUploader(
     Profile* profile,
     std::vector<base::FilePath> files,
     const std::string& upload_root,
+    const base::FilePath& error_log_path,
     MigrationDoneCallback callback)
     : MigrationCloudUploader(profile,
                              std::move(files),
                              upload_root,
+                             error_log_path,
                              std::move(callback)) {}
 
 GoogleDriveMigrationUploader::~GoogleDriveMigrationUploader() = default;

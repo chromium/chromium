@@ -57,7 +57,7 @@ void MockMigrationCoordinator::OnMigrationDone(
     MigrationDoneCallback callback,
     std::map<base::FilePath, MigrationUploadError> errors,
     base::FilePath upload_root_path,
-    std::optional<base::FilePath> error_log_path) {
+    base::FilePath error_log_path) {
   if (is_running_) {
     std::move(callback).Run(std::move(errors), upload_root_path,
                             error_log_path);

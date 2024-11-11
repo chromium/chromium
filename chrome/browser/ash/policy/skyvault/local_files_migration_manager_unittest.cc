@@ -215,7 +215,8 @@ TEST_F(LocalFilesMigrationManagerTest, HandlesMigrationFailures) {
             {
                 {base::FilePath("test.txt"), MigrationUploadError::kCopyFailed},
             },
-            base::FilePath(), base::FilePath());
+            base::FilePath(),
+            base::FilePath(kErrorLogFileBasePath).Append(kErrorLogFileName));
         run_future.SetValue();
       });
 
@@ -295,7 +296,8 @@ TEST_F(LocalFilesMigrationManagerTest, DoesNotRetryWhenFatal) {
                 {base::FilePath("test.txt"),
                  MigrationUploadError::kCloudQuotaFull},
             },
-            base::FilePath(), base::FilePath());
+            base::FilePath(),
+            base::FilePath(kErrorLogFileBasePath).Append(kErrorLogFileName));
         run_future.SetValue();
       });
 

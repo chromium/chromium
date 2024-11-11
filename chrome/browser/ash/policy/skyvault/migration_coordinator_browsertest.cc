@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -100,9 +101,8 @@ class OneDriveMigrationCoordinatorTest : public SkyvaultOneDriveTest {
   void SetUpOnMainThread() override {
     SkyvaultOneDriveTest::SetUpOnMainThread();
 
-    base::FilePath home_dir;
-    CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
-    error_log_path_ = home_dir.AppendASCII(kErrorLogFileName);
+    CHECK(temp_dir_.CreateUniqueTempDir());
+    error_log_path_ = temp_dir_.GetPath().AppendASCII(kErrorLogFileName);
   }
 
   OneDriveMigrationCoordinatorTest(const OneDriveMigrationCoordinatorTest&) =
@@ -142,6 +142,8 @@ class OneDriveMigrationCoordinatorTest : public SkyvaultOneDriveTest {
     return std::move(uploader);
   }
 
+  base::ScopedTempDir temp_dir_;
+  // Expected error log path.
   base::FilePath error_log_path_;
   // Local pointer to the instance created by the factory method. Should be used
   // for single file uploads, as only the last created pointer is stored.
@@ -170,8 +172,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, SuccessfulUpload) {
   base::FilePath nested_file_path = CopyTestFile(nested_file, dir_path);
 
   MigrationCoordinator coordinator(profile());
+  coordinator.SetErrorLogPathForTesting(error_log_path_);
   base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>,
-                         base::FilePath, std::optional<base::FilePath>>
+                         base::FilePath, base::FilePath>
       future;
   // Upload the files.
   coordinator.Run(CloudProvider::kOneDrive, {file_path, nested_file_path},
@@ -215,8 +218,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest,
   base::FilePath file_path = CopyTestFile(file, my_files_dir());
 
   MigrationCoordinator coordinator(profile());
+  coordinator.SetErrorLogPathForTesting(error_log_path_);
   base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>,
-                         base::FilePath, std::optional<base::FilePath>>
+                         base::FilePath, base::FilePath>
       future;
   // Upload the file.
   coordinator.Run(CloudProvider::kOneDrive, {file_path}, kUploadRootPrefix,
@@ -245,8 +249,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, EmptyUrls) {
   SetUpODFS();
 
   MigrationCoordinator coordinator(profile());
+  coordinator.SetErrorLogPathForTesting(error_log_path_);
   base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>,
-                         base::FilePath, std::optional<base::FilePath>>
+                         base::FilePath, base::FilePath>
       future;
   coordinator.Run(CloudProvider::kOneDrive, {}, kUploadRootPrefix,
                   future.GetCallback());
@@ -273,6 +278,7 @@ IN_PROC_BROWSER_TEST_F(OneDriveMigrationCoordinatorTest, CancelUpload) {
   base::FilePath file_path = CopyTestFile(test_file_name, my_files_dir());
 
   MigrationCoordinator coordinator(profile());
+  coordinator.SetErrorLogPathForTesting(error_log_path_);
   coordinator.Run(CloudProvider::kOneDrive, {file_path}, kUploadRootPrefix,
                   base::DoNothing());
 
@@ -310,9 +316,8 @@ class GoogleDriveMigrationCoordinatorTest : public SkyvaultGoogleDriveTest {
   void SetUpOnMainThread() override {
     SkyvaultGoogleDriveTest::SetUpOnMainThread();
 
-    base::FilePath home_dir;
-    CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
-    error_log_path_ = home_dir.AppendASCII(kErrorLogFileName);
+    CHECK(temp_dir_.CreateUniqueTempDir());
+    error_log_path_ = temp_dir_.GetPath().AppendASCII(kErrorLogFileName);
   }
 
   base::FilePath observed_relative_drive_path(const FileInfo& info) override {
@@ -329,6 +334,8 @@ class GoogleDriveMigrationCoordinatorTest : public SkyvaultGoogleDriveTest {
   SyncStatus sync_status_ = SyncStatus::kCompleted;
   // Invoked when the copy is in progress.
   base::RepeatingClosure on_transfer_in_progress_callback_;
+  base::ScopedTempDir temp_dir_;
+  // Expected error log path.
   base::FilePath error_log_path_;
 
  private:
@@ -445,8 +452,9 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, SuccessfulUpload) {
           base::test::RunOnceCallback<1>(drive::FileError::FILE_ERROR_OK));
 
   MigrationCoordinator coordinator(profile());
+  coordinator.SetErrorLogPathForTesting(error_log_path_);
   base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>,
-                         base::FilePath, std::optional<base::FilePath>>
+                         base::FilePath, base::FilePath>
       future;
   // Upload the files.
   coordinator.Run(CloudProvider::kGoogleDrive, {nested_file_path},
@@ -489,8 +497,9 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, FailedUpload) {
           base::test::RunOnceCallback<1>(drive::FileError::FILE_ERROR_FAILED));
 
   MigrationCoordinator coordinator(profile());
+  coordinator.SetErrorLogPathForTesting(error_log_path_);
   base::test::TestFuture<std::map<base::FilePath, MigrationUploadError>,
-                         base::FilePath, std::optional<base::FilePath>>
+                         base::FilePath, base::FilePath>
       future;
   // Upload the files.
   coordinator.Run(CloudProvider::kGoogleDrive, {file_path}, kUploadRootPrefix,
@@ -527,6 +536,7 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveMigrationCoordinatorTest, CancelUpload) {
   base::FilePath file_path = SetUpSourceFile(file, my_files_dir());
 
   MigrationCoordinator coordinator(profile());
+  coordinator.SetErrorLogPathForTesting(error_log_path_);
   base::RunLoop run_loop;
   coordinator.SetCancelledCallbackForTesting(
       base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));

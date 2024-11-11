@@ -533,7 +533,7 @@ void LocalFilesMigrationManager::StartMigration(
 void LocalFilesMigrationManager::OnMigrationDone(
     std::map<base::FilePath, MigrationUploadError> errors,
     base::FilePath upload_root_path,
-    std::optional<base::FilePath> error_log_path) {
+    base::FilePath error_log_path) {
   if (state_ != State::kInProgress) {
     LOG(ERROR) << "Wrong state in migration done";
     SkyVaultMigrationWrongStateHistogram(
@@ -572,16 +572,11 @@ void LocalFilesMigrationManager::OnMigrationDone(
 
 void LocalFilesMigrationManager::ProcessErrors(
     std::map<base::FilePath, MigrationUploadError> errors,
-    std::optional<base::FilePath> error_log_path) {
+    base::FilePath error_log_path) {
   CHECK(state_ == State::kFailure);
   CHECK(!errors.empty());
-  // TODO(351971781): Process retryable errors/show correct message.
-  if (!error_log_path.has_value()) {
-    LOG(ERROR) << "Local files migration log file path invalid.";
-    return;
-  }
   notification_manager_->ShowMigrationErrorNotification(
-      cloud_provider_, upload_root_, error_log_path.value());
+      cloud_provider_, upload_root_, error_log_path);
 }
 
 void LocalFilesMigrationManager::CleanupLocalFiles() {
