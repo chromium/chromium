@@ -5044,7 +5044,6 @@ Chính sách này sẽ không có hiệu lực khi bạn đặt chính sách <ph
 <translation id="4725801978265372736">Yêu cầu tên của người dùng cục bộ và chủ sở hữu máy chủ truy cập từ xa phải khớp với nhau</translation>
 <translation id="4726228171190098009">Không cho phép thiết bị yêu cầu định dạng lại</translation>
 <translation id="4726895359147376813">Liên kết từ mã cố định đến cấu hình máy ảo</translation>
-<translation id="4729091573952050200">Luôn sử dụng Translator API</translation>
 <translation id="4732069502693984686">Bật tính năng tự động chụp ảnh nhiều màn hình</translation>
 <translation id="4733471537137819387">Các chính sách liên quan đến xác thực HTTP tích hợp.</translation>
 <translation id="473673197014866318">Nếu bạn đặt chính sách này, hệ thống sẽ kiểm soát các chế độ cài đặt quản lý tiện ích cho <ph name="PRODUCT_NAME" />, bao gồm cả những chế độ cài đặt chịu sự kiểm soát của các chính sách hiện có liên quan đến tiện ích. Chính sách này sẽ thay thế mọi chính sách cũ mà bạn có thể đã đặt.
@@ -9981,15 +9980,6 @@ Bạn có thể xem thêm thông tin về công nghệ cũ tại https://chromes
 <translation id="8331479227794770304">Bật phím cố định</translation>
 <translation id="8332822245414537447">Tắt tuỳ chọn kiểm tra việc sử dụng khoá RSA</translation>
 <translation id="8334685561819743286">Tắt tính năng tự động sửa lỗi khi nhập bằng bàn phím vật lý khi người dùng đánh máy</translation>
-<translation id="8336819406993366823">Nếu bạn đặt chính sách này thành <ph name="ENABLED_VALUE_NAME" /> thì hệ thống sẽ cho phép sử dụng API toàn màn hình có tiền tố dành riêng cho video (ví dụ: Video.webkitEnterFullscreen()) qua JavaScript.
-
-Nếu bạn đặt chính sách này thành <ph name="DISABLED_VALUE_NAME" /> thì hệ thống sẽ không cho phép sử dụng API toàn màn hình có tiền tố dành riêng cho video qua JavaScript và chỉ giữ lại các API toàn màn hình tiêu chuẩn (ví dụ: Element.requestFullscreen()).
-
-Nếu bạn đặt chính sách này thành <ph name="RUNTIME_ENABLED_VALUE_NAME" /> thì hệ thống sẽ cho phép cờ tính năng hỗ trợ thời gian chạy PrefixedFullscreenVideo xác định xem API toàn màn hình có tiền tố dành riêng cho video có dùng được cho các trang web hay không.
-
-Nếu bạn không đặt chính sách này, hành vi mặc định sẽ là <ph name="RUNTIME_ENABLED_VALUE_NAME" />.
-
-Lưu ý: Chính sách này là giải pháp tạm thời nhằm hỗ trợ cho quá trình ngừng sử dụng API toàn màn hình có tiền tố webkit. Chính sách này dự kiến sẽ bị loại bỏ trong phiên bản M130 hoặc trong một số bản phát hành tiếp theo.</translation>
 <translation id="8337114537412769126">Nếu bạn bật <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, thì thao tác đặt <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> sẽ chỉ định thông số khi thực hiện tìm kiếm theo đề xuất bằng yêu cầu POST. Thông số này bao gồm các cặp tên/giá trị phân tách bằng dấu phẩy. Nếu một giá trị là thông số mẫu, chẳng hạn như<ph name="SEARCH_TERM_MARKER" />, thì dữ liệu cụm từ tìm kiếm thực sẽ thay thế thông số này.
 
       Nếu bạn không đặt <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />, thì yêu cầu tìm kiếm theo đề xuất sẽ được gửi bằng phương thức GET.</translation>

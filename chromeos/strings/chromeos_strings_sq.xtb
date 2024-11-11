@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Imazhet po krijohen...</translation>
 <translation id="1116694919640316211">Informacione</translation>
 <translation id="1118572504348554005">Ne mund t'i ndajmë komentet e dërguara nëpërmjet këtij formulari me partnerët tanë për të zgjidhur problemet për defektet në kod dhe probleme të tjera që ti i raporton te ne. Mos përfshi informacione delikate si p.sh. fjalëkalime.</translation>
+<translation id="1119403468619527527">Shumë pak fjalë për t'i thjeshtuar</translation>
 <translation id="1119447706177454957">Gabim i brendshëm</translation>
 <translation id="1124772482545689468">Përdoruesi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Pajisja nuk mund të testohet. Kalo te modaliteti i laptopit për të kryer testin.</translation>
 <translation id="3916998944874125962">nxirr një pamje të ekranit</translation>
 <translation id="3923184630988645767">Përdorimi i të dhënave</translation>
+<translation id="3924445055519423964">Kliko për të përmbledhur faqen e uebit/skedarin PDF</translation>
 <translation id="3932043219784172185">Nuk është lidhur asnjë pajisje</translation>
 <translation id="3934185438132762746">Nuk është caktuar (<ph name="CONTROL_TYPE" />)</translation>
 <translation id="3941014780699102620">Zgjidhja e pritësit dështoi</translation>
@@ -814,6 +816,7 @@
 <translation id="4988526792673242964">Faqet</translation>
 <translation id="4989542687859782284">Nuk ofrohen</translation>
 <translation id="4999333166442584738">Fshih raportin</translation>
+<translation id="5005695757087124131">Kliko për të thjeshtuar tekstin e zgjedhur</translation>
 <translation id="500920857929044050">Ndalo testin</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Ngjyra e temës</translation>
@@ -1334,6 +1337,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> është gati për t'u përditësuar</translation>
 <translation id="741244894080940828">konvertimi</translation>
 <translation id="7415801143053185905">Vonesë shumë e lartë e HTTP-së</translation>
+<translation id="7418738250896500352">Shumë fjalë për t'i thjeshtuar</translation>
 <translation id="7425037327577270384">Më ndihmo të shkruaj</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Kjo APN nuk mund të çaktivizohet apo të hiqet. Sigurohu që të çaktivizohen ose të hiqen APN-të e aktivizuara <ph name="ATTACH" />.</translation>
@@ -1549,6 +1553,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8476942730579767658">Dritaret dhe tavolinat e punës</translation>
 <translation id="8477536061607044749">e dizajnit grafik</translation>
 <translation id="8477551185774834963">Vonesa e DNS-së është pak më lart se pragu i lejueshëm</translation>
+<translation id="8482376765267780829">Zgjidh një pjesë të tekstit për ta thjeshtuar</translation>
 <translation id="8483248364096924578">Adresa e IP-së</translation>
 <translation id="8491311378305535241">Nuk mund të lidhesh me uebsajtet HTTPS nëpërmjet murit mbrojtës nga aplikacionet për Android</translation>
 <translation id="8495070016475833911">lesh të presuar</translation>
@@ -1678,6 +1683,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="9082718469794970195">Përdor këtë video</translation>
 <translation id="9087578468327036362">Raportoje këtë kërkesë</translation>
 <translation id="9088306295921699330">Përdorimi aktual</translation>
+<translation id="9088994563996376283">Thjeshto</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Më shumë informacione për "Datën e rivendosjes"</translation>
 <translation id="9100765901046053179">Cilësimet e përparuara</translation>

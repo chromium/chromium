@@ -307,6 +307,7 @@
 <translation id="2308243864813041101">Taktu USB-snúru <ph name="DEVICE_NAME" /> úr sambandi til að halda uppfærsluferlinu áfram</translation>
 <translation id="2320295602967756579">Virkja ljóst þema</translation>
 <translation id="2323506179655536734">SLEPPT</translation>
+<translation id="2323755382216917952">Þessi uppfærsla krefst þess að þú endurræsir tölvuna þína til að ljúka við uppsetningu. Uppfærslan gæti tekið nokkrar mínútur. Ekki taka tölvuna þína úr sambandi eða slökkva á henni á meðan fastbúnaðurinn er að uppfærast.</translation>
 <translation id="2324354238778375592">Fljótandi</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Frábær (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -450,6 +451,7 @@
 <translation id="3178532070248519384">framúrstefnustíl</translation>
 <translation id="3182676044300231689">Sláðu inn skipun á borð við „hljóma öruggari“</translation>
 <translation id="3188257591659621405">Skrárnar mínar</translation>
+<translation id="3188931456353313123">Þessi uppfærsla er veitt af framleiðanda tækisins og Google hefur ekki staðfest hana.</translation>
 <translation id="319101249942218879">Notandamynd var breytt</translation>
 <translation id="3192947282887913208">Hljóðskrár</translation>
 <translation id="3199982728237701504">Skjalamatari (tvíhliða)</translation>
@@ -508,6 +510,7 @@
 <translation id="3488065109653206955">Virkjað að hluta</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> skrifstofa í <ph name="OFFICE_COLOR" /> litatónum</translation>
 <translation id="3493187369049186498">Chromebook-tækið mælir gögnin þín. Þau kunna að vera aðskilin gögnum þjónustuveitanda.</translation>
+<translation id="349570724365779960">Nemendur eru tengdir við School Tools</translation>
 <translation id="3502426834823382181">skoða öll forrit</translation>
 <translation id="3510890413042482857">Senda <ph name="BEGIN_LINK1" />rakningargögn um afköst<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS uppfærsla</translation>
@@ -757,6 +760,7 @@
 <translation id="473775607612524610">Uppfæra</translation>
 <translation id="4744944742468440486">Upplýsingar sem tengjast vali þínu</translation>
 <translation id="4771607256327216405">lýsa lyklaborð</translation>
+<translation id="4771923071974529837">á morgun</translation>
 <translation id="4773299976671772492">Stöðvað</translation>
 <translation id="4778082030331381943">ametýst</translation>
 <translation id="4782311465517282004">Fáðu skilgreiningar, þýðingar eða umreikninga mæligilda þegar þú hægrismellir eða heldur texta inni</translation>
@@ -820,6 +824,7 @@
 <translation id="500920857929044050">Stöðva próf</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Þemalitur</translation>
+<translation id="5037240652947866174">í dag</translation>
 <translation id="5038292761217083259">lyklaborð í mörgum litum</translation>
 <translation id="5039804452771397117">Leyfa</translation>
 <translation id="5049856988445523908">SIM læst (<ph name="LOCK_TYPE" />)</translation>

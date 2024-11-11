@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Створення зображень…</translation>
 <translation id="1116694919640316211">Про Google Chrome</translation>
 <translation id="1118572504348554005">Ми можемо ділитися з нашими партнерами відгуками, надісланими через цю форму, щоб вирішувати проблеми, про які ви нас повідомляєте. Не вказуйте конфіденційну інформацію, як-от паролі.</translation>
+<translation id="1119403468619527527">Замало слів, щоб спростити текст</translation>
 <translation id="1119447706177454957">Внутрішня помилка</translation>
 <translation id="1124772482545689468">Користувач</translation>
 <translation id="1128128132059598906">EAP – TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Не вдалося перевірити клавіатуру. Перейдіть у режим ноутбука й повторіть спробу.</translation>
 <translation id="3916998944874125962">зробити знімок екрана</translation>
 <translation id="3923184630988645767">Використання трафіку</translation>
+<translation id="3924445055519423964">Натисніть, щоб отримати короткий виклад вебсторінки або файлу PDF</translation>
 <translation id="3932043219784172185">Немає підключених пристроїв</translation>
 <translation id="3934185438132762746">Не призначено: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">не вдалося розпізнати хост</translation>
@@ -814,6 +816,7 @@
 <translation id="4988526792673242964">Сторінки</translation>
 <translation id="4989542687859782284">Недоступні</translation>
 <translation id="4999333166442584738">Сховати звіт</translation>
+<translation id="5005695757087124131">Натисніть, щоб спростити вибраний текст</translation>
 <translation id="500920857929044050">Зупинити перевірку</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Колір теми</translation>
@@ -1334,6 +1337,7 @@
 <translation id="7405493795721832710">Пристрій <ph name="DEVICE_NAME" /> готовий до оновлення</translation>
 <translation id="741244894080940828">конвертація</translation>
 <translation id="7415801143053185905">Дуже велика затримка HTTP</translation>
+<translation id="7418738250896500352">Забагато слів, щоб спростити текст</translation>
 <translation id="7425037327577270384">Допомога з текстом</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Не вдалося вимкнути або вилучити цю точку доступу. Переконайтеся, що ввімкнені точки доступу <ph name="ATTACH" /> вимкнено або вилучено.</translation>
@@ -1550,6 +1554,7 @@
 <translation id="8476942730579767658">Вікна й робочі столи</translation>
 <translation id="8477536061607044749">графічний дизайн</translation>
 <translation id="8477551185774834963">Затримка DNS трохи довша, ніж дозволено</translation>
+<translation id="8482376765267780829">Щоб спростити текст, виділіть його</translation>
 <translation id="8483248364096924578">IP-адреса</translation>
 <translation id="8491311378305535241">Не вдається підключитися з додатків для Android до веб-сайтів HTTP через брандмауер</translation>
 <translation id="8495070016475833911">фетру</translation>
@@ -1679,6 +1684,7 @@
 <translation id="9082718469794970195">Використати це відео</translation>
 <translation id="9087578468327036362">Повідомити про проблеми із запитом</translation>
 <translation id="9088306295921699330">Використовується</translation>
+<translation id="9088994563996376283">Спростити</translation>
 <translation id="9095775724867566971">PluginVM</translation>
 <translation id="909856219855259344">Докладніше про скидання дати</translation>
 <translation id="9100765901046053179">Розширені налаштування</translation>

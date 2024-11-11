@@ -806,7 +806,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1561331397460162942">Tindakan ini mengizinkan akses lokasi untuk aplikasi dan situs yang memiliki izin akses lokasi, serta layanan sistem</translation>
 <translation id="1562119309884184621">Begitu kontak ini ditambahkan, sistem akan mengingatnya saat berbagi pada waktu berikutnya</translation>
 <translation id="1563137369682381456">Tanggal habis masa berlaku</translation>
-<translation id="1563702743503072935">Sandi dari Akun Google Anda juga akan tersedia di perangkat ini saat Anda login</translation>
 <translation id="1566049601598938765">Situs web</translation>
 <translation id="15662109988763471">Printer yang dipilih tidak tersedia atau tidak diinstal dengan benar. Periksa printer Anda atau coba pilih printer lainnya.</translation>
 <translation id="1566329594234563241">Saat tidak aktif dan dicolokkan</translation>
@@ -3139,7 +3138,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3177909033752230686">Bahasa Halaman:</translation>
 <translation id="3177914167275935955">Perangkat Anda menyertakan Chrome Education Upgrade, tetapi nama pengguna Anda tidak dikaitkan dengan akun Google for Education. Buat akun Google for Education dengan membuka g.co/workspace/edusignup di perangkat sekunder.</translation>
 <translation id="3179982752812949580">Font teks</translation>
-<translation id="3180175986308160674">Membuat pertanyaan tentang halaman ini…</translation>
 <translation id="3180284704187420717">Simpan bookmark, sandi, dan yang lainnya dengan sinkronisasi</translation>
 <translation id="3180990259147710757">Menggerakkan rahang ke kiri</translation>
 <translation id="3181954750937456830">Safe Browsing (melindungi Anda dan perangkat dari situs berbahaya)</translation>
@@ -3802,6 +3800,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3662207097851752847">Konfirmasi Akun Google Anda di ponsel</translation>
 <translation id="3663417513679360795">Info selengkapnya tentang mengaktifkan pramuat standar</translation>
 <translation id="3664511988987167893">Ikon Ekstensi</translation>
+<translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Bergabung ke grup tab dengan <ph name="OWNER_FIRST_NAME" />}=1{Bergabung ke grup tab dengan <ph name="OWNER_FIRST_NAME" /> dan # orang lainnya}other{Bergabung ke grup tab dengan <ph name="OWNER_FIRST_NAME" /> dan # orang lainnya}}</translation>
 <translation id="3665100783276035932">Sebagian besar situs akan berfungsi seperti yang diharapkan</translation>
 <translation id="3665301845536101715">Buka di panel samping</translation>
 <translation id="3665589677786828986">Chrome mendeteksi bahwa beberapa setelan Anda dirusak oleh program lain dan menyetelnya ulang ke setelan default aslinya.</translation>
@@ -3942,7 +3941,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3748424433435232460">Sandi untuk akun ini sudah disimpan di perangkat ini</translation>
 <translation id="3748706263662799310">Laporkan bug</translation>
 <translation id="3749724428455457489">Pelajari iklan yang disarankan situs lebih lanjut</translation>
-<translation id="3750562496035670393">Chrome menyimpan sandi Anda ke perangkat ini, tetapi Anda dapat menyimpannya ke Akun Google Anda. Dengan begitu, semua sandi dari Akun Google Anda juga akan tersedia saat Anda login.</translation>
 <translation id="3752115502500640407">Bagikan salinan sandi Anda untuk <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Minta anak Anda mengangkat dan menyentuhkan jari secara berulang untuk menyimpan sidik jari</translation>
 <translation id="3753033997400164841">Simpan sekali. Gunakan di mana saja</translation>
@@ -4579,7 +4577,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4195378859392041564">Klik tombol mana pun dengan mouse, lalu tekan tombol keyboard untuk menyesuaikan</translation>
 <translation id="4195643157523330669">Buka di tab baru</translation>
 <translation id="4195814663415092787">Lanjutkan dari halaman terakhir yang dibuka</translation>
-<translation id="4196350776737072374">Tidak ada pertanyaan yang tersedia. Coba ajukan permintaan seperti “ringkas halaman ini” atau pertanyaan Anda sendiri.</translation>
 <translation id="4198268995694216131">Situs tambahan</translation>
 <translation id="4200609364258658652">Salin frame video</translation>
 <translation id="4200689466366162458">Kata khusus</translation>
@@ -6017,7 +6014,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5249624017678798539">Browser mogok sebelum download selesai.</translation>
 <translation id="5249818097095743806">Gunakan kunci keamanan</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> menggunakan lokasi Anda untuk memberi konten lokal. Anda dapat mengubah opsi ini di <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5252496130205799136">Gunakan Akun Google Anda untuk menyimpan dan mengisi sandi?</translation>
 <translation id="5252653240322147470">PIN harus kurang dari <ph name="MAXIMUM" /> digit</translation>
 <translation id="5253554634804500860">Gunakan <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Penggunaan memori: <ph name="MEMORY_USAGE" /></translation>
@@ -8191,7 +8187,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6833479554815567477">Tab dihapus dari grup <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Seimbang (direkomendasikan)</translation>
 <translation id="6835762382653651563">Sambungkan ke internet untuk memperbarui <ph name="DEVICE_TYPE" /> Anda.</translation>
-<translation id="683630338945552556">Simpan dan gunakan sandi di Akun Google Anda</translation>
 <translation id="6838992358006915573">Pembesar mengikuti fokus ChromeVox</translation>
 <translation id="6839225236531462745">Kesalahan Penghapusan Sertifikat</translation>
 <translation id="6839916869147598086">Login telah berubah</translation>

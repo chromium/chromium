@@ -307,6 +307,7 @@
 <translation id="2308243864813041101">გამოაერთეთ <ph name="DEVICE_NAME" />-ის USB კაბელი, რომ განახლება განაგრძოთ</translation>
 <translation id="2320295602967756579">ღია თემის ჩართვა</translation>
 <translation id="2323506179655536734">გამოტოვებულია</translation>
+<translation id="2323755382216917952">ამ განახლების ინსტალაციის დასასრულებლად საჭიროა კომპიუტერის გადატვირთვა. განახლების დასრულებას რამდენიმე წუთი დასჭირდება. ჩაშენებული პროგრამული უზრუნველყოფის განახლების დროს ნუ გამორთავთ ან გათიშავთ კომპიუტერს.</translation>
 <translation id="2324354238778375592">ლივლივი</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">შესანიშნავი (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -360,6 +361,7 @@
 <translation id="2589921777872778654">რედაქტირების და წაშლის მენიუ</translation>
 <translation id="2597774443162333062">ფაილები, გამართვის მიზნით, Google-ს გაეგზავნება</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{სკანირება დასრულდა. დასკანირდა 1 გვერდი.}other{სკანირება დასრულდა. დასკანირდა {NUMBER_OF_PAGES} გვერდი.}}</translation>
+<translation id="261322795497077164">მოსაუბრის იდენტიფიკაცია</translation>
 <translation id="2617397783536231890">ბამბა</translation>
 <translation id="2618015542787108131">ქვიშის დიუნი</translation>
 <translation id="2619761439309613843">ყოველდღიური განახლება</translation>
@@ -441,6 +443,7 @@
 <translation id="3140130301071865159">თოვლი</translation>
 <translation id="3146655726035122603">ექსკლუზიურად <ph name="PRODUCT_NAME" />-ისთვის</translation>
 <translation id="315116470104423982">მობილური მონაცემები</translation>
+<translation id="3153094818810437149">ამ არჩევანის შეცვლა მოგვიანებით შეგიძლიათ რეკორდერის პარამეტრებიდან</translation>
 <translation id="3156511682997763015">10 წამით წინ გადახვევა</translation>
 <translation id="3156846309055100599">სკანირდება გვერდი <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">აღმოჩენილია ავტორიზაციის პორტალი</translation>
@@ -450,6 +453,7 @@
 <translation id="3178532070248519384">ავანგარდი</translation>
 <translation id="3182676044300231689">შეიყვანეთ მოთხოვნა — მაგალითად, „მეტი თავდაჯერებულობის მიცემა“</translation>
 <translation id="3188257591659621405">ჩემი ფაილები</translation>
+<translation id="3188931456353313123">ამ განახლებას უზრუნველყოფს მოწყობილობის მწარმოებელი და ის Google-ს არ შეუმოწმებია.</translation>
 <translation id="319101249942218879">ავატარის სურათი შეცვლილია</translation>
 <translation id="3192947282887913208">აუდიო ფაილები</translation>
 <translation id="3199982728237701504">დოკუმენტების მიმწოდი (ორმხრივი)</translation>
@@ -508,6 +512,7 @@
 <translation id="3488065109653206955">ნაწილობრივ გააქტიურებული</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> ოფისი <ph name="OFFICE_COLOR" /> ტონებით</translation>
 <translation id="3493187369049186498">მონაცემთა მოხმარებას ითვლის თქვენი Chromebook. მისი გამოთვლები, შესაძლოა, განსხვავდებოდეს თქვენი პროვაიდერის მონაცემებისგან.</translation>
+<translation id="349570724365779960">სასკოლო ხელსაწყოები დაკავშირებულია სტუდენტებთან</translation>
 <translation id="3502426834823382181">ყველა აპის ნახვა</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />ეფექტურობის ტრასირების მონაცემების<ph name="END_LINK1" /> გაგზავნა</translation>
 <translation id="3517001332549868749">ChromeOS განახლება</translation>
@@ -562,6 +567,7 @@
 <translation id="3785643128701396311">პიქსელური გრაფიკა</translation>
 <translation id="3799381533888781854">გამორთულია — ამ პარამეტრს მართავს თქვენი ადმინისტრატორი.</translation>
 <translation id="380097101658023925">RGB მართვის საშუალებები</translation>
+<translation id="380493988330050229">ამ ენის ტრანსკრიპტისთვის შეჯამების შექმნა ვერ მოხერხდა</translation>
 <translation id="38114475217616659">მთელი ისტორიის გასუფთავება</translation>
 <translation id="3820172043799983114">PIN-კოდი არასწორია.</translation>
 <translation id="382043424867370667">მზის ჩასვლის ფონი</translation>
@@ -734,6 +740,7 @@
 <translation id="458794348635939462">ჰოსტების გარდაქმნა ვერ მოხერხდა</translation>
 <translation id="4593212453765072419">საჭიროა პროქსი-სერვერის ავტორიზაცია</translation>
 <translation id="4594021849294327751">ტრანსკრიპტის შექმნა</translation>
+<translation id="4594541568452132351">აირჩიეთ ტრანსკრიპტის ენა და ჩამოტვირთეთ მოდელი</translation>
 <translation id="4607282946861182308">ამის სურათების შექმნა ვერ მოხერხდება. ცადეთ სხვა მოთხოვნა.</translation>
 <translation id="4609350030397390689">კლავიატურის სიკაშკაშის დაკლება</translation>
 <translation id="4623061655523261501">ჩანაწერების სახელები წარმატებით დაგენერირდა</translation>
@@ -757,6 +764,7 @@
 <translation id="473775607612524610">განახლება</translation>
 <translation id="4744944742468440486">თქვენს არჩევანთან დაკავშირებული ინფორმაცია</translation>
 <translation id="4771607256327216405">კლავიატურის სიკაშკაშე</translation>
+<translation id="4771923071974529837">ხვალ</translation>
 <translation id="4773299976671772492">შეწყვეტილია</translation>
 <translation id="4778082030331381943">ამეთვისტო</translation>
 <translation id="4782311465517282004">მიიღეთ განმარტებები, თარგმნეთ ან გადაიყვანეთ საზომი ერთეულები ტექსტზე მარჯვენა დაწკაპუნების ან ხანგრძლივად შეხების მეშვეობით</translation>
@@ -820,6 +828,7 @@
 <translation id="500920857929044050">ტესტის შეწყვეტა</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">თემის ფერი</translation>
+<translation id="5037240652947866174">დღეს</translation>
 <translation id="5038292761217083259">მრავალფერიანი კლავიატურა</translation>
 <translation id="5039804452771397117">დაშვება</translation>
 <translation id="5049856988445523908">SIM-ბარათი ჩაკეტილია (<ph name="LOCK_TYPE" />)</translation>
@@ -1096,6 +1105,7 @@
 <translation id="6359919876285606596">ეს ქმედება სამუდამოა და მისი დაბრუნება შეუძლებელია</translation>
 <translation id="6368342879959028556">„ხელოვნური ინტელექტის დახმარების შექმნის“ არჩევის შემთხვევაში დაწერეთ ინდივიდუალური მოთხოვნა. ან მონიშნეთ „AI ფონი“, რომ თქვენი AI ფონის პერსონალიზებისთვის აირჩიოთ ფონი და შემდეგ — ხაზგასმული სიტყვები.</translation>
 <translation id="636850387210749493">ორგანიზაციის რეგისტრაცია</translation>
+<translation id="6369221585240879141">ამ ენის ტრანსკრიპტისთვის ჩანაწერების სახელების შექმნა ვერ მოხერხდა</translation>
 <translation id="6373461326814131011">ტბორი</translation>
 <translation id="6379086450106841622">სენსორული ეკრანი</translation>
 <translation id="6381741036071372448">შეამოწმეთ თქვენი კლავიატურა</translation>
@@ -1269,6 +1279,7 @@
 <translation id="7130438335435247835">წვდომის წერტილი (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{სახელთა სერვერი}other{სახელთა სერვერები}}</translation>
 <translation id="7135814714616751706">მალსახმობების ძიება</translation>
+<translation id="7138614237884624401">გამარტივებული ტექსტი</translation>
 <translation id="7141470099673912333">კონტენტის გადატანა</translation>
 <translation id="7143207342074048698">დაკავშირება</translation>
 <translation id="7144878232160441200">გაიმეორეთ</translation>
@@ -1690,6 +1701,7 @@
 <translation id="9100765901046053179">გაფართოებული პარამეტრები</translation>
 <translation id="910415269708673980">განაახლეთ ბილეთი <ph name="PRINCIPAL_NAME" />-ისთვის</translation>
 <translation id="9106415115617144481">სკანირდება გვერდი <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">რეკორდერს შეუძლია, შექმნას ტრანსკრიპტები ისეთი ჩანაწერებისთვის, რომლებშიც გამოყენებულია მეტყველება. მომდევნო ეტაპზე დაგჭირდებათ ტრანსკრიპტის ენის არჩევა და მოდელის ჩამოტვირთვა (100 მბაიტამდე).</translation>
 <translation id="9111102763498581341">განბლოკვა</translation>
 <translation id="9122492456897874028">კონტენტის შეჯამება, განმარტებების მიღება და სხვა</translation>
 <translation id="9122602430962285795">ხელახლა დასაკავშირებლად გადადით პარამეტრებზე</translation>

@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Creazione di immagini in corso…</translation>
 <translation id="1116694919640316211">Informazioni</translation>
 <translation id="1118572504348554005">Potremmo condividere il feedback inviato tramite questo modulo con i nostri partner per risolvere bug e altri problemi che ci segnali. Non includere informazioni sensibili come password.</translation>
+<translation id="1119403468619527527">Numero insufficiente di parole per semplificare</translation>
 <translation id="1119447706177454957">Errore interno</translation>
 <translation id="1124772482545689468">Utente</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -590,6 +591,7 @@
 <translation id="391412459402535266">Impossibile testare il dispositivo. Passa alla modalità laptop per testarlo.</translation>
 <translation id="3916998944874125962">acquisisci screenshot</translation>
 <translation id="3923184630988645767">Utilizzo dei dati</translation>
+<translation id="3924445055519423964">Fai clic per riepilogare la pagina web/il file PDF</translation>
 <translation id="3932043219784172185">Nessun dispositivo connesso</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> non assegnato</translation>
 <translation id="3941014780699102620">impossibile risolvere l'host</translation>
@@ -818,6 +820,7 @@
 <translation id="4988526792673242964">Pagine</translation>
 <translation id="4989542687859782284">Non disponibili</translation>
 <translation id="4999333166442584738">Nascondi rapporto</translation>
+<translation id="5005695757087124131">Fai clic per semplificare il testo selezionato</translation>
 <translation id="500920857929044050">Interrompi test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Colore tema</translation>
@@ -1339,6 +1342,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7405493795721832710">Il dispositivo <ph name="DEVICE_NAME" /> è pronto per l'aggiornamento</translation>
 <translation id="741244894080940828">conversione</translation>
 <translation id="7415801143053185905">Latenza HTTP molto elevata</translation>
+<translation id="7418738250896500352">Numero eccessivo di parole per semplificare</translation>
 <translation id="7425037327577270384">Aiutami a scrivere</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Impossibile disattivare o rimuovere questo APN. Assicurati che gli APN <ph name="ATTACH" /> abilitati siano disattivati o rimossi.</translation>
@@ -1555,6 +1559,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8476942730579767658">Finestre e scrivanie</translation>
 <translation id="8477536061607044749">graphic design</translation>
 <translation id="8477551185774834963">la latenza DNS è leggermente al di sopra della soglia consentita</translation>
+<translation id="8482376765267780829">Seleziona del testo da semplificare</translation>
 <translation id="8483248364096924578">Indirizzo IP</translation>
 <translation id="8491311378305535241">Impossibile collegarti tramite firewall ai siti web HTTP da app Android</translation>
 <translation id="8495070016475833911">feltro</translation>
@@ -1684,6 +1689,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="9082718469794970195">Utilizza questo video</translation>
 <translation id="9087578468327036362">Segnala questa query</translation>
 <translation id="9088306295921699330">Spazio utilizzato</translation>
+<translation id="9088994563996376283">Semplifica</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="909856219855259344">Scopri di più sulla data di reimpostazione</translation>
 <translation id="9100765901046053179">Impostazioni avanzate</translation>

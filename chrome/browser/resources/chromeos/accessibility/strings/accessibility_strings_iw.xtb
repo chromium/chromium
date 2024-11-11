@@ -29,6 +29,7 @@
 <translation id="1161762950103988776">Jump</translation>
 <translation id="1164857107703583584">באמצעות פקודות קפיצה אפשר לנווט ביעילות בדף אינטרנט.</translation>
 <translation id="1175914831232945926">ספרות</translation>
+<translation id="1186712907912748007">פעולת גרירה ושחרור מתבצעת. ‫<ph name="GESTURE" /> כדי לסיים. תנועות אחרות לא זמינות כרגע.</translation>
 <translation id="1188858454923323853">משלים</translation>
 <translation id="1189258430971676908">אזור תרגול: רשימות נפתחות</translation>
 <translation id="1195238899008218998">אחרית דבר</translation>
@@ -210,6 +211,7 @@
 <translation id="2347456970887948350">קישור</translation>
 <translation id="2363753371702255035">תבליט</translation>
 <translation id="2365384324219615024">‏אפשר גם להקיש על Enter כדי להפעיל פריטים. למשל, כדי לשלוח טקסט בטופס, מקישים על Enter. כדי להמשיך, יש להקיש על Enter.</translation>
+<translation id="2371402123699727805">ההכתבה פעילה. ‫<ph name="GESTURE" /> כדי לעצור. תנועות אחרות לא זמינות כרגע.</translation>
 <translation id="2381733276052567791">הפעלה וכיבוי של דיבור</translation>
 <translation id="2390264819538553347">‏כדי להתקדם יש להקיש על Enter וכדי לחזור יש להקיש על backspace.</translation>
 <translation id="2398579267367951220">‏יש להקליד כדי לחפש בדף. יש להקיש על Enter כדי לעבור אל התוצאה ועל מקשי החיצים למעלה ולמטה כדי לדפדף בתוצאות. אפשר להמשיך להקליד כדי לשנות את החיפוש או להקיש על Esc כדי לבטל.</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">אין כותרת קודמת מרמה 3</translation>
 <translation id="3887399638190992181">מקשים חיוניים</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">השליטה באמצעות תנועות הפנים הושהתה. ‫<ph name="GESTURE" /> כדי להמשיך. תנועות אחרות לא זמינות כרגע.</translation>
 <translation id="3897092660631435901">תפריט</translation>
 <translation id="3907138069015388678">רשימה/רשת</translation>
 <translation id="3909320334364316587">הכותרת הקודמת של רמה 6</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">אין עוד כותרות מרמה 1</translation>
 <translation id="5455441614648621694">משלים</translation>
 <translation id="5462510922370980473">רשימת דפים</translation>
+<translation id="5489460663499094917">מצב הגלילה פעיל. ‫<ph name="GESTURE" /> כדי לצאת. תנועות אחרות לא זמינות כרגע.</translation>
 <translation id="5495517933067991341">‏מקשים חיוניים: Shift</translation>
 <translation id="549602578321198708">מילה</translation>
 <translation id="5513242761114685513">תפריט הקשר</translation>

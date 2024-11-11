@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">ছবি তৈরি হচ্ছে...</translation>
 <translation id="1116694919640316211">সম্পর্কে</translation>
 <translation id="1118572504348554005">আমরা আমাদের পার্টনারদের সাথে এই ফর্মের মাধ্যমে জমা দেওয়া মতামত শেয়ার করতে পারি, যাতে আপনার অভিযোগ করা সমস্যা এবং অন্যান্য সমস্যার সমাধান করা যায়। পাসওয়ার্ডের মতো সংবেদনশীল তথ্য দেবেন না।</translation>
+<translation id="1119403468619527527">সহজে বোঝার জন্য বেছে নেওয়া শব্দ খুব কম</translation>
 <translation id="1119447706177454957">অভ্যন্তরীণ ত্রুটি</translation>
 <translation id="1124772482545689468">ব্যবহারকারী</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">ডিভাইসটি পরীক্ষা করা সম্ভব হচ্ছে না। পরীক্ষার জন্য ল্যাপটপ মোড চালু করুন।</translation>
 <translation id="3916998944874125962">স্ক্রিনশট নিন</translation>
 <translation id="3923184630988645767">ডেটা ব্যবহার</translation>
+<translation id="3924445055519423964">ওয়েবপেজ/পিডিএফ ফাইলের সারাংশ তৈরি করতে ক্লিক করুন</translation>
 <translation id="3932043219784172185">কোনও ডিভাইস কানেক্ট করা নেই</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> অ্যাসাইন করা নেই</translation>
 <translation id="3941014780699102620">হোস্ট নেম যাচাই করা যায়নি</translation>
@@ -814,6 +816,7 @@
 <translation id="4988526792673242964">পৃষ্ঠাসমূহ</translation>
 <translation id="4989542687859782284">উপলভ্য নেই</translation>
 <translation id="4999333166442584738">রিপোর্ট লুকান</translation>
+<translation id="5005695757087124131">বেছে নেওয়া টেক্সট সহজে বোঝার জন্য ক্লিক করুন</translation>
 <translation id="500920857929044050">টেস্ট বন্ধ করুন</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">থিমের রঙ</translation>
@@ -1334,6 +1337,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> আপডেট করার জন্য রেডি</translation>
 <translation id="741244894080940828">রূপান্তর</translation>
 <translation id="7415801143053185905">HTTP লেটেন্সি অনেক বেশি</translation>
+<translation id="7418738250896500352">সহজে বোঝার জন্য বেছে নেওয়া শব্দ খুব বেশি</translation>
 <translation id="7425037327577270384">আমাকে লিখতে সাহায্য করো</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">এই APN বন্ধ করা বা সরানো যাচ্ছে না। নিশ্চিত করুন যে চালু করা <ph name="ATTACH" /> APN বন্ধ করা আছে বা সরানো হয়েছে।</translation>
@@ -1550,6 +1554,7 @@
 <translation id="8476942730579767658">উইন্ডো ও ডেস্ক</translation>
 <translation id="8477536061607044749">গ্রাফিক ডিজাইন</translation>
 <translation id="8477551185774834963">যতদূর পর্যন্ত লেটেন্সির ঊর্ধ্বসীমা অনুমোদন করা যায়, ডিএনএস লেটেন্সি তার চেয়ে বেশি</translation>
+<translation id="8482376765267780829">সহজে বোঝার জন্য কিছু টেক্সট বেছে নিন</translation>
 <translation id="8483248364096924578">আইপি অ্যাড্রেস</translation>
 <translation id="8491311378305535241">Android অ্যাপ থেকে ফায়ারওয়ালের সাহায্যে HTTPS ওয়েবসাইটের সাথে কানেক্ট করা যাচ্ছে না</translation>
 <translation id="8495070016475833911">ফেল্ট</translation>
@@ -1679,6 +1684,7 @@
 <translation id="9082718469794970195">এই ভিডিওটি ব্যবহার করুন</translation>
 <translation id="9087578468327036362">এই কোয়েরি সম্পর্কে রিপোর্ট করুন</translation>
 <translation id="9088306295921699330">বর্তমান ব্যবহার</translation>
+<translation id="9088994563996376283">সহজ করুন</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">রিসেট করার তারিখ সম্পর্কে আরও তথ্য</translation>
 <translation id="9100765901046053179">উন্নত সেটিংস</translation>

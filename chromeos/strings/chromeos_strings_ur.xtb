@@ -307,6 +307,7 @@
 <translation id="2308243864813041101">‏اپ ڈیٹ ہونے کے عمل کو جاری رکھنے کے لیے <ph name="DEVICE_NAME" /> کے USB کیبل کو ان پلگ کریں</translation>
 <translation id="2320295602967756579">ہلکی تھیم فعال کریں</translation>
 <translation id="2323506179655536734">نظر انداز کردہ</translation>
+<translation id="2323755382216917952">اس اپ ڈیٹ کے لیے آپ کو انسٹالیشن مکمل کرنے کے لیے اپنے کمپیوٹر کو دوبارہ شروع کرنے کی ضرورت ہے۔ اس اپ ڈیٹ کو مکمل ہونے میں چند منٹ لگ سکتے ہیں۔ جب فرم ویئر اپ ڈیٹ ہونے کے دوران اپنے کمپیوٹر کو ان پلگ یا شٹ ڈاؤن نہ کریں۔</translation>
 <translation id="2324354238778375592">فلوٹ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">عمدہ (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -450,6 +451,7 @@
 <translation id="3178532070248519384">Avant-Garde</translation>
 <translation id="3182676044300231689">"اسے مزید پُر اعتماد بنائیں" جیسا پرامپٹ درج کریں</translation>
 <translation id="3188257591659621405">میری فائلز</translation>
+<translation id="3188931456353313123">‏یہ اپ ڈیٹ آلہ کے کسی مینوفیکچرر کی طرف سے فراہم کی گئی ہے، ساتھ ہی Google نے بھی اس کی توثیق نہیں کی ہے۔</translation>
 <translation id="319101249942218879">اوتار تصویر تبدیل کی گئی</translation>
 <translation id="3192947282887913208">آڈیو فائلز</translation>
 <translation id="3199982728237701504">دستاویز فیڈر (دو طرفہ)</translation>
@@ -508,6 +510,7 @@
 <translation id="3488065109653206955">جزوی طور پر فعال کردہ</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> ٹونز والا ایک <ph name="OFFICE_STYLE" /> آفس</translation>
 <translation id="3493187369049186498">‏ڈیٹا کی پیمائش آپ کی Chromebook کے ذریعے کی جاتی ہے۔ یہ فراہم کنندہ کے ڈیٹا سے مختلف ہو سکتا ہے۔</translation>
+<translation id="349570724365779960">اسکول کے ٹولز طلباء سے منسلک ہیں</translation>
 <translation id="3502426834823382181">سبھی ایپس دیکھیں</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />کارکردگی کا پتا لگانے کا ڈیٹا<ph name="END_LINK1" /> بھیجیں</translation>
 <translation id="3517001332549868749">‏Chrome OS اپ ڈیٹ</translation>
@@ -757,6 +760,7 @@
 <translation id="473775607612524610">اپ ڈيٹ کریں</translation>
 <translation id="4744944742468440486">آپ کے انتخاب سے متعلقہ معلومات</translation>
 <translation id="4771607256327216405">کی بورڈ کو روشن کرنا</translation>
+<translation id="4771923071974529837">آئندہ کل</translation>
 <translation id="4773299976671772492">روک دیا گیا</translation>
 <translation id="4778082030331381943">یاقوت ارغوانی</translation>
 <translation id="4782311465517282004">جب آپ دائیں طرف کلک کرنے یا ٹیکسٹ کو ٹچ کریں اور دبائے رکھیں تو تعریفیں، ترجمے یونٹ کی تبدیلیاں حاصل کریں</translation>
@@ -820,6 +824,7 @@
 <translation id="500920857929044050">ٹیسٹ روکیں</translation>
 <translation id="5017508259293544172">لیپ</translation>
 <translation id="5035083460461104704">تھیم کا رنگ</translation>
+<translation id="5037240652947866174">آج</translation>
 <translation id="5038292761217083259">متعدد رنگوں والا کی بورڈ</translation>
 <translation id="5039804452771397117">اجازت دیں</translation>
 <translation id="5049856988445523908">‏SIM مقفل ہو گیا (<ph name="LOCK_TYPE" />)</translation>

@@ -29,6 +29,7 @@
 <translation id="1161762950103988776">Jump</translation>
 <translation id="1164857107703583584">কোনও ওয়েব পৃষ্ঠার মধ্যে দ্রুত নেভিগেট করতে জাম্প কমান্ড ব্যবহার করা হতে পারে।</translation>
 <translation id="1175914831232945926">ডিজিট</translation>
+<translation id="1186712907912748007">'টেনে নিয়ে রাখুন' অ্যাকশন ব্যবহার করা হচ্ছে। একদম শেষে, <ph name="GESTURE" />। অন্যান্য জেসচার সাময়িকভাবে উপলভ্য নেই।</translation>
 <translation id="1188858454923323853">পরিপূরক</translation>
 <translation id="1189258430971676908">অনুশীলন ক্ষেত্র: ড্রপ-ডাউন তালিকা</translation>
 <translation id="1195238899008218998">পরিশিষ্ট</translation>
@@ -210,6 +211,7 @@
 <translation id="2347456970887948350">একটি লিঙ্ক</translation>
 <translation id="2363753371702255035">বুলেট</translation>
 <translation id="2365384324219615024">এছাড়াও, আইটেম অ্যাক্টিভেট করতে Enter কী প্রেস করুন। যেমন, কোনও ফর্মে টেক্সট জমা দেওয়ার জন্য Enter কী ব্যবহার করা যেতে পারে। চালিয়ে যেতে Enter কী প্রেস করুন।</translation>
+<translation id="2371402123699727805">'ডিকটেশন' ফিচার চালু আছে। থামানোর জন্য <ph name="GESTURE" />। অন্যান্য জেসচার সাময়িকভাবে উপলভ্য নেই।</translation>
 <translation id="2381733276052567791">ভাষ্য চালু বা বন্ধ করুন</translation>
 <translation id="2390264819538553347">এগিয়ে যাওয়ার জন্য, enter টিপুন; ফিরে যেতে, backspace টিপুন।</translation>
 <translation id="2398579267367951220">পৃষ্ঠাতে সার্চ করতে টাইপ করুন। সার্চ ফলাফলে সরাসরি যেতে কীবোর্ড থেকে 'Enter' কী এবং ফলাফল ব্রাউজ করার জন্য 'Up' বা 'Down Arrow' কী প্রেস করুন। নতুন কোনও কিছু সার্চ করার জন্য টাইপ করতে থাকুন অথবা বাতিল করতে 'Escape' কী প্রেস করুন।</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">কোনও পূর্ববর্তী লেভেল ৩ শিরোনাম নেই</translation>
 <translation id="3887399638190992181">গুরুত্বপূর্ণ কী</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">ফেস কন্ট্রোল পজ করা আছে। আবার চালু করার জন্য, <ph name="GESTURE" />। অন্যান্য জেসচার সাময়িকভাবে উপলভ্য নেই।</translation>
 <translation id="3897092660631435901">মেনু</translation>
 <translation id="3907138069015388678">সূচির গ্রিড</translation>
 <translation id="3909320334364316587">পূর্ববর্তী স্তর ৬ শিরোনাম</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">কোনও পরবর্তী লেভেল ১ শিরোনাম নেই</translation>
 <translation id="5455441614648621694">পরিপূরক</translation>
 <translation id="5462510922370980473">পৃষ্ঠা তালিকা</translation>
+<translation id="5489460663499094917">স্ক্রল মোড চালু আছে। বেরিয়ে আসার জন্য <ph name="GESTURE" />। অন্যান্য জেসচার সাময়িকভাবে উপলভ্য নেই।</translation>
 <translation id="5495517933067991341">গুরুত্বপূর্ণ কী: Shift</translation>
 <translation id="549602578321198708">শব্দ</translation>
 <translation id="5513242761114685513">সংশ্লিষ্ট মেনু</translation>

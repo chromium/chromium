@@ -307,6 +307,7 @@
 <translation id="2308243864813041101">ដកខ្សែ USB របស់ <ph name="DEVICE_NAME" /> ដើម្បីបន្តដំណើរការដំឡើងកំណែ</translation>
 <translation id="2320295602967756579">បើក​រចនាប័ទ្ម​ភ្លឺ</translation>
 <translation id="2323506179655536734">បានរំលង</translation>
+<translation id="2323755382216917952">ការដំឡើង​កំណែនេះ​តម្រូវឱ្យអ្នក​ចាប់ផ្ដើម​កុំព្យូទ័រ​របស់អ្នក​ឡើងវិញ ដើម្បី​បញ្ចប់​ការដំឡើង។ ការដំឡើង​កំណែនេះ​អាច​ចំណាយពេល​ពីរបីនាទី ទម្រាំ​ចប់។ សូមកុំ​ដកឌុយ ឬបិទ​កុំព្យូទ័រ​របស់អ្នក នៅពេលកំពុង​ដំឡើង​កំណែ​កម្មវិធី​បង្កប់។</translation>
 <translation id="2324354238778375592">អណ្ដែត</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">ល្អប្រសើរ (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -450,6 +451,7 @@
 <translation id="3178532070248519384">avant-garde</translation>
 <translation id="3182676044300231689">បញ្ចូល​សារតម្រុយ​ដូចជា "ធ្វើឱ្យ​កាន់តែ​មានទំនុកចិត្ត"</translation>
 <translation id="3188257591659621405">ឯកសារ​របស់ខ្ញុំ​</translation>
+<translation id="3188931456353313123">ការដំឡើង​កំណែនេះ​ត្រូវបាន​ផ្ដល់ជូន​ដោយ​ក្រុមហ៊ុន​ផលិតឧបករណ៍ និង​មិនត្រូវបាន​ផ្ទៀងផ្ទាត់​ដោយ Google ទេ។</translation>
 <translation id="319101249942218879">បានប្ដូរ​រូបភាព​រូបតំណាង</translation>
 <translation id="3192947282887913208">ឯកសារសម្លេង</translation>
 <translation id="3199982728237701504">ឧបករណ៍​បញ្ចូល​ឯកសារ (សងខាង)</translation>
@@ -508,6 +510,7 @@
 <translation id="3488065109653206955">បានធ្វើសកម្មភាពតាមផ្នែក</translation>
 <translation id="3492882532495507361">ការិយាល័យ<ph name="OFFICE_STYLE" />ដែល​មានពណ៌<ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">ទិន្នន័យត្រូវបានវាស់ដោយ Chromebook របស់អ្នក។ ការវាស់នេះអាចខុសពីទិន្នន័យរបស់ក្រុមហ៊ុនផ្ដល់សេវាកម្ម។</translation>
+<translation id="349570724365779960">School Tools ត្រូវបាន​ភ្ជាប់​ជាមួយ​សិស្ស</translation>
 <translation id="3502426834823382181">មើល​កម្មវិធី​ទាំងអស់</translation>
 <translation id="3510890413042482857">ផ្ញើ<ph name="BEGIN_LINK1" />ទិន្នន័យដានប្រតិបត្តិការ<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">កំណែថ្មី ChromeOS</translation>
@@ -757,6 +760,7 @@
 <translation id="473775607612524610">ធ្វើបច្ចុប្បន្នភាព</translation>
 <translation id="4744944742468440486">ព័ត៌មានពាក់ព័ន្ធនឹងការជ្រើសរើសរបស់អ្នក</translation>
 <translation id="4771607256327216405">ក្ដារចុចភ្លឺជាងមុន</translation>
+<translation id="4771923071974529837">ថ្ងៃស្អែក</translation>
 <translation id="4773299976671772492">បានឈប់</translation>
 <translation id="4778082030331381943">កែវ​ណាំហ្វាន</translation>
 <translation id="4782311465517282004">ទទួលបាននិយមន័យ ការបកប្រែ ឬការបំប្លែងខ្នាត នៅពេលអ្នកចុចកណ្ដុរខាងស្ដាំ ឬចុចអត្ថបទឱ្យជាប់</translation>
@@ -820,6 +824,7 @@
 <translation id="500920857929044050">បញ្ឈប់​ការធ្វើតេស្ត</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">ពណ៌​ទម្រង់រចនា</translation>
+<translation id="5037240652947866174">ថ្ងៃនេះ</translation>
 <translation id="5038292761217083259">ក្ដារចុច​ពណ៌ចម្រុះ</translation>
 <translation id="5039804452771397117">អនុញ្ញាត</translation>
 <translation id="5049856988445523908">បានចាក់​សោស៊ីម (<ph name="LOCK_TYPE" />)</translation>

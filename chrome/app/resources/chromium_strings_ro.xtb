@@ -18,6 +18,7 @@
 <translation id="1185134272377778587">Despre Chromium</translation>
 <translation id="1188705220418984327">Pentru a permite accesul la fereastră, permite înregistrarea ecranului pentru Chromium din Preferințe de sistem.</translation>
 <translation id="1203500561924088507">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești browserul.</translation>
+<translation id="1235768345431527125">Poți să te conectezi pentru a-ți accesa conținutul sau să folosești Chromium fără cont</translation>
 <translation id="1262876892872089030">Cât timp fila a fost inactivă, memoria a fost eliberată pentru a menține viteza ridicată a browserului Chromium. Poți alege ca acest site să nu fie mereu inactiv.</translation>
 <translation id="1265577313130862557">Chromium a blocat descărcarea, deoarece fișierul este periculos</translation>
 <translation id="126567311906253476">Când te conectezi la Servicii Google, cum ar fi Gmail sau YouTube, cu <ph name="USER_EMAIL" />, te poți conecta automat la Chromium cu același cont</translation>
@@ -327,6 +328,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="549669000822060376">Așteaptă până când Chromium instalează cele mai recente actualizări de sistem.</translation>
 <translation id="5496810170689441661">Chromium încearcă să modifice parolele. Pentru a permite acest lucru, introdu parola pentru Windows.</translation>
 <translation id="5527463683072221100">Deschide fișierele PDF în Chromium</translation>
+<translation id="5568136785038042132">Pentru a accesa extensiile pe toate computerele, conectează-te la Chromium</translation>
 <translation id="5575418445468216473">Parolele și alte date Chromium sunt salvate în Contul Google și vor fi eliminate de pe acest dispozitiv. Pentru a le folosi în viitor, conectează-te din nou la Chromium.</translation>
 <translation id="5579324208890605088">Eroare la pornire: rulează programul de instalare ca utilizator obișnuit, nu ca administrator.</translation>
 <translation id="5596627076506792578">Mai multe opțiuni</translation>

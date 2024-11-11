@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Суреттер жасалып жатыр...</translation>
 <translation id="1116694919640316211">Мәлімет</translation>
 <translation id="1118572504348554005">Қателерді және сіз бізге хабарлаған басқа мәселелерді шешу үшін осы үлгі арқылы жіберілген пікірді серіктестерімізбен бөлісуіміз мүмкін. Құпия сөздер сияқты құпия ақпаратты қоспаңыз.</translation>
+<translation id="1119403468619527527">Қысқарту үшін сөз тым аз.</translation>
 <translation id="1119447706177454957">Ішкі қате</translation>
 <translation id="1124772482545689468">Пайдаланушы</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Құрылғыны сынау мүмкін емес. Сынау үшін ноутбук режиміне ауысыңыз.</translation>
 <translation id="3916998944874125962">скриншот түсіру</translation>
 <translation id="3923184630988645767">Деректер трафигі</translation>
+<translation id="3924445055519423964">Веб-бетті/PDF файлын қорытындылау үшін басыңыз.</translation>
 <translation id="3932043219784172185">Жалғанған құрылғы жоқ.</translation>
 <translation id="3934185438132762746">Тағайындалмаған <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Хост атауы түрлендірілмеді.</translation>
@@ -814,6 +816,7 @@
 <translation id="4988526792673242964">Беттер</translation>
 <translation id="4989542687859782284">Қолжетімді емес</translation>
 <translation id="4999333166442584738">Есепті жасыру</translation>
+<translation id="5005695757087124131">Таңдалған мәтінді қысқарту үшін басыңыз.</translation>
 <translation id="500920857929044050">Тексеруді тоқтату</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Тақырып түсі</translation>
@@ -1334,6 +1337,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> жаңартуға дайын</translation>
 <translation id="741244894080940828">түрлендіру</translation>
 <translation id="7415801143053185905">HTTP кідірісі өте жоғары.</translation>
+<translation id="7418738250896500352">Қысқарту үшін сөз тым көп.</translation>
 <translation id="7425037327577270384">Жазуға көмектесіңіз</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Бұл APN атын өшіру немесе жою мүмкін емес. Қосылған <ph name="ATTACH" /> APN аттарының өшірілгеніне немесе жойылғанына көз жеткізіңіз.</translation>
@@ -1550,6 +1554,7 @@
 <translation id="8476942730579767658">Терезелер және жұмыс үстелдері</translation>
 <translation id="8477536061607044749">графикалық дизайн</translation>
 <translation id="8477551185774834963">DNS кідірісі рұқсат етілетін шектен сәл жоғары.</translation>
+<translation id="8482376765267780829">Қысқарту үшін мәтін таңдаңыз.</translation>
 <translation id="8483248364096924578">IP мекенжайы</translation>
 <translation id="8491311378305535241">Брандмауэр арқылы Android қолданбаларынан HTTPS веб-сайттарына қосылу мүмкін емес.</translation>
 <translation id="8495070016475833911">тебіскі</translation>
@@ -1679,6 +1684,7 @@
 <translation id="9082718469794970195">Осы бейнені қолдану</translation>
 <translation id="9087578468327036362">Осы сұрау туралы хабарлау</translation>
 <translation id="9088306295921699330">Қазір пайдаланылуы</translation>
+<translation id="9088994563996376283">Қысқарту</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Бастапқы күйге қайтару күні туралы қосымша ақпарат</translation>
 <translation id="9100765901046053179">Кеңейтілген параметрлер</translation>

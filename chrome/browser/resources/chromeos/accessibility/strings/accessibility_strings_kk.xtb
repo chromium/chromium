@@ -29,6 +29,7 @@
 <translation id="1161762950103988776">Өту</translation>
 <translation id="1164857107703583584">Өту пәрмендерін пайдаланып, веб-бетте тиімді өтіңіз.</translation>
 <translation id="1175914831232945926">Цифрлар</translation>
+<translation id="1186712907912748007">Сүйреп қойылып жатыр. Аяқтау үшін <ph name="GESTURE" />. Басқа қимылдар уақытша қолжетімсіз.</translation>
 <translation id="1188858454923323853">қосымша</translation>
 <translation id="1189258430971676908">Тәжірибе аймағы: ашылмалы тізімдер</translation>
 <translation id="1195238899008218998">Соңғы сөз</translation>
@@ -210,6 +211,7 @@
 <translation id="2347456970887948350">Сілтеме</translation>
 <translation id="2363753371702255035">таңбалауыш</translation>
 <translation id="2365384324219615024">Сонымен қатар элементтерді белсендіру үшін Enter пернесін басыңыз. Мысалы, Enter пернесін басып, үлгіге мәтін енгізуге болады. Жалғастыру үшін Enter пернесін басыңыз.</translation>
+<translation id="2371402123699727805">Мәтінді дауыспен енгізу іске қосылды. Тоқтату үшін <ph name="GESTURE" />. Басқа қимылдар уақытша қолжетімсіз.</translation>
 <translation id="2381733276052567791">Дауыстап оқуды қосу немесе өшіру</translation>
 <translation id="2390264819538553347">Келесі бетке өту үшін Enter пернесін, ал кері қайту үшін Backspace пернесін басыңыз.</translation>
 <translation id="2398579267367951220">Беттен ізделетін мәтінді теріңіз. Нәтижелерге өту үшін Enter пернесін, ал оларды шолып шығу үшін жоғары не төмен көрсеткі пернесін басыңыз. Іздеу сұрауын өзгерту үшін мәтін теріңіз, ал бас тарту үшін Escape пернесін басыңыз.</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">Алдыңғы 3-деңгей тақырыбы жоқ.</translation>
 <translation id="3887399638190992181">Негізгі пернелер</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">Бетпен басқару кідіртілді. Жалғастыру үшін <ph name="GESTURE" />. Басқа қимылдар уақытша қолжетімсіз.</translation>
 <translation id="3897092660631435901">Мәзір</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">Алдыңғы 6-деңгей тақырыбы</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">Келесі 1-деңгей тақырыбы жоқ.</translation>
 <translation id="5455441614648621694">Қосымша</translation>
 <translation id="5462510922370980473">Беттер тізімі</translation>
+<translation id="5489460663499094917">Айналдыру режимі іске қосылды. Шығу үшін <ph name="GESTURE" />. Басқа қимылдар уақытша қолжетімсіз.</translation>
 <translation id="5495517933067991341">Негізгі пернелер: Shift</translation>
 <translation id="549602578321198708">Сөз</translation>
 <translation id="5513242761114685513">Контекстік мәзір</translation>

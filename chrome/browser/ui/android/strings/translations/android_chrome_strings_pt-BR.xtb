@@ -595,6 +595,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3819183753496523827">Você está off-line. Verifique sua conexão de Internet e tente novamente.</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">O Lens não está disponível nesta conta.</translation>
+<translation id="38258275871320156">Disponível apenas para janelas pequenas</translation>
 <translation id="3830886834687455630">Atualize o Google Play Services para verificar suas senhas</translation>
 <translation id="3843603704176567761">As senhas deixarão de funcionar neste dispositivo em breve. Para continuar usando suas senhas, atualize o Google Play Services.</translation>
 <translation id="3845098929839618392">Abrir em guia anônima</translation>
@@ -602,6 +603,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="385051799172605136">Voltar</translation>
 <translation id="3856096718352044181">Verifique se o provedor é válido ou tente novamente mais tarde</translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="3863527519275151528">Processando notificação</translation>
 <translation id="3873174561423636563">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu <ph name="FIELDS_STRING" /> com este site. Veja os <ph name="BEGIN_LINK1" />Termos de Serviço<ph name="END_LINK1" /> do site.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3899682235662194879">Fechar todas as guias anônimas</translation>

@@ -307,6 +307,7 @@
 <translation id="2308243864813041101">అప్‌డేట్ ప్రాసెస్‌ను కొనసాగించడానికి, <ph name="DEVICE_NAME" /> USB కేబుల్‌ను అన్‌ప్లగ్ చేయండి</translation>
 <translation id="2320295602967756579">లేత రంగు రూపాన్ని ఎనేబుల్ చేయండి</translation>
 <translation id="2323506179655536734">స్కిప్ చేయబడింది</translation>
+<translation id="2323755382216917952">ఈ అప్‌డేట్‌కు మీరు ఇన్‌స్టాలేషన్‌ను పూర్తి చేయడానికి మీ కంప్యూటర్‌ను రీస్టార్ట్ చేయవలసి ఉంటుంది. ఈ అప్‌డేట్ పూర్తి కావడానికి కొన్ని నిమిషాలు పట్టే అవకాశం ఉంది. ఫర్మ్‌వేర్ అప్‌డేట్ అవుతున్నప్పుడు, అన్‌ప్లగ్ చేయవద్దు లేదా మీ కంప్యూటర్‌ను షట్ డౌన్ చేయవద్దు.</translation>
 <translation id="2324354238778375592">ఫ్లోట్</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">అద్భుతంగా ఉంది (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -450,6 +451,7 @@
 <translation id="3178532070248519384">అవాంట్-గార్డ్</translation>
 <translation id="3182676044300231689">"మరింత కాన్ఫిడెంట్‌గా ఉండేలా రాయి" వంటి ప్రాంప్ట్‌ను ఎంటర్ చేయండి</translation>
 <translation id="3188257591659621405">నా ఫైళ్లు</translation>
+<translation id="3188931456353313123">ఈ అప్‌డేట్‌ను పరికరాలను తయారు చేసే ప్రొవైడర్ అందిస్తున్నారు, సదరు అప్‌డేట్‌ను Google వెరిఫై చేయలేదు.</translation>
 <translation id="319101249942218879">అవతార్ ఇమేజ్ మారింది</translation>
 <translation id="3192947282887913208">ఆడియో  ఫైళ్ళు</translation>
 <translation id="3199982728237701504">డాక్యుమెంట్ ఫీడర్ (రెండు వైపులా)</translation>
@@ -508,6 +510,7 @@
 <translation id="3488065109653206955">పాక్షికంగా సక్రియం చేయబడింది</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> టోన్‌లతో <ph name="OFFICE_STYLE" /> ఆఫీస్</translation>
 <translation id="3493187369049186498">మీ డేటాను కొలవడం Chromebook ద్వారా జరుగుతుంది. ఇది ప్రొవైడర్ డేటాకు భిన్నంగా ఉండవచ్చు.</translation>
+<translation id="349570724365779960">స్కూల్ టూల్స్ విద్యార్థులకు కనెక్ట్ చేయబడ్డాయి</translation>
 <translation id="3502426834823382181">అన్ని యాప్‌లను చూడండి</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />పనితీరు ట్రేస్ డేటాను<ph name="END_LINK1" /> పంపండి</translation>
 <translation id="3517001332549868749">ChromeOS అప్‌డేట్</translation>
@@ -757,6 +760,7 @@
 <translation id="473775607612524610">అప్‌డేట్‌</translation>
 <translation id="4744944742468440486">మీ ఎంపికకు సంబంధించిన సమాచారం</translation>
 <translation id="4771607256327216405">కీబోర్డ్ బ్రైట్‌నెస్ పెంచండి</translation>
+<translation id="4771923071974529837">రేపు</translation>
 <translation id="4773299976671772492">ఆపివేయబడింది</translation>
 <translation id="4778082030331381943">ఆమెథిస్ట్</translation>
 <translation id="4782311465517282004">మీరు టెక్స్ట్‌ను కుడి క్లిక్ చేసినప్పుడు లేదా తాకి, నొక్కి ఉంచినప్పుడు నిర్వచనాలు, అనువాదాలు, లేదా యూనిట్ మార్పిడులను పొందండి</translation>
@@ -820,6 +824,7 @@
 <translation id="500920857929044050">పరీక్షను ఆపండి</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">రూపం రంగు</translation>
+<translation id="5037240652947866174">ఈరోజు</translation>
 <translation id="5038292761217083259">పలు రంగులు కలిగిన కీబోర్డ్</translation>
 <translation id="5039804452771397117">అనుమతించండి</translation>
 <translation id="5049856988445523908">SIM లాక్ చేయబడింది (<ph name="LOCK_TYPE" />)</translation>

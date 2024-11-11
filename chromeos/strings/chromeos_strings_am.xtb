@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">ምስሎች በመፍጠር ላይ...</translation>
 <translation id="1116694919640316211">ስለ</translation>
 <translation id="1118572504348554005">ለሳንካዎች እና ለእኛ ሪፖርት ለሚያደርጓቸው ሌሎች ችግሮች መላ ለመፈለግ በዚህ ቅጽ በኩል የቀረበውን ግብረመልስ ከአጋሮቻችን ጋር ልናጋራ እንችላለን። እንደ የይለፍ ቃላት የመሳሰሉ ልዩ ጥንቃቄ የሚያስፈልጋቸው መረጃዎችን አያካትቱ።</translation>
+<translation id="1119403468619527527">ለማቃለል በጣም ጥቂት ቃላት</translation>
 <translation id="1119447706177454957">ውስጣዊ ስህተት</translation>
 <translation id="1124772482545689468">ተጠቃሚ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">መሣሪያን መፈተሽ አልተቻለም። ለመፈተሽ ወደ የጭን ኮምፒውተር ሁነታ ይቀይሩ።</translation>
 <translation id="3916998944874125962">ቅጽበታዊ ገጽ እይታን የሚያነሳ</translation>
 <translation id="3923184630988645767">የውሂብ አጠቃቀም</translation>
+<translation id="3924445055519423964">ድረ-ገጽ/PDF ፋይል ለማጠቃለል ጠቅ ያድርጉ</translation>
 <translation id="3932043219784172185">ምንም መሣሪያ አልተገናኘም</translation>
 <translation id="3934185438132762746">ያልተመደበ <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">ለአስተናጋጅ መፍትሔ መስጠት አልተሳካም</translation>
@@ -814,6 +816,7 @@
 <translation id="4988526792673242964">ገፆች</translation>
 <translation id="4989542687859782284">አይገኝም</translation>
 <translation id="4999333166442584738">ሪፖርትን ደብቅ</translation>
+<translation id="5005695757087124131">የተመረጠውን ጽሑፍ ለማቃለል ጠቅ ያድርጉ</translation>
 <translation id="500920857929044050">ሙከራን አቁም</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">የገጽታ ቀለም</translation>
@@ -1334,6 +1337,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> ለመዘመን ዝግጁ ነው</translation>
 <translation id="741244894080940828">ልወጣ</translation>
 <translation id="7415801143053185905">በጣም ከፍተኛ የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>
+<translation id="7418738250896500352">ለማቀለል በጣም ብዙ ቃላት</translation>
 <translation id="7425037327577270384">ለመጻፍ አግዘኝ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ይህን ኤፒኤን ማሰናከል ወይም ማስወገድ አልተቻለም። የነቁ <ph name="ATTACH" /> ኤፒኤኖች መሰናከላቸውን እና መወገዳቸውን ያረጋግጡ።</translation>
@@ -1550,6 +1554,7 @@
 <translation id="8476942730579767658">መስኮቶች እና ዴስኮች</translation>
 <translation id="8477536061607044749">ግራፊክ ዲዛይን</translation>
 <translation id="8477551185774834963">የዲኤንኤስ ስርዓተ ምላሽ ጊዜ ከሚፈቀደው ገደብ በትንሹ ይበልጣል</translation>
+<translation id="8482376765267780829">ለማቀለል የተወሰነ ጽሑፍ ይምረጡ</translation>
 <translation id="8483248364096924578">የአይፒ አድራሻ</translation>
 <translation id="8491311378305535241">ከAndroid መተግበሪያዎች በኬላ በኩል ወደ ኤችቲቲፒ ድር ጣቢያዎች መገናኘት አይቻልም</translation>
 <translation id="8495070016475833911">ፌልት</translation>
@@ -1679,6 +1684,7 @@
 <translation id="9082718469794970195">ይህን ቪዲዮ ተጠቀም</translation>
 <translation id="9087578468327036362">ይህንን መጠይቅ ሪፖርት ያድርጉ</translation>
 <translation id="9088306295921699330">የአሁኑ አጠቃቀም</translation>
+<translation id="9088994563996376283">ያቃልሉ</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="909856219855259344">በዳግም ማስጀመር ቀን ተጨማሪ መረጃ</translation>
 <translation id="9100765901046053179">የላቁ ቅንብሮች</translation>

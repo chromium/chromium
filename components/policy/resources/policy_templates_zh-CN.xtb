@@ -4921,7 +4921,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="4725801978265372736">要求本地用户的名称和远程访问主机所有者的名称必须一致</translation>
 <translation id="4726228171190098009">不允许设备请求执行 Powerwash 操作</translation>
 <translation id="4726895359147376813">从永久性 ID 映射到虚拟机配置</translation>
-<translation id="4729091573952050200">允许使用 Translator API</translation>
 <translation id="4732069502693984686">允许自动截取多个界面</translation>
 <translation id="4733471537137819387">与集成 HTTP 身份验证相关的政策。</translation>
 <translation id="473673197014866318">通过设置此政策，您可以控制 <ph name="PRODUCT_NAME" /> 的扩展程序管理设置，包括由现有的与扩展程序相关的政策控制的设置。此政策会取代任何可能已设置的旧版政策。
@@ -9712,15 +9711,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8331479227794770304">启用粘滞键</translation>
 <translation id="8332822245414537447">停用 RSA 密钥用法检查</translation>
 <translation id="8334685561819743286">在用户输入内容时停用实体键盘自动更正功能</translation>
-<translation id="8336819406993366823">如果此政策设为 <ph name="ENABLED_VALUE_NAME" />，系统会允许在 JavaScript 中使用带前缀的视频专用全屏 API，例如 Video.webkitEnterFullscreen()。
-
-如果此政策设为 <ph name="DISABLED_VALUE_NAME" />，您将无法在 JavaScript 中使用带前缀的视频专用全屏 API，而只能使用标准全屏 API，例如 Element.requestFullscreen()。
-
-将此政策设为 <ph name="RUNTIME_ENABLED_VALUE_NAME" /> 可允许在运行时启用的 PrefixedFullscreenVideo 功能标志确定带前缀的视频专用全屏 API 是否可供网站使用。
-
-如果此政策未设置，行为将默认为 <ph name="RUNTIME_ENABLED_VALUE_NAME" />。
-
-注意：此政策只是一种临时解决方案，用于帮助弃用带有 webkit 前缀的全屏 API。我们将在 M130 或后续的几个版本中暂时将其移除。</translation>
 <translation id="8337114537412769126">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> 来指定在借助 POST 搜索建议时应使用的参数。所指定的内容由一系列以英文逗号分隔的名称-值对组成。如果值为模板参数（例如<ph name="SEARCH_TERM_MARKER" />），系统会将其替换成真实的搜索字词数据。
 
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />，系统将使用 GET 方法发送建议搜索请求。</translation>

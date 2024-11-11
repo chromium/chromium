@@ -806,7 +806,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1561331397460162942">Consente l'accesso alla posizione per le app e i siti web che dispongono dell'autorizzazione di accesso alla posizione e ai servizi di sistema</translation>
 <translation id="1562119309884184621">Se aggiungi questo contatto, verrà memorizzato e riconosciuto la volta successiva che condividerà file</translation>
 <translation id="1563137369682381456">Data di scadenza</translation>
-<translation id="1563702743503072935">Le password memorizzate nel tuo Account Google saranno disponibili anche su questo dispositivo dopo aver eseguito l'accesso</translation>
 <translation id="1566049601598938765">Sito web</translation>
 <translation id="15662109988763471">La stampante selezionata non è disponibile o non è installata correttamente. Controlla la stampante o prova a selezionarne un'altra.</translation>
 <translation id="1566329594234563241">Quando inattivo e collegato</translation>
@@ -1549,6 +1548,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2062354623176996748">Apri una finestra di navigazione in incognito per esplorare il Web senza salvare la tua cronologia di navigazione</translation>
 <translation id="206308717637808771">Elimina i dati alla chiusura di tutte le finestre. I dati vengono trattati allo stesso modo del sito che stai visualizzando</translation>
 <translation id="2065405795449409761">Chrome è controllato da software di test automatizzato.</translation>
+<translation id="2066700471214517561">Microfono beamforming per un audio nitido della persona che utilizza Chromebook.</translation>
 <translation id="2067591192939433190">Di "<ph name="VENDOR_NAME" />"</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ha terminato la stampa su <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Nessun file di log locale.</translation>
@@ -2306,6 +2306,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2580889980133367162">Consenti sempre a <ph name="HOST" /> di scaricare più file</translation>
 <translation id="258095186877893873">Lungo</translation>
 <translation id="2581455244799175627">Scopri di più sull'autorizzazione dei cookie di terze parti</translation>
+<translation id="2581786034175502848">Premi Maiusc 5 volte per riattivarlo</translation>
 <translation id="2581992808349413349">Utilizza una connessione sicura per cercare l'indirizzo IP di un sito nel DNS (Domain Name System). Viene utilizzato un fornitore di servizi gestiti all'indirizzo <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (piattaforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Impossibile recuperare la richiesta di Kerberos. Riprova o contatta l'amministratore del dispositivo dell'organizzazione. (Codice errore: <ph name="ERROR_CODE" />).</translation>
@@ -3131,7 +3132,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3177909033752230686">Lingua della pagina:</translation>
 <translation id="3177914167275935955">Il tuo dispositivo include una licenza Chrome Education Upgrade, ma il tuo nome utente non è associato a un account Google for Education. Crea un account Google for Education visitando la pagina g.co/workspace/edusignup su un dispositivo secondario.</translation>
 <translation id="3179982752812949580">Carattere testo</translation>
-<translation id="3180175986308160674">Generazione di domande su questa pagina in corso…</translation>
 <translation id="3180284704187420717">Salva i tuoi preferiti, le tue password e altro ancora attivando la sincronizzazione</translation>
 <translation id="3180990259147710757">Sposta la mascella a sinistra</translation>
 <translation id="3181954750937456830">Navigazione sicura (protegge te e il tuo dispositivo da siti pericolosi)</translation>
@@ -3796,6 +3796,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3662207097851752847">Conferma il tuo Account Google sullo smartphone</translation>
 <translation id="3663417513679360795">Maggiori informazioni sull'attivazione del precaricamento standard</translation>
 <translation id="3664511988987167893">Icona dell'estensione</translation>
+<translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" />}=1{Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" /> e # altra persona}other{Partecipa al gruppo di schede con <ph name="OWNER_FIRST_NAME" /> e # altre persone}}</translation>
 <translation id="3665100783276035932">La maggior parte dei siti dovrebbe funzionare come previsto</translation>
 <translation id="3665301845536101715">Apri nel riquadro laterale</translation>
 <translation id="3665589677786828986">Chrome ha rilevato che alcune impostazioni sono state danneggiate da un altro programma e le ha ripristinate con i valori originali predefiniti.</translation>
@@ -3938,7 +3939,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3748424433435232460">Una password per questo account è già salvata su questo dispositivo</translation>
 <translation id="3748706263662799310">Segnala un bug</translation>
 <translation id="3749724428455457489">Scopri di più sugli annunci suggeriti dal sito</translation>
-<translation id="3750562496035670393">Chrome ha salvato la tua password su questo dispositivo, ma puoi salvarla sul tuo Account Google se preferisci. Se lo fai, saranno disponibili anche tutte le password sul tuo Account Google quando avrai eseguito l'accesso.</translation>
 <translation id="3752115502500640407">Condividi una copia della tua password di <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Chiedi a tuo figlio di continuare a sollevare il dito per salvare l'impronta</translation>
 <translation id="3753033997400164841">Memorizza una volta, usa ovunque</translation>
@@ -4515,7 +4515,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4135746311382563554">Termini di servizio aggiuntivi di Google Chrome e ChromeOS</translation>
 <translation id="4136203100490971508">La funzione Luminosità notturna verrà disattivata automaticamente all'alba</translation>
 <translation id="41365691917097717">Se continui, verrà attivato il debug ADB per creare e testare app Android. Tieni presente che questa azione consente l'installazione di app Android che non sono state verificate da Google. Per disattivare la funzionalità è necessario ripristinare le impostazioni di fabbrica.</translation>
-<translation id="4137923333452716643">Evidenzia il testo che vuoi aprire in modalità di lettura.</translation>
+<translation id="4137923333452716643">Evidenzia il testo che vuoi aprire in modalità Lettura.</translation>
 <translation id="4138267921960073861">Visualizza nomi e foto dell'utente sulla schermata di accesso</translation>
 <translation id="4138598238327913711">Controllo grammaticale attualmente disponibile soltanto per l'inglese</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - Dispositivo HID connesso</translation>
@@ -4579,7 +4579,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4195378859392041564">Fai clic su un tasto qualsiasi con il mouse, quindi premi un tasto della tastiera per personalizzarlo</translation>
 <translation id="4195643157523330669">Apri in un'altra scheda</translation>
 <translation id="4195814663415092787">Continua dal punto in cui avevi interrotto</translation>
-<translation id="4196350776737072374">Nessuna domanda disponibile. Prova a fare richieste come: "Riassumi questa pagina" o a porre la tua domanda.</translation>
 <translation id="4198268995694216131">Altri siti</translation>
 <translation id="4200609364258658652">Copia frame</translation>
 <translation id="4200689466366162458">Parole del dizionario personale</translation>
@@ -5167,6 +5166,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4627442949885028695">Continua da un altro dispositivo</translation>
 <translation id="4628762811416793313">La configurazione del container Linux non è stata completata. Riprova.</translation>
 <translation id="4629521233550547305">Apri il profilo <ph name="PROFILE_NAME" /></translation>
+<translation id="4631955550884380853">Focus sulla voce</translation>
 <translation id="4632655012900268062">Personalizza le schede</translation>
 <translation id="4633003931260532286">L'estensione richiede "<ph name="IMPORT_NAME" />" con la versione minima "<ph name="IMPORT_VERSION" />", ma è installata soltanto la versione "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4633757335284074492">Effettua il backup su Google Drive. Ripristina i dati facilmente o cambia dispositivo in qualsiasi momento. Questa copia di backup include i dati delle app. Le copie di backup vengono caricate su Google e criptate mediante la password del tuo Account Google.</translation>
@@ -6015,7 +6015,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5249624017678798539">Si è verificato un arresto anomalo del browser prima che il download fosse completato.</translation>
 <translation id="5249818097095743806">Utilizza il tuo token di sicurezza</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> utilizza la tua posizione per fornirti contenuti locali. Puoi modificare questa preferenza nelle <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5252496130205799136">Usare l'Account Google per salvare e inserire le password?</translation>
 <translation id="5252653240322147470">Il PIN deve contenere meno di <ph name="MAXIMUM" /> cifre</translation>
 <translation id="5253554634804500860">Utilizza <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Memoria utilizzata: <ph name="MEMORY_USAGE" /></translation>
@@ -7548,7 +7547,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6378392501584240055">Apri nelle reti Wi-Fi</translation>
 <translation id="6379533146645857098">Seleziona un intervallo di tempo</translation>
 <translation id="6380143666419481200">Accetta e continua</translation>
-<translation id="6383382161803538830">Modalità di lettura non disponibile in questa pagina</translation>
+<translation id="6383382161803538830">Modalità Lettura non disponibile in questa pagina</translation>
 <translation id="638418309848716977">Link supportati</translation>
 <translation id="6384275966486438344">Modifica delle impostazioni di ricerca per: <ph name="SEARCH_HOST" /></translation>
 <translation id="6385149369087767061">Connettiti a Internet e riprova</translation>
@@ -8190,7 +8189,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6833479554815567477">Scheda spostata dal gruppo <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Bilanciato (consigliato)</translation>
 <translation id="6835762382653651563">Connettiti a Internet per aggiornare il tuo <ph name="DEVICE_TYPE" />.</translation>
-<translation id="683630338945552556">Usa e salva le password nel tuo Account Google</translation>
 <translation id="6838992358006915573">La funzionalità di ingrandimento segue lo stato attivo di ChromeVox</translation>
 <translation id="6839225236531462745">Errore di eliminazione del certificato</translation>
 <translation id="6839916869147598086">L'accesso è stato modificato</translation>

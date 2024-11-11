@@ -805,7 +805,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1561331397460162942">To omogućava pristup lokaciji za aplikacije, veb-sajtove sa dozvolom za lokaciju i sistemske usluge</translation>
 <translation id="1562119309884184621">Ako dodate kontakt, biće zapamćen za sledeće deljenje</translation>
 <translation id="1563137369682381456">Datum isteka</translation>
-<translation id="1563702743503072935">Lozinke sa Google naloga biće dostupne i na ovom uređaju dok ste prijavljeni</translation>
 <translation id="1566049601598938765">Veb-sajt</translation>
 <translation id="15662109988763471">Izabrani štampač nije dostupan ili nije pravilno instaliran. Proverite štampač ili izaberite neki drugi.</translation>
 <translation id="1566329594234563241">Dok je neaktivan i priključen</translation>
@@ -3131,7 +3130,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3177909033752230686">Jezik stranice:</translation>
 <translation id="3177914167275935955">Uređaj sadrži nadogradnju za Chrome Education, ali vaše korisničko ime nije povezano sa Google for Education nalogom. Otvorite Google for Education nalog tako što ćete posetiti g.co/workspace/edusignup na sekundarnom uređaju.</translation>
 <translation id="3179982752812949580">Font teksta</translation>
-<translation id="3180175986308160674">Generišu se pitanja o ovoj stranici…</translation>
 <translation id="3180284704187420717">Sačuvajte obeleživače, lozinke i drugo uz sinhronizaciju</translation>
 <translation id="3180990259147710757">Pomerite vilicu ulevo</translation>
 <translation id="3181954750937456830">Bezbedno pregledanje (štiti vas i uređaj od opasnih sajtova)</translation>
@@ -3939,7 +3937,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3748424433435232460">Lozinka za ovaj nalog je već sačuvana na ovom uređaju</translation>
 <translation id="3748706263662799310">Prijavite grešku</translation>
 <translation id="3749724428455457489">Saznajte više o oglasima koje predlaže sajt</translation>
-<translation id="3750562496035670393">Chrome je sačuvao lozinku na ovaj uređaj, ali možete umesto toga da je sačuvate na Google nalog. Tada će sve lozinke na Google nalogu takođe biti dostupne dok ste prijavljeni.</translation>
 <translation id="3752115502500640407">Delite kopiju lozinke za <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Neka dete nastavi da podiže prst da bi otisak prsta bio sačuvan</translation>
 <translation id="3753033997400164841">Sačuvajte jednom. Koristite svuda</translation>
@@ -4580,7 +4577,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4195378859392041564">Kliknite mišem na bilo koji taster, pa pritisnite taster na tastaturi da biste ga prilagodili</translation>
 <translation id="4195643157523330669">Otvori na novoj kartici</translation>
 <translation id="4195814663415092787">Nastavi prethodnu sesiju</translation>
-<translation id="4196350776737072374">Nema dostupnih pitanja. Pitajte stvari kao što su „rezimiraj ovu stranicu“ ili sami osmislite pitanje.</translation>
 <translation id="4198268995694216131">Dodatni sajtovi</translation>
 <translation id="4200609364258658652">Kopiraj&amp; kadar videa</translation>
 <translation id="4200689466366162458">Prilagođene reči</translation>
@@ -6018,7 +6014,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5249624017678798539">Pregledač je otkazao pre nego što je preuzimanje dovršeno.</translation>
 <translation id="5249818097095743806">Koristite bezbednosni ključ</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> koristi lokaciju da bi vam pružao lokalni sadržaj. To možete da promenite u: <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5252496130205799136">Želite da koristite Google nalog da biste čuvali i popunjavali lozinke?</translation>
 <translation id="5252653240322147470">PIN mora da ima manje od <ph name="MAXIMUM" /> cifre(ara)</translation>
 <translation id="5253554634804500860">Koristi telefon <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Korišćenje memorije: <ph name="MEMORY_USAGE" /></translation>
@@ -8199,7 +8194,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6833479554815567477">Kartica je uklonjena iz grupe <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Uravnoteženo (preporučeno)</translation>
 <translation id="6835762382653651563">Povežite se na internet da biste ažurirali <ph name="DEVICE_TYPE" />.</translation>
-<translation id="683630338945552556">Koristite i sačuvajte lozinke na Google nalogu</translation>
 <translation id="6838992358006915573">Lupa prati ChromeVox fokus</translation>
 <translation id="6839225236531462745">Greška pri brisanju sertifikata</translation>
 <translation id="6839916869147598086">Prijavljivanje je promenjeno</translation>

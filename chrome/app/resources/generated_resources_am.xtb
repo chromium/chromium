@@ -806,7 +806,6 @@
 <translation id="1561331397460162942">ይህ ለመተግበሪያዎች፣ የአካባቢ ፈቃድ ላላቸው ድር ጣቢያዎች እና ለስርዓት አገልግሎቶች የማይክሮፎን አካባቢን ይፈቅዳል።</translation>
 <translation id="1562119309884184621">እኚህን እውቂያ ማከል በሚያጋሩበት ቀጣዩ ጊዜ ላይ እርስዎን ያስታውሳል</translation>
 <translation id="1563137369682381456">ጊዜው የሚያበቃበት ቀን</translation>
-<translation id="1563702743503072935">በመለያ ገብተው ሳለ ከGoogle መለያዎ የመጡ ይለፍ ቃላት እንዲሁም በዚህ መሣሪያ ላይም ይገኛሉ</translation>
 <translation id="1566049601598938765">ድር ጣቢያ</translation>
 <translation id="15662109988763471">የተመረጠው አታሚ የለም ወይም በትክክል አልተጫነም። አታሚዎን ይፈትሹት ወይም ሌላ አታሚ ለመምረጥ ይሞክሩ።</translation>
 <translation id="1566329594234563241">ገቢር ሳይሆን እና ሲሰካ</translation>
@@ -1555,6 +1554,7 @@
 <translation id="2062354623176996748">ማንነት በማያሳውቅ መስኮት አማካኝነት የአሰሳ ታሪክዎን ሳያስቀምጡ ድሩን ይጠቀሙ</translation>
 <translation id="206308717637808771">ሁሉንም መስኮቶች ሲዘጉ ውሂብ ይሰርዙ። ውሂብ የሚስተናገደው እየተመለከቱት እንዳለው ጣቢያ ነው</translation>
 <translation id="2065405795449409761">Chrome በራስ-ሰር የሙከራ ሶፍትዌር ቁጥጥር ሥር ነው።</translation>
+<translation id="2066700471214517561">Chromebook የሚጠቀሙት ሰው ግልፅ ሆነው መደመጥ እንዲችሉ ማይክን ሞገድ በማሠራት ላይ።</translation>
 <translation id="2067591192939433190">ከ«<ph name="VENDOR_NAME" />»</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ወደ <ph name="PRINTER_NAME" /> ማተምን አጠናቅቋል</translation>
 <translation id="2071393345806050157">ምንም አካባቢያዊ የምዝግብ ማስታወሻ ፋይል የለም።</translation>
@@ -2313,6 +2313,7 @@
 <translation id="2580889980133367162">ሁልጊዜም <ph name="HOST" /> ከአንድ በላይ ፋይሎችን እንዲያወርድ ይፍቀዱ</translation>
 <translation id="258095186877893873">ረጅም</translation>
 <translation id="2581455244799175627">የሦስተኛ ወገን ኩኪዎችን ስለመፍቀድ ተጨማሪ</translation>
+<translation id="2581786034175502848">እንደገና ለማንቃት shift 5 ጊዜያት ይጫኑ</translation>
 <translation id="2581992808349413349">የጣቢያን አይፒ አድራሻ ዲኤንኤስ (የጎራ ስም ሥርዓት) ውስጥ ለመፈለግ ደህንነቱ የተጠበቀ ግንኙነትን ይጠቀሙ። ይህ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> ላይ የሚተዳደር ግልጋሎት ሰጪን ይጠቀማል</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (የመሣሪያ ስርዓት <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">የKerberos ቲኬት ማግኘት አልተቻለም። እንደገና ይሞክሩ፣ ወይም የድርጅትዎን የመሣሪያ አስተዳዳሪ ያነጋግሩ። (የስህተት ኮድ፦ <ph name="ERROR_CODE" />)።</translation>
@@ -3133,7 +3134,6 @@
 <translation id="3177909033752230686">የገጽ ቋንቋ፦</translation>
 <translation id="3177914167275935955">የእርስዎ መሣሪያ የChrome Education ልቀትን ያካትታል፣ ነገር ግን የእርስዎ የተጠቃሚ ስም ከGoogle for Education መለያ ጋር የተጎዳኘ አይደለም። እባክዎ በሁለተኛ መሣሪያ ላይ g.co/workspace/edusignupን በመጎብኘት የGoogle for Education መለያ ይፍጠሩ።</translation>
 <translation id="3179982752812949580">የጽሑፍ ቅርጸ ቁምፊ</translation>
-<translation id="3180175986308160674">ስለ እዚህ ገፅ ጥያቄዎችን በማመንጨት ላይ…</translation>
 <translation id="3180284704187420717">በስምረት እልባቶችዎን፣ የይለፍ ቃላትዎን እና ሌሎችንም ያስቀምጡ</translation>
 <translation id="3180990259147710757">መንጋጋን ወደ ግራ ይውሰዱ</translation>
 <translation id="3181954750937456830">ደኅንነቱ የተጠበቀ አሰሳ (እርስዎን እና የእርስዎን መሣሪያ ከአደገኛ ጣቢያዎች ጥበቃ ያደርግላችኋል)</translation>
@@ -3937,7 +3937,6 @@
 <translation id="3748424433435232460">ለዚህ መለያ አንድ የይለፍ ቃል በዚህ መሣሪያ ላይ አስቀድሞ ተቀምጧል</translation>
 <translation id="3748706263662799310">ስህተት ሪፖርት አድርግ</translation>
 <translation id="3749724428455457489">ስለ በጣቢያ የተጠቆሙ ማስታወቂያዎች የበለጠ ይወቁ</translation>
-<translation id="3750562496035670393">Chrome የይለፍ ቃልዎን በዚህ መሣሪያ ላይ አስቀምጦታል፣ ነገር ግን በምትኩ Google መለያዎ ላይ ማስቀመጥ ይችላሉ። ከዚያ በመለያ ገብተው ሳለ በGoogle መለያዎ ውስጥ ያሉት ሁሉም የይለፍ ቃላት ይገኛሉ።</translation>
 <translation id="3752115502500640407">የይለፍ ቃልዎን ቅጂ ለ<ph name="WEBSITE" /> ያጋሩ</translation>
 <translation id="3752253558646317685">ልጅዎ የጣት አሻራውን ለማስቀመት ጣታቸውን ማንሳት እንዲቀጥሉ ያድርጉ</translation>
 <translation id="3753033997400164841">አንድ ጊዜ አከማች። በሁሉም ቦታ ተጠቀም</translation>
@@ -4572,7 +4571,6 @@
 <translation id="4195378859392041564">በእርስዎ መዳፊት ማንኛውም ቁልፍ ላይ ጠቅ ያድረጉ፣ ከዚያ ለማበጀት አንድ የቁልፍ ሰሌዳ ቁልፍን ይጫኑ</translation>
 <translation id="4195643157523330669">በአዲስ ትር ክፈት</translation>
 <translation id="4195814663415092787">ካቆምክበት ቀጥል</translation>
-<translation id="4196350776737072374">ምንም ጥያቄዎች አይገኙም። እንደ «ይህን ገፅ አጠቃልል» ያሉ ነገሮችን ወይም የራስዎን ጥያቄ መጠየቅ ይሞክሩ።</translation>
 <translation id="4198268995694216131">ተጨማሪ ጣቢያዎች</translation>
 <translation id="4200609364258658652">የቪዲዮ ፍሬም ቅ&amp;ዳ</translation>
 <translation id="4200689466366162458">ብጁ ቃላት</translation>
@@ -5160,6 +5158,7 @@
 <translation id="4627442949885028695">ከሌላ መሣሪያ ላይ ቀጥል</translation>
 <translation id="4628762811416793313">የLinux መያዣው ውቅረት አልተጠናቀቀም። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> መገለጫን ክፈት</translation>
+<translation id="4631955550884380853">ትኩረት የተደረገ ድምፅ</translation>
 <translation id="4632655012900268062">ካርዶችን ያብጁ</translation>
 <translation id="4633003931260532286">ቅጥያው ቢያንስ የ«<ph name="IMPORT_VERSION" />» ስሪት የሆነ «<ph name="IMPORT_NAME" />» ያስፈልገዋል፣ ነገር ግን «<ph name="INSTALLED_VERSION" />» ስሪት ብቻ ነው የተጫነው</translation>
 <translation id="4633757335284074492">ምትኬ ወደ Google Drive ያስቀምጡ። በማንኛውም ጊዜ ውሂብ በቀላሉ ወደነበሩበት ይመልሱ ወይም መሣሪያን ይቀይሩ። ይህ ምትኬ የመተግበሪያ ውሂብን ያካትታል። ምትኬዎች ወደ Google ተሰቅለዋል እና የልጅዎን የGoogle መለያ የይለፍ ቃል በመጠቀም ተመስጥረዋል።</translation>
@@ -6009,7 +6008,6 @@
 <translation id="5249624017678798539">ማውረድ ከመጠናቀቁ በፊት አሳሹ ተበላሽቷል።</translation>
 <translation id="5249818097095743806">የደህንነት ቁልፍዎን ይጠቀሙ</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> አካባቢያዊ ይዘትን ለእርስዎ ለመስጠት አካባቢዎን ይጠቀማል። ይህን በ<ph name="SETTINGS_LINK" /> ውስጥ መቀየር ይችላሉ።</translation>
-<translation id="5252496130205799136">የይለፍ ቃላትን ለማስቀመጥ እና ለመሙላት የGoogle መለያዎን ይጠቀማሉ?</translation>
 <translation id="5252653240322147470">ፒን ከ<ph name="MAXIMUM" /> አኃዞች ያነሰ መሆን አለበት</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" />ን ይጠቀሙ</translation>
 <translation id="5254233580564156835">የማህደረ ትውስታ አጠቃቀም፦ <ph name="MEMORY_USAGE" /></translation>
@@ -8185,7 +8183,6 @@
 <translation id="6833479554815567477">ትር ከቡድን <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> ተወግዷል</translation>
 <translation id="6833753236242482566">የተመጣጠነ (የሚመከር)</translation>
 <translation id="6835762382653651563">የእርስዎን <ph name="DEVICE_TYPE" /> ለማዘመን እባክዎ ከበይነመረብ ጋር ይገናኙ።</translation>
-<translation id="683630338945552556">በGoogle መለያዎ ውስጥ የይለፍ ቃላትን ይጠቀሙ እና ያስቀምጡ</translation>
 <translation id="6838992358006915573">ማጉያ የChromeVox ማተኮርን ይከተላል</translation>
 <translation id="6839225236531462745">የእውቅና ማረጋገጫ ስረዛ ስህተት</translation>
 <translation id="6839916869147598086">በመለያ መግቢያ ተለውጧል</translation>

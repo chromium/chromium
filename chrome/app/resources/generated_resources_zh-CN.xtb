@@ -800,7 +800,6 @@
 <translation id="1561331397460162942">这将允许具有位置信息权限的应用和网站以及系统服务使用位置信息</translation>
 <translation id="1562119309884184621">如果您添加了此联系人，当他/她下次分享内容时，系统会识别出此联系人</translation>
 <translation id="1563137369682381456">失效日期</translation>
-<translation id="1563702743503072935">登录后，您在此设备上也能获取您 Google 账号中保存的密码</translation>
 <translation id="1566049601598938765">网站</translation>
 <translation id="15662109988763471">所选打印机无法使用或未正确安装。请检查打印机，或尝试选择其他打印机。</translation>
 <translation id="1566329594234563241">处于闲置状态且接通电源时</translation>
@@ -3118,7 +3117,6 @@
 <translation id="3177909033752230686">网页语言：</translation>
 <translation id="3177914167275935955">您的设备随附了一份 Chrome 教育版升级许可，但您的用户名并未与 Google for Education 账号关联。请先在辅助设备上前往 g.co/workspace/edusignup 创建一个 Google for Education 账号。</translation>
 <translation id="3179982752812949580">文本字体</translation>
-<translation id="3180175986308160674">正在生成与此页面相关的问题…</translation>
 <translation id="3180284704187420717">借助同步功能保存您的书签、密码等数据</translation>
 <translation id="3180990259147710757">将下巴向左移动</translation>
 <translation id="3181954750937456830">安全浏览（保护您和您的设备不受危险网站的侵害）</translation>
@@ -3779,6 +3777,7 @@
 <translation id="3662207097851752847">请在手机上确认您的 Google 账号</translation>
 <translation id="3663417513679360795">详细了解如何开启标准预加载功能</translation>
 <translation id="3664511988987167893">扩展程序图标</translation>
+<translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{加入<ph name="OWNER_FIRST_NAME" />所在的标签页分组}=1{加入<ph name="OWNER_FIRST_NAME" />和另外 # 人所在的标签页分组}other{加入<ph name="OWNER_FIRST_NAME" />和另外 # 人所在的标签页分组}}</translation>
 <translation id="3665100783276035932">大多数网站应该都会按预期运行</translation>
 <translation id="3665301845536101715">在侧边栏中打开</translation>
 <translation id="3665589677786828986">Chrome检测到您的部分设置被其他程序篡改了，因此已将这些设置重置为原始默认设置。</translation>
@@ -3919,7 +3918,6 @@
 <translation id="3748424433435232460">此账号的密码已经保存在该设备上</translation>
 <translation id="3748706263662799310">报告错误</translation>
 <translation id="3749724428455457489">详细了解网站建议的广告</translation>
-<translation id="3750562496035670393">Chrome 已将您的密码保存到此设备，但您可改为将其保存到自己的 Google 账号。这样一来，在登录后，您也能获取您 Google 账号中保存的所有密码。</translation>
 <translation id="3752115502500640407">分享您用于登录 <ph name="WEBSITE" /> 的密码</translation>
 <translation id="3752253558646317685">让您的孩子不时地移开手指，以便保存指纹</translation>
 <translation id="3753033997400164841">一次储存，随时随地使用</translation>
@@ -4555,7 +4553,6 @@
 <translation id="4195378859392041564">使用鼠标点击任意按键，然后按一个键盘按键即可自定义</translation>
 <translation id="4195643157523330669">在新标签页中打开</translation>
 <translation id="4195814663415092787">继续浏览上次打开的网页</translation>
-<translation id="4196350776737072374">没有任何问题。请尝试询问“总结此页面”之类的问题，或提出您自己的问题。</translation>
 <translation id="4198268995694216131">更多网站</translation>
 <translation id="4200609364258658652">复制视频帧(&amp;Y)</translation>
 <translation id="4200689466366162458">自定义字词</translation>
@@ -5992,7 +5989,6 @@
 <translation id="5249624017678798539">浏览器崩溃了，下载还未完成。</translation>
 <translation id="5249818097095743806">使用安全密钥</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> 会使用您的位置信息为您提供本地内容。您可以在<ph name="SETTINGS_LINK" />中更改此设置。</translation>
-<translation id="5252496130205799136">使用您的 Google 账号保存和填充密码？</translation>
 <translation id="5252653240322147470">PIN 码必须少于 <ph name="MAXIMUM" /> 位数</translation>
 <translation id="5253554634804500860">使用<ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">内存用量：<ph name="MEMORY_USAGE" /></translation>
@@ -8162,7 +8158,6 @@
 <translation id="6833479554815567477">此标签页已从“<ph name="GROUP_NAME" />”组中移除 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">均衡（推荐）</translation>
 <translation id="6835762382653651563">请连接到互联网，以便更新您的<ph name="DEVICE_TYPE" />。</translation>
-<translation id="683630338945552556">将密码保存到您的 Google 账号并自动填充</translation>
 <translation id="6838992358006915573">放大镜跟随 ChromeVox 焦点移动</translation>
 <translation id="6839225236531462745">证书删除错误</translation>
 <translation id="6839916869147598086">登录发生变化</translation>

@@ -5167,7 +5167,6 @@ Kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="DEVICE_SCREENSAVER
 <translation id="4725801978265372736">Wajibkan pencocokan nama pengguna lokal dengan pemilik host akses jarak jauh</translation>
 <translation id="4726228171190098009">Jangan izinkan perangkat meminta powerwash</translation>
 <translation id="4726895359147376813">Pemetaan dari ID persisten ke konfigurasi VM</translation>
-<translation id="4729091573952050200">Selalu gunakan Translator API</translation>
 <translation id="4732069502693984686">Mengaktifkan screenshot otomatis beberapa layar</translation>
 <translation id="4733471537137819387">Kebijakan yang terkait dengan autentikasi HTTP terintegrasi.</translation>
 <translation id="473673197014866318">Menyetel kebijakan akan mengontrol setelan pengelolaan ekstensi untuk <ph name="PRODUCT_NAME" />, termasuk setelan apa pun yang dikontrol oleh kebijakan terkait ekstensi yang sudah ada. Kebijakan ini akan menggantikan kebijakan lama apa pun yang mungkin disetel.
@@ -10201,15 +10200,6 @@ Informasi selengkapnya tentang teknologi lama dapat ditemukan di https://chromes
 <translation id="8331479227794770304">Aktifkan tombol lengket</translation>
 <translation id="8332822245414537447">Nonaktifkan pemeriksaan penggunaan kunci RSA</translation>
 <translation id="8334685561819743286">Nonaktifkan koreksi otomatis keyboard fisik saat pengguna mengetik</translation>
-<translation id="8336819406993366823">Jika kebijakan disetel ke <ph name="ENABLED_VALUE_NAME" />, API layar penuh khusus video berawalan (mis. Video.webkitEnterFullscreen()) dapat digunakan dari JavaScript.
-
-Jika kebijakan disetel ke <ph name="DISABLED_VALUE_NAME" />, API layar penuh khusus video berawalan tidak akan digunakan dalam JavaScript, sehingga hanya API layar penuh standar yang tersisa (mis. Element.requestFullscreen()).
-
-Jika kebijakan disetel ke <ph name="RUNTIME_ENABLED_VALUE_NAME" />, tombol fitur yang diaktifkan runtime PrefixedFullscreenVideo dapat digunakan untuk menentukan apakah API layar penuh khusus video berawalan tersedia untuk situs web.
-
-Jika kebijakan ini tidak disetel, perilaku akan ditetapkan secara default ke <ph name="RUNTIME_ENABLED_VALUE_NAME" />.
-
-Catatan: kebijakan ini adalah solusi sementara untuk membantu transisi dari API layar penuh berawalan webkit. Kebijakan ini akan dihapus untuk sementara di M130, atau dalam beberapa rilis berikutnya.</translation>
 <translation id="8337114537412769126">Jika <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktif, menyetel <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> akan menentukan parameter ketika melakukan penelusuran saran dengan POST. Kebijakan terdiri dari pasangan nama kunci yang dipisahkan koma. Jika nilai adalah parameter template seperti <ph name="SEARCH_TERM_MARKER" />, data istilah penelusuran nyata akan menggantikannya.
 
       Jika <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> tidak disetel, permintaan penelusuran saran dikirimkan menggunakan metode GET.</translation>

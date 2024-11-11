@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Gumagawa ng mga larawan...</translation>
 <translation id="1116694919640316211">Tungkol sa</translation>
 <translation id="1118572504348554005">Posibleng mag-share kami ng feedback na isinumite sa pamamagitan ng form na ito sa aming mga partner para mag-troubleshoot ng mga bug at iba pang isyu na iuulat mo sa amin. Huwag magsama ng sensitibong impormasyon tulad ng mga password.</translation>
+<translation id="1119403468619527527">Masyadong kaunti ang mga salita para pasimplehin</translation>
 <translation id="1119447706177454957">Panloob na error</translation>
 <translation id="1124772482545689468">User</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -306,6 +307,7 @@
 <translation id="2308243864813041101">Bunutin ang USB cable ng <ph name="DEVICE_NAME" /> para ituloy ang proseso ng pag-update</translation>
 <translation id="2320295602967756579">I-enable ang maliwanag na tema</translation>
 <translation id="2323506179655536734">NILAKTAWAN</translation>
+<translation id="2323755382216917952">Nire-require ka ng pag-update na ito na i-restart ang iyong computer para matapos ang pag-install. Posibleng abutin nang ilang minuto bago matapos ang pag-update na ito. Habang nag-a-update ang firmware, huwag alisin sa pagkakasaksak o i-shut down ang iyong computer.</translation>
 <translation id="2324354238778375592">I-float</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Napakabilis (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -449,6 +451,7 @@
 <translation id="3178532070248519384">avant-garde</translation>
 <translation id="3182676044300231689">Maglagay ng prompt tulad ng "gawing mas may kumpiyansa ang dating"</translation>
 <translation id="3188257591659621405">Aking mga file</translation>
+<translation id="3188931456353313123">Ibinigay ng manufacturer ng device ang update na ito at hindi pa ito nave-verify ng Google.</translation>
 <translation id="319101249942218879">Pinalitan ang larawan ng avatar</translation>
 <translation id="3192947282887913208">Mga Audio File</translation>
 <translation id="3199982728237701504">Document Feeder (Dalawang bahagi)</translation>
@@ -507,6 +510,7 @@
 <translation id="3488065109653206955">Bahagyang na-activate</translation>
 <translation id="3492882532495507361">Isang <ph name="OFFICE_STYLE" /> na opisina na may mga <ph name="OFFICE_COLOR" /> na tone</translation>
 <translation id="3493187369049186498">Sinusukat ng iyong Chromebook ang data. Posibleng naiiba ito sa data ng provider.</translation>
+<translation id="349570724365779960">Nakakonekta sa mga mag-aaral ang Mga Tool sa Paaralan</translation>
 <translation id="3502426834823382181">tingnan ang lahat ng app</translation>
 <translation id="3510890413042482857">Ipadala ang <ph name="BEGIN_LINK1" />data ng pagte-trace sa performance<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Update sa Chrome OS</translation>
@@ -587,6 +591,7 @@
 <translation id="391412459402535266">Hindi masuri ang device. Lumipat sa laptop mode para suriin.</translation>
 <translation id="3916998944874125962">kumuha ng screenshot</translation>
 <translation id="3923184630988645767">Paggamit ng data</translation>
+<translation id="3924445055519423964">I-click para ibuod ang webpage/PDF file</translation>
 <translation id="3932043219784172185">Walang nakakonektang device</translation>
 <translation id="3934185438132762746">Hindi nakatalagang <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Hindi nalutas ang host</translation>
@@ -755,6 +760,7 @@
 <translation id="473775607612524610">I-update</translation>
 <translation id="4744944742468440486">Impormasyong nauugnay sa iyong pinili</translation>
 <translation id="4771607256327216405">pagliliwanag ng keyboard</translation>
+<translation id="4771923071974529837">bukas</translation>
 <translation id="4773299976671772492">Inihinto</translation>
 <translation id="4778082030331381943">amethyst</translation>
 <translation id="4782311465517282004">Makakuha ng mga kahulugan, pagsasalin, o conversion ng unit kapag nag-right click ka sa o pinindot mo nang matagal ang text</translation>
@@ -814,9 +820,11 @@
 <translation id="4988526792673242964">Mga Page</translation>
 <translation id="4989542687859782284">Hindi Available</translation>
 <translation id="4999333166442584738">Itago ang ulat</translation>
+<translation id="5005695757087124131">I-click para pasimplehin ang napiling text</translation>
 <translation id="500920857929044050">Ihinto ang pagsusuri</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Kulay ng tema</translation>
+<translation id="5037240652947866174">ngayon</translation>
 <translation id="5038292761217083259">multicolor na keyboard</translation>
 <translation id="5039804452771397117">Payagan</translation>
 <translation id="5049856988445523908">Na-lock ang SIM (<ph name="LOCK_TYPE" />)</translation>
@@ -1334,6 +1342,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="7405493795721832710">Handa nang i-update ang <ph name="DEVICE_NAME" /></translation>
 <translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Napakataas na latency ng HTTP</translation>
+<translation id="7418738250896500352">Masyadong marami ang mga salita para pasimplehin</translation>
 <translation id="7425037327577270384">Tulungan akong magsulat</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Hindi ma-disable o maalis ang APN na ito. Tiyaking naka-disable o inalis ang mga naka-enable na <ph name="ATTACH" /> na APN.</translation>
@@ -1550,6 +1559,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8476942730579767658">Mga window at desk</translation>
 <translation id="8477536061607044749">graphic design</translation>
 <translation id="8477551185774834963">Medyo mas mataas sa pinapayagang limitasyon ang latency ng DNS</translation>
+<translation id="8482376765267780829">Pumili ng ilang text na papasimplehin</translation>
 <translation id="8483248364096924578">IP address</translation>
 <translation id="8491311378305535241">Hindi makakonekta sa pamamagitan ng firewall sa mga HTTP na website mula sa mga Android app</translation>
 <translation id="8495070016475833911">felt</translation>
@@ -1679,6 +1689,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="9082718469794970195">Gamitin ang video na ito</translation>
 <translation id="9087578468327036362">Iulat ang query na ito</translation>
 <translation id="9088306295921699330">Kasalukuyang paggamit</translation>
+<translation id="9088994563996376283">Pasimplehin</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Higit pang impormasyon tungkol sa Petsa ng pag-reset</translation>
 <translation id="9100765901046053179">Mga advanced na setting</translation>

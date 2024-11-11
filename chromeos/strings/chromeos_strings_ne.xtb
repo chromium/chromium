@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">थम्बनेलहरू लोड हुँदै छन्…</translation>
 <translation id="1116694919640316211">बारेमा</translation>
 <translation id="1118572504348554005">हामी यो फाराममार्फत पेस गरिएका प्रतिक्रिया त्रुटि सच्याउने र तपाईंले हामीलाई जानकारी गराउने अन्य समस्याहरू निवारण गर्ने प्रयोजनका लागि हाम्रा साझेदारसँग सेयर गर्न सक्छौँ। आफ्नो पासवर्ड जस्ता संवेदनशील जानकारी समावेश नगर्नुहोस्।</translation>
+<translation id="1119403468619527527">एकदमै थोरै शब्द भएकाले सरल बनाउन सकिँदैन</translation>
 <translation id="1119447706177454957">आन्तरिक त्रुटि</translation>
 <translation id="1124772482545689468">प्रयोगकर्ता</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -590,6 +591,7 @@
 <translation id="391412459402535266">डिभाइसको परीक्षण गर्न सकिँदैन। परीक्षण गर्न ल्यापटप मोड प्रयोग गर्नुहोस्।</translation>
 <translation id="3916998944874125962">"स्क्रिनसट लिनुहोस्" जनाउने आइकन</translation>
 <translation id="3923184630988645767">डेटा प्रयोग</translation>
+<translation id="3924445055519423964">वेबपेज/PDF फाइलको सारांश निकाल्न क्लिक गर्नुहोस्</translation>
 <translation id="3932043219784172185">कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
 <translation id="3934185438132762746">असाइन नगरिएको <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">होस्टको समस्या समाधान गर्न सकिएन</translation>
@@ -818,6 +820,7 @@
 <translation id="4988526792673242964">पृष्ठहरू</translation>
 <translation id="4989542687859782284">उपलब्ध छैन</translation>
 <translation id="4999333166442584738">रिपोर्ट लुकाउनुहोस्</translation>
+<translation id="5005695757087124131">चयन गरिएको टेक्स्ट सरल बनाउन क्लिक गर्नुहोस्</translation>
 <translation id="500920857929044050">परीक्षण रोक्नुहोस्</translation>
 <translation id="5017508259293544172">छलाङ</translation>
 <translation id="5035083460461104704">थिमको रङ</translation>
@@ -1339,6 +1342,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> अब अपडेट गर्न मिल्छ</translation>
 <translation id="741244894080940828">रूपान्तरण</translation>
 <translation id="7415801143053185905">HTTP को विलम्बता अति धेरै छ</translation>
+<translation id="7418738250896500352">एकदमै धेरै शब्द भएकाले सरल बनाउन सकिँदैन</translation>
 <translation id="7425037327577270384">मलाई लेख्न मद्दत गर्नुहोस्</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">यो APN अफ गर्न वा हटाउन मिल्दैन। अन गरिएका <ph name="ATTACH" /> APN हरू अफ गरिएका वा हटाइएका छन् भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
@@ -1555,6 +1559,7 @@
 <translation id="8476942730579767658">विन्डो तथा डेस्कहरू</translation>
 <translation id="8477536061607044749">ग्राफिक डिजाइन</translation>
 <translation id="8477551185774834963">DNS को विलम्बता तोकिएको समयसीमाभन्दा थोरै बढी छ</translation>
+<translation id="8482376765267780829">सरल बनाउन टेक्स्टको केही अंश चयन गर्नुहोस्</translation>
 <translation id="8483248364096924578">IP एड्रेस</translation>
 <translation id="8491311378305535241">Android एपहरूबाट फायरवाल पार गरेर HTTP वेबसाइटहरूमा कनेक्ट गर्न सकिएन</translation>
 <translation id="8495070016475833911">फेल्ट</translation>
@@ -1684,6 +1689,7 @@
 <translation id="9082718469794970195">यो भिडियो प्रयोग गर्नुहोस्</translation>
 <translation id="9087578468327036362">यो क्वेरीका बारेमा रिपोर्ट गर्नुहोस्</translation>
 <translation id="9088306295921699330">हालको प्रयोग</translation>
+<translation id="9088994563996376283">सरल बनाउनुहोस्</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">रिसेट गरिने मितिका बारेमा थप जानकारी</translation>
 <translation id="9100765901046053179">उन्नत सेटिङहरू</translation>

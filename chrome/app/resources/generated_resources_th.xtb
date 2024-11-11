@@ -806,7 +806,6 @@
 <translation id="1561331397460162942">การดำเนินการนี้จะอนุญาตให้เข้าถึงตำแหน่งสำหรับแอป เว็บไซต์ที่มีสิทธิ์เข้าถึงตำแหน่ง และบริการของระบบ</translation>
 <translation id="1562119309884184621">การเพิ่มรายชื่อติดต่อนี้จะทำให้ระบบจำได้เมื่อรายชื่อนี้แชร์ครั้งถัดไป</translation>
 <translation id="1563137369682381456">วันที่หมดอายุ</translation>
-<translation id="1563702743503072935">รหัสผ่านจากบัญชี Google จะพร้อมใช้งานในอุปกรณ์นี้ด้วยในระหว่างที่คุณลงชื่อเข้าใช้</translation>
 <translation id="1566049601598938765">เว็บไซต์</translation>
 <translation id="15662109988763471">เครื่องพิมพ์ที่เลือกไว้ใช้ไม่ได้หรือติดตั้งไว้ไม่ถูกต้อง โปรดตรวจสอบเครื่องพิมพ์ของคุณหรือลองเลือกเครื่องพิมพ์อื่น</translation>
 <translation id="1566329594234563241">ขณะที่ไม่มีการใช้งานและเสียบปลั๊กอยู่</translation>
@@ -3133,7 +3132,6 @@
 <translation id="3177909033752230686">ภาษาหน้าเว็บ:</translation>
 <translation id="3177914167275935955">อุปกรณ์ของคุณมี Chrome Education Upgrade แต่ชื่อผู้ใช้ไม่ได้เชื่อมโยงกับบัญชี Google for Education โปรดสร้างบัญชี Google for Education โดยไปที่ g.co/workspace/edusignup บนอุปกรณ์สำรอง</translation>
 <translation id="3179982752812949580">แบบอักษรของข้อความ</translation>
-<translation id="3180175986308160674">กำลังสร้างคำถามเกี่ยวกับหน้านี้…</translation>
 <translation id="3180284704187420717">บันทึกบุ๊กมาร์ก รหัสผ่าน และอื่นๆ ด้วยการซิงค์</translation>
 <translation id="3180990259147710757">ยักกรามด้านซ้าย</translation>
 <translation id="3181954750937456830">Google Safe Browsing (ปกป้องคุณและอุปกรณ์จากเว็บไซต์ที่เป็นอันตราย)</translation>
@@ -3939,7 +3937,6 @@
 <translation id="3748424433435232460">ระบบบันทึกรหัสผ่านสำหรับบัญชีนี้ไว้ในอุปกรณ์นี้อยู่แล้ว</translation>
 <translation id="3748706263662799310">รายงานข้อบกพร่อง</translation>
 <translation id="3749724428455457489">ดูข้อมูลเพิ่มเติมเกี่ยวกับโฆษณาที่เว็บไซต์แนะนำ</translation>
-<translation id="3750562496035670393">Chrome บันทึกรหัสผ่านของคุณลงในอุปกรณ์นี้แล้ว แต่คุณจะบันทึกลงในบัญชี Google แทนก็ได้ ซึ่งจะทำให้รหัสผ่านทั้งหมดในบัญชี Google พร้อมใช้งานตลอดเวลาที่คุณลงชื่อเข้าใช้ด้วย</translation>
 <translation id="3752115502500640407">แชร์สำเนารหัสผ่านของ <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">ให้บุตรหลานยกนิ้วขึ้นเพื่อบันทึกลายนิ้วมือ</translation>
 <translation id="3753033997400164841">บันทึกครั้งเดียว แล้วใช้ได้ทุกที่</translation>
@@ -4580,7 +4577,6 @@
 <translation id="4195378859392041564">คลิกแป้นต่างๆ ด้วยเมาส์ จากนั้นกดแป้นพิมพ์เพื่อปรับแต่ง</translation>
 <translation id="4195643157523330669">เปิดในแท็บใหม่</translation>
 <translation id="4195814663415092787">ดำเนินการต่อจากที่ค้างอยู่</translation>
-<translation id="4196350776737072374">ไม่มีคำถามให้ใช้งาน ลองขอให้ทำงานอย่างเช่น "สรุปหน้านี้" หรือใช้คำถามหรือคำขอของคุณเอง</translation>
 <translation id="4198268995694216131">เว็บไซต์เพิ่มเติม</translation>
 <translation id="4200609364258658652">คัดลอกเฟรมวิดีโอ</translation>
 <translation id="4200689466366162458">คำที่กำหนดเอง</translation>
@@ -6017,7 +6013,6 @@
 <translation id="5249624017678798539">เบราว์เซอร์ขัดข้องก่อนที่จะดาวน์โหลดเสร็จ</translation>
 <translation id="5249818097095743806">ใช้คีย์ความปลอดภัย</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> ใช้ตำแหน่งของคุณเพื่อแสดงเนื้อหาในท้องที่ โดยคุณจะเปลี่ยนแปลงได้ใน<ph name="SETTINGS_LINK" /></translation>
-<translation id="5252496130205799136">ต้องการใช้บัญชี Google เพื่อบันทึกและกรอกรหัสผ่านไหม</translation>
 <translation id="5252653240322147470">PIN ต้องมีน้อยกว่า <ph name="MAXIMUM" /> หลัก</translation>
 <translation id="5253554634804500860">ใช้ <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">การใช้งานหน่วยความจำ: <ph name="MEMORY_USAGE" /></translation>
@@ -8191,7 +8186,6 @@
 <translation id="6833479554815567477">แท็บถูกนำออกจากกลุ่ม <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">สมดุล (แนะนำ)</translation>
 <translation id="6835762382653651563">โปรดเชื่อมต่ออินเทอร์เน็ตเพื่ออัปเดต <ph name="DEVICE_TYPE" /></translation>
-<translation id="683630338945552556">ใช้และบันทึกรหัสผ่านในบัญชี Google</translation>
 <translation id="6838992358006915573">แว่นขยายตามโฟกัสของ ChromeVox</translation>
 <translation id="6839225236531462745">ข้อผิดพลาดในการนำออกใบรับรอง</translation>
 <translation id="6839916869147598086">มีการเปลี่ยนแปลงการลงชื่อเข้าใช้</translation>

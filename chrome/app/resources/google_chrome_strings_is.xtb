@@ -303,6 +303,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="4567424176335768812">Þú ert skráð(ur) inn sem <ph name="USER_EMAIL_ADDRESS" />. Nú hefur þú aðgang að bókamerkjunum þínum, vefferlinum þínum og öðrum stillingum í öllum tækjum sem þú ert skráð(ur) inn á.</translation>
 <translation id="4571503333518166079">Opna tilkynningastillingar Chrome</translation>
 <translation id="4575717501879784448">Chrome getur óvirkjað þessa flipa til að bæta upplifunina þína í vafranum og losa um gögn.</translation>
+<translation id="4595162648538023956">Þú getur skráð þig inn til að nálgast efnið þitt eða notað Chrome án reiknings</translation>
 <translation id="459622048091363950">Þegar Chrome hefur aðgang munu vefsvæði geta beðið þig um aðgang.</translation>
 <translation id="4600710005438004015">Ekki var hægt að uppfæra Chrome í nýjustu útgáfu og þú ferð því á mis við nýja eiginleika og öryggislagfæringar.</translation>
 <translation id="4601439950572737842">Gögnin þín eru dulkóðuð með aðgangsorði. Sláðu það inn til að nota og vista Chrome-gögn á Google-reikningnum þínum.</translation>
@@ -454,6 +455,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6497147134301593682">Chrome var lokað sjálfkrafa</translation>
 <translation id="6506909944137591434">Chrome verður að fá leyfi fyrir myndavél til að búa til þrívíddarkort af umhverfi þínu</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6515549163407364048">Skráðu þig inn í Chrome til að fá aðgang að öllum viðbótum úr öllum tölvunum þínum</translation>
 <translation id="6520670145826811516">Veittu Chrome aðgang að staðsetningunni þinni í <ph name="BEGIN_LINK" />kerfisstillingum<ph name="END_LINK" /> til að geta notað hana</translation>
 <translation id="659498884637196217">Í Aðgangsorðastjórnun Google í þessu tæki</translation>
 <translation id="6600016381025017075">Leitaðu að hverju sem er á síðunni</translation>

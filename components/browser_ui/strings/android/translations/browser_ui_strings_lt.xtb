@@ -170,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> svetainė, priklausanti <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}one{<ph name="RWS_MEMBERS_COUNT" /> svetainė, priklausanti <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}few{<ph name="RWS_MEMBERS_COUNT" /> svetainės, priklausančios <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}many{<ph name="RWS_MEMBERS_COUNT" /> svetainės, priklausančios <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}other{<ph name="RWS_MEMBERS_COUNT" /> svetainių, priklausančių <ph name="RWS_OWNER" /> svetainių grupei, gali matyti jūsų veiklą grupėje}}</translation>
 <translation id="3697164069658504920">Įjungus svetainėse gali būti prašoma naudoti USB įrenginius. Išjungus svetainėse negalima naudoti USB įrenginių.</translation>
 <translation id="3707034683772193706">Svetainė, kurioje lankotės, gali išsaugoti nedidelį kiekį informacijos „Chrome“, kad būtų galima patvirtinti, jog nesate robotas</translation>
+<translation id="3709818294139939629">Pašalinta prieiga prie failo</translation>
 <translation id="3721953990244350188">Atsisakyti ir rodyti kitą galimą veiksmą</translation>
 <translation id="3744111561329211289">Fono sinchronizavimas</translation>
 <translation id="3763247130972274048">Dukart palieskite vaizdo įrašą, kad praleistumėte 10 sek.</translation>
@@ -432,6 +433,7 @@
 <translation id="7425915948813553151">Tamsioji tema, skirta svetainėms</translation>
 <translation id="7521387064766892559">„JavaScript“</translation>
 <translation id="7547989957535180761">Įjungus svetainėse gali būti rodomi raginimai prisijungti. Išjungus svetainėse negalima rodyti raginimų prisijungti.</translation>
+<translation id="7553211568594248088">Išeiti iš centro paieškos</translation>
 <translation id="7554752735887601236">Svetainėje naudojamas jūsų mikrofonas</translation>
 <translation id="7561196759112975576">Visada</translation>
 <translation id="757524316907819857">Užblokuoti svetaines, kad neleistų apsaugoto turinio</translation>
@@ -440,7 +442,6 @@
 <translation id="7649070708921625228">Pagalba</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7667547420449112975">Nuostabusis Ozo šalies burtininkas</translation>
-<translation id="7684642910516280563">Neleisti svetainei naudoti trečiųjų šalių slapukų</translation>
 <translation id="7688240020069572972">Slėpti „Chrome“ patarimų kortelę</translation>
 <translation id="7719367874908701697">Puslapio mastelis</translation>
 <translation id="7759147511335618829">MIDI įrenginio valdymas ir programavimas iš naujo</translation>

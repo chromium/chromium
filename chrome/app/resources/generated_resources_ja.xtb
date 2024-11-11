@@ -805,7 +805,6 @@
 <translation id="1561331397460162942">位置情報へのアクセス権を持つアプリとウェブサイト、システム サービスに対して、位置情報へのアクセスを許可します</translation>
 <translation id="1562119309884184621">この連絡先を追加すると、次回ファイルが共有されたときに表示されます</translation>
 <translation id="1563137369682381456">有効期限</translation>
-<translation id="1563702743503072935">Google アカウントに保存したパスワードをこのデバイスでもログイン中に使用できるようになります</translation>
 <translation id="1566049601598938765">ウェブサイト</translation>
 <translation id="15662109988763471">選択したプリンタは利用できないか、正しくインストールされていません。プリンタを確認するか、別のプリンタを選択してみてください。</translation>
 <translation id="1566329594234563241">非アクティブで電源接続時</translation>
@@ -3120,7 +3119,6 @@
 <translation id="3177909033752230686">ページの言語:</translation>
 <translation id="3177914167275935955">デバイスには Chrome Education Upgrade が含まれていますが、ユーザー名が Google for Education アカウントに関連付けられていません。別のデバイスで g.co/workspace/edusignup にアクセスし、Google for Education アカウントを作成してください。</translation>
 <translation id="3179982752812949580">テキストのフォント</translation>
-<translation id="3180175986308160674">このページに関する質問を生成しています…</translation>
 <translation id="3180284704187420717">同期することで、ブックマークやパスワード、その他の設定を保存できます</translation>
 <translation id="3180990259147710757">あごを左に動かす</translation>
 <translation id="3181954750937456830">セーフ ブラウジング（危険なサイトからユーザーとデバイスを保護します）</translation>
@@ -3921,7 +3919,6 @@
 <translation id="3748424433435232460">このアカウントのパスワードはすでにこのデバイスに保存されています</translation>
 <translation id="3748706263662799310">バグを報告</translation>
 <translation id="3749724428455457489">ウェブサイトによる広告提案の詳細</translation>
-<translation id="3750562496035670393">パスワードが Chrome によってこのデバイスに保存されました。パスワードは、Google アカウントに保存することもできます。この場合、Google アカウントにログインしている間、アカウントに保存されたすべてのパスワードを使用できます。</translation>
 <translation id="3752115502500640407"><ph name="WEBSITE" /> のパスワードのコピーを共有する</translation>
 <translation id="3752253558646317685">指紋を保存するには、お子様に指をかざしてもらってください</translation>
 <translation id="3753033997400164841">一度保存すればどこでも使用可能</translation>
@@ -4557,7 +4554,6 @@
 <translation id="4195378859392041564">カスタマイズするには、マウスで任意のキーをクリックしてから、キーボードのキーを押してください</translation>
 <translation id="4195643157523330669">新しいタブで開く</translation>
 <translation id="4195814663415092787">前回開いていたページを開く</translation>
-<translation id="4196350776737072374">質問が指定されていません。「このページを要約」など好きな表現で質問してみてください。</translation>
 <translation id="4198268995694216131">追加のサイト</translation>
 <translation id="4200609364258658652">動画フレームをコピー(&amp;Y)</translation>
 <translation id="4200689466366162458">カスタムの単語</translation>
@@ -5992,7 +5988,6 @@
 <translation id="5249624017678798539">ダウンロードの完了前にブラウザで問題が発生しました。</translation>
 <translation id="5249818097095743806">セキュリティ キーを使用する</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> は、ユーザーの現在地情報を使用して地域のコンテンツを提供します。この設定は [<ph name="SETTINGS_LINK" />] で変更できます。</translation>
-<translation id="5252496130205799136">Google アカウントを使用してパスワードを保存、入力しますか？</translation>
 <translation id="5252653240322147470">PIN は <ph name="MAXIMUM" /> 桁未満で指定してください</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" /> を使用</translation>
 <translation id="5254233580564156835">メモリ使用量: <ph name="MEMORY_USAGE" /></translation>
@@ -8162,7 +8157,6 @@
 <translation id="6833479554815567477">タブを <ph name="GROUP_NAME" /> グループから削除しました - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">バランス重視（推奨）</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> を更新するにはインターネットに接続してください。</translation>
-<translation id="683630338945552556">Google アカウントのパスワードの使用と保存</translation>
 <translation id="6838992358006915573">ChromeVox のフォーカスに合わせて拡大鏡を動かす</translation>
 <translation id="6839225236531462745">証明書削除エラー</translation>
 <translation id="6839916869147598086">ログインが変わりました</translation>

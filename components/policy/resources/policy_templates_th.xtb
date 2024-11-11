@@ -4946,7 +4946,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns *
 <translation id="4725801978265372736">กำหนดให้ชื่อผู้ใช้ในเครื่องและเจ้าของโฮสต์การเข้าถึงระยะไกลต้องตรงกัน</translation>
 <translation id="4726228171190098009">ไม่อนุญาตให้อุปกรณ์ขอทํา Powerwash</translation>
 <translation id="4726895359147376813">การแมปจากรหัสถาวรไปยังการกําหนดค่า VM</translation>
-<translation id="4729091573952050200">อนุญาตให้ใช้ Translator API เสมอ</translation>
 <translation id="4732069502693984686">เปิดใช้การจับภาพหน้าจอโดยอัตโนมัติแบบหลายหน้าจอ</translation>
 <translation id="4733471537137819387">นโยบายที่เกี่ยวข้องกับการตรวจสอบสิทธิ์ HTTP ในตัว</translation>
 <translation id="473673197014866318">การตั้งค่านโยบายนี้จะควบคุมการตั้งค่าการจัดการส่วนขยายสำหรับ <ph name="PRODUCT_NAME" /> ซึ่งรวมถึงการตั้งค่าที่ควบคุมโดยนโยบายเกี่ยวกับส่วนขยายที่มีอยู่ นโยบายนี้มีผลแทนนโยบายเดิมที่อาจมีการตั้งค่าไว้
@@ -9743,15 +9742,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 <translation id="8331479227794770304">เปิดใช้คีย์ติดหนึบ</translation>
 <translation id="8332822245414537447">ปิดใช้การตรวจสอบการใช้งานคีย์ RSA</translation>
 <translation id="8334685561819743286">ปิดใช้ฟีเจอร์การแก้ไขอัตโนมัติบนแป้นพิมพ์จริงเมื่อผู้ใช้พิมพ์</translation>
-<translation id="8336819406993366823">การตั้งค่านโยบายเป็น <ph name="ENABLED_VALUE_NAME" /> จะอนุญาตให้ใช้ API แบบเต็มหน้าจอเฉพาะวิดีโอที่มีคำต่อท้าย (เช่น Video.webkitEnterFullscreen()) จาก JavaScript
-
-การตั้งค่านโยบายเป็น <ph name="DISABLED_VALUE_NAME" /> จะป้องกันไม่ให้มีการใช้ API แบบเต็มหน้าจอเฉพาะวิดีโอที่มีคำต่อท้ายใน JavaScript ทำให้เหลือเฉพาะ API แบบเต็มหน้าจอมาตรฐาน (เช่น Element.requestFullscreen())
-
-การตั้งค่านโยบายเป็น <ph name="RUNTIME_ENABLED_VALUE_NAME" /> จะอนุญาตให้แฟล็กฟีเจอร์ที่เปิดใช้รันไทม์ PrefixedFullscreenVideo เพื่อระบุว่า API แบบเต็มหน้าจอเฉพาะวิดีโอที่มีคำต่อท้ายพร้อมใช้งานสำหรับเว็บไซต์ไหม
-
-หากไม่ได้ตั้งค่านโยบาย ลักษณะการทำงานตามค่าเริ่มต้นจะเป็น <ph name="RUNTIME_ENABLED_VALUE_NAME" />
-
-หมายเหตุ: นโยบายนี้เป็นวิธีแก้ปัญหาชั่วคราวที่จะช่วยเปลี่ยนจาก API แบบเต็มหน้าจอที่มีคำต่อท้ายเป็น webkit ซึ่งอาจจะถูกนำออกในรุ่น M130 หรือในอีก 2-3 รุ่นหลังจากนี้</translation>
 <translation id="8337114537412769126">หาก <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> เปิดอยู่ การตั้งค่า <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> จะระบุพารามิเตอร์ระหว่างการค้นหาที่แนะนำด้วยเมธอด POST โดยจะประกอบด้วยคู่ชื่อ-ค่าที่คั่นด้วยจุลภาค หากมีค่าใดเป็นพารามิเตอร์เทมเพลต เช่น <ph name="SEARCH_TERM_MARKER" /> ข้อมูลข้อความค้นหาจริงจะแทนที่ค่าดังกล่าว
 
       การไม่ตั้งค่า <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> จะทำให้ระบบส่งคำขอการค้นหาที่แนะนำโดยใช้เมธอด GET</translation>

@@ -307,6 +307,7 @@
 <translation id="2308243864813041101">अपडेट करण्याची प्रक्रिया पुढे सुरू ठेवण्यासाठी, <ph name="DEVICE_NAME" /> ची USB केबल अनप्लग करा</translation>
 <translation id="2320295602967756579">फिकट थीम सुरू करा</translation>
 <translation id="2323506179655536734">वगळली</translation>
+<translation id="2323755382216917952">या अपडेटनुसार, इंस्टॉलेशन पूर्ण करण्यासाठी तुम्ही तुमचा काँप्युटर रीस्टार्ट करणे आवश्यक आहे. हे अपडेट पूर्ण होण्यासाठी काही मिनिटे लागू शकतात. फर्मवेअर अपडेट होत असताना, तुमचा काँप्युटर अनप्लग करू नका किंवा बंद करू नका.</translation>
 <translation id="2324354238778375592">फ्लोट करा</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">उत्कृष्ट (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -450,6 +451,7 @@
 <translation id="3178532070248519384">अ‍ॅवोंत-गार्ड</translation>
 <translation id="3182676044300231689">"आणखी आत्मविश्वास दिसू द्या" यासारखा प्रॉम्प्ट एंटर करा</translation>
 <translation id="3188257591659621405">माझ्या फाइल</translation>
+<translation id="3188931456353313123">हे अपडेट डिव्हाइस निर्मात्याने पुरवले आहे आणि Google ने त्याची पडताळणी केलेली नाही.</translation>
 <translation id="319101249942218879">अवतार इमेज बदला</translation>
 <translation id="3192947282887913208">ऑडिओ फाइल</translation>
 <translation id="3199982728237701504">दस्तऐवज फीडर (दोन बाजू असलेले)</translation>
@@ -508,6 +510,7 @@
 <translation id="3488065109653206955">आंशिक रूपात सक्रिय </translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> टोन असलेले <ph name="OFFICE_STYLE" /> कार्यालय</translation>
 <translation id="3493187369049186498">तुमच्या Chromebook द्वारे डेटाचे मापन केले जाते. हा पुरवठादाराच्या डेटापेक्षा वेगळा असू शकतो.</translation>
+<translation id="349570724365779960">School Tools विद्यार्थ्यांशी कनेक्ट केलेले आहे</translation>
 <translation id="3502426834823382181">सर्व अ‍ॅप्स पहा</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />परफॉर्मन्स माग डेटा<ph name="END_LINK1" /> पाठवा</translation>
 <translation id="3517001332549868749">ChromeOS अपडेट</translation>
@@ -757,6 +760,7 @@
 <translation id="473775607612524610">अपडेट करा</translation>
 <translation id="4744944742468440486">तुमच्या निवडीशी संबंधित माहिती</translation>
 <translation id="4771607256327216405">कीबोर्ड उजळणे</translation>
+<translation id="4771923071974529837">उद्या</translation>
 <translation id="4773299976671772492">थांबविले</translation>
 <translation id="4778082030331381943">ॲमेथिस्ट</translation>
 <translation id="4782311465517282004">तुम्ही मजकुरावर राइट-क्लिक करता तेव्हा किंवा त्याला स्पर्श करून तो धरून ठेवता तेव्हा व्याख्या, भाषांतरे किंवा युनिट रूपांतरे मिळवा</translation>
@@ -820,6 +824,7 @@
 <translation id="500920857929044050">चाचणी थांबवा</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">थीमचा रंग</translation>
+<translation id="5037240652947866174">आज</translation>
 <translation id="5038292761217083259">कीबोर्ड बहुरंगी</translation>
 <translation id="5039804452771397117">परवानगी द्या</translation>
 <translation id="5049856988445523908">सिम लॉक केले (<ph name="LOCK_TYPE" />)</translation>

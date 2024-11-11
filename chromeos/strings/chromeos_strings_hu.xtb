@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Képek létrehozása…</translation>
 <translation id="1116694919640316211">Névjegy</translation>
 <translation id="1118572504348554005">Az ezen az űrlapon keresztül beküldött visszajelzést partnereinkkel is megoszthatjuk az Ön által bejelentett programhibák és további problémák megoldása érdekében. Ne adjon meg bizalmas adatokat, például jelszavakat.</translation>
+<translation id="1119403468619527527">Túl kevés szó van kijelölve az egyszerűsítéshez</translation>
 <translation id="1119447706177454957">Belső hiba</translation>
 <translation id="1124772482545689468">Felhasználó</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Az eszköz tesztelése nem sikerült. Váltson laptop módra a teszteléshez.</translation>
 <translation id="3916998944874125962">képernyőkép készítése</translation>
 <translation id="3923184630988645767">Adathasználat</translation>
+<translation id="3924445055519423964">Kattintson a weboldal/PDF-fájl összefoglalásához</translation>
 <translation id="3932043219784172185">Nincs csatlakoztatott eszköz</translation>
 <translation id="3934185438132762746">Hozzárendelés nélküli <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Nem sikerült a gazdagép feloldása</translation>
@@ -814,6 +816,7 @@
 <translation id="4988526792673242964">Oldal</translation>
 <translation id="4989542687859782284">Nem áll rendelkezésre</translation>
 <translation id="4999333166442584738">Jelentés elrejtése</translation>
+<translation id="5005695757087124131">Kattintson a kijelölt szöveg egyszerűsítéséhez</translation>
 <translation id="500920857929044050">Teszt leállítása</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Témaszín</translation>
@@ -1334,6 +1337,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7405493795721832710">A(z) <ph name="DEVICE_NAME" /> készen áll a frissítésre</translation>
 <translation id="741244894080940828">Átváltás</translation>
 <translation id="7415801143053185905">Nagyon hosszú HTTP várakozási idő</translation>
+<translation id="7418738250896500352">Túl sok szó van kijelölve az egyszerűsítéshez</translation>
 <translation id="7425037327577270384">Segítség az íráshoz</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Nem lehet letiltani vagy eltávolítani ezt az APN-t. Győződjön meg arról, hogy az engedélyezett <ph name="ATTACH" /> APN-ek le vannak tiltva vagy el vannak távolítva.</translation>
@@ -1550,6 +1554,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8476942730579767658">Ablakok és asztalok</translation>
 <translation id="8477536061607044749">grafikai tervezés</translation>
 <translation id="8477551185774834963">A DNS várakozási ideje kissé az engedélyezhető határérték felett van</translation>
+<translation id="8482376765267780829">Jelölje ki az egyszerűsíteni kívánt szöveget</translation>
 <translation id="8483248364096924578">IP-cím</translation>
 <translation id="8491311378305535241">Nem lehet a tűzfalon keresztül HTTP-protokollt használó webhelyekhez csatlakozni androidos alkalmazásokról</translation>
 <translation id="8495070016475833911">nemez</translation>
@@ -1679,6 +1684,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="9082718469794970195">E videó használata</translation>
 <translation id="9087578468327036362">Bejelentheti ezt a lekérdezést.</translation>
 <translation id="9088306295921699330">Jelenleg felhasznált</translation>
+<translation id="9088994563996376283">Egyszerűsítés</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">További információ a visszaállítási dátumról</translation>
 <translation id="9100765901046053179">Speciális beállítások</translation>

@@ -802,7 +802,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1561331397460162942">Dadurch können Apps, Websites mit Berechtigung zur Standortermittlung und Systemdienste auf deinen Standort zugreifen</translation>
 <translation id="1562119309884184621">Wenn dieser Kontakt hinzugefügt wird, wird er beim nächsten Teilen von Inhalten wiedererkannt</translation>
 <translation id="1563137369682381456">Ablaufdatum</translation>
-<translation id="1563702743503072935">Die Passwörter aus deinem Google-Konto sind auch auf diesem Gerät verfügbar, solange du angemeldet bist</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">Der ausgewählte Drucker ist entweder nicht verfügbar oder nicht ordnungsgemäß installiert. Überprüfe den Drucker oder wähle einen anderen Drucker aus.</translation>
 <translation id="1566329594234563241">Wenn das Gerät inaktiv und an die Stromversorgung angeschlossen ist</translation>
@@ -3123,7 +3122,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3177909033752230686">Sprache der Seite:</translation>
 <translation id="3177914167275935955">Dein Gerät beinhaltet ein Chrome Education-Upgrade, aber dein Nutzername ist nicht mit einem Google for Education-Konto verknüpft. Rufe g.co/workspace/edusignup auf einem Zweitgerät auf und erstelle ein Google for Education-Konto.</translation>
 <translation id="3179982752812949580">Schriftart für Text</translation>
-<translation id="3180175986308160674">Fragen zu dieser Seite werden generiert…</translation>
 <translation id="3180284704187420717">Per Synchronisierung Lesezeichen, Passwörter und weitere Inhalte speichern</translation>
 <translation id="3180990259147710757">Kiefer nach links verschieben</translation>
 <translation id="3181954750937456830">Safe Browsing (mich und mein Gerät vor schädlichen Websites schützen)</translation>
@@ -3925,7 +3923,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3748424433435232460">Auf diesem Gerät ist bereits ein Passwort für dieses Konto gespeichert</translation>
 <translation id="3748706263662799310">Programmfehler melden</translation>
 <translation id="3749724428455457489">Weitere Informationen zu von Websites vorgeschlagener Werbung</translation>
-<translation id="3750562496035670393">Chrome hat dein Passwort auf diesem Gerät gespeichert, du kannst es aber stattdessen auch in deinem Google-Konto speichern lassen. Alle Passwörter in deinem Google-Konto sind verfügbar, solange du angemeldet bist.</translation>
 <translation id="3752115502500640407">Kopie deines Passworts für <ph name="WEBSITE" /> teilen</translation>
 <translation id="3752253558646317685">Bitte dein Kind, den Finger zu heben und wieder abzulegen, um den Fingerabdruck zu speichern</translation>
 <translation id="3753033997400164841">Einmal speichern. Überall verwenden.</translation>
@@ -4562,7 +4559,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4195378859392041564">Klicke mit der Maus auf eine Taste und drücke dann zum Anpassen eine Taste auf der Tastatur</translation>
 <translation id="4195643157523330669">In neuem Tab öffnen</translation>
 <translation id="4195814663415092787">Zuletzt angesehene Seiten öffnen</translation>
-<translation id="4196350776737072374">Keine Fragen verfügbar. Du kannst z. B. sagen „Fasse diese Seite zusammen“ oder eine Frage stellen.</translation>
 <translation id="4198268995694216131">Zusätzliche Websites</translation>
 <translation id="4200609364258658652">Videoframe kop&amp;ieren</translation>
 <translation id="4200689466366162458">Benutzerdefinierte Wörter</translation>
@@ -5999,7 +5995,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5249624017678798539">Der Browser ist während des Downloads abgestürzt.</translation>
 <translation id="5249818097095743806">Sicherheitsschlüssel verwenden</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> verwendet deinen Standort, um dir lokale Inhalte bereitzustellen. Du kannst dies unter <ph name="SETTINGS_LINK" /> ändern.</translation>
-<translation id="5252496130205799136">Dein Google-Konto verwenden, um Passwörter zu speichern und automatisch auszufüllen?</translation>
 <translation id="5252653240322147470">PIN muss weniger als <ph name="MAXIMUM" /> Ziffern umfassen</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" /> verwenden</translation>
 <translation id="5254233580564156835">Arbeitsspeichernutzung: <ph name="MEMORY_USAGE" /></translation>
@@ -8169,7 +8164,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6833479554815567477">Tab wurde aus folgender Gruppe entfernt: <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Ausgewogen (empfohlen)</translation>
 <translation id="6835762382653651563">Stelle eine Internetverbindung her, um dein Gerät (<ph name="DEVICE_TYPE" />) zu aktualisieren.</translation>
-<translation id="683630338945552556">Passwörter in deinem Google-Konto speichern und verwenden</translation>
 <translation id="6838992358006915573">Lupe folgt ChromeVox-Fokus</translation>
 <translation id="6839225236531462745">Fehler beim Löschen des Zertifikats</translation>
 <translation id="6839916869147598086">Anmeldung hat sich geändert</translation>

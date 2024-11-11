@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Kod diimbas</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} tab}other{{count} tab}}</translation>
 <translation id="1084365883616172403">Catatan Facebook selesai.</translation>
+<translation id="1085677983426914530"><ph name="FILENAME" /> tidak dapat dibuka</translation>
 <translation id="1096992026380844478">Tetapan penyegerakan anda akan dipulihkan berdasarkan sandaran terakhir anda. <ph name="BEGIN_LINK" />Lihat item yang boleh anda segerakkan<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Sentiasa terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Penyegerakan sejarah</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Tidak, terima kasih</translation>
 <translation id="2320166752086256636">Sembunyikan papan kekunci</translation>
 <translation id="2321086116217818302">Menyediakan kata laluan…</translation>
+<translation id="2323697864063408084">Dapatkan pemberitahuan pada Skrin Kunci anda dan sebagai Sepanduk supaya anda tidak terlepas perkara yang penting bagi anda</translation>
 <translation id="2326302612031521902">Pemilih unit</translation>
 <translation id="2330607597130465898">Tiada perlindungan</translation>
 <translation id="233375395665273385">Padamkan dan log keluar</translation>
@@ -384,6 +386,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2671423594960767771">Kongsi kumpulan</translation>
 <translation id="2673508731173059946">Lawati pautan disalin</translation>
 <translation id="2687403674020088961">Sekat semua kuki (tidak disyorkan)</translation>
+<translation id="2688535388040882469">Sepanduk</translation>
 <translation id="2690858294534178585">Kamera sedang digunakan</translation>
 <translation id="2691653761409724435">Tidak tersedia di luar talian</translation>
 <translation id="2696180352517415858">Anda tidak akan dilog keluar daripada Google Account anda. <ph name="BEGIN_LINK" />Bentuk aktiviti yang lain<ph name="END_LINK" /> mungkin disimpan dalam Google Account anda semasa anda dilog masuk. Anda boleh memadamkan data tersebut pada bila-bila masa.
@@ -636,6 +639,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="3986739045730058129">Akses tab</translation>
 <translation id="3992684624889376114">Perihal halaman ini</translation>
 <translation id="3994422733891749358">Pilih pemberitahuan yang mahu anda terima</translation>
+<translation id="3994522032746736727">Log masuk sebagai <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Bar kemajuan pemuatan halaman, <ph name="EMAIL" /> dimuatkan.</translation>
 <translation id="3997522473364371632">Perkongsian kata laluan dilumpuhkan oleh pentadbir anda.</translation>
 <translation id="4002066346123236978">Tajuk</translation>
@@ -843,6 +847,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="4936354130727646074">Jangan sekali-kali alihkan</translation>
 <translation id="4937410517508563815">Simpan kata laluan dalam akaun</translation>
 <translation id="4938338714234463591">Tindakan ini akan membolehkan anda menggunakan suara anda dengan ciri tertentu pada laman web.</translation>
+<translation id="4938716880833771969">Pemberitahuan anda dihantar secara senyap</translation>
 <translation id="4941089862236492464">Maaf, terdapat masalah mengongsi item anda.</translation>
 <translation id="4944543191714094452">Cari dalam Halaman…</translation>
 <translation id="4945756290001680296">Akses tetapan kata laluan</translation>
@@ -1610,6 +1615,7 @@ Tapak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda merent
 <translation id="8319076807703933069">Carian Baharu</translation>
 <translation id="8343993175958086504">Sandarkan bahan anda dan gunakan bahan itu pada mana-mana peranti.</translation>
 <translation id="8349305172487531364">Bar penanda halaman</translation>
+<translation id="8364563001733875155">Untuk menukar PIN anda, sediakan kod laluan pada peranti anda dahulu.</translation>
 <translation id="8366466717204352506">Penyemakan tidak pernah dijalankan</translation>
 <translation id="8368001212524806591">Jejak harga</translation>
 <translation id="8370406443343902172">Akses Tetapan...</translation>

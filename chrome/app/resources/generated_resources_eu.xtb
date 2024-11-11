@@ -805,7 +805,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1561331397460162942">Kokapena erabiltzeko baimena duten aplikazio eta webguneek erabili ahal izango dute kokapena, baita sistemaren zerbitzuek ere</translation>
 <translation id="1562119309884184621">Kontaktua gehituz gero, gogoratu egingo da partekatzen duten hurrengoan</translation>
 <translation id="1563137369682381456">Iraungitze-data</translation>
-<translation id="1563702743503072935">Google-ko kontuko pasahitzak gailu honetan ere egongo dira erabilgarri saioa hasita daukazunean</translation>
 <translation id="1566049601598938765">Webgunea</translation>
 <translation id="15662109988763471">Hautatutako inprimagailua ez dago erabilgarri edo ez da instalatu behar bezala. Egiaztatu inprimagailua edo hautatu beste bat.</translation>
 <translation id="1566329594234563241">Inaktibo eta entxufatuta dagoen bitartean</translation>
@@ -1547,6 +1546,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2062354623176996748">Sarean egiten duzuna historian gordeta geratzerik nahi ez baduzu, ireki leiho bat ezkutuko moduan</translation>
 <translation id="206308717637808771">Ezabatu datuak leiho guztiak ixtean. Ikusten ari zaren webgunea bezala tratatzen dira datuak.</translation>
 <translation id="2065405795449409761">Probako software automatikoa ari da Chrome kontrolatzen.</translation>
+<translation id="2066700471214517561">Beamforming teknologiarekin bateragarria den mikrofonoa, Chromebook-a darabilen pertsonaren ahotsa argi eta garbi entzun dadin.</translation>
 <translation id="2067591192939433190">"<ph name="VENDOR_NAME" />" zerbitzukoa</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> aplikazioak <ph name="PRINTER_NAME" /> inprimagailuan inprimatzen amaitu du</translation>
 <translation id="2071393345806050157">Ez dago erregistro lokalik.</translation>
@@ -2304,6 +2304,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2580889980133367162">Eman beti hainbat fitxategi deskargatzeko baimena <ph name="HOST" /> ostalariari</translation>
 <translation id="258095186877893873">Luzea</translation>
 <translation id="2581455244799175627">Hirugarrenen cookieak onartzeari buruzko informazio gehiago</translation>
+<translation id="2581786034175502848">Berriro gaitzeko, sakatu Maius 5 aldiz</translation>
 <translation id="2581992808349413349">Erabili konexio segurua webgune baten IP helbidea DNSan (domeinu-izenen sistema) bilatzeko. <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> helbideko zerbitzu-hornitzaile kudeatu bat erabiltzen du.</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (<ph name="PLATFORM_VERSION" /> plataforma) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Ezin izan da lortu Kerberos-eko txartela. Saiatu berriro edo jarri harremanetan erakundeko gailuen administratzailearekin. (Errore-kodea: <ph name="ERROR_CODE" />).</translation>
@@ -3124,7 +3125,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3177909033752230686">Orriaren hizkuntza:</translation>
 <translation id="3177914167275935955">Gailuak Chrome Education Upgrade dakar, baina zure erabiltzaile-izena ez dago erlazionatuta Google for Education-eko ezein konturekin. Google for Education-eko kontu bat sortzeko, joan g.co/workspace/edusignup helbidera beste gailu batean.</translation>
 <translation id="3179982752812949580">Testuaren letra</translation>
-<translation id="3180175986308160674">Orri honi buruzko galderak sortzen…</translation>
 <translation id="3180284704187420717">Gorde laster-markak, pasahitzak eta beste gauza asko sinkronizazioa erabilita</translation>
 <translation id="3180990259147710757">Masailezurra ezkerrerantz mugitzea</translation>
 <translation id="3181954750937456830">Arakatze segurua (webgune arriskutsuen aurka babesten zaituzte gailua eta zu)</translation>
@@ -3926,7 +3926,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3748424433435232460">Dagoeneko gordeta dago gailuan kontu honetarako pasahitz bat</translation>
 <translation id="3748706263662799310">Eman akats baten berri</translation>
 <translation id="3749724428455457489">Lortu webguneek iradokitako iragarkiei buruzko informazio gehiago</translation>
-<translation id="3750562496035670393">Chrome-k gailu honetan gorde du pasahitza, baina Google-ko kontuan gorde dezakezu, bestela. Horrela, Google-ko kontuko pasahitz guztiak ere erabilgarri egongo dira saioa hasita daukazunean.</translation>
 <translation id="3752115502500640407">Partekatu <ph name="WEBSITE" /> webgunerako pasahitzaren kopia bat</translation>
 <translation id="3752253558646317685">Eskatu haurrari hatza behin eta berriro altxatzeko hatz-marka gorde dadin</translation>
 <translation id="3753033997400164841">Gorde behin. Erabili edonon.</translation>
@@ -4563,7 +4562,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4195378859392041564">Egin klik saguarekin edozein teklatan. Ondoren, tekla hori pertsonalizatzeko, sakatu teklatuko tekla bat.</translation>
 <translation id="4195643157523330669">Ireki fitxa berri batean</translation>
 <translation id="4195814663415092787">Jarraitu utzi zenuen tokitik</translation>
-<translation id="4196350776737072374">Ez dago galderarik erabilgarri. Eskatu "laburbildu orri hau" edo egin galdera bat.</translation>
 <translation id="4198268995694216131">Webgune gehigarriak</translation>
 <translation id="4200609364258658652">Kop&amp;iatu bideo-fotograma</translation>
 <translation id="4200689466366162458">Hitz pertsonalizatuak</translation>
@@ -5151,6 +5149,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4627442949885028695">Jarraitu beste gailu batetik</translation>
 <translation id="4628762811416793313">Ez da osatu Linux edukiontziaren konfigurazioa. Saiatu berriro.</translation>
 <translation id="4629521233550547305">Ireki <ph name="PROFILE_NAME" /> erabiltzailearen profila</translation>
+<translation id="4631955550884380853">Fokuratutako ahotsa</translation>
 <translation id="4632655012900268062">Pertsonalizatu txartelak</translation>
 <translation id="4633003931260532286">Luzapenak "<ph name="IMPORT_NAME" />" eskatzen du, gutxienez "<ph name="IMPORT_VERSION" />" bertsiokoa, baina "<ph name="INSTALLED_VERSION" />" bertsioa baino ez dago instalatuta</translation>
 <translation id="4633757335284074492">Egin babeskopiak Google Drive-n. Leheneratu gailu honen datuak edo aldatu gailua edonoiz. Aplikazioetako datuak ere sartzen dira babeskopietan. Babeskopiak Google-ra kargatzen dira eta enkriptatu egiten dira haurraren Google-ko kontuaren pasahitza erabilita.</translation>
@@ -5999,7 +5998,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5249624017678798539">Arakatzaileak hutsegite bat izan du deskargatzen amaitu aurretik.</translation>
 <translation id="5249818097095743806">Erabili segurtasun-giltza</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> bilatzaileak zure kokapena erabiltzen du tokiko edukiak erakusteko. <ph name="SETTINGS_LINK" /> atalean alda dezakezu hori.</translation>
-<translation id="5252496130205799136">Google-ko kontua erabili nahi duzu pasahitzak gordetzeko eta eremuak automatikoki betetzeko?</translation>
 <translation id="5252653240322147470"><ph name="MAXIMUM" /> digitu baino gutxiago izan behar ditu PIN kodeak</translation>
 <translation id="5253554634804500860">Erabili <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Memoriaren erabilera: <ph name="MEMORY_USAGE" /></translation>
@@ -8169,7 +8167,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="6833479554815567477"><ph name="GROUP_NAME" /> taldetik kendu da fitxa (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="6833753236242482566">Orekatua (gomendatua)</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> eguneratzeko, konektatu Internetera.</translation>
-<translation id="683630338945552556">Erabili eta gorde pasahitzak Google-ko kontuan</translation>
 <translation id="6838992358006915573">ChromeVox-eko fokuari jarraitzen dio lupak</translation>
 <translation id="6839225236531462745">Errore bat gertatu da ziurtagiria ezabatzean</translation>
 <translation id="6839916869147598086">Aldatu egin da saioa hasteko modua</translation>

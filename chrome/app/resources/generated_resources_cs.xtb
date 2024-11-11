@@ -807,7 +807,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1561331397460162942">Povolíte tím přístup k poloze aplikacím a webům s oprávněním pro přístup k poloze a systémovým službám.</translation>
 <translation id="1562119309884184621">Přidaný kontakt bude zapamatován pro případ příštího sdílení</translation>
 <translation id="1563137369682381456">Datum konce platnosti</translation>
-<translation id="1563702743503072935">Když budete přihlášeni, budou hesla z účtu Google k dispozici i na tomto zařízení</translation>
 <translation id="1566049601598938765">Web</translation>
 <translation id="15662109988763471">Zvolená tiskárna není k dispozici nebo není správně nainstalovaná. Zkontrolujte tiskárnu nebo vyberte jinou.</translation>
 <translation id="1566329594234563241">Při nečinnosti a připojení ke zdroji napájení</translation>
@@ -1549,6 +1548,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2062354623176996748">Pomocí anonymního okna můžete web používat bez ukládání historie procházení</translation>
 <translation id="206308717637808771">Po zavření všech oken vymazat data. S daty se nakládá stejně jako s webem, který si prohlížíte</translation>
 <translation id="2065405795449409761">Chrome je právě kontrolován pomocí automatického testovacího softwaru.</translation>
+<translation id="2066700471214517561">Mikrofon s podporou tvarování paprsku, aby osoba používající Chromebook zněla jasně.</translation>
 <translation id="2067591192939433190">Od poskytovatele <ph name="VENDOR_NAME" /></translation>
 <translation id="206960706005837784">Aplikace <ph name="APP_NAME" /> dokončila tisk na tiskárně <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Žádný místní soubor protokolu není k dispozici.</translation>
@@ -2306,6 +2306,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2580889980133367162">Vždy povolit hostiteli <ph name="HOST" /> stahování několika souborů</translation>
 <translation id="258095186877893873">Dlouhé</translation>
 <translation id="2581455244799175627">Další informace o povolení souborů cookie třetích stran</translation>
+<translation id="2581786034175502848">Znovu ho aktivujete stisknutím klávesy Shift pětkrát</translation>
 <translation id="2581992808349413349">Používat zabezpečené připojení k vyhledání IP adresy webu v DNS (Domain Name System). Využívá poskytovatele spravovaných služeb v doméně <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" />.</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (platforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Lístek Kerberos se nepodařilo získat. Zkuste to znovu nebo kontaktujte správce zařízení své organizace. (Kód chyby <ph name="ERROR_CODE" />).</translation>
@@ -3126,7 +3127,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3177909033752230686">Jazyk stránky:</translation>
 <translation id="3177914167275935955">Vaše zařízení obsahuje upgrade Chrome Education, ale vaše uživatelské jméno není přidruženo k účtu Google for Education. Navštivte na sekundárním zařízení stránku g.co/workspace/edusignup a vytvořte si účet Google for Education.</translation>
 <translation id="3179982752812949580">Písmo textu</translation>
-<translation id="3180175986308160674">Generování dotazů ohledně téhle stránky…</translation>
 <translation id="3180284704187420717">Ukládejte si záložky, hesla a další obsah pomocí synchronizace</translation>
 <translation id="3180990259147710757">Posuňte čelist doleva</translation>
 <translation id="3181954750937456830">Bezpečné prohlížení (chrání vás a vaše zařízení před nebezpečnými weby)</translation>
@@ -3787,6 +3787,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3662207097851752847">Potvrďte na telefonu svůj účet Google</translation>
 <translation id="3663417513679360795">Další informace o zapnutí standardního předběžného načítání</translation>
 <translation id="3664511988987167893">Ikona rozšíření</translation>
+<translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" />}=1{Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" /> a # dalším}few{Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" /> a # dalšími}many{Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" /> a # dalšího}other{Přidat se ke skupině karet s uživatelem <ph name="OWNER_FIRST_NAME" /> a # dalšími}}</translation>
 <translation id="3665100783276035932">Většina webů by měla fungovat podle očekávání</translation>
 <translation id="3665301845536101715">Otevřít v bočním panelu</translation>
 <translation id="3665589677786828986">Prohlížeč Chrome zjistil, že některá z vašich nastavení byla upravena jiným programem, a obnovil je na původní výchozí hodnoty.</translation>
@@ -3927,7 +3928,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3748424433435232460">Heslo tohoto účtu už je v tomto zařízení uloženo</translation>
 <translation id="3748706263662799310">Nahlásit chybu</translation>
 <translation id="3749724428455457489">Další informace o reklamách navrhovaných weby</translation>
-<translation id="3750562496035670393">Chrome heslo uložil do tohoto zařízení, ale můžete ho místo toho uložit do svého účtu Google. Když budete přihlášeni, budou pak k dispozici i všechna hesla ve vašem účtu Google.</translation>
 <translation id="3752115502500640407">Sdílet kopii hesla pro <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Nechte dítě opakovaně přikládat a zvedat prst, aby se uložil celý otisk prstu</translation>
 <translation id="3753033997400164841">Uložte jednou. Používejte všude</translation>
@@ -4563,7 +4563,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4195378859392041564">Klikněte myší na klávesu a poté stisknutím klávesy na klávesnici přizpůsobte</translation>
 <translation id="4195643157523330669">Otevřít na nové kartě</translation>
 <translation id="4195814663415092787">Pokračovat tam, kde jste přestali</translation>
-<translation id="4196350776737072374">Žádné otázky nejsou k dispozici. Zkuste zadat třeba „shrnout tuto stránku“ nebo položit vlastní dotaz.</translation>
 <translation id="4198268995694216131">Další weby</translation>
 <translation id="4200609364258658652">&amp;Kopírovat snímek videa</translation>
 <translation id="4200689466366162458">Vlastní slova</translation>
@@ -5151,6 +5150,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4627442949885028695">Pokračovat z jiného zařízení</translation>
 <translation id="4628762811416793313">Nastavení kontejneru systému Linux nebylo dokončeno. Zkuste to znovu.</translation>
 <translation id="4629521233550547305">Otevřít profil <ph name="PROFILE_NAME" /></translation>
+<translation id="4631955550884380853">Soustředěný hlas</translation>
 <translation id="4632655012900268062">Přizpůsobení karet</translation>
 <translation id="4633003931260532286">Rozšíření vyžaduje rozhraní <ph name="IMPORT_NAME" /> s minimální verzí <ph name="IMPORT_VERSION" />, máte však nainstalovanou pouze verzi <ph name="INSTALLED_VERSION" /></translation>
 <translation id="4633757335284074492">Zálohování na Disk Google. Snadno obnovte data nebo kdykoliv přejděte na jiné zařízení. Tato záloha obsahuje data aplikací. Zálohy se nahrávají do Googlu a šifrují pomocí hesla účtu Google dítěte.</translation>
@@ -5999,7 +5999,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5249624017678798539">Prohlížeč před dokončením stahování selhal.</translation>
 <translation id="5249818097095743806">Použijte bezpečnostní klíč</translation>
 <translation id="5250372599208556903">Vyhledávač <ph name="SEARCH_ENGINE_NAME" /> poskytuje místní obsah na základě vaší polohy. Toto nastavení můžete změnit na stránce <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5252496130205799136">Používat váš účet Google k ukládání a vyplňování hesel?</translation>
 <translation id="5252653240322147470">Maximální počet číslic v kódu PIN: <ph name="MAXIMUM" /></translation>
 <translation id="5253554634804500860">Použít <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Využití paměti: <ph name="MEMORY_USAGE" /></translation>
@@ -8173,7 +8172,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6833479554815567477">Karta byla odstraněna ze skupiny <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Vyvážené (doporučeno)</translation>
 <translation id="6835762382653651563">Chcete-li zařízení <ph name="DEVICE_TYPE" /> aktualizovat, připojte se k internetu.</translation>
-<translation id="683630338945552556">Používat a ukládat hesla v účtu Google</translation>
 <translation id="6838992358006915573">Lupa sleduje zaměření čtečky ChromeVox</translation>
 <translation id="6839225236531462745">Chyba při mazání certifikátu</translation>
 <translation id="6839916869147598086">Přihlášení se změnilo</translation>

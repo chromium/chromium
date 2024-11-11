@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Skapar bilder …</translation>
 <translation id="1116694919640316211">Om</translation>
 <translation id="1118572504348554005">Vi kan dela feedback som skickas via det här formuläret med våra partners för att felsöka problem som du rapporterar till oss. Ange inte känsliga uppgifter somlösenord.</translation>
+<translation id="1119403468619527527">Det går inte att förenkla med så få ord</translation>
 <translation id="1119447706177454957">Internt fel</translation>
 <translation id="1124772482545689468">Användare</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Det gick inte att testa enheten. Byt till laptopläge för att testa.</translation>
 <translation id="3916998944874125962">ta skärmbild</translation>
 <translation id="3923184630988645767">Dataanvändning</translation>
+<translation id="3924445055519423964">Klicka för att sammanfatta webbsidan/PDF-filen</translation>
 <translation id="3932043219784172185">Det finns ingen ansluten enhet</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> har inte tilldelats</translation>
 <translation id="3941014780699102620">DNS-matchningen misslyckades för värden</translation>
@@ -814,6 +816,7 @@
 <translation id="4988526792673242964">Sidor</translation>
 <translation id="4989542687859782284">Inte tillgänglig</translation>
 <translation id="4999333166442584738">Dölj rapporten</translation>
+<translation id="5005695757087124131">Klicka för att förenkla den markerade texten</translation>
 <translation id="500920857929044050">Avsluta testet</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Temafärg</translation>
@@ -1334,6 +1337,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> är redo att uppdateras</translation>
 <translation id="741244894080940828">Räkna om</translation>
 <translation id="7415801143053185905">Mycket hög HTTS-latens</translation>
+<translation id="7418738250896500352">Det går inte att förenkla med så många ord</translation>
 <translation id="7425037327577270384">Hjälp mig skriva</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Det gick inte att inaktivera eller ta bort detta APN. Se till att aktiverade <ph name="ATTACH" />-APN inaktiveras eller tas bort.</translation>
@@ -1550,6 +1554,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8476942730579767658">Fönster och skrivbord</translation>
 <translation id="8477536061607044749">grafisk design</translation>
 <translation id="8477551185774834963">DNS-latensen är något högre än det godtagbara tröskelvärdet</translation>
+<translation id="8482376765267780829">Markera texten du vill förenkla</translation>
 <translation id="8483248364096924578">IP-adress</translation>
 <translation id="8491311378305535241">Det gick inte att ansluta till HTTPS-webbplatser från Android-appar genom brandvägg</translation>
 <translation id="8495070016475833911">filt</translation>
@@ -1679,6 +1684,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="9082718469794970195">Använd den här videon</translation>
 <translation id="9087578468327036362">Rapportera sökfrågan</translation>
 <translation id="9088306295921699330">Nuvarande användning</translation>
+<translation id="9088994563996376283">Förenkla</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Mer information om återställningsdatumet</translation>
 <translation id="9100765901046053179">Avancerade inställningar</translation>

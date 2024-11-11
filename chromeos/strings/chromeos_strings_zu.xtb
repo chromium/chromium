@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Isungula imifanekiso...</translation>
 <translation id="1116694919640316211">Mayelana</translation>
 <translation id="1118572504348554005">Singase sabelane ngempendulo ethunyelwe ngaleli fomu nozakwethu ukuze sixazulule iziphazamisi nezinye izinkinga ozibikayo. Ungafaki ulwazi olubucayi olufana namaphasiwedi.</translation>
+<translation id="1119403468619527527">Amagama ambalwa kakhulu ukuthi abe lula</translation>
 <translation id="1119447706177454957">Iphutha langaphakathi</translation>
 <translation id="1124772482545689468">Umsebenzisi</translation>
 <translation id="1128128132059598906">I-EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Ayikwazi ukuhlola idivayisi. Shintshela kumodi yekhompuyutha ephathekayo ukuze uhlole.</translation>
 <translation id="3916998944874125962">thatha isithombe-sikrini</translation>
 <translation id="3923184630988645767">Ukusetshenziswa kwedatha</translation>
+<translation id="3924445055519423964">Chofoza ukuze ufingqe ikhasi lewebhu/ifayela le-PDF</translation>
 <translation id="3932043219784172185">Ayikho idivayisi exhunyiwe</translation>
 <translation id="3934185438132762746">Akunikeziwe i-<ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Yehlulekile ukulungisa umsingathi</translation>
@@ -814,6 +816,7 @@
 <translation id="4988526792673242964">Amakhasi</translation>
 <translation id="4989542687859782284">Ayitholakali</translation>
 <translation id="4999333166442584738">Fihla umbiko</translation>
+<translation id="5005695757087124131">Chofoza ukuze wenze umbhalo okhethiwe ube lula</translation>
 <translation id="500920857929044050">Misa ukuhlola</translation>
 <translation id="5017508259293544172">I-LEAP</translation>
 <translation id="5035083460461104704">Umbala wetimu</translation>
@@ -1334,6 +1337,7 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="7405493795721832710">I-<ph name="DEVICE_NAME" /> ikulungele ukubuyekezwa</translation>
 <translation id="741244894080940828">ukuguqulwa</translation>
 <translation id="7415801143053185905">Ukubambezeleka okuphakeme kakhulu kwe-HTTP</translation>
+<translation id="7418738250896500352">Amagama amaningi kakhulu ukuthi abe lula</translation>
 <translation id="7425037327577270384">Ngisize ngibhale</translation>
 <translation id="7427315641433634153">I-MSCHAP</translation>
 <translation id="7438298994385592770">Ayikwazi ukukhubaza noma ukususa le APN. Qinisekisa ukuthi ama-APN ye-<ph name="ATTACH" /> enikwe amandla ivaliwe noma ikhishiwe.</translation>
@@ -1550,6 +1554,7 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8476942730579767658">Amawindi namatafula</translation>
 <translation id="8477536061607044749">ukuklama imifanekiso</translation>
 <translation id="8477551185774834963">Ukubambezeleka kwe-DNS kungaphezulu kancane komkhawulo ovumelekile</translation>
+<translation id="8482376765267780829">Khetha umbhalo ozowenza ube lula</translation>
 <translation id="8483248364096924578">Ikheli lasesizindenise-inthanethi</translation>
 <translation id="8491311378305535241">Ayikwazi ukuxhuma ngohlelo lokuvikela kumawebhusayithi we-HTTP kusukela kuma-app we-Android</translation>
 <translation id="8495070016475833911">i-felt</translation>
@@ -1679,6 +1684,7 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="9082718469794970195">Sebenzisa le vidiyo</translation>
 <translation id="9087578468327036362">Bika lo mbuzo</translation>
 <translation id="9088306295921699330">Ukusetshenziswa kwamanje</translation>
+<translation id="9088994563996376283">Ukwenza kalula</translation>
 <translation id="9095775724867566971">I-Pluginvm</translation>
 <translation id="909856219855259344">Ulwazi olwengeziwe ngosuku Lokusetha kabusha</translation>
 <translation id="9100765901046053179">Izilungiselelo ezithuthukisiwe</translation>

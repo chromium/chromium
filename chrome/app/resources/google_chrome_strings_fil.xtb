@@ -303,6 +303,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4567424176335768812">Naka-sign in ka bilang <ph name="USER_EMAIL_ADDRESS" />. Maaari mo na ngayong i-access ang iyong mga bookmark, kasaysayan, at iba pang setting sa lahat ng iyong device na naka-sign in.</translation>
 <translation id="4571503333518166079">Pumunta sa mga setting ng notification ng Chrome</translation>
 <translation id="4575717501879784448">Magagawa ng Chrome na gawing hindi aktibo ang mga tab na ito para pagandahin ang iyong experience sa pag-browse at bakantehin ang mga resource.</translation>
+<translation id="4595162648538023956">Puwede kang mag-sign in para makuha ang kailangan mo, o gamitin ang Chrome nang walang account</translation>
 <translation id="459622048091363950">Kapag mayroon nang access ang Chrome, makakahingi na ang mga website ng access sa iyo.</translation>
 <translation id="4600710005438004015">Hindi ma-update ang Chrome sa pinakabagong bersyon, kaya hindi mo magagamit ang mga bagong feature at pag-aayos sa seguridad.</translation>
 <translation id="4601439950572737842">Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at ma-save ang data sa Chrome sa iyong Google account.</translation>
@@ -349,6 +350,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="5170938038195470297">Hindi magagamit ang iyong profile dahil mula ito sa isang mas bagong bersyon ng Google Chrome.
 
 Maaaring hindi available ang ilang tampok. Mangyaring tumukoy ng ibang direktoryo ng profile o gumamit ng mas bagong bersyon ng Chrome.</translation>
+<translation id="5174969993834422967">Kadalasan mong bina-block ang mga notification. Para hayaan ang site na itong abisuhan ka, i-click ang icon ng notification sa kanang sulok ng iyong bar ng lokasyon.</translation>
 <translation id="5201744974236816379">Update sa Chrome</translation>
 <translation id="521447420733633466">Kung magpapahiram ka ng device, puwedeng mag-browse nang hiwalay ang mga kaibigan at kapamilya, at puwede nilang i-set up ang Chrome sa paraang gusto nila</translation>
 <translation id="5234764350956374838">Huwag pansinin</translation>
@@ -453,6 +455,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6497147134301593682">Awtomatikong isinara ang Chrome</translation>
 <translation id="6506909944137591434">Kailangan ng Chrome ng pahintulot sa camera para makagawa ng 3D na mapa ng iyong kapaligiran</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6515549163407364048">Para makuha ang iyong mga extension sa lahat ng computer mo, mag-sign in sa Chrome</translation>
 <translation id="6520670145826811516">Para magamit ang iyong lokasyon, bigyan ng access ang Chrome sa <ph name="BEGIN_LINK" />mga setting ng system<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">Sa Google Password Manager sa device na ito</translation>
 <translation id="6600016381025017075">Maghanap ng kahit ano sa page na ito</translation>

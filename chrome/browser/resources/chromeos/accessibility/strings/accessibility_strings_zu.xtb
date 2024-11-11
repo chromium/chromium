@@ -29,6 +29,7 @@
 <translation id="1161762950103988776">Yeqa</translation>
 <translation id="1164857107703583584">Imiyalelo yokweqa ingasetshenziselwa ukuzulazula kahle kukhasi lewebhu.</translation>
 <translation id="1175914831232945926">Amadijithi</translation>
+<translation id="1186712907912748007">Ukuhudula udedele kuyaqhubeka <ph name="GESTURE" /> ukuze uqede. Okunye ukuthinta akutholakali okwesikhashana.</translation>
 <translation id="1188858454923323853">iyahambisana</translation>
 <translation id="1189258430971676908">Indawo yokuphrakthiza: Uhlu olushona ezansi</translation>
 <translation id="1195238899008218998">Amazwi angemuva</translation>
@@ -210,6 +211,7 @@
 <translation id="2347456970887948350">Isixhumanisi</translation>
 <translation id="2363753371702255035">inhlamvu</translation>
 <translation id="2365384324219615024">Ungakwazi nokucindezela u-Enter ukuze wenze izinto zisebenze. Ngokwesibonelo, u-Enter angasetshenziselwa ukuthumela umbhalo okwifomu. Ukuze uqhubeke, cindezela u-Enter.</translation>
+<translation id="2371402123699727805">Ukubizela kuyasebenza. <ph name="GESTURE" /> ukuze umise. Okunye ukuthinta akutholakali okwesikhashana.</translation>
 <translation id="2381733276052567791">Guqula inkulumo uyivule noma uyivale</translation>
 <translation id="2390264819538553347">Ukuze uthuthuke, cindezela u-enter; ukuze ubuyele emuva, cindezela u-backspace.</translation>
 <translation id="2398579267367951220">Thayipha ukuze useshe ikhasi. Cindezela u-enter ukuze weqele emiphumeleni, imicibisholo yaphezulu noma phansi ukuze uphequlule imiphumela, qhubeka uthayipha ukuze ushintshe usesho lwakho, noma u-escape ukuze ukhansele.</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">Asikho isihloko esedlule seleveli engu-3</translation>
 <translation id="3887399638190992181">Okhiye ababalulekile</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">Ukulawula ngobuso kumisiwe. <ph name="GESTURE" /> ukuze uqhubeke. Okunye ukuthinta akutholakali okwesikhashana.</translation>
 <translation id="3897092660631435901">Imenyu</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">Isihloko sangaphambili seleveli engu-6</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">Asikho isihloko esilandelayo seleveli engu-1</translation>
 <translation id="5455441614648621694">Iyahambisana</translation>
 <translation id="5462510922370980473">Uhlu lwekhasi</translation>
+<translation id="5489460663499094917">Imodi yokuskrola iyasebenza. <ph name="GESTURE" /> ukuze uphume. Okunye ukuthinta akutholakali okwesikhashana.</translation>
 <translation id="5495517933067991341">Okhiye Ababalulekile: u-Shift</translation>
 <translation id="549602578321198708">Igama</translation>
 <translation id="5513242761114685513">Imenyu yokuqukethwe</translation>

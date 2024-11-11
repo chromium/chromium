@@ -806,7 +806,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1561331397460162942">Sallii sijainnin käytön sovelluksille, verkkosivustoille, joilla on sijaintilupa, ja järjestelmäpalveluille</translation>
 <translation id="1562119309884184621">Tämän kontaktin lisääminen muistetaan ensi kerralla, kun hän jakaa</translation>
 <translation id="1563137369682381456">Vanhenemispäivä</translation>
-<translation id="1563702743503072935">Google-tilisi salasanat ovat saatavilla myös tällä laitteella, kun olet kirjautuneena sisään</translation>
 <translation id="1566049601598938765">Sivusto</translation>
 <translation id="15662109988763471">Valittu tulostin ei ole käytettävissä tai sitä ei ole asennettu oikein. Tarkista tulostin tai valitse toinen tulostin.</translation>
 <translation id="1566329594234563241">Kun laite on ei-aktiivinen ja liitetty virtaan</translation>
@@ -3138,7 +3137,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3177909033752230686">Sivun kieli:</translation>
 <translation id="3177914167275935955">Laitteesi sisältää Chrome Education Upgraden, mutta käyttäjänimeäsi ei ole liitetty Google for Education ‐tiliin. Luo Google for Education ‐tili siirtymällä toisella laitteella osoitteeseen g.co/workspace/edusignup.</translation>
 <translation id="3179982752812949580">Tekstin fontti</translation>
-<translation id="3180175986308160674">Luodaan tätä sivua koskevia kysymyksiä…</translation>
 <translation id="3180284704187420717">Tallenna esimerkiksi kirjanmerkit ja salasanat synkronoimalla</translation>
 <translation id="3180990259147710757">Käännä leukaa vasemmalle</translation>
 <translation id="3181954750937456830">Selaussuoja (suojaa sinua ja laitettasi vaarallisilta sivustoilta)</translation>
@@ -3942,7 +3940,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3748424433435232460">Tilin salasana on jo tallennettu tälle laitteelle</translation>
 <translation id="3748706263662799310">Ilmoita virheestä</translation>
 <translation id="3749724428455457489">Lue lisää sivustojen ehdottamista mainoksista</translation>
-<translation id="3750562496035670393">Chrome tallensi salasanasi tälle laitteelle, mutta voit halutessasi tallentaa sen Google-tilillesi. Kaikki Google-tilillä olevat salasanat ovat käytettävissä, kun olet sisäänkirjautuneena.</translation>
 <translation id="3752115502500640407">Jaa kopio sivuston <ph name="WEBSITE" /> salasanasta</translation>
 <translation id="3752253558646317685">Pyydä lasta nostamaan sormea toistuvasti, jotta sormenjälki tallennetaan</translation>
 <translation id="3753033997400164841">Tallenna kerran. Käytä kaikkialla.</translation>
@@ -4576,7 +4573,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4195378859392041564">Klikkaa mitä tahansa näppäintä hiirellä ja yksilöi sitten painamalla näppäintä näppäimistöltä</translation>
 <translation id="4195643157523330669">Avaa uudelle välilehdelle</translation>
 <translation id="4195814663415092787">Jatka siitä, mihin jäit</translation>
-<translation id="4196350776737072374">Kysymyksiä ei ole saatavilla. Kokeile esimerkiksi pyytää "tiivistä tämä sivu" tai kysyä oman kysymyksesi.</translation>
 <translation id="4198268995694216131">Lisää sivustoja</translation>
 <translation id="4200609364258658652">Kopio&amp;i videokehys</translation>
 <translation id="4200689466366162458">Muokatut sanat</translation>
@@ -6015,7 +6011,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5249624017678798539">Selain kaatui ennen latauksen päättymistä.</translation>
 <translation id="5249818097095743806">Käytä suojausavainta</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> tarjoaa paikallista sisältöä sijaintisi avulla. Voit muuttaa asetusta osoitteessa <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5252496130205799136">Saako Google-tili tallentaa ja täyttää salasanoja?</translation>
 <translation id="5252653240322147470">PIN-koodissa saa olla korkeintaan <ph name="MAXIMUM" /> numeroa.</translation>
 <translation id="5253554634804500860">Valitse <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Muistin käyttö: <ph name="MEMORY_USAGE" /></translation>
@@ -8189,7 +8184,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6833479554815567477">Välilehti poistettu ryhmästä <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Tasapainoinen (suositus)</translation>
 <translation id="6835762382653651563">Muodosta internetyhteys, niin voit päivittää laitteen <ph name="DEVICE_TYPE" />.</translation>
-<translation id="683630338945552556">Käytä ja tallenna Google-tilisi salasanoja</translation>
 <translation id="6838992358006915573">Suurennuslasi seuraa ChromeVox-tarkennusta</translation>
 <translation id="6839225236531462745">Varmenteen poistovirhe</translation>
 <translation id="6839916869147598086">Kirjautuminen on muuttunut</translation>

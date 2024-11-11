@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Се создаваат слики…</translation>
 <translation id="1116694919640316211">За</translation>
 <translation id="1118572504348554005">Можно е да ги споделиме повратните информации споделени со нас преку формуларов со нашите партнери за отстранувањето грешки и решавањето на другите проблеми што ни ги пријавувате. Не опфаќајте чувствителни податоци како лозинки.</translation>
+<translation id="1119403468619527527">Премалку зборови за да се поедностави</translation>
 <translation id="1119447706177454957">Внатрешна грешка</translation>
 <translation id="1124772482545689468">Корисник</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Не можете да го тестирате уредот. Префрлете се на режим за лаптоп за да тестирате.</translation>
 <translation id="3916998944874125962">снимање слика од екранот</translation>
 <translation id="3923184630988645767">Интернет</translation>
+<translation id="3924445055519423964">Кликнете за да се резимира веб-страницата/PDF-датотеката</translation>
 <translation id="3932043219784172185">Нема поврзан уред</translation>
 <translation id="3934185438132762746">Неназначено <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Неуспешно отворање на хостот</translation>
@@ -814,6 +816,7 @@
 <translation id="4988526792673242964">Страници</translation>
 <translation id="4989542687859782284">Недостапни</translation>
 <translation id="4999333166442584738">Скриј го извештајот</translation>
+<translation id="5005695757087124131">Кликнете за да се поедностави избраниот текст</translation>
 <translation id="500920857929044050">Запри го тестот</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Боја на темата</translation>
@@ -1334,6 +1337,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> е подготвен за ажурирање</translation>
 <translation id="741244894080940828">конверзија</translation>
 <translation id="7415801143053185905">Многу висока латенција на HTTP</translation>
+<translation id="7418738250896500352">Премногу зборови за да се поедностави</translation>
 <translation id="7425037327577270384">Помогни ми да напишам</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Не може да се оневозможи или отстрани ова APN. Уверете се дека овозможените APN од тип <ph name="ATTACH" /> се оневозможени или отстранети.</translation>
@@ -1550,6 +1554,7 @@
 <translation id="8476942730579767658">Прозорци и работни површини</translation>
 <translation id="8477536061607044749">графички дизајн</translation>
 <translation id="8477551185774834963">Латенцијата на DNS е малку над дозволениот праг</translation>
+<translation id="8482376765267780829">Изберете текст за да се поедностави</translation>
 <translation id="8483248364096924578">IP-адреса</translation>
 <translation id="8491311378305535241">Не може да се поврзе преку заштитен ѕид со веб-сајтови со HTTP од апликации на Android</translation>
 <translation id="8495070016475833911">филц</translation>
@@ -1679,6 +1684,7 @@
 <translation id="9082718469794970195">Користи го ова видео</translation>
 <translation id="9087578468327036362">Пријавете го барањево</translation>
 <translation id="9088306295921699330">Моментално користење</translation>
+<translation id="9088994563996376283">Поедностави</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="909856219855259344">Повеќе детали за „Датум на ресетирање“</translation>
 <translation id="9100765901046053179">Напредни поставки</translation>

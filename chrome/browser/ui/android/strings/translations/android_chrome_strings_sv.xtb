@@ -603,6 +603,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="385051799172605136">Föregående</translation>
 <translation id="3856096718352044181">Verifiera att detta är en giltig leverantör eller försök igen senare</translation>
 <translation id="3858860766373142691">Namn</translation>
+<translation id="3863527519275151528">Bearbetar avisering</translation>
 <translation id="3873174561423636563"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> delar <ph name="FIELDS_STRING" /> med den här webbplatsen om du fortsätter. Läs webbplatsens <ph name="BEGIN_LINK1" />användarvillkor<ph name="END_LINK1" />.</translation>
 <translation id="3892148308691398805">Kopiera text</translation>
 <translation id="3899682235662194879">Stäng alla inkognitoflikar</translation>

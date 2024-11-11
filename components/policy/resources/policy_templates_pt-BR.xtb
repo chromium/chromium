@@ -2092,6 +2092,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 
       A verificação ortográfica sempre pode usar um dicionário baixado localmente, a menos que esse recurso tenha sido desativado pela <ph name="SPELLCHECK_ENABLED_POLICY_NAME" />. Nesse caso, a política não terá efeito.</translation>
 <translation id="2433516903565257847">Porcentagem do conjunto de dispositivos que precisa ser atualizada após os dias especificados.</translation>
+<translation id="2433683038230070030">O armazenamento em buffer adaptável da API Web Audio pode ser ativado dependendo do processo de lançamento do recurso.</translation>
 <translation id="2435052056904485763">Lista de permissões do servidor de delegação Kerberos</translation>
 <translation id="2436302465999055995">Tornar o <ph name="LACROS_NAME" /> o único navegador disponível (ainda não implementado)</translation>
 <translation id="2439187682308339104">Não permitir que nenhum site solicite acesso a dispositivos HID pela API WebHID</translation>
@@ -5157,7 +5158,6 @@ Esta política não terá efeito quando a <ph name="DEVICE_SCREENSAVER_LOGIN_SCR
 <translation id="4725801978265372736">Exigir correspondência entre o nome do usuário local e o proprietário do host de acesso remoto</translation>
 <translation id="4726228171190098009">Não permitir que o dispositivo solicite a execução de um Powerwash</translation>
 <translation id="4726895359147376813">Mapeamento de IDs persistentes para as configurações da VM</translation>
-<translation id="4729091573952050200">Sempre usar a API Translator</translation>
 <translation id="4732069502693984686">Ativa a captura automática de várias telas</translation>
 <translation id="4733471537137819387">Políticas relacionadas à autenticação integrada de HTTP.</translation>
 <translation id="473673197014866318">Se definida, a política controlará as configurações de gerenciamento de extensões do <ph name="PRODUCT_NAME" />, inclusive aquelas controladas pelas políticas existentes relacionadas a extensões. A política substitui todas as políticas legadas que possam estar definidas.
@@ -6668,6 +6668,13 @@ Quando ela está desativada ou é deixada sem definição, os Glanceables não s
 <translation id="5776485039795852974">Perguntar cada vez que um site quiser exibir notificações da área de trabalho</translation>
 <translation id="5783009211970309878">Imprimir cabeçalhos e rodapés</translation>
 <translation id="5790763087505467169">Reduzir notificações de lançamento automático para sessões de visitante gerenciadas</translation>
+<translation id="5794205610250307906">Esta política controla se o navegador usa o armazenamento em buffer adaptável para a API
+Web Audio, o que pode diminuir as falhas de áudio, mas também aumentar a latência em uma quantidade variável.
+
+Se a política for ativada, o armazenamento em buffer adaptável será usado sempre.
+
+Se for desativada ou deixada sem definição, o processo de inicialização do navegador
+vai decidir se o armazenamento em buffer adaptável será usado.</translation>
 <translation id="5800329278018669527">Desativar a solicitação de configuração de rede quando estiver off-line</translation>
 <translation id="5802931736499687181">Desativar o pipeline de geração de relatórios criptografados</translation>
 <translation id="5803715507113569033">Esta política permite que os administradores configurem a instalação do <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
@@ -7251,6 +7258,7 @@ Na versão 114 e mais recentes, esta política é opcional quando a <ph name="DO
 Se a política for desativada, os usuários não poderão bloquear a tela. Eles só poderão sair da sessão do usuário.</translation>
 <translation id="6265892395051519509">Permite acesso a sensores nesses sites</translation>
 <translation id="6266043141694454734">Determina se a Chrome Root Store e o verificador de certificados integrado vão ser usados para verificar os certificados do servidor</translation>
+<translation id="6266686172120601139">Ativar o armazenamento em buffer adaptável para a API Web Audio</translation>
 <translation id="6267130578410325007">Esta política permite por padrão o clustering do agente com origin-key.
 
 O cabeçalho HTTP Origin-Agent-Cluster controla se um documento está
@@ -9959,6 +9967,7 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
 <translation id="8173864651667424191">Usar "Imprimir como imagem" como padrão na visualização da impressão de documentos PDF quando a opção estiver disponível</translation>
 <translation id="8175922758834816585">Ativar a resposta falada na tela de login e permitir que o usuário a desative temporariamente</translation>
 <translation id="8176035528522326671">Permitir que o usuário corporativo seja o usuário principal de diversos perfis (comportamento padrão para usuários gerenciados por empresa)</translation>
+<translation id="817717947404114735">Ativar o armazenamento em buffer adaptável da API Web Audio.</translation>
 <translation id="8179082421668183060">Se a política for definida como uma lista de strings, as strings serão mescladas com espaços e transmitidas do <ph name="IE_PRODUCT_NAME" /> para o <ph name="PRODUCT_NAME" /> como parâmetros de linha de comando. Se um parâmetro tiver <ph name="URL_PLACEHOLDER" />, <ph name="URL_PLACEHOLDER" /> será substituído pelo URL da página a ser aberta. Se nenhum parâmetro tiver <ph name="URL_PLACEHOLDER" />, o URL será anexado ao fim da linha de comando.
 
       As variáveis de ambiente serão expandidas. No <ph name="MS_WIN_NAME" />, <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> será substituída pelo valor da variável de ambiente <ph name="ENV_VARIABLE_VALUE" />.
@@ -10167,15 +10176,6 @@ Mais informações sobre tecnologias legadas podem ser encontradas em https://ch
 <translation id="8331479227794770304">Ativar tecla aderente</translation>
 <translation id="8332822245414537447">Desativar a verificação de uso da Chave RSA</translation>
 <translation id="8334685561819743286">Desativar a correção automática do teclado físico durante a digitação</translation>
-<translation id="8336819406993366823">Se a política for definida como <ph name="ENABLED_VALUE_NAME" />, as APIs prefixadas de tela cheia específicas para vídeo, como Video.webkitEnterFullscreen(), serão usadas no JavaScript.
-
-Se a política for definida como <ph name="DISABLED_VALUE_NAME" />, as APIs prefixadas de tela cheia específicas para vídeo não serão usadas em JavaScript, deixando apenas as APIs de tela cheia padrão, como Element.requestFullscreen().
-
-Definir a política como <ph name="RUNTIME_ENABLED_VALUE_NAME" /> permite que a flag de recurso ativada pelo ambiente de execução PrefixedFullscreenVideo determine se as APIs prefixadas de tela cheia específicas para vídeo estão disponíveis para sites.
-
-Se a política não for definida, o comportamento será <ph name="RUNTIME_ENABLED_VALUE_NAME" /> por padrão.
-
-Observação: essa política é uma solução temporária para ajudar na transição das APIs de tela cheia com o prefixo webkit. Ela será removida temporariamente na versão M130 ou nas próximas versões.</translation>
 <translation id="8337114537412769126">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> especificará os parâmetros durante a pesquisa sugerida com POST. Ele consiste em pares nome-valor separados por vírgula. Se o valor for um parâmetro modelo, como <ph name="SEARCH_TERM_MARKER" />, ele será substituído pelos dados dos termos de pesquisa reais.
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> não for definida, as solicitações de pesquisa sugerida serão enviadas usando o método get.</translation>

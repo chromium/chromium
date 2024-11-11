@@ -595,6 +595,7 @@
 <translation id="3819183753496523827">თქვენ ხაზგარეშე რეჟიმში ხართ. შეამოწმეთ ინტერნეტ-კავშირი და ხელახლა ცადეთ.</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">Lens მიუწვდომელია ამ ანგარიშზე.</translation>
+<translation id="38258275871320156">ხელმისაწვდომია მხოლოდ პატარა ფანჯრებისთვის</translation>
 <translation id="3830886834687455630">პაროლების შესამოწმებლად განაახლეთ Google Play services</translation>
 <translation id="3843603704176567761">პაროლებმა შეიძლება მალე შეწყვიტოს ამ მოწყობილობაზე მუშაობა. პაროლების გამოყენების გასაგრძელებლად განაახლეთ Google Play services.</translation>
 <translation id="3845098929839618392">ინკოგნიტო ჩანართში გახსნა</translation>
@@ -1037,6 +1038,7 @@
 <translation id="5885378508678660271">შეტყობინებები <ph name="SEPARATOR" /> Chrome-მა ამოშალა ეს ნებართვები, რადგან ეს საიტი სახიფათოა</translation>
 <translation id="5895834791314695851">პაროლებმა შეიძლება მალე შეწყვიტოს ამ მოწყობილობაზე მუშაობა. პაროლების გამოყენების გასაგრძელებლად განაახლეთ Google Play services. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">წვდომის გასაღებების არარსებობის ფურცელი დახურულია</translation>
+<translation id="5907542076239273525">სანიშნე შენახულია საქაღალდეში „<ph name="FOLDER_NAME" />“.</translation>
 <translation id="5916664084637901428">ჩართვა</translation>
 <translation id="5919204609460789179">სინქრონიზაციის დასაწყებად, განაახლეთ <ph name="PRODUCT_NAME" /></translation>
 <translation id="5938820472109305350">დაემატოს <ph name="INTEREST" /></translation>

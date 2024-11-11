@@ -806,7 +806,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1561331397460162942">See annab rakendustele, asukohale juurdepääsu loaga veebisaitidele ja süsteemiteenustele juurdepääsu asukohale</translation>
 <translation id="1562119309884184621">Selle kontakti lisamisel mäletatakse teda, kui ta järgmisel korral jagab</translation>
 <translation id="1563137369682381456">Aegumiskuupäev</translation>
-<translation id="1563702743503072935">Paroolid teie Google'i kontolt on saadaval ka selles seadmes, kui olete sisse logitud</translation>
 <translation id="1566049601598938765">Veebisait</translation>
 <translation id="15662109988763471">Valitud printer pole saadaval või pole õigesti installitud. Kontrollige printerit või valige teine printer.</translation>
 <translation id="1566329594234563241">Kui seade on inaktiivne ja ühendatud</translation>
@@ -3130,7 +3129,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3177909033752230686">Lehe keel:</translation>
 <translation id="3177914167275935955">Teie seadmel on Chrome Educationi täiendus, kuid teie kasutajanimi pole Google for Educationi kontoga seotud. Looge Google for Educationi konto, külastades teises seadmes saiti g.co/workspace/edusignup.</translation>
 <translation id="3179982752812949580">Teksti font</translation>
-<translation id="3180175986308160674">Selle lehega seotud küsimuste genereerimine…</translation>
 <translation id="3180284704187420717">Salvestage sünkroonimise abil oma järjehoidjad, paroolid ja muu teave.</translation>
 <translation id="3180990259147710757">Lõualuu vasakule liigutamine</translation>
 <translation id="3181954750937456830">Ohutu sirvimine (kaitseb teid ja teie seadet ohtlike saitide eest)</translation>
@@ -3934,7 +3932,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3748424433435232460">Selle konto parool on sellesse seadmesse juba salvestatud.</translation>
 <translation id="3748706263662799310">Teatage veast</translation>
 <translation id="3749724428455457489">Lisateave saidi soovitatud reklaamide kohta</translation>
-<translation id="3750562496035670393">Chrome salvestas teie parooli sellesse seadmesse, kuid saate selle salvestada hoopis oma Google'i kontole. Nii on kõik teie Google'i kontol olevad paroolid saadaval, kui olete sisse logitud.</translation>
 <translation id="3752115502500640407">Parooli koopia jagamine veebisaidiga <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Sõrmejälje salvestamiseks paluge lapsel sõrm andurilt eemaldada ja siis seda uuesti puudutada</translation>
 <translation id="3753033997400164841">Salvestage üks kord. Kasutage kõikjal.</translation>
@@ -4571,7 +4568,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4195378859392041564">Klõpsake hiirega ükskõik millisel klahvil, seejärel vajutage kohandamiseks klaviatuuri klahvi</translation>
 <translation id="4195643157523330669">Ava uuel vahelehel</translation>
 <translation id="4195814663415092787">Jätka sealt, kus pooleli jäin</translation>
-<translation id="4196350776737072374">Küsimusi pole saadaval. Proovige selliseid taotlusi nagu „Selle lehe kokkuvõte”, või esitage oma küsimus.</translation>
 <translation id="4198268995694216131">Täiendavad saidid</translation>
 <translation id="4200609364258658652">K&amp;opeeri videokaader</translation>
 <translation id="4200689466366162458">Kohandatud sõnad</translation>
@@ -6009,7 +6005,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5249624017678798539">Brauser jooksis enne allalaadimise lõppu kokku.</translation>
 <translation id="5249818097095743806">Kasutage oma turvavõtit</translation>
 <translation id="5250372599208556903">Otsingumootor <ph name="SEARCH_ENGINE_NAME" /> kasutab teile kohaliku sisu pakkumiseks teie asukohta. Seda saate muuta menüüs <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5252496130205799136">Kas soovite kasutada oma Google'i kontot paroolide salvestamiseks ja täitmiseks?</translation>
 <translation id="5252653240322147470">PIN-kood peab olema lühem kui <ph name="MAXIMUM" /> numbrit</translation>
 <translation id="5253554634804500860">Kasuta seadmes <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Mälukasutus: <ph name="MEMORY_USAGE" /></translation>
@@ -8183,7 +8178,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6833479554815567477">Vaheleht eemaldati grupist <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Tasakaalustatud (soovitatud)</translation>
 <translation id="6835762382653651563">Seadme <ph name="DEVICE_TYPE" /> värskendamiseks looge ühendus Internetiga.</translation>
-<translation id="683630338945552556">Paroolide kasutamine ja salvestamine Google'i kontol</translation>
 <translation id="6838992358006915573">Luup järgib ChromeVoxi fookust</translation>
 <translation id="6839225236531462745">Sertifikaadi kustutamise viga</translation>
 <translation id="6839916869147598086">Sisselogimine on muutunud</translation>

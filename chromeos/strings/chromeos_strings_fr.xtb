@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Création d'images...</translation>
 <translation id="1116694919640316211">À propos</translation>
 <translation id="1118572504348554005">Les commentaires que vous transmettez via ce formulaire peuvent être partagés avec nos partenaires afin de résoudre des bugs et d'autres problèmes que vous nous signalez. N'incluez pas d'informations sensibles, comme un mot de passe.</translation>
+<translation id="1119403468619527527">Trop peu de mots pour simplifier</translation>
 <translation id="1119447706177454957">Erreur interne.</translation>
 <translation id="1124772482545689468">Utilisateur</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Impossible de tester l'appareil. Passez en mode ordinateur portable pour tester.</translation>
 <translation id="3916998944874125962">faire une capture d'écran</translation>
 <translation id="3923184630988645767">Consommation des données</translation>
+<translation id="3924445055519423964">Cliquer pour résumer la page Web/le fichier PDF</translation>
 <translation id="3932043219784172185">Aucun appareil connecté</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> non attribué</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
@@ -814,6 +816,7 @@
 <translation id="4988526792673242964">Pages</translation>
 <translation id="4989542687859782284">Indisponible</translation>
 <translation id="4999333166442584738">Masquer le rapport</translation>
+<translation id="5005695757087124131">Cliquer pour simplifier le texte sélectionné</translation>
 <translation id="500920857929044050">Arrêter le test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Couleur du thème</translation>
@@ -1334,6 +1337,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> est prêt à être mis à jour</translation>
 <translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Latence HTTP très élevée</translation>
+<translation id="7418738250896500352">Trop de mots pour simplifier</translation>
 <translation id="7425037327577270384">M'aider à écrire</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Impossible de désactiver ou de supprimer cet APN. Assurez-vous que les APN <ph name="ATTACH" /> activés sont désactivés ou supprimés.</translation>
@@ -1550,6 +1554,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8476942730579767658">Fenêtres et bureaux</translation>
 <translation id="8477536061607044749">conception graphique</translation>
 <translation id="8477551185774834963">Seuil de latence autorisé légèrement dépassé par le DNS</translation>
+<translation id="8482376765267780829">Sélectionner du texte à simplifier</translation>
 <translation id="8483248364096924578">Adresse IP</translation>
 <translation id="8491311378305535241">Impossible de se connecter aux sites HTTP via le pare-feu depuis les applis Android</translation>
 <translation id="8495070016475833911">feutre</translation>
@@ -1679,6 +1684,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="9082718469794970195">Utiliser cette vidéo</translation>
 <translation id="9087578468327036362">Signaler cette requête</translation>
 <translation id="9088306295921699330">Utilisation actuelle</translation>
+<translation id="9088994563996376283">Simplifier</translation>
 <translation id="9095775724867566971">PluginVM</translation>
 <translation id="909856219855259344">En savoir plus sur la date de réinitialisation</translation>
 <translation id="9100765901046053179">Paramètres avancés</translation>

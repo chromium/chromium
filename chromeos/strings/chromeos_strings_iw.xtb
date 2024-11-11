@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">התמונות נוצרות…</translation>
 <translation id="1116694919640316211">מידע כללי</translation>
 <translation id="1118572504348554005">יכול להיות שנשתף משוב שנשלח באמצעות הטופס הזה עם השותפים שלנו כדי לתקן באגים ולפתור בעיות אחרות שדווחו. אין להזין מידע רגיש כמו סיסמאות.</translation>
+<translation id="1119403468619527527">יש מעט מדי מילים כדי לפשט</translation>
 <translation id="1119447706177454957">שגיאה פנימית</translation>
 <translation id="1124772482545689468">משתמש</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -306,6 +307,7 @@
 <translation id="2308243864813041101">‏כדי להמשיך בתהליך העדכון, צריך לנתק את כבל ה-USB של <ph name="DEVICE_NAME" /></translation>
 <translation id="2320295602967756579">הפעלת העיצוב הבהיר</translation>
 <translation id="2323506179655536734">לא בוצעה בדיקה</translation>
+<translation id="2323755382216917952">העדכון הזה דורש הפעלה מחדש של המחשב כדי להשלים את ההתקנה. העדכון הזה יכול לקחת כמה דקות עד שיסתיים. במהלך עדכון הקושחה אין לנתק את המחשב או לכבות אותו.</translation>
 <translation id="2324354238778375592">מצב צף</translation>
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> ‏DPI</translation>
 <translation id="2346474577291266260">מצוין (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -449,6 +451,7 @@
 <translation id="3178532070248519384">אוונגרד</translation>
 <translation id="3182676044300231689">אפשר להזין הנחיה כמו "אני רוצה שזה יישמע עם יותר ביטחון עצמי"</translation>
 <translation id="3188257591659621405">הקבצים שלי</translation>
+<translation id="3188931456353313123">‏העדכון הזה סופק על ידי יצרן המכשיר והוא לא אומת על ידי Google.</translation>
 <translation id="319101249942218879">תמונת הדמות שונתה</translation>
 <translation id="3192947282887913208">קובצי אודיו</translation>
 <translation id="3199982728237701504">הכנסת מסמכים (שני צדדים)</translation>
@@ -507,6 +510,7 @@
 <translation id="3488065109653206955">מופעל חלקית</translation>
 <translation id="3492882532495507361">משרד בסגנון <ph name="OFFICE_STYLE" /> עם נגיעות בעיצוב <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">‏הנתונים נמדדים על ידי מכשיר Chromebook שלך. יכול להיות שהנתונים האלה יהיו שונים מנתוני הספק.</translation>
+<translation id="349570724365779960">‏התלמידים מחוברים ל-‎School Tools</translation>
 <translation id="3502426834823382181">הצגת כל האפליקציות</translation>
 <translation id="3510890413042482857">שליחת <ph name="BEGIN_LINK1" />נתוני מעקב אחר ביצועים<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">‏עדכון של ChromeOS</translation>
@@ -587,6 +591,7 @@
 <translation id="391412459402535266">לא ניתן לבדוק את המכשיר. צריך לעבור למצב מחשב נייד כדי לבצע את הבדיקה.</translation>
 <translation id="3916998944874125962">צילום מסך</translation>
 <translation id="3923184630988645767">שימוש בחבילת הגלישה</translation>
+<translation id="3924445055519423964">‏אפשר ללחוץ כדי לסכם את דף האינטרנט או קובץ ה-PDF</translation>
 <translation id="3932043219784172185">אין מכשיר מחובר</translation>
 <translation id="3934185438132762746">‫<ph name="CONTROL_TYPE" /> לא הוקצה</translation>
 <translation id="3941014780699102620">לא ניתן היה להתאים את נתוני המארח</translation>
@@ -755,6 +760,7 @@
 <translation id="473775607612524610">עדכון</translation>
 <translation id="4744944742468440486">מידע בקשר לבחירה שלך</translation>
 <translation id="4771607256327216405">מקלדת בהירה</translation>
+<translation id="4771923071974529837">מחר</translation>
 <translation id="4773299976671772492">הופסק</translation>
 <translation id="4778082030331381943">אחלמה</translation>
 <translation id="4782311465517282004">בלחיצה ימנית או בלחיצה ארוכה על טקסט, יוצגו הגדרות, תרגומים או המרת יחידות</translation>
@@ -814,9 +820,11 @@
 <translation id="4988526792673242964">דפים</translation>
 <translation id="4989542687859782284">לא זמין</translation>
 <translation id="4999333166442584738">הסתרת הדוח</translation>
+<translation id="5005695757087124131">אפשר ללחוץ כדי לפשט את הטקסט שנבחר</translation>
 <translation id="500920857929044050">הפסקת הבדיקה</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">צבע העיצוב</translation>
+<translation id="5037240652947866174">היום</translation>
 <translation id="5038292761217083259">כוונון הצבעים במקלדת</translation>
 <translation id="5039804452771397117">זה בסדר</translation>
 <translation id="5049856988445523908">‏כרטיס ה-SIM נעול (<ph name="LOCK_TYPE" />)</translation>
@@ -1334,6 +1342,7 @@
 <translation id="7405493795721832710">המכשיר <ph name="DEVICE_NAME" /> מוכן לעדכון</translation>
 <translation id="741244894080940828">המרה</translation>
 <translation id="7415801143053185905">‏משך זמן ההמתנה ל-HTTP ארוך מאוד</translation>
+<translation id="7418738250896500352">יש יותר מדי מילים כדי לפשט</translation>
 <translation id="7425037327577270384">עזרה בכתיבה</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">‏לא ניתן להשבית או להסיר את ה-APN הזה. צריך להשבית או להסיר את פריטי ה-APN שהופעלו מסוג '<ph name="ATTACH" />'.</translation>
@@ -1550,6 +1559,7 @@
 <translation id="8476942730579767658">חלונות ושולחנות עבודה וירטואליים</translation>
 <translation id="8477536061607044749">עיצוב גרפי</translation>
 <translation id="8477551185774834963">‏זמן האחזור של ה-DNS חורג מעט מהסף המותר</translation>
+<translation id="8482376765267780829">צריך לבחור טקסט כדי לפשט</translation>
 <translation id="8483248364096924578">‏כתובת IP</translation>
 <translation id="8491311378305535241">‏לא ניתן להתחבר עם חומת אש לאתרי HTTPS מאפליקציות ל-Android</translation>
 <translation id="8495070016475833911">לבד</translation>
@@ -1679,6 +1689,7 @@
 <translation id="9082718469794970195">שימוש בסרטון הזה</translation>
 <translation id="9087578468327036362">דיווח על השאילתה הזו</translation>
 <translation id="9088306295921699330">שימוש נוכחי</translation>
+<translation id="9088994563996376283">פישוט</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">מידע נוסף על תאריך האיפוס</translation>
 <translation id="9100765901046053179">הגדרות מתקדמות</translation>

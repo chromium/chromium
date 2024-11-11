@@ -29,6 +29,7 @@
 <translation id="1161762950103988776">Lumaktaw</translation>
 <translation id="1164857107703583584">Magagamit ang mga jump command para mahusay na mag-navigate sa isang web page.</translation>
 <translation id="1175914831232945926">Mga Digit</translation>
+<translation id="1186712907912748007">Kasalukuyang isinasagawa ang pag-drag at pag-drop. <ph name="GESTURE" /> para tapusin. Pansamantalang hindi available ang iba pang galaw.</translation>
 <translation id="1188858454923323853">complementary</translation>
 <translation id="1189258430971676908">Lugar ng pagsasanay: Mga drop-down na listahan</translation>
 <translation id="1195238899008218998">Afterword</translation>
@@ -210,6 +211,7 @@
 <translation id="2347456970887948350">Isang link</translation>
 <translation id="2363753371702255035">bullet</translation>
 <translation id="2365384324219615024">Puwede mo ring pindutin ang Enter para mag-activate ng mga item. Halimbawa, magagamit ang Enter para magsumite ng text sa isang form. Para magpatuloy, pindutin ang Enter.</translation>
+<translation id="2371402123699727805">Aktibo ang dictation. <ph name="GESTURE" /> para huminto. Pansamantalang hindi available ang iba pang galaw.</translation>
 <translation id="2381733276052567791">I-toggle pa-on o pa-off ang pananalita</translation>
 <translation id="2390264819538553347">Upang magpatuloy, pindutin ang enter; upang bumalik, pindutin ang backspace.</translation>
 <translation id="2398579267367951220">Mag-type para maghanap sa page. Pindutin ang enter para pumunta sa resulta, pataas o pababang arrow para i-browse ang mga resulta, patuloy na mag-type para baguhin ang iyong paghahanap, o lumabas para kanselahin.</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">Walang nakaraang heading sa antas 3</translation>
 <translation id="3887399638190992181">Mahahalagang key</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">Na-pause ang pagkontrol gamit ang mukha. <ph name="GESTURE" /> para magpatuloy. Pansamantalang hindi available ang iba pang galaw.</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">Nakaraang heading sa antas 6</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">Walang susunod na heading sa antas 1</translation>
 <translation id="5455441614648621694">Complementary</translation>
 <translation id="5462510922370980473">Listahan ng page</translation>
+<translation id="5489460663499094917">Aktibo ang scroll mode. <ph name="GESTURE" /> para lumabas. Pansamantalang hindi available ang iba pang galaw.</translation>
 <translation id="5495517933067991341">Mahahalagang Key: Shift</translation>
 <translation id="549602578321198708">Salita</translation>
 <translation id="5513242761114685513">Menu ng konteksto</translation>

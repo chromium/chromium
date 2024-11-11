@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Notiek attēlu izveide…</translation>
 <translation id="1116694919640316211">Par</translation>
 <translation id="1118572504348554005">Mēs varam kopīgot šajā veidlapā sniegtās atsauksmes ar saviem partneriem, lai novērstu kļūdas un citas problēmas, par kurām esat ziņojis. Neietveriet sensitīvu informāciju, piemēram, paroles.</translation>
+<translation id="1119403468619527527">Pārāk maz vārdu, lai vienkāršotu.</translation>
 <translation id="1119447706177454957">Iekšēja kļūda</translation>
 <translation id="1124772482545689468">Lietotājs</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Nevar pārbaudīt ierīci. Lai pārbaudītu, pārejiet klēpjdatora režīmā.</translation>
 <translation id="3916998944874125962">izveidot ekrānuzņēmumu</translation>
 <translation id="3923184630988645767">Datu lietojums</translation>
+<translation id="3924445055519423964">Lai izveidotu tīmekļa lapas vai PDF faila kopsavilkumu, noklikšķiniet šeit.</translation>
 <translation id="3932043219784172185">Nav pievienota neviena ierīce</translation>
 <translation id="3934185438132762746">Nav piešķirta vadīkla: <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Neizdevās atrisināt saimniekdatora nosaukumu</translation>
@@ -814,6 +816,7 @@
 <translation id="4988526792673242964">Lapas</translation>
 <translation id="4989542687859782284">Nav pieejami</translation>
 <translation id="4999333166442584738">Paslēpt pārskatu</translation>
+<translation id="5005695757087124131">Lai vienkāršotu atlasīto tekstu, noklikšķiniet šeit.</translation>
 <translation id="500920857929044050">Apturēt pārbaudi</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Motīva krāsa</translation>
@@ -1334,6 +1337,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="7405493795721832710">Ierīce <ph name="DEVICE_NAME" /> ir gatava atjaunināšanai</translation>
 <translation id="741244894080940828">izteikšana citās mērvienībās</translation>
 <translation id="7415801143053185905">Ļoti liels HTTP latentums</translation>
+<translation id="7418738250896500352">Pārāk daudz vārdu, lai vienkāršotu.</translation>
 <translation id="7425037327577270384">Palīdzība rakstīšanā</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Nevar atspējot vai noņemt šo APN. Iespējotie APN (“<ph name="ATTACH" />”) ir jāatspējo vai jānoņem.</translation>
@@ -1550,6 +1554,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8476942730579767658">Logi un darbvietas</translation>
 <translation id="8477536061607044749">grafiskais dizains</translation>
 <translation id="8477551185774834963">DNS latentums nedaudz pārsniedz pieļaujamo slieksni</translation>
+<translation id="8482376765267780829">Atlasiet tekstu, ko vienkāršot.</translation>
 <translation id="8483248364096924578">IP adrese</translation>
 <translation id="8491311378305535241">Nevar izveidot savienojumu ar HTTP vietnēm no Android lietotnēm, ja ir iespējots ugunsmūris</translation>
 <translation id="8495070016475833911">filcs</translation>
@@ -1679,6 +1684,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="9082718469794970195">Izmantot šo videoklipu</translation>
 <translation id="9087578468327036362">Ziņot par šo vaicājumu</translation>
 <translation id="9088306295921699330">Pašreizējais lietojums</translation>
+<translation id="9088994563996376283">Vienkāršot</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Plašāka informācija par atiestatīšanas datumu</translation>
 <translation id="9100765901046053179">Papildu iestatījumi</translation>

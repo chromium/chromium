@@ -170,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða í eigu <ph name="RWS_OWNER" /> sem geta séð virkni þína í hópnum}one{<ph name="RWS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða í eigu <ph name="RWS_OWNER" /> sem geta séð virkni þína í hópnum}other{<ph name="RWS_MEMBERS_COUNT" /> vefsvæði í hópi vefsvæða í eigu <ph name="RWS_OWNER" /> sem geta séð virkni þína í hópnum}}</translation>
 <translation id="3697164069658504920">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota USB-tæki. Þegar slökkt er á þessu geta vefsvæði ekki notað USB-tæki.</translation>
 <translation id="3707034683772193706">Vefsvæði sem þú heimsækir getur vistað lítið magn upplýsinga í Chrome, aðallega til að staðfesta að þú sért raunverulegur notandi</translation>
+<translation id="3709818294139939629">Aðgangur vefsvæðisins að skránni var fjarlægður</translation>
 <translation id="3721953990244350188">Hunsa og sýna næstu tiltæku aðgerð</translation>
 <translation id="3744111561329211289">Samstilling í bakgrunni</translation>
 <translation id="3763247130972274048">Ýttu tvisvar vinstra eða hægra megin á myndskeið til að fara fram um 10 sekúndur</translation>
@@ -432,6 +433,7 @@
 <translation id="7425915948813553151">Dökkt þema fyrir vefsvæði</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Þegar kveikt er á þessu geta vefsvæði sýnt innskráningarbeiðnir. Þegar slökkt er á þessu geta vefsvæði ekki sýnt innskráningarbeiðnir.</translation>
+<translation id="7553211568594248088">Loka miðstöðvaleit</translation>
 <translation id="7554752735887601236">Vefsvæði er að nota hljóðnemann</translation>
 <translation id="7561196759112975576">Alltaf</translation>
 <translation id="757524316907819857">Banna síðum að spila varið efni</translation>
@@ -440,7 +442,6 @@
 <translation id="7649070708921625228">Hjálp</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7667547420449112975">Galdrakarlinn í Oz</translation>
-<translation id="7684642910516280563">Ekki leyfa vefsvæði að nota fótspor þriðju aðila</translation>
 <translation id="7688240020069572972">Fela ábendingarspjald Chrome</translation>
 <translation id="7719367874908701697">Síðuaðdráttur</translation>
 <translation id="7759147511335618829">Stjórn og endurforritun MIDI-tækja</translation>

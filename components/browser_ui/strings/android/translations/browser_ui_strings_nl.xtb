@@ -170,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site in de groep sites van <ph name="RWS_OWNER" /> die je activiteit in de groep kunnen bekijken}other{<ph name="RWS_MEMBERS_COUNT" /> sites in de groep sites van <ph name="RWS_OWNER" /> die je activiteit in de groep kunnen bekijken}}</translation>
 <translation id="3697164069658504920">Als deze optie aanstaat, kunnen sites vragen of ze USB-apparaten mogen gebruiken. Staat de optie uit, dan kunnen sites geen USB-apparaten gebruiken.</translation>
 <translation id="3707034683772193706">Een site die je bezoekt, kan een kleine hoeveelheid informatie opslaan in Chrome, voornamelijk om te bevestigen dat je geen bot bent</translation>
+<translation id="3709818294139939629">Toegang van site tot bestand ingetrokken</translation>
 <translation id="3721953990244350188">Sluiten en volgende beschikbare actie tonen</translation>
 <translation id="3744111561329211289">Synchronisatie op de achtergrond</translation>
 <translation id="3763247130972274048">Dubbeltik links of rechts in de video om tien seconden te verspringen</translation>
@@ -432,6 +433,7 @@
 <translation id="7425915948813553151">Donker thema voor sites</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Als deze optie aanstaat, kunnen sites inlogprompts tonen. Staat de optie uit, dan kunnen sites geen inlogprompts tonen.</translation>
+<translation id="7553211568594248088">Hub-zoekfunctie sluiten</translation>
 <translation id="7554752735887601236">Een site gebruikt de microfoon</translation>
 <translation id="7561196759112975576">Altijd</translation>
 <translation id="757524316907819857">Blokkeren dat sites beschermde content kunnen afspelen</translation>
@@ -440,7 +442,6 @@
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7667547420449112975">De tovenaar van Oz</translation>
-<translation id="7684642910516280563">Niet toestaan dat een site cookies van derden gebruikt</translation>
 <translation id="7688240020069572972">Kaart met Chrome-tips verbergen</translation>
 <translation id="7719367874908701697">Zoomen op pagina</translation>
 <translation id="7759147511335618829">MIDI-apparaatbediening en -herprogrammering</translation>

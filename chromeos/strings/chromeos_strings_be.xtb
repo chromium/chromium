@@ -307,6 +307,7 @@
 <translation id="2308243864813041101">Каб працягнуць абнаўленне, адключыце кабель USB ад прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2320295602967756579">Уключыць светлую тэму</translation>
 <translation id="2323506179655536734">ПРАПУШЧАНА</translation>
+<translation id="2323755382216917952">Гэта абнаўленне патрабуе, каб вы перазапусцілі камп’ютар і завяршылі ўсталяванне. Для завяршэння абнаўлення можа спатрэбіцца некалькі хвілін. Падчас абнаўлення ўбудаванага ПЗ не адключайце камп’ютар ад сеткі сілкавання і не завяршайце яго працу.</translation>
 <translation id="2324354238778375592">Зрабіць акно плаваючым</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Выдатны (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -450,6 +451,7 @@
 <translation id="3178532070248519384">авангард</translation>
 <translation id="3182676044300231689">Увядзіце запыт, напрыклад: "Зрабі тон больш упэўненым"</translation>
 <translation id="3188257591659621405">Мае файлы</translation>
+<translation id="3188931456353313123">Гэта абнаўленне пастаўлена вытворцам прылады і не было праверана Google.</translation>
 <translation id="319101249942218879">Відарыс аватара зменены</translation>
 <translation id="3192947282887913208">Аўдыяфайлы</translation>
 <translation id="3199982728237701504">Прылада для падачы дакументаў (абодвума бакамі)</translation>
@@ -508,6 +510,7 @@
 <translation id="3488065109653206955">Часткова актывавана</translation>
 <translation id="3492882532495507361">Офіс, стыль – <ph name="OFFICE_STYLE" />, тон – <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Выкарыстанне трафіка вымяраецца Chromebook. Атрыманае значэнне можа адрознівацца ад даных пастаўшчыка інтэрнэт-паслуг.</translation>
+<translation id="349570724365779960">Навучэнцы падключаны да праграмы "Школьныя інструменты"</translation>
 <translation id="3502426834823382181">паглядзець усе праграмы</translation>
 <translation id="3510890413042482857">Адпраўляць <ph name="BEGIN_LINK1" />даныя адсочвання прадукцыйнасці<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Абнаўленне Chrome OS</translation>
@@ -757,6 +760,7 @@
 <translation id="473775607612524610">Абнавіць</translation>
 <translation id="4744944742468440486">Інфармацыя, звязаная з вылучаным вамі фрагментам</translation>
 <translation id="4771607256327216405">клавіятура ярчэй</translation>
+<translation id="4771923071974529837">заўтра</translation>
 <translation id="4773299976671772492">Спынена</translation>
 <translation id="4778082030331381943">аметыст</translation>
 <translation id="4782311465517282004">Атрымлівайце азначэнні, пераклады або пераводзьце адзінкі вымярэння: для гэтага вам трэба дакрануцца да тэксту і ўтрымліваць палец або націснуць на тэкст правай кнопкай мышы.</translation>
@@ -820,6 +824,7 @@
 <translation id="500920857929044050">Спыніць праверку</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Колер тэмы</translation>
+<translation id="5037240652947866174">сёння</translation>
 <translation id="5038292761217083259">рознакаляровая падсветка клавіятуры</translation>
 <translation id="5039804452771397117">Дазволіць</translation>
 <translation id="5049856988445523908">SIM-карта заблакіравана (<ph name="LOCK_TYPE" />)</translation>

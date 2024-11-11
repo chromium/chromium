@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Skep tans prente ...</translation>
 <translation id="1116694919640316211">Meer oor</translation>
 <translation id="1118572504348554005">Ons sal terugvoer wat deur hierdie vorm gedeel is dalk met ons vennote deel om foute en ander kwessies wat jy by ons aangee, te foutspoor Moenie sensitiewe inligting soos wagwoorde insluit nie.</translation>
+<translation id="1119403468619527527">Te min woorde om te vereenvoudig</translation>
 <translation id="1119447706177454957">Interne fout</translation>
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Kan nie toestel toets nie. Skakel oor na skootrekenaarmodus om te toets.</translation>
 <translation id="3916998944874125962">neem skermskoot</translation>
 <translation id="3923184630988645767">Datagebruik</translation>
+<translation id="3924445055519423964">Klik om die webbladsy/PDF-lêer op te som</translation>
 <translation id="3932043219784172185">Geen toestel is gekoppel nie</translation>
 <translation id="3934185438132762746">Ontoegewysde <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Kon nie gasheer bepaal nie</translation>
@@ -814,6 +816,7 @@
 <translation id="4988526792673242964">Bladsye</translation>
 <translation id="4989542687859782284">Onbeskikbaar</translation>
 <translation id="4999333166442584738">Versteek verslag</translation>
+<translation id="5005695757087124131">Klik om die gekose teks te vereenvoudig</translation>
 <translation id="500920857929044050">Stop toets</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Temakleur</translation>
@@ -1334,6 +1337,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> is gereed vir opdatering</translation>
 <translation id="741244894080940828">omskakeling</translation>
 <translation id="7415801143053185905">Baie hoë HTTP-traagheid</translation>
+<translation id="7418738250896500352">Te veel woorde om te vereenvoudig</translation>
 <translation id="7425037327577270384">Help my skryf</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Kan nie hierdie APN deaktiveer of verwyder nie. Maak seker dat geaktiveerde APN’e <ph name="ATTACH" /> gedeaktiveer of verwyder word.</translation>
@@ -1550,6 +1554,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8476942730579767658">Vensters en lessenaars</translation>
 <translation id="8477536061607044749">grafiese ontwerp</translation>
 <translation id="8477551185774834963">DNS-traagheid is effens bo toelaatbare drempel</translation>
+<translation id="8482376765267780829">Kies teks om te vereenvoudig</translation>
 <translation id="8483248364096924578">IP-adres</translation>
 <translation id="8491311378305535241">Kan nie deur brandmuur van Android-programme af aan HTTP-webwerwe koppel nie</translation>
 <translation id="8495070016475833911">vilt</translation>
@@ -1679,6 +1684,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="9082718469794970195">Gebruik hierdie video</translation>
 <translation id="9087578468327036362">Gee hierdie navraag aan</translation>
 <translation id="9088306295921699330">Huidige gebruik</translation>
+<translation id="9088994563996376283">Vereenvoudig</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Meer inligting oor terugsteldatum</translation>
 <translation id="9100765901046053179">Gevorderde instellings</translation>

@@ -29,6 +29,7 @@
 <translation id="1161762950103988776">Keçid</translation>
 <translation id="1164857107703583584">Veb səhifədə səmərəli qaydada naviqasiya etmək üçün keçid əmrlərindən istifadə etmək mümkündür.</translation>
 <translation id="1175914831232945926">Rəqəmlər</translation>
+<translation id="1186712907912748007">Sürüşdürüb buraxmaq funksiyası icra olunur. Sonlandırmaq üçün <ph name="GESTURE" />. Digər jestlər müvəqqəti olaraq əlçatan deyil.</translation>
 <translation id="1188858454923323853">əlavə</translation>
 <translation id="1189258430971676908">Təcrübə sahəsi: Aşağıya açılan siyahılar</translation>
 <translation id="1195238899008218998">Son söz</translation>
@@ -210,6 +211,7 @@
 <translation id="2347456970887948350">Link</translation>
 <translation id="2363753371702255035">marker</translation>
 <translation id="2365384324219615024">Elementləri aktivləşdirmək üçün Enter düyməsinə də basa bilərsiniz. Məsələn, formada mətn təqdim etmək üçün Enter düyməsindən istifadə edilə bilər. Davam etmək üçün Enter düyməsinə basın.</translation>
+<translation id="2371402123699727805">Diktə aktivdir. Dayandırmaq üçün <ph name="GESTURE" />. Digər jestlər müvəqqəti olaraq əlçatan deyil.</translation>
 <translation id="2381733276052567791">Nitqi aktiv və ya deaktiv edin</translation>
 <translation id="2390264819538553347">Davam etmək üçün daxil etmək, geri qayıtmaq üçün geri düyməsinə basın.</translation>
 <translation id="2398579267367951220">Səhifədə axtarın. Nəticəyə keçmək üçün enter düyməsinə basın, nəticələrə baxmaq üçün yuxarı və ya aşağı oxa basın, axtarışı dəyişmək üçün yazmağa davam edin və ya ləğv etmək üçün escape düyməsinə basın.</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">Öncəki 3-cü səviyyə başlığı yoxdur</translation>
 <translation id="3887399638190992181">Vacib düymələr</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">Mimika ilə idarəetmə durduruldu. Bərpa etmək üçün <ph name="GESTURE" />. Digər jestlər müvəqqəti olaraq əlçatan deyil.</translation>
 <translation id="3897092660631435901">Menyu</translation>
 <translation id="3907138069015388678">tor siyahı</translation>
 <translation id="3909320334364316587">Öncəki 6-cı başlıq səviyyəsi</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">Sonrakı 1-ci səviyyə başlığı yoxdur</translation>
 <translation id="5455441614648621694">Əlavə</translation>
 <translation id="5462510922370980473">Səhifə siyahısı</translation>
+<translation id="5489460663499094917">Sürüşdürmə rejimi aktivdir. Çıxmaq üçün <ph name="GESTURE" />. Digər jestlər müvəqqəti olaraq əlçatan deyil.</translation>
 <translation id="5495517933067991341">Vacib Düymələr: Shift</translation>
 <translation id="549602578321198708">Söz</translation>
 <translation id="5513242761114685513">Məzmun menyusu</translation>

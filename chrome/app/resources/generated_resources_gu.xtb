@@ -803,7 +803,6 @@
 <translation id="1561331397460162942">આમ કરવાથી સિસ્ટમ સર્વિસને તથા લોકેશનની પરવાનગી ધરાવતી ઍપ અને વેબસાઇટને લોકેશનના ઍક્સેસની મંજૂરી મળે છે</translation>
 <translation id="1562119309884184621">આ સંપર્કને ઉમેરવાથી, આગલી વખતે તેઓ શેર કરતી વખતે સિસ્ટમ આ યાદ રાખી શકશે</translation>
 <translation id="1563137369682381456">સમય સમાપ્તિની તારીખ</translation>
-<translation id="1563702743503072935">તમે સાઇન ઇન કરેલું હશે ત્યારે તમારા Google એકાઉન્ટમાં રહેલા પાસવર્ડ આ ડિવાઇસ પર પણ ઉપલબ્ધ થશે</translation>
 <translation id="1566049601598938765">વેબસાઇટ</translation>
 <translation id="15662109988763471">પસંદ કરેલું પ્રિન્ટર ઉપલબ્ધ નથી અથવા યોગ્ય રીતે ઇન્સ્ટૉલ કરેલું નથી. તમારું પ્રિન્ટર ચેક કરો અથવા બીજું પ્રિન્ટર પસંદ કરી જુઓ.</translation>
 <translation id="1566329594234563241">જ્યારે નિષ્ક્રિય અને પ્લગ ઇન કરેલું હોય</translation>
@@ -1544,6 +1543,7 @@
 <translation id="2062354623176996748">છૂપી વિન્ડો વડે, તમારો બ્રાઉઝિંગ ઇતિહાસ સાચવ્યા વિના વેબનો ઉપયોગ કરો</translation>
 <translation id="206308717637808771">તમે બધી વિન્ડો બંધ કરો ત્યારે ડેટા ડિલીટ કરો. ડેટા પર તમે જોઈ રહ્યા હો તે સાઇટને સમાન જ પ્રક્રિયા કરવામાં આવે છે</translation>
 <translation id="2065405795449409761">Chrome, સ્વચલિત પરીક્ષણ સોફ્ટવેર દ્વારા નિયંત્રિત કરવામાં આવી રહ્યું છે.</translation>
+<translation id="2066700471214517561">બીમફૉર્મિંગ માઇક, જેથી Chromebookનો ઉપયોગ કરનારી વ્યક્તિને સ્પષ્ટ રીતે સાંભળી શકાય.</translation>
 <translation id="2067591192939433190">"<ph name="VENDOR_NAME" />" તરફથી</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> દ્વારા <ph name="PRINTER_NAME" /> પર પ્રિન્ટ કરવાનું સમાપ્ત કરવામાં આવ્યું</translation>
 <translation id="2071393345806050157">કોઇ સ્થાનિક લૉગ ફાઇલ નથી.</translation>
@@ -2302,6 +2302,7 @@
 <translation id="2580889980133367162">એકથી વધુ ફાઇલો ડાઉનલોડ કરવા માટે હંમેશાં <ph name="HOST" />ને મંજૂરી આપો</translation>
 <translation id="258095186877893873">લાંબો</translation>
 <translation id="2581455244799175627">ત્રીજા પક્ષની કુકીને મંજૂરી આપવા વિશે વધુ</translation>
+<translation id="2581786034175502848">તેને ફરી ચાલુ કરવા માટે, 5 વાર Shift કી દબાવો</translation>
 <translation id="2581992808349413349">DNS (ડોમેન નેમ સિસ્ટમ)માં કોઈ સાઇટનું IP ઍડ્રેસ શોધવા માટે, સુરક્ષિત કનેક્શનનો ઉપયોગ કરો. આ <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> પર મેનેજ કરવામાં આવતા સેવા પ્રદાતાનો ઉપયોગ કરે છે</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (પ્લૅટફૉર્મ <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Kerberosની ટિકિટ મેળવી શકાઈ નથી. ફરી પ્રયાસ કરો અથવા તમારી સંસ્થાના ડિવાઇસ વ્યવસ્થાપકનો સંપર્ક કરો. (ભૂલનો કોડ <ph name="ERROR_CODE" />).</translation>
@@ -3122,7 +3123,6 @@
 <translation id="3177909033752230686">પેજની ભાષા:</translation>
 <translation id="3177914167275935955">તમારા ડિવાઇસ માટે Chrome Education Upgrade શામેલ છે, પરંતુ તમારું વપરાશકર્તાનું નામ કોઈ Google for Education એકાઉન્ટ સાથે સંકળાયેલું નથી. કૃપા કરીને કોઈ ગૌણ ડિવાઇસ પર g.co/workspace/edusignupની મુલાકાત લઈને એક Google for Education એકાઉન્ટ બનાવો.</translation>
 <translation id="3179982752812949580">ટેક્સ્ટ ફોન્ટ</translation>
-<translation id="3180175986308160674">આ પેજ વિશે પ્રશ્નો જનરેટ કરી રહ્યાં છીએ…</translation>
 <translation id="3180284704187420717">સિંક સુવિધા વડે તમારા બુકમાર્ક, પાસવર્ડ અને અન્ય બાબતો સાચવો</translation>
 <translation id="3180990259147710757">જડબું ડાબે ખસેડો</translation>
 <translation id="3181954750937456830">Safe Browsing (તમારું અને તમારા ડિવાઇસનું જોખમી સાઇટથી રક્ષણ કરે છે)</translation>
@@ -3926,7 +3926,6 @@
 <translation id="3748424433435232460">આ એકાઉન્ટ માટેનો પાસવર્ડ પહેલેથી જ આ ડિવાઇસમાં સાચવવામાં આવ્યો છે</translation>
 <translation id="3748706263662799310">બગની જાણ કરો</translation>
 <translation id="3749724428455457489">સાઇટ દ્વારા સૂચવવામાં આવેલી જાહેરાતો વિશે વધુ જાણો</translation>
-<translation id="3750562496035670393">Chrome દ્વારા તમારો પાસવર્ડ આ ડિવાઇસમાં સાચવવામાં આવ્યો, પરંતુ તેને બદલે તમે તેને તમારા Google એકાઉન્ટમાં સાચવી શકો છો. પછી, જ્યારે તમે સાઇન ઇન થયા હો, ત્યારે તમારા Google એકાઉન્ટના બધા પાસવર્ડ પણ ઉપલબ્ધ રહેશે.</translation>
 <translation id="3752115502500640407"><ph name="WEBSITE" /> માટે તમારા પાસવર્ડની એક કૉપિ શેર કરો</translation>
 <translation id="3752253558646317685">ફિંગરપ્રિન્ટ સાચવવા માટે તમારા બાળકને તેમની આંગળી ઊંચકતા રહેવાનું જણાવો</translation>
 <translation id="3753033997400164841">એકવાર સ્ટોર કરો. ગમે ત્યાં ઉપયોગ કરો</translation>
@@ -4563,7 +4562,6 @@
 <translation id="4195378859392041564">તમારા માઉસ વડે કોઈપણ કી પર ક્લિક કરો, પછી કસ્ટમાઇઝ કરવા માટે કીબોર્ડની કી દબાવો</translation>
 <translation id="4195643157523330669">નવા ટૅબમાં ખોલો</translation>
 <translation id="4195814663415092787">તમે જ્યાંથી છોડેલું ત્યાંથી ચાલુ કરો</translation>
-<translation id="4196350776737072374">કોઈ પ્રશ્ન ઉપલબ્ધ નથી. "આ પેજનો સારાંશ આપો" અથવા તમારા પોતાના પ્રશ્ન જેવી વસ્તુઓ પૂછવાનો પ્રયાસ કરો.</translation>
 <translation id="4198268995694216131">વધારાની સાઇટ</translation>
 <translation id="4200609364258658652">વીડિયો ફ્રેમ કૉપિ કરો</translation>
 <translation id="4200689466366162458">કસ્ટમ શબ્દો</translation>
@@ -5151,6 +5149,7 @@
 <translation id="4627442949885028695">બીજા ઉપકરણમાંથી ચાલુ કરો</translation>
 <translation id="4628762811416793313">Linux કન્ટેનર સેટઅપ પૂર્ણ થયું નથી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="4629521233550547305"><ph name="PROFILE_NAME" /> પ્રોફાઇલ ખોલો</translation>
+<translation id="4631955550884380853">ફોકસમાંનો વૉઇસ</translation>
 <translation id="4632655012900268062">કાર્ડ કસ્ટમાઇઝ કરો</translation>
 <translation id="4633003931260532286">એક્સટેંશનને ન્યૂનતમ વર્ઝન "<ph name="IMPORT_VERSION" />" સાથે "<ph name="IMPORT_NAME" />"ની જરૂર પડે છે, પણ ફક્ત વર્ઝન "<ph name="INSTALLED_VERSION" />" જ ઇન્સ્ટૉલ કરેલું છે</translation>
 <translation id="4633757335284074492">Google ડ્રાઇવ પર બૅકઅપ લો. ડેટાને સરળતાથી પાછો મેળવો અથવા ડિવાઇસને કોઈપણ સમયે સ્વિચ કરો. આ બૅકઅપમાં ઍપનો ડેટા શામેલ છે. બૅકઅપને Google પર અપલોડ કરવામાં આવે છે અને તમારા બાળકના Google એકાઉન્ટ પાસવર્ડનો ઉપયોગ કરીને એન્ક્રિપ્ટ કરવામાં આવે છે.</translation>
@@ -6000,7 +5999,6 @@
 <translation id="5249624017678798539">ડાઉનલોડ પૂર્ણ થતા પહેલાં બ્રાઉઝર ક્રેશ થયું.</translation>
 <translation id="5249818097095743806">તમારી સિક્યુરિટી કીનો ઉપયોગ કરો</translation>
 <translation id="5250372599208556903">તમને જગ્યાિક કન્ટેન્ટ પૂરું પાડવા માટે <ph name="SEARCH_ENGINE_NAME" /> તમારી જગ્યાનો ઉપયોગ કરે છે. તમે તેને <ph name="SETTINGS_LINK" />માં બદલી શકો છો.</translation>
-<translation id="5252496130205799136">પાસવર્ડ સાચવવા અને ભરવા માટે તમારા Google એકાઉન્ટનો ઉપયોગ કરીએ?</translation>
 <translation id="5252653240322147470">PIN, <ph name="MAXIMUM" /> અંક કરતાં ઓછો હોવો આવશ્યક છે</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" />નો ઉપયોગ કરો</translation>
 <translation id="5254233580564156835">મેમરીનો વપરાશ: <ph name="MEMORY_USAGE" /></translation>
@@ -8178,7 +8176,6 @@ USB ડિવાઇસ</translation>
 <translation id="6833479554815567477">ગ્રૂપ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" />માંથી ટૅબને કાઢી નાખવામાં આવી</translation>
 <translation id="6833753236242482566">સંતુલિત (સુઝાવ આપવામાં આવે છે)</translation>
 <translation id="6835762382653651563">કૃપા કરીને તમારા <ph name="DEVICE_TYPE" /> ને અપડેટ કરવા માટે ઇન્ટરનેટથી કનેક્ટ કરો.</translation>
-<translation id="683630338945552556">તમારા Google એકાઉન્ટમાંના પાસવર્ડનો ઉપયોગ કરો અને તેને સાચવો</translation>
 <translation id="6838992358006915573">Magnifier ChromeVox ફોકસને ફૉલો કરે છે</translation>
 <translation id="6839225236531462745">પ્રમાણપત્ર કાઢી નાખવામાં ભૂલ</translation>
 <translation id="6839916869147598086">સાઇન-ઇન બદલાઈ ગયું છે</translation>

@@ -5157,7 +5157,6 @@ Esta política no tendrá ningún efecto si estableces la política <ph name="DE
 <translation id="4725801978265372736">Solicitar que el nombre del usuario local y el propietario del host de acceso remoto coincidan</translation>
 <translation id="4726228171190098009">No permitir que el dispositivo solicite usar powerwash</translation>
 <translation id="4726895359147376813">Asigna desde IDs persistentes hasta opciones de configuración de VM</translation>
-<translation id="4729091573952050200">Siempre usar la API de Translator</translation>
 <translation id="4732069502693984686">Habilitar la captura de pantalla automática de varias pantallas</translation>
 <translation id="4733471537137819387">Políticas relacionadas con la autenticación de HTTP integrada</translation>
 <translation id="473673197014866318">Si estableces esta política, se controlará la configuración de la administración de extensiones para <ph name="PRODUCT_NAME" />, incluido cualquier parámetro de configuración controlado por políticas existentes relacionadas con extensiones. Esta política sustituye a cualquier política heredada que se haya establecido.
@@ -10204,15 +10203,6 @@ Para obtener más información sobre las tecnologías heredadas, visita https://
 <translation id="8331479227794770304">Habilitar teclas de acción prolongada</translation>
 <translation id="8332822245414537447">Inhabilitar la verificación de uso de la clave RSA</translation>
 <translation id="8334685561819743286">Inhabilitar la autocorrección en el teclado físico cuando los usuarios escriben</translation>
-<translation id="8336819406993366823">Si estableces la política como <ph name="ENABLED_VALUE_NAME" />, se podrán usar las APIs de Prefixed Video-Specific Fullscreen (p.ej., Video.webkitEnterFullscreen()) desde JavaScript.
-
-Si estableces la política como <ph name="DISABLED_VALUE_NAME" />, no se usarán en JavaScript las APIs de Prefixed Video-Specific Fullscreen y solo se quedarán las APIs de pantalla completa estándar (p.ej., Element.requestFullscreen()).
-
-Si estableces la política en <ph name="RUNTIME_ENABLED_VALUE_NAME" /> permitirá que la marca de función habilitada para el tiempo de ejecución PrefixedFullscreenVideo determine si las APIs de Prefixed Video-Specific Fullscreen están disponibles para los sitios web.
-
-Si no estableces la política, el comportamiento predeterminado será <ph name="RUNTIME_ENABLED_VALUE_NAME" />.
-
-Nota: Esta política es una solución temporal para ayudar a dejar de usar las APIs de Webkit-Prefixed Fullscreen. Se prevé quitarla en M130 o en las versiones siguientes.</translation>
 <translation id="8337114537412769126">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> especificará los parámetros durante la búsqueda de sugerencias con POST. Se compone de pares de nombre y valor separados por comas. Si un valor es un parámetro de plantilla, como <ph name="SEARCH_TERM_MARKER" />, se reemplazará por datos de términos de búsqueda reales.
 
       Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />, se enviarán las solicitudes de búsqueda de sugerencias con el método GET.</translation>

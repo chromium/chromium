@@ -806,7 +806,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1561331397460162942">Esto permite que las aplicaciones, los sitios web con el permiso de ubicación y los servicios del sistema puedan acceder a la ubicación</translation>
 <translation id="1562119309884184621">Si añades este contacto, se recordará la próxima vez que comparta archivos</translation>
 <translation id="1563137369682381456">Fecha de caducidad</translation>
-<translation id="1563702743503072935">Las contraseñas de tu cuenta de Google también estarán disponibles en este dispositivo cuando hayas iniciado sesión</translation>
 <translation id="1566049601598938765">Sitio web</translation>
 <translation id="15662109988763471">La impresora seleccionada no se encuentra disponible o no se ha instalado correctamente. Comprueba tu impresora o prueba a seleccionar otra.</translation>
 <translation id="1566329594234563241">Mientras está inactivo y enchufado</translation>
@@ -3134,7 +3133,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3177909033752230686">Idioma de la página:</translation>
 <translation id="3177914167275935955">Tu dispositivo incluye una Licencia de Chrome Education, pero tu nombre de usuario no está asociado a una cuenta de Google for Education. Crea una cuenta de Google for Education en g.co/workspace/edusignup con un dispositivo secundario.</translation>
 <translation id="3179982752812949580">Fuente del texto</translation>
-<translation id="3180175986308160674">Generando preguntas sobre esta página…</translation>
 <translation id="3180284704187420717">Guarda tus marcadores, contraseñas y más con la sincronización</translation>
 <translation id="3180990259147710757">Mover la mandíbula hacia la izquierda</translation>
 <translation id="3181954750937456830">Navegación segura (te protege a ti y a tu dispositivo frente a sitios peligrosos)</translation>
@@ -3942,7 +3940,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3748424433435232460">Ya se ha guardado una contraseña para esta cuenta en este dispositivo</translation>
 <translation id="3748706263662799310">Notifica un error</translation>
 <translation id="3749724428455457489">Más información sobre los anuncios sugeridos por sitios</translation>
-<translation id="3750562496035670393">Chrome ha guardado tu contraseña en este dispositivo, pero puedes guardarla en tu cuenta de Google. Así, todas las contraseñas guardadas en tu cuenta de Google estarán disponibles si inicias sesión.</translation>
 <translation id="3752115502500640407">Compartir una copia de tu contraseña de <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Pídele a tu hijo/a que siga levantando el dedo para guardar la huella digital.</translation>
 <translation id="3753033997400164841">Guárdalas una vez. Úsalas en todos sitios.</translation>
@@ -4582,7 +4579,6 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="4195378859392041564">Haz clic en cualquier tecla con el ratón y, a continuación, pulsa una tecla del teclado para personalizarla</translation>
 <translation id="4195643157523330669">Abrir en una pestaña nueva</translation>
 <translation id="4195814663415092787">Continúa por donde lo dejaste</translation>
-<translation id="4196350776737072374">No hay preguntas disponibles. Prueba a pedir cosas como "resume esta página" o haz tu propia pregunta.</translation>
 <translation id="4198268995694216131">Más sitios</translation>
 <translation id="4200609364258658652">C&amp;opiar fotograma</translation>
 <translation id="4200689466366162458">Palabras personalizadas</translation>
@@ -6019,7 +6015,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5249624017678798539">Se ha producido un fallo en el navegador antes de que se completara la descarga.</translation>
 <translation id="5249818097095743806">Usar tu llave de seguridad</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> utiliza tu ubicación para ofrecerte contenido local. Puedes cambiar esta opción en <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5252496130205799136">¿Quieres usar tu cuenta de Google para guardar y rellenar contraseñas?</translation>
 <translation id="5252653240322147470">El PIN debe tener menos de <ph name="MAXIMUM" /> dígitos</translation>
 <translation id="5253554634804500860">Usar <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Uso de memoria: <ph name="MEMORY_USAGE" /></translation>
@@ -8196,7 +8191,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6833479554815567477">Pestaña quitada del grupo <ph name="GROUP_NAME" /> (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="6833753236242482566">Equilibrado (recomendado)</translation>
 <translation id="6835762382653651563">Conéctate a Internet para actualizar tu <ph name="DEVICE_TYPE" />.</translation>
-<translation id="683630338945552556">Usar y guardar contraseñas en tu cuenta de Google</translation>
 <translation id="6838992358006915573">La lupa afecta al mismo contenido que ChromeVox</translation>
 <translation id="6839225236531462745">Error de eliminación de certificado</translation>
 <translation id="6839916869147598086">El proceso de inicio de sesión ha cambiado</translation>

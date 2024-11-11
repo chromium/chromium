@@ -20,6 +20,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1185134272377778587">Apie „Chromium“</translation>
 <translation id="1188705220418984327">Jei norite bendrinti langą, sistemos nuostatose leiskite įrašyti „Chromium“ ekrano vaizdą.</translation>
 <translation id="1203500561924088507">Dėkojame už diegimą. Turite iš naujo paleisti naršyklę, prieš naudodami „<ph name="BUNDLE_NAME" />“.</translation>
+<translation id="1235768345431527125">Galite prisijungti, kad gautumėte savo duomenis, arba naudoti „Chromium“ be paskyros</translation>
 <translation id="1262876892872089030">Kol šis skirtukas buvo neaktyvus, atmintis buvo atlaisvinta, kad „Chromium“ veiktų sparčiai. Galite pasirinkti visada išskirti šią svetainę, kad būtų aktyvi.</translation>
 <translation id="1265577313130862557">„Chromium“ užblokavo šį atsisiuntimą, nes failas pavojingas</translation>
 <translation id="126567311906253476">Prisijungdami prie „Google“ paslaugų, pvz., „Gmail“ ar „YouTube“, naudodami <ph name="USER_EMAIL" />, galite automatiškai prisijungti prie „Chromium“ naudodami tą pačią paskyrą</translation>
@@ -329,6 +330,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="549669000822060376">Palaukite, kol „Chromium“ įdiegs naujausius sistemos naujinius.</translation>
 <translation id="5496810170689441661">„Chromium“ bando redaguoti slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="5527463683072221100">Atidaryti PDF failus naudojant „Chromium“</translation>
+<translation id="5568136785038042132">Jei norite naudoti plėtinius visuose kompiuteriuose, prisijunkite prie „Chromium“</translation>
 <translation id="5575418445468216473">Slaptažodžiai ir kiti „Chromium“ duomenys išsaugomi „Google“ paskyroje ir bus pašalinti iš šio įrenginio. Jei ateityje norėsite juos naudoti, vėl prisijunkite prie „Chromium“.</translation>
 <translation id="5579324208890605088">Paleisties klaida: diegimo programą paleiskite kaip įprastas naudotojas, o ne administratorius.</translation>
 <translation id="5596627076506792578">Daugiau parinkčių</translation>

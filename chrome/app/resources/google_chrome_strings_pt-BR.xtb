@@ -299,6 +299,7 @@
 <translation id="4567424176335768812">Você está conectado como <ph name="USER_EMAIL_ADDRESS" />. Agora você pode acessar seus favoritos, histórico e outras configurações em todos os seus dispositivos conectados.</translation>
 <translation id="4571503333518166079">Acessar as configurações de notificação do Chrome</translation>
 <translation id="4575717501879784448">O Chrome pode deixar essas guias inativas para melhorar sua experiência de navegação e liberar recursos.</translation>
+<translation id="4595162648538023956">Você pode fazer login para acessar seus dados ou usar o Chrome sem uma conta</translation>
 <translation id="459622048091363950">Assim que o Chrome tiver acesso, os sites poderão solicitar acesso.</translation>
 <translation id="4600710005438004015">Não foi possível atualizar o Chrome para a versão mais recente. Com isso, você está perdendo novos recursos e correções de segurança.</translation>
 <translation id="4601439950572737842">Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os dados do Chrome na sua Conta do Google.</translation>
@@ -343,6 +344,7 @@
 <translation id="5163087008893166964">Conheça o Chrome. Nova janela do navegador aberta</translation>
 <translation id="5166439563123238795">O Chrome precisa de permissão para rastrear suas mãos</translation>
 <translation id="5170938038195470297">Seu perfil não pode ser utilizado pois foi criado em uma versão mais recente do Google Chrome. Alguns recursos podem não estar disponíveis. Especifique um diretório de perfil diferente ou utilize uma versão mais recente do Google Chrome.</translation>
+<translation id="5174969993834422967">Você geralmente bloqueia notificações. Para permitir que este site envie notificações, clique no ícone de notificação no canto direito da barra de local.</translation>
 <translation id="5201744974236816379">Atualização do Chrome</translation>
 <translation id="521447420733633466">Se você compartilha um dispositivo, seus amigos e familiares podem navegar separadamente e configurar o Chrome da maneira que quiserem</translation>
 <translation id="5234764350956374838">Dispensar</translation>
@@ -445,6 +447,7 @@
 <translation id="6497147134301593682">O Chrome foi fechado automaticamente</translation>
 <translation id="6506909944137591434">O Chrome precisa da permissão de acesso à câmera para criar um mapa 3D do ambiente</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" />: Google Chrome Dev</translation>
+<translation id="6515549163407364048">Para acessar suas extensões em todos os seus computadores, faça login no Chrome</translation>
 <translation id="6520670145826811516">Para usar a localização, permita o acesso ao Chrome nas <ph name="BEGIN_LINK" />configurações do sistema<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">No Gerenciador de senhas do Google deste dispositivo</translation>
 <translation id="6600016381025017075">Pesquise o que quiser nesta página</translation>

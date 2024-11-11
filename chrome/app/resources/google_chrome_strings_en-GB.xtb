@@ -303,6 +303,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4567424176335768812">You're signed in as <ph name="USER_EMAIL_ADDRESS" />. Now you can access your bookmarks, history and other settings on all your signed in devices.</translation>
 <translation id="4571503333518166079">Go to Chrome notification settings</translation>
 <translation id="4575717501879784448">Chrome can make these tabs inactive to improve your browsing experience and free up resources.</translation>
+<translation id="4595162648538023956">You can sign in to get your stuff, or use Chrome without an account</translation>
 <translation id="459622048091363950">Once Chrome has access, websites will be able to ask you for access.</translation>
 <translation id="4600710005438004015">Chrome couldn't update to the latest version, so you're missing out on new features and security fixes.</translation>
 <translation id="4601439950572737842">Your data is encrypted with your passphrase. Enter it to use and save Chrome data in your Google Account.</translation>
@@ -454,6 +455,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6497147134301593682">Chrome was automatically closed</translation>
 <translation id="6506909944137591434">Chrome needs camera permission to create a 3D map of your surroundings</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
+<translation id="6515549163407364048">To get your extensions on all your computers, sign in to Chrome</translation>
 <translation id="6520670145826811516">To use your location, give Chrome access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
 <translation id="659498884637196217">In Google Password Manager on this device</translation>
 <translation id="6600016381025017075">Search anything on this page</translation>

@@ -807,7 +807,6 @@
 <translation id="1561331397460162942">Ова овозможува пристап до локацијата за апликациите, веб-сајтовите со дозволата за локација и системските услуги</translation>
 <translation id="1562119309884184621">Ако го додадете контактов, ќе биде запомнет следниот пат кога ќе споделува</translation>
 <translation id="1563137369682381456">Датум на истекување</translation>
-<translation id="1563702743503072935">Лозинките од сметката на Google ќе бидат достапни и на уредов додека сте најавени</translation>
 <translation id="1566049601598938765">Веб-сајт</translation>
 <translation id="15662109988763471">Избраниот печатач не е достапен или не е правилно инсталиран. Проверете го или обидете се да изберете друг печатач.</translation>
 <translation id="1566329594234563241">Додека е неактивен и приклучен во струја</translation>
@@ -1558,6 +1557,7 @@
 <translation id="2062354623176996748">Користете интернет без да ја зачувувате историјата на прелистувањето со прозорец „Инкогнито“</translation>
 <translation id="206308717637808771">Податоците се бришат при затворање на сите прозорци. Податоците се третираат исто како сајтот што го прегледувате</translation>
 <translation id="2065405795449409761">Автоматизиран софтвер за тестирање го контролира Chrome.</translation>
+<translation id="2066700471214517561">Микрофон што формира сигнален сноп за да звучи јасно лицето што користи Chromebook.</translation>
 <translation id="2067591192939433190">Од „<ph name="VENDOR_NAME" />“</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> заврши со печатење на <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Нема локална датотека со евиденција.</translation>
@@ -2137,7 +2137,7 @@
 <translation id="2454206500483040640">Поделени во партиции</translation>
 <translation id="2454247629720664989">Клучен збор</translation>
 <translation id="2454524890947537054">Да се одобри барањето за прелистување?</translation>
-<translation id="2454913962395846391">Автоматска временска зона</translation>
+<translation id="2454913962395846391">Автоматска часовна зона</translation>
 <translation id="245650153866130664">За автоматско освежување на билетот, изберете „Запомни ја лозинката“. Лозинката ќе се зачува само на вашиот уред.</translation>
 <translation id="2456794251167091176">Увозот е целосен</translation>
 <translation id="2457246892030921239"><ph name="APP_NAME" /> сака да копира датотеки од <ph name="VOLUME_NAME" />.</translation>
@@ -2318,6 +2318,7 @@
 <translation id="2580889980133367162">Секогаш дозволи <ph name="HOST" /> да презема повеќе датотеки</translation>
 <translation id="258095186877893873">Долго</translation>
 <translation id="2581455244799175627">Повеќе за дозволување колачиња од трети страни</translation>
+<translation id="2581786034175502848">Притиснете Shift 5 пати за да ја овозможите повторно</translation>
 <translation id="2581992808349413349">Користете безбедна врска за пребарување на IP-адресата на сајт во DNS (Систем за имиња на домени). Ова користи управуван давател на услуги на <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Платформа <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Не може да се преземе билетот на Kerberos. Обидете се повторно или контактирајте со администраторот на уредот во вашата организација. (Код за грешка <ph name="ERROR_CODE" />).</translation>
@@ -3138,7 +3139,6 @@
 <translation id="3177909033752230686">Јазик на страницата:</translation>
 <translation id="3177914167275935955">Вашиот уред содржи Chrome Education Upgrade, но вашето корисничко име не е поврзано со сметка на Google for Education. Создајте сметка на Google for Education на g.co/workspace/edusignup на секундарен уред.</translation>
 <translation id="3179982752812949580">Фонт на текстот</translation>
-<translation id="3180175986308160674">Се генерираат прашања за страницава…</translation>
 <translation id="3180284704187420717">Зачувувајте ги обележувачите, лозинките и друго со синхронизација</translation>
 <translation id="3180990259147710757">Помрднете ја вилицата налево</translation>
 <translation id="3181954750937456830">Безбедно прелистување (ве заштитува вас и вашиот уред од опасни сајтови)</translation>
@@ -3801,6 +3801,7 @@
 <translation id="3662207097851752847">Потврдете ја вашата сметка на Google на телефонот</translation>
 <translation id="3663417513679360795">Повеќе детали за вклучувањето „Стандардно вчитување однапред“</translation>
 <translation id="3664511988987167893">Икона за екстензијата</translation>
+<translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" />}=1{Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" /> и уште #}one{Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" /> и уште #}other{Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" /> и уште #}}</translation>
 <translation id="3665100783276035932">Повеќето сајтови би требало да функционираат според очекувањата</translation>
 <translation id="3665301845536101715">Отвори во страничната табла</translation>
 <translation id="3665589677786828986">Chrome откри дека некои од поставките на прелистувачот ги оштетила друга програма и ги ресетирала на првичните стандардни вредности.</translation>
@@ -3941,7 +3942,6 @@
 <translation id="3748424433435232460">Веќе е зачувана лозинка за оваа сметка на уредов</translation>
 <translation id="3748706263662799310">Пријавете грешка</translation>
 <translation id="3749724428455457489">Дознајте повеќе за рекламите предложени од сајтови</translation>
-<translation id="3750562496035670393">Chrome ја зачува лозинката на уредов, но може да ја зачувате на вашата сметка на Google наместо тоа. Потоа, сите лозинки во вашата сметка на Google ќе бидат исто така достапни додека сте најавени.</translation>
 <translation id="3752115502500640407">Споделете копија од вашата лозинка за <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Кажете му на детето постојано да го крева прстот за да се зачува отпачатокот</translation>
 <translation id="3753033997400164841">Складирајте еднаш. Користете насекаде</translation>
@@ -4578,7 +4578,6 @@
 <translation id="4195378859392041564">Кликнете на кое било копче со глувчето, а потоа притиснете копчето на тастатурата за да го приспособите</translation>
 <translation id="4195643157523330669">Отвори во нова картичка</translation>
 <translation id="4195814663415092787">Продолжете каде што сте застанале</translation>
-<translation id="4196350776737072374">Не се достапни прашања. Обидете се да побарате работи како „резимирај ја страницава“ или поставете сопствено прашање.</translation>
 <translation id="4198268995694216131">Дополнителни сајтови</translation>
 <translation id="4200609364258658652">Копирај видеокадар</translation>
 <translation id="4200689466366162458">Приспособени зборови</translation>
@@ -5166,6 +5165,7 @@
 <translation id="4627442949885028695">Продолжете од друг уред</translation>
 <translation id="4628762811416793313">Поставувањето на контејнерот на Linux не заврши. Обидете се повторно.</translation>
 <translation id="4629521233550547305">Отвори го профилот <ph name="PROFILE_NAME" /></translation>
+<translation id="4631955550884380853">Фокусиран глас</translation>
 <translation id="4632655012900268062">Приспособете ги картичките</translation>
 <translation id="4633003931260532286">Екстензијата бара „<ph name="IMPORT_NAME" />" со минимална верзија „<ph name="IMPORT_VERSION" />", но инсталирана е само верзијата „<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4633757335284074492">Направете бекап на Google Drive. Лесно враќајте ги податоците или менувајте ги уредите во секое време. Бекапов опфаќа податоци од апликациите. Бекапот се прикачува во Google и се шифрира со лозинката за сметката на Google на вашето дете.</translation>
@@ -6015,7 +6015,6 @@
 <translation id="5249624017678798539">Прелистувачот падна пред да заврши преземањето.</translation>
 <translation id="5249818097095743806">Користете го безбедносниот клуч</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> ја користи вашата локација за да ви даде локални содржини. Ова може да го промените во <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5252496130205799136">Да се користи сметката на Google за зачувување и пополнување лозинки?</translation>
 <translation id="5252653240322147470">PIN-кодот мора да содржи помалку од <ph name="MAXIMUM" /> цифри</translation>
 <translation id="5253554634804500860">Користи <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Искористена меморија: <ph name="MEMORY_USAGE" /></translation>
@@ -8191,7 +8190,6 @@
 <translation id="6833479554815567477">Картичката е отстранета од групата <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Урамнотежено (препорачано)</translation>
 <translation id="6835762382653651563">Поврзете се на интернет за да го ажурирате <ph name="DEVICE_TYPE" />.</translation>
-<translation id="683630338945552556">Користете и зачувувајте лозинки во вашата сметка на Google</translation>
 <translation id="6838992358006915573">Лупата го следи фокусот на ChromeVox</translation>
 <translation id="6839225236531462745">Грешка при бришење сертификат</translation>
 <translation id="6839916869147598086">Најавувањето се промени</translation>

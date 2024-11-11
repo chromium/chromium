@@ -809,7 +809,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1561331397460162942">To omogoča dostop do lokacije za aplikacije, spletna mesta z dovoljenjem za lokacijo in sistemske storitve</translation>
 <translation id="1562119309884184621">Če dodate ta stik, se bo nastavitev shranila za naslednjič, ko bo ta oseba delila</translation>
 <translation id="1563137369682381456">Datum poteka</translation>
-<translation id="1563702743503072935">Gesla v računu Google bodo na voljo tudi v tej napravi, ko ste prijavljeni</translation>
 <translation id="1566049601598938765">Spletno mesto</translation>
 <translation id="15662109988763471">Izbrani tiskalnik ni na voljo ali ni pravilno nameščen. Preverite tiskalnik ali izberite drugega.</translation>
 <translation id="1566329594234563241">Ko je naprava neaktivna in priklopljena</translation>
@@ -3142,7 +3141,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3177909033752230686">Jezik strani:</translation>
 <translation id="3177914167275935955">Vaša naprava vključuje nadgradnjo za Chrome Education, vendar vaše uporabniško ime ni povezano z računom za Google for Education. Ustvarite račun za Google for Education tako, da v drugi napravi obiščete g.co/workspace/edusignup.</translation>
 <translation id="3179982752812949580">Pisava besedila</translation>
-<translation id="3180175986308160674">Generiranje vprašanj o tej strani …</translation>
 <translation id="3180284704187420717">Shranite zaznamke, gesla in drugo z uporabo sinhronizacije.</translation>
 <translation id="3180990259147710757">Premik čeljusti levo</translation>
 <translation id="3181954750937456830">Varno brskanje (ščiti vas in napravo pred nevarnimi spletnimi mesti)</translation>
@@ -3946,7 +3944,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3748424433435232460">Geslo za ta račun je že shranjeno v tej napravi.</translation>
 <translation id="3748706263662799310">Obvestite nas o napaki</translation>
 <translation id="3749724428455457489">Preberite več o oglasih, ki jih predlaga spletno mesto.</translation>
-<translation id="3750562496035670393">Chrome je vaše geslo shranil v to napravo, vendar ga lahko po želji shranite v svoj račun Google. Nato bodo vsa gesla v računu Google na voljo tudi, ko ste prijavljeni.</translation>
 <translation id="3752115502500640407">Delite kopijo gesla za spletno mesto <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Naj otrok dviguje prst, da se bo prstni odtis shranil.</translation>
 <translation id="3753033997400164841">Shranite enkrat. Uporabite kjer koli</translation>
@@ -4583,7 +4580,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="4195378859392041564">Kliknite poljubno tipko z miško, nato pritisnite tipko na tipkovnici, če jo želite prilagoditi.</translation>
 <translation id="4195643157523330669">Odpri v novem zavihku</translation>
 <translation id="4195814663415092787">Nadaljuj prejšnjo sejo</translation>
-<translation id="4196350776737072374">Na voljo ni nobenega vprašanja. Poskusite vprašati »povzemite to stran« ali postavite svoje vprašanje.</translation>
 <translation id="4198268995694216131">Dodatna spletna mesta</translation>
 <translation id="4200609364258658652">Kopira&amp;j videosličico</translation>
 <translation id="4200689466366162458">Besede po meri</translation>
@@ -6021,7 +6017,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5249624017678798539">Brskalnik se je sesul pred koncem prenosa.</translation>
 <translation id="5249818097095743806">Uporaba varnostnega ključa</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> uporablja lokacijo za zagotavljanje lokalne vsebine. To lahko spremenite tukaj: <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5252496130205799136">Želite račun Google uporabiti za shranjevanje in vnašanje gesel?</translation>
 <translation id="5252653240322147470">Koda PIN sme imeti največ toliko števk: <ph name="MAXIMUM" /></translation>
 <translation id="5253554634804500860">Uporabi napravo <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Uporaba pomnilnika: <ph name="MEMORY_USAGE" /></translation>
@@ -8203,7 +8198,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6833479554815567477">Zavihek je odstranjen iz skupine <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" />.</translation>
 <translation id="6833753236242482566">Uravnoteženo (priporočeno)</translation>
 <translation id="6835762382653651563">Če želite posodobiti napravo <ph name="DEVICE_TYPE" />, vzpostavite internetno povezavo.</translation>
-<translation id="683630338945552556">Uporaba in shranjevanje gesel v računu Google</translation>
 <translation id="6838992358006915573">Lupa spremlja izbiro ChromeVoxa</translation>
 <translation id="6839225236531462745">Napaka pri brisanju potrdila</translation>
 <translation id="6839916869147598086">Prijava je zdaj drugačna</translation>

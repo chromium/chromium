@@ -307,6 +307,7 @@
 <translation id="2308243864813041101">Desenchufa el cable USB del dispositivo <ph name="DEVICE_NAME" /> para continuar con el proceso de actualización</translation>
 <translation id="2320295602967756579">Habilitar el tema claro</translation>
 <translation id="2323506179655536734">OMITIDO</translation>
+<translation id="2323755382216917952">Esta actualización requiere que reinicies la computadora para completar la instalación. Esta actualización puede tardar unos minutos en completarse. No desconectes ni apagues la computadora mientras se actualiza el firmware.</translation>
 <translation id="2324354238778375592">Flotante</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -450,6 +451,7 @@
 <translation id="3178532070248519384">vanguardista</translation>
 <translation id="3182676044300231689">Ingresa una instrucción como "proyectar más confianza"</translation>
 <translation id="3188257591659621405">Mis archivos</translation>
+<translation id="3188931456353313123">Esta actualización la proporciona el fabricante del dispositivo, y Google no la verificó.</translation>
 <translation id="319101249942218879">Se cambió la imagen de avatar</translation>
 <translation id="3192947282887913208">Archivos de audio</translation>
 <translation id="3199982728237701504">Alimentador de documentos (dos caras)</translation>
@@ -508,6 +510,7 @@
 <translation id="3488065109653206955">Parcialmente activado</translation>
 <translation id="3492882532495507361">Una oficina <ph name="OFFICE_STYLE" /> con tonos <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">La Chromebook mide los datos. Pueden diferir de los datos del proveedor.</translation>
+<translation id="349570724365779960">School Tools está conectado a los estudiantes</translation>
 <translation id="3502426834823382181">ver todas las apps</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />datos de registro del rendimiento<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualización del SO</translation>
@@ -757,6 +760,7 @@
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4744944742468440486">Información sobre el texto seleccionado</translation>
 <translation id="4771607256327216405">iluminación teclado</translation>
+<translation id="4771923071974529837">mañana</translation>
 <translation id="4773299976671772492">Detenida</translation>
 <translation id="4778082030331381943">amatista</translation>
 <translation id="4782311465517282004">Obtén definiciones, traducciones o conversión de unidades cuando haces clic con el botón derecho en texto o lo mantienes presionado.</translation>
@@ -820,6 +824,7 @@
 <translation id="500920857929044050">Detener la prueba</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Color del tema</translation>
+<translation id="5037240652947866174">hoy</translation>
 <translation id="5038292761217083259">teclado multicolor</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5049856988445523908">SIM bloqueado (<ph name="LOCK_TYPE" />)</translation>

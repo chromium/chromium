@@ -307,6 +307,7 @@
 <translation id="2308243864813041101">‏برای ادامه فرایند به‌روزرسانی، کابل USB دستگاه <ph name="DEVICE_NAME" /> را جدا کنید</translation>
 <translation id="2320295602967756579">فعال کردن زمینه روشن</translation>
 <translation id="2323506179655536734">رد شد</translation>
+<translation id="2323755382216917952">برای تکمیل نصب این به‌روزرسانی، باید رایانه را بازراه‌اندازی کنید. ممکن است تکمیل این به‌روزرسانی چند دقیقه طول بکشد. وقتی سفت‌افزار درحال به‌روزرسانی است، رایانه‌تان را از پریز برق جدا نکنید یا آن را خاموش نکنید.</translation>
 <translation id="2324354238778375592">شناور</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> نقطه در اینچ</translation>
 <translation id="2346474577291266260">عالی (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -450,6 +451,7 @@
 <translation id="3178532070248519384">آوانگارد</translation>
 <translation id="3182676044300231689">پیام‌واره‌ای مثل «با قاطعیت بیشتری بنویس» را وارد کنید</translation>
 <translation id="3188257591659621405">فایل‌های من</translation>
+<translation id="3188931456353313123">‏این به‌روزرسانی را سازنده دستگاه ارائه داده است و Google آن را تأیید نکرده است.</translation>
 <translation id="319101249942218879">تصویر چهرک تغییر کرد</translation>
 <translation id="3192947282887913208">فایل‌های صوتی</translation>
 <translation id="3199982728237701504">تغذیه‌کننده سند (دورو)</translation>
@@ -508,6 +510,7 @@
 <translation id="3488065109653206955">به‌طور نسبی فعال شده است</translation>
 <translation id="3492882532495507361">دفتر کار <ph name="OFFICE_STYLE" /> با رنگ‌های <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">‏دستگاه Chromebook شما میزان مصرف داده را اندازه‌گیری می‌کند. مقدار آن ممکن است با اندازه‌گیری رساننده خدمات متفاوت باشد.</translation>
+<translation id="349570724365779960">«ابزارهای مدرسه» با دانش‌آموزان مرتبط شده است</translation>
 <translation id="3502426834823382181">مشاهده همه برنامه‌ها</translation>
 <translation id="3510890413042482857">ارسال <ph name="BEGIN_LINK1" />داده‌های ردیابی عملکرد<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">‏به‌روزرسانی ChromeOS</translation>
@@ -757,6 +760,7 @@
 <translation id="473775607612524610">به‌روزرسانی</translation>
 <translation id="4744944742468440486">اطلاعات مرتبط با انتخاب شما</translation>
 <translation id="4771607256327216405">صفحه‌کلید روشن‌تر</translation>
+<translation id="4771923071974529837">فردا</translation>
 <translation id="4773299976671772492">متوقف شد</translation>
 <translation id="4778082030331381943">یاقوت</translation>
 <translation id="4782311465517282004">وقتی روی نوشتار کلیک راست می‌کنید یا آن را لمس می‌کنید و نگه می‌دارید، تعاریف، ترجمه‌ها، یا تبدیل واحدها را دریافت می‌کنید</translation>
@@ -820,6 +824,7 @@
 <translation id="500920857929044050">توقف آزمایش</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">رنگ زمینه</translation>
+<translation id="5037240652947866174">امروز</translation>
 <translation id="5038292761217083259">صفحه‌کلید چندرنگ</translation>
 <translation id="5039804452771397117">اجازه دادن</translation>
 <translation id="5049856988445523908">سیم‌کارت قفل است (<ph name="LOCK_TYPE" />)</translation>

@@ -805,7 +805,6 @@
 <translation id="1561331397460162942">То омогућава приступ локацији за апликације, веб-сајтове са дозволом за локацију и системске услуге</translation>
 <translation id="1562119309884184621">Ако додате контакт, биће запамћен за следеће дељење</translation>
 <translation id="1563137369682381456">Датум истека</translation>
-<translation id="1563702743503072935">Лозинке са Google налога биће доступне и на овом уређају док сте пријављени</translation>
 <translation id="1566049601598938765">Веб-сајт</translation>
 <translation id="15662109988763471">Изабрани штампач није доступан или није правилно инсталиран. Проверите штампач или изаберите неки други.</translation>
 <translation id="1566329594234563241">Док је неактиван и прикључен</translation>
@@ -3131,7 +3130,6 @@
 <translation id="3177909033752230686">Језик странице:</translation>
 <translation id="3177914167275935955">Уређај садржи надоградњу за Chrome Education, али ваше корисничко име није повезано са Google for Education налогом. Отворите Google for Education налог тако што ћете посетити g.co/workspace/edusignup на секундарном уређају.</translation>
 <translation id="3179982752812949580">Фонт текста</translation>
-<translation id="3180175986308160674">Генеришу се питања о овој страници…</translation>
 <translation id="3180284704187420717">Сачувајте обележиваче, лозинке и друго уз синхронизацију</translation>
 <translation id="3180990259147710757">Померите вилицу улево</translation>
 <translation id="3181954750937456830">Безбедно прегледање (штити вас и уређај од опасних сајтова)</translation>
@@ -3939,7 +3937,6 @@
 <translation id="3748424433435232460">Лозинка за овај налог је већ сачувана на овом уређају</translation>
 <translation id="3748706263662799310">Пријавите грешку</translation>
 <translation id="3749724428455457489">Сазнајте више о огласима које предлаже сајт</translation>
-<translation id="3750562496035670393">Chrome је сачувао лозинку на овај уређај, али можете уместо тога да је сачувате на Google налог. Тада ће све лозинке на Google налогу такође бити доступне док сте пријављени.</translation>
 <translation id="3752115502500640407">Делите копију лозинке за <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Нека дете настави да подиже прст да би отисак прста био сачуван</translation>
 <translation id="3753033997400164841">Сачувајте једном. Користите свуда</translation>
@@ -4580,7 +4577,6 @@
 <translation id="4195378859392041564">Кликните мишем на било који тастер, па притисните тастер на тастатури да бисте га прилагодили</translation>
 <translation id="4195643157523330669">Отвори на новој картици</translation>
 <translation id="4195814663415092787">Настави претходну сесију</translation>
-<translation id="4196350776737072374">Нема доступних питања. Питајте ствари као што су „резимирај ову страницу“ или сами осмислите питање.</translation>
 <translation id="4198268995694216131">Додатни сајтови</translation>
 <translation id="4200609364258658652">Копирај&amp; кадар видеа</translation>
 <translation id="4200689466366162458">Прилагођене речи</translation>
@@ -6018,7 +6014,6 @@
 <translation id="5249624017678798539">Прегледач је отказао пре него што је преузимање довршено.</translation>
 <translation id="5249818097095743806">Користите безбедносни кључ</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> користи локацију да би вам пружао локални садржај. То можете да промените у: <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5252496130205799136">Желите да користите Google налог да бисте чували и попуњавали лозинке?</translation>
 <translation id="5252653240322147470">PIN мора да има мање од <ph name="MAXIMUM" /> цифре(ара)</translation>
 <translation id="5253554634804500860">Користи телефон <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Коришћење меморије: <ph name="MEMORY_USAGE" /></translation>
@@ -8199,7 +8194,6 @@
 <translation id="6833479554815567477">Картица је уклоњена из групе <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Уравнотежено (препоручено)</translation>
 <translation id="6835762382653651563">Повежите се на интернет да бисте ажурирали <ph name="DEVICE_TYPE" />.</translation>
-<translation id="683630338945552556">Користите и сачувајте лозинке на Google налогу</translation>
 <translation id="6838992358006915573">Лупа прати ChromeVox фокус</translation>
 <translation id="6839225236531462745">Грешка при брисању сертификата</translation>
 <translation id="6839916869147598086">Пријављивање је промењено</translation>

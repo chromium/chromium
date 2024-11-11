@@ -808,7 +808,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1561331397460162942">Z lokalizacji będą mogły korzystać aplikacje i strony, które mają odpowiednie uprawnienia, oraz usługi systemowe</translation>
 <translation id="1562119309884184621">Gdy dodasz ten kontakt, zostanie on rozpoznany, gdy znów będzie Ci coś udostępniać.</translation>
 <translation id="1563137369682381456">Data ważności</translation>
-<translation id="1563702743503072935">Gdy się zalogujesz, uzyskasz na tym urządzeniu dostęp także do haseł z Twojego konta Google</translation>
 <translation id="1566049601598938765">Strona internetowa</translation>
 <translation id="15662109988763471">Wybrana drukarka jest niedostępna lub nieprawidłowo zainstalowana. Sprawdź ją lub wybierz inną.</translation>
 <translation id="1566329594234563241">Gdy urządzenie jest nieaktywne i podłączone do zasilania</translation>
@@ -3117,7 +3116,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3177909033752230686">Język strony:</translation>
 <translation id="3177914167275935955">Twoje urządzenie ma licencję na Chrome Education, ale Twoja nazwa użytkownika nie jest powiązana z kontem Google for Education. Utwórz takie konto na stronie g.co/workspace/edusignup, korzystając z dodatkowego urządzenia.</translation>
 <translation id="3179982752812949580">Czcionka tekstu</translation>
-<translation id="3180175986308160674">Generuję pytania dotyczące tej strony…</translation>
 <translation id="3180284704187420717">Zapisuj m.in. swoje zakładki i hasła dzięki synchronizacji</translation>
 <translation id="3180990259147710757">Przesunięcie żuchwy w lewo</translation>
 <translation id="3181954750937456830">Bezpieczne przeglądanie (chroni Ciebie i Twoje urządzenie przed niebezpiecznymi witrynami)</translation>
@@ -3921,7 +3919,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3748424433435232460">Hasło do tego konta jest już zapisane na tym urządzeniu</translation>
 <translation id="3748706263662799310">Zgłoś błąd</translation>
 <translation id="3749724428455457489">Więcej informacji o reklamach sugerowanych przez witryny</translation>
-<translation id="3750562496035670393">Przeglądarka Chrome zapisała Twoje hasło na tym urządzeniu, ale jeśli wolisz, możesz je zamiast tego zapisać na swoim koncie Google. Jeśli to zrobisz, po zalogowaniu się będziesz mieć dostęp do wszystkich haseł z Twojego konta Google.</translation>
 <translation id="3752115502500640407">Udostępnij kopię swojego hasła do strony <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Twoje dziecko musi unosić i opuszczać palec, aby można było zapisać odcisk</translation>
 <translation id="3753033997400164841">Zapisz raz – używaj w dowolnym miejscu</translation>
@@ -4562,7 +4559,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4195378859392041564">Kliknij myszą dowolny klawisz, a następnie naciśnij klawisz na klawiaturze, aby go dostosować</translation>
 <translation id="4195643157523330669">Otwórz w nowej karcie</translation>
 <translation id="4195814663415092787">Kontynuuj od tego samego miejsca</translation>
-<translation id="4196350776737072374">Brak dostępnych pytań. Poproś o coś, na przykład: „podsumuj tę stronę”, albo zadaj pytanie.</translation>
 <translation id="4198268995694216131">Dodatkowe witryny</translation>
 <translation id="4200609364258658652">Kopiu&amp;j klatkę wideo</translation>
 <translation id="4200689466366162458">Słowa niestandardowe</translation>
@@ -5999,7 +5995,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5249624017678798539">Przeglądarka uległa awarii przed zakończeniem pobierania.</translation>
 <translation id="5249818097095743806">Użyj swojego klucza bezpieczeństwa</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> korzysta z informacji o Twojej lokalizacji, by zapewnić Ci lokalne wyniki. Możesz to zmienić na stronie <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5252496130205799136">Używać konta Google do zapisywania i uzupełniania haseł?</translation>
 <translation id="5252653240322147470">Liczba cyfr w kodzie PIN musi być mniejsza niż <ph name="MAXIMUM" /></translation>
 <translation id="5253554634804500860">Użyj telefonu <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Wykorzystanie pamięci: <ph name="MEMORY_USAGE" /></translation>
@@ -8177,7 +8172,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6833479554815567477">Karta została usunięta z grupy <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Zrównoważone (zalecane)</translation>
 <translation id="6835762382653651563">Aby zaktualizować urządzenie <ph name="DEVICE_TYPE" />, połącz się z internetem.</translation>
-<translation id="683630338945552556">Używaj haseł i zapisuj je na swoim koncie Google</translation>
 <translation id="6838992358006915573">Lupa śledzi fokus w czytniku ChromeVox</translation>
 <translation id="6839225236531462745">Błąd usuwania certyfikatu</translation>
 <translation id="6839916869147598086">Logowanie wygląda teraz inaczej</translation>

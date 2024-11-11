@@ -796,7 +796,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1561331397460162942">Kjo lejon qasjen te vendndodhja për aplikacionet, uebsajtet me lejen për vendndodhjen, si dhe shërbimet e sistemit</translation>
 <translation id="1562119309884184621">Shtimi i këtij kontakti do ta kujtojë atë herën tjetër që do të ndajë</translation>
 <translation id="1563137369682381456">Data e skadimit</translation>
-<translation id="1563702743503072935">Fjalëkalimet nga "Llogaria jote e Google" do të jenë të disponueshme gjithashtu në pajisjen tënde ndërsa je i identifikuar</translation>
 <translation id="1566049601598938765">Uebsajti</translation>
 <translation id="15662109988763471">Printeri i zgjedhur nuk ofrohet ose nuk është instaluar si duhet. Kontrollo printerin ose provo të zgjedhësh një printer tjetër.</translation>
 <translation id="1566329594234563241">Kur është joaktive dhe në prizë</translation>
@@ -1535,6 +1534,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2062354623176996748">Përdor uebin pa ruajtur historikun tënd të shfletimit me një dritare "të fshehtë"</translation>
 <translation id="206308717637808771">Fshiji të dhënat kur mbyll të gjitha dritaret. Të dhënat trajtohen njëlloj si sajti që po shikon</translation>
 <translation id="2065405795449409761">Chrome po kontrollohet nga një softuer testues i automatizuar.</translation>
+<translation id="2066700471214517561">Mikrofoni me teknikën "Beamforming", në mënyrë që tingujt e personit që po përdor Chromebook të jenë të qartë.</translation>
 <translation id="2067591192939433190">Nga "<ph name="VENDOR_NAME" />"</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ka përfunduar printimin te <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Nuk ka skedar lokal të regjistrit.</translation>
@@ -2292,6 +2292,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2580889980133367162">Lejo gjithmonë që <ph name="HOST" /> të shkarkojë shumë skedarë</translation>
 <translation id="258095186877893873">E gjatë</translation>
 <translation id="2581455244799175627">Më shumë rreth lejimit të kukive të palëve të treta</translation>
+<translation id="2581786034175502848">Shtyp Shift 5 herë për ta riaktivizuar atë</translation>
 <translation id="2581992808349413349">Përdor një lidhje të sigurt për të kërkuar për adresën IP të një sajti në sistemin e emrave të domeneve (DNS). Kjo përdor një ofrues të menaxhuar të shërbimit në <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Platforma <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Nuk mund të merrej bileta e Kerberos. Provo përsëri ose kontakto me administratorin e pajisjes së organizatës. (Kodi i gabimit <ph name="ERROR_CODE" />).</translation>
@@ -3108,7 +3109,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3177909033752230686">Gjuha e faqes:</translation>
 <translation id="3177914167275935955">Pajisja jote përfshin një përmirësim të Chrome për edukimin, por emri yt i përdoruesit nuk lidhet me një llogari të Google for Education. Krijo një llogari të Google for Education duke vizituar g.co/workspace/edusignup në një pajisje të dytë.</translation>
 <translation id="3179982752812949580">Lloji i fontit</translation>
-<translation id="3180175986308160674">Po gjenerohen pyetjet për këtë faqe…</translation>
 <translation id="3180284704187420717">Ruaj faqeshënuesit, fjalëkalimet dhe më shumë me sinkronizimin</translation>
 <translation id="3180990259147710757">Zhvendose nofullën në të majtë</translation>
 <translation id="3181954750937456830">"Shfletimi i sigurt" (të mbron ty dhe pajisjen tënde nga sajtet e rrezikshme)</translation>
@@ -3905,7 +3905,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3748424433435232460">Një fjalëkalim për këtë llogari është ruajtur tashmë në këtë pajisje</translation>
 <translation id="3748706263662799310">Raporto një defekt në kod</translation>
 <translation id="3749724428455457489">Mëso më shumë për reklamat e sugjeruara nga sajtet</translation>
-<translation id="3750562496035670393">Chrome ruajti fjalëkalimin tënd në këtë pajisje, por mund ta ruash ndryshe në "Llogarinë tënde të Google". Më pas, të gjitha fjalëkalimet në "Llogarinë tënde të Google" do të ofrohen gjithashtu ndërkohë që je identifikuar.</translation>
 <translation id="3752115502500640407">Ndaj një kopje të fjalëkalimit tënd për <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Vëre fëmijën ta mbajë ngritur gishtin për të ruajtur gjurmën e gishtit</translation>
 <translation id="3753033997400164841">Ruaji një herë. Përdori kudo</translation>
@@ -4537,7 +4536,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4195378859392041564">Kliko te një tast me miun tënd dhe më pas shtyp një tast të tastierës për ta personalizuar</translation>
 <translation id="4195643157523330669">Hape në një skedë të re</translation>
 <translation id="4195814663415092787">Vazhdo ku e ke lënë</translation>
-<translation id="4196350776737072374">Nuk ofrohet asnjë pyetje. Provo të pyesësh gjëra të tilla si "përmblidh këtë faqe" ose një pyetje tënden.</translation>
 <translation id="4198268995694216131">Sajte të tjera</translation>
 <translation id="4200609364258658652">Kopj&amp;o kuadrin e videos</translation>
 <translation id="4200689466366162458">Fjalët e personalizuara</translation>
@@ -5124,6 +5122,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4627442949885028695">Vazhdo nga një pajisje tjetër</translation>
 <translation id="4628762811416793313">Konfigurimi i kontejnerit të Linux nuk përfundoi. Provo përsëri.</translation>
 <translation id="4629521233550547305">Hap profilin <ph name="PROFILE_NAME" /></translation>
+<translation id="4631955550884380853">Zëri i fokusuar</translation>
 <translation id="4632655012900268062">Personalizo kartat</translation>
 <translation id="4633003931260532286">Shtesa kërkon "<ph name="IMPORT_NAME" />" me një version minimal "<ph name="IMPORT_VERSION" />", por është instaluar vetëm versioni "<ph name="INSTALLED_VERSION" />"</translation>
 <translation id="4633757335284074492">Rezervo në "Diskun e Google". Restauro të dhënat ose ndërro me lehtësi pajisjen në çdo kohë. Rezervimi yt përfshin të dhënat e aplikacioneve. Rezervimet ngarkohen në Google dhe enkriptohen duke përdorur fjalëkalimin e "Llogarisë së Google" të fëmijës tënd.</translation>
@@ -5970,7 +5969,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5249624017678798539">Shfletuesi u ndërpre aksidentalisht përpara përfundimit të shkarkimit.</translation>
 <translation id="5249818097095743806">Përdor çelësin e sigurisë</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> përdor vendndodhjen tënde për të të dhënë përmbajtje lokale. Këtë mund ta ndryshosh te <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5252496130205799136">Dëshiron ta përdorësh "Llogarinë tënde të Google" për të ruajtur dhe plotësuar automatikisht fjalëkalimet?</translation>
 <translation id="5252653240322147470">Kodi PIN duhet të ketë më pak se <ph name="MAXIMUM" /> shifra</translation>
 <translation id="5253554634804500860">Përdor <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Përdorimi i memories: <ph name="MEMORY_USAGE" /></translation>
@@ -8132,7 +8130,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6833479554815567477">Skeda u zhvendos nga grupi <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Balancuar (rekomandohet)</translation>
 <translation id="6835762382653651563">Lidhu në internet për të përditësuar pajisjen <ph name="DEVICE_TYPE" />.</translation>
-<translation id="683630338945552556">Përdor dhe ruaj fjalëkalimet në "Llogarinë tënde të Google"</translation>
 <translation id="6838992358006915573">Zmadhuesi ndjek fokusin e ChromeVox</translation>
 <translation id="6839225236531462745">Gabim në fshirjen e certifikatës</translation>
 <translation id="6839916869147598086">Identifikimi ka ndryshuar</translation>

@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">படங்களை உருவாக்குகிறது...</translation>
 <translation id="1116694919640316211">அறிமுகம்</translation>
 <translation id="1118572504348554005">நீங்கள் எங்களிடம் புகாரளித்த பிழைகளையும் பிற சிக்கல்களையும் பிழையறிந்து திருத்துவதற்கு, இந்தப் படிவத்தின் மூலம் சமர்ப்பித்த கருத்தை எங்கள் கூட்டாளர்களுடன் நாங்கள் பகிரக்கூடும். கடவுச்சொற்கள் போன்ற பாதுகாக்கவேண்டிய தகவல்களைச் சேர்க்க வேண்டாம்.</translation>
+<translation id="1119403468619527527">சுருக்குவதற்கான வார்த்தைகள் மிகவும் குறைவாக உள்ளன</translation>
 <translation id="1119447706177454957">அகப் பிழை</translation>
 <translation id="1124772482545689468">பயனர்</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">சாதனத்தைச் சோதிக்க முடியவில்லை. சோதிக்க லேப்டாப் பயன்முறைக்கு மாறவும்.</translation>
 <translation id="3916998944874125962">ஸ்கிரீன்ஷாட் எடுப்பதற்கான ஐகான்</translation>
 <translation id="3923184630988645767">டேட்டா உபயோகம்</translation>
+<translation id="3924445055519423964">இணையப் பக்கம்/PDF ஃபைலைச் சுருக்க கிளிக் செய்யவும்</translation>
 <translation id="3932043219784172185">சாதனம் எதுவும் இணைக்கப்படவில்லை</translation>
 <translation id="3934185438132762746">ஒதுக்கப்படாதவை <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">ஹோஸ்ட்டைச் சரிசெய்ய முடியவில்லை</translation>
@@ -814,6 +816,7 @@
 <translation id="4988526792673242964">பக்கங்கள்</translation>
 <translation id="4989542687859782284">இல்லை</translation>
 <translation id="4999333166442584738">அறிக்கையை மறை</translation>
+<translation id="5005695757087124131">தேர்ந்தெடுத்த வார்த்தையைச் சுருக்க கிளிக் செய்யவும்</translation>
 <translation id="500920857929044050">சோதனையை நிறுத்து</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">தீமின் வண்ணம்</translation>
@@ -1334,6 +1337,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> புதுப்பிக்கப்படத் தயாராக உள்ளது</translation>
 <translation id="741244894080940828">கன்வெர்ஷன்</translation>
 <translation id="7415801143053185905">HTTP கோரிக்கைகள் மிகவும் அதிக நேரம் எடுத்துக்கொள்கின்றன</translation>
+<translation id="7418738250896500352">சுருக்குவதற்கான வார்த்தைகள் மிகவும் அதிகமாக உள்ளன</translation>
 <translation id="7425037327577270384">எனக்கு எழுத உதவு</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">இந்த APNனை முடக்கவோ அகற்றவோ முடியவில்லை. <ph name="ATTACH" /> APNகள் இயக்கப்பட்டிருந்தால் அவை முடக்கப்பட்டிருப்பதை அல்லது அகற்றப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும்.</translation>
@@ -1550,6 +1554,7 @@
 <translation id="8476942730579767658">சாளரங்களும் டெஸ்க்குகளும்</translation>
 <translation id="8477536061607044749">கிராஃபிக் டிசைன்</translation>
 <translation id="8477551185774834963">DNSஸில் ஏற்படும் தாமதம் அனுமதிக்கப்படும் வரம்பைவிடச் சற்றே அதிகமாக உள்ளது</translation>
+<translation id="8482376765267780829">சுருக்க சில வார்த்தைகளைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="8483248364096924578">IP முகவரி</translation>
 <translation id="8491311378305535241">Android ஆப்ஸில் இருந்து HTTPS இணையதளங்களுடன் இணைப்பதை ஃபயர்வால் தடுக்கிறது</translation>
 <translation id="8495070016475833911">ஃபெல்ட்</translation>
@@ -1679,6 +1684,7 @@
 <translation id="9082718469794970195">இந்த வீடியோவைப் பயன்படுத்து</translation>
 <translation id="9087578468327036362">இந்த வினவல் குறித்துப் புகாரளிக்கலாம்</translation>
 <translation id="9088306295921699330">தற்போதைய உபயோகம்</translation>
+<translation id="9088994563996376283">சுருக்கு</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">தேதியை மீட்டமைப்பது குறித்த கூடுதல் தகவல்கள்</translation>
 <translation id="9100765901046053179">மேம்பட்ட அமைப்புகள்</translation>

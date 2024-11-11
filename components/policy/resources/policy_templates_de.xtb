@@ -4942,7 +4942,6 @@ Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="DEVICE_SCR
 <translation id="4725801978265372736">Verlangen, dass der Name des lokalen Nutzers und des Host-Inhabers des Remotezugriffs übereinstimmen</translation>
 <translation id="4726228171190098009">Powerwash-Anfrage durch Gerät nicht zulassen</translation>
 <translation id="4726895359147376813">Zuordnung von persistenten IDs zu VM-Konfigurationen</translation>
-<translation id="4729091573952050200">Translator API darf verwendet werden</translation>
 <translation id="4732069502693984686">Ermöglicht die automatische Bildschirmaufnahme für mehrere Bildschirme</translation>
 <translation id="4733471537137819387">Strategien im Hinblick auf die integrierte HTTP-Authentifizierung</translation>
 <translation id="473673197014866318">Mit dieser Richtlinie werden Einstellungen zur Erweiterungsverwaltung für <ph name="PRODUCT_NAME" /> festgelegt, darunter Einstellungen, die von anderen auf Erweiterungen bezogenen Richtlinien geregelt werden. Durch diese Richtlinie werden alle älteren Richtlinien überschrieben.
@@ -9773,15 +9772,6 @@ Weitere Informationen zu Legacy-Technologien findest du unter https://chromestat
 <translation id="8331479227794770304">Einfingerbedienung aktivieren</translation>
 <translation id="8332822245414537447">Prüfung der RSA-Schlüsselverwendung deaktivieren</translation>
 <translation id="8334685561819743286">Autokorrektur bei Nutzung der physischen Tastatur beim Tippen deaktivieren</translation>
-<translation id="8336819406993366823">Wenn die Richtlinie auf „<ph name="ENABLED_VALUE_NAME" />“ gesetzt ist, können die speziell für Videos mit Präfix vorgesehenen Vollbild-APIs (z. B. „Video.webkitEnterFullscreen()“) aus JavaScript verwendet werden.
-
-Wenn die Richtlinie auf „<ph name="DISABLED_VALUE_NAME" />“ gesetzt ist, können die speziell für Videos mit Präfix vorgesehenen Vollbild-APIs nicht in JavaScript verwendet werden, sodass nur die standardmäßigen Vollbild-APIs (z. B. „Element.requestFullscreen()“) übrig bleiben.
-
-Ist die Richtlinie auf „<ph name="RUNTIME_ENABLED_VALUE_NAME" />“ gesetzt, kann das laufzeitfähige Funktions-Flag „PrefixedFullscreenVideo“ ermitteln, ob die speziell für Videos mit Präfix vorgesehenen Vollbild-APIs Websites zur Verfügung stehen.
-
-Wenn die Richtlinie nicht konfiguriert ist, wird standardmäßig „<ph name="RUNTIME_ENABLED_VALUE_NAME" />“ verwendet.
-
-Hinweis: Diese Richtlinie ist eine vorübergehende Lösung, um die Umstellung von Vollbild-APIs mit webkit-Präfix zu erleichtern. Vorläufig ist geplant, sie in M130 oder einem darauf folgenden Release zu entfernen.</translation>
 <translation id="8337114537412769126">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />" die Parameter für die Vorschlagsuche mit POST an. Die Richtlinie besteht aus kommagetrennten Name/Wert-Paaren. Wenn ein Wert ein Vorlagenparameter wie <ph name="SEARCH_TERM_MARKER" /> ist, wird er durch echte Suchbegriffsdaten ersetzt.
 
       Ist "<ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />" nicht konfiguriert, wird die Vorschlagsuchanfrage mithilfe der GET-Methode gesendet.</translation>

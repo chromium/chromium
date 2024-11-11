@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Irudiak sortzen…</translation>
 <translation id="1116694919640316211">Honi buruz</translation>
 <translation id="1118572504348554005">Salatzen dituzun akatsak eta bestelako arazoak konpontzeko, baliteke inprimaki honen bidez bidalitako oharrak gure bazkideekin partekatzea. Ez eman kontuzko informaziorik, hala nola pasahitzak.</translation>
+<translation id="1119403468619527527">Hitz gutxiegi daude sinplifikatzeko</translation>
 <translation id="1119447706177454957">Barneko errorea</translation>
 <translation id="1124772482545689468">Erabiltzailea</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Ezin da probatu gailua. Probak egiteko, aldatu ordenagailu eramangarriaren modura.</translation>
 <translation id="3916998944874125962">atera pantaila-argazkia</translation>
 <translation id="3923184630988645767">Datu-erabilera</translation>
+<translation id="3924445055519423964">Web-orria edo PDF fitxategia laburbiltzeko, sakatu hau</translation>
 <translation id="3932043219784172185">Ez dago gailurik konektatuta</translation>
 <translation id="3934185438132762746">Esleitu gabeko <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Ezin izan da ebatzi ostalaria</translation>
@@ -814,6 +816,7 @@
 <translation id="4988526792673242964">Orriak</translation>
 <translation id="4989542687859782284">Erabilgarri ez daudenak</translation>
 <translation id="4999333166442584738">Ezkutatu txostena</translation>
+<translation id="5005695757087124131">Hautatutako testua laburbiltzeko, sakatu hau</translation>
 <translation id="500920857929044050">Gelditu proba</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Gaiaren kolorea</translation>
@@ -1334,6 +1337,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> eguneratzeko prest dago</translation>
 <translation id="741244894080940828">bihurketa</translation>
 <translation id="7415801143053185905">HTTP eskaeren latentzia oso luzea da</translation>
+<translation id="7418738250896500352">Hitz gehiegi daude sinplifikatzeko</translation>
 <translation id="7425037327577270384">Idazteko laguntza</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">APN hau ezin da desgaitu edo kendu. Ziurtatu gaituta dauden <ph name="ATTACH" /> motako APNak desgaitu edo kendu direla.</translation>
@@ -1550,6 +1554,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8476942730579767658">Leihoak eta lan-eremuak</translation>
 <translation id="8477536061607044749">diseinu grafikoa</translation>
 <translation id="8477551185774834963">DNSaren latentzia onartzen den atalasetik apur bat gorago dago</translation>
+<translation id="8482376765267780829">Hautatu sinplifikatu nahi duzun testua</translation>
 <translation id="8483248364096924578">IP helbidea</translation>
 <translation id="8491311378305535241">Ezin da konektatu HTTPS darabilten webguneetara suebakiaren bidez Android-erako aplikazioetatik</translation>
 <translation id="8495070016475833911">feltroa</translation>
@@ -1679,6 +1684,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="9082718469794970195">Erabili bideoa</translation>
 <translation id="9087578468327036362">Salatu kontsulta</translation>
 <translation id="9088306295921699330">Oraingo erabilera</translation>
+<translation id="9088994563996376283">Sinplifikatu</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Berrezartzeko datari buruzko informazio gehiago</translation>
 <translation id="9100765901046053179">Ezarpen aurreratuak</translation>

@@ -20,6 +20,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1185134272377778587">Tungkol sa Chromium</translation>
 <translation id="1188705220418984327">Para i-share ang iyong window, payagan ang pag-record ng screen para sa Chromium sa Mga Preference sa System.</translation>
 <translation id="1203500561924088507">Salamat sa pag-install. Dapat mong i-restart ang iyong browser bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1235768345431527125">Puwede kang mag-sign in para makuha ang kailangan mo, o gamitin ang Chromium nang walang account</translation>
 <translation id="1262876892872089030">Habang hindi aktibo ang tab na ito, nagbakante ng memory para mapanatiling mabilis ang Chromium. Puwede mong piliing palaging huwag isama ang site na ito sa pagiging hindi aktibo.</translation>
 <translation id="1265577313130862557">Na-block ng Chromium ang pag-download na ito dahil mapanganib ang file</translation>
 <translation id="126567311906253476">Kapag nagsa-sign in sa mga serbisyo ng Google tulad ng Gmail o YouTube gamit ang <ph name="USER_EMAIL" />, puwede kang awtomatikong mag-sign in sa Chromium gamit ang parehong account</translation>
@@ -299,6 +300,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5051959905407134411">Subukan ang Paghahanap ng Larawan</translation>
 <translation id="5114678101347489141">Nag-e-explore ang Chromium ng mga bagong feature na nagbibigay-daan sa mga site na ihatid ang parehong karanasan sa pag-browse nang hindi gaanong gumagamit ng iyong impormasyon</translation>
 <translation id="5123973130450702873">Kailangan ng Chromium ng pahintulot para i-track ang iyong mga kamay</translation>
+<translation id="5174969993834422967">Kadalasan mong bina-block ang mga notification. Para hayaan ang site na itong abisuhan ka, i-click ang icon ng notification sa kanang sulok ng iyong bar ng lokasyon.</translation>
 <translation id="5187123684706427865">Nagre-require ang Chromium account ng pag-authenticate ulit</translation>
 <translation id="5224391634244552924">Walang naka-save na password. Masusuri ng Chromium ang iyong mga password kapag na-save mo ang mga ito.</translation>
 <translation id="5231355151045086930">Mag-sign out sa Chromium</translation>
@@ -328,6 +330,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="549669000822060376">Mangyaring maghintay habang ini-install ng Chromium ang mga pinakabagong update sa system.</translation>
 <translation id="5496810170689441661">Sinusubukan ng Chromium na i-edit ang mga password. I-type ang iyong password sa Windows para payagan ito.</translation>
 <translation id="5527463683072221100">Magbukas ng mga PDF sa Chromium</translation>
+<translation id="5568136785038042132">Para makuha ang iyong mga extension sa lahat ng computer mo, mag-sign in sa Chromium</translation>
 <translation id="5575418445468216473">Sine-save sa Google Account mo ang iyong mga password at iba pang data sa Chromium, at aalisin ang mga ito sa device na ito. Para magamit ang mga ito sa hinaharap, mag-sign in ulit sa Chromium.</translation>
 <translation id="5579324208890605088">Nagkaroon ng error sa startup: patakbuhin ang installer bilang karaniwang user, hindi bilang administrator.</translation>
 <translation id="5596627076506792578">Higit pang opsyon</translation>

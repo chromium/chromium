@@ -18,6 +18,7 @@
 <translation id="1185134272377778587">‏על Chromium</translation>
 <translation id="1188705220418984327">‏כדי לשתף את החלון, צריך לאפשר הקלטת מסך ב-Chromium בקטע 'העדפות המערכת'.</translation>
 <translation id="1203500561924088507">תודה שהתקנת. עליך להפעיל מחדש את הדפדפן לפני השימוש ב-<ph name="BUNDLE_NAME" />.</translation>
+<translation id="1235768345431527125">‏אפשר להיכנס לחשבון כדי לגשת לדברים שלך, או להשתמש ב-Chromium ללא חשבון</translation>
 <translation id="1262876892872089030">‏בזמן שהכרטיסייה הזו לא הייתה פעילה, התפנה זיכרון כדי ש-Chromium ימשיך לפעול במהירות. ניתן לבחור להחריג תמיד את האתר הזה כדי שיישאר במצב פעיל.</translation>
 <translation id="1265577313130862557">‏Chromium חסם את ההורדה הזאת כי הקובץ מסוכן</translation>
 <translation id="126567311906253476">‏כשנכנסים לשירותי Google כמו Gmail או YouTube עם <ph name="USER_EMAIL" />, אפשר להיכנס אוטומטית ל-Chromium עם אותו חשבון</translation>
@@ -295,6 +296,7 @@
 <translation id="5051959905407134411">רוצה לנסות את התכונה 'חיפוש תמונות'?</translation>
 <translation id="5114678101347489141">‏אנחנו בודקים תכונות חדשות ב-Chromium שמאפשרות לאתרים לספק את אותה חוויית הגלישה תוך שימוש בפחות פרטים אישיים</translation>
 <translation id="5123973130450702873">‏צריך לתת ל-Chromium הרשאה כדי לעקוב אחרי תנועות הידיים</translation>
+<translation id="5174969993834422967">הבחירה שלך היא בדרך כלל לחסום התראות. כדי לאפשר לאתר הזה להציג התראות, יש ללחוץ על סמל ההתראה בפינה השמאלית של סרגל המיקום.</translation>
 <translation id="5187123684706427865">‏נדרש אימות מחדש לחשבון Chromium</translation>
 <translation id="5224391634244552924">‏אין סיסמאות שמורות. Chromium יכול לבדוק את הסיסמאות שלך רק אם שמרת אותן.</translation>
 <translation id="5231355151045086930">‏יציאה מ-Chromium</translation>
@@ -324,6 +326,7 @@
 <translation id="549669000822060376">‏יש להמתין בזמן ש-Chromium מתקין את עדכוני המערכת האחרונים.</translation>
 <translation id="5496810170689441661">‏Chromium מנסה לערוך את הסיסמאות. כדי לאפשר זאת, יש להזין את הסיסמה שלך ל-Windows.</translation>
 <translation id="5527463683072221100">‏פתיחה של קובצי PDF ב-Chromium</translation>
+<translation id="5568136785038042132">‏כדי לקבל גישה לתוספים שלך בכל המחשבים, צריך להיכנס לחשבון ב-Chromium</translation>
 <translation id="5575418445468216473">‏הסיסמאות ונתונים אחרים מ-Chromium נשמרים בחשבון שלך ב-Google, ויוסרו מהמכשיר הזה. כדי להשתמש בהם בעתיד, צריך להיכנס שוב ל-Chromium.</translation>
 <translation id="5579324208890605088">שגיאת הפעלה: יש להפעיל את מנהל ההתקנה כמשתמש רגיל ולא כאדמין.</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>

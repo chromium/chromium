@@ -183,7 +183,7 @@
 <translation id="1118738876271697201">سیستم نتوانست مدل یا شماره سریال دستگاه را تعیین کند.</translation>
 <translation id="111897705806685148">استفاده از گذرکلید از دستگاهی دیگر</translation>
 <translation id="1119447706177454957">خطای داخلی</translation>
-<translation id="1122068467107743258">کار</translation>
+<translation id="1122068467107743258">محل کار</translation>
 <translation id="1122198203221319518">&amp;ابزارها</translation>
 <translation id="1122242684574577509">‏اصالت‌سنجی انجام نشد. کلیک کنید تا به صفحه ورود به سیستم شبکه Wi-Fi مورد استفاده‌تان بروید (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">کاغذدیواری‌های منحصربه‌فرد طراحی کنید</translation>
@@ -303,6 +303,7 @@
 <translation id="1197088940767939838">نارنجی</translation>
 <translation id="11978075283960463">داده‌های ذخیره‌شده در برنامه: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">ابزارهای گفتاری کم‌بینایان</translation>
+<translation id="1198412233443148072">‫<ph name="MEMBER_FIRST_NAME" /> برگه «<ph name="WEBSITE_TITLE" />» را برداشت</translation>
 <translation id="119944043368869598">پاک کردن همه</translation>
 <translation id="1199814941632954229">گواهینامه‌ها درحال به‌تأیید رسیدن برای این نمایه‌های دارای مجوز هستند</translation>
 <translation id="120069043972472860">غیرقابل تماشا</translation>
@@ -804,7 +805,6 @@
 <translation id="1561331397460162942">این اقدام دسترسی مکان را برای برنامه‌ها، وب‌سایت‌های دارای اجازه مکان، و خدمات سیستم مجاز می‌کند</translation>
 <translation id="1562119309884184621">افزودن این مخاطب باعث می‌شود برای هم‌رسانی بعدی‌اش در حافظه ذخیره شود</translation>
 <translation id="1563137369682381456">تاریخ انقضا</translation>
-<translation id="1563702743503072935">‏وقتی به سیستم وارد شده باشید، گذرواژه‌های ذخیره‌شده در «حساب Google» شما در این دستگاه هم دردسترس خواهد بود</translation>
 <translation id="1566049601598938765">وب‌سایت</translation>
 <translation id="15662109988763471">چاپگر انتخابی موجود نیست یا به‌درستی نصب نشده است. چاپگر خود را بررسی کنید یا چاپگر دیگری را انتخاب کنید.</translation>
 <translation id="1566329594234563241">وقتی غیرفعال و به برق متصل است</translation>
@@ -1010,6 +1010,7 @@
 <translation id="1692210323591458290">بنفش تیره</translation>
 <translation id="1692713444215319269">وارونگی رنگ، ذره‌بین، و تنظیمات نمایش</translation>
 <translation id="169341880170235617">اکنون گروه‌های برگه شما به‌طور خودکار ذخیره می‌شود</translation>
+<translation id="1694470329618537745">آخرین به‌روزرسانی‌های این گروه</translation>
 <translation id="1695487653372841667">‏می‌توانید کنترل کنید چه داده‌هایی با Google هم‌رسانی شود. هرزمان خواستید می‌توانید آن را در «تنظیمات» تغییر دهید.</translation>
 <translation id="1695510246756136088">اتصال به اینترنت ممکن نیست. دوباره امتحان کنید.</translation>
 <translation id="1696555181932908973">می‌توانید روش‌های دیگر را برای ادامه دادن در <ph name="SITE_ETLD_PLUS_ONE" /> امتحان کنید.</translation>
@@ -2411,6 +2412,7 @@
 <translation id="2653659639078652383">ارسال</translation>
 <translation id="265390580714150011">مقدار قسمت</translation>
 <translation id="2654553774144920065">درخواست چاپ</translation>
+<translation id="265680054508313161">ادامه دادن با حساب <ph name="USERNAME" /></translation>
 <translation id="265748523151262387">اتصال با تلفن را حفظ کنید</translation>
 <translation id="2657612187216250073">تنظیمات دسترس‌پذیری اشاره‌گر</translation>
 <translation id="2658510146844889864">گذرکلیدها و کلیدهای امنیتی</translation>
@@ -2566,6 +2568,7 @@
 <translation id="2754825024506485820">‏برنامه‌های موردنیازتان را، از بهره‌وری گرفته تا سرگرمی، در «فروشگاه Google Play» پیدا کنید. هر زمانی بخواهید می‌توانید برنامه‌ها را نصب کنید.</translation>
 <translation id="2755349111255270002">بازنشانی این <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">مدیریت قابلیت‌های دسترس‌پذیری</translation>
+<translation id="2755485474385016903">همه افراد گروه تغییرات ایجادشده را می‌بینند</translation>
 <translation id="275662540872599901">صفحه خاموش است</translation>
 <translation id="2756754491396884324">گروه را مسدود و ترک می‌کنید؟</translation>
 <translation id="2756936198272359372">اجازه ندارد از جاوا اسکریپت استفاده کند</translation>
@@ -2577,6 +2580,7 @@
 <translation id="2764920001292228569">نام نمایه را وارد کنید</translation>
 <translation id="2765100602267695013">لطفاً با ارائه‌دهنده تلفن همراهتان تماس بگیرید</translation>
 <translation id="2765217105034171413">کوچک</translation>
+<translation id="2765349783094807040">‫<ph name="MEMBER_FIRST_NAME" /> این برگه را برداشت</translation>
 <translation id="2765820627968019645">روشن</translation>
 <translation id="276582196519778359">پین کنترل‌های والدین را وارد کنید</translation>
 <translation id="2766006623206032690">جا&amp;گذاری و رفتن</translation>
@@ -2616,6 +2620,7 @@
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">تأیید</translation>
+<translation id="2790112944253231361">این برگه را تغییر داد</translation>
 <translation id="2790750268015892264">«برنامه‌های وب مجزا» نمی‌توانند کارت‌خوان‌های هوشمند را کنترل کنند. برنامه‌ها به هیچ کارت هوشمندی دسترسی نخواهند داشت.</translation>
 <translation id="2791529110887957050">‏برداشتن Linux</translation>
 <translation id="2791952154587244007">خطایی رخ داده است. برنامه کیوسک نمی‌تواند در این دستگاه به صورت خودکار راه‌اندازی شود.</translation>
@@ -3060,6 +3065,7 @@
 <translation id="3109724472072898302">جمع شده</translation>
 <translation id="310979712355504754">حذف همه</translation>
 <translation id="3112292765614504292">اندازه برنامه: <ph name="APP_SIZE" /></translation>
+<translation id="311347022006935575">این برگه را اضافه کرد</translation>
 <translation id="311394601889664316">به سایت‌ها اجازه داده نشود فایل‌ها یا پوشه‌های درون دستگاه را ویرایش کنند</translation>
 <translation id="3113970906450647715">سنجاق دکمه برداشته شد</translation>
 <translation id="3115147772012638511">منتظر حافظه نهان...</translation>
@@ -3136,7 +3142,6 @@
 <translation id="3177909033752230686">زبان صفحه:</translation>
 <translation id="3177914167275935955">‏Chrome Education Upgrade در دستگاهتان وجود دارد، اما نام کاربری شما با هیچ حساب Google for Education مرتبط نیست. لطفاً با رفتن به نشانی زیر در دستگاهی دیگر، حساب Google for Education بسازید: g.co/workspace/edusignup.</translation>
 <translation id="3179982752812949580">قلم نوشتار</translation>
-<translation id="3180175986308160674">درحال تولید کردن سؤال درباره این صفحه…</translation>
 <translation id="3180284704187420717">با همگام‌سازی، نشانک‌ها، گذرواژه‌ها، و اطلاعات دیگر را ذخیره کنید</translation>
 <translation id="3180990259147710757">بردن فک به چپ</translation>
 <translation id="3181954750937456830">مرور ایمن (از شما و دستگاهتان درمقابل سایت‌های خطرناک محافظت می‌کند)</translation>
@@ -3454,6 +3459,7 @@
 <translation id="3416468988018290825">همیشه نشانی‌های وب کامل نشان داده شود</translation>
 <translation id="3417835166382867856">برگه‌های جستجو</translation>
 <translation id="3417836307470882032">ساعت نظامی</translation>
+<translation id="3418798368381485936">نمی‌توانید با این حساب به سیستم وارد شوید</translation>
 <translation id="3420501302812554910">کلید ایمنی توکار باید بازنشانی شود</translation>
 <translation id="3421387094817716717">کلید عمومی منحنی بیضوی</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />توجه:<ph name="END_BOLD" /> ممکن است صدای مشابه یا صدای ضبط‌شده هم بتواند به نتایج شخصی یا «دستیار» شما دسترسی یابد.</translation>
@@ -3661,6 +3667,7 @@
 <translation id="3566211766752891194">نمایش میزان استفاده برگه از حافظه</translation>
 <translation id="3566325075220776093">از این دستگاه</translation>
 <translation id="3566721612727112615">سایتی اضافه نشده است</translation>
+<translation id="3566788242120166275">داده‌های مرور موجود در نمایه فعلی باقی خواهد ماند. این نمایه جدید حاوی داده‌های مرور قبلی نخواهد بود.</translation>
 <translation id="3567168891086460374">ذخیره به روشی دیگر</translation>
 <translation id="3567284462585300767">برای دریافت و پذیرفتن فایل‌های افرادی که در اطرافتان هستند، نمایان شوید</translation>
 <translation id="356738834800832239">گذرواژه شما ذخیره شد</translation>
@@ -3828,6 +3835,7 @@
 <translation id="3685598397738512288">‏اولویت‌های USB در Linux</translation>
 <translation id="3687598459967813435">اعلان‌های <ph name="WEBSITE" /> همیشه مجاز باشد</translation>
 <translation id="368789413795732264">خطایی در حین نوشتن در این فایل وجود داشت: <ph name="ERROR_TEXT" />.</translation>
+<translation id="3687957587012862163">نه، به این نمایه جدید منتقل شود</translation>
 <translation id="3688507211863392146">نوشتن بر روی فایل‌ها و پوشه‌هایی که در برنامه باز می‌کنید</translation>
 <translation id="3688526734140524629">تغییر کانال</translation>
 <translation id="3688578402379768763">به‌روز</translation>
@@ -3923,6 +3931,7 @@
 <translation id="3735039640698208086">هنگام پخش صدا...</translation>
 <translation id="3735740477244556633">مرتب کردن براساس</translation>
 <translation id="3735827758948958091">هنگام استفاده از اتصال با حجم محدود، نمی‌توان <ph name="FILE_NAMES" /> را باز کرد</translation>
+<translation id="3737058101969549870">داده‌های مرور موجود جدا از این نمایه جدید نگه داشته شود؟</translation>
 <translation id="3738632186060045350">داده‌های <ph name="DEVICE_TYPE" /> پس از ۲۴ ساعت حذف خواهد شد</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> باز شود؟</translation>
@@ -3940,7 +3949,6 @@
 <translation id="3748424433435232460">درحال‌حاضر گذرواژه‌ای برای این حساب در این دستگاه ذخیره شده است</translation>
 <translation id="3748706263662799310">گزارش یک اشکال</translation>
 <translation id="3749724428455457489">درباره آگهی‌های پیشنهادی سایت بیشتر بدانید</translation>
-<translation id="3750562496035670393">‏Chrome گذرواژه‌تان را در این دستگاه ذخیره کرده است، اما به‌جای دستگاه می‌توانید آن را در «حساب Google» خودتان ذخیره کنید. بدین‌ترتیب، هرگاه به سیستم وارد شده باشید، همه گذرواژه‌های ذخیره‌شده در «حساب Google» شما نیز دردسترس خواهد بود.</translation>
 <translation id="3752115502500640407">هم‌رسانی کردن نسخه‌ای از گذرواژه با <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">از فرزندتان بخواهید مدام انگشتش را بردارد تا اثر انگشت ذخیره شود</translation>
 <translation id="3753033997400164841">یک‌بار ذخیره کنید. همه‌جا استفاده کنید</translation>
@@ -3992,6 +4000,7 @@
 <translation id="3778208826288864398">چون چندین‌بار پین اشتباه وارد شده، کلید ایمنی قفل شده است. باید کلید ایمنی‌ را بازنشانی کنید.</translation>
 <translation id="3778740492972734840">ابزارهای &amp;برنامه نویس</translation>
 <translation id="3778868487658107119">‏از آن سؤال بپرسید. بگویید کاری انجام دهد. این Google شخصی شما است و همیشه برای کمک آماده است.</translation>
+<translation id="3779244863011082655">استفاده از حساب <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> دیگر</translation>
 <translation id="3780542776224651912"><ph name="BRAND" /> نمی‌تواند گذواژه‌های شما را دربرابر سرقت اطلاعات شبکه بررسی کند. بعداً دوباره امتحان کنید.</translation>
 <translation id="3781742599892759500">‏دسترسی به میکروفون Linux</translation>
 <translation id="3783640748446814672">دگرساز</translation>
@@ -4140,6 +4149,7 @@
 <translation id="3872991219937722530">فضای دیسک را خالی کنید، در غیر این صورت دستگاه پاسخ نخواهد داد.</translation>
 <translation id="3873315167136380065">برای روشن کردن این گزینه، <ph name="BEGIN_LINK" />همگام‌سازی را بازنشانی کنید<ph name="END_LINK" /> تا گذرعبارت همگام‌سازی حذف شود</translation>
 <translation id="3873423927483480833">نمایش پین‌ها</translation>
+<translation id="3873893412864594794">‫<ph name="MEMBER_FIRST_NAME" /> برگه‌ای اضافه کرد</translation>
 <translation id="3873915545594852654">‏در رابطه با ++ARC مشکلی پیش آمد.</translation>
 <translation id="3874164307099183178">‏روشن کردن «دستیار Google»</translation>
 <translation id="3875511946736639169">فعال کردن تصاویر</translation>
@@ -4268,6 +4278,7 @@
 <translation id="3958821725268247062"><ph name="APP_NAME" /> قبلاً نصب شده است</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">کنش‌های بیشتر برای <ph name="IBAN_DESCRIPTION" /></translation>
+<translation id="3962607437409665666">‫<ph name="MEMBER_FIRST_NAME" /> گروه را ترک کرد</translation>
 <translation id="3963753386716096475">استفاده از تلفن، رایانه لوحی، یا کلید ایمنی دیگر</translation>
 <translation id="3964480518399667971">خاموش کردن شبکه تلفن همراه</translation>
 <translation id="3965965397408324205">خارج شدن از <ph name="PROFILE_NAME" /></translation>
@@ -4347,6 +4358,7 @@
 <translation id="4015163439792426608">افزونه‌ها را دریافت کردید؟ به‌راحتی در یک جا <ph name="BEGIN_LINK" />افزونه‌هایتان را مدیریت کنید<ph name="END_LINK" />.</translation>
 <translation id="4016762287427926315">اجازه‌هایی که به <ph name="APP_NAME" /> می‌دهید به این برنامه نیز داده خواهد شد. <ph name="BEGIN_LINK" />مدیریت<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">ایجاد رمزینه پاسخ‌سریع برای این پیوند</translation>
+<translation id="4019150221059185859">برداشتن <ph name="TAB_TITLE" /> از فهرست</translation>
 <translation id="4019983356493507433">ویرایش فهرست نشانک</translation>
 <translation id="4020327272915390518">منوی گزینه‌ها</translation>
 <translation id="4021279097213088397">–</translation>
@@ -4577,7 +4589,6 @@
 <translation id="4195378859392041564">با موشواره روی یکی از کلیدها کلیک کنید، سپس یکی از کلیدهای صفحه‌کلید را فشار دهید تا آن را سفارشی کنید</translation>
 <translation id="4195643157523330669">باز کردن در برگهٔ جدید</translation>
 <translation id="4195814663415092787">ادامه از جایی که ترک کردید</translation>
-<translation id="4196350776737072374">سؤالی موجود نیست. چیزی مثل «این صفحه را خلاصه کن» درخواست کنید یا سؤال خودتان را بپرسید.</translation>
 <translation id="4198268995694216131">سایت‌های بیشتر</translation>
 <translation id="4200609364258658652">کپی کردن فریم ویدیو</translation>
 <translation id="4200689466366162458">واژه‌های سفارشی</translation>
@@ -6015,7 +6026,6 @@
 <translation id="5249624017678798539">مرورگر پیش از تکمیل بارگیری ناگهان خارج شد.</translation>
 <translation id="5249818097095743806">استفاده از کلید امنیتی</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> از مکانتان برای ارائه محتوای محلی استفاده می‌کند. می‌توانید در <ph name="SETTINGS_LINK" /> آن را تغییر دهید.</translation>
-<translation id="5252496130205799136">‏برای ذخیره و تکمیل گذرواژه‌ها از «حساب Google» شما استفاده شود؟</translation>
 <translation id="5252653240322147470">کد پین باید کمتر از <ph name="MAXIMUM" /> رقم باشد</translation>
 <translation id="5253554634804500860">استفاده از <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">استفاده از حافظه: <ph name="MEMORY_USAGE" /></translation>
@@ -6025,6 +6035,7 @@
 <translation id="5256174546894739043">وقتی سایتی می‌خواهد دست‌هایتان را ردیابی کند سؤال شود</translation>
 <translation id="52566111838498928">درحال بارگیری قلم‌ها…</translation>
 <translation id="5256861893479663409">در همه سایت‌ها</translation>
+<translation id="5258473597674772367">گروه برگه «<ph name="GROUP_NAME" />» دیگر دردسترس نیست</translation>
 <translation id="5258992782919386492">نصب در این دستگاه</translation>
 <translation id="5260334392110301220">نقل‌قول‌های هوشمند</translation>
 <translation id="5260508466980570042">متأسفانه ایمیل یا گذرواژه شما تأیید نشد. لطفاً دوباره سعی کنید.</translation>
@@ -6382,6 +6393,7 @@
 <translation id="5503982651688210506">ادامه دهید به <ph name="HOST" /> اجازه دهید از دوربینتان استفاده کند و آن را حرکت دهد، و از میکروفونتان استفاده کند</translation>
 <translation id="5505307013568720083">جوهر تمام شده است</translation>
 <translation id="5507756662695126555">انکارناپذیری</translation>
+<translation id="5508864312047847614">داده‌های مرور موجود جدا از نمایه تحصیلی نگه داشته شود؟</translation>
 <translation id="5509693895992845810">ذخیره &amp;به‌عنوان...</translation>
 <translation id="5509914365760201064">صادرکننده: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">‏دریافت توضیحات تصویر از Google</translation>
@@ -6916,6 +6928,7 @@
 <translation id="5911533659001334206">نمایشگر میان‌بر</translation>
 <translation id="5911545422157959623">نشانک‌ها در ‏حالت مهمان دردسترس نیست</translation>
 <translation id="5914016309240354769">طبیعت</translation>
+<translation id="5914465277418006379">‫<ph name="MEMBER_FIRST_NAME" /> این برگه را اضافه کرد</translation>
 <translation id="5914724413750400082">مدول (<ph name="MODULUS_NUM_BITS" /> بیت):
   <ph name="MODULUS_HEX_DUMP" />
 
@@ -7730,6 +7743,7 @@
 <translation id="6519689855001245063">درحال بررسی واجدشرایط بودن</translation>
 <translation id="6520087076882753524">‏می‌توانید گذرواژه‌های ذخیره‌شده در «مدیر گذرواژه Google» را مشاهده و مدیریت کنید</translation>
 <translation id="6520115099532274511">‏‫<ph name="SITE" /> می‌خواهد هویتتان را درستی‌سنجی کند. پین حرفی‌عددی «مدیر گذرواژه Google» را وارد کنید</translation>
+<translation id="6520509611422418552">‫<ph name="MEMBER_FIRST_NAME" /> به گروه برگه «<ph name="GROUP_NAME" />» پیوست</translation>
 <translation id="6520876759015997832">‏نتیجه جستجوی <ph name="LIST_POSITION" /> از <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" /> برای پیمایش کردن به بخش، Enter را فشار دهید.</translation>
 <translation id="6521214596282732365">سایت‌ها معمولاً از قلم‌هایتان استفاده می‌کنند تا با ابزارهای گرافیکی و طراحی آنلاین بتوانید محتوای با شباهت زیاد به اصل ایجاد کنید</translation>
 <translation id="6523574494641144162">‏«مدیر گذرواژه Google» نتوانست این گذرواژه‌ها را در «حساب Google» شما ذخیره کند. می‌توانید آن‌ها را در این دستگاه ذخیره کنید.</translation>
@@ -8191,7 +8205,6 @@
 <translation id="6833479554815567477">برگه از گروه <ph name="GROUP_NAME" /> برداشته شد - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">متعادل (توصیه می‌شود)</translation>
 <translation id="6835762382653651563">برای به‌روزرسانی <ph name="DEVICE_TYPE" />، لطفاً به اینترنت وصل شوید.</translation>
-<translation id="683630338945552556">‏استفاده و ذخیره گذرواژه‌ها در «حساب Google» شما</translation>
 <translation id="6838992358006915573">‏ذره‌بین تمرکز ChromeVox را دنبال کند</translation>
 <translation id="6839225236531462745">خطای حذف مجوز</translation>
 <translation id="6839916869147598086">ورود به سیستم تغییر کرده است</translation>
@@ -8651,6 +8664,8 @@
 <translation id="7180865173735832675">سفارشی کردن</translation>
 <translation id="7181117767881540376">&amp;پنهان کردن نوار نشانک‌ها</translation>
 <translation id="7181329571386134105">‏برای اینکه <ph name="CHILD_NAME" /> بعداً بتواند افزونه‌ها را بدون تأیید شما نصب کند، برنامه Family Link را در دستگاهتان باز کنید و تنظیمات Google Chrome ‏<ph name="CHILD_NAME" /> را به‌روز کنید.</translation>
+<translation id="7181840534454431748">به گروه برگه با <ph name="OWNER_FIRST_NAME" /> بپیوندید
+              {NUM_OTHER_MEMBERS,plural, =0{به گروه برگه با <ph name="OWNER_FIRST_NAME" /> بپیوندید}=1{به گروه برگه با <ph name="OWNER_FIRST_NAME" /> و # نفر دیگر بپیوندید}one{به گروه برگه با <ph name="OWNER_FIRST_NAME" /> و # نفر دیگر بپیوندید}other{به گروه برگه با <ph name="OWNER_FIRST_NAME" /> و # نفر دیگر بپیوندید}}</translation>
 <translation id="7182051712900867547">استفاده از حسابی دیگر</translation>
 <translation id="7182063559013288142">نقطه اتصال فوری</translation>
 <translation id="7182791023900310535">انتقال گذرواژه</translation>
@@ -8663,6 +8678,7 @@
 <translation id="7189234443051076392">مطمئن شوید که در دستگاهتان فضای کافی وجود داشته باشد</translation>
 <translation id="7189451821249468368">برای ثبت‌نام این دستگاه، به ‌اندازه کافی ارتقا ندارید. لطفاً برای خرید بیشتر با مرکز فروش تماس بگیرید. اگر فکر می‌کنید این پیام به اشتباه به شما نشان داده شده است، لطفاً با مرکز پشتیبانی تماس بگیرید.</translation>
 <translation id="7189965711416741966">اثرانگشت اضافه شد.</translation>
+<translation id="7190883804815364931">آخرین به‌روزرسانی این برگه</translation>
 <translation id="7191063546666816478">برخی‌از پیوندهای پشتیبانی‌شده همچنان در <ph name="APP_NAME" />، <ph name="APP_NAME_2" />، <ph name="APP_NAME_3" />، و <ph name="NUMBER_OF_OTHER_APPS" /> برنامه دیگر باز خواهد شد.</translation>
 <translation id="7191159667348037">‏چاپگر ناشناس (USB)</translation>
 <translation id="7191631508323321927">کریدور</translation>
@@ -8995,6 +9011,7 @@
 <translation id="742130257665691897">نشانک‌ها برداشته شد</translation>
 <translation id="7421925624202799674">&amp;مشاهده منبع صفحه</translation>
 <translation id="7422192691352527311">موارد برگزیده...</translation>
+<translation id="7422516375032300779">‫<ph name="MEMBER_FIRST_NAME" /> نام گروه را تغییر داد</translation>
 <translation id="7423425410216218516">«رؤیت‌پذیری» به‌مدت <ph name="MINUTES" /> دقیقه روشن است</translation>
 <translation id="7423513079490750513">حذف <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> برای اجرا شدن به اجازه نیاز دارد</translation>
@@ -9047,6 +9064,7 @@
 <translation id="7461924472993315131">پین</translation>
 <translation id="746216226901520237">‏دفعه بعد، تلفنتان قفل <ph name="DEVICE_TYPE" /> را باز خواهد کرد. می‌توانید Smart Lock را در «تنظیمات» خاموش کنید.</translation>
 <translation id="746329643760972486">MacOS</translation>
+<translation id="7464645554245611385">آخرین به‌روزرسانی این برگه</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# برگه باز است، برای پنهان/نمایان کردن نوار برگه فشار دهید}one{# برگه باز است، برای پنهان/نمایان کردن نوار برگه فشار دهید}other{# برگه باز است، برای پنهان/نمایان کردن نوار برگه فشار دهید}}</translation>
 <translation id="7465635034594602553">مشکلی پیش آمد. لطفاً چند دقیقه صبر کنید و دوباره <ph name="APP_NAME" /> را اجرا کنید.</translation>
 <translation id="7465777686629334728">برداشتن محیط توسعه نرم‌افزار مدیریت‌شده (<ph name="SPECIFIC_NAME" />)</translation>
@@ -9483,6 +9501,7 @@
 <translation id="7772032839648071052">تأیید گذرعبارت</translation>
 <translation id="7772127298218883077">درباره <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">ذخیره جلسه</translation>
+<translation id="7773887159761725143">‫<ph name="MEMBER_FIRST_NAME" /> به گروه پیوست</translation>
 <translation id="7774365994322694683">پرنده</translation>
 <translation id="7774581652827321413">خلاصه صفحه، جستجوهای مربوط، و اطلاعات مفید دیگری درباره این صفحه دریافت کنید</translation>
 <translation id="7774792847912242537">تعداد درخواست‌ها بیش از حد است.</translation>
@@ -9600,6 +9619,7 @@
 <translation id="7851716364080026749">همیشه دسترسی به دوربین و میکروفون مسدود شود</translation>
 <translation id="7851720427268294554">‏تجزیه‌کننده IPP</translation>
 <translation id="78526636422538552">‏افزودن تعداد بیشتر «حساب Google» غیرفعال شد</translation>
+<translation id="785371335555334021">برای خارج شدن از <ph name="TITLE" />، کلیک کنید</translation>
 <translation id="7853747251428735">‏ابزارهای بیشتر (‎&amp;L)</translation>
 <translation id="7855678561139483478">انتقال برگه به پنجره جدید</translation>
 <translation id="7857004848504343806">‏رایانه شما دارای پودمان امنیتی است که برای پیاده‌سازی بسیاری از ویژگی‌های امنیتی ضروری در ChromeOS Flex استفاده می‌شود. برای کسب اطلاعات بیشتر، از «مرکز راهنمایی Chromebook» بازدید کنید: https://support.google.com/chromebook/?p=sm</translation>
@@ -9793,6 +9813,7 @@
 <translation id="7981662863948574132">‏نمایش بالاپر رمزینه پاسخ‌سریع و «سند شناسه جاسازی‌شده» (EID) دستگاه</translation>
 <translation id="7981670705071137488">بعداز این، به‌روزرسانی‌های نرم‌افزار در پس‌زمینه انجام می‌شود. می‌توانید اولویت‌های به‌روزرسانی را در «تنظیمات» مرور کنید.</translation>
 <translation id="7982083145464587921">لطفاً برای رفع این خطا دستگاه خود را مجدداً راه‌اندازی کنید.</translation>
+<translation id="7982578888426609524">آخرین به‌روزرسانی‌های این گروه</translation>
 <translation id="7982789257301363584">شبکه</translation>
 <translation id="7982878511129296052">درحال خاموش کردن…</translation>
 <translation id="7984068253310542383">قرینه‌سازی <ph name="DISPLAY_NAME" /></translation>
@@ -11081,6 +11102,7 @@
 <translation id="8888253246822647887">وقتی ارتقا به پایان برسد، برنامه‌تان باز خواهد شد. ارتقا ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="8888459276890791557">برای دسترسی آسان، می‌توانید این پانل کناری را سنجاق کنید</translation>
 <translation id="8889294078294184559">‏همان‌طور که مرور می‌کنید، سایت‌ها می‌توانند ازطریق Chrome بررسی کنند و بااستفاده از سایت قبلی که بازدید کرده‌اید تأیید کنند که احتمالاً شما شخص واقعی هستید</translation>
+<translation id="88895904696396879">‫<ph name="MEMBER_FIRST_NAME" /> رنگ گروه را تغییر داد</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> می‌تواند این فایل‌ها و پوشه‌ها را ویرایش کند:</translation>
 <translation id="8890170499370378450">ممکن است هزینه داده تلفن همراه اعمال شود</translation>
 <translation id="8890516388109605451">منابع</translation>
@@ -11229,6 +11251,7 @@
 <translation id="8991520179165052608">سایت می‌تواند از میکروفن شما استفاده کند</translation>
 <translation id="8991694323904646277">دوربین متصل نیست</translation>
 <translation id="8991766915726096402">بازیابی داده‌های محلی</translation>
+<translation id="8992268506092808992">{TIME_DIMENSION,plural, =0{‫<ph name="TIME_COUNT" /> دقیقه پیش}=1{‫<ph name="TIME_COUNT" /> ساعت پیش}one{‫<ph name="TIME_COUNT" /> روز پیش}other{‫<ph name="TIME_COUNT" /> روز پیش}}</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - استفاده از حافظه - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">‏اگر گذرواژه <ph name="DEVICE_TYPE" /> را فراموش کنید، همچنان می‌توانید داده‌های محلی‌تان را بازیابی کنید. باید به سیستم «حساب Google» خود وارد شوید یا از بازیابی حساب استفاده کنید.</translation>
 <translation id="8993198843374358393">کپی کردن درهم‌سازی گواهینامه <ph name="CERT_NAME" /></translation>
@@ -11521,6 +11544,7 @@
 <translation id="918352324374649435">{COUNT,plural, =1{برنامه}one{# برنامه}other{# برنامه}}</translation>
 <translation id="9186963452600581158">‏ورود به سیستم با «حساب Google» فرزند</translation>
 <translation id="9187967020623675250">کلیدها مطابقت ندارند. برای <ph name="RESPONSE" />، یکی از کلیدها را فشار دهید.</translation>
+<translation id="9189468832660648522">‫<ph name="MEMBER_FIRST_NAME" /> این برگه را تغییر داد</translation>
 <translation id="9192019773545828776">‏با شنیدن بازخورد گفتاری می‌توانید بدون نگاه کردن به صفحه‌نمایش از دستگاهتان استفاده کنید. بازخورد بریل ازطریق دستگاه متصل دردسترس است. از کلیدهای «مهار + دگرساز + Z» برای روشن و خاموش کردن ChromeVox استفاده کنید. از «جستجو + کلید چپ‌بَر یا کلید راست‌بَر» برای پیمایش استفاده کنید. از کلیدهای «جستجو + فاصله» برای انتخاب (فعال کردن) استفاده کنید.</translation>
 <translation id="9195969368671142407">‏وقتی سازمانتان ذخیره‌سازی در «حساب Google» شما را محدود می‌کند، نمی‌توانید گروه‌های برگه را هم‌رسانی کنید یا به آن‌ها بپیوندید</translation>
 <translation id="919686179725692564">درباره پشتیبان‌گیری از برنامه‌ها بیشتر بدانید</translation>
@@ -11633,6 +11657,7 @@
 <translation id="973558314812359997">اندازه موشواره</translation>
 <translation id="973788791897303708">این گروه برگه پر است</translation>
 <translation id="97381968209917373">حذف کردن گواهینامه <ph name="CERT_NAME" /></translation>
+<translation id="973825986436797073">‫<ph name="MEMBER_FIRST_NAME" /> برگه‌ای را تغییر داد</translation>
 <translation id="975893173032473675">زبانی که می‌خواهید به آن ترجمه کنید</translation>
 <translation id="976499800099896273">کادر گفتگوی واگرد کردن تصحیح خودکار برای کلمه «<ph name="TYPED_WORD" />» که به «<ph name="CORRECTED_WORD" />» تصحیح شده است نشان داده شد.  برای دسترسی به آن، کلید «پیکان روبه‌بالا»، و برای نادیده گرفتن، کلید «گریز» را فشار دهید.</translation>
 <translation id="976572010712028687">تأیید کنید که ولی هستید</translation>

@@ -807,7 +807,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1561331397460162942">Dette giver apps, websites med lokationstilladelsen og systemtjenester adgang til lokationen</translation>
 <translation id="1562119309884184621">Denne kontakt huskes, til næste gang vedkommende deler</translation>
 <translation id="1563137369682381456">Udløbsdato</translation>
-<translation id="1563702743503072935">Adgangskoder fra din Google-konto kan også bruges på denne enhed, når du er logget ind</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">Den valgte printer er ikke tilgængelig eller ikke installeret korrekt. Tjek din printer, eller vælg en anden printer.</translation>
 <translation id="1566329594234563241">Når enheden er inaktiv og tilsluttet</translation>
@@ -3140,7 +3139,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3177909033752230686">Sidens sprog:</translation>
 <translation id="3177914167275935955">Din enhed inkluderer en Chrome Education-opgradering, men dit brugernavn er ikke knyttet til en Google for Education-konto. Opret en Google for Education-konto ved at gå til g.co/workspace/edusignup på en sekundær enhed.</translation>
 <translation id="3179982752812949580">Tekstskrifttype</translation>
-<translation id="3180175986308160674">Genererer spørgsmål om denne side…</translation>
 <translation id="3180284704187420717">Gem dine bogmærker, adgangskoder og meget mere ved hjælp af synkronisering</translation>
 <translation id="3180990259147710757">Drej kæben til venstre</translation>
 <translation id="3181954750937456830">Beskyttet browsing (beskytter dig og din enhed mod farlige websites)</translation>
@@ -3803,6 +3801,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3662207097851752847">Bekræft din Google-konto på din telefon</translation>
 <translation id="3663417513679360795">Flere oplysninger om aktivering af standardforudindlæsning</translation>
 <translation id="3664511988987167893">Udvidelsesikon</translation>
+<translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Deltag i fanegruppen med <ph name="OWNER_FIRST_NAME" />}=1{Deltag i fanegruppen med <ph name="OWNER_FIRST_NAME" /> og # anden}one{Deltag i fanegruppen med <ph name="OWNER_FIRST_NAME" /> og # anden}other{Deltag i fangegruppen med <ph name="OWNER_FIRST_NAME" /> og # andre}}</translation>
 <translation id="3665100783276035932">De fleste websites bør fungere som forventet</translation>
 <translation id="3665301845536101715">Åbn i sidepanel</translation>
 <translation id="3665589677786828986">Chrome har registreret, at nogle af dine indstillinger er blevet ændret af et andet program, og har derfor gendannet standardindstillingerne.</translation>
@@ -3943,7 +3942,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3748424433435232460">Der er allerede gemt en adgangskode for denne konto på denne enhed</translation>
 <translation id="3748706263662799310">Rapporter en fejl</translation>
 <translation id="3749724428455457489">Få flere oplysninger om foreslåede annoncer fra websites</translation>
-<translation id="3750562496035670393">Chrome har gemt din adgangskode på denne enhed, men du kan gemme den på din Google-konto i stedet. Dermed kan alle adgangskoderne på din Google-konto også bruges, når du er logget ind.</translation>
 <translation id="3752115502500640407">Del en kopi af din adgangskode til <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Sørg for, at dit barn bliver ved med at løfte sin finger, så fingeraftrykket kan gemmes</translation>
 <translation id="3753033997400164841">Gem én gang. Brug overalt.</translation>
@@ -4580,7 +4578,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4195378859392041564">Klik på en tast med musen, og tryk derefter på en tastaturtast for at tilpasse den</translation>
 <translation id="4195643157523330669">Åbn på ny fane</translation>
 <translation id="4195814663415092787">Fortsæt, hvor du slap</translation>
-<translation id="4196350776737072374">Der er ingen tilgængelige spørgsmål. Prøv at spørge om ting som f.eks. "opsummer denne side" eller stille dit eget spørgsmål.</translation>
 <translation id="4198268995694216131">Yderligere websites</translation>
 <translation id="4200609364258658652">Kopiér videoramme</translation>
 <translation id="4200689466366162458">Tilpassede ord</translation>
@@ -6018,7 +6015,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5249624017678798539">Browseren lukkede ned, før overførslen var fuldført.</translation>
 <translation id="5249818097095743806">Brug din sikkerhedsnøgle</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> anvender din lokation for at give dig lokalt indhold. Du kan ændre dette i <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5252496130205799136">Vil du bruge din Google-konto til at gemme og udfylde adgangskoder?</translation>
 <translation id="5252653240322147470">Pinkoden skal være mindre end <ph name="MAXIMUM" /> tegn</translation>
 <translation id="5253554634804500860">Brug <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Hukommelsesforbrug: <ph name="MEMORY_USAGE" /></translation>
@@ -8194,7 +8190,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6833479554815567477">Fanen blev fjernet fra gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Balanceret (anbefales)</translation>
 <translation id="6835762382653651563">Opret forbindelse til internettet for at opdatere din <ph name="DEVICE_TYPE" />.</translation>
-<translation id="683630338945552556">Brug og gem adgangskoder på din Google-konto</translation>
 <translation id="6838992358006915573">Forstørrelse følger ChromeVox-fokus</translation>
 <translation id="6839225236531462745">Fejl under sletning af certifikat</translation>
 <translation id="6839916869147598086">Login blev ændret</translation>

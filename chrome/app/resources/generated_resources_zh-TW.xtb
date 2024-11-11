@@ -805,7 +805,6 @@
 <translation id="1561331397460162942">系統服務和具有位置存取權的應用程式、網站將可存取位置資訊</translation>
 <translation id="1562119309884184621">新增這位聯絡人後，下次該聯絡人分享內容時，系統將可辨識出該聯絡人</translation>
 <translation id="1563137369682381456">到期日</translation>
-<translation id="1563702743503072935">當你登入帳戶時，也可以在這部裝置上使用 Google 帳戶中的密碼</translation>
 <translation id="1566049601598938765">網站</translation>
 <translation id="15662109988763471">選取的印表機無法使用或未正確安裝。請檢查你的印表機，或改選其他印表機。</translation>
 <translation id="1566329594234563241">處於閒置狀態並接上電源時</translation>
@@ -3126,7 +3125,6 @@
 <translation id="3177909033752230686">網頁語言：</translation>
 <translation id="3177914167275935955">你的裝置含有 Chrome Education 升級版，但你的使用者名稱沒有相關聯的 Google for Education 帳戶。請在次要裝置上前往 g.co/workspace/edusignup 建立 Google for Education 帳戶。</translation>
 <translation id="3179982752812949580">文字字型</translation>
-<translation id="3180175986308160674">正在生成與本頁相關的問題…</translation>
 <translation id="3180284704187420717">透過同步處理功能儲存書籤、密碼等其他資訊</translation>
 <translation id="3180990259147710757">將下巴往左移動</translation>
 <translation id="3181954750937456830">安全瀏覽 (保護你和你的裝置不受危險網站攻擊)</translation>
@@ -3927,7 +3925,6 @@
 <translation id="3748424433435232460">這個帳戶的密碼已儲存在這部裝置上</translation>
 <translation id="3748706263662799310">回報錯誤</translation>
 <translation id="3749724428455457489">進一步瞭解網站建議廣告</translation>
-<translation id="3750562496035670393">Chrome 已將你的密碼儲存至這個裝置，但你可以改為儲存至 Google 帳戶。如此一來，當你登入帳戶時，也可以使用 Google 帳戶中的密碼。</translation>
 <translation id="3752115502500640407">分享「<ph name="WEBSITE" />」的密碼副本</translation>
 <translation id="3752253558646317685">讓孩子不斷抬起再放下手指，藉此儲存指紋</translation>
 <translation id="3753033997400164841">只要儲存一次，即可在所有裝置上使用。</translation>
@@ -4563,7 +4560,6 @@
 <translation id="4195378859392041564">使用滑鼠點選任何按鍵，然後按下鍵盤按鍵即可自訂</translation>
 <translation id="4195643157523330669">在新分頁中開啟</translation>
 <translation id="4195814663415092787">繼續瀏覽上次開啟的網頁</translation>
-<translation id="4196350776737072374">沒有可顯示的問題。你可以說「請提供這個頁面的重點摘要」，或是提出自己的問題。</translation>
 <translation id="4198268995694216131">其他網站</translation>
 <translation id="4200609364258658652">複製影片影格(&amp;Y)</translation>
 <translation id="4200689466366162458">自訂字詞</translation>
@@ -6000,7 +5996,6 @@
 <translation id="5249624017678798539">瀏覽器在下載尚未完成時當機。</translation>
 <translation id="5249818097095743806">使用安全金鑰</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> 會使用你的位置資訊，為你提供當地的相關內容。你可以在 [<ph name="SETTINGS_LINK" />] 中變更這項設定。</translation>
-<translation id="5252496130205799136">要使用你的 Google 帳戶儲存及填入密碼嗎？</translation>
 <translation id="5252653240322147470">PIN 不可多於 <ph name="MAXIMUM" /> 碼</translation>
 <translation id="5253554634804500860">使用 <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">記憶體用量：<ph name="MEMORY_USAGE" /></translation>
@@ -8169,7 +8164,6 @@
 <translation id="6833479554815567477">分頁已從包含「<ph name="GROUP_CONTENTS" />」的「<ph name="GROUP_NAME" />」群組中移除</translation>
 <translation id="6833753236242482566">平衡 (建議選項)</translation>
 <translation id="6835762382653651563">請連線至網際網路，以更新您的 <ph name="DEVICE_TYPE" />。</translation>
-<translation id="683630338945552556">將密碼儲存到 Google 帳戶並自動填入</translation>
 <translation id="6838992358006915573">放大鏡隨著 ChromeVox 焦點移動</translation>
 <translation id="6839225236531462745">憑證刪除錯誤</translation>
 <translation id="6839916869147598086">登入方式已變更</translation>

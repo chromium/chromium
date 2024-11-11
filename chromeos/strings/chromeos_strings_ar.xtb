@@ -307,6 +307,7 @@
 <translation id="2308243864813041101">‏عليك فصل كابل USB الخاص بجهاز "<ph name="DEVICE_NAME" />" عن مصدر الطاقة لمواصلة عملية التحديث</translation>
 <translation id="2320295602967756579">تفعيل المظهر الفاتح</translation>
 <translation id="2323506179655536734">تم تخطّي الاختبار.</translation>
+<translation id="2323755382216917952">يتطلّب هذا التحديث إعادة تشغيل جهاز الكمبيوتر لإكمال عملية التثبيت. وقد يستغرق إكمال التحديث بضع دقائق. لا تفصل جهاز الكمبيوتر أو تطفئه أثناء تحديث البرامج الثابتة.</translation>
 <translation id="2324354238778375592">النافذة العائمة</translation>
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> نقطة لكل بوصة (DPI)</translation>
 <translation id="2346474577291266260">إشارة ممتازة (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -450,6 +451,7 @@
 <translation id="3178532070248519384">الفن الطلائعي</translation>
 <translation id="3182676044300231689">أدخِل طلبًا، مثل "إعادة الكتابة بأسلوب أكثر ثقة"</translation>
 <translation id="3188257591659621405">ملفاتي</translation>
+<translation id="3188931456353313123">‏هذا التحديث مقدَّم من الشركة المصنّعة للجهاز ولم تتحقّق Google منه.</translation>
 <translation id="319101249942218879">تم تغيير الأفاتار.</translation>
 <translation id="3192947282887913208">ملفات صوتية</translation>
 <translation id="3199982728237701504">وحدة تغذية المستندات (وجهان)</translation>
@@ -508,6 +510,7 @@
 <translation id="3488065109653206955">نشطة جزئيًا</translation>
 <translation id="3492882532495507361">مكتب <ph name="OFFICE_STYLE" /> بألوان <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">‏يقيس جهاز Chromebook البيانات التي يتم استخدامها. وقد يختلف هذا القياس عن قياسات مزوِّد البيانات.</translation>
+<translation id="349570724365779960">‏هناك جلسة حالية بين School Tools والطلاب</translation>
 <translation id="3502426834823382181">عرض جميع التطبيقات</translation>
 <translation id="3510890413042482857">إرسال <ph name="BEGIN_LINK1" />بيانات تتبُّع مستوى الأداء<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">‏تحديث نظام التشغيل Chrome</translation>
@@ -757,6 +760,7 @@
 <translation id="473775607612524610">تحديث</translation>
 <translation id="4744944742468440486">معلومات ذات صلة باختيارك</translation>
 <translation id="4771607256327216405">زيادة سطوع لوحة المفاتيح</translation>
+<translation id="4771923071974529837">غدًا</translation>
 <translation id="4773299976671772492">متوقفة</translation>
 <translation id="4778082030331381943">الجمشت</translation>
 <translation id="4782311465517282004">يمكنك الحصول على تعريفات أو ترجمات للنصوص أو تحويل الوحدات من خلال النقر بزر الماوس الأيمن على النص أو النقر عليه مع الاستمرار.</translation>
@@ -820,6 +824,7 @@
 <translation id="500920857929044050">إيقاف الاختبار</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">لون المظهر</translation>
+<translation id="5037240652947866174">اليوم</translation>
 <translation id="5038292761217083259">لوحة مفاتيح متعددة الألوان</translation>
 <translation id="5039804452771397117">سماح</translation>
 <translation id="5049856988445523908">‏تم قفل شريحة SIM (باستخدام <ph name="LOCK_TYPE" />).</translation>

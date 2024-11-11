@@ -29,6 +29,7 @@
 <translation id="1161762950103988776">जम्प</translation>
 <translation id="1164857107703583584">जम्प कमान्डहरू प्रयोग गरी कुनै वेब पेजमा कुशलतापूर्वक नेभिगेट गर्न सकिन्छ।</translation>
 <translation id="1175914831232945926">अङ्कहरू</translation>
+<translation id="1186712907912748007">ड्र्याग एन्ड ड्रप गरिँदै छ। रद्द गर्न <ph name="GESTURE" />। अन्य जेस्चरहरू केही समयका लागि उपलब्ध छैनन्।</translation>
 <translation id="1188858454923323853">पूरक</translation>
 <translation id="1189258430971676908">अभ्यास गर्ने क्षेत्र: ड्रप-डाउन सूचीहरू</translation>
 <translation id="1195238899008218998">उपसंहार</translation>
@@ -210,6 +211,7 @@
 <translation id="2347456970887948350">एउटा लिंक</translation>
 <translation id="2363753371702255035">बुलेट</translation>
 <translation id="2365384324219615024">तपाईं पाठ खोल्न Enter की पनि थिच्न सक्नुहुन्छ। उदाहरणका लागि, Enter की थिचेर कुनै फारममा टेक्स्ट पेस गर्न सकिन्छ। जारी राख्न Enter की थिच्नुहोस्।</translation>
+<translation id="2371402123699727805">स्पिच-टु-टेक्स्ट अन छ। अफ गर्न <ph name="GESTURE" />। अन्य जेस्चरहरू केही समयका लागि उपलब्ध छैनन्।</translation>
 <translation id="2381733276052567791">बोली सक्रिय वा निष्क्रिय पार्न टगल गर्नुहोस्</translation>
 <translation id="2390264819538553347">अगाडि बढ्न इन्टर थिच्नुहोस्; पछाडि जान ब्याकस्पेस थिच्नुहोस्</translation>
 <translation id="2398579267367951220">यो पृष्ठमा खोज्न टाइप गर्नुहोस्। परिणामहरू भएको पृष्ठमा जान enter थिच्नुहोस्, परिणामहरू हेर्न माथि वा तल जनाउने तीर चिन्हहरू थिच्नुहोस्, अरू नै कुरा खोज्न टाइप गरिराख्नुहोस् वा खोज रद्द गर्न escape थिच्नुहोस्।</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">अघिल्लो कुनै पनि लेभल ३ शीर्षक छैन</translation>
 <translation id="3887399638190992181">अत्यावश्यक कीहरू</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">फेस कन्ट्रोल पज गरिएको छ। सुचारु गर्न <ph name="GESTURE" />। अन्य जेस्चरहरू केही समयका लागि उपलब्ध छैनन्।</translation>
 <translation id="3897092660631435901">मेनु</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">अघिल्लो स्तर 6 शीर्षक</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">अर्को कुनै लेभल १ शीर्षक छैन</translation>
 <translation id="5455441614648621694">पूरक</translation>
 <translation id="5462510922370980473">पृष्ठ सूची</translation>
+<translation id="5489460663499094917">स्क्रोल मोड अन छ। अफ गर्न <ph name="GESTURE" />। अन्य जेस्चरहरू केही समयका लागि उपलब्ध छैनन्।</translation>
 <translation id="5495517933067991341">अत्यावश्यक की: Shift</translation>
 <translation id="549602578321198708">शब्द</translation>
 <translation id="5513242761114685513">सान्दर्भिक मेनु</translation>

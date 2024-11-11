@@ -307,6 +307,7 @@
 <translation id="2308243864813041101">Deconectează cablul USB pentru <ph name="DEVICE_NAME" /> pentru a continua procesul de actualizare</translation>
 <translation id="2320295602967756579">Activează tema luminoasă</translation>
 <translation id="2323506179655536734">OMIS</translation>
+<translation id="2323755382216917952">Pentru a finaliza instalarea actualizării, trebuie să repornești computerul. Actualizarea poate dura câteva minute. Nu deconecta sau nu închide computerul în timpul actualizării firmware-ului.</translation>
 <translation id="2324354238778375592">Suprapus</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Excelentă (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -450,6 +451,7 @@
 <translation id="3178532070248519384">avant-gardist</translation>
 <translation id="3182676044300231689">Introdu o solicitare precum „mai încrezător”</translation>
 <translation id="3188257591659621405">Fișierele mele</translation>
+<translation id="3188931456353313123">Actualizarea este oferită de producătorul dispozitivului și nu a fost verificată de Google.</translation>
 <translation id="319101249942218879">Imaginea avatar a fost schimbată</translation>
 <translation id="3192947282887913208">Fișiere audio</translation>
 <translation id="3199982728237701504">Alimentator de documente (față-verso)</translation>
@@ -508,6 +510,7 @@
 <translation id="3488065109653206955">Activat parțial</translation>
 <translation id="3492882532495507361">Un birou <ph name="OFFICE_STYLE" /> în tonuri de <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Datele sunt măsurate de Chromebook. Acestea pot fi diferite de datele furnizorului.</translation>
+<translation id="349570724365779960">School Tools este conectat la elevi</translation>
 <translation id="3502426834823382181">vezi toate aplicațiile</translation>
 <translation id="3510890413042482857">Trimite <ph name="BEGIN_LINK1" />datele privind urmărirea performanței<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualizare SO Chrome</translation>
@@ -757,6 +760,7 @@
 <translation id="473775607612524610">Actualizează</translation>
 <translation id="4744944742468440486">Informații legate de selecția ta</translation>
 <translation id="4771607256327216405">mărirea luminozității tastaturii</translation>
+<translation id="4771923071974529837">mâine</translation>
 <translation id="4773299976671772492">Oprit</translation>
 <translation id="4778082030331381943">ametist</translation>
 <translation id="4782311465517282004">Obții definiții, traduceri sau conversii ale unităților când dai clic dreapta sau apeși lung pe text</translation>
@@ -820,6 +824,7 @@
 <translation id="500920857929044050">Oprește testul</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Culoarea temei</translation>
+<translation id="5037240652947866174">azi</translation>
 <translation id="5038292761217083259">tastatură multicoloră</translation>
 <translation id="5039804452771397117">Permite</translation>
 <translation id="5049856988445523908">Card SIM blocat (<ph name="LOCK_TYPE" />)</translation>

@@ -806,7 +806,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1561331397460162942">Detta tillåter platsåtkomst för appar, webbplatser med platsbehörighet och systemtjänster</translation>
 <translation id="1562119309884184621">Om du lägger till den här kontakten är den sparad nästa gång personen delar något</translation>
 <translation id="1563137369682381456">Utgångsdatum</translation>
-<translation id="1563702743503072935">Lösenorden i Google-kontot blir även tillgängliga på denna enhet när du är inloggad</translation>
 <translation id="1566049601598938765">Webbplats</translation>
 <translation id="15662109988763471">Den valda skrivaren är inte tillgänglig eller har inte installerats korrekt. Kontrollera skrivaren eller välj en annan.</translation>
 <translation id="1566329594234563241">När enheten är inaktiv och ansluten till en strömkälla</translation>
@@ -1557,6 +1556,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2062354623176996748">Surfa utan att någon webbhistorik sparas med ett inkognitofönster</translation>
 <translation id="206308717637808771">Radera data när du stänger alla fönster. Data behandlas på samma sätt som webbplatsen du visar</translation>
 <translation id="2065405795449409761">Chrome kontrolleras av automatisk testmjukvara.</translation>
+<translation id="2066700471214517561">Strålformad mikrofon används så att personen som använder Chromebook hörs klart.</translation>
 <translation id="2067591192939433190">Från <ph name="VENDOR_NAME" /></translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> har skrivit ut på till <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Det finns ingen lokal loggfil.</translation>
@@ -2317,6 +2317,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2580889980133367162">Tillåt alltid att <ph name="HOST" /> laddar flera filer</translation>
 <translation id="258095186877893873">Lång</translation>
 <translation id="2581455244799175627">Mer om att tillåta tredjepartscookies</translation>
+<translation id="2581786034175502848">Tryck på Skift fem gånger för att återaktivera den</translation>
 <translation id="2581992808349413349">Använd en säker anslutning för att söka efter en webbplats IP-adress i domännamnssystemet (DNS). Detta använder en hanterad tjänsteleverantör på <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /></translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Plattform <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Det gick inte att hämta Kerberos-biljetten. Försök igen eller kontakta organisationens enhetsadministratör. (Felkod: <ph name="ERROR_CODE" />).</translation>
@@ -3137,7 +3138,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3177909033752230686">Sidans språk:</translation>
 <translation id="3177914167275935955">Chrome Education Upgrade ingår med enheten, men ditt användarnamn är inte kopplat till ett Google for Education-konto. Skapa ett Google for Education-konto genom att besöka g.co/workspace/edusignup på en annan enhet.</translation>
 <translation id="3179982752812949580">Textens teckensnitt</translation>
-<translation id="3180175986308160674">Genererar frågor om den här sidan …</translation>
 <translation id="3180284704187420717">Spara bokmärken, lösenord och annat med synkronisering</translation>
 <translation id="3180990259147710757">Flytta käken åt vänster</translation>
 <translation id="3181954750937456830">Säker webbsökning (skyddar dig och enheten från skadliga webbplatser)</translation>
@@ -3800,6 +3800,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3662207097851752847">Bekräfta ditt Google-konto på telefonen</translation>
 <translation id="3663417513679360795">Mer information om att aktivera standardinläsning i förväg</translation>
 <translation id="3664511988987167893">Tilläggsikon</translation>
+<translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Gå med i flikgruppen med <ph name="OWNER_FIRST_NAME" />}=1{Gå med i flikgruppen med <ph name="OWNER_FIRST_NAME" /> och # till}other{Gå med i flikgruppen med <ph name="OWNER_FIRST_NAME" /> och # till}}</translation>
 <translation id="3665100783276035932">De flesta webbplatser bör fungera som förväntat</translation>
 <translation id="3665301845536101715">Öppna i sidopanelen</translation>
 <translation id="3665589677786828986">Chrome har upptäckt att visa av inställningarna har skadats av ett annat program och återställer dem till standardinställningarna.</translation>
@@ -3940,7 +3941,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3748424433435232460">Ett lösenord för det här kontot har redan sparats på den här enheten</translation>
 <translation id="3748706263662799310">Rapportera ett fel</translation>
 <translation id="3749724428455457489">Läs mer om föreslagna annonser på webbplatser</translation>
-<translation id="3750562496035670393">Chrome har sparat lösenordet på enheten, men du kan spara det i Google-kontot i stället. Alla lösenord som finns i Google-kontot är tillgängliga när du är inloggad.</translation>
 <translation id="3752115502500640407">Dela en kopia av lösenordet till <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Låt ditt barn trycka och lyfta på fingret upprepade gånger så att fingeravtrycket sparas</translation>
 <translation id="3753033997400164841">Spara dem en gång. Använd dem överallt</translation>
@@ -4577,7 +4577,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4195378859392041564">Klicka på valfri tangent med musen och tryck sedan på en tangent på tangentbordet för att anpassa den</translation>
 <translation id="4195643157523330669">Öppna i ny flik</translation>
 <translation id="4195814663415092787">Fortsätt där du slutade</translation>
-<translation id="4196350776737072374">Det finns inga tillgängliga frågor. Testa att be om sådant som ”sammanfatta den här sidan” eller ställ en egen fråga.</translation>
 <translation id="4198268995694216131">Ytterligare webbplatser</translation>
 <translation id="4200609364258658652">Kopiera videobildrutan</translation>
 <translation id="4200689466366162458">Anpassade ord</translation>
@@ -5165,6 +5164,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4627442949885028695">Fortsätta på en annan enhet</translation>
 <translation id="4628762811416793313">Det gick inte att slutföra konfigureringen av Linux-behållaren. Försök igen.</translation>
 <translation id="4629521233550547305">Öppna profilen <ph name="PROFILE_NAME" /></translation>
+<translation id="4631955550884380853">Fokuserad röst</translation>
 <translation id="4632655012900268062">Anpassa kort</translation>
 <translation id="4633003931260532286">Tillägget kräver <ph name="IMPORT_NAME" /> med minst version <ph name="IMPORT_VERSION" />, men endast version <ph name="INSTALLED_VERSION" /> är installerad</translation>
 <translation id="4633757335284074492">Säkerhetskopiera på Google Drive. Återställ data eller byt enkelt enhet när du vill. Säkerhetskopian innehåller appdata. Säkerhetskopiorna krypteras med hjälp av lösenordet till barnets Google-konto och laddas upp på Google.</translation>
@@ -6014,7 +6014,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5249624017678798539">Webbläsaren kraschade innan nedladdningen slutförts.</translation>
 <translation id="5249818097095743806">Använd säkerhetsnyckeln</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> använder din plats för att ge dig lokalt innehåll. Detta går att ändra i <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5252496130205799136">Vill du spara och fylla i lösenord med Google-kontot?</translation>
 <translation id="5252653240322147470">Pinkoden får inte överskrida <ph name="MAXIMUM" /> siffror</translation>
 <translation id="5253554634804500860">Använd <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Minnesanvändning: <ph name="MEMORY_USAGE" /></translation>
@@ -8188,7 +8187,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6833479554815567477">Fliken togs bort från gruppen <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Balanserat (rekommenderas)</translation>
 <translation id="6835762382653651563">Anslut till internet om du vill uppdatera din <ph name="DEVICE_TYPE" />.</translation>
-<translation id="683630338945552556">Använd och spara lösenord i Google-kontot</translation>
 <translation id="6838992358006915573">Förstoringsglaset följer ChromeVox fokus</translation>
 <translation id="6839225236531462745">Fel vid borttagning av certifikat</translation>
 <translation id="6839916869147598086">Inloggning fungerar annorlunda</translation>

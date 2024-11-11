@@ -302,6 +302,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4567424176335768812">Je bent ingelogd als <ph name="USER_EMAIL_ADDRESS" />. Je hebt nu toegang tot je bookmarks, geschiedenis en andere instellingen op al je apparaten waarop je bent ingelogd.</translation>
 <translation id="4571503333518166079">Ga naar instellingen voor Chrome-meldingen</translation>
 <translation id="4575717501879784448">Chrome kan deze tabbladen inactief maken om de browsefunctionaliteit te verbeteren en resources vrij te maken.</translation>
+<translation id="4595162648538023956">Je kunt inloggen om toegang tot je gegevens te krijgen of Chrome gebruiken zonder account</translation>
 <translation id="459622048091363950">Zodra Chrome toegang heeft, kunnen websites je om toegang vragen.</translation>
 <translation id="4600710005438004015">Chrome kan niet worden geüpdatet naar de nieuwste versie, dus je loopt nieuwe functies en beveiligingsoplossingen mis.</translation>
 <translation id="4601439950572737842">Je gegevens zijn versleuteld met je wachtwoordzin. Voer deze in om Chrome-gegevens te gebruiken en op te slaan in je Google-account.</translation>
@@ -451,6 +452,7 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="6497147134301593682">Chrome is automatisch gesloten</translation>
 <translation id="6506909944137591434">Chrome heeft camerarechten nodig om een 3D-kaart van je omgeving te maken</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
+<translation id="6515549163407364048">Log in bij Chrome om op al je computers toegang te krijgen tot je extensies</translation>
 <translation id="6520670145826811516">Geef Chrome toegang via de <ph name="BEGIN_LINK" />systeeminstellingen<ph name="END_LINK" /> om je locatie te gebruiken</translation>
 <translation id="659498884637196217">In Google Wachtwoordmanager op dit apparaat</translation>
 <translation id="6600016381025017075">Zoek naar iets op deze pagina</translation>

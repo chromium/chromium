@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Vytváření obrázků…</translation>
 <translation id="1116694919640316211">Informace</translation>
 <translation id="1118572504348554005">Zpětnou vazbu odeslanou prostřednictvím tohoto formuláře můžeme za účelem odstraňování chyb a jiných nahlášených problémů sdílet s našimi partnery. Nezahrnujte citlivé informace, jako jsou hesla.</translation>
+<translation id="1119403468619527527">Příliš málo slov na zjednodušení</translation>
 <translation id="1119447706177454957">Interní chyba</translation>
 <translation id="1124772482545689468">Uživatel</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Zařízení nelze otestovat. Přepněte na režim notebooku.</translation>
 <translation id="3916998944874125962">pořídit snímek obrazovky</translation>
 <translation id="3923184630988645767">Využití dat</translation>
+<translation id="3924445055519423964">Kliknutím získáte souhrn webové stránky / souboru PDF</translation>
 <translation id="3932043219784172185">Není připojeno žádné zařízení</translation>
 <translation id="3934185438132762746">Nepřiřazeno <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Hostitele se nepodařilo vyřešit</translation>
@@ -814,6 +816,7 @@
 <translation id="4988526792673242964">Stránky</translation>
 <translation id="4989542687859782284">Nedostupné</translation>
 <translation id="4999333166442584738">Skrýt přehled</translation>
+<translation id="5005695757087124131">Kliknutím zjednodušíte vybraný text</translation>
 <translation id="500920857929044050">Zastavit test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Barva motivu</translation>
@@ -1334,6 +1337,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="7405493795721832710">Zařízení <ph name="DEVICE_NAME" /> je připraveno k aktualizaci</translation>
 <translation id="741244894080940828">převod</translation>
 <translation id="7415801143053185905">Velmi vysoká latence požadavků HTTP</translation>
+<translation id="7418738250896500352">Příliš mnoho slov na zjednodušení</translation>
 <translation id="7425037327577270384">Pomozte mi s psaním</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Tento APN nelze deaktivovat ani odstranit. Je třeba deaktivovat nebo odstranit aktivované APN typu <ph name="ATTACH" />.</translation>
@@ -1550,6 +1554,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8476942730579767658">Okna a plochy</translation>
 <translation id="8477536061607044749">grafický design</translation>
 <translation id="8477551185774834963">DNS má latenci mírně nad prahovou hodnotou</translation>
+<translation id="8482376765267780829">Vyberte nějaký text ke zjednodušení</translation>
 <translation id="8483248364096924578">IP adresa</translation>
 <translation id="8491311378305535241">Z aplikací pro Android se přes firewall nelze připojit k webům HTTPS</translation>
 <translation id="8495070016475833911">plsť</translation>
@@ -1679,6 +1684,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="9082718469794970195">Použít toto video</translation>
 <translation id="9087578468327036362">Nahlaste tento dotaz</translation>
 <translation id="9088306295921699330">Současné využití</translation>
+<translation id="9088994563996376283">Zjednodušit</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Další informace o datu resetování</translation>
 <translation id="9100765901046053179">Rozšířená nastavení</translation>

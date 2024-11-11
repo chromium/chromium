@@ -170,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{සමූහය තුළ ඔබේ ක්‍රියාකාරකම් දැකිය හැකි <ph name="RWS_OWNER" />ගේ අඩවි සමූහයේ <ph name="RWS_MEMBERS_COUNT" /> අඩවියක්}one{සමූහය තුළ ඔබේ ක්‍රියාකාරකම් දැකිය හැකි <ph name="RWS_OWNER" />ගේ අඩවි සමූහයේ වෙබ් අඩවි <ph name="RWS_MEMBERS_COUNT" />ක්}other{සමූහය තුළ ඔබේ ක්‍රියාකාරකම් දැකිය හැකි <ph name="RWS_OWNER" />ගේ අඩවි සමූහයේ වෙබ් අඩවි <ph name="RWS_MEMBERS_COUNT" />ක්}}</translation>
 <translation id="3697164069658504920">සක්‍රීය වූ විට, අඩවිවලට USB උපාංග භාවිත කිරීමට ඉල්ලිය හැක. අක්‍රිය වූ විට, අඩවිවලට USB උපාංග භාවිත කළ නොහැක.</translation>
 <translation id="3707034683772193706">ඔබ පිවිසෙන අඩවියකට ප්‍රධාන වශයෙන් ඔබ බොට් කෙනෙක් නොවන බව වලංගු කිරීමට, Chrome සමග කුඩා තතු ප්‍රමාණයක් සුරැකීමට හැක</translation>
+<translation id="3709818294139939629">අඩවියේ ගොනුව වෙත ප්‍රවේශය ඉවත් කරන ලදි</translation>
 <translation id="3721953990244350188">අස් කර මීළඟ පවතින ක්‍රියාව පෙන්වන්න</translation>
 <translation id="3744111561329211289">පසුබිමෙහි සමමුහුර්තකරණය</translation>
 <translation id="3763247130972274048">ත. 10 ක් මඟ හැරීමට වීඩියෝවේ වමට හෝ දකුණට දෙවරක් තට්ටු කරන්න</translation>
@@ -432,6 +433,7 @@
 <translation id="7425915948813553151">අඩවි සඳහා අඳුරු තේමාව</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">සක්‍රීය වූ විට, අඩවිවලට පුරන ප්‍රේරක පෙන්විය හැක. අක්‍රිය වූ විට, අඩවිවලට පුරන ප්‍රේරක පෙන්විය නොහැක.</translation>
+<translation id="7553211568594248088">මධ්‍යස්ථාන සෙවීමෙන් පිටවන්න</translation>
 <translation id="7554752735887601236">වෙබ් අඩවියක් ඔබේ මයික්‍රොෆෝනය භාවිත කරයි</translation>
 <translation id="7561196759112975576">සැමවිටම</translation>
 <translation id="757524316907819857">ආරක්ෂිත අන්තර්ගත වාදනය කරමින් තිබෙන අඩවි තහනම් කිරීම</translation>
@@ -440,7 +442,6 @@
 <translation id="7649070708921625228">උදවු</translation>
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
-<translation id="7684642910516280563">තෙවන පාර්ශවීය කුකීස් භාවිතා කිරීමට වෙබ් අඩවියකට ඉඩ නොදෙන්න</translation>
 <translation id="7688240020069572972">Chrome ඉඟි කාඩ්පත සඟවන්න</translation>
 <translation id="7719367874908701697">පිටු විශාලනය:</translation>
 <translation id="7759147511335618829">MIDI උපාංග පාලනය සහ නැවත වැඩසටහන්කරණය</translation>

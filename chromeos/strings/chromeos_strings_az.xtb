@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Şəkillər yaradılır...</translation>
 <translation id="1116694919640316211">Haqqında</translation>
 <translation id="1118572504348554005">Bildirdiyiniz baq və digər problemləri həll etmək üçün bu formadakı rəyi partnyorlarımızla paylaşa bilərik. Parol kimi həssas məlumat daxil etməyin.</translation>
+<translation id="1119403468619527527">Sadələşdirmək üçün çox az söz</translation>
 <translation id="1119447706177454957">Daxili xəta</translation>
 <translation id="1124772482545689468">İstifadəçi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Cihazı test etmək mümkün deyil. Test etmək üçün noutbuk rejiminə keçin.</translation>
 <translation id="3916998944874125962">skrinşot çəkin</translation>
 <translation id="3923184630988645767">Data istifadəsi</translation>
+<translation id="3924445055519423964">Veb-səhifəni/PDF faylını ümumiləşdirmək üçün klikləyin</translation>
 <translation id="3932043219784172185">Qoşulmuş cihaz yoxdur</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> təyinatı ləğv edildi</translation>
 <translation id="3941014780699102620">Hostu həll etmək alınmadı</translation>
@@ -814,6 +816,7 @@
 <translation id="4988526792673242964">Səhifələr</translation>
 <translation id="4989542687859782284">Əlçatmaz</translation>
 <translation id="4999333166442584738">Hesabatı gizlədin</translation>
+<translation id="5005695757087124131">Seçilmiş mətni sadələşdirmək üçün klikləyin</translation>
 <translation id="500920857929044050">Testi dayandırın</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Tema rəngi</translation>
@@ -1334,6 +1337,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> güncəllənməyə hazırdır</translation>
 <translation id="741244894080940828">çevirmə</translation>
 <translation id="7415801143053185905">Çox yüksək HTTP gecikməsi</translation>
+<translation id="7418738250896500352">Sadələşdirmək üçün həddindən çox söz</translation>
 <translation id="7425037327577270384">Yazmağa kömək edin</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Bu APN-i deaktiv etmək və ya silmək olmur. Aktiv <ph name="ATTACH" /> APN-lər deaktiv edilməli və ya silinməlidir.</translation>
@@ -1550,6 +1554,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8476942730579767658">Pəncərə və masalar</translation>
 <translation id="8477536061607044749">qrafik dizayn</translation>
 <translation id="8477551185774834963">DNS gecikməsi icazə verilən həddən azca yuxarıdır</translation>
+<translation id="8482376765267780829">Sadələşdirmək üçün mətn seçin</translation>
 <translation id="8483248364096924578">IP ünvanı</translation>
 <translation id="8491311378305535241">Alov divarı aktiv olduqda Android tətbiqlərindən HTTPS vebsaytlarına qoşulmaq olmur</translation>
 <translation id="8495070016475833911">keçə</translation>
@@ -1679,6 +1684,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="9082718469794970195">Bu videonu istifadə edin</translation>
 <translation id="9087578468327036362">Bu sorğunu bildirin</translation>
 <translation id="9088306295921699330">Cari istifadə</translation>
+<translation id="9088994563996376283">Sadələşdirin</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Sıfırlama tarixi haqqında ətraflı məlumat</translation>
 <translation id="9100765901046053179">Qabaqcıl ayarlar</translation>

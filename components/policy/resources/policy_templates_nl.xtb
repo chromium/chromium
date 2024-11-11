@@ -4933,7 +4933,6 @@ Dit beleid heeft geen effect als het beleid <ph name="DEVICE_SCREENSAVER_LOGIN_S
 <translation id="4725801978265372736">Vereisen dat de naam van de lokale gebruiker en de eigenaar van de host voor externe toegang met elkaar overeenkomen</translation>
 <translation id="4726228171190098009">Niet toestaan dat het apparaat een Powerwash aanvraagt</translation>
 <translation id="4726895359147376813">Toewijzing van permanente ID's naar VM-configuraties</translation>
-<translation id="4729091573952050200">Het gebruik van de Translator API altijd toestaan</translation>
 <translation id="4732069502693984686">Hiermee zet je automatische schermopname van meerdere schermen aan</translation>
 <translation id="4733471537137819387">Beleid met betrekking tot geïntegreerde HTTP-authenticatie.</translation>
 <translation id="473673197014866318">Als je dit beleid instelt, worden de extensiebeheerinstellingen voor <ph name="PRODUCT_NAME" /> beheerd, waaronder instellingen die worden beheerd door bestaande, aan extensies gerelateerde beleidsregels. Dit beleid vervangt verouderde beleidsregels die misschien zijn ingesteld.
@@ -9738,15 +9737,6 @@ Meer informatie over verouderde technologieën vind je op https://chromestatus.c
 <translation id="8331479227794770304">Plaktoetsen aanzetten</translation>
 <translation id="8332822245414537447">Controle van RSA-sleutelgebruik uitzetten</translation>
 <translation id="8334685561819743286">Automatische correctie op fysiek toetsenbord als gebruikers typen uitzetten</translation>
-<translation id="8336819406993366823">Als je het beleid instelt op <ph name="ENABLED_VALUE_NAME" />, kunnen de specifieke API's voor volledig scherm voor video met voorvoegsels (bijv. Video.webkitEnterFullscreen()) worden gebruikt via JavaScript.
-
-Als je het beleid instelt op <ph name="DISABLED_VALUE_NAME" />, kunnen de specifieke API's voor volledig scherm voor video met voorvoegsels niet worden gebruikt in JavaScript. Alleen de standaard-API's voor volledig scherm blijven over (bijvoorbeeld Element.requestFullscreen()).
-
-Als je het beleid instelt op <ph name="RUNTIME_ENABLED_VALUE_NAME" />, zorg je ervoor dat de functievlag waarvoor de runtime PrefixedFullscreenVideo is aangezet, bepaalt of de specifieke API's voor volledig scherm voor video met voorvoegsels beschikbaar zijn voor websites.
-
-Als je het beleid niet instelt, is het gedrag standaard ingesteld op <ph name="RUNTIME_ENABLED_VALUE_NAME" />.
-
-Opmerking: Dit beleid is een tijdelijke oplossing om de overstap te maken van API's voor volledig scherm met webkit-voorvoegsels. Het beleid wordt voorlopig verwijderd in M130 of in de daaropvolgende releases.</translation>
 <translation id="8337114537412769126">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> instelt, worden de parameters gespecificeerd tijdens voorgestelde zoekopdrachten met POST. Deze bestaan uit door komma's gescheiden naam/waarde-paren. Als een waarde een templateparameter is (zoals <ph name="SEARCH_TERM_MARKER" />), wordt deze vervangen door de echte zoektermen.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> niet instelt, worden voorgestelde zoekopdrachten gestuurd met de GET-methode.</translation>

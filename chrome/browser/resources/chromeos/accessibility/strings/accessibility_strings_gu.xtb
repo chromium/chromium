@@ -29,6 +29,7 @@
 <translation id="1161762950103988776">Jump</translation>
 <translation id="1164857107703583584">જમ્પ આદેશોનો ઉપયોગ વેેબ પેજ પર વધુ કાર્યક્ષમતાથી નૅવિગેટ કરવા માટે થઈ શકે છે.</translation>
 <translation id="1175914831232945926">અંકો</translation>
+<translation id="1186712907912748007">ખેંચવા અને છોડવાની પ્રક્રિયા ચાલુ છે. સમાપ્ત કરવા માટે, <ph name="GESTURE" />. અન્ય સંકેતો હંગામી રીતે અનુપલબ્ધ છે.</translation>
 <translation id="1188858454923323853">પૂરક</translation>
 <translation id="1189258430971676908">અભ્યાસ ક્ષેત્ર: ડ્રૉપ-ડાઉન સૂચિ</translation>
 <translation id="1195238899008218998">સમાપન ભાષણ</translation>
@@ -210,6 +211,7 @@
 <translation id="2347456970887948350">લિંક</translation>
 <translation id="2363753371702255035">બુલેટ</translation>
 <translation id="2365384324219615024">આઇટમ સક્રિય કરવા માટે તમે Enter પણ દબાવી શકો છો. ઉદાહરણ તરીકે, ફોર્મમાં ટેક્સ્ટ સબમિટ કરવા માટે Enterનો ઉપયોગ કરી શકાય છે. આગળ વધવા માટે, Enter દબાવો.</translation>
+<translation id="2371402123699727805">ડિક્ટેશનની સુવિધા સક્રિય છે. બંધ કરવા માટે, <ph name="GESTURE" />. અન્ય સંકેતો હંગામી રીતે અનુપલબ્ધ છે.</translation>
 <translation id="2381733276052567791">વાણી ચાલુ અથવા બંધ કરવાનું ટૉગલ કરો</translation>
 <translation id="2390264819538553347">આગળ જવા માટે, enter દબાવો, પાછળ જવા માટે backspace દબાવો.</translation>
 <translation id="2398579267367951220">પેજ શોધવા માટે ટાઇપ કરો. પરિણામ પર જવા માટે Enter, પરિણામો બ્રાઉઝ કરવા માટે ઉપર અથવા નીચેનો ઍરો દબાવો, તમારી શોધમાં ફેરફાર કરવા માટે ટાઇપ કરવાનું ચાલુ રાખો અથવા રદ કરવા માટે Escape દબાવો.</translation>
@@ -464,6 +466,7 @@
 <translation id="3870295413168340326">કોઈ પાછલું 'લેવલ 3' મથાળું નથી</translation>
 <translation id="3887399638190992181">આવશ્યક કી</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">ફેસ કન્ટ્રોલની સુવિધા થોભાવવામાં આવી. ફરી શરૂ કરવા માટે, <ph name="GESTURE" />. અન્ય સંકેતો હંગામી રીતે અનુપલબ્ધ છે.</translation>
 <translation id="3897092660631435901">મેનૂ</translation>
 <translation id="3907138069015388678">સૂચિ ગ્રિડ</translation>
 <translation id="3909320334364316587">પાછલું લેવલ 6 શીર્ષક</translation>
@@ -700,6 +703,7 @@
 <translation id="5452267669091857717">કોઈ આગલું 'લેવલ 1' મથાળું નથી</translation>
 <translation id="5455441614648621694">પૂરક</translation>
 <translation id="5462510922370980473">પેજ સૂચિ</translation>
+<translation id="5489460663499094917">સ્ક્રોલ મોડ સક્રિય છે. બહાર નીકળવા માટે, <ph name="GESTURE" />. અન્ય સંકેતો હંગામી રીતે અનુપલબ્ધ છે.</translation>
 <translation id="5495517933067991341">આવશ્યક કી: Shift</translation>
 <translation id="549602578321198708">શબ્દ</translation>
 <translation id="5513242761114685513">સંદર્ભ મેનૂ</translation>

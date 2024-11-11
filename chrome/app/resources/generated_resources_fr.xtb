@@ -806,7 +806,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1561331397460162942">L'accès à la position sera accordé aux applis et sites Web ayant l'autorisation correspondante, ainsi qu'aux services système</translation>
 <translation id="1562119309884184621">L'ajout de ce contact sera mémorisé pour leur prochain partage</translation>
 <translation id="1563137369682381456">Date d'expiration</translation>
-<translation id="1563702743503072935">Les mots de passe enregistrés dans votre compte Google seront également disponibles sur cet appareil lorsque vous serez connecté</translation>
 <translation id="1566049601598938765">Site Web</translation>
 <translation id="15662109988763471">L'imprimante sélectionnée n'est pas disponible ou n'est pas installée correctement. Vérifiez votre imprimante ou sélectionnez-en une autre.</translation>
 <translation id="1566329594234563241">Lorsque l'appareil est inactif et branché</translation>
@@ -1548,6 +1547,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2062354623176996748">Parcourez le Web sans enregistrer l'historique de votre navigation à l'aide d'une fenêtre de navigation privée</translation>
 <translation id="206308717637808771">Supprimer les données lorsque vous fermez toutes les fenêtres. Les données sont traitées de la même manière que le site que vous consultez.</translation>
 <translation id="2065405795449409761">Chrome est contrôlé par un logiciel de test automatisé.</translation>
+<translation id="2066700471214517561">Micro à formation de faisceau pour que la personne utilisant le Chromebook soit bien entendue.</translation>
 <translation id="2067591192939433190">Venant de "<ph name="VENDOR_NAME" />"</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> a terminé l'impression sur <ph name="PRINTER_NAME" /></translation>
 <translation id="2071393345806050157">Aucun fichier journal local.</translation>
@@ -2305,6 +2305,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2580889980133367162">Toujours autoriser <ph name="HOST" /> à télécharger plusieurs fichiers</translation>
 <translation id="258095186877893873">Long</translation>
 <translation id="2581455244799175627">En savoir plus sur l'autorisation des cookies tiers</translation>
+<translation id="2581786034175502848">Appuyez cinq fois sur Maj pour le réactiver</translation>
 <translation id="2581992808349413349">Utiliser une connexion sécurisée pour rechercher l'adresse IP d'un site dans le système de noms de domaine (DNS). Un fournisseur de services gérés situé à l'adresse <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER" /> est utilisé.</translation>
 <translation id="2582253231918033891"><ph name="PRODUCT_NAME" /> <ph name="PRODUCT_VERSION" /> (Plate-forme <ph name="PLATFORM_VERSION" />) <ph name="DEVICE_SERIAL_NUMBER" /></translation>
 <translation id="2584109212074498965">Impossible de récupérer le ticket Kerberos. Veuillez réessayer ou contacter l'administrateur des appareils de votre organisation. (Code d'erreur : <ph name="ERROR_CODE" />).</translation>
@@ -3125,7 +3126,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3177909033752230686">Langue de la page :</translation>
 <translation id="3177914167275935955">Votre appareil bénéficie d'une licence Chrome Education Upgrade, mais votre nom d'utilisateur n'est associé à aucun compte Google for Education. Veuillez créer un compte Google for Education en accédant à g.co/workspace/edusignup sur un appareil secondaire.</translation>
 <translation id="3179982752812949580">Police du texte</translation>
-<translation id="3180175986308160674">Génération de questions à propos de cette page…</translation>
 <translation id="3180284704187420717">Enregistrez vos favoris, vos mots de passe et plus avec la synchronisation</translation>
 <translation id="3180990259147710757">Se tordre la mâchoire à gauche</translation>
 <translation id="3181954750937456830">Navigation sécurisée (assure votre protection et celle de votre appareil contre les sites dangereux)</translation>
@@ -3786,6 +3786,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3662207097851752847">Confirmer votre compte Google sur votre téléphone</translation>
 <translation id="3663417513679360795">En savoir plus sur l'activation du préchargement standard</translation>
 <translation id="3664511988987167893">Icône de l'extension</translation>
+<translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{Rejoindre le groupe d'onglets avec <ph name="OWNER_FIRST_NAME" />}=1{Rejoindre le groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et # autre personne}one{Rejoindre le groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et # autre personne}other{Rejoindre le groupe d'onglets avec <ph name="OWNER_FIRST_NAME" /> et # autres personnes}}</translation>
 <translation id="3665100783276035932">La plupart des sites devraient fonctionner comme prévu</translation>
 <translation id="3665301845536101715">Ouvrir dans le panneau latéral</translation>
 <translation id="3665589677786828986">Chrome a détecté que certains de vos paramètres ont été corrompus par un autre programme. Leurs valeurs par défaut ont été rétablies.</translation>
@@ -3926,7 +3927,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3748424433435232460">Un mot de passe pour ce compte est déjà enregistré sur cet appareil</translation>
 <translation id="3748706263662799310">Signaler un bug</translation>
 <translation id="3749724428455457489">En savoir plus sur les annonces suggérées par les sites</translation>
-<translation id="3750562496035670393">Chrome a enregistré votre mot de passe sur cet appareil, mais vous pouvez l'enregistrer dans votre compte Google. Ainsi, les mots de passe enregistrés dans ce compte seront aussi disponibles lorsque vous serez connecté.</translation>
 <translation id="3752115502500640407">Partager une copie de votre mot de passe pour <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Demandez à votre enfant de répéter cette opération pour enregistrer son empreinte</translation>
 <translation id="3753033997400164841">Enregistrez-les une fois pour toutes. Utilisez-les partout</translation>
@@ -4563,7 +4563,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4195378859392041564">Cliquez sur une touche avec la souris, puis appuyez sur une touche du clavier pour la personnaliser</translation>
 <translation id="4195643157523330669">Ouvrir dans un nouvel onglet</translation>
 <translation id="4195814663415092787">Reprendre où vous avez arrêté</translation>
-<translation id="4196350776737072374">Aucune question disponible. Posez la vôtre ou dites, par exemple, "résumer cette page".</translation>
 <translation id="4198268995694216131">Autres sites</translation>
 <translation id="4200609364258658652">Cop&amp;ier l'image vidéo</translation>
 <translation id="4200689466366162458">Mots personnalisés</translation>
@@ -5151,6 +5150,7 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4627442949885028695">Continuer sur un autre appareil</translation>
 <translation id="4628762811416793313">Impossible de configurer le conteneur Linux. Veuillez réessayer.</translation>
 <translation id="4629521233550547305">Ouvrir le profil <ph name="PROFILE_NAME" /></translation>
+<translation id="4631955550884380853">Voix concentrée</translation>
 <translation id="4632655012900268062">Personnaliser les fiches</translation>
 <translation id="4633003931260532286">L'extension nécessite au minimum la version <ph name="IMPORT_VERSION" /> de <ph name="IMPORT_NAME" />, mais la version installée est la <ph name="INSTALLED_VERSION" /></translation>
 <translation id="4633757335284074492">Sauvegarder dans Google Drive. Restaurez les données ou changez d'appareil facilement et à tout moment. Les données des applications sont également sauvegardées. Les sauvegardes sont importées dans Google et chiffrées à l'aide du mot de passe du compte Google de votre enfant.</translation>
@@ -5999,7 +5999,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5249624017678798539">Le navigateur a planté avant la fin du téléchargement.</translation>
 <translation id="5249818097095743806">Utilisez votre clé de sécurité</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> utilise votre position pour vous proposer des contenus locaux. Pour modifier ce paramètre, accédez à la page <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5252496130205799136">Utiliser votre compte Google pour enregistrer et saisir automatiquement les mots de passe ?</translation>
 <translation id="5252653240322147470">Le code doit comprendre moins de <ph name="MAXIMUM" /> chiffres</translation>
 <translation id="5253554634804500860">Utiliser <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Utilisation de la mémoire : <ph name="MEMORY_USAGE" /></translation>
@@ -8175,7 +8174,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6833479554815567477">Onglet supprimé du groupe <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Équilibré (recommandé)</translation>
 <translation id="6835762382653651563">Connectez-vous à Internet pour mettre à jour votre <ph name="DEVICE_TYPE" />.</translation>
-<translation id="683630338945552556">Utiliser et enregistrer les mots de passe dans votre compte Google</translation>
 <translation id="6838992358006915573">Loupe selon la sélection dans ChromeVox</translation>
 <translation id="6839225236531462745">Erreur de suppression de certificat</translation>
 <translation id="6839916869147598086">Le processus de connexion a été modifié</translation>

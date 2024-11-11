@@ -28,6 +28,7 @@
 <translation id="1161762950103988776">Kërce</translation>
 <translation id="1164857107703583584">Komandat e kërcimit mund të përdoren për të naviguar me efikasitet nëpër një faqe uebi</translation>
 <translation id="1175914831232945926">Shifra</translation>
+<translation id="1186712907912748007">Zvarritja dhe lëshimi në vazhdim. <ph name="GESTURE" /> për ta përfunduar. Gjestet e tjera nuk ofrohen përkohësisht.</translation>
 <translation id="1188858454923323853">plotësues</translation>
 <translation id="1189258430971676908">Zona e praktikës: Listat zbritëse</translation>
 <translation id="1195238899008218998">Pasthënie</translation>
@@ -209,6 +210,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="2347456970887948350">Një lidhje</translation>
 <translation id="2363753371702255035">pikë liste</translation>
 <translation id="2365384324219615024">Mund të shtypësh gjithashtu Enter për të aktivizuar artikujt. Për shembull, Enter mund të përdoret për të dërguar tekstin në një formular. Për të vazhduar, shtyp Enter.</translation>
+<translation id="2371402123699727805">Diktimi është aktiv. <ph name="GESTURE" /> për ta ndaluar. Gjestet e tjera nuk ofrohen përkohësisht.</translation>
 <translation id="2381733276052567791">Aktivizo/çaktivizo të folurën</translation>
 <translation id="2390264819538553347">Për të shkuar përpara, shtyp tastin "Enter", për t'u kthyer pas shtyp tastin "Backspace"</translation>
 <translation id="2398579267367951220">Shkruaj për të kërkuar në faqe. Shtyp "Enter" për të kaluar te rezultati, shigjetat lart ose poshtë për të shfletuar rezultatet, vazhdo të shkruash për të ndryshuar kërkimin tënd, ose shtyp "Escape" për ta anuluar.</translation>
@@ -463,6 +465,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="3870295413168340326">Nuk ka titull të mëparshëm të nivelit 3</translation>
 <translation id="3887399638190992181">Tastet thelbësore</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">Kontrolli me anë të fytyrës u vendos në pauzë. <ph name="GESTURE" /> për të vazhduar. Gjestet e tjera nuk ofrohen përkohësisht.</translation>
 <translation id="3897092660631435901">Menyja</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">Titulli i mëparshëm i nivelit 6</translation>
@@ -698,6 +701,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="5452267669091857717">Nuk ka titull tjetër të nivelit 1</translation>
 <translation id="5455441614648621694">Plotësues</translation>
 <translation id="5462510922370980473">Listë faqeje</translation>
+<translation id="5489460663499094917">Modaliteti i lëvizjes është aktiv. <ph name="GESTURE" /> për të dalë. Gjestet e tjera nuk ofrohen përkohësisht.</translation>
 <translation id="5495517933067991341">Tastet thelbësore: Shift</translation>
 <translation id="549602578321198708">Fjalë</translation>
 <translation id="5513242761114685513">Menyja e kontekstit</translation>

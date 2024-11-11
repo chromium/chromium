@@ -595,6 +595,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3819183753496523827">Offline ka. Suriin ang iyong koneksyon sa internet at subukan ulit.</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">Hindi available ang Lens sa account na ito.</translation>
+<translation id="38258275871320156">Available lang para sa maliliit na window</translation>
 <translation id="3830886834687455630">I-update ang mga serbisyo ng Google Play para tingnan ang iyong mga password</translation>
 <translation id="3843603704176567761">Posibleng hindi na gumana ang mga password sa device na ito. Para patuloy na magamit ang iyong mga password, i-update ang mga serbisyo ng Google Play.</translation>
 <translation id="3845098929839618392">Buksan sa Incognito tab</translation>
@@ -602,6 +603,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="3856096718352044181">Paki-verify na valid na provider ito o subukan ulit sa ibang pagkakataon</translation>
 <translation id="3858860766373142691">Pangalan</translation>
+<translation id="3863527519275151528">Pinoproseso ang notification</translation>
 <translation id="3873174561423636563">Para magpatuloy, ishe-share ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong <ph name="FIELDS_STRING" /> sa site na ito. Tingnan ang <ph name="BEGIN_LINK1" />mga tuntunin ng serbisyo<ph name="END_LINK1" /> ng site na ito.</translation>
 <translation id="3892148308691398805">Kopyahin ang text</translation>
 <translation id="3899682235662194879">Isara ang lahat ng tab na Incognito</translation>

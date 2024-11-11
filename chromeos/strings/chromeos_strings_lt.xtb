@@ -307,6 +307,7 @@
 <translation id="2308243864813041101">Jei norite tęsti atnaujinimo procesą, atjunkite „<ph name="DEVICE_NAME" />“ USB laidą</translation>
 <translation id="2320295602967756579">Įgalinti šviesiąją temą</translation>
 <translation id="2323506179655536734">PRALEISTA</translation>
+<translation id="2323755382216917952">Norint užbaigti atnaujinimą, reikia iš naujo paleisti kompiuterį. Šis atnaujinimas gali užtrukti kelias minutes. Kol programinė aparatinė įranga atnaujinama, neatjunkite ir neišjunkite kompiuterio.</translation>
 <translation id="2324354238778375592">Užslinkti</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> tšk./col.</translation>
 <translation id="2346474577291266260">Puikus (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -450,6 +451,7 @@
 <translation id="3178532070248519384">avangardo</translation>
 <translation id="3182676044300231689">Įveskite užklausą, pvz., „reikia, kad skambėtų užtikrinčiau“</translation>
 <translation id="3188257591659621405">Mano failai</translation>
+<translation id="3188931456353313123">Šį naujinį teikia įrenginio gamintojas ir „Google“ jo nepatvirtino.</translation>
 <translation id="319101249942218879">Pseudoportreto vaizdas pakeistas</translation>
 <translation id="3192947282887913208">Garso įrašų failai</translation>
 <translation id="3199982728237701504">Dokumentų tiektuvas (dvipusis)</translation>
@@ -508,6 +510,7 @@
 <translation id="3488065109653206955">Iš dalies suaktyvinta</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> biuras su <ph name="OFFICE_COLOR" /> tonais</translation>
 <translation id="3493187369049186498">Duomenys matuojami „Chromebook“ įrenginiu. Dėl to gali skirtis nuo teikėjo duomenų.</translation>
+<translation id="349570724365779960">Mokyklos įrankiai susieti su mokiniais</translation>
 <translation id="3502426834823382181">žr. visas programas</translation>
 <translation id="3510890413042482857">Siųsti <ph name="BEGIN_LINK1" />našumo stebėjimo duomenis<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">„Chrome“ OS naujinys</translation>
@@ -757,6 +760,7 @@
 <translation id="473775607612524610">Atnaujinti</translation>
 <translation id="4744944742468440486">Informacija, susijusi su jūsų pasirinkimu</translation>
 <translation id="4771607256327216405">klaviatūros pašviesinimas</translation>
+<translation id="4771923071974529837">rytoj</translation>
 <translation id="4773299976671772492">Sustabdyta</translation>
 <translation id="4778082030331381943">ametisto</translation>
 <translation id="4782311465517282004">Spustelėkite dešiniuoju klavišu arba palieskite ir palaikykite tekstą, kad būtų pateiktos apibrėžtys, vertimai ar vienetų konvertavimas.</translation>
@@ -820,6 +824,7 @@
 <translation id="500920857929044050">Stabdyti bandymą</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Temos spalva</translation>
+<translation id="5037240652947866174">šiandien</translation>
 <translation id="5038292761217083259">įvairiaspalvė klaviatūra</translation>
 <translation id="5039804452771397117">Leisti</translation>
 <translation id="5049856988445523908">SIM kortelė užrakinta (<ph name="LOCK_TYPE" />)</translation>

@@ -805,7 +805,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1561331397460162942">Bu işlem, konum izni olan uygulamalar ve web sitelerinin yanı sıra sisteme ait hizmetlerin konuma erişmesine izin verir</translation>
 <translation id="1562119309884184621">Bu kişinin eklenmesi bir sonraki paylaşımında hatırlanmasını sağlar</translation>
 <translation id="1563137369682381456">Son kullanma tarihi</translation>
-<translation id="1563702743503072935">Oturum açtığınızda Google Hesabınızdaki şifrelerinize bu cihazdan da erişebilirsiniz</translation>
 <translation id="1566049601598938765">Web sitesi</translation>
 <translation id="15662109988763471">Seçilen yazıcı kullanılamıyor veya doğru yüklenmemiş. Yazıcınızı kontrol edin veya başka yazıcı seçmeyi deneyin.</translation>
 <translation id="1566329594234563241">Etkin değilken ve fişe takılıyken</translation>
@@ -3124,7 +3123,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3177909033752230686">Sayfanın Dili:</translation>
 <translation id="3177914167275935955">Cihazınızda bir Chrome Education Yükseltme mevcut, ancak kullanıcı adınız bir Google for Education hesabıyla ilişkilendirilmemiş. Lütfen ikinci bir cihazda g.co/workspace/edusignup adresine giderek Google for Education hesabı oluşturun.</translation>
 <translation id="3179982752812949580">Metin yazı tipi</translation>
-<translation id="3180175986308160674">Bu sayfa hakkında sorular oluşturuluyor…</translation>
 <translation id="3180284704187420717">Senkronize ederek yer işaretleri, şifreler ve diğer öğelerinizi kaydedin</translation>
 <translation id="3180990259147710757">Çenenizi sola kaydırın</translation>
 <translation id="3181954750937456830">Gizli Göz Atma (sizi ve cihazınızı tehlikelerden korur)</translation>
@@ -3785,6 +3783,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3662207097851752847">Telefonunuzda Google Hesabınızı onaylayın</translation>
 <translation id="3663417513679360795">Standart önceden yüklemeyi etkinleştirme hakkında daha fazla bilgi</translation>
 <translation id="3664511988987167893">Uzantı Simgesi</translation>
+<translation id="3664911592976620204">{NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" /> kullanıcısının bulunduğu sekme grubuna katılmak istiyor musunuz?}=1{<ph name="OWNER_FIRST_NAME" /> ve # diğer kullanıcının bulunduğu sekme grubuna katılmak istiyor musunuz?}other{<ph name="OWNER_FIRST_NAME" /> ve # diğer kullanıcının bulunduğu sekme grubuna katılmak istiyor musunuz?}}</translation>
 <translation id="3665100783276035932">Çoğu site beklendiği gibi çalışır</translation>
 <translation id="3665301845536101715">Yan panelde aç</translation>
 <translation id="3665589677786828986">Chrome, bazı ayarlarınızın başka bir program tarafından bozulduğunu algıladı ve onları orijinal varsayılan değerlerine sıfırladı.</translation>
@@ -3925,7 +3924,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3748424433435232460">Bu hesaba ait bir şifre bu cihazda zaten depolanıyor</translation>
 <translation id="3748706263662799310">Hata bildir</translation>
 <translation id="3749724428455457489">Site tarafından önerilen reklamlar hakkında daha fazla bilgi</translation>
-<translation id="3750562496035670393">Chrome, şifrenizi bu cihaza kaydetti ancak bunun yerine şifrenizi Google Hesabınıza kaydedebilirsiniz. Bu durumda Google Hesabınızdaki tüm şifreler oturumunuz açıkken de kullanılabilir.</translation>
 <translation id="3752115502500640407"><ph name="WEBSITE" /> şifrenizin bir kopyasını paylaşın</translation>
 <translation id="3752253558646317685">Parmak izini kaydetmek için çocuğunuzun parmağını kaldırıp dokundurmaya devam etmesi gerekir</translation>
 <translation id="3753033997400164841">Bir kere depolayın. Her yerde kullanın</translation>
@@ -4562,7 +4560,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız ve cihazın işletim sistemi hakk
 <translation id="4195378859392041564">Farenizle herhangi bir tuşu tıklayın ve ardından özelleştirmek istediğiniz klavye tuşuna basın</translation>
 <translation id="4195643157523330669">Yeni sekmede aç</translation>
 <translation id="4195814663415092787">Kaldığım yerden devam et</translation>
-<translation id="4196350776737072374">Soru yok. "Bu sayfayı özetle" gibi bir istekte bulunun veya kendi sorunuzu sorun.</translation>
 <translation id="4198268995694216131">Ek siteler</translation>
 <translation id="4200609364258658652">Video karesini kop&amp;yala</translation>
 <translation id="4200689466366162458">Özel kelimeler</translation>
@@ -6000,7 +5997,6 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5249624017678798539">İndirme tamamlanmadan önce tarayıcı kilitlendi.</translation>
 <translation id="5249818097095743806">Güvenlik anahtarınızı kullanın</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" />, size yerel içerik sağlamak için konumunuzu kullanır. Bunu <ph name="SETTINGS_LINK" /> sayfasından değiştirebilirsiniz.</translation>
-<translation id="5252496130205799136">Şifreleri kaydetmek ve doldurmak için Google Hesabınız kullanılsın mı?</translation>
 <translation id="5252653240322147470">PIN en fazla <ph name="MAXIMUM" /> basamaklı olmalıdır</translation>
 <translation id="5253554634804500860"><ph name="DEVICE_NAME" /> cihazını kullan</translation>
 <translation id="5254233580564156835">Bellek kullanımı: <ph name="MEMORY_USAGE" /></translation>
@@ -8174,7 +8170,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6833479554815567477">Sekme, <ph name="GROUP_NAME" /> adlı gruptan kaldırıldı - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Dengeli (önerilen)</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> cihazınızı güncellemek için lütfen İnternet'e bağlanın.</translation>
-<translation id="683630338945552556">Google Hesabınızdaki şifreleri kullanma ve kaydetme</translation>
 <translation id="6838992358006915573">Büyüteç, ChromeVox odağını takip eder</translation>
 <translation id="6839225236531462745">Sertifika Silme Hatası</translation>
 <translation id="6839916869147598086">Oturum açma değişti</translation>

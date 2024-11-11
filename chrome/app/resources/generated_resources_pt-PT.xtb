@@ -806,7 +806,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1561331397460162942">Isto permite o acesso à localização para apps, Websites com a autorização de acesso à localização e serviços do sistema</translation>
 <translation id="1562119309884184621">Ao adicionar este contacto, vai memorizá-lo para a próxima vez que partilhar.</translation>
 <translation id="1563137369682381456">Data de validade</translation>
-<translation id="1563702743503072935">As palavras-passe da sua Conta Google também estarão disponíveis neste dispositivo enquanto tiver sessão iniciada.</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">A impressora selecionada não está disponível ou não está instalada corretamente. Verifique a impressora ou experimente selecionar outra impressora.</translation>
 <translation id="1566329594234563241">Quando está inativo e ligado à corrente</translation>
@@ -3134,7 +3133,6 @@ Quer pará-lo?</translation>
 <translation id="3177909033752230686">Idioma da página:</translation>
 <translation id="3177914167275935955">O seu dispositivo inclui uma Atualização do Chrome Education, mas o seu nome de utilizador não está associado a uma conta do Google for Education. Crie uma conta do Google for Education ao visitar g.co/workspace/edusignup num dispositivo secundário.</translation>
 <translation id="3179982752812949580">Tipo de letra do texto</translation>
-<translation id="3180175986308160674">A gerar perguntas acerca desta página…</translation>
 <translation id="3180284704187420717">Guarde os seus marcadores, palavras-passe e muito mais com a sincronização</translation>
 <translation id="3180990259147710757">Mover o maxilar para a esquerda</translation>
 <translation id="3181954750937456830">Navegação segura (protege o utilizador e o seu dispositivo contra sites perigosos)</translation>
@@ -3942,7 +3940,6 @@ Quer pará-lo?</translation>
 <translation id="3748424433435232460">Já foi guardada uma palavra-passe para esta conta neste dispositivo</translation>
 <translation id="3748706263662799310">Comunicar um erro</translation>
 <translation id="3749724428455457489">Saber mais acerca dos anúncios sugeridos por sites</translation>
-<translation id="3750562496035670393">O Chrome guardou a sua palavra-passe neste dispositivo, mas pode guardá-la na sua Conta Google em alternativa. Assim, todas as palavras-passe na sua Conta Google também estarão disponíveis enquanto tiver sessão iniciada.</translation>
 <translation id="3752115502500640407">Partilhe uma cópia da sua palavra-passe de <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Peça à criança para ir levantando o dedo para guardar a impressão digital</translation>
 <translation id="3753033997400164841">Armazene uma vez. Utilize em todas as plataformas.</translation>
@@ -4583,7 +4580,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4195378859392041564">Clique em qualquer tecla com o rato e, de seguida, prima uma tecla do teclado para personalizar</translation>
 <translation id="4195643157523330669">Abrir num novo separador</translation>
 <translation id="4195814663415092787">Continuar onde deixou</translation>
-<translation id="4196350776737072374">Sem perguntas disponíveis. Experimente fazer pedidos como "resumir esta página" ou a sua própria pergunta.</translation>
 <translation id="4198268995694216131">Sites adicionais</translation>
 <translation id="4200609364258658652">Cop&amp;iar frame do vídeo</translation>
 <translation id="4200689466366162458">Palavras personalizadas</translation>
@@ -6021,7 +6017,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5249624017678798539">O navegador bloqueou antes de a transferência ter sido concluída.</translation>
 <translation id="5249818097095743806">Use a sua chave de segurança</translation>
 <translation id="5250372599208556903">O <ph name="SEARCH_ENGINE_NAME" /> utiliza a sua localização para lhe fornecer conteúdo local. Pode alterar esta opção em <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5252496130205799136">Quer utilizar a sua Conta Google para guardar e preencher as palavras-passe?</translation>
 <translation id="5252653240322147470">O PIN deve ter menos de <ph name="MAXIMUM" /> dígitos</translation>
 <translation id="5253554634804500860">Usar <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Utilização de memória: <ph name="MEMORY_USAGE" /></translation>
@@ -8200,7 +8195,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6833479554815567477">Separador removido do grupo <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="6833753236242482566">Equilibrada (recomendado)</translation>
 <translation id="6835762382653651563">Ligue-se à Internet para atualizar o <ph name="DEVICE_TYPE" />.</translation>
-<translation id="683630338945552556">Usar e guardar palavras-passe na sua Conta Google</translation>
 <translation id="6838992358006915573">A lupa segue o foco do ChromeVox</translation>
 <translation id="6839225236531462745">Erro ao eliminar o certificado</translation>
 <translation id="6839916869147598086">O início de sessão foi alterado</translation>

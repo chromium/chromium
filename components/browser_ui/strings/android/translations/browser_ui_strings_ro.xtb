@@ -170,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site din grupul utilizatorului <ph name="RWS_OWNER" /> care îți poate vedea activitatea în grup}few{<ph name="RWS_MEMBERS_COUNT" /> site-uri din grupul utilizatorului <ph name="RWS_OWNER" /> care îți pot vedea activitatea în grup}other{<ph name="RWS_MEMBERS_COUNT" /> de site-uri din grupul utilizatorului <ph name="RWS_OWNER" /> care îți pot vedea activitatea în grup}}</translation>
 <translation id="3697164069658504920">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi dispozitive USB. Când opțiunea este dezactivată, site-urile nu pot folosi dispozitive USB.</translation>
 <translation id="3707034683772193706">Un site pe care îl accesezi poate salva un mic volum de informații în Chrome, în principal pentru a valida că nu ești o aplicație bot</translation>
+<translation id="3709818294139939629">S-a eliminat accesul site-ului</translation>
 <translation id="3721953990244350188">Închide și afișează următoarea acțiune disponibilă</translation>
 <translation id="3744111561329211289">Sincronizare în fundal</translation>
 <translation id="3763247130972274048">Atinge de două ori videoclipul spre stânga sau spre dreapta pentru a derula cu 10 secunde</translation>
@@ -432,6 +433,7 @@
 <translation id="7425915948813553151">Tema întunecată pentru site-uri</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Când opțiunea este activată, site-urile pot afișa solicitări de conectare. Când opțiunea este dezactivată, site-urile nu pot afișa solicitări de conectare.</translation>
+<translation id="7553211568594248088">Ieși din căutarea în hub</translation>
 <translation id="7554752735887601236">Un site folosește microfonul</translation>
 <translation id="7561196759112975576">Întotdeauna</translation>
 <translation id="757524316907819857">Împiedică site-urile să redea conținutul protejat</translation>
@@ -440,7 +442,6 @@
 <translation id="7649070708921625228">Ajutor</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7667547420449112975">Minunatul Vrăjitor din Oz</translation>
-<translation id="7684642910516280563">Nu permite ca un site să folosească cookie-uri terță parte</translation>
 <translation id="7688240020069572972">Ascunde cardul cu sfaturi Chrome</translation>
 <translation id="7719367874908701697">Zoom pe pagină</translation>
 <translation id="7759147511335618829">Control și reprogramare dispozitive MIDI</translation>

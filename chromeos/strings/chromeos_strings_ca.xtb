@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">S'estan creant les imatges...</translation>
 <translation id="1116694919640316211">Informació</translation>
 <translation id="1118572504348554005">És possible que compartim amb els nostres partners els comentaris que enviïs a través d'aquest formulari per resoldre els errors i altres problemes de què ens informis. No incloguis informació sensible, com ara contrasenyes.</translation>
+<translation id="1119403468619527527">Hi ha massa poques paraules per simplificar-les</translation>
 <translation id="1119447706177454957">Error intern</translation>
 <translation id="1124772482545689468">Usuari</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -590,6 +591,7 @@
 <translation id="391412459402535266">No es pot provar el dispositiu. Canvia al mode de portàtil per fer la prova.</translation>
 <translation id="3916998944874125962">fes una captura de pantalla</translation>
 <translation id="3923184630988645767">Ús de dades</translation>
+<translation id="3924445055519423964">Fes clic per resumir la pàgina web o el fitxer PDF</translation>
 <translation id="3932043219784172185">No hi ha cap dispositiu connectat</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> sense assignar</translation>
 <translation id="3941014780699102620">No s'ha pogut resoldre l'amfitrió</translation>
@@ -818,6 +820,7 @@
 <translation id="4988526792673242964">Pàgines</translation>
 <translation id="4989542687859782284">No disponibles</translation>
 <translation id="4999333166442584738">Amaga l'informe</translation>
+<translation id="5005695757087124131">Fes clic per simplificar el text seleccionat</translation>
 <translation id="500920857929044050">Atura la prova</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Color del tema</translation>
@@ -1339,6 +1342,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> està a punt per actualitzar-se</translation>
 <translation id="741244894080940828">conversió</translation>
 <translation id="7415801143053185905">La latència d'HTTP és molt alta</translation>
+<translation id="7418738250896500352">Hi ha massa paraules per simplificar-les</translation>
 <translation id="7425037327577270384">Ajuda'm a escriure</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">No es pot desactivar ni suprimir aquest APN. Assegura't de desactivar o suprimir els APN <ph name="ATTACH" /> que estiguin activats.</translation>
@@ -1555,6 +1559,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8476942730579767658">Finestres i escriptoris</translation>
 <translation id="8477536061607044749">de disseny gràfic</translation>
 <translation id="8477551185774834963">La latència DNS supera lleugerament el llindar permès</translation>
+<translation id="8482376765267780829">Selecciona text per simplificar-lo</translation>
 <translation id="8483248364096924578">Adreça IP</translation>
 <translation id="8491311378305535241">No es pot establir la connexió amb llocs web HTTPS a través del tallafoc des d'aplicacions d'Android</translation>
 <translation id="8495070016475833911">feltre</translation>
@@ -1684,6 +1689,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="9082718469794970195">Utilitza aquest vídeo</translation>
 <translation id="9087578468327036362">Informa d'aquesta consulta</translation>
 <translation id="9088306295921699330">Ús actual</translation>
+<translation id="9088994563996376283">Simplifica</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Més informació sobre l'opció Data de restabliment</translation>
 <translation id="9100765901046053179">Configuració avançada</translation>

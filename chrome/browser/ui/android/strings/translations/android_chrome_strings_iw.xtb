@@ -595,6 +595,7 @@
 <translation id="3819183753496523827">אין לך חיבור לאינטרנט. צריך לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">‏‫Lens לא זמין בחשבון הזה.</translation>
+<translation id="38258275871320156">האפשרות זמינה רק לחלונות קטנים</translation>
 <translation id="3830886834687455630">‏כדי לבדוק את הסיסמאות, יש לעדכן את Google Play Services</translation>
 <translation id="3843603704176567761">‏יכול להיות שהסיסמאות יפסיקו לפעול במכשיר הזה בקרוב. כדי להמשיך להשתמש בסיסמאות, צריך לעדכן את Google Play Services.</translation>
 <translation id="3845098929839618392">לפתיחה בכרטיסיית מצב אנונימי</translation>
@@ -602,6 +603,7 @@
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3856096718352044181">יש לאמת שהספק הזה חוקי או לנסות שוב מאוחר יותר</translation>
 <translation id="3858860766373142691">שם</translation>
+<translation id="3863527519275151528">הודעה על עיבוד</translation>
 <translation id="3873174561423636563">כדי להמשיך, פרטים מסוימים (<ph name="FIELDS_STRING" />) ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה. <ph name="BEGIN_LINK1" />כאן מפורטים התנאים וההגבלות<ph name="END_LINK1" /> של האתר הזה.</translation>
 <translation id="3892148308691398805">העתקת הטקסט</translation>
 <translation id="3899682235662194879">סגירה של כל כרטיסיות המצב האנונימי</translation>

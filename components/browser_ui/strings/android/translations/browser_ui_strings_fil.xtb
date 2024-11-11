@@ -170,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site sa grupo ng mga site ng <ph name="RWS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}one{<ph name="RWS_MEMBERS_COUNT" /> site sa grupo ng mga site ng <ph name="RWS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}other{<ph name="RWS_MEMBERS_COUNT" /> na site sa grupo ng mga site ng <ph name="RWS_OWNER" /> na makakakita ng iyong aktibidad sa grupo}}</translation>
 <translation id="3697164069658504920">Kapag naka-on, puwedeng hilingin ng mga site na gumamit ng mga USB device. Kapag naka-off, hindi makakagamit ng mga USB device ang mga site.</translation>
 <translation id="3707034683772193706">Puwedeng mag-save ng kaunting impormasyon sa Chrome ang isang site na binibisita mo, para lang ma-validate na hindi ka bot</translation>
+<translation id="3709818294139939629">Inalis ang file access ng site</translation>
 <translation id="3721953990244350188">I-dismiss at ipakita ang susunod na available na pagkilos</translation>
 <translation id="3744111561329211289">Pag-sync sa background</translation>
 <translation id="3763247130972274048">Mag-double tap sa kaliwa o kanan ng video para lumaktaw nang 10s</translation>
@@ -432,6 +433,7 @@
 <translation id="7425915948813553151">Madilim na tema para sa mga site</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Kapag naka-on, makakapagpakita ang mga site ng mga prompt sa pag-sign in. Kapag naka-off, hindi makakapagpakita ang mga site ng mga prompt sa pag-sign in.</translation>
+<translation id="7553211568594248088">Lumabas sa paghahanap sa hub</translation>
 <translation id="7554752735887601236">Gingamit ng isang site ang iyong mikropono</translation>
 <translation id="7561196759112975576">Palagi</translation>
 <translation id="757524316907819857">I-block ang mga site sa pag-play ng pinoprotektahang content</translation>
@@ -440,7 +442,6 @@
 <translation id="7649070708921625228">Tulong</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7667547420449112975">The Wonderful Wizard of Oz</translation>
-<translation id="7684642910516280563">Huwag payagan ang isang site na gumamit ng third-party na cookies</translation>
 <translation id="7688240020069572972">Itago ang card ng mga tip sa Chrome</translation>
 <translation id="7719367874908701697">Pag-zoom ng page</translation>
 <translation id="7759147511335618829">Kontrol / reprogram: MIDI device</translation>

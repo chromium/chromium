@@ -170,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{Há <ph name="RWS_MEMBERS_COUNT" /> site que pode ver sua atividade no grupo <ph name="RWS_OWNER" />}one{Há <ph name="RWS_MEMBERS_COUNT" /> site que pode ver sua atividade no grupo <ph name="RWS_OWNER" />}other{Há <ph name="RWS_MEMBERS_COUNT" /> sites que podem ver sua atividade no grupo <ph name="RWS_OWNER" />}}</translation>
 <translation id="3697164069658504920">Quando essa configuração está ativada, os sites podem pedir para usar dispositivos USB. Quando está desativada, os sites não podem usar dispositivos USB.</translation>
 <translation id="3707034683772193706">Os sites visitados podem salvar uma pequena quantidade de informações com o Chrome, principalmente para validar que você não é um bot</translation>
+<translation id="3709818294139939629">O acesso do site ao arquivo foi removido</translation>
 <translation id="3721953990244350188">Dispensar e mostrar a próxima ação disponível</translation>
 <translation id="3744111561329211289">Sincronização em segundo plano</translation>
 <translation id="3763247130972274048">Toque duas vezes no lado esquerdo ou direito do vídeo para pular 10 s</translation>
@@ -432,6 +433,7 @@
 <translation id="7425915948813553151">Tema escuro para sites</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">Quando essa configuração está ativada, os sites podem mostrar solicitações de login. Quando está desativada, os sites não podem mostrar solicitações de login.</translation>
+<translation id="7553211568594248088">Sair da pesquisa de hub</translation>
 <translation id="7554752735887601236">Um site está usando seu microfone</translation>
 <translation id="7561196759112975576">Sempre</translation>
 <translation id="757524316907819857">Impedir que sites mostrem conteúdo protegido</translation>
@@ -440,7 +442,6 @@
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7667547420449112975">O Mágico de Oz</translation>
-<translation id="7684642910516280563">Não permitir que um site use cookies de terceiros</translation>
 <translation id="7688240020069572972">Ocultar card de dicas do Chrome</translation>
 <translation id="7719367874908701697">Zoom da página:</translation>
 <translation id="7759147511335618829">Controle e reprogramação de dispositivos MIDI</translation>

@@ -804,7 +804,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1561331397460162942">Desta forma, as aplicacións, os sitios web co permiso correspondente e os servizos do sistema poderán acceder á localización</translation>
 <translation id="1562119309884184621">Se engades este contacto, lembrarase a próxima vez que comparta contido</translation>
 <translation id="1563137369682381456">Data de caducidade</translation>
-<translation id="1563702743503072935">Os contrasinais da túa Conta de Google tamén estarán dispoñibles neste dispositivo mentres teñas a sesión iniciada</translation>
 <translation id="1566049601598938765">Sitio web</translation>
 <translation id="15662109988763471">A impresora seleccionada non está dispoñible ou non está instalada correctamente. Compróbaa ou selecciona outra.</translation>
 <translation id="1566329594234563241">Cando o dispositivo estea inactivo e conectado</translation>
@@ -3125,7 +3124,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3177909033752230686">Idioma da páxina:</translation>
 <translation id="3177914167275935955">O teu dispositivo inclúe unha licenza Chrome Education Upgrade, pero o teu nome de usuario non está asociado a unha conta de Google for Education. Crea unha conta de Google for Education visitando g.co/workspace/edusignup desde un dispositivo secundario.</translation>
 <translation id="3179982752812949580">Tipo de letra do texto</translation>
-<translation id="3180175986308160674">Xerando preguntas sobre esta páxina…</translation>
 <translation id="3180284704187420717">Garda os teus marcadores ou os contrasinais, entre outras cousas, grazas á sincronización</translation>
 <translation id="3180990259147710757">Mover a mandíbula cara á esquerda</translation>
 <translation id="3181954750937456830">Navegación segura (protección para ti e o teu dispositivo contra os sitios perigosos)</translation>
@@ -3932,7 +3930,6 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3748424433435232460">Xa hai un contrasinal para esta conta gardado neste dispositivo</translation>
 <translation id="3748706263662799310">Informar dun erro</translation>
 <translation id="3749724428455457489">Máis información sobre os anuncios suxeridos do sitio</translation>
-<translation id="3750562496035670393">Chrome gardou o teu contrasinal neste dispositivo, pero, se o prefires, podes almacenalo na túa Conta de Google. Todos os contrasinais da túa Conta de Google estarán dispoñibles sempre que teñas a sesión iniciada.</translation>
 <translation id="3752115502500640407">Compartir unha copia do teu contrasinal de <ph name="WEBSITE" /></translation>
 <translation id="3752253558646317685">Dille ao teu fillo ou filla que levante o dedo e o volva a poñer para gardar a impresión dixital</translation>
 <translation id="3753033997400164841">Garda os contrasinais unha vez e utilízaos en todas partes</translation>
@@ -4569,7 +4566,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4195378859392041564">Fai clic en calquera tecla usando o rato e despois preme unha tecla para personalizala</translation>
 <translation id="4195643157523330669">Abrir en pestana nova</translation>
 <translation id="4195814663415092787">Continuar onde o deixaches</translation>
-<translation id="4196350776737072374">Non hai ningunha pregunta dispoñible. Proba a dicir algo como "resume esta páxina" ou fai a túa propia pregunta.</translation>
 <translation id="4198268995694216131">Máis sitios</translation>
 <translation id="4200609364258658652">Copia&amp;r fotograma de vídeo</translation>
 <translation id="4200689466366162458">Palabras personalizadas</translation>
@@ -6007,7 +6003,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5249624017678798539">O navegador fallou antes de completar a descarga.</translation>
 <translation id="5249818097095743806">Usa a túa chave de seguranza</translation>
 <translation id="5250372599208556903"><ph name="SEARCH_ENGINE_NAME" /> utiliza a túa localización para proporcionarche contido local. Podes cambiar esta opción en <ph name="SETTINGS_LINK" />.</translation>
-<translation id="5252496130205799136">Queres utilizar a túa Conta de Google para gardar e completar contrasinais?</translation>
 <translation id="5252653240322147470">O PIN debe ter menos de <ph name="MAXIMUM" /> díxitos</translation>
 <translation id="5253554634804500860">Usar <ph name="DEVICE_NAME" /></translation>
 <translation id="5254233580564156835">Uso da memoria: <ph name="MEMORY_USAGE" /></translation>
@@ -8178,7 +8173,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="6833479554815567477">A pestana quitouse automaticamente do grupo <ph name="GROUP_NAME" /> (<ph name="GROUP_CONTENTS" />)</translation>
 <translation id="6833753236242482566">Equilibrado (opción recomendada)</translation>
 <translation id="6835762382653651563">Conéctate a Internet para actualizar o teu dispositivo <ph name="DEVICE_TYPE" />.</translation>
-<translation id="683630338945552556">Usar e gardar contrasinais na túa Conta de Google</translation>
 <translation id="6838992358006915573">A lupa achega a zona seleccionada por ChromeVox</translation>
 <translation id="6839225236531462745">Erro de eliminación do certificado</translation>
 <translation id="6839916869147598086">O inicio de sesión cambiou</translation>

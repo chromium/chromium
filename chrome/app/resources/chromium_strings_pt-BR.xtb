@@ -18,6 +18,7 @@
 <translation id="1185134272377778587">Sobre o Chromium</translation>
 <translation id="1188705220418984327">Para compartilhar a janela, permita a gravação de tela do Chromium nas "Preferências do sistema".</translation>
 <translation id="1203500561924088507">Agradecemos por fazer a instalação. É necessário reiniciar o navegador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1235768345431527125">Você pode fazer login para acessar seus dados ou usar o Chromium sem uma conta</translation>
 <translation id="1262876892872089030">Enquanto esta guia estava inativa, a memória foi liberada para manter o Chromium rápido. Você pode optar por sempre excluir este site do status de inatividade.</translation>
 <translation id="1265577313130862557">O Chromium bloqueou o download porque o arquivo é perigoso</translation>
 <translation id="126567311906253476">Ao fazer login nos Serviços do Google (como o Gmail ou o YouTube) com <ph name="USER_EMAIL" />, você pode se conectar automaticamente ao Chromium com a mesma conta</translation>
@@ -295,6 +296,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5051959905407134411">Teste a pesquisa por imagens</translation>
 <translation id="5114678101347489141">O Chromium está explorando novos recursos que permitem que os sites ofereçam a mesma experiência de navegação atual usando menos informações pessoais</translation>
 <translation id="5123973130450702873">O Chromium precisa de permissão para rastrear suas mãos</translation>
+<translation id="5174969993834422967">Você geralmente bloqueia notificações. Para permitir que este site envie notificações, clique no ícone de notificação no canto direito da barra de local.</translation>
 <translation id="5187123684706427865">A conta do Chromium precisa ser autenticada de novo</translation>
 <translation id="5224391634244552924">Nenhuma senha salva. O Chromium poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="5231355151045086930">Sair do Chromium</translation>
@@ -324,6 +326,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="549669000822060376">Aguarde enquanto o Chromium instala as últimas atualizações do sistema.</translation>
 <translation id="5496810170689441661">O Chromium está tentando editar senhas. Digite a senha do Windows para permitir essa ação.</translation>
 <translation id="5527463683072221100">Abrir PDFs no Chromium</translation>
+<translation id="5568136785038042132">Para acessar suas extensões em todos os seus computadores, faça login no Chromium</translation>
 <translation id="5575418445468216473">Suas senhas e outros dados do Chromium estão salvos na sua Conta do Google e serão removidos deste dispositivo. Para usá-los no futuro, faça login no Chromium de novo.</translation>
 <translation id="5579324208890605088">Erro de inicialização: execute o instalador como um usuário comum, não como administrador.</translation>
 <translation id="5596627076506792578">Mais opções</translation>

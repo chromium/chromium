@@ -170,6 +170,7 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> च्या साइटच्या गटातील <ph name="RWS_MEMBERS_COUNT" /> साइट तुमची अ‍ॅक्टिव्हिटी पाहू शकते}other{<ph name="RWS_OWNER" /> च्या साइटच्या गटातील <ph name="RWS_MEMBERS_COUNT" /> साइट तुमची अ‍ॅक्टिव्हिटी पाहू शकतात}}</translation>
 <translation id="3697164069658504920">सुरू असताना, साइट USB डिव्हाइस वापरण्याची विनंती करू शकतात. बंद असताना, साइट USB डिव्हाइस वापरू शकत नाहीत.</translation>
 <translation id="3707034683772193706">तुम्ही भेट देता ती साइट Chrome सह थोड्या प्रमाणात माहिती सेव्ह करू शकते, जी प्रामुख्याने तुम्ही बॉट नाही हे प्रमाणित करते</translation>
+<translation id="3709818294139939629">साइटचा फाइलचा अ‍ॅक्सेस काढला आहे</translation>
 <translation id="3721953990244350188">डिसमिस करा आणि पुढील उपलब्ध कृती दाखवा</translation>
 <translation id="3744111561329211289">पार्श्वभूमी सिंक</translation>
 <translation id="3763247130972274048">१० सेकंद पुढे जाण्यासाठी व्हिडिओवर डावीकडे किंवा उजवीकडे दोनदा टॅप करा</translation>
@@ -432,6 +433,7 @@
 <translation id="7425915948813553151">साइटसाठी गडद थीम</translation>
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7547989957535180761">सुरू असताना, साइट साइन-इन प्रॉम्प्ट दाखवू शकतात. बंद असताना, साइट साइन-इन प्रॉम्प्ट दाखवू शकत नाहीत.</translation>
+<translation id="7553211568594248088">हबसंबंधित शोधामधून बाहेर पडा</translation>
 <translation id="7554752735887601236">साइट तुमचा मायक्रोफोन वापरत आहे</translation>
 <translation id="7561196759112975576">नेहमी</translation>
 <translation id="757524316907819857">संरक्षित आशय प्ले करण्यापासून साइटवर ब्लॉक करा</translation>
@@ -440,7 +442,6 @@
 <translation id="7649070708921625228">मदत</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7667547420449112975">द वंडरफुल विझर्ड ऑफ ओझ</translation>
-<translation id="7684642910516280563">साइटला तृतीय पक्ष कुकी वापरण्याची अनुमती देऊ नका</translation>
 <translation id="7688240020069572972">Chrome संबंधित टिपांचे कार्ड लपवा</translation>
 <translation id="7719367874908701697">पेज झूम करा</translation>
 <translation id="7759147511335618829">MIDI डिव्हाइस नियंत्रण व रीप्रोग्राम</translation>

@@ -361,6 +361,7 @@
 <translation id="2589921777872778654">Edit dan padamkan menu</translation>
 <translation id="2597774443162333062">Fail akan dihantar kepada Google untuk dinyahpepijat</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Pengimbasan selesai. 1 halaman diimbas}other{Pengimbasan selesai. {NUMBER_OF_PAGES} halaman diimbas}}</translation>
+<translation id="261322795497077164">Pengecaman penutur</translation>
 <translation id="2617397783536231890">kapas</translation>
 <translation id="2618015542787108131">gumuk pasir</translation>
 <translation id="2619761439309613843">Muat Semula Harian</translation>
@@ -442,6 +443,7 @@
 <translation id="3140130301071865159">salji</translation>
 <translation id="3146655726035122603">Eksklusif untuk <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Data mudah alih</translation>
+<translation id="3153094818810437149">Anda boleh membuat perubahan ini kemudian dalam tetapan Recorder</translation>
 <translation id="3156511682997763015">Mundar 10 saat</translation>
 <translation id="3156846309055100599">Mengimbas halaman <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Portal terbolot dikesan</translation>
@@ -565,6 +567,7 @@
 <translation id="3785643128701396311">seni piksel</translation>
 <translation id="3799381533888781854">DIMATIKAN - Tetapan ini diurus oleh pentadbir anda.</translation>
 <translation id="380097101658023925">kawalan rgb</translation>
+<translation id="380493988330050229">Tidak dapat membuat ringkasan untuk bahasa transkrip ini</translation>
 <translation id="38114475217616659">Kosongkan semua sejarah</translation>
 <translation id="3820172043799983114">PIN tidak sah.</translation>
 <translation id="382043424867370667">Hiasan latar matahari terbenam</translation>
@@ -737,6 +740,7 @@
 <translation id="458794348635939462">Gagal untuk menyelesaikan semua hos</translation>
 <translation id="4593212453765072419">Pengesahan proksi diperlukan</translation>
 <translation id="4594021849294327751">Buat transkrip</translation>
+<translation id="4594541568452132351">Pilih bahasa transkripsi dan model muat turun</translation>
 <translation id="4607282946861182308">Tidak dapat membuat imej ini. Cuba gesaan lain.</translation>
 <translation id="4609350030397390689">Mengurangkan kecerahan papan kekunci</translation>
 <translation id="4623061655523261501">Nama rakaman berjaya dijana</translation>
@@ -1101,6 +1105,7 @@
 <translation id="6359919876285606596">Tindakan ini kekal dan tidak boleh dibuat asal</translation>
 <translation id="6368342879959028556">Apabila anda memilih “Buat dengan AI”, tulis gesaan tersuai. Anda juga boleh memilih “Hiasan latar AI” untuk memilih tema, kemudian memilih perkataan bergaris untuk memeribadikan hiasan latar AI anda.</translation>
 <translation id="636850387210749493">Pendaftaran perusahaan</translation>
+<translation id="6369221585240879141">Tidak dapat membuat nama rakaman untuk bahasa transkrip ini</translation>
 <translation id="6373461326814131011">kolam</translation>
 <translation id="6379086450106841622">Skrin sentuh</translation>
 <translation id="6381741036071372448">Uji papan kekunci anda</translation>
@@ -1274,6 +1279,7 @@
 <translation id="7130438335435247835">Nama Titik Capaian (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Pelayan nama}other{Pelayan nama}}</translation>
 <translation id="7135814714616751706">Pintasan carian</translation>
+<translation id="7138614237884624401">Teks ringkas</translation>
 <translation id="7141470099673912333">Pemindahan Kandungan</translation>
 <translation id="7143207342074048698">Menyambung</translation>
 <translation id="7144878232160441200">Cuba semula</translation>
@@ -1695,6 +1701,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="9100765901046053179">Tetapan terperinci</translation>
 <translation id="910415269708673980">Muat semula tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Mengimbas halaman <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">Recorder boleh membuat transkripsi untuk rakaman yang mengandungi pertuturan. Dalam langkah seterusnya, anda perlu memilih bahasa transkripsi dan memuat turun model (hingga 100MB).</translation>
 <translation id="9111102763498581341">Buka kunci</translation>
 <translation id="9122492456897874028">Ringkaskan kandungan, dapatkan takrifan dan pelbagai lagi</translation>
 <translation id="9122602430962285795">Untuk menyambung semula, pergi ke Tetapan</translation>

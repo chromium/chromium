@@ -307,6 +307,7 @@
 <translation id="2308243864813041101">Изключете USB кабела на <ph name="DEVICE_NAME" />, за да продължите процеса на актуализиране</translation>
 <translation id="2320295602967756579">Активиране на светлата тема</translation>
 <translation id="2323506179655536734">ПРОПУСНАТО</translation>
+<translation id="2323755382216917952">Актуализацията изисква да рестартирате компютъра си, за да завършите инсталирането. Тя може да отнеме няколко минути. Докато фърмуерът се актуализира, не изключвайте компютъра си.</translation>
 <translation id="2324354238778375592">Плаващо</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Отлична (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -450,6 +451,7 @@
 <translation id="3178532070248519384">авангард</translation>
 <translation id="3182676044300231689">Въведете подкана, като например „да звучи по-уверено“</translation>
 <translation id="3188257591659621405">Моите файлове</translation>
+<translation id="3188931456353313123">Тази актуализация е предоставена от производителя на устройството и не е потвърдена от Google.</translation>
 <translation id="319101249942218879">Изображението на аватара бе променено</translation>
 <translation id="3192947282887913208">Аудиофайлове</translation>
 <translation id="3199982728237701504">Подавач на документи (двустранно)</translation>
@@ -508,6 +510,7 @@
 <translation id="3488065109653206955">Частично активиран</translation>
 <translation id="3492882532495507361">Офис в(ъв) <ph name="OFFICE_STYLE" /> стил с(ъс) <ph name="OFFICE_COLOR" /> тонове</translation>
 <translation id="3493187369049186498">Данните се измерват от вашия Chromebook. Стойностите, отчетени от доставчика, може да са различни.</translation>
+<translation id="349570724365779960">School Tools има връзка с учащите</translation>
 <translation id="3502426834823382181">преглед на всички приложения</translation>
 <translation id="3510890413042482857">Изпращане на <ph name="BEGIN_LINK1" />данните от проследяването на ефективността<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS: Актуал.</translation>
@@ -757,6 +760,7 @@
 <translation id="473775607612524610">Актуализиране</translation>
 <translation id="4744944742468440486">Информация за избраното от вас</translation>
 <translation id="4771607256327216405">увеличаване на яркостта на клавиатурата</translation>
+<translation id="4771923071974529837">утре</translation>
 <translation id="4773299976671772492">Спряно</translation>
 <translation id="4778082030331381943">аметист</translation>
 <translation id="4782311465517282004">Получавайте определения, преводи или преобразувани мерни единици, когато докоснете и задържите текст или кликнете върху него с десния бутон</translation>
@@ -820,6 +824,7 @@
 <translation id="500920857929044050">Спиране на теста</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Цвят на темата</translation>
+<translation id="5037240652947866174">днес</translation>
 <translation id="5038292761217083259">многоцветна клавиатура</translation>
 <translation id="5039804452771397117">Разрешаване</translation>
 <translation id="5049856988445523908">SIM картата е заключена (<ph name="LOCK_TYPE" />)</translation>

@@ -27,6 +27,7 @@
 <translation id="1100902271996134409">Сүрөттөр түзүлүүдө...</translation>
 <translation id="1116694919640316211">Программа жөнүндө</translation>
 <translation id="1118572504348554005">Бузулууларды аныктап оңдоо жана сиз кабарлаган башка маселелерди чечүү үчүн бул форма аркылуу тапшырылган маалымат өнөктөштөрүбүз менен бөлүшүлүшү мүмкүн. Сырсөздөр сыяктуу купуя маалыматты жазбаңыз.</translation>
+<translation id="1119403468619527527">Өтө аз сөз тандалды</translation>
 <translation id="1119447706177454957">Ички ката</translation>
 <translation id="1124772482545689468">Колдонуучу</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -587,6 +588,7 @@
 <translation id="391412459402535266">Түзмөктү сыноого болбойт. Сынап көрүү үчүн ноутбук режимине которулуңуз.</translation>
 <translation id="3916998944874125962">скриншот тартып алуу</translation>
 <translation id="3923184630988645767">Маалыматтардын өткөрүлүшү</translation>
+<translation id="3924445055519423964">Веб-баракчанын/PDF файлынын корутундусун түзүү үчүн басыңыз</translation>
 <translation id="3932043219784172185">Бир да түзмөк туташкан жок</translation>
 <translation id="3934185438132762746">Аты коюла элек <ph name="CONTROL_TYPE" /></translation>
 <translation id="3941014780699102620">Башкы түйүн чечилген жок</translation>
@@ -814,6 +816,7 @@
 <translation id="4988526792673242964">Барактар</translation>
 <translation id="4989542687859782284">Жеткиликсиз</translation>
 <translation id="4999333166442584738">Отчётту жашыруу</translation>
+<translation id="5005695757087124131">Тандалган текстти жөнөкөйлөтүү үчүн чыкылдатыңыз</translation>
 <translation id="500920857929044050">Сынакты токтотуу</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Теманын түсү</translation>
@@ -1334,6 +1337,7 @@
 <translation id="7405493795721832710"><ph name="DEVICE_NAME" /> жаңыртууга даяр</translation>
 <translation id="741244894080940828">которуу</translation>
 <translation id="7415801143053185905">HTTP күтүү убакыты өтө жогору</translation>
+<translation id="7418738250896500352">Өтө көп сөз тандалды</translation>
 <translation id="7425037327577270384">Жазууга жардам бер</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Бул APN'ди өчүрүү же алып салуу мүмкүн эмес. Иштетилген <ph name="ATTACH" /> APN'дер өчүрүлүп же алып салынганын текшериңиз.</translation>
@@ -1550,6 +1554,7 @@
 <translation id="8476942730579767658">Терезелер жана иш такталар</translation>
 <translation id="8477536061607044749">графикалык дизайн</translation>
 <translation id="8477551185774834963">DNS күтүү убакыты уруксат берилген босогодон бир аз жогору</translation>
+<translation id="8482376765267780829">Жөнөкөйлөтө турган текстти тандаңыз</translation>
 <translation id="8483248364096924578">IP дареги</translation>
 <translation id="8491311378305535241">Android колдонмолорунан HTTP вебсайттарына тармактык коргоо аркылуу туташпай жатат</translation>
 <translation id="8495070016475833911">кийиз</translation>
@@ -1679,6 +1684,7 @@
 <translation id="9082718469794970195">Ушул видеону колдонуу</translation>
 <translation id="9087578468327036362">Бул сурам тууралуу кабарлоо</translation>
 <translation id="9088306295921699330">Учурдагы колдонулушу</translation>
+<translation id="9088994563996376283">Жөнөкөйлөтүү</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Дайын-даректерди баштапкы абалга келтирүү жөнүндө кошумча маалымат</translation>
 <translation id="9100765901046053179">Өркүндөтүлгөн жөндөөлөр</translation>
