@@ -887,7 +887,7 @@
 <translation id="5163361352003913350">درحال‌حاضر <ph name="NAME" /> انتخاب شده است. حسابی انتخاب کنید.</translation>
 <translation id="5167637873777016814">برای خارج شدن از حالت «ناشناس»، دو تک‌ضرب بزنید و نگه دارید</translation>
 <translation id="5170568018924773124">نمایش در پوشه</translation>
-<translation id="5171045022955879922">‏جستجو یا تایپ URL</translation>
+<translation id="5171045022955879922">جستجو یا تایپ نشانی وب</translation>
 <translation id="5174700554036517242">برگه به ارتفاع اولیه‌اش برگردانده شد</translation>
 <translation id="5180063720319462041">صفحه به <ph name="TARGET_LANGUAGE" /> ترجمه شده است</translation>
 <translation id="5191251636205085390">با فناوری‌های جدیدی که قرار است جایگزین کوکی‌های شخص ثالث شود آشنا شوید و آن‌ها را کنترل کنید</translation>
@@ -1476,7 +1476,7 @@
 <translation id="774876555279732384">‏سرویس‌های تکمیل خودکار نیز در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> مدیریت می‌شود.</translation>
 <translation id="7759809451544302770">اختیاری</translation>
 <translation id="7762668264895820836">‏کارت SD <ph name="SD_CARD_NUMBER" /></translation>
-<translation id="7764225426217299476">افزودن آدرس</translation>
+<translation id="7764225426217299476">افزودن نشانی</translation>
 <translation id="7772032839648071052">تأیید گذرعبارت</translation>
 <translation id="7772375229873196092">بستن <ph name="APP_NAME" /></translation>
 <translation id="7774125747223422443">طبق قانونی در منطقه شما، باید مرورگر و موتور جستجویتان را انتخاب کنید</translation>
@@ -1732,7 +1732,7 @@
 <translation id="8865415417596392024">‏داده‌های Chrome در حساب شما</translation>
 <translation id="8888527824584402177">برگه‌هایی که به‌مدت <ph name="DAYS_INACTIVE" /> روز از آن‌ها استفاده نکرده‌اید به اینجا منتقل می‌شود<ph name="AUTODELETE_SECTION" />. هرزمان بخواهید می‌توانید این گزینه را در <ph name="SETTINGS_TITLE" /> تغییر دهید.</translation>
 <translation id="8898822736010347272">‏نشانی‌های وب بعضی از صفحه‌هایی که بازدید می‌کنید، اطلاعات محدودی از سیستم، و برخی از محتوای صفحه را به Google ارسال می‌کند تا به کشف تهدیدهای جدید و محافظت از همه افراد در وب کمک کند.</translation>
-<translation id="8909135823018751308">اشتراک‌گذاری‌...</translation>
+<translation id="8909135823018751308">هم‌رسانی…</translation>
 <translation id="8921980840204105660">برای دریافت نشانک‌هایتان از دستگاه‌های دیگر، همگام‌سازی کنید</translation>
 <translation id="8922289737868596582">برای استفاده از صفحه‌ها در حالت آفلاین، آن‌ها را با دکمه «گزینه‌های بیشتر» بارگیری کنید</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>

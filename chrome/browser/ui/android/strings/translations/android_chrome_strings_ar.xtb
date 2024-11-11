@@ -8,10 +8,10 @@
 <translation id="1017104654974573432">اختيار مشكلة</translation>
 <translation id="1024113959924243553">‏إصدار مطوّري البرامج من Chrome</translation>
 <translation id="1028699632127661925">جارٍ الإرسال إلى <ph name="DEVICE_NAME" />...</translation>
-<translation id="103269572468856066">محو البيانات هنا أيضًا؟</translation>
+<translation id="103269572468856066">محو البيانات من هذه المواقع والتطبيقات أيضًا؟</translation>
 <translation id="1034259925032978114">تم فتح نافذة.</translation>
 <translation id="1036348656032585052">إيقاف</translation>
-<translation id="1045899828449635435">محو البيانات هنا أيضًا؟</translation>
+<translation id="1045899828449635435">محو البيانات من هذه المواقع أيضًا؟</translation>
 <translation id="1049743911850919806">التصفح المتخفي</translation>
 <translation id="1058669287135776095">لا يتوفر اتصال بالإنترنت. يُرجى التأكد من الاتصال بالإنترنت ثم إعادة المحاولة.</translation>
 <translation id="10614374240317010">المواقع التي لن تحفظ كلمات المرور أبدًا</translation>
@@ -1061,7 +1061,7 @@
 <translation id="6002122790816966947">أجهزتك</translation>
 <translation id="6011308810877101166">تحسين اقتراحات البحث</translation>
 <translation id="6013305291643746595">جارٍ الترتيب حسب الأقدم</translation>
-<translation id="6022659036123304283">‏اجعل Chrome متصفِّحك الدائم.</translation>
+<translation id="6022659036123304283">‏اجعل Chrome متصفِّحك الدائم</translation>
 <translation id="6026538407078977628">التوسيع إلى وضع ملء الشاشة</translation>
 <translation id="6030719887161080597">إدارة المعلومات التي تستخدمها المواقع الإلكترونية لقياس أداء الإعلانات</translation>
 <translation id="6039379616847168523">الانتقال السريع إلى علامة التبويب التالية</translation>

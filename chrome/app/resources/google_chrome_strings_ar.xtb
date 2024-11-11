@@ -363,7 +363,7 @@
 <translation id="5953954252731207958">‏لم تزر هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chrome إذن <ph name="PERMISSION" /></translation>
 <translation id="6003112304606738118">جارٍ التنزيل… الساعات المتبقّية: <ph name="HOURS" /></translation>
 <translation id="6014316319780893079">‏باستخدام <ph name="BEGIN_LINK" />أدوات من Chrome<ph name="END_LINK" />، يمكنك التصفُّح بأمان والتحكُّم بشكل كامل.</translation>
-<translation id="6022659036123304283">‏اجعل Chrome متصفِّحك الدائم.</translation>
+<translation id="6022659036123304283">‏اجعل Chrome متصفِّحك الدائم</translation>
 <translation id="6025087594896450715">‏ستتم إعادة تشغيل Google Chrome خلال <ph name="REMAINING_TIME" /></translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6070348360322141662">‏لمزيد من الأمان، سيشفِّر Google Chrome بياناتك</translation>
@@ -438,7 +438,7 @@
 <translation id="7025800014283535195">‏يمكنك من هنا التبديل بين الملفات الشخصية على Chrome.</translation>
 <translation id="7036251913954633326">‏إذا أردت استخدام هذا الحساب لمرة واحدة فقط، يمكنك استخدام <ph name="GUEST_LINK_BEGIN" />وضع الضيف<ph name="GUEST_LINK_END" /> في متصفّح Chrome. وإذا أردت إضافة حساب لمستخدم آخر، <ph name="LINK_BEGIN" />أضِف مستخدمًا جديدًا<ph name="LINK_END" /> إلى <ph name="DEVICE_TYPE" />، مع العِلم بأنّ الأذونات التي سبق لك منحها إلى المواقع الإلكترونية والتطبيقات يمكن أن تنطبق على هذا الحساب. يمكنك إدارة حساباتك على Google من خلال <ph name="SETTINGS_LINK_BEGIN" />الإعدادات<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="7048502283602470098">استكشاف ميزات الذكاء الاصطناعي</translation>
-<translation id="7059914902409643750">‏اجعل Chrome متصفِّحك الدائم.</translation>
+<translation id="7059914902409643750">‏اجعل Chrome متصفِّحك الدائم</translation>
 <translation id="7071827361006050863">‏سيحذف Chrome بيانات التصفُّح قريبًا</translation>
 <translation id="7085332316435785646">‏اختَر ما إذا كنت تريد تضمين سجلّ Chrome للحصول على تجارب أكثر تخصيصًا في خدمات Google.</translation>
 <translation id="7088681679121566888">‏Chrome محدّث.</translation>

@@ -45,7 +45,7 @@
 <translation id="1028823395684328817">‏برای ادامه استفاده از گذرواژه‌ها و موارد دیگر در «حساب Google» خود، هویتتان را به‌تأیید برسانید</translation>
 <translation id="102916930470544692">گذرکلید</translation>
 <translation id="1029317248976101138">بزرگ‌نمایی</translation>
-<translation id="1029526375103058355">ضربه به‌جای کلیک</translation>
+<translation id="1029526375103058355">کلیک با تک‌ضرب</translation>
 <translation id="1029724557649700742">ویژگی‌های جدید هنگام دردسترس قرار گرفتن اضافه می‌شوند و ویژگی‌ها ممکن است بسته به دستگاه متفاوت باشند.</translation>
 <translation id="1031343556156414679">‏مدیریت گذرکلیدها در Windows Hello</translation>
 <translation id="1031362278801463162">بارگیری پیش‌نمایش</translation>
@@ -176,7 +176,7 @@
 <translation id="1118428905044642028">گذرواژه‌ها و تکمیل خودکار</translation>
 <translation id="1118738876271697201">سیستم نتوانست مدل یا شماره سریال دستگاه را تعیین کند.</translation>
 <translation id="1119447706177454957">خطای داخلی</translation>
-<translation id="1122068467107743258">کار</translation>
+<translation id="1122068467107743258">محل کار</translation>
 <translation id="1122198203221319518">&amp;ابزارها</translation>
 <translation id="1122242684574577509">‏اصالت‌سنجی انجام نشد. کلیک کنید تا به صفحه ورود به سیستم شبکه Wi-Fi مورد استفاده‌تان بروید (<ph name="NETWORK_ID" />).</translation>
 <translation id="1122587596907914265">کاغذدیواری‌های منحصربه‌فرد طراحی کنید</translation>
@@ -4502,7 +4502,7 @@
 <translation id="4193575319002689239">نمایش کارت‌ها</translation>
 <translation id="4193836101014293726">نمی‌توان این نمایه را حذف کرد</translation>
 <translation id="419427585139779713">هر بار یک هجا وارد می‌شود</translation>
-<translation id="4194570336751258953">فعال کردن ضربه به‌جای کلیک</translation>
+<translation id="4194570336751258953">فعال کردن کلیک با تک‌ضرب</translation>
 <translation id="4195001808989442226">‏Steam ویژه Chromebook (بتا) باز نشد</translation>
 <translation id="4195378859392041564">با موشواره روی یکی از کلیدها کلیک کنید، سپس یکی از کلیدهای صفحه‌کلید را فشار دهید تا آن را سفارشی کنید</translation>
 <translation id="4195643157523330669">باز کردن در برگهٔ جدید</translation>
@@ -5763,7 +5763,7 @@
 <translation id="512903556749061217">متصل</translation>
 <translation id="5130080518784460891">Eten</translation>
 <translation id="5130675701626084557">نمایه را نمی‌توان بارگیری کرد. لطفاً بعداً دوباره امتحان کنید یا برای راهنمایی با شرکت مخابراتی تماس بگیرید.</translation>
-<translation id="5131591206283983824">کشیدن با ضربه روی صفحه لمسی</translation>
+<translation id="5131591206283983824">کشیدن با تک‌ضرب روی صفحه لمسی</translation>
 <translation id="5135533361271311778">ایجاد مورد نشانک ممکن نیست.</translation>
 <translation id="513555878193063507">افزودن «نام نقطه دستیابی» جدید</translation>
 <translation id="5136343472380336530">مطمئن شوید قفل هر دو دستگاه باز باشد، نزدیک یکدیگر باشند، و بلوتوث آن‌ها روشن باشد. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
@@ -5812,7 +5812,7 @@
 <translation id="5164530241085602114">اعلان‌ها برای <ph name="SITE" /> مجاز نیست</translation>
 <translation id="516747639689914043">‏پروتکل انتقال ابرمتن (HTTP)</translation>
 <translation id="5170568018924773124">نمایش در پوشه</translation>
-<translation id="5171045022955879922">‏جستجو یا تایپ URL</translation>
+<translation id="5171045022955879922">جستجو یا تایپ نشانی وب</translation>
 <translation id="5171343362375269016">حافظه جابجاشده</translation>
 <translation id="5172855596271336236">۱ چاپگر مدیریت‌شده وجود دارد.</translation>
 <translation id="5173668317844998239">اثرانگشت به کلید ایمنی اضافه کنید یا اثرهای انگشت ذخیره‌شده در آن را حذف کنید</translation>
@@ -6387,7 +6387,7 @@
 <translation id="5594371836748657471">‏میکروفون در «تنظیمات سیستم Mac» خاموش است</translation>
 <translation id="5594899180331219722">انتخاب فایل</translation>
 <translation id="5595307023264033512">مجموع فضای ذخیره‌سازی که سایت‌ها استفاده کرده‌اند: <ph name="TOTAL_USAGE" /></translation>
-<translation id="5595485650161345191">ویرایش آدرس</translation>
+<translation id="5595485650161345191">ویرایش نشانی</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
 <translation id="5599819890022137981">‏از Windows Hello</translation>
 <translation id="5600348067066185292">نصب در چند مرحله آسان انجام می‌شود. پیش‌از اعمال تغییرات در رایانه‌تان، فرصت دیگری برای تأیید آن‌ها خواهید داشت.</translation>
@@ -7910,7 +7910,7 @@
 <translation id="6732956960067639542">‏به‌جای آن، جلسه جدیدی در مرورگر Chrome باز کنید.</translation>
 <translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (شناسه: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6735304988756581115">نمایش کوکی‌ها و دیگر داده‌های سایت...</translation>
-<translation id="6736243959894955139">آدرس</translation>
+<translation id="6736243959894955139">نشانی</translation>
 <translation id="6737663862851963468">‏حذف کردن بلیت Kerberos</translation>
 <translation id="6738180164164974883">مجاز کردن تنظیم کوکی‌های شخص ثالث</translation>
 <translation id="6738430949033571771">درحال تأیید حساب…</translation>
@@ -7923,7 +7923,7 @@
 <translation id="6743841972744298686">تنظیمات همگام‌سازی</translation>
 <translation id="6745592621698551453">اکنون به‌روز کردن</translation>
 <translation id="6746124502594467657">انتقال به پایین</translation>
-<translation id="674632704103926902">فعال کردن کشیدن با ضربه</translation>
+<translation id="674632704103926902">فعال کردن کشیدن با تک‌ضرب</translation>
 <translation id="67465227497040338">نشان دادن گذرواژه <ph name="DOMAIN" /></translation>
 <translation id="6748980958975836188">‏<ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" /> و <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Chrome و ChromeOS<ph name="END_LINK2" /> را خوانده‌ام و با آن‌ها موافقت می‌کنم.</translation>
 <translation id="6749077623962119521">اجازه‌ها بازنشانی شوند؟</translation>
@@ -8048,7 +8048,7 @@
 <translation id="6820079682647046800">‏اصالت‌سنجی Kerberos انجام نشد</translation>
 <translation id="6821439254917412979">برداشتن سنجاق <ph name="EXTENSION_NAME" /></translation>
 <translation id="6823097506504975234">‏وقتی سابقه مرور را جستجو می‌کنید، عبارت‌های جستجوی سابقه، محتوای صفحه منطبق‌ترین نتایج، و خروجی‌های مدل تولیدشده برای بهبود این ویژگی به Google ارسال می‌شوند و افراد بازبین می‌توانند آن‌ها را ببینند.</translation>
-<translation id="6823174134746916417">ضربه به‌جای کلیک برای صفحه لمسی</translation>
+<translation id="6823174134746916417">کلیک با تک‌ضرب برای صفحه لمسی</translation>
 <translation id="6823561724060793716">در نوار نشانی می‌توانید اطلاعات صفحه را باز کنید تا اطلاعات بیشتری درباره صفحه‌ای که از آن بازدید می‌کنید ببینید</translation>
 <translation id="6824564591481349393">کپی آدرس &amp;ایمیل</translation>
 <translation id="6824584962142919697">&amp;بازرسی عناصر</translation>
@@ -9324,7 +9324,7 @@
 <translation id="7759809451544302770">اختیاری</translation>
 <translation id="7760176388948986635">‏برنامه‌ها، وب‌سایت‌ها، و سرویس‌های Android و ChromeOS که اجازه مکان دارند مجاز می‌شوند از مکان این دستگاه استفاده کنند. «دقت مکان» مکان دقیق‌تری برای برنامه‌ها و سرویس‌های Android ارائه می‌دهد. برای انجام این کار، Google به‌صورت دوره‌ای اطلاعات مربوط به حسگرهای دستگاه و سیگنال‌های بی‌سیم این دستگاه را برای انبوه‌سپاری مکان‌های سیگنال بی‌سیم پردازش می‌کند. از این اطلاعات بدون شناسایی هیچ فردی برای بهبود دقت مکان و خدمات مکان‌مبنا و همچنین بهبود، ارائه، و حفظ سرویس‌های Google براساس منافع مشروع Google و اشخاص ثالث به‌منظور برآورده کردن نیازهای کاربران استفاده می‌شود.</translation>
 <translation id="7762024824096060040">نمی‌توان از این حساب استفاده کرد</translation>
-<translation id="7764225426217299476">افزودن آدرس</translation>
+<translation id="7764225426217299476">افزودن نشانی</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> از <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">باز کردن گروه در پنجره جدید</translation>
 <translation id="7764909446494215916">‏مدیریت «حساب Google»</translation>

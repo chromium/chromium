@@ -6708,7 +6708,7 @@ Wenn diese Richtlinie deaktiviert ist, befindet sich die App für Tastenkombinat
 <translation id="6164441518097008843">Anmeldung auf eine Liste von Nutzern beschränken</translation>
 <translation id="6169504363239921686">Wenn diese Richtlinie auf „<ph name="BR_ENABLED" />“ festgelegt ist, ist die Android-Funktion „Sichern und wiederherstellen“ anfangs aktiviert. Wenn die Richtlinie auf „<ph name="BR_DISABLED" />“ festgelegt ist oder keine Einstellung gewählt wird, ist „Sichern und wiederherstellen“ während der Einrichtung deaktiviert.
 
-Wenn die Richtlinie auf „<ph name="BR_UNDER_USER_CONTROL" />“ festgelegt ist, erhalten Nutzer eine Aufforderung, in der sie wählen können, ob sie die Android-Funktion „Sichern und wiederherstellen“ nutzen möchten. Aktivieren sie die Funktion, werden App-Daten von Android auf die Android-Back-up-Server hochgeladen und bei der Neuinstallation von kompatiblen Apps wiederhergestellt.
+Wenn die Richtlinie auf „<ph name="BR_UNDER_USER_CONTROL" />“ festgelegt ist, erhalten Nutzer eine Aufforderung, in der sie wählen können, ob sie die Android-Funktion „Sichern und wiederherstellen“ nutzen möchten. Aktivieren sie die Funktion, werden App-Daten von Android auf die Android-Backup-Server hochgeladen und bei der Neuinstallation von kompatiblen Apps wiederhergestellt.
 
 Nach der Ersteinrichtung können Nutzer selbst entscheiden, ob sie „Sichern und wiederherstellen“ nutzen möchten.</translation>
 <translation id="6169768162756928771">GAIA-Einstellungen zur Verwaltung der Nutzeridentität</translation>

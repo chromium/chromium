@@ -313,7 +313,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2515921719039583189">¿Borrar datos de Chrome del dispositivo?</translation>
 <translation id="2517113738956581680">Hoja de tamaño completo</translation>
 <translation id="2523184218357549926">Envía las URLs de las páginas que visitas a Google</translation>
-<translation id="2524132927880411790">Ir a la búsqueda por voz de la aplicación de Google</translation>
+<translation id="2524132927880411790">Ir a la búsqueda por voz de la aplicación Google</translation>
 <translation id="2527209463677295330">Al incluir más texto de una página, es posible que obtengas mejores resultados</translation>
 <translation id="2527779675047087889">Oculta el contenido del portapapeles</translation>
 <translation id="2532336938189706096">Vista web</translation>
@@ -559,7 +559,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="363596933471559332">Permite iniciar sesión automáticamente en sitios web con credenciales almacenadas. Si esta función está desactivada, se solicitará la verificación cada vez que se intente iniciar sesión en un sitio web.</translation>
 <translation id="3636940436873918441">Idiomas preferidos</translation>
 <translation id="3637744895182738742">Si has olvidado tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
-<translation id="3674208116086565128">Ir a la página principal de la aplicación de Google</translation>
+<translation id="3674208116086565128">Ir a la página principal de la aplicación Google</translation>
 <translation id="368329460027487650">Has cerrado sesión. Abre las opciones para iniciar sesión.</translation>
 <translation id="3684540848053703310">Hoja inferior de estadísticas sobre precios cerrada</translation>
 <translation id="3687645719033307815">Estás viendo una vista previa de esta página</translation>
@@ -755,7 +755,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="4619564267100705184">Verificar mi identidad</translation>
 <translation id="4620032614425803188">Servicios de autocompletado</translation>
 <translation id="4624065194742029982">Chrome en Incógnito</translation>
-<translation id="4634124774493850572">Utilizar contraseña</translation>
+<translation id="4634124774493850572">Usar contraseña</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contraseña vulnerada}other{# contraseñas vulneradas}}</translation>
 <translation id="4642472735733036929">Seguimiento de precios detenido</translation>
 <translation id="4645146721047390964">En modo Incógnito, los sitios no pueden usar las cookies para ver tu actividad de navegación en otros sitios con el objetivo de, por ejemplo, personalizar los anuncios. Es posible que las funciones de algunos sitios no funcionen correctamente.</translation>
@@ -785,7 +785,7 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="474121291218385686">Filtrar por aplicación</translation>
 <translation id="4741753828624614066">Recibirás sugerencias mejoradas en la barra de direcciones.</translation>
 <translation id="4742795653798179840">Datos de Chrome eliminados</translation>
-<translation id="4742970037960872810">Eliminar resaltado</translation>
+<translation id="4742970037960872810">Eliminar texto destacado</translation>
 <translation id="4749960740855309258">Abre una pestaña nueva</translation>
 <translation id="4750356170202299988">Contenido para mentes jóvenes</translation>
 <translation id="4758061975920522644">Compartir solo la imagen</translation>
@@ -1490,7 +1490,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7808889146555843082">Aunque quites esta contraseña, no se eliminará tu cuenta de <ph name="SITE" />. Cambia la contraseña o elimina tu cuenta de <ph name="SITE" /> para protegerla de otros.</translation>
 <translation id="7810647596859435254">Abrir con…</translation>
 <translation id="7814066895362068701">{FILE_COUNT,plural, =1{Todos los archivos, 1 archivo en la lista}other{Todos los archivos, # archivos en la lista}}</translation>
-<translation id="7815484226266492798">Captura de página completa</translation>
+<translation id="7815484226266492798">Captura completa</translation>
 <translation id="7821130663268546430">Puedes ver todas las pestañas abiertas en la Función de cambio de pestaña</translation>
 <translation id="7822705602465980873">Cuando inicias sesión, estos datos se vinculan a tu cuenta de Google para protegerte en los servicios de Google (por ejemplo, con una mayor protección en Gmail tras un incidente de seguridad).</translation>
 <translation id="7824665136384946951">Tu organización ha desactivado Navegación segura</translation>

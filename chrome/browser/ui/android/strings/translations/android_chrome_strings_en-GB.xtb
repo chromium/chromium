@@ -357,7 +357,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2669454659051515572">Anyone using this device can see downloaded files</translation>
 <translation id="2702516483241149200">New: Share a link that scrolls to this text</translation>
 <translation id="2705073298859543115">Create summary</translation>
-<translation id="2708051474374549906">Real-time, proactive protection against dangerous sites, downloads, and extensions that’s based on your browsing data getting sent to Google</translation>
+<translation id="2708051474374549906">Real-time, proactive protection against dangerous sites, downloads and extensions that’s based on your browsing data getting sent to Google</translation>
 <translation id="2708226184420201102">Open in <ph name="PRODUCT_NAME" /> browser</translation>
 <translation id="271033894570825754">New</translation>
 <translation id="2718352093833049315">Only on Wi-Fi</translation>
@@ -1264,7 +1264,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="686366188661646310">Delete password?</translation>
 <translation id="6864459304226931083">Download image</translation>
 <translation id="686490460830618322">App filter sheet</translation>
-<translation id="6865313869410766144">Auto-fill form data</translation>
+<translation id="6865313869410766144">Autofill form data</translation>
 <translation id="6867400383614725881">New Incognito tab</translation>
 <translation id="686899695320434745">Addresses aren't encrypted with your passphrase. This lets you use them in other Google services.</translation>
 <translation id="6869056123412990582">computer</translation>

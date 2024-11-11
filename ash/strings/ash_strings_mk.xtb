@@ -141,7 +141,7 @@
 <translation id="1420408895951708260">Вклучи/исклучи „Ноќно светло“: <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="1435537621343861112">Не може да започне „Диктирање“. Микрофонот е исклучен.</translation>
-<translation id="1445031758921122223">Датотеките за контролирање лице се преземени</translation>
+<translation id="1445031758921122223">Датотеките за „Контрола со лик“ се преземени</translation>
 <translation id="1447907279406111651">Сега · Завршува во <ph name="END_TIME" /></translation>
 <translation id="1448963928642384376">Точки на пристап на вашиот уред</translation>
 <translation id="1455242230282523554">Прикажи ги поставките за јазикот</translation>
@@ -177,7 +177,7 @@
 <translation id="1550523713251050646">Кликни за повеќе опции</translation>
 <translation id="1555130319947370107">Сина</translation>
 <translation id="1557622599341396706">Прикажи го името на работната површина</translation>
-<translation id="1567138500090284106">Копче за копчињата на глувчето</translation>
+<translation id="1567138500090284106">Копче за копчиња за глувче</translation>
 <translation id="1569384531973824928">Ова овозможува пристап за сите апликации и веб-сајтови со дозволи за камерата и микрофонот. Можеби ќе треба да ја освежите веб-страницата или да ја рестартирате апликацијата.</translation>
 <translation id="1571697193564730395">Вклучи/исклучи „Не вознемирувај“. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Одзумирајте кога е вклучена лупата</translation>
@@ -859,7 +859,7 @@
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="40062176907008878">Ракописно</translation>
 <translation id="4011112806063830608">„Не вознемирувај“ е вклучено.</translation>
-<translation id="4015144849380506405">Паузирајте/продолжете ги копчињата на глувчето кога се вклучени</translation>
+<translation id="4015144849380506405">Паузирајте/продолжете ги копчињата за глувче кога се вклучени</translation>
 <translation id="4017989525502048489">Ласерски покажувач</translation>
 <translation id="401993194061514265">Означувачот не е достапен. Отворете ја повторно Screencast.</translation>
 <translation id="4021716437419160885">Оди надолу</translation>
@@ -1481,7 +1481,7 @@
 <translation id="6020147141355393792">Поставете прегледување на известувањата и апликациите на телефонот</translation>
 <translation id="6022924867608035986">Избриши го текстот во полето за пребарување</translation>
 <translation id="602472752137106327">Прикажувај прозорци од сите работни површини, избрано е тркалезно копче</translation>
-<translation id="6024768346262692989">Не можеше да се преземат датотеки за контролирање лице</translation>
+<translation id="6024768346262692989">Не можеше да се преземат датотеки за „Контрола со лик“</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
 <translation id="6027518778343897451">Нема настан на <ph name="CURRENT_MONTH_DAY" />. Притиснете Enter за да го отворите „Календарот на Google“ во прелистувачот.</translation>
 <translation id="6030495522958826102">Менито е преместено во долниот лев агол на екранот.</translation>
@@ -1653,7 +1653,7 @@
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Камерата е поставена во долниот лев агол. Конфликт со површината на системот.</translation>
 <translation id="6605415194043280389">„Режимот за концентрација“ е вклучен</translation>
-<translation id="660846213831377756">Копчиња на глувчето</translation>
+<translation id="660846213831377756">Копчиња за глувче</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
 <translation id="6612802754306526077">Избран е режимот на снимање на екранот</translation>
 <translation id="6612889377159412215">подзадача</translation>
