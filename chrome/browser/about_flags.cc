@@ -2104,6 +2104,20 @@ const FeatureEntry::FeatureVariation
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+const FeatureEntry::FeatureParam
+    kOnDeviceNotificationContentDetectionModelAllowlistSampleRate100[] = {
+        {"OnDeviceNotificationContentDetectionModelAllowlistSamplingRate",
+         "100"}};
+
+const FeatureEntry::FeatureVariation
+    kOnDeviceNotificationContentDetectionModelVariations[] = {
+        {"with allowlist sample rate 100",
+         kOnDeviceNotificationContentDetectionModelAllowlistSampleRate100,
+         std::size(
+             kOnDeviceNotificationContentDetectionModelAllowlistSampleRate100),
+         nullptr},
+};
+
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kPerformanceInterventionStringVersion1[] = {
     {"intervention_dialog_version", "1"}};
@@ -9794,8 +9808,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOnDeviceNotificationContentDetectionModelName,
      flag_descriptions::kOnDeviceNotificationContentDetectionModelDescription,
      kOsAll,
-     FEATURE_VALUE_TYPE(
-         safe_browsing::kOnDeviceNotificationContentDetectionModel)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         safe_browsing::kOnDeviceNotificationContentDetectionModel,
+         kOnDeviceNotificationContentDetectionModelVariations,
+         "OnDeviceNotificationContentDetectionModel")},
 
 #if BUILDFLAG(IS_ANDROID)
     {"enable-commerce-hint-android",
