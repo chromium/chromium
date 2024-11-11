@@ -11336,26 +11336,38 @@ if (!is_android) {
 if (is_android) {
   generate_jni("sync_integration_test_support_jni_headers") {
     testonly = true
-    sources = [ "../android/javatests/src/org/chromium/chrome/browser/sync/SyncTestSigninUtils.java" ]
+    sources = [
+      "../android/javatests/src/org/chromium/chrome/browser/sync/SyncTestSigninUtils.java",
+      "../android/javatests/src/org/chromium/chrome/browser/sync/SyncTestTabGroupHelpers.java",
+    ]
   }
 
   android_library("sync_integration_test_support_java") {
     testonly = true
     srcjar_deps = [ ":sync_integration_test_support_jni_headers" ]
     deps = [
+      "//base:base_java",
+      "//base:log_java",
       "//chrome/android:chrome_all_java",
       "//chrome/browser/profiles/android:java",
+      "//chrome/browser/tab:java",
+      "//chrome/browser/tabmodel:java",
       "//chrome/test/android:chrome_java_integration_test_support",
       "//chrome/test/android:live_signin_test_util_java",
       "//components/gcm_driver/instance_id/android:instance_id_driver_test_support_java",
       "//components/signin/public/android:java",
       "//components/sync/android:sync_java",
+      "//components/tab_groups:tab_groups_java",
       "//content/public/test/android:content_java_test_support",
       "//third_party/jni_zero:jni_zero_java",
       "//third_party/junit",
+      "//url:gurl_java",
     ]
 
-    sources = [ "../android/javatests/src/org/chromium/chrome/browser/sync/SyncTestSigninUtils.java" ]
+    sources = [
+      "../android/javatests/src/org/chromium/chrome/browser/sync/SyncTestSigninUtils.java",
+      "../android/javatests/src/org/chromium/chrome/browser/sync/SyncTestTabGroupHelpers.java",
+    ]
   }
 }
 
@@ -11406,6 +11418,8 @@ source_set("sync_integration_test_support") {
     "../browser/sync/test/integration/secondary_account_helper.h",
     "../browser/sync/test/integration/session_hierarchy_match_checker.cc",
     "../browser/sync/test/integration/session_hierarchy_match_checker.h",
+    "../browser/sync/test/integration/shared_tab_group_data_helper.cc",
+    "../browser/sync/test/integration/shared_tab_group_data_helper.h",
     "../browser/sync/test/integration/single_client_status_change_checker.cc",
     "../browser/sync/test/integration/single_client_status_change_checker.h",
     "../browser/sync/test/integration/status_change_checker.cc",
@@ -11422,6 +11436,8 @@ source_set("sync_integration_test_support") {
     "../browser/sync/test/integration/sync_signin_delegate.h",
     "../browser/sync/test/integration/sync_test.cc",
     "../browser/sync/test/integration/sync_test.h",
+    "../browser/sync/test/integration/sync_test_tab_utils.cc",
+    "../browser/sync/test/integration/sync_test_tab_utils.h",
     "../browser/sync/test/integration/updated_progress_marker_checker.cc",
     "../browser/sync/test/integration/updated_progress_marker_checker.h",
     "../browser/sync/test/integration/wallet_helper.cc",
@@ -11455,8 +11471,6 @@ source_set("sync_integration_test_support") {
       "../browser/sync/test/integration/send_tab_to_self_helper.h",
       "../browser/sync/test/integration/sessions_helper.cc",
       "../browser/sync/test/integration/sessions_helper.h",
-      "../browser/sync/test/integration/shared_tab_group_data_helper.cc",
-      "../browser/sync/test/integration/shared_tab_group_data_helper.h",
       "../browser/sync/test/integration/sync_app_helper.cc",
       "../browser/sync/test/integration/sync_app_helper.h",
       "../browser/sync/test/integration/sync_extension_helper.cc",
@@ -11508,6 +11522,7 @@ source_set("sync_integration_test_support") {
     "//components/signin/public/identity_manager:test_support",
     "//components/sync",
     "//components/sync:test_support",
+    "//components/tab_groups:tab_groups",
     "//components/webapps/common",
     "//content/public/browser",
     "//content/test:test_support",
@@ -11559,6 +11574,7 @@ source_set("sync_integration_test_support") {
       ":sync_integration_test_support_jni_headers",
       ":test_support_jni_headers",
       "//chrome/browser/android/webapk:webapk_sources",
+      "//components/saved_tab_groups/public:conversion_utils",
     ]
   } else {
     deps += [

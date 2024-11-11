@@ -358,6 +358,16 @@ bool ServerSavedTabGroupMatchChecker::IsExitConditionSatisfied(
       SyncEntitiesToSavedTabGroupSpecifics(
           fake_server()->GetSyncEntitiesByDataType(syncer::SAVED_TAB_GROUP));
 
+  for (const sync_pb::SavedTabGroupSpecifics& specifics : entities) {
+    *os << "Entity GUID: " << specifics.guid() << ", ";
+    if (specifics.has_group()) {
+      *os << "group title: " << specifics.group().title() << ". ";
+    } else if (specifics.has_tab()) {
+      *os << "tab title: " << specifics.tab().title()
+          << ", URL: " << specifics.tab().url() << ". ";
+    }
+  }
+
   testing::StringMatchResultListener result_listener;
   const bool matches =
       testing::ExplainMatchResult(matcher_, entities, &result_listener);

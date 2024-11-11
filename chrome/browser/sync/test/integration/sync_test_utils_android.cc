@@ -8,14 +8,26 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/android/token_android.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
+#include "components/saved_tab_groups/public/types.h"
+#include "url/android/gurl_android.h"
+#include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/test/sync_integration_test_support_jni_headers/SyncTestSigninUtils_jni.h"
+#include "chrome/test/sync_integration_test_support_jni_headers/SyncTestTabGroupHelpers_jni.h"
 
 namespace sync_test_utils_android {
 
@@ -109,6 +121,18 @@ void ShutdownLiveAuthForTesting() {
       reinterpret_cast<intptr_t>(heap_callback.release()));
 
   run_loop.Run();
+}
+
+tab_groups::LocalTabGroupID CreateGroupFromTab(
+    TabAndroid* tab,
+    std::string_view title,
+    tab_groups::TabGroupColorId color) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto j_title = base::android::ConvertUTF8ToJavaString(env, title);
+  jint j_color = static_cast<jint>(color);
+  auto j_group_id = Java_SyncTestTabGroupHelpers_createGroupFromTab(
+      env, tab->GetJavaObject(), j_title, j_color);
+  return base::android::TokenAndroid::FromJavaToken(env, j_group_id);
 }
 
 void JNI_SyncTestSigninUtils_OnShutdownComplete(JNIEnv* env,

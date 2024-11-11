@@ -39,13 +39,6 @@ MATCHER_P2(HasTabMetadata, title, url, "") {
   return base::UTF16ToUTF8(arg.title()) == title && arg.url() == GURL(url);
 }
 
-// Creates a new tab group with the given existing tabs and visual data.
-tab_groups::LocalTabGroupID AddTabsToNewGroup(
-    int browser_index,
-    const std::vector<int>& tab_indices,
-    const std::u16string& title,
-    tab_groups::TabGroupColorId color);
-
 // A helper class that waits for the SAVED_TAB_GROUP entities on the FakeServer
 // to match a given GMock matcher.
 class ServerSharedTabGroupMatchChecker

@@ -7,9 +7,6 @@
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
-#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -20,12 +17,6 @@
 namespace tab_groups {
 
 namespace {
-
-Browser* GetBrowserOrDie(int browser_index) {
-  Browser* browser = sync_datatype_helper::test()->GetBrowser(browser_index);
-  CHECK(browser);
-  return browser;
-}
 
 std::vector<sync_pb::SharedTabGroupDataSpecifics>
 SyncEntitiesToSharedTabGroupSpecifics(
@@ -114,24 +105,6 @@ bool AreServicesEqual(TabGroupSyncService* service_1,
 }
 
 }  // namespace
-
-tab_groups::LocalTabGroupID AddTabsToNewGroup(
-    int browser_index,
-    const std::vector<int>& tab_indices,
-    const std::u16string& title,
-    tab_groups::TabGroupColorId color) {
-  Browser* browser = GetBrowserOrDie(browser_index);
-  TabStripModel* tab_strip = browser->tab_strip_model();
-  CHECK(tab_strip);
-
-  tab_groups::LocalTabGroupID group_id = tab_strip->AddToNewGroup(tab_indices);
-  TabGroup* model_tab_group = tab_strip->group_model()->GetTabGroup(group_id);
-  CHECK(model_tab_group);
-
-  model_tab_group->SetVisualData(tab_groups::TabGroupVisualData(title, color),
-                                 /*is_customized=*/true);
-  return group_id;
-}
 
 ServerSharedTabGroupMatchChecker::ServerSharedTabGroupMatchChecker(
     const Matcher& matcher)

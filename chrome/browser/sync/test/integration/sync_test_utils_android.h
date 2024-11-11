@@ -7,6 +7,11 @@
 
 #include <string>
 
+#include "chrome/browser/android/tab_android.h"
+#include "components/saved_tab_groups/public/types.h"
+#include "components/tab_groups/tab_group_color.h"
+#include "url/gurl.h"
+
 // Utilities that interface with Java to support Sync testing on Android.
 
 namespace sync_test_utils_android {
@@ -54,6 +59,13 @@ void SetUpLiveAccountAndSignInAndEnableSyncForTesting(
 //
 // Should be called from PostRunTestOnMainThread() method of the test fixture.
 void ShutdownLiveAuthForTesting();
+
+// Creates a new tab group with the given `tab` and visual data. Returns the
+// local tab group ID of the created tab.
+tab_groups::LocalTabGroupID CreateGroupFromTab(
+    TabAndroid* tab,
+    std::string_view title,
+    tab_groups::TabGroupColorId color);
 
 }  // namespace sync_test_utils_android
 
