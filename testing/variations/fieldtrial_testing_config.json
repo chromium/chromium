@@ -22120,11 +22120,11 @@
                     "params": {
                         "en_site_id": "JcjxgSDnh0ugnJ3q1cK0UVkwDj1o",
                         "probability": "1.0",
-                        "settings-time": "5s",
+                        "settings-time": "10s",
                         "survey": "settings-privacy"
                     },
                     "enable_features": [
-                        "HappinessTrackingSurveysForDesktopSettingsPrivacy"
+                        "HappinessTrackingSurveysForDesktopSettings"
                     ]
                 }
             ]
