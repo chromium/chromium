@@ -2222,8 +2222,6 @@ TEST_P(PDFiumEngineInkDrawTest, MAYBE_LoadedV2InkPathsAndUpdateShapeActive) {
   // Undo the erasure and check the rendering.
   engine->UpdateShapeActive(kPageIndex, shape_id, /*active=*/true);
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kInkV2PngPath);
-#if 0
-  // TODO(thestig): Figure out why this crashes and re-enable.
   saved_pdf_data = engine->GetSaveData();
   ASSERT_FALSE(saved_pdf_data.empty());
   CheckPdfRendering(saved_pdf_data, kPageIndex, kPageSizeInPoints,
@@ -2231,7 +2229,6 @@ TEST_P(PDFiumEngineInkDrawTest, MAYBE_LoadedV2InkPathsAndUpdateShapeActive) {
   EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
                                          kInkAnnotationIdentifierKeyV2),
             1);
-#endif
 }
 
 // Don't be concerned about any slight rendering differences in AGG vs. Skia,
