@@ -42,6 +42,7 @@ source_set("autofill") {
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/ui_bundled:autofill_shared_ui",
     "//ios/chrome/browser/autofill/ui_bundled:common",
+    "//ios/chrome/browser/autofill/ui_bundled:constants",
     "//ios/chrome/browser/autofill/ui_bundled:ui_type",
     "//ios/chrome/browser/autofill/ui_bundled/cells",
     "//ios/chrome/browser/autofill/ui_bundled/form_input_accessory:form_input_accessory",
