@@ -282,6 +282,7 @@ void SupervisedUserNavigationObserver::OnRequestBlockedInternal(
       /*referrer=*/url, history::RedirectList(), ui::PAGE_TRANSITION_BLOCKED,
       /*hidden=*/false, history::SOURCE_BROWSED,
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true,
+      /*is_ephemeral=*/false,
       /*title=*/std::nullopt,
       // TODO(crbug.com/40279734): Investigate whether we want to record blocked
       // navigations in the VisitedLinkDatabase, and if so, populate

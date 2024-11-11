@@ -883,6 +883,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       bool should_increment_typed_count,
       VisitID opener_visit,
       bool consider_for_ntp_most_visited,
+      bool is_ephemeral = false,
       std::optional<int64_t> local_navigation_id = std::nullopt,
       std::optional<std::u16string> title = std::nullopt,
       std::optional<GURL> top_level_url = std::nullopt,
@@ -893,8 +894,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       std::optional<VisitID> originator_visit_id = std::nullopt,
       std::optional<VisitID> originator_referring_visit = std::nullopt,
       std::optional<VisitID> originator_opener_visit = std::nullopt,
-      bool is_known_to_sync = false,
-      bool is_ephemeral = false);
+      bool is_known_to_sync = false);
 
   // Returns a redirect-or-referral chain in `redirects` for the VisitID
   // `cur_visit`. `cur_visit` is assumed to be valid. Assumes that

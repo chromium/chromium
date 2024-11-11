@@ -295,6 +295,13 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       navigation_handle->GetRedirectChain(), page_transition, hidden,
       history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
       ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle),
+      // Determine if this navigation is ephemeral.
+      are_partitioned_visited_links_enabled
+          ? navigation_handle->GetRenderFrameHost()
+                ->GetStorageKey()
+                .nonce()
+                .has_value()
+          : false,
       // Reloads do not result in calling TitleWasSet() (which normally sets
       // the title), so a reload needs to set the title. This is
       // important for a reload after clearing history.
@@ -318,13 +325,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
                        navigation_handle->GetPreviousPrimaryMainFrameURL()))
                  : std::nullopt),
       chrome_ui_data == nullptr ? std::nullopt : chrome_ui_data->bookmark_id(),
-      app_id_, std::move(context_annotations),
-      are_partitioned_visited_links_enabled
-          ? navigation_handle->GetRenderFrameHost()
-                ->GetStorageKey()
-                .nonce()
-                .has_value()
-          : false);
+      app_id_, std::move(context_annotations));
 
   if (ui::PageTransitionIsMainFrame(page_transition) &&
       virtual_url != navigation_handle->GetURL()) {

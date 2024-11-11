@@ -326,13 +326,13 @@ HistoryAddPageArgs::HistoryAddPageArgs()
                          SOURCE_BROWSED,
                          false,
                          true,
+                         false,
                          std::nullopt,
                          std::nullopt,
                          std::nullopt,
                          std::nullopt,
                          std::nullopt,
-                         std::nullopt,
-                         false) {}
+                         std::nullopt) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(
     const GURL& url,
@@ -347,13 +347,13 @@ HistoryAddPageArgs::HistoryAddPageArgs(
     VisitSource source,
     bool did_replace_entry,
     bool consider_for_ntp_most_visited,
+    bool is_ephemeral,
     std::optional<std::u16string> title,
     std::optional<GURL> top_level_url,
     std::optional<Opener> opener,
     std::optional<int64_t> bookmark_id,
     std::optional<std::string> app_id,
-    std::optional<VisitContextAnnotations::OnVisitFields> context_annotations,
-    bool is_ephemeral)
+    std::optional<VisitContextAnnotations::OnVisitFields> context_annotations)
     : url(url),
       time(time),
       context_id(context_id),
@@ -366,13 +366,13 @@ HistoryAddPageArgs::HistoryAddPageArgs(
       visit_source(source),
       did_replace_entry(did_replace_entry),
       consider_for_ntp_most_visited(consider_for_ntp_most_visited),
+      is_ephemeral(is_ephemeral),
       title(title),
       top_level_url(top_level_url),
       opener(opener),
       bookmark_id(bookmark_id),
       app_id(app_id),
-      context_annotations(std::move(context_annotations)),
-      is_ephemeral(is_ephemeral) {}
+      context_annotations(std::move(context_annotations)) {}
 
 HistoryAddPageArgs::HistoryAddPageArgs(const HistoryAddPageArgs& other) =
     default;
