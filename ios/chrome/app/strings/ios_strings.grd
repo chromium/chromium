@@ -5603,7 +5603,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
        Don't hide
       </message>
       <message name="IDS_IOS_INCOGNITO_LOCK_HIDE_WITH_SOFT_LOCK_TITLE" desc="Incognito lock setting option to enable hiding Incognito tabs with a soft lock.  This appears in the incognito lock settings page under privacy and security. [iOS only]">
-       Hide after 10 minutes
+       {count, plural,
+          =1 {Hide after 1 minute}
+          other {Hide after {count} minutes}}
       </message>
       <message name="IDS_IOS_INCOGNITO_LOCK_HIDE_WITH_SOFT_LOCK_DESCRIPTION" desc="Description for enabling Incognito soft lock setting. This appears in the incognito lock settings page under privacy and security. [iOS only]">
        When you return, tabs are blurred until you tap to continue

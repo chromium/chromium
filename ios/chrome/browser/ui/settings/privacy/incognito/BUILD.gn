@@ -36,6 +36,7 @@ source_set("incognito_ui") {
     ":incognito_protocols",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:features",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/ui/list_model",

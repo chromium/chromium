@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
@@ -94,7 +95,9 @@ IncognitoLockState StateWithItemIdentifier(ItemIdentifier item_identifier) {
   TableViewDetailTextItem* hideWithSoftLockItem =
       [[TableViewDetailTextItem alloc] initWithType:kHideWithSoftLock];
   hideWithSoftLockItem.text =
-      l10n_util::GetNSString(IDS_IOS_INCOGNITO_LOCK_HIDE_WITH_SOFT_LOCK_TITLE);
+      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_INCOGNITO_LOCK_HIDE_WITH_SOFT_LOCK_TITLE,
+          kIOSSoftLockBackgroundThreshold.Get().InMinutes()));
   hideWithSoftLockItem.detailText = l10n_util::GetNSString(
       IDS_IOS_INCOGNITO_LOCK_HIDE_WITH_SOFT_LOCK_DESCRIPTION);
   // Allow for text to wrap into multiple lines to fit the cell.
