@@ -531,93 +531,6 @@ class MockSearchResultsPanel : public SearchResultsPanel {
   bool mouse_events_received_ = false;
 };
 
-TEST_F(SunfishTest, DisclaimerAcceptRecordsHistogramOnce) {
-  base::HistogramTester histogram_tester;
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      kSunfishConsentDisclaimerAccepted, false);
-
-  auto* controller = CaptureModeController::Get();
-  controller->StartSunfishSession();
-  ASSERT_TRUE(controller->IsActive());
-
-  views::Widget* disclaimer = controller->disclaimer_widget();
-  ASSERT_TRUE(disclaimer);
-
-  views::View* accept_button =
-      disclaimer->GetContentsView()->GetViewByID(kDisclaimerViewAcceptButtonId);
-  LeftClickOn(accept_button);
-
-  histogram_tester.ExpectBucketCount(
-      "Ash.ScannerFeature.UserState",
-      ScannerFeatureUserState::kConsentDisclaimerAccepted, 1);
-}
-
-TEST_F(SunfishTest, DisclaimerDeclineRecordsHistogramOnce) {
-  base::HistogramTester histogram_tester;
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      kSunfishConsentDisclaimerAccepted, false);
-
-  auto* controller = CaptureModeController::Get();
-  controller->StartSunfishSession();
-  ASSERT_TRUE(controller->IsActive());
-
-  views::Widget* disclaimer = controller->disclaimer_widget();
-  ASSERT_TRUE(disclaimer);
-
-  views::View* decline_button = disclaimer->GetContentsView()->GetViewByID(
-      kDisclaimerViewDeclineButtonId);
-  LeftClickOn(decline_button);
-
-  histogram_tester.ExpectBucketCount(
-      "Ash.ScannerFeature.UserState",
-      ScannerFeatureUserState::kConsentDisclaimerRejected, 1);
-}
-
-TEST_F(SunfishTest,
-       DisclaimerAcceptHidesDisclaimerSetPrefsAndContinuesSession) {
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      kSunfishConsentDisclaimerAccepted, false);
-
-  auto* controller = CaptureModeController::Get();
-  controller->StartSunfishSession();
-  ASSERT_TRUE(controller->IsActive());
-
-  views::Widget* disclaimer = controller->disclaimer_widget();
-  ASSERT_TRUE(disclaimer);
-
-  views::View* accept_button =
-      disclaimer->GetContentsView()->GetViewByID(kDisclaimerViewAcceptButtonId);
-  LeftClickOn(accept_button);
-
-  EXPECT_EQ(controller->disclaimer_widget(), nullptr);
-  EXPECT_TRUE(
-      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
-          kSunfishConsentDisclaimerAccepted));
-  EXPECT_TRUE(controller->IsActive());
-}
-
-TEST_F(SunfishTest, DisclaimerDeclineHidesDisclaimerSetPrefsAndEndsSession) {
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      kSunfishConsentDisclaimerAccepted, false);
-
-  auto* controller = CaptureModeController::Get();
-  controller->StartSunfishSession();
-  ASSERT_TRUE(controller->IsActive());
-
-  views::Widget* disclaimer = controller->disclaimer_widget();
-  ASSERT_TRUE(disclaimer);
-
-  views::View* decline_button = disclaimer->GetContentsView()->GetViewByID(
-      kDisclaimerViewDeclineButtonId);
-  LeftClickOn(decline_button);
-
-  EXPECT_EQ(controller->disclaimer_widget(), nullptr);
-  EXPECT_FALSE(
-      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
-          kSunfishConsentDisclaimerAccepted));
-  EXPECT_FALSE(controller->IsActive());
-}
-
 // Tests that the search results panel receives mouse events.
 TEST_F(SunfishTest, OnLocatedEvent) {
   auto* controller = CaptureModeController::Get();
@@ -2173,6 +2086,143 @@ TEST_F(ScannerTest, CaptureLabelHiddenWhilePerformingCaptureForScanner) {
   // The capture label should be reshown once capture completes.
   WaitForImageCapturedForSearch(PerformCaptureType::kScanner);
   EXPECT_TRUE(session_test_api.GetCaptureLabelWidget()->IsVisible());
+}
+
+TEST_F(ScannerTest, DisclaimerAcceptContinuesScannerSession) {
+  base::HistogramTester histogram_tester;
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  base::test::TestFuture<manta::ScannerProvider::ScannerProtoResponseCallback>
+      fetch_actions_future;
+  EXPECT_CALL(*GetFakeScannerProfileScopedDelegate(*scanner_controller),
+              FetchActionsForImage)
+      .WillOnce(WithArg<1>(InvokeFuture(fetch_actions_future)));
+
+  // Select a region to trigger text detection. The capture label should be
+  // hidden so that it does not interfere with text detection.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  EXPECT_FALSE(session_test_api.GetCaptureLabelWidget()->IsVisible());
+
+  // The capture label should be reshown once capture completes.
+  WaitForImageCapturedForSearch(PerformCaptureType::kTextDetection);
+  EXPECT_TRUE(session_test_api.GetCaptureLabelWidget()->IsVisible());
+
+  detect_text_future.Take().Run("detected text");
+  // Smart actions button should have been created.
+  std::vector<ActionButtonView*> action_buttons =
+      session_test_api.GetActionButtons();
+  ASSERT_THAT(action_buttons,
+              ElementsAre(ActionButtonTypeIs(ActionButtonType::kScanner), _));
+
+  // Click the smart actions button.
+  LeftClickOn(action_buttons[0]);
+  views::Widget* disclaimer = controller->disclaimer_widget();
+  ASSERT_TRUE(disclaimer);
+
+  views::View* accept_button =
+      disclaimer->GetContentsView()->GetViewByID(kDisclaimerViewAcceptButtonId);
+  LeftClickOn(accept_button);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kConsentDisclaimerAccepted, 1);
+  EXPECT_EQ(controller->disclaimer_widget(), nullptr);
+  EXPECT_TRUE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          kSunfishConsentDisclaimerAccepted));
+  EXPECT_TRUE(controller->IsActive());
+  WaitForImageCapturedForSearch(PerformCaptureType::kScanner);
+
+  // Smart actions button should have been removed, and the copy text button
+  // should be collapsed.
+  EXPECT_THAT(session_test_api.GetActionButtons(),
+              ElementsAre(AllOf(ActionButtonTypeIs(ActionButtonType::kCopyText),
+                                ActionButtonIsCollapsed())));
+
+  // Simulate a single fetched Scanner action.
+  auto output = std::make_unique<manta::proto::ScannerOutput>();
+  manta::proto::ScannerObject& objects = *output->add_objects();
+  objects.add_actions()->mutable_new_event()->set_title("Event");
+  fetch_actions_future.Take().Run(std::move(output), manta::MantaStatus());
+
+  // Check for a Scanner action button and a collapsed copy text button.
+  EXPECT_THAT(session_test_api.GetActionButtons(),
+              ElementsAre(AllOf(ActionButtonTypeIs(ActionButtonType::kScanner),
+                                Not(ActionButtonIsCollapsed())),
+                          AllOf(ActionButtonTypeIs(ActionButtonType::kCopyText),
+                                ActionButtonIsCollapsed())));
+}
+
+TEST_F(ScannerTest, DisclaimerDeclinedGoesBackToScreenshotMode) {
+  base::HistogramTester histogram_tester;
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, false);
+
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  // Select a region to trigger text detection. The capture label should be
+  // hidden so that it does not interfere with text detection.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  CaptureModeSessionTestApi session_test_api(
+      controller->capture_mode_session());
+  EXPECT_FALSE(session_test_api.GetCaptureLabelWidget()->IsVisible());
+
+  // The capture label should be reshown once capture completes.
+  WaitForImageCapturedForSearch(PerformCaptureType::kTextDetection);
+  EXPECT_TRUE(session_test_api.GetCaptureLabelWidget()->IsVisible());
+
+  detect_text_future.Take().Run("detected text");
+  // Smart actions button should have been created.
+  std::vector<ActionButtonView*> action_buttons =
+      session_test_api.GetActionButtons();
+  ASSERT_THAT(action_buttons,
+              ElementsAre(ActionButtonTypeIs(ActionButtonType::kScanner), _));
+
+  // Click the smart actions button.
+  LeftClickOn(action_buttons[0]);
+  views::Widget* disclaimer = controller->disclaimer_widget();
+  ASSERT_TRUE(disclaimer);
+
+  views::View* decline_button = disclaimer->GetContentsView()->GetViewByID(
+      kDisclaimerViewDeclineButtonId);
+  LeftClickOn(decline_button);
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.UserState",
+      ScannerFeatureUserState::kConsentDisclaimerRejected, 1);
+  EXPECT_EQ(controller->disclaimer_widget(), nullptr);
+  EXPECT_FALSE(
+      Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+          kSunfishConsentDisclaimerAccepted));
+  EXPECT_TRUE(controller->IsActive());
+  // Did not get filled with new actions buttons, stays the same as before.
+  EXPECT_THAT(session_test_api.GetActionButtons(),
+              ElementsAre(ActionButtonTypeIs(ActionButtonType::kScanner), _));
+
+  // Click the smart actions button again, should show the disclaimer again.
+  LeftClickOn(action_buttons[0]);
+  EXPECT_TRUE(controller->disclaimer_widget());
 }
 
 }  // namespace ash

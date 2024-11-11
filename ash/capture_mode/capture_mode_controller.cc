@@ -684,10 +684,8 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 /*default_value=*/true);
   registry->RegisterBooleanPref(prefs::kSunfishEnabled,
                                 /*default_value=*/true);
-  // TODO(b/367882127): Set to default to true when consent disclaimer is
-  // required for the general launch.
   registry->RegisterBooleanPref(kSunfishConsentDisclaimerAccepted,
-                                /*default_value=*/true);
+                                /*default_value=*/false);
 }
 
 // static
@@ -705,6 +703,25 @@ SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
              ? views::AsViewClass<SearchResultsPanel>(
                    search_results_panel_widget_->GetContentsView())
              : nullptr;
+}
+
+void CaptureModeController::MaybeShowDisclaimer(
+    base::RepeatingClosure accept_callback) {
+  if (GetActiveUserPrefService()->GetBoolean(
+          kSunfishConsentDisclaimerAccepted)) {
+    if (accept_callback) {
+      std::move(accept_callback).Run();
+    }
+    return;
+  }
+  disclaimer_ = DisclaimerView::CreateWidget(
+      capture_mode_util::GetPreferredRootWindow(),
+      base::BindRepeating(&CaptureModeController::OnDisclaimerAccepted,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          std::move(accept_callback)),
+      base::BindRepeating(&CaptureModeController::OnDisclaimerDeclined,
+                          weak_ptr_factory_.GetWeakPtr()));
+  disclaimer_->Show();
 }
 
 void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
@@ -890,9 +907,7 @@ void CaptureModeController::StartSunfishSession() {
   if (!GetActiveUserPrefService()->GetBoolean(prefs::kSunfishEnabled)) {
     return;
   }
-  StartInternal(SessionType::kReal, CaptureModeEntryType::kSunfish,
-                base::BindOnce(&CaptureModeController::MaybeShowDisclaimer,
-                               weak_ptr_factory_.GetWeakPtr()));
+  StartInternal(SessionType::kReal, CaptureModeEntryType::kSunfish);
 }
 
 void CaptureModeController::Stop() {
@@ -1967,40 +1982,25 @@ void CaptureModeController::OnCopyTextButtonClicked(
   Stop();
 }
 
-void CaptureModeController::MaybeShowDisclaimer(bool success) {
-  if (!success) {
-    return;
-  }
-  // TODO(b/367882127): Should also check prefs to see if sunfish was completely
-  // disabled, which should happen when the decline button is pressed in
-  // disclaimer.
-  if (!GetActiveUserPrefService()->GetBoolean(
-          kSunfishConsentDisclaimerAccepted)) {
-    disclaimer_ = DisclaimerView::CreateWidget(
-        capture_mode_util::GetPreferredRootWindow(),
-        base::BindRepeating(&CaptureModeController::OnDisclaimerAction,
-                            weak_ptr_factory_.GetWeakPtr(),
-                            /*accepted=*/true),
-        base::BindRepeating(&CaptureModeController::OnDisclaimerAction,
-                            weak_ptr_factory_.GetWeakPtr(),
-                            /*accepted=*/false));
-    disclaimer_->Show();
-  }
-}
-
-void CaptureModeController::OnDisclaimerAction(bool accepted) {
+void CaptureModeController::OnDisclaimerDeclined() {
   RecordScannerFeatureUserState(
-      accepted ? ScannerFeatureUserState::kConsentDisclaimerAccepted
-               : ScannerFeatureUserState::kConsentDisclaimerRejected);
-  GetActiveUserPrefService()->SetBoolean(kSunfishConsentDisclaimerAccepted,
-                                         accepted);
+      ScannerFeatureUserState::kConsentDisclaimerRejected);
 
   if (disclaimer_.get() != nullptr) {
     disclaimer_.reset();
   }
+}
 
-  if (!accepted && IsActive()) {
-    Stop();
+void CaptureModeController::OnDisclaimerAccepted(
+    base::RepeatingClosure callback) {
+  RecordScannerFeatureUserState(
+      ScannerFeatureUserState::kConsentDisclaimerAccepted);
+  GetActiveUserPrefService()->SetBoolean(kSunfishConsentDisclaimerAccepted,
+                                         true);
+
+  disclaimer_.reset();
+  if (callback) {
+    std::move(callback).Run();
   }
 }
 

@@ -1424,8 +1424,9 @@ void CaptureModeSession::OnTextDetected() {
     // TODO(crbug.com/375967525): Finalize and translate the smart actions
     // button accessible name.
     if (ActionButtonView* action_button = AddActionButton(
-            base::BindOnce(&CaptureModeSession::OnSmartActionsButtonPressed,
-                           weak_ptr_factory_.GetWeakPtr()),
+            base::BindRepeating(
+                &CaptureModeSession::OnSmartActionsButtonPressed,
+                weak_ptr_factory_.GetWeakPtr()),
             u"Smart actions", &kCaptureModeSmartActionsIcon,
             ActionButtonRank{ActionButtonType::kScanner, /*weight=*/0})) {
       action_button->CollapseToIconButton();
@@ -1474,6 +1475,12 @@ void CaptureModeSession::SetActionButtonsEnabled(bool enabled) {
 }
 
 void CaptureModeSession::OnSmartActionsButtonPressed() {
+  controller_->MaybeShowDisclaimer(base::BindRepeating(
+      &CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CaptureModeSession::OnSmartActionsButtonDisclaimerCheckSuccess() {
   // Remove Scanner action buttons and keep other buttons. We need to copy
   // `children()` since we will be removing buttons from the original vector.
   std::vector<std::unique_ptr<ActionButtonView>> action_buttons_to_keep;

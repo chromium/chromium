@@ -450,9 +450,13 @@ class ASH_EXPORT CaptureModeSession
   // are added after this is called will still be enabled by default.
   void SetActionButtonsEnabled(bool enabled);
 
-  // Called back when the smart actions button is pressed. This will trigger a
-  // request to fetch and show Scanner actions.
+  // Called back when the smart actions button is pressed.
   void OnSmartActionsButtonPressed();
+
+  // Called back when the smart actions button is pressed and disclaimer check
+  // was successful. This will trigger a request to fetch and show Scanner
+  // actions.
+  void OnSmartActionsButtonDisclaimerCheckSuccess();
 
   // Called back when a Scanner action button is pressed.
   void OnScannerActionButtonPressed(

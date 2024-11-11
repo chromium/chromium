@@ -143,6 +143,13 @@ class ASH_EXPORT CaptureModeController
   // Returns the search results panel, or nullptr if none exists.
   SearchResultsPanel* GetSearchResultsPanel() const;
 
+  // Checks if the controller needs to show the disclaimer and shows if
+  // necessary. Call back is run if disclaimer is accepted.
+  // Takes a repeating closure because the button that triggers this (Smart
+  // actions button) will continue to appear after the disclaimer is dismissed,
+  // allowing the user to click on it again and trigger the callback again.
+  void MaybeShowDisclaimer(base::RepeatingClosure accept_callback);
+
   // Shows the results panel with the captured region as `image` and the search
   // results `url`.
   void ShowSearchResultsPanel(const gfx::ImageSkia& image, GURL url);
@@ -541,12 +548,11 @@ class ASH_EXPORT CaptureModeController
   // clipboard, show a notification, and close the capture session.
   void OnCopyTextButtonClicked(const std::u16string& text);
 
-  // Checks if the controller needs to show the disclaimer and shows if
-  // necessary.
-  void MaybeShowDisclaimer(bool success);
+  // Called by the consent disclaimer on accept.
+  void OnDisclaimerAccepted(base::RepeatingClosure callback);
 
-  // Called by the consent disclaimer when interacted with.
-  void OnDisclaimerAction(bool accepted);
+  // Called by the consent disclaimer on decline.
+  void OnDisclaimerDeclined();
 
   // Called back when the Scanner feature has processed a captured image to
   // suggest available Scanner actions.
