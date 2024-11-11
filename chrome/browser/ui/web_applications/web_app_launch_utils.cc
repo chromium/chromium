@@ -1024,7 +1024,7 @@ Browser* CreateWebAppWindowFromNavigationParams(
     const NavigateParams& navigate_params,
     bool should_create_app_popup = false) {
   Browser::CreateParams app_browser_params = CreateParamsForApp(
-      app_id, should_create_app_popup, /*trusted_source=*/true,
+      app_id, should_create_app_popup, navigate_params.trusted_source,
       navigate_params.window_features.bounds,
       navigate_params.initiating_profile, navigate_params.user_gesture);
   Browser* created_browser =
