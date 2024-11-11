@@ -1,0 +1,17 @@
+Tests that Runtime.exceptionThrown comes with a CORS issue summary.
+Exception: {
+    issueId : <string>
+    issueSummary : Access blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. If an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+    requestId : <string>
+}
+Exception: {
+    issueId : <string>
+    issueSummary : Access blocked by CORS policy: The 'Access-Control-Allow-Origin' header has a value 'http://127.0.0.1' that is not equal to the supplied origin. Have the server send the header with a valid value, or, if an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+    requestId : <string>
+}
+Exception: {
+    issueId : <string>
+    issueSummary : Access blocked by CORS policy: Response to preflight request doesn't pass access control check: The 'Access-Control-Allow-Origin' header contains the invalid value '1'. Have the server send the header with a valid value, or, if an opaque response serves your needs, set the request's mode to 'no-cors' to fetch the resource with CORS disabled.
+    requestId : <string>
+}
+

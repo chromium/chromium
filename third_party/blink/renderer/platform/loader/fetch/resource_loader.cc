@@ -80,6 +80,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/detachable_use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
@@ -1243,14 +1244,21 @@ void ResourceLoader::HandleError(const ResourceError& error) {
   }
   if (error.CorsErrorStatus()) {
     // CORS issues are reported via network service instrumentation.
-    fetcher_->GetConsoleLogger().AddConsoleMessage(
-        mojom::ConsoleMessageSource::kJavaScript,
-        mojom::ConsoleMessageLevel::kError,
-        cors::GetErrorString(
-            *error.CorsErrorStatus(), resource_->GetResourceRequest().Url(),
-            resource_->LastResourceRequest().Url(), *resource_->GetOrigin(),
-            resource_->GetType(), resource_->Options().initiator_info.name),
-        false /* discard_duplicates */, mojom::ConsoleMessageCategory::Cors);
+    const AtomicString& initiator_name =
+        resource_->Options().initiator_info.name;
+    if (initiator_name != fetch_initiator_type_names::kFetch ||
+        !base::FeatureList::IsEnabled(
+            features::kDevToolsImprovedNetworkError)) {
+      fetcher_->GetConsoleLogger().AddConsoleMessage(
+          mojom::blink::ConsoleMessageSource::kJavaScript,
+          mojom::blink::ConsoleMessageLevel::kError,
+          cors::GetErrorStringForConsoleMessage(
+              *error.CorsErrorStatus(), resource_->GetResourceRequest().Url(),
+              resource_->LastResourceRequest().Url(), *resource_->GetOrigin(),
+              resource_->GetType(), initiator_name),
+          false /* discard_duplicates */,
+          mojom::blink::ConsoleMessageCategory::Cors);
+    }
   }
 
   Release(ResourceLoadScheduler::ReleaseOption::kReleaseAndSchedule,

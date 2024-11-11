@@ -4067,5 +4067,21 @@
     ],
     "expires": "Jan 1, 2025",
     "owners": ["moonira@google.com"]
+  },
+  {
+    "prefix": "devtools-improved-network-error",
+    "platforms": ["Linux"],
+    "bases": [
+      "http/tests/inspector-protocol/runtime/runtime-exception-thrown-cors-issue-summary.js"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=DevToolsImprovedNetworkError"
+    ],
+    "expires": "Jan 3, 2025",
+    "owners": [
+      "bmeurer@google.com",
+      "changhaohan@google.com"
+    ]
   }
 ]

@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
+#include "third_party/blink/renderer/platform/loader/cors/cors_error_string.h"
 #include "third_party/blink/renderer/platform/loader/fetch/buffering_bytes_consumer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
@@ -292,10 +293,14 @@ class ResponseResolver final : public GarbageCollected<ResponseResolver> {
   void Reject(DOMException*);
 
   // Rejects the promise with the TypeError exception created at construction
-  // time. Also passes the exception object to devtools if `devtools_request_id`
-  // or `issue_id` are set.
+  // time. Also optionally passes `devtools_request_id`, `issue_id`, and
+  // `issue_summary` to DevTools if they are set; this happens via a side
+  // channel that is inaccessible to the page (so additional information
+  // stored in the `issue_summary` about for example CORS policy violations
+  // is not leaked to the page).
   void RejectBecauseFailed(std::optional<String> devtools_request_id,
-                           std::optional<base::UnguessableToken> issue_id);
+                           std::optional<base::UnguessableToken> issue_id,
+                           std::optional<String> issue_summary);
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(resolver_);
@@ -343,14 +348,15 @@ void ResponseResolver::Reject(DOMException* dom_exception) {
 
 void ResponseResolver::RejectBecauseFailed(
     std::optional<String> devtools_request_id,
-    std::optional<base::UnguessableToken> issue_id) {
+    std::optional<base::UnguessableToken> issue_id,
+    std::optional<String> issue_summary) {
   CHECK(resolver_);
   auto* script_state = resolver_->GetScriptState();
   auto* isolate = script_state->GetIsolate();
   auto context = script_state->GetContext();
   v8::Local<v8::Value> value = exception_.Get(isolate);
   exception_.Reset();
-  if (devtools_request_id || issue_id) {
+  if (devtools_request_id || issue_id || issue_summary) {
     ThreadDebugger* debugger = ThreadDebugger::From(isolate);
     auto* inspector = debugger->GetV8Inspector();
     if (devtools_request_id) {
@@ -362,6 +368,11 @@ void ResponseResolver::RejectBecauseFailed(
       inspector->associateExceptionData(
           context, value, V8AtomicString(isolate, "issueId"),
           V8String(isolate, IdentifiersFactory::IdFromToken(*issue_id)));
+    }
+    if (issue_summary) {
+      inspector->associateExceptionData(context, value,
+                                        V8AtomicString(isolate, "issueSummary"),
+                                        V8String(isolate, *issue_summary));
     }
   }
   resolver_->Reject(value);
@@ -425,7 +436,8 @@ class FetchLoaderBase : public GarbageCollectedMixin {
       const String& message,
       DOMException* dom_exception,
       std::optional<String> devtools_request_id = std::nullopt,
-      std::optional<base::UnguessableToken> issue_id = std::nullopt) = 0;
+      std::optional<base::UnguessableToken> issue_id = std::nullopt,
+      std::optional<String> issue_summary = std::nullopt) = 0;
 
   void PerformSchemeFetch(ExceptionState&);
   void PerformNetworkError(
@@ -599,11 +611,11 @@ class FetchManager::Loader final
       const ResourceLoaderOptions& resource_loader_options) override;
   // If |dom_exception| is provided, throws the specified DOMException instead
   // of the usual "Failed to fetch" TypeError.
-  void Failed(
-      const String& message,
-      DOMException* dom_exception,
-      std::optional<String> devtools_request_id = std::nullopt,
-      std::optional<base::UnguessableToken> issue_id = std::nullopt) override;
+  void Failed(const String& message,
+              DOMException* dom_exception,
+              std::optional<String> devtools_request_id = std::nullopt,
+              std::optional<base::UnguessableToken> issue_id = std::nullopt,
+              std::optional<String> issue_summary = std::nullopt) override;
 
   Member<FetchManager> fetch_manager_;
   Member<ResponseResolver> response_resolver_;
@@ -853,12 +865,18 @@ void FetchManager::Loader::DidFail(uint64_t identifier,
     return;
   }
 
-  auto issue_id = error.CorsErrorStatus()
-                      ? std::optional<base::UnguessableToken>(
-                            error.CorsErrorStatus()->issue_id)
-                      : std::nullopt;
+  std::optional<base::UnguessableToken> issue_id;
+  std::optional<String> issue_summary;
+  if (const auto& cors_error_status = error.CorsErrorStatus()) {
+    issue_id = cors_error_status->issue_id;
+    if (base::FeatureList::IsEnabled(features::kDevToolsImprovedNetworkError)) {
+      issue_summary = cors::GetErrorStringForIssueSummary(
+          *cors_error_status, fetch_initiator_type_names::kFetch);
+    }
+  }
   Failed(String(), nullptr,
-         IdentifiersFactory::SubresourceRequestId(identifier), issue_id);
+         IdentifiersFactory::SubresourceRequestId(identifier), issue_id,
+         issue_summary);
 }
 
 void FetchManager::Loader::DidFailRedirectCheck(uint64_t identifier) {
@@ -1271,7 +1289,8 @@ void FetchManager::Loader::Failed(
     const String& message,
     DOMException* dom_exception,
     std::optional<String> devtools_request_id,
-    std::optional<base::UnguessableToken> issue_id) {
+    std::optional<base::UnguessableToken> issue_id,
+    std::optional<String> issue_summary) {
   if (failed_ || finished_) {
     return;
   }
@@ -1284,8 +1303,8 @@ void FetchManager::Loader::Failed(
     if (dom_exception) {
       response_resolver_->Reject(dom_exception);
     } else {
-      response_resolver_->RejectBecauseFailed(std::move(devtools_request_id),
-                                              issue_id);
+      response_resolver_->RejectBecauseFailed(
+          std::move(devtools_request_id), issue_id, std::move(issue_summary));
       LogIfKeepalive("Failed");
     }
     response_resolver_.Clear();
@@ -1508,11 +1527,11 @@ class FetchLaterManager::DeferredLoader final
       timer_.StartOneShot(*activate_after_, FROM_HERE);
     }
   }
-  void Failed(
-      const String& message,
-      DOMException* dom_exception,
-      std::optional<String> devtools_request_id = std::nullopt,
-      std::optional<base::UnguessableToken> issue_id = std::nullopt) override {
+  void Failed(const String& message,
+              DOMException* dom_exception,
+              std::optional<String> devtools_request_id = std::nullopt,
+              std::optional<base::UnguessableToken> issue_id = std::nullopt,
+              std::optional<String> issue_summary = std::nullopt) override {
     AddConsoleMessage(message, issue_id);
     NotifyFinished();
   }
