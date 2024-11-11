@@ -63,7 +63,7 @@ BASE_FEATURE(kGpuLPAC,
 // overridden and disabled by policy.
 BASE_FEATURE(kPrintCompositorLPAC,
              "PrintCompositorLPAC",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables Renderer AppContainer
 BASE_FEATURE(kRendererAppContainer,
