@@ -37,6 +37,7 @@ chromium-metrics-reviews@google.com.
     completed/pending/in-flight) upon startup (if signed in) or upon first
     signin.
   </summary>
+  <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 
 <histogram name="TrustedVault.DeviceRegistrationOutcome{SecurityDomainId}"
@@ -58,6 +59,7 @@ chromium-metrics-reviews@google.com.
     (if signed in) or upon first signin, and if not registered, provides
     insights into why.
   </summary>
+  <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 
 <histogram
@@ -82,6 +84,7 @@ chromium-metrics-reviews@google.com.
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>Recorded when reading local trusted vault file.</summary>
+  <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 
 <histogram name="TrustedVault.FileWriteSuccess{SecurityDomainId}"
@@ -91,6 +94,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether writing local trusted vault file upon each write.
   </summary>
+  <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 
 <histogram
