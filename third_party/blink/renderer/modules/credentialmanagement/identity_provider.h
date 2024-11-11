@@ -15,6 +15,7 @@
 namespace blink {
 class IdentityUserInfo;
 class IdentityResolveOptions;
+class V8UnionIdentityProviderTokenOrUSVString;
 
 class MODULES_EXPORT IdentityProvider : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -32,7 +33,7 @@ class MODULES_EXPORT IdentityProvider : public ScriptWrappable {
                                                                 const String&);
   static ScriptPromise<IDLUndefined> resolve(
       ScriptState*,
-      const String&,
+      const V8UnionIdentityProviderTokenOrUSVString* token,
       const IdentityResolveOptions* options = nullptr);
 };
 
