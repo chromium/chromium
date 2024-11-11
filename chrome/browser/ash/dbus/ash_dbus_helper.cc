@@ -352,6 +352,7 @@ void ShutdownDBus() {
   ConciergeClient::Shutdown();
   CiceroneClient::Shutdown();
   ChunneldClient::Shutdown();
+  ChapsClient::Shutdown();
   CecServiceClient::Shutdown();
   CdmFactoryDaemonClient::Shutdown();
   BiodClient::Shutdown();
