@@ -98,12 +98,27 @@ class NodeLinkMemory : public RefCounted<NodeLinkMemory> {
   // with the same BufferId and dimensions as `descriptor`.
   Fragment GetFragment(const FragmentDescriptor& descriptor);
 
-  // Adopts an existing reference to a RefCountedFragment within `fragment`.
-  // This does NOT increment the ref count of the RefCountedFragment.
+  // Adopts an existing reference to a RefCountedFragment within `fragment`,
+  // which must be a valid, properly aligned, and sufficiently sized fragment to
+  // hold a T. This does NOT increment the ref count of the RefCountedFragment.
   template <typename T>
   FragmentRef<T> AdoptFragmentRef(const Fragment& fragment) {
     ABSL_ASSERT(sizeof(T) <= fragment.size());
     return FragmentRef<T>(kAdoptExistingRef, WrapRefCounted(this), fragment);
+  }
+
+  // Attempts to adopt an existing reference to a RefCountedFragment located at
+  // `fragment`. Returns null if the fragment descriptor is null, misaligned,
+  // or of insufficient size. This does NOT increment the ref count of the
+  // RefCountedFragment.
+  template <typename T>
+  FragmentRef<T> AdoptFragmentRefIfValid(const FragmentDescriptor& descriptor) {
+    if (descriptor.is_null() || descriptor.size() < sizeof(T) ||
+        descriptor.offset() % 8 != 0) {
+      return {};
+    }
+
+    return AdoptFragmentRef<T>(GetFragment(descriptor));
   }
 
   // Adds a new buffer to the underlying BufferPool to use as additional
