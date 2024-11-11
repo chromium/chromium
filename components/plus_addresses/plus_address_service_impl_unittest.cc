@@ -250,6 +250,10 @@ class PlusAddressServiceTest : public ::testing::Test {
     return test_url_loader_factory_;
   }
 
+  base::test::TestFuture<hats::SurveyType>& launch_survey_future() {
+    return launch_survey_future_;
+  }
+
   // Forces (re-)initialization of the `PlusAddressService`, which can be useful
   // when classes override feature parameters.
   void InitService() {
@@ -262,7 +266,7 @@ class PlusAddressServiceTest : public ::testing::Test {
                      &affiliation_service(),
                      /*feature_enabled_for_profile_check=*/
                      base::BindRepeating(&base::FeatureList::IsEnabled),
-                     /*launch_hats_survey=*/base::DoNothing());
+                     launch_survey_future_.GetRepeatingCallback());
   }
 
  private:
@@ -273,6 +277,7 @@ class PlusAddressServiceTest : public ::testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   data_decoder::test::InProcessDataDecoder decoder_;
   std::optional<PlusAddressServiceImpl> service_;
+  base::test::TestFuture<hats::SurveyType> launch_survey_future_;
 };
 
 TEST_F(PlusAddressServiceTest, BasicTest) {
@@ -740,6 +745,14 @@ TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestion) {
   base::test::TestFuture<autofill::SuggestionHidingReason> hide_callback;
   base::test::TestFuture<const std::string&> fill_callback;
 
+  // Simulate the scenario when the user has already created 2 other plus
+  // addresses. This is relevant only for the HaTS survey triggering
+  // verification.
+  service().SavePlusProfile(test::CreatePlusProfileWithFacet(
+      FacetURI::FromPotentiallyInvalidSpec("https://example1.com")));
+  service().SavePlusProfile(test::CreatePlusProfileWithFacet(
+      FacetURI::FromPotentiallyInvalidSpec("https://example2.com")));
+
   PlusProfile profile = test::CreatePlusProfile();
 
   Suggestion inline_suggestion(SuggestionType::kCreateNewPlusAddressInline);
@@ -776,6 +789,11 @@ TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestion) {
   ASSERT_TRUE(hide_callback.Wait());
   EXPECT_THAT(hide_callback.Get(),
               Eq(autofill::SuggestionHidingReason::kAcceptSuggestion));
+  // Feature perception survey should be triggered after the user has created
+  // the 3rd+ plus address.
+  ASSERT_TRUE(launch_survey_future().Wait());
+  ASSERT_THAT(launch_survey_future().Get(),
+              Eq(hats::SurveyType::kCreatedMultiplePlusAddresses));
 }
 
 // Tests that when the server call to create a plus address from an inline
@@ -791,6 +809,14 @@ TEST_F(PlusAddressServiceRequestsTest,
   base::test::TestFuture<autofill::SuggestionHidingReason> hide_callback;
   base::test::TestFuture<std::u16string, std::u16string>
       show_affiliation_error_callback;
+
+  // Simulate the scenario when the user has already created 2 other plus
+  // addresses. This is relevant only for the HaTS survey triggering
+  // verification.
+  service().SavePlusProfile(test::CreatePlusProfileWithFacet(
+      FacetURI::FromPotentiallyInvalidSpec("https://example1.com")));
+  service().SavePlusProfile(test::CreatePlusProfileWithFacet(
+      FacetURI::FromPotentiallyInvalidSpec("https://example2.com")));
 
   PlusProfile profile = test::CreatePlusProfile();
   PlusProfile affiliated_profile = test::CreatePlusProfile2();
@@ -827,6 +853,9 @@ TEST_F(PlusAddressServiceRequestsTest,
   EXPECT_THAT(show_affiliation_error_callback.Get<0>(), Eq(u"bar.com"));
   EXPECT_THAT(show_affiliation_error_callback.Get<1>(),
               Eq(base::UTF8ToUTF16(*affiliated_profile.plus_address)));
+  // Feature perception survey should not be triggered if the plus address was
+  // not created.
+  ASSERT_FALSE(launch_survey_future().IsReady());
 }
 
 // Tests that when the server call to create a plus address from an inline
@@ -841,6 +870,14 @@ TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestionTimeoutError) {
   base::MockCallback<PlusAddressService::ShowErrorDialogCallback>
       show_error_callback;
   base::MockCallback<base::OnceClosure> reshow_callback;
+
+  // Simulate the scenario when the user has already created 2 other plus
+  // addresses. This is relevant only for the HaTS survey triggering
+  // verification.
+  service().SavePlusProfile(test::CreatePlusProfileWithFacet(
+      FacetURI::FromPotentiallyInvalidSpec("https://example1.com")));
+  service().SavePlusProfile(test::CreatePlusProfileWithFacet(
+      FacetURI::FromPotentiallyInvalidSpec("https://example2.com")));
 
   PlusProfile profile = test::CreatePlusProfile();
   PlusProfile affiliated_profile = test::CreatePlusProfile2();
@@ -878,6 +915,9 @@ TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestionTimeoutError) {
 
   url_loader_factory().SimulateResponseForPendingRequest(
       kCreatePlusAddressEndpoint, "", net::HTTP_REQUEST_TIMEOUT);
+  // Feature perception survey should not be triggered if the plus address was
+  // not created.
+  ASSERT_FALSE(launch_survey_future().IsReady());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

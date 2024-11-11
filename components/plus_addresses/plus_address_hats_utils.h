@@ -25,6 +25,8 @@ enum class SurveyType {
   kAcceptedFirstTimeCreate = 1,
   // The user has declined the first plus address creation flow.
   kDeclinedFirstTimeCreate = 2,
+  // The user has created their 3rd, 4th, ... plus address.
+  kCreatedMultiplePlusAddresses = 3,
 };
 
 std::map<std::string, std::string> GetPlusAddressHatsData(

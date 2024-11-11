@@ -172,9 +172,18 @@ class PlusAddressServiceImpl : public PlusAddressService,
   const PlusProfileOrError& HandleCreateOrConfirmResponse(
       const PlusProfileOrError& maybe_profile);
 
+  // Analyzes `maybe_profile` and triggers a HaTS survey if
+  // * plus address was confirmed successfully.
+  // * it's identical to the `requested_address` (it might be different if there
+  //   is an affiliation error).
+  // * the user has created 3 or more plus addresses.
+  const PlusProfileOrError& MaybeTriggerUserPerceptionSurvey(
+      const PlusAddress& requested_address,
+      const PlusProfileOrError& maybe_profile);
+
   // Checks whether the `origin` supports plus address.
-  // Returns `true` when origin is not opaque, not excluded, and scheme is http
-  // or https.
+  // Returns `true` when origin is not opaque, not excluded, and scheme is
+  // http or https.
   bool IsSupportedOrigin(const url::Origin& origin) const;
 
   // Reacts to the server response for confirming a plus address from an inline

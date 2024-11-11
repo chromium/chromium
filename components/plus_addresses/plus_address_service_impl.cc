@@ -401,6 +401,9 @@ void PlusAddressServiceImpl::ConfirmPlusAddress(
       origin, plus_address,
       base::BindOnce(&PlusAddressServiceImpl::HandleCreateOrConfirmResponse,
                      base::Unretained(this))
+          .Then(base::BindOnce(
+              &PlusAddressServiceImpl::MaybeTriggerUserPerceptionSurvey,
+              base::Unretained(this), plus_address))
           .Then(std::move(on_completed)));
 }
 
@@ -408,6 +411,24 @@ const PlusProfileOrError& PlusAddressServiceImpl::HandleCreateOrConfirmResponse(
     const PlusProfileOrError& maybe_profile) {
   if (maybe_profile.has_value() && maybe_profile->is_confirmed) {
     SavePlusProfile(*maybe_profile);
+  }
+  return maybe_profile;
+}
+
+const PlusProfileOrError&
+PlusAddressServiceImpl::MaybeTriggerUserPerceptionSurvey(
+    const PlusAddress& requested_address,
+    const PlusProfileOrError& maybe_profile) {
+  // If `maybe_profile` contains a confirmed plus profile, it might different
+  // from the requested plus address. This can happen if the user tries to
+  // create a plus address for a domain, for which they already have an
+  // affiliated plus address. In this case, the HaTS survey should not be
+  // triggered because no new plus address was created.
+  if (maybe_profile.has_value() && maybe_profile->is_confirmed &&
+      requested_address == maybe_profile->plus_address &&
+      GetPlusProfiles().size() > 2) {
+    TriggerUserPerceptionSurvey(
+        hats::SurveyType::kCreatedMultiplePlusAddresses);
   }
   return maybe_profile;
 }
