@@ -220,8 +220,6 @@ suite('<nearby-share-receive-dialog>', () => {
       dialog.showHighVisibilityPage(60);
       await waitAfterNextRender(dialog);
 
-      assertFalse(isVisible(
-          dialog.shadowRoot!.querySelector('nearby-onboarding-page')));
       assertTrue(isVisible(
           dialog.shadowRoot!.querySelector('nearby-onboarding-one-page')));
       // Finish onboarding
@@ -239,8 +237,6 @@ suite('<nearby-share-receive-dialog>', () => {
       dialog.showOnboarding();
       await waitAfterNextRender(dialog);
 
-      assertFalse(isVisible(
-          dialog.shadowRoot!.querySelector('nearby-onboarding-page')));
       assertTrue(isVisible(
           dialog.shadowRoot!.querySelector('nearby-onboarding-one-page')));
       // Select visibility button and advance to the next page.

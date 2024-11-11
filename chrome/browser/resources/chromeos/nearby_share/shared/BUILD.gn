@@ -18,7 +18,6 @@ build_webui("build") {
     "nearby_device_icon.ts",
     "nearby_device.ts",
     "nearby_onboarding_one_page.ts",
-    "nearby_onboarding_page.ts",
     "nearby_page_template.ts",
     "nearby_preview.ts",
     "nearby_progress.ts",

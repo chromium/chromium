@@ -177,27 +177,6 @@ function getOnboardingEntrypointFromQueryParam(queryParam: string|null):
 }
 
 /**
- * If onboarding was cancelled this function is invoked to record during which
- * step the cancellation occurred.
- */
-export function processOnboardingCancelledMetrics(
-    nearbyShareOnboardingEntryPointState: NearbyShareOnboardingEntryPoint,
-    nearbyShareOnboardingFinalState: NearbyShareOnboardingFinalState): void {
-  if (!onboardingInitiatedTimestamp) {
-    return;
-  }
-  chrome.send('metricsHandler:recordInHistogram', [
-    NearbyShareOnboardingResultHistogramName,
-    nearbyShareOnboardingFinalState,
-    NearbyShareOnboardingFinalState.MAX,
-  ]);
-
-  processOnboardingEntryPointResultMetrics(
-      nearbyShareOnboardingEntryPointState, nearbyShareOnboardingFinalState);
-  onboardingInitiatedTimestamp = null;
-}
-
-/**
  * If one-page onboarding was cancelled this function is invoked to record
  * during which step the cancellation occurred.
  */
@@ -234,33 +213,6 @@ function getOnboardingCancelledFlowEvent(
     default:
       assertNotReached('Invalid final state for cancel event');
   }
-}
-
-/**
- * Records a metric for successful onboarding flow completion and the time it
- * took to complete.
- */
-export function processOnboardingCompleteMetrics(
-    nearbyShareOnboardingEntryPointState: NearbyShareOnboardingEntryPoint):
-    void {
-  if (!onboardingInitiatedTimestamp) {
-    return;
-  }
-  chrome.send('metricsHandler:recordInHistogram', [
-    NearbyShareOnboardingResultHistogramName,
-    NearbyShareOnboardingFinalState.COMPLETE,
-    NearbyShareOnboardingFinalState.MAX,
-  ]);
-
-  chrome.send('metricsHandler:recordMediumTime', [
-    NearbyShareOnboardingDurationHistogramName,
-    window.performance.now() - onboardingInitiatedTimestamp,
-  ]);
-
-  processOnboardingEntryPointResultMetrics(
-      nearbyShareOnboardingEntryPointState,
-      NearbyShareOnboardingFinalState.COMPLETE);
-  onboardingInitiatedTimestamp = null;
 }
 
 /**

@@ -771,9 +771,6 @@ void MultiDeviceSection::AddLoadTimeData(
   html_source->AddBoolean("isEcheAppEnabled", features::IsEcheSWAEnabled());
   OnEnableScreenLockChanged();
   OnScreenLockStatusChanged();
-  html_source->AddBoolean("isOnePageOnboardingEnabled",
-                          base::FeatureList::IsEnabled(
-                              ::features::kNearbySharingOnePageOnboarding));
   html_source->AddBoolean(
       "isSmartLockSignInRemoved",
       base::FeatureList::IsEnabled(features::kSmartLockSignInRemoved));

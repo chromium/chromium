@@ -23,11 +23,6 @@ BASE_FEATURE(kNearbySharingDeviceContacts,
              "NearbySharingDeviceContacts",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables new one-page onboarding workflow for Nearby Share.
-BASE_FEATURE(kNearbySharingOnePageOnboarding,
-             "NearbySharingOnePageOnboarding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables UI features for Self Share to allow seamless sharing between a user's
 // own devices.
 BASE_FEATURE(kNearbySharingSelfShare,
