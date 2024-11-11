@@ -154,7 +154,7 @@ void ActionButtonView::StateChanged(ButtonState old_state) {
 void ActionButtonView::UpdateColorsAndIcon() {
   // See `PillButton::UpdateBackgroundColor`.
   const ui::ColorId background_color =
-      GetEnabled() ? cros_tokens::kCrosSysSystemOnBase
+      GetEnabled() ? cros_tokens::kCrosSysSystemBaseElevated
                    : cros_tokens::kCrosSysDisabledContainer;
   SetBackground(views::CreateThemedRoundedRectBackground(background_color,
                                                          kActionButtonRadius));
