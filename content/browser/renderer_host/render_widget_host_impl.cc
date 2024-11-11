@@ -113,7 +113,6 @@
 #include "storage/browser/file_system/isolated_context.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/common/widget/constants.h"
 #include "third_party/blink/public/common/widget/visual_properties.h"
 #include "third_party/blink/public/mojom/drag/drag.mojom.h"
