@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_address_field.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_address_field.h"
 
 @implementation AutofillProfileAddressField
 @end

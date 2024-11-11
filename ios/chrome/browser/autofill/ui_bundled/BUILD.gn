@@ -117,14 +117,6 @@ source_set("ui") {
   frameworks = [ "UIKit.framework" ]
 }
 
-source_set("constants") {
-  sources = [
-    "autofill_constants.h",
-    "autofill_constants.mm",
-  ]
-  deps = [ "//ios/chrome/browser/shared/ui/list_model" ]
-}
-
 source_set("util") {
   sources = [
     "autofill_credit_card_util.h",
@@ -134,47 +126,6 @@ source_set("util") {
     ":ui_type",
     "//base",
     "//components/autofill/core/browser",
-  ]
-}
-
-source_set("autofill_shared_ui") {
-  sources = [
-    "autofill_country_selection_table_view_controller.h",
-    "autofill_country_selection_table_view_controller.mm",
-    "autofill_profile_address_field.h",
-    "autofill_profile_address_field.mm",
-    "autofill_profile_edit_consumer.h",
-    "autofill_profile_edit_handler.h",
-    "autofill_profile_edit_mediator.h",
-    "autofill_profile_edit_mediator.mm",
-    "autofill_profile_edit_mediator_delegate.h",
-    "autofill_profile_edit_table_view_controller.h",
-    "autofill_profile_edit_table_view_controller.mm",
-    "autofill_profile_edit_table_view_controller_delegate.h",
-  ]
-  deps = [
-    ":constants",
-    ":ui_type",
-    "//base:base",
-    "//components/autofill/core/browser",
-    "//components/autofill/core/common:features",
-    "//components/autofill/ios/common",
-    "//components/strings:components_strings_grit",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/autofill/ui_bundled/cells",
-    "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/list_model",
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/table_view",
-    "//ios/chrome/browser/shared/ui/table_view:constants",
-    "//ios/chrome/browser/shared/ui/table_view:utils",
-    "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/ui/settings/autofill:shared_ui",
-    "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/table_view:cells_constants",
-    "//ios/chrome/common/ui/util",
-    "//ui/base",
   ]
 }
 
@@ -227,7 +178,6 @@ source_set("eg2_tests") {
   ]
   deps = [
     ":common",
-    ":constants",
     ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
@@ -238,6 +188,7 @@ source_set("eg2_tests") {
     "//components/strings",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/ui_bundled/address_editor:constants",
     "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet:constants",
     "//ios/chrome/browser/badges/ui_bundled:public",
     "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
@@ -308,14 +259,11 @@ source_set("eg_test_support+eg2") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "autofill_profile_edit_mediator_unittest.mm",
-    "autofill_profile_edit_table_view_controller_unittest.mm",
     "card_unmask_prompt_view_controller_unittest.mm",
     "chrome_autofill_client_ios_unittest.mm",
     "ios_chrome_payments_autofill_client_unittest.mm",
   ]
   deps = [
-    ":autofill_shared_ui",
     ":bridges",
     ":coordinator",
     "//base/test:test_support",
@@ -329,7 +277,8 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
-    "//ios/chrome/browser/autofill/ui_bundled:constants",
+    "//ios/chrome/browser/autofill/ui_bundled/address_editor:autofill_shared_ui",
+    "//ios/chrome/browser/autofill/ui_bundled/address_editor:constants",
     "//ios/chrome/browser/autofill/ui_bundled/cells",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/test",

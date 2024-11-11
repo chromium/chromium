@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
@@ -14,9 +14,9 @@
 #import "components/autofill/core/browser/ui/country_combobox_model.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_consumer.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_mediator_delegate.h"
-#import "ios/chrome/browser/autofill/ui_bundled/cells/country_item.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_consumer.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -11,12 +11,12 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_constants.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_table_view_controller_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/autofill_edit_profile_button_footer_item.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/autofill_profile_edit_item.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_type_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/cells/autofill_edit_profile_button_footer_item.h"
-#import "ios/chrome/browser/autofill/ui_bundled/cells/autofill_profile_edit_item.h"
-#import "ios/chrome/browser/autofill/ui_bundled/cells/country_item.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"

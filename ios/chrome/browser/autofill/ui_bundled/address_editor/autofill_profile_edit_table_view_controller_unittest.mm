@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -11,17 +11,17 @@
 #import "components/autofill/core/browser/test_personal_data_manager.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/autofill_profile_edit_item.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_constants.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_mediator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_table_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/cells/autofill_profile_edit_item.h"
-#import "ios/chrome/browser/autofill/ui_bundled/cells/country_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
