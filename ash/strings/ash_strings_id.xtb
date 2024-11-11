@@ -674,7 +674,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="3410336247007142655">Tampilkan setelan tema gelap</translation>
 <translation id="3413817803639110246">Belum ada notifikasi</translation>
 <translation id="3417835166382867856">Telusuri tab</translation>
-<translation id="3426253816581969877">Tekan dan tahan <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, ketuk <ph name="KEY" /> sampai jendela yang Anda inginkan terbuka, lalu lepaskan</translation>
+<translation id="3426253816581969877">Tekan lama <ph name="MODIFIER_1" /><ph name="MODIFIER_2" />, ketuk <ph name="KEY" /> sampai jendela yang Anda inginkan terbuka, lalu lepaskan</translation>
 <translation id="3428447136709161042">Putuskan sambungan dari <ph name="NETWORK_NAME" /></translation>
 <translation id="3430396595145920809">Geser dari kanan untuk kembali</translation>
 <translation id="3431517721463707585">Desktop 14</translation>
@@ -1869,7 +1869,7 @@ Baru diinstal</translation>
 <translation id="7401788553834047908">Mode Jangan Ganggu saat dalam mode Fokus</translation>
 <translation id="7405710164030118432">Untuk membuka kunci perangkat, masukkan kode akses orang tua Family Link</translation>
 <translation id="7406608787870898861">Selesaikan penyiapan jaringan seluler Anda</translation>
-<translation id="7406854842098869085">Tekan dan tahan <ph name="MODIFIER_1" />, ketuk <ph name="KEY" /> sampai jendela yang Anda inginkan terbuka, lalu lepaskan</translation>
+<translation id="7406854842098869085">Tekan lama <ph name="MODIFIER_1" />, ketuk <ph name="KEY" /> sampai jendela yang Anda inginkan terbuka, lalu lepaskan</translation>
 <translation id="740790383907119240">Pintasan Aplikasi</translation>
 <translation id="7413851974711031813">Tekan escape untuk menutup</translation>
 <translation id="7416471219712049036">Simpan halaman saat ini</translation>
@@ -1902,7 +1902,7 @@ Baru diinstal</translation>
 <translation id="7519206258459640379">Framing kamera aktif.</translation>
 <translation id="7519649142417630956">Setelah dimatikan, administrator akan logout dan tidak dapat mengontrol perangkat Anda.
 
-Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</translation>
+Untuk mematikan perangkat, tekan lama tombol daya di perangkat lagi.</translation>
 <translation id="7523420897035067483">Aktifkan mode Jangan Ganggu saat dalam mode Fokus</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">Buat</translation>
@@ -1941,7 +1941,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (pemilik)</translation>
 <translation id="7647488630410863958">Buka kunci perangkat untuk melihat notifikasi</translation>
 <translation id="7649070708921625228">Bantuan</translation>
-<translation id="7654687942625752712">Tekan dan tahan kedua tombol volume selama 5 detik untuk menonaktifkan respons lisan.</translation>
+<translation id="7654687942625752712">Tekan kedua tombol volume selama 5 detik untuk menonaktifkan respons lisan.</translation>
 <translation id="7654916369822103315">"<ph name="DISPLAY_NAME" />" diubah ke resolusi <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Karena keterbatasan bandwidth port, layar Anda tidak dapat mendukung resolusi <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Tanpa mengonfirmasi, setelan sebelumnya akan dipulihkan dalam <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7659861092419699379">Desktop dan jendela telah ditutup</translation>
