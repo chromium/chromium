@@ -1442,7 +1442,7 @@ ci.builder(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
+            target_bits = 32,
             target_platform = builder_config.target_platform.LINUX,
         ),
     ),
