@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
@@ -302,16 +301,6 @@ const char kCastMirroringTargetPlayoutDelay[] =
 }  // namespace switches
 
 namespace media {
-
-// Enables customized AudioRendererAlgorithmParameters.
-BASE_FEATURE(kAudioRendererAlgorithmParameters,
-             "AudioRendererAlgorithmParameters",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<base::TimeDelta>
-    kAudioRendererAlgorithmStartingCapacityForEncrypted{
-        &kAudioRendererAlgorithmParameters, "starting_capacity_for_encrypted",
-        base::Milliseconds(500)};
 
 // Only used for disabling overlay fullscreen (aka SurfaceView) in Clank.
 BASE_FEATURE(kOverlayFullscreenVideo,
