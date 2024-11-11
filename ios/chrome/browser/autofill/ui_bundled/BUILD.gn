@@ -125,12 +125,22 @@ source_set("constants") {
   deps = [ "//ios/chrome/browser/shared/ui/list_model" ]
 }
 
+source_set("util") {
+  sources = [
+    "autofill_credit_card_util.h",
+    "autofill_credit_card_util.mm",
+  ]
+  deps = [
+    ":ui_type",
+    "//base",
+    "//components/autofill/core/browser",
+  ]
+}
+
 source_set("autofill_shared_ui") {
   sources = [
     "autofill_country_selection_table_view_controller.h",
     "autofill_country_selection_table_view_controller.mm",
-    "autofill_credit_card_util.h",
-    "autofill_credit_card_util.mm",
     "autofill_profile_address_field.h",
     "autofill_profile_address_field.mm",
     "autofill_profile_edit_consumer.h",

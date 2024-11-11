@@ -118,7 +118,7 @@ source_set("settings") {
     "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/model",
-    "//ios/chrome/browser/autofill/ui_bundled:autofill_shared_ui",
+    "//ios/chrome/browser/autofill/ui_bundled:util",
     "//ios/chrome/browser/autofill/ui_bundled/cells",
     "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/browsing_data/model:feature_flags",
