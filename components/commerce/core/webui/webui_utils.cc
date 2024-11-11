@@ -8,11 +8,101 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_types.h"
+#include "components/commerce/core/proto/price_tracking.pb.h"
 #include "components/payments/core/currency_formatter.h"
 #include "components/url_formatter/elide_url.h"
+#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 #include "url/gurl.h"
 
 namespace commerce {
+
+using BuyableProduct_PriceDisplayRecommendation::
+    BuyableProduct_PriceDisplayRecommendation_RECOMMENDATION_SHOW_PRICE_UNDETERMINED;
+using BuyableProduct_PriceDisplayRecommendation::
+    BuyableProduct_PriceDisplayRecommendation_RECOMMENDATION_SHOW_RANGE;
+using BuyableProduct_PriceDisplayRecommendation::
+    BuyableProduct_PriceDisplayRecommendation_RECOMMENDATION_SHOW_RANGE_LOWER_BOUND;
+using BuyableProduct_PriceDisplayRecommendation::
+    BuyableProduct_PriceDisplayRecommendation_RECOMMENDATION_SHOW_RANGE_UPPER_BOUND;
+using BuyableProduct_PriceDisplayRecommendation::
+    BuyableProduct_PriceDisplayRecommendation_RECOMMENDATION_SHOW_SINGLE_PRICE;
+using BuyableProduct_PriceDisplayRecommendation::
+    BuyableProduct_PriceDisplayRecommendation_RECOMMENDATION_UNSPECIFIED;
+
+using PriceSummary_ProductOfferCondition::
+    PriceSummary_ProductOfferCondition_CONDITION_ANY;
+
+namespace {
+
+std::string GetFormattedCurrencyFromMicros(
+    uint64_t amount_micros,
+    payments::CurrencyFormatter* formatter) {
+  return base::UTF16ToUTF8(formatter->Format(base::NumberToString(
+      static_cast<float>(amount_micros) / kToMicroCurrency)));
+}
+
+// Generate a string that displays the price summary in the format specified by
+// the provided product info.
+std::string GetFormattedPriceSummary(const ProductInfo& product_info,
+                                     payments::CurrencyFormatter* formatter) {
+  std::string current_price =
+      GetFormattedCurrencyFromMicros(product_info.amount_micros, formatter);
+  size_t index = 0;
+  for (const auto& summary : product_info.price_summary) {
+    if (summary.is_preferred()) {
+      break;
+    }
+    index++;
+  }
+
+  if (index >= product_info.price_summary.size()) {
+    return current_price;
+  }
+
+  const PriceSummary& summary = product_info.price_summary[index];
+
+  std::string lowest_price = "";
+  if (summary.has_lowest_price()) {
+    lowest_price = GetFormattedCurrencyFromMicros(
+        summary.lowest_price().amount_micros(), formatter);
+  }
+
+  std::string highest_price = "";
+  if (summary.has_highest_price()) {
+    highest_price = GetFormattedCurrencyFromMicros(
+        summary.highest_price().amount_micros(), formatter);
+  }
+
+  switch (product_info.price_display_recommendation.value()) {
+    case BuyableProduct_PriceDisplayRecommendation_RECOMMENDATION_SHOW_RANGE:
+      if (!lowest_price.empty() && !highest_price.empty()) {
+        return lowest_price + " - " + highest_price;
+      }
+      return current_price;
+    case BuyableProduct_PriceDisplayRecommendation_RECOMMENDATION_SHOW_RANGE_LOWER_BOUND:
+      if (!lowest_price.empty()) {
+        return lowest_price + "+";
+      }
+      return current_price;
+    case BuyableProduct_PriceDisplayRecommendation_RECOMMENDATION_SHOW_RANGE_UPPER_BOUND:
+      if (!highest_price.empty()) {
+        return highest_price;
+      }
+      return current_price;
+    case BuyableProduct_PriceDisplayRecommendation_RECOMMENDATION_SHOW_PRICE_UNDETERMINED:
+      return "-";
+    case BuyableProduct_PriceDisplayRecommendation_RECOMMENDATION_SHOW_SINGLE_PRICE:
+      return current_price;
+    case BuyableProduct_PriceDisplayRecommendation_RECOMMENDATION_UNSPECIFIED:
+      return "";
+    default:
+      break;
+  }
+
+  return current_price;
+}
+
+}  // namespace
 
 shopping_service::mojom::ProductInfoPtr ProductInfoToMojoProduct(
     const GURL& url,
@@ -68,6 +158,12 @@ shopping_service::mojom::ProductInfoPtr ProductInfoToMojoProduct(
     }
     product_info->category_labels.push_back(std::move(category_labels));
   }
+
+  if (info->price_summary.size() > 0) {
+    product_info->price_summary =
+        GetFormattedPriceSummary(info.value(), formatter.get());
+  }
+
   return product_info;
 }
 

@@ -227,6 +227,26 @@ class ShoppingServiceHandlerTest : public testing::Test {
   base::test::ScopedFeatureList features_;
 };
 
+std::optional<ProductInfo> BuildProductInfoWithPriceSummary(
+    uint64_t price,
+    uint64_t price_lowest,
+    uint64_t price_highest) {
+  std::optional<commerce::ProductInfo> info;
+  info.emplace();
+  info->currency_code = "usd";
+  info->amount_micros = price;
+
+  PriceSummary summary;
+  summary.set_is_preferred(true);
+  summary.mutable_lowest_price()->set_currency_code("usd");
+  summary.mutable_lowest_price()->set_amount_micros(price_lowest);
+  summary.mutable_highest_price()->set_currency_code("usd");
+  summary.mutable_highest_price()->set_amount_micros(price_highest);
+  info->price_summary.push_back(std::move(summary));
+
+  return info;
+}
+
 TEST_F(ShoppingServiceHandlerTest, ConvertToMojoTypes) {
   const bookmarks::BookmarkNode* product = AddProductBookmark(
       bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
@@ -1423,6 +1443,94 @@ TEST_F(ShoppingServiceHandlerTest,
           })
           .Then(run_loop.QuitClosure()));
 
+  run_loop.Run();
+}
+
+TEST_F(ShoppingServiceHandlerTest, TestProductInfoPriceSummary_ShowRange) {
+  std::optional<commerce::ProductInfo> info =
+      BuildProductInfoWithPriceSummary(150000000, 100000000, 200000000);
+  info->price_display_recommendation =
+      BuyableProduct_PriceDisplayRecommendation::
+          BuyableProduct_PriceDisplayRecommendation_RECOMMENDATION_SHOW_RANGE;
+  shopping_service_->SetResponseForGetProductInfoForUrl(info);
+
+  base::RunLoop run_loop;
+  handler_->GetProductInfoForUrl(
+      GURL(),
+      base::BindOnce([](const GURL& url,
+                        shopping_service::mojom::ProductInfoPtr product_info) {
+        ASSERT_EQ("$100.00 - $200.00", product_info->price_summary);
+      }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(ShoppingServiceHandlerTest,
+       TestProductInfoPriceSummary_ShowRangeLowerBound) {
+  std::optional<commerce::ProductInfo> info =
+      BuildProductInfoWithPriceSummary(150000000, 100000000, 200000000);
+  info->price_display_recommendation = BuyableProduct_PriceDisplayRecommendation::
+      BuyableProduct_PriceDisplayRecommendation_RECOMMENDATION_SHOW_RANGE_LOWER_BOUND;
+  shopping_service_->SetResponseForGetProductInfoForUrl(info);
+
+  base::RunLoop run_loop;
+  handler_->GetProductInfoForUrl(
+      GURL(),
+      base::BindOnce([](const GURL& url,
+                        shopping_service::mojom::ProductInfoPtr product_info) {
+        ASSERT_EQ("$100.00+", product_info->price_summary);
+      }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(ShoppingServiceHandlerTest,
+       TestProductInfoPriceSummary_ShowRangeUpperBound) {
+  std::optional<commerce::ProductInfo> info =
+      BuildProductInfoWithPriceSummary(150000000, 100000000, 200000000);
+  info->price_display_recommendation = BuyableProduct_PriceDisplayRecommendation::
+      BuyableProduct_PriceDisplayRecommendation_RECOMMENDATION_SHOW_RANGE_UPPER_BOUND;
+  shopping_service_->SetResponseForGetProductInfoForUrl(info);
+
+  base::RunLoop run_loop;
+  handler_->GetProductInfoForUrl(
+      GURL(),
+      base::BindOnce([](const GURL& url,
+                        shopping_service::mojom::ProductInfoPtr product_info) {
+        ASSERT_EQ("$200.00", product_info->price_summary);
+      }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(ShoppingServiceHandlerTest, TestProductInfoPriceSummary_Unspecified) {
+  std::optional<commerce::ProductInfo> info =
+      BuildProductInfoWithPriceSummary(150000000, 100000000, 200000000);
+  info->price_display_recommendation = BuyableProduct_PriceDisplayRecommendation::
+      BuyableProduct_PriceDisplayRecommendation_RECOMMENDATION_SHOW_PRICE_UNDETERMINED;
+  shopping_service_->SetResponseForGetProductInfoForUrl(info);
+
+  base::RunLoop run_loop;
+  handler_->GetProductInfoForUrl(
+      GURL(),
+      base::BindOnce([](const GURL& url,
+                        shopping_service::mojom::ProductInfoPtr product_info) {
+        ASSERT_EQ("-", product_info->price_summary);
+      }).Then(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
+TEST_F(ShoppingServiceHandlerTest, TestProductInfoPriceSummary_SinglePrice) {
+  std::optional<commerce::ProductInfo> info =
+      BuildProductInfoWithPriceSummary(150000000, 100000000, 200000000);
+  info->price_display_recommendation = BuyableProduct_PriceDisplayRecommendation::
+      BuyableProduct_PriceDisplayRecommendation_RECOMMENDATION_SHOW_SINGLE_PRICE;
+  shopping_service_->SetResponseForGetProductInfoForUrl(info);
+
+  base::RunLoop run_loop;
+  handler_->GetProductInfoForUrl(
+      GURL(),
+      base::BindOnce([](const GURL& url,
+                        shopping_service::mojom::ProductInfoPtr product_info) {
+        ASSERT_EQ("$150.00", product_info->price_summary);
+      }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
 

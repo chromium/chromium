@@ -29,6 +29,22 @@ message BuyableProduct {
     MAIN_PRODUCT = 1;
   }
 
+  // Recommendation on how to display the price range to the consumer.
+  enum PriceDisplayRecommendation {
+    // No recommendation.
+    RECOMMENDATION_UNSPECIFIED = 0;
+    // Show the price range as is.
+    RECOMMENDATION_SHOW_RANGE = 1;
+    // Show the lower bound of the price range.
+    RECOMMENDATION_SHOW_RANGE_LOWER_BOUND = 2;
+    // Show the upper bound of the price range.
+    RECOMMENDATION_SHOW_RANGE_UPPER_BOUND = 3;
+    // Show a '-'.
+    RECOMMENDATION_SHOW_PRICE_UNDETERMINED = 4;
+    // Show the single price.
+    RECOMMENDATION_SHOW_SINGLE_PRICE = 5;
+  }
+
   // One offer title of the product in the current page.
   optional string title = 1;
 
@@ -60,6 +76,9 @@ message BuyableProduct {
 
   // Lowest and highest price offers.
   repeated PriceSummary price_summary = 10;
+
+  // The price display recommendation.
+  optional PriceDisplayRecommendation price_display_recommendation = 11;
 }
 
 message PriceSummary {
@@ -80,6 +99,9 @@ message PriceSummary {
 
   // The highest price offer.
   optional ProductPrice highest_price = 3;
+
+  // Whether this is the preferred price summary in this list.
+  optional bool is_preferred = 4;
 }
 
 message ProductPriceUpdate {

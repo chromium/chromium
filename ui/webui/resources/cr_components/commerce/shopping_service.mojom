@@ -44,6 +44,11 @@ struct ProductInfo {
 
   // The category labels of the product.
   array<string> category_labels;
+
+  // A formatted string showing the summary of the product's price. This may be
+  // a range or a singular value and may not match the |current_price| above (as
+  // it represents a single offer).
+  string price_summary;
 };
 
 struct BookmarkProductInfo {

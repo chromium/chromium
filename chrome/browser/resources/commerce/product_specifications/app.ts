@@ -117,7 +117,7 @@ function getProductDetails(
   productDetails.push({
     title: loadTimeData.getString('priceRowTitle'),
     content: {
-      price: productInfo?.currentPrice || '',
+      price: productInfo?.priceSummary || productInfo?.currentPrice || '',
       jackpotUrl: product?.buyingOptionsUrl.url || '',
     },
   });

@@ -132,6 +132,8 @@ struct ProductInfo {
   std::optional<int64_t> previous_amount_micros;
   std::string country_code;
   CategoryData category_data;
+  std::optional<BuyableProduct_PriceDisplayRecommendation>
+      price_display_recommendation;
   std::vector<PriceSummary> price_summary;
 
  private:

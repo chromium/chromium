@@ -24,6 +24,7 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
     previousPrice: '',
     clusterId: BigInt(0),
     categoryLabels: [],
+    priceSummary: '',
   };
   private priceInsights_: PriceInsightsInfo = {
     clusterId: BigInt(0),
