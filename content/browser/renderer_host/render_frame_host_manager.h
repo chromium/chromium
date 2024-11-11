@@ -100,6 +100,41 @@ enum class DeferSpeculativeRFHAction {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:DeferSpeculativeRFHAction)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Describes cases where calling `GetFrameHostForNavigation()` results in a
+// wasted speculative RenderFrameHost for the navigation (values starting with
+// kWasted) or not (values starting with kNotWasted).
+enum class WastedSpeculativeRFHCase {
+  // No associated RFH yet for the navigation before this, so there's no
+  // wasted speculative RFH. We can get here when it's the first call to
+  // `GetFrameHostForNavigation()` for that navigation, or if the navigation
+  // couldn't create a new RFH before due to navigation queueing, or if the
+  // speculative RFH associated with it became the current RFH due to another
+  // navigation.
+  kNotWasted_WasUnassociated = 0,
+  // The navigation decided to reuse the current RFH on the previous call, and
+  // continues to keep using the current RFH now.
+  kNotWasted_WasUsingCurrentRFH_NowKeepCurrentRFH = 1,
+  // The navigation decided to reuse the current RFH on the previous call, but
+  // decides to use a speculative RFH now. There's no wasted speculative RFH,
+  // but if we were able to predict that we needed a speculative RFH, maybe we
+  // could've prepared it earlier.
+  kNotWasted_WasUsingCurrentRFH_NowUseSpeculativeRFH = 2,
+  // The navigation decided to create a speculative RFH before, and will keep
+  // using the created speculative RFH.
+  kNotWasted_NowKeepSameSpeculativeRFH = 3,
+  // The navigation decided to create a speculative RFH before, but now decides
+  // to reuse the current / active RFH.
+  kWasted_NowUseCurrentRFH = 4,
+  // The navigation decided to create a speculative RFH before, but will create
+  // a new speculative RFH as the previous speculative RFH is no longer
+  // compatible.
+  kWasted_NowUseNewSpeculativeRFH = 5,
+  kMaxValue = kWasted_NowUseNewSpeculativeRFH,
+};
+
 // Manages RenderFrameHosts for a FrameTreeNode. It maintains a
 // current_frame_host() which is the content currently visible to the user. When
 // a frame is told to navigate to a different web site (as determined by

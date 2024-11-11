@@ -27,6 +27,12 @@ chromium-metrics-reviews@google.com.
   <variant name="Subframe"/>
 </variants>
 
+<variants name="InitiatorType">
+  <variant name="All" summary="any"/>
+  <variant name="FromAd" summary="ad-initiated"/>
+  <variant name="NotFromAd" summary="non-ad-initiated"/>
+</variants>
+
 <variants name="NavigationMode">
   <variant name="" summary="both gesture nav mode and 3 button mode"/>
   <variant name=".3ButtonMode" summary="only 3-button mode"/>
@@ -2313,6 +2319,95 @@ chromium-metrics-reviews@google.com.
     reduction feature kReduceUserAgentMinorVersion is enabled. This histogram is
     recorded when a NavigationRequest is constructed, prior to sending the
     request to the network stack.
+  </summary>
+</histogram>
+
+<histogram
+    name="Navigation.{InitiatorType}.WastedSpeculativeRFH.CrossOriginIsolationDiffers"
+    enum="Boolean" expires_after="2025-03-01">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    For {InitiatorType} navigations that result in wasting a speculative RFH
+    that's previously created for the navigation (i.e. when the
+    WastedSpeculativeRFHCase metric records kWasted_NowUseCurrentRFH or
+    kWasted_NowUseNewSpeculativeRFH), records whether the cross-origin isolation
+    state for the wasted speculative RFH and the new RFH differs.
+
+    Recorded on RenderFrameHostManager::GetFrameHostNavigation(), for
+    {InitiatorType} navigations that picked a RenderFrameHost that is different
+    from the speculative RFH previously created for the navigation.
+  </summary>
+</histogram>
+
+<histogram
+    name="Navigation.{InitiatorType}.WastedSpeculativeRFH.ProcessDiffers"
+    enum="Boolean" expires_after="2025-03-01">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    For {InitiatorType} navigations that result in wasting a speculative RFH
+    that's previously created for the navigation (i.e. when the
+    WastedSpeculativeRFHCase metric records kWasted_NowUseCurrentRFH or
+    kWasted_NowUseNewSpeculativeRFH), records whether the renderer process for
+    the wasted speculative RFH and the new RFH differ.
+
+    Recorded on RenderFrameHostManager::GetFrameHostNavigation(), for
+    {InitiatorType} navigations that picked a RenderFrameHost that is different
+    from a speculative RFH previously created for the navigation.
+  </summary>
+</histogram>
+
+<histogram
+    name="Navigation.{InitiatorType}.WastedSpeculativeRFH.ReplacementRFHCreatedNewProcess"
+    enum="Boolean" expires_after="2025-03-01">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    For {InitiatorType} navigations that result in wasting a speculative RFH
+    that's previously created for the navigation (i.e. when the
+    WastedSpeculativeRFHCase metric records kWasted_NowUseCurrentRFH or
+    kWasted_NowUseNewSpeculativeRFH), records whether a new renderer process is
+    created by the RFH that replaces the wasted speculative RFH. These cases add
+    latency while waiting for a new process at commit time.
+
+    Recorded on RenderFrameHostManager::GetFrameHostNavigation(), for
+    {InitiatorType} navigations that picked a RenderFrameHost that is different
+    from the speculative RFH previously created for the navigation.
+  </summary>
+</histogram>
+
+<histogram
+    name="Navigation.{InitiatorType}.WastedSpeculativeRFH.WastedRFHLikelyCreatedNewProcess"
+    enum="Boolean" expires_after="2025-03-01">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    For {InitiatorType} navigations that result in wasting a speculative RFH
+    that's previously created for the navigation (i.e. when the
+    WastedSpeculativeRFHCase metric records kWasted_NowUseCurrentRFH or
+    kWasted_NowUseNewSpeculativeRFH), records whether a new renderer process was
+    likely created when creating the wasted speculative RFH. These cases
+    indicate a fair amount of work was wasted.
+
+    Recorded on RenderFrameHostManager::GetFrameHostNavigation(), for
+    {InitiatorType} navigations that picked a RenderFrameHost that is different
+    from the speculative RFH previously created for the navigation.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.{InitiatorType}.WastedSpeculativeRFHCase"
+    enum="WastedSpeculativeRFHCase" expires_after="2025-03-01">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-security-architecture@google.com</owner>
+  <summary>
+    Records whether a call to RenderFrameHostManager::GetFrameHostNavigation()
+    for {InitiatorType} navigation resulted in &quot;wasting&quot; a speculative
+    RFH previously created for the navigation.
+
+    Recorded on {InitiatorType} navigations after picking its RenderFrameHost in
+    RenderFrameHostManager::GetFrameHostNavigation(). Note that this can be
+    called multiple times for each navigation.
   </summary>
 </histogram>
 

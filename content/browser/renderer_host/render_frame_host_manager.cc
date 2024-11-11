@@ -514,6 +514,53 @@ bool CanIntentionallyDeferSpeculativeRFHForRequest(
          !DevToolsAgentHost::IsDebuggerAttached(request->GetWebContents());
 }
 
+void RecordWastedSpeculativeRFHCase(bool from_ad_click,
+                                    WastedSpeculativeRFHCase result) {
+  std::string initiator_types[] = {"All",
+                                   from_ad_click ? "FromAd" : "NotFromAd"};
+  for (std::string_view initiator_type : initiator_types) {
+    base::UmaHistogramEnumeration(base::StrCat({"Navigation.", initiator_type,
+                                                ".WastedSpeculativeRFHCase"}),
+                                  result);
+  }
+}
+
+void RecordWastedAndReplacementRFHDiff(
+    bool from_ad_click,
+    scoped_refptr<SiteInstanceImpl> wasted_rfh_site_instance,
+    scoped_refptr<SiteInstanceImpl> new_site_instance) {
+  std::string initiator_types[] = {"All",
+                                   from_ad_click ? "FromAd" : "NotFromAd"};
+  for (std::string_view initiator_type : initiator_types) {
+    base::UmaHistogramBoolean(
+        base::StrCat({"Navigation.", initiator_type,
+                      ".WastedSpeculativeRFH.CrossOriginIsolationDiffers"}),
+        wasted_rfh_site_instance->IsCrossOriginIsolated() !=
+            new_site_instance->IsCrossOriginIsolated());
+    base::UmaHistogramBoolean(
+        base::StrCat({"Navigation.", initiator_type,
+                      ".WastedSpeculativeRFH.ProcessDiffers"}),
+        wasted_rfh_site_instance->GetProcess() !=
+            new_site_instance->GetProcess());
+    // If the previous speculative RFH's process only has the speculative RFH in
+    // it, it's likely that the renderer process was created for that
+    // speculative RFH (it's also possible but less likely that all other RFH
+    // that uses that process had been destructed).
+    base::UmaHistogramBoolean(
+        base::StrCat(
+            {"Navigation.", initiator_type,
+             ".WastedSpeculativeRFH.WastedRFHLikelyCreatedNewProcess"}),
+        wasted_rfh_site_instance->GetProcess()->GetRenderFrameHostCount() == 1);
+    // For the replacement RFH, if it's a speculative RFH that created a new
+    // process, then the RFH count for its process must be 0, since the RFH is
+    // not created yet at this point.
+    base::UmaHistogramBoolean(
+        base::StrCat({"Navigation.", initiator_type,
+                      ".WastedSpeculativeRFH.ReplacementRFHCreatedNewProcess"}),
+        new_site_instance->GetProcess()->GetRenderFrameHostCount() == 0);
+  }
+}
+
 }  // namespace
 
 RenderFrameHostManager::IsSameSiteGetter::IsSameSiteGetter()
@@ -1748,6 +1795,59 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   bool recovering_without_early_commit =
       ShouldSkipEarlyCommitPendingForCrashedFrame() &&
       render_frame_host_->must_be_replaced();
+
+  bool from_ad_click =
+      (request->GetNavigationInitiatorActivationAndAdStatus() ==
+       blink::mojom::NavigationInitiatorActivationAndAdStatus::
+           kStartedWithTransientActivationFromAd);
+  // Record whether a speculative RFH previously created for this navigation
+  // (if any) will be wasted because we change the RFH associated with this
+  // navigation this time.
+  if (request->GetAssociatedRFHType() ==
+      NavigationRequest::AssociatedRenderFrameHostType::NONE) {
+    RecordWastedSpeculativeRFHCase(
+        from_ad_click, WastedSpeculativeRFHCase::kNotWasted_WasUnassociated);
+  } else if (request->GetAssociatedRFHType() ==
+             NavigationRequest::AssociatedRenderFrameHostType::CURRENT) {
+    if (use_current_rfh) {
+      RecordWastedSpeculativeRFHCase(
+          from_ad_click, WastedSpeculativeRFHCase::
+                             kNotWasted_WasUsingCurrentRFH_NowKeepCurrentRFH);
+    } else {
+      RecordWastedSpeculativeRFHCase(
+          from_ad_click,
+          WastedSpeculativeRFHCase::
+              kNotWasted_WasUsingCurrentRFH_NowUseSpeculativeRFH);
+    }
+  } else {
+    CHECK_EQ(request->GetAssociatedRFHType(),
+             NavigationRequest::AssociatedRenderFrameHostType::SPECULATIVE);
+    CHECK(speculative_render_frame_host_);
+    if (use_current_rfh) {
+      RecordWastedSpeculativeRFHCase(
+          from_ad_click, WastedSpeculativeRFHCase::kWasted_NowUseCurrentRFH);
+      // Record the difference between the previously picked RFH for the
+      // navigation and the new one.
+      RecordWastedAndReplacementRFHDiff(
+          from_ad_click, speculative_render_frame_host_->GetSiteInstance(),
+          render_frame_host_->GetSiteInstance());
+    } else if (speculative_render_frame_host_->GetSiteInstance() !=
+               dest_site_instance.get()) {
+      RecordWastedSpeculativeRFHCase(
+          from_ad_click,
+          WastedSpeculativeRFHCase::kWasted_NowUseNewSpeculativeRFH);
+      // Record the difference between the previously picked RFH for the
+      // navigation and the new one.
+      RecordWastedAndReplacementRFHDiff(
+          from_ad_click, speculative_render_frame_host_->GetSiteInstance(),
+          dest_site_instance);
+    } else {
+      RecordWastedSpeculativeRFHCase(
+          from_ad_click,
+          WastedSpeculativeRFHCase::kNotWasted_NowKeepSameSpeculativeRFH);
+    }
+  }
+
   if (use_current_rfh) {
     AppendReason(reason, "GetFrameHostForNavigation / use-current-rfh");
     navigation_rfh = render_frame_host_.get();

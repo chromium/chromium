@@ -1867,6 +1867,15 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Overridden user agent string"/>
 </enum>
 
+<enum name="WastedSpeculativeRFHCase">
+  <int value="0" label="kNotWasted_WasUnassociated"/>
+  <int value="1" label="kNotWasted_WasUsingCurrentRFH_NowKeepCurrentRFH"/>
+  <int value="2" label="kNotWasted_WasUsingCurrentRFH_NowUseSpeculativeRFH"/>
+  <int value="3" label="kNotWasted_NowKeepSameSpeculativeRFH"/>
+  <int value="4" label="kWasted_NowUseCurrentRFH"/>
+  <int value="5" label="kWasted_NowUseNewSpeculativeRFH"/>
+</enum>
+
 <enum name="WebSchedulerTrackedFeature">
 <!-- Generated from third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h.
 Called by update_scheduler_enums.py.-->
