@@ -30,16 +30,9 @@
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-shared.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
-#include "third_party/dawn/include/dawn/dawn_proc.h"
-#include "third_party/dawn/include/dawn/dawn_proc_table.h"
 #include "third_party/dawn/include/dawn/webgpu.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp_print.h"
-#include "third_party/dawn/include/dawn/wire/WireClient.h"
-
-#if MEDIAPIPE_USE_WEBGPU
-#include "third_party/mediapipe/src/mediapipe/gpu/webgpu/webgpu_device_registration.h"
-#endif
 
 namespace {
 
@@ -74,15 +67,16 @@ struct Uniforms {
 };
 
 VideoEffectsProcessorWebGpu::VideoEffectsProcessorWebGpu(
+    wgpu::Device device,
     scoped_refptr<viz::ContextProviderCommandBuffer> context_provider,
     scoped_refptr<viz::RasterContextProvider> raster_interface_context_provider,
-    scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface,
-    base::OnceClosure on_unrecoverable_error)
-    : context_provider_(std::move(context_provider)),
+    scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface)
+    : device_(device),
+      context_provider_(std::move(context_provider)),
       raster_interface_context_provider_(
           std::move(raster_interface_context_provider)),
-      shared_image_interface_(std::move(shared_image_interface)),
-      on_unrecoverable_error_(std::move(on_unrecoverable_error)) {
+      shared_image_interface_(std::move(shared_image_interface)) {
+  CHECK(device_);
   CHECK(context_provider_);
   CHECK(context_provider_->WebGPUInterface());
   CHECK(raster_interface_context_provider_);
@@ -99,41 +93,8 @@ VideoEffectsProcessorWebGpu::VideoEffectsProcessorWebGpu(
 VideoEffectsProcessorWebGpu::~VideoEffectsProcessorWebGpu() = default;
 
 bool VideoEffectsProcessorWebGpu::Initialize() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  gpu::webgpu::WebGPUInterface* webgpu_interface =
-      context_provider_->WebGPUInterface();
-
-  scoped_refptr<gpu::webgpu::APIChannel> webgpu_api_channel =
-      webgpu_interface->GetAPIChannel();
-
-  // C++ wrapper for WebGPU requires us to install a proc table globally per
-  // process or per thread. Here, we install them per-process.
-  dawnProcSetProcs(&dawn::wire::client::GetProcs());
-
-  // Required to create a device. Setting a synthetic token here means that
-  // blob cache will be disabled in Dawn, since the mapping that is going to
-  // be queried will return an empty string. For more details see
-  // `GpuProcessHost::GetIsolationKey()`.
-  webgpu_interface->SetWebGPUExecutionContextToken(
-      blink::WebGPUExecutionContextToken(blink::DedicatedWorkerToken{}));
-
-  instance_ = wgpu::Instance(webgpu_api_channel->GetWGPUInstance());
-
-  auto* request_adapter_callback = gpu::webgpu::BindWGPUOnceCallback(
-      [](base::WeakPtr<VideoEffectsProcessorWebGpu> processor,
-         wgpu::RequestAdapterStatus status, wgpu::Adapter adapter,
-         wgpu::StringView message) {
-        if (processor) {
-          processor->OnRequestAdapter(status, std::move(adapter), message);
-        }
-      },
-      weak_ptr_factory_.GetWeakPtr());
-  instance_.RequestAdapter(nullptr, wgpu::CallbackMode::AllowSpontaneous,
-                           request_adapter_callback->UnboundCallback(),
-                           request_adapter_callback->AsUserdata());
+  CreateComputePipeline();
   EnsureFlush();
-
   return true;
 }
 
@@ -443,7 +404,7 @@ void VideoEffectsProcessorWebGpu::PostProcess(
       command_encoder.Finish(&command_buffer_descriptor);
 
   // w2<-RunPipeline(w1)
-  default_queue_.Submit(1, &commandBuffer);
+  device_.GetQueue().Submit(1, &commandBuffer);
 
   webgpu_interface->DissociateMailbox(in_reservation.id,
                                       in_reservation.generation);
@@ -527,84 +488,6 @@ void VideoEffectsProcessorWebGpu::QueryDone(
   std::move(post_process_cb)
       .Run(mojom::PostProcessResult::NewSuccess(
           mojom::PostProcessSuccess::New(std::move(input_frame_info))));
-}
-
-void VideoEffectsProcessorWebGpu::OnRequestAdapter(
-    wgpu::RequestAdapterStatus status,
-    wgpu::Adapter adapter,
-    wgpu::StringView message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (status != wgpu::RequestAdapterStatus::Success || !adapter) {
-    MaybeCallOnUnrecoverableError();
-    return;
-  }
-
-  adapter_ = std::move(adapter);
-
-  // TODO(bialpio): Determine the limits based on the incoming video frames.
-  wgpu::RequiredLimits limits = {
-      .limits = {},
-  };
-
-  auto* device_lost_callback = gpu::webgpu::BindWGPUOnceCallback(
-      [](base::WeakPtr<VideoEffectsProcessorWebGpu> processor,
-         const wgpu::Device& device, wgpu::DeviceLostReason reason,
-         wgpu::StringView message) {
-        if (processor) {
-          processor->OnDeviceLost(device, reason, message);
-        }
-      },
-      weak_ptr_factory_.GetWeakPtr());
-  wgpu::DeviceDescriptor descriptor;
-  descriptor.label = "VideoEffectsProcessor";
-  descriptor.requiredLimits = &limits;
-  descriptor.defaultQueue = {
-      .label = "VideoEffectsProcessorDefaultQueue",
-  };
-  descriptor.SetDeviceLostCallback(wgpu::CallbackMode::AllowSpontaneous,
-                                   device_lost_callback->UnboundCallback(),
-                                   device_lost_callback->AsUserdata());
-  descriptor.SetUncapturedErrorCallback(&ErrorCallback);
-
-  auto* request_device_callback = gpu::webgpu::BindWGPUOnceCallback(
-      [](base::WeakPtr<VideoEffectsProcessorWebGpu> processor,
-         wgpu::RequestDeviceStatus status, wgpu::Device device,
-         wgpu::StringView message) {
-        if (processor) {
-          processor->OnRequestDevice(status, std::move(device), message);
-        }
-      },
-      weak_ptr_factory_.GetWeakPtr());
-  adapter_.RequestDevice(&descriptor, wgpu::CallbackMode::AllowSpontaneous,
-                         request_device_callback->UnboundCallback(),
-                         request_device_callback->AsUserdata());
-  EnsureFlush();
-}
-
-void VideoEffectsProcessorWebGpu::OnRequestDevice(
-    wgpu::RequestDeviceStatus status,
-    wgpu::Device device,
-    wgpu::StringView message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (status != wgpu::RequestDeviceStatus::Success || !device) {
-    MaybeCallOnUnrecoverableError();
-    return;
-  }
-
-  device_ = device;
-  device_.SetLoggingCallback(&LoggingCallback, nullptr);
-
-#if MEDIAPIPE_USE_WEBGPU
-  // TODO(b/366236619): Move device registration to VideoEffectsServiceImpl.
-  mediapipe::WebGpuDeviceRegistration::GetInstance().RegisterWebGpuDevice(
-      std::move(device));
-#endif
-
-  default_queue_ = device_.GetQueue();
-  compute_pipeline_ = CreateComputePipeline();
-  EnsureFlush();
 }
 
 wgpu::ComputePipeline VideoEffectsProcessorWebGpu::CreateComputePipeline() {
@@ -719,64 +602,9 @@ fn postProcess(@builtin(global_invocation_id) id: vec3<u32>) {
   return device_.CreateComputePipeline(&compute_pipeline_descriptor);
 }
 
-void VideoEffectsProcessorWebGpu::OnDeviceLost(const wgpu::Device& device,
-                                               wgpu::DeviceLostReason reason,
-                                               wgpu::StringView message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if MEDIAPIPE_USE_WEBGPU
-  mediapipe::WebGpuDeviceRegistration::GetInstance().UnRegisterWebGpuDevice();
-#endif
-  device_ = {};
-
-  MaybeCallOnUnrecoverableError();
-}
-
 void VideoEffectsProcessorWebGpu::EnsureFlush() {
   if (context_provider_->WebGPUInterface()->EnsureAwaitingFlush()) {
     context_provider_->WebGPUInterface()->FlushAwaitingCommands();
-  }
-}
-
-void VideoEffectsProcessorWebGpu::MaybeCallOnUnrecoverableError() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (on_unrecoverable_error_) {
-    std::move(on_unrecoverable_error_).Run();
-  }
-}
-
-// static
-void VideoEffectsProcessorWebGpu::ErrorCallback(const wgpu::Device& device,
-                                                wgpu::ErrorType type,
-                                                wgpu::StringView message) {
-  LOG(ERROR) << "VideoEffectsProcessor encountered a WebGPU error. type: "
-             << type << ", message: \"" << message << "\"";
-}
-
-// static
-void VideoEffectsProcessorWebGpu::LoggingCallback(WGPULoggingType type,
-                                                  WGPUStringView message,
-                                                  void* userdata) {
-  std::string_view messageView = {message.data, message.length};
-  auto log_line = base::StringPrintf(
-      "VideoEffectsProcessor received WebGPU log message. message: %s",
-      messageView);
-
-  switch (type) {
-    case WGPULoggingType_Verbose:
-    case WGPULoggingType_Info:
-      VLOG(1) << log_line;
-      break;
-    case WGPULoggingType_Warning:
-      LOG(WARNING) << log_line;
-      break;
-    case WGPULoggingType_Error:
-      LOG(ERROR) << log_line;
-      break;
-    default:
-      VLOG(1) << log_line;
-      break;
   }
 }
 

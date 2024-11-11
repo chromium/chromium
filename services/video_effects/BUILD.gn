@@ -17,6 +17,8 @@ source_set("service") {
     "video_effects_processor_webgpu.h",
     "video_effects_service_impl.cc",
     "viz_gpu_channel_host_provider.cc",
+    "webgpu_device.cc",
+    "webgpu_device.h",
   ]
 
   visibility = [
@@ -33,6 +35,7 @@ source_set("service") {
     "//gpu/command_buffer/client:raster_interface",
     "//gpu/command_buffer/client:webgpu_interface",
     "//gpu/webgpu:common",
+    "//third_party/blink/public/common/tokens:tokens_headers",
     "//third_party/dawn/include/dawn:cpp_headers",
     "//third_party/dawn/src/dawn:proc",
     "//third_party/dawn/src/dawn/wire",

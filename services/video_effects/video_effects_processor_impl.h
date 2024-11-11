@@ -23,6 +23,7 @@
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "services/video_effects/video_effects_processor_webgpu.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
+#include "third_party/dawn/include/dawn/webgpu_cpp.h"
 
 namespace video_effects {
 
@@ -34,6 +35,19 @@ class GpuChannelHostProvider {
  public:
   virtual ~GpuChannelHostProvider() = default;
 
+  // Returns the context provider for WebGPU.
+  virtual scoped_refptr<viz::ContextProviderCommandBuffer>
+  GetWebGpuContextProvider() = 0;
+
+  // Returns the context provider for the raster interface.
+  virtual scoped_refptr<viz::RasterContextProvider>
+  GetRasterInterfaceContextProvider() = 0;
+
+  // Returns the SharedImageInterface.
+  virtual scoped_refptr<gpu::ClientSharedImageInterface>
+  GetSharedImageInterface() = 0;
+
+ protected:
   // Return a connected `gpu::GpuChannelHost`. Implementations should expect
   // this method to be called somewhat frequently when a new Video Effects
   // Processor is created.
@@ -49,6 +63,7 @@ class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
   // of the mojo pipes owned by this processor have been disconnected, or when
   // the processor was unable to reinitialize GPU resources after context loss.
   explicit VideoEffectsProcessorImpl(
+      wgpu::Device device,
       mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
       mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver,
       std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider,
@@ -82,11 +97,6 @@ class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
   // defunct as we cannot work without functional mojo connections.
   void OnMojoDisconnected();
 
-  // Passed into `processor_webgpu_` as its unrecoverable error callback.
-  // It will attempt to recreate the `processor_webgpu_` instance and
-  // reinitialize it.
-  void OnWebGpuProcessorError();
-
   // Initializes GPU state (context providers and shared image interface).
   bool InitializeGpuState();
 
@@ -94,6 +104,8 @@ class VideoEffectsProcessorImpl : public mojom::VideoEffectsProcessor,
   void MaybeCallOnUnrecoverableError();
 
   bool initialized_ = false;
+
+  wgpu::Device device_;
 
   mojo::Remote<media::mojom::VideoEffectsManager> manager_remote_;
   mojo::Receiver<mojom::VideoEffectsProcessor> processor_receiver_;
