@@ -125,12 +125,7 @@ class DataSharingChromeNativeUiTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ShowShareBubble DISABLED_ShowShareBubble
-#else
-#define MAYBE_ShowShareBubble ShowShareBubble
-#endif
-IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, MAYBE_ShowShareBubble) {
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowShareBubble) {
   tab_groups::LocalTabGroupID group_id = InstrumentATabGroup();
   RunTestSequence(
       FinishTabstripAnimations(), SaveGroupLeaveEditorBubbleOpen(group_id),
@@ -149,14 +144,10 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, MAYBE_ShowShareBubble) {
                 }));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ShowManageBubble DISABLED_ShowManageBubble
-#else
 // TODO (368057577) This test was disabled after moving to TabGroupSyncService.
 // Re-enable this test.
-#define MAYBE_ShowManageBubble DISABLED_ShowManageBubble
-#endif
-IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, MAYBE_ShowManageBubble) {
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest,
+                       DISABLED_ShowManageBubble) {
   auto* tab_group_service =
       tab_groups::SavedTabGroupUtils::GetServiceForProfile(
           browser()->profile());
@@ -178,12 +169,7 @@ IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, MAYBE_ShowManageBubble) {
       }));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ShowJoinBubble DISABLED_ShowJoinBubble
-#else
-#define MAYBE_ShowJoinBubble ShowJoinBubble
-#endif
-IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, MAYBE_ShowJoinBubble) {
+IN_PROC_BROWSER_TEST_F(DataSharingChromeNativeUiTest, ShowJoinBubble) {
   std::string fake_collab_id = "fake_collab_id";
   std::string fake_access_token = "fake_access_token";
 

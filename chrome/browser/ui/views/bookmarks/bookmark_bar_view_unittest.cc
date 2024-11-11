@@ -16,7 +16,6 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
@@ -170,10 +169,6 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
         std::make_unique<SearchTermsData>(),
         nullptr /* KeywordWebDataService */,
         nullptr /* TemplateURLServiceClient */, base::RepeatingClosure()
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                                                    ,
-        profile->IsMainProfile()
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     );
   }
 };

@@ -323,7 +323,7 @@ constexpr char kLinuxWaylandErrorMessage[] =
 // Determines whether the current system is Linux + Wayland and the current test
 // should be skipped for reasons described in the error message above.
 bool SkipIfLinuxWayland() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   return views::test::InteractionTestUtilSimulatorViews::IsWayland();
 #else
   return false;
@@ -370,6 +370,9 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, MAYBE_AnnotateMenu) {
       // There may be some shuffling and setting up on some platforms (looking
       // at you, Lacros) so make sure the menu is fully loaded before trying to
       // show the help bubble.
+      //
+      // TODO(crbug.com/377723892): Confirm whether this is still needed, and
+      // remove it if it was lacros-specific.
       WaitForShow(AppMenuModel::kDownloadsMenuItem),
 
       // Show the help bubble attached to the menu.
@@ -422,6 +425,9 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, TwoMenuHelpBubbles) {
       // There may be some shuffling and setting up on some platforms (looking
       // at you, Lacros) so make sure the menu is fully loaded before trying to
       // show the help bubble.
+      //
+      // TODO(crbug.com/377723892): Confirm whether this is still needed, and
+      // remove it if it was lacros-specific.
       WaitForShow(AppMenuModel::kDownloadsMenuItem),
 
       ShowHelpBubble(AppMenuModel::kDownloadsMenuItem, std::move(params1)),

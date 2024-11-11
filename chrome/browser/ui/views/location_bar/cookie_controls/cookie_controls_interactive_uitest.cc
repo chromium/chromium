@@ -469,9 +469,8 @@ IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest, NotShownWhen3pcdEnabled) {
       EnsureNotPresent(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
-// Opening the feedback dialog on CrOS & LaCrOS open a system level dialog,
-// which cannot be easily tested here. Instead, LaCrOS has a separate feedback
-// browser test which gives some coverage.
+// Opening the feedback dialog on CrOS open a system level dialog, which cannot
+// be easily tested here.
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(CookieControlsUiTest, FeedbackOpens) {
   BlockThirdPartyCookies(GetParam());
