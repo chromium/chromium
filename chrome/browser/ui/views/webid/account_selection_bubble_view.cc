@@ -662,7 +662,8 @@ AccountSelectionBubbleView::CreateSingleAccountChooser(
   // data.
   auto button = std::make_unique<ContinueButton>(
       base::BindRepeating(
-          &AccountSelectionViewBase::Observer::OnAccountSelected,
+          base::IgnoreResult(
+              &AccountSelectionViewBase::Observer::OnAccountSelected),
           base::Unretained(observer_), std::cref(account), std::cref(idp_data)),
       l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_CONTINUE,
                                  base::UTF8ToUTF16(display_name)),

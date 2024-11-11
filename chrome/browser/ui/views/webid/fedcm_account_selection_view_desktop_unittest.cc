@@ -2535,3 +2535,41 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Dialog should reappear once the popup window is destroyed.
   EXPECT_TRUE(dialog_widget_->IsVisible());
 }
+
+TEST_F(FedCmAccountSelectionViewDesktopTest, ClickProtectionNoModalSpinner) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
+      accounts_, SignInMode::kExplicit, blink::mojom::RpMode::kActive);
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+  // Use a mock input protector to more easily test. The protector rejects the
+  // first input and accepts any subsequent input.
+  auto input_protector =
+      std::make_unique<views::MockInputEventActivationProtector>();
+  EXPECT_CALL(*input_protector, IsPossiblyUnintendedInteraction)
+      .WillOnce(testing::Return(true))
+      .WillRepeatedly(testing::Return(false));
+  controller->SetInputEventActivationProtectorForTesting(
+      std::move(input_protector));
+
+  observer->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  // Nothing should change after first account selected.
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId1));
+
+  observer->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  // Should show verifying sheet after first account selected.
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId1));
+
+  observer->OnAccountSelected(*accounts_[0], *idp_data_, CreateMouseEvent());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId1));
+}

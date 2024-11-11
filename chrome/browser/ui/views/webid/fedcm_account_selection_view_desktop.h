@@ -249,7 +249,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // AccountSelectionBubbleView::Observer:
-  void OnAccountSelected(const Account& account,
+  bool OnAccountSelected(const Account& account,
                          const content::IdentityProviderData& idp_data,
                          const ui::Event& event) override;
   void OnLinkClicked(LinkType link_type,

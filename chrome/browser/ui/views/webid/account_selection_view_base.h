@@ -33,6 +33,8 @@ using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
 using IdentityRequestAccountPtr =
     scoped_refptr<content::IdentityRequestAccount>;
 using TokenError = content::IdentityCredentialTokenError;
+using OnAccountSelectedCallback =
+    base::RepeatingCallback<bool(const ui::Event& event)>;
 
 namespace content {
 class IdentityRequestAccount;
@@ -144,7 +146,7 @@ class BrandIconImageView : public views::ImageView {
 
 class AccountHoverButton : public HoverButton {
  public:
-  AccountHoverButton(PressedCallback callback,
+  AccountHoverButton(OnAccountSelectedCallback callback,
                      std::unique_ptr<views::View> icon_view,
                      const std::u16string& title,
                      const std::u16string& subtitle,
@@ -155,7 +157,7 @@ class AccountHoverButton : public HoverButton {
                      int button_position);
   AccountHoverButton(const AccountHoverButton&) = delete;
   AccountHoverButton& operator=(const AccountHoverButton&) = delete;
-  ~AccountHoverButton() override = default;
+  ~AccountHoverButton() override;
 
   void StateChanged(ButtonState old_state) override;
   void OnThemeChanged() override;
@@ -168,7 +170,7 @@ class AccountHoverButton : public HoverButton {
   bool HasDisabledOpacity();
 
  private:
-  PressedCallback callback_;
+  OnAccountSelectedCallback callback_;
   // Owned by its views::BoxLayoutView container.
   raw_ptr<BrandIconImageView> brand_icon_image_view_;
   // The order of this account button relative to other account buttons in
@@ -206,7 +208,11 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
     // Takes `account` as well as `idp_data` since passing `account_id`
     // is insufficient in the multiple IDP case. The caller should pass a cref,
     // as these objects are owned by the observer.
-    virtual void OnAccountSelected(
+    // Returns true if the account selection was confirmed by the observer, and
+    // false otherwise. Account selection may be rejected for instance due to
+    // input protection or because a subsequent account confirmation screen will
+    // be shown.
+    virtual bool OnAccountSelected(
         const content::IdentityRequestAccount& account,
         const content::IdentityProviderData& idp_data,
         const ui::Event& event) = 0;
