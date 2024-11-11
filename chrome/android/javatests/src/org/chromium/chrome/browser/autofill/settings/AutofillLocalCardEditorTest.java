@@ -1172,6 +1172,7 @@ public class AutofillLocalCardEditorTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
     public void paymentSettingsOnScanCompleted_cardDataIsAdded() throws Exception {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         AutofillLocalCardEditor autofillLocalCardEditorFragment =
