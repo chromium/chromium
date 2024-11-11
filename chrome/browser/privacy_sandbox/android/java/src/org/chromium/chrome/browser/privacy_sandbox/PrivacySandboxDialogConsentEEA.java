@@ -272,7 +272,6 @@ public class PrivacySandboxDialogConsentEEA extends ChromeDialog
                                         errorCode);
                             }
                         };
-                // TODO(crbug.com/366010532): Add in functionality to add language code to the url
                 mThinWebView =
                         PrivacySandboxDialogController.createThinWebView(
                                 mWebContents, mProfile, mActivityWindowAndroid, privacyPolicyUrl);
