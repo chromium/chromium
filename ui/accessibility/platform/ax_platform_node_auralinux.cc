@@ -152,8 +152,6 @@ constexpr AtkRole kSuperscriptRole = ATK_ROLE_SUPERSCRIPT;
 
 constexpr AtkRole kAtkFootnoteRole = ATK_ROLE_FOOTNOTE;
 
-constexpr std::string kAriaActionsPrefix = "custom";
-
 using GetTypeFunc = GType (*)();
 using GetColumnHeaderCellsFunc = GPtrArray* (*)(AtkTableCell* cell);
 using GetRowHeaderCellsFunc = GPtrArray* (*)(AtkTableCell* cell);
@@ -689,9 +687,10 @@ const gchar* GetName(AtkAction* atk_action, gint index) {
   std::string html_id =
       aria_action_obj->GetStringAttribute(ax::mojom::StringAttribute::kHtmlId);
   if (html_id.empty()) {
-    ATK_AURALINUX_RETURN_STRING(kAriaActionsPrefix);
+    ATK_AURALINUX_RETURN_STRING(AXPlatformNodeBase::kAriaActionsPrefix);
   }
-  ATK_AURALINUX_RETURN_STRING(kAriaActionsPrefix + "#" + html_id);
+  ATK_AURALINUX_RETURN_STRING(AXPlatformNodeBase::kAriaActionsPrefix + "#" +
+                              html_id);
 }
 
 const gchar* GetKeybinding(AtkAction* atk_action, gint index) {

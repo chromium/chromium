@@ -39,6 +39,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/accessibility_notification_waiter.h"
@@ -88,6 +89,9 @@ class AccessibilityWinBrowserTest : public AccessibilityBrowserTest {
     AccessibilityBrowserTest::SetUpCommandLine(command_line);
     // Some of these tests assume a device scale factor of 1.0.
     command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1");
+    // Enable aria-actions.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "AriaActions");
   }
 
  protected:
@@ -4444,6 +4448,179 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestIAccessibleAction) {
   context_menu_interceptor->Wait();
   // There are no more actions, calls for indexes >=2 will fail.
   EXPECT_HRESULT_FAILED(image_action->doAction(2));
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
+                       TestAriaActionIAccessibleAction) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <html>
+      <body>
+      <div role="textbox" id="my-textbox" aria-actions="edit open">
+        your-file-name.pdf
+        <button id="edit"
+          onclick="document.getElementById('edit').innerText = 'edit clicked';">
+          Edit
+        </button>
+        <button id="open"
+          onclick="document.getElementById('open').innerText = 'open clicked';">
+          Open
+        </button>
+      </div>
+      </body>
+      </html>)HTML");
+
+  // Retrieve the IAccessible interface for the web page.
+  Microsoft::WRL::ComPtr<IAccessible> document(GetRendererAccessible());
+  std::vector<base::win::ScopedVariant> document_children =
+      GetAllAccessibleChildren(document.Get());
+  ASSERT_EQ(1u, document_children.size());
+
+  Microsoft::WRL::ComPtr<IAccessible2> div;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(document.Get(), document_children[0].AsInput())
+          .Get(),
+      &div));
+  LONG div_role = 0;
+  ASSERT_HRESULT_SUCCEEDED(div->role(&div_role));
+  ASSERT_EQ(ROLE_SYSTEM_TEXT, div_role);
+
+  // Verify the 3 children of the div.
+  std::vector<base::win::ScopedVariant> div_children =
+      GetAllAccessibleChildren(div.Get());
+  ASSERT_EQ(3u, div_children.size());
+
+  Microsoft::WRL::ComPtr<IAccessible2> static_text;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(div.Get(), div_children[0].AsInput()).Get(),
+      &static_text));
+  LONG static_text_role = 0;
+  ASSERT_HRESULT_SUCCEEDED(static_text->role(&static_text_role));
+  ASSERT_EQ(ROLE_SYSTEM_STATICTEXT, static_text_role);
+
+  Microsoft::WRL::ComPtr<IAccessible2> edit_button;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(div.Get(), div_children[1].AsInput()).Get(),
+      &edit_button));
+  LONG edit_button_role = 0;
+  ASSERT_HRESULT_SUCCEEDED(edit_button->role(&edit_button_role));
+  ASSERT_EQ(ROLE_SYSTEM_PUSHBUTTON, edit_button_role);
+
+  Microsoft::WRL::ComPtr<IAccessible2> open_button;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(div.Get(), div_children[2].AsInput()).Get(),
+      &open_button));
+  LONG open_button_role = 0;
+  ASSERT_HRESULT_SUCCEEDED(open_button->role(&open_button_role));
+  ASSERT_EQ(ROLE_SYSTEM_PUSHBUTTON, open_button_role);
+
+  // Check the number of actions.
+  Microsoft::WRL::ComPtr<IAccessibleAction> div_action;
+  ASSERT_HRESULT_SUCCEEDED(div.As(&div_action));
+  LONG n_actions = 0;
+  EXPECT_HRESULT_SUCCEEDED(div_action->nActions(&n_actions));
+  EXPECT_EQ(4, n_actions);
+
+  // Check action names.
+  base::win::ScopedBstr action_name;
+  EXPECT_HRESULT_SUCCEEDED(div_action->get_name(0, action_name.Receive()));
+  EXPECT_EQ(L"doDefault",
+            std::wstring(action_name.Get(), action_name.Length()));
+  action_name.Release();
+  EXPECT_HRESULT_SUCCEEDED(div_action->get_name(1, action_name.Receive()));
+  EXPECT_EQ(L"showContextMenu",
+            std::wstring(action_name.Get(), action_name.Length()));
+  action_name.Release();
+  EXPECT_HRESULT_SUCCEEDED(div_action->get_name(2, action_name.Receive()));
+  EXPECT_EQ(L"custom#edit",
+            std::wstring(action_name.Get(), action_name.Length()));
+  action_name.Release();
+  EXPECT_HRESULT_SUCCEEDED(div_action->get_name(3, action_name.Receive()));
+  EXPECT_EQ(L"custom#open",
+            std::wstring(action_name.Get(), action_name.Length()));
+  action_name.Release();
+  EXPECT_HRESULT_FAILED(div_action->get_name(4, action_name.Receive()));
+  EXPECT_EQ(nullptr, action_name.Get());
+
+  base::win::ScopedBstr localized_name;
+  EXPECT_HRESULT_SUCCEEDED(
+      div_action->get_localizedName(0, localized_name.Receive()));
+  EXPECT_EQ(L"doDefault",
+            std::wstring(localized_name.Get(), localized_name.Length()));
+  localized_name.Release();
+  EXPECT_HRESULT_SUCCEEDED(
+      div_action->get_localizedName(1, localized_name.Receive()));
+  EXPECT_EQ(L"showContextMenu",
+            std::wstring(localized_name.Get(), localized_name.Length()));
+  localized_name.Release();
+  EXPECT_HRESULT_SUCCEEDED(
+      div_action->get_localizedName(2, localized_name.Receive()));
+  EXPECT_EQ(L"Edit",
+            std::wstring(localized_name.Get(), localized_name.Length()));
+  localized_name.Release();
+  EXPECT_HRESULT_SUCCEEDED(
+      div_action->get_localizedName(3, localized_name.Receive()));
+  EXPECT_EQ(L"Open",
+            std::wstring(localized_name.Get(), localized_name.Length()));
+  localized_name.Release();
+  EXPECT_HRESULT_FAILED(
+      div_action->get_localizedName(4, localized_name.Receive()));
+  EXPECT_EQ(nullptr, localized_name.Get());
+
+  LONG n_key_bindings = 0;
+  BSTR* key_bindings = nullptr;
+  EXPECT_HRESULT_SUCCEEDED(
+      div_action->get_keyBinding(0, 100, &key_bindings, &n_key_bindings));
+  EXPECT_EQ(0, n_key_bindings);
+  EXPECT_EQ(nullptr, key_bindings);
+
+  base::win::ScopedVariant childid_self(CHILDID_SELF);
+
+  // Verify name of the edit button before doAction is called.
+  base::win::ScopedBstr edit_button_name;
+  EXPECT_HRESULT_SUCCEEDED(
+      edit_button->get_accName(childid_self, edit_button_name.Receive()));
+  EXPECT_EQ(L"Edit",
+            std::wstring(edit_button_name.Get(), edit_button_name.Length()));
+  edit_button_name.Release();
+
+  // Test first aria-action (since its the third action, call doAction(2)).
+  // Clicking the button should change its name.
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::NAME_CHANGED);
+  EXPECT_HRESULT_SUCCEEDED(div_action->doAction(2));
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  // Verify the name of the edit button is changed.
+  EXPECT_HRESULT_SUCCEEDED(
+      edit_button->get_accName(childid_self, edit_button_name.Receive()));
+  EXPECT_EQ(L"edit clicked",
+            std::wstring(edit_button_name.Get(), edit_button_name.Length()));
+  edit_button_name.Release();
+
+  // Verify the name of the open button before doAction is called.
+  base::win::ScopedBstr open_button_name;
+  EXPECT_HRESULT_SUCCEEDED(
+      open_button->get_accName(childid_self, open_button_name.Receive()));
+  EXPECT_EQ(L"Open",
+            std::wstring(open_button_name.Get(), open_button_name.Length()));
+  open_button_name.Release();
+
+  // Test second aria-action (since its the fourth action, call doAction(3)).
+  // Clicking the button should change its name.
+  EXPECT_HRESULT_SUCCEEDED(div_action->doAction(3));
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  // Verify the name of the open button is changed.
+  EXPECT_HRESULT_SUCCEEDED(
+      open_button->get_accName(childid_self, open_button_name.Receive()));
+  EXPECT_EQ(L"open clicked",
+            std::wstring(open_button_name.Get(), open_button_name.Length()));
+  open_button_name.Release();
+
+  // There are no more actions, calls for indexes >=4 will fail.
+  EXPECT_HRESULT_FAILED(div_action->doAction(4));
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, HasHWNDAfterNavigation) {

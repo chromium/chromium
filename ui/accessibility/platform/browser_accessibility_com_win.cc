@@ -732,7 +732,11 @@ IFACEMETHODIMP BrowserAccessibilityComWin::nActions(LONG* n_actions) {
   if (!n_actions)
     return E_INVALIDARG;
 
-  *n_actions = static_cast<LONG>(GetOwner()->GetSupportedActions().size());
+  *n_actions = static_cast<LONG>(
+      GetOwner()->GetSupportedActions().size() +
+      GetOwner()
+          ->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds)
+          .size());
   return S_OK;
 }
 
@@ -746,13 +750,31 @@ IFACEMETHODIMP BrowserAccessibilityComWin::doAction(LONG action_index) {
 
   const std::vector<ax::mojom::Action> actions =
       GetOwner()->GetSupportedActions();
-  if (action_index < 0 || action_index >= static_cast<LONG>(actions.size()))
+  const std::vector<int32_t>& aria_actions =
+      GetOwner()->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
+
+  // Actions can be from Blink for the given markup, or from the aria-actions
+  // attribute defined by the author.
+  if (action_index < 0 ||
+      action_index >= static_cast<LONG>(actions.size() + aria_actions.size())) {
     return E_INVALIDARG;
+  }
 
   AXActionData data;
-  data.action = actions[action_index];
-  GetOwner()->AccessibilityPerformAction(data);
 
+  // Handle Blink action.
+  if (action_index < static_cast<LONG>(actions.size())) {
+    data.action = actions[action_index];
+    GetOwner()->AccessibilityPerformAction(data);
+    return S_OK;
+  }
+
+  // action_index refers to a position in the combined Blink actions and
+  // aria-actions vector. To find the corresponding index in the aria_actions
+  // vector, subtract the number of Blink actions.
+  int32_t aria_action_id = aria_actions[action_index - actions.size()];
+  data.action = ax::mojom::Action::kDoDefault;
+  GetFromID(aria_action_id)->GetOwner()->AccessibilityPerformAction(data);
   return S_OK;
 }
 
@@ -776,16 +798,18 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_keyBinding(LONG action_index,
     return E_FAIL;
   }
 
-  if (!key_bindings || !n_bindings)
+  if (!key_bindings || !n_bindings) {
     return E_INVALIDARG;
+  }
 
   *key_bindings = nullptr;
   *n_bindings = 0;
 
   const std::vector<ax::mojom::Action> actions =
       GetOwner()->GetSupportedActions();
-  if (action_index < 0 || action_index >= static_cast<LONG>(actions.size()))
+  if (action_index < 0 || action_index >= static_cast<LONG>(actions.size())) {
     return E_INVALIDARG;
+  }
 
   // Only the default action, in index 0, may have a key binding. If it does,
   // it will be stored in the attribute kAccessKey.
@@ -811,12 +835,17 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_name(LONG action_index,
     return E_FAIL;
   }
 
-  if (!name)
+  if (!name) {
     return E_INVALIDARG;
+  }
 
   const std::vector<ax::mojom::Action> actions =
       GetOwner()->GetSupportedActions();
-  if (action_index < 0 || action_index >= static_cast<LONG>(actions.size())) {
+  const std::vector<int32_t>& aria_actions =
+      GetOwner()->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
+
+  if (action_index < 0 ||
+      action_index >= static_cast<LONG>(actions.size() + aria_actions.size())) {
     *name = nullptr;
     return E_INVALIDARG;
   }
@@ -828,8 +857,19 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_name(LONG action_index,
                                   &action)) {
     action_verb =
         ui::ToString(static_cast<ax::mojom::DefaultActionVerb>(action));
-  } else {
+  } else if (action_index < static_cast<LONG>(actions.size())) {
     action_verb = ui::ToString(actions[action_index]);
+  } else {
+    // action_index refers to a position in the combined Blink actions and
+    // aria-actions vector. To find the corresponding index in the aria_actions
+    // vector, subtract the number of Blink actions.
+    int32_t aria_action_id = aria_actions[action_index - actions.size()];
+    BrowserAccessibilityComWin* aria_action_obj = GetFromID(aria_action_id);
+    std::string html_id = aria_action_obj->GetStringAttribute(
+        ax::mojom::StringAttribute::kHtmlId);
+    action_verb = html_id.empty()
+                      ? AXPlatformNodeBase::kAriaActionsPrefix
+                      : AXPlatformNodeBase::kAriaActionsPrefix + "#" + html_id;
   }
 
   if (action_verb.empty() || action_verb.compare("none") == 0) {
@@ -852,27 +892,46 @@ BrowserAccessibilityComWin::get_localizedName(LONG action_index,
     return E_FAIL;
   }
 
-  if (!localized_name)
+  if (!localized_name) {
     return E_INVALIDARG;
+  }
 
   const std::vector<ax::mojom::Action> actions =
       GetOwner()->GetSupportedActions();
-  if (action_index < 0 || action_index >= static_cast<LONG>(actions.size())) {
+  const std::vector<int32_t>& aria_actions =
+      GetOwner()->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
+
+  if (action_index < 0 ||
+      action_index >= static_cast<LONG>(actions.size() + aria_actions.size())) {
     *localized_name = nullptr;
     return E_INVALIDARG;
   }
 
   int action;
-  if (!GetOwner()->GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb,
-                                   &action) ||
-      action_index != 0) {
-    // There aren't localized names for actions except default ones, we fall
-    // back to returning the hard-coded, not localized name.
-    return get_name(action_index, localized_name);
+  std::string action_verb;
+
+  // Blink actions and aria-actions are handled differently.
+  if (action_index < static_cast<LONG>(actions.size())) {
+    if (!GetOwner()->GetIntAttribute(
+            ax::mojom::IntAttribute::kDefaultActionVerb, &action) ||
+        action_index != 0) {
+      // There aren't localized names for actions except default ones, we fall
+      // back to returning the hard-coded, not localized name.
+      return get_name(action_index, localized_name);
+    }
+
+    action_verb =
+        ToLocalizedString(static_cast<ax::mojom::DefaultActionVerb>(action));
+  } else {
+    // action_index refers to a position in the combined Blink actions and
+    // aria-actions vector. To find the corresponding index in the aria_actions
+    // vector, subtract the number of Blink actions.
+    int32_t aria_action_id = aria_actions[action_index - actions.size()];
+    BrowserAccessibilityComWin* aria_action_obj = GetFromID(aria_action_id);
+
+    action_verb = aria_action_obj->GetName();
   }
 
-  std::string action_verb =
-      ToLocalizedString(static_cast<ax::mojom::DefaultActionVerb>(action));
   if (action_verb.empty()) {
     *localized_name = nullptr;
     return S_FALSE;

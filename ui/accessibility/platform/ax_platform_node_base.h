@@ -355,6 +355,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   // child object appears.
   static const char16_t kEmbeddedCharacter;
 
+  // Prefix for the name of an action from the aria-actions attribute.
+  static const std::string kAriaActionsPrefix;
+
   // Get a node given its unique id or null in the case that the id is unknown.
   static AXPlatformNode* GetFromUniqueId(int32_t unique_id);
 
