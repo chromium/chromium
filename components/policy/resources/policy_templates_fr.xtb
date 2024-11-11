@@ -2002,6 +2002,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Le correcteur orthographique peut toujours utiliser un dictionnaire téléchargé en local, sauf si la fonctionnalité est désactivée par <ph name="SPELLCHECK_ENABLED_POLICY_NAME" />, auquel cas cette règle n'a aucun effet.</translation>
 <translation id="2433516903565257847">Pourcentage du parc à mettre à jour au terme du nombre de jours indiqué.</translation>
+<translation id="2433683038230070030">La mise en mémoire tampon adaptative Web Audio peut être activée en fonction du processus de lancement de fonctionnalités.</translation>
 <translation id="2435052056904485763">Liste d'autorisation des serveurs de délégation Kerberos</translation>
 <translation id="2436302465999055995">Faire de <ph name="LACROS_NAME" /> le seul navigateur disponible (pas encore implémenté)</translation>
 <translation id="2439187682308339104">Interdire à tous les sites de demander l'accès aux appareils HID via l'API WebHID</translation>
@@ -6411,6 +6412,11 @@ Si elle est désactivée ou n'est pas configurée, les Glanceables ne sont pas a
 <translation id="5776485039795852974">Demander confirmation chaque fois qu'un site veut afficher des notifications sur le bureau</translation>
 <translation id="5783009211970309878">Imprimer les en-têtes et les pieds de page</translation>
 <translation id="5790763087505467169">Réduire les notifications de lancement automatique des sessions Invité gérées</translation>
+<translation id="5794205610250307906">Cette règle contrôle si le navigateur utilise la mise en mémoire tampon adaptative pour Web Audio. Cela peut réduire les problèmes audio, mais aussi augmenter la latence de façon variable.
+
+Si cette règle est activée, la mise en mémoire tampon adaptative est toujours utilisée.
+
+Si cette règle est désactivée ou qu'elle n'est pas configurée, le processus de lancement de fonctionnalités du navigateur détermine si la mise en mémoire tampon adaptative est utilisée.</translation>
 <translation id="5800329278018669527">Désactiver l'invite de configuration réseau lorsque l'utilisateur n'est pas connecté</translation>
 <translation id="5802931736499687181">Désactiver le pipeline de rapports chiffrés</translation>
 <translation id="5803715507113569033">Cette règle permet aux administrateurs de configurer l'installation de <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
@@ -6986,6 +6992,7 @@ Le salage doit être une chaîne comprenant entre 8 et 32 caractères.
 Si cette règle est désactivée, les utilisateurs ne peuvent pas verrouiller l'écran (ils peuvent uniquement se déconnecter de leur session utilisateur).</translation>
 <translation id="6265892395051519509">Autoriser l'accès aux capteurs sur ces sites</translation>
 <translation id="6266043141694454734">Détermine si le Chrome Root Store et l'outil de vérification des certificats intégré seront utilisés pour vérifier les certificats de serveur</translation>
+<translation id="6266686172120601139">Activer la mise en mémoire tampon adaptative pour Web Audio</translation>
 <translation id="6267130578410325007">Par défaut, cette règle autorise le clustering d'agents selon l'origine.
 
 L'en-tête HTTP Origin-Agent-Cluster permet de spécifier si un document est isolé dans un cluster d'agents selon l'origine ou selon le site. Ce choix a des implications sur la sécurité, car le clustering d'agents selon l'origine permet d'isoler des documents en fonction de l'origine. Du point de vue du développeur, cela se traduit par l'impossibilité de configurer l'accesseur document.domain.
@@ -9556,6 +9563,7 @@ Si cette règle n'est pas définie, l'écran de confidentialité est désactivé
 <translation id="8173864651667424191">L'option "Imprimer en tant qu'image" par défaut permettant de générer un aperçu avant impression d'un PDF, lorsque cette option est disponible, est proposée.</translation>
 <translation id="8175922758834816585">Activer les commentaires audio sur l'écran de connexion et permettre à l'utilisateur de les désactiver temporairement</translation>
 <translation id="8176035528522326671">Autoriser l'utilisateur d'entreprise à participer aux sessions à plusieurs profils en tant qu'utilisateur principal seulement (comportement par défaut pour les utilisateurs gérés par une entreprise)</translation>
+<translation id="817717947404114735">Activer la mise en mémoire tampon adaptative Web Audio.</translation>
 <translation id="8179082421668183060">Si cette règle est définie sur une liste de chaînes, celles-ci sont reliées par des espaces avant d'être transmises entre <ph name="IE_PRODUCT_NAME" /> et <ph name="PRODUCT_NAME" /> comme paramètres de ligne de commande. Si un paramètre contient <ph name="URL_PLACEHOLDER" />, l'URL <ph name="URL_PLACEHOLDER" /> est remplacée par l'URL de la page à ouvrir. Si aucun paramètre ne contient l'URL <ph name="URL_PLACEHOLDER" />, celle-ci est ajoutée à la fin de la ligne de commande.
 
       Les variables d'environnement sont développées. Sous <ph name="MS_WIN_NAME" />, la variable <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> est remplacée par la valeur de la variable d'environnement <ph name="ENV_VARIABLE_VALUE" />.

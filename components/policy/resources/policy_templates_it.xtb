@@ -2054,6 +2054,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
       Per il controllo ortografico può essere sempre usato un dizionario scaricato in locale, a meno che la funzionalità non sia disattivata nel criterio <ph name="SPELLCHECK_ENABLED_POLICY_NAME" />; in tal caso questo criterio non avrà effetto.</translation>
 <translation id="2433516903565257847">La percentuale del parco di dispositivi che dovrebbe essere aggiornata dopo i giorni indicati.</translation>
+<translation id="2433683038230070030">Il buffering adattivo di Web Audio potrebbe essere attivato a seconda del processo di lancio della funzionalità.</translation>
 <translation id="2435052056904485763">Lista consentita server di delega Kerberos</translation>
 <translation id="2436302465999055995">Imposta <ph name="LACROS_NAME" /> come unico browser disponibile (opzione non ancora implementata)</translation>
 <translation id="2439187682308339104">Non consentire a nessun sito di richiedere l'accesso ai dispositivi HID tramite l'API WebHID</translation>
@@ -6475,6 +6476,11 @@ Se questo criterio viene disattivato o se non viene configurato, i Glanceables n
 <translation id="5776485039795852974">Chiedi ogni volta che un sito desidera mostrare le notifiche desktop</translation>
 <translation id="5783009211970309878">Stampa intestazioni e piè di pagina</translation>
 <translation id="5790763087505467169">Riduci notifiche sull'avvio automatico della sessione Ospite gestita</translation>
+<translation id="5794205610250307906">Questa policy consente di stabilire se il browser utilizza il buffering adattivo per Web Audio, che può ridurre i problemi audio, ma anche aumentare la latenza in modo variabile.
+
+Se la policy viene attivata, verrà sempre utilizzato il buffering adattivo.
+
+Se la policy viene disattivata o se non viene configurata, il processo di lancio della funzionalità del browser deciderà se utilizzare il buffering adattivo.</translation>
 <translation id="5800329278018669527">Disattiva la richiesta di configurazione di rete in modalità offline</translation>
 <translation id="5802931736499687181">Disabilita la Pipeline di reporting criptato</translation>
 <translation id="5803715507113569033">Questo criterio consente agli amministratori di configurare il montaggio di <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
@@ -7062,6 +7068,7 @@ Dalla versione 114 in poi, questo criterio è facoltativo se viene configurato i
 Se viene impostato su Disattivato, gli utenti non possono bloccare lo schermo e possono soltanto uscire dalla sessione utente.</translation>
 <translation id="6265892395051519509">Consenti l'accesso ai sensori su questi siti</translation>
 <translation id="6266043141694454734">Determina se verranno utilizzati Chrome Root Store e lo strumento di verifica dei certificati integrato per verificare i certificati del server</translation>
+<translation id="6266686172120601139">Attiva il buffering adattivo per Web Audio</translation>
 <translation id="6267130578410325007">Questo criterio consente per impostazione predefinita il clustering di agenti con chiave di origine.
 
 L'intestazione HTTP Origin-Agent-Cluster consente di stabilire se un documento viene isolato in un cluster di agenti con chiave di origine o in un cluster di agenti con chiave del sito. Questo comporta implicazioni relative alla sicurezza perché un cluster di agenti con chiave di origine consente di isolare i documenti per origine. La conseguenza evidente di questo comportamento per gli sviluppatori è che non è più possibile impostare la funzione di accesso document.domain.
@@ -9679,6 +9686,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy viene inizial
 <translation id="8173864651667424191">L'opzione Stampa come immagine è impostata per impostazione predefinita per le anteprime di stampa dei documenti PDF quando è disponibile.</translation>
 <translation id="8175922758834816585">Attiva la funzione di lettura vocale nella schermata di accesso e consenti all'utente di disattivarla temporaneamente</translation>
 <translation id="8176035528522326671">Consenti all'utente aziendale di essere solo l'utente multiprofilo principale (comportamento predefinito per gli utenti gestiti dall'azienda)</translation>
+<translation id="817717947404114735">Attiva il buffering adattivo di Web Audio.</translation>
 <translation id="8179082421668183060">Se per questo criterio viene impostato un elenco di stringhe, queste ultime vengono unite usando degli spazi e passate da <ph name="IE_PRODUCT_NAME" /> a <ph name="PRODUCT_NAME" /> sotto forma di parametri della riga di comando. Se un parametro contiene <ph name="URL_PLACEHOLDER" />, il valore <ph name="URL_PLACEHOLDER" /> viene sostituito con l'URL della pagina da aprire. Se nessun parametro contiene <ph name="URL_PLACEHOLDER" />, l'URL viene aggiunto alla fine della riga di comando.
 
       Le variabili di ambiente vengono espanse. Su <ph name="MS_WIN_NAME" />, il valore <ph name="ENV_VARIABLE_WIN_EXAMPLE" /> viene sostituito con il valore della variabile di ambiente <ph name="ENV_VARIABLE_VALUE" />.
