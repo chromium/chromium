@@ -144,7 +144,8 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
 
     @Override
     public void openTabGroup(String syncId) {
-        assert mSyncBackendInitialized;
+        // It's possible that the sync backend isn't initialized but we get a request to open tab
+        // group from the revisit surface. In that case, simply ignore the request.
         if (!mSyncBackendInitialized) return;
 
         // Skip groups that are open in another window, or have been deleted.
