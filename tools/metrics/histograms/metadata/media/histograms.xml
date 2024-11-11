@@ -4670,6 +4670,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.PictureInPicture.Disallowed"
+    enum="PictureInPictureDisallowedType" expires_after="2025-06-30">
+  <owner>steimel@chromium.org</owner>
+  <owner>liberato@chromium.org</owner>
+  <summary>
+    Recorded when a picture-in-picture window is closed due to a
+    ScopedDisallowPictureInPicture object. Records whether the closed
+    picture-in-picture window was just opened or already existed when the
+    ScopedDisallowPictureInPicture was created.
+  </summary>
+</histogram>
+
 <histogram name="Media.PipelineStatus.AudioVideo.{VideoCodec}.{Pipeline}"
     enum="PipelineStatus" expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->

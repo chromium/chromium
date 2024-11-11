@@ -19,6 +19,7 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/types/pass_key.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -34,6 +35,7 @@ class Display;
 
 #if !BUILDFLAG(IS_ANDROID)
 class PictureInPictureOcclusionTracker;
+class ScopedDisallowPictureInPicture;
 
 namespace views {
 class View;
@@ -188,6 +190,23 @@ class PictureInPictureWindowManager {
   // when a widget has been occluded by a video or document picture-in-picture
   // window.
   PictureInPictureOcclusionTracker* GetOcclusionTracker();
+
+  // Returns true if a file dialog opened by `owner_web_contents` should create
+  // a `ScopedDisallowPictureInPicture` to block picture-in-picture.
+  bool ShouldFileDialogBlockPictureInPicture(
+      content::WebContents* owner_web_contents);
+
+  // Called by `ScopedDisallowPictureInPicture` to block picture-in-picture
+  // windows from opening, as well as close any existing picture-in-picture
+  // windows.
+  void OnScopedDisallowPictureInPictureCreated(
+      base::PassKey<ScopedDisallowPictureInPicture>);
+  void OnScopedDisallowPictureInPictureDestroyed(
+      base::PassKey<ScopedDisallowPictureInPicture>);
+
+  // Returns true if picture-in-picture is currently disabled (e.g. due to a
+  // ScopedDisallowPictureInPicture object existing).
+  bool IsPictureInPictureDisabled() const;
 #endif
 
   void set_window_controller_for_testing(
@@ -206,6 +225,23 @@ class PictureInPictureWindowManager {
   class VideoWebContentsObserver;
 #if !BUILDFLAG(IS_ANDROID)
   class DocumentWebContentsObserver;
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(PictureInPictureDisallowedType)
+  enum class PictureInPictureDisallowedType {
+    // An existing picture-in-picture window was closed because we started
+    // disallowing picture-in-picture windows.
+    kExistingWindowClosed = 0,
+
+    // A new picture-in-picture window was closed because it was created while
+    // we were already disallowing picture-in-picture windows.
+    kNewWindowClosed = 1,
+
+    kMaxValue = kNewWindowClosed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:PictureInPictureDisallowedTypeEnum)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Create a Picture-in-Picture window and register it in order to be closed
@@ -239,6 +275,10 @@ class PictureInPictureWindowManager {
   void RecordDocumentPictureInPictureRequestedSizeMetrics(
       const blink::mojom::PictureInPictureWindowOptions& pip_options,
       const display::Display& display);
+
+  // Records whether a new or existing picture-in-picture window was closed due
+  // to an existing ScopedDisallowPictureInPicture.
+  void RecordPictureInPictureDisallowed(PictureInPictureDisallowedType type);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   PictureInPictureWindowManager();
@@ -252,6 +292,11 @@ class PictureInPictureWindowManager {
   std::unique_ptr<DocumentWebContentsObserver> document_web_contents_observer_;
 
   std::unique_ptr<PictureInPictureOcclusionTracker> occlusion_tracker_;
+
+  // The number of `ScopedDisallowPictureInPicture` objects currently in
+  // existence. If at least one exists, then picture-in-picture windows will be
+  // blocked.
+  uint32_t number_of_existing_scoped_disallow_picture_in_pictures_ = 0;
 #endif  //! BUILDFLAG(IS_ANDROID)
 
   raw_ptr<content::PictureInPictureWindowController, DanglingUntriaged>
