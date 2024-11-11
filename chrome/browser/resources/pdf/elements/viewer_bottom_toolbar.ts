@@ -12,6 +12,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AnnotationBrushType} from '../constants.js';
 import type {Color} from '../constants.js';
+import {record, UserAction} from '../metrics.js';
 import {blendHighlighterColorValue, colorToHex} from '../pdf_viewer_utils.js';
 
 import {ERASER_SIZES, HIGHLIGHTER_SIZES, PEN_SIZES} from './ink_size_selector.js';
@@ -45,6 +46,11 @@ export class ViewerBottomToolbarElement extends CrLitElement {
       currentSize: {type: Number},
       currentType: {type: String},
     };
+  }
+
+  constructor() {
+    super();
+    record(UserAction.OPEN_INK2_BOTTOM_TOOLBAR);
   }
 
   override updated(changedProperties: PropertyValues<this>) {

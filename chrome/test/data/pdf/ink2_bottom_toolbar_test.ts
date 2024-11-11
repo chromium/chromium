@@ -2,25 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AnnotationBrushType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationBrushType, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {InkColorSelectorElement, InkSizeSelectorElement, ViewerBottomToolbarDropdownElement, ViewerBottomToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {assertAnnotationBrush, assertSelectedSize, getBrushSelector, getColorButtons, getRequiredElement, getSizeButtons, setGetAnnotationBrushReply, setupTestMockPluginForInk} from './test_util.js';
+import {assertAnnotationBrush, assertSelectedSize, getBrushSelector, getColorButtons, getRequiredElement, getSizeButtons, setGetAnnotationBrushReply, setupMockMetricsPrivate, setupTestMockPluginForInk} from './test_util.js';
 
 const viewer = document.body.querySelector('pdf-viewer')!;
 const mockPlugin = setupTestMockPluginForInk();
 
-// Enter annotation mode to get the side panel.
-viewer.$.toolbar.toggleAnnotation();
-await microtasksFinished();
-assert(viewer.$.toolbar.annotationMode);
-
-const bottomToolbar = getRequiredElement<ViewerBottomToolbarElement>(
-    viewer, 'viewer-bottom-toolbar');
+function getBottomToolbar(): ViewerBottomToolbarElement {
+  return getRequiredElement(viewer, 'viewer-bottom-toolbar');
+}
 
 async function clickColorButton(index: number) {
+  const bottomToolbar = getBottomToolbar();
   const colorDropdown = getRequiredElement<ViewerBottomToolbarDropdownElement>(
       bottomToolbar, '#color');
   await clickDropdownButton(colorDropdown);
@@ -40,6 +36,7 @@ async function clickDropdownButton(
 }
 
 function assertDropdownSizeIcon(expected: string) {
+  const bottomToolbar = getBottomToolbar();
   const actual =
       getRequiredElement(bottomToolbar, '#size > cr-icon').getAttribute('icon');
   chrome.test.assertTrue(!!actual);
@@ -47,18 +44,38 @@ function assertDropdownSizeIcon(expected: string) {
 }
 
 function assertDropdownColorFillColor(expected: string) {
+  const bottomToolbar = getBottomToolbar();
   const styles =
       getComputedStyle(getRequiredElement(bottomToolbar, '#color-chip'));
   chrome.test.assertEq(expected, styles.getPropertyValue('background-color'));
 }
 
 chrome.test.runTests([
+  // Test that toggling annotation mode opens the bottom toolbar. Must be run
+  // first, as other tests expect to already be in annotation mode.
+  async function testOpenBottomToolbar() {
+    const mockMetricsPrivate = setupMockMetricsPrivate();
+
+    viewer.$.toolbar.toggleAnnotation();
+    await microtasksFinished();
+
+    chrome.test.assertTrue(viewer.$.toolbar.annotationMode);
+    chrome.test.assertTrue(
+        !!viewer.shadowRoot!.querySelector('viewer-bottom-toolbar'));
+    mockMetricsPrivate.assertCount(UserAction.OPEN_INK2_SIDE_PANEL, 0);
+    mockMetricsPrivate.assertCount(UserAction.OPEN_INK2_BOTTOM_TOOLBAR, 1);
+    chrome.test.succeed();
+  },
+
   async function testSelectPen() {
+    chrome.test.assertTrue(viewer.$.toolbar.annotationMode);
+
     // Default to a black pen. Cannot use assertAnnotationBrush() yet, since
     // there's no need to set the brush in the backend immediately after getting
     // the default brush.
 
     // Change the pen size.
+    const bottomToolbar = getBottomToolbar();
     await clickDropdownButton(bottomToolbar.$.size);
     const sizeSelector = getRequiredElement<InkSizeSelectorElement>(
         bottomToolbar, 'ink-size-selector');
@@ -89,9 +106,12 @@ chrome.test.runTests([
 
   // Test that the eraser can be selected.
   async function testSelectEraser() {
+    chrome.test.assertTrue(viewer.$.toolbar.annotationMode);
+
     // Switch to eraser.
     setGetAnnotationBrushReply(
         mockPlugin, AnnotationBrushType.ERASER, /*size=*/ 3);
+    const bottomToolbar = getBottomToolbar();
     getBrushSelector(bottomToolbar).$.eraser.click();
     await microtasksFinished();
 
@@ -125,10 +145,13 @@ chrome.test.runTests([
 
   // Test that the highlighter can be selected.
   async function testSelectHighlighter() {
+    chrome.test.assertTrue(viewer.$.toolbar.annotationMode);
+
     // Switch to highlighter.
     setGetAnnotationBrushReply(
         mockPlugin, AnnotationBrushType.HIGHLIGHTER, /*size=*/ 8,
         /*color=*/ {r: 242, g: 139, b: 130});
+    const bottomToolbar = getBottomToolbar();
     getBrushSelector(bottomToolbar).$.highlighter.click();
     await microtasksFinished();
 

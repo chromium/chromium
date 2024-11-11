@@ -122,6 +122,10 @@ chromium-metrics-reviews@google.com.
   <int value="92" label="UndoInk2"/>
   <int value="93" label="RedoInk2First"/>
   <int value="94" label="RedoInk2"/>
+  <int value="95" label="OpenInk2SidePanelFirst"/>
+  <int value="96" label="OpenInk2SidePanel"/>
+  <int value="97" label="OpenInk2BottomToolbarFirst"/>
+  <int value="98" label="OpenInk2BottomToolbar"/>
 </enum>
 
 <enum name="ChromePDFViewerLoadStatus">

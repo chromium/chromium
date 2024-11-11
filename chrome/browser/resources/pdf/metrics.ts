@@ -253,7 +253,15 @@ export enum UserAction {
   REDO_INK2_FIRST = 93,
   REDO_INK2 = 94,
 
-  NUMBER_OF_ACTIONS = 95,
+  // Recorded when the user opens the Ink2 side panel.
+  OPEN_INK2_SIDE_PANEL_FIRST = 95,
+  OPEN_INK2_SIDE_PANEL = 96,
+
+  // Recorded when the user opens the Ink2 bottom toolbar.
+  OPEN_INK2_BOTTOM_TOOLBAR_FIRST = 97,
+  OPEN_INK2_BOTTOM_TOOLBAR = 98,
+
+  NUMBER_OF_ACTIONS = 99,
 }
 
 function createFirstMap(): Map<UserAction, UserAction> {

@@ -10,6 +10,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {AnnotationBrushType} from '../constants.js';
 import type {Color} from '../constants.js';
+import {record, UserAction} from '../metrics.js';
 
 import {getCss} from './viewer_side_panel.css.js';
 import {getHtml} from './viewer_side_panel.html.js';
@@ -38,6 +39,11 @@ export class ViewerSidePanelElement extends CrLitElement {
   currentColor?: Color;
   currentSize: number = 0;
   currentType: AnnotationBrushType = AnnotationBrushType.PEN;
+
+  constructor() {
+    super();
+    record(UserAction.OPEN_INK2_SIDE_PANEL);
+  }
 
   protected shouldShowColorOptions_(): boolean {
     return this.currentType !== AnnotationBrushType.ERASER;
