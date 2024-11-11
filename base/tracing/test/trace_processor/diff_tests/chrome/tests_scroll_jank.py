@@ -393,6 +393,36 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395280246,"GESTURE_SCROLL_UPDATE_EVENT","STEP_SEND_INPUT_EVENT_UI,STEP_HANDLE_INPUT_EVENT_IMPL,STEP_DID_HANDLE_INPUT_AND_OVERSCROLL,STEP_GESTURE_EVENT_HANDLED"
         """))
 
+  def test_task_start_time(self):
+    return DiffTestBlueprint(
+        trace=DataPath('scroll_m131.pftrace'),
+        query="""
+        INCLUDE PERFETTO MODULE chrome.input;
+
+        SELECT
+          latency_id,
+          step,
+          task_start_time_ts
+        FROM chrome_input_pipeline_steps
+        ORDER BY latency_id
+        LIMIT 10;
+        """,
+        # STEP_SEND_INPUT_EVENT_UI does not run in a task,
+        # so its task_start_time_ts will be NULL.
+        out=Csv("""
+        "latency_id","step","task_start_time_ts"
+        -2143831735395280256,"STEP_SEND_INPUT_EVENT_UI","[NULL]"
+        -2143831735395280256,"STEP_HANDLE_INPUT_EVENT_IMPL",1292554143003210
+        -2143831735395280256,"STEP_DID_HANDLE_INPUT_AND_OVERSCROLL",1292554153539210
+        -2143831735395280256,"STEP_GESTURE_EVENT_HANDLED",1292554154651257
+        -2143831735395280254,"STEP_SEND_INPUT_EVENT_UI","[NULL]"
+        -2143831735395280254,"STEP_HANDLE_INPUT_EVENT_IMPL",1292554155188210
+        -2143831735395280254,"STEP_DID_HANDLE_INPUT_AND_OVERSCROLL",1292554164359210
+        -2143831735395280254,"STEP_GESTURE_EVENT_HANDLED",1292554165141257
+        -2143831735395280250,"STEP_SEND_INPUT_EVENT_UI","[NULL]"
+        -2143831735395280250,"STEP_HANDLE_INPUT_EVENT_IMPL",1292554131865210
+        """))
+
   def test_chrome_coalesced_inputs(self):
         return DiffTestBlueprint(
         trace=DataPath('scroll_m131.pftrace'),

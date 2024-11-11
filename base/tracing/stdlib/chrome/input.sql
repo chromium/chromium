@@ -19,7 +19,9 @@ CREATE PERFETTO TABLE _chrome_input_pipeline_steps_no_input_type(
   -- Step name (ChromeLatencyInfo.step).
   step STRING,
   -- Input type.
-  input_type STRING
+  input_type STRING,
+  -- Start time of the parent Chrome scheduler task (if any) of this step.
+  task_start_time_ts INT
 ) AS
 SELECT
   EXTRACT_ARG(thread_slice.arg_set_id, 'chrome_latency_info.trace_id') AS latency_id,
@@ -28,7 +30,8 @@ SELECT
   dur,
   utid,
   EXTRACT_ARG(thread_slice.arg_set_id, 'chrome_latency_info.step') AS step,
-  EXTRACT_ARG(thread_slice.arg_set_id, 'chrome_latency_info.input_type') AS input_type
+  EXTRACT_ARG(thread_slice.arg_set_id, 'chrome_latency_info.input_type') AS input_type,
+  ts - (EXTRACT_ARG(thread_slice.arg_set_id, 'current_task.event_offset_from_task_start_time_us') * 1000) AS task_start_time_ts
 FROM
   thread_slice
 WHERE
@@ -69,7 +72,9 @@ CREATE PERFETTO TABLE chrome_input_pipeline_steps(
   -- Step name (ChromeLatencyInfo.step).
   step STRING,
   -- Input type.
-  input_type STRING
+  input_type STRING,
+  -- Start time of the parent Chrome scheduler task (if any) of this step.
+  task_start_time_ts INT
 ) AS
 SELECT
   latency_id,
@@ -78,7 +83,8 @@ SELECT
   dur,
   utid,
   step,
-  chrome_inputs.input_type AS input_type
+  chrome_inputs.input_type AS input_type,
+  task_start_time_ts
 FROM
   chrome_inputs
 LEFT JOIN
