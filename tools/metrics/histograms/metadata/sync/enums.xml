@@ -685,6 +685,8 @@ chromium-metrics-reviews@google.com.
   <int value="100310" label="PrivacySandboxFakeNoticePromptShownTimeSync"/>
   <int value="100311" label="AccessibilityBounceKeysDelay"/>
   <int value="100312" label="AccessibilitySlowKeysDelay"/>
+  <int value="100313" label="AccessibilityFaceGazePrecisionClick"/>
+  <int value="100314" label="AccessibilityFaceGazePrecisionClickSpeedFactor"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

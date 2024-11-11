@@ -337,6 +337,10 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs::kAccessibilityFaceGazeAdjustSpeedSeparately));
   EXPECT_TRUE(
       prefs()->FindPreference(prefs::kAccessibilityFaceGazeVelocityThreshold));
+  EXPECT_TRUE(
+      prefs()->FindPreference(prefs::kAccessibilityFaceGazePrecisionClick));
+  EXPECT_TRUE(prefs()->FindPreference(
+      prefs::kAccessibilityFaceGazePrecisionClickSpeedFactor));
   EXPECT_TRUE(prefs()->FindPreference(prefs::kAccessibilityCaretBlinkInterval));
   EXPECT_TRUE(
       prefs()->FindPreference(prefs::kAccessibilityFlashNotificationsEnabled));

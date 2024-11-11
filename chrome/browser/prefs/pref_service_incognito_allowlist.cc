@@ -88,6 +88,8 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kAccessibilityFaceGazeCursorControlEnabled,
     ash::prefs::kAccessibilityFaceGazeAdjustSpeedSeparately,
     ash::prefs::kAccessibilityFaceGazeVelocityThreshold,
+    ash::prefs::kAccessibilityFaceGazePrecisionClick,
+    ash::prefs::kAccessibilityFaceGazePrecisionClickSpeedFactor,
     ash::prefs::kAccessibilityFlashNotificationsEnabled,
     ash::prefs::kAccessibilityFlashNotificationsColor,
     ash::prefs::kAccessibilityHighContrastEnabled,

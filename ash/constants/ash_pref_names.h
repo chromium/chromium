@@ -904,6 +904,14 @@ inline constexpr char kFaceGazeDlcFailureNotificationHasBeenShown[] =
 // threshold.
 inline constexpr char kAccessibilityFaceGazeVelocityThreshold[] =
     "settings.a11y.face_gaze.velocity_threshold";
+// A boolean pref which indicates whether or not FaceGaze should perform a
+// precision click.
+inline constexpr char kAccessibilityFaceGazePrecisionClick[] =
+    "settings.a11y.face_gaze.precision_click";
+// An integer pref which indicates the percentage that the FaceGaze mouse speed
+// should be dampened by during a precision click.
+inline constexpr char kAccessibilityFaceGazePrecisionClickSpeedFactor[] =
+    "settings.a11y.face_gaze.precision_click_speed_factor";
 
 // A boolean pref which determines whether the accessibility menu shows
 // regardless of the state of a11y features.

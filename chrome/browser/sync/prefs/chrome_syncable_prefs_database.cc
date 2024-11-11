@@ -371,6 +371,8 @@ enum {
   kPrivacySandboxFakeNoticePromptShownTimeSync = 100310,
   kAccessibilityBounceKeysDelay = 100311,
   kAccessibilitySlowKeysDelay = 100312,
+  kAccessibilityFaceGazePrecisionClick = 100313,
+  kAccessibilityFaceGazePrecisionClickSpeedFactor = 100314,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -1192,6 +1194,14 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kAccessibilityFaceGazeVelocityThreshold,
      {syncable_prefs_ids::kAccessibilityFaceGazeVelocityThreshold,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFaceGazePrecisionClick,
+     {syncable_prefs_ids::kAccessibilityFaceGazePrecisionClick,
+      syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {ash::prefs::kAccessibilityFaceGazePrecisionClickSpeedFactor,
+     {syncable_prefs_ids::kAccessibilityFaceGazePrecisionClickSpeedFactor,
       syncer::OS_PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {ash::prefs::kAccessibilityFlashNotificationsEnabled,

@@ -207,6 +207,10 @@ constexpr bool kDefaultFaceGazeCursorUseAcceleration = true;
 // How much FaceGaze should threshold velocity, e.g. to implement deadzone.
 constexpr int kDefaultFaceGazeVelocityThreshold = 9;
 
+// How much FaceGaze should dampen the mouse speed during a precision click.
+// Note that this value represents a percentage, e.g. 50%.
+constexpr int kDefaultFaceGazePrecisionClickSpeedFactor = 50;
+
 }  // namespace ash
 
 #endif  // ASH_CONSTANTS_ASH_CONSTANTS_H_
