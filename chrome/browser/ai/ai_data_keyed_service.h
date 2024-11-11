@@ -36,11 +36,22 @@ class AiDataKeyedService : public KeyedService {
 
   // Fills an AiData and returns the result via the passed in callback. If the
   // AiData is empty, data collection failed. |callback| is guaranteed to be
-  // called, and guaranteed to be called asynchronously.
+  // called, and guaranteed to be called asynchronously. This method uses a set
+  // of default specifiers. See |GetAiDataWithSpecifiers| for more details.
   void GetAiData(int dom_node_id,
                  content::WebContents* web_contents,
                  std::string user_input,
                  AiDataCallback callback);
+
+  // Fills an AiData and returns the result via the passed in callback. If the
+  // AiData is empty, data collection failed. |callback| is guaranteed to be
+  // called, and guaranteed to be called asynchronously.
+  // |tabs_for_inner_text|: The number of tabs to collect inner text for.
+  void GetAiDataWithSpecifiers(int tabs_for_inner_text,
+                               int dom_node_id,
+                               content::WebContents* web_contents,
+                               std::string user_input,
+                               AiDataCallback callback);
 
   static const base::Feature& GetAllowlistedAiDataExtensionsFeatureForTesting();
 

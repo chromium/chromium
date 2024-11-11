@@ -182,6 +182,7 @@ void FillTabInfo(content::WebContents* web_contents,
 
 // Create an AiData with the tab and tab group information.
 void GetTabDataForModelPrototyping(
+    int tabs_for_inner_text,
     content::WebContents* web_contents,
     base::ConcurrentCallbacks<AiDataKeyedService::AiData>& concurrent) {
   TRACE_EVENT0("browser", "GetTabDataForModelPrototyping");
@@ -196,14 +197,13 @@ void GetTabDataForModelPrototyping(
   // Fill the Tabs part of the proto.
   AiDataKeyedService::AiData data =
       std::make_optional<AiDataKeyedService::BrowserData>();
-  static constexpr int inner_text_limit = 5;
   auto* tab_strip_model = browser->GetTabStripModel();
   for (int index = 0; index < tab_strip_model->count(); index++) {
     content::WebContents* tab_web_contents =
         tab_strip_model->GetWebContentsAt(index);
     auto title = base::UTF16ToUTF8(tab_web_contents->GetTitle());
     auto url = tab_web_contents->GetLastCommittedURL().spec();
-    if (index >= inner_text_limit) {
+    if (index >= tabs_for_inner_text) {
       OnGetTabInnerText(index, std::move(title), std::move(url),
                         concurrent.CreateCallback(), nullptr);
     } else {
@@ -312,7 +312,8 @@ void GetSiteEngagementScoresForModelPrototyping(
 
 // Fills synchronous information and kicks off concurrent tasks to fill an
 // AiData.
-void GetModelPrototypingAiData(int dom_node_id,
+void GetModelPrototypingAiData(int tabs_for_inner_text,
+                               int dom_node_id,
                                content::WebContents* web_contents,
                                std::string user_input,
                                AiDataKeyedService::AiDataCallback callback) {
@@ -334,7 +335,7 @@ void GetModelPrototypingAiData(int dom_node_id,
   GetTabScreenshotForModelPrototyping(web_contents,
                                       concurrent.CreateCallback());
 #if !BUILDFLAG(IS_ANDROID)
-  GetTabDataForModelPrototyping(web_contents, concurrent);
+  GetTabDataForModelPrototyping(tabs_for_inner_text, web_contents, concurrent);
 #endif
   GetSiteEngagementScoresForModelPrototyping(web_contents->GetBrowserContext(),
                                              concurrent.CreateCallback());
@@ -373,8 +374,19 @@ void AiDataKeyedService::GetAiData(int dom_node_id,
                                    std::string user_input,
                                    AiDataCallback callback) {
   TRACE_EVENT0("browser", "AiDataKeyedService::GetAiData");
-  GetModelPrototypingAiData(dom_node_id, web_contents, user_input,
+  GetAiDataWithSpecifiers(10, dom_node_id, web_contents, user_input,
                             std::move(callback));
+}
+
+void AiDataKeyedService::GetAiDataWithSpecifiers(
+    int tabs_for_inner_text,
+    int dom_node_id,
+    content::WebContents* web_contents,
+    std::string user_input,
+    AiDataCallback callback) {
+  TRACE_EVENT0("browser", "AiDataKeyedService::GetAiDataWithSpecifiers");
+  GetModelPrototypingAiData(tabs_for_inner_text, dom_node_id, web_contents,
+                            user_input, std::move(callback));
 }
 
 std::vector<std::string> AiDataKeyedService::GetAllowlistedExtensions() {
