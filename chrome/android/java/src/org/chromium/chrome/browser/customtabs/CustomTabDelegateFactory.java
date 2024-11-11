@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
-import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.externalnav.ExternalNavigationDelegateImpl;
@@ -312,7 +311,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private final Lazy<SnackbarManager> mSnackbarManager;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     // Should only be used after inflation.
-    private final Lazy<BottomSheetController> mBottomSheetController;
+    private final Supplier<BottomSheetController> mBottomSheetController;
     private final Lazy<AuthTabVerifier> mAuthTabVerifier;
     private final boolean mContextMenuEnabled;
 
@@ -367,7 +366,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             Lazy<SnackbarManager> snackbarManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Named(ACTIVITY_TYPE) @ActivityType int activityType,
-            Lazy<BottomSheetController> bottomSheetController,
+            Supplier<BottomSheetController> bottomSheetController,
             Lazy<AuthTabVerifier> authTabVerifier,
             boolean contextMenuEnabled,
             BrowserControlsManager browserControlsManager) {
@@ -400,8 +399,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     public CustomTabDelegateFactory(
             BaseCustomTabActivity activity,
             BrowserServicesIntentDataProvider intentDataProvider,
-            CustomTabBrowserControlsVisibilityDelegate visibilityDelegate,
-            ChromeActivityNativeDelegate chromeActivityNativeDelegate,
             BrowserControlsStateProvider browserControlsStateProvider,
             FullscreenManager fullscreenManager,
             TabCreatorManager tabCreatorManager,
@@ -411,7 +408,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             Lazy<SnackbarManager> snackbarManager,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Named(ACTIVITY_TYPE) @ActivityType int activityType,
-            Lazy<BottomSheetController> bottomSheetController,
             Lazy<AuthTabVerifier> authTabVerifier,
             BrowserControlsManager browserControlsManager) {
         this(
@@ -422,9 +418,9 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 intentDataProvider,
                 getDisplayMode(intentDataProvider),
                 intentDataProvider.shouldEnableEmbeddedMediaExperience(),
-                visibilityDelegate,
+                activity.getCustomTabBrowserControlsVisibilityDelegate(),
                 activity.getVerifier(),
-                chromeActivityNativeDelegate,
+                activity,
                 browserControlsStateProvider,
                 fullscreenManager,
                 tabCreatorManager,
@@ -434,7 +430,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 snackbarManager,
                 shareDelegateSupplier,
                 activityType,
-                bottomSheetController,
+                activity.getBottomSheetController(),
                 authTabVerifier,
                 !intentDataProvider.isAuthTab(),
                 browserControlsManager);

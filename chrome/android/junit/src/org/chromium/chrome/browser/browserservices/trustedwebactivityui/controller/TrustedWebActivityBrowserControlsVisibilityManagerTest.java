@@ -58,6 +58,7 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
         SecurityStateModelJni.TEST_HOOKS.setInstanceForTesting(mSecurityStateMocks);
         when(mActivity.getCustomTabActivityTabProvider()).thenReturn(mTabProvider);
         when(mActivity.getTabObserverRegistrar()).thenReturn(mTabObserverRegistrar);
+        when(mActivity.getCloseButtonVisibilityManager()).thenReturn(mCloseButtonVisibilityManager);
         when(mTabProvider.getTab()).thenReturn(mTab);
         doReturn(Tab.INVALID_TAB_ID).when(mTab).getParentId();
         setTabSecurityLevel(ConnectionSecurityLevel.NONE);
@@ -137,12 +138,10 @@ public class TrustedWebActivityBrowserControlsVisibilityManagerTest {
 
     private TrustedWebActivityBrowserControlsVisibilityManager buildController(
             BrowserServicesIntentDataProvider intentDataProvider) {
+        when(mActivity.getIntentDataProvider()).thenReturn(intentDataProvider);
         return spy(
                 new TrustedWebActivityBrowserControlsVisibilityManager(
-                        mActivity,
-                        mToolbarCoordinator,
-                        mCloseButtonVisibilityManager,
-                        intentDataProvider));
+                        mActivity, mToolbarCoordinator));
     }
 
     /** Returns the current browser controls state. */

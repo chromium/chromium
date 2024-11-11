@@ -27,6 +27,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
@@ -64,6 +65,7 @@ import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.Custom
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.dependency_injection.ModuleFactoryOverrides;
@@ -88,7 +90,9 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.webapps.SameTaskWebApkActivity;
+import org.chromium.chrome.browser.webapps.WebappActionsNotificationManager;
 import org.chromium.chrome.browser.webapps.WebappActivityCoordinator;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
@@ -127,6 +131,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private CustomTabNavigationEventObserver mCustomTabNavigationEventObserver;
     private ClientPackageNameProvider mClientPackageNameProvider;
     private TwaFinishHandler mTwaFinishHandler;
+    private CloseButtonVisibilityManager mCloseButtonVisibilityManager;
+    private CustomTabBrowserControlsVisibilityDelegate mCustomTabBrowserControlsVisibilityDelegate;
+    private WebappActionsNotificationManager mWebappActionsNotificationManager;
 
     protected @interface PictureInPictureMode {
         int NONE = 0;
@@ -360,6 +367,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         if (intentDataProvider.isWebappOrWebApkActivity()) {
             mWebappActivityCoordinator = component.resolveWebappActivityCoordinator();
+            mWebappActionsNotificationManager = new WebappActionsNotificationManager(this);
         }
 
         if (intentDataProvider.isWebApkActivity()) {
@@ -918,5 +926,30 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     public TwaFinishHandler getTwaFinishHandler() {
         if (mTwaFinishHandler == null) mTwaFinishHandler = new TwaFinishHandler(this);
         return mTwaFinishHandler;
+    }
+
+    public CloseButtonVisibilityManager getCloseButtonVisibilityManager() {
+        if (mCloseButtonVisibilityManager == null) {
+            mCloseButtonVisibilityManager =
+                    new CloseButtonVisibilityManager(getIntentDataProvider());
+        }
+        return mCloseButtonVisibilityManager;
+    }
+
+    public CustomTabBrowserControlsVisibilityDelegate
+            getCustomTabBrowserControlsVisibilityDelegate() {
+        if (mCustomTabBrowserControlsVisibilityDelegate == null) {
+            mCustomTabBrowserControlsVisibilityDelegate =
+                    new CustomTabBrowserControlsVisibilityDelegate(this::getBrowserControlsManager);
+        }
+        return mCustomTabBrowserControlsVisibilityDelegate;
+    }
+
+    public WebappActionsNotificationManager getWebappActionsNotificationManagerForTesting() {
+        return mWebappActionsNotificationManager;
+    }
+
+    public Supplier<BottomSheetController> getBottomSheetController() {
+        return mRootUiCoordinator::getBottomSheetController;
     }
 }

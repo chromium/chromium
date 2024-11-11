@@ -24,13 +24,11 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.metrics.LegacyTabStartupMetricsTracker;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
@@ -43,7 +41,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -56,10 +53,8 @@ import javax.inject.Named;
 @Module
 public class ChromeActivityCommonsModule {
     private final AppCompatActivity mActivity;
-    private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final BrowserControlsManager mBrowserControlsManager;
-    private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     private final BrowserControlsSizer mBrowserControlsSizer;
     private final FullscreenManager mFullscreenManager;
     private final Supplier<LayoutManagerImpl> mLayoutManagerSupplier;
@@ -80,7 +75,6 @@ public class ChromeActivityCommonsModule {
     private final Supplier<StartupMetricsTracker> mStartupMetricsTrackerSupplier;
     private final CompositorViewHolder.Initializer mCompositorViewHolderInitializer;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
     private final ObservableSupplier<Integer> mAutofillUiBottomInsetSupplier;
@@ -92,10 +86,8 @@ public class ChromeActivityCommonsModule {
     public interface Factory {
         ChromeActivityCommonsModule create(
                 AppCompatActivity activity,
-                Supplier<BottomSheetController> bottomSheetControllerSupplier,
                 Supplier<TabModelSelector> tabModelSelectorSupplier,
                 BrowserControlsManager browserControlsManager,
-                BrowserControlsVisibilityManager browserControlsVisibilityManager,
                 BrowserControlsSizer browserControlsSizer,
                 FullscreenManager fullscreenManager,
                 Supplier<LayoutManagerImpl> layoutManagerSupplier,
@@ -115,7 +107,6 @@ public class ChromeActivityCommonsModule {
                 Supplier<LegacyTabStartupMetricsTracker> legacyTabStartupMetricsTrackerSupplier,
                 Supplier<StartupMetricsTracker> startupMetricsTrackerSupplier,
                 CompositorViewHolder.Initializer compositorViewHolderInitializer,
-                ChromeActivityNativeDelegate chromeActivityNativeDelegate,
                 Supplier<ModalDialogManager> modalDialogManagerSupplier,
                 BrowserControlsStateProvider browserControlsStateProvider,
                 Supplier<Bundle> savedInstanceStateSupplier,
@@ -127,10 +118,8 @@ public class ChromeActivityCommonsModule {
 
     public ChromeActivityCommonsModule(
             AppCompatActivity activity,
-            Supplier<BottomSheetController> bottomSheetControllerSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             BrowserControlsManager browserControlsManager,
-            BrowserControlsVisibilityManager browserControlsVisibilityManager,
             BrowserControlsSizer browserControlsSizer,
             FullscreenManager fullscreenManager,
             Supplier<LayoutManagerImpl> layoutManagerSupplier,
@@ -150,7 +139,6 @@ public class ChromeActivityCommonsModule {
             Supplier<LegacyTabStartupMetricsTracker> legacyTabStartupMetricsTrackerSupplier,
             Supplier<StartupMetricsTracker> startupMetricsTrackerSupplier,
             CompositorViewHolder.Initializer compositorViewHolderInitializer,
-            ChromeActivityNativeDelegate chromeActivityNativeDelegate,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<Bundle> savedInstanceStateSupplier,
@@ -159,10 +147,8 @@ public class ChromeActivityCommonsModule {
             TabModelInitializer tabModelInitializer,
             @ActivityType int activityType) {
         mActivity = activity;
-        mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mBrowserControlsManager = browserControlsManager;
-        mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mBrowserControlsSizer = browserControlsSizer;
         mFullscreenManager = fullscreenManager;
         mLayoutManagerSupplier = layoutManagerSupplier;
@@ -183,18 +169,12 @@ public class ChromeActivityCommonsModule {
         mStartupMetricsTrackerSupplier = startupMetricsTrackerSupplier;
         mCompositorViewHolderInitializer = compositorViewHolderInitializer;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
         mAutofillUiBottomInsetSupplier = autofillUiBottomInsetSupplier;
         mShareDelegateSupplier = shareDelegateSupplier;
         mTabModelInitializer = tabModelInitializer;
         mActivityType = activityType;
-    }
-
-    @Provides
-    public BottomSheetController provideBottomSheetController() {
-        return mBottomSheetControllerSupplier.get();
     }
 
     @Provides
@@ -210,11 +190,6 @@ public class ChromeActivityCommonsModule {
     @Provides
     public BrowserControlsManager provideBrowserControlsManager() {
         return mBrowserControlsManager;
-    }
-
-    @Provides
-    public BrowserControlsVisibilityManager provideBrowserControlsVisibilityManager() {
-        return mBrowserControlsVisibilityManager;
     }
 
     @Provides
@@ -346,11 +321,6 @@ public class ChromeActivityCommonsModule {
     @Provides
     public Supplier<ModalDialogManager> provideModalDialogManagerSupplier() {
         return mModalDialogManagerSupplier;
-    }
-
-    @Provides
-    public ChromeActivityNativeDelegate provideChromeActivityNativeDelegate() {
-        return mChromeActivityNativeDelegate;
     }
 
     @Provides

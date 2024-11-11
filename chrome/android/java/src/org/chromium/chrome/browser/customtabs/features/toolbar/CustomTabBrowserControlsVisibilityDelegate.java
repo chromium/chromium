@@ -4,25 +4,19 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
-import dagger.Lazy;
-
+import org.chromium.base.supplier.Supplier;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 
-import javax.inject.Inject;
-
 /** Implementation of {@link BrowserControlsVisibilityDelegate} for custom tabs. */
-@ActivityScope
 public class CustomTabBrowserControlsVisibilityDelegate extends BrowserControlsVisibilityDelegate {
-    private final Lazy<BrowserControlsVisibilityManager> mBrowserControlsVisibilityManager;
+    private final Supplier<BrowserControlsVisibilityManager> mBrowserControlsVisibilityManager;
     private @BrowserControlsState int mBrowserControlsState = BrowserControlsState.BOTH;
 
-    @Inject
     public CustomTabBrowserControlsVisibilityDelegate(
-            Lazy<BrowserControlsVisibilityManager> controlsVisibilityManager) {
+            Supplier<BrowserControlsVisibilityManager> controlsVisibilityManager) {
         super(BrowserControlsState.BOTH);
         mBrowserControlsVisibilityManager = controlsVisibilityManager;
         getDefaultVisibilityDelegate().addObserver((constraints) -> updateVisibilityConstraints());

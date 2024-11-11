@@ -9,7 +9,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.cc.input.BrowserControlsState;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
@@ -61,16 +60,13 @@ public class TrustedWebActivityBrowserControlsVisibilityManager {
 
     @Inject
     public TrustedWebActivityBrowserControlsVisibilityManager(
-            BaseCustomTabActivity activity,
-            CustomTabToolbarCoordinator toolbarCoordinator,
-            CloseButtonVisibilityManager closeButtonVisibilityManager,
-            BrowserServicesIntentDataProvider intentDataProvider) {
+            BaseCustomTabActivity activity, CustomTabToolbarCoordinator toolbarCoordinator) {
         mTabObserverRegistrar = activity.getTabObserverRegistrar();
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mToolbarCoordinator = toolbarCoordinator;
-        mCloseButtonVisibilityManager = closeButtonVisibilityManager;
+        mCloseButtonVisibilityManager = activity.getCloseButtonVisibilityManager();
 
-        WebappExtras webappExtras = intentDataProvider.getWebappExtras();
+        WebappExtras webappExtras = activity.getIntentDataProvider().getWebappExtras();
         mShowBrowserControlsForChildTab = (webappExtras != null);
         mShowBrowserControlsInAppMode =
                 (webappExtras != null && webappExtras.displayMode == DisplayMode.MINIMAL_UI);

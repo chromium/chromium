@@ -94,11 +94,9 @@ public class WebApkInitializationTest {
                     .setOverride(
                             ChromeActivityCommonsModule.Factory.class,
                             (activity,
-                                    bottomSheetControllerSupplier,
                                     tabModelSelectorSupplier,
                                     browserControlsManager,
                                     browserControlsVisibilityManager,
-                                    browserControlsSizer,
                                     fullscreenManager,
                                     layoutManagerSupplier,
                                     lifecycleDispatcher,
@@ -117,7 +115,6 @@ public class WebApkInitializationTest {
                                     legacyTabStartupMetricsTrackerSupplier,
                                     startupMetricsTrackerSupplier,
                                     compositorViewHolderInitializer,
-                                    chromeActivityNativeDelegate,
                                     modalDialogManagerSupplier,
                                     browserControlsStateProvider,
                                     savedInstanceStateSupplier,
@@ -128,11 +125,9 @@ public class WebApkInitializationTest {
                                 mTrackingActivityLifecycleDispatcher.init(lifecycleDispatcher);
                                 return new ChromeActivityCommonsModule(
                                         activity,
-                                        bottomSheetControllerSupplier,
                                         tabModelSelectorSupplier,
                                         browserControlsManager,
                                         browserControlsVisibilityManager,
-                                        browserControlsSizer,
                                         fullscreenManager,
                                         layoutManagerSupplier,
                                         mTrackingActivityLifecycleDispatcher,
@@ -151,7 +146,6 @@ public class WebApkInitializationTest {
                                         legacyTabStartupMetricsTrackerSupplier,
                                         startupMetricsTrackerSupplier,
                                         compositorViewHolderInitializer,
-                                        chromeActivityNativeDelegate,
                                         modalDialogManagerSupplier,
                                         browserControlsStateProvider,
                                         savedInstanceStateSupplier,
@@ -185,11 +179,11 @@ public class WebApkInitializationTest {
                                 "/chrome/test/data/banners/manifest_test_page.html"));
         mActivityRule.startWebApkActivity(intentDataProviderBuilder.build());
 
+        WebappActivity activity = mActivityRule.getActivity();
+        assertTrue(activity.getWebappActionsNotificationManagerForTesting() != null);
+
         Set<String> registeredObserverClassNames =
                 mTrackingActivityLifecycleDispatcher.getRegisteredObserverClassNames();
-        assertTrue(
-                registeredObserverClassNames.contains(
-                        WebappActionsNotificationManager.class.getName()));
         assertTrue(
                 registeredObserverClassNames.contains(WebappDisclosureController.class.getName()));
         assertTrue(

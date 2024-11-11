@@ -43,7 +43,6 @@ public class WebappActivityCoordinator
             BrowserServicesIntentDataProvider intentDataProvider,
             WebappSplashController unused_splashController,
             WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
-            WebappActionsNotificationManager unused_actionsNotificationManager,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         // We don't need to do anything with the _unused params. We just need to resolve it so that
         // it starts working.

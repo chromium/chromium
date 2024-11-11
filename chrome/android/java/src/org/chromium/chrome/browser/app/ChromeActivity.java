@@ -580,9 +580,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 overridenCommonsFactory == null
                         ? new ChromeActivityCommonsModule(
                                 this,
-                                mRootUiCoordinator::getBottomSheetController,
                                 getTabModelSelectorSupplier(),
-                                getBrowserControlsManager(),
                                 getBrowserControlsManager(),
                                 getBrowserControlsManager(),
                                 getFullscreenManager(),
@@ -603,7 +601,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                                 this::getLegacyTabStartupMetricsTracker,
                                 this::getStartupMetricsTracker,
                                 /* compositorViewHolderInitializer= */ this,
-                                /* chromeActivityNativeDelegate= */ this,
                                 getModalDialogManagerSupplier(),
                                 getBrowserControlsManager(),
                                 this::getSavedInstanceState,
@@ -613,9 +610,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                                 getActivityType())
                         : overridenCommonsFactory.create(
                                 this,
-                                mRootUiCoordinator::getBottomSheetController,
                                 getTabModelSelectorSupplier(),
-                                getBrowserControlsManager(),
                                 getBrowserControlsManager(),
                                 getBrowserControlsManager(),
                                 getFullscreenManager(),
@@ -636,7 +631,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                                 this::getLegacyTabStartupMetricsTracker,
                                 this::getStartupMetricsTracker,
                                 /* CompositorViewHolder.Initializer */ this,
-                                /* ChromeActivityNativeDelegate */ this,
                                 getModalDialogManagerSupplier(),
                                 getBrowserControlsManager(),
                                 this::getSavedInstanceState,

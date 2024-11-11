@@ -17,8 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
-import dagger.Lazy;
-
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -69,7 +67,7 @@ public class CustomTabToolbarCoordinator {
     private final CustomTabActivityTabProvider mTabProvider;
     private final Activity mActivity;
     private final ActivityWindowAndroid mWindowAndroid;
-    private final Lazy<BrowserControlsVisibilityManager> mBrowserControlsVisibilityManager;
+    private final Supplier<BrowserControlsVisibilityManager> mBrowserControlsVisibilityManager;
     private final CustomTabActivityNavigationController mNavigationController;
     private final CloseButtonVisibilityManager mCloseButtonVisibilityManager;
     private final CustomTabBrowserControlsVisibilityDelegate mVisibilityDelegate;
@@ -88,20 +86,17 @@ public class CustomTabToolbarCoordinator {
             BrowserServicesIntentDataProvider intentDataProvider,
             BaseCustomTabActivity activity,
             ActivityWindowAndroid windowAndroid,
-            Lazy<BrowserControlsVisibilityManager> controlsVisiblityManager,
             CustomTabActivityNavigationController navigationController,
-            CloseButtonVisibilityManager closeButtonVisibilityManager,
-            CustomTabBrowserControlsVisibilityDelegate visibilityDelegate,
             CustomTabCompositorContentInitializer compositorContentInitializer,
             CustomTabToolbarColorController toolbarColorController) {
         mIntentDataProvider = intentDataProvider;
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mActivity = activity;
         mWindowAndroid = windowAndroid;
-        mBrowserControlsVisibilityManager = controlsVisiblityManager;
+        mBrowserControlsVisibilityManager = activity::getBrowserControlsManager;
         mNavigationController = navigationController;
-        mCloseButtonVisibilityManager = closeButtonVisibilityManager;
-        mVisibilityDelegate = visibilityDelegate;
+        mCloseButtonVisibilityManager = activity.getCloseButtonVisibilityManager();
+        mVisibilityDelegate = activity.getCustomTabBrowserControlsVisibilityDelegate();
         mToolbarColorController = toolbarColorController;
 
         compositorContentInitializer.addCallback(this::onCompositorContentInitialized);
