@@ -877,9 +877,12 @@ export class AppElement extends AppElementBase {
     // automatically enabled because we want the newly downloaded language to be
     // available in the voice menu. Thus we only want to mark it installed if
     // it's newly installed, otherwise we may enable a language that was
-    // previously installed but disabled.
-    if (this.getVoicePackServerStatus_(lang)?.code ===
-        newVoicePackStatus.code) {
+    // previously installed but disabled. If the status is not installed, then
+    // we do want to update again, in case we want to request an install now.
+    if ((newVoicePackStatus.code !==
+         VoicePackServerStatusSuccessCode.NOT_INSTALLED) &&
+        (this.getVoicePackServerStatus_(lang)?.code ===
+         newVoicePackStatus.code)) {
       return;
     }
 
