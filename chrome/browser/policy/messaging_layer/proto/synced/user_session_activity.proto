@@ -7,6 +7,7 @@ syntax = "proto2";
 option optimize_for = LITE_RUNTIME;
 
 import "components/reporting/proto/synced/session_affiliated_user.proto";
+// ${COPYBARA_DATAPOL_IMPORT}
 
 package reporting;
 
@@ -24,6 +25,7 @@ message SessionStartEvent {
 
   // Time that the session ended.
   // Represents UTC time since Unix epoch 1970-01-01T00:00:00Z in microseconds.
+  // ${COPYBARA_DATAPOL_ST_SENSITIVE_TIMESTAMP}
   optional int64 timestamp_micro = 2;
 }
 
@@ -41,6 +43,7 @@ message SessionEndEvent {
 
   // Time that the session ended.
   // Represents UTC time since Unix epoch 1970-01-01T00:00:00Z in microseconds.
+  // ${COPYBARA_DATAPOL_ST_SENSITIVE_TIMESTAMP}
   optional int64 timestamp_micro = 2;
 }
 
@@ -57,6 +60,7 @@ message ActiveIdleState {
 
   // Time that the state was recorded.
   // Represents UTC time since Unix epoch 1970-01-01T00:00:00Z in microseconds
+  // ${COPYBARA_DATAPOL_ST_SENSITIVE_TIMESTAMP}
   optional int64 timestamp_micro = 1;
 }
 
