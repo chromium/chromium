@@ -2905,11 +2905,6 @@
       status: "stable",
     },
     {
-      // crbug.com/376097115
-      name: "NoCollapseSpaceBeforeRuby",
-      status: "stable",
-    },
-    {
       name: "NoIdleEncodingForWebTests",
       status: "test",
     },
