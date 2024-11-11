@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_service.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_sync_bridge.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,6 +22,15 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace ash::floating_sso {
+
+namespace {
+
+network::mojom::CookieManager* GetCookieManager(Profile* profile) {
+  return profile->GetDefaultStoragePartition()
+      ->GetCookieManagerForBrowserProcess();
+}
+
+}  // namespace
 
 // static
 FloatingSsoService* FloatingSsoServiceFactory::GetForProfile(Profile* profile) {
@@ -55,9 +65,9 @@ FloatingSsoServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   PrefService* prefs = profile->GetPrefs();
-  network::mojom::CookieManager* cookie_manager =
-      profile->GetDefaultStoragePartition()
-          ->GetCookieManagerForBrowserProcess();
+  // Callback will be used from the KeyedService, so profile will outlive it.
+  auto cookie_manager_callback =
+      base::BindRepeating(&GetCookieManager, profile);
   return std::make_unique<FloatingSsoService>(
       prefs,
       std::make_unique<FloatingSsoSyncBridge>(
@@ -67,7 +77,7 @@ FloatingSsoServiceFactory::BuildServiceInstanceForBrowserContext(
                                   chrome::GetChannel())),
           DataTypeStoreServiceFactory::GetForProfile(profile)
               ->GetStoreFactory()),
-      cookie_manager);
+      cookie_manager_callback);
 }
 
 bool FloatingSsoServiceFactory::ServiceIsCreatedWithBrowserContext() const {

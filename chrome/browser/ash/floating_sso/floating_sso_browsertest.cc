@@ -867,6 +867,10 @@ class FloatingSsoWithMockedBridgeTest : public FloatingSsoTest {
         context, base::BindOnce([](content::BrowserContext* context)
                                     -> std::unique_ptr<KeyedService> {
           Profile* profile = Profile::FromBrowserContext(context);
+          auto cookie_manager_getter = base::BindLambdaForTesting([profile]() {
+            return profile->GetDefaultStoragePartition()
+                ->GetCookieManagerForBrowserProcess();
+          });
           return std::make_unique<FloatingSsoService>(
               profile->GetPrefs(),
               std::make_unique<testing::NiceMock<MockFloatingSsoSyncBridge>>(
@@ -874,8 +878,7 @@ class FloatingSsoWithMockedBridgeTest : public FloatingSsoTest {
                       syncer::COOKIES, base::DoNothing()),
                   DataTypeStoreServiceFactory::GetForProfile(profile)
                       ->GetStoreFactory()),
-              profile->GetDefaultStoragePartition()
-                  ->GetCookieManagerForBrowserProcess());
+              cookie_manager_getter);
         }));
   }
 

@@ -33,9 +33,13 @@ class FloatingSsoService : public KeyedService,
                            public network::mojom::CookieChangeListener,
                            public FloatingSsoSyncBridge::Observer {
  public:
+  // Callback used to get a CookieManager.
+  using CookieManagerGetter =
+      base::RepeatingCallback<network::mojom::CookieManager*()>;
+
   FloatingSsoService(PrefService* prefs,
                      std::unique_ptr<FloatingSsoSyncBridge> bridge,
-                     network::mojom::CookieManager* cookie_manager);
+                     CookieManagerGetter cookie_manager_getter);
   FloatingSsoService(const FloatingSsoService&) = delete;
   FloatingSsoService& operator=(const FloatingSsoService&) = delete;
 
@@ -87,7 +91,9 @@ class FloatingSsoService : public KeyedService,
   void DecrementChangesCountAndMaybeNotify();
 
   raw_ptr<PrefService> prefs_ = nullptr;
-  const raw_ptr<network::mojom::CookieManager> cookie_manager_;
+  // TODO(crbug.com/378091718): investigated lifetime issues when using
+  // raw_ptr<network::mojom::CookieManager> instead of a callback here.
+  CookieManagerGetter cookie_manager_getter_;
   std::unique_ptr<FloatingSsoSyncBridge> bridge_;
   base::ScopedObservation<FloatingSsoSyncBridge,
                           FloatingSsoSyncBridge::Observer>

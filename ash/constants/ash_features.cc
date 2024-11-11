@@ -1095,7 +1095,7 @@ BASE_FEATURE(kFlexFirmwareUpdate,
 // enterprise devices. The feature is also guarded by an enterprise policy. This
 // flag controls if we are allowed to launch the service observing the policy
 // and if we show the user selectable UI when the policy is enabled.
-BASE_FEATURE(kFloatingSso, "FloatingSso", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFloatingSso, "FloatingSso", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Floating Workspace feature on ChromeOS
 BASE_FEATURE(kFloatingWorkspace,

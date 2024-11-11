@@ -46,9 +46,9 @@ bool IsGoogleCookie(const net::CanonicalCookie& cookie) {
 FloatingSsoService::FloatingSsoService(
     PrefService* prefs,
     std::unique_ptr<FloatingSsoSyncBridge> bridge,
-    network::mojom::CookieManager* cookie_manager)
+    CookieManagerGetter cookie_manager_getter)
     : prefs_(prefs),
-      cookie_manager_(cookie_manager),
+      cookie_manager_getter_(cookie_manager_getter),
       bridge_(std::move(bridge)),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
   pref_change_registrar_->Init(prefs_);
@@ -164,10 +164,6 @@ void FloatingSsoService::RunWhenCookiesAreReady(base::OnceClosure callback) {
 }
 
 void FloatingSsoService::MaybeStartListening() {
-  if (!cookie_manager_) {
-    return;
-  }
-
   if (!receiver_.is_bound()) {
     BindToCookieManager();
   }
@@ -183,13 +179,16 @@ void FloatingSsoService::StopListening() {
 }
 
 void FloatingSsoService::BindToCookieManager() {
-  cookie_manager_->AddGlobalChangeListener(
-      receiver_.BindNewPipeAndPassRemote());
+  network::mojom::CookieManager* cookie_manager = cookie_manager_getter_.Run();
+  if (!cookie_manager) {
+    return;
+  }
+  cookie_manager->AddGlobalChangeListener(receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(
       &FloatingSsoService::OnConnectionError, base::Unretained(this)));
 
   if (fetch_accumulated_cookies_) {
-    cookie_manager_->GetAllCookies(base::BindOnce(
+    cookie_manager->GetAllCookies(base::BindOnce(
         &FloatingSsoService::OnCookiesLoaded, base::Unretained(this)));
   }
 }
@@ -244,6 +243,7 @@ void FloatingSsoService::OnCookieChange(const net::CookieChangeInfo& change) {
 
 void FloatingSsoService::OnCookiesAddedOrUpdatedRemotely(
     const std::vector<net::CanonicalCookie>& cookies) {
+  network::mojom::CookieManager* cookie_manager = cookie_manager_getter_.Run();
   net::CookieOptions options;
   // Allow to alter http_only and SameSite cookies since we are restoring this
   // cookie from another Chrome session.
@@ -260,7 +260,7 @@ void FloatingSsoService::OnCookiesAddedOrUpdatedRemotely(
       --changes_in_progress_count_;
       continue;
     }
-    cookie_manager_->SetCanonicalCookie(
+    cookie_manager->SetCanonicalCookie(
         cookie, net::cookie_util::SimulatedCookieSource(cookie, "https"),
         options,
         base::BindOnce(&FloatingSsoService::OnCookieSet,
@@ -270,6 +270,7 @@ void FloatingSsoService::OnCookiesAddedOrUpdatedRemotely(
 
 void FloatingSsoService::OnCookiesRemovedRemotely(
     const std::vector<net::CanonicalCookie>& cookies) {
+  network::mojom::CookieManager* cookie_manager = cookie_manager_getter_.Run();
   changes_in_progress_count_ += cookies.size();
   for (const net::CanonicalCookie& cookie : cookies) {
     // Sync server might contain changes for cookies which should no longer be
@@ -280,7 +281,7 @@ void FloatingSsoService::OnCookiesRemovedRemotely(
       continue;
     }
 
-    cookie_manager_->DeleteCanonicalCookie(
+    cookie_manager->DeleteCanonicalCookie(
         cookie, base::BindOnce(&FloatingSsoService::OnCookieDeleted,
                                base::Unretained(this)));
   }
