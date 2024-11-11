@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview.test;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.test.InstrumentationRegistry;
@@ -28,6 +29,7 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedTitleHelper;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -948,6 +950,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView", "NavigationListener"})
     @CommandLineFlags.Add({"enable-features=EnableNavigationListener"})
+    @DisableIf.Build(
+            sdk_equals = Build.VERSION_CODES.P,
+            message = "https://crbug.com/378479369")
     public void testNavigationHistoryNavigationToEvictedPageBFCacheEnabled() throws Throwable {
         mAwContents.getSettings().setBackForwardCacheEnabled(true);
         // Navigation #1: Set up the listener and navigate to `url`. This will create a new page and
