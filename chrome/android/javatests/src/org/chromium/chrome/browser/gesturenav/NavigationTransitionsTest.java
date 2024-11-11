@@ -35,6 +35,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.ViewportTestUtils;
@@ -637,12 +638,11 @@ public class NavigationTransitionsTest {
         ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivity().getActivityTab(), url1);
     }
 
-    /**
-     * Test that it doesn't crash when the edge is somehow changed in the mid of swipe gesture.
-     */
+    /** Test that it doesn't crash when the edge is somehow changed in the mid of swipe gesture. */
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @DisabledTest(message = "crbug.com/377320122")
     public void testNoCrashWhenGestureEdgeIsChangedUnexpectedly() throws TimeoutException {
         if (mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON) {
             return;
