@@ -79,6 +79,8 @@ chromium-metrics-reviews@google.com.
   <variant name="HelpMeWrite" summary="the module for Help Me Write"/>
   <variant name="HistoryEmbeddings"
       summary="the module for History Embeddings Search"/>
+  <variant name="LensOverlayTranslateButton"
+      summary="the module for Lens Overlay Full Page Translate"/>
   <variant name="Passkeys" summary="the module for Passkeys"/>
   <variant name="PdfSearchify"
       summary="the module for making PDFs interactable"/>

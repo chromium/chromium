@@ -46537,6 +46537,8 @@ should be able to be added at any place in this file.
   <suffix name="Googlepayreauth" label="Google Pay Re-auth"/>
   <suffix name="HelpMeWrite" label="Help Me Write"/>
   <suffix name="HistoryEmbeddings" label="History Embeddings Search"/>
+  <suffix name="LensOverlayTranslateButton"
+      label="Lens Overlay Translate Button"/>
   <suffix name="Passkeys" label="Passkeys"/>
   <suffix name="PdfSearchify" label="PDF Searchify"/>
   <suffix name="PerformanceInterventionUI" label="Performance Intervention"/>

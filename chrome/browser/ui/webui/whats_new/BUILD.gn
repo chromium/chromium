@@ -36,6 +36,7 @@ source_set("whats_new") {
       "//chrome/browser:browser_process",
       "//chrome/browser/ui/webui/whats_new:mojo_bindings",
       "//chrome/common:constants",
+      "//components/lens:features",
       "//components/prefs",
       "//components/user_education/webui",
       "//content/public/browser",
