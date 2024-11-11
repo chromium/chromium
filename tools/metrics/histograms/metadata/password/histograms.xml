@@ -2161,6 +2161,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PasswordManager.ManualFallback.AcceptedSuggestion.FromRootPopup"
+    enum="BooleanRootPopupSuggestionAccepted" expires_after="2025-08-21">
+  <owner>brunobraga@google.com</owner>
+  <owner>tchudakov@google.com</owner>
+  <summary>
+    Desktop only. Emitted on every accepted suggestion from a manually triggered
+    password autofill popup. The two buckets allow to see whether the user
+    accepted a suggestion from the root popup or from the subpopup.
+  </summary>
+</histogram>
+
+<histogram
     name="PasswordManager.ManualFallback.AcceptedSuggestion.SearchInputUsed"
     enum="BooleanSearchInputIsNotEmpty" expires_after="2025-08-21">
   <owner>vykochko@google.com</owner>

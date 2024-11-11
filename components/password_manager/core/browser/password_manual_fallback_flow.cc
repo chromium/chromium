@@ -246,6 +246,9 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
   base::UmaHistogramBoolean(
       "PasswordManager.ManualFallback.AcceptedSuggestion.SearchInputUsed",
       metadata.from_search_result);
+  base::UmaHistogramBoolean(
+      "PasswordManager.ManualFallback.AcceptedSuggestion.FromRootPopup",
+      metadata.sub_popup_level == 0);
 
   switch (suggestion.type) {
     case autofill::SuggestionType::kPasswordEntry: {
@@ -368,8 +371,6 @@ void PasswordManualFallbackFlow::RunFlowImpl(
 
 void PasswordManualFallbackFlow::MaybeAuthenticateBeforeFilling(
     base::OnceClosure fill_fields) {
-  // TODO(b/324241248): Conditionally trigger consent dialog and fill
-  // password.
   CancelBiometricReauthIfOngoing();
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
       password_client_->GetDeviceAuthenticator();

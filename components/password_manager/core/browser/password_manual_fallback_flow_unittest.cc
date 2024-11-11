@@ -1233,15 +1233,19 @@ TEST_F(PasswordManualFallbackFlowTest, ShowPasswordDetails) {
 // filling password or not.
 // The third parameter determines whether the suggestion is taken from a search
 // result list.
+// The forth parameter determines whether the suggestion was accepted/selected
+// from the root popup or from a subpopup.
 class PasswordManualFallbackFlowFillAfterSuggestionMetricsTest
     : public PasswordManualFallbackFlowTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
  public:
   // If true, the test will simulate both showing and accepting a suggestion. If
   // false, the test will simulate only showing the suggestion.
   bool SuggestionAccepted() const { return std::get<0>(GetParam()); }
 
   bool SuggestionFromSearchResult() const { return std::get<2>(GetParam()); }
+
+  bool SuggestionAcceptedOnRootPopup() const { return std::get<3>(GetParam()); }
 
   bool IsClassifiedAsTargetFillingPassword() const {
     return std::get<1>(GetParam());
@@ -1393,20 +1397,28 @@ TEST_P(PasswordManualFallbackFlowFillAfterSuggestionMetricsTest,
       SuggestionType::kPasswordFieldByFieldFilling, u"password");
   if (SuggestionAccepted()) {
     ShowAndAcceptSuggestion(
-        suggestion, AutofillSuggestionDelegate::SuggestionMetadata{
-                        .row = 0,
-                        .sub_popup_level = 0,
-                        .from_search_result = SuggestionFromSearchResult()});
+        suggestion,
+        AutofillSuggestionDelegate::SuggestionMetadata{
+            .row = 0,
+            // Any `sub_popup_level` that is larger than 0 means a subpopup.
+            .sub_popup_level = SuggestionAcceptedOnRootPopup() ? 0 : 1,
+            .from_search_result = SuggestionFromSearchResult()});
     histograms.ExpectUniqueSample("Autofill.Suggestions.AcceptedType",
                                   SuggestionType::kPasswordFieldByFieldFilling,
                                   1);
     histograms.ExpectUniqueSample(
         "PasswordManager.ManualFallback.AcceptedSuggestion.SearchInputUsed",
         SuggestionFromSearchResult(), 1);
+    histograms.ExpectUniqueSample(
+        "PasswordManager.ManualFallback.AcceptedSuggestion.FromRootPopup",
+        SuggestionAcceptedOnRootPopup(), 1);
   } else {
     flow().OnSuggestionsShown(base::span_from_ref(suggestion));
+    // Root popup acceptance metrics are only logged when suggestions are
+    // accepted.
+    histograms.ExpectTotalCount(
+        "PasswordManager.ManualFallback.AcceptedSuggestion.FromRootPopup", 0);
   }
-
   // The metric of the metrics recorder is recorded only in the destructor.
   histograms.ExpectTotalCount(MetricName(), 0);
   ResetFlowAndMetricsRecorder();
@@ -1416,13 +1428,17 @@ TEST_P(PasswordManualFallbackFlowFillAfterSuggestionMetricsTest,
 INSTANTIATE_TEST_SUITE_P(
     PasswordManualFallbackFlowTest,
     PasswordManualFallbackFlowFillAfterSuggestionMetricsTest,
-    ::testing::Combine(testing::Bool(), testing::Bool(), testing::Bool()),
-    [](const testing::TestParamInfo<std::tuple<bool, bool, bool>>& info) {
+    ::testing::Combine(testing::Bool(),
+                       testing::Bool(),
+                       testing::Bool(),
+                       testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool, bool, bool>>& info) {
       return base::StrCat(
           {std::get<0>(info.param) ? "SuggestionAccepted" : "SuggestionShown",
            std::get<1>(info.param) ? "_ClassifiedAsTargetFilling"
                                    : "_NotClassifiedAsTargetFilling",
-           std::get<2>(info.param) ? "_WithSearchInput" : "_NoSearchInput"});
+           std::get<2>(info.param) ? "_WithSearchInput" : "_NoSearchInput",
+           std::get<3>(info.param) ? "_FromRootPopup" : "_FromRootpopup"});
     });
 
 }  // namespace
