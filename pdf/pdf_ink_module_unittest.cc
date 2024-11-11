@@ -25,6 +25,7 @@
 #include "pdf/pdf_ink_conversions.h"
 #include "pdf/pdf_ink_module_client.h"
 #include "pdf/pdf_ink_transform.h"
+#include "pdf/pdfium/pdfium_ink_reader.h"
 #include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -221,6 +222,11 @@ class FakeClient : public PdfInkModuleClient {
   void StrokeFinished() override { ++stroke_finished_count_; }
 
   MOCK_METHOD(void, UpdateInkCursorImage, (SkBitmap bitmap), (override));
+
+  MOCK_METHOD(void,
+              UpdateShapeActive,
+              (int page_index, InkModeledShapeId id, bool active),
+              (override));
 
   MOCK_METHOD(void,
               UpdateStrokeActive,
@@ -1730,6 +1736,85 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoOnTwoPages) {
               ElementsAre(kPage0Matcher, kPage1Matcher));
   EXPECT_THAT(VisibleStrokeInputPositions(),
               ElementsAre(kPage0Matcher, kPage1Matcher));
+}
+
+TEST_F(PdfInkModuleUndoRedoTest, UndoRedoEraseLoadedV2Shapes) {
+  constexpr int kPageIndex = 0;
+  constexpr InkModeledShapeId kShapeId0(0);
+  constexpr InkModeledShapeId kShapeId1(1);
+
+  const auto ink_points = base::ToVector(
+      kMousePoints,
+      [](const gfx::PointF& point) { return InkPointFromGfxPoint(point); });
+  std::optional<ink::Mesh> mesh0 =
+      CreateInkMeshFromPolylineForTesting(ink_points);
+  ASSERT_TRUE(mesh0.has_value());
+  auto shape0 =
+      ink::ModeledShape::FromMeshes(base::span_from_ref(mesh0.value()));
+  ASSERT_TRUE(shape0.ok());
+
+  constexpr ink::Point kCornerPoints[] = {
+      {49, 59},
+      {48, 59},
+      {48, 58},
+  };
+  std::optional<ink::Mesh> mesh1 =
+      CreateInkMeshFromPolylineForTesting(kCornerPoints);
+  ASSERT_TRUE(mesh1.has_value());
+  auto shape1 =
+      ink::ModeledShape::FromMeshes(base::span_from_ref(mesh1.value()));
+  ASSERT_TRUE(shape1.ok());
+
+  EXPECT_CALL(client(), LoadV2InkPathsFromPdf())
+      .WillOnce(Return(PdfInkModuleClient::DocumentV2InkPathShapesMap{
+          {kPageIndex, PdfInkModuleClient::PageV2InkPathShapesMap{
+                           {kShapeId0, *shape0},
+                           {kShapeId1, *shape1},
+                       }}}));
+  ExpectNoStrokeAdded();
+  ExpectNoUpdateStrokeActive();
+  EXPECT_CALL(client(), UpdateShapeActive(_, _, _)).Times(0);
+
+  InitializeSimpleSinglePageBasicLayout();
+  EnableAnnotationMode();
+  ASSERT_TRUE(ink_module().enabled());
+
+  // Stroke with the eraser tool in the corner opposite from `kCornerPoints`,
+  // which does nothing.
+  SelectEraserToolOfSize(3.0f);
+  ApplyStrokeWithMouseAtPoints(
+      gfx::PointF(), base::span_from_ref(gfx::PointF()), gfx::PointF());
+  VerifyAndClearExpectations();
+
+  // Stroke twice where `shape0` is, and that should deactivate only that shape
+  // and only once.
+  ExpectNoStrokeAdded();
+  ExpectNoUpdateStrokeActive();
+  EXPECT_CALL(client(),
+              UpdateShapeActive(kPageIndex, kShapeId0, /*active=*/false));
+  EXPECT_CALL(client(), UpdateShapeActive(_, kShapeId1, _)).Times(0);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint, base::span_from_ref(kMouseMovePoint), kMouseUpPoint);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint, base::span_from_ref(kMouseMovePoint), kMouseUpPoint);
+  VerifyAndClearExpectations();
+
+  // Undo should reactivate `shape0`.
+  ExpectNoStrokeAdded();
+  ExpectNoUpdateStrokeActive();
+  EXPECT_CALL(client(),
+              UpdateShapeActive(kPageIndex, kShapeId0, /*active=*/true));
+  EXPECT_CALL(client(), UpdateShapeActive(_, kShapeId1, _)).Times(0);
+  PerformUndo();
+  VerifyAndClearExpectations();
+
+  // Redo should deactivate `shape0`.
+  ExpectNoStrokeAdded();
+  ExpectNoUpdateStrokeActive();
+  EXPECT_CALL(client(),
+              UpdateShapeActive(kPageIndex, kShapeId0, /*active=*/false));
+  EXPECT_CALL(client(), UpdateShapeActive(_, kShapeId1, _)).Times(0);
+  PerformRedo();
 }
 
 using PdfInkModuleGetVisibleStrokesTest = PdfInkModuleStrokeTest;
