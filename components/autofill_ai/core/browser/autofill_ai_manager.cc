@@ -163,7 +163,8 @@ bool AutofillAiManager::IsPredictionImprovementsEligible(
     const autofill::FormStructure& form,
     const autofill::AutofillField& field) const {
   return IsFormAndFieldEligible(form, field) &&
-         ShouldProvidePredictionImprovements(form.main_frame_origin().GetURL());
+         client_->IsAutofillAiEnabledPref() && IsUserEligible() &&
+         IsURLEligibleForAutofillAi(form.main_frame_origin().GetURL());
 }
 
 bool AutofillAiManager::IsUserEligible() const {
@@ -388,8 +389,7 @@ void AutofillAiManager::UserClickedLearnMore() {
   client_->OpenPredictionImprovementsSettings();
 }
 
-bool AutofillAiManager::IsURLEligibleForPredictionImprovements(
-    const GURL& url) const {
+bool AutofillAiManager::IsURLEligibleForAutofillAi(const GURL& url) const {
   if (!decider_) {
     return false;
   }
@@ -408,12 +408,6 @@ bool AutofillAiManager::IsURLEligibleForPredictionImprovements(
           optimization_guide::proto::AUTOFILL_PREDICTION_IMPROVEMENTS_ALLOWLIST,
           /*optimization_metadata=*/nullptr);
   return decision == optimization_guide::OptimizationGuideDecision::kTrue;
-}
-
-bool AutofillAiManager::ShouldProvidePredictionImprovements(
-    const GURL& url) const {
-  return client_->IsAutofillAiEnabledPref() && IsUserEligible() &&
-         IsURLEligibleForPredictionImprovements(url);
 }
 
 void AutofillAiManager::OnClickedTriggerSuggestion(
@@ -680,8 +674,7 @@ bool AutofillAiManager::ShouldDisplayIph(
   // 3. The current domain can trigger the feature.
   return !client_->IsAutofillAiEnabledPref() && IsUserEligible() &&
          IsFormAndFieldEligible(form, field) &&
-         IsURLEligibleForPredictionImprovements(
-             form.main_frame_origin().GetURL());
+         IsURLEligibleForAutofillAi(form.main_frame_origin().GetURL());
 }
 
 void AutofillAiManager::GoToSettings() const {

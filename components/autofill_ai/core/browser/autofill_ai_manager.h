@@ -73,7 +73,6 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
       const autofill::FormStructure& form,
       const autofill::AutofillField& field) const override;
   bool IsUserEligible() const override;
-  bool ShouldProvidePredictionImprovements(const GURL& url) const override;
   void UserFeedbackReceived(UserFeedback feedback) override;
   void UserClickedLearnMore() override;
   void OnClickedTriggerSuggestion(
@@ -178,9 +177,9 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   // Returns true if the user has the flag enabled and is overall eligible for
   // the feature, such as signin state (check the implementation for details).
   // It also checks whether the `url` is eligible. Note that differently from
-  // `ShouldProvidePredictionImprovements()` this method does not check whether
-  // the pref is enabled.
-  bool IsURLEligibleForPredictionImprovements(const GURL& url) const;
+  // `IsPredictionImprovementsEligible()` this method does not check whether the
+  // pref is enabled.
+  bool IsURLEligibleForAutofillAi(const GURL& url) const;
 
   // Returns values to fill based on the `cache_`.
   base::flat_map<autofill::FieldGlobalId, std::u16string> GetValuesToFill();

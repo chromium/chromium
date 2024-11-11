@@ -780,13 +780,13 @@ IN_PROC_BROWSER_TEST_F(UnclassifiedFieldsTest,
 }
 
 // Tests if the prediction improvements entry is not added based on
-// `ShouldProvidePredictionImprovements()` returning `false`.
+// `IsPredictionImprovementsEligible()` returning `false`.
 class AutofillAiDisabledTest : public BaseAutofillContextMenuManagerTest {
  public:
   void SetUpOnMainThread() override {
     BaseAutofillContextMenuManagerTest::SetUpOnMainThread();
     ON_CALL(*autofill_client()->GetAutofillAiDelegate(),
-            ShouldProvidePredictionImprovements)
+            IsPredictionImprovementsEligible)
         .WillByDefault(::testing::Return(false));
   }
 };
@@ -804,13 +804,13 @@ IN_PROC_BROWSER_TEST_F(AutofillAiDisabledTest,
 }
 
 // Tests if the prediction improvements entry is added based on
-// `ShouldProvidePredictionImprovements()` returning `true`.
+// `IsPredictionImprovementsEligible()` returning `true`.
 class AutofillAiEnabledTest : public BaseAutofillContextMenuManagerTest {
  public:
   void SetUpOnMainThread() override {
     BaseAutofillContextMenuManagerTest::SetUpOnMainThread();
     ON_CALL(*autofill_client()->GetAutofillAiDelegate(),
-            ShouldProvidePredictionImprovements)
+            IsPredictionImprovementsEligible)
         .WillByDefault(::testing::Return(true));
   }
 };

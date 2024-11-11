@@ -34,26 +34,22 @@ class AutofillAiDelegate {
 
   virtual ~AutofillAiDelegate() = default;
 
-  // Returns Autofill prediction improvements suggestions combined with
-  // `autofill_suggestions`. May return an empty vector.
+  // Returns Autofill AI suggestions combined with `autofill_suggestions`. May
+  // return an empty vector.
   virtual std::vector<Suggestion> GetSuggestions(
       const std::vector<Suggestion>& autofill_suggestions,
       const FormData& form,
       const FormFieldData& field) = 0;
 
-  // Returns whether `form` and `field` are eligible for the improved prediction
+  // Returns whether `form` and `field` are eligible for the Autofill AI
   // experience.
   virtual bool IsPredictionImprovementsEligible(
       const FormStructure& form,
       const AutofillField& field) const = 0;
 
-  // Returns whether the current user is eligible for the improved prediction
+  // Returns whether the current user is eligible for the Autofill AI
   // experience.
   virtual bool IsUserEligible() const = 0;
-
-  // Returns `true` if the corresponding feature is enabled and optimization can
-  // be applied.
-  virtual bool ShouldProvidePredictionImprovements(const GURL& url) const = 0;
 
   // Called when a feedback about the feature is given by the user.
   virtual void UserFeedbackReceived(UserFeedback feedback) = 0;
@@ -69,17 +65,17 @@ class AutofillAiDelegate {
       const FormFieldData& trigger_field,
       UpdateSuggestionsCallback update_suggestions_callback) = 0;
 
-  // Displays an import bubble for `form` if Autofill Prediction Improvements is
-  // interested in the form and then calls `autofill_callback`.
+  // Displays an import bubble for `form` if Autofill AI is interested in the
+  // form and then calls `autofill_callback`.
   //
   // CAUTION: `autofill_callback` *must* be called, independent of whether
-  // Autofill Prediction Improvements is interested in the form or not.
+  // Autofill AI is interested in the form or not.
   //
   // The purpose of `autofill_callback` is to allow Autofill to import the form
-  // on its own and/or send votes, for example. If Autofill Prediction
-  // Improvements has imported the form, `autofill_ai_shows_bubble` is set to
-  // true; this is to avoid conflicting import bubbles. The call happens
-  // synchronously or asynchronously.
+  // on its own and/or send votes, for example. If Autofill AI has imported the
+  // form, `autofill_ai_shows_bubble` is set to true; this is to avoid
+  // conflicting import bubbles. The call happens synchronously or
+  // asynchronously.
   virtual void MaybeImportForm(
       std::unique_ptr<FormStructure> form_structure,
       base::OnceCallback<void(std::unique_ptr<FormStructure> form,
@@ -90,13 +86,13 @@ class AutofillAiDelegate {
   // can be used for filling and runs the `callback` accordingly.
   virtual void HasDataStored(HasDataCallback callback) = 0;
 
-  // Returns whether we should suggest to the user enabling the prediction
-  // improvements pref in chrome://settings.
+  // Returns whether we should suggest to the user enabling the Autofill AI pref
+  // in chrome://settings.
   virtual bool ShouldDisplayIph(const FormStructure& form,
                                 const AutofillField& field) const = 0;
 
   // Opens the subpage of chrome settings that deals with managing information
-  // stored by the prediction improvements system.
+  // stored by the Autofill AI system.
   virtual void GoToSettings() const = 0;
 
   // Event handler called when suggestions are shown.
@@ -110,8 +106,8 @@ class AutofillAiDelegate {
 
   virtual void OnDidFillSuggestion(FormGlobalId form_id) = 0;
 
-  // Called when the user manually edits a field that was filled using
-  // prediction improvements.
+  // Called when the user manually edits a field that was filled using Autofill
+  // AI.
   virtual void OnEditedAutofilledField(FormGlobalId form_id) = 0;
 };
 
