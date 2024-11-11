@@ -38,14 +38,6 @@
 
 namespace features {
 
-// Don't preconnect on weak signal to save power.
-BASE_FEATURE(kNoPreconnectToSearchOnWeakSignal,
-             "NoPreconnectToSearchOnWeakSignal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kNoNavigationPreconnectOnWeakSignal,
-             "NoNavigationPreconnectOnWeakSignal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, suppresses LoadingPredictor (https://crbug.com/350519234)
 BASE_FEATURE(kSuppressesLoadingPredictorOnSlowNetwork,
              "SuppressesLoadingPredictorOnSlowNetwork",
@@ -89,26 +81,6 @@ bool AddInitialUrlToPreconnectPrediction(const GURL& initial_url,
   }
 
   return !prediction->requests.empty();
-}
-
-bool IsPreconnectExpensive() {
-#if BUILDFLAG(IS_ANDROID)
-  // Preconnecting is expensive while on battery power and cellular data and
-  // the radio signal is weak.
-  if (auto* power_monitor = base::PowerMonitor::GetInstance();
-      (power_monitor->IsInitialized() && !power_monitor->IsOnBatteryPower()) ||
-      (base::android::RadioUtils::GetConnectionType() !=
-       base::android::RadioConnectionType::kCell)) {
-    return false;
-  }
-
-  std::optional<base::android::RadioSignalLevel> maybe_level =
-      base::android::RadioUtils::GetCellSignalLevel();
-  return maybe_level.has_value() &&
-         *maybe_level <= base::android::RadioSignalLevel::kModerate;
-#else
-  return false;
-#endif
 }
 
 void MaybeWarmUpServiceWorker(const GURL& url, Profile* profile) {
@@ -414,12 +386,6 @@ void LoadingPredictor::MaybeAddPreconnect(const GURL& url,
     prefetch_manager()->Start(url, std::move(prediction.prefetch_requests));
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kNoNavigationPreconnectOnWeakSignal) &&
-      IsPreconnectExpensive()) {
-    return;
-  }
-
   if (!prediction.requests.empty())
     preconnect_manager()->Start(url, std::move(prediction.requests));
 }
@@ -536,12 +502,6 @@ void LoadingPredictor::PreconnectURLIfAllowed(
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
   if (!url.is_valid() || !url.has_host() || !IsPreconnectAllowed(profile_))
     return;
-
-  if (base::FeatureList::IsEnabled(
-          features::kNoPreconnectToSearchOnWeakSignal) &&
-      IsPreconnectExpensive()) {
-    return;
-  }
 
   preconnect_manager()->StartPreconnectUrl(
       url, allow_credentials, network_anonymization_key, traffic_annotation);
