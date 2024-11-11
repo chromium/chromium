@@ -387,23 +387,15 @@ class AIAssistantTest : public AITestUtils::AITestBase {
     AITestUtils::MockModelStreamingResponder mock_responder;
 
     base::RunLoop responder_run_loop;
-    // This is run twice because the response is returned together with
-    // `is_complete` set to true.
-    EXPECT_CALL(mock_responder, OnResponse(_, _, _))
-        .WillOnce([&](blink::mojom::ModelStreamingResponseStatus status,
-                      const std::optional<std::string>& text,
-                      std::optional<uint64_t> current_tokens) {
+    EXPECT_CALL(mock_responder, OnStreaming(_))
+        .WillOnce(testing::Invoke([&](const std::string& text) {
           EXPECT_THAT(text, kTestResponse);
-          EXPECT_EQ(status,
-                    blink::mojom::ModelStreamingResponseStatus::kOngoing);
-        })
-        .WillOnce([&](blink::mojom::ModelStreamingResponseStatus status,
-                      const std::optional<std::string>& text,
-                      std::optional<uint64_t> current_tokens) {
-          EXPECT_EQ(status,
-                    blink::mojom::ModelStreamingResponseStatus::kComplete);
+        }));
+
+    EXPECT_CALL(mock_responder, OnCompletion(_))
+        .WillOnce(testing::Invoke([&](std::optional<uint64_t> current_tokens) {
           responder_run_loop.Quit();
-        });
+        }));
 
     mock_session->Prompt(prompt, mock_responder.BindNewPipeAndPassRemote());
     responder_run_loop.Run();

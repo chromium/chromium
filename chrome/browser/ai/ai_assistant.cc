@@ -243,8 +243,7 @@ void AIAssistant::AddPromptHistoryAndSendCompletion(
     item.prompts = history_request.prompt_history();
     context_->AddContextItem(std::move(item));
   }
-  responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kComplete,
-                        std::nullopt, context_->current_tokens());
+  responder->OnCompletion(context_->current_tokens());
 }
 
 void AIAssistant::ModelExecutionCallback(
@@ -258,17 +257,15 @@ void AIAssistant::ModelExecutionCallback(
   }
 
   if (!result.response.has_value()) {
-    responder->OnResponse(
-        AIUtils::ConvertModelExecutionError(result.response.error().error()),
-        /*text=*/std::nullopt, /*current_tokens=*/std::nullopt);
+    responder->OnError(
+        AIUtils::ConvertModelExecutionError(result.response.error().error()));
     return;
   }
 
   auto response = optimization_guide::ParsedAnyMetadata<
       optimization_guide::proto::StringValue>(result.response->response);
   if (response->has_value()) {
-    responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kOngoing,
-                          response->value(), /*current_tokens=*/std::nullopt);
+    responder->OnStreaming(response->value());
   }
   if (result.response->is_complete) {
     // TODO(crbug.com/351935390): instead of calculating this from the
@@ -292,9 +289,8 @@ void AIAssistant::Prompt(
   if (!session_) {
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
         std::move(pending_responder));
-    responder->OnResponse(
-        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed,
-        /*text=*/std::nullopt, /*current_tokens=*/std::nullopt);
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
     return;
   }
 
@@ -343,9 +339,8 @@ void AIAssistant::Destroy() {
   }
 
   for (auto& responder : responder_set_) {
-    responder->OnResponse(
-        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed,
-        /*text=*/std::nullopt, /*current_tokens=*/std::nullopt);
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
   }
 
   responder_set_.Clear();

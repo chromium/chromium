@@ -37,17 +37,18 @@ class MockStreamingResponder : public blink::mojom::ModelStreamingResponder {
   MockStreamingResponder(const MockStreamingResponder&) = delete;
   MockStreamingResponder& operator=(const MockStreamingResponder&) = delete;
 
-  void OnResponse(blink::mojom::ModelStreamingResponseStatus status,
-                  const std::optional<std::string>& text,
-                  const std::optional<uint64_t> current_tokens) override {
-    status_ = status;
+  void OnStreaming(const std::string& text) override {
+    status_ = blink::mojom::ModelStreamingResponseStatus::kOngoing;
+    result_ += text;
+  }
 
-    if (text.has_value()) {
-      result_ += text.value();
-    }
-    if (status_ != blink::mojom::ModelStreamingResponseStatus::kOngoing) {
-      run_loop_.Quit();
-    }
+  void OnError(blink::mojom::ModelStreamingResponseStatus status) override {
+    status_ = status;
+    run_loop_.Quit();
+  }
+  void OnCompletion(const std::optional<uint64_t> current_tokens) override {
+    status_ = blink::mojom::ModelStreamingResponseStatus::kComplete;
+    run_loop_.Quit();
   }
 
   mojo::PendingRemote<blink::mojom::ModelStreamingResponder>

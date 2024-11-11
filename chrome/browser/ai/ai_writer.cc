@@ -23,9 +23,8 @@ AIWriter::AIWriter(
 
 AIWriter::~AIWriter() {
   for (auto& responder : responder_set_) {
-    responder->OnResponse(
-        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed,
-        /*text=*/std::nullopt, /*current_tokens=*/std::nullopt);
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
   }
 }
 
@@ -69,23 +68,18 @@ void AIWriter::ModelExecutionCallback(
     return;
   }
   if (!result.response.has_value()) {
-    responder->OnResponse(
-        AIUtils::ConvertModelExecutionError(result.response.error().error()),
-        /*text=*/std::nullopt, /*current_tokens=*/std::nullopt);
+    responder->OnError(
+        AIUtils::ConvertModelExecutionError(result.response.error().error()));
     return;
   }
 
   auto compose_response = optimization_guide::ParsedAnyMetadata<
       optimization_guide::proto::ComposeResponse>(result.response->response);
   if (compose_response) {
-    responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kOngoing,
-                          compose_response->output(),
-                          /*current_tokens=*/std::nullopt);
+    responder->OnStreaming(compose_response->output());
   }
   if (result.response->is_complete) {
-    responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kComplete,
-                          /*text=*/std::nullopt,
-                          /*current_tokens=*/std::nullopt);
+    responder->OnCompletion(/*current_tokens=*/std::nullopt);
     responder_set_.Remove(responder_id);
   }
 }

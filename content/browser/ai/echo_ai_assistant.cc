@@ -34,10 +34,8 @@ void EchoAIAssistant::DoMockExecution(const std::string& input,
   // To make EchoAIAssistant simple, we will use the string length as the size
   // in tokens.
   current_tokens_ += response.size();
-  responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kOngoing,
-                        response, /*current_tokens=*/std::nullopt);
-  responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kComplete,
-                        /*text=*/std::nullopt, current_tokens_);
+  responder->OnStreaming(response);
+  responder->OnCompletion(current_tokens_);
 }
 
 void EchoAIAssistant::Prompt(
@@ -47,9 +45,8 @@ void EchoAIAssistant::Prompt(
   if (is_destroyed_) {
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
         std::move(pending_responder));
-    responder->OnResponse(
-        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed,
-        /*text=*/std::nullopt, /*current_tokens=*/std::nullopt);
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
     return;
   }
 
@@ -85,9 +82,8 @@ void EchoAIAssistant::Destroy() {
   is_destroyed_ = true;
 
   for (auto& responder : responder_set_) {
-    responder->OnResponse(
-        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed,
-        /*text=*/std::nullopt, /*current_tokens=*/std::nullopt);
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
   }
   responder_set_.Clear();
 }

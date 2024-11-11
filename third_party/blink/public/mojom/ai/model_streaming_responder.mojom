@@ -48,12 +48,14 @@ enum ModelStreamingResponseStatus {
 // The responder provides methods for the session to return the execution
 // response in a streaming manner.
 interface ModelStreamingResponder {
-  // This is called when there is a new chunk of data available for
-  // streaming, or when the response is fully streamed, or when there are
-  // some errors.
-  // When `status` is `kComplete`, the `current_tokens` field might be set to
-  // the latest number of existing tokens, and the renderer should update the
-  // information accordingly. Otherwise, the `current_tokens` will be null.
-  OnResponse(
-    ModelStreamingResponseStatus status, string? text, uint64? current_tokens);
+  // Called when the model execution encounters errors.
+  OnError(ModelStreamingResponseStatus status);
+  // Called when there is a new chunk of data available for streaming.
+  // The data will be stored in `text`.
+  OnStreaming(string text);
+  // Called when the model execution completes. It optionally returns the
+  // current number of tokens.
+  // It will only be set when necessary, for example, in the `AIAssistant`
+  // interface as it maintains the context of the past model execution.
+  OnCompletion(uint64? current_tokens);
 };

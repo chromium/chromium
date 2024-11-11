@@ -192,23 +192,14 @@ void AIRewriterTest::RunSimpleRewriteTest(
   AITestUtils::MockModelStreamingResponder mock_responder;
 
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_responder, OnResponse(_, _, _))
-      .WillOnce(
-          testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus status,
-                              const std::optional<std::string>& text,
-                              std::optional<uint64_t> current_tokens) {
-            EXPECT_THAT(text, "Result text");
-            EXPECT_EQ(status,
-                      blink::mojom::ModelStreamingResponseStatus::kOngoing);
-          }))
-      .WillOnce(
-          testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus status,
-                              const std::optional<std::string>& text,
-                              std::optional<uint64_t> current_tokens) {
-            EXPECT_EQ(status,
-                      blink::mojom::ModelStreamingResponseStatus::kComplete);
-            run_loop.Quit();
-          }));
+
+  EXPECT_CALL(mock_responder, OnStreaming(_))
+      .WillOnce(testing::Invoke(
+          [&](const std::string& text) { EXPECT_THAT(text, "Result text"); }));
+
+  EXPECT_CALL(mock_responder, OnCompletion(_))
+      .WillOnce(testing::Invoke(
+          [&](std::optional<uint64_t> current_tokens) { run_loop.Quit(); }));
 
   rewriter_remote->Rewrite(kInputString, kContextString,
                            mock_responder.BindNewPipeAndPassRemote());
@@ -607,11 +598,9 @@ TEST_F(AIRewriterTest, RewriteError) {
   AITestUtils::MockModelStreamingResponder mock_responder;
 
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_responder, OnResponse(_, _, _))
+  EXPECT_CALL(mock_responder, OnError(_))
       .WillOnce(testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus
-                                        status,
-                                    const std::optional<std::string>& text,
-                                    std::optional<uint64_t> current_tokens) {
+                                        status) {
         EXPECT_EQ(
             status,
             blink::mojom::ModelStreamingResponseStatus::kErrorPermissionDenied);
@@ -681,31 +670,15 @@ TEST_F(AIRewriterTest, RewriteMultipleResponse) {
   AITestUtils::MockModelStreamingResponder mock_responder;
 
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_responder, OnResponse(_, _, _))
-      .WillOnce(
-          testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus status,
-                              const std::optional<std::string>& text,
-                              std::optional<uint64_t> current_tokens) {
-            EXPECT_THAT(text, "Result ");
-            EXPECT_EQ(status,
-                      blink::mojom::ModelStreamingResponseStatus::kOngoing);
-          }))
-      .WillOnce(
-          testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus status,
-                              const std::optional<std::string>& text,
-                              std::optional<uint64_t> current_tokens) {
-            EXPECT_THAT(text, "text");
-            EXPECT_EQ(status,
-                      blink::mojom::ModelStreamingResponseStatus::kOngoing);
-          }))
-      .WillOnce(
-          testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus status,
-                              const std::optional<std::string>& text,
-                              std::optional<uint64_t> current_tokens) {
-            EXPECT_EQ(status,
-                      blink::mojom::ModelStreamingResponseStatus::kComplete);
-            run_loop.Quit();
-          }));
+  EXPECT_CALL(mock_responder, OnStreaming(_))
+      .WillOnce(testing::Invoke(
+          [&](const std::string& text) { EXPECT_THAT(text, "Result "); }))
+      .WillOnce(testing::Invoke(
+          [&](const std::string& text) { EXPECT_THAT(text, "text"); }));
+
+  EXPECT_CALL(mock_responder, OnCompletion(_))
+      .WillOnce(testing::Invoke(
+          [&](std::optional<uint64_t> current_tokens) { run_loop.Quit(); }));
 
   rewriter_remote->Rewrite(kInputString, kContextString,
                            mock_responder.BindNewPipeAndPassRemote());
@@ -782,23 +755,15 @@ TEST_F(AIRewriterTest, MultipleRewrite) {
   {
     AITestUtils::MockModelStreamingResponder mock_responder;
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_responder, OnResponse(_, _, _))
+
+    EXPECT_CALL(mock_responder, OnStreaming(_))
+        .WillOnce(testing::Invoke([&](const std::string& text) {
+          EXPECT_THAT(text, "Result text");
+        }));
+
+    EXPECT_CALL(mock_responder, OnCompletion(_))
         .WillOnce(testing::Invoke(
-            [&](blink::mojom::ModelStreamingResponseStatus status,
-                const std::optional<std::string>& text,
-                std::optional<uint64_t> current_tokens) {
-              EXPECT_THAT(text, "Result text");
-              EXPECT_EQ(status,
-                        blink::mojom::ModelStreamingResponseStatus::kOngoing);
-            }))
-        .WillOnce(testing::Invoke(
-            [&](blink::mojom::ModelStreamingResponseStatus status,
-                const std::optional<std::string>& text,
-                std::optional<uint64_t> current_tokens) {
-              EXPECT_EQ(status,
-                        blink::mojom::ModelStreamingResponseStatus::kComplete);
-              run_loop.Quit();
-            }));
+            [&](std::optional<uint64_t> current_tokens) { run_loop.Quit(); }));
 
     rewriter_remote->Rewrite(kInputString, kContextString,
                              mock_responder.BindNewPipeAndPassRemote());
@@ -807,23 +772,15 @@ TEST_F(AIRewriterTest, MultipleRewrite) {
   {
     AITestUtils::MockModelStreamingResponder mock_responder;
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_responder, OnResponse(_, _, _))
+
+    EXPECT_CALL(mock_responder, OnStreaming(_))
+        .WillOnce(testing::Invoke([&](const std::string& text) {
+          EXPECT_THAT(text, "Result text 2");
+        }));
+
+    EXPECT_CALL(mock_responder, OnCompletion(_))
         .WillOnce(testing::Invoke(
-            [&](blink::mojom::ModelStreamingResponseStatus status,
-                const std::optional<std::string>& text,
-                std::optional<uint64_t> current_tokens) {
-              EXPECT_THAT(text, "Result text 2");
-              EXPECT_EQ(status,
-                        blink::mojom::ModelStreamingResponseStatus::kOngoing);
-            }))
-        .WillOnce(testing::Invoke(
-            [&](blink::mojom::ModelStreamingResponseStatus status,
-                const std::optional<std::string>& text,
-                std::optional<uint64_t> current_tokens) {
-              EXPECT_EQ(status,
-                        blink::mojom::ModelStreamingResponseStatus::kComplete);
-              run_loop.Quit();
-            }));
+            [&](std::optional<uint64_t> current_tokens) { run_loop.Quit(); }));
 
     rewriter_remote->Rewrite("input string 2", "test context 2",
                              mock_responder.BindNewPipeAndPassRemote());
@@ -962,12 +919,9 @@ TEST_F(AIRewriterTest, RewriterDisconnected) {
 
   AITestUtils::MockModelStreamingResponder mock_responder;
   base::RunLoop run_loop_for_response;
-  EXPECT_CALL(mock_responder, OnResponse(_, _, _))
+  EXPECT_CALL(mock_responder, OnError(_))
       .WillOnce(testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus
-                                        status,
-                                    const std::optional<std::string>& text,
-                                    std::optional<uint64_t> current_tokens) {
-        // The OnResponse must be called with kErrorSessionDestroyed.
+                                        status) {
         EXPECT_EQ(
             status,
             blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);

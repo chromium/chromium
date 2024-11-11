@@ -79,10 +79,8 @@ TEST(CreateModelExecutionResponder, Simple) {
   mojo::Remote<blink::mojom::blink::ModelStreamingResponder> responder(
       std::move(pending_remote));
   responder.set_disconnect_handler(runloop.QuitClosure());
-  responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kOngoing,
-                        "result", std::nullopt);
-  responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kComplete,
-                        String(), kTestTokenNumber);
+  responder->OnStreaming("result");
+  responder->OnCompletion(kTestTokenNumber);
   // Check that the promise will be resolved with the "result" string.
   ScriptPromiseTester tester(scope.GetScriptState(), promise);
   tester.WaitUntilSettled();
@@ -114,9 +112,8 @@ TEST(CreateModelExecutionResponder, ErrorPermissionDenied) {
       std::move(pending_remote));
   base::RunLoop runloop;
   responder.set_disconnect_handler(runloop.QuitClosure());
-  responder->OnResponse(
-      blink::mojom::ModelStreamingResponseStatus::kErrorPermissionDenied,
-      String(), std::nullopt);
+  responder->OnError(
+      blink::mojom::ModelStreamingResponseStatus::kErrorPermissionDenied);
 
   // Check that the promise will be rejected with an ErrorInvalidRequest.
   ScriptPromiseTester tester(scope.GetScriptState(), promise);
@@ -185,10 +182,8 @@ TEST(CreateModelExecutionResponder, AbortAfterResponse) {
       std::move(pending_remote));
   base::RunLoop runloop;
   responder.set_disconnect_handler(runloop.QuitClosure());
-  responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kOngoing,
-                        "result", std::nullopt);
-  responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kComplete,
-                        String(), 1u);
+  responder->OnStreaming("result");
+  responder->OnCompletion(/*current_tokens=*/1u);
 
   controller->abort(scope.GetScriptState());
 
@@ -220,10 +215,8 @@ TEST(CreateModelExecutionStreamingResponder, Simple) {
       std::move(pending_remote));
   base::RunLoop runloop;
   responder.set_disconnect_handler(runloop.QuitClosure());
-  responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kOngoing,
-                        "result", std::nullopt);
-  responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kComplete,
-                        String(), 1u);
+  responder->OnStreaming("result");
+  responder->OnCompletion(/*current_tokens=*/1u);
 
   // Check that we can read the stream.
   auto* reader =
@@ -255,9 +248,8 @@ TEST(CreateModelExecutionStreamingResponder, ErrorPermissionDenied) {
       std::move(pending_remote));
   base::RunLoop runloop;
   responder.set_disconnect_handler(runloop.QuitClosure());
-  responder->OnResponse(
-      blink::mojom::ModelStreamingResponseStatus::kErrorPermissionDenied,
-      String(), std::nullopt);
+  responder->OnError(
+      blink::mojom::ModelStreamingResponseStatus::kErrorPermissionDenied);
 
   // Check that the NotAllowedError is passed to the stream.
   auto* reader =
@@ -328,10 +320,8 @@ TEST(CreateModelExecutionStreamingResponder, AbortAfterResponse) {
       std::move(pending_remote));
   base::RunLoop runloop;
   responder.set_disconnect_handler(runloop.QuitClosure());
-  responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kOngoing,
-                        "result", std::nullopt);
-  responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kComplete,
-                        String(), 1u);
+  responder->OnStreaming("result");
+  responder->OnCompletion(/*current_tokens=*/1u);
 
   // Check that the AbortError is passed to the stream.
   auto* reader =

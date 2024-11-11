@@ -62,9 +62,8 @@ AISummarizer::AISummarizer(
 
 AISummarizer::~AISummarizer() {
   for (auto& responder : responder_set_) {
-    responder->OnResponse(
-        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed,
-        std::nullopt, std::nullopt);
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
   }
 }
 
@@ -83,21 +82,18 @@ void AISummarizer::ModelExecutionCallback(
   }
 
   if (!result.response.has_value()) {
-    responder->OnResponse(
-        AIUtils::ConvertModelExecutionError(result.response.error().error()),
-        std::nullopt, std::nullopt);
+    responder->OnError(
+        AIUtils::ConvertModelExecutionError(result.response.error().error()));
     return;
   }
 
   auto response = optimization_guide::ParsedAnyMetadata<
       optimization_guide::proto::StringValue>(result.response->response);
   if (response->has_value()) {
-    responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kOngoing,
-                          response->value(), std::nullopt);
+    responder->OnStreaming(response->value());
   }
   if (result.response->is_complete) {
-    responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kComplete,
-                          std::nullopt, std::nullopt);
+    responder->OnCompletion(/*current_tokens=*/std::nullopt);
   }
 }
 
@@ -109,9 +105,8 @@ void AISummarizer::Summarize(
   if (!summarize_session_) {
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
         std::move(pending_responder));
-    responder->OnResponse(
-        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed,
-        std::nullopt, std::nullopt);
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
     return;
   }
 
