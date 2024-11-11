@@ -56,24 +56,12 @@ class WTF_EXPORT AtomicString {
 
   AtomicString() = default;
   explicit AtomicString(const LChar* chars)
-      : AtomicString(chars,
-                     chars ? strlen(reinterpret_cast<const char*>(chars)) : 0) {
-  }
-
-#if defined(ARCH_CPU_64_BITS)
-  // Only define a size_t constructor if size_t is 64 bit otherwise
-  // we'd have a duplicate define.
-  AtomicString(const LChar* chars, size_t length);
-#endif  // defined(ARCH_CPU_64_BITS)
+      : AtomicString(base::span<const LChar>{
+            chars, chars ? strlen(reinterpret_cast<const char*>(chars)) : 0}) {}
 
   explicit AtomicString(const char* chars)
       : AtomicString(reinterpret_cast<const LChar*>(chars)) {}
-  AtomicString(const LChar* chars, unsigned length);
   explicit AtomicString(base::span<const LChar> chars);
-  AtomicString(
-      const UChar* chars,
-      unsigned length,
-      AtomicStringUCharEncoding encoding = AtomicStringUCharEncoding::kUnknown);
   explicit AtomicString(
       base::span<const UChar> chars,
       AtomicStringUCharEncoding encoding = AtomicStringUCharEncoding::kUnknown);
