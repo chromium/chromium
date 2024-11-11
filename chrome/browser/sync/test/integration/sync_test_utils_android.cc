@@ -123,16 +123,34 @@ void ShutdownLiveAuthForTesting() {
   run_loop.Run();
 }
 
-tab_groups::LocalTabGroupID CreateGroupFromTab(
-    TabAndroid* tab,
-    std::string_view title,
-    tab_groups::TabGroupColorId color) {
+tab_groups::LocalTabGroupID CreateGroupFromTab(TabAndroid* tab) {
+  CHECK(tab);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto j_group_id = Java_SyncTestTabGroupHelpers_createGroupFromTab(
+      env, tab->GetJavaObject());
+  return base::android::TokenAndroid::FromJavaToken(env, j_group_id);
+}
+
+std::optional<tab_groups::LocalTabGroupID> GetGroupIdForTab(TabAndroid* tab) {
+  CHECK(tab);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto j_group_id =
+      Java_SyncTestTabGroupHelpers_getGroupIdForTab(env, tab->GetJavaObject());
+  if (j_group_id.is_null()) {
+    return std::nullopt;
+  }
+  return base::android::TokenAndroid::FromJavaToken(env, j_group_id);
+}
+
+void UpdateTabGroupVisualData(TabAndroid* tab,
+                              const std::string_view& title,
+                              tab_groups::TabGroupColorId color) {
+  CHECK(tab);
   JNIEnv* env = base::android::AttachCurrentThread();
   auto j_title = base::android::ConvertUTF8ToJavaString(env, title);
   jint j_color = static_cast<jint>(color);
-  auto j_group_id = Java_SyncTestTabGroupHelpers_createGroupFromTab(
-      env, tab->GetJavaObject(), j_title, j_color);
-  return base::android::TokenAndroid::FromJavaToken(env, j_group_id);
+  Java_SyncTestTabGroupHelpers_updateGroupVisualData(env, tab->GetJavaObject(),
+                                                     j_title, j_color);
 }
 
 void JNI_SyncTestSigninUtils_OnShutdownComplete(JNIEnv* env,

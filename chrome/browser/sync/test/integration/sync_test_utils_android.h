@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_TEST_UTILS_ANDROID_H_
 #define CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_TEST_UTILS_ANDROID_H_
 
+#include <optional>
 #include <string>
 
 #include "chrome/browser/android/tab_android.h"
@@ -60,12 +61,17 @@ void SetUpLiveAccountAndSignInAndEnableSyncForTesting(
 // Should be called from PostRunTestOnMainThread() method of the test fixture.
 void ShutdownLiveAuthForTesting();
 
-// Creates a new tab group with the given `tab` and visual data. Returns the
-// local tab group ID of the created tab.
-tab_groups::LocalTabGroupID CreateGroupFromTab(
-    TabAndroid* tab,
-    std::string_view title,
-    tab_groups::TabGroupColorId color);
+// Creates a new tab group with the given `tab`. Returns the local tab group ID
+// of the created tab.
+tab_groups::LocalTabGroupID CreateGroupFromTab(TabAndroid* tab);
+
+// Returns the local tab group ID for the `tab` if it's in any group.
+std::optional<tab_groups::LocalTabGroupID> GetGroupIdForTab(TabAndroid* tab);
+
+// Update title and color of the tab group (represented by its `tab`).
+void UpdateTabGroupVisualData(TabAndroid* tab,
+                              const std::string_view& title,
+                              tab_groups::TabGroupColorId color);
 
 }  // namespace sync_test_utils_android
 

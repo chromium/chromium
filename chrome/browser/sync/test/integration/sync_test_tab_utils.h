@@ -29,6 +29,14 @@ tab_groups::LocalTabGroupID CreateGroupFromTab(
     std::string_view title,
     tab_groups::TabGroupColorId color);
 
+// Returns true if the tab group is open in the tab strip model.
+bool IsTabGroupOpen(const tab_groups::LocalTabGroupID& local_group_id);
+
+// Updates title and color for the given group (must be open in the tab strip).
+void UpdateTabGroupVisualData(const tab_groups::LocalTabGroupID& local_group_id,
+                              const std::string_view& title,
+                              tab_groups::TabGroupColorId color);
+
 }  // namespace sync_test_tab_utils
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_TEST_TAB_UTILS_H_

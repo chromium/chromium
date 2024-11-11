@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
@@ -39,6 +40,19 @@ TabModel* GetActiveTabModel() {
     }
   }
   NOTREACHED_NORETURN() << "No active tab model";
+}
+
+TabAndroid* GetFirstTabAtGroup(
+    const tab_groups::LocalTabGroupID& local_group_id) {
+  TabModel* active_model = GetActiveTabModel();
+  for (int i = 0; i < active_model->GetTabCount(); ++i) {
+    TabAndroid* tab = active_model->GetTabAt(i);
+    CHECK(tab);
+    if (sync_test_utils_android::GetGroupIdForTab(tab) == local_group_id) {
+      return tab;
+    }
+  }
+  return nullptr;
 }
 
 #else  // BUILDFLAG(IS_ANDROID)
@@ -76,21 +90,43 @@ tab_groups::LocalTabGroupID CreateGroupFromTab(
     size_t tab_index,
     std::string_view title,
     tab_groups::TabGroupColorId color) {
+  std::optional<tab_groups::LocalTabGroupID> local_group_id;
 #if BUILDFLAG(IS_ANDROID)
   TabAndroid* tab = GetActiveTabModel()->GetTabAt(tab_index);
   CHECK(tab);
-  return sync_test_utils_android::CreateGroupFromTab(tab, title, color);
+  local_group_id = sync_test_utils_android::CreateGroupFromTab(tab);
 #else
   TabStripModel* tab_strip = GetBrowserOrDie()->tab_strip_model();
-  tab_groups::LocalTabGroupID local_group_id =
-      tab_strip->AddToNewGroup({static_cast<int>(tab_index)});
+  local_group_id = tab_strip->AddToNewGroup({static_cast<int>(tab_index)});
+#endif  // BUILDFLAG(IS_ANDROID)
+  CHECK(local_group_id.has_value());
+  UpdateTabGroupVisualData(local_group_id.value(), title, color);
+  return local_group_id.value();
+}
+
+bool IsTabGroupOpen(const tab_groups::LocalTabGroupID& local_group_id) {
+#if BUILDFLAG(IS_ANDROID)
+  return GetFirstTabAtGroup(local_group_id) != nullptr;
+#else
+  TabStripModel* tab_strip = GetBrowserOrDie()->tab_strip_model();
+  return tab_strip->group_model()->ContainsTabGroup(local_group_id);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+void UpdateTabGroupVisualData(const tab_groups::LocalTabGroupID& local_group_id,
+                              const std::string_view& title,
+                              tab_groups::TabGroupColorId color) {
+#if BUILDFLAG(IS_ANDROID)
+  return sync_test_utils_android::UpdateTabGroupVisualData(
+      GetFirstTabAtGroup(local_group_id), title, color);
+#else
+  TabStripModel* tab_strip = GetBrowserOrDie()->tab_strip_model();
   TabGroup* model_tab_group =
       tab_strip->group_model()->GetTabGroup(local_group_id);
   CHECK(model_tab_group);
   model_tab_group->SetVisualData(
       tab_groups::TabGroupVisualData(base::UTF8ToUTF16(title), color),
       /*is_customized=*/true);
-  return local_group_id;
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

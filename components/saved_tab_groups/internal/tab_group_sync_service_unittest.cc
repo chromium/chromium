@@ -53,6 +53,7 @@ using testing::NotNull;
 using testing::Return;
 using testing::Sequence;
 using testing::SizeIs;
+using testing::WithArgs;
 
 namespace tab_groups {
 namespace {
@@ -574,6 +575,9 @@ TEST_F(TabGroupSyncServiceTest, AddTabToSharedGroup) {
   ASSERT_FALSE(group->saved_tabs()[0].is_pending_sanitization());
   tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_,
                                               "collaboration");
+
+  // The new group replaces the originating one asynchronously.
+  WaitForPostedTasks();
 
   std::optional<SavedTabGroup> shared_group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
@@ -1159,6 +1163,9 @@ TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {
 
 TEST_F(TabGroupSyncServiceTest, UpdateTabTitleForSharedTabGroup) {
   tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_, "colab");
+  // The new group replaces the originating one asynchronously.
+  WaitForPostedTasks();
+
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), SizeIs(1));
   auto tab =
       tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_tabs()[0];
@@ -1180,6 +1187,8 @@ TEST_F(TabGroupSyncServiceTest, TabPendingSanitizationAfterMakeTabGroupShared) {
   EXPECT_FALSE(tab.is_pending_sanitization());
 
   tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_, "colab");
+  // The new group replaces the originating one asynchronously.
+  WaitForPostedTasks();
   tab = tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_tabs()[0];
   EXPECT_TRUE(tab.is_pending_sanitization());
 }
@@ -1222,6 +1231,8 @@ TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {
       .InSequence(s);
   tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_,
                                               "collaboration");
+  // The new group replaces the originating one asynchronously.
+  WaitForPostedTasks();
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), SizeIs(1));
 
   // The originating group should remain mostly unchanged.
@@ -1444,6 +1455,8 @@ TEST_F(TabGroupSyncServiceTest, ShouldReturnSharedTabGroupOnly) {
 
   tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_,
                                               "collaboration");
+  // The new group replaces the originating one asynchronously.
+  WaitForPostedTasks();
 
   EXPECT_THAT(tab_group_sync_service_->GetAllGroups(), SizeIs(3));
   EXPECT_THAT(model_->saved_tab_groups(), SizeIs(4));

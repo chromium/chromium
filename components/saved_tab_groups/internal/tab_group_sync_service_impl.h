@@ -232,6 +232,12 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // retrieval.
   void StoreSharedTabGroupsAvailableAtStartupForMessaging();
 
+  // Transitions the originating saved tab group to the given shared tab group
+  // if the saved tab group is open in the tab strip. Returns true if the group
+  // was transitioned.
+  bool TransitionSavedToSharedTabGroupIfNeeded(
+      const SavedTabGroup& shared_group);
+
   // The in-memory model representing the currently present saved tab groups.
   std::unique_ptr<SavedTabGroupModel> model_;
 

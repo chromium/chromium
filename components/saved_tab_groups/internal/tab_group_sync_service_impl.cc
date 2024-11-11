@@ -492,22 +492,6 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
   // TODO(crbug.com/370745855): remove the originating saved tab group from the
   // model afterwards.
   model_->AddedLocally(std::move(shared_group));
-
-  // TODO(crbug.com/370745855): move the code below to HandleTabGroupAdded() to
-  // cover transition on remote devices.
-
-  // First, remove the local tab group mapping and then disconnect the local tab
-  // group. Note that on some platforms the coordinator may call
-  // RemoveLocalTabGroupMapping() but it should be a no-op.
-  RemoveLocalTabGroupMapping(local_group_id,
-                             ClosingSource::kDisconnectOnGroupShared);
-  coordinator_->DisconnectLocalTabGroup(local_group_id);
-
-  // Connect the shared tab group to the local group. The coordinator updates
-  // the local tab group mapping on all platforms, and updates the mapping for
-  // session restore.
-  ConnectLocalTabGroup(shared_group_id, local_group_id,
-                       OpeningSource::kConnectOnGroupShare);
 }
 
 void TabGroupSyncServiceImpl::MakeTabGroupSharedForTesting(
@@ -828,7 +812,11 @@ void TabGroupSyncServiceImpl::NotifyTabGroupAdded(const base::Uuid& guid,
     return;
   }
 
-  for (auto& observer : observers_) {
+  // Saved tab group should be transitions to shared before notifying observers
+  // because the new group may be opened automatically on some platforms.
+  TransitionSavedToSharedTabGroupIfNeeded(*saved_tab_group);
+
+  for (TabGroupSyncService::Observer& observer : observers_) {
     observer.OnTabGroupAdded(*saved_tab_group, source);
   }
 }
@@ -1097,6 +1085,42 @@ void TabGroupSyncServiceImpl::GetPageTitle(const GURL& url,
       url, optimization_guide::proto::PAGE_ENTITIES,
       base::BindOnce(&OnPageEntitiesResponseReceived, url,
                      std::move(callback)));
+}
+
+bool TabGroupSyncServiceImpl::TransitionSavedToSharedTabGroupIfNeeded(
+    const SavedTabGroup& shared_group) {
+  if (!shared_group.originating_saved_tab_group_guid().has_value()) {
+    return false;
+  }
+
+  const SavedTabGroup* originating_saved_group =
+      model_->Get(shared_group.originating_saved_tab_group_guid().value());
+  if (!originating_saved_group ||
+      !originating_saved_group->local_group_id().has_value()) {
+    // Originating group doesn't exist in the model or it's not open in the tab
+    // strip model. The group may not exist if it was deleted from the current
+    // device before the remote shared tab group was downloaded.
+    return false;
+  }
+
+  // Make a copy because both groups will be updated.
+  LocalTabGroupID local_group_id =
+      originating_saved_group->local_group_id().value();
+
+  // First, remove the local tab group mapping and then disconnect the local tab
+  // group. Note that on some platforms the coordinator may call
+  // RemoveLocalTabGroupMapping() but it should be a no-op.
+  RemoveLocalTabGroupMapping(local_group_id,
+                             ClosingSource::kDisconnectOnGroupShared);
+  coordinator_->DisconnectLocalTabGroup(local_group_id);
+
+  // Connect the shared tab group to the local group: update the local tab
+  // group mapping on all platforms, and update the mapping for session
+  // restore.
+  ConnectLocalTabGroup(shared_group.saved_guid(), local_group_id,
+                       OpeningSource::kConnectOnGroupShare);
+
+  return true;
 }
 
 }  // namespace tab_groups

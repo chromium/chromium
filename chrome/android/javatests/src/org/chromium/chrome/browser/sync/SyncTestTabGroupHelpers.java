@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.sync;
 
+import androidx.annotation.Nullable;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
@@ -19,14 +21,27 @@ final class SyncTestTabGroupHelpers {
 
     /** Creates a tab group with a single tab and given visual data. */
     @CalledByNative
-    private static Token createGroupFromTab(Tab tab, String title, @TabGroupColorId int color) {
+    private static Token createGroupFromTab(Tab tab) {
         TabGroupModelFilter tabGroupModelFilter = TabModelUtils.getTabGroupModelFilterByTab(tab);
         tabGroupModelFilter.createSingleTabGroup(tab, false);
 
-        int rootId = tabGroupModelFilter.getRootIdFromStableId(tab.getTabGroupId());
+        return tab.getTabGroupId();
+    }
+
+    /** Returns the local tab group ID if the `tab` is in a group. */
+    @CalledByNative
+    private static @Nullable Token getGroupIdForTab(Tab tab) {
+        return tab.getTabGroupId();
+    }
+
+    /** Updates title and color of the group of the given tab. */
+    @CalledByNative
+    private static void updateGroupVisualData(
+            Tab tabInGroup, String title, @TabGroupColorId int color) {
+        TabGroupModelFilter tabGroupModelFilter =
+                TabModelUtils.getTabGroupModelFilterByTab(tabInGroup);
+        int rootId = tabGroupModelFilter.getRootIdFromStableId(tabInGroup.getTabGroupId());
         tabGroupModelFilter.setTabGroupColor(rootId, color);
         tabGroupModelFilter.setTabGroupTitle(rootId, title);
-
-        return tab.getTabGroupId();
     }
 }
