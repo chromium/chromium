@@ -49,6 +49,18 @@ namespace controlled_frame {
 // RendererFrameHost or a RendererProcessHost. In the renderer process, it is
 // called and checks for a process wide isolation setting and whether the
 // isolation flag is enabled for the process.
+//
+// This can return false for several reasons:
+//  * The Isolated Web App or Controlled Frame Features are disabled.
+//  * The frame is not part of an Isolated Context (usually an Isolated Web
+//    App). Cross-origin child frames of an Isolated Context are *not* also
+//    Isolated Contexts.
+//  * The Isolated Web App the frame belongs to does not declare the
+//    "controlled-frame" Permissions Policy in the "permissions_policy"
+//    dictionary of its manifest.
+//  * The frame is a child frame that *is* an Isolated Context but was not
+//    delegated either the "cross-origin-isolated" or "controlled-frame"
+//    Permissions Policies.
 bool AvailabilityCheck(const std::string& api_full_name,
                        const extensions::Extension* extension,
                        extensions::mojom::ContextType context,
