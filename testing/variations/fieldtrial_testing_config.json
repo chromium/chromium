@@ -7716,37 +7716,6 @@
             ]
         }
     ],
-    "DesktopLinkCapturingPWAExperiment": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_DefaultOn",
-                    "params": {
-                        "link_capturing_guardrail_storage_duration": "60",
-                        "link_capturing_state": "on_by_default"
-                    },
-                    "enable_features": [
-                        "PwaNavigationCapturing"
-                    ]
-                },
-                {
-                    "name": "Enabled_DefaultOff",
-                    "params": {
-                        "link_capturing_guardrail_storage_duration": "60",
-                        "link_capturing_state": "off_by_default"
-                    },
-                    "enable_features": [
-                        "PwaNavigationCapturing"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopNtpDriveCache": [
         {
             "platforms": [
@@ -16172,6 +16141,35 @@
                     "name": "EnablePWAIconAndTitleInNativeNotificationsWin",
                     "enable_features": [
                         "AppSpecificNotifications"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PWANavigationCapturingV2WindowMacLinux": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledSettingOnByDefault20241105",
+                    "params": {
+                        "link_capturing_state": "reimpl_default_on"
+                    },
+                    "enable_features": [
+                        "PwaNavigationCapturing"
+                    ]
+                },
+                {
+                    "name": "EnabledSettingOffByDefault20241105",
+                    "params": {
+                        "link_capturing_state": "reimpl_default_off"
+                    },
+                    "enable_features": [
+                        "PwaNavigationCapturing"
                     ]
                 }
             ]

@@ -25,6 +25,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
@@ -427,6 +428,11 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, DISABLED_OpenLinkInNewTab) {
 #define MAYBE_CtrlClickLink CtrlClickLink
 #endif
 IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, MAYBE_CtrlClickLink) {
+  if (apps::features::IsNavigationCapturingReimplEnabled() &&
+      GetParam() == AppType::WEB_APP) {
+    GTEST_SKIP() << "Ctrl-click tests for web apps are thoroughly handled in "
+                    "WebAppLinkCapturingParameterizedBrowserTest";
+  }
   WaitUntilBrowserBecomeActiveOrLastActive(browser());
   ExpectBrowserBecomesActiveOrLastActive(browser());
 
