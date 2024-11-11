@@ -267,11 +267,12 @@ TEST_P(AlphaVideoEncoderWrapperTest, EncodeAndDecode) {
         buffer->set_timestamp(output.timestamp);
         buffer->set_is_key_frame(output.key_frame);
         EXPECT_FALSE(output.alpha_data.empty());
-        std::vector<uint8_t>& buf_alpha = buffer->WritableSideData().alpha_data;
         // Side data id for alpha. Big endian one.
-        buf_alpha.assign({0, 0, 0, 0, 0, 0, 0, 1});
+        std::vector<uint8_t> buf_alpha = {0, 0, 0, 0, 0, 0, 0, 1};
         buf_alpha.insert(buf_alpha.end(), output.alpha_data.begin(),
                          output.alpha_data.end());
+        buffer->WritableSideData().alpha_data =
+            base::HeapArray<uint8_t>::CopiedFrom(buf_alpha);
         decoder_->Decode(std::move(buffer), base::DoNothing());
       });
 

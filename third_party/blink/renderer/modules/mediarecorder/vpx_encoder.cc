@@ -237,9 +237,9 @@ void VpxEncoder::DoEncode(vpx_codec_ctx_t* const encoder,
       // If is_alpha is true, it needs *output_data to already be a valid
       // scoped_refptr.
       CHECK(*output_data);
-      (*output_data)
-          ->WritableSideData()
-          .alpha_data.assign(alpha_data, alpha_data + pkt->data.frame.sz);
+      (*output_data)->WritableSideData().alpha_data =
+          base::HeapArray<uint8_t>::CopiedFrom(
+              base::span<const uint8_t>(alpha_data, pkt->data.frame.sz));
     } else {
       *output_data = media::DecoderBuffer::CopyFrom(
           {reinterpret_cast<const uint8_t*>(pkt->data.frame.buf),

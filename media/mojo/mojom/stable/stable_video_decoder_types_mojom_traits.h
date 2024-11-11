@@ -496,7 +496,7 @@ struct StructTraits<media::stable::mojom::DecoderBufferDataView,
   static base::TimeDelta back_discard(
       const scoped_refptr<media::DecoderBuffer>& input);
 
-  static std::optional<media::DecoderBufferSideData> side_data(
+  static std::unique_ptr<media::DecoderBufferSideData> side_data(
       const scoped_refptr<media::DecoderBuffer>& input);
 
   static bool Read(media::stable::mojom::DecoderBufferDataView input,
@@ -505,14 +505,24 @@ struct StructTraits<media::stable::mojom::DecoderBufferDataView,
 
 template <>
 struct StructTraits<media::stable::mojom::DecoderBufferSideDataDataView,
-                    media::DecoderBufferSideData> {
+                    std::unique_ptr<media::DecoderBufferSideData>> {
+  static bool IsNull(
+      const std::unique_ptr<media::DecoderBufferSideData>& input) {
+    return !input;
+  }
+
+  static void SetToNull(std::unique_ptr<media::DecoderBufferSideData>* output) {
+    output->reset();
+  }
   static std::vector<uint32_t> spatial_layers(
-      media::DecoderBufferSideData input);
-  static std::vector<uint8_t> alpha_data(media::DecoderBufferSideData input);
-  static uint64_t secure_handle(media::DecoderBufferSideData input);
+      const std::unique_ptr<media::DecoderBufferSideData>& input);
+  static std::vector<uint8_t> alpha_data(
+      const std::unique_ptr<media::DecoderBufferSideData>& input);
+  static uint64_t secure_handle(
+      const std::unique_ptr<media::DecoderBufferSideData>& input);
 
   static bool Read(media::stable::mojom::DecoderBufferSideDataDataView data,
-                   media::DecoderBufferSideData* output);
+                   std::unique_ptr<media::DecoderBufferSideData>* output);
 };
 
 template <>

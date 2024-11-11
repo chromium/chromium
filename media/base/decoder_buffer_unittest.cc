@@ -264,13 +264,23 @@ TEST(DecoderBufferTest, SideData) {
 
   buffer->WritableSideData().secure_handle = kSecureHandle;
   buffer->WritableSideData().spatial_layers = kSpatialLayers;
-  buffer->WritableSideData().alpha_data = kAlphaData;
+  buffer->WritableSideData().alpha_data =
+      base::HeapArray<uint8_t>::CopiedFrom(kAlphaData);
   EXPECT_TRUE(buffer->has_side_data());
   EXPECT_EQ(buffer->side_data()->secure_handle, kSecureHandle);
   EXPECT_EQ(buffer->side_data()->spatial_layers, kSpatialLayers);
-  EXPECT_EQ(buffer->side_data()->alpha_data, kAlphaData);
+  EXPECT_EQ(buffer->side_data()->alpha_data.as_span(), base::span(kAlphaData));
 
-  buffer->set_side_data(std::nullopt);
+  auto cloned_side_data = buffer->side_data()->Clone();
+
+  EXPECT_EQ(buffer->side_data()->secure_handle,
+            cloned_side_data->secure_handle);
+  EXPECT_EQ(buffer->side_data()->spatial_layers,
+            cloned_side_data->spatial_layers);
+  EXPECT_EQ(buffer->side_data()->alpha_data.as_span(),
+            cloned_side_data->alpha_data.as_span());
+
+  buffer->set_side_data(nullptr);
   EXPECT_FALSE(buffer->has_side_data());
 }
 

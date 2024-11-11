@@ -272,8 +272,7 @@ void MediaRecorderEncoderWrapper::OutputEncodeData(
 
   auto buffer = media::DecoderBuffer::FromArray(std::move(output.data));
   if (encode_alpha_) {
-    buffer->WritableSideData().alpha_data.assign(output.alpha_data.begin(),
-                                                 output.alpha_data.end());
+    buffer->WritableSideData().alpha_data = std::move(output.alpha_data);
   }
   buffer->set_is_key_frame(output.key_frame);
 

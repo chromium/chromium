@@ -51,20 +51,20 @@ TypeConverter<std::unique_ptr<media::DecryptConfig>,
 }
 
 // static
-media::mojom::DecoderBufferSideDataPtr
-TypeConverter<media::mojom::DecoderBufferSideDataPtr,
-              std::optional<media::DecoderBufferSideData>>::
-    Convert(const std::optional<media::DecoderBufferSideData>& input) {
-  if (!input.has_value()) {
-    return nullptr;
-  }
+media::mojom::DecoderBufferSideDataPtr TypeConverter<
+    media::mojom::DecoderBufferSideDataPtr,
+    media::DecoderBufferSideData>::Convert(const media::DecoderBufferSideData&
+                                               input) {
   media::mojom::DecoderBufferSideDataPtr mojo_side_data(
       media::mojom::DecoderBufferSideData::New());
-  mojo_side_data->alpha_data = input->alpha_data;
-  mojo_side_data->spatial_layers = input->spatial_layers;
-  mojo_side_data->secure_handle = input->secure_handle;
-  mojo_side_data->front_discard = input->discard_padding.first;
-  mojo_side_data->back_discard = input->discard_padding.second;
+  if (!input.alpha_data.empty()) {
+    mojo_side_data->alpha_data.assign(input.alpha_data.begin(),
+                                      input.alpha_data.end());
+  }
+  mojo_side_data->spatial_layers = input.spatial_layers;
+  mojo_side_data->secure_handle = input.secure_handle;
+  mojo_side_data->front_discard = input.discard_padding.first;
+  mojo_side_data->back_discard = input.discard_padding.second;
 
   // Note: `next_audio_config` and `next_video_config` are intentionally not
   // serialized here since they are only set for EOS buffers.
@@ -73,17 +73,20 @@ TypeConverter<media::mojom::DecoderBufferSideDataPtr,
 }
 
 // static
-std::optional<media::DecoderBufferSideData>
-TypeConverter<std::optional<media::DecoderBufferSideData>,
+std::unique_ptr<media::DecoderBufferSideData>
+TypeConverter<std::unique_ptr<media::DecoderBufferSideData>,
               media::mojom::DecoderBufferSideDataPtr>::
     Convert(const media::mojom::DecoderBufferSideDataPtr& input) {
   if (!input) {
-    return std::nullopt;
+    return nullptr;
   }
-  auto side_data = std::make_optional<media::DecoderBufferSideData>(
-      media::DecoderBufferSideData());
-  side_data->alpha_data = input->alpha_data;
+
+  auto side_data = std::make_unique<media::DecoderBufferSideData>();
   side_data->spatial_layers = input->spatial_layers;
+  if (!input->alpha_data.empty()) {
+    side_data->alpha_data =
+        base::HeapArray<uint8_t>::CopiedFrom(input->alpha_data);
+  }
   side_data->secure_handle = input->secure_handle;
   side_data->discard_padding.first = input->front_discard;
   side_data->discard_padding.second = input->back_discard;
@@ -121,8 +124,10 @@ TypeConverter<media::mojom::DecoderBufferPtr, media::DecoderBuffer>::Convert(
   data_buffer->duration = input.duration();
   data_buffer->is_key_frame = input.is_key_frame();
   data_buffer->data_size = base::checked_cast<uint32_t>(input.size());
-  data_buffer->side_data =
-      media::mojom::DecoderBufferSideData::From(input.side_data());
+  if (input.has_side_data()) {
+    data_buffer->side_data =
+        media::mojom::DecoderBufferSideData::From(*input.side_data());
+  }
 
   if (input.decrypt_config()) {
     data_buffer->decrypt_config =
@@ -162,7 +167,7 @@ TypeConverter<scoped_refptr<media::DecoderBuffer>,
   if (mojo_buffer->side_data) {
     buffer->set_side_data(
         mojo_buffer->side_data
-            .To<std::optional<media::DecoderBufferSideData>>());
+            .To<std::unique_ptr<media::DecoderBufferSideData>>());
   }
 
   buffer->set_timestamp(mojo_buffer->timestamp);

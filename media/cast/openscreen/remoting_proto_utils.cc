@@ -69,10 +69,9 @@ scoped_refptr<media::DecoderBuffer> ConvertProtoToDecoderBuffer(
   }
 
   if (buffer_message.has_side_data()) {
-    const uint8_t* side_ptr =
-        reinterpret_cast<const uint8_t*>(buffer_message.side_data().data());
-    buffer->WritableSideData().alpha_data.assign(
-        side_ptr, side_ptr + buffer_message.side_data().size());
+    buffer->WritableSideData().alpha_data =
+        base::HeapArray<uint8_t>::CopiedFrom(
+            base::as_byte_span(buffer_message.side_data()));
   }
 
   return buffer;

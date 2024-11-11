@@ -92,9 +92,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         const auto has_alpha_frame = rng() % 4;
         auto parameters = media::Muxer::VideoParameters(*video_frame);
         parameters.codec = video_codec;
-        auto buffer = media::DecoderBuffer::CopyFrom({data, size});
+        auto buffer = media::DecoderBuffer::CopyFrom(
+            base::span<const uint8_t>(data, size));
         if (has_alpha_frame) {
-          buffer->WritableSideData().alpha_data.assign(data, data + size);
+          buffer->WritableSideData().alpha_data =
+              base::HeapArray<uint8_t>::CopiedFrom(
+                  base::span<const uint8_t>(data, size));
         }
         buffer->set_is_key_frame(is_key_frame != 0 || is_first_frame);
         muxer.PutFrame(media::Muxer::EncodedFrame{parameters, std::nullopt,

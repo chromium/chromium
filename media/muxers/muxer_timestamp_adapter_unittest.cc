@@ -85,7 +85,8 @@ class MuxerTimestampAdapterTestBase {
       return *this;
     }
     Frame& WithAlphaData(std::string_view v) {
-      data->WritableSideData().alpha_data.assign(v.begin(), v.end());
+      data->WritableSideData().alpha_data =
+          base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span(v));
       return *this;
     }
     Frame& AsKeyframe() {

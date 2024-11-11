@@ -202,7 +202,7 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
 
   bool ParseBlock(bool is_simple_block,
                   const uint8_t* buf,
-                  int size,
+                  size_t size,
                   const uint8_t* additional,
                   int additional_size,
                   int duration,
@@ -213,9 +213,9 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
                int timecode,
                int duration,
                const uint8_t* data,
-               int size,
+               size_t size,
                const uint8_t* additional,
-               int additional_size,
+               size_t additional_size,
                int64_t discard_padding,
                bool is_keyframe);
 

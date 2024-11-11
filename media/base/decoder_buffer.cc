@@ -164,13 +164,9 @@ DecoderBufferSideData& DecoderBuffer::WritableSideData() {
 }
 
 void DecoderBuffer::set_side_data(
-    std::optional<DecoderBufferSideData> side_data) {
+    std::unique_ptr<DecoderBufferSideData> side_data) {
   DCHECK(!end_of_stream());
-  if (!side_data) {
-    side_data_.reset();
-    return;
-  }
-  WritableSideData() = *side_data;
+  side_data_ = std::move(side_data);
 }
 
 bool DecoderBuffer::MatchesMetadataForTesting(
@@ -276,8 +272,7 @@ size_t DecoderBuffer::GetMemoryUsage() const {
   if (has_side_data()) {
     memory_usage += sizeof(decltype(side_data_->spatial_layers)::value_type) *
                     side_data_->spatial_layers.capacity();
-    memory_usage += sizeof(decltype(side_data_->alpha_data)::value_type) *
-                    side_data_->alpha_data.capacity();
+    memory_usage += side_data_->alpha_data.size();
   }
   if (decrypt_config_) {
     memory_usage += sizeof(DecryptConfig);

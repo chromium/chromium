@@ -314,8 +314,8 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
         gfx::Size(), 1, media::VideoCodec::kH264, gfx::ColorSpace());
     auto buffer = media::DecoderBuffer::CopyFrom(h264_video_stream_);
     std::string alpha_data = "alpha";
-    buffer->WritableSideData().alpha_data.assign(alpha_data.begin(),
-                                                 alpha_data.end());
+    buffer->WritableSideData().alpha_data =
+        base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span(alpha_data));
     buffer->set_is_key_frame(true);
     OnEncodedVideoForTesting(video_params, buffer, timestamp,
                              std::move(codec_description));
@@ -916,8 +916,8 @@ TEST_P(MediaRecorderHandlerTest, PauseRecorderForVideo) {
       auto buffer =
           media::DecoderBuffer::CopyFrom(base::as_byte_span("vp9 frame"));
       std::string alpha_data = "alpha";
-      buffer->WritableSideData().alpha_data.assign(alpha_data.begin(),
-                                                   alpha_data.end());
+      buffer->WritableSideData().alpha_data =
+          base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span(alpha_data));
       buffer->set_is_key_frame(true);
       OnEncodedVideoForTesting(params, buffer, base::TimeTicks::Now());
     }
@@ -967,8 +967,8 @@ TEST_P(MediaRecorderHandlerTest, StartStopStartRecorderForVideo) {
     auto buffer =
         media::DecoderBuffer::CopyFrom(base::as_byte_span("vp9 frame"));
     std::string alpha_data = "alpha";
-    buffer->WritableSideData().alpha_data.assign(alpha_data.begin(),
-                                                 alpha_data.end());
+    buffer->WritableSideData().alpha_data =
+        base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span(alpha_data));
     buffer->set_is_key_frame(true);
     OnEncodedVideoForTesting(params, buffer, base::TimeTicks::Now());
   }
@@ -1324,8 +1324,8 @@ class MediaRecorderHandlerAudioVideoTest : public testing::Test,
         gfx::Size(), 1, media::VideoCodec::kVP9, gfx::ColorSpace());
     auto buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("video"));
     std::string alpha_data = "alpha";
-    buffer->WritableSideData().alpha_data.assign(alpha_data.begin(),
-                                                 alpha_data.end());
+    buffer->WritableSideData().alpha_data =
+        base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span(alpha_data));
     buffer->set_is_key_frame(true);
     OnEncodedVideoForTesting(video_params, buffer, timestamp_);
     timestamp_ += base::Milliseconds(10);

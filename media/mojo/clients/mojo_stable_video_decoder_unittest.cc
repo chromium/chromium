@@ -849,7 +849,7 @@ TEST_F(MojoStableVideoDecoderTest, Decode) {
     EXPECT_EQ(base::make_span(decoder_buffer_to_send->data(),
                               decoder_buffer_to_send->size()),
               base::make_span(kEncodedData, std::size(kEncodedData)));
-    ASSERT_TRUE(decoder_buffer_to_send->side_data().has_value());
+    ASSERT_TRUE(decoder_buffer_to_send->has_side_data());
     EXPECT_EQ(decoder_buffer_to_send->side_data()->secure_handle,
               kSecureHandle);
   }

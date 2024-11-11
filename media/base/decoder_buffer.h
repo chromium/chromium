@@ -248,17 +248,17 @@ class MEDIA_EXPORT DecoderBuffer
 
   bool has_side_data() const { return !!side_data_; }
 
-  // TODO(crbug.com/365814210): Convert to const*.
-  std::optional<DecoderBufferSideData> side_data() const {
+  // Returns DecoderBufferSideData associated with `this`. Check if `side_data_`
+  // exists using `has_side_data()` before calling this function.
+  const DecoderBufferSideData* side_data() const {
     DCHECK(!end_of_stream());
-    return side_data_ ? std::optional<DecoderBufferSideData>(*side_data_)
-                      : std::nullopt;
+    return side_data_.get();
   }
 
   // TODO(b/331652782): integrate the setter function into the constructor to
   // make |side_data_| immutable.
   DecoderBufferSideData& WritableSideData();
-  void set_side_data(std::optional<DecoderBufferSideData> side_data);
+  void set_side_data(std::unique_ptr<DecoderBufferSideData> side_data);
 
   // Returns true if all fields in |buffer| matches this buffer including
   // |data_|.

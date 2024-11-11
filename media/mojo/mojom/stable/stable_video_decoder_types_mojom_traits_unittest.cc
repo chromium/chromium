@@ -876,40 +876,42 @@ TEST(StableVideoDecoderTypesMojomTraitsTest, ValidMediaLogRecord) {
 }
 
 TEST(StableVideoDecoderTypesMojomTraitsTest, ValidDecoderBufferSideData) {
-  auto decoder_buffer_side_data = DecoderBufferSideData();
-  decoder_buffer_side_data.spatial_layers = {1, 2, 3};
-  decoder_buffer_side_data.alpha_data = {0, 1, 2};
-  decoder_buffer_side_data.secure_handle = 14;
+  auto decoder_buffer_side_data = std::make_unique<DecoderBufferSideData>();
+  decoder_buffer_side_data->spatial_layers = {1, 2, 3};
+  decoder_buffer_side_data->alpha_data =
+      base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span("alpha_data"));
+  decoder_buffer_side_data->secure_handle = 14;
 
   std::vector<uint8_t> serialized_decoder_buffer_side_data =
       stable::mojom::DecoderBufferSideData::Serialize(
           &decoder_buffer_side_data);
 
-  DecoderBufferSideData deserialized_decoder_buffer_side_data;
+  std::unique_ptr<DecoderBufferSideData> deserialized_decoder_buffer_side_data;
   ASSERT_TRUE(stable::mojom::DecoderBufferSideData::Deserialize(
       serialized_decoder_buffer_side_data,
       &deserialized_decoder_buffer_side_data));
 
-  EXPECT_EQ(decoder_buffer_side_data.spatial_layers,
-            deserialized_decoder_buffer_side_data.spatial_layers);
-  EXPECT_EQ(decoder_buffer_side_data.alpha_data,
-            deserialized_decoder_buffer_side_data.alpha_data);
-  EXPECT_EQ(decoder_buffer_side_data.secure_handle,
-            deserialized_decoder_buffer_side_data.secure_handle);
+  EXPECT_EQ(decoder_buffer_side_data->spatial_layers,
+            deserialized_decoder_buffer_side_data->spatial_layers);
+  EXPECT_EQ(decoder_buffer_side_data->alpha_data.as_span(),
+            deserialized_decoder_buffer_side_data->alpha_data.as_span());
+  EXPECT_EQ(decoder_buffer_side_data->secure_handle,
+            deserialized_decoder_buffer_side_data->secure_handle);
 }
 
 TEST(StableVideoDecoderTypesMojomTraitsTest,
      DecoderBufferSideDataWithTooManySpatialLayers) {
-  auto decoder_buffer_side_data = DecoderBufferSideData();
-  decoder_buffer_side_data.spatial_layers = {1, 2, 3, 4};
-  decoder_buffer_side_data.alpha_data = {0, 1, 2};
-  decoder_buffer_side_data.secure_handle = 14;
+  auto decoder_buffer_side_data = std::make_unique<DecoderBufferSideData>();
+  decoder_buffer_side_data->spatial_layers = {1, 2, 3, 4};
+  decoder_buffer_side_data->alpha_data =
+      base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span("alpha_data"));
+  decoder_buffer_side_data->secure_handle = 14;
 
   std::vector<uint8_t> serialized_decoder_buffer_side_data =
       stable::mojom::DecoderBufferSideData::Serialize(
           &decoder_buffer_side_data);
 
-  DecoderBufferSideData deserialized_decoder_buffer_side_data;
+  std::unique_ptr<DecoderBufferSideData> deserialized_decoder_buffer_side_data;
   ASSERT_FALSE(stable::mojom::DecoderBufferSideData::Deserialize(
       serialized_decoder_buffer_side_data,
       &deserialized_decoder_buffer_side_data));

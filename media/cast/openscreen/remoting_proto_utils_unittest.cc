@@ -69,8 +69,8 @@ TEST_F(ProtoUtilsTest, PassValidDecoderBuffer) {
       media::DecoderBuffer::CopyFrom(buffer);
   input_buffer->set_timestamp(pts);
   input_buffer->set_is_key_frame(true);
-  input_buffer->WritableSideData().alpha_data.assign(std::begin(side_buffer),
-                                                     std::end(side_buffer));
+  input_buffer->WritableSideData().alpha_data =
+      base::HeapArray<uint8_t>::CopiedFrom(side_buffer);
 
   // 2. To Byte Array
   const base::HeapArray<uint8_t> data = DecoderBufferToByteArray(*input_buffer);
@@ -85,7 +85,7 @@ TEST_F(ProtoUtilsTest, PassValidDecoderBuffer) {
   ASSERT_EQ(output_buffer->timestamp(), pts);
   EXPECT_EQ(base::span(*output_buffer), base::span(buffer));
   ASSERT_TRUE(output_buffer->has_side_data());
-  EXPECT_EQ(base::span(output_buffer->side_data()->alpha_data),
+  EXPECT_EQ(output_buffer->side_data()->alpha_data.as_span(),
             base::span(side_buffer));
 }
 

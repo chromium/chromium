@@ -212,8 +212,8 @@ TEST_P(WebmMuxerTest, OnEncodedVideoTwoAlphaFrames) {
   const auto encoded_data = media::DecoderBuffer::CopyFrom(
       base::as_byte_span("abcdefghijklmnopqrstuvwxyz"));
   const uint8_t alpha_data[] = "ijklmnopqrstuvwxyz";
-  encoded_data->WritableSideData().alpha_data.assign(std::begin(alpha_data),
-                                                     std::end(alpha_data));
+  encoded_data->WritableSideData().alpha_data =
+      base::HeapArray<uint8_t>::CopiedFrom(alpha_data);
 
   InSequence s;
   EXPECT_CALL(*this, WriteCallback(_))
@@ -243,10 +243,10 @@ TEST_P(WebmMuxerTest, OnEncodedVideoTwoAlphaFrames) {
   const uint32_t kBlockGroupSize = 2u;
   const uint32_t kSimpleBlockSize = 6u;
   const uint32_t kAdditionsSize = 13u;
-  EXPECT_EQ(static_cast<int64_t>(begin_of_second_block + kBlockGroupSize +
-                                 kSimpleBlockSize + encoded_data->size() +
-                                 kAdditionsSize +
-                                 encoded_data->side_data()->alpha_data.size()),
+  EXPECT_EQ(static_cast<int64_t>(
+                begin_of_second_block + kBlockGroupSize + kSimpleBlockSize +
+                encoded_data->size() + kAdditionsSize +
+                encoded_data->side_data()->alpha_data.as_span().size_bytes()),
             accumulated_position_);
 }
 
