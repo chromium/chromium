@@ -53,7 +53,7 @@ void ExpectBuilderContent(const String& expected,
 void ExpectEmpty(const StringBuilder& builder) {
   EXPECT_EQ(0U, builder.length());
   EXPECT_TRUE(builder.empty());
-  EXPECT_EQ(nullptr, builder.Characters8());
+  EXPECT_EQ(nullptr, builder.Span8().data());
 }
 
 }  // namespace
@@ -69,7 +69,7 @@ TEST(StringBuilderTest, Append) {
   ExpectBuilderContent("0123456789", builder);
   builder.Append("abcd");
   ExpectBuilderContent("0123456789abcd", builder);
-  builder.Append("efgh", 3);
+  builder.Append(base::byte_span_from_cstring("efgh").first(3u));
   ExpectBuilderContent("0123456789abcdefg", builder);
   builder.Append("");
   ExpectBuilderContent("0123456789abcdefg", builder);
@@ -78,19 +78,19 @@ TEST(StringBuilderTest, Append) {
 
   builder.ToString();  // Test after reifyString().
   StringBuilder builder1;
-  builder.Append("", 0);
+  builder.Append("");
   ExpectBuilderContent("0123456789abcdefg#", builder);
-  builder1.Append(builder.Characters8(), builder.length());
+  builder1.Append(builder.Span8());
   builder1.Append("XYZ");
-  builder.Append(builder1.Characters8(), builder1.length());
+  builder.Append(builder1.Span8());
   ExpectBuilderContent("0123456789abcdefg#0123456789abcdefg#XYZ", builder);
 
   StringBuilder builder2;
   builder2.ReserveCapacity(100);
   builder2.Append("xyz");
-  const LChar* characters = builder2.Characters8();
+  base::span<const LChar> characters = builder2.Span8();
   builder2.Append("0123456789");
-  EXPECT_EQ(characters, builder2.Characters8());
+  EXPECT_EQ(characters.data(), builder2.Span8().data());
 
   StringBuilder builder3;
   builder3.Append("xyz", 1, 2);
@@ -389,7 +389,7 @@ TEST(StringBuilderTest, ToAtomicStringOnEmpty) {
   }
   {  // AtomicString constructed from an empty char* string.
     StringBuilder builder;
-    builder.Append("", 0);
+    builder.Append("");
     AtomicString atomic_string = builder.ToAtomicString();
     EXPECT_EQ(g_empty_atom, atomic_string);
   }
