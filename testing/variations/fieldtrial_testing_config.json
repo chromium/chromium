@@ -17369,6 +17369,21 @@
             ]
         }
     ],
+    "PompanoEnabled": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Pompano"
+                    ]
+                }
+            ]
+        }
+    ],
     "PostGetMyMemoryStateToBackground": [
         {
             "platforms": [
