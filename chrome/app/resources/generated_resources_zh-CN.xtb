@@ -171,7 +171,7 @@
 <translation id="1112998165730922436">投放已暂停</translation>
 <translation id="1114102982691049955"><ph name="PRINTER_MANUFACTURER" /> <ph name="PRINTER_MODEL" /> (USB)</translation>
 <translation id="1114202307280046356">菱形</translation>
-<translation id="1114525161406758033">在盖被合上之后进入休眠模式</translation>
+<translation id="1114525161406758033">合上设备盖后进入休眠模式</translation>
 <translation id="1116639326869298217">无法验证您的身份</translation>
 <translation id="1116694919640316211">关于</translation>
 <translation id="1116779635164066733">此设置是由“<ph name="NAME" />”这一扩展程序强制指定的。</translation>
