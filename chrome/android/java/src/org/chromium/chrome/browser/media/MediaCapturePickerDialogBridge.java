@@ -40,13 +40,15 @@ public class MediaCapturePickerDialogBridge {
      * Shows the media capture picker dialog.
      *
      * @param windowAndroid Window to show the dialog on.
+     * @param appName Name of the app that wants to share content.
      */
     @CalledByNative
-    public void showDialog(WindowAndroid windowAndroid) {
+    public void showDialog(WindowAndroid windowAndroid, String appName) {
         Activity activity = windowAndroid.getActivity().get();
         MediaCapturePickerDialog.showDialog(
                 activity,
                 ((ModalDialogManagerHolder) activity).getModalDialogManager(),
+                appName,
                 (webContents) -> {
                     // We know `mNativeMediaCapturePickerDialogBridge` is non-zero because
                     // `destroy` will only be called after the dialog is dismissed.

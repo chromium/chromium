@@ -2268,6 +2268,19 @@ Your Google account may have other forms of browsing history like searches and a
         Download page again?
       </message>
 
+      <if expr="enable_screen_capture">
+        <!-- Media capture picker dialog -->
+        <message name="IDS_MEDIA_CAPTURE_PICKER_DIALOG_TITLE" desc="Title for the dialog showing a list of tabs for capture and sharing.">
+          Choose what to share with <ph name="APP_NAME">%1$s</ph>
+        </message>
+        <message name="IDS_MEDIA_CAPTURE_PICKER_DIALOG_SUBTITLE_TEXT" desc="Text for the dialog showing a list of tabs for capture and sharing to request capture of a tab to be used by the app itself.">
+          The site will be able to see the contents of your screen
+        </message>
+        <message name="IDS_MEDIA_CAPTURE_PICKER_DIALOG_SHARE_TEXT" desc="Share button text for the dialog showing a list of tabs for capture and sharing.">
+          Share
+        </message>
+      </if>
+
       <!-- Download open dialog -->
       <message name="IDS_OPEN_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm they want to open a downloaded pdf file.">
         Open PDF?

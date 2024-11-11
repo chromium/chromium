@@ -32,6 +32,7 @@ MediaCapturePickerDialogBridge::~MediaCapturePickerDialogBridge() {
 
 void MediaCapturePickerDialogBridge::Show(
     content::WebContents* web_contents,
+    const std::u16string& app_name,
     MediaCapturePickerDialogCallback callback) {
   CHECK(web_contents);
   CHECK(callback_.is_null());
@@ -46,7 +47,8 @@ void MediaCapturePickerDialogBridge::Show(
   }
 
   Java_MediaCapturePickerDialogBridge_showDialog(
-      env, java_object_, window_android->GetJavaObject());
+      env, java_object_, window_android->GetJavaObject(),
+      base::android::ConvertUTF16ToJavaString(env, app_name));
 }
 
 void MediaCapturePickerDialogBridge::OnResult(

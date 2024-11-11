@@ -13,6 +13,7 @@ import("//components/safe_browsing/buildflags.gni")
 import("//components/sharing_message/buildflags.gni")
 import("//components/signin/features.gni")
 import("//components/supervised_user/buildflags.gni")
+import("//content/public/common/features.gni")
 import("//crypto/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -89,6 +90,7 @@ chrome_grit_defines = [
   "enable_dice_support=$enable_dice_support",
   "enable_pdf=$enable_pdf",
   "enable_print_preview=$enable_print_preview",
+  "enable_screen_capture=$enable_screen_capture",
   "enable_supervised_users=$enable_supervised_users",
   "enable_vr=$enable_vr",
   "enable_webui_certificate_viewer=$enable_webui_certificate_viewer",

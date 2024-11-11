@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.media;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
@@ -33,6 +34,7 @@ import java.util.Map;
 /** Dialog for selecting a media source for media capture. */
 public class MediaCapturePickerDialog implements AllTabObserver.Observer {
     private final ModalDialogManager mModalDialogManager;
+    private final String mAppName;
     private final View mDialogView;
     private final ModelList mModelList = new ModelList();
     private final Map<Tab, TabItemState> mTabItemStateMap = new HashMap<>();
@@ -78,15 +80,18 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
     public static void showDialog(
             Context context,
             ModalDialogManager modalDialogManager,
+            String appName,
             Callback<WebContents> callback) {
-        new MediaCapturePickerDialog(context, modalDialogManager, callback).show();
+        new MediaCapturePickerDialog(context, modalDialogManager, appName, callback).show();
     }
 
     private MediaCapturePickerDialog(
             Context context,
             ModalDialogManager modalDialogManager,
+            String appName,
             Callback<WebContents> callback) {
         mModalDialogManager = modalDialogManager;
+        mAppName = appName;
         mCallback = callback;
 
         mDialogView =
@@ -152,13 +157,21 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
                     }
                 };
 
+        Resources resources = mDialogView.getResources();
+        var title = resources.getString(R.string.media_capture_picker_dialog_title, mAppName);
         var propertyModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, controller)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView)
-                        .with(ModalDialogProperties.TITLE, "Share tab")
-                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, "Share")
-                        .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, "Cancel")
+                        .with(ModalDialogProperties.TITLE, title)
+                        .with(
+                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
+                                resources,
+                                R.string.media_capture_picker_dialog_share_text)
+                        .with(
+                                ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
+                                resources,
+                                R.string.cancel)
                         .build();
 
         mModalDialogManager.showDialog(propertyModel, ModalDialogManager.ModalDialogType.TAB);
