@@ -260,6 +260,7 @@ suite('<search-and-assistant-settings-card>', () => {
                       })})});
   });
 
+  // <if expr="_google_chrome">
   test(
       'when isSunfishSettingsToggleVisible flag is false, ' +
           'Sunfish toggle is hidden',
@@ -331,6 +332,7 @@ suite('<search-and-assistant-settings-card>', () => {
               `Element should be focused for settingId=${setting}.'`);
         });
       });
+  // </if>
 
   suite('when Quick Answers is not supported', () => {
     test('Search engine row should be visible', () => {

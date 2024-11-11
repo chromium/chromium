@@ -396,6 +396,8 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       {"enableLobster", IDS_OS_SETTINGS_ENABLE_LOBSTER},
       {"enableLobsterDesc", IDS_OS_SETTINGS_ENABLE_LOBSTER_DESCRIPTION},
+      {"enableSunfish", IDS_OS_SETTINGS_ENABLE_SUNFISH},
+      {"enableSunfishDesc", IDS_OS_SETTINGS_ENABLE_SUNFISH_DESCRIPTION},
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       {"osSearchEngineLabel", kIsRevampEnabled
                                   ? IDS_OS_SETTINGS_REVAMP_SEARCH_ENGINE_LABEL
