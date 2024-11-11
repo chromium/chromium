@@ -26,6 +26,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -113,6 +114,8 @@ std::string_view kSuspectedTrackerFlowReferrerUkmEventName =
     "DIPS.SuspectedTrackerFlowReferrer";
 std::string_view kSuspectedTrackerFlowEntrypointUkmEventName =
     "DIPS.SuspectedTrackerFlowEntrypoint";
+std::string_view kInFlowInteractionUkmEventName =
+    "DIPS.TrustIndicator.InFlowInteraction";
 std::string_view kSiteA = "a.test";
 std::string_view kSiteB = "b.test";
 std::string_view kSiteC = "c.test";
@@ -166,6 +169,11 @@ class DipsNavigationFlowDetectorTest : public PlatformBrowserTest {
         << StringifyNavigationFlowNodeEntry(&ukm_recorder(), ukm_entries.at(0));
   }
 
+  void ExpectNoUkmEventsOfType(std::string_view event_name) {
+    auto ukm_entries = ukm_recorder().GetEntriesByName(event_name);
+    EXPECT_TRUE(ukm_entries.empty());
+  }
+
   GURL GetSetCookieUrlForSite(std::string_view site) {
     // Path set in dips_test_utils.cc's NavigateToSetCookie().
     return embedded_https_test_server_.GetURL(site, "/set-cookie?name=value");
@@ -186,6 +194,26 @@ class DipsNavigationFlowDetectorTest : public PlatformBrowserTest {
     return testing::AssertionResult(success);
   }
 
+  void SimulateUserActivation(content::WebContents* web_contents) {
+    SimulateMouseClickAndWait(web_contents);
+  }
+
+  [[nodiscard]] testing::AssertionResult WaitUntilTransientActivationLost(
+      content::RenderFrameHost* rfh,
+      base::TimeDelta timeout) {
+    const base::Time start_time;
+    while (rfh->HasTransientUserActivation()) {
+      if (base::Time() - start_time >= timeout) {
+        return testing::AssertionFailure()
+               << "Timed out waiting for the RFH to lose transient activation "
+                  "after "
+               << timeout.InSeconds() << " seconds";
+      }
+      Sleep(base::Milliseconds(50));
+    }
+    return testing::AssertionSuccess();
+  }
+
   DipsNavigationFlowDetector* GetDetector() {
     return DipsNavigationFlowDetector::FromWebContents(GetActiveWebContents());
   }
@@ -194,6 +222,13 @@ class DipsNavigationFlowDetectorTest : public PlatformBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   void SetTestClock() { GetDetector()->SetClockForTesting(&test_clock_); }
+
+  static void Sleep(base::TimeDelta delay) {
+    base::RunLoop run_loop;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), delay);
+    run_loop.Run();
+  }
 };
 
 class DipsNavigationFlowDetectorPrerenderTest
@@ -407,6 +442,8 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
       entrypoint_entry, "ExitRedirectType",
       static_cast<int64_t>(DIPSRedirectType::kServer));
   ukm_recorder().ExpectEntryMetric(entrypoint_entry, "FlowId", *flow_id);
+  // It's not possible to interact with a page that server-redirected.
+  ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -478,16 +515,54 @@ IN_PROC_BROWSER_TEST_F(
       static_cast<int64_t>(DIPSRedirectType::kServer));
   ukm_recorder().ExpectEntryMetric(second_entrypoint_entry, "FlowId",
                                    *second_flow_id);
+  // It's not possible to interact with a page that server-redirected.
+  ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
 
-IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
-                       SuspectedTrackerFlowEmittedForClientRedirectExit) {
+namespace {
+enum ClientRedirectType {
+  kMetaTag = 0,
+  kJsWindowLocationReplace = 1,
+  kRedirectLikeNavigation = 2,
+};
+
+const std::vector<std::string_view> kClientRedirectTypeNames = {
+    "MetaTag", "JsWindowLocationReplace", "RedirectLikeNavigation"};
+}  // namespace
+
+class DipsNavigationFlowDetectorClientRedirectTest
+    : public DipsNavigationFlowDetectorTest,
+      public testing::WithParamInterface<ClientRedirectType> {
+ protected:
+  ClientRedirectType client_redirect_type() { return GetParam(); }
+  void PerformClientRedirect(content::WebContents* web_contents,
+                             const GURL& final_url) {
+    switch (client_redirect_type()) {
+      case kMetaTag:
+        ASSERT_TRUE(ClientSideRedirectViaMetaTag(
+            web_contents, web_contents->GetPrimaryMainFrame(), final_url));
+        break;
+      case kJsWindowLocationReplace:
+        ASSERT_TRUE(ClientSideRedirectViaJS(
+            web_contents, web_contents->GetPrimaryMainFrame(), final_url));
+        break;
+      case kRedirectLikeNavigation:
+        ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+            web_contents, final_url));
+        break;
+    }
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(
+    DipsNavigationFlowDetectorClientRedirectTest,
+    SuspectedTrackerFlowEmittedForClientRedirectWithInteraction) {
   // Visit A.
   content::WebContents* web_contents = GetActiveWebContents();
   GURL referrer_url =
       embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents, referrer_url));
-  // Make A client-redirect to B, where B commits and reads cookies with JS.
+  // Make A client-redirect to B, where B commits and writes cookies with JS.
   GURL entrypoint_url =
       embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
@@ -499,13 +574,16 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
       content::EvalJs(frame, "document.cookie = 'name=value;';",
                       content::EXECUTE_SCRIPT_NO_USER_GESTURE);
   observer.Wait();
+  // Interact with B.
+  SimulateUserActivation(web_contents);
+  ASSERT_TRUE(WaitUntilTransientActivationLost(
+      web_contents->GetPrimaryMainFrame(), base::Seconds(5)));
   // Make B client-redirect to C, and wait for UKM to be recorded.
   base::RunLoop ukm_loop;
   ukm_recorder().SetOnAddEntryCallback(
       kSuspectedTrackerFlowEntrypointUkmEventName, ukm_loop.QuitClosure());
   GURL final_url = embedded_https_test_server_.GetURL(kSiteC, "/title1.html");
-  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
-                                                                   final_url));
+  PerformClientRedirect(web_contents, final_url);
   ukm_loop.Run();
 
   // Expect referrer event to be accurate.
@@ -526,7 +604,80 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
       entrypoint_entry, "ExitRedirectType",
       static_cast<int64_t>(DIPSRedirectType::kClient));
   ukm_recorder().ExpectEntryMetric(entrypoint_entry, "FlowId", *flow_id);
+  // Expect InFlowInteraction to have been emitted appropriately.
+  auto in_flow_interaction_entries =
+      ukm_recorder().GetEntriesByName(kInFlowInteractionUkmEventName);
+  ASSERT_EQ(in_flow_interaction_entries.size(), 1u);
+  auto in_flow_interaction_entry = in_flow_interaction_entries.front();
+  ukm_recorder().ExpectEntrySourceHasUrl(in_flow_interaction_entry,
+                                         entrypoint_url);
+  ukm_recorder().ExpectEntryMetric(in_flow_interaction_entry, "FlowId",
+                                   *flow_id);
 }
+
+IN_PROC_BROWSER_TEST_P(
+    DipsNavigationFlowDetectorClientRedirectTest,
+    SuspectedTrackerFlowEmittedForClientRedirectWithoutInteraction) {
+  // Visit A.
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL referrer_url =
+      embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, referrer_url));
+  // Make A client-redirect to B, where B commits and writes cookies with JS.
+  // Don't generate user activation on B.
+  GURL entrypoint_url =
+      embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, entrypoint_url));
+  content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
+  FrameCookieAccessObserver observer(web_contents, frame,
+                                     CookieOperation::kChange);
+  content::EvalJsResult result =
+      content::EvalJs(frame, "document.cookie = 'name=value;';",
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+  observer.Wait();
+  // Make B client-redirect to C, and wait for UKM to be recorded.
+  base::RunLoop ukm_loop;
+  ukm_recorder().SetOnAddEntryCallback(
+      kSuspectedTrackerFlowEntrypointUkmEventName, ukm_loop.QuitClosure());
+  GURL final_url = embedded_https_test_server_.GetURL(kSiteC, "/title1.html");
+  PerformClientRedirect(web_contents, final_url);
+  ukm_loop.Run();
+
+  ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
+  // Expect referrer event to be accurate.
+  auto referrer_entries = ukm_recorder().GetEntriesByName(
+      kSuspectedTrackerFlowReferrerUkmEventName);
+  ASSERT_EQ(referrer_entries.size(), 1u);
+  auto referrer_entry = referrer_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(referrer_entry, referrer_url);
+  const int64_t* flow_id =
+      ukm_recorder().GetEntryMetric(referrer_entry, "FlowId");
+  // Expect entrypoint event to be accurate.
+  auto entrypoint_entries = ukm_recorder().GetEntriesByName(
+      kSuspectedTrackerFlowEntrypointUkmEventName);
+  ASSERT_EQ(entrypoint_entries.size(), 1u);
+  auto entrypoint_entry = entrypoint_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(entrypoint_entry, entrypoint_url);
+  ukm_recorder().ExpectEntryMetric(
+      entrypoint_entry, "ExitRedirectType",
+      static_cast<int64_t>(DIPSRedirectType::kClient));
+  ukm_recorder().ExpectEntryMetric(entrypoint_entry, "FlowId", *flow_id);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DipsNavigationFlowDetectorClientRedirectTest,
+    testing::Values(ClientRedirectType::kMetaTag,
+                    ClientRedirectType::kJsWindowLocationReplace,
+                    ClientRedirectType::kRedirectLikeNavigation),
+    [](const testing::TestParamInfo<
+        DipsNavigationFlowDetectorClientRedirectTest::ParamType>& param_info) {
+      ClientRedirectType client_redirect_type = param_info.param;
+      CHECK(client_redirect_type >= 0 &&
+            client_redirect_type < kClientRedirectTypeNames.size());
+      return std::string(kClientRedirectTypeNames[client_redirect_type]);
+    });
 
 IN_PROC_BROWSER_TEST_F(
     DipsNavigationFlowDetectorTest,
@@ -549,13 +700,9 @@ IN_PROC_BROWSER_TEST_F(
       web_contents, entrypoint_url, final_url));
   cookie_observer.Wait();
 
-  // Expect no DIPS.SuspectedTrackerFlow* UKM events.
-  auto referrer_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowReferrerUkmEventName);
-  EXPECT_TRUE(referrer_entries.empty());
-  auto entrypoint_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowEntrypointUkmEventName);
-  EXPECT_TRUE(entrypoint_entries.empty());
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowReferrerUkmEventName);
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowEntrypointUkmEventName);
+  ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -574,13 +721,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, entrypoint_url, final_url));
 
-  // Expect no DIPS.SuspectedTrackerFlow* UKM events.
-  auto referrer_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowReferrerUkmEventName);
-  EXPECT_TRUE(referrer_entries.empty());
-  auto entrypoint_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowEntrypointUkmEventName);
-  EXPECT_TRUE(entrypoint_entries.empty());
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowReferrerUkmEventName);
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowEntrypointUkmEventName);
+  ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
 
 IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
@@ -602,13 +745,9 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
       web_contents, entrypoint_url, final_url));
   cookie_observer.Wait();
 
-  // Expect no DIPS.SuspectedTrackerFlow* UKM events.
-  auto referrer_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowReferrerUkmEventName);
-  EXPECT_TRUE(referrer_entries.empty());
-  auto entrypoint_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowEntrypointUkmEventName);
-  EXPECT_TRUE(entrypoint_entries.empty());
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowReferrerUkmEventName);
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowEntrypointUkmEventName);
+  ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
 
 IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
@@ -630,13 +769,9 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
       web_contents, entrypoint_url, final_url));
   cookie_observer.Wait();
 
-  // Expect no DIPS.SuspectedTrackerFlow* UKM events.
-  auto referrer_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowReferrerUkmEventName);
-  EXPECT_TRUE(referrer_entries.empty());
-  auto entrypoint_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowEntrypointUkmEventName);
-  EXPECT_TRUE(entrypoint_entries.empty());
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowReferrerUkmEventName);
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowEntrypointUkmEventName);
+  ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -659,13 +794,9 @@ IN_PROC_BROWSER_TEST_F(
                                                  final_url));
   cookie_observer.Wait();
 
-  // Expect no DIPS.SuspectedTrackerFlow* UKM events.
-  auto referrer_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowReferrerUkmEventName);
-  EXPECT_TRUE(referrer_entries.empty());
-  auto entrypoint_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowEntrypointUkmEventName);
-  EXPECT_TRUE(entrypoint_entries.empty());
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowReferrerUkmEventName);
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowEntrypointUkmEventName);
+  ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -687,13 +818,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::NavigateToURL(web_contents, entrypoint_url, final_url));
   cookie_observer.Wait();
 
-  // Expect no DIPS.SuspectedTrackerFlow* UKM events.
-  auto referrer_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowReferrerUkmEventName);
-  EXPECT_TRUE(referrer_entries.empty());
-  auto entrypoint_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowEntrypointUkmEventName);
-  EXPECT_TRUE(entrypoint_entries.empty());
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowReferrerUkmEventName);
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowEntrypointUkmEventName);
+  ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -714,13 +841,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
                                                                    final_url));
 
-  // Expect no DIPS.SuspectedTrackerFlow* UKM events.
-  auto referrer_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowReferrerUkmEventName);
-  EXPECT_TRUE(referrer_entries.empty());
-  auto entrypoint_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowEntrypointUkmEventName);
-  EXPECT_TRUE(entrypoint_entries.empty());
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowReferrerUkmEventName);
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowEntrypointUkmEventName);
+  ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -748,13 +871,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
                                                                    final_url));
 
-  // Expect no DIPS.SuspectedTrackerFlow* UKM events.
-  auto referrer_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowReferrerUkmEventName);
-  EXPECT_TRUE(referrer_entries.empty());
-  auto entrypoint_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowEntrypointUkmEventName);
-  EXPECT_TRUE(entrypoint_entries.empty());
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowReferrerUkmEventName);
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowEntrypointUkmEventName);
+  ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
 
 IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
@@ -781,13 +900,9 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
                                                                    final_url));
 
-  // Expect no DIPS.SuspectedTrackerFlow* UKM events.
-  auto referrer_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowReferrerUkmEventName);
-  EXPECT_TRUE(referrer_entries.empty());
-  auto entrypoint_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowEntrypointUkmEventName);
-  EXPECT_TRUE(entrypoint_entries.empty());
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowReferrerUkmEventName);
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowEntrypointUkmEventName);
+  ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -815,13 +930,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
                                                                    final_url));
 
-  // Expect no DIPS.SuspectedTrackerFlow* UKM events.
-  auto referrer_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowReferrerUkmEventName);
-  EXPECT_TRUE(referrer_entries.empty());
-  auto entrypoint_entries = ukm_recorder().GetEntriesByName(
-      kSuspectedTrackerFlowEntrypointUkmEventName);
-  EXPECT_TRUE(entrypoint_entries.empty());
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowReferrerUkmEventName);
+  ExpectNoUkmEventsOfType(kSuspectedTrackerFlowEntrypointUkmEventName);
+  ExpectNoUkmEventsOfType(kInFlowInteractionUkmEventName);
 }
 
 IN_PROC_BROWSER_TEST_F(

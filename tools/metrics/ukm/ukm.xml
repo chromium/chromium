@@ -7491,6 +7491,25 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="DIPS.TrustIndicator.InFlowInteraction">
+  <owner>svend@google.com</owner>
+  <owner>dc-komics@google.com</owner>
+  <summary>
+    When a tab's primary main frame is navigated to three consecutive URLs
+    A-&gt;B-&gt;C, B accesses cookies or storage, the eTLD+1 for B is different
+    from the eTLD+1s of A and C, A, B, and C commit (become the primary main
+    page), the navigations A-&gt;B and B-&gt;C were content-initiated but not
+    user-initiated, and B receives user activation (click, scroll, etc.), then
+    this event is recorded for URL B.
+  </summary>
+  <metric name="FlowId">
+    <summary>
+      A randomly-generated 32-bit id to connect this event with its matching
+      DIPS.SuspectedTrackerFlowEntrypoint event.
+    </summary>
+  </metric>
+</event>
+
 <event name="DocumentCreated">
   <owner>rakina@chromium.org</owner>
   <owner>navigation-dev@chromium.org</owner>

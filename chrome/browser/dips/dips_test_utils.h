@@ -107,6 +107,16 @@ base::expected<content::WebContents*, std::string> OpenInNewTab(
 void AccessCookieViaJSIn(content::WebContents* web_contents,
                          content::RenderFrameHost* frame);
 
+[[nodiscard]] testing::AssertionResult ClientSideRedirectViaMetaTag(
+    content::WebContents* web_contents,
+    content::RenderFrameHost* frame,
+    const GURL& target_url);
+
+[[nodiscard]] testing::AssertionResult ClientSideRedirectViaJS(
+    content::WebContents* web_contents,
+    content::RenderFrameHost* frame,
+    const GURL& target_url);
+
 // Helper function to navigate to /set-cookie on `host` and wait for
 // OnCookiesAccessed() to be called.
 bool NavigateToSetCookie(content::WebContents* web_contents,

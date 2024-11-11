@@ -87,15 +87,18 @@ class DipsNavigationFlowDetector
   bool CanEmitNavFlowNodeUkmForPreviousPage() const;
 
   void MaybeEmitSuspectedTrackerFlowUkmForServerRedirectExit(
-      const DIPSRedirectInfo* exit_info);
+      const DIPSRedirectInfo* exit_info,
+      int32_t flow_id);
   bool CanEmitSuspectedTrackerFlowUkmForServerRedirectExit(
       const DIPSRedirectInfo* exit_info) const;
-  void MaybeEmitSuspectedTrackerFlowUkmForClientRedirectExit();
+  void MaybeEmitSuspectedTrackerFlowUkmForClientRedirectExit(int32_t flow_id);
   bool CanEmitSuspectedTrackerFlowUkmForClientRedirectExit() const;
   bool CanEmitSuspectedTrackerFlowUkm(
       const dips::PageVisitInfo& referrer_page_info,
       const dips::EntrypointInfo& entrypoint_info,
       const dips::PageVisitInfo& exit_page_info) const;
+
+  void MaybeEmitInFlowInteraction(int32_t flow_id);
 
  private:
   // So WebContentsUserData::CreateForWebContents can call the constructor.

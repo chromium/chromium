@@ -44,9 +44,8 @@ const DIPSRedirectInfo* GetEntrypointExitServerRedirect(
 
 void EmitSuspectedTrackerFlowUkm(ukm::SourceId referrer_source_id,
                                  ukm::SourceId entrypoint_source_id,
+                                 int32_t flow_id,
                                  DIPSRedirectType exit_redirect_type) {
-  int32_t flow_id = static_cast<int32_t>(base::RandUint64());
-
   ukm::builders::DIPS_SuspectedTrackerFlowReferrer(referrer_source_id)
       .SetFlowId(flow_id)
       .Record(ukm::UkmRecorder::Get());
@@ -162,14 +161,16 @@ void DipsNavigationFlowDetector::OnNavigationCommitted(
 
   MaybeEmitNavFlowNodeUkmForPreviousPage();
 
+  int32_t flow_id = static_cast<int32_t>(base::RandUint64());
   const DIPSRedirectInfo* server_redirect_entrypoint_exit =
       GetEntrypointExitServerRedirect(
           redirect_chain_observation_.GetSource()->CommittedRedirectContext());
   if (server_redirect_entrypoint_exit != nullptr) {
     MaybeEmitSuspectedTrackerFlowUkmForServerRedirectExit(
-        server_redirect_entrypoint_exit);
+        server_redirect_entrypoint_exit, flow_id);
   } else {
-    MaybeEmitSuspectedTrackerFlowUkmForClientRedirectExit();
+    MaybeEmitSuspectedTrackerFlowUkmForClientRedirectExit(flow_id);
+    MaybeEmitInFlowInteraction(flow_id);
   }
 }
 
@@ -224,13 +225,14 @@ bool DipsNavigationFlowDetector::CanEmitNavFlowNodeUkmForPreviousPage() const {
 
 void DipsNavigationFlowDetector::
     MaybeEmitSuspectedTrackerFlowUkmForServerRedirectExit(
-        const DIPSRedirectInfo* exit_info) {
+        const DIPSRedirectInfo* exit_info,
+        int32_t flow_id) {
   if (!CanEmitSuspectedTrackerFlowUkmForServerRedirectExit(exit_info)) {
     return;
   }
 
   EmitSuspectedTrackerFlowUkm(previous_page_visit_info_->source_id,
-                              exit_info->url.source_id,
+                              exit_info->url.source_id, flow_id,
                               DIPSRedirectType::kServer);
 }
 
@@ -250,13 +252,13 @@ bool DipsNavigationFlowDetector::
 }
 
 void DipsNavigationFlowDetector::
-    MaybeEmitSuspectedTrackerFlowUkmForClientRedirectExit() {
+    MaybeEmitSuspectedTrackerFlowUkmForClientRedirectExit(int32_t flow_id) {
   if (!CanEmitSuspectedTrackerFlowUkmForClientRedirectExit()) {
     return;
   }
 
   EmitSuspectedTrackerFlowUkm(two_pages_ago_visit_info_->source_id,
-                              previous_page_visit_info_->source_id,
+                              previous_page_visit_info_->source_id, flow_id,
                               DIPSRedirectType::kClient);
 }
 
@@ -300,6 +302,18 @@ bool DipsNavigationFlowDetector::CanEmitSuspectedTrackerFlowUkm(
          is_entrypoint_site_different_from_exit_page &&
          entrypoint_info.had_triggering_storage_access &&
          entrypoint_info.was_referral_client_redirect;
+}
+
+void DipsNavigationFlowDetector::MaybeEmitInFlowInteraction(int32_t flow_id) {
+  if (!CanEmitSuspectedTrackerFlowUkmForClientRedirectExit() ||
+      !previous_page_visit_info_->did_page_receive_user_activation) {
+    return;
+  }
+
+  ukm::builders::DIPS_TrustIndicator_InFlowInteraction(
+      previous_page_visit_info_->source_id)
+      .SetFlowId(flow_id)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void DipsNavigationFlowDetector::OnCookiesAccessed(
