@@ -50,6 +50,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
+#include "build/android_buildflags.h"  // nogncheck
 #include "chrome/browser/ui/android/android_about_app_info.h"
 #else
 #include "chrome/browser/ui/webui/theme_source.h"
@@ -272,6 +273,13 @@ void VersionUI::AddVersionDetailStrings(content::WebUIDataSource* html_source) {
   html_source->AddString(
       version_ui::kVersionCode,
       base::android::BuildInfo::GetInstance()->package_version_code());
+  html_source->AddString(version_ui::kIsDesktopAndroid,
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+                         "true"
+#else
+                         "false"
+#endif
+  );
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

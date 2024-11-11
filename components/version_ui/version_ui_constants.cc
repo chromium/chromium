@@ -62,6 +62,7 @@ const char kTargetsUName[] = "targets_u_name";
 const char kTargetsU[] = "targets_u";
 const char kGmsName[] = "gms_name";
 const char kGmsVersion[] = "gms_version";
+const char kIsDesktopAndroid[] = "is_desktop_android";
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
 const char kPlatform[] = "platform";
