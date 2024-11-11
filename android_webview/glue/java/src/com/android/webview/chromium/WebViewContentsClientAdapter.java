@@ -4,6 +4,7 @@
 
 package com.android.webview.chromium;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -1224,6 +1225,9 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             return null;
         }
         return new WebChromeClient.FileChooserParams() {
+            // TODO: use the intdef annotation in FileChooserParamsImpl once the
+            // B SDK is in use upstream.
+            @SuppressLint("WrongConstant")
             @Override
             public int getMode() {
                 return value.getMode();
