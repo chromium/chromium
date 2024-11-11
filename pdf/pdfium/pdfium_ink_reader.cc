@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "pdf/pdf_ink_constants.h"
 #include "pdf/pdf_ink_conversions.h"
@@ -68,7 +69,7 @@ ink::Point GetTransformedInkPoint(const gfx::AxisTransform2d& transform,
 // ink::Mesh. It applies an additional check to make sure the points in
 // `polyline` have sane values.
 std::optional<ink::Mesh> CreateInkMeshFromPolyline(
-    const std::vector<ink::Point>& polyline) {
+    base::span<const ink::Point> polyline) {
   // Limit for ink::Point values in pixels. It is divided by 2 because the limit
   // extends half way in the negative range.
   constexpr int kInkPointDimensionLimit =
@@ -177,7 +178,7 @@ std::vector<ReadV2InkPathResult> ReadV2InkPathsFromPageAsModeledShapes(
 }
 
 std::optional<ink::Mesh> CreateInkMeshFromPolylineForTesting(  // IN-TEST
-    const std::vector<ink::Point>& polyline) {
+    base::span<const ink::Point> polyline) {
   return CreateInkMeshFromPolyline(polyline);
 }
 

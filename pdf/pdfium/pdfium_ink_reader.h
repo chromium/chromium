@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "pdf/buildflags.h"
 #include "third_party/ink/src/ink/geometry/mesh.h"
 #include "third_party/ink/src/ink/geometry/modeled_shape.h"
@@ -37,7 +38,7 @@ std::vector<ReadV2InkPathResult> ReadV2InkPathsFromPageAsModeledShapes(
 
 // Exposes internal CreateInkMeshFromPolyline() for testing.
 std::optional<ink::Mesh> CreateInkMeshFromPolylineForTesting(
-    const std::vector<ink::Point>& polyline);
+    base::span<const ink::Point> polyline);
 
 }  // namespace chrome_pdf
 
