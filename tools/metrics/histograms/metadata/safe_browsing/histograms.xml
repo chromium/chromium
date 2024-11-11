@@ -1227,6 +1227,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.GetReferringAppInfo.Duration" units="ms"
+    expires_after="2025-03-30">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the duration GetReferringAppInfo. Recorded on downloads in Clank, PG
+    pings, and viewing the Referrer Chain tab of chrome://safe-browsing.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.GmsSafeBrowsingApi.ApiExceptionStatusCode"
     enum="SafeBrowsingApiExceptionStatusCode" expires_after="2025-03-30">
   <owner>xinghuilu@chromium.org</owner>
