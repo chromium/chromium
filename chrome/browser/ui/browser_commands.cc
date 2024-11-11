@@ -1600,7 +1600,6 @@ void StartTabOrganizationRequest(Browser* browser) {
       TabOrganizationServiceFactory::GetForProfile(browser->profile());
   UMA_HISTOGRAM_BOOLEAN("Tab.Organization.AllEntrypoints.Clicked", true);
   UMA_HISTOGRAM_BOOLEAN("Tab.Organization.ThreeDotMenu.Clicked", true);
-  browser->window()->NotifyNewBadgeFeatureUsed(features::kTabOrganization);
 
   service->RestartSessionAndShowUI(browser,
                                    TabOrganizationEntryPoint::kThreeDotMenu);
