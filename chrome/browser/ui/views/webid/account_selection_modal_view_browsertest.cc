@@ -484,6 +484,10 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     // and all of them should be disabled.
     for (const auto& item : account_chooser) {
       ASSERT_FALSE(item->GetEnabled());
+      if (std::string(item->GetClassName()) == "HoverButton") {
+        AccountHoverButton* button = static_cast<AccountHoverButton*>(item);
+        ASSERT_TRUE(button->HasDisabledOpacity());
+      }
     }
 
     CheckDisabledButtonRow(dialog()->children()[2],

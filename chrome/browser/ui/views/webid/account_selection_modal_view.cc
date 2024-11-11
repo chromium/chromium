@@ -466,7 +466,9 @@ void AccountSelectionModalView::ShowVerifyingSheet(
     // chooser.
     if (std::string(child->GetClassName()) == "HoverButton") {
       is_single_account_chooser = true;
-      has_spinner_ |= static_cast<AccountHoverButton*>(child)->HasSpinner();
+      AccountHoverButton* button = static_cast<AccountHoverButton*>(child);
+      has_spinner_ |= button->HasSpinner();
+      button->SetDisabledOpacity();
     }
     child->SetEnabled(false);
   }
@@ -479,7 +481,9 @@ void AccountSelectionModalView::ShowVerifyingSheet(
     views::View* contents = wrapper->children()[0];
     for (const auto& child : contents->children()) {
       if (std::string(child->GetClassName()) == "HoverButton") {
-        has_spinner_ |= static_cast<AccountHoverButton*>(child)->HasSpinner();
+        AccountHoverButton* button = static_cast<AccountHoverButton*>(child);
+        has_spinner_ |= button->HasSpinner();
+        button->SetDisabledOpacity();
       }
       child->SetEnabled(false);
     }

@@ -162,6 +162,11 @@ class AccountHoverButton : public HoverButton {
   void OnPressed(const ui::Event& event);
   bool HasSpinner();
 
+  // Changes the opacity of elements in the button to appear disabled. Used when
+  // the button is disabled in the verifying sheet.
+  void SetDisabledOpacity();
+  bool HasDisabledOpacity();
+
  private:
   PressedCallback callback_;
   // Owned by its views::BoxLayoutView container.
@@ -171,6 +176,7 @@ class AccountHoverButton : public HoverButton {
   // to record a metric when the button is clicked.
   int button_position_;
   bool has_spinner_{false};
+  bool is_appear_disabled_{false};
 };
 
 class AccountHoverButtonSecondaryView : public views::View {
@@ -183,6 +189,10 @@ class AccountHoverButtonSecondaryView : public views::View {
   ~AccountHoverButtonSecondaryView() override = default;
 
   void ReplaceWithSpinner();
+  void SetDisabledOpacity();
+
+ private:
+  raw_ptr<views::ImageView> arrow_image_view_{nullptr};
 };
 
 // Base class for interacting with FedCM account selection dialog.

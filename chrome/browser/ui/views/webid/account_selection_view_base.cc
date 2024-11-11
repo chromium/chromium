@@ -238,27 +238,33 @@ class AccountImageView : public views::ImageView {
   void SetAccountImage(const content::IdentityRequestAccount& account,
                        image_fetcher::ImageFetcher& image_fetcher,
                        int image_size) {
-    gfx::ImageSkia avatar;
     if (account.decoded_picture.IsEmpty()) {
       std::u16string letter = base::UTF8ToUTF16(account.name);
       if (letter.length() > 0) {
         letter = base::i18n::ToUpper(letter.substr(0, 1));
       }
-      avatar = gfx::CanvasImageSource::MakeImageSkia<
+      avatar_ = gfx::CanvasImageSource::MakeImageSkia<
           LetterCircleCroppedImageSkiaSource>(letter, image_size);
     } else {
-      avatar =
+      avatar_ =
           gfx::CanvasImageSource::MakeImageSkia<CircleCroppedImageSkiaSource>(
               account.decoded_picture.AsImageSkia(), std::nullopt, image_size);
       if (account.is_filtered_out) {
-        avatar = gfx::ImageSkiaOperations::CreateTransparentImage(
-            avatar, kDisabledAvatarOpacity);
+        avatar_ = gfx::ImageSkiaOperations::CreateTransparentImage(
+            avatar_, kDisabledAvatarOpacity);
       }
     }
-    SetImage(ui::ImageModel::FromImageSkia(avatar));
+    SetImage(ui::ImageModel::FromImageSkia(avatar_));
+  }
+
+  void SetDisabledOpacity() {
+    avatar_ = gfx::ImageSkiaOperations::CreateTransparentImage(
+        avatar_, kDisabledAvatarOpacity);
+    SetImage(ui::ImageModel::FromImageSkia(avatar_));
   }
 
  private:
+  gfx::ImageSkia avatar_;
   base::WeakPtrFactory<AccountImageView> weak_ptr_factory_{this};
 };
 
@@ -278,7 +284,7 @@ AccountHoverButtonSecondaryView::AccountHoverButtonSecondaryView() {
       std::make_unique<views::ImageView>();
   arrow_image_view->SetImage(ui::ImageModel::FromVectorIcon(
       vector_icons::kSubmenuArrowIcon, ui::kColorIcon, kArrowIconSize));
-  AddChildView(std::move(arrow_image_view));
+  arrow_image_view_ = AddChildView(std::move(arrow_image_view));
 }
 
 void AccountHoverButtonSecondaryView::ReplaceWithSpinner() {
@@ -287,8 +293,19 @@ void AccountHoverButtonSecondaryView::ReplaceWithSpinner() {
   constexpr int kSpinnerSize = 24;
   spinner->SetPreferredSize(gfx::Size(kSpinnerSize, kSpinnerSize));
   spinner->Start();
+  arrow_image_view_ = nullptr;
   RemoveAllChildViews();
   AddChildView(std::move(spinner));
+}
+
+void AccountHoverButtonSecondaryView::SetDisabledOpacity() {
+  if (!arrow_image_view_) {
+    return;
+  }
+
+  arrow_image_view_->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kSubmenuArrowIcon, ui::kColorLabelForegroundDisabled,
+      kArrowIconSize));
 }
 
 BrandIconImageView::BrandIconImageView(
@@ -455,6 +472,33 @@ void AccountHoverButton::OnPressed(const ui::Event& event) {
 
 bool AccountHoverButton::HasSpinner() {
   return has_spinner_;
+}
+
+void AccountHoverButton::SetDisabledOpacity() {
+  is_appear_disabled_ = true;
+
+  if (has_spinner_) {
+    return;
+  }
+
+  if (icon_view()) {
+    static_cast<AccountImageView*>(icon_view())->SetDisabledOpacity();
+  }
+
+  if (secondary_view()) {
+    static_cast<AccountHoverButtonSecondaryView*>(secondary_view())
+        ->SetDisabledOpacity();
+  }
+
+  title()->SetDefaultEnabledColorId(ui::kColorLabelForegroundDisabled);
+  subtitle()->SetEnabledColorId(ui::kColorLabelForegroundDisabled);
+
+  // Recreates the StyledLabel with the new default enabled color id.
+  title()->PreferredSizeChanged();
+}
+
+bool AccountHoverButton::HasDisabledOpacity() {
+  return is_appear_disabled_;
 }
 
 AccountSelectionViewBase::AccountSelectionViewBase(
