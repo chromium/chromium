@@ -10,7 +10,7 @@ let host = '';
 
 // Returns the full URL for the |path| using the Controlled Frame's host.
 function getControlledFrameUrl(path) {
-  return `http://${host}${path}`;
+  return `https://${host}${path}`;
 }
 
 // Returns a promise that runs |callback| then resolves when |controlledFrame|'s
@@ -20,7 +20,7 @@ function runCallbackAndWaitForLoadStop(controlledFrame, callback) {
     controlledFrame.addEventListener('loadstop', () => {
       resolve('SUCCESS');
     });
-    controlledFrame.addEventListener('loadabort', () => {
+    controlledFrame.addEventListener('loadabort', (e) => {
       reject(`ERROR: Load aborted for ${e.url} with reason ${e.reason}`);
     });
     await callback(controlledFrame);

@@ -592,7 +592,9 @@ IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddResource(
       << "to IsolatedWebAppBuilder::AddResource?";
   return AddResource(
       resource_path, content,
-      {{net::HttpRequestHeaders::kContentType, std::string(content_type)}});
+      {{net::HttpRequestHeaders::kContentType, std::string(content_type)},
+       {"Cross-Origin-Embedder-Policy", "require-corp"},
+       {"Cross-Origin-Resource-Policy", "cross-origin"}});
 }
 
 IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddResource(
@@ -691,7 +693,8 @@ IsolatedWebAppBuilder::BuildAndStartProxyServer() {
   Validate();
   net::EmbeddedTestServer::HandleRequestCallback handler = base::BindRepeating(
       &IsolatedWebAppBuilder::HandleRequest, manifest_builder_, resources_);
-  auto server = std::make_unique<net::EmbeddedTestServer>();
+  auto server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
   server->RegisterRequestHandler(handler);
   CHECK(server->Start());
   return std::make_unique<ScopedProxyIsolatedWebApp>(std::move(server),
@@ -738,7 +741,7 @@ std::unique_ptr<BundledIsolatedWebApp> IsolatedWebAppBuilder::BuildBundle(
       manifest_builder_);
 }
 
-std::vector<uint8_t> IsolatedWebAppBuilder ::BuildInMemoryBundle(
+std::vector<uint8_t> IsolatedWebAppBuilder::BuildInMemoryBundle(
     const web_package::SignedWebBundleId& web_bundle_id,
     const web_package::test::KeyPairs& key_pairs) {
   base::ScopedAllowBlockingForTesting allow_blocking;

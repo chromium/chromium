@@ -557,6 +557,45 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
       HasSubstr("Failed to fetch"));
 }
 
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest,
+                       CanPostMessageToCrossOriginIframe) {
+  // Create an HTTPS proxy backed IWA so that we can iframe a page from the
+  // proxy server instead of defining the HTTPS resource in some second
+  // server.
+  std::unique_ptr<ScopedProxyIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddHtml("/iframe.html",
+                   "I'm an iframe! <script src='/iframe.js'></script>")
+          .AddJs("/iframe.js", R"(
+            // echo back any incoming messages
+            window.addEventListener('message', (e) => {
+              console.log('got message', e.data, e.origin);
+              e.source.postMessage(e.data, e.origin);
+            });
+          )")
+          .BuildAndStartProxyServer();
+  ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  GURL proxy_url = app->proxy_server().base_url();
+  CreateIframe(app_frame, /*iframe_id=*/"", proxy_url.Resolve("/iframe.html"),
+               /*permissions_policy=*/"");
+
+  std::string js = R"(
+    new Promise(async (resolve, reject) => {
+      setTimeout(() => reject('timeout'), 2000);
+      window.addEventListener('message', (e) => {
+        resolve(e.data);
+      });
+
+      const iframe = document.querySelector('iframe');
+      iframe.contentWindow.postMessage("message body",
+                                       new URL(iframe.src).origin);
+    });
+  )";
+  EXPECT_EQ("message body", EvalJs(app_frame, js));
+}
+
 class IsolatedWebAppApiAccessBrowserTest : public IsolatedWebAppBrowserTest {
  protected:
   IsolatedWebAppUrlInfo InstallAppWithSocketPermission() {
