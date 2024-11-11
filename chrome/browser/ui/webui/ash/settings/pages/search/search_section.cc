@@ -420,7 +420,8 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean(
       "isMagicBoostFeatureEnabled",
-      chromeos::MagicBoostState::Get()->IsMagicBoostAvailable());
+      chromeos::MagicBoostState::Get()->IsMagicBoostAvailable() ||
+          IsLobsterSettingsToggleVisible(profile()));
 
   html_source->AddBoolean("isMagicBoostNoticeBannerVisible",
                           IsMagicBoostNoticeBannerVisible(profile()));
