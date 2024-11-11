@@ -899,6 +899,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
+    "//components/query_parser:query_parser",
     "//components/safe_browsing/core/common:common",
     "//components/search",
     "//components/search_engines",

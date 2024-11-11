@@ -18,14 +18,17 @@
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/keyword_provider.h"
+#include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/scoring_functor.h"
 #include "components/omnibox/browser/titled_url_match_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/query_parser/query_parser.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/base/page_transition_types.h"
 #include "url/url_constants.h"
 
@@ -112,6 +115,11 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
         match.transition = ui::PAGE_TRANSITION_KEYWORD;
       }
 
+      if (input.current_page_classification() ==
+          metrics::OmniboxEventProto_PageClassification_ANDROID_HUB) {
+        match.suggestion_group_id = omnibox::GROUP_MOBILE_BOOKMARKS;
+      }
+
       matches_.push_back(match);
     }
   }
@@ -134,6 +142,11 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
 
 query_parser::MatchingAlgorithm BookmarkProvider::GetMatchingAlgorithm(
     AutocompleteInput input) {
+  if (input.current_page_classification() ==
+      PageClassification::OmniboxEventProto_PageClassification_ANDROID_HUB) {
+    return query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH;
+  }
+
   // TODO(yoangela): This might have to check whether we're in @bookmarks mode
   //  specifically, since we might still get bookmarks suggestions in
   //  non-bookmarks keyword mode. This is enough of an edge case it makes sense

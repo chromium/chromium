@@ -9,6 +9,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -29,6 +30,7 @@ import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -50,6 +52,8 @@ import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.BookmarkTestUtil;
+import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -440,11 +444,46 @@ public class TabSwitcherSearchTest {
                         .contains("foobar"));
     }
 
+    @Test
+    @MediumTest
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH + ":enable_bookmark_provider/true")
+    public void testBookmarkSuggestions() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        mActivityTestRule.loadUrl(
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html"));
+        BookmarkTestUtil.waitForBookmarkModelLoaded();
+        // Click star button to bookmark the current tab.
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity(),
+                R.id.bookmark_this_page_id);
+
+        mActivityTestRule.loadUrl(
+                mActivityTestRule
+                        .getTestServer()
+                        .getURL("/chrome/test/data/android/navigate/one.html"));
+        enterTabSwitcher(cta);
+
+        SearchActivity searchActivity =
+                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
+        assertEquals(ActivityState.STOPPED, ApplicationStatus.getStateForActivity(cta));
+        assertEquals(ActivityState.RESUMED, ApplicationStatus.getStateForActivity(searchActivity));
+
+        OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(searchActivity);
+        omniboxTestUtils.requestFocus();
+        omniboxTestUtils.typeText("test.html", /* execute= */ false);
+        omniboxTestUtils.waitAnimationsComplete();
+
+        verifySuggestions(
+                Arrays.asList("/chrome/test/data/android/test.html"), /* includePrefix= */ true);
+        onView(withText("Bookmarks")).check(matches(isCompletelyDisplayed()));
+    }
+
     private void verifySuggestions(List<String> suggestionUrls, boolean includePrefix) {
         for (int i = 0; i < suggestionUrls.size(); i++) {
             String url = adjustUrl(suggestionUrls.get(i), includePrefix);
             findMatchWithTextAndId(url, includePrefix ? R.id.line_2 : R.id.line_1)
-                    .check(matches(isCompletelyDisplayed()));
+                    .check(matches(isDisplayed()));
         }
     }
 

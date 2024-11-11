@@ -70,7 +70,7 @@ const GroupConfigMap& BuildDefaultHubZPSGroups() {
         // clang-format off
         {GROUP_MOBILE_OPEN_TABS,
          CreateGroup(SECTION_MOBILE_OPEN_TABS,
-        GroupConfig_RenderType_DEFAULT_VERTICAL,
+                    GroupConfig_RenderType_DEFAULT_VERTICAL,
                     IDS_OMNIBOX_HUB_OPEN_TABS_HEADER)}
         // clang-format on
     };
@@ -83,6 +83,10 @@ const GroupConfigMap& BuildDefaultHubTypedGroups() {
     g_default_hub_typed_groups.Get() = {
         // clang-format off
         {GROUP_MOBILE_OPEN_TABS, CreateGroup(SECTION_MOBILE_OPEN_TABS)},
+        {GROUP_MOBILE_BOOKMARKS,
+             CreateGroup(SECTION_MOBILE_BOOKMARKS,
+                         GroupConfig_RenderType_DEFAULT_VERTICAL,
+                         IDS_SEARCH_ENGINES_STARTER_PACK_BOOKMARKS_NAME)},
         {GROUP_SEARCH,
              CreateGroup(SECTION_SEARCH,
                          GroupConfig_RenderType_DEFAULT_VERTICAL,

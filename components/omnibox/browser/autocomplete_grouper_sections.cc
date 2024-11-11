@@ -194,6 +194,7 @@ AndroidHubNonZPSSection::AndroidHubNonZPSSection(
     : Section(25,
               // Reserve most of the spots for open tabs.
               {{20, omnibox::GROUP_MOBILE_OPEN_TABS},
+               {5, omnibox::GROUP_MOBILE_BOOKMARKS},
                // Fallback to search suggestions at the bottom of the reuslts.
                {5, omnibox::GROUP_SEARCH}},
               group_configs,

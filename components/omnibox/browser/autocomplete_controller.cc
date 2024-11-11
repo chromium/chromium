@@ -1048,10 +1048,14 @@ bool AutocompleteController::ShouldRunProvider(
            provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST;
   }
 
+#if BUILDFLAG(IS_ANDROID)
   if (omnibox::IsAndroidHub(input_.current_page_classification())) {
     return provider->type() == AutocompleteProvider::TYPE_SEARCH ||
-           provider->type() == AutocompleteProvider::TYPE_OPEN_TAB;
+           provider->type() == AutocompleteProvider::TYPE_OPEN_TAB ||
+           (omnibox::kAndroidHubSearchEnableBookmarkProvider.Get() &&
+            provider->type() == AutocompleteProvider::TYPE_BOOKMARK);
   }
+#endif
 
   if (input_.InKeywordMode()) {
     // Only a subset of providers are run when we're in a starter pack keyword
