@@ -7,6 +7,7 @@
 #include "ash/capture_mode/search_results_panel.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/capture_mode/search_results_view.h"
@@ -71,6 +72,12 @@ IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, SearchResultsView) {
 
 // Tests that links are opened in new tabs.
 IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, OpenLinksInNewTabs) {
+  base::HistogramTester histogram_tester;
+  constexpr char kSearchResultClickedHistogram[] =
+      "Ash.CaptureModeController.SearchResultClicked.ClamshellMode";
+
+  histogram_tester.ExpectTotalCount(kSearchResultClickedHistogram, 0);
+
   auto* controller = CaptureModeController::Get();
   controller->StartSunfishSession();
   VerifyActiveBehavior(BehaviorType::kSunfish);
@@ -122,6 +129,7 @@ IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, OpenLinksInNewTabs) {
   // Test it opens a new tab and ends the session.
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_FALSE(controller->IsActive());
+  histogram_tester.ExpectTotalCount(kSearchResultClickedHistogram, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, SendSearchRequests) {

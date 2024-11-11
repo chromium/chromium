@@ -2377,6 +2377,18 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
+<histogram
+    name="Ash.CaptureModeController.MultimodalSearchRequest.{TabletOrClamshell}"
+    enum="Boolean" expires_after="2025-05-07">
+  <owner>hewer@chromium.org</owner>
+  <owner>sophiewen@google.com</owner>
+  <summary>
+    Recorded each time a multimodal search request is made in the search results
+    panel in {TabletOrClamshell}.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
 <histogram name="Ash.CaptureModeController.NumberOfConnectedCameras"
     units="connected cameras" expires_after="2025-02-13">
   <owner>afakhry@chromium.org</owner>
@@ -2545,6 +2557,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Ash.CaptureModeController.SearchResultClicked.{TabletOrClamshell}"
+    enum="Boolean" expires_after="2025-05-07">
+  <owner>hewer@chromium.org</owner>
+  <owner>sophiewen@google.com</owner>
+  <summary>
+    Recorded each time a search result URL was clicked in the search results
+    panel in {TabletOrClamshell}.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
     name="Ash.CaptureModeController.SearchResultsPanelEntryPoint.{TabletOrClamshell}"
     enum="SearchResultsPanelEntryType" expires_after="2025-05-07">
   <owner>hewer@chromium.org</owner>
@@ -2554,6 +2578,18 @@ chromium-metrics-reviews@google.com.
     session, either due to selecting a region (without an existing panel) in a
     Sunfish session, or clicking the search button in a default session. The
     recorded enum value indicates the entry point.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.SearchResultsPanelShown.{TabletOrClamshell}"
+    enum="Boolean" expires_after="2025-05-07">
+  <owner>hewer@chromium.org</owner>
+  <owner>sophiewen@google.com</owner>
+  <summary>
+    Recorded each time the search results panel was shown, including panel
+    creation, region adjustment, and region reselection, in {TabletOrClamshell}.
   </summary>
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>

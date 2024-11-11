@@ -743,7 +743,14 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
 
     RecordSearchResultsPanelEntryType(capture_mode_session_->active_behavior());
   }
-  search_results_panel_widget_->Show();
+
+  // If the panel was not visible beforehand (either the panel was not created
+  // yet or the panel was hidden from making a new selection), emit a metric.
+  if (!search_results_panel_widget_->IsVisible()) {
+    search_results_panel_widget_->Show();
+    RecordSearchResultsPanelShown();
+  }
+
   // Note at this point the session may no longer be active.
   auto* search_results_panel = GetSearchResultsPanel();
   search_results_panel->SetSearchBoxImage(image);
@@ -1315,6 +1322,8 @@ void CaptureModeController::SendMultimodalSearch(const gfx::ImageSkia& image,
       base::BindRepeating(&CaptureModeController::OnSearchUrlFetched,
                           weak_ptr_factory_.GetWeakPtr(), user_capture_region_,
                           image));
+
+  RecordMultimodalSearchRequest();
 }
 
 void CaptureModeController::OnRecordingEnded(
@@ -2030,6 +2039,8 @@ void CaptureModeController::OnSearchResultClicked() {
                         ->ShouldEndSessionOnSearchResultClicked()) {
     Stop();
   }
+
+  RecordSearchResultClicked();
 }
 
 void CaptureModeController::OnImageFileSaved(

@@ -15,7 +15,6 @@
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
-#include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
@@ -1052,6 +1051,7 @@ TEST_F(SunfishTest, SendMultimodalSearch) {
   LeftClickOn(session_test_api.GetActionButtons()[0]);
   WaitForImageCapturedForSearch(PerformCaptureType::kSearch);
   ASSERT_FALSE(controller->IsActive());
+  ASSERT_TRUE(controller->GetSearchResultsPanel());
 
   auto* search_results_panel =
       controller->search_results_panel_widget()->SetContentsView(
@@ -1099,6 +1099,12 @@ TEST_F(SunfishTest, SearchBoxInDefaultMode) {
 
 // Tests that the search box sends multimodal search requests.
 TEST_F(SunfishTest, SearchBoxTextfield) {
+  base::HistogramTester histogram_tester;
+  constexpr char kMultimodalSearchRequestHistogram[] =
+      "Ash.CaptureModeController.MultimodalSearchRequest.ClamshellMode";
+
+  histogram_tester.ExpectTotalCount(kMultimodalSearchRequestHistogram, 0);
+
   auto* controller = CaptureModeController::Get();
   auto* test_delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
@@ -1115,6 +1121,8 @@ TEST_F(SunfishTest, SearchBoxTextfield) {
   auto* widget = controller->search_results_panel_widget();
   ASSERT_TRUE(widget);
 
+  histogram_tester.ExpectTotalCount(kMultimodalSearchRequestHistogram, 0);
+
   // Click on the search box.
   auto* search_results_panel =
       views::AsViewClass<SearchResultsPanel>(widget->GetContentsView());
@@ -1128,6 +1136,8 @@ TEST_F(SunfishTest, SearchBoxTextfield) {
   EXPECT_EQ(u"a", textfield->GetText());
   PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_EQ(1, test_delegate->num_multimodal_search_requests());
+
+  histogram_tester.ExpectTotalCount(kMultimodalSearchRequestHistogram, 1);
 }
 
 // Tests that the search results panel is preserved between sessions.

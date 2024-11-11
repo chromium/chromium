@@ -57,6 +57,9 @@ constexpr char kSwitchesFromInitialModeRootWord[] =
     "SwitchesFromInitialCaptureMode";
 constexpr char kSearchResultsPanelEntryPointHistogramRootWord[] =
     "SearchResultsPanelEntryPoint";
+constexpr char kSearchResultsPanelShown[] = "SearchResultsPanelShown";
+constexpr char kSearchResultClickedRootWord[] = "SearchResultClicked";
+constexpr char kMultimodalSearchRequest[] = "MultimodalSearchRequest";
 
 void RecordCaptureModeRecordingDurationInternal(
     const std::string& histogram_name,
@@ -340,6 +343,27 @@ void RecordSearchResultsPanelEntryType(const CaptureModeBehavior* behavior) {
       behavior->behavior_type() == BehaviorType::kSunfish
           ? SearchResultsPanelEntryType::kSunfishRegionSelection
           : SearchResultsPanelEntryType::kDefaultSearchButton);
+}
+
+void RecordSearchResultsPanelShown() {
+  base::UmaHistogramBoolean(BuildHistogramName(kSearchResultsPanelShown,
+                                               /*behavior=*/nullptr,
+                                               /*append_ui_mode_suffix=*/true),
+                            true);
+}
+
+void RecordSearchResultClicked() {
+  base::UmaHistogramBoolean(BuildHistogramName(kSearchResultClickedRootWord,
+                                               /*behavior=*/nullptr,
+                                               /*append_ui_mode_suffix=*/true),
+                            true);
+}
+
+void RecordMultimodalSearchRequest() {
+  base::UmaHistogramBoolean(BuildHistogramName(kMultimodalSearchRequest,
+                                               /*behavior=*/nullptr,
+                                               /*append_ui_mode_suffix=*/true),
+                            true);
 }
 
 std::string BuildHistogramName(const char* const root_word,
