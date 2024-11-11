@@ -79,7 +79,7 @@
   <message name="IDS_WEBSITE_SETTINGS_FILE_SYSTEM_WRITE_GUARD_TITLE" desc="Title of the permission to edit files [CHAR_LIMIT=32]">
     File editing
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_FILE_SYSTEM_REVOKE_GRANT_TEXT" desc="Text to show when a file edit grant is revoked [CHAR_LIMIT=32]">
+  <message name="IDS_WEBSITE_SETTINGS_FILE_SYSTEM_REVOKE_GRANT_TEXT" desc="Text to show when a file edit grant is revoked">
     Removed site's access to file
   </message>
   <message name="IDS_HAND_TRACKING_PERMISSION_TITLE" desc="Title of the permission to use Hand tracking [CHAR_LIMIT=32]">
