@@ -470,6 +470,9 @@ bool CheckClientDownloadRequest::ShouldPromptForDeepScanning(
 
 bool CheckClientDownloadRequest::ShouldPromptForLocalDecryption(
     bool server_requests_prompt) const {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
   if (!server_requests_prompt) {
     return false;
   }
@@ -503,12 +506,17 @@ bool CheckClientDownloadRequest::ShouldPromptForLocalDecryption(
   }
 
   return true;
+#endif
 }
 
 bool CheckClientDownloadRequest::ShouldPromptForIncorrectPassword() const {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
   return password_.has_value() &&
          DownloadItemWarningData::HasShownLocalDecryptionPrompt(item_) &&
          DownloadItemWarningData::HasIncorrectPassword(item_);
+#endif
 }
 
 bool CheckClientDownloadRequest::ShouldShowScanFailure() const {
