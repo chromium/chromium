@@ -75,7 +75,9 @@ class TestDataSourceFactory
     auto file_data_source = std::make_unique<FileDataSource>();
     base::FilePath file_path(
 #if BUILDFLAG(IS_WIN)
-        base::UTF8ToWide(uri.GetContent())
+        // Windows file paths can't start with '/' the way unix file paths can,
+        // So we have to strip the leading one which comes from GetContent().
+        base::UTF8ToWide(uri.GetContent().erase(0, 1))
 #else
         uri.GetContent()
 #endif
