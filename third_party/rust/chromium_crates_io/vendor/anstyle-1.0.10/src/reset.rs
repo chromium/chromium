@@ -15,7 +15,7 @@ impl Reset {
 
 impl core::fmt::Display for Reset {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "{RESET}")
+        f.write_str(RESET)
     }
 }
 

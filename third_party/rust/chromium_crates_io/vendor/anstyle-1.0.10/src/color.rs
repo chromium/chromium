@@ -627,19 +627,17 @@ impl DisplayBuffer {
 impl core::fmt::Display for DisplayBuffer {
     #[inline]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        let s = self.as_str();
-        write!(f, "{s}")
+        f.write_str(self.as_str())
     }
 }
 
 #[derive(Copy, Clone, Default, Debug)]
-struct NullFormatter<D: core::fmt::Display>(D);
+struct NullFormatter(&'static str);
 
-impl<D: core::fmt::Display> core::fmt::Display for NullFormatter<D> {
+impl core::fmt::Display for NullFormatter {
     #[inline]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        let d = &self.0;
-        write!(f, "{d}")
+        f.write_str(self.0)
     }
 }
 

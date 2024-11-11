@@ -323,8 +323,7 @@ impl core::fmt::Display for EffectsDisplay {
     #[inline]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         for index in self.0.index_iter() {
-            let escape = METADATA[index].escape;
-            write!(f, "{escape}")?;
+            f.write_str(METADATA[index].escape)?;
         }
         Ok(())
     }
