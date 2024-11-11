@@ -170,12 +170,15 @@ declare_args() {
   #
   # For more information see
   # https://chromium.googlesource.com/chromium/src/+/main/docs/component_build.md
-  is_component_build = is_debug && current_os != "ios"
+  is_component_build =
+      is_debug && current_os != "ios" && current_os != "watchos"
 }
 
 assert(!(is_debug && is_official_build), "Can't do official debug builds")
 assert(!(current_os == "ios" && is_component_build),
        "Can't use component build on iOS")
+assert(!(current_os == "watchos" && is_component_build),
+       "Can't use component build on watchOS")
 
 declare_args() {
   # Unsafe buffers. Location of file used by plugins to track portions of
@@ -312,9 +315,10 @@ is_ios = current_os == "ios"
 is_linux = current_os == "linux"
 is_mac = current_os == "mac"
 is_nacl = current_os == "nacl"
+is_watchos = current_os == "watchos"
 is_win = current_os == "win" || current_os == "winuwp"
 
-is_apple = is_ios || is_mac
+is_apple = is_ios || is_mac || is_watchos
 is_posix = !is_win && !is_fuchsia
 
 # =============================================================================
