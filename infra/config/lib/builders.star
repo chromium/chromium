@@ -1009,6 +1009,20 @@ def builder(
             name = "/chrome/infra/browser/builds/ran_tests_without_patch_count",
             predicates = ["has(build.output.properties.ran_tests_without_patch)"],
         ),
+        buildbucket.custom_metric(
+            name = "/chrome/infra/browser/builds/cached_count",
+            predicates = [
+                "has(build.output.properties.is_cached)",
+                'string(build.output.properties.is_cached) == "true"',
+            ],
+        ),
+        buildbucket.custom_metric(
+            name = "/chrome/infra/browser/builds/uncached_count",
+            predicates = [
+                "has(build.output.properties.is_cached)",
+                'string(build.output.properties.is_cached) == "false"',
+            ],
+        ),
     ]
 
     kwargs["custom_metrics"] = args.listify(

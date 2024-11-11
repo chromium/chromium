@@ -17,22 +17,6 @@ ci.defaults.set(
     pool = ci.DEFAULT_POOL,
     cores = 8,
     os = os.LINUX_DEFAULT,
-    custom_metrics = [
-        buildbucket.custom_metric(
-            name = "/chrome/infra/browser/builds/cached_count",
-            predicates = [
-                "has(build.output.properties.is_cached)",
-                'string(build.output.properties.is_cached) == "true"',
-            ],
-        ),
-        buildbucket.custom_metric(
-            name = "/chrome/infra/browser/builds/uncached_count",
-            predicates = [
-                "has(build.output.properties.is_cached)",
-                'string(build.output.properties.is_cached) == "false"',
-            ],
-        ),
-    ],
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
     health_spec = health_spec.DEFAULT,
     priority = ci.DEFAULT_FYI_PRIORITY,

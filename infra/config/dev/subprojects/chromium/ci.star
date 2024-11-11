@@ -96,22 +96,6 @@ def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
         siso_project = siso.project.DEFAULT_TRUSTED,
         siso_remote_jobs = siso.remote_jobs.DEFAULT,
         resultdb_index_by_timestamp = True,
-        custom_metrics = [
-            buildbucket.custom_metric(
-                name = "/chrome/infra/browser/builds/cached_count",
-                predicates = [
-                    "has(build.output.properties.is_cached)",
-                    'string(build.output.properties.is_cached) == "true"',
-                ],
-            ),
-            buildbucket.custom_metric(
-                name = "/chrome/infra/browser/builds/uncached_count",
-                predicates = [
-                    "has(build.output.properties.is_cached)",
-                    'string(build.output.properties.is_cached) == "false"',
-                ],
-            ),
-        ],
         **kwargs
     )
 

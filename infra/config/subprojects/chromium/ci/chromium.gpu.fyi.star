@@ -19,22 +19,6 @@ ci.defaults.set(
     pool = ci.gpu.POOL,
     gardener_rotations = gardener_rotations.CHROMIUM_GPU,
     contact_team_email = "chrome-gpu-infra@google.com",
-    custom_metrics = [
-        buildbucket.custom_metric(
-            name = "/chrome/infra/browser/builds/cached_count",
-            predicates = [
-                "has(build.output.properties.is_cached)",
-                'string(build.output.properties.is_cached) == "true"',
-            ],
-        ),
-        buildbucket.custom_metric(
-            name = "/chrome/infra/browser/builds/uncached_count",
-            predicates = [
-                "has(build.output.properties.is_cached)",
-                'string(build.output.properties.is_cached) == "false"',
-            ],
-        ),
-    ],
     execution_timeout = 6 * time.hour,
     health_spec = health_spec.DEFAULT,
     properties = {

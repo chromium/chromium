@@ -20,22 +20,6 @@ ci.defaults.set(
     builder_group = "chromium.fyi",
     pool = ci.DEFAULT_POOL,
     cores = 8,
-    custom_metrics = [
-        buildbucket.custom_metric(
-            name = "/chrome/infra/browser/builds/cached_count",
-            predicates = [
-                "has(build.output.properties.is_cached)",
-                'string(build.output.properties.is_cached) == "true"',
-            ],
-        ),
-        buildbucket.custom_metric(
-            name = "/chrome/infra/browser/builds/uncached_count",
-            predicates = [
-                "has(build.output.properties.is_cached)",
-                'string(build.output.properties.is_cached) == "false"',
-            ],
-        ),
-    ],
     execution_timeout = 10 * time.hour,
     health_spec = health_spec.DEFAULT,
     priority = ci.DEFAULT_FYI_PRIORITY,
