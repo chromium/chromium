@@ -50,6 +50,23 @@ public class PdfUtils {
         int TRANSIENT_INSECURE = 3;
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({
+        PdfLoadResult.SUCCESS,
+        PdfLoadResult.ERROR,
+        PdfLoadResult.ABORT,
+        PdfLoadResult.NUM_ENTRIES
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface PdfLoadResult {
+        int SUCCESS = 0;
+        int ERROR = 1;
+        int ABORT = 2;
+
+        int NUM_ENTRIES = 3;
+    }
+
     private static final String TAG = "PdfUtils";
     private static final String PARAM_ANDROID_INLINE_PDF_IN_INCOGNITO = "inline_pdf_in_incognito";
     private static final String PARAM_ANDROID_INLINE_PDF_BACKPORT_IN_INCOGNITO =
@@ -317,6 +334,11 @@ public class PdfUtils {
     static void recordPdfLoadResultPaired(boolean isLoadSuccess) {
         RecordHistogram.recordBooleanHistogram(
                 "Android.Pdf.DocumentLoadResult.Paired", isLoadSuccess);
+    }
+
+    static void recordPdfLoadResultDetail(@PdfLoadResult int loadResult) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Pdf.DocumentLoadResult.Detail", loadResult, PdfLoadResult.NUM_ENTRIES);
     }
 
     static void recordPdfLoadTime(long duration) {

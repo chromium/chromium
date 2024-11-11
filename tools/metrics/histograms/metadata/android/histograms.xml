@@ -3673,6 +3673,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Pdf.DocumentLoadResult.Detail"
+    enum="AndroidPdfLoadResult" expires_after="2025-05-04">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the pdf document load result details. Recorded when the pdf load is
+    completed or aborted. Only record when there is a paired
+    Android.Pdf.DocumentLoad. Only record the first load result for each pdf
+    load.
+  </summary>
+</histogram>
+
 <histogram name="Android.Pdf.DocumentLoadResult.Paired" enum="Boolean"
     expires_after="2025-03-02">
   <owner>shuyng@google.com</owner>
