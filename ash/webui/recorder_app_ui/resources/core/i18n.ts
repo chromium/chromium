@@ -33,8 +33,12 @@ const noArgStringNames = [
   'genAiDisclaimerText',
   'genAiErrorGeneralLabel',
   'genAiErrorSummaryLanguageUnsupportedLabel',
+  'genAiErrorSummaryTranscriptTooLongLabel',
+  'genAiErrorSummaryTranscriptTooShortLabel',
   'genAiErrorSummaryTrustAndSafetyLabel',
   'genAiErrorTitleSuggestionLanguageUnsupportedLabel',
+  'genAiErrorTitleSuggestionTranscriptTooLongLabel',
+  'genAiErrorTitleSuggestionTranscriptTooShortLabel',
   'genAiErrorTitleSuggestionTrustAndSafetyLabel',
   'genAiExperimentBadge',
   'genAiLearnMoreLink',
@@ -203,10 +207,6 @@ const withArgsStringNames = {
   // Usage example:
   // Add `fooBar: withArgs<[number, string]>(),` here,
   // then `i18n.fooBar(1, '2')` works.
-  genAiErrorSummaryTranscriptTooLongLabel: withArgs<[number]>(),
-  genAiErrorSummaryTranscriptTooShortLabel: withArgs<[number]>(),
-  genAiErrorTitleSuggestionTranscriptTooLongLabel: withArgs<[number]>(),
-  genAiErrorTitleSuggestionTranscriptTooShortLabel: withArgs<[number]>(),
   languagePickerLanguageDownloadingProgressDescription: withArgs<[number]>(),
   recordingItemOptionsButtonAriaLabel: withArgs<[string]>(),
   recordingItemPauseButtonAriaLabel: withArgs<[string]>(),

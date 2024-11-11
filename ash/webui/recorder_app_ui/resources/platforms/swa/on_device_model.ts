@@ -3,10 +3,6 @@
 // found in the LICENSE file.
 
 import {
-  MAX_WORD_LENGTH,
-  MIN_WORD_LENGTH,
-} from '../../core/on_device_model/ai_feature_constants.js';
-import {
   Model,
   ModelLoader as ModelLoaderBase,
   ModelResponse,
@@ -20,12 +16,12 @@ import {
   assertExists,
   assertNotReached,
 } from '../../core/utils/assert.js';
-import {getWordCount} from '../../core/utils/utils.js';
 
 import {PlatformHandler} from './handler.js';
 import {
   FormatFeature,
   LoadModelResult,
+  ModelInfo,
   ModelState as MojoModelState,
   ModelStateMonitorReceiver,
   ModelStateType,
@@ -43,22 +39,39 @@ function parseResponse(res: string): string {
   return res.replaceAll('▁', ' ').replaceAll(/\n+/g, '\n').trim();
 }
 
+// The minimum transcript token length for title generation and summarization.
+const MIN_TOKEN_LENGTH = 200;
+
 abstract class OnDeviceModel<T> implements Model<T> {
   constructor(
     private readonly remote: OnDeviceModelRemote,
     private readonly pageRemote: PageHandlerRemote,
-    private readonly modelId: string,
+    private readonly modelInfo: ModelInfo,
   ) {
     // TODO(pihsun): Handle disconnection error
   }
 
-  // TODO(hsuanling): Have a loadAndExecute method so that input check can be
-  // done before loading models.
   abstract execute(content: string): Promise<ModelResponse<T>>;
 
-  private executeRaw(text: string): Promise<string> {
+  private async executeRaw(text: string): Promise<ModelResponse<string>> {
     const session = new SessionRemote();
     this.remote.startSession(session.$.bindNewPipeAndPassReceiver());
+    const inputPiece = {text};
+    const {size} = await session.getSizeInTokens({pieces: [inputPiece]});
+
+    if (size < MIN_TOKEN_LENGTH) {
+      return {
+        kind: 'error',
+        error: ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT,
+      };
+    }
+    if (size > this.modelInfo.inputTokenLimit) {
+      return {
+        kind: 'error',
+        error: ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG,
+      };
+    }
+
     const responseRouter = new StreamingResponderCallbackRouter();
     // TODO(pihsun): Error handling.
     const {promise, resolve} = Promise.withResolvers<string>();
@@ -92,7 +105,8 @@ abstract class OnDeviceModel<T> implements Model<T> {
       },
       responseRouter.$.bindNewPipeAndPassRemote(),
     );
-    return promise;
+    const result = await promise;
+    return {kind: 'success', result};
   }
 
   private async contentIsUnsafe(
@@ -120,7 +134,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
     fields: Record<string, string>,
   ) {
     const {result} = await this.pageRemote.formatModelInput(
-      {value: this.modelId},
+      this.modelInfo.modelId,
       feature,
       fields,
     );
@@ -149,11 +163,14 @@ abstract class OnDeviceModel<T> implements Model<T> {
     if (await this.contentIsUnsafe(prompt, requestSafetyFeature)) {
       return {kind: 'error', error: ModelResponseError.UNSAFE};
     }
-    const result = await this.executeRaw(prompt);
-    if (await this.contentIsUnsafe(result, responseSafetyFeature)) {
+    const response = await this.executeRaw(prompt);
+    if (response.kind === 'error') {
+      return response;
+    }
+    if (await this.contentIsUnsafe(response.result, responseSafetyFeature)) {
       return {kind: 'error', error: ModelResponseError.UNSAFE};
     }
-    return {kind: 'success', result};
+    return {kind: 'success', result: response.result};
   }
 }
 
@@ -231,7 +248,9 @@ export function mojoModelStateToModelState(state: MojoModelState): ModelState {
 abstract class ModelLoader<T> extends ModelLoaderBase<T> {
   override state = signal<ModelState>({kind: 'unavailable'});
 
-  protected abstract readonly modelId: string;
+  protected modelInfoInternal: ModelInfo|null = null;
+
+  protected abstract readonly featureType: FormatFeature;
 
   abstract createModel(remote: OnDeviceModelRemote): OnDeviceModel<T>;
 
@@ -242,7 +261,13 @@ abstract class ModelLoader<T> extends ModelLoaderBase<T> {
     super();
   }
 
+  get modelInfo(): ModelInfo {
+    return assertExists(this.modelInfoInternal);
+  }
+
   async init(): Promise<void> {
+    this.modelInfoInternal =
+      (await this.remote.getModelInfo(this.featureType)).modelInfo;
     const update = (state: MojoModelState) => {
       this.state.value = mojoModelStateToModelState(state);
     };
@@ -252,7 +277,7 @@ abstract class ModelLoader<T> extends ModelLoaderBase<T> {
     // return the cached state here, but we await here to avoid UI showing
     // temporary unavailable state.
     const {state} = await this.remote.addModelMonitor(
-      {value: this.modelId},
+      this.modelInfo.modelId,
       monitor.$.bindNewPipeAndPassRemote(),
     );
     update(state);
@@ -261,7 +286,7 @@ abstract class ModelLoader<T> extends ModelLoaderBase<T> {
   override async load(): Promise<Model<T>|null> {
     const newModel = new OnDeviceModelRemote();
     const {result} = await this.remote.loadModel(
-      {value: this.modelId},
+      this.modelInfo.modelId,
       newModel.$.bindNewPipeAndPassReceiver(),
     );
     if (result !== LoadModelResult.kSuccess) {
@@ -276,21 +301,6 @@ abstract class ModelLoader<T> extends ModelLoaderBase<T> {
     Promise<ModelResponse<T>> {
     if (!this.platformHandler.getLangPackInfo(language).isGenAiSupported) {
       return {kind: 'error', error: ModelResponseError.UNSUPPORTED_LANGUAGE};
-    }
-
-    const wordCount = getWordCount(content, language);
-    if (wordCount < MIN_WORD_LENGTH) {
-      return {
-        kind: 'error',
-        error: ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT,
-      };
-    }
-
-    if (wordCount > MAX_WORD_LENGTH) {
-      return {
-        kind: 'error',
-        error: ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG,
-      };
     }
 
     const model = await this.load();
@@ -310,17 +320,21 @@ abstract class ModelLoader<T> extends ModelLoaderBase<T> {
 }
 
 export class SummaryModelLoader extends ModelLoader<string> {
-  protected override modelId = '73caa678-45cb-4007-abb9-f04e431376da';
+  protected override featureType = FormatFeature.kAudioSummary;
 
   override createModel(remote: OnDeviceModelRemote): SummaryModel {
-    return new SummaryModel(remote, this.remote, this.modelId);
+    return new SummaryModel(remote, this.remote, this.modelInfo);
   }
 }
 
 export class TitleSuggestionModelLoader extends ModelLoader<string[]> {
-  protected override modelId = '1bdd5282-2d14-413c-bf43-9ea6d55c38a6';
+  protected override featureType = FormatFeature.kAudioTitle;
 
   override createModel(remote: OnDeviceModelRemote): TitleSuggestionModel {
-    return new TitleSuggestionModel(remote, this.remote, this.modelId);
+    return new TitleSuggestionModel(
+      remote,
+      this.remote,
+      this.modelInfo,
+    );
   }
 }

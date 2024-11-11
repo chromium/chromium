@@ -14,10 +14,6 @@ import {
 
 import {i18n} from '../core/i18n.js';
 import {
-  MAX_WORD_LENGTH,
-  MIN_WORD_LENGTH,
-} from '../core/on_device_model/ai_feature_constants.js';
-import {
   GenaiResultType,
   ModelResponseError,
 } from '../core/on_device_model/types.js';
@@ -77,13 +73,10 @@ export class GenaiError extends ReactiveLitElement {
         const resultType = assertExists(this.resultType);
         switch (resultType) {
           case GenaiResultType.SUMMARY:
-            message =
-              i18n.genAiErrorSummaryTranscriptTooShortLabel(MIN_WORD_LENGTH);
+            message = i18n.genAiErrorSummaryTranscriptTooShortLabel;
             break;
           case GenaiResultType.TITLE_SUGGESTION:
-            message = i18n.genAiErrorTitleSuggestionTranscriptTooShortLabel(
-              MIN_WORD_LENGTH,
-            );
+            message = i18n.genAiErrorTitleSuggestionTranscriptTooShortLabel;
             break;
           default:
             assertExhaustive(resultType);
@@ -96,13 +89,10 @@ export class GenaiError extends ReactiveLitElement {
         const resultType = assertExists(this.resultType);
         switch (resultType) {
           case GenaiResultType.SUMMARY:
-            message =
-              i18n.genAiErrorSummaryTranscriptTooLongLabel(MAX_WORD_LENGTH);
+            message = i18n.genAiErrorSummaryTranscriptTooLongLabel;
             break;
           case GenaiResultType.TITLE_SUGGESTION:
-            message = i18n.genAiErrorTitleSuggestionTranscriptTooLongLabel(
-              MAX_WORD_LENGTH,
-            );
+            message = i18n.genAiErrorTitleSuggestionTranscriptTooLongLabel;
             break;
           default:
             assertExhaustive(resultType);

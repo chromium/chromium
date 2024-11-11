@@ -112,6 +112,9 @@ class RecorderAppUI
   ModelState GetSodaState(const speech::LanguageCode& language_code);
 
   // recorder_app::mojom::PageHandler:
+  void GetModelInfo(on_device_model::mojom::FormatFeature feature,
+                    GetModelInfoCallback callback) override;
+
   void LoadModel(
       const base::Uuid& model_id,
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,

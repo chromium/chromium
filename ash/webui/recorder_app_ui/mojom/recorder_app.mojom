@@ -50,6 +50,15 @@ interface ModelStateMonitor {
   Update(ModelState state);
 };
 
+// Information of an on-device model.
+struct ModelInfo {
+  // Associated DownLoadable Content (DLC) id. Id is used for requesting DLC
+  // service to download corresponding system feature on-demand at run-time.
+  mojo_base.mojom.Uuid model_id;
+  // The maximum input token size.
+  uint32 input_token_limit;
+};
+
 // Retrieved information for a microphone.
 struct MicrophoneInfo {
   // Whether the microphone is the system default microphone.
@@ -82,6 +91,11 @@ struct LangPackInfo {
 
 // Primary interface for the chrome://recorder-app WebUI.
 interface PageHandler {
+  // Returns model information of the given format feature type.
+  // `feature` should be either `kAudioTitle` or `kAudioSummary`.
+  GetModelInfo(on_device_model.mojom.FormatFeature feature)
+      => (ModelInfo model_info);
+
   // Binds a new OnDeviceModel interface if possible using model from DLC
   // specified by `model_id`.
   // The list of possible IDs are listed in core/platform_handler.ts, and

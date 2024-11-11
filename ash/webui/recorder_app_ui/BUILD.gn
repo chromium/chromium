@@ -8,6 +8,8 @@ assert(is_chromeos_ash, "Recorder app is ash-chrome only")
 
 static_library("recorder_app_ui") {
   sources = [
+    "model_constants.cc",
+    "model_constants.h",
     "recorder_app_ui.cc",
     "recorder_app_ui.h",
     "recorder_app_ui_delegate.h",

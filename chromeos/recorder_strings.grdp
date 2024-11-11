@@ -51,10 +51,10 @@
     Can’t create summary for this transcript language
   </message>
   <message desc="Error message for too-long transcript input for summary." name="IDS_RECORDER_GEN_AI_ERROR_SUMMARY_TRANSCRIPT_TOO_LONG_LABEL">
-    Can’t summarize a transcript longer than <ph name="MAX_WORD_LENGTH">$1<ex>1461</ex></ph> words
+    Can’t summarize. Try a shorter transcript.
   </message>
   <message desc="Error message for too-short transcript input for summary." name="IDS_RECORDER_GEN_AI_ERROR_SUMMARY_TRANSCRIPT_TOO_SHORT_LABEL">
-    Can’t summarize a transcript fewer than <ph name="MIN_WORD_LENGTH">$1<ex>150</ex></ph> words
+    Can’t summarize. Try a longer transcript.
   </message>
   <message desc="Error message for trust and safety related error for summary generative AI feature." name="IDS_RECORDER_GEN_AI_ERROR_SUMMARY_TRUST_AND_SAFETY_LABEL">
     Can’t create summary for this content
@@ -63,10 +63,10 @@
     Can't create recording names for this transcript language
   </message>
   <message desc="Error message for too-long transcript input for title suggestion." name="IDS_RECORDER_GEN_AI_ERROR_TITLE_SUGGESTION_TRANSCRIPT_TOO_LONG_LABEL">
-    Can’t create names for a transcript longer than <ph name="MAX_WORD_LENGTH">$1<ex>1461</ex></ph> words
+    Can’t create names. Try a shorter transcript.
   </message>
   <message desc="Error message for too-short transcript input for title suggestion." name="IDS_RECORDER_GEN_AI_ERROR_TITLE_SUGGESTION_TRANSCRIPT_TOO_SHORT_LABEL">
-    Can’t create names for a transcript fewer than <ph name="MIN_WORD_LENGTH">$1<ex>150</ex></ph> words
+    Can’t create names. Try a longer transcript.
   </message>
   <message desc="Error message for trust and safety related error for title suggestion generative AI feature." name="IDS_RECORDER_GEN_AI_ERROR_TITLE_SUGGESTION_TRUST_AND_SAFETY_LABEL">
     Can’t create recording names for this content
