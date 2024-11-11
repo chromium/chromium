@@ -195,6 +195,9 @@ BASE_DECLARE_FEATURE(kEncryptAllPasswordsWithOSCryptAsync);
 // leak dialog.
 BASE_DECLARE_FEATURE(kMarkAllCredentialsAsLeaked);
 
+// Enables improvements to password change functionality.
+BASE_DECLARE_FEATURE(kImprovedPasswordChangeService);
+
 // All features parameters in alphabetical order.
 }  // namespace password_manager::features
 
