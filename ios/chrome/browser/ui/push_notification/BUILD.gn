@@ -135,6 +135,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "notifications_opt_in_egtest.mm",
+    "prominence_notification_setting_alert_egtest.mm",
     "push_notification_egtest.mm",
   ]
   deps = [
@@ -151,6 +152,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:eg_test_support+eg2",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:constants",
+    "//ios/chrome/browser/ui/settings/notifications:constants",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
