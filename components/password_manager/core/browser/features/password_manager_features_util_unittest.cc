@@ -467,50 +467,6 @@ TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
 }
 
 TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
-       MigrateOptInPrefToSyncSelectedTypes) {
-  syncer::SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
-  CoreAccountInfo account1;
-  account1.gaia = "gaia1";
-  auto gaia1_hash = signin::GaiaIdHash::FromGaiaId(account1.gaia);
-  CoreAccountInfo account2;
-  account2.gaia = "gaia2";
-  auto gaia2_hash = signin::GaiaIdHash::FromGaiaId(account2.gaia);
-  pref_service_.SetDict(
-      prefs::kAccountStoragePerAccountSettings,
-      base::Value::Dict()
-          .Set(gaia1_hash.ToBase64(),
-               base::Value::Dict()
-                   .Set("opted_in", true)
-                   .Set("default_store",
-                        static_cast<int>(PasswordForm::Store::kAccountStore)))
-          .Set(gaia2_hash.ToBase64(),
-               base::Value::Dict()
-                   .Set("opted_in", true)
-                   .Set("default_store",
-                        static_cast<int>(PasswordForm::Store::kProfileStore))));
-
-  MigrateOptInPrefToSyncSelectedTypes(&pref_service_);
-
-  syncer::SyncPrefs sync_prefs(&pref_service_);
-  EXPECT_TRUE(sync_prefs.GetSelectedTypesForAccount(gaia1_hash)
-                  .Has(syncer::UserSelectableType::kPasswords));
-  EXPECT_TRUE(sync_prefs.GetSelectedTypesForAccount(gaia2_hash)
-                  .Has(syncer::UserSelectableType::kPasswords));
-  EXPECT_FALSE(
-      sync_prefs
-          .GetSelectedTypesForAccount(signin::GaiaIdHash::FromGaiaId("other"))
-          .Has(syncer::UserSelectableType::kPasswords));
-
-  // Verify the default store settings are unnaffected.
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account1);
-  EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
-            PasswordForm::Store::kAccountStore);
-  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin, account2);
-  EXPECT_EQ(GetDefaultPasswordStore(&pref_service_, &sync_service_),
-            PasswordForm::Store::kProfileStore);
-}
-
-TEST_F(PasswordManagerFeaturesUtilWithAccountStorageForNonSyncingTest,
        MigrateDeclinedSaveOptInToExplicitOptOut) {
   // Using the Uno Flag because it will automatically turn on account password
   // storage if the default store has not been set to kProfileStore.

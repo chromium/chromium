@@ -191,11 +191,6 @@ void KeepAccountStorageSettingsOnlyForUsers(
     PrefService* pref_service,
     const std::vector<std::string>& gaia_ids);
 
-// Migrates the old password_manager account storage opt-in pref to
-// SyncUserSettings::GetSelectedTypes(), see crbug.com/1484531.
-// TODO(crbug.com/40943534): Delete the migration when appropriate, see bug.
-void MigrateOptInPrefToSyncSelectedTypes(PrefService* pref_service);
-
 // When the user declines the opt-in offer during saving, the default
 // store pref is set to kProfileStore, to signal the opt-in shouldn't be
 // offered again (see PasswordFeatureManagerImpl::

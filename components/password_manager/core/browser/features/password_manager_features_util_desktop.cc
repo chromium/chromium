@@ -318,32 +318,6 @@ void KeepAccountStorageSettingsOnlyForUsers(
   }
 }
 
-void MigrateOptInPrefToSyncSelectedTypes(PrefService* pref_service) {
-  const char kLegacyAccountStorageOptedInKey[] = "opted_in";
-
-  ScopedDictPrefUpdate legacy_pref_update(
-      pref_service, prefs::kAccountStoragePerAccountSettings);
-  ScopedDictPrefUpdate new_pref_update(
-      pref_service, syncer::prefs::internal::kSelectedTypesPerAccount);
-  for (auto [serialized_gaia_id_hash, settings] : *legacy_pref_update) {
-    // `settings` should be a dict but check to avoid a possible startup crash.
-    if (!settings.is_dict()) {
-      continue;
-    }
-    if (settings.GetDict()
-            .FindBool(kLegacyAccountStorageOptedInKey)
-            .value_or(false)) {
-      // Sync doesn't expose an API to set selected types for an arbitrary
-      // account, so manipulate the underlying prefs directly. The serialization
-      // for the gaia id hash is indeed the same, unit tests verify that by
-      // invoking GetSelectedTypes() after the migration.
-      new_pref_update->EnsureDict(serialized_gaia_id_hash)
-          ->Set(syncer::prefs::internal::kSyncPasswords, true);
-    }
-    settings.GetDict().Remove(kLegacyAccountStorageOptedInKey);
-  }
-}
-
 void MigrateDeclinedSaveOptInToExplicitOptOut(PrefService* pref_service) {
   ScopedDictPrefUpdate opt_in_pref_update(
       pref_service, syncer::prefs::internal::kSelectedTypesPerAccount);
