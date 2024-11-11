@@ -352,8 +352,8 @@ NSString* GetOverridenReason(
       SessionSyncServiceFactory::GetForProfile(profile)
           ->GetOpenTabsUIDelegate();
   const sessions::SessionTab* sessionTab = nullptr;
-  if (openTabsDelegate->GetForeignTab(_sessionTag, _tabId.value(),
-                                      &sessionTab)) {
+  if (openTabsDelegate && openTabsDelegate->GetForeignTab(
+                              _sessionTag, _tabId.value(), &sessionTab)) {
     bool isNTP = _webStateList->GetActiveWebState()->GetVisibleURL() ==
                  kChromeUINewTabURL;
     new_tab_page_uma::RecordNTPAction(
