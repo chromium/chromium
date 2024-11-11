@@ -864,12 +864,19 @@ void PausedInDebuggerTool::Dispatch(const ScriptValue& message,
                                     ExceptionState& exception_state) {
   String message_string;
   if (message.ToString(message_string)) {
+    auto task_runner =
+        overlay_->GetFrame()->GetTaskRunner(TaskType::kInternalInspector);
     if (message_string == "resume") {
-      v8_session_->resume();
+      task_runner->PostTask(
+          FROM_HERE, WTF::BindOnce(&v8_inspector::V8InspectorSession::resume,
+                                   WTF::Unretained(v8_session_),
+                                   /* setTerminateOnResume */ false));
       return;
     }
     if (message_string == "stepOver") {
-      v8_session_->stepOver();
+      task_runner->PostTask(
+          FROM_HERE, WTF::BindOnce(&v8_inspector::V8InspectorSession::stepOver,
+                                   WTF::Unretained(v8_session_)));
       return;
     }
   }

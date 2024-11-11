@@ -1,0 +1,16 @@
+Verifies that clicking the "Resume" button in the overlay doesn't leak pointerup events into the page.
+Paused on "debugger" statement.
+Found 'Resume' button
+Clicked 'Resume' button
+pointerup event count: {
+    id : <number>
+    result : {
+        result : {
+            description : 0
+            type : number
+            value : 0
+        }
+    }
+    sessionId : <string>
+}
+
