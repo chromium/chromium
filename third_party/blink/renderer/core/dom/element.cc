@@ -7244,6 +7244,7 @@ void Element::SetInnerHTMLInternal(
       if (auto* template_element = DynamicTo<HTMLTemplateElement>(*this)) {
         container = template_element->content();
         swap_dom_parts =
+            RuntimeEnabledFeatures::DOMPartsAPIEnabled() &&
             template_element->hasAttribute(html_names::kParsepartsAttr);
       }
       ReplaceChildrenWithFragment(container, fragment, exception_state);
