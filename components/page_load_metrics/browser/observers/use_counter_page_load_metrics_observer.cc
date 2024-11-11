@@ -651,6 +651,9 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kRubyAlign, WebDXFeature::kRubyAlign},
           {CSSSampleId::kRubyPosition, WebDXFeature::kRubyPosition},
           {CSSSampleId::kInitialLetter, WebDXFeature::kInitialLetter},
+          {CSSSampleId::kHyphenateCharacter, WebDXFeature::kHyphenateCharacter},
+          {CSSSampleId::kHyphenateLimitChars,
+           WebDXFeature::kHyphenateLimitChars},
       }};
 
   return *kMap;

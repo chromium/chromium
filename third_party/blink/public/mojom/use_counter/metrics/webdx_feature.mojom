@@ -266,6 +266,8 @@ enum WebDXFeature {
   kRubyAlign = 208,
   kRubyPosition = 209,
   kInitialLetter = 210,
+  kHyphenateCharacter = 211,
+  kHyphenateLimitChars = 212,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
