@@ -342,7 +342,7 @@ ci_build_perf_builder(
         ),
     ),
     gn_args = {
-        "builtin": gn_args.config(args = {"concurrent_links": 5}, configs = ["ci/Win x64 Builder", "no_reclient"]),
+        "builtin": gn_args.config(configs = ["ci/Win x64 Builder", "no_reclient"]),
         "reproxy": "ci/Win x64 Builder",
     },
     os = os.WINDOWS_DEFAULT,
