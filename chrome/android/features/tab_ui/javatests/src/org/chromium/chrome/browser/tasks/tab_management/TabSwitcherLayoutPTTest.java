@@ -132,6 +132,9 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @RequiresRestart(
+            "Flaky in arm64 (crbug.com/378137969 and crbug.com/378502216), affects flake rate of"
+                    + " other tests")
     public void testRenderGrid_10WebTabs() throws IOException {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         WebPageStation pageStation =
@@ -153,6 +156,9 @@ public class TabSwitcherLayoutPTTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @RequiresRestart(
+            "Flaky in arm64 (crbug.com/378137969 and crbug.com/378502216), affects flake rate of"
+                    + " other tests")
     public void testRenderGrid_10WebTabs_InitialScroll() throws IOException {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         WebPageStation pageStation =
