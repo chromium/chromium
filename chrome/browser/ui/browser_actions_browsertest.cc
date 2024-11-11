@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/browser_actions.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/address_bubbles_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
@@ -15,6 +17,8 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/user_prefs/user_prefs.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/actions/actions.h"
@@ -86,6 +90,20 @@ IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest, ShowPaymentsBubbleOrPage) {
   ASSERT_NE(bubble_controller->GetPaymentBubbleView(), nullptr);
   action_manager.FindAction(kActionShowPaymentsBubbleOrPage)->InvokeAction();
   EXPECT_EQ(bubble_controller->GetPaymentBubbleView(), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserActionsBrowserTest,
+                       NewIncognitoWindowEnabledState) {
+  auto& action_manager = actions::ActionManager::GetForTesting();
+  EXPECT_TRUE(
+      action_manager.FindAction(kActionNewIncognitoWindow)->GetEnabled());
+
+  // Set Incognito to DISABLED and verify the action item is updated.
+  IncognitoModePrefs::SetAvailability(
+      browser()->profile()->GetPrefs(),
+      policy::IncognitoModeAvailability::kDisabled);
+  EXPECT_FALSE(
+      action_manager.FindAction(kActionNewIncognitoWindow)->GetEnabled());
 }
 
 }  // namespace chrome

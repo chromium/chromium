@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
@@ -49,9 +50,11 @@
 #include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_prefs/user_prefs.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/actions/actions.h"
@@ -249,11 +252,14 @@ void BrowserActions::InitializeBrowserActions() {
         ChromeMenuAction(base::BindRepeating(
                              [](Browser* browser, actions::ActionItem* item,
                                 actions::ActionInvocationContext context) {
+                               CHECK(IncognitoModePrefs::IsIncognitoAllowed(
+                                   browser->profile()));
                                chrome::NewIncognitoWindow(browser->profile());
                              },
                              base::Unretained(browser)),
                          kActionNewIncognitoWindow, IDS_NEW_INCOGNITO_WINDOW,
                          IDS_NEW_INCOGNITO_WINDOW, kIncognitoRefreshMenuIcon)
+            .SetEnabled(IncognitoModePrefs::IsIncognitoAllowed(profile))
             .Build());
 
     root_action_item_->AddChild(
