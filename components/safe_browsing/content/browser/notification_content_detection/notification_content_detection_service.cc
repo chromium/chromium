@@ -33,7 +33,7 @@ NotificationContentDetectionService::~NotificationContentDetectionService() =
 
 void NotificationContentDetectionService::
     MaybeCheckNotificationContentDetectionModel(
-        blink::PlatformNotificationData& notification_data,
+        const blink::PlatformNotificationData& notification_data,
         const GURL& origin) {
   // Check the high confidence allowlist to determine whether to check the
   // LiteRT model. Since this does not own `notification_data`, create a deep

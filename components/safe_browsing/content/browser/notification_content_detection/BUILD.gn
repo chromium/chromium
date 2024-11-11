@@ -26,13 +26,11 @@ source_set("notification_content_detection") {
   ]
 }
 
-source_set("unittests") {
+source_set("test_utils") {
   testonly = true
   sources = [
     "mock_safe_browsing_database_manager.cc",
     "mock_safe_browsing_database_manager.h",
-    "notification_content_detection_model_unittest.cc",
-    "notification_content_detection_service_unittest.cc",
     "test_model_observer_tracker.cc",
     "test_model_observer_tracker.h",
     "test_notification_content_detection_model.cc",
@@ -41,6 +39,23 @@ source_set("unittests") {
 
   deps = [
     ":notification_content_detection",
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core:features",
+    "//components/optimization_guide/core:test_support",
+    "//components/safe_browsing/core/browser/db:test_database_manager",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = [
+    "notification_content_detection_model_unittest.cc",
+    "notification_content_detection_service_unittest.cc",
+  ]
+
+  deps = [
+    ":notification_content_detection",
+    ":test_utils",
     "//base:base",
     "//base/test:test_support",
     "//components/optimization_guide/core",

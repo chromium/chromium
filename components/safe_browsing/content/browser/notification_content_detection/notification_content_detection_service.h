@@ -29,8 +29,9 @@ class NotificationContentDetectionService : public KeyedService {
       content::BrowserContext* browser_context);
   ~NotificationContentDetectionService() override;
 
-  void MaybeCheckNotificationContentDetectionModel(
-      blink::PlatformNotificationData& notification_data,
+  // This method is virtual for testing.
+  virtual void MaybeCheckNotificationContentDetectionModel(
+      const blink::PlatformNotificationData& notification_data,
       const GURL& origin);
 
  protected:

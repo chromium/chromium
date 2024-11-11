@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/notifications/metrics/mock_notification_metrics_logger.h"
@@ -18,7 +19,13 @@
 #include "chrome/browser/notifications/notification_permission_context.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
+#include "chrome/browser/safe_browsing/mock_notification_content_detection_service.h"
+#include "chrome/browser/safe_browsing/notification_content_detection_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_service.h"
+#include "components/safe_browsing/content/browser/notification_content_detection/test_model_observer_tracker.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/common/persistent_notification_status.h"
 #include "content/public/test/browser_task_environment.h"
@@ -85,6 +92,8 @@ class PersistentNotificationHandlerTest : public ::testing::Test {
 
   // ::testing::Test overrides:
   void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(
+        safe_browsing::kOnDeviceNotificationContentDetectionModel);
     HistoryServiceFactory::GetInstance()->SetTestingFactory(
         &profile_, HistoryServiceFactory::GetDefaultFactory());
 
@@ -100,6 +109,7 @@ class PersistentNotificationHandlerTest : public ::testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileWithPermissionManager profile_;
   NotificationDisplayServiceTester display_service_tester_;
@@ -203,4 +213,74 @@ TEST_F(PersistentNotificationHandlerTest, DisableNotifications) {
                                       origin_)
                 .status,
             kExpectedDisabledStatus);
+}
+
+class PersistentNotificationHandlerWithNotificationContentDetection
+    : public PersistentNotificationHandlerTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  void SetUp() override {
+    if (IsNotificationContentDetectionEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          safe_browsing::kOnDeviceNotificationContentDetectionModel);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          safe_browsing::kOnDeviceNotificationContentDetectionModel);
+    }
+    if (IsSafeBrowsingEnabled()) {
+      profile_.GetTestingPrefService()->SetManagedPref(
+          prefs::kSafeBrowsingEnabled, std::make_unique<base::Value>(true));
+    } else {
+      profile_.GetTestingPrefService()->SetManagedPref(
+          prefs::kSafeBrowsingEnabled, std::make_unique<base::Value>(false));
+    }
+    mock_notification_content_detection_service_ = static_cast<
+        safe_browsing::MockNotificationContentDetectionService*>(
+        safe_browsing::NotificationContentDetectionServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                &profile_,
+                base::BindRepeating(
+                    &safe_browsing::MockNotificationContentDetectionService::
+                        FactoryForTests,
+                    &model_observer_tracker_,
+                    base::ThreadPool::CreateSequencedTaskRunner(
+                        {base::MayBlock()}))));
+  }
+
+  bool IsSafeBrowsingEnabled() { return std::get<0>(GetParam()); }
+
+  bool IsNotificationContentDetectionEnabled() {
+    return std::get<1>(GetParam());
+  }
+
+ protected:
+  raw_ptr<safe_browsing::MockNotificationContentDetectionService>
+      mock_notification_content_detection_service_ = nullptr;
+  safe_browsing::TestModelObserverTracker model_observer_tracker_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PersistentNotificationHandlerWithNotificationContentDetection,
+    testing::Combine(testing::Bool(), testing::Bool()));
+
+TEST_P(PersistentNotificationHandlerWithNotificationContentDetection,
+       PerformNotificationContentDetectionWhenEnabled) {
+  base::RunLoop run_loop;
+  display_service_tester_.SetNotificationAddedClosure(run_loop.QuitClosure());
+
+  int expected_number_of_calls = 0;
+  if (IsSafeBrowsingEnabled() && IsNotificationContentDetectionEnabled()) {
+    expected_number_of_calls = 1;
+  }
+  EXPECT_CALL(*mock_notification_content_detection_service_,
+              MaybeCheckNotificationContentDetectionModel(_, _))
+      .Times(expected_number_of_calls);
+
+  PlatformNotificationServiceFactory::GetForProfile(&profile_)
+      ->DisplayPersistentNotification(
+          kExampleNotificationId, origin_ /* service_worker_scope */, origin_,
+          blink::PlatformNotificationData(), blink::NotificationResources());
+
+  run_loop.Run();
 }

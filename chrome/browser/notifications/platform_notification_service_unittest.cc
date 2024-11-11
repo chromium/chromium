@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -32,10 +33,15 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
+#include "chrome/browser/safe_browsing/mock_notification_content_detection_service.h"
+#include "chrome/browser/safe_browsing/notification_content_detection_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
+#include "components/safe_browsing/content/browser/notification_content_detection/test_model_observer_tracker.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
@@ -81,6 +87,7 @@ using blink::NotificationResources;
 using blink::PlatformNotificationData;
 using content::NotificationDatabaseData;
 using message_center::Notification;
+using ::testing::_;
 
 namespace {
 
@@ -107,6 +114,8 @@ const char kTimeUntilLastClickMillis[] = "TimeUntilLastClick";
 class PlatformNotificationServiceTest : public testing::Test {
  public:
   void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(
+        safe_browsing::kOnDeviceNotificationContentDetectionModel);
     TestingProfile::Builder profile_builder;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     profile_builder.SetIsMainProfile(true);
@@ -637,3 +646,78 @@ TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
       icon_and_title->icon.GetRepresentation(1.0f).GetBitmap().getColor(0, 0));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+class PlatformNotificationServiceTest_NotificationContentDetection
+    : public PlatformNotificationServiceTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  void SetUp() override {
+    TestingProfile::Builder profile_builder;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    profile_builder.SetIsMainProfile(true);
+#endif
+    profile_builder.AddTestingFactory(
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory());
+    profile_ = profile_builder.Build();
+    if (IsNotificationContentDetectionEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          safe_browsing::kOnDeviceNotificationContentDetectionModel);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          safe_browsing::kOnDeviceNotificationContentDetectionModel);
+    }
+    if (IsSafeBrowsingEnabled()) {
+      profile_->GetTestingPrefService()->SetManagedPref(
+          prefs::kSafeBrowsingEnabled, std::make_unique<base::Value>(true));
+    } else {
+      profile_->GetTestingPrefService()->SetManagedPref(
+          prefs::kSafeBrowsingEnabled, std::make_unique<base::Value>(false));
+    }
+    mock_notification_content_detection_service_ = static_cast<
+        safe_browsing::MockNotificationContentDetectionService*>(
+        safe_browsing::NotificationContentDetectionServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                profile_.get(),
+                base::BindRepeating(
+                    &safe_browsing::MockNotificationContentDetectionService::
+                        FactoryForTests,
+                    &model_observer_tracker_,
+                    base::ThreadPool::CreateSequencedTaskRunner(
+                        {base::MayBlock()}))));
+  }
+
+  bool IsSafeBrowsingEnabled() { return std::get<0>(GetParam()); }
+
+  bool IsNotificationContentDetectionEnabled() {
+    return std::get<1>(GetParam());
+  }
+
+ protected:
+  raw_ptr<safe_browsing::MockNotificationContentDetectionService>
+      mock_notification_content_detection_service_ = nullptr;
+  safe_browsing::TestModelObserverTracker model_observer_tracker_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PlatformNotificationServiceTest_NotificationContentDetection,
+    testing::Combine(testing::Bool(), testing::Bool()));
+
+TEST_P(PlatformNotificationServiceTest_NotificationContentDetection,
+       PerformNotificationContentDetectionWhenEnabled) {
+  PlatformNotificationData data;
+  data.title = u"My notification's title";
+  data.body = u"Hello, world!";
+
+  int expected_number_of_calls = 0;
+  if (IsSafeBrowsingEnabled() && IsNotificationContentDetectionEnabled()) {
+    expected_number_of_calls = 1;
+  }
+  EXPECT_CALL(*mock_notification_content_detection_service_,
+              MaybeCheckNotificationContentDetectionModel(_, _))
+      .Times(expected_number_of_calls);
+  service()->DisplayPersistentNotification(
+      kNotificationId, GURL() /* service_worker_scope */,
+      GURL("https://chrome.com/"), data, NotificationResources());
+}
