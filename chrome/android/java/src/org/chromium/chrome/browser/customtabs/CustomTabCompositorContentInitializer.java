@@ -43,17 +43,16 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
     @Inject
     public CustomTabCompositorContentInitializer(
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            Activity activity,
+            BaseCustomTabActivity activity,
             Lazy<CompositorViewHolder> compositorViewHolder,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            CompositorViewHolder.Initializer compositorViewHolderInitializer,
-            TopUiThemeColorProvider topUiThemeColorProvider) {
+            CompositorViewHolder.Initializer compositorViewHolderInitializer) {
         mLifecycleDispatcher = lifecycleDispatcher;
         mActivity = activity;
         mCompositorViewHolder = compositorViewHolder;
         mTabContentManagerSupplier = tabContentManagerSupplier;
         mCompositorViewHolderInitializer = compositorViewHolderInitializer;
-        mTopUiThemeColorProvider = topUiThemeColorProvider;
+        mTopUiThemeColorProvider = activity.getTopUiThemeColorProvider();
 
         lifecycleDispatcher.register(this);
     }

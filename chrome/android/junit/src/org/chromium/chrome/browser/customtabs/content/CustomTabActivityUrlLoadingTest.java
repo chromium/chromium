@@ -19,6 +19,7 @@ import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityCo
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityContentTestEnvironment.SPECULATED_URL;
 
 import android.content.Intent;
+import android.net.Uri;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -195,7 +196,9 @@ public class CustomTabActivityUrlLoadingTest {
         CustomTabIntentDataProvider dataProvider = mock(CustomTabIntentDataProvider.class);
         when(dataProvider.getUrlToLoad()).thenReturn(url);
         when(dataProvider.getSession()).thenReturn(env.session);
-        when(dataProvider.getIntent()).thenReturn(new Intent().setAction(Intent.ACTION_VIEW));
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        when(dataProvider.getIntent()).thenReturn(intent);
         return dataProvider;
     }
 }

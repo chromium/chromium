@@ -76,20 +76,18 @@ public class CustomTabToolbarColorController {
 
     @Inject
     public CustomTabToolbarColorController(
-            BrowserServicesIntentDataProvider intentDataProvider,
-            BaseCustomTabActivity activity,
-            TopUiThemeColorProvider topUiThemeColorProvider) {
+            BrowserServicesIntentDataProvider intentDataProvider, BaseCustomTabActivity activity) {
         mIntentDataProvider = intentDataProvider;
         mActivity = activity;
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mTabObserverRegistrar = activity.getTabObserverRegistrar();
-        mTopUiThemeColorProvider = topUiThemeColorProvider;
+        mTopUiThemeColorProvider = activity.getTopUiThemeColorProvider();
     }
 
     /**
-     * Computes the toolbar color type.
-     * Returns a 'type' instead of a color so that the function can be used by non-toolbar UI
-     * surfaces with different values for {@link ToolbarColorType.DEFAULT_COLOR}.
+     * Computes the toolbar color type. Returns a 'type' instead of a color so that the function can
+     * be used by non-toolbar UI surfaces with different values for {@link
+     * ToolbarColorType.DEFAULT_COLOR}.
      */
     public static int computeToolbarColorType(
             BrowserServicesIntentDataProvider intentDataProvider,

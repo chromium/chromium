@@ -11,34 +11,21 @@ import dagger.Provides;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaIntentHandlingStrategy;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
-import org.chromium.chrome.browser.customtabs.CustomTabNightModeStateController;
-import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler.IntentIgnoringCriterion;
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandlingStrategy;
 import org.chromium.chrome.browser.customtabs.content.DefaultCustomTabIntentHandlingStrategy;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 
 /** Module for bindings shared between custom tabs and webapps. */
 @Module
 public class BaseCustomTabActivityModule {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final @ActivityType int mActivityType;
-    private final CustomTabNightModeStateController mNightModeController;
-    private final IntentIgnoringCriterion mIntentIgnoringCriterion;
-    private final TopUiThemeColorProvider mTopUiThemeColorProvider;
     private final BaseCustomTabActivity mActivity;
 
     public BaseCustomTabActivityModule(
-            BrowserServicesIntentDataProvider intentDataProvider,
-            CustomTabNightModeStateController nightModeController,
-            IntentIgnoringCriterion intentIgnoringCriterion,
-            TopUiThemeColorProvider topUiThemeColorProvider,
-            BaseCustomTabActivity activity) {
+            BrowserServicesIntentDataProvider intentDataProvider, BaseCustomTabActivity activity) {
         mIntentDataProvider = intentDataProvider;
         mActivityType = intentDataProvider.getActivityType();
-        mNightModeController = nightModeController;
-        mIntentIgnoringCriterion = intentIgnoringCriterion;
-        mTopUiThemeColorProvider = topUiThemeColorProvider;
         mActivity = activity;
     }
 
@@ -62,27 +49,9 @@ public class BaseCustomTabActivityModule {
                 : defaultHandler.get();
     }
 
-    @Provides
-    public IntentIgnoringCriterion provideIntentIgnoringCriterion() {
-        return mIntentIgnoringCriterion;
-    }
-
-    @Provides
-    public TopUiThemeColorProvider provideTopUiThemeColorProvider() {
-        return mTopUiThemeColorProvider;
-    }
-
-    @Provides
-    public CustomTabNightModeStateController provideNightModeController() {
-        return mNightModeController;
-    }
-
     public interface Factory {
         BaseCustomTabActivityModule create(
                 BrowserServicesIntentDataProvider intentDataProvider,
-                CustomTabNightModeStateController nightModeController,
-                IntentIgnoringCriterion intentIgnoringCriterion,
-                TopUiThemeColorProvider topUiThemeColorProvider,
                 BaseCustomTabActivity activity);
     }
 }

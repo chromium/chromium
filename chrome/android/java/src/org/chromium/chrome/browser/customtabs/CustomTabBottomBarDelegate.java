@@ -114,13 +114,12 @@ public class CustomTabBottomBarDelegate
             WindowAndroid windowAndroid,
             BrowserServicesIntentDataProvider dataProvider,
             BrowserControlsSizer browserControlsSizer,
-            CustomTabNightModeStateController nightModeStateController,
             CustomTabCompositorContentInitializer compositorContentInitializer) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mDataProvider = dataProvider;
         mBrowserControlsSizer = browserControlsSizer;
-        mNightModeStateController = nightModeStateController;
+        mNightModeStateController = activity.getCustomTabNightModeStateController();
         mTabProvider = activity.getCustomTabActivityTabProvider();
         browserControlsSizer.addObserver(this);
         mKeepContentView = false;

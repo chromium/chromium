@@ -91,6 +91,8 @@ public class CustomTabBottomBarDelegateUnitTest {
                 .thenReturn(mSwipeUpPendingIntent);
         when(mWindowAndroid.getApplicationBottomInsetSupplier()).thenReturn(mViewportInsetSupplier);
         when(mCustomTabActivity.getCustomTabActivityTabProvider()).thenReturn(mTabProvider);
+        when(mCustomTabActivity.getCustomTabNightModeStateController())
+                .thenReturn(mNightModeStateController);
         mIntentDataProvider =
                 new CustomTabIntentDataProvider(
                         mIntent, mActivity, CustomTabsIntent.COLOR_SCHEME_LIGHT);
@@ -100,7 +102,6 @@ public class CustomTabBottomBarDelegateUnitTest {
                         mWindowAndroid,
                         mIntentDataProvider,
                         mBrowserControlsSizer,
-                        mNightModeStateController,
                         mCompositorContentInitializer);
         when(mBottomBarView.findViewById(eq(R.id.bottombar_shadow))).thenReturn(mShadowView);
         mBottomBarDelegate.setBottomBarViewForTesting(mBottomBarView);

@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
@@ -33,7 +34,6 @@ public class CustomTabIntentHandler {
     private final CustomTabActivityTabProvider mTabProvider;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final CustomTabIntentHandlingStrategy mHandlingStrategy;
-    private final IntentIgnoringCriterion mIntentIgnoringCriterion;
     private final Context mContext;
     @Nullable private Runnable mOnTabCreatedRunnable;
     private final CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
@@ -42,13 +42,11 @@ public class CustomTabIntentHandler {
     public CustomTabIntentHandler(
             BrowserServicesIntentDataProvider intentDataProvider,
             CustomTabIntentHandlingStrategy handlingStrategy,
-            IntentIgnoringCriterion intentIgnoringCriterion,
             CustomTabMinimizationManagerHolder minimizationManagerHolder,
             BaseCustomTabActivity activity) {
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mIntentDataProvider = intentDataProvider;
         mHandlingStrategy = handlingStrategy;
-        mIntentIgnoringCriterion = intentIgnoringCriterion;
         mContext = activity;
         mMinimizationManagerHolder = minimizationManagerHolder;
 
@@ -110,7 +108,7 @@ public class CustomTabIntentHandler {
             return false;
         }
 
-        if (mIntentIgnoringCriterion.shouldIgnoreIntent(intent)) {
+        if (IntentHandler.shouldIgnoreIntent(intent, mContext, true)) {
             return false;
         }
 
@@ -142,11 +140,5 @@ public class CustomTabIntentHandler {
         } else {
             mOnTabCreatedRunnable = runnable;
         }
-    }
-
-    /** Represents Chrome-wide rules for ignoring Intents. */
-    public interface IntentIgnoringCriterion {
-        /** Returns whether given intent should be ignored. */
-        boolean shouldIgnoreIntent(Intent intent);
     }
 }

@@ -65,13 +65,12 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
     public CustomTabTaskDescriptionHelper(
             BaseCustomTabActivity activity,
             BrowserServicesIntentDataProvider intentDataProvider,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            TopUiThemeColorProvider topUiThemeColorProvider) {
+            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         mActivity = activity;
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mTabObserverRegistrar = activity.getTabObserverRegistrar();
         mIntentDataProvider = intentDataProvider;
-        mTopUiThemeColorProvider = topUiThemeColorProvider;
+        mTopUiThemeColorProvider = activity.getTopUiThemeColorProvider();
 
         activityLifecycleDispatcher.register(this);
     }

@@ -9,8 +9,10 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.view.View;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
@@ -102,6 +104,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
     @Mock public ProfileProvider profileProvider;
     @Mock public CipherFactory cipherFactory;
+    @Mock public PowerManager powerManager;
 
     public final CustomTabActivityTabProvider tabProvider =
             new CustomTabActivityTabProvider(SPECULATED_URL);
@@ -149,6 +152,8 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(activity.getCustomTabObserver()).thenReturn(customTabObserver);
         when(activity.getCustomTabNavigationEventObserver()).thenReturn(navigationEventObserver);
         when(activity.getCipherFactory()).thenReturn(cipherFactory);
+        when(activity.getSystemService(Context.POWER_SERVICE)).thenReturn(powerManager);
+        when(powerManager.isInteractive()).thenReturn(true);
     }
 
     @Override
@@ -195,7 +200,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         return new CustomTabIntentHandler(
                 intentDataProvider,
                 new DefaultCustomTabIntentHandlingStrategy(navigationController, activity),
-                (intent) -> false,
                 mMinimizationManagerHolder,
                 activity);
     }
