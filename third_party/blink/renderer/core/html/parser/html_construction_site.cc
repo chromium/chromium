@@ -294,6 +294,7 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   if (task.operation == HTMLConstructionSiteTask::kInsert) {
     ExecuteInsertTask(task);
     if (pending_dom_parts_) {
+      DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
       if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
         if (task.dom_parts_needed.needs_node_part) {
           // Just mark the node as having a node part.
@@ -310,6 +311,7 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   if (task.operation == HTMLConstructionSiteTask::kInsertText) {
     ExecuteInsertTextTask(task);
     if (pending_dom_parts_) {
+      DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
       if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
         if (task.dom_parts_needed.needs_node_part) {
           // Just mark the node as having a node part.
@@ -1406,7 +1408,8 @@ void HTMLConstructionSite::FinishedTemplateElement(
   if (!pending_dom_parts_) {
     return;
   }
-  if (!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
+  if (RuntimeEnabledFeatures::DOMPartsAPIEnabled() &&
+      !RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
     PartRoot* last_root = pending_dom_parts_->PopPartRoot();
     CHECK_EQ(&content_fragment->getPartRoot(), last_root);
   }
@@ -1481,17 +1484,20 @@ void HTMLConstructionSite::PendingDOMParts::ConstructDOMPartsIfNeeded(
 }
 
 PartRoot* HTMLConstructionSite::PendingDOMParts::CurrentPartRoot() const {
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   CHECK(!part_root_stack_.empty());
   return part_root_stack_.back().Get();
 }
 
 void HTMLConstructionSite::PendingDOMParts::PushPartRoot(PartRoot* root) {
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   return part_root_stack_.push_back(root);
 }
 
 PartRoot* HTMLConstructionSite::PendingDOMParts::PopPartRoot() {
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   CHECK(!part_root_stack_.empty());
   PartRoot* popped = part_root_stack_.back();
