@@ -25,12 +25,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/parser/html_entity_parser.h"
+
+#include <array>
 
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/html/parser/html_entity_search.h"
@@ -41,7 +38,7 @@ namespace blink {
 
 namespace {
 
-constexpr UChar kWindowsLatin1ExtensionArray[32] = {
+constexpr std::array<UChar, 32> kWindowsLatin1ExtensionArray = {
     0x20AC, 0x0081, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021,  // 80-87
     0x02C6, 0x2030, 0x0160, 0x2039, 0x0152, 0x008D, 0x017D, 0x008F,  // 88-8F
     0x0090, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014,  // 90-97
