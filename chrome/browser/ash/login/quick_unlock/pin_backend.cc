@@ -42,6 +42,7 @@ constexpr int kSaltByteSize = 16;
 
 // PIN auto submit backfill only for 6 digits PINs.
 constexpr int kPinAutosubmitBackfillLength = 6;
+constexpr int kPinAutosubmitMinPinLength = 6;
 constexpr int kPinAutosubmitMaxPinLength = 12;
 
 QuickUnlockStorage* GetPrefsBackend(const AccountId& account_id) {
@@ -250,6 +251,8 @@ void PinBackend::UpdateCryptohomePin(const AccountId& account_id,
                      std::move(did_update)));
 }
 
+// This method is used by the recovery path and therefore can only rely on
+// data that is available before the profile is loaded.
 void PinBackend::UpdateCryptohomePinWithContext(
     const AccountId& account_id,
     const std::string& token,
@@ -264,6 +267,22 @@ void PinBackend::UpdateCryptohomePinWithContext(
   cryptohome_backend_->SetPin(
       std::move(user_context), pin, std::nullopt,
       base::BindOnce(&PinBackend::OnAuthOperation, token, std::move(did_set)));
+
+  // Update autosubmit length if it exists. PIN autosubmit is only intended for
+  // PINs that are 6-12 digits long. When the user has autosubmit enabled, the
+  // stored value in local state is != 0.
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const int previous_pin_length = known_user.GetUserPinLength(account_id);
+  const int new_pin_length = pin.length();
+  if (previous_pin_length != 0) {
+    // User had autosubmit enabled before.
+    if (new_pin_length >= kPinAutosubmitMinPinLength &&
+        new_pin_length <= kPinAutosubmitMaxPinLength) {
+      known_user.SetUserPinLength(account_id, new_pin_length);
+    } else {
+      known_user.SetUserPinLength(account_id, 0);
+    }
+  }
 }
 
 void PinBackend::SetWithContext(const AccountId& account_id,
