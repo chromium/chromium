@@ -21,4 +21,14 @@ base::span<const uint8_t> SkPixmapToSpan(const SkPixmap& pixmap) {
       base::span(static_cast<const uint8_t*>(pixmap.addr()), size_in_bytes));
 }
 
+GFX_SKIA_EXPORT base::span<const uint8_t> SkDataToSpan(
+    sk_sp<SkData> data LIFETIME_BOUND) {
+  if (!data) {
+    return {};
+  }
+  // SAFETY: SkData is a container of bytes but the non-standard bytes()
+  // accessor prevents automatic conversion to span.
+  return UNSAFE_BUFFERS(base::make_span(data->bytes(), data->size()));
+}
+
 }  // namespace gfx

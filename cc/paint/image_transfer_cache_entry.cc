@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/image_transfer_cache_entry.h"
 
 #include <algorithm>
@@ -305,7 +300,7 @@ sk_sp<SkImage> ReadImage(
     return nullptr;
   }
 
-  SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes];
+  std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> pixmaps;
   bool fits_on_gpu = true;
   const int num_pixmaps = NumPixmapsForYUVConfig(plane_config);
   for (int i = 0; i < num_pixmaps; ++i) {
@@ -453,9 +448,10 @@ ClientImageTransferCacheEntry::Image::Image(const SkPixmap* pixmap)
   pixmaps[0] = pixmap;
 }
 
-ClientImageTransferCacheEntry::Image::Image(const SkPixmap yuva_pixmaps[],
-                                            const SkYUVAInfo& yuva_info,
-                                            const SkColorSpace* color_space)
+ClientImageTransferCacheEntry::Image::Image(
+    base::span<const SkPixmap> yuva_pixmaps,
+    const SkYUVAInfo& yuva_info,
+    const SkColorSpace* color_space)
     : yuv_plane_config(yuva_info.planeConfig()),
       yuv_subsampling(yuva_info.subsampling()),
       yuv_color_space(yuva_info.yuvColorSpace()),

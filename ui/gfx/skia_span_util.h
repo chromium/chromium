@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/gfx/gfx_skia_export.h"
 
@@ -15,6 +16,10 @@ namespace gfx {
 // Returns a span to the pixel memory for pixmap.
 GFX_SKIA_EXPORT base::span<const uint8_t> SkPixmapToSpan(
     const SkPixmap& pixmap LIFETIME_BOUND);
+
+// Returns a span to `data` owned memory.
+GFX_SKIA_EXPORT base::span<const uint8_t> SkDataToSpan(
+    sk_sp<SkData> data LIFETIME_BOUND);
 
 }  // namespace gfx
 

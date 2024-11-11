@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/tiles/gpu_image_decode_cache.h"
 
 #include <inttypes.h>
@@ -76,6 +71,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/skia_span_util.h"
 #include "ui/gl/trace_util.h"
 
 namespace cc {
@@ -861,7 +857,7 @@ bool GpuImageDecodeCache::DecodedImageData::Lock() {
   }
 
   bool did_lock = true;
-  bool did_lock_image[kAuxImageCount] = {false, false};
+  std::array<bool, kAuxImageCount> did_lock_image = {false, false};
   for (size_t i = 0; i < kAuxImageCount; ++i) {
     if (!aux_image_data_[i].data) {
       continue;
@@ -897,7 +893,7 @@ void GpuImageDecodeCache::DecodedImageData::Unlock() {
 }
 
 void GpuImageDecodeCache::DecodedImageData::SetLockedData(
-    DecodedAuxImageData aux_image_data[kAuxImageCount],
+    base::span<DecodedAuxImageData, kAuxImageCount> aux_image_data,
     bool out_of_raster) {
   for (size_t i = 0; i < kAuxImageCount; ++i) {
     DCHECK(aux_image_data_[i].IsEmpty());
@@ -1096,7 +1092,7 @@ GpuImageDecodeCache::ImageData::ImageData(
     bool is_bitmap_backed,
     bool can_do_hardware_accelerated_decode,
     bool do_hardware_accelerated_decode,
-    ImageInfo image_info[kAuxImageCount])
+    base::span<ImageInfo, kAuxImageCount> image_info)
     : paint_image_id(paint_image_id),
       mode(mode),
       target_color_space(target_color_space),
@@ -2335,8 +2331,9 @@ void GpuImageDecodeCache::InsertTransferCacheEntry(
   uint32_t size = image_entry.SerializedSize();
   void* data = context_->ContextSupport()->MapTransferCacheEntry(size);
   if (data) {
+    // TODO(crbug.com/40285824): Have MapTransferCacheEntry() return a span.
     bool succeeded = image_entry.Serialize(
-        base::make_span(static_cast<uint8_t*>(data), size));
+        UNSAFE_TODO(base::make_span(static_cast<uint8_t*>(data), size)));
     DCHECK(succeeded);
     context_->ContextSupport()->UnmapAndCreateTransferCacheEntry(
         image_entry.UnsafeType(), image_entry.Id());
@@ -2438,7 +2435,7 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
   scoped_refptr<ImageData> image_data_holder(image_data);
 
   // Decode the image into `aux_image_data` while the lock is not held.
-  DecodedAuxImageData aux_image_data[kAuxImageCount];
+  std::array<DecodedAuxImageData, kAuxImageCount> aux_image_data;
   {
     base::AutoUnlock unlock(lock_);
     for (auto aux_image : kAllAuxImages) {
@@ -2673,8 +2670,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_HardwareDecode(
   const uint32_t transfer_cache_id = ClientImageTransferCacheEntry::GetNextId();
   const gpu::SyncToken decode_sync_token =
       context_->RasterInterface()->ScheduleImageDecode(
-          base::make_span(encoded_data->bytes(), encoded_data->size()),
-          output_size, transfer_cache_id,
+          gfx::SkDataToSpan(encoded_data), output_size, transfer_cache_id,
           color_space ? gfx::ColorSpace(*color_space) : gfx::ColorSpace(),
           image_data->needs_mips);
 
@@ -2706,7 +2702,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
   DCHECK(use_transfer_cache_);
   DCHECK(!image_data->decode.do_hardware_accelerated_decode());
 
-  ClientImageTransferCacheEntry::Image image[kAuxImageCount];
+  std::array<ClientImageTransferCacheEntry::Image, kAuxImageCount> image;
   bool has_gainmap = false;
 
   for (auto aux_image : kAllAuxImages) {
@@ -2724,7 +2720,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary_TransferCache_SoftwareDecode(
     if (info.rgba.has_value()) {
       DCHECK(!info.yuva.has_value());
       image[aux_image_index] = ClientImageTransferCacheEntry::Image(
-          image_data->decode.pixmaps(aux_image));
+          &image_data->decode.pixmaps(aux_image)[0]);
     }
   }
 
@@ -2905,7 +2901,7 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
                                      bool allow_hardware_decode) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "GpuImageDecodeCache::CreateImageData");
-  ImageInfo image_info[kAuxImageCount];
+  std::array<ImageInfo, kAuxImageCount> image_info;
 
   // Extract ImageInfo and SkImageInfo for the default image, assuming software
   // decoding to RGBA.

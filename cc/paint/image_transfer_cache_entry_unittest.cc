@@ -247,8 +247,7 @@ TEST_P(ImageTransferCacheEntryTest, MAYBE_Deserialize) {
   ASSERT_TRUE(yuva_pixmaps.plane(0).erase(SkColors::kBlack, &top_color_rect));
 
   auto client_entry(std::make_unique<ClientImageTransferCacheEntry>(
-      ClientImageTransferCacheEntry::Image(yuva_pixmaps.planes().data(),
-                                           yuva_info,
+      ClientImageTransferCacheEntry::Image(yuva_pixmaps.planes(), yuva_info,
                                            nullptr /* decoded color space*/),
       true /* needs_mips */, std::nullopt));
   uint32_t size = client_entry->SerializedSize();
