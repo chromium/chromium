@@ -29,8 +29,6 @@ import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
-import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
-import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.url.GURL;
 
 import java.io.BufferedOutputStream;
@@ -84,27 +82,6 @@ public class AuxiliarySearchProvider {
                 return (int) -Math.signum((float) delta);
             };
 
-    private static final String ZERO_STATE_FAVICON_NUMBER_PARAM = "zero_state_favicon_number";
-    public static final IntCachedFieldTrialParameter ZERO_STATE_FAVICON_NUMBER =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON,
-                    ZERO_STATE_FAVICON_NUMBER_PARAM,
-                    DEFAULT_FAVICON_NUMBER);
-
-    private static final String USE_LARGE_FAVICON_PARAM = "use_large_favicon";
-    public static final BooleanCachedFieldTrialParameter USE_LARGE_FAVICON =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON,
-                    USE_LARGE_FAVICON_PARAM,
-                    false);
-
-    private static final String SCHEDULE_DELAY_TIME_MS_PARAM = "schedule_delay_time_ms";
-    public static final IntCachedFieldTrialParameter SCHEDULE_DELAY_TIME_MS =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.ANDROID_APP_INTEGRATION_WITH_FAVICON,
-                    SCHEDULE_DELAY_TIME_MS_PARAM,
-                    DEFAULT_SCHEDULE_DELAY_TIME_MS);
-
     private final Context mContext;
     private final Profile mProfile;
     private final AuxiliarySearchBridge mAuxiliarySearchBridge;
@@ -128,7 +105,7 @@ public class AuxiliarySearchProvider {
         mFaviconHelper = new FaviconHelper();
         mDefaultFaviconSize = AuxiliarySearchUtils.getFaviconSize(mContext.getResources());
         mIsFaviconEnabled = ChromeFeatureList.sAndroidAppIntegrationWithFavicon.isEnabled();
-        mZeroStateFaviconNumber = ZERO_STATE_FAVICON_NUMBER.getValue();
+        mZeroStateFaviconNumber = AuxiliarySearchUtils.ZERO_STATE_FAVICON_NUMBER.getValue();
     }
 
     /**
@@ -234,7 +211,8 @@ public class AuxiliarySearchProvider {
                     tabs,
                     zeroStateFaviconFetchedNumber,
                     remainingFaviconFetchCount);
-            scheduleBackgroundTask((long) SCHEDULE_DELAY_TIME_MS.getValue(), startTimeMs);
+            scheduleBackgroundTask(
+                    (long) AuxiliarySearchUtils.SCHEDULE_DELAY_TIME_MS.getValue(), startTimeMs);
         }
     }
 

@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.auxiliary_search;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchProvider.USE_LARGE_FAVICON;
+import static org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils.USE_LARGE_FAVICON;
 
 import android.content.Context;
 import android.content.res.Resources;

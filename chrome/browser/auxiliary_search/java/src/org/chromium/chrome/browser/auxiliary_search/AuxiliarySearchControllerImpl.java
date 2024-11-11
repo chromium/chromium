@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
-import static org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchProvider.SCHEDULE_DELAY_TIME_MS;
-import static org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchProvider.ZERO_STATE_FAVICON_NUMBER;
+import static org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils.SCHEDULE_DELAY_TIME_MS;
+import static org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils.ZERO_STATE_FAVICON_NUMBER;
 
 import android.content.Context;
 import android.graphics.Bitmap;
