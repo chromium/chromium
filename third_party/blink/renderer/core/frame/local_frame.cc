@@ -991,12 +991,6 @@ void LocalFrame::OnFirstPaint(bool text_painted, bool image_painted) {
   }
 }
 
-void LocalFrame::OnFirstContentfulPaint() {
-  if (IsOutermostMainFrame()) {
-    GetPage()->GetChromeClient().OnFirstContentfulPaint();
-  }
-}
-
 bool LocalFrame::CanAccessEvent(
     const WebInputEventAttribution& attribution) const {
   switch (attribution.type()) {

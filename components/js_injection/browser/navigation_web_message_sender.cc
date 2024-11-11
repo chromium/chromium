@@ -184,8 +184,6 @@ const char NavigationWebMessageSender::kNavigationCompletedMessage[] =
 const char NavigationWebMessageSender::kPageLoadEndMessage[] = "PAGE_LOAD_END";
 const char NavigationWebMessageSender::kDOMContentLoadedMessage[] =
     "DOM_CONTENT_LOADED";
-const char NavigationWebMessageSender::kFirstContentfulPaintMessage[] =
-    "FIRST_CONTENTFUL_PAINT";
 const char NavigationWebMessageSender::kPageDeletedMessage[] = "PAGE_DELETED";
 
 // static
@@ -245,8 +243,7 @@ void NavigationWebMessageSender::DispatchOptInMessage() {
           .Set("type", kOptedInMessage)
           .Set("supports_start_and_redirect", true)
           .Set("supports_history_details", true)
-          .Set("supports_dom_content_loaded", true)
-          .Set("supports_first_contentful_paint", true);
+          .Set("supports_dom_content_loaded", true);
   PostMessage(std::move(message_dict));
 }
 
@@ -265,13 +262,6 @@ void NavigationWebMessageSender::DidFinishLoad(
     return;
   }
   PostMessageWithType(kPageLoadEndMessage);
-}
-
-void NavigationWebMessageSender::OnFirstContentfulPaintInPrimaryMainFrame() {
-  if (!page().IsPrimary()) {
-    return;
-  }
-  PostMessageWithType(kFirstContentfulPaintMessage);
 }
 
 bool NavigationWebMessageSender::ShouldSendMessageForNavigation(

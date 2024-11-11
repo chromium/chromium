@@ -1166,16 +1166,6 @@ public class NavigationListenerTest extends AwParameterizedTest {
             data = mListener.waitForOnPostMessage();
             assertNavigationMessageType(data, "PAGE_LOAD_END");
             Assert.assertEquals(currentPageReplyProxy, data.mReplyProxy);
-
-            // FIRST_CONTENTFUL_PAINT is only invoked on pages that have non-empty content. All of
-            // about:blank, PAGE_B, and PAGE_WITH_IFRAME are empty/background-color-only.
-            if (!url.equals("about:blank")
-                    && !url.equals(mTestServer.getURL(PAGE_B))
-                    && !url.equals(mTestServer.getURL(PAGE_WITH_IFRAME))) {
-                data = mListener.waitForOnPostMessage();
-                assertNavigationMessageType(data, "FIRST_CONTENTFUL_PAINT");
-                Assert.assertEquals(currentPageReplyProxy, data.mReplyProxy);
-            }
         }
 
         return currentPageReplyProxy;

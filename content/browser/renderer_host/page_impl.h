@@ -90,13 +90,6 @@ class CONTENT_EXPORT PageImpl : public Page {
     is_on_load_completed_in_main_document_ = completed;
   }
 
-  bool did_first_contentful_paint_in_main_document() const {
-    return did_first_contentful_paint_in_main_document_;
-  }
-  void set_did_first_contentful_paint_in_main_document() {
-    did_first_contentful_paint_in_main_document_ = true;
-  }
-
   bool is_main_document_element_available() const {
     return is_main_document_element_available_;
   }
@@ -295,9 +288,6 @@ class CONTENT_EXPORT PageImpl : public Page {
   // True if we've received a notification that the onload() handler has
   // run for the main document.
   bool is_on_load_completed_in_main_document_ = false;
-
-  // True if the main document had done a first contentful paint.
-  bool did_first_contentful_paint_in_main_document_ = false;
 
   // True if we've received a notification that the window.document element
   // became available for the main document.

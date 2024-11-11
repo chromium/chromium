@@ -2569,7 +2569,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void DraggableRegionsChanged(
       std::vector<blink::mojom::DraggableRegionPtr> regions) override;
   void NotifyDocumentInteractive() override;
-  void OnFirstContentfulPaint() override;
 
   void ReportNoBinderForInterface(const std::string& error);
 

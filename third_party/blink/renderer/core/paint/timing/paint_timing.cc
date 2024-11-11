@@ -445,10 +445,8 @@ void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
     soft_navigation_fcp_reported_ = true;
     return;
   }
-  if (GetFrame()) {
-    GetFrame()->OnFirstContentfulPaint();
+  if (GetFrame())
     GetFrame()->Loader().Progress().DidFirstContentfulPaint();
-  }
   NotifyPaintTimingChanged();
   fmp_detector_->NotifyFirstContentfulPaint(
       paint_details_.first_contentful_paint_presentation_);
