@@ -122,9 +122,6 @@ class SavedTabGroupTab {
   // merged specific. Side effect: Updates the values in the tab.
   void MergeRemoteTab(const SavedTabGroupTab& remote_tab);
 
-  // Returns whether the `remote_tab` should be merged into the current one.
-  bool ShouldMergeTab(const SavedTabGroupTab& remote_tab) const;
-
   // Returns true iff syncable data fields in `this` and `other` are equivalent.
   bool IsSyncEquivalent(const SavedTabGroupTab& other) const;
 

@@ -498,12 +498,6 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncDataWithExistingData) {
   syncer::EntityChangeList entity_change_list = CreateEntityChangeListFromGroup(
       updated_group, syncer::EntityChange::ChangeType::ACTION_UPDATE);
 
-  // Ensure the updated data is eligible to be merged.
-  EXPECT_TRUE(group_from_model->RemoteGroupHasMoreRecentUpdates(
-      updated_group.update_time_windows_epoch_micros()));
-  EXPECT_TRUE(
-      group_from_model->GetTab(tab_1_guid)->ShouldMergeTab(updated_tab_1));
-
   bridge_->MergeFullSyncData(bridge_->CreateMetadataChangeList(),
                              std::move(entity_change_list));
 

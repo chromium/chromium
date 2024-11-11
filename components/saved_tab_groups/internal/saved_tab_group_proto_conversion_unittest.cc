@@ -220,8 +220,6 @@ TEST_F(SavedTabGroupConversionTest, VerifyLocalFieldsOnProtoToGroupConversion) {
 // Verifies that merging 2 group objects (1 Sync, 1 SavedTabGroup) merges the
 // most recently updated object correctly.
 TEST_F(SavedTabGroupConversionTest, MergedGroupHoldsCorrectData) {
-  // Create a group.
-  const base::Time old_time = base::Time::Now();
   const std::u16string& title = u"Test title";
   const tab_groups::TabGroupColorId& color = tab_groups::TabGroupColorId::kBlue;
   std::optional<base::Uuid> saved_guid = base::Uuid::GenerateRandomV4();
@@ -239,29 +237,17 @@ TEST_F(SavedTabGroupConversionTest, MergedGroupHoldsCorrectData) {
   group2.SetColor(tab_groups::TabGroupColorId::kGreen);
   group2.SetTitle(u"New Title");
 
-  // Expect that group2 is a valid group to merge with and that group1 hold the
-  // same data after the merge.
-  EXPECT_TRUE(group1.RemoteGroupHasMoreRecentUpdates(
-      group2.update_time_windows_epoch_micros()));
+  // Merge existing group group1 with incoming group group2 and verify that
+  // group1 holds the same data as group2 after the merge.
   group1.MergeRemoteGroupMetadata(
       group2.title(), group2.color(), group2.position(),
       group2.creator_cache_guid(), group2.last_updater_cache_guid(),
       group2.update_time_windows_epoch_micros());
   CompareGroups(group1, group2);
-
-  // Expect that group2 is not a valid group to merge. No merging should be
-  // done.
-  group1.SetColor(tab_groups::TabGroupColorId::kOrange);
-  group1.SetTitle(u"Another title");
-  group2.SetUpdateTimeWindowsEpochMicros(old_time);
-  EXPECT_TRUE(group1.RemoteGroupHasMoreRecentUpdates(
-      group2.update_time_windows_epoch_micros()));
 }
 
 // Verifies that merging 2 tab objects (1 Sync, 1 SavedTabGroupTab)
 TEST_F(SavedTabGroupConversionTest, MergedTabHoldsCorrectData) {
-  // Create a tab.
-  const base::Time old_time = base::Time::Now();
   base::Uuid saved_guid = base::Uuid::GenerateRandomV4();
   SavedTabGroupTab tab1(GURL("Test url"), u"Test Title", saved_guid,
                         /*position=*/0);
@@ -274,17 +260,10 @@ TEST_F(SavedTabGroupConversionTest, MergedTabHoldsCorrectData) {
   tab2.SetCreatorCacheGuid("creator_cache_guid");
   tab2.SetLastUpdaterCacheGuid("last_updater_cache_guid");
 
-  // Expect that tab2 is a valid group to merge with and that the tab1 holds the
-  // same data after the merge.
-  EXPECT_TRUE(tab1.ShouldMergeTab(tab2));
+  // Merge existing tab tab1 with incoming tab tab2 and verify that tab1 holds
+  // the same data as tab2 after the merge.
   tab1.MergeRemoteTab(tab2);
   CompareTabs(tab1, tab2);
-
-  // Expect that tab2 is not a valid group to merge. No merging should be done.
-  tab1.SetTitle(u"A title");
-  tab1.SetURL(GURL("Another url"));
-  tab2.SetUpdateTimeWindowsEpochMicros(old_time);
-  EXPECT_TRUE(tab1.ShouldMergeTab(tab2));
 }
 
 }  // namespace tab_groups

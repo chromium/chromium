@@ -360,17 +360,6 @@ void SavedTabGroup::UpdateTabPositionsImpl() {
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
 }
 
-bool SavedTabGroup::RemoteGroupHasMoreRecentUpdates(
-    base::Time remote_group_update_time) const {
-  if (AlwaysAcceptServerDataInModel()) {
-    return true;
-  }
-
-  // TODO(crbug.com/40870787): Investigate if we should consider the creation
-  // time.
-  return remote_group_update_time >= update_time_windows_epoch_micros();
-}
-
 void SavedTabGroup::MergeRemoteGroupMetadata(
     const std::u16string& title,
     TabGroupColorId color,
@@ -378,10 +367,6 @@ void SavedTabGroup::MergeRemoteGroupMetadata(
     std::optional<std::string> creator_cache_guid,
     std::optional<std::string> last_updater_cache_guid,
     base::Time update_time) {
-  if (!RemoteGroupHasMoreRecentUpdates(update_time)) {
-    return;
-  }
-
   SetTitle(title);
   SetColor(color);
   if (position.has_value()) {

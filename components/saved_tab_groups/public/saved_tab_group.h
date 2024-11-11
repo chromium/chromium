@@ -172,9 +172,6 @@ class SavedTabGroup {
       std::optional<std::string> last_updater_cache_guid,
       base::Time update_time);
 
-  // Returns whether the remote group has more recent updates.
-  bool RemoteGroupHasMoreRecentUpdates(base::Time remote_update_time) const;
-
   // Returns true iff syncable data fields in `this` and `other` are equivalent.
   bool IsSyncEquivalent(const SavedTabGroup& other) const;
 

@@ -52,21 +52,7 @@ SavedTabGroupTab& SavedTabGroupTab::operator=(SavedTabGroupTab&& other) =
     default;
 SavedTabGroupTab::~SavedTabGroupTab() = default;
 
-bool SavedTabGroupTab::ShouldMergeTab(
-    const SavedTabGroupTab& remote_tab) const {
-  if (AlwaysAcceptServerDataInModel()) {
-    return true;
-  }
-
-  return remote_tab.update_time_windows_epoch_micros() >=
-         update_time_windows_epoch_micros();
-}
-
 void SavedTabGroupTab::MergeRemoteTab(const SavedTabGroupTab& remote_tab) {
-  if (!ShouldMergeTab(remote_tab)) {
-    return;
-  }
-
   SetURL(remote_tab.url());
   SetTitle(remote_tab.title());
   // TODO(crbug.com/370714643): check that remote tab always contains position.

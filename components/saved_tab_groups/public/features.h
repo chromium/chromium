@@ -21,8 +21,6 @@ BASE_DECLARE_FEATURE(kTabGroupsSaveUIUpdate);
 
 BASE_DECLARE_FEATURE(kTabGroupSyncServiceDesktopMigration);
 
-BASE_DECLARE_FEATURE(kAlwaysAcceptServerDataInModel);
-
 BASE_DECLARE_FEATURE(kTabGroupSyncAutoOpenKillSwitch);
 
 BASE_DECLARE_FEATURE(kRestrictDownloadOnSyncedTabs);

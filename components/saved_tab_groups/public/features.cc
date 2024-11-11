@@ -49,11 +49,6 @@ BASE_FEATURE(kTabGroupSyncServiceDesktopMigration,
              "TabGroupSyncServiceDesktopMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature flag to remove any merge logic from saved tab group model.
-BASE_FEATURE(kAlwaysAcceptServerDataInModel,
-             "AlwaysAcceptServerDataInModel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Feature flag to disable auto-open of saved tab groups. Note that the
 // settings page for auto open will still be visible, and when user is allowed
 // to change. However the written pref from the user selection will not be
@@ -104,10 +99,6 @@ bool IsTabGroupSyncCoordinatorEnabled() {
 #else
   return true;
 #endif
-}
-
-bool AlwaysAcceptServerDataInModel() {
-  return base::FeatureList::IsEnabled(kAlwaysAcceptServerDataInModel);
 }
 
 bool RestrictDownloadOnSyncedTabs() {
