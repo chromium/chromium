@@ -5832,6 +5832,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Mahi.Elucidation.LoadingTime" units="ms"
+    expires_after="2025-04-06">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the time it takes to load the elucidation inside the Mahi panel.
+    Emitted when elucidation text is fully loaded and shows up.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Mahi.Feedback" enum="BooleanThumbsUp"
     expires_after="2025-04-06">
   <owner>leandre@chromium.org</owner>

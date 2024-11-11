@@ -144,6 +144,8 @@ inline constexpr char kAnswerLoadingTimeHistogramName[] =
     "Ash.Mahi.QuestionAnswer.LoadingTime";
 inline constexpr char kSummaryLoadingTimeHistogramName[] =
     "Ash.Mahi.Summary.LoadingTime";
+inline constexpr char kElucidationLoadingTimeHistogramName[] =
+    "Ash.Mahi.Elucidation.LoadingTime";
 inline constexpr char kMahiUserJourneyTimeHistogramName[] =
     "Ash.Mahi.UserJourneyTime";
 inline constexpr char kMahiQuestionSourceHistogramName[] =

@@ -206,6 +206,8 @@ void SummaryOutlinesElucidationSection::OnUpdated(const MahiUiUpdate& update) {
     }
     case MahiUiUpdateType::kSummaryLoaded:
       HandleSummaryOrElucidationLoaded(update.GetSummary());
+      base::UmaHistogramTimes(mahi_constants::kSummaryLoadingTimeHistogramName,
+                              base::Time::Now() - start_loading_time_);
       return;
     case MahiUiUpdateType::kElucidationRequested:
       indicator_label_->SetVisible(false);
@@ -213,6 +215,9 @@ void SummaryOutlinesElucidationSection::OnUpdated(const MahiUiUpdate& update) {
       return;
     case MahiUiUpdateType::kElucidationLoaded:
       HandleSummaryOrElucidationLoaded(update.GetElucidation());
+      base::UmaHistogramTimes(
+          mahi_constants::kElucidationLoadingTimeHistogramName,
+          base::Time::Now() - start_loading_time_);
       return;
     case MahiUiUpdateType::kAnswerLoaded:
     case MahiUiUpdateType::kErrorReceived:
@@ -273,10 +278,6 @@ void SummaryOutlinesElucidationSection::HandleSummaryOrElucidationLoaded(
   summary_or_elucidation_loading_animated_image_->Stop();
   summary_or_elucidation_loading_animated_image_->SetVisible(false);
 
-  // TODO(b:375944345): deal with metrics properly
-  base::UmaHistogramTimes(mahi_constants::kSummaryLoadingTimeHistogramName,
-                          base::Time::Now() - start_loading_time_);
-
   GetViewAccessibility().AnnounceText(
       l10n_util::GetStringUTF16(IDS_ASH_MAHI_LOADED_ACCESSIBLE_NAME));
 }
@@ -314,7 +315,6 @@ void SummaryOutlinesElucidationSection::LoadContentForDisplay(
 
   start_loading_time_ = base::Time::Now();
 
-  // TODO(b:374173466): need a label to indicate the result type.
   switch (content_type) {
     case ContentType::kSummaryAndOutline: {
       indicator_label_->SetText(
