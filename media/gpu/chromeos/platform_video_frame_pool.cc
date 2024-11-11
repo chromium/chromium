@@ -146,6 +146,9 @@ scoped_refptr<FrameResource> PlatformVideoFramePool::GetFrame() {
     // correctly // set by the caller.
     CHECK_EQ((*new_frame)->storage_type(), frame_storage_type_);
 
+    // Sets and/or registers the frame's |tracking_token|.
+    frame_tracking_token_helper_.SetUniqueTrackingToken(new_frame->metadata());
+
     InsertFreeFrame_Locked(std::move(new_frame).value());
   }
 
@@ -352,6 +355,8 @@ void PlatformVideoFramePool::OnFrameReleased(
                           origin_frame->visible_rect(),
                           origin_frame->metadata().hw_protected)) {
     InsertFreeFrame_Locked(std::move(origin_frame));
+  } else {
+    frame_tracking_token_helper_.ClearToken(origin_frame->tracking_token());
   }
 
   if (frame_available_cb_ && !IsExhausted_Locked())

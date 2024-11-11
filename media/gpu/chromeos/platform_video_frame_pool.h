@@ -21,8 +21,9 @@
 #include "base/thread_annotations.h"
 #include "media/base/video_types.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
+#include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/media_gpu_export.h"
-#include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/generic_shared_memory_id.h"
 
 namespace media {
 
@@ -105,6 +106,10 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
 
   // The function used to allocate new frames.
   CreateFrameCB create_frame_cb_ GUARDED_BY(lock_);
+
+  // Used to guarantee that frames are produced with unique tracking tokens.
+  media::UniqueTrackingTokenHelper frame_tracking_token_helper_
+      GUARDED_BY(lock_);
 
   // The storage type that |create_frame_cb_| produces.
   VideoFrame::StorageType frame_storage_type_ GUARDED_BY(lock_);
