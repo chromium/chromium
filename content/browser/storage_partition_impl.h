@@ -113,7 +113,7 @@ class PushMessagingContext;
 class QuotaContext;
 class ReconnectableURLLoaderFactoryForIOThreadWrapper;
 class SharedStorageHeaderObserver;
-class SharedStorageWorkletHostManager;
+class SharedStorageRuntimeManager;
 class SharedWorkerServiceImpl;
 class SubresourceProxyingURLLoaderService;
 class NavigationOrDocumentHandle;
@@ -148,9 +148,9 @@ class CONTENT_EXPORT StoragePartitionImpl
       BackgroundSyncContextImpl* background_sync_context);
   void OverrideSharedWorkerServiceForTesting(
       std::unique_ptr<SharedWorkerServiceImpl> shared_worker_service);
-  void OverrideSharedStorageWorkletHostManagerForTesting(
-      std::unique_ptr<SharedStorageWorkletHostManager>
-          shared_storage_worklet_host_manager);
+  void OverrideSharedStorageRuntimeManagerForTesting(
+      std::unique_ptr<SharedStorageRuntimeManager>
+          shared_storage_runtime_manager);
   void OverrideSharedStorageHeaderObserverForTesting(
       std::unique_ptr<SharedStorageHeaderObserver>
           shared_storage_header_observer);
@@ -192,10 +192,9 @@ class CONTENT_EXPORT StoragePartitionImpl
   LockManager<storage::BucketId>*
   GetLockManager();  // override; TODO: Add to interface
   // TODO(crbug.com/40185706): Add this method to the StoragePartition
-  // interface, which would also require making SharedStorageWorkletHostManager
+  // interface, which would also require making SharedStorageRuntimeManager
   // an interface accessible in //content/public/.
-  SharedStorageWorkletHostManager*
-  GetSharedStorageWorkletHostManager();  // override;
+  SharedStorageRuntimeManager* GetSharedStorageRuntimeManager();  // override;
   storage::mojom::IndexedDBControl& GetIndexedDBControl() override;
   FileSystemAccessEntryFactory* GetFileSystemAccessEntryFactory() override;
   storage::mojom::CacheStorageControl* GetCacheStorageControl() override;
@@ -793,10 +792,9 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   // This needs to be declared after `shared_storage_manager_` because
   // `shared_storage_worklet_host` (managed by
-  // `shared_storage_worklet_host_manager_`) ultimately stores a raw pointer on
+  // `shared_storage_runtime_manager_`) ultimately stores a raw pointer on
   // it.
-  std::unique_ptr<SharedStorageWorkletHostManager>
-      shared_storage_worklet_host_manager_;
+  std::unique_ptr<SharedStorageRuntimeManager> shared_storage_runtime_manager_;
 
   // Owning pointer to the `SharedStorageHeaderObserver` for this partition.
   std::unique_ptr<SharedStorageHeaderObserver> shared_storage_header_observer_;

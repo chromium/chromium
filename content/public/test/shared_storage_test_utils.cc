@@ -17,8 +17,8 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/shared_storage/shared_storage_document_service_impl.h"
+#include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
-#include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -98,11 +98,10 @@ std::optional<bool> MojomToAbslOptionalBool(
 
 }  // namespace
 
-SharedStorageWorkletHostManager*
-GetSharedStorageWorkletHostManagerForStoragePartition(
+SharedStorageRuntimeManager* GetSharedStorageRuntimeManagerForStoragePartition(
     StoragePartition* storage_partition) {
   return static_cast<StoragePartitionImpl*>(storage_partition)
-      ->GetSharedStorageWorkletHostManager();
+      ->GetSharedStorageRuntimeManager();
 }
 
 std::string GetFencedStorageReadDisabledMessage() {
@@ -127,8 +126,8 @@ std::string GetSharedStorageAddModuleDisabledMessage() {
 
 size_t GetAttachedSharedStorageWorkletHostsCount(
     StoragePartition* storage_partition) {
-  SharedStorageWorkletHostManager* manager =
-      GetSharedStorageWorkletHostManagerForStoragePartition(storage_partition);
+  SharedStorageRuntimeManager* manager =
+      GetSharedStorageRuntimeManagerForStoragePartition(storage_partition);
   DCHECK(manager);
 
   size_t count = 0;
@@ -142,8 +141,8 @@ size_t GetAttachedSharedStorageWorkletHostsCount(
 
 size_t GetKeepAliveSharedStorageWorkletHostsCount(
     StoragePartition* storage_partition) {
-  SharedStorageWorkletHostManager* manager =
-      GetSharedStorageWorkletHostManagerForStoragePartition(storage_partition);
+  SharedStorageRuntimeManager* manager =
+      GetSharedStorageRuntimeManagerForStoragePartition(storage_partition);
   DCHECK(manager);
   return manager->GetKeepAliveWorkletHostsForTesting().size();
 }

@@ -38,7 +38,7 @@ class SharedStorageDocumentServiceImpl;
 class SharedStorageURLLoaderFactoryProxy;
 class SharedStorageCodeCacheHostProxy;
 class SharedStorageWorkletDriver;
-class SharedStorageWorkletHostManager;
+class SharedStorageRuntimeManager;
 class StoragePartitionImpl;
 class PageImpl;
 
@@ -49,7 +49,7 @@ class PageImpl;
 // `SharedStorageWorkletService` (i.e. storage access, console log) which
 // could happen while running those worklet operations.
 //
-// The SharedStorageWorkletHost lives in the `SharedStorageWorkletHostManager`,
+// The SharedStorageWorkletHost lives in the `SharedStorageRuntimeManager`,
 // and the SharedStorageWorkletHost's lifetime is bounded by the earliest of the
 // two timepoints:
 // 1. When the outstanding worklet operations have finished on or after the
@@ -104,7 +104,7 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // `selectURL()`, or `run()`.
   bool HasPendingOperations();
 
-  // Called by the `SharedStorageWorkletHostManager` for this host to enter
+  // Called by the `SharedStorageRuntimeManager` for this host to enter
   // keep-alive phase.
   void EnterKeepAliveOnDocumentDestroyed(KeepAliveFinishedCallback callback);
 
@@ -273,8 +273,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // destroyed before `shared_storage_manager_` in ~StoragePartition.
   raw_ptr<storage::SharedStorageManager> shared_storage_manager_;
 
-  // The owning `SharedStorageWorkletHostManager`, which will outlive `this`.
-  raw_ptr<SharedStorageWorkletHostManager> shared_storage_worklet_host_manager_;
+  // The owning `SharedStorageRuntimeManager`, which will outlive `this`.
+  raw_ptr<SharedStorageRuntimeManager> shared_storage_runtime_manager_;
 
   // Pointer to the `BrowserContext`, saved to be able to call
   // `IsSharedStorageAllowed()`, and to get the global URLLoaderFactory.

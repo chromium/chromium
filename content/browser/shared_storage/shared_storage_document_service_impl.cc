@@ -14,8 +14,8 @@
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
-#include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -55,7 +55,7 @@ bool CheckSecureContext(RenderFrameHost& frame) {
 }
 
 using AccessType =
-    SharedStorageWorkletHostManager::SharedStorageObserverInterface::AccessType;
+    SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessType;
 
 using OperationResult = storage::SharedStorageManager::OperationResult;
 using GetResult = storage::SharedStorageManager::GetResult;
@@ -99,7 +99,7 @@ std::string GetSharedStorageErrorMessage(const std::string& debug_message,
 }
 
 SharedStorageDocumentServiceImpl::~SharedStorageDocumentServiceImpl() {
-  GetSharedStorageWorkletHostManager()->OnDocumentServiceDestroyed(this);
+  GetSharedStorageRuntimeManager()->OnDocumentServiceDestroyed(this);
 }
 
 void SharedStorageDocumentServiceImpl::Bind(
@@ -177,7 +177,7 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
     return;
   }
 
-  GetSharedStorageWorkletHostManager()->CreateWorkletHost(
+  GetSharedStorageRuntimeManager()->CreateWorkletHost(
       this, render_frame_host().GetLastCommittedOrigin(), data_origin,
       script_source_url, credentials_mode, origin_trial_features,
       std::move(worklet_host),
@@ -248,7 +248,7 @@ void SharedStorageDocumentServiceImpl::SharedStorageGet(
     return;
   }
 
-  GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(
+  GetSharedStorageRuntimeManager()->NotifySharedStorageAccessed(
       AccessType::kDocumentGet, main_frame_id(), SerializeLastCommittedOrigin(),
       SharedStorageEventParams::CreateForGetOrDelete(base::UTF16ToUTF8(key)));
 
@@ -316,7 +316,7 @@ void SharedStorageDocumentServiceImpl::SharedStorageUpdate(
             ? storage::SharedStorageDatabase::SetBehavior::kIgnoreIfPresent
             : storage::SharedStorageDatabase::SetBehavior::kDefault;
 
-    GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(
+    GetSharedStorageRuntimeManager()->NotifySharedStorageAccessed(
         AccessType::kDocumentSet, main_frame_id(),
         SerializeLastCommittedOrigin(),
         SharedStorageEventParams::CreateForSet(
@@ -331,7 +331,7 @@ void SharedStorageDocumentServiceImpl::SharedStorageUpdate(
     network::mojom::SharedStorageAppendMethodPtr& append_method =
         method->get_append_method();
 
-    GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(
+    GetSharedStorageRuntimeManager()->NotifySharedStorageAccessed(
         AccessType::kDocumentAppend, main_frame_id(),
         SerializeLastCommittedOrigin(),
         SharedStorageEventParams::CreateForAppend(
@@ -345,7 +345,7 @@ void SharedStorageDocumentServiceImpl::SharedStorageUpdate(
     network::mojom::SharedStorageDeleteMethodPtr& delete_method =
         method->get_delete_method();
 
-    GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(
+    GetSharedStorageRuntimeManager()->NotifySharedStorageAccessed(
         AccessType::kDocumentDelete, main_frame_id(),
         SerializeLastCommittedOrigin(),
         SharedStorageEventParams::CreateForGetOrDelete(
@@ -357,7 +357,7 @@ void SharedStorageDocumentServiceImpl::SharedStorageUpdate(
   } else {
     CHECK(method->is_clear_method());
 
-    GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(
+    GetSharedStorageRuntimeManager()->NotifySharedStorageAccessed(
         AccessType::kDocumentClear, main_frame_id(),
         SerializeLastCommittedOrigin(),
         SharedStorageEventParams::CreateDefault());
@@ -431,11 +431,11 @@ SharedStorageDocumentServiceImpl::GetSharedStorageManager() {
   return shared_storage_manager;
 }
 
-SharedStorageWorkletHostManager*
-SharedStorageDocumentServiceImpl::GetSharedStorageWorkletHostManager() {
+SharedStorageRuntimeManager*
+SharedStorageDocumentServiceImpl::GetSharedStorageRuntimeManager() {
   return static_cast<StoragePartitionImpl*>(
              render_frame_host().GetProcess()->GetStoragePartition())
-      ->GetSharedStorageWorkletHostManager();
+      ->GetSharedStorageRuntimeManager();
 }
 
 bool SharedStorageDocumentServiceImpl::IsSharedStorageAllowed(

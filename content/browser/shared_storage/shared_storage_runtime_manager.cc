@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
+#include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/shared_storage/shared_storage_document_service_impl.h"
@@ -10,10 +10,10 @@
 
 namespace content {
 
-SharedStorageWorkletHostManager::SharedStorageWorkletHostManager() = default;
-SharedStorageWorkletHostManager::~SharedStorageWorkletHostManager() = default;
+SharedStorageRuntimeManager::SharedStorageRuntimeManager() = default;
+SharedStorageRuntimeManager::~SharedStorageRuntimeManager() = default;
 
-void SharedStorageWorkletHostManager::OnDocumentServiceDestroyed(
+void SharedStorageRuntimeManager::OnDocumentServiceDestroyed(
     SharedStorageDocumentServiceImpl* document_service) {
   // Note: `attached_shared_storage_worklet_hosts_` will be populated when
   // there's an actual worklet operation request, but the
@@ -33,7 +33,7 @@ void SharedStorageWorkletHostManager::OnDocumentServiceDestroyed(
       CHECK(inserted);
 
       raw_worklet_host->EnterKeepAliveOnDocumentDestroyed(base::BindOnce(
-          &SharedStorageWorkletHostManager::OnWorkletKeepAliveFinished,
+          &SharedStorageRuntimeManager::OnWorkletKeepAliveFinished,
           base::Unretained(this)));
     }
   }
@@ -41,7 +41,7 @@ void SharedStorageWorkletHostManager::OnDocumentServiceDestroyed(
   attached_shared_storage_worklet_hosts_.erase(worklet_hosts_it);
 }
 
-void SharedStorageWorkletHostManager::ExpireWorkletHostForDocumentService(
+void SharedStorageRuntimeManager::ExpireWorkletHostForDocumentService(
     SharedStorageDocumentServiceImpl* document_service,
     SharedStorageWorkletHost* worklet_host) {
   auto worklet_hosts_it =
@@ -60,7 +60,7 @@ void SharedStorageWorkletHostManager::ExpireWorkletHostForDocumentService(
   }
 }
 
-void SharedStorageWorkletHostManager::CreateWorkletHost(
+void SharedStorageRuntimeManager::CreateWorkletHost(
     SharedStorageDocumentServiceImpl* document_service,
     const url::Origin& frame_origin,
     const url::Origin& data_origin,
@@ -96,24 +96,25 @@ void SharedStorageWorkletHostManager::CreateWorkletHost(
   worklet_hosts.emplace(raw_worklet_host, std::move(worklet_host));
 }
 
-void SharedStorageWorkletHostManager::AddSharedStorageObserver(
+void SharedStorageRuntimeManager::AddSharedStorageObserver(
     SharedStorageObserverInterface* observer) {
   observers_.AddObserver(observer);
 }
 
-void SharedStorageWorkletHostManager::RemoveSharedStorageObserver(
+void SharedStorageRuntimeManager::RemoveSharedStorageObserver(
     SharedStorageObserverInterface* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void SharedStorageWorkletHostManager::NotifySharedStorageAccessed(
+void SharedStorageRuntimeManager::NotifySharedStorageAccessed(
     SharedStorageObserverInterface::AccessType type,
     FrameTreeNodeId main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {
   // Don't bother getting the time if there are no observers.
-  if (observers_.empty())
+  if (observers_.empty()) {
     return;
+  }
   base::Time now = base::Time::Now();
   for (SharedStorageObserverInterface& observer : observers_) {
     observer.OnSharedStorageAccessed(now, type, main_frame_id, owner_origin,
@@ -122,7 +123,7 @@ void SharedStorageWorkletHostManager::NotifySharedStorageAccessed(
 }
 
 std::unique_ptr<SharedStorageWorkletHost>
-SharedStorageWorkletHostManager::CreateWorkletHostHelper(
+SharedStorageRuntimeManager::CreateWorkletHostHelper(
     SharedStorageDocumentServiceImpl& document_service,
     const url::Origin& frame_origin,
     const url::Origin& data_origin,
@@ -139,27 +140,26 @@ SharedStorageWorkletHostManager::CreateWorkletHostHelper(
       std::move(callback));
 }
 
-void SharedStorageWorkletHostManager::OnWorkletKeepAliveFinished(
+void SharedStorageRuntimeManager::OnWorkletKeepAliveFinished(
     SharedStorageWorkletHost* worklet_host) {
   DCHECK(keep_alive_shared_storage_worklet_hosts_.count(worklet_host));
   keep_alive_shared_storage_worklet_hosts_.erase(worklet_host);
 }
 
-void SharedStorageWorkletHostManager::NotifyUrnUuidGenerated(
-    const GURL& urn_uuid) {
+void SharedStorageRuntimeManager::NotifyUrnUuidGenerated(const GURL& urn_uuid) {
   for (SharedStorageObserverInterface& observer : observers_) {
     observer.OnUrnUuidGenerated(urn_uuid);
   }
 }
 
-void SharedStorageWorkletHostManager::NotifyConfigPopulated(
+void SharedStorageRuntimeManager::NotifyConfigPopulated(
     const std::optional<FencedFrameConfig>& config) {
   for (SharedStorageObserverInterface& observer : observers_) {
     observer.OnConfigPopulated(config);
   }
 }
 
-void SharedStorageWorkletHostManager::BindLockManager(
+void SharedStorageRuntimeManager::BindLockManager(
     const url::Origin& shared_storage_origin,
     mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
   lock_manager_.BindReceiver(OriginLockGroupId(shared_storage_origin),

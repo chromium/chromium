@@ -26,7 +26,7 @@
 #include "content/browser/navigation_or_document_handle.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/shared_storage/shared_storage_event_params.h"
-#include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
+#include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
@@ -529,7 +529,7 @@ void SharedStorageHeaderObserver::NotifySharedStorageAccessed(
     FrameTreeNodeId main_frame_id,
     const url::Origin& request_origin,
     const SharedStorageEventParams& params) {
-  storage_partition_->GetSharedStorageWorkletHostManager()
+  storage_partition_->GetSharedStorageRuntimeManager()
       ->NotifySharedStorageAccessed(type, main_frame_id,
                                     request_origin.Serialize(), params);
 }

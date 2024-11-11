@@ -28,7 +28,7 @@ namespace content {
 
 class RenderFrameHost;
 class SharedStorageWorkletHost;
-class SharedStorageWorkletHostManager;
+class SharedStorageRuntimeManager;
 
 extern CONTENT_EXPORT const char kFencedStorageReadDisabledMessage[];
 extern CONTENT_EXPORT const char
@@ -92,7 +92,7 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
       bool post_prefs_success,
       const std::string& error_message);
 
-  SharedStorageWorkletHostManager* GetSharedStorageWorkletHostManager();
+  SharedStorageRuntimeManager* GetSharedStorageRuntimeManager();
 
   SharedStorageWorkletHost* GetSharedStorageWorkletHost();
 

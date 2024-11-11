@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/navigation_or_document_handle.h"
-#include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
+#include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -25,7 +25,7 @@
 namespace content {
 
 using AccessType =
-    SharedStorageWorkletHostManager::SharedStorageObserverInterface::AccessType;
+    SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessType;
 
 // Receives notifications from `StoragePartitionImpl` when a parsed
 // "Shared-Storage-Write" header is received from the network service. The

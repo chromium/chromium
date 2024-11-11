@@ -100,7 +100,7 @@
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/shared_storage/shared_storage_header_observer.h"
-#include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
+#include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/browser/ssl/ssl_client_auth_handler.h"
 #include "content/browser/ssl/ssl_error_handler.h"
 #include "content/browser/ssl_private_key_impl.h"
@@ -1336,8 +1336,8 @@ void StoragePartitionImpl::Initialize(
 
   lock_manager_ = std::make_unique<LockManager<storage::BucketId>>();
 
-  shared_storage_worklet_host_manager_ =
-      std::make_unique<SharedStorageWorkletHostManager>();
+  shared_storage_runtime_manager_ =
+      std::make_unique<SharedStorageRuntimeManager>();
 
   scoped_refptr<ChromeBlobStorageContext> blob_context =
       ChromeBlobStorageContext::GetFor(browser_context_);
@@ -1685,10 +1685,10 @@ LockManager<storage::BucketId>* StoragePartitionImpl::GetLockManager() {
   return lock_manager_.get();
 }
 
-SharedStorageWorkletHostManager*
-StoragePartitionImpl::GetSharedStorageWorkletHostManager() {
+SharedStorageRuntimeManager*
+StoragePartitionImpl::GetSharedStorageRuntimeManager() {
   DCHECK(initialized_);
-  return shared_storage_worklet_host_manager_.get();
+  return shared_storage_runtime_manager_.get();
 }
 
 storage::mojom::IndexedDBControl& StoragePartitionImpl::GetIndexedDBControl() {
@@ -3283,12 +3283,11 @@ void StoragePartitionImpl::OverrideSharedWorkerServiceForTesting(
   shared_worker_service_ = std::move(shared_worker_service);
 }
 
-void StoragePartitionImpl::OverrideSharedStorageWorkletHostManagerForTesting(
-    std::unique_ptr<SharedStorageWorkletHostManager>
-        shared_storage_worklet_host_manager) {
+void StoragePartitionImpl::OverrideSharedStorageRuntimeManagerForTesting(
+    std::unique_ptr<SharedStorageRuntimeManager>
+        shared_storage_runtime_manager) {
   DCHECK(initialized_);
-  shared_storage_worklet_host_manager_ =
-      std::move(shared_storage_worklet_host_manager);
+  shared_storage_runtime_manager_ = std::move(shared_storage_runtime_manager);
 }
 
 void StoragePartitionImpl::OverrideSharedStorageHeaderObserverForTesting(

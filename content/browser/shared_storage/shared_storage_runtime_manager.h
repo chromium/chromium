@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_WORKLET_HOST_MANAGER_H_
-#define CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_WORKLET_HOST_MANAGER_H_
+#ifndef CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_RUNTIME_MANAGER_H_
+#define CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_RUNTIME_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -25,9 +25,10 @@ class FencedFrameConfig;
 class SharedStorageDocumentServiceImpl;
 class SharedStorageWorkletHost;
 
-// Manages the creation and destruction of the `SharedStorageWorkletHost`. The
-// manager is bound to the StoragePartition.
-class CONTENT_EXPORT SharedStorageWorkletHostManager {
+// Manages in-memory components related to shared storage, such as
+// `SharedStorageWorkletHost` and `LockManager`. The manager is bound to the
+// `StoragePartition`.
+class CONTENT_EXPORT SharedStorageRuntimeManager {
  public:
   using WorkletHosts = std::map<SharedStorageWorkletHost*,
                                 std::unique_ptr<SharedStorageWorkletHost>>;
@@ -48,8 +49,8 @@ class CONTENT_EXPORT SharedStorageWorkletHostManager {
     std::string origin;
   };
 
-  SharedStorageWorkletHostManager();
-  virtual ~SharedStorageWorkletHostManager();
+  SharedStorageRuntimeManager();
+  virtual ~SharedStorageRuntimeManager();
 
   class SharedStorageObserverInterface : public base::CheckedObserver {
    public:
@@ -186,17 +187,17 @@ namespace base {
 
 template <>
 struct ScopedObservationTraits<
-    content::SharedStorageWorkletHostManager,
-    content::SharedStorageWorkletHostManager::SharedStorageObserverInterface> {
+    content::SharedStorageRuntimeManager,
+    content::SharedStorageRuntimeManager::SharedStorageObserverInterface> {
   static void AddObserver(
-      content::SharedStorageWorkletHostManager* source,
-      content::SharedStorageWorkletHostManager::SharedStorageObserverInterface*
+      content::SharedStorageRuntimeManager* source,
+      content::SharedStorageRuntimeManager::SharedStorageObserverInterface*
           observer) {
     source->AddSharedStorageObserver(observer);
   }
   static void RemoveObserver(
-      content::SharedStorageWorkletHostManager* source,
-      content::SharedStorageWorkletHostManager::SharedStorageObserverInterface*
+      content::SharedStorageRuntimeManager* source,
+      content::SharedStorageRuntimeManager::SharedStorageObserverInterface*
           observer) {
     source->RemoveSharedStorageObserver(observer);
   }
@@ -204,4 +205,4 @@ struct ScopedObservationTraits<
 
 }  // namespace base
 
-#endif  // CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_WORKLET_HOST_MANAGER_H_
+#endif  // CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_RUNTIME_MANAGER_H_

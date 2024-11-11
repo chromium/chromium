@@ -345,12 +345,12 @@ class StorageHandler::IndexedDBObserver
 // informs the StorageHandler on the UI thread for origins of interest.
 // Created and used exclusively on the UI thread.
 class StorageHandler::SharedStorageObserver
-    : content::SharedStorageWorkletHostManager::SharedStorageObserverInterface {
+    : content::SharedStorageRuntimeManager::SharedStorageObserverInterface {
  public:
   explicit SharedStorageObserver(StorageHandler* owner_storage_handler)
       : owner_(owner_storage_handler) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    auto* manager = owner_->GetSharedStorageWorkletHostManager();
+    auto* manager = owner_->GetSharedStorageRuntimeManager();
     DCHECK(manager);
     scoped_observation_.Observe(manager);
   }
@@ -380,8 +380,8 @@ class StorageHandler::SharedStorageObserver
  private:
   raw_ptr<StorageHandler> const owner_;
   base::ScopedObservation<
-      content::SharedStorageWorkletHostManager,
-      content::SharedStorageWorkletHostManager::SharedStorageObserverInterface>
+      content::SharedStorageRuntimeManager,
+      content::SharedStorageRuntimeManager::SharedStorageObserverInterface>
       scoped_observation_{this};
 };
 
@@ -895,11 +895,10 @@ StorageHandler::IndexedDBObserver* StorageHandler::GetIndexedDBObserver() {
   return indexed_db_observer_.get();
 }
 
-SharedStorageWorkletHostManager*
-StorageHandler::GetSharedStorageWorkletHostManager() {
+SharedStorageRuntimeManager* StorageHandler::GetSharedStorageRuntimeManager() {
   DCHECK(storage_partition_);
   return static_cast<StoragePartitionImpl*>(storage_partition_)
-      ->GetSharedStorageWorkletHostManager();
+      ->GetSharedStorageRuntimeManager();
 }
 
 absl::variant<protocol::Response, storage::SharedStorageManager*>
@@ -1450,7 +1449,7 @@ void StorageHandler::ClearSharedStorageEntries(
 
 Response StorageHandler::SetSharedStorageTracking(bool enable) {
   if (enable) {
-    if (!GetSharedStorageWorkletHostManager()) {
+    if (!GetSharedStorageRuntimeManager()) {
       return Response::ServerError("Shared storage is disabled.");
     }
     shared_storage_observer_ = std::make_unique<SharedStorageObserver>(this);
@@ -1505,15 +1504,15 @@ std::string GetFrameTokenFromFrameTreeNodeId(FrameTreeNodeId frame_id) {
 
 void StorageHandler::NotifySharedStorageAccessed(
     const base::Time& access_time,
-    SharedStorageWorkletHostManager::SharedStorageObserverInterface::AccessType
+    SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessType
         type,
     FrameTreeNodeId main_frame_id,
     const std::string& owner_origin,
     const SharedStorageEventParams& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  using AccessType = SharedStorageWorkletHostManager::
-      SharedStorageObserverInterface::AccessType;
+  using AccessType =
+      SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessType;
   std::string type_enum;
   switch (type) {
     case AccessType::kDocumentAddModule:
