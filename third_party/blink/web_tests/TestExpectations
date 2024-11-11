@@ -2611,9 +2611,9 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac11 ] external/wpt/mediacapture-streams/BrowserCaptureMediaStreamTrack-restrictTo.https.html [ Timeout ]
-[ Mac13 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2 [ Timeout ]
-[ Mac13 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2 [ Timeout ]
+crbug.com/378014590 [ Mac11 ] external/wpt/mediacapture-streams/BrowserCaptureMediaStreamTrack-restrictTo.https.html [ Timeout ]
+crbug.com/378158966 [ Mac13 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2 [ Timeout ]
+crbug.com/378158966 [ Mac13 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2 [ Timeout ]
 [ Mac13 ] wpt_internal/css/css-overflow/scroll-markers-updated-by-user-scroll.html [ Timeout ]
 crbug.com/377971439 [ Mac13 ] external/wpt/webrtc/RTCCertificate.html [ Timeout ]
 crbug.com/377971439 [ Mac13 ] external/wpt/webrtc/RTCPeerConnection-constructor.html [ Timeout ]
