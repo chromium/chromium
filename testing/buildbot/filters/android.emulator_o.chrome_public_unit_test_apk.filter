@@ -6,7 +6,3 @@
 
 # TODO(crbug.com/377388268)
 -org.chromium.components.browser_ui.widget.CheckBoxWithDescriptionRenderTest.testCheckBoxWithDescription
-
-# TODO(crbug.com/378392574
--org.chromium.chrome.browser.tasks.tab_management.TabGroupRowViewRenderTest.testRenderWithVariousFaviconCounts
--org.chromium.chrome.browser.tasks.tab_management.TabGroupRowViewRenderTest.testRenderWithVeryLongTitle
