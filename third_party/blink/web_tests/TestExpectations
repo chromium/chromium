@@ -2611,6 +2611,10 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac11 ] external/wpt/mediacapture-streams/BrowserCaptureMediaStreamTrack-restrictTo.https.html [ Timeout ]
+[ Mac13 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2 [ Timeout ]
+[ Mac13 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2 [ Timeout ]
+[ Mac13 ] wpt_internal/css/css-overflow/scroll-markers-updated-by-user-scroll.html [ Timeout ]
 crbug.com/377971439 [ Mac13 ] external/wpt/webrtc/RTCCertificate.html [ Timeout ]
 crbug.com/377971439 [ Mac13 ] external/wpt/webrtc/RTCPeerConnection-constructor.html [ Timeout ]
 crbug.com/377977965 [ Linux ] external/wpt/webdriver/tests/bidi/browser/get_client_windows/get_client_windows.py [ Failure ]
@@ -2648,6 +2652,7 @@ crbug.com/376091890 [ Mac13 ] external/wpt/webrtc/RollbackEvents.https.html [ Ti
 crbug.com/376126804 [ Mac15 ] external/wpt/html/canvas/element/compositing/2d.composite.grid.no_filter.shadow.pattern.html [ Failure ]
 crbug.com/376126805 [ Mac13 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p0 [ Timeout ]
 crbug.com/376126805 [ Mac13 ] external/wpt/webcodecs/video-encoder-content-hint.https.any.html [ Timeout ]
+crbug.com/376126805 [ Mac14 ] external/wpt/webcodecs/video-encoder-content-hint.https.any.html [ Timeout ]
 crbug.com/376126805 [ Mac13 ] external/wpt/webcodecs/video-encoder-flush.https.any.worker.html?av1 [ Timeout ]
 crbug.com/375262152 external/wpt/html/semantics/embedded-content/the-img-element/update-the-image-data/src-then-lazy-load.html [ Timeout ]
 crbug.com/375262151 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/reshape.https.any.worker.html?npu [ Failure Timeout ]
@@ -2900,6 +2905,7 @@ crbug.com/346368829 [ Mac12 ] external/wpt/service-workers/service-worker/tentat
 crbug.com/346042379 [ Mac12 ] external/wpt/video-rvfc/request-video-frame-callback-dom.html [ Timeout ]
 crbug.com/346368830 [ Mac12 ] external/wpt/webaudio/the-audio-api/the-pannernode-interface/pannernode-basic.window.html [ Timeout ]
 crbug.com/346042379 [ Mac12 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-worker.https.html [ Timeout ]
+crbug.com/346042379 [ Mac13 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-worker.https.html [ Timeout ]
 crbug.com/346088868 [ Mac14 ] external/wpt/editing/other/white-spaces-after-execCommand-forwarddelete.tentative.html [ Skip Timeout ]
 crbug.com/345868497 [ Mac14 ] external/wpt/import-maps/bare-specifiers.sub.html [ Skip Timeout ]
 crbug.com/345868498 [ Mac14 ] external/wpt/xhr/access-control-basic-cors-safelisted-response-headers.htm [ Timeout ]

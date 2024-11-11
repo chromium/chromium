@@ -177018,19 +177018,6 @@
        ]
       ]
      },
-     "collapse-trailing-whitespace.html": [
-      "e6e01278349d671e9df47149f7b42636e80dcbf2",
-      [
-       null,
-       [
-        [
-         "/css/css-ruby/collapse-trailing-whitespace-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "empty-ruby-base-container.html": [
       "4d86e07985d0e99e586848f7ca3195e63371c4d4",
       [
@@ -305457,7 +305444,7 @@
       []
      ],
      "derived_bits_length.https.any-expected.txt": [
-      "21228fb640dc74cf44a886ffb65e6e0d4126cf8e",
+      "181703383a2f977e2e4cebe60d86dd505c1dbf26",
       []
      ],
      "derived_bits_length.https.any.worker-expected.txt": [
@@ -305469,7 +305456,7 @@
       []
      ],
      "derived_bits_length_testcases.js": [
-      "518c781d9f15b4efd8bfcad3813ea7f814cdbf9b",
+      "2679fa79e2a044d8f7955e0b4372a0ae6a8178c3",
       []
      ],
      "derived_bits_length_vectors.js": [
@@ -305517,7 +305504,7 @@
       []
      ],
      "hkdf.js": [
-      "b2dfda0257bc81b00131026e1983a267342d9e9a",
+      "0384f88ec73e4394ed52f7743947061d87cf3495",
       []
      ],
      "hkdf_vectors.js": [
@@ -305525,79 +305512,79 @@
       []
      ],
      "pbkdf2.https.any.worker_1-1000-expected.txt": [
-      "9245ea78730757dc0339ec974f1bfecc6208bdf5",
+      "c451b7c3e6ed92183c669391ee38dd5af525fab3",
       []
      ],
      "pbkdf2.https.any.worker_1001-2000-expected.txt": [
-      "518f1dc34b2c610b95b3af9f6bc00a80ccd37c67",
+      "665e13d17fff29624e1ae70ff274549f3b678490",
       []
      ],
      "pbkdf2.https.any.worker_2001-3000-expected.txt": [
-      "04eb698fa0756380ea46b0ae14670dd22d33fb88",
+      "9b17ae0e464677b5e29f75fa9c3191cfc95a2fc9",
       []
      ],
      "pbkdf2.https.any.worker_3001-4000-expected.txt": [
-      "daffd296ab93b4d8eab4c9c9355cae8efed6e719",
+      "e86efae0844f2c8d5cb2ecbddf19e4d0cd66404f",
       []
      ],
      "pbkdf2.https.any.worker_4001-5000-expected.txt": [
-      "721329d2c4695d1ea3a7f44ab158414675927ff4",
+      "d78a95a3b35c53919c1ab4e23fe3e2e9963ea71c",
       []
      ],
      "pbkdf2.https.any.worker_5001-6000-expected.txt": [
-      "1adfa4e616e76fbc3a15116c63771ad79de2640a",
+      "4d0f1d952683718504c33b083f54bb3bcb41bb2e",
       []
      ],
      "pbkdf2.https.any.worker_6001-7000-expected.txt": [
-      "d9c1c7f54838ca5f9b441dadf957869e0af2a653",
+      "d9b5707443830df19fbd1eadadfe8650f6205e4f",
       []
      ],
      "pbkdf2.https.any.worker_7001-8000-expected.txt": [
-      "c0a54e849562512cac53d8418d8ec7653c74542e",
+      "b86e9cb737b17def3d27cd0d17e2367933aa20b9",
       []
      ],
      "pbkdf2.https.any.worker_8001-last-expected.txt": [
-      "ecfbc7d75f3ccbfe7b16b8cc81350061b00d4c93",
+      "01ce9aeaf45df090a1fda507929ddc2c17c429a5",
       []
      ],
      "pbkdf2.https.any_1-1000-expected.txt": [
-      "9245ea78730757dc0339ec974f1bfecc6208bdf5",
+      "c451b7c3e6ed92183c669391ee38dd5af525fab3",
       []
      ],
      "pbkdf2.https.any_1001-2000-expected.txt": [
-      "518f1dc34b2c610b95b3af9f6bc00a80ccd37c67",
+      "665e13d17fff29624e1ae70ff274549f3b678490",
       []
      ],
      "pbkdf2.https.any_2001-3000-expected.txt": [
-      "04eb698fa0756380ea46b0ae14670dd22d33fb88",
+      "9b17ae0e464677b5e29f75fa9c3191cfc95a2fc9",
       []
      ],
      "pbkdf2.https.any_3001-4000-expected.txt": [
-      "daffd296ab93b4d8eab4c9c9355cae8efed6e719",
+      "e86efae0844f2c8d5cb2ecbddf19e4d0cd66404f",
       []
      ],
      "pbkdf2.https.any_4001-5000-expected.txt": [
-      "721329d2c4695d1ea3a7f44ab158414675927ff4",
+      "d78a95a3b35c53919c1ab4e23fe3e2e9963ea71c",
       []
      ],
      "pbkdf2.https.any_5001-6000-expected.txt": [
-      "1adfa4e616e76fbc3a15116c63771ad79de2640a",
+      "4d0f1d952683718504c33b083f54bb3bcb41bb2e",
       []
      ],
      "pbkdf2.https.any_6001-7000-expected.txt": [
-      "d9c1c7f54838ca5f9b441dadf957869e0af2a653",
+      "d9b5707443830df19fbd1eadadfe8650f6205e4f",
       []
      ],
      "pbkdf2.https.any_7001-8000-expected.txt": [
-      "c0a54e849562512cac53d8418d8ec7653c74542e",
+      "b86e9cb737b17def3d27cd0d17e2367933aa20b9",
       []
      ],
      "pbkdf2.https.any_8001-last-expected.txt": [
-      "ecfbc7d75f3ccbfe7b16b8cc81350061b00d4c93",
+      "01ce9aeaf45df090a1fda507929ddc2c17c429a5",
       []
      ],
      "pbkdf2.js": [
-      "090806ceb6b3eaa5a7d48f44143bbe95fe63876b",
+      "38cf3b1bfe952c37ca08477bc115c89de5a9a660",
       []
      ],
      "pbkdf2_vectors.js": [
@@ -345546,6 +345533,10 @@
       "b0098caea13c61def740fa706be68efb74b3bd9b",
       []
      ],
+     "WEB_FEATURES.yml": [
+      "6fe544ba9858fe28c0fa3d57662c09ab1dee1ee2",
+      []
+     ],
      "abs-in-ruby-base-ref.html": [
       "0c7f57b1d795ef1f61ee5a8387466db0bc8db37d",
       []
@@ -345584,10 +345575,6 @@
        []
       ]
      },
-     "collapse-trailing-whitespace-ref.html": [
-      "de2fa938679acad71f2c61a598c63453b59b63c1",
-      []
-     ],
      "empty-ruby-base-container-ref.html": [
       "e6119468c59af5581d9deeb6e20f60bb18f6aab6",
       []
@@ -345609,6 +345596,10 @@
       []
      ],
      "parsing": {
+      "WEB_FEATURES.yml": [
+       "718d1b9ad8f2090efdb6f7ad99b9c54def7698ed",
+       []
+      ],
       "ruby-merge-valid-expected.txt": [
        "b96648717897f152af2e20027f341654fa163fd9",
        []
@@ -508426,6 +508417,13 @@
          {}
         ]
        ],
+       "live-range-updates.html": [
+        "9f8c4d99c1600beaf284743c5c10949a35816b71",
+        [
+         null,
+         {}
+        ]
+       ],
        "modal-dialog.html": [
         "fa9eeae85eb13daf948c20406b1b907575c1c1f6",
         [
@@ -645193,7 +645191,7 @@
       ]
      ],
      "getAvailability.https.html": [
-      "71b19e6a4eb819c088020a17241851d5e01f756c",
+      "b2574cd56ae79158000c17c61cd770714e4bf33d",
       [
        null,
        {
@@ -711454,7 +711452,7 @@
       ]
      ],
      "dequantizeLinear.https.any.js": [
-      "73dd916b9763160a6626c0781a4099c924aff183",
+      "6b8ba3716936446749e0bfdc4c441307449863fe",
       [
        "webnn/conformance_tests/dequantizeLinear.https.any.html?cpu",
        {
@@ -721309,7 +721307,7 @@
       ]
      ],
      "quantizeLinear.https.any.js": [
-      "8aa9d7f3bcc407d92762ddbf67be894a7d17c34e",
+      "8333f7b1b58a0a9e0ac98cc8a2c5d8339f456811",
       [
        "webnn/conformance_tests/quantizeLinear.https.any.html?cpu",
        {
@@ -731735,7 +731733,7 @@
       ]
      ],
      "dequantizeLinear.https.any.js": [
-      "d0dd2c15dfff2d63c7a1f165770dd8b9543ccf5e",
+      "672fc4ac72456bfe8ca05cf908dba457819830b3",
       [
        "webnn/validation_tests/dequantizeLinear.https.any.html?cpu",
        {
@@ -737471,7 +737469,7 @@
       ]
      ],
      "quantizeLinear.https.any.js": [
-      "42b8ac4b1f2c36f9611db528e01ce465f194de6a",
+      "8516e9cf8e0b4745d5837e9dc3f8a437b9d3301a",
       [
        "webnn/validation_tests/quantizeLinear.https.any.html?cpu",
        {
