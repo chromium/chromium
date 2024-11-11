@@ -63,9 +63,9 @@ jobs:
         with:
           toolchain: ${{matrix.rust}}
           components: rust-src
-      - run: cargo check
-      - run: cargo check --no-default-features
-      - run: cargo check --features backtrace
+      - run: cargo check --manifest-path tests/crate/Cargo.toml
+      - run: cargo check --manifest-path tests/crate/Cargo.toml --no-default-features
+      - run: cargo check --manifest-path tests/crate/Cargo.toml --features backtrace
         if: matrix.rust != '1.65.0' && matrix.rust != '1.52.0' && matrix.rust != '1.51.0' && matrix.rust != '1.50.0' && matrix.rust != '1.39.0'
 
   minimal:

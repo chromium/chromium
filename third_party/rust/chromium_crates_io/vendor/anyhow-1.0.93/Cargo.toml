@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.39"
 name = "anyhow"
-version = "1.0.91"
+version = "1.0.93"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build.rs"
 autolib = false
@@ -116,7 +116,7 @@ version = "2.0"
 features = ["full"]
 
 [dev-dependencies.thiserror]
-version = "1.0.45"
+version = "2"
 
 [dev-dependencies.trybuild]
 version = "1.0.66"

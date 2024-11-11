@@ -155,12 +155,28 @@ macro_rules! __parse_ensure {
         $crate::__parse_ensure!(0 $stack $bail ($($fuel)*) {($($buf)* $and $mut) $($parse)*} ($($rest)*) $($rest)*)
     };
 
+    (0 $stack:tt $bail:tt (~$($fuel:tt)*) {($($buf:tt)*) $($parse:tt)*} ($and:tt $raw:tt $mut:tt $($dup:tt)*) &raw mut $($rest:tt)*) => {
+        $crate::__parse_ensure!(0 $stack $bail ($($fuel)*) {($($buf)* $and $raw $mut) $($parse)*} ($($rest)*) $($rest)*)
+    };
+
+    (0 $stack:tt $bail:tt (~$($fuel:tt)*) {($($buf:tt)*) $($parse:tt)*} ($and:tt $raw:tt $const:tt $($dup:tt)*) &raw const $($rest:tt)*) => {
+        $crate::__parse_ensure!(0 $stack $bail ($($fuel)*) {($($buf)* $and $raw $const) $($parse)*} ($($rest)*) $($rest)*)
+    };
+
     (0 $stack:tt $bail:tt (~$($fuel:tt)*) {($($buf:tt)*) $($parse:tt)*} ($and:tt $($dup:tt)*) & $($rest:tt)*) => {
         $crate::__parse_ensure!(0 $stack $bail ($($fuel)*) {($($buf)* $and) $($parse)*} ($($rest)*) $($rest)*)
     };
 
     (0 $stack:tt $bail:tt (~$($fuel:tt)*) {($($buf:tt)*) $($parse:tt)*} ($andand:tt $mut:tt $($dup:tt)*) &&mut $($rest:tt)*) => {
         $crate::__parse_ensure!(0 $stack $bail ($($fuel)*) {($($buf)* $andand $mut) $($parse)*} ($($rest)*) $($rest)*)
+    };
+
+    (0 $stack:tt $bail:tt (~$($fuel:tt)*) {($($buf:tt)*) $($parse:tt)*} ($andand:tt $raw:tt $mut:tt $($dup:tt)*) &&raw mut $($rest:tt)*) => {
+        $crate::__parse_ensure!(0 $stack $bail ($($fuel)*) {($($buf)* $andand $raw $mut) $($parse)*} ($($rest)*) $($rest)*)
+    };
+
+    (0 $stack:tt $bail:tt (~$($fuel:tt)*) {($($buf:tt)*) $($parse:tt)*} ($andand:tt $raw:tt $const:tt $($dup:tt)*) &&raw const $($rest:tt)*) => {
+        $crate::__parse_ensure!(0 $stack $bail ($($fuel)*) {($($buf)* $andand $raw $const) $($parse)*} ($($rest)*) $($rest)*)
     };
 
     (0 $stack:tt $bail:tt (~$($fuel:tt)*) {($($buf:tt)*) $($parse:tt)*} ($andand:tt $($dup:tt)*) && $($rest:tt)*) => {
