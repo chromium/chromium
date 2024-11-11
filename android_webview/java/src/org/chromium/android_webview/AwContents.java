@@ -71,7 +71,8 @@ import org.chromium.android_webview.metrics.BackForwardCacheNotRestoredReason;
 import org.chromium.android_webview.permission.AwGeolocationCallback;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
-import org.chromium.android_webview.selection.AwSelectionActionMenuDelegate;
+import org.chromium.android_webview.selection.SamsungSelectionActionMenuDelegate;
+import org.chromium.android_webview.selection.SelectionActionMenuDelegateProvider;
 import org.chromium.base.BaseFeatures;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
@@ -96,6 +97,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.autofill.AutofillProvider;
+import org.chromium.components.autofill.AutofillSelectionActionMenuDelegate;
 import org.chromium.components.autofill.AutofillSelectionMenuItemHelper;
 import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.util.TouchEventFilter;
@@ -133,6 +135,7 @@ import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.WebContentsInternals;
 import org.chromium.content_public.browser.navigation_controller.LoadURLType;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
+import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.device.gamepad.GamepadList;
@@ -1455,7 +1458,7 @@ public class AwContents implements SmartClipProvider {
             WebContents webContents,
             WindowAndroid windowAndroid,
             WebContentsInternalsHolder internalsHolder,
-            AwSelectionActionMenuDelegate selectionActionMenuDelegate) {
+            AutofillSelectionActionMenuDelegate selectionActionMenuDelegate) {
         webContents.setDelegates(
                 PRODUCT_VERSION, viewDelegate, internalDispatcher, windowAndroid, internalsHolder);
         mViewEventSink = ViewEventSink.from(mWebContents);
@@ -1481,7 +1484,7 @@ public class AwContents implements SmartClipProvider {
     }
 
     private void initializeAutofillProvider(
-            AwSelectionActionMenuDelegate selectionActionMenuDelegate) {
+            AutofillSelectionActionMenuDelegate selectionActionMenuDelegate) {
         if (mAutofillProvider == null) {
             mAutofillProvider =
                     new AutofillProvider(mContext, mContainerView, mWebContents, "Android WebView");
@@ -1925,8 +1928,8 @@ public class AwContents implements SmartClipProvider {
         mViewAndroidDelegate =
                 new AwViewAndroidDelegate(mContainerView, mContentsClient, mScrollOffsetManager);
         mWebContentsInternalsHolder = new WebContentsInternalsHolder(this);
-        AwSelectionActionMenuDelegate selectionActionMenuDelegate =
-                new AwSelectionActionMenuDelegate();
+        AutofillSelectionActionMenuDelegate selectionActionMenuDelegate =
+                SelectionActionMenuDelegateProvider.getSelectionActionMenuDelegate();
         initWebContents(
                 mViewAndroidDelegate,
                 mInternalAccessAdapter,
@@ -3541,7 +3544,7 @@ public class AwContents implements SmartClipProvider {
      * be thrown by Android framework if startActivityForResult is called with
      * a non-Activity context.
      */
-    void startActivityForResult(Intent intent, int requestCode) {
+    public void startActivityForResult(Intent intent, int requestCode) {
         // Even in fullscreen mode, startActivityForResult will still use the
         // initial internal access delegate because it has access to
         // the hidden API View#startActivityForResult.
@@ -3560,14 +3563,33 @@ public class AwContents implements SmartClipProvider {
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // TODO(anukul.chand): check if we can replace existing implementation with WindowAndroid's
+        //  intent dispatch handling/tracking.
         if (TRACE) Log.i(TAG, "%s onActivityResult", this);
         if (isDestroyed(NO_WARN)) return;
-        if (requestCode == PROCESS_TEXT_REQUEST_CODE) {
-            SelectionPopupController.fromWebContents(mWebContents)
-                    .onReceivedProcessTextResult(resultCode, data);
-        } else {
-            Log.e(TAG, "Received activity result for an unknown request code %d", requestCode);
+        SelectionPopupController selectionPopupController =
+                SelectionPopupController.fromWebContents(mWebContents);
+        if (requestCode == PROCESS_TEXT_REQUEST_CODE
+                && resultCode == Activity.RESULT_OK
+                && data != null) {
+            CharSequence value = data.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT);
+            String result = (value == null) ? null : value.toString();
+            selectionPopupController.handleTextReplacementAction(result);
+            return;
         }
+        SelectionActionMenuDelegate selectionActionMenuDelegate =
+                selectionPopupController.getSelectionActionMenuDelegate();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU
+                && selectionActionMenuDelegate
+                        instanceof SamsungSelectionActionMenuDelegate delegate) {
+            String additionalActivityResult =
+                    delegate.getTextFromAdditionalActivityResult(requestCode, resultCode, data);
+            if (additionalActivityResult != null) {
+                selectionPopupController.handleTextReplacementAction(additionalActivityResult);
+                return;
+            }
+        }
+        Log.e(TAG, "Received activity result for an unknown request code %d", requestCode);
     }
 
     /** @see android.webkit.View#onTouchEvent() */

@@ -9,6 +9,7 @@ import android.content.pm.ResolveInfo;
 import androidx.annotation.NonNull;
 
 import org.chromium.content_public.browser.SelectionMenuItem;
+import org.chromium.content_public.browser.SelectionPopupController;
 
 import java.util.List;
 
@@ -26,11 +27,14 @@ public interface SelectionActionMenuDelegate {
      *
      * @param menuItemBuilders default menu item builder list which need to be modified.
      * @param isSelectionPassword True if current selection is of password type, False otherwise.
+     * @param isSelectionReadOnly True if current node having selection is editable, False
+     *     otherwise.
      * @param selectedText The selected text (empty if no text selected).
      */
     void modifyDefaultMenuItems(
             List<SelectionMenuItem.Builder> menuItemBuilders,
             boolean isSelectionPassword,
+            boolean isSelectionReadOnly,
             @NonNull String selectedText);
 
     /**

@@ -161,6 +161,7 @@ public class SelectActionMenuHelper {
                         delegate,
                         selectionActionMenuDelegate,
                         isSelectionPassword,
+                        isSelectionReadOnly,
                         selectedText));
 
         SelectionMenuGroup primaryAssistItems =
@@ -219,6 +220,7 @@ public class SelectActionMenuHelper {
             SelectActionMenuDelegate delegate,
             @Nullable SelectionActionMenuDelegate selectionActionMenuDelegate,
             boolean isSelectionPassword,
+            boolean isSelectionReadOnly,
             String selectedText) {
         SelectionMenuGroup defaultGroup =
                 new SelectionMenuGroup(
@@ -234,7 +236,7 @@ public class SelectActionMenuHelper {
         if (ContentFeatureMap.isEnabled(ContentFeatures.SELECTION_MENU_ITEM_MODIFICATION)
                 && selectionActionMenuDelegate != null) {
             selectionActionMenuDelegate.modifyDefaultMenuItems(
-                    menuItemBuilders, isSelectionPassword, selectedText);
+                    menuItemBuilders, isSelectionPassword, isSelectionReadOnly, selectedText);
         }
         for (SelectionMenuItem.Builder builder : menuItemBuilders) {
             defaultGroup.addItem(builder.build());

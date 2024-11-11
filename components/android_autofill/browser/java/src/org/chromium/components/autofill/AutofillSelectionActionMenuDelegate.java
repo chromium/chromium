@@ -9,6 +9,7 @@ import android.content.pm.ResolveInfo;
 import androidx.annotation.NonNull;
 
 import org.chromium.content_public.browser.SelectionMenuItem;
+import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class AutofillSelectionActionMenuDelegate implements SelectionActionMenuD
     public void modifyDefaultMenuItems(
             List<SelectionMenuItem.Builder> menuItemBuilders,
             boolean isSelectionPassword,
+            boolean isSelectionReadOnly,
             @NonNull String selectedText) {}
 
     @Override
