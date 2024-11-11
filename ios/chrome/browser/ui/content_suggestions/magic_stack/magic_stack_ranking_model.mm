@@ -753,7 +753,9 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         break;
       case ContentSuggestionsModuleType::kSendTabPromo:
         if (send_tab_to_self::
-                IsSendTabIOSPushNotificationsEnabledWithMagicStackCard()) {
+                IsSendTabIOSPushNotificationsEnabledWithMagicStackCard() &&
+            _sendTabPromoMediator &&
+            _sendTabPromoMediator.sendTabPromoItemToShow) {
           [magicStackOrder
               addObject:_sendTabPromoMediator.sendTabPromoItemToShow];
         }

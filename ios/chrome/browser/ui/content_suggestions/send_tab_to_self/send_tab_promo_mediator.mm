@@ -28,7 +28,6 @@
   if (self) {
     _faviconLoader = faviconLoader;
     _prefService = prefService;
-    _sendTabPromoItem = [[SendTabPromoItem alloc] init];
   }
   return self;
 }
@@ -75,6 +74,7 @@
 
 // Fetches the favicon for the page at `tabURL`.
 - (void)fetchFaviconForUrl:(GURL)tabURL {
+  _sendTabPromoItem = nullptr;
   __weak SendTabPromoMediator* weakSelf = self;
 
   _faviconLoader->FaviconForPageUrl(
@@ -86,6 +86,15 @@
 
 // Called when the favicon has been received.
 - (void)onFaviconReceived:(FaviconAttributes*)attributes {
+  if (_sendTabPromoItem) {
+    // Favicon callback has already been executed, update the image and return.
+    if (!attributes.usesDefaultImage) {
+      _sendTabPromoItem.faviconImage = attributes.faviconImage;
+    }
+    return;
+  }
+
+  _sendTabPromoItem = [[SendTabPromoItem alloc] init];
   if (!attributes.usesDefaultImage) {
     _sendTabPromoItem.faviconImage = attributes.faviconImage;
   }
