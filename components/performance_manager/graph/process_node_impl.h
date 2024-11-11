@@ -33,6 +33,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace performance_manager {
 
@@ -130,6 +131,7 @@ class ProcessNodeImpl
   // Private implementation properties.
   NodeSetView<FrameNodeImpl*> frame_nodes() const;
   NodeSetView<WorkerNodeImpl*> worker_nodes() const;
+  std::optional<perfetto::Track> tracing_track() const;
 
   void SetProcessExitStatus(int32_t exit_status);
   void SetProcessMetricsName(const std::string& metrics_name);
@@ -249,6 +251,10 @@ class ProcessNodeImpl
   // A bit field that indicates which type of content this process has hosted,
   // either currently or in the past.
   ContentTypes hosted_content_types_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The Perfetto ProcessTrack for this process.
+  std::optional<perfetto::Track> tracing_track_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   NodeSet frame_nodes_ GUARDED_BY_CONTEXT(sequence_checker_);
 

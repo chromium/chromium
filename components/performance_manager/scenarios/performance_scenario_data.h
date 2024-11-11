@@ -51,9 +51,11 @@ class RefCountedScenarioState
     return base::OptionalToPtr(input_tracing_track_);
   }
 
-  // Creates tracing tracks nested under `parent_track` to log trace events when
-  // updating scenarios in the shared memory region.
-  void RegisterTracingTracks(perfetto::Track parent_track);
+  // Creates tracing tracks under the ProcessTrack for `process_node`. The
+  // tracks will log trace events when updating scenarios in the shared memory
+  // region. If `process_node` is null, tracks for the global scenario state
+  // will be created under the current ProcessTrack.
+  void EnsureTracingTracks(const ProcessNode* process_node = nullptr);
 
  private:
   friend class base::RefCountedThreadSafe<RefCountedScenarioState>;
@@ -66,7 +68,6 @@ class RefCountedScenarioState
   base::StructuredSharedMemory<ScenarioState> shared_state_;
 
   // Additional data associated with the region.
-  std::optional<perfetto::Track> parent_tracing_track_;
   std::optional<perfetto::NamedTrack> loading_tracing_track_;
   std::optional<perfetto::NamedTrack> input_tracing_track_;
 };

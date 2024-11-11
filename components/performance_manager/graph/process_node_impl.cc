@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/graph/process_node_impl.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -22,6 +23,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace performance_manager {
 
@@ -42,7 +44,9 @@ content::ProcessType ValidateBrowserChildProcessType(
 ProcessNodeImpl::ProcessNodeImpl(BrowserProcessNodeTag tag)
     : ProcessNodeImpl(content::PROCESS_TYPE_BROWSER,
                       AnyChildProcessHostProxy{},
-                      base::TaskPriority::HIGHEST) {}
+                      base::TaskPriority::HIGHEST) {
+  tracing_track_.emplace(perfetto::ProcessTrack::Current());
+}
 
 ProcessNodeImpl::ProcessNodeImpl(RenderProcessHostProxy proxy,
                                  base::TaskPriority priority)
@@ -181,6 +185,15 @@ void ProcessNodeImpl::RequestSharedPerformanceScenarioRegions(
     uint64_t process_track_id,
     RequestSharedPerformanceScenarioRegionsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Should not be called for the Browser process, which already has a track.
+  // Otherwise, it's ok to overwrite `tracing_track_`, since processes can be
+  // re-initialized for the same ProcessNode (eg. after a crash).
+  // TODO(crbug.com/374302723): Rename the Mojo message that sets this, since
+  // the track ID is used for more than PerformanceScenarios now.
+  CHECK_NE(process_type_, content::PROCESS_TYPE_BROWSER);
+  tracing_track_.emplace(perfetto::Track::Global(process_track_id));
+
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSingleProcess)) {
     // The "child process" is actually running in the same process space. The
@@ -191,9 +204,8 @@ void ProcessNodeImpl::RequestSharedPerformanceScenarioRegions(
                             base::ReadOnlySharedMemoryRegion());
     return;
   }
-  std::move(callback).Run(
-      GetGlobalSharedScenarioRegion(),
-      GetSharedScenarioRegionForProcessNode(this, process_track_id));
+  std::move(callback).Run(GetGlobalSharedScenarioRegion(),
+                          GetSharedScenarioRegionForProcessNode(this));
 }
 
 content::ProcessType ProcessNodeImpl::GetProcessType() const {
@@ -293,6 +305,11 @@ ProcessNode::NodeSetView<WorkerNodeImpl*> ProcessNodeImpl::worker_nodes()
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(process_type_, content::PROCESS_TYPE_RENDERER);
   return NodeSetView<WorkerNodeImpl*>(worker_nodes_);
+}
+
+std::optional<perfetto::Track> ProcessNodeImpl::tracing_track() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return tracing_track_;
 }
 
 void ProcessNodeImpl::SetProcessExitStatus(int32_t exit_status) {

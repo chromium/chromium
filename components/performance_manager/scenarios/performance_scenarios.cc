@@ -197,15 +197,9 @@ scoped_refptr<RefCountedScenarioState>& GlobalSharedStatePtr() {
 // failure. The region's lifetime is tied to `process_node`. Must be called from
 // the PM sequence.
 scoped_refptr<RefCountedScenarioState> GetSharedStateForProcessNode(
-    const ProcessNode* process_node,
-    uint64_t process_track_id = 0u) {
-  auto& data = PerformanceScenarioMemoryData::GetOrCreate(process_node);
-  if (process_track_id && data.state_ptr) {
-    data.state_ptr->RegisterTracingTracks(
-        perfetto::Track::Global(process_track_id));
-  }
+    const ProcessNode* process_node) {
   // Returns a copy of the pointer.
-  return data.state_ptr;
+  return PerformanceScenarioMemoryData::GetOrCreate(process_node).state_ptr;
 }
 
 // Returns a pointer to the global shared memory region that can be read by all
@@ -296,7 +290,7 @@ ScopedGlobalScenarioMemory::ScopedGlobalScenarioMemory() {
   CHECK(!GlobalSharedStatePtr());
   auto state_ptr = RefCountedScenarioState::Create();
   if (state_ptr) {
-    state_ptr->RegisterTracingTracks(perfetto::ProcessTrack::Current());
+    state_ptr->EnsureTracingTracks();
     GlobalSharedStatePtr() = std::move(state_ptr);
     read_only_mapping_.emplace(blink::performance_scenarios::Scope::kGlobal,
                                GetGlobalSharedScenarioRegion());
@@ -308,9 +302,12 @@ ScopedGlobalScenarioMemory::~ScopedGlobalScenarioMemory() {
 }
 
 base::ReadOnlySharedMemoryRegion GetSharedScenarioRegionForProcessNode(
-    const ProcessNode* process_node,
-    uint64_t process_track_id) {
-  auto state_ptr = GetSharedStateForProcessNode(process_node, process_track_id);
+    const ProcessNode* process_node) {
+  auto state_ptr = GetSharedStateForProcessNode(process_node);
+  // When this is called, the ProcessTrack should be available.
+  if (state_ptr) {
+    state_ptr->EnsureTracingTracks(process_node);
+  }
   return state_ptr ? state_ptr->shared_state().DuplicateReadOnlyRegion()
                    : base::ReadOnlySharedMemoryRegion();
 }

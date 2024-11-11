@@ -9,10 +9,26 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/structured_shared_memory.h"
 #include "components/performance_manager/graph/process_node_impl.h"
+#include "components/performance_manager/public/tracing_support.h"
 #include "third_party/blink/public/common/performance/performance_scenarios.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace performance_manager {
+
+namespace {
+
+perfetto::NamedTrack CreateTracingTrack(const ProcessNode* process_node,
+                                        perfetto::StaticString name,
+                                        uint64_t track_id) {
+  if (process_node) {
+    return CreateProcessTracingTrack(process_node, name, track_id);
+  } else {
+    return perfetto::NamedTrack(name, track_id,
+                                perfetto::ProcessTrack::Current());
+  }
+}
+
+}  // namespace
 
 // static
 scoped_refptr<RefCountedScenarioState> RefCountedScenarioState::Create() {
@@ -30,19 +46,20 @@ RefCountedScenarioState::RefCountedScenarioState(
 
 RefCountedScenarioState::~RefCountedScenarioState() = default;
 
-void RefCountedScenarioState::RegisterTracingTracks(
-    perfetto::Track parent_track) {
-  if (parent_tracing_track_.has_value()) {
-    // Already registered.
+void RefCountedScenarioState::EnsureTracingTracks(
+    const ProcessNode* process_node) {
+  uint64_t track_id = reinterpret_cast<uint64_t>(this);
+  if (process_node && !HasProcessTracingTrack(process_node)) {
     return;
   }
-  parent_tracing_track_.emplace(parent_track);
-
-  uint64_t track_id = reinterpret_cast<uint64_t>(this);
-  loading_tracing_track_.emplace(perfetto::NamedTrack(
-      "LoadingPerformanceScenario", track_id, parent_track));
-  input_tracing_track_.emplace(
-      perfetto::NamedTrack("InputPerformanceScenario", track_id, parent_track));
+  if (!loading_tracing_track_.has_value()) {
+    loading_tracing_track_.emplace(CreateTracingTrack(
+        process_node, "LoadingPerformanceScenario", track_id));
+  }
+  if (!input_tracing_track_.has_value()) {
+    input_tracing_track_.emplace(
+        CreateTracingTrack(process_node, "InputPerformanceScenario", track_id));
+  }
 }
 
 // static
