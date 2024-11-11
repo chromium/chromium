@@ -431,13 +431,6 @@ BASE_FEATURE(kCdmHostVerification,
              "CdmHostVerification",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Use per-CDM-type, per-user and per-site CDM processes (for library CDM). If
-// disabled, the CDM processes are only per-CDM-type, meaning different sites
-// using the same CDM type would share one CDM process.
-BASE_FEATURE(kCdmProcessSiteIsolation,
-             "CdmProcessSiteIsolation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the "Copy Video Frame" context menu item.
 BASE_FEATURE(kContextMenuCopyVideoFrame,
              "ContextMenuCopyVideoFrame",

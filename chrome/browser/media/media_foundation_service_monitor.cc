@@ -346,8 +346,7 @@ void MediaFoundationServiceMonitor::OnServiceProcessCrashed(
                             HasRecentPowerOrDisplayChange());
 
   // Site should always be set when launching MediaFoundationService, but it
-  // could be empty, e.g. during capability checking or when
-  // `media::kCdmProcessSiteIsolation` is disabled.
+  // could be empty, e.g. during capability checking.
   DVLOG(1) << __func__ << ": MediaFoundationService process ("
            << info.site().value() << ") crashed!";
 
