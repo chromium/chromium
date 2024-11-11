@@ -186,9 +186,10 @@ PasswordManualFallbackFlow::GetDriver() {
 
 void PasswordManualFallbackFlow::OnSuggestionsShown(
     base::span<const Suggestion> suggestions) {
+  const PasswordForm* const form = password_form_cache_->GetPasswordForm(
+      password_manager_driver_, field_id_);
   manual_fallback_metrics_recorder_->OnDidShowSuggestions(
-      password_form_cache_->GetPasswordForm(password_manager_driver_,
-                                            field_id_));
+      IsTriggerFieldRelevantInPasswordForm(form));
 }
 
 void PasswordManualFallbackFlow::OnSuggestionsHidden() {}
