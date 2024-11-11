@@ -5173,7 +5173,7 @@ class MHTMLImprovementsLoadingTest : public MhtmlLoadingTest {
   std::unique_ptr<DownloadTestContentBrowserClient> browser_client_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_FormsDisabledWhenRenderedFromHttp \
   DISABLED_FormsDisabledWhenRenderedFromHttp
 #else
