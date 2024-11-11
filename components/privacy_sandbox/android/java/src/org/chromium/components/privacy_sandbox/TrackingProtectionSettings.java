@@ -7,10 +7,7 @@ package org.chromium.components.privacy_sandbox;
 import static org.chromium.components.browser_ui.settings.SearchUtils.handleSearchNavigation;
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Browser;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ClickableSpan;
@@ -22,12 +19,10 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceClickListener;
 import androidx.preference.PreferenceFragmentCompat;
 
-import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -39,7 +34,6 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.site_settings.AddExceptionPreference;
 import org.chromium.components.browser_ui.site_settings.AddExceptionPreference.SiteAddedCallback;
-import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment.CustomTabIntentHelper;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetcher;
@@ -48,6 +42,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.privacy_sandbox.CustomTabs.CustomTabIntentHelper;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.Toast;
 
@@ -403,25 +398,10 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     }
 
     private void onLearnMoreClicked() {
-        openUrlInCct(LEARN_MORE_URL);
+        CustomTabs.openUrlInCct(mCustomTabIntentHelper, getContext(), LEARN_MORE_URL);
     }
 
     public void setCustomTabIntentHelper(CustomTabIntentHelper helper) {
         mCustomTabIntentHelper = helper;
-    }
-
-    private void openUrlInCct(String url) {
-        assert (mCustomTabIntentHelper != null)
-                : "CCT helpers must be set on TrackingProtectionSettings before opening a link";
-        CustomTabsIntent customTabIntent =
-                new CustomTabsIntent.Builder().setShowTitle(true).build();
-        customTabIntent.intent.setData(Uri.parse(url));
-        Intent intent =
-                mCustomTabIntentHelper.createCustomTabActivityIntent(
-                        getContext(), customTabIntent.intent);
-        intent.setPackage(getContext().getPackageName());
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
-        IntentUtils.addTrustedIntentExtras(intent);
-        IntentUtils.safeStartActivity(getContext(), intent);
     }
 }

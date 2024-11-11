@@ -4,17 +4,12 @@
 
 package org.chromium.components.privacy_sandbox;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Browser;
 import android.text.style.ClickableSpan;
 import android.view.View;
 
-import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.preference.PreferenceFragmentCompat;
 
-import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -22,6 +17,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.privacy_sandbox.CustomTabs.CustomTabIntentHelper;
 import org.chromium.ui.text.SpanApplier;
 
 /**
@@ -104,7 +100,7 @@ public class FingerprintingProtectionSettingsFragment extends PreferenceFragment
     }
 
     private void onLearnMoreClicked() {
-        openUrlInCct(LEARN_MORE_URL);
+        CustomTabs.openUrlInCct(mCustomTabIntentHelper, getContext(), LEARN_MORE_URL);
     }
 
     /**
@@ -117,22 +113,5 @@ public class FingerprintingProtectionSettingsFragment extends PreferenceFragment
      */
     public void setCustomTabIntentHelper(CustomTabIntentHelper helper) {
         mCustomTabIntentHelper = helper;
-    }
-
-    // TODO(b/329317221) This logic will be refactored as a part of other effort.
-    private void openUrlInCct(String url) {
-        assert (mCustomTabIntentHelper != null)
-                : "CCT helpers must be set on FingerprintingProtectionSettingsFragment before"
-                        + " opening a link";
-        CustomTabsIntent customTabIntent =
-                new CustomTabsIntent.Builder().setShowTitle(true).build();
-        customTabIntent.intent.setData(Uri.parse(url));
-        Intent intent =
-                mCustomTabIntentHelper.createCustomTabActivityIntent(
-                        getContext(), customTabIntent.intent);
-        intent.setPackage(getContext().getPackageName());
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
-        IntentUtils.addTrustedIntentExtras(intent);
-        IntentUtils.safeStartActivity(getContext(), intent);
     }
 }
