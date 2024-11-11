@@ -124,10 +124,6 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 
   std::string signin_partition_name_;
 
-  // This variable takes the value of `force_reauth_gaia_page` needed to be used
-  // when reactivating the autoreload in `LockScreenStartReauthDialog`.
-  bool force_gaia_reauth_ = false;
-
   ::login::StringList scraped_saml_passwords_;
 
   raw_ptr<LockScreenReauthManager> lock_screen_reauth_manager_ = nullptr;
