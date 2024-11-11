@@ -55,6 +55,7 @@ import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.facilitated_payments.core.ui_utils.UiEvent;
 import org.chromium.components.payments.InputProtector;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -171,6 +172,10 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     // TODO: b/350660307 - Remove reason parameter.
     public void onDismissed(@StateChangeReason int reason) {
         mDelegate.onDismissed();
+    }
+
+    public void onUiEvent(@UiEvent int uiEvent) {
+        mDelegate.onUiEvent(uiEvent);
     }
 
     private ListItem buildHeader() {

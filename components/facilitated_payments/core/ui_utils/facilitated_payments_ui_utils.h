@@ -24,6 +24,8 @@ enum class UiState {
 
 // This enum is used to denote the UI events in the Facilitated Payments bottom
 // sheet.
+// GENERATED_JAVA_ENUM_PACKAGE: (
+//   org.chromium.components.facilitated_payments.core.ui_utils)
 enum class UiEvent {
   // Represents a new screen being shown. This includes both opening the bottom
   // sheet to show a screen, and replacing an existing screen to show a new

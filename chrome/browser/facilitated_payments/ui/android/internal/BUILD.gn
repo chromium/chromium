@@ -93,6 +93,7 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//base:callback_java",
     "//chrome/android:chrome_java",
+    "//chrome/browser/facilitated_payments/ui/android:public_java",
     "//chrome/browser/profiles/android:java",
     "//components/autofill/android:autofill_java",
     "//components/browser_ui/bottomsheet/android:factory_java",
