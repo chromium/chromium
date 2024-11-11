@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_params.h"
@@ -18,15 +19,23 @@
 
 namespace sandbox {
 
-bool SignedPolicy::GenerateRules(const wchar_t* name,
+bool SignedPolicy::GenerateRules(base::FilePath dll_path,
                                  LowLevelPolicy* policy) {
-  base::FilePath file_path(name);
-  auto nt_path_name = GetNtPathFromWin32Path(file_path.DirName().value());
-  if (!nt_path_name)
+  // Disallow patterns to allow for future API changes.
+  if (base::Contains(dll_path.value(), L'*')) {
     return false;
+  }
+  if (!dll_path.IsAbsolute()) {
+    return false;
+  }
+
+  auto nt_path_name = GetNtPathFromWin32Path(dll_path.DirName().value());
+  if (!nt_path_name) {
+    return false;
+  }
 
   base::FilePath nt_path(nt_path_name.value());
-  std::wstring nt_filename = nt_path.Append(file_path.BaseName()).value();
+  std::wstring nt_filename = nt_path.Append(dll_path.BaseName()).value();
   // Create a rule to ASK_BROKER if name matches.
   PolicyRule signed_policy(ASK_BROKER);
   if (!signed_policy.AddStringMatch(IF, NameBased::NAME, nt_filename.c_str())) {

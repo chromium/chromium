@@ -157,9 +157,9 @@ class [[clang::lto_visibility_public]] TargetConfig {
                                                    const wchar_t* pattern) = 0;
 
   // Adds a policy rule effective for processes spawned using this policy.
-  // Modules patching `pattern` (see AllowFileAccess) can still be loaded under
+  // Modules patching `path` exactly can still be loaded under
   // Code-Integrity Guard (MITIGATION_FORCE_MS_SIGNED_BINS).
-  [[nodiscard]] virtual ResultCode AllowExtraDlls(const wchar_t* pattern) = 0;
+  [[nodiscard]] virtual ResultCode AllowExtraDll(const wchar_t* path) = 0;
 
   // Adds a policy rule effective for processes spawned using this policy.
   // Fake gdi init to allow user32 and gdi32 to initialize under Win32 Lockdown.

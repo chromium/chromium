@@ -806,7 +806,7 @@ TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicySuccessDelayed) {
 TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicySuccess) {
   // AllowExtraDlls shims may run before ASAN has a chance to initialize its
   // internal state, namely __asan_shadow_memory_dynamic_address.
-#if !defined(ADDRESS_SANITIZER)
+#if !defined(ADDRESS_SANITIZER) && !defined(COMPONENT_BUILD)
   if (base::win::GetVersion() < base::win::Version::WIN10_TH2)
     return;
 
@@ -825,18 +825,9 @@ TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicySuccess) {
 
   EXPECT_EQ(config2->SetProcessMitigations(MITIGATION_FORCE_MS_SIGNED_BINS),
             SBOX_ALL_OK);
-  // In a component build, the DLLs must be allowed to load.
-#if defined(COMPONENT_BUILD)
-  base::FilePath exe_path;
-  EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
-  // Allow all *.dll in current directory to load.
-  EXPECT_EQ(sandbox::SBOX_ALL_OK,
-            config2->AllowExtraDlls(
-                exe_path.DirName().AppendASCII("*.dll").value().c_str()));
-#endif  // defined(COMPONENT_BUILD)
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(test_command.c_str()));
-#endif  // !defined(ADDRESS_SANITIZER)
+#endif  // !defined(ADDRESS_SANITIZER) && !defined(COMPONENT_BUILD)
 }
 
 // This test attempts to load an unsigned dll, which should succeed only if
@@ -866,7 +857,7 @@ SBOX_TESTS_COMMAND int TestMsSignedLoadUnsignedDll(int argc, wchar_t** argv) {
 // mitigation enables the setting on a process when non-delayed, and that
 // process fails load a dll not signed by Microsoft.
 TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicyAndDllLoadFailure) {
-  // AllowExtraDlls shims may run before ASAN has a chance to initialize its
+  // AllowExtraDll shims may run before ASAN has a chance to initialize its
   // internal state, namely __asan_shadow_memory_dynamic_address.
   // With component build we would have to allow all DLLs to load, which
   // invalidates the test.
@@ -894,9 +885,9 @@ TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicyAndDllLoadFailure) {
 // mitigation enables the setting on a process when non-delayed, and that
 // process can load a dll.
 TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicyAndDllLoadSuccess) {
-  // AllowExtraDlls shims may run before ASAN has a chance to initialize its
+  // AllowExtraDll shims may run before ASAN has a chance to initialize its
   // internal state, namely __asan_shadow_memory_dynamic_address.
-#if !defined(ADDRESS_SANITIZER)
+#if !defined(ADDRESS_SANITIZER) && !defined(COMPONENT_BUILD)
   if (base::win::GetVersion() < base::win::Version::WIN10_TH2) {
     return;
   }
@@ -905,27 +896,21 @@ TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicyAndDllLoadSuccess) {
 
   TestRunner runner;
   // After the sandbox is applied, the sandbox will prevent DLL loads. Validate
-  // we can load a DLL specified in AllowExtraDlls before sandbox is applied.
+  // we can load a DLL specified in AllowExtraDll before sandbox is applied.
   runner.SetTestState(BEFORE_REVERT);
   sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
 
   EXPECT_EQ(config->SetProcessMitigations(MITIGATION_FORCE_MS_SIGNED_BINS),
             SBOX_ALL_OK);
-  // In a component build, allow all *.dll in current directory to load. On a
-  // release build, specify the name of the hooking dll that the test tries to
-  // load.
+  // Specify the name of the hooking dll that the test tries to load.
   base::FilePath exe_path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
   EXPECT_EQ(sandbox::SBOX_ALL_OK,
-            config->AllowExtraDlls(
-#if defined(COMPONENT_BUILD)
-                exe_path.DirName().AppendASCII("*.dll").value().c_str()));
-#else
+            config->AllowExtraDll(
                 exe_path.Append(hooking_dll::g_hook_dll_file).value().c_str()));
-#endif
 
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
-#endif  // !defined(ADDRESS_SANITIZER)
+#endif  // !defined(ADDRESS_SANITIZER) && !defined(COMPONENT_BUILD)
 }
 
 //------------------------------------------------------------------------------
@@ -1408,6 +1393,23 @@ TEST(ProcessMitigationsTest, RestrictCoreSharing) {
   EXPECT_EQ(config->SetProcessMitigations(MITIGATION_RESTRICT_CORE_SHARING),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
+}
+
+TEST(ProcessMitigationsTest, NoAllowExtraDllWildcards) {
+  // AllowExtraDll() is not supported on very first Win10 version.
+  if (base::win::GetVersion() < base::win::Version::WIN10_TH2) {
+    return;
+  }
+
+  TestRunner runner;
+  sandbox::TargetConfig* config = runner.GetPolicy()->GetConfig();
+  EXPECT_EQ(config->SetProcessMitigations(MITIGATION_FORCE_MS_SIGNED_BINS),
+            SBOX_ALL_OK);
+  // Validate that wildcards are rejected.
+  base::FilePath exe_path;
+  EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
+  EXPECT_EQ(sandbox::SBOX_ERROR_BAD_PARAMS,
+            config->AllowExtraDll(exe_path.Append(L"*.dll").value().c_str()));
 }
 
 }  // namespace sandbox
