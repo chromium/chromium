@@ -1397,6 +1397,9 @@ TEST_P(PasswordManualFallbackFlowFillAfterSuggestionMetricsTest,
                         .row = 0,
                         .sub_popup_level = 0,
                         .from_search_result = SuggestionFromSearchResult()});
+    histograms.ExpectUniqueSample("Autofill.Suggestions.AcceptedType",
+                                  SuggestionType::kPasswordFieldByFieldFilling,
+                                  1);
     histograms.ExpectUniqueSample(
         "PasswordManager.ManualFallback.AcceptedSuggestion.SearchInputUsed",
         SuggestionFromSearchResult(), 1);

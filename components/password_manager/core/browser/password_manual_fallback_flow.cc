@@ -241,7 +241,8 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
       password_manager_driver_, field_id_);
   manual_fallback_metrics_recorder_->OnDidFillSuggestion(
       IsTriggerFieldRelevantInPasswordForm(form));
-
+  base::UmaHistogramEnumeration("Autofill.Suggestions.AcceptedType",
+                                suggestion.type);
   base::UmaHistogramBoolean(
       "PasswordManager.ManualFallback.AcceptedSuggestion.SearchInputUsed",
       metadata.from_search_result);
