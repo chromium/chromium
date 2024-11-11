@@ -2120,6 +2120,7 @@ if (!is_android) {
       "//components/enterprise/browser/identifiers:identifiers",
       "//components/enterprise/common/proto:connectors_proto",
       "//components/enterprise/connectors/core",
+      "//components/enterprise/obfuscation/core:enterprise_obfuscation",
       "//components/error_page/content/browser",
       "//components/favicon/content",
       "//components/favicon/core",

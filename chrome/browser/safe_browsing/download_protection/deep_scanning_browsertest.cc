@@ -51,6 +51,7 @@
 #include "components/download/public/common/download_features.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/obfuscation/core/utils.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -80,6 +81,10 @@ constexpr char kUserName[] = "test@chromium.org";
 
 constexpr char kResumableUploadUrl[] =
     "http://uploads.google.com?upload_id=ABC&upload_protocol=resumable";
+
+constexpr int64_t kSingleChunkObfuscationOverhead =
+    enterprise_obfuscation::kKeySize + enterprise_obfuscation::kNonceSize +
+    enterprise_obfuscation::kAuthTagSize;
 
 // Extract the metadata proto from the raw request string based on multipart
 // upload protocol. Returns true on success.
@@ -160,16 +165,31 @@ class DownloadDeepScanningBrowserTestBase
   // |is_resumable| indicates whether the metadata and content are transmitted
   // by resumable upload protocol or multipart upload protocol. Resumable upload
   // currently is only open to enterprise scans.
+  // |is_obfuscated| indicates whether the downloaded file has been obfuscated
+  // to prevent user access. Currently, this is done while waiting for an
+  // enterprise deep scan verdict.
   explicit DownloadDeepScanningBrowserTestBase(bool connectors_machine_scope,
                                                bool is_consumer,
-                                               bool is_resumable)
+                                               bool is_resumable,
+                                               bool is_obfuscated)
       : is_consumer_(is_consumer),
         is_resumable_(is_resumable),
+        is_obfuscated_(is_obfuscated),
         connectors_machine_scope_(connectors_machine_scope) {
-    is_resumable_ ? scoped_feature_list_.InitAndEnableFeature(
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    is_resumable_ ? enabled_features.push_back(
                         enterprise_connectors::kResumableUploadEnabled)
-                  : scoped_feature_list_.InitAndDisableFeature(
+                  : disabled_features.push_back(
                         enterprise_connectors::kResumableUploadEnabled);
+    is_obfuscated_ ? enabled_features.push_back(
+                         enterprise_obfuscation::kEnterpriseFileObfuscation)
+                   : disabled_features.push_back(
+                         enterprise_obfuscation::kEnterpriseFileObfuscation);
+
+    scoped_feature_list_.InitWithFeatures(std::move(enabled_features),
+                                          std::move(disabled_features));
   }
 
   void OnDownloadCreated(content::DownloadManager* manager,
@@ -429,6 +449,8 @@ class DownloadDeepScanningBrowserTestBase
 
   bool is_resumable() const { return is_resumable_; }
 
+  bool is_obfuscated() const { return is_obfuscated_; }
+
   std::string GetProfileIdentifier() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     return browser()->profile()->GetPath().AsUTF8Unsafe();
@@ -573,6 +595,7 @@ class DownloadDeepScanningBrowserTestBase
   base::test::ScopedFeatureList scoped_feature_list_;
   bool is_consumer_;
   bool is_resumable_;
+  bool is_obfuscated_;
 
   std::unique_ptr<TestSafeBrowsingServiceFactory> test_sb_factory_;
   raw_ptr<FakeBinaryFCMService, DanglingUntriaged> binary_fcm_service_;
@@ -601,25 +624,28 @@ class ConsumerDeepScanningBrowserTest
   ConsumerDeepScanningBrowserTest()
       : DownloadDeepScanningBrowserTestBase(/*connectors_machine_scope=*/true,
                                             /*is_consumer=*/true,
-                                            /*is_resumable=*/false) {}
+                                            /*is_resumable=*/false,
+                                            /*is_obfuscated=*/false) {}
 };
 
 class DownloadDeepScanningBrowserTest
     : public DownloadDeepScanningBrowserTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   DownloadDeepScanningBrowserTest()
       : DownloadDeepScanningBrowserTestBase(
             /*connectors_machine_scope=*/std::get<0>(GetParam()),
             /*is_consumer=*/false,
-            /*is_resumable=*/std::get<1>(GetParam())) {}
+            /*is_resumable=*/std::get<1>(GetParam()),
+            /*is_obfuscated=*/std::get<2>(GetParam())) {}
 };
 
 INSTANTIATE_TEST_SUITE_P(,
                          DownloadDeepScanningBrowserTest,
                          testing::Combine(
                              /*connectors_machine_scope=*/testing::Bool(),
-                             /*is_resumable=*/testing::Bool()));
+                             /*is_resumable=*/testing::Bool(),
+                             /*is_obfuscated=*/testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
                        SafeDownloadHasCorrectDangerType) {
@@ -849,6 +875,11 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
 // be blocked.
 IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
                        PasswordProtectedTxtFilesAreBlocked) {
+  // TODO(crbug.com/378490429): Add support for obfuscated password protected
+  // files.
+  if (is_obfuscated()) {
+    GTEST_SKIP() << "Encryption status cannot be detected in obfuscated files.";
+  }
   // This allows the blocking DM token reads happening on profile-Connector
   // triggers.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -941,7 +972,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, MultipleFCMResponses) {
       /*trigger*/
       extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
       /*mimetypes*/ &zip_types,
-      /*size*/ 276,
+      /*size*/ is_obfuscated() ? 276 + kSingleChunkObfuscationOverhead : 276,
       /*result*/ EventResultToString(EventResult::WARNED),
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
@@ -1047,7 +1078,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
       extensions::SafeBrowsingPrivateEventRouter::kTriggerFileDownload,
       /*dlp_verdict*/ *dlp_result,
       /*mimetypes*/ &zip_types,
-      /*size*/ 276,
+      /*size*/ is_obfuscated() ? 276 + kSingleChunkObfuscationOverhead : 276,
       /*result*/ EventResultToString(EventResult::WARNED),
       /*username*/ kUserName,
       /*profile_identifier*/ GetProfileIdentifier(),
@@ -1079,7 +1110,8 @@ class DownloadRestrictionsDeepScanningBrowserTest
       : DownloadDeepScanningBrowserTestBase(
             /*connectors_machine_scope=*/GetParam(),
             /*is_consumer=*/false,
-            /*is_resumable=*/false) {}
+            /*is_resumable=*/false,
+            /*is_obfuscated*/ false) {}
   ~DownloadRestrictionsDeepScanningBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -1161,13 +1193,14 @@ IN_PROC_BROWSER_TEST_P(DownloadRestrictionsDeepScanningBrowserTest,
 
 class AllowlistedUrlDeepScanningBrowserTest
     : public DownloadDeepScanningBrowserTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   AllowlistedUrlDeepScanningBrowserTest()
       : DownloadDeepScanningBrowserTestBase(
             /*connectors_machine_scope=*/std::get<0>(GetParam()),
             /*is_consumer=*/false,
-            /*is_resumable=*/std::get<1>(GetParam())) {}
+            /*is_resumable=*/std::get<1>(GetParam()),
+            /*is_obfuscated=*/std::get<2>(GetParam())) {}
   ~AllowlistedUrlDeepScanningBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -1184,7 +1217,8 @@ INSTANTIATE_TEST_SUITE_P(,
                          AllowlistedUrlDeepScanningBrowserTest,
                          testing::Combine(
                              /*connectors_machine_scope=*/testing::Bool(),
-                             /*is_resumable=*/testing::Bool()));
+                             /*is_resumable=*/testing::Bool(),
+                             /*is_obfuscated*/ testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(AllowlistedUrlDeepScanningBrowserTest,
                        AllowlistedUrlStillDoesDlpAndMalware) {
@@ -1345,7 +1379,8 @@ class SavePackageDeepScanningBrowserTest
   SavePackageDeepScanningBrowserTest()
       : DownloadDeepScanningBrowserTestBase(/*connectors_machine_scope=*/true,
                                             /*is_consumer=*/false,
-                                            /*is_resumable=*/GetParam()) {}
+                                            /*is_resumable=*/GetParam(),
+                                            /*is_obfuscated=*/false) {}
 
   base::FilePath GetSaveDir() {
     return DownloadPrefs(browser()->profile()).DownloadPath();
