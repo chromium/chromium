@@ -9763,6 +9763,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_DECLUTTER_CLOSE_TAB_ARIA_LABEL" desc="The accessible label declutter for the button which excludes a tab from the list" is_accessibility_with_no_ui="true">
         Remove <ph name="TAB_TITLE">$1<ex>New Tab</ex></ph> from list
       </message>
+      <message name="IDS_DECLUTTER_CLOSE_TAB_TOOLTIP" desc="The declutter tooltip for the button which excludes a tab from the list">
+        Remove tab from list
+      </message>
       <!-- Strings for tab organization -->
       <message name="IDS_TOOLTIP_TAB_ORGANIZE" desc="The tooltip for the Tab Organization button.">
         Organize tabs?

@@ -155,6 +155,7 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       // Declutter UI strings
       {"closeTabs", IDS_DECLUTTER_CLOSE_TABS},
       {"declutterCloseTabAriaLabel", IDS_DECLUTTER_CLOSE_TAB_ARIA_LABEL},
+      {"declutterCloseTabTooltip", IDS_DECLUTTER_CLOSE_TAB_TOOLTIP},
       {"declutterEmptyBody", IDS_DECLUTTER_EMPTY_BODY},
       {"declutterEmptyTitle", IDS_DECLUTTER_EMPTY_TITLE},
       {"declutterTimestamp", IDS_DECLUTTER_TIMESTAMP},

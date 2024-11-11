@@ -40,6 +40,7 @@ export function getHtml(this: DeclutterPageElement) {
               <tab-search-item class="mwb-list-item" .data="${item}"
                   close-button-aria-label=
                       "${this.getCloseButtonAriaLabel_(item)}"
+                  close-button-tooltip="$i18n{declutterCloseTabTooltip}"
                   close-button-icon="tab-search:remove"
                   role="option"
                   data-index="${index}"
