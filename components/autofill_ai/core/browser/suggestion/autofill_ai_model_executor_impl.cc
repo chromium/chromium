@@ -25,7 +25,7 @@
 
 namespace autofill_ai {
 
-AutofillAiFillingEngineImpl::AutofillAiFillingEngineImpl(
+AutofillAiModelExecutorImpl::AutofillAiModelExecutorImpl(
     optimization_guide::OptimizationGuideModelExecutor* model_executor,
     user_annotations::UserAnnotationsService* user_annotations_service)
     : model_executor_(model_executor),
@@ -33,22 +33,22 @@ AutofillAiFillingEngineImpl::AutofillAiFillingEngineImpl(
   CHECK(model_executor_);
   CHECK(user_annotations_service_);
 }
-AutofillAiFillingEngineImpl::~AutofillAiFillingEngineImpl() = default;
+AutofillAiModelExecutorImpl::~AutofillAiModelExecutorImpl() = default;
 
-void AutofillAiFillingEngineImpl::GetPredictions(
+void AutofillAiModelExecutorImpl::GetPredictions(
     autofill::FormData form_data,
     base::flat_map<autofill::FieldGlobalId, bool> field_eligibility_map,
     base::flat_map<autofill::FieldGlobalId, bool> field_sensitivity_map,
     optimization_guide::proto::AXTreeUpdate ax_tree_update,
     PredictionsReceivedCallback callback) {
   user_annotations_service_->RetrieveAllEntries(base::BindOnce(
-      &AutofillAiFillingEngineImpl::OnUserAnnotationsRetrieved,
+      &AutofillAiModelExecutorImpl::OnUserAnnotationsRetrieved,
       weak_ptr_factory_.GetWeakPtr(), std::move(form_data),
       std::move(field_eligibility_map), std::move(field_sensitivity_map),
       std::move(ax_tree_update), std::move(callback)));
 }
 
-void AutofillAiFillingEngineImpl::OnUserAnnotationsRetrieved(
+void AutofillAiModelExecutorImpl::OnUserAnnotationsRetrieved(
     autofill::FormData form_data,
     const base::flat_map<autofill::FieldGlobalId, bool>& field_eligibility_map,
     const base::flat_map<autofill::FieldGlobalId, bool>& field_sensitivity_map,
@@ -85,12 +85,12 @@ void AutofillAiFillingEngineImpl::OnUserAnnotationsRetrieved(
   model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kFormsPredictions, request,
       kExecutionTimeout.Get(),
-      base::BindOnce(&AutofillAiFillingEngineImpl::OnModelExecuted,
+      base::BindOnce(&AutofillAiModelExecutorImpl::OnModelExecuted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(form_data),
                      std::move(callback)));
 }
 
-void AutofillAiFillingEngineImpl::OnModelExecuted(
+void AutofillAiModelExecutorImpl::OnModelExecuted(
     autofill::FormData form_data,
     PredictionsReceivedCallback callback,
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
@@ -117,8 +117,8 @@ void AutofillAiFillingEngineImpl::OnModelExecuted(
 }
 
 // static
-AutofillAiFillingEngine::PredictionsByGlobalId
-AutofillAiFillingEngineImpl::ExtractPredictions(
+AutofillAiModelExecutor::PredictionsByGlobalId
+AutofillAiModelExecutorImpl::ExtractPredictions(
     const autofill::FormData& form_data,
     const optimization_guide::proto::FilledFormData& form_data_proto) {
   std::vector<std::pair<autofill::FieldGlobalId, Prediction>> predictions;

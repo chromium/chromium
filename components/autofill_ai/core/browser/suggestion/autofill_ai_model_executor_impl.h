@@ -30,14 +30,14 @@ class UserAnnotationsService;
 
 namespace autofill_ai {
 
-class AutofillAiFillingEngineImpl : public AutofillAiFillingEngine {
+class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
  public:
-  AutofillAiFillingEngineImpl(
+  AutofillAiModelExecutorImpl(
       optimization_guide::OptimizationGuideModelExecutor* model_executor,
       user_annotations::UserAnnotationsService* user_annotations_service);
-  ~AutofillAiFillingEngineImpl() override;
+  ~AutofillAiModelExecutorImpl() override;
 
-  // AutofillAiFillingEngine:
+  // AutofillAiModelExecutor:
   void GetPredictions(
       autofill::FormData form_data,
       base::flat_map<autofill::FieldGlobalId, bool> field_eligibility_map,
@@ -74,7 +74,7 @@ class AutofillAiFillingEngineImpl : public AutofillAiFillingEngine {
   raw_ptr<user_annotations::UserAnnotationsService> user_annotations_service_ =
       nullptr;
 
-  base::WeakPtrFactory<AutofillAiFillingEngineImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AutofillAiModelExecutorImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill_ai

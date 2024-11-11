@@ -23,7 +23,7 @@ class MockAutofillAiClient : public AutofillAiClient {
               (AutofillAiClient::AXTreeCallback callback),
               (override));
   MOCK_METHOD(AutofillAiManager&, GetManager, (), (override));
-  MOCK_METHOD(AutofillAiFillingEngine*, GetFillingEngine, (), (override));
+  MOCK_METHOD(AutofillAiModelExecutor*, GetFillingEngine, (), (override));
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (override));
   MOCK_METHOD(const url::Origin&, GetLastCommittedOrigin, (), (override));
   MOCK_METHOD(std::string, GetTitle, (), (override));

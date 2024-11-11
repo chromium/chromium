@@ -307,7 +307,7 @@ void AutofillAiManager::OnReceivedAXTree(
 void AutofillAiManager::OnReceivedPredictions(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
-    AutofillAiFillingEngine::PredictionsOrError predictions_or_error,
+    AutofillAiModelExecutor::PredictionsOrError predictions_or_error,
     std::optional<std::string> model_execution_id) {
   LOG_AF(GetLogManager()) << LoggingScope::kAutofillAi
                           << LogMessage::kAutofillAi

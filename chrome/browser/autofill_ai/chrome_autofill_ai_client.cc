@@ -98,13 +98,13 @@ autofill_ai::AutofillAiManager& ChromeAutofillAiClient::GetManager() {
   return prediction_improvements_manager_;
 }
 
-autofill_ai::AutofillAiFillingEngine*
+autofill_ai::AutofillAiModelExecutor*
 ChromeAutofillAiClient::GetFillingEngine() {
   if (!filling_engine_) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents_->GetBrowserContext());
     filling_engine_ =
-        std::make_unique<autofill_ai::AutofillAiFillingEngineImpl>(
+        std::make_unique<autofill_ai::AutofillAiModelExecutorImpl>(
             OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
             UserAnnotationsServiceFactory::GetForProfile(profile));
   }

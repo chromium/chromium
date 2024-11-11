@@ -10,7 +10,7 @@
 
 namespace autofill_ai {
 
-AutofillAiFillingEngine::Prediction::Prediction(std::u16string value,
+AutofillAiModelExecutor::Prediction::Prediction(std::u16string value,
                                                 std::u16string label,
                                                 bool is_focusable)
     : Prediction(std::move(value),
@@ -18,7 +18,7 @@ AutofillAiFillingEngine::Prediction::Prediction(std::u16string value,
                  is_focusable,
                  std::nullopt) {}
 
-AutofillAiFillingEngine::Prediction::Prediction(
+AutofillAiModelExecutor::Prediction::Prediction(
     std::u16string value,
     std::u16string label,
     bool is_focusable,
@@ -28,8 +28,8 @@ AutofillAiFillingEngine::Prediction::Prediction(
       is_focusable(is_focusable),
       select_option_text(std::move(select_option_text)) {}
 
-AutofillAiFillingEngine::Prediction::Prediction(const Prediction& other) =
+AutofillAiModelExecutor::Prediction::Prediction(const Prediction& other) =
     default;
-AutofillAiFillingEngine::Prediction::~Prediction() = default;
+AutofillAiModelExecutor::Prediction::~Prediction() = default;
 
 }  // namespace autofill_ai

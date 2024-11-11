@@ -149,7 +149,7 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
   void OnReceivedPredictions(
       const autofill::FormData& form,
       const autofill::FormFieldData& trigger_field,
-      AutofillAiFillingEngine::PredictionsOrError predictions_or_error,
+      AutofillAiModelExecutor::PredictionsOrError predictions_or_error,
       std::optional<std::string> model_execution_id);
 
   // Method for showing filling or error suggestions, depending on the outcome
@@ -212,7 +212,7 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
 
   // Most recently retrieved form with field values set to prediction
   // improvements.
-  std::optional<AutofillAiFillingEngine::PredictionsByGlobalId> cache_ =
+  std::optional<AutofillAiModelExecutor::PredictionsByGlobalId> cache_ =
       std::nullopt;
   // The form global id for which predictions were retrieved last. Set at the
   // beginning of retrieving prediction improvements.

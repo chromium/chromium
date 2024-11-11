@@ -12,7 +12,7 @@
 namespace autofill_ai {
 
 // For tests to readably print an instance of this struct.
-void PrintTo(const AutofillAiFillingEngine::Prediction& prediction,
+void PrintTo(const AutofillAiModelExecutor::Prediction& prediction,
              std::ostream* os) {
   *os << "Prediction { " << ".value = \"" << base::UTF16ToUTF8(prediction.value)
       << "\", " << ".label = \"" << base::UTF16ToUTF8(prediction.label)

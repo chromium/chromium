@@ -12,7 +12,7 @@
 namespace autofill_ai {
 
 // For GTest.
-void PrintTo(const AutofillAiFillingEngine::Prediction& prediction,
+void PrintTo(const AutofillAiModelExecutor::Prediction& prediction,
              std::ostream* os);
 
 }  // namespace autofill_ai

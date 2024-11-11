@@ -19,11 +19,11 @@ class AutofillAiManagerTestApi {
       : manager_(CHECK_DEREF(manager)) {}
 
   void SetCache(
-      std::optional<AutofillAiFillingEngine::PredictionsByGlobalId> cache) {
+      std::optional<AutofillAiModelExecutor::PredictionsByGlobalId> cache) {
     manager_->cache_ = cache;
   }
 
-  std::optional<AutofillAiFillingEngine::PredictionsByGlobalId> GetCache() {
+  std::optional<AutofillAiModelExecutor::PredictionsByGlobalId> GetCache() {
     return manager_->cache_;
   }
 

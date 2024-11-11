@@ -32,7 +32,7 @@ constexpr autofill::DenseSet<autofill::FieldFillingSkipReason>
 // at least one matching autofill suggestion for the specified `field_type`.
 bool CacheHasMatchingAutofillSuggestion(
     AutofillAiClient& client,
-    const AutofillAiFillingEngine::PredictionsByGlobalId& cache,
+    const AutofillAiModelExecutor::PredictionsByGlobalId& cache,
     const autofill::FormData& form,
     const std::string& autofill_profile_guid,
     autofill::FieldType field_type) {
@@ -71,7 +71,7 @@ bool CacheHasMatchingAutofillSuggestion(
 
 // Maps cached field global ids to their predicted field values.
 base::flat_map<autofill::FieldGlobalId, std::u16string> GetValuesToFill(
-    const AutofillAiFillingEngine::PredictionsByGlobalId& cache) {
+    const AutofillAiModelExecutor::PredictionsByGlobalId& cache) {
   std::vector<std::pair<autofill::FieldGlobalId, std::u16string>>
       values_to_fill;
   for (const auto& [field_global_id, prediction] : cache) {
@@ -112,7 +112,7 @@ autofill::Suggestion CreateFillAllSuggestion(
 // child suggestion was added and false otherwise.
 void AddChildFillingSuggestion(
     autofill::Suggestion& suggestion,
-    const AutofillAiFillingEngine::Prediction& prediction) {
+    const AutofillAiModelExecutor::Prediction& prediction) {
   const std::u16string& value_to_fill = prediction.select_option_text
                                             ? *prediction.select_option_text
                                             : prediction.value;
@@ -233,7 +233,7 @@ std::vector<autofill::Suggestion> CreateErrorOrNoInfoSuggestions(
 // prediction improvements.
 bool ShouldSkipAutofillSuggestion(
     AutofillAiClient& client,
-    const AutofillAiFillingEngine::PredictionsByGlobalId& cache,
+    const AutofillAiModelExecutor::PredictionsByGlobalId& cache,
     const autofill::FormData& form,
     const autofill::Suggestion& autofill_suggestion) {
   if (autofill_suggestion.type != autofill::SuggestionType::kAddressEntry &&
@@ -279,12 +279,12 @@ std::vector<autofill::Suggestion> CreateLoadingSuggestions() {
 
 std::vector<autofill::Suggestion> CreateFillingSuggestions(
     AutofillAiClient& client,
-    const AutofillAiFillingEngine::PredictionsByGlobalId& cache,
+    const AutofillAiModelExecutor::PredictionsByGlobalId& cache,
     const autofill::FormData& form,
     const autofill::FormFieldData& field,
     const std::vector<autofill::Suggestion>& autofill_suggestions) {
   CHECK(cache.contains(field.global_id()));
-  const AutofillAiFillingEngine::Prediction& prediction =
+  const AutofillAiModelExecutor::Prediction& prediction =
       cache.at(field.global_id());
   autofill::Suggestion suggestion(
       prediction.value, autofill::SuggestionType::kFillPredictionImprovements);

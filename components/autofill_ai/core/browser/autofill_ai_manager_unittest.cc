@@ -40,7 +40,7 @@ using ::autofill::Suggestion;
 using ::autofill::SuggestionType;
 using enum SuggestionType;
 using PredictionImprovementsPayload = Suggestion::PredictionImprovementsPayload;
-using PredictionsByGlobalId = AutofillAiFillingEngine::PredictionsByGlobalId;
+using PredictionsByGlobalId = AutofillAiModelExecutor::PredictionsByGlobalId;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AllOf;
@@ -93,7 +93,7 @@ auto HasLabel(const std::u16string& expected_label) {
                                              expected_label))));
 }
 
-class MockAutofillAiFillingEngine : public AutofillAiFillingEngine {
+class MockAutofillAiModelExecutor : public AutofillAiModelExecutor {
  public:
   MOCK_METHOD(
       void,
@@ -128,7 +128,7 @@ class BaseAutofillAiManagerTest : public testing::Test {
   optimization_guide::MockOptimizationGuideDecider& decider() {
     return decider_;
   }
-  MockAutofillAiFillingEngine& filling_engine() { return filling_engine_; }
+  MockAutofillAiModelExecutor& filling_engine() { return filling_engine_; }
   MockAutofillAiClient& client() { return client_; }
   AutofillAiManager& manager() { return manager_; }
   autofill::TestStrikeDatabase& strike_database() { return strike_database_; }
@@ -138,7 +138,7 @@ class BaseAutofillAiManagerTest : public testing::Test {
   autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
   autofill::TestAutofillClient autofill_client_;
   NiceMock<optimization_guide::MockOptimizationGuideDecider> decider_;
-  NiceMock<MockAutofillAiFillingEngine> filling_engine_;
+  NiceMock<MockAutofillAiModelExecutor> filling_engine_;
   NiceMock<MockAutofillAiClient> client_;
   autofill::TestStrikeDatabase strike_database_;
   AutofillAiManager manager_{&client(), &decider(), &strike_database_};
@@ -296,7 +296,7 @@ TEST_F(AutofillAiManagerTest, EndToEnd) {
   form_description.fields[0].renderer_id = form.fields().front().renderer_id();
   autofill::FormData filled_form =
       autofill::test::GetFormData(form_description);
-  AutofillAiFillingEngine::PredictionsReceivedCallback
+  AutofillAiModelExecutor::PredictionsReceivedCallback
       predictions_received_callback;
   base::MockCallback<AutofillAiManager::UpdateSuggestionsCallback>
       update_suggestions_callback;
@@ -364,7 +364,7 @@ TEST_F(AutofillAiManagerTest, AutofillSuggestionsAreCachedOnMultipleFocus) {
                   .heuristic_type = autofill::NAME_LAST}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
 
-  AutofillAiFillingEngine::PredictionsReceivedCallback
+  AutofillAiModelExecutor::PredictionsReceivedCallback
       predictions_received_callback;
   base::MockCallback<AutofillAiManager::UpdateSuggestionsCallback>
       update_suggestions_callback;
@@ -822,11 +822,11 @@ TEST_F(AutofillAiManagerTest,
               Optional(ElementsAre(
                   Pair(form.fields()[0].global_id(),
                        Field("Prediction::is_focusable",
-                             &AutofillAiFillingEngine::Prediction::is_focusable,
+                             &AutofillAiModelExecutor::Prediction::is_focusable,
                              form.fields()[0].IsFocusable())),
                   Pair(form.fields()[1].global_id(),
                        Field("Prediction::is_focusable",
-                             &AutofillAiFillingEngine::Prediction::is_focusable,
+                             &AutofillAiModelExecutor::Prediction::is_focusable,
                              form.fields()[1].IsFocusable())))));
 }
 

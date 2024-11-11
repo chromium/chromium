@@ -27,7 +27,7 @@ class AutofillAiClient;
 // TODO(crbug.com/376016081): Move to anonymous namespace.
 bool ShouldSkipAutofillSuggestion(
     AutofillAiClient& client,
-    const AutofillAiFillingEngine::PredictionsByGlobalId& cache,
+    const AutofillAiModelExecutor::PredictionsByGlobalId& cache,
     const autofill::FormData& form,
     const autofill::Suggestion& autofill_suggestion);
 
@@ -41,7 +41,7 @@ std::vector<autofill::Suggestion> CreateLoadingSuggestions();
 // first and `autofill_suggestions` afterwards.
 std::vector<autofill::Suggestion> CreateFillingSuggestions(
     AutofillAiClient& client,
-    const AutofillAiFillingEngine::PredictionsByGlobalId& cache,
+    const AutofillAiModelExecutor::PredictionsByGlobalId& cache,
     const autofill::FormData& form,
     const autofill::FormFieldData& field,
     const std::vector<autofill::Suggestion>& autofill_suggestions);
