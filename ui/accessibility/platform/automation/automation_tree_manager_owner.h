@@ -190,6 +190,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationTreeManagerOwner
       const AXTreeID& tree_id,
       int32_t node_id,
       const AXRelativeBounds& bounds) override;
+  void DispatchAccessibilityScrollChange(const AXTreeID& tree_id,
+                                         int32_t node_id,
+                                         int32_t scroll_x,
+                                         int32_t scroll_y) override;
   void DispatchActionResult(const AXActionData& data, bool result) override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

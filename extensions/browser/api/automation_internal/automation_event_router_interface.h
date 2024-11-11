@@ -34,6 +34,9 @@ class AutomationEventRouterInterface {
   virtual void DispatchAccessibilityLocationChange(
       const ui::AXTreeID& tree_id,
       const ui::AXLocationChange& details) = 0;
+  virtual void DispatchAccessibilityScrollChange(
+      const ui::AXTreeID& tree_id,
+      const ui::AXScrollChange& details) = 0;
 
   // Notify all automation extensions that an accessibility tree was
   // destroyed. If |browser_context| is null, use the currently active context.

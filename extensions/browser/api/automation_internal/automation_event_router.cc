@@ -109,6 +109,15 @@ void AutomationEventRouter::DispatchAccessibilityLocationChange(
   }
 }
 
+void AutomationEventRouter::DispatchAccessibilityScrollChange(
+    const ui::AXTreeID& tree_id,
+    const ui::AXScrollChange& details) {
+  for (const auto& remote : automation_remote_set_) {
+    remote->DispatchAccessibilityScrollChange(
+        tree_id, details.id, details.scroll_x, details.scroll_y);
+  }
+}
+
 void AutomationEventRouter::DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) {
   if (remote_router_) {
     remote_router_->DispatchTreeDestroyedEvent(tree_id);

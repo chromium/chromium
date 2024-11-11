@@ -48,4 +48,13 @@ void AutomationImpl::DispatchAccessibilityLocationChange(
   // When implementing this method, cc an IPC security reviewer.
 }
 
+void AutomationImpl::DispatchAccessibilityScrollChange(
+    const ui::AXTreeID& tree_id,
+    int node_id,
+    int scroll_x,
+    int scroll_y) {
+  // TODO(crbug.com/262637071): Send location change to accessibility features.
+  // When implementing this method, cc an IPC security reviewer.
+}
+
 }  // namespace ax

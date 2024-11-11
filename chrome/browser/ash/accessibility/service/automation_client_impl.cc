@@ -66,6 +66,19 @@ void AutomationClientImpl::DispatchAccessibilityLocationChange(
                                                 details.new_location);
   }
 }
+
+void AutomationClientImpl::DispatchAccessibilityScrollChange(
+    const ui::AXTreeID& tree_id,
+    const ui::AXScrollChange& details) {
+  if (tree_id == ui::AXTreeIDUnknown()) {
+    return;
+  }
+  for (auto& remote : automation_remotes_) {
+    remote->DispatchAccessibilityScrollChange(
+        tree_id, details.id, details.scroll_x, details.scroll_y);
+  }
+}
+
 void AutomationClientImpl::DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) {
   if (tree_id == ui::AXTreeIDUnknown())
     return;
