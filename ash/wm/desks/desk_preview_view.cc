@@ -483,11 +483,14 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
   }
   aura::Window::Windows parent_windows_to_mirror = {desk_container};
   // If there is a floated window that belongs to this desk, since it doesn't
-  // belong to `desk_container`, we need to add it separately.
+  // belong to `desk_container`, we need to add it separately. Note: this
+  // function may be called *while* a floated window is in the process of being
+  // un-floated. In that case, its parent will temporarily be null and we
+  // shouldn't include it here.
   aura::Window* floated_window =
       Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
           mini_view_->desk());
-  if (floated_window) {
+  if (floated_window && floated_window->parent()) {
     parent_windows_to_mirror.push_back(floated_window);
     force_float_occlusion_tracker_visible_.emplace(floated_window);
   } else {
