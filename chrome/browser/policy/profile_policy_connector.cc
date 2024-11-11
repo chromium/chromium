@@ -66,11 +66,6 @@
 #include "components/user_manager/user_type.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/profiles/profile_manager.h"
-#include "components/user_manager/user_manager.h"
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -371,13 +366,6 @@ void ProfilePolicyConnector::Init(
     AppendPolicyProviderWithSchemaTracking(platform_provider, schema_registry);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  browser_policy_connector_ = connector;
-  if (connector->ash_policy_provider()) {
-    policy_providers_.push_back(connector->ash_policy_provider());
-  }
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (browser_policy_connector->GetDeviceCloudPolicyManager()) {
     policy_providers_.push_back(
@@ -398,13 +386,7 @@ void ProfilePolicyConnector::Init(
     local_test_policy_provider_ = connector->local_test_policy_provider();
 
   if (configuration_policy_provider) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    AppendPolicyProviderWithSchemaTracking(configuration_policy_provider,
-                                           schema_registry);
-    configuration_policy_provider_ = wrapped_policy_providers_.back().get();
-#else
     policy_providers_.push_back(configuration_policy_provider);
-#endif
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -528,36 +510,8 @@ bool ProfilePolicyConnector::IsManaged() const {
   const CloudPolicyStore* actual_policy_store = GetActualPolicyStore();
   if (actual_policy_store)
     return actual_policy_store->is_managed();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // As Lacros uses different ways to handle the main and the secondary
-  // profiles, these profiles need to be handled differently:
-  // ChromeOS's way is using mirror and we need to check with Ash using the
-  // device account (via IsManagedDeviceAccount).
-  // Desktop's way is used for secondary profiles and is using dice, which
-  // can be read directly from the profile.
-  // TODO(crbug.com/40788404): Remove this once Lacros only uses mirror.
-  if (browser_policy_connector_ && IsMainProfile())
-    return browser_policy_connector_->IsMainUserManaged();
-#endif
   return false;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool ProfilePolicyConnector::IsMainProfile() const {
-  // If there is only a single profile or this connector object is owned by the
-  // main profile, it must be the main profile.
-  // TODO(crbug.com/40788404): Remove this once Lacros only uses mirror.
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (profile_manager->GetNumberOfProfiles() <= 1)
-    return true;
-
-  auto profiles = profile_manager->GetLoadedProfiles();
-  const auto main_it = base::ranges::find_if(profiles, &Profile::IsMainProfile);
-  if (main_it == profiles.end())
-    return false;
-  return (*main_it)->GetProfilePolicyConnector() == this;
-}
-#endif
 
 bool ProfilePolicyConnector::IsProfilePolicy(const char* policy_key) const {
   const ConfigurationPolicyProvider* const provider =
