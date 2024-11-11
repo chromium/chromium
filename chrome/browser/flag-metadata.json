@@ -2027,11 +2027,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "device-force-scheduled-reboot",
-    "owners": [ "sanjaperisic@chromium.org"],
-    "expiry_milestone": 105
-  },
-  {
     "name": "device-posture",
     "owners": [ "alexis.menard@intel.com" ],
     "expiry_milestone": 140

@@ -8300,10 +8300,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kViewportSegments)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"device-force-scheduled-reboot",
-     flag_descriptions::kDeviceForceScheduledRebootName,
-     flag_descriptions::kDeviceForceScheduledRebootDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kDeviceForceScheduledReboot)},
     {"enable-assistant-aec", flag_descriptions::kEnableGoogleAssistantAecName,
      flag_descriptions::kEnableGoogleAssistantAecDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::assistant::features::kAssistantAudioEraser)},

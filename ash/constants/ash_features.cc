@@ -3307,15 +3307,6 @@ BASE_FEATURE(kDeviceActiveClientChurnObservationNewDeviceMetadata,
              "DeviceActiveClientChurnObservationNewDeviceMetadata",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables forced reboots when DeviceScheduledReboot policy is set.
-BASE_FEATURE(kDeviceForceScheduledReboot,
-             "DeviceForceScheduledReboot",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Maximum delay added to reboot time when DeviceScheduledReboot policy is set.
-const base::FeatureParam<base::TimeDelta> kDeviceForceScheduledRebootMaxDelay{
-    &kDeviceForceScheduledReboot, "MaxDelay", base::Minutes(2)};
-
 // Enables settings to be split per device.
 BASE_FEATURE(kInputDeviceSettingsSplit,
              "InputDeviceSettingsSplit",

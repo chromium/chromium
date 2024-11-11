@@ -971,13 +971,6 @@ const char kClearCrossSiteCrossBrowsingContextGroupWindowNameDescription[] =
     "Clear the preserved window.name property when it's a top-level cross-site "
     "navigation that swaps BrowsingContextGroup.";
 
-const char kDeviceForceScheduledRebootName[] =
-    "Enable DeviceScheduledReboot policy for all sessions.";
-const char kDeviceForceScheduledRebootDescription[] =
-    "Schedule recurring reboot for the device. Reboots are always executed at "
-    "a scheduled time. If the session is active, user will be notified about "
-    "the reboot, but the reboot will not be delayed.";
-
 const char kDevicePostureName[] = "Device Posture API";
 const char kDevicePostureDescription[] =
     "Enables Device Posture API (foldable devices)";

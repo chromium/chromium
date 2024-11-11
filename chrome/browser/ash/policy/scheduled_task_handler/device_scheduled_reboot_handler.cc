@@ -139,18 +139,14 @@ void DeviceScheduledRebootHandler::OnRebootTimerExpired() {
 
   // If the device is on the sign-in screen, skip reboot only if the grace
   // period is applied.
-  if (!skip_reboot_ && !user_manager::UserManager::Get()->IsUserLoggedIn() &&
-      base::FeatureList::IsEnabled(
-          ash::features::kDeviceForceScheduledReboot)) {
+  if (!skip_reboot_ && !user_manager::UserManager::Get()->IsUserLoggedIn()) {
     RebootDevice(kRebootDescriptionOnTimerExpired);
     return;
   }
 
-  // If the device is not in the kiosk mode or on the sign-in screen, check if
-  // the |kDeviceForceScheduledReboot| feature flag is enabled and if we should
-  // not skip reboot due to grace period applied.
-  if (!skip_reboot_ && base::FeatureList::IsEnabled(
-                           ash::features::kDeviceForceScheduledReboot)) {
+  // If the device is not in the kiosk mode or on the sign-in screen, check we
+  // should not skip reboot due to grace period applied.
+  if (!skip_reboot_) {
     // Schedule post reboot notification for the user in session.
     notifications_scheduler_->SchedulePostRebootNotification();
     RebootDevice(kRebootDescriptionOnTimerExpired);
@@ -228,16 +224,13 @@ void DeviceScheduledRebootHandler::OnRebootTimerStartResult(
       get_boot_time_callback_.Run(),
       scheduled_task_executor_->GetScheduledTaskTime());
 
-  // If the flag is enabled, schedule reboot notification and dialog.
-  if (base::FeatureList::IsEnabled(
-          ash::features::kDeviceForceScheduledReboot)) {
-    if (!skip_reboot_) {
-      notifications_scheduler_->SchedulePendingRebootNotifications(
-          base::BindOnce(&DeviceScheduledRebootHandler::OnRebootButtonClicked,
-                         base::Unretained(this)),
-          scheduled_task_executor_->GetScheduledTaskTime(),
-          RebootNotificationsScheduler::Requester::kScheduledRebootPolicy);
-    }
+  // Schedule reboot notification and dialog.
+  if (!skip_reboot_) {
+    notifications_scheduler_->SchedulePendingRebootNotifications(
+        base::BindOnce(&DeviceScheduledRebootHandler::OnRebootButtonClicked,
+                       base::Unretained(this)),
+        scheduled_task_executor_->GetScheduledTaskTime(),
+        RebootNotificationsScheduler::Requester::kScheduledRebootPolicy);
   }
 }
 
@@ -252,8 +245,7 @@ void DeviceScheduledRebootHandler::ResetState() {
 const base::TimeDelta DeviceScheduledRebootHandler::GetExternalDelay() const {
   return reboot_delay_for_testing_.has_value()
              ? reboot_delay_for_testing_.value()
-             : base::RandTimeDeltaUpTo(
-                   ash::features::kDeviceForceScheduledRebootMaxDelay.Get());
+             : base::RandTimeDeltaUpTo(base::Minutes(2));
 }
 
 void DeviceScheduledRebootHandler::RebootDevice(
