@@ -29,9 +29,11 @@ from devil.android.tools import system_app
 from devil.android.tools import webview_app
 from devil.utils import reraiser_thread
 from incremental_install import installer
+from lib.proto import exception_recorder
 from pylib import constants
 from pylib.base import base_test_result
 from pylib.base import output_manager
+from pylib.base import test_exception
 from pylib.constants import host_paths
 from pylib.instrumentation import instrumentation_parser
 from pylib.instrumentation import instrumentation_test_instance
@@ -404,14 +406,26 @@ class LocalDeviceInstrumentationTestRun(
         @trace_event.traced
         def install_helper_internal(d, apk_path=None):
           # pylint: disable=unused-argument
-          d.Install(
-              apk,
-              modules=modules,
-              fake_modules=fake_modules,
-              permissions=permissions,
-              additional_locales=additional_locales,
-              instant_app=instant_app,
-              force_queryable=self._test_instance.IsApkForceQueryable(apk))
+          try:
+            d.Install(
+                apk,
+                modules=modules,
+                fake_modules=fake_modules,
+                permissions=permissions,
+                additional_locales=additional_locales,
+                instant_app=instant_app,
+                force_queryable=self._test_instance.IsApkForceQueryable(apk))
+          except device_errors.CommandFailedError as e:
+            exception_recorder.register(
+                test_exception.InstallationFailedError(e))
+            raise
+          except device_errors.CommandTimeoutError as e:
+            exception_recorder.register(
+                test_exception.InstallationTimeoutError(e))
+            raise
+          except base_error.BaseError as e:
+            exception_recorder.register(test_exception.InstallationError(e))
+            raise
 
         return install_helper_internal
 
@@ -429,7 +443,19 @@ class LocalDeviceInstrumentationTestRun(
         @trace_event.traced
         def incremental_install_helper_internal(d, apk_path=None):
           # pylint: disable=unused-argument
-          installer.Install(d, json_path, apk=apk, permissions=permissions)
+          try:
+            installer.Install(d, json_path, apk=apk, permissions=permissions)
+          except device_errors.CommandFailedError as e:
+            exception_recorder.register(
+                test_exception.InstallationFailedError(e))
+            raise
+          except device_errors.CommandTimeoutError as e:
+            exception_recorder.register(
+                test_exception.InstallationTimeoutError(e))
+            raise
+          except base_error.BaseError as e:
+            exception_recorder.register(test_exception.InstallationError(e))
+            raise
 
         return incremental_install_helper_internal
 
@@ -1111,8 +1137,21 @@ class LocalDeviceInstrumentationTestRun(
 
     with ui_capture_dir:
       with self._ArchiveLogcat(device, test_name) as logcat_file:
-        output = device.StartInstrumentation(
-            target, raw=True, extras=extras, timeout=timeout, retries=0)
+        try:
+          output = device.StartInstrumentation(
+              target, raw=True, extras=extras, timeout=timeout, retries=0)
+        except device_errors.CommandFailedError as e:
+          exception_recorder.register(
+              test_exception.StartInstrumentationFailedError(e))
+          raise
+        except device_errors.CommandTimeoutError as e:
+          exception_recorder.register(
+              test_exception.StartInstrumentationTimeoutError(e))
+          raise
+        except base_error.BaseError as e:
+          exception_recorder.register(
+              test_exception.StartInstrumentationError(e))
+          raise
 
       duration_ms = time_ms() - start_ms
 
