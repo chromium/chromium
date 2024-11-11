@@ -2235,7 +2235,7 @@ gfx::PointF BackForwardTransitionAnimator::CalculateRRectStartPx() const {
            nav_direction_ == NavigationDirection::kForward) {
     return gfx::PointF(GetViewportWidthPx() - DipToPx(kRRectSizeDip), y_start);
   } else {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 }
 

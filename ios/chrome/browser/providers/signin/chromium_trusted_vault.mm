@@ -116,7 +116,7 @@ void ChromiumTrustedVaultClientBackend::UpdateGPMPinForAccount(
     UINavigationController* navigationController,
     UIView* brandedNavigationItemTitleView,
     UpdateGPMPinCompletionCallback completion) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // anonymous namespace

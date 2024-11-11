@@ -126,7 +126,7 @@
 
 - (BOOL)canUserInjectInPasswordField:(BOOL)passwordField
                        requiresHTTPS:(BOOL)requiresHTTPS {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)userDidPickContent:(NSString*)content
@@ -144,16 +144,16 @@
 
 - (void)autofillFormWithCredential:(ManualFillCredential*)credential
                       shouldReauth:(BOOL)shouldReauth {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion
                            atIndex:(NSInteger)index {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (BOOL)isActiveFormAPasswordForm {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 #pragma mark - Private

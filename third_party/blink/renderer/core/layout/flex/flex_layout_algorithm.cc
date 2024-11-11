@@ -1245,7 +1245,7 @@ LayoutUnit InitialContentPositionOffset(const StyleContentAlignmentData& data,
       return is_reverse ? free_space : LayoutUnit();
     case ContentPosition::kLeft:
     case ContentPosition::kRight:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

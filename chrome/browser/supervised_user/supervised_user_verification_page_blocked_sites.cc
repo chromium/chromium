@@ -134,6 +134,6 @@ int SupervisedUserVerificationPageForBlockedSites::GetBlockMessageReasonId() {
                  ? IDS_CHILD_BLOCK_MESSAGE_MANUAL_MULTI_PARENT
                  : IDS_CHILD_BLOCK_MESSAGE_MANUAL_SINGLE_PARENT;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }

@@ -27,7 +27,7 @@ std::unique_ptr<ImageDecoder> CreatePngImageDecoder(
     return std::make_unique<SkiaPngRustImageDecoder>(
         alpha_option, color_behavior, max_decoded_bytes, offset);
 #else
-    NOTREACHED_NORETURN();  // The `if` condition guarantees `ENABLE_RUST_PNG`.
+    NOTREACHED();  // The `if` condition guarantees `ENABLE_RUST_PNG`.
 #endif
   }
 

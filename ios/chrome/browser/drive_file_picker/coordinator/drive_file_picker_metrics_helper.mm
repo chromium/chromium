@@ -241,7 +241,7 @@ enum class FilePickerFilterChange {
       direction == DriveItemsSortingOrder::kDescending) {
     return FilePickerSortingChoice::kOpenTimeDescending;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (FilePickerFilterChange)convertToFilePickerFilterChangeFromFilter:
@@ -260,7 +260,7 @@ enum class FilePickerFilterChange {
     case DriveFilePickerFilter::kOnlyShowPDFs:
       return FilePickerFilterChange::kPDFs;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 @end

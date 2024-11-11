@@ -1353,7 +1353,7 @@ void ChromePasswordManagerClient::ShowCredentialsInAmbientBubble(
   controller->AddAndShowPasswordMethods(std::move(forms), credential_type_flags,
                                         std::move(callback));
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

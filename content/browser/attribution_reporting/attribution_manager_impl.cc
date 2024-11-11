@@ -1566,7 +1566,7 @@ void AttributionManagerImpl::HandleOsRegistration(OsRegistration registration) {
             return false;
         }
 
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       });
 
   if (registration.registration_items.empty()) {

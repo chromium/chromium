@@ -35,7 +35,7 @@ std::string_view GetPromoActionHistogramSuffix(PromoAction promo_action) {
              "suffix.";
       return "NOT IMPLEMENTED";
     case PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO:
-      NOTREACHED_NORETURN() << "No signin promo should not record metrics.";
+      NOTREACHED() << "No signin promo should not record metrics.";
   }
 }
 

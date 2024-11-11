@@ -235,12 +235,12 @@ class DummyTaskRunner : public base::UpdateableSequencedTaskRunner {
   bool PostDelayedTask(const base::Location& from_here,
                        base::OnceClosure task,
                        base::TimeDelta delay) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   bool PostNonNestableDelayedTask(const base::Location& from_here,
                                   base::OnceClosure task,
                                   base::TimeDelta delay) override {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   bool RunsTasksInCurrentSequence() const override { return true; }

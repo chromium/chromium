@@ -53,7 +53,7 @@ web::JavaScriptFeature* GetDummyFeatureForContentWorld(
     case web::ContentWorld::kPageContentWorld:
       return GetDummyPageContentWorldFeature();
     case web::ContentWorld::kAllContentWorlds:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

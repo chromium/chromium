@@ -118,7 +118,7 @@ ash::AccessibilityScrollDirection ConvertScrollDirection(
     case accessibility_private::ScrollDirection::kRight:
       return ash::AccessibilityScrollDirection::kRight;
     case accessibility_private::ScrollDirection::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -162,7 +162,7 @@ std::string ConvertFacialGestureType(
     case accessibility_private::FacialGesture::kMouthUpperUp:
       return "mouthUpperUp";
     case accessibility_private::FacialGesture::kNone:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

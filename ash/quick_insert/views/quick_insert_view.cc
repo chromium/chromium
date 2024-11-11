@@ -189,7 +189,7 @@ QuickInsertCategory GetCategoryForMoreResults(QuickInsertSectionType type) {
     case QuickInsertSectionType::kNone:
     case QuickInsertSectionType::kContentEditor:
     case QuickInsertSectionType::kExamples:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case QuickInsertSectionType::kClipboard:
       return QuickInsertCategory::kClipboard;
     case QuickInsertSectionType::kLinks:
@@ -219,7 +219,7 @@ std::u16string GetSearchFieldPlaceholderText(PickerModeType mode,
               ? IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_WITH_EDITOR_PLACEHOLDER_TEXT
               : IDS_PICKER_SEARCH_FIELD_HAS_SELECTION_PLACEHOLDER_TEXT);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 #else
   return u"Placeholder";
@@ -250,7 +250,7 @@ std::u16string GetNoResultsFoundDescription(QuickInsertCategory category) {
     case QuickInsertCategory::kLobsterWithSelectedText:
     case QuickInsertCategory::kEmojisGifs:
     case QuickInsertCategory::kEmojis:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -334,7 +334,7 @@ bool QuickInsertView::AcceleratorPressed(const ui::Accelerator& accelerator) {
       OnSearchBackButtonPressed();
       return true;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -441,7 +441,7 @@ void QuickInsertView::SelectSearchResult(
         GetWidget()->Close();
         break;
       case QuickInsertActionType::kCreate:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 }

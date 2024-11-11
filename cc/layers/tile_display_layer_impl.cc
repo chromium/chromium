@@ -158,11 +158,11 @@ mojom::LayerType TileDisplayLayerImpl::GetLayerType() const {
 
 std::unique_ptr<LayerImpl> TileDisplayLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void TileDisplayLayerImpl::PushPropertiesTo(LayerImpl* layer) {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void TileDisplayLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,

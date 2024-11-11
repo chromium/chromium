@@ -48,7 +48,7 @@ std::string SeverityToString(TypeStatusForDebugging::Severity severity) {
     case TypeStatusForDebugging::Severity::kOk:
       return "ok";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Converts TypeStatusMapForDebugging to a base::Value::List.

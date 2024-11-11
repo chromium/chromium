@@ -351,7 +351,7 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
     case compose::ComposeSessionCloseReason::kEndedAtFre:
     case compose::ComposeSessionCloseReason::kAckedFreEndedAtMsbb:
     case compose::ComposeSessionCloseReason::kEndedAtMsbb:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Report all location-agnostic metrics.

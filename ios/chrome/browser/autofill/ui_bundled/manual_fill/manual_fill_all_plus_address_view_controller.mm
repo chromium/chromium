@@ -95,7 +95,7 @@ enum ManualFallbackItemType : NSInteger {
 }
 
 - (void)presentPlusAddressActions:(NSArray<ManualFillActionItem*>*)actions {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 #pragma mark - Private

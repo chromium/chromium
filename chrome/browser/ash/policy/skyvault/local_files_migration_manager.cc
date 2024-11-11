@@ -169,7 +169,7 @@ bool ShouldFail(const std::map<base::FilePath, MigrationUploadError> errors,
 bool IsMigrationMisconfigured(Profile* profile, CloudProvider provider) {
   switch (provider) {
     case CloudProvider::kNotSpecified:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case CloudProvider::kGoogleDrive:
       return !drive::DriveIntegrationServiceFactory::FindForProfile(profile)
                   ->is_enabled();

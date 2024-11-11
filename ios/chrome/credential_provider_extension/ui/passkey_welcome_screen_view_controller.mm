@@ -57,7 +57,7 @@ NSString* GetSubtitleString(PasskeyWelcomeScreenPurpose purpose) {
   NSString* stringID;
   switch (purpose) {
     case PasskeyWelcomeScreenPurpose::kEnroll:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PasskeyWelcomeScreenPurpose::kFixDegradedRecoverability:
       stringID =
           @"IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_PARTIAL_BOOTSRAPPING_SUBTITLE";

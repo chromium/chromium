@@ -112,8 +112,7 @@ signin::TestAccountSigninCredentials CreateTestAccountFromCredentialsSwitch(
     return {username, password};
   }
 
-  NOTREACHED_NORETURN() << "Expected username:password format, but got: "
-                        << credentials;
+  NOTREACHED() << "Expected username:password format, but got: " << credentials;
 }
 }  // namespace
 
@@ -142,7 +141,7 @@ FamilyMember& FamilyLiveTest::rpc_issuer() const {
     case RpcMode::kTestImpersonation:
       return child();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void FamilyLiveTest::TurnOnSync() {
@@ -319,7 +318,7 @@ std::string ToString(FamilyLiveTest::RpcMode rpc_mode) {
     case FamilyLiveTest::RpcMode::kTestImpersonation:
       return "TestImpersonationRpcMode";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace supervised_user

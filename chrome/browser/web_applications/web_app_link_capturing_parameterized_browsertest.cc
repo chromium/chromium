@@ -244,7 +244,7 @@ std::string ToIdString(NavigationElement element) {
     case NavigationElement::kElementIntentPicker:
       // The IntentPicker is within the Chrome UI, not the web page. Therefore,
       // this should not be used to construct an ID to click on within the page.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

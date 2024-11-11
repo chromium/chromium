@@ -74,7 +74,7 @@ ash::LobsterErrorCode MantaToLobsterStatusCode(
     case manta::MantaStatusCode::kRestrictedCountry:
       return ash::LobsterErrorCode::kRestrictedRegion;
     case manta::MantaStatusCode::kOk:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

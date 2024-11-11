@@ -100,8 +100,7 @@ BirchSuggestionType CommandIdToSuggestionType(int command_id) {
     default:
       break;
   }
-  NOTREACHED_NORETURN() << "No matching suggestion type for command Id: "
-                        << command_id;
+  NOTREACHED() << "No matching suggestion type for command Id: " << command_id;
 }
 
 TabAppSelectionHost* GetVisibleTabAppSelectionHost() {

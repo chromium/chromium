@@ -44,7 +44,7 @@ coral::mojom::GroupPtr CreateTestGroup(const std::vector<TestEntity>& entities,
           coral::mojom::Entity::NewApp(coral::mojom::App::New(
               entity.title, std::get<std::string>(entity.id))));
     } else {
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
 

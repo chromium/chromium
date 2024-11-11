@@ -30,7 +30,7 @@ QuickInsertCapsLockResult::Shortcut GetPickerShortcutForCapsLock() {
       return QuickInsertCapsLockResult::Shortcut::kAltLauncher;
     case ui::mojom::MetaKey::kExternalMeta:
     case ui::mojom::MetaKey::kCommand:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

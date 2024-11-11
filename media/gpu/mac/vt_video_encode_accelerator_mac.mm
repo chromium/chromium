@@ -131,7 +131,7 @@ gfx::Size GetMaxResolution(VideoCodec codec) {
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -182,7 +182,7 @@ class WebFrameImplContentWorldIntTest
       case ContentWorld::kPageContentWorld:
         return WKContentWorld.pageWorld;
       case ContentWorld::kAllContentWorlds:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
 

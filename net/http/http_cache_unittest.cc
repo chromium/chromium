@@ -11497,7 +11497,7 @@ TEST_P(HttpCacheTestSplitCacheFeature, SplitCache) {
   subframe_document_trans_info.is_subframe_document_resource = true;
   switch (GetParam()) {
     case SplitCacheTestCase::kDisabled:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case SplitCacheTestCase::kEnabledTripleKeyed:
     case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
     case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:

@@ -183,7 +183,7 @@ CGFloat const kSheetCornerRadius = 30;
       break;
     }
     case CustomizationMenuPage::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Configure the navigation controller.

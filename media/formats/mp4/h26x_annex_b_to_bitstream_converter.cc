@@ -47,7 +47,7 @@ MP4Status H26xAnnexBToBitstreamConverter::ConvertChunk(
                                          size_out);
   }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 scoped_refptr<DecoderBuffer> H26xAnnexBToBitstreamConverter::Convert(
@@ -86,7 +86,7 @@ H26xAnnexBToBitstreamConverter::GetCodecDescription() {
     return hevc_codec_description;
   }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 CodecProfileLevel H26xAnnexBToBitstreamConverter::GetCodecProfileLevel() {
@@ -106,7 +106,7 @@ CodecProfileLevel H26xAnnexBToBitstreamConverter::GetCodecProfileLevel() {
         config.general_level_idc};
   }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace media

@@ -238,7 +238,7 @@ DriveListQuery CreateDriveListQuery(
   switch (collection_type) {
     case DriveFilePickerCollectionType::kRoot:
       // The root collection cannot be obtained using a query.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case DriveFilePickerCollectionType::kSharedDrives:
       // For "Shared Drives", there are no parameters to set.
       break;
@@ -412,7 +412,7 @@ NSString* DriveFilePickerItemSubtitle(
   // Handling non-search items.
   switch (collection_type) {
     case DriveFilePickerCollectionType::kRoot:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case DriveFilePickerCollectionType::kSharedDrives:
       // Shared drives do not have subtitles.
       return nil;

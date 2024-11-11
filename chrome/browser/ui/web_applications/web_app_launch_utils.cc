@@ -431,7 +431,7 @@ std::optional<std::pair<Browser*, int>> GetAppHostForCapturing(
     case blink::mojom::DisplayMode::kTabbed:
     case blink::mojom::DisplayMode::kFullscreen:
     case blink::mojom::DisplayMode::kPictureInPicture:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -1698,7 +1698,7 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
     case blink::mojom::DisplayMode::kUndefined:
     case blink::mojom::DisplayMode::kPictureInPicture:
     case blink::mojom::DisplayMode::kFullscreen:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   return AppNavigationResult::CapturedNewClient(

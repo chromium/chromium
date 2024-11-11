@@ -208,7 +208,7 @@ IndexedDBClientStateCheckerFactory::InitializePendingRemote(
       // on `DedicatedWorkerHost`. We will not bind the remote in this case.
     } else {
       // No other client type is expected.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
   }
   return client_state_checker_remote;

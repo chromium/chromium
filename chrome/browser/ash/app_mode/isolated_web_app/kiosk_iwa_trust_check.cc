@@ -44,7 +44,7 @@ policy::DeviceLocalAccount GetCurrentDeviceLocalAccount() {
     }
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

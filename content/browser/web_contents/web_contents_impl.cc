@@ -2506,7 +2506,7 @@ const std::string& WebContentsImpl::GetEncoding() {
 
 void WebContentsImpl::Discard() {
   if (!base::FeatureList::IsEnabled(features::kWebContentsDiscard)) {
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   AboutToBeDiscarded(this);

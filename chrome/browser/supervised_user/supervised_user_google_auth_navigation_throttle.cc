@@ -186,7 +186,7 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
     case content::FrameType::kPrerenderMainFrame:
       return content::NavigationThrottle::PROCEED;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Cancel the navigation and show the re-authentication page.

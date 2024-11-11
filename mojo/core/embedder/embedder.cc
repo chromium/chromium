@@ -154,7 +154,7 @@ void Init(const Configuration& configuration) {
     InitializeCore();
     MojoEmbedderSetSystemThunks(&GetSystemThunks());
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 }
@@ -170,7 +170,7 @@ void ShutDown() {
 #if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
     ShutDownCore();
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 }
@@ -182,7 +182,7 @@ scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() {
 #if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
     return Core::Get()->GetNodeController()->io_task_runner();
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 }

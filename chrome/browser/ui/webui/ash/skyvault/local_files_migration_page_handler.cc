@@ -23,7 +23,7 @@ namespace {
 mojom::CloudProvider ConvertCloudProviderToMojo(CloudProvider cloud_provider) {
   switch (cloud_provider) {
     case CloudProvider::kNotSpecified:
-      NOTREACHED_NORETURN()
+      NOTREACHED()
           << "Case should not be reached, cloud provider must be specified.";
     case CloudProvider::kGoogleDrive:
       return mojom::CloudProvider::kGoogleDrive;

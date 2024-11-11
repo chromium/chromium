@@ -131,7 +131,7 @@ void PickerSuggestionsController::GetSuggestionsForCategory(
     case QuickInsertCategory::kEditorRewrite:
     case QuickInsertCategory::kLobsterWithNoSelectedText:
     case QuickInsertCategory::kLobsterWithSelectedText:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case QuickInsertCategory::kLinks:
       // TODO: b/366237507 - Request only kMaxRecentLinks results once
       // HistoryService supports filtering.
@@ -143,7 +143,7 @@ void PickerSuggestionsController::GetSuggestionsForCategory(
       return;
     case QuickInsertCategory::kEmojisGifs:
     case QuickInsertCategory::kEmojis:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case QuickInsertCategory::kDriveFiles:
       client.GetRecentDriveFileResults(kMaxRecentFiles, std::move(callback));
       return;

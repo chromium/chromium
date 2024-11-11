@@ -38,7 +38,7 @@ void UpdateFaviconsGrid(TabGroupFaviconsGrid* favicons_grid,
       favicons_grid.favicon4 = favicon;
       break;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

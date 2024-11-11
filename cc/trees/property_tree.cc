@@ -1522,7 +1522,7 @@ uint32_t ScrollTree::GetMainThreadRepaintReasons(const ScrollNode& node) const {
   uint32_t reasons = node.main_thread_repaint_reasons;
   if (!MainThreadScrollingReason::AreRepaintReasons(reasons)) {
     SCOPED_CRASH_KEY_NUMBER("NotRepaint", "reasons", reasons);
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
   return reasons;
 }

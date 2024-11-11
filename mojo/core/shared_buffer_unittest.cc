@@ -303,7 +303,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadAndMapWriteSharedBuffer,
               base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
     EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 #else
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 
@@ -380,7 +380,7 @@ TEST_F(SharedBufferTest, MAYBE_CreateAndPassFromChildReadOnlyBuffer) {
                 base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly);
       EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
     }
 

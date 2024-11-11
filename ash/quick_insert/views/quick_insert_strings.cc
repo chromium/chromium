@@ -88,7 +88,7 @@ std::u16string GetSearchFieldPlaceholderTextForQuickInsertCategory(
     case QuickInsertCategory::kLobsterWithSelectedText:
     case QuickInsertCategory::kEmojisGifs:
     case QuickInsertCategory::kEmojis:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

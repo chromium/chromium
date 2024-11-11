@@ -269,7 +269,7 @@ void HttpStreamPool::JobController::OnRequestComplete() {
 }
 
 int HttpStreamPool::JobController::RestartTunnelWithProxyAuth() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void HttpStreamPool::JobController::SetPriority(RequestPriority priority) {

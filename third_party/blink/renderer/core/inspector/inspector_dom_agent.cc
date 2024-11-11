@@ -271,7 +271,7 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
     case kPseudoIdColumnScrollMarker:
       // Not reachable, since it's an internal representation of
       // ::column::scroll-marker and won't be exposed to devtools
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case kAfterLastInternalPseudoId:
     case kPseudoIdNone:
     case kPseudoIdInvalid:

@@ -1918,7 +1918,7 @@
     return IOSNTPImpressionCustomizationState::kFeedEnabled;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Presents the Fakebox Lens icon IPH bubble without checking scroll position.

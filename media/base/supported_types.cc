@@ -377,7 +377,7 @@ bool IsEncoderH264ProfileSupported(const VideoType& type) {
       // wire them for now.
       return false;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 #elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Android and iOS won't bundle OpenH264, query hardware encoder support
@@ -421,7 +421,7 @@ bool IsEncoderVp9ProfileSupported(const VideoType& type) {
     case VP9PROFILE_PROFILE3:
       return vpx_supports_hbd;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 #else
   return false;
@@ -438,7 +438,7 @@ bool IsEncoderAv1ProfileSupported(const VideoType& type) {
       // We don't build libaom with high bit depth support.
       return false;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 #elif BUILDFLAG(IS_ANDROID)
   // Android won't bundle libaom, query hardware encoder support instead.

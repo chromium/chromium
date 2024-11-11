@@ -46,7 +46,7 @@ std::unique_ptr<SkCodec> CreatePngDecoder(std::unique_ptr<SkStream> stream,
     return SkPngRustDecoder::Decode(std::move(stream), result);
 #else
     // The `if` condition guarantees `SKIA_BUILD_RUST_PNG`.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
 

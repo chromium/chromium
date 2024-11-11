@@ -61,7 +61,7 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
     case manual_fill::ManualFillDataType::kOther:
       // The expand icon should only be available if the mapped `data_type` is
       // either associated with passwords, payment methods or addresses.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

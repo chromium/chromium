@@ -125,7 +125,7 @@ FloatRoundedRect BoxShape::ToLogical(const FloatRoundedRect& rect,
 
   switch (converter.GetWritingMode()) {
     case WritingMode::kHorizontalTb:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case WritingMode::kVerticalLr:
       return FloatRoundedRect(logical_rect, top_left, bottom_left, top_right,
                               bottom_right);

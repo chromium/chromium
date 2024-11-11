@@ -103,7 +103,7 @@ scoped_refptr<DevToolsAgentHostImpl> GetDevToolsAgentHostForClient(
     return nullptr;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace

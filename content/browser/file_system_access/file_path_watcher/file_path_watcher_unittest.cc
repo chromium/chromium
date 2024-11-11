@@ -379,7 +379,7 @@ class EventExpecterWithChangeInfo : public EventExpecter {
     if (each_event_matcher_) {
       return *each_event_matcher_;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   EventListMatcher GetFailureMatcher() override {
@@ -393,7 +393,7 @@ class EventExpecterWithChangeInfo : public EventExpecter {
     if (each_event_matcher_) {
       return testing::Not(*each_event_matcher_);
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   ExpectedEventsSinceLastWait GetAndResetExpectedEventsSinceLastWait()

@@ -148,7 +148,7 @@ TEST_F(PredictionQualityMetricsTest, SaneMetricsWithCacheMismatch) {
       } else if (source == "ML") {
         return ml_types;
       }
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }();
     EXPECT_THAT(
         histogram_tester.GetAllSamples("Autofill.FieldPrediction." + source),

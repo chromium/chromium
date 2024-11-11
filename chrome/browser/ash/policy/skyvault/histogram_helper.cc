@@ -54,7 +54,7 @@ constexpr char kMigrationTrigger[] = "Migration";
 std::string GetUMACloudProvider(CloudProvider provider) {
   switch (provider) {
     case CloudProvider::kNotSpecified:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case CloudProvider::kGoogleDrive:
       return kGoogleDriveProvider;
     case CloudProvider::kOneDrive:

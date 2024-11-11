@@ -78,7 +78,7 @@ InterpolableNumber* CreateDefaultValue(CSSValueID type) {
       return MakeGarbageCollected<InterpolableNumber>(
           0, CSSPrimitiveValue::UnitType::kDegrees);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

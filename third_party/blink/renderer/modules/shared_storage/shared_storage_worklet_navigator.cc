@@ -13,7 +13,7 @@ SharedStorageWorkletNavigator::SharedStorageWorkletNavigator(
 SharedStorageWorkletNavigator::~SharedStorageWorkletNavigator() = default;
 
 String SharedStorageWorkletNavigator::GetAcceptLanguages() {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace blink

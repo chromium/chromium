@@ -862,7 +862,7 @@ ProfileMenuView::GetIdentitySectionParams() {
       break;
     case signin_util::SignedInState::kSyncPaused:
       // Sync paused is covered by the sync errors path.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   if (!params.button_text.empty()) {

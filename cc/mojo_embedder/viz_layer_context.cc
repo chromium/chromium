@@ -472,7 +472,7 @@ viz::mojom::TimingFunctionPtr SerializeTimingFunction(
       break;
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return wire;
 }
@@ -517,7 +517,7 @@ std::vector<viz::mojom::TransformOperationPtr> SerializeTransformOperations(
         wire_ops.push_back(viz::mojom::TransformOperation::NewIdentity(true));
         break;
       default:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
     }
   }
   return wire_ops;
@@ -632,7 +632,7 @@ viz::mojom::AnimationKeyframeModelPtr SerializeAnimationKeyframeModel(
       // TODO(rockot): Support these curve types too.
       return nullptr;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   return wire;
 }

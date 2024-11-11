@@ -419,16 +419,16 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 - (void)deleteTabGroup:(base::WeakPtr<const TabGroup>)group
             sourceView:(UIView*)sourceView {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)closeTabGroup:(base::WeakPtr<const TabGroup>)group {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)ungroupTabGroup:(base::WeakPtr<const TabGroup>)group
              sourceView:(UIView*)sourceView {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 #pragma mark - GridToolbarsConfigurationProvider

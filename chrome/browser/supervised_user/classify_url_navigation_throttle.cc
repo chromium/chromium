@@ -62,7 +62,7 @@ std::ostream& operator<<(std::ostream& stream,
       stream << "CancelDeferredNavigation";
       return stream;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

@@ -2055,7 +2055,7 @@ GraphBuilderCoreml::AddOperationForElementwiseUnary(
     }
     case mojom::ElementWiseUnary::Kind::kSign: {
       // Sign is not implemented.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     }
     case mojom::ElementWiseUnary::Kind::kSin: {
       CHECK(context_properties_.data_type_limits.sin_input.Has(

@@ -289,7 +289,7 @@ InputManager::MakeRenderInputRouterSupport(input::RenderInputRouter* rir,
                                                              frame_sink_id);
 #else
     // InputVizard only supports Android currently.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
 #endif
   }
   return std::make_unique<RenderInputRouterSupportChildFrame>(rir, this,

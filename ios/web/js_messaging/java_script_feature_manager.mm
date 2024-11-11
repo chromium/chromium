@@ -57,7 +57,7 @@ JavaScriptFeatureManager::GetContentWorldForBrowserState(
     case ContentWorld::kIsolatedWorld:
       return feature_manager->isolated_world_.get();
     case ContentWorld::kAllContentWorlds:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

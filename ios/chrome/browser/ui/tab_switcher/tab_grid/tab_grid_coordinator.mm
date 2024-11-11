@@ -775,7 +775,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       return !self.incognitoBrowser->GetWebStateList()->empty();
     case TabGridPageRemoteTabs:
     case TabGridPageTabGroups:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

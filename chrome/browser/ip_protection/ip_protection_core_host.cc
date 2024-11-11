@@ -472,7 +472,7 @@ std::optional<base::TimeDelta> IpProtectionCoreHost::CalculateBackoff(
       exponential = true;
       break;
     case kFailedOAuthTokenDeprecated:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Note that we calculate the backoff assuming that we've waited for

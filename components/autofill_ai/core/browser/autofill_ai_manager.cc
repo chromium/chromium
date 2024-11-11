@@ -693,7 +693,7 @@ void AutofillAiManager::OnFailedToGenerateSuggestions() {
   switch (prediction_retrieval_state_) {
     case PredictionRetrievalState::kReady:
     case PredictionRetrievalState::kIsLoadingPredictions:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PredictionRetrievalState::kDoneSuccess:
       UpdateSuggestions(CreateNoInfoSuggestions());
       break;
