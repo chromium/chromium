@@ -4393,11 +4393,13 @@ void PDFiumEngine::ApplyStroke(int page_index,
   FPDF_PAGE page = pdfium_page->GetPage();
   CHECK(page);
 
-  FPDF_PAGEOBJECT page_object = WriteStrokeToPage(doc(), page, stroke);
-  CHECK(page_object);
+  std::vector<FPDF_PAGEOBJECT> page_objects =
+      WriteStrokeToPage(doc(), page, stroke);
+  CHECK(!page_objects.empty());
   ink_stroked_pages_needing_regeneration_.insert(page_index);
 
-  bool inserted = ink_stroke_objects_map_.insert({id, page_object}).second;
+  bool inserted =
+      ink_stroke_objects_map_.insert({id, std::move(page_objects)}).second;
   CHECK(inserted);  // Stroke IDs should be unique when added.
 
   // Since there is now a page reference in `ink_stroke_objects_map_`, ensure
@@ -4415,8 +4417,10 @@ void PDFiumEngine::UpdateStrokeActive(int page_index,
   CHECK(PageIndexInBounds(page_index));
   auto it = ink_stroke_objects_map_.find(id);
   CHECK(it != ink_stroke_objects_map_.end());
-  bool result = FPDFPageObj_SetIsActive(it->second, active);
-  CHECK(result);
+  for (FPDF_PAGEOBJECT page_object : it->second) {
+    bool result = FPDFPageObj_SetIsActive(page_object, active);
+    CHECK(result);
+  }
   ink_stroked_pages_needing_regeneration_.insert(page_index);
 }
 

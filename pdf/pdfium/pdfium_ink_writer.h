@@ -5,6 +5,8 @@
 #ifndef PDF_PDFIUM_PDFIUM_INK_WRITER_H_
 #define PDF_PDFIUM_PDFIUM_INK_WRITER_H_
 
+#include <vector>
+
 #include "pdf/buildflags.h"
 #include "third_party/pdfium/public/fpdfview.h"
 
@@ -18,16 +20,17 @@ namespace chrome_pdf {
 
 // Writes `stroke` into `page` in `document` using the "V2" Ink format.
 //
-// Returns a handle to the page object if the operation is successful.  If the
-// operation fails, then both `document` and `page` are left unchanged.
+// Returns handles to the page objects if the operation is successful.
+// The returned vector never contains nullptr entries.
 //
-// - If either `document` or `page` is null, then return nullptr.
+// - If either `document` or `page` is null, then return an empty vector.
+// - If the operation fails, then both `document` and `page` are left unchanged.
 // - If `document` is not associated with `page`, then the behavior is
 //   undefined.
-// - If the provided `stroke` is empty, then return nullptr.
-FPDF_PAGEOBJECT WriteStrokeToPage(FPDF_DOCUMENT document,
-                                  FPDF_PAGE page,
-                                  const ink::Stroke& stroke);
+// - If the provided `stroke` is empty, then return an empty vector.
+std::vector<FPDF_PAGEOBJECT> WriteStrokeToPage(FPDF_DOCUMENT document,
+                                               FPDF_PAGE page,
+                                               const ink::Stroke& stroke);
 
 }  // namespace chrome_pdf
 

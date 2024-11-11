@@ -5,6 +5,7 @@
 #include "pdf/pdfium/pdfium_ink_writer.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/span.h"
@@ -102,69 +103,37 @@ ScopedFPDFPageObject CreatePathFromOutlineData(
     CHECK(result);
   }
 
+  // Path completed. Close it, mark it, and return it.
+  bool result = FPDFPath_SetDrawMode(path.get(), FPDF_FILLMODE_WINDING,
+                                     /*stroke=*/false);
+  CHECK(result);
+  result = FPDFPath_Close(path.get());
+  CHECK(result);
+  FPDF_PAGEOBJECTMARK mark =
+      FPDFPageObj_AddMark(path.get(), kInkAnnotationIdentifierKeyV2);
+  CHECK(mark);
+
   return path;
 }
 
-// Appends `outline_data` to `path`. `shape` and `transform` are the same as
-// the CreatePathFromOutline() parameters with the same names.
-void AppendOutlineToPath(
-    FPDF_PAGEOBJECT path,
+std::vector<ScopedFPDFPageObject> WriteShapeToNewPathsOnPage(
     const ink::ModeledShape& shape,
-    const ModeledShapeOutlinesIterator::OutlineData& outline_data,
-    const gfx::AxisTransform2d& transform) {
-  CHECK(path);
-
-  base::span<const ink::Mesh> meshes =
-      shape.RenderGroupMeshes(outline_data.group_index);
-  const auto& first_outline_position = outline_data.outline.front();
-  gfx::PointF transformed_vertex_position =
-      transform.MapPoint(GetVertexPosition(meshes, first_outline_position));
-  bool result = FPDFPath_MoveTo(path, transformed_vertex_position.x(),
-                                transformed_vertex_position.y());
-  CHECK(result);
-
-  for (const auto& outline_position : outline_data.outline.subspan<1u>()) {
-    transformed_vertex_position =
-        transform.MapPoint(GetVertexPosition(meshes, outline_position));
-    result = FPDFPath_LineTo(path, transformed_vertex_position.x(),
-                             transformed_vertex_position.y());
-    CHECK(result);
-  }
-}
-
-ScopedFPDFPageObject WriteShapeToNewPathOnPage(const ink::ModeledShape& shape,
-                                               FPDF_PAGE page) {
+    FPDF_PAGE page) {
   CHECK(page);
-
-  ModeledShapeOutlinesIterator it(shape);
-  std::optional<ModeledShapeOutlinesIterator::OutlineData> outline_data =
-      it.GetAndAdvance();
-  if (!outline_data.has_value()) {
-    return nullptr;  // `shape` is empty.
-  }
 
   const gfx::AxisTransform2d transform =
       GetCanonicalToPdfTransform(FPDF_GetPageHeightF(page));
 
-  // Create a path using the first outline.
-  ScopedFPDFPageObject path =
-      CreatePathFromOutlineData(page, shape, outline_data.value(), transform);
-
-  // Work through the remaining outlines, which are part of the same path.
-  for (outline_data = it.GetAndAdvance(); outline_data.has_value();
-       outline_data = it.GetAndAdvance()) {
-    AppendOutlineToPath(path.get(), shape, outline_data.value(), transform);
+  std::vector<ScopedFPDFPageObject> results;
+  ModeledShapeOutlinesIterator it(shape);
+  for (std::optional<ModeledShapeOutlinesIterator::OutlineData> outline_data =
+           it.GetAndAdvance();
+       outline_data.has_value(); outline_data = it.GetAndAdvance()) {
+    results.push_back(CreatePathFromOutlineData(
+        page, shape, outline_data.value(), transform));
   }
 
-  bool result = FPDFPath_SetDrawMode(path.get(), FPDF_FILLMODE_WINDING,
-                                     /*stroke=*/false);
-  CHECK(result);
-
-  // Path completed, close and mark it with an ID.
-  result = FPDFPath_Close(path.get());
-  CHECK(result);
-
-  return path;
+  return results;
 }
 
 void SetBrushPropertiesForPath(const ink::Brush& brush, FPDF_PAGEOBJECT path) {
@@ -178,30 +147,28 @@ void SetBrushPropertiesForPath(const ink::Brush& brush, FPDF_PAGEOBJECT path) {
 
 }  // namespace
 
-FPDF_PAGEOBJECT WriteStrokeToPage(FPDF_DOCUMENT document,
-                                  FPDF_PAGE page,
-                                  const ink::Stroke& stroke) {
+std::vector<FPDF_PAGEOBJECT> WriteStrokeToPage(FPDF_DOCUMENT document,
+                                               FPDF_PAGE page,
+                                               const ink::Stroke& stroke) {
+  std::vector<FPDF_PAGEOBJECT> results;
   if (!document || !page) {
-    return nullptr;
+    return results;
   }
 
-  ScopedFPDFPageObject path =
-      WriteShapeToNewPathOnPage(stroke.GetShape(), page);
-  if (!path) {
-    return nullptr;
+  std::vector<ScopedFPDFPageObject> paths =
+      WriteShapeToNewPathsOnPage(stroke.GetShape(), page);
+  results.reserve(paths.size());
+  for (auto& path : paths) {
+    FPDF_PAGEOBJECT page_obj = path.get();
+    SetBrushPropertiesForPath(stroke.GetBrush(), page_obj);
+
+    // Path is ready for the page.
+    FPDFPage_InsertObject(page, path.release());
+
+    results.push_back(page_obj);
   }
 
-  FPDF_PAGEOBJECT page_obj = path.get();
-  FPDF_PAGEOBJECTMARK mark =
-      FPDFPageObj_AddMark(page_obj, kInkAnnotationIdentifierKeyV2);
-  CHECK(mark);
-
-  SetBrushPropertiesForPath(stroke.GetBrush(), page_obj);
-
-  // Path is ready for the page.
-  FPDFPage_InsertObject(page, path.release());
-
-  return page_obj;
+  return results;
 }
 
 }  // namespace chrome_pdf

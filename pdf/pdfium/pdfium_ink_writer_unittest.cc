@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/cfi_buildflags.h"
@@ -105,7 +106,9 @@ TEST_P(PDFiumInkWriterTest, MAYBE_BasicWriteAndRead) {
       CreateInkInputBatch(kBasicInputs);
   ASSERT_TRUE(inputs.has_value());
   ink::Stroke stroke(brush->ink_brush(), inputs.value());
-  ASSERT_TRUE(WriteStrokeToPage(engine->doc(), page, stroke));
+  std::vector<FPDF_PAGEOBJECT> results =
+      WriteStrokeToPage(engine->doc(), page, stroke);
+  EXPECT_EQ(1u, results.size());
 
   ASSERT_TRUE(FPDFPage_GenerateContent(page));
 
@@ -176,7 +179,9 @@ TEST_P(PDFiumInkWriterTest, EmptyStroke) {
 
   auto brush = CreateTestBrush();
   ink::Stroke unused_stroke(brush->ink_brush());
-  ASSERT_FALSE(WriteStrokeToPage(engine->doc(), page, unused_stroke));
+  std::vector<FPDF_PAGEOBJECT> results =
+      WriteStrokeToPage(engine->doc(), page, unused_stroke);
+  EXPECT_TRUE(results.empty());
 }
 
 TEST_P(PDFiumInkWriterTest, NoDocumentNoPage) {
@@ -191,11 +196,13 @@ TEST_P(PDFiumInkWriterTest, NoDocumentNoPage) {
 
   auto brush = CreateTestBrush();
   ink::Stroke unused_stroke(brush->ink_brush());
-  ASSERT_FALSE(
-      WriteStrokeToPage(/*document=*/nullptr, /*page=*/nullptr, unused_stroke));
-  ASSERT_FALSE(WriteStrokeToPage(/*document=*/nullptr, page, unused_stroke));
-  ASSERT_FALSE(
-      WriteStrokeToPage(engine->doc(), /*page=*/nullptr, unused_stroke));
+  std::vector<FPDF_PAGEOBJECT> results =
+      WriteStrokeToPage(/*document=*/nullptr, /*page=*/nullptr, unused_stroke);
+  EXPECT_TRUE(results.empty());
+  results = WriteStrokeToPage(/*document=*/nullptr, page, unused_stroke);
+  EXPECT_TRUE(results.empty());
+  results = WriteStrokeToPage(engine->doc(), /*page=*/nullptr, unused_stroke);
+  EXPECT_TRUE(results.empty());
 }
 
 // Don't be concerned about any slight rendering differences in AGG vs. Skia,

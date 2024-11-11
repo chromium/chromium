@@ -1136,6 +1136,12 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
 
   bool edit_mode_ = false;
 
+  // When true, interactive portions of the content, such as forms and links,
+  // are restricted.
+  bool read_only_ = false;
+
+  PDFiumPrint print_;
+
 #if BUILDFLAG(ENABLE_PDF_INK2)
   // Map of zero-based page indices with Ink strokes to page unload preventers.
   // Pages with Ink strokes have page references in `ink_stroke_objects_map_`,
@@ -1150,20 +1156,12 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // using the `InkStrokeId` provided during stroke creation.  The handles are
   // protected against becoming stale from page unloads by
   // `stroked_pages_unload_preventers_`.
-  std::map<InkStrokeId, FPDF_PAGEOBJECT> ink_stroke_objects_map_;
+  std::map<InkStrokeId, std::vector<FPDF_PAGEOBJECT>> ink_stroke_objects_map_;
 
   // Tracks the pages which need to be regenerated before saving due to Ink
   // stroke changes.
   std::set<int> ink_stroked_pages_needing_regeneration_;
-#endif
 
-  // When true, interactive portions of the content, such as forms and links,
-  // are restricted.
-  bool read_only_ = false;
-
-  PDFiumPrint print_;
-
-#if BUILDFLAG(ENABLE_PDF_INK2)
 #if DCHECK_IS_ON()
   // Used to keep track of LoadV2InkPathsForPage() calls as a sanity check.
   // Stores the 0-based page indices for pages that have been loaded.
