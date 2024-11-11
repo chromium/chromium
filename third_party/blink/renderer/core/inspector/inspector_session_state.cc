@@ -132,10 +132,10 @@ bool InspectorAgentState::Deserialize(span<uint8_t> in, WTF::String* v) {
     return true;
   }
   if (tokenizer.TokenTag() == CBORTokenTag::STRING16) {
-    *v = WTF::String(
-        reinterpret_cast<const UChar*>(tokenizer.GetString16WireRep().data()),
-        base::checked_cast<wtf_size_t>(tokenizer.GetString16WireRep().size() /
-                                       2));
+    const crdtp::span<uint8_t> data = tokenizer.GetString16WireRep();
+    // SAFETY: GetString16WireRep guarantees `data` is safe.
+    *v = WTF::String(UNSAFE_BUFFERS(base::span(
+        reinterpret_cast<const UChar*>(data.data()), data.size() / 2)));
     return true;
   }
   return false;
