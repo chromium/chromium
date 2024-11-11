@@ -21829,7 +21829,19 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithStaticPromo",
+                    "params": {
+                        "SegmentedDefaultBrowserExperimentType": "0"
+                    },
+                    "enable_features": [
+                        "SegmentedDefaultBrowserPromo"
+                    ]
+                },
+                {
+                    "name": "EnabledWithAnimatedPromo",
+                    "params": {
+                        "SegmentedDefaultBrowserExperimentType": "1"
+                    },
                     "enable_features": [
                         "SegmentedDefaultBrowserPromo"
                     ]
