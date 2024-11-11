@@ -4663,11 +4663,6 @@ bool IsSmartReaderEnabled() {
   return base::FeatureList::IsEnabled(kSmartReader);
 }
 
-bool IsSunfishFeatureEnabled() {
-  return base::FeatureList::IsEnabled(kSunfishFeature) &&
-         switches::IsSunfishSecretKeyMatched();
-}
-
 bool IsSuspendStateMachineEnabled() {
   return base::FeatureList::IsEnabled(kSuspendStateMachine);
 }

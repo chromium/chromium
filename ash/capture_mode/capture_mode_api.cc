@@ -6,8 +6,10 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/feature_list.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
 namespace ash {
@@ -17,15 +19,17 @@ void CaptureScreenshotsOfAllDisplays() {
 }
 
 bool IsSunfishFeatureEnabledWithFeatureKey() {
+  const bool is_sunfish_feature_enabled =
+      base::FeatureList::IsEnabled(features::kSunfishFeature);
   // Allow Google accounts to bypass the secret key check.
   if (Shell* shell = Shell::HasInstance() ? Shell::Get() : nullptr;
       shell && shell->session_controller() &&
       gaia::IsGoogleInternalAccountEmail(
           shell->session_controller()->GetActiveAccountId().GetUserEmail())) {
-    return true;
+    return is_sunfish_feature_enabled;
   }
 
-  return features::IsSunfishFeatureEnabled();
+  return is_sunfish_feature_enabled && switches::IsSunfishSecretKeyMatched();
 }
 
 bool CanStartSunfishSession() {
