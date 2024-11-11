@@ -14,6 +14,8 @@
 #include "pdf/pdf_ink_constants.h"
 #include "pdf/pdf_ink_conversions.h"
 #include "pdf/pdf_ink_transform.h"
+#include "third_party/ink/src/ink/brush/brush_coat.h"
+#include "third_party/ink/src/ink/brush/brush_tip.h"
 #include "third_party/ink/src/ink/geometry/mesh.h"
 #include "third_party/ink/src/ink/geometry/modeled_shape.h"
 #include "third_party/ink/src/ink/geometry/point.h"
@@ -137,11 +139,20 @@ std::vector<ScopedFPDFPageObject> WriteShapeToNewPathsOnPage(
 }
 
 void SetBrushPropertiesForPath(const ink::Brush& brush, FPDF_PAGEOBJECT path) {
-  // TODO(crbug.com/353942910) Write out the brush type and size.
-  SkColor color = GetSkColorFromInkBrush(brush);
-  bool result =
-      FPDFPageObj_SetFillColor(path, SkColorGetR(color), SkColorGetG(color),
-                               SkColorGetB(color), SkColorGetA(color));
+  const SkColor color = GetSkColorFromInkBrush(brush);
+  CHECK_EQ(SkColorGetA(color), SK_AlphaOPAQUE);
+
+  CHECK_EQ(brush.CoatCount(), 1u);
+  const ink::BrushCoat& coat = brush.GetCoats()[0];
+  CHECK_EQ(coat.tips.size(), 1u);
+  // third_party/ink/src/ink/brush/brush_tip.h says this can have a value up to
+  // 2.0f, but that should never be the case, as //pdf code never sets it that
+  // high.
+  CHECK_LE(coat.tips[0].opacity_multiplier, 1.0f);
+
+  bool result = FPDFPageObj_SetFillColor(path, SkColorGetR(color),
+                                         SkColorGetG(color), SkColorGetB(color),
+                                         coat.tips[0].opacity_multiplier * 255);
   CHECK(result);
 }
 
