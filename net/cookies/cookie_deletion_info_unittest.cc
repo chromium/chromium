@@ -524,15 +524,15 @@ TEST(CookieDeletionInfoTest, MatchesCookiePartitionKeyCollection) {
       CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"));
   const CookiePartitionKey kOtherPartitionKey =
       CookiePartitionKey::FromURLForTesting(GURL("https://www.bar.com"));
-  const CookiePartitionKeyCollection kEmptyKeychain;
-  const CookiePartitionKeyCollection kSingletonKeychain(kPartitionKey);
-  const CookiePartitionKeyCollection kMultipleKeysKeychain(
+  const CookiePartitionKeyCollection kEmptyCollection;
+  const CookiePartitionKeyCollection kSingletonCollection(kPartitionKey);
+  const CookiePartitionKeyCollection kMultipleKeysCollection(
       {kPartitionKey, kOtherPartitionKey});
-  const CookiePartitionKeyCollection kAllKeysKeychain =
+  const CookiePartitionKeyCollection kAllKeysCollection =
       CookiePartitionKeyCollection::ContainsAll();
   const std::optional<CookiePartitionKey> kPartitionKeyOpt =
       std::make_optional(kPartitionKey);
-  const CookiePartitionKeyCollection kOtherKeySingletonKeychain(
+  const CookiePartitionKeyCollection kOtherKeySingletonCollection(
       kOtherPartitionKey);
 
   struct TestCase {
@@ -542,21 +542,22 @@ TEST(CookieDeletionInfoTest, MatchesCookiePartitionKeyCollection) {
     bool expects_match;
   } test_cases[] = {
       // Unpartitioned cookie always matches
-      {"Unpartitioned empty keychain", kEmptyKeychain, std::nullopt, true},
-      {"Unpartitioned singleton keychain", kSingletonKeychain, std::nullopt,
+      {"Unpartitioned empty collection", kEmptyCollection, std::nullopt, true},
+      {"Unpartitioned singleton collection", kSingletonCollection, std::nullopt,
        true},
-      {"Unpartitioned multiple keys", kMultipleKeysKeychain, std::nullopt,
+      {"Unpartitioned multiple keys", kMultipleKeysCollection, std::nullopt,
        true},
-      {"Unpartitioned all keys", kAllKeysKeychain, std::nullopt, true},
-      // Partitioned cookie only matches keychains which contain its partition
+      {"Unpartitioned all keys", kAllKeysCollection, std::nullopt, true},
+      // Partitioned cookie only matches collections which contain its partition
       // key.
-      {"Partitioned empty keychain", kEmptyKeychain, kPartitionKeyOpt, false},
-      {"Partitioned singleton keychain", kSingletonKeychain, kPartitionKeyOpt,
+      {"Partitioned empty collection", kEmptyCollection, kPartitionKeyOpt,
+       false},
+      {"Partitioned singleton collection", kSingletonCollection,
+       kPartitionKeyOpt, true},
+      {"Partitioned multiple keys", kMultipleKeysCollection, kPartitionKeyOpt,
        true},
-      {"Partitioned multiple keys", kMultipleKeysKeychain, kPartitionKeyOpt,
-       true},
-      {"Partitioned all keys", kAllKeysKeychain, kPartitionKeyOpt, true},
-      {"Partitioned mismatched keys", kOtherKeySingletonKeychain,
+      {"Partitioned all keys", kAllKeysCollection, kPartitionKeyOpt, true},
+      {"Partitioned mismatched keys", kOtherKeySingletonCollection,
        kPartitionKeyOpt, false},
   };
 
