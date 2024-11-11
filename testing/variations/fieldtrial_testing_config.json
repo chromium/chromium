@@ -18963,6 +18963,21 @@
             ]
         }
     ],
+    "ProvisionalNotificationAlert": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ProvisionalNotificationAlert"
+                    ]
+                }
+            ]
+        }
+    ],
     "PruneOldTransferCacheEntries": [
         {
             "platforms": [
