@@ -382,6 +382,10 @@ class VolumeManager
   // Removes My Files after SkyVault migration completes successufully.
   void OnMigrationSucceeded() override;
 
+  // Resets the local folders state in case migration previously completed
+  // thus removing all local volumes.
+  void OnMigrationReset() override;
+
   static int counter_;
   const int id_ = ++counter_;  // Only used in log traces
 

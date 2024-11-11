@@ -314,13 +314,12 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
 
   LocalStorageHistograms(profile, local_user_files_allowed_);
 
-  // If local files are allowed or migration is turned off, just stop ongoing
-  // migration or timers if any.
   if (local_user_files_allowed_ || !IsMigrationEnabled(cloud_provider_)) {
     MaybeStopMigration(cloud_provider_old);
     if (local_user_files_allowed_) {
       SetLocalUserFilesWriteEnabled(/*enabled=*/true);
     }
+    SkyVaultMigrationResetHistogram(true);
     return;
   }
   SkyVaultMigrationEnabledHistogram(cloud_provider_, true);
@@ -380,9 +379,7 @@ void LocalFilesMigrationManager::OnMyFilesChecked(bool is_empty) {
     // Completed state is handled below. For any other state, notify
     // observers and also cleanup empty folders.
     if (state_ != State::kCompleted) {
-      for (auto& observer : observers_) {
-        observer.OnMigrationSucceeded();
-      }
+      NotifySuccess();
       state_ = State::kCleanup;
     }
   }
@@ -401,9 +398,7 @@ void LocalFilesMigrationManager::OnMyFilesChecked(bool is_empty) {
       break;
     case State::kCompleted:
       // TODO(aidazolic): Consider if we should do any special handling.
-      for (auto& observer : observers_) {
-        observer.OnMigrationSucceeded();
-      }
+      NotifySuccess();
       SetLocalUserFilesWriteEnabled(/*enabled=*/false);
       break;
     case State::kFailure:
@@ -547,9 +542,7 @@ void LocalFilesMigrationManager::OnMigrationDone(
   }
 
   if (errors.empty()) {
-    for (auto& observer : observers_) {
-      observer.OnMigrationSucceeded();
-    }
+    NotifySuccess();
     notification_manager_->ShowMigrationCompletedNotification(cloud_provider_,
                                                               upload_root_path);
     VLOG(1) << "Local files migration done";
@@ -675,6 +668,7 @@ void LocalFilesMigrationManager::MaybeStopMigration(
   current_retry_count_ = 0;
   Profile::FromBrowserContext(context_)->GetPrefs()->SetInteger(
       prefs::kSkyVaultMigrationRetryCount, current_retry_count_);
+  NotifyReset();
 }
 
 void LocalFilesMigrationManager::SetState(State new_state) {
@@ -684,6 +678,18 @@ void LocalFilesMigrationManager::SetState(State new_state) {
   state_ = new_state;
   Profile::FromBrowserContext(context_)->GetPrefs()->SetInteger(
       prefs::kSkyVaultMigrationState, static_cast<int>(new_state));
+}
+
+void LocalFilesMigrationManager::NotifySuccess() {
+  for (auto& observer : observers_) {
+    observer.OnMigrationSucceeded();
+  }
+}
+
+void LocalFilesMigrationManager::NotifyReset() {
+  for (auto& observer : observers_) {
+    observer.OnMigrationReset();
+  }
 }
 
 // static

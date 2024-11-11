@@ -36,6 +36,8 @@ class MockMigrationObserver : public LocalFilesMigrationManager::Observer {
   ~MockMigrationObserver();
 
   MOCK_METHOD(void, OnMigrationSucceeded, (), (override));
+
+  MOCK_METHOD(void, OnMigrationReset, (), (override));
 };
 
 // Mock implementation of MigrationNotificationManager.

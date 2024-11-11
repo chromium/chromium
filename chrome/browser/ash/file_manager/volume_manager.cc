@@ -1783,10 +1783,15 @@ void VolumeManager::OnMigrationSucceeded() {
     return;
   }
 
-  // TODO(376842261): This should be reset if the policies change after the
-  // migration already succeeded.
   read_only_local_folders_ = false;
   OnLocalUserFilesDisabled();
+}
+
+void VolumeManager::OnMigrationReset() {
+  if (!read_only_local_folders_) {
+    read_only_local_folders_ = true;
+    OnLocalUserFilesPolicyChanged();
+  }
 }
 
 }  // namespace file_manager

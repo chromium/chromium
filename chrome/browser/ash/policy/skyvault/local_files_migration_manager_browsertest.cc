@@ -389,6 +389,7 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
 
 IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
                        NoMigrationIfLocalFilesAllowed) {
+  EXPECT_CALL(observer_, OnMigrationReset).Times(1);
   // Write access will be explicitly allowed.
   EXPECT_CALL(userdataauth_,
               SetUserDataStorageWriteEnabled(WithEnabled(true), _))
@@ -432,7 +433,8 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
-                       NoMigrationIfNoDefaultLocation) {
+                       NoMigrationIfNoDestination) {
+  EXPECT_CALL(observer_, OnMigrationReset).Times(1);
   SetMigrationPolicies(/*local_user_files_allowed=*/false,
                        /*destination=*/kReadOnly);
 
@@ -442,6 +444,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
 
 IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
                        EnableLocalFilesStopsMigration) {
+  EXPECT_CALL(observer_, OnMigrationReset).Times(1);
   SetUpMyFiles();
   base::FilePath source_file_path = CreateTestFile(kTestFile, my_files_dir_);
 
@@ -482,6 +485,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
 
 IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
                        ChangeDestinationStopsMigration) {
+  EXPECT_CALL(observer_, OnMigrationReset).Times(1);
   SetUpMyFiles();
   base::FilePath source_file_path = CreateTestFile(kTestFile, my_files_dir_);
 
@@ -535,6 +539,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
 
 IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
                        NoDestinationStopsMigration) {
+  EXPECT_CALL(observer_, OnMigrationReset).Times(1);
   SetUpMyFiles();
   base::FilePath source_file_path = CreateTestFile(kTestFile, my_files_dir_);
 

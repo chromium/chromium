@@ -43,6 +43,9 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
     // Called when the migration of files to the cloud has completed
     // successfully.
     virtual void OnMigrationSucceeded() = 0;
+
+    // Called when the migration of files to the cloud has been reset.
+    virtual void OnMigrationReset() = 0;
   };
 
   // Creates an instance of LocalFilesMigrationManager with overridden
@@ -152,6 +155,12 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
 
   // Sets and stores the state on the device.
   void SetState(State new_state);
+
+  // Notifies the observers that migration succeeded.
+  void NotifySuccess();
+
+  // Notifies the observers that migration was reset.
+  void NotifyReset();
 
   // Observers for migration events.
   base::ObserverList<Observer>::Unchecked observers_;
