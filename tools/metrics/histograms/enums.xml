@@ -33912,6 +33912,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="207" label="Rch"/>
   <int value="208" label="RubyAlign"/>
   <int value="209" label="RubyPosition"/>
+  <int value="210" label="InitialLetter"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

@@ -650,6 +650,7 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kTransformBox, WebDXFeature::kTransformBox},
           {CSSSampleId::kRubyAlign, WebDXFeature::kRubyAlign},
           {CSSSampleId::kRubyPosition, WebDXFeature::kRubyPosition},
+          {CSSSampleId::kInitialLetter, WebDXFeature::kInitialLetter},
       }};
 
   return *kMap;
