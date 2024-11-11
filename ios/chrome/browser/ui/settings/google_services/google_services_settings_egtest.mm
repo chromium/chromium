@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -120,6 +121,9 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
     // Enable the feature because the dialog uses a slightly different string if
     // the feature is not enabled.
     config.features_enabled.push_back(kIdentityDiscAccountMenu);
+  }
+  if ([self isRunningTest:@selector(testParcelTrackingSetting)]) {
+    config.features_disabled.push_back(kIOSDisableParcelTracking);
   }
   return config;
 }
