@@ -532,9 +532,16 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
     // Reload the active web contents so that the managed profile required
     // interstitial is shown there.
     if (active_contents) {
+      content::OpenURLParams params(active_contents->GetVisibleURL(),
+                                    content::Referrer(),
+                                    WindowOpenDisposition::CURRENT_TAB,
+                                    ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
+
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&content::WebContents::ReloadFocusedFrame,
-                                    active_contents->GetWeakPtr()));
+          FROM_HERE,
+          base::BindOnce(base::IgnoreResult(&content::WebContents::OpenURL),
+                         active_contents->GetWeakPtr(), std::move(params),
+                         /*navigation_handle_callback=*/base::DoNothing()));
     }
   }
 
