@@ -17,7 +17,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
 #include "base/debug/stack_trace.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -60,12 +59,6 @@ ThreadLocalData* GetThreadLocalData() {
   return &thread_local_data;
 #endif
 }
-
-#if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
-BASE_FEATURE(kAvoidFramePointers,
-             "AndroidHeapSamplerAvoidFramePointers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 using StackUnwinder = SamplingHeapProfiler::StackUnwinder;
 using base::allocator::dispatcher::AllocationSubsystem;
@@ -126,11 +119,8 @@ const char* UpdateAndGetThreadName(const char* name) {
 StackUnwinder ChooseStackUnwinder() {
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
   // Use frame pointers if available, since they can be faster than the default.
-  if (!base::FeatureList::IsEnabled(kAvoidFramePointers)) {
-    return StackUnwinder::kFramePointers;
-  }
-#endif
-#if BUILDFLAG(IS_ANDROID)
+  return StackUnwinder::kFramePointers;
+#elif BUILDFLAG(IS_ANDROID)
   // Default unwind tables aren't always present on Android.
   return CheckForDefaultUnwindTables();
 #else
