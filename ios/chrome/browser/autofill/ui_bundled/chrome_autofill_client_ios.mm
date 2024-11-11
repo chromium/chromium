@@ -31,6 +31,8 @@
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_manager.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
@@ -67,6 +69,10 @@
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#import "ios/chrome/browser/passwords/model/ios_password_field_classification_model_handler_factory.h"
+#endif
 
 namespace autofill {
 
@@ -138,6 +144,18 @@ ChromeAutofillClientIOS::GetCrowdsourcingManager() {
 
 PersonalDataManager* ChromeAutofillClientIOS::GetPersonalDataManager() {
   return personal_data_manager_;
+}
+
+FieldClassificationModelHandler*
+ChromeAutofillClientIOS::GetPasswordManagerFieldClassificationModelHandler() {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordFormClientsideClassifier)) {
+    return IOSPasswordFieldClassificationModelHandlerFactory::GetForProfile(
+        profile_);
+  }
+#endif
+  return nullptr;
 }
 
 AutocompleteHistoryManager*

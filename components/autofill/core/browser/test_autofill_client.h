@@ -211,12 +211,22 @@ class TestAutofillClientTemplate : public T {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   FieldClassificationModelHandler* GetAutofillFieldClassificationModelHandler()
       override {
-    return ml_prediction_model_handler_.get();
+    return autofill_ml_prediction_model_handler_.get();
   }
 
-  void set_ml_prediction_model_handler(
+  void set_autofill_ml_prediction_model_handler(
       std::unique_ptr<FieldClassificationModelHandler> handler) {
-    ml_prediction_model_handler_ = std::move(handler);
+    autofill_ml_prediction_model_handler_ = std::move(handler);
+  }
+
+  FieldClassificationModelHandler*
+  GetPasswordManagerFieldClassificationModelHandler() override {
+    return password_ml_prediction_model_handler_.get();
+  }
+
+  void set_password_ml_prediction_model_handler(
+      std::unique_ptr<FieldClassificationModelHandler> handler) {
+    password_ml_prediction_model_handler_ = std::move(handler);
   }
 #endif
 
@@ -510,7 +520,10 @@ class TestAutofillClientTemplate : public T {
       device_authenticator_ = nullptr;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  std::unique_ptr<FieldClassificationModelHandler> ml_prediction_model_handler_;
+  std::unique_ptr<FieldClassificationModelHandler>
+      autofill_ml_prediction_model_handler_;
+  std::unique_ptr<FieldClassificationModelHandler>
+      password_ml_prediction_model_handler_;
 #endif
 
   // NULL by default.

@@ -162,6 +162,7 @@
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "chrome/browser/autofill/autofill_field_classification_model_service_factory.h"
+#include "chrome/browser/password_manager/password_field_classification_model_handler_factory.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #endif
 
@@ -266,6 +267,18 @@ ChromeAutofillClient::GetAutofillFieldClassificationModelHandler() {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (base::FeatureList::IsEnabled(features::kAutofillModelPredictions)) {
     return AutofillFieldClassificationModelServiceFactory::GetForBrowserContext(
+        web_contents()->GetBrowserContext());
+  }
+#endif
+  return nullptr;
+}
+
+FieldClassificationModelHandler*
+ChromeAutofillClient::GetPasswordManagerFieldClassificationModelHandler() {
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordFormClientsideClassifier)) {
+    return PasswordFieldClassificationModelHandlerFactory::GetForBrowserContext(
         web_contents()->GetBrowserContext());
   }
 #endif

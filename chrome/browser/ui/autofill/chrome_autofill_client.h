@@ -99,6 +99,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutofillOptimizationGuide* GetAutofillOptimizationGuide() const override;
   FieldClassificationModelHandler* GetAutofillFieldClassificationModelHandler()
       override;
+  FieldClassificationModelHandler*
+  GetPasswordManagerFieldClassificationModelHandler() override;
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   AutofillComposeDelegate* GetComposeDelegate() override;

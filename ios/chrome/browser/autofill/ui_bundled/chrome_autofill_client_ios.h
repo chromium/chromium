@@ -73,6 +73,8 @@ class ChromeAutofillClientIOS : public AutofillClient {
   AutofillDriverFactory& GetAutofillDriverFactory() override;
   AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
   PersonalDataManager* GetPersonalDataManager() override;
+  FieldClassificationModelHandler*
+  GetPasswordManagerFieldClassificationModelHandler() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;

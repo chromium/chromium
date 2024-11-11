@@ -512,7 +512,7 @@ TEST_F(AutofillManagerTest, GetMlModelPredictionsForForm) {
             std::move(callback).Run(std::move(forms));
           });
   EXPECT_CALL(*mock_handler, GetModelPredictionsForForms);
-  client_.set_ml_prediction_model_handler(std::move(mock_handler));
+  client_.set_autofill_ml_prediction_model_handler(std::move(mock_handler));
 
   FormData form = test::CreateTestAddressFormData();
   OnFormsSeenWithExpectations(manager(), /*updated_forms=*/{form},
@@ -522,7 +522,7 @@ TEST_F(AutofillManagerTest, GetMlModelPredictionsForForm) {
   // and is destroyed asynchronously. Resetting the `client_`'s handler triggers
   // the deletion. Wait for it to complete. This needs to happen before the
   // `provider` goes out of scope.
-  client_.set_ml_prediction_model_handler(nullptr);
+  client_.set_autofill_ml_prediction_model_handler(nullptr);
   task_environment_.RunUntilIdle();
 }
 #endif

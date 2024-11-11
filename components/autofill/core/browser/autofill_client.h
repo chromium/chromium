@@ -251,6 +251,11 @@ class AutofillClient {
   virtual FieldClassificationModelHandler*
   GetAutofillFieldClassificationModelHandler();
 
+  // Gets the FieldClassificationModelHandler instance for password manager
+  // machine learning predictions associated with the client.
+  virtual FieldClassificationModelHandler*
+  GetPasswordManagerFieldClassificationModelHandler();
+
   // Gets the AutocompleteHistoryManager instance associated with the client.
   virtual AutocompleteHistoryManager* GetAutocompleteHistoryManager() = 0;
 

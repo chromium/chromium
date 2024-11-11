@@ -69,6 +69,11 @@ AutofillClient::GetAutofillFieldClassificationModelHandler() {
   return nullptr;
 }
 
+FieldClassificationModelHandler*
+AutofillClient::GetPasswordManagerFieldClassificationModelHandler() {
+  return nullptr;
+}
+
 AutofillComposeDelegate* AutofillClient::GetComposeDelegate() {
   return nullptr;
 }
