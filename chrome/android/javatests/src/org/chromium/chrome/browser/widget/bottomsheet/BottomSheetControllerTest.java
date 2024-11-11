@@ -230,6 +230,7 @@ public class BottomSheetControllerTest {
     @Test
     @SmallTest
     @Feature({"BottomSheetController"})
+    @DisabledTest(message = "https://crbug.com/376478156")
     public void testShowWithBottomInset_LargeBottomInsets() {
         mEdgeToEdgeController.bottomInset = 2000;
 
