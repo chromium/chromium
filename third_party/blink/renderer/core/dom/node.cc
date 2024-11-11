@@ -767,9 +767,9 @@ Node* Node::moveBefore(Node* new_child,
       GetDocument() == new_child->GetDocument() &&
       // "If node is not an Element or a CharacterData node, then ..."
       (new_child->IsElementNode() || new_child->IsCharacterDataNode()) &&
-      // "If parent is not an Element node, then throw a "HierarchyRequestError"
-      // DOMException."
-      IsElementNode();
+      // "If parent is not an Element or DocumentFragment node, then throw a
+      // "HierarchyRequestError" DOMException."
+      (IsElementNode() || IsDocumentFragment());
   // These two conditions below are caught by `EnsurePreInsertionValidity()`
   // that gets invoked in `insertBefore()`:
   //
