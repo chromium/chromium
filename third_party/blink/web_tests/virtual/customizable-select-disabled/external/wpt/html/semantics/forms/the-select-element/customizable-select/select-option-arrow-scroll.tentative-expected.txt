@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] topofdocument: Arrow keys on options should not scroll the document.
+  assert_equals: First option should be focused when opening the select. expected Element node <option>one</option> but got Element node <select id="topofdocument">\n  <option>one</option>\n  <opt...
+[FAIL] bottomofdocument: Arrow keys on options should not scroll the document.
+  assert_equals: First option should be focused when opening the select. expected Element node <option>one</option> but got Element node <select id="bottomofdocument">\n  <option>one</option>\n  <...
+Harness: the test ran to completion.
+

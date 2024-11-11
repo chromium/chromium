@@ -643,6 +643,11 @@ bool HTMLOptionElement::IsDisplayNone() const {
 }
 
 void HTMLOptionElement::DefaultEventHandler(Event& event) {
+  DefaultEventHandlerInternal(event);
+  HTMLElement::DefaultEventHandler(event);
+}
+
+void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
   auto* select = OwnerSelectElement();
   if (select && !select->IsAppearanceBasePicker()) {
     // We only want to apply mouse/keyboard behavior for appearance:base-select
@@ -685,9 +690,9 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
         }
         if (previous_option) {
           previous_option->Focus(FocusParams(FocusTrigger::kUserGesture));
-          event.SetDefaultHandled();
-          return;
         }
+        event.SetDefaultHandled();
+        return;
       } else if (key == keywords::kArrowDown && select) {
         OptionListIterator option_list = select->GetOptionList().begin();
         while (*option_list && *option_list != this) {
@@ -699,9 +704,9 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
           auto* next_option = *option_list;
           if (next_option) {
             next_option->Focus(FocusParams(FocusTrigger::kUserGesture));
-            event.SetDefaultHandled();
-            return;
           }
+          event.SetDefaultHandled();
+          return;
         }
       } else if ((key == " " || key == keywords::kCapitalEnter) && select) {
         select->SelectOptionByPopup(this);
@@ -722,8 +727,6 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
       }
     }
   }
-
-  HTMLElement::DefaultEventHandler(event);
 }
 
 }  // namespace blink

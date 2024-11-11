@@ -142,6 +142,8 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
 
   void UpdateLabel();
 
+  void DefaultEventHandlerInternal(Event&);
+
   Member<OptionTextObserver> text_observer_;
 
   // Represents 'selectedness'.
