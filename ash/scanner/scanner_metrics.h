@@ -14,6 +14,25 @@ namespace ash {
 inline constexpr std::string_view kScannerFeatureTimerFetchActionsForImage =
     "Ash.ScannerFeature.Timer.FetchActionsForImage";
 
+inline constexpr std::string_view
+    kScannerFeatureTimerPopulateNewCalendarEventAction =
+        "Ash.ScannerFeature.Timer.PopulateNewCalendarEventAction";
+
+inline constexpr std::string_view kScannerFeatureTimerPopulateNewContactAction =
+    "Ash.ScannerFeature.Timer.PopulateNewContactAction";
+
+inline constexpr std::string_view
+    kScannerFeatureTimerPopulateNewGoogleSheetAction =
+        "Ash.ScannerFeature.Timer.PopulateNewGoogleSheetAction";
+
+inline constexpr std::string_view
+    kScannerFeatureTimerPopulateNewGoogleDocAction =
+        "Ash.ScannerFeature.Timer.PopulateNewGoogleDocAction";
+
+inline constexpr std::string_view
+    kScannerFeatureTimerPopulateNewCopyToClipboardAction =
+        "Ash.ScannerFeature.Timer.PopulateNewCopyToClipboardAction";
+
 // Enum for histogram. Stores what state the user is in.
 // LINT.IfChange(ScannerFeatureUserState)
 enum class ScannerFeatureUserState {
