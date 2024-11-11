@@ -750,7 +750,7 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
     base::Time seed_fetch_time) {
   // As a performance optimization, avoid an expensive no-op of overwriting
   // the previous safe seed with an identical copy.
-  std::string previous_safe_seed = safe_seed_store_->GetCompressedSeed();
+  const std::string& previous_safe_seed = safe_seed_store_->GetCompressedSeed();
   if (seed.base64_seed_data != previous_safe_seed) {
     // It's theoretically possible to overwrite an existing safe seed value,
     // which was identical to the latest seed, with a new value. This could

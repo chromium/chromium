@@ -35,7 +35,7 @@ base::Time EarlyBootSafeSeed::GetTimeForStudyDateChecks() const {
 void EarlyBootSafeSeed::SetTimeForStudyDateChecks(
     const base::Time& safe_seed_time) {}
 
-std::string EarlyBootSafeSeed::GetCompressedSeed() const {
+const std::string& EarlyBootSafeSeed::GetCompressedSeed() const {
   return safe_seed_details_.b64_compressed_data();
 }
 

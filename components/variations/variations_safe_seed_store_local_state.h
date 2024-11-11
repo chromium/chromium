@@ -46,7 +46,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSafeSeedStoreLocalState
   base::Time GetTimeForStudyDateChecks() const override;
   void SetTimeForStudyDateChecks(const base::Time& safe_seed_time) override;
 
-  std::string GetCompressedSeed() const override;
+  const std::string& GetCompressedSeed() const override;
   void SetCompressedSeed(const std::string& safe_compressed,
                          const std::string& base64_safe_compressed) override;
 
