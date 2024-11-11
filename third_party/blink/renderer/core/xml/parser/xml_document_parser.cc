@@ -490,7 +490,7 @@ bool XMLDocumentParser::ParseDocumentFragment(
     return true;
   }
 
-  TryRethrowScope rethrow_scope(fragment->GetExecutionContext()->GetIsolate(),
+  TryRethrowScope rethrow_scope(fragment->GetDocument().GetAgent().isolate(),
                                 exception_state);
   auto* parser = MakeGarbageCollected<XMLDocumentParser>(
       fragment, context_element, parser_content_policy);
@@ -1038,7 +1038,7 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
     return;
   }
 
-  v8::Isolate* isolate = document_->GetExecutionContext()->GetIsolate();
+  v8::Isolate* isolate = document_->GetAgent().isolate();
   v8::TryCatch try_catch(isolate);
   if (!HandleElementAttributes(prefixed_attributes, libxml_attributes,
                                nb_attributes, prefix_to_namespace_map_,
