@@ -2,26 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/app_mode/auto_sleep/fake_repeating_time_interval_task_executor.h"
-
+#include <cstddef>
+#include <functional>
 #include <memory>
-#include <vector>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
-#include "base/notreached.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_test_policy_builder.h"
+#include "chrome/browser/ash/app_mode/auto_sleep/fake_repeating_time_interval_task_executor.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
-#include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "chromeos/dbus/power/native_timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,9 +52,7 @@ class RepeatingTimeIntervalTaskExecutorTest : public testing::Test {
         task_environment_.GetMockTickClock());
   }
 
-  void TearDown() override {
-    chromeos::PowerManagerClient::Shutdown();
-  }
+  void TearDown() override { chromeos::PowerManagerClient::Shutdown(); }
 
   void FastForwardTimeTo(const policy::WeeklyTime& weekly_time,
                          base::TimeDelta delta = base::TimeDelta()) {
