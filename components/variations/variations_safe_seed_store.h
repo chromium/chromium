@@ -65,7 +65,8 @@ class VariationsSafeSeedStore {
   virtual void SetSessionConsistencyCountry(
       const std::string& session_consistency_country) = 0;
 
-  // Setter for SeedReaderWriter for testing.
+  // Getter and setter for SeedReaderWriter for testing.
+  virtual SeedReaderWriter* GetSeedReaderWriterForTesting() = 0;
   virtual void SetSeedReaderWriterForTesting(
       std::unique_ptr<SeedReaderWriter> seed_reader_writer) = 0;
 

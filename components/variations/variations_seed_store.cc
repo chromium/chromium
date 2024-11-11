@@ -535,9 +535,17 @@ std::optional<std::string> VariationsSeedStore::SeedBytesToCompressedBase64Seed(
   return base::Base64Encode(compressed_seed_data);
 }
 
+SeedReaderWriter* VariationsSeedStore::GetSeedReaderWriterForTesting() {
+  return seed_reader_writer_.get();
+}
+
 void VariationsSeedStore::SetSeedReaderWriterForTesting(
     std::unique_ptr<SeedReaderWriter> seed_reader_writer) {
   seed_reader_writer_ = std::move(seed_reader_writer);
+}
+
+SeedReaderWriter* VariationsSeedStore::GetSafeSeedReaderWriterForTesting() {
+  return safe_seed_store_->GetSeedReaderWriterForTesting();  // IN-TEST
 }
 
 void VariationsSeedStore::SetSafeSeedReaderWriterForTesting(

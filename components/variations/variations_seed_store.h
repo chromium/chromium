@@ -223,9 +223,15 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   static std::optional<std::string> SeedBytesToCompressedBase64Seed(
       const std::string& seed_bytes);
 
+  // Gets |seed_reader_writer_| for testing.
+  SeedReaderWriter* GetSeedReaderWriterForTesting();
+
   // Sets |seed_reader_writer_| to the given SeedReaderWriter for testing.
   void SetSeedReaderWriterForTesting(
       std::unique_ptr<SeedReaderWriter> seed_reader_writer);
+
+  // Gets |safe_seed_store_| SeedReaderWriter for testing.
+  SeedReaderWriter* GetSafeSeedReaderWriterForTesting();
 
   // Sets |safe_seed_store_| SeedReaderWriter to the given one for testing.
   void SetSafeSeedReaderWriterForTesting(

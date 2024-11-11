@@ -112,6 +112,11 @@ void VariationsSafeSeedStoreLocalState::SetSessionConsistencyCountry(
                           session_consistency_country);
 }
 
+SeedReaderWriter*
+VariationsSafeSeedStoreLocalState::GetSeedReaderWriterForTesting() {
+  return seed_reader_writer_.get();
+}
+
 void VariationsSafeSeedStoreLocalState::SetSeedReaderWriterForTesting(
     std::unique_ptr<SeedReaderWriter> seed_reader_writer) {
   seed_reader_writer_ = std::move(seed_reader_writer);

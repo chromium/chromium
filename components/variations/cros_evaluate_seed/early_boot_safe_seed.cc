@@ -68,6 +68,10 @@ std::string EarlyBootSafeSeed::GetSessionConsistencyCountry() const {
 void EarlyBootSafeSeed::SetSessionConsistencyCountry(
     const std::string& session_consistency_country) {}
 
+SeedReaderWriter* EarlyBootSafeSeed::GetSeedReaderWriterForTesting() {
+  return nullptr;
+}
+
 void EarlyBootSafeSeed::SetSeedReaderWriterForTesting(
     std::unique_ptr<SeedReaderWriter> seed_reader_writer) {}
 

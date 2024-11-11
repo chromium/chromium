@@ -30,6 +30,9 @@ using ::testing::Values;
 
 const base::FilePath::CharType kSeedFilename[] = FILE_PATH_LITERAL("TestSeed");
 
+// Used for clients that do not participate in SeedFiles experiment.
+constexpr char kNoGroup[] = "";
+
 // Compresses `data` using Gzip compression.
 std::string Gzip(const std::string& data) {
   std::string compressed;
@@ -320,7 +323,7 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Combine(
             ::testing::Values(prefs::kVariationsCompressedSeed,
                               prefs::kVariationsSafeCompressedSeed),
-            ::testing::Values(kControlGroup, std::string()))));
+            ::testing::Values(kControlGroup, kDefaultGroup, kNoGroup))));
 
 // Verifies that writing seeds with an empty path for `seed_file_dir` does not
 // cause a crash.
@@ -357,6 +360,9 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Combine(
             ::testing::Values(prefs::kVariationsCompressedSeed,
                               prefs::kVariationsSafeCompressedSeed),
-            ::testing::Values(kSeedFilesGroup, kControlGroup, std::string()))));
+            ::testing::Values(kSeedFilesGroup,
+                              kControlGroup,
+                              kDefaultGroup,
+                              kNoGroup))));
 }  // namespace
 }  // namespace variations

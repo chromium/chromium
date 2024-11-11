@@ -62,6 +62,7 @@ class EarlyBootSafeSeed : public VariationsSafeSeedStore {
   void SetSessionConsistencyCountry(
       const std::string& session_consistency_country) override;
 
+  SeedReaderWriter* GetSeedReaderWriterForTesting() override;
   void SetSeedReaderWriterForTesting(
       std::unique_ptr<SeedReaderWriter> seed_reader_writer) override;
 
