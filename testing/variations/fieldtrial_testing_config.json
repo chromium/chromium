@@ -17378,6 +17378,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "MahiPanelResizable",
                         "Pompano"
                     ]
                 }
