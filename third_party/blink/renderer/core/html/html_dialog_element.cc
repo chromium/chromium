@@ -642,18 +642,25 @@ void HTMLDialogElement::AttributeChanged(
 
 void HTMLDialogElement::ParseAttribute(
     const AttributeModificationParams& params) {
-  if (RuntimeEnabledFeatures::DialogCloseWhenOpenRemovedEnabled() &&
-      params.name == html_names::kOpenAttr && params.new_value.IsNull() &&
+  if (params.name == html_names::kOpenAttr && params.new_value.IsNull() &&
       !is_closing_) {
-    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kOther,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        "The open attribute was removed from a dialog element while it was "
-        "open. This is not recommended. Please close it using the "
-        "dialog.close() method instead.");
-    console_message->SetNodes(GetDocument().GetFrame(), {GetDomNodeId()});
-    GetDocument().AddConsoleMessage(console_message);
-    close(/*return_value=*/String(), /*ignore_open_attribute=*/true);
+    // The open attribute has been removed explicitly, without calling close().
+    if (RuntimeEnabledFeatures::DialogCloseWhenOpenRemovedEnabled()) {
+      auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "The open attribute was removed from a dialog element while it was "
+          "open. This is not recommended. Please close it using the "
+          "dialog.close() method instead.");
+      console_message->SetNodes(GetDocument().GetFrame(), {GetDomNodeId()});
+      GetDocument().AddConsoleMessage(console_message);
+      close(/*return_value=*/String(), /*ignore_open_attribute=*/true);
+    } else {
+      if (close_watcher_) {
+        close_watcher_->destroy();
+        close_watcher_ = nullptr;
+      }
+    }
   }
 
   HTMLElement::ParseAttribute(params);
