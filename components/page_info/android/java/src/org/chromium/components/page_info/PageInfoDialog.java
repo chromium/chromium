@@ -12,14 +12,13 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.LinearLayout;
 
-import androidx.annotation.GravityInt;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -28,7 +27,6 @@ import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.modaldialog.ModalDialogProperties.Controller;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Represents the dialog containing the page info view. */
@@ -52,7 +50,6 @@ public class PageInfoDialog {
     private Animator mCurrentAnimation;
 
     private boolean mDismissWithoutAnimation;
-    private @GravityInt int mDialogPosition;
 
     /**
      * Creates a new page info dialog. The dialog can appear as a sheet (using Android dialogs) or a
@@ -63,7 +60,7 @@ public class PageInfoDialog {
      * @param isSheet Whether the dialog should appear as a sheet.
      * @param manager The dialog's manager used for modal dialogs.
      * @param controller The dialog's controller.
-     * @param dialogPosition The position of the dialog, either TOP or BOTTOM.
+     *
      */
     public PageInfoDialog(
             Context context,
@@ -71,13 +68,11 @@ public class PageInfoDialog {
             View containerView,
             boolean isSheet,
             @NonNull ModalDialogManager manager,
-            @NonNull Controller controller,
-            @GravityInt int dialogPosition) {
+            @NonNull ModalDialogProperties.Controller controller) {
         mPageInfoContainer = pageInfoContainer;
         mIsSheet = isSheet;
         mManager = manager;
         mController = controller;
-        mDialogPosition = dialogPosition;
 
         if (isSheet) {
             // On smaller screens, make the dialog fill the width of the screen.
@@ -180,7 +175,7 @@ public class PageInfoDialog {
         sheetDialog.setCanceledOnTouchOutside(true);
 
         Window window = sheetDialog.getWindow();
-        window.setGravity(mDialogPosition);
+        window.setGravity(Gravity.TOP);
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         sheetDialog.setOnDismissListener(
@@ -211,45 +206,14 @@ public class PageInfoDialog {
         return new FadingEdgeScrollView(context, null) {
             {
                 if (mPageInfoContainer != null) {
-                    int cornerRadius =
+                    int padding =
                             (int)
                                     context.getResources()
                                             .getDimension(R.dimen.page_info_popup_corners_radius);
-                    GradientDrawable background =
-                            (GradientDrawable)
-                                    AppCompatResources.getDrawable(
-                                            getContext(), R.drawable.page_info_bg);
-                    float[] radii;
-                    if (mDialogPosition == Gravity.TOP) {
-                        radii =
-                                new float[] {
-                                    /*Top-left*/ 0,
-                                    0,
-                                    /*Top-right*/ 0,
-                                    0,
-                                    /*Bottom-left*/ cornerRadius,
-                                    cornerRadius,
-                                    /*Bottom-right*/ cornerRadius,
-                                    cornerRadius
-                                };
-                        setPadding(0, 0, 0, cornerRadius);
-                    } else {
-                        radii =
-                                new float[] {
-                                    /*Top-left*/ cornerRadius,
-                                    cornerRadius,
-                                    /*Top-right*/ cornerRadius,
-                                    cornerRadius,
-                                    /*Bottom-left*/ 0,
-                                    0,
-                                    /*Bottom-right*/ 0,
-                                    0
-                                };
-                        setPadding(0, cornerRadius, 0, 0);
-                    }
-
-                    background.setCornerRadii(radii);
+                    Drawable background =
+                            AppCompatResources.getDrawable(getContext(), R.drawable.page_info_bg);
                     setBackground(background);
+                    setPadding(0, 0, 0, padding);
                 }
             }
 
@@ -271,10 +235,7 @@ public class PageInfoDialog {
     private Animator createDialogSlideAnimaton(boolean isEnter, Runnable onAnimationEnd) {
         Animator dialogAnimation;
         if (mIsSheet) {
-            final float animHeight =
-                    mDialogPosition == Gravity.TOP
-                            ? -mScrollView.getHeight()
-                            : mScrollView.getHeight();
+            final float animHeight = -mScrollView.getHeight();
             ObjectAnimator translateAnim;
             if (isEnter) {
                 mScrollView.setTranslationY(animHeight);

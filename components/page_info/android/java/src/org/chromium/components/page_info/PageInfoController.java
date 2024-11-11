@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 
-import androidx.annotation.GravityInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -159,7 +158,6 @@ public class PageInfoController
      * @param delegate The PageInfoControllerDelegate used to provide embedder-specific info.
      * @param pageInfoHighlight Providing the highlight row info related to this dialog.
      * @param source Determines the source that triggered the popup.
-     * @param dialogPosition The position of the dialog, either TOP or BOTTOM.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public PageInfoController(
@@ -168,8 +166,7 @@ public class PageInfoController
             String publisher,
             PageInfoControllerDelegate delegate,
             PageInfoHighlight pageInfoHighlight,
-            @OpenedFromSource int source,
-            @GravityInt int dialogPosition) {
+            @OpenedFromSource int source) {
         mWebContents = webContents;
         mSecurityLevel = securityLevel;
         mDelegate = delegate;
@@ -356,8 +353,7 @@ public class PageInfoController
                         webContents.getViewAndroidDelegate().getContainerView(),
                         isSheet(mContext),
                         delegate.getModalDialogManager(),
-                        this,
-                        dialogPosition);
+                        this);
         mDialog.show();
     }
 
@@ -577,8 +573,7 @@ public class PageInfoController
             final String contentPublisher,
             @OpenedFromSource int source,
             PageInfoControllerDelegate delegate,
-            PageInfoHighlight pageInfoHighlight,
-            @GravityInt int dialogPosition) {
+            PageInfoHighlight pageInfoHighlight) {
         // Don't show the dialog if this tab doesn't have an activity. See https://crbug.com/1267383
         if (activity == null) return;
         // If the activity's decor view is not attached to window, we don't show the dialog because
@@ -607,8 +602,7 @@ public class PageInfoController
                                 contentPublisher,
                                 delegate,
                                 pageInfoHighlight,
-                                source,
-                                dialogPosition));
+                                source));
     }
 
     public static PageInfoController getLastPageInfoControllerForTesting() {

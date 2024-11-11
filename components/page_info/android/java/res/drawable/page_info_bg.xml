@@ -10,6 +10,10 @@ found in the LICENSE file.
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:shape="rectangle"
     app:surfaceElevation="@dimen/page_info_bg_elev">
-  <!-- Corner rounding is handled in java code. -->
+  <corners
+      android:bottomLeftRadius="16dp"
+      android:bottomRightRadius="16dp"
+      android:topLeftRadius="0dp"
+      android:topRightRadius="0dp" />
 </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
 
