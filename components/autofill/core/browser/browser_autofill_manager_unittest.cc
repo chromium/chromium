@@ -7209,8 +7209,7 @@ TEST_F(BrowserAutofillManagerTest, ShowAutofillAiSuggestions) {
   NiceMock<MockAutofillAiDelegate> delegate;
   ON_CALL(autofill_client_, GetAutofillAiDelegate)
       .WillByDefault(Return(&delegate));
-  ON_CALL(delegate, IsPredictionImprovementsEligible)
-      .WillByDefault(Return(true));
+  ON_CALL(delegate, IsEligibleForAutofillAi).WillByDefault(Return(true));
   EXPECT_CALL(delegate, HasDataStored)
       .WillOnce(RunOnceCallback<0>(AutofillAiDelegate::HasData(true)));
   EXPECT_CALL(delegate, GetSuggestions)
@@ -7235,8 +7234,7 @@ TEST_F(BrowserAutofillManagerTest, ShowAutofillAiIPH) {
   NiceMock<MockAutofillAiDelegate> delegate;
   ON_CALL(autofill_client_, GetAutofillAiDelegate)
       .WillByDefault(Return(&delegate));
-  ON_CALL(delegate, IsPredictionImprovementsEligible)
-      .WillByDefault(Return(false));
+  ON_CALL(delegate, IsEligibleForAutofillAi).WillByDefault(Return(false));
   ON_CALL(delegate, ShouldDisplayIph).WillByDefault(Return(true));
 
   EXPECT_CALL(autofill_client_,

@@ -69,7 +69,7 @@ class AutofillAiManager : public autofill::AutofillAiDelegate {
       const std::vector<autofill::Suggestion>& autofill_suggestions,
       const autofill::FormData& form,
       const autofill::FormFieldData& field) override;
-  bool IsPredictionImprovementsEligible(
+  bool IsEligibleForAutofillAi(
       const autofill::FormStructure& form,
       const autofill::AutofillField& field) const override;
   bool IsUserEligible() const override;

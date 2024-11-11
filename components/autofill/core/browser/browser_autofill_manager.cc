@@ -1460,8 +1460,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
 
   if (delegate && form_structure && autofill_field &&
-      delegate->IsPredictionImprovementsEligible(*form_structure,
-                                                 *autofill_field)) {
+      delegate->IsEligibleForAutofillAi(*form_structure, *autofill_field)) {
     delegate->HasDataStored(base::BindOnce(
         &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1,
         weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context,

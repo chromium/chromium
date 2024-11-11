@@ -1209,8 +1209,8 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleIfFlagDisabled) {
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   autofill::AutofillField* prediction_improvement_field = form->field(0);
 
-  EXPECT_FALSE(manager().IsPredictionImprovementsEligible(
-      *form, *prediction_improvement_field));
+  EXPECT_FALSE(
+      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
 }
 
 TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleIfDeciderIsNull) {
@@ -1221,8 +1221,8 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleIfDeciderIsNull) {
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   autofill::AutofillField* prediction_improvement_field = form->field(0);
 
-  EXPECT_FALSE(manager.IsPredictionImprovementsEligible(
-      *form, *prediction_improvement_field));
+  EXPECT_FALSE(
+      manager.IsEligibleForAutofillAi(*form, *prediction_improvement_field));
 }
 
 TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsEligibleIfSkipAllowlistIsTrue) {
@@ -1233,8 +1233,8 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsEligibleIfSkipAllowlistIsTrue) {
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   autofill::AutofillField* prediction_improvement_field = form->field(0);
 
-  EXPECT_TRUE(manager().IsPredictionImprovementsEligible(
-      *form, *prediction_improvement_field));
+  EXPECT_TRUE(
+      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
 }
 
 TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleIfPrefIsDisabled) {
@@ -1247,8 +1247,8 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleIfPrefIsDisabled) {
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   autofill::AutofillField* prediction_improvement_field = form->field(0);
 
-  EXPECT_FALSE(manager().IsPredictionImprovementsEligible(
-      *form, *prediction_improvement_field));
+  EXPECT_FALSE(
+      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
 }
 
 TEST_F(IsFormAndFieldEligibleAutofillAiTest,
@@ -1263,8 +1263,8 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest,
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   autofill::AutofillField* prediction_improvement_field = form->field(0);
 
-  EXPECT_FALSE(manager().IsPredictionImprovementsEligible(
-      *form, *prediction_improvement_field));
+  EXPECT_FALSE(
+      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
 }
 
 TEST_F(IsFormAndFieldEligibleAutofillAiTest,
@@ -1278,8 +1278,8 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest,
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   autofill::AutofillField* prediction_improvement_field = form->field(0);
 
-  EXPECT_TRUE(manager().IsPredictionImprovementsEligible(
-      *form, *prediction_improvement_field));
+  EXPECT_TRUE(
+      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
 }
 
 TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleForNotHttps) {
@@ -1291,8 +1291,8 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleForNotHttps) {
       CreateEligibleForm(GURL("http://http.com"));
   autofill::AutofillField* prediction_improvement_field = form->field(0);
 
-  EXPECT_FALSE(manager().IsPredictionImprovementsEligible(
-      *form, *prediction_improvement_field));
+  EXPECT_FALSE(
+      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
 }
 
 TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleOnEmptyForm) {
@@ -1304,7 +1304,7 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleOnEmptyForm) {
   autofill::FormStructure form(form_data);
   autofill::AutofillField field;
 
-  EXPECT_FALSE(manager().IsPredictionImprovementsEligible(form, field));
+  EXPECT_FALSE(manager().IsEligibleForAutofillAi(form, field));
 }
 
 TEST_F(IsFormAndFieldEligibleAutofillAiTest,
@@ -1316,8 +1316,8 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest,
   std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
   autofill::AutofillField* prediction_improvement_field = form->field(0);
 
-  EXPECT_TRUE(manager().IsPredictionImprovementsEligible(
-      *form, *prediction_improvement_field));
+  EXPECT_TRUE(
+      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
 }
 
 TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleForNonEligibleUser) {
@@ -1329,8 +1329,8 @@ TEST_F(IsFormAndFieldEligibleAutofillAiTest, IsNotEligibleForNonEligibleUser) {
   autofill::AutofillField* prediction_improvement_field = form->field(0);
 
   ON_CALL(client(), IsUserEligible).WillByDefault(Return(false));
-  EXPECT_FALSE(manager().IsPredictionImprovementsEligible(
-      *form, *prediction_improvement_field));
+  EXPECT_FALSE(
+      manager().IsEligibleForAutofillAi(*form, *prediction_improvement_field));
 }
 
 }  // namespace

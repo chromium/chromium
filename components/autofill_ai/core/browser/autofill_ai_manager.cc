@@ -159,7 +159,7 @@ bool AutofillAiManager::HasImprovedPredictionsForField(
   return cache_ && cache_->contains(field.global_id());
 }
 
-bool AutofillAiManager::IsPredictionImprovementsEligible(
+bool AutofillAiManager::IsEligibleForAutofillAi(
     const autofill::FormStructure& form,
     const autofill::AutofillField& field) const {
   return IsFormAndFieldEligible(form, field) &&

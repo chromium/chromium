@@ -43,9 +43,8 @@ class AutofillAiDelegate {
 
   // Returns whether `form` and `field` are eligible for the Autofill AI
   // experience.
-  virtual bool IsPredictionImprovementsEligible(
-      const FormStructure& form,
-      const AutofillField& field) const = 0;
+  virtual bool IsEligibleForAutofillAi(const FormStructure& form,
+                                       const AutofillField& field) const = 0;
 
   // Returns whether the current user is eligible for the Autofill AI
   // experience.

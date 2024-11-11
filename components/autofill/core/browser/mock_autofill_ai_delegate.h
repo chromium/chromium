@@ -28,7 +28,7 @@ class MockAutofillAiDelegate : public AutofillAiDelegate {
               (override));
   MOCK_METHOD(void, UserFeedbackReceived, (UserFeedback feedback), (override));
   MOCK_METHOD(bool,
-              IsPredictionImprovementsEligible,
+              IsEligibleForAutofillAi,
               (const FormStructure& form, const AutofillField& field),
               (const override));
   MOCK_METHOD(bool, IsUserEligible, (), (const override));
