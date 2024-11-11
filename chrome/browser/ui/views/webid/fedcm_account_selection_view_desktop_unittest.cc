@@ -429,6 +429,13 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
     return controller;
   }
 
+  void OpenLoginToIdpPopup(AccountSelectionViewBase::Observer* observer,
+                           TestFedCmAccountSelectionView* controller) {
+    observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl),
+                           CreateMouseEvent());
+    CreateAndShowPopupWindow(*controller);
+  }
+
   std::unique_ptr<TestFedCmAccountSelectionView>
   CreateAndShowAccountsModalThroughPopupWindow(
       const std::vector<IdentityRequestAccountPtr>& all_accounts,
@@ -439,9 +446,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
         static_cast<AccountSelectionViewBase::Observer*>(controller.get());
 
     // Emulate the login to IdP flow.
-    observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl),
-                           CreateMouseEvent());
-    CreateAndShowPopupWindow(*controller);
+    OpenLoginToIdpPopup(observer, controller.get());
 
     // Emulate user completing the sign-in flow and IdP prompts closing the
     // pop-up window and sending new accounts.
@@ -465,9 +470,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
         static_cast<AccountSelectionViewBase::Observer*>(controller.get());
 
     // Emulate the user clicking "use another account button".
-    observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl),
-                           CreateMouseEvent());
-    CreateAndShowPopupWindow(*controller);
+    OpenLoginToIdpPopup(observer, controller.get());
 
     // Emulate user completing the sign-in flow and IdP prompts closing the
     // pop-up window and sending new accounts.
@@ -847,8 +850,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult", 0);
 
   // Emulate user clicking on "Continue" button in the mismatch dialog.
-  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
-  CreateAndShowPopupWindow(*controller);
+  OpenLoginToIdpPopup(observer, controller.get());
 
   histogram_tester_->ExpectUniqueSample(
       "Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
@@ -871,9 +873,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         "Blink.FedCm.IdpSigninStatus.MismatchDialogResult", 0);
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl),
-                           CreateMouseEvent());
-    CreateAndShowPopupWindow(*controller);
+    OpenLoginToIdpPopup(observer, controller.get());
   }
 
   histogram_tester_->ExpectUniqueSample(
@@ -897,9 +897,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionViewBase::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl),
-                           CreateMouseEvent());
-    CreateAndShowPopupWindow(*controller);
+    OpenLoginToIdpPopup(observer, controller.get());
 
     // When pop-up window is shown, mismatch dialog should be hidden.
     EXPECT_FALSE(dialog_widget_->IsVisible());
@@ -954,9 +952,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionViewBase::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl),
-                           CreateMouseEvent());
-    CreateAndShowPopupWindow(*controller);
+    OpenLoginToIdpPopup(observer, controller.get());
 
     // When pop-up window is shown, mismatch dialog should be hidden.
     EXPECT_FALSE(dialog_widget_->IsVisible());
@@ -1008,9 +1004,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionViewBase::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl),
-                           CreateMouseEvent());
-    CreateAndShowPopupWindow(*controller);
+    OpenLoginToIdpPopup(observer, controller.get());
 
     // Emulate IdP sending the IdP sign-in status header which updates the
     // failure dialog to an accounts dialog.
@@ -1041,9 +1035,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionViewBase::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl),
-                           CreateMouseEvent());
-    CreateAndShowPopupWindow(*controller);
+    OpenLoginToIdpPopup(observer, controller.get());
 
     // Emulate IdentityProvider.close() being called in the pop-up window.
     controller->CloseModalDialog();
@@ -1072,9 +1064,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
         static_cast<AccountSelectionViewBase::Observer*>(controller.get());
 
     // Emulate user clicking on "Continue" button in the mismatch dialog.
-    observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl),
-                           CreateMouseEvent());
-    CreateAndShowPopupWindow(*controller);
+    OpenLoginToIdpPopup(observer, controller.get());
 
     histogram_tester_->ExpectTotalCount(
         "Blink.FedCm.IdpSigninStatus.PopupWindowResult", 0);
@@ -1192,8 +1182,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate user clicking on "Continue" button in the mismatch dialog.
   AccountSelectionViewBase::Observer* observer =
       static_cast<AccountSelectionViewBase::Observer*>(controller.get());
-  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
-  CreateAndShowPopupWindow(*controller);
+  OpenLoginToIdpPopup(observer, controller.get());
 
   // Emulate IdP closing the pop-up window.
   controller->CloseModalDialog();
@@ -1227,8 +1216,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate user clicking on "Continue" button in the mismatch dialog.
   AccountSelectionViewBase::Observer* observer =
       static_cast<AccountSelectionViewBase::Observer*>(controller.get());
-  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
-  CreateAndShowPopupWindow(*controller);
+  OpenLoginToIdpPopup(observer, controller.get());
 
   // Emulate IdP closing the pop-up window.
   controller->CloseModalDialog();
@@ -1470,16 +1458,14 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountTwiceModal) {
               testing::ElementsAre(kAccountId1));
 
   // Emulate the user clicking "use another account button".
-  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
-  CreateAndShowPopupWindow(*controller);
+  OpenLoginToIdpPopup(observer, controller.get());
 
   // Modal remains visible.
   EXPECT_TRUE(dialog_widget_->IsVisible());
 
   // Emulate the user clicking "use another account button" again. This should
   // not crash.
-  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
-  CreateAndShowPopupWindow(*controller);
+  OpenLoginToIdpPopup(observer, controller.get());
 }
 
 // Test user triggering the use another account flow twice in a modal, with
@@ -1496,8 +1482,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
               testing::ElementsAre(kAccountId1));
 
   // Emulate the user clicking "use another account button".
-  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
-  CreateAndShowPopupWindow(*controller);
+  OpenLoginToIdpPopup(observer, controller.get());
 
   // Modal remains visible.
   EXPECT_TRUE(dialog_widget_->IsVisible());
@@ -1510,8 +1495,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Emulate the user clicking "use another account button" again. This should
   // not crash.
-  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
-  CreateAndShowPopupWindow(*controller);
+  OpenLoginToIdpPopup(observer, controller.get());
 }
 
 // Test user triggering the use another account flow then clicking on the cancel
@@ -1527,8 +1511,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountThenCancel) {
               testing::ElementsAre(kAccountId1));
 
   // Emulate the user clicking "use another account button".
-  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
-  CreateAndShowPopupWindow(*controller);
+  OpenLoginToIdpPopup(observer, controller.get());
 
   // Modal remains visible.
   EXPECT_TRUE(dialog_widget_->IsVisible());
@@ -1730,10 +1713,9 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 // pop-up window triggers the dismiss callback.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        ActiveModePopupCloseTriggersDismissCallback) {
-  // Initialize a controller but do not trigger any dialogs.
-  auto controller = std::make_unique<TestFedCmAccountSelectionView>(
-      delegate_.get(), account_selection_view_.get());
-  EXPECT_FALSE(dialog_widget_->IsVisible());
+  // Show modal mismatch dialog.
+  auto controller = CreateAndShowMismatchDialog(
+      blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kActive);
 
   // Emulate user clicking on a button to sign in with an IDP via active mode.
   auto popup_window = std::make_unique<MockFedCmModalDialogView>(
@@ -1769,8 +1751,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultiIdpMismatchAndShow) {
   // Emulate user clicking on "Continue" button in the mismatch dialog.
   AccountSelectionViewBase::Observer* observer =
       static_cast<AccountSelectionViewBase::Observer*>(controller.get());
-  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
-  CreateAndShowPopupWindow(*controller);
+  OpenLoginToIdpPopup(observer, controller.get());
   controller->CloseModalDialog();
 
   // The backend will pass the accounts reordered.
@@ -2531,5 +2512,26 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   controller->PrimaryMainFrameWasResized(/*width_changed=*/true);
   EXPECT_TRUE(account_selection_view_->dialog_position_updated_);
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+}
+
+// Tests that closing the use other account button does not close a FedCM
+// passive mode dialog.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       PassiveModeCloseUseOtherAccountDoesNotCloseDialog) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShow(accounts_, SignInMode::kExplicit);
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+  // This is choose another account since there are accounts being shown.
+  OpenLoginToIdpPopup(observer, controller.get());
+  // The dialog is not closed but is hidden.
+  EXPECT_FALSE(dialog_widget_->IsClosed());
+  EXPECT_FALSE(dialog_widget_->IsVisible());
+
+  // Emulate user closing the pop-up window.
+  controller->OnPopupWindowDestroyed();
+
+  // Dialog should reappear once the popup window is destroyed.
   EXPECT_TRUE(dialog_widget_->IsVisible());
 }

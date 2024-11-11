@@ -818,10 +818,9 @@ content::WebContents* FedCmAccountSelectionView::ShowModalDialog(
     }
   }
 
-  // The modal should not be dismissed if it a use other account pop-up, which
-  // can only be triggered from an account selection sheet.
-  if (GetDialogType() == DialogType::MODAL &&
-      GetSheetType() == SheetType::ACCOUNT_SELECTION) {
+  // The FedCM dialog should not be dismissed if the use other account pop-up is
+  // closed, which can only be triggered from account selection.
+  if (GetSheetType() == SheetType::ACCOUNT_SELECTION) {
     notify_delegate_of_dismiss_ = false;
     return popup_window_->ShowPopupWindow(url);
   }
@@ -885,6 +884,11 @@ void FedCmAccountSelectionView::OnPopupWindowDestroyed() {
   popup_window_.reset();
 
   if (!notify_delegate_of_dismiss_) {
+    if (GetSheetType() == SheetType::ACCOUNT_SELECTION &&
+        GetDialogType() == DialogType::BUBBLE && account_selection_view_ &&
+        ShouldShowDialogWidget()) {
+      ShowDialogWidget();
+    }
     return;
   }
 
