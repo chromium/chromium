@@ -7,6 +7,8 @@
 #include <optional>
 
 #include "base/feature_list.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
@@ -346,13 +348,27 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
 void PlusAddressCreationControllerAndroid::RecordModalShownOutcome(
     metrics::PlusAddressModalCompletionStatus status,
     bool was_notice_shown) {
-  if (modal_shown_time_.has_value()) {
-    metrics::RecordModalShownOutcome(
-        status, base::TimeTicks::Now() - *modal_shown_time_,
-        std::max(reserve_response_count_ - 1, 0), was_notice_shown);
-    modal_shown_time_.reset();
-    reserve_response_count_ = 0;
+  if (!modal_shown_time_.has_value()) {
+    return;
   }
+
+  metrics::RecordModalShownOutcome(
+      status, base::TimeTicks::Now() - *modal_shown_time_,
+      std::max(reserve_response_count_ - 1, 0), was_notice_shown);
+  using enum metrics::PlusAddressModalCompletionStatus;
+  switch (status) {
+    case kModalCanceled:
+      base::RecordAction(
+          base::UserMetricsAction("PlusAddresses.OfferedPlusAddressDeclined"));
+      break;
+    case kModalConfirmed:
+    case kReservePlusAddressError:
+    case kConfirmPlusAddressError:
+      break;
+  }
+
+  modal_shown_time_.reset();
+  reserve_response_count_ = 0;
 }
 
 bool PlusAddressCreationControllerAndroid::ShouldShowNotice() const {
