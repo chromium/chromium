@@ -242,12 +242,16 @@ public class ShrinkExpandHubLayoutAnimatorProvider implements HubLayoutAnimatorP
                     }
                 });
 
+        int searchBoxHeight =
+                HubUtils.getSearchBoxHeight(
+                        mHubContainerView, R.id.hub_toolbar, R.id.toolbar_action_container);
         ShrinkExpandAnimationData animationData = mAnimationDataSupplier.get();
         mShrinkExpandAnimator =
                 new ShrinkExpandAnimator(
                         mShrinkExpandImageView,
                         animationData.getInitialRect(),
-                        animationData.getFinalRect());
+                        animationData.getFinalRect(),
+                        searchBoxHeight);
         mShrinkExpandAnimator.setThumbnailSizeForOffset(animationData.getThumbnailSize());
         mShrinkExpandAnimator.setRect(animationData.getInitialRect());
 

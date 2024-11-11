@@ -499,11 +499,17 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
 
         Rect containerViewRect = new Rect();
         containerView.getGlobalVisibleRect(containerViewRect);
+        int searchBoxHeight =
+                HubUtils.getSearchBoxHeight(
+                        containerView, R.id.hub_toolbar, R.id.toolbar_action_container);
 
         View paneHost = mHubController.getPaneHostView();
         assert paneHost.isLaidOut();
         Rect finalRect = new Rect();
         paneHost.getGlobalVisibleRect(finalRect);
+        // Account for the hub's search box container height.
+        finalRect.offset(0, -searchBoxHeight);
+        finalRect.bottom += searchBoxHeight;
         // Ignore edge offset and just ensure the width is correct. See crbug/1502437.
         finalRect.offset(-finalRect.left, -containerViewRect.top);
 

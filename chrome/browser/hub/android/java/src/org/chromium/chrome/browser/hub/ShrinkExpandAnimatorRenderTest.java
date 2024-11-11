@@ -45,6 +45,7 @@ import java.util.Locale;
 @Batch(Batch.UNIT_TESTS)
 public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase {
     private static final int ANIMATION_STEPS = 5;
+    private static final int SEARCH_BOX_HEIGHT = 50;
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -104,7 +105,8 @@ public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase 
                         startY + thumbnailSize.getHeight());
 
         setupShrinkExpandImageView(startValue);
-        ShrinkExpandAnimator animator = createAnimator(startValue, endValue, thumbnailSize);
+        ShrinkExpandAnimator animator =
+                createAnimator(startValue, endValue, thumbnailSize, /* searchBoxHeight= */ 0);
 
         Rect startValueCopy = new Rect(startValue);
         Rect endValueCopy = new Rect(endValue);
@@ -143,10 +145,43 @@ public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase 
                         Math.round(thumbnailSize.getHeight() / 2.0f));
 
         setupShrinkExpandImageView(startValue);
-        ShrinkExpandAnimator animator = createAnimator(startValue, endValue, thumbnailSize);
+        ShrinkExpandAnimator animator =
+                createAnimator(startValue, endValue, thumbnailSize, /* searchBoxHeight= */ 0);
 
         stepThroughAnimation(
                 "expand_rect_with_top_clip", animator, startValue, endValue, ANIMATION_STEPS);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    public void testExpandRectWithTopClip_hubSearchBoxAdjustment() throws Exception {
+        Size thumbnailSize = getThumbnailSize();
+
+        // Fullscreen
+        Rect endValue =
+                new Rect(0, -SEARCH_BOX_HEIGHT, mRootView.getWidth(), mRootView.getHeight());
+
+        // Center top of screen
+        int startX = Math.round(mRootView.getWidth() / 2.0f - thumbnailSize.getWidth() / 2.0f);
+        Rect startValue =
+                new Rect(
+                        startX,
+                        0,
+                        startX + thumbnailSize.getWidth(),
+                        Math.round(thumbnailSize.getHeight() / 2.0f));
+
+        setupShrinkExpandImageView(startValue);
+        ShrinkExpandAnimator animator =
+                createAnimator(startValue, endValue, thumbnailSize, SEARCH_BOX_HEIGHT);
+
+        stepThroughAnimation(
+                "expand_rect_with_top_clip_hub_search",
+                animator,
+                startValue,
+                endValue,
+                ANIMATION_STEPS);
     }
 
     @Test
@@ -170,17 +205,18 @@ public class ShrinkExpandAnimatorRenderTest extends BlankUiTestActivityTestCase 
                         endY + thumbnailSize.getHeight());
 
         setupShrinkExpandImageView(startValue);
-        ShrinkExpandAnimator animator = createAnimator(startValue, endValue, thumbnailSize);
+        ShrinkExpandAnimator animator =
+                createAnimator(startValue, endValue, thumbnailSize, /* searchBoxHeight= */ 0);
 
         stepThroughAnimation("shrink_rect_rect", animator, startValue, endValue, ANIMATION_STEPS);
     }
 
     private ShrinkExpandAnimator createAnimator(
-            Rect startValue, Rect endValue, @Nullable Size thumbnailSize) {
+            Rect startValue, Rect endValue, @Nullable Size thumbnailSize, int searchBoxHeight) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ShrinkExpandAnimator animator =
-                            new ShrinkExpandAnimator(mView, startValue, endValue);
+                            new ShrinkExpandAnimator(mView, startValue, endValue, searchBoxHeight);
                     animator.setThumbnailSizeForOffset(thumbnailSize);
                     animator.setRect(startValue);
                     return animator;

@@ -32,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.core.content.ContextCompat;
@@ -80,7 +81,7 @@ public class HubToolbarViewUnitTest {
     @Captor ArgumentCaptor<PaneButtonLookup> mPaneButtonLookupCaptor;
 
     private Activity mActivity;
-    private HubToolbarView mToolbar;
+    private FrameLayout mToolbarContainer;
     private Button mActionButton;
     private TabLayout mPaneSwitcher;
     private LinearLayout mMenuButtonContainer;
@@ -99,17 +100,21 @@ public class HubToolbarViewUnitTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         LayoutInflater inflater = LayoutInflater.from(mActivity);
-        mToolbar = (HubToolbarView) inflater.inflate(R.layout.hub_toolbar_layout, null, false);
-        mActionButton = mToolbar.findViewById(R.id.toolbar_action_button);
-        mPaneSwitcher = mToolbar.findViewById(R.id.pane_switcher);
-        mMenuButtonContainer = mToolbar.findViewById(R.id.menu_button_container);
-        mSearchBox = mToolbar.findViewById(R.id.search_box);
-        mSearchLoupe = mToolbar.findViewById(R.id.search_loupe);
-        mSearchBoxText = mToolbar.findViewById(R.id.search_box_text);
-        mActivity.setContentView(mToolbar);
+        mToolbarContainer =
+                (FrameLayout) inflater.inflate(R.layout.hub_toolbar_layout, null, false);
+        mActionButton = mToolbarContainer.findViewById(R.id.toolbar_action_button);
+        mPaneSwitcher = mToolbarContainer.findViewById(R.id.pane_switcher);
+        mMenuButtonContainer = mToolbarContainer.findViewById(R.id.menu_button_container);
+        mSearchBox = mToolbarContainer.findViewById(R.id.search_box);
+        mSearchLoupe = mToolbarContainer.findViewById(R.id.search_loupe);
+        mSearchBoxText = mToolbarContainer.findViewById(R.id.search_box_text);
+        mActivity.setContentView(mToolbarContainer);
 
         mPropertyModel = new PropertyModel(HubToolbarProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(mPropertyModel, mToolbar, HubToolbarViewBinder::bind);
+        PropertyModelChangeProcessor.create(
+                mPropertyModel,
+                mToolbarContainer.findViewById(R.id.hub_toolbar),
+                HubToolbarViewBinder::bind);
     }
 
     private FullButtonData makeTestButtonData() {

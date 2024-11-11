@@ -37,6 +37,7 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
     private final @NonNull HubPaneHostCoordinator mHubPaneHostCoordinator;
     private final @NonNull HubLayoutController mHubLayoutController;
     private final @NonNull ObservableSupplierImpl<Boolean> mHandleBackPressSupplier;
+    private final @NonNull HubSearchBoxBackgroundCoordinator mHubSearchBoxBackgroundCoordinator;
 
     /**
      * Generic callback that invokes {@link #updateHandleBackPressSupplier()}. This can be cast to
@@ -125,6 +126,8 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
                 .addObserver(castCallback(mBackPressStateChangeCallback));
 
         updateHandleBackPressSupplier();
+
+        mHubSearchBoxBackgroundCoordinator = new HubSearchBoxBackgroundCoordinator(mContainerView);
     }
 
     /** Removes the hub from the layout tree and cleans up resources. */
@@ -191,6 +194,15 @@ public class HubCoordinator implements PaneHubController, BackPressHandler {
     @Override
     public View getFloatingActionButton() {
         return mHubPaneHostCoordinator.getFloatingActionButton();
+    }
+
+    @Override
+    public void setSearchBoxBackgroundProperties(boolean shouldShow) {
+        // Early exit if the search box is not active like in phone landscape or tablets.
+        if (!mHubToolbarCoordinator.isSearchBoxVisible()) return;
+        mHubSearchBoxBackgroundCoordinator.setShouldShowBackground(shouldShow);
+        mHubSearchBoxBackgroundCoordinator.setBackgroundColorScheme(
+                getFocusedPane().getColorScheme());
     }
 
     /** Returns the view group to contain the snackbar. */

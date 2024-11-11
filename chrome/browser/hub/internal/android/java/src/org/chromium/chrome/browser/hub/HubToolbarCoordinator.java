@@ -19,6 +19,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Sets up the component that handles the toolbar of the Hub. */
 public class HubToolbarCoordinator {
     private final HubToolbarMediator mMediator;
+    private final HubToolbarView mHubToolbarView;
 
     /**
      * Eagerly creates the component, but will not be rooted in the view tree yet.
@@ -40,6 +41,7 @@ public class HubToolbarCoordinator {
         PropertyModelChangeProcessor.create(model, hubToolbarView, HubToolbarViewBinder::bind);
         mMediator =
                 new HubToolbarMediator(activity, model, paneManager, tracker, searchActivityClient);
+        mHubToolbarView = hubToolbarView;
 
         MenuButton menuButton = hubToolbarView.findViewById(R.id.menu_button_wrapper);
         menuButtonCoordinator.setMenuButton(menuButton);
@@ -53,5 +55,9 @@ public class HubToolbarCoordinator {
     /** Cleans up observers and resources. */
     public void destroy() {
         mMediator.destroy();
+    }
+
+    public boolean isSearchBoxVisible() {
+        return mHubToolbarView.findViewById(R.id.search_box).getVisibility() == View.VISIBLE;
     }
 }

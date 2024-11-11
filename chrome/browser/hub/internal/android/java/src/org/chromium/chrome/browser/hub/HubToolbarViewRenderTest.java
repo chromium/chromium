@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
+import android.widget.FrameLayout;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
@@ -74,8 +75,10 @@ public class HubToolbarViewRenderTest {
 
     private void setUpOnUi() {
         LayoutInflater inflater = LayoutInflater.from(mActivity);
-        mToolbar = (HubToolbarView) inflater.inflate(R.layout.hub_toolbar_layout, null, false);
-        mActivity.setContentView(mToolbar);
+        FrameLayout toolbarContainer =
+                (FrameLayout) inflater.inflate(R.layout.hub_toolbar_layout, null, false);
+        mToolbar = toolbarContainer.findViewById(R.id.hub_toolbar);
+        mActivity.setContentView(toolbarContainer);
 
         mPropertyModel = new PropertyModel(HubToolbarProperties.ALL_KEYS);
         PropertyModelChangeProcessor.create(mPropertyModel, mToolbar, HubToolbarViewBinder::bind);

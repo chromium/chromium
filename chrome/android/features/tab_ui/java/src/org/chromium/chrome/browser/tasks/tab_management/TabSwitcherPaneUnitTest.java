@@ -762,15 +762,18 @@ public class TabSwitcherPaneUnitTest {
         mTabModel.addTab(TAB_ID);
         mTabSwitcherPane.initWithNative();
         mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        mTabSwitcherPane.setPaneHubController(mPaneHubController);
 
         assertFalse(mIsAnimatingSupplierCaptor.getValue().get());
 
         HubLayoutAnimationListener listener = mTabSwitcherPane.getHubLayoutAnimationListener();
         listener.beforeStart();
         assertTrue(mIsAnimatingSupplierCaptor.getValue().get());
+        verify(mPaneHubController).setSearchBoxBackgroundProperties(true);
 
         listener.afterEnd();
         assertFalse(mIsAnimatingSupplierCaptor.getValue().get());
+        verify(mPaneHubController).setSearchBoxBackgroundProperties(false);
     }
 
     @Test
