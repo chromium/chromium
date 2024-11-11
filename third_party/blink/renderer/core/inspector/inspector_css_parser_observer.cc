@@ -169,7 +169,7 @@ void InspectorCSSParserObserver::AddNewRuleToSourceTree(
       (rule->type == StyleRule::RuleType::kStyle)) {
     // Check if there is an active property inside the style rule.
     bool contains_active_property = false;
-    for (auto property_data : rule->property_data) {
+    for (const auto& property_data : rule->property_data) {
       if (!property_data.disabled) {
         contains_active_property = true;
         break;
