@@ -1015,8 +1015,6 @@ void DeskBarViewBase::Init(aura::Window* desk_bar_widget_window) {
 
   hover_observer_ =
       std::make_unique<DeskBarHoverObserver>(this, desk_bar_widget_window);
-
-  RecordDeskProfileAdoption();
 }
 
 bool DeskBarViewBase::IsZeroState() const {
@@ -2108,29 +2106,6 @@ void DeskBarViewBase::MaybeRefreshOverviewGridBounds() {
     CHECK(overview_grid_);
     overview_grid_->RefreshGridBounds(/*animate=*/true);
   }
-}
-
-void DeskBarViewBase::RecordDeskProfileAdoption() {
-  // With regards to desk profiles, the user can be in one of these buckets:
-  //  1. Conditions for selecting a user profile have not been met.
-  //  2. Conditions are met, but the user has not actively selected a profile.
-  //  3. The user has selected a profile.
-  DeskProfilesUsageStatus status = DeskProfilesUsageStatus::kConditionsNotMet;
-  if (DesksController::Get()->GetNumberOfDesks() > 1) {
-    for (const auto& mini_view : mini_views_) {
-      if (mini_view->desk() && mini_view->desk()->lacros_profile_id()) {
-        // The user has actively selected a profile for at least one desk.
-        status = DeskProfilesUsageStatus::kEnabled;
-        break;
-      }
-      if (mini_view->desk_profiles_button()) {
-        // The user has the option to pick a profile.
-        status = DeskProfilesUsageStatus::kConditionsMet;
-      }
-    }
-  }
-
-  base::UmaHistogramEnumeration(kDeskProfilesUsageStatusHistogramName, status);
 }
 
 BEGIN_METADATA(DeskBarViewBase)

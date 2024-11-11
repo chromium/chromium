@@ -418,8 +418,7 @@ void SavedDeskPresenter::LaunchSavedDesk(
 
   // Set the lacros profile ID for the newly created desk. This is effectively a
   // no-op if `lacros_profile_id` returns zero.
-  new_desk->SetLacrosProfileId(saved_desk->lacros_profile_id(),
-                               /*source=*/std::nullopt);
+  new_desk->SetLacrosProfileId(saved_desk->lacros_profile_id());
 
   LaunchSavedDeskIntoNewDesk(std::move(saved_desk), root_window, new_desk);
 

@@ -394,9 +394,6 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // Maybe refreshes `overview_grid_` bounds on desk bar `state_` changed.
   void MaybeRefreshOverviewGridBounds();
 
-  // Records UMA histograms on desk profile adoption.
-  void RecordDeskProfileAdoption();
-
   const Type type_ = Type::kOverview;
 
   State state_ = State::kZero;

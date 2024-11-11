@@ -1667,7 +1667,7 @@ void DesksController::OnProfileRemoved(uint64_t profile_id) {
     // If this desk's profile has been removed, revert it to the primary user's
     // profile (which cannot be deleted).
     if (desk->lacros_profile_id() == profile_id) {
-      desk->SetLacrosProfileId(primary_profile_id, /*source=*/std::nullopt);
+      desk->SetLacrosProfileId(primary_profile_id);
     }
   }
 }

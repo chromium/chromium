@@ -2996,27 +2996,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Desks.DeskLifetime_Profile_{DeskIndex}" units="hr"
-    expires_after="2024-12-21">
-  <owner>dandersson@chromium.org</owner>
-  <owner>yongshun@chromium.org</owner>
-  <owner>chromeos-wm@google.com</owner>
-  <summary>
-    Variant of Ash.Desks.DeskLifetime that is emitted if the closed desk has a
-    desk profile assigned to it. It has the same semantics as DeskLifetime.
-  </summary>
-  <token key="DeskIndex">
-    <variant name="1" summary="1"/>
-    <variant name="2" summary="2"/>
-    <variant name="3" summary="3"/>
-    <variant name="4" summary="4"/>
-    <variant name="5" summary="5"/>
-    <variant name="6" summary="6"/>
-    <variant name="7" summary="7"/>
-    <variant name="8" summary="8"/>
-  </token>
-</histogram>
-
 <histogram name="Ash.Desks.DeskLifetime_{DeskIndex}" units="hr"
     expires_after="2025-04-20">
   <owner>afakhry@chromium.org</owner>
@@ -3038,40 +3017,6 @@ chromium-metrics-reviews@google.com.
     <variant name="7" summary="7"/>
     <variant name="8" summary="8"/>
   </token>
-</histogram>
-
-<histogram name="Ash.Desks.DeskProfiles.AvatarView.ButtonPressed"
-    enum="BooleanHit" expires_after="2025-02-23">
-  <owner>dandersson@chromium.org</owner>
-  <owner>yongshun@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
-  <summary>Records when the desk profiles button is pressed.</summary>
-</histogram>
-
-<histogram name="Ash.Desks.DeskProfiles.ContextMenu.OpenProfileManager"
-    units="BooleanHit" expires_after="2024-12-21">
-  <owner>dandersson@chromium.org</owner>
-  <owner>yongshun@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
-  <summary>
-    Records when the profile manager is opened from desk profiles context menu.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Desks.DeskProfiles.SelectProfile"
-    enum="DeskProfilesSelectProfileSource" expires_after="2024-12-21">
-  <owner>dandersson@chromium.org</owner>
-  <owner>yongshun@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
-  <summary>Emitted when the user assigns a profile to a desk.</summary>
-</histogram>
-
-<histogram name="Ash.Desks.DeskProfiles.UsageStatus"
-    enum="DeskProfilesUsageStatus" expires_after="2025-04-27">
-  <owner>dandersson@chromium.org</owner>
-  <owner>yongshun@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
-  <summary>Records relative adoption of desk profiles.</summary>
 </histogram>
 
 <histogram name="Ash.Desks.DesksCount3" units="units"

@@ -269,8 +269,6 @@ void DeskActionContextMenu::ExecuteCommand(int command_id, int event_flags) {
       config_.close_all_callback.Run();
       break;
     case CommandId::kShowProfileManager:
-      base::UmaHistogramBoolean(kDeskProfilesOpenProfileManagerHistogramName,
-                                true);
       Shell::Get()->shell_delegate()->OpenProfileManager();
       break;
     default:

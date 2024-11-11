@@ -11,7 +11,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desk_mini_view.h"
-#include "ash/wm/desks/desks_histogram_enums.h"
 #include "base/check_op.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -76,7 +75,6 @@ void DeskProfilesButton::OnDeskProfileChanged(uint64_t new_lacros_profile_id) {
 }
 
 bool DeskProfilesButton::OnMousePressed(const ui::MouseEvent& event) {
-  base::UmaHistogramBoolean(kDeskProfilesPressesHistogramName, true);
   return ImageButton::OnMousePressed(event);
 }
 
@@ -156,8 +154,7 @@ void DeskProfilesButton::OnMenuClosed() {
 
 void DeskProfilesButton::OnSetLacrosProfileId(uint64_t lacros_profile_id) {
   if (desk_) {
-    desk_->SetLacrosProfileId(
-        lacros_profile_id, DeskProfilesSelectProfileSource::kDeskProfileButton);
+    desk_->SetLacrosProfileId(lacros_profile_id);
   }
 }
 
