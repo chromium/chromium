@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
-#include "third_party/blink/renderer/modules/presentation/presentation_availability.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_state.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection_callbacks.h"
@@ -191,13 +190,7 @@ bool PresentationRequest::HasPendingActivity() const {
     return false;
   }
 
-  if (HasEventListeners()) {
-    return true;
-  }
-
-  return availability_property_ &&
-         availability_property_->GetState() ==
-             PresentationAvailabilityProperty::kPending;
+  return HasEventListeners();
 }
 
 ScriptPromise<PresentationConnection> PresentationRequest::start(
@@ -280,15 +273,11 @@ ScriptPromise<PresentationAvailability> PresentationRequest::getAvailability(
     return EmptyPromise();
   }
 
-  if (!availability_property_) {
-    availability_property_ =
-        MakeGarbageCollected<PresentationAvailabilityProperty>(
-            ExecutionContext::From(script_state));
-
-    controller->GetAvailabilityState()->RequestAvailability(
-        urls_, availability_property_);
-  }
-  return availability_property_->Promise(script_state->World());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<PresentationAvailability>>(
+          script_state, exception_state.GetContext());
+  controller->GetAvailabilityState()->RequestAvailability(urls_, resolver);
+  return resolver->Promise();
 }
 
 const Vector<KURL>& PresentationRequest::Urls() const {
@@ -296,7 +285,6 @@ const Vector<KURL>& PresentationRequest::Urls() const {
 }
 
 void PresentationRequest::Trace(Visitor* visitor) const {
-  visitor->Trace(availability_property_);
   EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }

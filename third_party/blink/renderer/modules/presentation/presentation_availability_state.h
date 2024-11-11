@@ -9,8 +9,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/presentation/presentation_promise_property.h"
+#include "third_party/blink/renderer/modules/presentation/presentation_availability.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -39,11 +40,12 @@ class MODULES_EXPORT PresentationAvailabilityState final
 
   ~PresentationAvailabilityState();
 
-  // Requests availability for the given URLs and invokes the given promise
-  // with the determined availability value. The promise will only be invoked
-  // once and will be deleted afterwards.
-  void RequestAvailability(const Vector<KURL>&,
-                           PresentationAvailabilityProperty* promise);
+  // Requests availability for the given URLs and resolves the Promise
+  // for `resolver` when the availability is known, or rejects the Promise
+  // if availability cannot be determined.
+  void RequestAvailability(
+      const Vector<KURL>&,
+      ScriptPromiseResolver<PresentationAvailability>* resolver);
 
   // Starts/stops listening for availability with the given observer.
   void AddObserver(PresentationAvailabilityObserver*);
@@ -76,7 +78,8 @@ class MODULES_EXPORT PresentationAvailabilityState final
     ~AvailabilityListener();
 
     const WTF::Vector<KURL> urls;
-    HeapVector<Member<PresentationAvailabilityProperty>> availability_promises;
+    HeapVector<Member<ScriptPromiseResolver<PresentationAvailability>>>
+        availability_resolvers;
     HeapVector<Member<PresentationAvailabilityObserver>> availability_observers;
 
     void Trace(Visitor*) const;

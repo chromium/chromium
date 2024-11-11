@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_observer.h"
-#include "third_party/blink/renderer/modules/presentation/presentation_promise_property.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -32,7 +31,7 @@ class MODULES_EXPORT PresentationAvailability final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static PresentationAvailability* Take(PresentationAvailabilityProperty*,
+  static PresentationAvailability* Take(ExecutionContext*,
                                         const WTF::Vector<KURL>&,
                                         bool);
 

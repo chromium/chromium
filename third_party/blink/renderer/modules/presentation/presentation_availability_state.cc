@@ -6,7 +6,6 @@
 
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/modules/presentation/presentation_availability.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_observer.h"
 
 namespace blink {
@@ -28,12 +27,12 @@ PresentationAvailabilityState::~PresentationAvailabilityState() = default;
 
 void PresentationAvailabilityState::RequestAvailability(
     const Vector<KURL>& urls,
-    PresentationAvailabilityProperty* promise) {
+    ScriptPromiseResolver<PresentationAvailability>* resolver) {
   auto screen_availability = GetScreenAvailability(urls);
   // Reject Promise if screen availability is unsupported for all URLs.
   if (screen_availability == mojom::blink::ScreenAvailability::DISABLED) {
-    promise->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotSupportedError, kNotSupportedErrorInfo));
+    resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                     kNotSupportedErrorInfo);
     return;
   }
 
@@ -44,11 +43,11 @@ void PresentationAvailabilityState::RequestAvailability(
   }
 
   if (screen_availability != mojom::blink::ScreenAvailability::UNKNOWN) {
-    promise->Resolve(PresentationAvailability::Take(
-        promise, urls,
+    resolver->Resolve(PresentationAvailability::Take(
+        resolver->GetExecutionContext(), urls,
         screen_availability == mojom::blink::ScreenAvailability::AVAILABLE));
   } else {
-    listener->availability_promises.push_back(promise);
+    listener->availability_resolvers.push_back(resolver);
   }
 
   for (const auto& availability_url : urls) {
@@ -128,19 +127,19 @@ void PresentationAvailabilityState::UpdateAvailability(
     }
 
     if (screen_availability == mojom::blink::ScreenAvailability::DISABLED) {
-      for (auto& promise_ptr : listener->availability_promises) {
-        promise_ptr->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotSupportedError, kNotSupportedErrorInfo));
+      for (auto& resolver_ptr : listener->availability_resolvers) {
+        resolver_ptr->RejectWithDOMException(
+            DOMExceptionCode::kNotSupportedError, kNotSupportedErrorInfo);
       }
     } else {
-      for (auto& promise_ptr : listener->availability_promises) {
-        promise_ptr->Resolve(PresentationAvailability::Take(
-            promise_ptr.Get(), listener->urls,
+      for (auto& resolver_ptr : listener->availability_resolvers) {
+        resolver_ptr->Resolve(PresentationAvailability::Take(
+            resolver_ptr->GetExecutionContext(), listener->urls,
             screen_availability ==
                 mojom::blink::ScreenAvailability::AVAILABLE));
       }
     }
-    listener->availability_promises.clear();
+    listener->availability_resolvers.clear();
 
     for (const auto& availability_url : listener->urls) {
       MaybeStopListeningToURL(availability_url);
@@ -177,7 +176,7 @@ void PresentationAvailabilityState::MaybeStopListeningToURL(const KURL& url) {
     }
 
     // URL is still observed by some availability object.
-    if (!listener->availability_promises.empty() ||
+    if (!listener->availability_resolvers.empty() ||
         !listener->availability_observers.empty()) {
       return;
     }
@@ -248,7 +247,7 @@ PresentationAvailabilityState::GetAvailabilityListener(
 void PresentationAvailabilityState::TryRemoveAvailabilityListener(
     AvailabilityListener* listener) {
   // URL is still observed by some availability object.
-  if (!listener->availability_promises.empty() ||
+  if (!listener->availability_resolvers.empty() ||
       !listener->availability_observers.empty()) {
     return;
   }
@@ -276,7 +275,7 @@ PresentationAvailabilityState::AvailabilityListener::~AvailabilityListener() =
 
 void PresentationAvailabilityState::AvailabilityListener::Trace(
     blink::Visitor* visitor) const {
-  visitor->Trace(availability_promises);
+  visitor->Trace(availability_resolvers);
   visitor->Trace(availability_observers);
 }
 
