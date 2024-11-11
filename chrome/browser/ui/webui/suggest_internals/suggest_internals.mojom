@@ -54,9 +54,9 @@ interface PageHandler {
 // WebUI-side handler for requests from the browser.
 interface Page {
   // Notifies the page that the given request has been created.
-  OnSuggestRequestCreated(Request request);
+  OnRequestCreated(Request request);
   // Notifies the page that the given request has started.
-  OnSuggestRequestStarted(Request request);
+  OnRequestStarted(Request request);
   // Notifies the page that the given request has completed.
-  OnSuggestRequestCompleted(Request request);
+  OnRequestCompleted(Request request);
 };

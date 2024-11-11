@@ -42,15 +42,14 @@ class RemoteSuggestionsServiceObserverBridge
   RemoteSuggestionsServiceObserverBridge& operator=(
       const RemoteSuggestionsServiceObserverBridge&) = delete;
 
-  void OnSuggestRequestCreated(
-      const base::UnguessableToken& request_id,
-      const network::ResourceRequest* request) override;
+  void OnRequestCreated(const base::UnguessableToken& request_id,
+                        const network::ResourceRequest* request) override;
 
-  void OnSuggestRequestStarted(const base::UnguessableToken& request_id,
-                               network::SimpleURLLoader* loader,
-                               const std::string& request_body) override;
+  void OnRequestStarted(const base::UnguessableToken& request_id,
+                        network::SimpleURLLoader* loader,
+                        const std::string& request_body) override;
 
-  void OnSuggestRequestCompleted(
+  void OnRequestCompleted(
       const base::UnguessableToken& request_id,
       const int response_code,
       const std::unique_ptr<std::string>& response_body) override;

@@ -204,26 +204,19 @@ RemoteSuggestionsService::StartSuggestionsRequest(
   // Create a unique identifier for the request.
   const base::UnguessableToken request_id = base::UnguessableToken::Create();
 
-  // Notify the observers that request has been created.
-  for (Observer& observer : observers_) {
-    observer.OnSuggestRequestCreated(request_id, request.get());
-  }
+  OnRequestCreated(request_id, request.get());
 
   // Make loader and start download.
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&RemoteSuggestionsService::OnURLLoadComplete,
+      base::BindOnce(&RemoteSuggestionsService::OnRequestCompleted,
                      weak_ptr_factory_.GetWeakPtr(), request_id,
                      std::move(completion_callback), loader.get()));
 
-  // Notify the observers that the transfer started.
-  for (Observer& observer : observers_) {
-    observer.OnSuggestRequestStarted(request_id, loader.get(),
-                                     /*request_body*/ "");
-  }
-  LogSuggestRequestSent(request_type);
+  OnRequestStarted(request_id, request_type, loader.get(),
+                   /*request_body*/ "");
   return loader;
 }
 
@@ -287,33 +280,26 @@ RemoteSuggestionsService::StartZeroPrefixSuggestionsRequest(
   // Create a unique identifier for the request.
   const base::UnguessableToken request_id = base::UnguessableToken::Create();
 
-  // Notify the observers that request has been created.
-  for (Observer& observer : observers_) {
-    observer.OnSuggestRequestCreated(request_id, request.get());
-  }
+  OnRequestCreated(request_id, request.get());
 
   // Make loader and start download.
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&RemoteSuggestionsService::OnURLLoadComplete,
+      base::BindOnce(&RemoteSuggestionsService::OnRequestCompleted,
                      weak_ptr_factory_.GetWeakPtr(), request_id,
                      std::move(completion_callback), loader.get()));
 
-  // Notify the observers that the transfer started.
-  for (Observer& observer : observers_) {
-    observer.OnSuggestRequestStarted(request_id, loader.get(),
-                                     /*request_body*/ "");
-  }
-  LogSuggestRequestSent(request_type);
+  OnRequestStarted(request_id, request_type, loader.get(),
+                   /*request_body*/ "");
   return loader;
 }
 
 void RemoteSuggestionsService::CreateDocumentSuggestionsRequest(
     const std::u16string& query,
     bool is_off_the_record,
-    DocumentStartCallback start_callback,
+    StartCallback start_callback,
     CompletionCallback completion_callback) {
   if (!document_suggestions_service_) {
     return;
@@ -324,14 +310,13 @@ void RemoteSuggestionsService::CreateDocumentSuggestionsRequest(
 
   document_suggestions_service_->CreateDocumentSuggestionsRequest(
       query, is_off_the_record,
-      base::BindOnce(
-          &RemoteSuggestionsService::OnDocumentSuggestionsRequestAvailable,
-          weak_ptr_factory_.GetWeakPtr(), request_id),
-      base::BindOnce(
-          &RemoteSuggestionsService::OnDocumentSuggestionsLoaderAvailable,
-          weak_ptr_factory_.GetWeakPtr(), request_id,
-          std::move(start_callback)),
-      base::BindOnce(&RemoteSuggestionsService::OnURLLoadComplete,
+      base::BindOnce(&RemoteSuggestionsService::OnRequestCreated,
+                     weak_ptr_factory_.GetWeakPtr(), request_id),
+      base::BindOnce(&RemoteSuggestionsService::OnRequestStartedAsync,
+                     weak_ptr_factory_.GetWeakPtr(), request_id,
+                     RemoteRequestType::kDocumentSuggest,
+                     std::move(start_callback)),
+      base::BindOnce(&RemoteSuggestionsService::OnRequestCompleted,
                      weak_ptr_factory_.GetWeakPtr(), request_id,
                      std::move(completion_callback)));
 }
@@ -395,26 +380,19 @@ RemoteSuggestionsService::StartDeletionRequest(
   // Create a unique identifier for the request.
   const base::UnguessableToken request_id = base::UnguessableToken::Create();
 
-  // Notify the observers that request has been created.
-  for (Observer& observer : observers_) {
-    observer.OnSuggestRequestCreated(request_id, request.get());
-  }
+  OnRequestCreated(request_id, request.get());
 
   // Make loader and start download.
   std::unique_ptr<network::SimpleURLLoader> loader =
       network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
-      base::BindOnce(&RemoteSuggestionsService::OnURLLoadComplete,
+      base::BindOnce(&RemoteSuggestionsService::OnRequestCompleted,
                      weak_ptr_factory_.GetWeakPtr(), request_id,
                      std::move(completion_callback), loader.get()));
 
-  // Notify the observers that the transfer started.
-  for (Observer& observer : observers_) {
-    observer.OnSuggestRequestStarted(request_id, loader.get(),
-                                     /*request_body*/ "");
-  }
-  LogSuggestRequestSent(RemoteRequestType::kDeletion);
+  OnRequestStarted(request_id, RemoteRequestType::kDeletion, loader.get(),
+                   /*request_body*/ "");
   return loader;
 }
 
@@ -435,29 +413,38 @@ void RemoteSuggestionsService::set_url_loader_factory_for_testing(
   url_loader_factory_ = std::move(url_loader_factory);
 }
 
-void RemoteSuggestionsService::OnDocumentSuggestionsRequestAvailable(
+void RemoteSuggestionsService::OnRequestCreated(
     const base::UnguessableToken& request_id,
     network::ResourceRequest* request) {
   // Notify the observers that request has been created.
   for (Observer& observer : observers_) {
-    observer.OnSuggestRequestCreated(request_id, request);
+    observer.OnRequestCreated(request_id, request);
   }
 }
 
-void RemoteSuggestionsService::OnDocumentSuggestionsLoaderAvailable(
+void RemoteSuggestionsService::OnRequestStarted(
     const base::UnguessableToken& request_id,
-    DocumentStartCallback start_callback,
-    std::unique_ptr<network::SimpleURLLoader> loader,
+    RemoteRequestType request_type,
+    network::SimpleURLLoader* loader,
     const std::string& request_body) {
   // Notify the observers that the transfer started.
   for (Observer& observer : observers_) {
-    observer.OnSuggestRequestStarted(request_id, loader.get(), request_body);
+    observer.OnRequestStarted(request_id, loader, request_body);
   }
-  LogSuggestRequestSent(RemoteRequestType::kDocumentSuggest);
+  LogSuggestRequestSent(request_type);
+}
+
+void RemoteSuggestionsService::OnRequestStartedAsync(
+    const base::UnguessableToken& request_id,
+    RemoteRequestType request_type,
+    StartCallback start_callback,
+    std::unique_ptr<network::SimpleURLLoader> loader,
+    const std::string& request_body) {
+  OnRequestStarted(request_id, request_type, loader.get(), request_body);
   std::move(start_callback).Run(std::move(loader));
 }
 
-void RemoteSuggestionsService::OnURLLoadComplete(
+void RemoteSuggestionsService::OnRequestCompleted(
     const base::UnguessableToken& request_id,
     CompletionCallback completion_callback,
     const network::SimpleURLLoader* source,
@@ -469,15 +456,14 @@ void RemoteSuggestionsService::OnURLLoadComplete(
 
   // Notify the observers that the transfer is done.
   for (Observer& observer : observers_) {
-    observer.OnSuggestRequestCompleted(request_id, response_code,
-                                       response_body);
+    observer.OnRequestCompleted(request_id, response_code, response_body);
   }
 
   // Call the completion callback or delegate it.
   if (delegate_) {
-    delegate_->OnSuggestRequestCompleted(source, response_code,
-                                         std::move(response_body),
-                                         std::move(completion_callback));
+    delegate_->OnRequestCompleted(source, response_code,
+                                  std::move(response_body),
+                                  std::move(completion_callback));
   } else {
     std::move(completion_callback)
         .Run(source, response_code, std::move(response_body));

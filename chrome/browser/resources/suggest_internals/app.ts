@@ -85,14 +85,14 @@ class SuggestInternalsAppElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
     this.suggestionsRequestCreatedListenerId_ =
-        this.callbackRouter_.onSuggestRequestCreated.addListener(
-            this.onSuggestRequestCreated_.bind(this));
+        this.callbackRouter_.onRequestCreated.addListener(
+            this.onRequestCreated_.bind(this));
     this.suggestionsRequestStartedListenerId_ =
-        this.callbackRouter_.onSuggestRequestStarted.addListener(
-            this.onSuggestRequestStarted_.bind(this));
+        this.callbackRouter_.onRequestStarted.addListener(
+            this.onRequestStarted_.bind(this));
     this.suggestionsRequestCompletedListenerId_ =
-        this.callbackRouter_.onSuggestRequestCompleted.addListener(
-            this.onSuggestRequestCompleted_.bind(this));
+        this.callbackRouter_.onRequestCompleted.addListener(
+            this.onRequestCompleted_.bind(this));
   }
 
   override disconnectedCallback() {
@@ -178,12 +178,12 @@ class SuggestInternalsAppElement extends PolymerElement {
     this.$.toast.show();
   }
 
-  private onSuggestRequestCreated_(request: Request) {
+  private onRequestCreated_(request: Request) {
     // Add the request to the start of the list of known requests.
     this.unshift('requests_', request);
   }
 
-  private onSuggestRequestStarted_(request: Request) {
+  private onRequestStarted_(request: Request) {
     const index = this.requests_.findIndex((element: Request) => {
       return request.id.high === element.id.high &&
           request.id.low === element.id.low;
@@ -198,7 +198,7 @@ class SuggestInternalsAppElement extends PolymerElement {
     }
   }
 
-  private onSuggestRequestCompleted_(request: Request) {
+  private onRequestCompleted_(request: Request) {
     const index = this.requests_.findIndex((element: Request) => {
       return request.id.high === element.id.high &&
           request.id.low === element.id.low;

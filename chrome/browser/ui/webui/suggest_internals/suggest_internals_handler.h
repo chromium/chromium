@@ -49,23 +49,22 @@ class SuggestInternalsHandler : public suggest_internals::mojom::PageHandler,
                         HardcodeResponseCallback callback) override;
 
   // RemoteSuggestionsService::Observer:
-  void OnSuggestRequestCreated(
-      const base::UnguessableToken& request_id,
-      const network::ResourceRequest* request) override;
-  void OnSuggestRequestStarted(const base::UnguessableToken& request_id,
-                               network::SimpleURLLoader* loader,
-                               const std::string& request_body) override;
-  void OnSuggestRequestCompleted(
+  void OnRequestCreated(const base::UnguessableToken& request_id,
+                        const network::ResourceRequest* request) override;
+  void OnRequestStarted(const base::UnguessableToken& request_id,
+                        network::SimpleURLLoader* loader,
+                        const std::string& request_body) override;
+  void OnRequestCompleted(
       const base::UnguessableToken& request_id,
       const int response_code,
       const std::unique_ptr<std::string>& response_body) override;
 
   // RemoteSuggestionsService::Delegate:
-  void OnSuggestRequestCompleted(const network::SimpleURLLoader* source,
-                                 const int response_code,
-                                 std::unique_ptr<std::string> response_body,
-                                 RemoteSuggestionsService::CompletionCallback
-                                     completion_callback) override;
+  void OnRequestCompleted(const network::SimpleURLLoader* source,
+                          const int response_code,
+                          std::unique_ptr<std::string> response_body,
+                          RemoteSuggestionsService::CompletionCallback
+                              completion_callback) override;
 
  private:
   raw_ptr<Profile> profile_;

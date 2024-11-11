@@ -49,18 +49,17 @@ class TestObserver : public RemoteSuggestionsService::Observer {
   std::string response_body() { return response_body_; }
 
   // RemoteSuggestionsService::Observer:
-  void OnSuggestRequestCreated(
-      const base::UnguessableToken& request_id,
-      const network::ResourceRequest* request) override {
+  void OnRequestCreated(const base::UnguessableToken& request_id,
+                        const network::ResourceRequest* request) override {
     request_id_ = request_id;
     url_ = request->url;
   }
-  void OnSuggestRequestStarted(const base::UnguessableToken& request_id,
-                               network::SimpleURLLoader* loader,
-                               const std::string& request_body) override {
+  void OnRequestStarted(const base::UnguessableToken& request_id,
+                        network::SimpleURLLoader* loader,
+                        const std::string& request_body) override {
     ASSERT_EQ(request_id_, request_id);
   }
-  void OnSuggestRequestCompleted(
+  void OnRequestCompleted(
       const base::UnguessableToken& request_id,
       const int response_code,
       const std::unique_ptr<std::string>& response_body) override {
@@ -89,7 +88,7 @@ class MockDelegate : public NiceMock<RemoteSuggestionsService::Delegate> {
   // RemoteSuggestionsService::Delegate:
   MOCK_METHOD(
       void,
-      OnSuggestRequestCompleted,
+      OnRequestCompleted,
       (const network::SimpleURLLoader* source,
        const int response_code,
        std::unique_ptr<std::string> response_body,
@@ -107,9 +106,9 @@ class RemoteSuggestionsServiceTest : public testing::Test {
     return test_url_loader_factory_.GetSafeWeakWrapper();
   }
 
-  void OnRequestComplete(const network::SimpleURLLoader* source,
-                         const int response_code,
-                         std::unique_ptr<std::string> response_body) {
+  void OnRequestCompleted(const network::SimpleURLLoader* source,
+                          const int response_code,
+                          std::unique_ptr<std::string> response_body) {
     response_body_ = *response_body;
   }
 
@@ -250,7 +249,7 @@ TEST_F(RemoteSuggestionsServiceTest, Observer) {
       template_url_service().GetDefaultSearchProvider(),
       TemplateURLRef::SearchTermsArgs(),
       template_url_service().search_terms_data(),
-      base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
+      base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestCompleted,
                      base::Unretained(this)));
 
   base::RunLoop().RunUntilIdle();
@@ -294,17 +293,17 @@ TEST_F(RemoteSuggestionsServiceTest, Delegate) {
 
   // Set up a delegate that will be replaced.
   MockDelegate delegate1(&service);
-  EXPECT_CALL(delegate1, OnSuggestRequestCompleted(_, _, _, _)).Times(0);
+  EXPECT_CALL(delegate1, OnRequestCompleted(_, _, _, _)).Times(0);
 
   // Set up a delegate that will be deallocated.
   {
     MockDelegate delegate2(&service);
-    EXPECT_CALL(delegate2, OnSuggestRequestCompleted(_, _, _, _)).Times(0);
+    EXPECT_CALL(delegate2, OnRequestCompleted(_, _, _, _)).Times(0);
   }
 
   // Set up a delegate that will call the completion callback asynchronously.
   MockDelegate delegate3(&service);
-  EXPECT_CALL(delegate3, OnSuggestRequestCompleted(_, _, _, _))
+  EXPECT_CALL(delegate3, OnRequestCompleted(_, _, _, _))
       .WillOnce(Invoke(
           [](const network::SimpleURLLoader* source, const int response_code,
              std::unique_ptr<std::string> response_body,
@@ -320,7 +319,7 @@ TEST_F(RemoteSuggestionsServiceTest, Delegate) {
       template_url_service().GetDefaultSearchProvider(),
       TemplateURLRef::SearchTermsArgs(),
       template_url_service().search_terms_data(),
-      base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
+      base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestCompleted,
                      base::Unretained(this)));
 
   base::RunLoop().RunUntilIdle();

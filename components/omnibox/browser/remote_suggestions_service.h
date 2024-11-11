@@ -86,25 +86,27 @@ class RemoteSuggestionsService : public KeyedService {
    public:
     // Called when the request has been created. `request_id` identifies the
     // request. `request` is deleted after this call once the transfer starts.
-    virtual void OnSuggestRequestCreated(
-        const base::UnguessableToken& request_id,
-        const network::ResourceRequest* request) {}
+    virtual void OnRequestCreated(const base::UnguessableToken& request_id,
+                                  const network::ResourceRequest* request) {}
     // Called when the transfer has started. `request_id` identifies the
     // request. `request_body` is the HTTP POST upload body, if applicable.
-    virtual void OnSuggestRequestStarted(
-        const base::UnguessableToken& request_id,
-        network::SimpleURLLoader* loader,
-        const std::string& request_body) {}
+    virtual void OnRequestStarted(const base::UnguessableToken& request_id,
+                                  network::SimpleURLLoader* loader,
+                                  const std::string& request_body) {}
     // Called when the transfer is done. `request_id` identifies the request.
     // `response_code` is the response status code. A status code of 200
     // indicates that the request has succeeded and `response_body` is
     // populated.
-    virtual void OnSuggestRequestCompleted(
+    virtual void OnRequestCompleted(
         const base::UnguessableToken& request_id,
         const int response_code,
         const std::unique_ptr<std::string>& response_body) {}
   };
 
+  // Called when the transfer has started asynchronously, e.g., after obtaining
+  // an OAuth token.
+  using StartCallback = base::OnceCallback<void(
+      std::unique_ptr<network::SimpleURLLoader> loader)>;
   // Called when the transfer is done. `response_code` is the response status
   // code. A status code of 200 indicates that the request has succeeded and
   // `response_body` is populated.
@@ -122,11 +124,10 @@ class RemoteSuggestionsService : public KeyedService {
 
     // Called when the transfer is done. Delegates invocation of
     // `completion_callback`
-    virtual void OnSuggestRequestCompleted(
-        const network::SimpleURLLoader* source,
-        const int response_code,
-        std::unique_ptr<std::string> response_body,
-        CompletionCallback completion_callback) = 0;
+    virtual void OnRequestCompleted(const network::SimpleURLLoader* source,
+                                    const int response_code,
+                                    std::unique_ptr<std::string> response_body,
+                                    CompletionCallback completion_callback) = 0;
 
    protected:
     base::WeakPtrFactory<Delegate> weak_ptr_factory_{this};
@@ -180,13 +181,11 @@ class RemoteSuggestionsService : public KeyedService {
       const SearchTermsData& search_terms_data,
       CompletionCallback completion_callback);
 
-  // Creates and starts a document suggestion request for |query|.
-  // May obtain an OAuth2 token for the signed-in users.
-  using DocumentStartCallback = base::OnceCallback<void(
-      std::unique_ptr<network::SimpleURLLoader> loader)>;
+  // Creates and starts a document suggestion request for `query` asynchronously
+  // after obtaining an OAuth2 token for the signed-in users.
   void CreateDocumentSuggestionsRequest(const std::u16string& query,
                                         bool is_off_the_record,
-                                        DocumentStartCallback start_callback,
+                                        StartCallback start_callback,
                                         CompletionCallback completion_callback);
 
   // Advises the service to stop any process that creates a document suggestion
@@ -212,24 +211,29 @@ class RemoteSuggestionsService : public KeyedService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
  private:
-  // Called when the request has been created, before fetching the OAuth2 token.
+  // Called when the request has been created, before the transfer has started.
   // Notifies `observers_`.
-  void OnDocumentSuggestionsRequestAvailable(
-      const base::UnguessableToken& request_id,
-      network::ResourceRequest* request);
-  // Called when the transfer has started, after receiving the OAuth2 token.
-  // Notifies `observers_` and calls `start_callback`.
-  void OnDocumentSuggestionsLoaderAvailable(
-      const base::UnguessableToken& request_id,
-      DocumentStartCallback start_callback,
-      std::unique_ptr<network::SimpleURLLoader> loader,
-      const std::string& request_body);
+  void OnRequestCreated(const base::UnguessableToken& request_id,
+                        network::ResourceRequest* request);
+  // Called when the transfer has started. Notifies `observers_`.
+  void OnRequestStarted(const base::UnguessableToken& request_id,
+                        RemoteRequestType request_type,
+                        network::SimpleURLLoader* loader,
+                        const std::string& request_body);
+  // Called when the transfer has started asynchronously, e.g., after obtaining
+  // an OAuth token. Notifies `observers_` and calls `start_callback` to
+  // transfer the ownership of `loader` to the caller.
+  void OnRequestStartedAsync(const base::UnguessableToken& request_id,
+                             RemoteRequestType request_type,
+                             StartCallback start_callback,
+                             std::unique_ptr<network::SimpleURLLoader> loader,
+                             const std::string& request_body);
   // Called when the transfer is done. Notifies `observers_` and calls
-  // `completion_callback`.
-  void OnURLLoadComplete(const base::UnguessableToken& request_id,
-                         CompletionCallback completion_callback,
-                         const network::SimpleURLLoader* source,
-                         std::unique_ptr<std::string> response_body);
+  // `completion_callback` passing the response to the caller.
+  void OnRequestCompleted(const base::UnguessableToken& request_id,
+                          CompletionCallback completion_callback,
+                          const network::SimpleURLLoader* source,
+                          std::unique_ptr<std::string> response_body);
 
   // May be nullptr in OTR profiles. Otherwise guaranteed to outlive this due to
   // the factories' dependency.
