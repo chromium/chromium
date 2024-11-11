@@ -658,6 +658,7 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
            WebDXFeature::kHyphenateLimitChars},
           {CSSSampleId::kQuotes, WebDXFeature::kQuotes},
           {CSSSampleId::kBaselineSource, WebDXFeature::kBaselineSource},
+          {CSSSampleId::kClipPath, WebDXFeature::kClipPath},
       }};
 
   return *kMap;

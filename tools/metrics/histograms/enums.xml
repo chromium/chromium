@@ -33923,6 +33923,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="213" label="Quotes"/>
   <int value="214" label="BaselineSource"/>
   <int value="215" label="ClipPathGeometryBox"/>
+  <int value="216" label="ClipPath"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
