@@ -73,6 +73,7 @@ class NavigationCapturingRedirectionInfo {
 
   static NavigationCapturingRedirectionInfo AuxiliaryContext(
       const std::optional<webapps::AppId>& source_browser_app_id,
+      const std::optional<webapps::AppId>& source_tab_app_id,
       WindowOpenDisposition disposition);
 
   // Created for user-modified or capturable navigations that don't have an
@@ -80,12 +81,14 @@ class NavigationCapturingRedirectionInfo {
   static NavigationCapturingRedirectionInfo
   NoInitialActionRedirectionHandlingEligible(
       const std::optional<webapps::AppId>& source_browser_app_id,
+      const std::optional<webapps::AppId>& source_tab_app_id,
       WindowOpenDisposition disposition);
 
   // Created for non-user modified navigations that usually launch a new app
   // window.
   static NavigationCapturingRedirectionInfo ForcedNewContext(
       const std::optional<webapps::AppId>& source_browser_app_id,
+      const std::optional<webapps::AppId>& source_tab_app_id,
       const webapps::AppId& capturing_app_id,
       blink::mojom::DisplayMode capturing_display_mode,
       WindowOpenDisposition disposition);
@@ -94,6 +97,7 @@ class NavigationCapturingRedirectionInfo {
   // navigation launching a new app container (window or tab).
   static NavigationCapturingRedirectionInfo CapturedNewContext(
       const std::optional<webapps::AppId>& source_browser_app_id,
+      const std::optional<webapps::AppId>& source_tab_app_id,
       const webapps::AppId& capturing_app_id,
       blink::mojom::DisplayMode capturing_display_mode,
       WindowOpenDisposition disposition);
@@ -104,6 +108,7 @@ class NavigationCapturingRedirectionInfo {
   // already open for the controlling app.
   static NavigationCapturingRedirectionInfo CapturedNavigateExisting(
       const std::optional<webapps::AppId>& source_browser_app_id,
+      const std::optional<webapps::AppId>& source_tab_app_id,
       const webapps::AppId& capturing_app_id,
       WindowOpenDisposition disposition);
 
@@ -119,8 +124,12 @@ class NavigationCapturingRedirectionInfo {
   // app_id of that PWA. Otherwise this is `std::nullopt`. Note that this will
   // be `std::nullopt` if the navigation came from a browser tab of an
   // open-in-browser-tab app.
-  const std::optional<webapps::AppId>& app_id_source_browser() const {
-    return app_id_source_browser_;
+  const std::optional<webapps::AppId>& source_browser_app_id() const {
+    return source_browser_app_id_;
+  }
+
+  const std::optional<webapps::AppId>& source_tab_app_id() const {
+    return source_tab_app_id_;
   }
 
   // The id of the capturing app_id of the first navigation, if this was
@@ -139,11 +148,13 @@ class NavigationCapturingRedirectionInfo {
  private:
   NavigationCapturingRedirectionInfo(
       const std::optional<webapps::AppId>& source_browser_app_id,
+      const std::optional<webapps::AppId>& source_tab_app_id,
       NavigationHandlingInitialResult initial_nav_handling_result,
       const std::optional<webapps::AppId>& first_navigation_app_id,
       WindowOpenDisposition disposition);
 
-  std::optional<webapps::AppId> app_id_source_browser_;
+  std::optional<webapps::AppId> source_browser_app_id_;
+  std::optional<webapps::AppId> source_tab_app_id_;
   NavigationHandlingInitialResult initial_nav_handling_result_ =
       NavigationHandlingInitialResult::kBrowserTab;
   std::optional<webapps::AppId> first_navigation_app_id_;

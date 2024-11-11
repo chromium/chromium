@@ -184,8 +184,10 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
   WindowOpenDisposition link_click_disposition = redirection_info.disposition();
   NavigationHandlingInitialResult initial_nav_handling_result =
       redirection_info.initial_nav_handling_result();
-  std::optional<webapps::AppId> source_app_id =
-      redirection_info.app_id_source_browser();
+  std::optional<webapps::AppId> source_browser_app_id =
+      redirection_info.source_browser_app_id();
+  std::optional<webapps::AppId> source_tab_app_id =
+      redirection_info.source_tab_app_id();
   std::optional<webapps::AppId> navigation_handling_first_stage_app =
       redirection_info.first_navigation_app_id();
 
@@ -229,7 +231,8 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
   //   target_app_id (and either can be std::nullopt, but not both).
   // - Navigation is only triggered as part of left, middle or shift clicks.
 
-  bool is_source_app_matching_final_target = target_app_id == source_app_id;
+  bool is_source_app_matching_final_target =
+      target_app_id == source_browser_app_id;
 
   // First, handle cases where the final url is not in scope of any app. These
   // can mostly proceed as is, except for two cases where the initial navigation
@@ -260,7 +263,7 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
   // where a new app container is made.
   if (initial_nav_handling_result ==
       NavigationHandlingInitialResult::kForcedNewAppContextAppWindow) {
-    CHECK(redirection_info.app_id_source_browser().has_value());
+    CHECK(redirection_info.source_browser_app_id().has_value());
     CHECK(navigation_handling_first_stage_app);
     handle_user_data->set_launched_app(*target_app_id);
     // standalone-app -> browser-tab-app.
@@ -285,7 +288,7 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
     // ensure that we cannot have a user-modified click go from a regular
     // browser tab to an app window.
     CHECK(target_display_mode != blink::mojom::DisplayMode::kBrowser);
-    if (source_app_id.has_value()) {
+    if (source_browser_app_id.has_value()) {
       handle_user_data->set_launched_app(*target_app_id);
       ReparentToAppBrowser(web_contents_for_navigation, *target_app_id,
                            final_url);
@@ -303,7 +306,7 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
       (link_click_disposition == WindowOpenDisposition::NEW_WINDOW);
   if (initial_nav_handling_result ==
           NavigationHandlingInitialResult::kBrowserTab &&
-      is_user_modified && source_app_id.has_value()) {
+      is_user_modified && source_browser_app_id.has_value()) {
     // As per the UX direction in the doc, NEW_BACKGROUND_TAB only creates a
     // new app window for an app when coming from the same app window.
     // Otherwise, only NEW_WINDOW can create a new app window when coming from
@@ -331,7 +334,7 @@ ThrottleCheckResult NavigationCapturingRedirectionThrottle::HandleResponse() {
 
   ClientModeAndBrowser client_mode_and_browser =
       GetEffectiveClientModeAndBrowserForCapturing(
-          *profile_, *target_app_id,
+          *profile_, *target_app_id, source_tab_app_id,
           /*ignore_browser_tabs_for_standalone_apps=*/false);
 
   // After this point:

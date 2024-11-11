@@ -84,6 +84,7 @@ class AppNavigationResult {
   // `disposition`.
   static AppNavigationResult AuxiliaryContextInAppWindow(
       const webapps::AppId& source_browser_app_id,
+      std::optional<webapps::AppId> source_tab_app_id,
       WindowOpenDisposition disposition,
       Browser* app_browser,
       base::Value::Dict debug_data);
@@ -92,6 +93,7 @@ class AppNavigationResult {
   // application.
   static AppNavigationResult NoInitialActionRedirectionHandlingEligible(
       std::optional<webapps::AppId> source_browser_app_id,
+      std::optional<webapps::AppId> source_tab_app_id,
       WindowOpenDisposition disposition,
       base::Value::Dict debug_data);
 
@@ -99,6 +101,7 @@ class AppNavigationResult {
   // clicks that creates a new app container.
   static AppNavigationResult ForcedNewAppContext(
       std::optional<webapps::AppId> source_browser_app_id,
+      std::optional<webapps::AppId> source_tab_app_id,
       const webapps::AppId capturing_app_id,
       blink::mojom::DisplayMode new_client_display_mode,
       Browser* host_browser,
@@ -110,6 +113,7 @@ class AppNavigationResult {
   // tab).
   static AppNavigationResult CapturedNewClient(
       std::optional<webapps::AppId> source_browser_app_id,
+      std::optional<webapps::AppId> source_tab_app_id,
       const webapps::AppId capturing_app_id,
       blink::mojom::DisplayMode new_client_display_mode,
       Browser* host_browser,
@@ -121,6 +125,7 @@ class AppNavigationResult {
   // tab).
   static AppNavigationResult CapturedNavigateExisting(
       std::optional<webapps::AppId> source_browser_app_id,
+      std::optional<webapps::AppId> source_tab_app_id,
       const webapps::AppId capturing_app_id,
       Browser* app_browser,
       int browser_tab,
@@ -290,6 +295,7 @@ struct ClientModeAndBrowser {
 ClientModeAndBrowser GetEffectiveClientModeAndBrowserForCapturing(
     Profile& profile,
     const webapps::AppId& app_id,
+    const std::optional<webapps::AppId> source_tab_app_id_from_navigation,
     bool ignore_browser_tabs_for_standalone_apps);
 
 // Returns an AppNavigationResult with pertinent details on how to handle a
