@@ -805,9 +805,7 @@ class PerformanceInterventionSettingsInteractiveTest
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {performance_manager::features::kPerformanceIntervention,
-         performance_manager::features::kPerformanceInterventionUI},
-        {});
+        {performance_manager::features::kPerformanceInterventionUI}, {});
     InteractiveBrowserTest::SetUp();
   }
 

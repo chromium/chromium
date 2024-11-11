@@ -17118,25 +17118,6 @@
             ]
         }
     ],
-    "PerformanceInterventionMetricsStudy": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20240626",
-                    "enable_features": [
-                        "IPH_PerformanceInterventionDialogFeature",
-                        "PerformanceIntervention"
-                    ]
-                }
-            ]
-        }
-    ],
     "PerformanceInterventionUILaunch": [
         {
             "platforms": [
