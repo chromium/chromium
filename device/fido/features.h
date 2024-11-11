@@ -37,6 +37,11 @@ BASE_DECLARE_FEATURE(kWebAuthnAndroidCredMan);
 COMPONENT_EXPORT(DEVICE_FIDO)
 inline constexpr base::FeatureParam<bool> kWebAuthnAndroidGpmInCredMan{
     &kWebAuthnAndroidCredMan, "gpm_in_cred_man", false};
+
+// Use the passkey cache service parallel to the FIDO2 module to retrieve
+// passkeys from GMSCore. This is for comparison only.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnAndroidUsePasskeyCache);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // These five feature flags control whether iCloud Keychain is the default

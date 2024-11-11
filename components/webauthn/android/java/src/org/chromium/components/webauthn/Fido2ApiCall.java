@@ -254,6 +254,8 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
     private static final int PERSISTENT_API_ID = 404;
     private static final Api.ClientKey<FidoClient> PERSISTENT_CLIENT_KEY = new Api.ClientKey<>();
 
+    public static final String PERSISTENT_API_INTERFACE =
+            "com.google.android.gms.auth.api.fido.IListPasskeysForRpCallback";
     public static final Fido2ApiCallParams PERSISTENT_API =
             new Fido2ApiCallParams(
                     new Api<>(

@@ -93,6 +93,13 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="The passkey ID was found and removed."/>
 </enum>
 
+<enum name="SuccessState">
+  <int value="0" label="FIDO2 and Passkey Cache calls failed."/>
+  <int value="1" label="FIDO2 call failed; Passkey Cache call succeeded."/>
+  <int value="2" label="FIDO2 call succeeded; Passkey Cache call failed."/>
+  <int value="3" label="FIDO2 and Passkey Cache calls succeeded."/>
+</enum>
+
 <enum name="WebAuthenticationCableV2TunnelEvent">
   <int value="0"
       label="Tunnel attempt started for QR- or extension-based connection"/>

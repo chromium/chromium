@@ -47,6 +47,12 @@ BASE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege,
 BASE_FEATURE(kWebAuthnAndroidCredMan,
              "WebAuthenticationAndroidCredMan",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enabled in M132. Remove in or after M135 or when the comparison histograms
+// are not needed anymore.
+BASE_FEATURE(kWebAuthnAndroidUsePasskeyCache,
+             "WebAuthenticationAndroidUsePasskeyCache",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Enabled in M118. Remove in or after M121.

@@ -81,6 +81,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="WebAuthentication.Android.Fido2VsPasskeyCache.CredentialCountDifference"
+    units="passkeys" expires_after="2025-03-30">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the difference between the number of credentials received from FIDO2
+    and Passkey Cache calls. Recorded only if FIDO2 and Passkey Cache
+    getCredential calls are successful.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.Android.Fido2VsPasskeyCache.Fido2FasterMs"
+    units="ms" expires_after="2025-03-30">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the difference in duration between the normal FIDO2 getCredentials
+    request and the Passkey Cache getCredentials request, when the normal FIDO2
+    request is faster.
+  </summary>
+</histogram>
+
+<histogram
+    name="WebAuthentication.Android.Fido2VsPasskeyCache.PasskeyCacheFasterMs"
+    units="ms" expires_after="2025-03-30">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the difference in duration between the normal FIDO2 getCredentials
+    request and the Passkey Cache getCredentials request, when the Passkey Cache
+    getCredentials request is faster.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.Android.Fido2VsPasskeyCache.SuccessState"
+    units="SuccessState" expires_after="2025-03-30">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the success/failure of FIDO2 and Passkey Cache getCredentials calls.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.Android.NonDiscoverableCredentialsFound"
     enum="Boolean" expires_after="2025-03-30">
   <owner>derinel@google.com</owner>
