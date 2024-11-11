@@ -4,16 +4,16 @@
 
 // <if expr="is_ios">
 import 'chrome://resources/js/ios/web_ui.js';
-// </if>
 
-import 'chrome://resources/js/jstemplate_compiled.js';
-import './download_internals_visuals.js';
+// </if>
 
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
+import {html, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {DownloadInternalsBrowserProxy, ServiceEntry, ServiceRequest, ServiceStatus} from './download_internals_browser_proxy.js';
 import {DownloadInternalsBrowserProxyImpl, ServiceEntryState} from './download_internals_browser_proxy.js';
+import {getFinishedServiceEntryClass, getOngoingServiceEntryClass, getServiceRequestClass} from './download_internals_visuals.js';
 
 const browserProxy: DownloadInternalsBrowserProxy =
     DownloadInternalsBrowserProxyImpl.getInstance();
@@ -21,6 +21,100 @@ const browserProxy: DownloadInternalsBrowserProxy =
 const ongoingServiceEntries: ServiceEntry[] = [];
 const finishedServiceEntries: ServiceEntry[] = [];
 const serviceRequests: ServiceRequest[] = [];
+
+function getOngoingEntriesHtml(entries: ServiceEntry[]) {
+  // clang-format off
+  return html`
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>State</th>
+          <th>Client</th>
+          <th>ID</th>
+          <th>URL</th>
+          <th>Bytes Downloaded</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${entries.map(item => html`
+          <tr class="${getOngoingServiceEntryClass(item)}"
+            <td>
+              <div>${item.state}</div>
+              ${item.driver ? html`
+                <div><span>${item.driver.state}</span></div>
+              ` : ''}
+            </td>
+            <td>${item.client}</td>
+            <td>${item.guid}</td>
+            <td>${item.url}</td>
+            <td>${item.bytes_downloaded}</td>
+          </tr>
+        `)}
+      </tbody>
+    </table>
+  `;
+  // clang-format on
+}
+
+function getFinishedEntriesHtml(entries: ServiceEntry[]) {
+  // clang-format off
+  return html`
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>Result</th>
+          <th>Client</th>
+          <th>ID</th>
+          <th>URL</th>
+          <th>Size</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${entries.map(item => html`
+          <tr class="${getFinishedServiceEntryClass(item)}">
+            <td>${item.result}</td>
+            <td>${item.client}</td>
+            <td>${item.guid}</td>
+            <td>
+              <div>${item.url}</div>
+              <div>${item.file_path}</div>
+            </td>
+            <td>${item.bytes_downloaded}</td>
+            <td>${item.time_downloaded}</td>
+          </tr>
+        `)}
+      </tbody>
+    </table>
+  `;
+  // clang-format on
+}
+
+function getRequestInfoHtml(requests: ServiceRequest[]) {
+  // clang-format off
+  return html`
+    <table class="styled-table">
+      <thead>
+        <tr>
+          <th>Result</th>
+          <th>Client</th>
+          <th>ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${requests.map(item => html`
+          <tr class="${getServiceRequestClass(item)}">
+            <td>${item.result}</td>
+            <td>${item.client}</td>
+            <td>${item.guid}</td>
+          </tr>
+        `)}
+      </tbody>
+    </table>
+  `;
+  // clang-format on
+}
+
 
 /**
  * @param list A list to remove the entry from.
@@ -48,14 +142,11 @@ function addOrUpdateEntryByGuid(list: ServiceEntry[], newEntry: ServiceEntry) {
 }
 
 function updateEntryTables() {
-  const ongoingInput = new JsEvalContext({entries: ongoingServiceEntries});
-  jstProcess(
-      ongoingInput,
+  render(
+      getOngoingEntriesHtml(ongoingServiceEntries),
       getRequiredElement('download-service-ongoing-entries-info'));
-
-  const finishedInput = new JsEvalContext({entries: finishedServiceEntries});
-  jstProcess(
-      finishedInput,
+  render(
+      getFinishedEntriesHtml(finishedServiceEntries),
       getRequiredElement('download-service-finished-entries-info'));
 }
 
@@ -115,8 +206,9 @@ function onServiceDownloadFailed(entry: ServiceEntry) {
  */
 function onServiceRequestMade(request: ServiceRequest) {
   serviceRequests.unshift(request);
-  const input = new JsEvalContext({requests: serviceRequests});
-  jstProcess(input, getRequiredElement('download-service-request-info'));
+  render(
+      getRequestInfoHtml(serviceRequests),
+      getRequiredElement('download-service-request-info'));
 }
 
 function initialize() {

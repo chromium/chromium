@@ -18,7 +18,6 @@ ts_library("library") {
   # it requires unsafe-eval CSP header to work. Use Lit templates instead.
   # TODO(crbug.com/40433145): Replace remaining usages with alternatives.
   visibility = [
-    "//components/download/resources/download_internals:build_ts",
     "//components/sync/service/resources:build_ts",
     "//content/browser/resources/indexed_db:build_ts",
   ]

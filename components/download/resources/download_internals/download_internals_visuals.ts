@@ -5,7 +5,7 @@
 import type {ServiceEntry, ServiceRequest} from './download_internals_browser_proxy.js';
 import {DriverEntryState, ServiceEntryResult, ServiceEntryState, ServiceRequestResult} from './download_internals_browser_proxy.js';
 
-function getOngoingServiceEntryClass(entry: ServiceEntry) {
+export function getOngoingServiceEntryClass(entry: ServiceEntry) {
   switch (entry.state) {
     case ServiceEntryState.NEW:
       return 'service-entry-new';
@@ -27,7 +27,7 @@ function getOngoingServiceEntryClass(entry: ServiceEntry) {
   }
 }
 
-function getFinishedServiceEntryClass(entry: ServiceEntry) {
+export function getFinishedServiceEntryClass(entry: ServiceEntry) {
   switch (entry.result) {
     case ServiceEntryResult.SUCCEED:
       return 'service-entry-success';
@@ -36,7 +36,7 @@ function getFinishedServiceEntryClass(entry: ServiceEntry) {
   }
 }
 
-function getServiceRequestClass(request: ServiceRequest) {
+export function getServiceRequestClass(request: ServiceRequest) {
   switch (request.result) {
     case ServiceRequestResult.ACCEPTED:
       return 'service-entry-success';
@@ -47,13 +47,3 @@ function getServiceRequestClass(request: ServiceRequest) {
       return 'service-entry-fail';
   }
 }
-
-// Expose these on |window| because they need to be accessed by jstemplate code
-// in download_internals.html
-Object.assign(window, {
-  downloadInternalsVisuals: {
-    getServiceRequestClass,
-    getFinishedServiceEntryClass,
-    getOngoingServiceEntryClass,
-  },
-});
