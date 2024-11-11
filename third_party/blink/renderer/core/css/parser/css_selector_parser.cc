@@ -2565,6 +2565,9 @@ static void RecordUsageAndDeprecationsOneSelector(
         *has_visited_pseudo = true;
       }
       break;
+    case CSSSelector::kPseudoActiveViewTransition:
+      feature = WebFeature::kActiveViewTransitionPseudo;
+      break;
     default:
       break;
   }

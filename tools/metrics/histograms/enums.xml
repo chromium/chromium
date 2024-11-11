@@ -10873,6 +10873,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5187" label="DocumentIsolationPolicyRequireCorp"/>
   <int value="5188" label="DocumentIsolationPolicyCredentialless"/>
   <int value="5189" label="ClipPathGeometryBox"/>
+  <int value="5190" label="ActiveViewTransitionPseudo"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -33924,6 +33925,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="214" label="BaselineSource"/>
   <int value="215" label="ClipPathGeometryBox"/>
   <int value="216" label="ClipPath"/>
+  <int value="217" label="ActiveViewTransition"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
