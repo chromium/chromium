@@ -284,14 +284,13 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       cc::PaintFlags::FilterQuality filter_quality,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
-      bool is_origin_top_left,
       bool is_accelerated,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       CanvasResourceHost* resource_host)
       : CanvasResourceProvider(kSharedImage,
                                info,
                                filter_quality,
-                               is_origin_top_left,
+                               /*is_origin_top_left=*/true,
                                std::move(context_provider_wrapper),
                                /*resource_dispatcher=*/nullptr,
                                resource_host),
@@ -416,10 +415,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     if (IsGpuContextLost())
       return nullptr;
 
+    CHECK(IsOriginTopLeft());
     return CanvasResourceSharedImage::Create(
         GetSkImageInfo(), ContextProviderWrapper(), CreateWeakPtr(),
-        FilterQuality(), IsOriginTopLeft(), is_accelerated_,
-        shared_image_usage_flags_);
+        FilterQuality(), is_accelerated_, shared_image_usage_flags_);
   }
 
   bool UseOopRasterization() final { return use_oop_rasterization_; }
@@ -1148,13 +1147,9 @@ CanvasResourceProvider::CreateSharedImageProvider(
   }
 #endif
 
-  // Use top left origin for shared image CanvasResourceProviders since those
-  // can be used for rendering with Skia, and Skia's Graphite backend doesn't
-  // support bottom left origin SkSurfaces.
-  constexpr bool kIsOriginTopLeft = true;
   auto provider = std::make_unique<CanvasResourceProviderSharedImage>(
-      adjusted_info, filter_quality, context_provider_wrapper, kIsOriginTopLeft,
-      is_accelerated, shared_image_usage_flags, resource_host);
+      adjusted_info, filter_quality, context_provider_wrapper, is_accelerated,
+      shared_image_usage_flags, resource_host);
   if (provider->IsValid()) {
     if (should_initialize ==
         CanvasResourceProvider::ShouldInitialize::kCallClear)

@@ -414,13 +414,11 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
     cc::PaintFlags::FilterQuality filter_quality,
-    bool is_origin_top_left,
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags)
     : CanvasResource(std::move(provider), filter_quality, info.colorInfo()),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       size_(info.width(), info.height()),
-      is_origin_top_left_(is_origin_top_left),
       is_accelerated_(is_accelerated),
       is_overlay_candidate_(
           shared_image_usage_flags.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT)),
@@ -453,9 +451,6 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
         shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
   }
 
-  GrSurfaceOrigin surface_origin = is_origin_top_left_
-                                       ? kTopLeft_GrSurfaceOrigin
-                                       : kBottomLeft_GrSurfaceOrigin;
   SkAlphaType surface_alpha_type = GetSkColorInfo().alphaType();
 
   scoped_refptr<gpu::ClientSharedImage> client_shared_image;
@@ -468,8 +463,9 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     // resolved.
 
     client_shared_image = shared_image_interface->CreateSharedImage(
-        {GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
-         surface_alpha_type, gpu::SharedImageUsageSet(shared_image_usage_flags),
+        {GetSharedImageFormat(), Size(), GetColorSpace(),
+         kTopLeft_GrSurfaceOrigin, surface_alpha_type,
+         gpu::SharedImageUsageSet(shared_image_usage_flags),
          "CanvasResourceRasterGmb"},
         gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
     if (!client_shared_image) {
@@ -477,8 +473,9 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
     }
   } else {
     client_shared_image = shared_image_interface->CreateSharedImage(
-        {GetSharedImageFormat(), Size(), GetColorSpace(), surface_origin,
-         surface_alpha_type, gpu::SharedImageUsageSet(shared_image_usage_flags),
+        {GetSharedImageFormat(), Size(), GetColorSpace(),
+         kTopLeft_GrSurfaceOrigin, surface_alpha_type,
+         gpu::SharedImageUsageSet(shared_image_usage_flags),
          "CanvasResourceRaster"},
         gpu::kNullSurfaceHandle);
     CHECK(client_shared_image);
@@ -517,14 +514,12 @@ scoped_refptr<CanvasResourceSharedImage> CanvasResourceSharedImage::Create(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
     cc::PaintFlags::FilterQuality filter_quality,
-    bool is_origin_top_left,
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags) {
   TRACE_EVENT0("blink", "CanvasResourceSharedImage::Create");
   auto resource = base::AdoptRef(new CanvasResourceSharedImage(
       info, std::move(context_provider_wrapper), std::move(provider),
-      filter_quality, is_origin_top_left, is_accelerated,
-      shared_image_usage_flags));
+      filter_quality, is_accelerated, shared_image_usage_flags));
   return resource->IsValid() ? resource : nullptr;
 }
 
@@ -700,10 +695,11 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedImage::Bitmap() {
   auto client_shared_image = GetClientSharedImage();
   uint32_t texture_target = client_shared_image->GetTextureTarget();
 
+  CHECK_EQ(client_shared_image->surface_origin(), kTopLeft_GrSurfaceOrigin);
   // If its cross thread, then the sync token was already verified.
   image = AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       std::move(client_shared_image), GetSyncToken(), texture_id_for_image,
-      image_info, texture_target, is_origin_top_left_,
+      image_info, texture_target, /*is_origin_top_left=*/true,
       context_provider_wrapper_, owning_thread_ref_, owning_thread_task_runner_,
       std::move(release_callback), supports_display_compositing_,
       is_overlay_candidate_);

@@ -492,8 +492,7 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason) override {
     return scoped_refptr<CanvasResource>(CanvasResourceSharedImage::Create(
         GetSkImageInfo(), SharedGpuContext::ContextProviderWrapper(),
-        CreateWeakPtr(), cc::PaintFlags::FilterQuality::kLow,
-        /*is_origin_top_left=*/true, IsAccelerated(),
+        CreateWeakPtr(), cc::PaintFlags::FilterQuality::kLow, IsAccelerated(),
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
             gpu::SHARED_IMAGE_USAGE_RASTER_WRITE));
   }
