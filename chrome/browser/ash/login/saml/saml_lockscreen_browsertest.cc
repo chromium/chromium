@@ -20,22 +20,28 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "base/test/test_future.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager.h"
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/fake_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
+#include "chrome/browser/ash/login/signin/authentication_flow_auto_reload_manager.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
+#include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -57,6 +63,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
@@ -401,6 +408,149 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideCaptivePortalDialog) {
   reauth_dialog_helper->ClickCloseNetworkButton();
   // Ensures that the re-auth dialog is closed.
   reauth_dialog_helper->WaitForReauthDialogToClose();
+}
+
+// TODO(crbug.com/378074596) Add test for proxy auth cases.
+// Class for testing `DeviceAuthenticationFlowAutoReloadInterval` policy cases
+// on the lock screen.
+class AutoReloadLockscreenWebUiTest : public LockscreenWebUiTest {
+ public:
+  AutoReloadLockscreenWebUiTest() = default;
+  AutoReloadLockscreenWebUiTest(const AutoReloadLockscreenWebUiTest&) = delete;
+  AutoReloadLockscreenWebUiTest& operator=(
+      const AutoReloadLockscreenWebUiTest&) = delete;
+
+  ~AutoReloadLockscreenWebUiTest() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    LockscreenWebUiTest::SetUpInProcessBrowserTestFixture();
+
+    task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+    AuthenticationFlowAutoReloadManager::SetClockForTesting(
+        task_runner_->GetMockClock(), task_runner_->GetMockTickClock());
+  }
+
+  void SetAutoReloadInterval(const int& reload_interval_in_minutes) {
+    policy::DevicePolicyCrosTestHelper device_policy_test_helper;
+    device_policy_test_helper.device_policy()
+        ->payload()
+        .mutable_deviceauthenticationflowautoreloadinterval()
+        ->set_value(reload_interval_in_minutes);
+
+    PrefChangeRegistrar registrar;
+    base::test::TestFuture<const char*> pref_changed_future;
+    registrar.Init(g_browser_process->local_state());
+    registrar.Add(
+        prefs::kAuthenticationFlowAutoReloadInterval,
+        base::BindRepeating(pref_changed_future.GetRepeatingCallback(),
+                            prefs::kAuthenticationFlowAutoReloadInterval));
+
+    device_policy_test_helper.RefreshDevicePolicy();
+
+    EXPECT_EQ(prefs::kAuthenticationFlowAutoReloadInterval,
+              pref_changed_future.Take());
+  }
+
+  void ShowLockScreenDialog() {
+    Login();
+
+    // Lock the screen and trigger the lock screen SAML reauth dialog.
+    ScreenLockerTester().Lock();
+
+    reauth_dialog_helper_ =
+        LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
+    ASSERT_TRUE(reauth_dialog_helper_);
+  }
+
+  void AdvanceTime(base::TimeDelta time_change) {
+    // TODO(crbug.com/353919505): Introduce a function for testing to advance
+    // time and reschedule the timer in one call.
+    task_runner()->FastForwardBy(time_change);
+    reauth_dialog_helper()->ResumeAutoReloadTimer();
+  }
+
+  void WaitForLockScreenReload() {
+    content::DOMMessageQueue message_queue(
+        reauth_dialog_helper()->DialogWebContents());
+
+    ASSERT_TRUE(content::ExecJs(
+        reauth_dialog_helper()->DialogWebContents(),
+        "$('main-element').authenticator.addEventListener('ready', function() {"
+        "  window.domAutomationController.send('ready');"
+        "});"));
+
+    std::string message;
+    do {
+      ASSERT_TRUE(message_queue.WaitForMessage(&message));
+    } while (message != "\"ready\"");
+  }
+
+  base::TestMockTimeTaskRunner* task_runner() { return task_runner_.get(); }
+
+  std::optional<LockScreenReauthDialogTestHelper>& reauth_dialog_helper() {
+    return reauth_dialog_helper_;
+  }
+
+ private:
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper_;
+
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+};
+
+IN_PROC_BROWSER_TEST_F(AutoReloadLockscreenWebUiTest, AutoReloadDisabled) {
+  ShowLockScreenDialog();
+  reauth_dialog_helper()->ExpectAutoReloadDisabled();
+}
+
+IN_PROC_BROWSER_TEST_F(AutoReloadLockscreenWebUiTest, AutoReloadEnabled) {
+  SetAutoReloadInterval(/*reload_interval_in_minutes=*/10);
+
+  ShowLockScreenDialog();
+
+  reauth_dialog_helper()->ExpectAutoReloadEnabled();
+
+  // Advance time and wait for webview to reload.
+  AdvanceTime(base::Minutes(10));
+
+  WaitForLockScreenReload();
+}
+
+IN_PROC_BROWSER_TEST_F(AutoReloadLockscreenWebUiTest,
+                       DisableAutoReloadOnNetworkDialogShown) {
+  SetAutoReloadInterval(/*reload_interval_in_minutes=*/10);
+
+  ShowLockScreenDialog();
+
+  AdvanceTime(base::Minutes(5));
+  reauth_dialog_helper()->ExpectAutoReloadEnabled();
+
+  // Disconnect from network in order to trigger the network dialog.
+  SetDisconnected(kWifiServicePath);
+  SetDisconnected(kEthServicePath);
+
+  // No networks are connected so we should see the network dialog.
+  reauth_dialog_helper()->WaitForNetworkDialogAndSetHandlers();
+
+  // The network dialog is shown on top of the lock screen reauth dialog (i.e
+  // the lock screen reauth dialog is not closed).
+  reauth_dialog_helper()->ExpectNetworkDialogVisible();
+
+  // Autoreload should be terminated since network dialog is shown.
+  reauth_dialog_helper()->ExpectAutoReloadDisabled();
+
+  // Connect to a network.
+  SetConnected(kEthServicePath);
+
+  reauth_dialog_helper()->ExpectNetworkDialogHidden();
+
+  // Autoreload should be reactivated automatically once the network dialog is
+  // closed. No reload is expected at this point because lock screen reauth
+  // dialog was never closed, so we just need to check that the auto reload
+  // timer is active again.
+  reauth_dialog_helper()->ExpectAutoReloadEnabled();
 }
 
 // Sets up proxy server which requires authentication.

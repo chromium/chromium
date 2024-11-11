@@ -135,6 +135,10 @@ class LockScreenReauthDialogTestHelper {
   // Precondition: The SAML container is visible.
   test::JSChecker SigninFrameJS();
 
+  void ExpectAutoReloadEnabled();
+  void ExpectAutoReloadDisabled();
+  void ResumeAutoReloadTimer();
+
  private:
   // Instantiate using public static factory methods.
   LockScreenReauthDialogTestHelper();

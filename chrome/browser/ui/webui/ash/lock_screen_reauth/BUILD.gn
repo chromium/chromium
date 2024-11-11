@@ -57,6 +57,7 @@ static_library("lock_screen_reauth") {
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
     "//chrome/browser/ash/login/lock/online_reauth",
+    "//chrome/browser/ash/login/signin",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions",
