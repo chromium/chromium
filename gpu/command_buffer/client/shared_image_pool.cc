@@ -10,10 +10,10 @@ namespace {
 
 gpu::ImageInfo GetImageInfo(scoped_refptr<gpu::ClientImage> image) {
   auto shared_image = image->GetSharedImage();
-  return gpu::ImageInfo(shared_image->size(), shared_image->format(),
-                        shared_image->usage(), shared_image->color_space(),
-                        shared_image->surface_origin(),
-                        shared_image->alpha_type());
+  return gpu::ImageInfo(
+      shared_image->size(), shared_image->format(), shared_image->usage(),
+      shared_image->color_space(), shared_image->surface_origin(),
+      shared_image->alpha_type(), shared_image->buffer_usage());
 }
 
 }  // namespace
@@ -63,11 +63,23 @@ size_t SharedImagePoolBase::GetPoolSizeForTesting() const {
 scoped_refptr<ClientSharedImage>
 SharedImagePoolBase::CreateSharedImageInternal() {
   CHECK(sii_);
-  return sii_->CreateSharedImage(
-      {image_info_.format, image_info_.size, image_info_.color_space,
-       image_info_.surface_origin, image_info_.alpha_type, image_info_.usage,
-       "SharedImagePoolBase"},
-      gpu::kNullSurfaceHandle);
+  if (image_info_.buffer_usage.has_value()) {
+    // Creates a Mappable shared image. Note that eventually when shared image
+    // usage is merged with buffer usage, there will be only one method to
+    // create both mappable and non-mappable shared image. These 2 paths will be
+    // merged after that.
+    return sii_->CreateSharedImage(
+        {image_info_.format, image_info_.size, image_info_.color_space,
+         image_info_.surface_origin, image_info_.alpha_type, image_info_.usage,
+         "SharedImagePoolMappable"},
+        gpu::kNullSurfaceHandle, image_info_.buffer_usage.value());
+  } else {
+    return sii_->CreateSharedImage(
+        {image_info_.format, image_info_.size, image_info_.color_space,
+         image_info_.surface_origin, image_info_.alpha_type, image_info_.usage,
+         "SharedImagePool"},
+        gpu::kNullSurfaceHandle);
+  }
 }
 
 scoped_refptr<ClientImage> SharedImagePoolBase::GetImageFromPoolInternal() {

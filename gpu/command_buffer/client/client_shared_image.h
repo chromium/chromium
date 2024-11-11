@@ -206,11 +206,13 @@ class GPU_EXPORT ClientSharedImage
       const SharedImageMetadata& metadata,
       const SyncToken& sync_token,
       std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
+      gfx::BufferUsage buffer_usage,
       scoped_refptr<SharedImageInterfaceHolder> sii_holder) {
     auto client_si = base::MakeRefCounted<ClientSharedImage>(
         mailbox, metadata, sync_token, sii_holder,
         gpu_memory_buffer->GetType());
     client_si->gpu_memory_buffer_ = std::move(gpu_memory_buffer);
+    client_si->buffer_usage_ = buffer_usage;
     return client_si;
   }
 

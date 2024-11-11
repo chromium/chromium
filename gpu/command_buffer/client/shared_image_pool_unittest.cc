@@ -271,4 +271,77 @@ TEST_F(SharedImagePoolTest, SetReleaseSyncToken) {
   EXPECT_EQ(client_image->GetSyncToken(), release_sync_token);
 }
 
+// Test that SharedImagePool creates a mappable shared image when buffer_usage
+// is set.
+TEST_F(SharedImagePoolTest, CreatesMappableSharedImageWhenBufferUsageIsSet) {
+  test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
+  // Define ImageInfo with buffer_usage set.
+  ImageInfo info = {gfx::Size(100, 100),
+                    viz::SinglePlaneFormat::kRGBA_8888,
+                    {},
+                    gfx::BufferUsage::GPU_READ};
+  auto pool = SharedImagePool<ClientImage>::Create(info, test_sii_);
+
+  // Expect CreateSharedImage to be called with buffer_usage specified.
+  EXPECT_CALL(*test_sii_,
+              DoCreateSharedImage(
+                  gfx::Size(100, 100), viz::SinglePlaneFormat::kRGBA_8888,
+                  gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ));
+
+  scoped_refptr<ClientImage> image = pool->GetImage();
+  EXPECT_NE(image, nullptr);
+  EXPECT_EQ(image->GetSharedImage()->buffer_usage(),
+            gfx::BufferUsage::GPU_READ);
+}
+
+TEST_F(SharedImagePoolTest, DoesNotReuseSharedImageWithDifferentBufferUsage) {
+  test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
+  // Define ImageInfo with initial buffer_usage.
+  ImageInfo info = {gfx::Size(100, 100),
+                    viz::SinglePlaneFormat::kRGBA_8888,
+                    {},
+                    gfx::BufferUsage::GPU_READ};
+  auto pool = SharedImagePool<ClientImage>::Create(info, test_sii_);
+
+  // Expect CreateSharedImage to be called with initial buffer_usage.
+  EXPECT_CALL(*test_sii_,
+              DoCreateSharedImage(
+                  gfx::Size(100, 100), viz::SinglePlaneFormat::kRGBA_8888,
+                  gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ))
+      .Times(1);
+
+  // First image created with GPU_READ usage.
+  scoped_refptr<ClientImage> image1 = pool->GetImage();
+  EXPECT_NE(image1, nullptr);
+  EXPECT_EQ(image1->GetSharedImage()->buffer_usage(),
+            gfx::BufferUsage::GPU_READ);
+
+  // Release the first image back to the pool.
+  pool->ReleaseImage(std::move(image1));
+
+  // Change buffer usage to GPU_READ_CPU_READ_WRITE.
+  info.buffer_usage = gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
+  pool->Reconfigure(info);
+
+  // Expect CreateSharedImage to be called again with new
+  // buffer_usage.
+  EXPECT_CALL(*test_sii_,
+              DoCreateSharedImage(gfx::Size(100, 100),
+                                  viz::SinglePlaneFormat::kRGBA_8888,
+                                  gpu::kNullSurfaceHandle,
+                                  gfx::BufferUsage::GPU_READ_CPU_READ_WRITE))
+      .Times(1);
+
+  // Second image created with GPU_READ_CPU_READ_WRITE usage. It should be a new
+  // image.
+  scoped_refptr<ClientImage> image2 = pool->GetImage();
+  EXPECT_NE(image2, nullptr);
+  EXPECT_EQ(image2->GetSharedImage()->buffer_usage(),
+            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
+
+  // Ensure the new image is different from the first one due to different
+  // buffer usage.
+  EXPECT_NE(image1, image2);
+}
+
 }  // namespace gpu

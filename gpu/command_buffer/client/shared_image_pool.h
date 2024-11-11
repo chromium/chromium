@@ -17,6 +17,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/gpu_export.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gpu {
@@ -32,30 +33,37 @@ struct GPU_EXPORT ImageInfo {
   gfx::ColorSpace color_space;
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
+  std::optional<gfx::BufferUsage> buffer_usage = std::nullopt;
 
   ImageInfo(gfx::Size size,
             viz::SharedImageFormat format,
-            SharedImageUsageSet usage)
-      : size(size), format(format), usage(usage) {}
+            SharedImageUsageSet usage,
+            std::optional<gfx::BufferUsage> buffer_usage = std::nullopt)
+      : size(size),
+        format(format),
+        usage(usage),
+        buffer_usage(std::move(buffer_usage)) {}
 
   ImageInfo(gfx::Size size,
             viz::SharedImageFormat format,
             SharedImageUsageSet usage,
             gfx::ColorSpace color_space,
             GrSurfaceOrigin surface_origin,
-            SkAlphaType alpha_type)
+            SkAlphaType alpha_type,
+            std::optional<gfx::BufferUsage> buffer_usage = std::nullopt)
       : size(size),
         format(format),
         usage(usage),
         color_space(color_space),
         surface_origin(surface_origin),
-        alpha_type(alpha_type) {}
+        alpha_type(alpha_type),
+        buffer_usage(std::move(buffer_usage)) {}
 
   bool operator==(const ImageInfo& other) const {
     return size == other.size && format == other.format &&
            usage == other.usage && color_space == other.color_space &&
            surface_origin == other.surface_origin &&
-           alpha_type == other.alpha_type;
+           alpha_type == other.alpha_type && buffer_usage == other.buffer_usage;
   }
 };
 

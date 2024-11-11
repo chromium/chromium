@@ -209,7 +209,7 @@ TestSharedImageInterface::CreateSharedImage(const SharedImageInfo& si_info,
     }
     return ClientSharedImage::CreateForTesting(
         mailbox, si_info_copy.meta, sync_token, std::move(gpu_memory_buffer),
-        holder_);
+        buffer_usage, holder_);
   }
 
   auto gmb_handle =
@@ -251,7 +251,7 @@ TestSharedImageInterface::CreateSharedImage(
     }
     return ClientSharedImage::CreateForTesting(
         mailbox, si_info_copy.meta, sync_token, std::move(gpu_memory_buffer),
-        holder_);
+        buffer_usage, holder_);
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
