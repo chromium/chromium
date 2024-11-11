@@ -279,6 +279,10 @@ void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
   if (is_on_load_completed_in_main_document())
     main_document_->DocumentOnLoadCompleted();
 
+  if (did_first_contentful_paint_in_main_document()) {
+    main_document_->OnFirstContentfulPaint();
+  }
+
   main_document_->ForEachRenderFrameHost(
       &RenderFrameHostImpl::MaybeDispatchDidFinishLoadOnPrerenderActivation);
 }

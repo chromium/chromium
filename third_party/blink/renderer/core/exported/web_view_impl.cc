@@ -1214,6 +1214,10 @@ void WebViewImpl::DidFirstVisuallyNonEmptyPaint() {
   local_main_frame_host_remote_->DidFirstVisuallyNonEmptyPaint();
 }
 
+void WebViewImpl::OnFirstContentfulPaint() {
+  local_main_frame_host_remote_->OnFirstContentfulPaint();
+}
+
 void WebViewImpl::UpdateICBAndResizeViewport(
     const gfx::Size& visible_viewport_size) {
   // We'll keep the initial containing block size from changing when the top

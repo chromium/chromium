@@ -598,6 +598,8 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
 
   virtual float ZoomFactorForViewportLayout() { return 1; }
 
+  virtual void OnFirstContentfulPaint() {}
+
  protected:
   ChromeClient() = default;
 

@@ -1502,4 +1502,8 @@ gfx::Rect ChromeClientImpl::AdjustWindowRectForDisplay(
   return window;
 }
 
+void ChromeClientImpl::OnFirstContentfulPaint() {
+  web_view_->OnFirstContentfulPaint();
+}
+
 }  // namespace blink

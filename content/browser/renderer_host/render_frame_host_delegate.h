@@ -759,6 +759,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   virtual WebContents* GetOpenedPartitionedPopin() const;
 
+  // Called when a first contentful paint happened in the primary main frame.
+  virtual void OnFirstContentfulPaintInPrimaryMainFrame() {}
+
  protected:
   virtual ~RenderFrameHostDelegate() = default;
 };

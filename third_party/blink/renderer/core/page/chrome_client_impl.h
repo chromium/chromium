@@ -314,6 +314,8 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
 
   float ZoomFactorForViewportLayout() override;
 
+  void OnFirstContentfulPaint() override;
+
  private:
   bool IsChromeClientImpl() const override { return true; }
 
