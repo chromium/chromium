@@ -42,6 +42,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
@@ -2885,6 +2887,8 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
           base::UTF16ToUTF8(potential_email_override)) &&
       original_email != potential_email_override) {
     client().GetPlusAddressDelegate()->DidFillPlusAddress();
+    base::RecordAction(
+        base::UserMetricsAction("PlusAddresses.FillAddressSuggestionAccepted"));
     // TODO(crbug.com/324557053): Filter out notifications for suggestion type
     // `SuggestionType::kFillFullEmail`.
     client().ShowPlusAddressEmailOverrideNotification(

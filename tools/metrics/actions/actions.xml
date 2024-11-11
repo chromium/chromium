@@ -32338,6 +32338,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PlusAddresses.FillAddressSuggestionAccepted">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    User accepted an address suggestion with a plus address email override.
+  </description>
+</action>
+
 <action name="PlusAddresses.FillStandaloneSuggestionAccepted">
   <owner>vizcay@google.com</owner>
   <owner>jkeitel@google.com</owner>

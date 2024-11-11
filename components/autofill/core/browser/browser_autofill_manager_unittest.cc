@@ -29,6 +29,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -8502,6 +8503,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 // without the email override is filled.
 TEST_F(BrowserAutofillManagerPlusAddressTest,
        FillsEmailOverrideAndShowsUserNotification) {
+  base::UserActionTester user_action_tester;
   // Set up gaia email.
   const std::string gaia_email = "theking@gmail.com";
   autofill_client_.identity_test_environment().MakePrimaryAccountAvailable(
@@ -8562,7 +8564,9 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   // the popup since we've selected an option.
   external_delegate()->DidAcceptSuggestion(
       external_delegate()->suggestions().front(), {});
-
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.FillAddressSuggestionAccepted"),
+            1);
   // Call the undo operation.
   ASSERT_TRUE(undo_callback);
   std::move(undo_callback).Run();
