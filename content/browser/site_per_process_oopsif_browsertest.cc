@@ -1208,6 +1208,45 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                    .is_sandboxed());
 }
 
+// Ensure a navigation that is from the initial empty document, is main frame,
+// cross-SiteInstance and same-SiteInstanceGroup succeeds.
+IN_PROC_BROWSER_TEST_P(SitePerProcessNotIsolatedSandboxedIframeTest,
+                       CrossSiteInstanceNavigationFromInitialEmptyDocument) {
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Create sandboxed data: URL which allows scripts and popups.
+  std::string js_str = base::StringPrintf(
+      "var frame = document.createElement('iframe'); "
+      "frame.sandbox = 'allow-scripts allow-popups'; "
+      "frame.src = 'data:text/html,foo'; "
+      "document.body.appendChild(frame);");
+  EXPECT_TRUE(ExecJs(shell(), js_str));
+  ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // The data: subframe opens a popup, which inherits the sandbox bit.
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  ShellAddedObserver new_shell_observer;
+  std::string js_open_popup = base::StringPrintf("var popup = window.open();");
+  EXPECT_TRUE(ExecJs(child, js_open_popup));
+  Shell* popup_shell = new_shell_observer.GetShell();
+  EXPECT_TRUE(popup_shell);
+
+  // Navigate the popup to the same URL as the main frame. Though the URL is the
+  // same, the sandbox bit means it is not same-SiteInstance.
+  // This navigation is cross-SiteInstance, same-SiteInstanceGroup,
+  // local-to-local, starts from the initial empty document and does not depend
+  // on RenderDocument level.
+  GURL url1(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  std::string js_navigate_popup1 =
+      base::StringPrintf("popup.location = '%s';", url1.spec().c_str());
+  TestNavigationObserver observer2(popup_shell->web_contents());
+  EXPECT_TRUE(ExecJs(child, js_navigate_popup1));
+  observer2.Wait();
+}
+
 // Test to make sure that javascript: urls don't execute in a sandboxed iframe.
 IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
                        SandboxedIframeWithJSUrl) {

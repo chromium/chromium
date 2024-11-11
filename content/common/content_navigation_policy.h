@@ -62,6 +62,8 @@ enum class RenderDocumentLevel {
 // RenderFrameHost is a main/local root/non-local-root frame, whether it has
 // committed any navigations or not, and whether it's a crashed frame that
 // must be replaced or not.
+// Note: It is up to the caller to ensure this is called for same-SiteInstance
+// navigations.
 CONTENT_EXPORT bool ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
     bool is_main_frame,
     bool is_local_root = true,

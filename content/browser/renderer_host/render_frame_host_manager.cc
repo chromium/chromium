@@ -3961,10 +3961,9 @@ RenderFrameHostManager::CreateRenderFrameHost(
   // Check to see if a speculative RenderViewHost is needed. It is needed for
   // cross-page same-SiteInstanceGroup navigations when the feature is enabled.
   // TODO(yangsharon, rakina, crbug.com/1336305): Handle the
-  // cross-SiteInstanceGroup  and crashed frame cases.
+  // cross-SiteInstanceGroup and crashed frame cases.
   CreateRenderViewHostCase create_rvh_case =
       (render_frame_host_ &&
-       render_frame_host_->ShouldChangeRenderFrameHostOnSameSiteNavigation() &&
        create_frame_case == CreateFrameCase::kCreateSpeculative &&
        static_cast<SiteInstanceImpl*>(site_instance)->group() ==
            render_frame_host_->GetSiteInstance()->group() &&
@@ -4692,7 +4691,7 @@ RenderFrameHostManager::GetReplacementFrameToken(
     return existing_proxy->GetFrameToken();
   } else {
     // No proxy means that this is one of:
-    // - a same-SiteInstance subframe navigation
+    // - a same-SiteInstanceGroup subframe navigation
     // - a cross-SiteInstance navigation from a crashed subframe that will do an
     //   early commit and the SiteInstance is not already in the frame tree.
     // A main frame navigation with no proxy would have its RenderFrame init
@@ -4703,8 +4702,12 @@ RenderFrameHostManager::GetReplacementFrameToken(
       CHECK_EQ(render_frame_host->GetSiteInstance(),
                current_frame_host()->GetSiteInstance());
       // The new frame will replace an existing frame in the renderer. For now
-      // this can only be when RenderDocument-subframe is enabled.
-      DCHECK(render_frame_host_
+      // this can only be when RenderDocument-subframe is enabled or when
+      // navigating to a different SiteInstance in the same SiteInstanceGroup in
+      // a subframe.
+      DCHECK(render_frame_host->GetSiteInstance() !=
+                 current_frame_host()->GetSiteInstance() ||
+             render_frame_host_
                  ->ShouldChangeRenderFrameHostOnSameSiteNavigation());
       DCHECK_NE(render_frame_host, current_frame_host());
       return current_frame_host()->GetFrameToken();
