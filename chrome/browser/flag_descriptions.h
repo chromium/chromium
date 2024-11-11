@@ -3940,9 +3940,6 @@ extern const char kFocusModeDescription[];
 extern const char kFocusModeYTMName[];
 extern const char kFocusModeYTMDescription[];
 
-extern const char kForceReSyncDriveName[];
-extern const char kForceReSyncDriveDescription[];
-
 extern const char kFuseBoxDebugName[];
 extern const char kFuseBoxDebugDescription[];
 

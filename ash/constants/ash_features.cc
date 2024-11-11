@@ -1145,12 +1145,6 @@ BASE_FEATURE(kForceOnDeviceAppControlsForAllRegions,
              "ForceOnDeviceAppControlsForAllRegions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables Drive to forcibly resync office files. Operations such as copy,
-// move, ZIP on MS Office files call on the Drive to resync the files.
-BASE_FEATURE(kForceReSyncDrive,
-             "ForceReSyncDrive",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls enabling/disabling the forest feature.
 // For more info, see go/crosforest.
 BASE_FEATURE(kForestFeature, "ForestFeature", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3818,10 +3812,6 @@ bool ShouldForceEnableServerSideSpeechRecognitionForDev() {
 #else
   return false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING);
-}
-
-bool IsForceReSyncDriveEnabled() {
-  return base::FeatureList::IsEnabled(kForceReSyncDrive);
 }
 
 bool IsForestFeatureEnabled() {

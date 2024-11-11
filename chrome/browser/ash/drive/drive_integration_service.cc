@@ -1696,9 +1696,8 @@ void DriveIntegrationService::PollHostedFilePinStates() {
 void DriveIntegrationService::ForceReSyncFile(const base::FilePath& local_path,
                                               base::OnceClosure callback) {
   base::FilePath drive_path;
-  bool is_feature_enabled = ash::features::IsForceReSyncDriveEnabled() &&
-                            chromeos::features::IsUploadOfficeToCloudEnabled();
-  if (!is_feature_enabled || !IsMounted() || !GetDriveFsInterface() ||
+  if (!chromeos::features::IsUploadOfficeToCloudEnabled() || !IsMounted() ||
+      !GetDriveFsInterface() ||
       !GetRelativeDrivePath(local_path, &drive_path)) {
     std::move(callback).Run();
     return;

@@ -20162,7 +20162,6 @@ from previous Chrome versions.
       label="(Obsolete) EnforceAshExtensionKeeplist:disabled"/>
   <int value="-31444029" label="MediaInspectorLogging:disabled"/>
   <int value="-31053177" label="TerminalMultiProfile:enabled"/>
-  <int value="-30997499" label="ForceReSyncDrive:disabled"/>
   <int value="-30966385" label="enable-hardware-overlays"/>
   <int value="-30208692" label="webview-enable-modern-cookie-same-site"/>
   <int value="-29920412" label="DynamicSafeAreaInsetsOnScroll:disabled"/>
@@ -23816,7 +23815,6 @@ from previous Chrome versions.
       label="AboutThisSitePersistentSidePanelEntry:enabled"/>
   <int value="1444066555" label="MessagesForAndroidSyncError:disabled"/>
   <int value="1444102509" label="FedCmRevoke:enabled"/>
-  <int value="1444324195" label="ForceReSyncDrive:enabled"/>
   <int value="1444347795"
       label="PageInfoAboutThisSiteDescriptionPlaceholder:enabled"/>
   <int value="1444527172" label="CrostiniContainerless:disabled"/>

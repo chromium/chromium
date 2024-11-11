@@ -6847,10 +6847,6 @@ const char kFocusModeDescription[] =
 const char kFocusModeYTMName[] = "Focus Mode YTM on ChromeOS";
 const char kFocusModeYTMDescription[] = "Focus mode YouTube Music integration.";
 
-const char kForceReSyncDriveName[] = "Force resync drive";
-const char kForceReSyncDriveDescription[] =
-    "Enable Drive to forcibly resync office files.";
-
 const char kFuseBoxDebugName[] = "Debugging UI for ChromeOS FuseBox service";
 const char kFuseBoxDebugDescription[] =
     "Show additional debugging UI for ChromeOS FuseBox service.";
