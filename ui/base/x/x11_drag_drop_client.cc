@@ -355,13 +355,15 @@ void XDragDropClient::OnXdndEnter(const x11::ClientMessageEvent& event) {
 void XDragDropClient::OnXdndPosition(const x11::ClientMessageEvent& event) {
   DVLOG(1) << "OnXdndPosition";
 
+  if (!target_current_context()) {
+    return;
+  }
+
   auto source_window = static_cast<x11::Window>(event.data.data32[0]);
   int x_root_window = event.data.data32[2] >> 16;
   int y_root_window = event.data.data32[2] & 0xffff;
   x11::Time time_stamp = static_cast<x11::Time>(event.data.data32[3]);
   x11::Atom suggested_action = static_cast<x11::Atom>(event.data.data32[4]);
-
-  CHECK(target_current_context());
 
   target_current_context()->OnXdndPositionMessage(
       this, suggested_action, source_window, time_stamp,
