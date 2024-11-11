@@ -17,6 +17,7 @@
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/common/recording_map.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/gfx/geometry/rect.h"
@@ -26,6 +27,31 @@ constexpr size_t kMaxScreenshotFileSize = 50 * 1000L * 1000L;  // 50 MB.
 namespace {
 
 int debug_file_sequencer = 0;
+
+// Crops the pixmap to the first non-transparent pixel in each row and column.
+// This is necessary because the screenshotter sometimes returns a bitmap with
+// transparent pixels outside the bounds of the page.
+bool CropPixmap(const SkPixmap& pixmap, SkPixmap* cropped_pixmap) {
+  SkIRect bounds = pixmap.bounds();
+  int top = 0;
+  int left = 0;
+  int bottom = bounds.height();
+  int right = bounds.width();
+  while (top < bounds.height() && pixmap.getColor(0, top) == 0) {
+    top++;
+  }
+  while (left < bounds.width() && pixmap.getColor(left, 0) == 0) {
+    left++;
+  }
+  while (bottom >= 0 && pixmap.getColor(0, bottom - 1) == 0) {
+    bottom--;
+  }
+  while (right >= 0 && pixmap.getColor(right - 1, 0) == 0) {
+    right--;
+  }
+  SkIRect area = SkIRect::MakeLTRB(left, top, right, bottom);
+  return pixmap.extractSubset(cropped_pixmap, area);
+}
 
 void WriteBitmapToPng(const SkBitmap& bitmap) {
   base::FilePath temp_dir;
@@ -40,9 +66,15 @@ void WriteBitmapToPng(const SkBitmap& bitmap) {
     return;
   }
 
-  bool success =
-      SkPngEncoder::Encode(&out_file, bitmap.pixmap(), /*options=*/{});
-  if (success) {
+  SkPixmap cropped_pixmap;
+  bool success_crop = CropPixmap(bitmap.pixmap(), &cropped_pixmap);
+  if (!success_crop) {
+    VLOG(2) << "Failed to crop pixmap: " << screenshot_filepath;
+    return;
+  }
+  bool success_encode =
+      SkPngEncoder::Encode(&out_file, cropped_pixmap, /*options=*/{});
+  if (success_encode) {
     VLOG(2) << "Wrote debug file: " << screenshot_filepath;
   } else {
     VLOG(2) << "Failed to write debug file: " << screenshot_filepath;
