@@ -17644,16 +17644,6 @@
             ],
             "experiments": [
                 {
-                    "name": "preload-on-warmup",
-                    "params": {
-                        "preload-mode": "preload-on-warmup",
-                        "smart-preload": "true"
-                    },
-                    "enable_features": [
-                        "PreloadTopChromeWebUI"
-                    ]
-                },
-                {
                     "name": "preload-on-warmup-delay",
                     "params": {
                         "delay-preload": "true",
