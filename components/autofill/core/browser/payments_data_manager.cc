@@ -505,8 +505,8 @@ CreditCard* PaymentsDataManager::GetCreditCardByGUID(const std::string& guid) {
   return iter != credit_cards.end() ? *iter : nullptr;
 }
 
-CreditCard* PaymentsDataManager::GetCreditCardByNumber(
-    const std::string& number) {
+const CreditCard* PaymentsDataManager::GetCreditCardByNumber(
+    const std::string& number) const {
   CreditCard numbered_card;
   numbered_card.SetNumber(base::ASCIIToUTF16(number));
   for (CreditCard* credit_card : GetCreditCards()) {
@@ -518,8 +518,8 @@ CreditCard* PaymentsDataManager::GetCreditCardByNumber(
   return nullptr;
 }
 
-CreditCard* PaymentsDataManager::GetCreditCardByInstrumentId(
-    int64_t instrument_id) {
+const CreditCard* PaymentsDataManager::GetCreditCardByInstrumentId(
+    int64_t instrument_id) const {
   const std::vector<CreditCard*> credit_cards = GetCreditCards();
   for (CreditCard* credit_card : credit_cards) {
     if (credit_card->instrument_id() == instrument_id) {
@@ -529,8 +529,8 @@ CreditCard* PaymentsDataManager::GetCreditCardByInstrumentId(
   return nullptr;
 }
 
-CreditCard* PaymentsDataManager::GetCreditCardByServerId(
-    const std::string& server_id) {
+const CreditCard* PaymentsDataManager::GetCreditCardByServerId(
+    const std::string& server_id) const {
   const std::vector<CreditCard*> server_credit_cards = GetServerCreditCards();
   for (CreditCard* credit_card : server_credit_cards) {
     if (credit_card->server_id() == server_id) {

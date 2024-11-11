@@ -481,8 +481,8 @@ FastCheckoutClientImpl::GetSelectedAutofillProfile() {
   return autofill_profile;
 }
 
-autofill::CreditCard* FastCheckoutClientImpl::GetSelectedCreditCard() {
-  autofill::CreditCard* credit_card = nullptr;
+const autofill::CreditCard* FastCheckoutClientImpl::GetSelectedCreditCard() {
+  const autofill::CreditCard* credit_card = nullptr;
   if (selected_credit_card_is_local_) {
     credit_card = personal_data_helper_->GetPersonalDataManager()
                       ->payments_data_manager()

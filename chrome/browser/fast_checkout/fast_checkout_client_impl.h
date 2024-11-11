@@ -204,7 +204,7 @@ class FastCheckoutClientImpl
 
   // Returns a pointer to the credit card corresponding to
   // `selected_credit_card_id_`. Stops the run if it's a `nullptr`.
-  autofill::CreditCard* GetSelectedCreditCard();
+  const autofill::CreditCard* GetSelectedCreditCard();
 
   // Fills credit card form via the `autofill_manager_` and handles internal
   // state.
