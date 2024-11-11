@@ -352,6 +352,9 @@ class LensOverlayController : public LensSearchboxClient,
   // Returns true if the overlay is open and covering the current active tab.
   bool IsOverlayShowing();
 
+  // Returns true if the overlay is showing or is in live page mode.
+  bool IsOverlayActive();
+
   // Returns true if the overlay is currently in the process of closing.
   bool IsOverlayClosing();
 

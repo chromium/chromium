@@ -32,7 +32,7 @@ bool LensOverlayEventHandler::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event,
     views::FocusManager* focus_manager) {
-  if (!focus_manager || !lens_overlay_controller_->IsOverlayShowing()) {
+  if (!focus_manager || !lens_overlay_controller_->IsOverlayActive()) {
     return false;
   }
 

@@ -687,6 +687,10 @@ bool LensOverlayController::IsOverlayShowing() {
          state_ == State::kClosingSidePanel;
 }
 
+bool LensOverlayController::IsOverlayActive() {
+  return IsOverlayShowing() || state_ == State::kLivePageAndResults;
+}
+
 bool LensOverlayController::IsOverlayClosing() {
   return state_ == State::kClosing || state_ == State::kClosingSidePanel;
 }
