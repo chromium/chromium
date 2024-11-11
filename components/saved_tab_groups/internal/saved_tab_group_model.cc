@@ -483,11 +483,6 @@ void SavedTabGroupModel::UpdateLastUserInteractionTimeLocally(
 
   group->SetLastUserInteractionTime(base::Time::Now());
 
-  if (!base::FeatureList::IsEnabled(
-          kSavedTabGroupNotifyOnInteractionTimeChanged)) {
-    return;
-  }
-
   for (SavedTabGroupModelObserver& observer : observers_) {
     observer.SavedTabGroupLastUserInteractionTimeUpdated(group->saved_guid());
   }
