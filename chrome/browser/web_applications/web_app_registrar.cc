@@ -79,7 +79,15 @@ bool WebAppSourceSupported(const WebApp& web_app) {
   return true;
 }
 
-bool IsLinkCapturingDisabledByDefaultBasedOnFlagState() {
+BASE_FEATURE(kDiyAppsDefaultCaptureForcedOff,
+             "capture_forced_off_diy_apps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsLinkCapturingDisabledByDefaultBasedOnFlagState(bool is_diy_app) {
+  if (is_diy_app &&
+      base::FeatureList::IsEnabled(kDiyAppsDefaultCaptureForcedOff)) {
+    return true;
+  }
   return features::kNavigationCapturingDefaultState.Get() ==
              features::CapturingState::kDefaultOff ||
          features::kNavigationCapturingDefaultState.Get() ==
@@ -1161,7 +1169,8 @@ bool WebAppRegistrar::CapturesLinksInScope(const webapps::AppId& app_id) const {
   CHECK(web_app);
   switch (web_app->user_link_capturing_preference()) {
     case proto::LinkCapturingUserPreference::LINK_CAPTURING_PREFERENCE_DEFAULT:
-      if (IsLinkCapturingDisabledByDefaultBasedOnFlagState()) {
+      if (IsLinkCapturingDisabledByDefaultBasedOnFlagState(
+              web_app->is_diy_app())) {
         return false;
       }
       break;
