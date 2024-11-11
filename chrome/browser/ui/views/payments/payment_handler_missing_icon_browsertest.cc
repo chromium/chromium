@@ -17,21 +17,18 @@
 
 namespace payments {
 
-// Test the icon-refetch logic for service worker payment apps that have missing
-// icons.
+// Test the UX flow for service worker payment apps that have missing icons.
 //
-// Tested both with and without the kPaymentHandlerAlwaysRefreshIcon feature;
-// the behavior should not change either way for missing icon refetches.
-class PaymentHandlerIconRefetchTest : public PaymentRequestBrowserTestBase,
-                                      public testing::WithParamInterface<bool> {
+// These apps are no longer allowed to be installed, but for any that were
+// installed before that change, they should not skip the sheet.
+class PaymentHandlerMissingIconTest : public PaymentRequestBrowserTestBase {
  protected:
-  PaymentHandlerIconRefetchTest() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kAllowJITInstallationWhenAppIconIsMissing, true},
-         {features::kPaymentHandlerAlwaysRefreshIcon, GetParam()}});
+  PaymentHandlerMissingIconTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAllowJITInstallationWhenAppIconIsMissing);
   }
 
-  ~PaymentHandlerIconRefetchTest() override = default;
+  ~PaymentHandlerMissingIconTest() override = default;
 
   void SetUpOnMainThread() override {
     PaymentRequestBrowserTestBase::SetUpOnMainThread();
@@ -66,7 +63,7 @@ class PaymentHandlerIconRefetchTest : public PaymentRequestBrowserTestBase,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(PaymentHandlerIconRefetchTest, RefetchMissingIcon) {
+IN_PROC_BROWSER_TEST_F(PaymentHandlerMissingIconTest, CantSkipTheSheet) {
   // Navigate to a page with strict CSP so that Kylepay's icon fetch fails.
   NavigateTo("/csp_prevent_icon_download.html");
   SetDownloaderAndIgnorePortInOriginComparisonForTesting();
@@ -98,41 +95,6 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerIconRefetchTest, RefetchMissingIcon) {
       {DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
   ClickOnDialogViewAndWait(DialogViewID::PAY_BUTTON, dialog_view());
   ExpectBodyContains({"kylepay.test/webpay"});
-
-  // Navigate to a page where refetching Kylepay's missing icon succeeds.
-  NavigateTo("/payment_request_bobpay_and_cards_test.html");
-  SetDownloaderAndIgnorePortInOriginComparisonForTesting();
-
-  // Create a payment request for Kylepay; One step flow (skip the sheet) should
-  // get triggered since the missing icon is refetched.
-  ResetEventWaiterForSequence(
-      {DialogEvent::PROCESSING_SPINNER_SHOWN,
-       DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
-       DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
-  EXPECT_TRUE(content::ExecJs(
-      GetActiveWebContents(),
-      "testPaymentMethods([{supportedMethods: 'https://kylepay.test/webpay'}], "
-      "/* requestShippingContact= */ true);"));
-  ASSERT_TRUE(WaitForObservedEvent());
-  ExpectBodyContains({"kylepay.test/webpay"});
-
-  // Navigate to the first merchant again and confirm that skip the sheet flow
-  // works there as well (i.e. The refetched icon is written to the payment app
-  // database.).
-  NavigateTo("/csp_prevent_icon_download.html");
-  SetDownloaderAndIgnorePortInOriginComparisonForTesting();
-  ResetEventWaiterForSequence(
-      {DialogEvent::PROCESSING_SPINNER_SHOWN,
-       DialogEvent::PROCESSING_SPINNER_HIDDEN, DialogEvent::DIALOG_OPENED,
-       DialogEvent::PROCESSING_SPINNER_SHOWN, DialogEvent::DIALOG_CLOSED});
-  EXPECT_TRUE(content::ExecJs(
-      GetActiveWebContents(),
-      "testPaymentMethods([{supportedMethods: 'https://kylepay.test/webpay'}], "
-      "/* requestShippingContact= */ true);"));
-  ASSERT_TRUE(WaitForObservedEvent());
-  ExpectBodyContains({"kylepay.test/webpay"});
 }
-
-INSTANTIATE_TEST_SUITE_P(All, PaymentHandlerIconRefetchTest, testing::Bool());
 
 }  // namespace payments

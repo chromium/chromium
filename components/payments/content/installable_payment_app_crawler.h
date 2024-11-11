@@ -53,9 +53,9 @@ class InstallablePaymentAppCrawler {
     // In this mode the crawler will crawl for finding JIT installable payment
     // apps.
     kJustInTimeInstallation,
-    // In this mode the crawler will crawl for downloading missing icons for
-    // already installed payment apps.
-    kMissingIconRefetch,
+    // In this mode the crawler will crawl for refreshing icons for already
+    // installed payment apps.
+    kInstalledAppIconRefresh,
   };
 
   // |merchant_origin| is the origin of the iframe that created the
@@ -86,7 +86,7 @@ class InstallablePaymentAppCrawler {
   // then this object is safe to be deleted.
   void Start(
       const std::vector<mojom::PaymentMethodDataPtr>& requested_method_data,
-      std::set<GURL> method_manifest_urls_for_icon_refetch,
+      std::set<GURL> method_manifest_urls_for_icon_refresh,
       FinishedCrawlingCallback callback,
       base::OnceClosure finished_using_resources);
 
@@ -150,7 +150,7 @@ class InstallablePaymentAppCrawler {
   std::set<GURL> downloaded_web_app_manifests_;
   std::map<GURL, std::unique_ptr<WebAppInstallationInfo>> installable_apps_;
   std::map<GURL, std::unique_ptr<RefetchedIcon>> refetched_icons_;
-  std::set<GURL> method_manifest_urls_for_icon_refetch_;
+  std::set<GURL> method_manifest_urls_for_icon_refresh_;
 
   // The first error message (if any) to be forwarded to the merchant when
   // rejecting the promise returned from PaymentRequest.show().

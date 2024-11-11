@@ -863,10 +863,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderBrowserTest,
 class ServiceWorkerPaymentAppFinderIconRefreshBrowserTest
     : public ServiceWorkerPaymentAppFinderBrowserTest {
  public:
-  ServiceWorkerPaymentAppFinderIconRefreshBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kPaymentHandlerAlwaysRefreshIcon);
-  }
+  ServiceWorkerPaymentAppFinderIconRefreshBrowserTest() = default;
   ~ServiceWorkerPaymentAppFinderIconRefreshBrowserTest() override = default;
 
   content::InstalledPaymentAppsFinder::PaymentApps GetInstalledPaymentApps() {
@@ -883,9 +880,6 @@ class ServiceWorkerPaymentAppFinderIconRefreshBrowserTest
 
     return apps;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerPaymentAppFinderIconRefreshBrowserTest,
