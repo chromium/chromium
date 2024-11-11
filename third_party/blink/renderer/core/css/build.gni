@@ -475,6 +475,7 @@ blink_core_sources_css = [
   "invalidation/invalidation_flags.h",
   "invalidation/invalidation_set.cc",
   "invalidation/invalidation_set.h",
+  "invalidation/invalidation_tracing_flag.h",
   "invalidation/node_invalidation_sets.h",
   "invalidation/pending_invalidations.cc",
   "invalidation/pending_invalidations.h",
