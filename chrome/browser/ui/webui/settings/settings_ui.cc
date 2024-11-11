@@ -593,14 +593,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
     const bool show_ai_settings_for_testing =
         optimization_guide::features::kShowAiSettingsForTesting.Get();
 
-    std::pair<const std::string_view, bool> optimization_guide_features[6] = {
+    std::pair<const std::string_view, bool> optimization_guide_features[] = {
         {"showTabOrganizationControl",
          TabOrganizationUtils::GetInstance()->IsEnabled(profile)},
         {"showComposeControl", compose_enabled},
         {"showWallpaperSearchControl",
          customize_chrome::IsWallpaperSearchEnabledForProfile(profile)},
-        {"showTabOrganizationControl",
-         TabOrganizationUtils::GetInstance()->IsEnabled(profile)},
         {"showHistorySearchControl",
          history_embeddings::IsHistoryEmbeddingsSettingVisible(profile)},
         {"showCompareControl", commerce::CanFetchProductSpecificationsData(
@@ -620,7 +618,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
     html_source->AddBoolean("showAdvancedFeaturesMainControl", show_ai_page);
   } else {
     std::pair<UserVisibleFeatureKey, const std::string_view>
-        optimization_guide_features[4] = {
+        optimization_guide_features[] = {
             {UserVisibleFeatureKey::kCompose, "showComposeControl"},
             {UserVisibleFeatureKey::kTabOrganization,
              "showTabOrganizationControl"},
