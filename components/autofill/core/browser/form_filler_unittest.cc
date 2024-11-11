@@ -204,7 +204,7 @@ class FormFillerTest : public testing::Test {
     } else {
       browser_autofill_manager_->FillOrPreviewCreditCardForm(
           mojom::ActionPersistence::kFill, form, trigger_field.global_id(),
-          *absl::get<const CreditCard*>(profile_or_credit_card), /*cvc=*/u"",
+          *absl::get<const CreditCard*>(profile_or_credit_card),
           trigger_details);
     }
     // Copy the filled data into the form.
@@ -228,8 +228,7 @@ class FormFillerTest : public testing::Test {
                          Return(std::vector<FieldGlobalId>{}))));
     browser_autofill_manager_->FillOrPreviewCreditCardForm(
         mojom::ActionPersistence::kPreview, input_form, input_field_id,
-        virtual_card, std::u16string(),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        virtual_card, {.trigger_source = AutofillTriggerSource::kPopup});
     return filled_fields;
   }
 

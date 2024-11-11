@@ -21,7 +21,6 @@ class FormFieldData;
 // `field`.
 std::u16string GetFillingValueForCreditCard(
     const CreditCard& credit_card,
-    const std::u16string& cvc,
     const std::string& app_locale,
     mojom::ActionPersistence action_persistence,
     const AutofillField& field,

@@ -5234,12 +5234,11 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
                         /*include_masked_server_credit_card=*/false,
                         /*masked_card_is_enrolled_for_virtual_card=*/false);
 
-    credit_card_with_cvc_ = {
-        .credit_card = *autofill_client_->GetPersonalDataManager()
-                            ->payments_data_manager()
-                            .GetCreditCardsToSuggest()
-                            .front(),
-        .cvc = u"123"};
+    credit_card_ = *autofill_client_->GetPersonalDataManager()
+                        ->payments_data_manager()
+                        .GetCreditCardsToSuggest()
+                        .front();
+    credit_card_.set_cvc(u"123");
 
     url::Origin main_origin =
         url::Origin::Create(GURL("https://example.test/"));
@@ -5284,15 +5283,14 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
         this));
   }
 
-  CreditCardAndCvc& fill_data() { return credit_card_with_cvc_; }
+  CreditCard& credit_card() { return credit_card_; }
 
   // Any call to FillForm() should be followed by a SetFormValues() call to
   // mimic its effect on |form_|.
   void FillForm(const FormFieldData& triggering_field) {
     autofill_manager().FillOrPreviewCreditCardForm(
         mojom::ActionPersistence::kFill, form_, triggering_field.global_id(),
-        fill_data().credit_card, fill_data().cvc,
-        {.trigger_source = AutofillTriggerSource::kPopup});
+        credit_card(), {.trigger_source = AutofillTriggerSource::kPopup});
   }
 
   // Sets the field values of |form_| according to the parameters.
@@ -5313,9 +5311,7 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
       auto index_it = type_to_index.find(fill_type);
       ASSERT_NE(index_it, type_to_index.end());
       FormFieldData& field = test_api(form_).field(index_it->second);
-      field.set_value(fill_type != CREDIT_CARD_VERIFICATION_CODE
-                          ? fill_data().credit_card.GetRawInfo(fill_type)
-                          : fill_data().cvc);
+      field.set_value(credit_card().GetRawInfo(fill_type));
       field.set_is_autofilled(is_autofilled);
       field.set_properties_mask((field.properties_mask() & ~kUserTyped) |
                                 (is_user_typed ? kUserTyped : 0));
@@ -5330,7 +5326,7 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
   }
 
   FormData form_;
-  CreditCardAndCvc credit_card_with_cvc_;
+  CreditCard credit_card_;
 };
 
 // This fixture adds utilities for the seamlessness metric names.
@@ -5449,7 +5445,7 @@ TEST_F(AutofillMetricsSeamlessnessTest,
 
   SeeForm(form_);
 
-  fill_data().cvc = u"";
+  credit_card().set_cvc(u"");
 
   // Fakes an Autofill with the following behavior:
   // - before security and assuming a complete profile: kFullFill;

@@ -210,8 +210,7 @@ class FastCheckoutClientImpl
   // state.
   void FillCreditCardForm(const autofill::FormStructure& form,
                           const autofill::FieldGlobalId& field_id,
-                          const autofill::CreditCard& credit_card,
-                          const std::u16string& cvc);
+                          const autofill::CreditCard& credit_card);
 
   // Same as Stop() but does not require `IsShowing() == true` for
   // `allow_further_runs == false` to have any effect. The `IsShowing()` guard

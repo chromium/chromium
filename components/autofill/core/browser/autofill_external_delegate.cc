@@ -1197,7 +1197,7 @@ void AutofillExternalDelegate::OnCreditCardScanned(
     const CreditCard& card) {
   manager_->FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, query_form_, query_field_.global_id(),
-      card, std::u16string(), {.trigger_source = trigger_source});
+      card, {.trigger_source = trigger_source});
 }
 
 void AutofillExternalDelegate::PreviewFieldByFieldFillingSuggestion(
@@ -1423,8 +1423,7 @@ void AutofillExternalDelegate::FillAutofillFormData(
               absl::get<Suggestion::Guid>(payload).value())) {
     is_preview ? manager_->FillOrPreviewCreditCardForm(
                      mojom::ActionPersistence::kPreview, query_form_,
-                     query_field_.global_id(), *credit_card, std::u16string(),
-                     trigger_details)
+                     query_field_.global_id(), *credit_card, trigger_details)
                : manager_->AuthenticateThenFillCreditCardForm(
                      query_form_, query_field_.global_id(),
                      type == SuggestionType::kVirtualCreditCardEntry

@@ -140,7 +140,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const FormData& form,
                const FieldGlobalId& field_id,
                const CreditCard& credit_card,
-               const std::u16string& cvc,
                const AutofillTriggerDetails& trigger_details),
               (override));
   MOCK_METHOD(void,

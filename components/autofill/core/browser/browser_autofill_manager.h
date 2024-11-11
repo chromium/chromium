@@ -134,7 +134,6 @@ class BrowserAutofillManager : public AutofillManager {
       const FormData& form,
       const FieldGlobalId& field_id,
       const CreditCard& credit_card,
-      const std::u16string& cvc,
       const AutofillTriggerDetails& trigger_details);
 
   // Routes calls from external components to FormFiller::FillOrPreviewField.

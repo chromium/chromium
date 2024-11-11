@@ -268,25 +268,16 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
 FormFiller::FillingContext::FillingContext(
     const AutofillField& field,
     absl::variant<const AutofillProfile*, const CreditCard*>
-        profile_or_credit_card,
-    base::optional_ref<const std::u16string> cvc)
-    : filled_field_id(field.global_id()),
+        profile_or_credit_card_ptr)
+    : profile_or_credit_card(absl::visit(
+          [](const auto* c) {
+            return absl::variant<CreditCard, AutofillProfile>(*c);
+          },
+          profile_or_credit_card_ptr)),
+      filled_field_id(field.global_id()),
       filled_field_signature(field.GetFieldSignature()),
       filled_origin(field.origin()),
-      original_fill_time(base::TimeTicks::Now()) {
-  DCHECK(absl::holds_alternative<const CreditCard*>(profile_or_credit_card) ||
-         !cvc.has_value());
-
-  if (absl::holds_alternative<const AutofillProfile*>(profile_or_credit_card)) {
-    profile_or_credit_card_with_cvc =
-        *absl::get<const AutofillProfile*>(profile_or_credit_card);
-  } else if (absl::holds_alternative<const CreditCard*>(
-                 profile_or_credit_card)) {
-    profile_or_credit_card_with_cvc =
-        std::make_pair(*absl::get<const CreditCard*>(profile_or_credit_card),
-                       cvc.has_value() ? *cvc : std::u16string());
-  }
-}
+      original_fill_time(base::TimeTicks::Now()) {}
 
 FormFiller::FillingContext::~FillingContext() = default;
 
@@ -554,7 +545,6 @@ void FormFiller::FillOrPreviewForm(
     const FormData& form,
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card,
-    base::optional_ref<const std::u16string> cvc,
     FormStructure* form_structure,
     AutofillField* autofill_trigger_field,
     const AutofillTriggerDetails& trigger_details,
@@ -564,7 +554,6 @@ void FormFiller::FillOrPreviewForm(
           ? FillingProduct::kCreditCard
           : FillingProduct::kAddress;
 
-  DCHECK(filling_product == FillingProduct::kCreditCard || !cvc.has_value());
   DCHECK(form_structure);
   DCHECK(autofill_trigger_field);
 
@@ -599,10 +588,9 @@ void FormFiller::FillOrPreviewForm(
 
   if (action_persistence == mojom::ActionPersistence::kFill && !is_refill) {
     form_structure->set_last_filling_timestamp(base::TimeTicks::Now());
-    SetFillingContext(
-        form_structure->global_id(),
-        std::make_unique<FillingContext>(*autofill_trigger_field,
-                                         profile_or_credit_card, cvc));
+    SetFillingContext(form_structure->global_id(),
+                      std::make_unique<FillingContext>(*autofill_trigger_field,
+                                                       profile_or_credit_card));
   }
 
   // Only record the types that are filled for an eventual refill if all the
@@ -679,8 +667,7 @@ void FormFiller::FillOrPreviewForm(
     // don't reach this code.
     const bool is_newly_autofilled =
         FillField(*autofill_field, profile_or_credit_card, forced_fill_values,
-                  result_fields[i], cvc.has_value() ? *cvc : u"",
-                  action_persistence, &failure_to_fill);
+                  result_fields[i], action_persistence, &failure_to_fill);
     const bool autofilled_value_did_not_change =
         form.fields()[i].is_autofilled() && result_fields[i].is_autofilled() &&
         form.fields()[i].value() == result_fields[i].value();
@@ -896,25 +883,14 @@ void FormFiller::TriggerRefill(const FormData& form,
   if (!found_matching_element) {
     return;
   }
-  if (absl::holds_alternative<std::pair<CreditCard, std::u16string>>(
-          filling_context->profile_or_credit_card_with_cvc)) {
-    const auto& [credit_card, cvc] =
-        absl::get<std::pair<CreditCard, std::u16string>>(
-            filling_context->profile_or_credit_card_with_cvc);
-    FillOrPreviewForm(mojom::ActionPersistence::kFill, form, &credit_card, &cvc,
-                      form_structure, autofill_field, trigger_details,
-                      /*is_refill=*/true);
-  } else if (absl::holds_alternative<AutofillProfile>(
-                 filling_context->profile_or_credit_card_with_cvc)) {
-    FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                      &absl::get<AutofillProfile>(
-                          filling_context->profile_or_credit_card_with_cvc),
-                      /*optional_cvc=*/std::nullopt, form_structure,
-                      autofill_field, trigger_details,
-                      /*is_refill=*/true);
-  } else {
-    NOTREACHED();
-  }
+  absl::visit(
+      [&](const auto& profile_or_credit_card) {
+        FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
+                          &profile_or_credit_card, form_structure,
+                          autofill_field, trigger_details,
+                          /*is_refill=*/true);
+      },
+      filling_context->profile_or_credit_card);
 }
 
 void FormFiller::MaybeTriggerRefillForExpirationDate(
@@ -991,7 +967,6 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
         profile_or_credit_card,
     const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
     const FormFieldData& field_data,
-    const std::u16string& cvc,
     mojom::ActionPersistence action_persistence,
     std::string* failure_to_fill) {
   auto it = forced_fill_values.find(field_data.global_id());
@@ -1006,7 +981,7 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
                 manager_->client().GetAddressNormalizer(), failure_to_fill)
           : std::make_pair(
                 GetFillingValueForCreditCard(
-                    *absl::get<const CreditCard*>(profile_or_credit_card), cvc,
+                    *absl::get<const CreditCard*>(profile_or_credit_card),
                     app_locale_, action_persistence, autofill_field,
                     failure_to_fill),
                 autofill_field.Type().GetStorableType());
@@ -1019,12 +994,11 @@ bool FormFiller::FillField(
         profile_or_credit_card,
     const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
     FormFieldData& field_data,
-    const std::u16string& cvc,
     mojom::ActionPersistence action_persistence,
     std::string* failure_to_fill) {
   const FieldFillingData filling_content = GetFieldFillingData(
       autofill_field, profile_or_credit_card, forced_fill_values, field_data,
-      cvc, action_persistence, failure_to_fill);
+      action_persistence, failure_to_fill);
 
   // Do not attempt to fill empty values as it would skew the metrics.
   if (filling_content.value_to_fill.empty()) {

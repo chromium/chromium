@@ -278,19 +278,17 @@ std::u16string GetVirtualCardNumberForPreviewInput(
 // Returns the credit card CVC for Preview or Fill.
 std::u16string GetCreditCardVerificationCodeForInput(
     const CreditCard& credit_card,
-    mojom::ActionPersistence action_persistence,
-    const std::u16string& cvc) {
-  const std::u16string cvc_candidate =
-      credit_card.cvc().empty() ? cvc : credit_card.cvc();
-  if (cvc_candidate.empty()) {
+    mojom::ActionPersistence action_persistence) {
+  if (credit_card.cvc().empty()) {
     return {};
   }
   switch (action_persistence) {
     case mojom::ActionPersistence::kFill:
-      return cvc_candidate;
+      return credit_card.cvc();
     // For preview, we will mask CVC with dots.
     case mojom::ActionPersistence::kPreview:
-      return CreditCard::GetMidlineEllipsisPlainDots(cvc_candidate.length());
+      return CreditCard::GetMidlineEllipsisPlainDots(
+          credit_card.cvc().length());
   }
 }
 
@@ -369,7 +367,6 @@ std::u16string GetExpirationDateForInput(const CreditCard& credit_card,
 // into the input `field`.
 std::u16string GetFillingValueForCreditCardForInput(
     const CreditCard& credit_card,
-    const std::u16string& cvc,
     const std::string& app_locale,
     mojom::ActionPersistence action_persistence,
     const AutofillField& field,
@@ -381,7 +378,7 @@ std::u16string GetFillingValueForCreditCardForInput(
     case CREDIT_CARD_VERIFICATION_CODE:
     case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       return GetCreditCardVerificationCodeForInput(credit_card,
-                                                   action_persistence, cvc);
+                                                   action_persistence);
     case CREDIT_CARD_NUMBER:
       return GetCreditCardNumberForInput(
           credit_card, field.credit_card_number_offset(), field.max_length(),
@@ -434,7 +431,7 @@ std::u16string GetValueForVirtualCardInputPreview(
     case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
     case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
       return ReplaceDigitsWithCenterDots(GetFillingValueForCreditCardForInput(
-          virtual_card, /*cvc=*/std::u16string(), app_locale,
+          virtual_card, app_locale,
           /*action_persistence=*/mojom::ActionPersistence::kPreview, field,
           failure_to_fill));
     default:
@@ -468,7 +465,6 @@ std::u16string GetFillingValueForCreditCardSelectControl(
 
 std::u16string GetFillingValueForCreditCard(
     const CreditCard& credit_card,
-    const std::u16string& cvc,
     const std::string& app_locale,
     mojom::ActionPersistence action_persistence,
     const AutofillField& field,
@@ -481,7 +477,7 @@ std::u16string GetFillingValueForCreditCard(
               action_persistence == mojom::ActionPersistence::kPreview
           ? GetValueForVirtualCardInputPreview(credit_card, app_locale, field,
                                                failure_to_fill)
-          : GetFillingValueForCreditCardForInput(credit_card, cvc, app_locale,
+          : GetFillingValueForCreditCardForInput(credit_card, app_locale,
                                                  action_persistence, field,
                                                  failure_to_fill);
 

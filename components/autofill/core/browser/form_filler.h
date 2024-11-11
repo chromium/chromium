@@ -158,7 +158,6 @@ class FormFiller {
       const FormData& form,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
-      base::optional_ref<const std::u16string> optional_cvc,
       FormStructure* form_structure,
       AutofillField* autofill_field,
       const AutofillTriggerDetails& trigger_details,
@@ -208,17 +207,13 @@ class FormFiller {
     // non-null.
     FillingContext(const AutofillField& field,
                    absl::variant<const AutofillProfile*, const CreditCard*>
-                       profile_or_credit_card,
-                   base::optional_ref<const std::u16string> optional_cvc);
+                       profile_or_credit_card);
     ~FillingContext();
 
     // Whether a refill attempt was made.
     bool attempted_refill = false;
     // The profile or credit card that was used for the initial fill.
-    // The std::string associated with the credit card is the CVC, which may be
-    // empty.
-    absl::variant<std::pair<CreditCard, std::u16string>, AutofillProfile>
-        profile_or_credit_card_with_cvc;
+    absl::variant<CreditCard, AutofillProfile> profile_or_credit_card;
     // Possible identifiers of the field that was focused when the form was
     // initially filled. A refill shall be triggered from the same field.
     const FieldGlobalId filled_field_id;
@@ -264,7 +259,6 @@ class FormFiller {
           profile_or_credit_card,
       const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
       const FormFieldData& field_data,
-      const std::u16string& cvc,
       mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill);
 
@@ -278,7 +272,6 @@ class FormFiller {
           profile_or_credit_card,
       const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
       FormFieldData& field_data,
-      const std::u16string& cvc,
       mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill);
 

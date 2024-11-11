@@ -134,7 +134,6 @@ void FillCard(content::RenderFrameHost* rfh,
   auto& manager = TestAutofillManager::GetForRenderFrameHost(rfh);
   manager.FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form, triggered_field.global_id(), card,
-      base::ASCIIToUTF16(std::string_view(kCvc)),
       AutofillTriggerDetails(AutofillTriggerSource::kPopup));
 }
 
