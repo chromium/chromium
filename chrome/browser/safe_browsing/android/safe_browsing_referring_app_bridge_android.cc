@@ -30,6 +30,13 @@ namespace safe_browsing {
 ReferringAppInfo GetReferringAppInfo(content::WebContents* web_contents) {
   base::TimeTicks start_time = base::TimeTicks::Now();
   ui::WindowAndroid* window_android = web_contents->GetTopLevelNativeWindow();
+
+  if (!window_android) {
+    return ReferringAppInfo{LoginReputationClientRequest::ReferringAppInfo::
+                                REFERRING_APP_SOURCE_UNSPECIFIED,
+                            "", GURL()};
+  }
+
   JNIEnv* env = base::android::AttachCurrentThread();
 
   ScopedJavaLocalRef<jobject> j_info =
