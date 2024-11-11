@@ -221,17 +221,33 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
     @Override
     public void createSingleTabGroup(Tab tab, boolean notify) {
+        createSingleTabGroupInternal(tab, Token.createRandom(), notify);
+    }
+
+    @Override
+    public void createTabGroupForTabGroupSync(@NonNull List<Tab> tabs, @NonNull Token tabGroupId) {
+        if (tabs.isEmpty()) return;
+
+        Tab rootTab = tabs.get(0);
+        createSingleTabGroupInternal(rootTab, tabGroupId, /* notify= */ false);
+
+        if (tabs.size() == 1) return;
+
+        mergeListOfTabsToGroup(tabs, rootTab, /* notify= */ false);
+    }
+
+    private void createSingleTabGroupInternal(Tab tab, @NonNull Token tabGroupId, boolean notify) {
         assert tab.getTabGroupId() == null;
 
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
             observer.willMergeTabToGroup(tab, tab.getRootId());
         }
 
-        tab.setTabGroupId(Token.createRandom());
+        tab.setTabGroupId(tabGroupId);
 
         // If this is a new tab group creation that will show a dialog, do not trigger a snackbar.
         if (!TabGroupFeatureUtils.shouldSkipGroupCreationDialog(
-            TabGroupFeatureUtils.shouldShowGroupCreationDialogViaSettingsSwitch())) {
+                TabGroupFeatureUtils.shouldShowGroupCreationDialogViaSettingsSwitch())) {
             notify = false;
         }
 

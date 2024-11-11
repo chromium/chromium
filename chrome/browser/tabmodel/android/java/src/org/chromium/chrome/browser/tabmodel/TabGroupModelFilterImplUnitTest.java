@@ -80,6 +80,7 @@ import org.chromium.url.GURL;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -650,6 +651,53 @@ public class TabGroupModelFilterImplUnitTest {
         // Verify this isn't called a second time.
         verify(mTabGroupModelFilterObserver).didCreateNewGroup(mTab1, mTabGroupModelFilter);
         assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(3));
+    }
+
+    @Test
+    public void createTabGroupForTabGroupSync_Empty() {
+        assertEquals(2, mTabGroupModelFilter.getTabGroupCount());
+
+        Token tabGroupId = new Token(783L, 348L);
+        mTabGroupModelFilter.createTabGroupForTabGroupSync(Collections.emptyList(), tabGroupId);
+        assertEquals(2, mTabGroupModelFilter.getTabGroupCount());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
+    public void createTabGroupForTabGroupSync_1Tab() {
+        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        assertEquals(2, mTabGroupModelFilter.getTabGroupCount());
+        assertFalse(mTabGroupModelFilter.isTabInTabGroup(mTab1));
+
+        Token tabGroupId = new Token(783L, 348L);
+        mTabGroupModelFilter.createTabGroupForTabGroupSync(List.of(mTab1), tabGroupId);
+        assertEquals(3, mTabGroupModelFilter.getTabGroupCount());
+        assertEquals(tabGroupId, mTab1.getTabGroupId());
+        assertTrue(mTabGroupModelFilter.isTabInTabGroup(mTab1));
+        assertEquals(1, mTabGroupModelFilter.getRelatedTabCountForRootId(mTab1.getRootId()));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
+    public void createTabGroupForTabGroupSync_MultipleTabs() {
+        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        assertEquals(2, mTabGroupModelFilter.getTabGroupCount());
+        assertFalse(mTabGroupModelFilter.isTabInTabGroup(mTab1));
+
+        Tab newTab = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, null, Tab.INVALID_TAB_ID);
+        addTabToTabModel(POSITION1 + 1, newTab);
+
+        assertFalse(mTabGroupModelFilter.isTabInTabGroup(newTab));
+
+        Token tabGroupId = new Token(783L, 348L);
+        mTabGroupModelFilter.createTabGroupForTabGroupSync(List.of(mTab1, newTab), tabGroupId);
+        assertEquals(3, mTabGroupModelFilter.getTabGroupCount());
+        assertEquals(tabGroupId, mTab1.getTabGroupId());
+        assertEquals(tabGroupId, newTab.getTabGroupId());
+        assertEquals(mTab1.getRootId(), newTab.getRootId());
+        assertTrue(mTabGroupModelFilter.isTabInTabGroup(mTab1));
+        assertTrue(mTabGroupModelFilter.isTabInTabGroup(newTab));
+        assertEquals(2, mTabGroupModelFilter.getRelatedTabCountForRootId(mTab1.getRootId()));
     }
 
     @Test

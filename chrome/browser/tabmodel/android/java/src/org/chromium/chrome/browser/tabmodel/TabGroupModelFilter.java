@@ -183,6 +183,19 @@ public interface TabGroupModelFilter extends TabList {
     public void createSingleTabGroup(Tab tab, boolean notify);
 
     /**
+     * Creates a tab group with a preallocated {@link Token} for the TabGroupId.
+     *
+     * <p>This should only be used by the tab group sync service and related code. Ideally, this
+     * would be locked down using a mechanism like {@code friend class} or some sort of access
+     * token. However, for now this disclaimer will suffice.
+     *
+     * @param tabs The list of tabs to make a tab group from. The first tab in the list will be the
+     *     root tab. An empty list will no-op.
+     * @param tabGroupId An externally minted tab group id token.
+     */
+    public void createTabGroupForTabGroupSync(@NonNull List<Tab> tabs, @NonNull Token tabGroupId);
+
+    /**
      * This method merges the source group that contains the {@code sourceTabId} to the destination
      * group that contains the {@code destinationTabId}. This method only operates if two groups are
      * in the same {@code TabModel}.
