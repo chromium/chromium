@@ -38,7 +38,6 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_meet.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/messages_dogfood.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -96,27 +95,23 @@ std::vector<ExternalInstallOptions> GetChromeBrandedApps(
       GetConfigForGoogleSheets(is_standalone_tabbed),
       GetConfigForGoogleSlides(is_standalone_tabbed),
       GetConfigForYouTube(),
-  };
 #if BUILDFLAG(IS_CHROMEOS)
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kPreinstalledWebAppsCoreOnly)) {
-    apps.insert(apps.end(),
-                {
-                    GetConfigForCalculator(),
-                    GetConfigForGemini(device_info),
-                    GetConfigForGoogleCalendar(),
-                    GetConfigForGoogleChat(/*is_standalone=*/true,
-                                           /*only_for_new_users=*/true),
-                    GetConfigForGoogleMeet(),
-                });
-  }
-#else  // BUILDFLAG(IS_CHROMEOS)
+      GetConfigForCalculator(),
+      GetConfigForGemini(device_info),
+      GetConfigForGoogleCalendar(),
+      GetConfigForGoogleChat(/*is_standalone=*/true,
+                             /*only_for_new_users=*/true),
+      GetConfigForGoogleMeet(),
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  };
+
+#if !BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(kChatPreinstalledWebApp)) {
     apps.insert(apps.end(), GetConfigForGoogleChat(
                                 /*is_standalone=*/false,
                                 /*only_for_new_users=*/kOnlyForNewUsers.Get()));
   }
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   return apps;
 }
@@ -153,9 +148,7 @@ std::vector<ExternalInstallOptions> GetPreinstalledWebApps(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40854011): replace with config in admin console.
-  if (IsGoogleInternalAccount() &&
-      !base::FeatureList::IsEnabled(
-          chromeos::features::kPreinstalledWebAppsCoreOnly)) {
+  if (IsGoogleInternalAccount()) {
     std::vector<ExternalInstallOptions> apps =
         GetChromeBrandedApps(profile, device_info);
     apps.push_back(GetConfigForMessagesDogfood());

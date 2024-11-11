@@ -260,11 +260,6 @@ BASE_FEATURE(kFeatureManagementRoundedWindows,
              "FeatureManagementRoundedWindows",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Whether PreinstalledWebApps should only install core apps.
-BASE_FEATURE(kPreinstalledWebAppsCoreOnly,
-             "PreinstalledWebAppsCoreOnly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether to enable quick answers V2 settings sub-toggles.
 BASE_FEATURE(kQuickAnswersV2SettingsSubToggle,
              "QuickAnswersV2SettingsSubToggle",

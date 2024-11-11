@@ -17615,22 +17615,6 @@
             ]
         }
     ],
-    "PreinstalledWebAppsCoreOnly": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AppPreloadServiceAllUserTypes",
-                        "PreinstalledWebAppsCoreOnly"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreloadSystemFonts": [
         {
             "platforms": [

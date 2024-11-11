@@ -10,8 +10,6 @@ static_library("migrations") {
   sources = [
     "adobe_express_oem_to_default_migration.cc",
     "adobe_express_oem_to_default_migration.h",
-    "migrate_preinstalls_to_aps.cc",
-    "migrate_preinstalls_to_aps.h",
   ]
 
   deps = [
@@ -29,10 +27,7 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [
-    "adobe_express_oem_to_default_migration_browsertest.cc",
-    "migrate_preinstalls_to_aps_browsertest.cc",
-  ]
+  sources = [ "adobe_express_oem_to_default_migration_browsertest.cc" ]
 
   deps = [
     ":migrations",

@@ -298,18 +298,10 @@ class PreinstalledWebAppManagerBrowserTestBase
 class PreinstalledWebAppManagerBrowserTest
     : public PreinstalledWebAppManagerBrowserTestBase {
  public:
-  PreinstalledWebAppManagerBrowserTest() {
-#if BUILDFLAG(IS_CHROMEOS)
-    feature_list_.InitWithFeatures(
-        {features::kRecordWebAppDebugInfo},
-        {chromeos::features::kPreinstalledWebAppsCoreOnly});
-#else
-    feature_list_.InitWithFeatures({features::kRecordWebAppDebugInfo}, {});
-#endif
-  }
+  PreinstalledWebAppManagerBrowserTest() = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{features::kRecordWebAppDebugInfo};
 };
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerBrowserTest,
