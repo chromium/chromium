@@ -389,6 +389,9 @@ Status FindElementCommon(int interval_ms,
       if (status.code() == kJavaScriptError) {
         status = Status{kInvalidSelector, status};
       }
+      if (status.code() == kTargetDetached) {
+        return Status{kAbortedByNavigation, status};
+      }
       return status;
     }
 

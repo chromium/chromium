@@ -409,6 +409,13 @@ Status ResolveNode(DevToolsClient& client,
   return status;
 }
 
+Status WrapIfTargetDetached(Status status, StatusCode new_code) {
+  if (status.code() == kTargetDetached) {
+    return Status{new_code, status};
+  }
+  return status;
+}
+
 }  // namespace
 
 std::unique_ptr<WebViewImpl> WebViewImpl::CreateServiceWorkerWebView(
@@ -799,7 +806,7 @@ Status WebViewImpl::GetLoaderId(const std::string& frame_id,
     }
     if (current_loader_id->empty()) {
       // There is probably an ongoing navigation. Giving up.
-      return Status{kNoSuchExecutionContext,
+      return Status{kAbortedByNavigation,
                     "no loaderId found for the current frame"};
     }
 
@@ -845,12 +852,12 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
 
   status = GetLoaderId(frame_id, local_timeout, loader_id);
   if (status.IsError()) {
-    return status;
+    return WrapIfTargetDetached(status, kAbortedByNavigation);
   }
   std::string context_id;
   status = GetFrameTracker()->GetContextIdForFrame(frame_id, &context_id);
   if (status.IsError()) {
-    return status;
+    return WrapIfTargetDetached(status, kAbortedByNavigation);
   }
 
   ObjectGroup object_group(client_.get());
@@ -866,17 +873,17 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
   // navigation.
   // Otherwise the user has sent us a node id that refers a non-existent node.
   if (status.IsError() && status.code() != kNoSuchElement) {
-    return status;
+    return WrapIfTargetDetached(status, kAbortedByNavigation);
   }
 
   std::string new_loader_id;
   Status new_status = GetLoaderId(frame_id, local_timeout, new_loader_id);
   if (new_status.IsError()) {
-    return new_status;
+    return WrapIfTargetDetached(new_status, kAbortedByNavigation);
   }
   if (new_loader_id != loader_id) {
     // A navigation has happened while resolving references. Giving up.
-    return Status{kNoSuchExecutionContext,
+    return Status{kAbortedByNavigation,
                   "loader has changed while resolving nodes"};
   }
   // ResolveElementReferences returned kNoSuchElement.
@@ -886,13 +893,12 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
   }
 
   std::string new_context_id;
-  new_status =
-      GetFrameTracker()->GetContextIdForFrame(frame_id, &new_context_id);
-  if (new_status.IsError()) {
-    return new_status;
+  status = GetFrameTracker()->GetContextIdForFrame(frame_id, &new_context_id);
+  if (status.IsError()) {
+    return WrapIfTargetDetached(status, kAbortedByNavigation);
   }
   if (context_id != new_context_id) {
-    return Status{kNoSuchExecutionContext,
+    return Status{kAbortedByNavigation,
                   "context has changed while resolving nodes"};
   }
 

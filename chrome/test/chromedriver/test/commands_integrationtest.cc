@@ -82,9 +82,9 @@ class SyncWebSocketWrapper : public SyncWebSocket {
   std::unique_ptr<SyncWebSocket> wrapped_socket_;
 };
 
-class ClickElementTest : public IntegrationTest {
+class SocketDecoratorTest : public IntegrationTest {
  protected:
-  ClickElementTest() = default;
+  SocketDecoratorTest() = default;
 
   template <class SocketDecorator>
   Status SetUpConnection(SocketDecorator** decorator_ptr) {
@@ -287,6 +287,28 @@ Status WaitForElement(Session& session,
   return status;
 }
 
+Status FindElements(Session& session,
+                    WebView& web_view,
+                    const std::string& strategy,
+                    const std::string& selector,
+                    Timeout& timeout,
+                    base::Value::List& element_id_list) {
+  base::Value::Dict params;
+  std::unique_ptr<base::Value> tmp_result;
+  params.Set("using", strategy);
+  params.Set("value", selector);
+  Status status = ExecuteFindElements(50, &session, &web_view, params,
+                                      &tmp_result, &timeout);
+  if (status.IsError()) {
+    return status;
+  }
+  if (!tmp_result->is_list()) {
+    return Status{kUnknownError, "element_id is not a dictionary"};
+  }
+  element_id_list = std::move(tmp_result->GetList());
+  return status;
+}
+
 Status SwitchToFrame(Session& session_,
                      WebView& web_view,
                      const base::Value::Dict& frame_id,
@@ -335,8 +357,34 @@ Status AttachToFirstPage(DevToolsClient& browser_client,
                                           &timeout, client);
 }
 
+class RemoteToLocalNavigationTest : public SocketDecoratorTest {
+ protected:
+  void SetUp() override {
+    SocketDecoratorTest::SetUp();
+    GURL root_url = http_server_.http_url();
+    http_server_.SetDataForPath("local.html", "<p>DONE!</p>");
+    local_url_ = root_url.Resolve("local.html");
+    http_server_.SetDataForPath(
+        "remote.html", base::StringPrintf("<a href=\"%s\">To Local</a>",
+                                          local_url_.spec().c_str()));
+    remote_url_ = ReplaceIPWithLocalhost(root_url).Resolve("remote.html");
+    http_server_.SetDataForPath(
+        "main.html",
+        base::StringPrintf("<iframe src=\"%s\">", remote_url_.spec().c_str()));
+    main_url_ = root_url.Resolve("main.html");
+
+    http_server_.SetDataForPath("away.html", "<span>AWAY!</span>");
+    away_url_ = root_url.Resolve("away.html");
+  }
+
+  GURL local_url_;
+  GURL remote_url_;
+  GURL main_url_;
+  GURL away_url_;
+};
+
 class DispatchingMouseEventsTest
-    : public ClickElementTest,
+    : public RemoteToLocalNavigationTest,
       public testing::WithParamInterface<InterceptionMode> {
  public:
   InterceptionMode InterceptionMode() const { return GetParam(); }
@@ -355,19 +403,7 @@ TEST_P(DispatchingMouseEventsTest, TolerateTargetDetach) {
                        PageLoadStrategy::kNormal, true);
   web_view.AttachTo(browser_client_.get());
 
-  GURL root_url = http_server_.http_url();
-  http_server_.SetDataForPath("local.html", "<p>DONE!</p>");
-  GURL local_url = root_url.Resolve("local.html");
-  http_server_.SetDataForPath("remote.html",
-                              base::StringPrintf("<a href=\"%s\">To Local</a>",
-                                                 local_url.spec().c_str()));
-  GURL remote_url = ReplaceIPWithLocalhost(root_url).Resolve("remote.html");
-  http_server_.SetDataForPath(
-      "main.html",
-      base::StringPrintf("<iframe src=\"%s\">", remote_url.spec().c_str()));
-
-  ASSERT_TRUE(
-      StatusOk(Navigate(session_, web_view, root_url.Resolve("main.html"))));
+  ASSERT_TRUE(StatusOk(Navigate(session_, web_view, main_url_)));
 
   base::Value::Dict frame_id;
   ASSERT_TRUE(StatusOk(WaitForElement(session_, web_view, "tag name", "iframe",
@@ -422,6 +458,7 @@ class NavigationCausingSocket : public SyncWebSocketWrapper {
   bool Send(const std::string& message) override {
     if (skip_count_ == 0) {
       base::Value::Dict params;
+      EXPECT_TRUE(!url_for_navigation_.is_empty());
       params.Set("url", url_for_navigation_.spec());
       if (!frame_for_navigation_.empty()) {
         params.Set("frameId", frame_for_navigation_);
@@ -482,7 +519,7 @@ class NavigationCausingSocket : public SyncWebSocketWrapper {
 };
 
 class MouseClickNavigationInjectionTest
-    : public ClickElementTest,
+    : public RemoteToLocalNavigationTest,
       public testing::WithParamInterface<int> {
  public:
   static const int kSkipTestStep = 10;
@@ -493,6 +530,7 @@ class MouseClickNavigationInjectionTest
 TEST_P(MouseClickNavigationInjectionTest, ClickWhileNavigating) {
   NavigationCausingSocket* socket;
   ASSERT_TRUE(StatusOk(SetUpConnection(&socket)));
+  socket->SetUrl(away_url_);
   Timeout timeout{base::Seconds(100)};
   std::unique_ptr<DevToolsClient> client;
   ASSERT_TRUE(StatusOk(AttachToFirstPage(*browser_client_, timeout, client)));
@@ -501,25 +539,11 @@ TEST_P(MouseClickNavigationInjectionTest, ClickWhileNavigating) {
                        PageLoadStrategy::kNormal, true);
   web_view.AttachTo(browser_client_.get());
 
-  GURL root_url = http_server_.http_url();
-  http_server_.SetDataForPath("local.html", "<p>DONE!</p>");
-  GURL local_url = root_url.Resolve("local.html");
-  http_server_.SetDataForPath("remote.html",
-                              base::StringPrintf("<a href=\"%s\">To Local</a>",
-                                                 local_url.spec().c_str()));
-  GURL remote_url = ReplaceIPWithLocalhost(root_url).Resolve("remote.html");
-  http_server_.SetDataForPath(
-      "main.html",
-      base::StringPrintf("<iframe src=\"%s\">", remote_url.spec().c_str()));
-  http_server_.SetDataForPath("away.html", "<span>AWAY!</span>");
-  socket->SetUrl(root_url.Resolve("away.html"));
-
   for (int skip_count = GetParam(); skip_count < GetParam() + kSkipTestStep;
        ++skip_count) {
     // avoid preliminary injected navigation
     socket->SetSkipCount(1000'000'000);
-    ASSERT_TRUE(
-        StatusOk(Navigate(session_, web_view, root_url.Resolve("main.html"))))
+    ASSERT_TRUE(StatusOk(Navigate(session_, web_view, main_url_)))
         << "skip_count=" << skip_count;
 
     base::Value::Dict frame_id;
@@ -548,19 +572,21 @@ TEST_P(MouseClickNavigationInjectionTest, ClickWhileNavigating) {
     Status status = ClickElement(session_, web_view, anchor_id);
 
     // If the injected navigation has happened and it was detected then the only
-    // two two acceptable outcomes are: KStaleElementReference and
-    // kNoSuchExecutionContext. The last one will lead to retry by the
+    // two two acceptable outcomes are: kStaleElementReference and
+    // kNoSuchExecutionContext. These will lead to retry by the
     // ExecuteWindowCommand function.
     // If there were no injection or the injected navigation has happened too
     // late, somewhere around Input.deispatchMouseEvent, and it was not detected
     // then the expected status code is kOk.
-    std::set<StatusCode> actual_code = {status.code()};
-    ASSERT_THAT(actual_code, testing::IsSubsetOf({kStaleElementReference,
-                                                  kAbortedByNavigation, kOk}))
-        << "skip_count=" << skip_count;
 
-    // The skip count is too large.
-    if (!socket->IsSaturated()) {
+    if (socket->IsSaturated()) {
+      std::set<StatusCode> actual_code = {status.code()};
+      ASSERT_THAT(actual_code, testing::IsSubsetOf({kStaleElementReference,
+                                                    kAbortedByNavigation, kOk}))
+          << "skip_count=" << skip_count;
+    } else {
+      // The skip count is too large.
+      ASSERT_TRUE(StatusOk(status)) << "skip_count=" << skip_count;
       break;
     }
   }
@@ -570,3 +596,175 @@ INSTANTIATE_TEST_SUITE_P(
     SkipRanges,
     MouseClickNavigationInjectionTest,
     ::testing::Range(0, 100, MouseClickNavigationInjectionTest::kSkipTestStep));
+
+namespace {
+
+class ScriptNavigateTest : public RemoteToLocalNavigationTest,
+                           public testing::WithParamInterface<int> {
+ public:
+  static const int kSkipTestStep = 10;
+};
+
+}  // namespace
+
+TEST_P(ScriptNavigateTest, ScriptNavigationWhileNavigating) {
+  NavigationCausingSocket* socket;
+  ASSERT_TRUE(StatusOk(SetUpConnection(&socket)));
+  socket->SetUrl(away_url_);
+  Timeout timeout{base::Seconds(100)};
+  std::unique_ptr<DevToolsClient> client;
+  ASSERT_TRUE(StatusOk(AttachToFirstPage(*browser_client_, timeout, client)));
+  WebViewImpl web_view(client->GetId(), true, nullptr, &browser_info_,
+                       std::move(client), std::nullopt,
+                       PageLoadStrategy::kNormal, true);
+  web_view.AttachTo(browser_client_.get());
+  bool expect_no_injections = false;
+
+  for (int skip_count = GetParam(); skip_count < GetParam() + kSkipTestStep;
+       ++skip_count) {
+    // avoid preliminary injected navigation
+    socket->SetSkipCount(1000'000'000);
+    ASSERT_TRUE(StatusOk(Navigate(session_, web_view, main_url_)))
+        << "skip_count=" << skip_count;
+
+    base::Value::Dict frame_id;
+    ASSERT_TRUE(StatusOk(WaitForElement(session_, web_view, "tag name",
+                                        "iframe", timeout, frame_id)))
+        << "skip_count=" << skip_count;
+
+    ASSERT_TRUE(StatusOk(SwitchToFrame(session_, web_view, frame_id, timeout)))
+        << "skip_count=" << skip_count;
+
+    socket->SetFrameId(session_.GetCurrentFrameId());
+    WebView* child_web_view = web_view.GetFrameTracker()->GetTargetForFrame(
+        session_.GetCurrentFrameId());
+    ASSERT_NE(nullptr, child_web_view);
+    const std::string session_id = child_web_view->GetSessionId();
+    socket->SetSessionId(session_id);
+
+    base::Value::Dict anchor_id;
+    ASSERT_TRUE(StatusOk(WaitForElement(session_, web_view, "tag name", "a",
+                                        timeout, anchor_id)))
+        << "skip_count=" << skip_count;
+
+    socket->SetSkipCount(skip_count);
+
+    base::Value::Dict params;
+    params.Set("script", "location.href=arguments[0]");
+    base::Value::List args;
+    args.Append(local_url_.spec().c_str());
+    params.Set("args", std::move(args));
+
+    std::unique_ptr<base::Value> result;
+    Status status =
+        ExecuteExecuteScript(&session_, &web_view, params, &result, &timeout);
+
+    // If the injected navigation has happened and it was detected then the only
+    // two two acceptable outcomes are: kScriptTimeout and
+    // kAbortedByNavigation. The last one will lead to retry by the
+    // ExecuteWindowCommand function.
+    // If there were no injection or the injected navigation has happened too
+    // late and it was not detected then the expected status code is kOk.
+
+    if (socket->IsSaturated()) {
+      ASSERT_FALSE(expect_no_injections);
+      std::set<StatusCode> actual_code = {status.code()};
+      ASSERT_THAT(actual_code, testing::IsSubsetOf(
+                                   {kAbortedByNavigation, kScriptTimeout, kOk}))
+          << "skip_count=" << skip_count;
+      // The last injection can lead to kScriptTimeout because it is unclear to
+      // ChromeDriver who initiated the navigation. However in this case the
+      // bigger skip count will never saturate.
+      expect_no_injections = status.code() == kScriptTimeout;
+    } else {
+      // The skip count is too large.
+      ASSERT_TRUE(StatusOk(status)) << "skip_count=" << skip_count;
+      break;
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(SkipRanges,
+                         ScriptNavigateTest,
+                         ::testing::Range(0,
+                                          20,
+                                          ScriptNavigateTest::kSkipTestStep));
+
+namespace {
+
+class FindElementsTest : public RemoteToLocalNavigationTest,
+                         public testing::WithParamInterface<int> {
+ public:
+  static const int kSkipTestStep = 10;
+};
+
+}  // namespace
+
+TEST_P(FindElementsTest, FindElementsWhileNavigating) {
+  NavigationCausingSocket* socket;
+  ASSERT_TRUE(StatusOk(SetUpConnection(&socket)));
+  socket->SetUrl(away_url_);
+  Timeout timeout{base::Seconds(100)};
+  std::unique_ptr<DevToolsClient> client;
+  ASSERT_TRUE(StatusOk(AttachToFirstPage(*browser_client_, timeout, client)));
+  WebViewImpl web_view(client->GetId(), true, nullptr, &browser_info_,
+                       std::move(client), std::nullopt,
+                       PageLoadStrategy::kNormal, true);
+  web_view.AttachTo(browser_client_.get());
+
+  for (int skip_count = GetParam(); skip_count < GetParam() + kSkipTestStep;
+       ++skip_count) {
+    // avoid preliminary injected navigation
+    socket->SetSkipCount(1000'000'000);
+    ASSERT_TRUE(StatusOk(Navigate(session_, web_view, main_url_)))
+        << "skip_count=" << skip_count;
+
+    base::Value::Dict frame_id;
+    ASSERT_TRUE(StatusOk(WaitForElement(session_, web_view, "tag name",
+                                        "iframe", timeout, frame_id)))
+        << "skip_count=" << skip_count;
+
+    ASSERT_TRUE(StatusOk(SwitchToFrame(session_, web_view, frame_id, timeout)))
+        << "skip_count=" << skip_count;
+
+    socket->SetFrameId(session_.GetCurrentFrameId());
+    WebView* child_web_view = web_view.GetFrameTracker()->GetTargetForFrame(
+        session_.GetCurrentFrameId());
+    ASSERT_NE(nullptr, child_web_view);
+    const std::string session_id = child_web_view->GetSessionId();
+    socket->SetSessionId(session_id);
+
+    base::Value::Dict anchor_id;
+    ASSERT_TRUE(StatusOk(WaitForElement(session_, web_view, "tag name", "a",
+                                        timeout, anchor_id)))
+        << "skip_count=" << skip_count;
+
+    socket->SetSkipCount(skip_count);
+
+    base::Value::List elemend_id_list;
+    Status status = FindElements(session_, web_view, "tag name", "a", timeout,
+                                 elemend_id_list);
+
+    // If the injected navigation has happened and it was detected then the only
+    // acceptable outcome is: kAbortedByNavigation. It will lead to retry by the
+    // ExecuteWindowCommand function.
+    // If there were no injection or the injected navigation has happened too
+    // late and it was not detected then the expected status code is kOk.
+
+    if (socket->IsSaturated()) {
+      std::set<StatusCode> actual_code = {status.code()};
+      ASSERT_THAT(actual_code, testing::IsSubsetOf({kAbortedByNavigation, kOk}))
+          << "skip_count=" << skip_count;
+    } else {
+      // The skip count is too large.
+      ASSERT_TRUE(StatusOk(status)) << "skip_count=" << skip_count;
+      break;
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(SkipRanges,
+                         FindElementsTest,
+                         ::testing::Range(0,
+                                          20,
+                                          FindElementsTest::kSkipTestStep));
