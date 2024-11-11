@@ -286,7 +286,8 @@ class DownloadRequestLimiter
 
   // Does the work of updating the download status on the UI thread and
   // potentially prompting the user.
-  void CanDownloadImpl(content::WebContents* originating_contents,
+  void CanDownloadImpl(const GURL& url,
+                       content::WebContents* originating_contents,
                        const std::string& request_method,
                        std::optional<url::Origin> request_initiator,
                        bool from_download_cross_origin_redirect,
@@ -294,6 +295,7 @@ class DownloadRequestLimiter
 
   // Invoked when decision to download has been made.
   void OnCanDownloadDecided(
+      const GURL& url,
       const content::WebContents::Getter& web_contents_getter,
       const std::string& request_method,
       std::optional<url::Origin> request_initiator,
