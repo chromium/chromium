@@ -108,6 +108,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation,
     &autofill::features::kAutofillEnableVirtualCardJavaPaymentsDataManager,
     &blink::features::kBackForwardTransitions,
+    &blink::features::kDynamicSafeAreaInsets,
     &blink::features::kForceWebContentsDarkMode,
     &blink::features::kPrerender2,
     &browsing_data::features::kBrowsingDataModel,
