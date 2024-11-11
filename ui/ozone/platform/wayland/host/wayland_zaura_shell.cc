@@ -73,7 +73,7 @@ WaylandZAuraShell::WaylandZAuraShell(zaura_shell* aura_shell,
   DCHECK(connection_);
 
   static constexpr zaura_shell_listener kZAuraShellListener = {
-      .layout_mode = &OnLayoutMode,
+      .layout_mode = nullptr,
       .bug_fix = &OnBugFix,
       .desks_changed = &OnDesksChanged,
       .desk_activation_changed = &OnDeskActivationChanged,
@@ -104,35 +104,6 @@ int WaylandZAuraShell::GetActiveDeskIndex() const {
 
 gfx::RoundedCornersF WaylandZAuraShell::GetWindowCornersRadii() const {
   return window_corners_radii_;
-}
-
-// static
-void WaylandZAuraShell::OnLayoutMode(void* data,
-                                     struct zaura_shell* zaura_shell,
-                                     uint32_t layout_mode) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* self = static_cast<WaylandZAuraShell*>(data);
-  auto* connection = self->connection_.get();
-  auto* screen = connection->wayland_output_manager()->wayland_screen();
-
-  switch (layout_mode) {
-    case ZAURA_SHELL_LAYOUT_MODE_WINDOWED:
-      connection->set_tablet_layout_state(
-          display::TabletState::kInClamshellMode);
-      // `screen` is null in some unit test suites or if it's called earlier
-      // than screen initialization.
-      if (screen)
-        screen->OnTabletStateChanged(display::TabletState::kInClamshellMode);
-      return;
-    case ZAURA_SHELL_LAYOUT_MODE_TABLET:
-      connection->set_tablet_layout_state(display::TabletState::kInTabletMode);
-      // `screen` is null in some unit test suites or if it's called earlier
-      // than screen initialization.
-      if (screen)
-        screen->OnTabletStateChanged(display::TabletState::kInTabletMode);
-      return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 // static

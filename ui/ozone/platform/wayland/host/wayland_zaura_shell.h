@@ -61,9 +61,6 @@ class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
 
  private:
   // zaura_shell_listener callbacks:
-  static void OnLayoutMode(void* data,
-                           struct zaura_shell* zaura_shell,
-                           uint32_t layout_mode);
   static void OnBugFix(void* data,
                        struct zaura_shell* zaura_shell,
                        uint32_t id);
