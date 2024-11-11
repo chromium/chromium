@@ -15,6 +15,7 @@
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
@@ -1255,6 +1256,56 @@ TEST_F(SunfishTest, RecordSearchButtonShownAndPressed) {
 
   histogram_tester.ExpectBucketCount(kSearchButtonShownHistogram, true, 1);
   histogram_tester.ExpectBucketCount(kSearchButtonPressedHistogram, true, 1);
+}
+
+// Tests the `SearchResultsPanel` entry point metrics are being properly
+// recorded.
+TEST_F(SunfishTest, RecordSearchResultsPanelEntryType) {
+  base::HistogramTester histogram_tester;
+  constexpr char kSearchResultsPanelEntryPointHistogram[] =
+      "Ash.CaptureModeController.SearchResultsPanelEntryPoint.ClamshellMode";
+
+  histogram_tester.ExpectTotalCount(kSearchResultsPanelEntryPointHistogram, 0);
+
+  // Start a Sunfish sunfish session, and select a region to create the search
+  // results panel.
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSunfish);
+  ASSERT_TRUE(controller->GetSearchResultsPanel());
+
+  histogram_tester.ExpectBucketCount(
+      kSearchResultsPanelEntryPointHistogram,
+      SearchResultsPanelEntryType::kSunfishRegionSelection, 1);
+
+  // Stop the Sunfish session so we can start a default capture session instead.
+  // The search results panel should automatically close.
+  controller->Stop();
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  ASSERT_FALSE(controller->GetSearchResultsPanel());
+
+  // The region will be remembered from the Sunfish session, but the action
+  // buttons will not be present, so reselect the region to make the Search
+  // button appear.
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(50, 50, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi session_test_api(session);
+  ASSERT_EQ(session_test_api.GetActionButtons().size(), 1u);
+
+  // Click on the search button to perform an image search and open
+  // the search results panel.
+  LeftClickOn(session_test_api.GetActionButtons()[0]);
+  WaitForImageCapturedForSearch(PerformCaptureType::kSearch);
+  ASSERT_TRUE(controller->search_results_panel_widget());
+
+  histogram_tester.ExpectBucketCount(
+      kSearchResultsPanelEntryPointHistogram,
+      SearchResultsPanelEntryType::kDefaultSearchButton, 1);
+  histogram_tester.ExpectTotalCount(kSearchResultsPanelEntryPointHistogram, 2);
 }
 
 class ScannerTest : public AshTestBase {

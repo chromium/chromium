@@ -135,6 +135,15 @@ enum class CaptureModeCameraSize {
   kMaxValue = kCollapsed,
 };
 
+// Enumeration of the entry point to create the search results panel.
+// LINT.IfChange(SearchResultsPanelEntryType)
+enum class SearchResultsPanelEntryType {
+  kSunfishRegionSelection,
+  kDefaultSearchButton,
+  kMaxValue = kDefaultSearchButton,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:SearchResultsPanelEntryType)
+
 // Records the `reason` for which screen recording was ended.
 void RecordEndRecordingReason(EndRecordingReason reason);
 
@@ -238,6 +247,10 @@ void RecordSearchButtonPressed();
 // Records that the Search button was shown to a user in a default capture
 // session.
 void RecordSearchButtonShown();
+
+// Records the method used to create the search results panel, based on the
+// active behavior.
+void RecordSearchResultsPanelEntryType(const CaptureModeBehavior* behavior);
 
 // Prepends the common prefix to the `root_word` and optionally inserts the
 // client's metric component (as specified by the given `behavior`) or appends

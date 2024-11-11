@@ -228,7 +228,8 @@ class ASH_EXPORT CaptureModeController
   // starting a countdown by using a null session. Currently unused.
   void StartRecordingInstantlyForGameDashboard(aura::Window* game_window);
 
-  // Starts a new sunfish session. Currently only invoked via a debug command.
+  // Starts a new sunfish session. Currently invoked when clicking the Sunfish
+  // button in the launcher, or a debug command.
   void StartSunfishSession();
 
   // Stops an existing capture session.

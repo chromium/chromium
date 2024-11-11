@@ -2104,6 +2104,15 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="1000" label="VcBackgroundFreeform"/>
 </enum>
 
+<!-- LINT.IfChange(SearchResultsPanelEntryType) -->
+
+<enum name="SearchResultsPanelEntryType">
+  <int value="0" label="Sunfish session region selection"/>
+  <int value="1" label="Default session search action button"/>
+</enum>
+
+<!-- LINT.ThenChange(//ash/capture_mode/capture_mode_metrics.h:SearchResultsPanelEntryType) -->
+
 <!-- LINT.IfChange(SessionLockEvent) -->
 
 <enum name="SessionLockEvent">

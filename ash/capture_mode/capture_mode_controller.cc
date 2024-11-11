@@ -740,6 +740,8 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
         capture_mode_session_->GetFeedbackWidgetScreenBounds());
     search_results_panel_widget_ = SearchResultsPanel::CreateWidget(
         capture_mode_session_->current_root(), panel_bounds);
+
+    RecordSearchResultsPanelEntryType(capture_mode_session_->active_behavior());
   }
   search_results_panel_widget_->Show();
   // Note at this point the session may no longer be active.

@@ -2544,6 +2544,20 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
+<histogram
+    name="Ash.CaptureModeController.SearchResultsPanelEntryPoint.{TabletOrClamshell}"
+    enum="SearchResultsPanelEntryType" expires_after="2025-05-07">
+  <owner>hewer@chromium.org</owner>
+  <owner>sophiewen@google.com</owner>
+  <summary>
+    Recorded whenever the search results panel is created during a capture
+    session, either due to selecting a region (without an existing panel) in a
+    Sunfish session, or clicking the search button in a default session. The
+    recorded enum value indicates the entry point.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
 <histogram name="Ash.CaptureModeController.SwitchesFromInitialCaptureMode"
     enum="Boolean" expires_after="2025-01-08">
   <owner>afakhry@chromium.org</owner>

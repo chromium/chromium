@@ -55,6 +55,8 @@ constexpr char kSearchButtonPressedRootWord[] = "SearchButtonPressed";
 constexpr char kSearchButtonShownRootWord[] = "SearchButtonShown";
 constexpr char kSwitchesFromInitialModeRootWord[] =
     "SwitchesFromInitialCaptureMode";
+constexpr char kSearchResultsPanelEntryPointHistogramRootWord[] =
+    "SearchResultsPanelEntryPoint";
 
 void RecordCaptureModeRecordingDurationInternal(
     const std::string& histogram_name,
@@ -328,6 +330,16 @@ void RecordSearchButtonShown() {
                                                /*behavior=*/nullptr,
                                                /*append_ui_mode_suffix=*/true),
                             true);
+}
+
+void RecordSearchResultsPanelEntryType(const CaptureModeBehavior* behavior) {
+  base::UmaHistogramEnumeration(
+      BuildHistogramName(kSearchResultsPanelEntryPointHistogramRootWord,
+                         /*behavior=*/nullptr,
+                         /*append_ui_mode_suffix=*/true),
+      behavior->behavior_type() == BehaviorType::kSunfish
+          ? SearchResultsPanelEntryType::kSunfishRegionSelection
+          : SearchResultsPanelEntryType::kDefaultSearchButton);
 }
 
 std::string BuildHistogramName(const char* const root_word,
