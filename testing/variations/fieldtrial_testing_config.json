@@ -16062,6 +16062,7 @@
                     "enable_features": [
                         "AllowWindowDragUsingSystemDragDrop",
                         "OverrideDefaultOzonePlatformHintToAuto",
+                        "WaylandPerSurfaceScale",
                         "WaylandTextInputV3"
                     ]
                 },
@@ -16072,6 +16073,7 @@
                         "AcceleratedVideoDecodeLinuxZeroCopyGL",
                         "AllowWindowDragUsingSystemDragDrop",
                         "OverrideDefaultOzonePlatformHintToAuto",
+                        "WaylandPerSurfaceScale",
                         "WaylandTextInputV3",
                         "WaylandUiScale"
                     ]
