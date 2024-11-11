@@ -1841,10 +1841,6 @@
                   '|components/plus_addresses_strings_grdp/'\
                   '|ios/chrome/browser/plus_addresses/'
     },
-    'policy_features': {
-      'filepath' : 'third_party/blink/renderer/core/permissions_policy/document_policy_features.json5|'\
-                   'third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5'
-    },
     'popup_blocker': {
       'filepath': 'chrome/browser/ui/blocked_content'
     },
@@ -3162,7 +3158,6 @@
              'marimatthew+watch-plus_addresses@google.com',
              'minap+watch-plus_addresses@google.com',
              'jkeitel+watch-plus_addresses@google.com'],
-    'policy_features': ['feature-control+watch@chromium.org'],
     'popup_blocker': ['csharrison+watch-popups@chromium.org'],
     'precache': ['wifiprefetch-reviews@google.com'],
     'prefetch_proxy': ['marcinjb+p4watch@google.com',
