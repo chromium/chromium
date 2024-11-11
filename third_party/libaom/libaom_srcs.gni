@@ -626,6 +626,8 @@ aom_encoder_app_util_sources = [
   "//third_party/libaom/source/libaom/common/y4minput.h",
   "//third_party/libaom/source/libaom/examples/encoder_util.c",
   "//third_party/libaom/source/libaom/examples/encoder_util.h",
+  "//third_party/libaom/source/libaom/examples/multilayer_metadata.cc",
+  "//third_party/libaom/source/libaom/examples/multilayer_metadata.h",
 ]
 
 aom_encoder_stats_sources = [
