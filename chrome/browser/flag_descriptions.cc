@@ -2762,6 +2762,13 @@ const char kOmniboxDynamicMaxAutocompleteDescription[] =
     "Configures the maximum number of autocomplete matches displayed in the "
     "Omnibox UI dynamically based on the number of URL matches.";
 
+const char kOnDeviceNotificationContentDetectionModelName[] =
+    "On device notification content detection model";
+const char kOnDeviceNotificationContentDetectionModelDescription[] =
+    "Enables checking the on-device notification content detection model for "
+    "verdicts on how suspicious the notification content looks and logging "
+    "metrics based on the response.";
+
 const char kOneTimePermissionName[] = "One time permission";
 const char kOneTimePermissionDescription[] =
     "Enables experimental one time permissions for Geolocation, Microphone and "

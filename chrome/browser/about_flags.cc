@@ -9794,6 +9794,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          safe_browsing::kSafetyHubAbusiveNotificationRevocation)},
 
+    {"on-device-notification-content-detection-model",
+     flag_descriptions::kOnDeviceNotificationContentDetectionModelName,
+     flag_descriptions::kOnDeviceNotificationContentDetectionModelDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         safe_browsing::kOnDeviceNotificationContentDetectionModel)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"enable-commerce-hint-android",
      flag_descriptions::kCommerceHintAndroidName,
