@@ -47,24 +47,6 @@ enum class PlatformWindowState {
 COMPONENT_EXPORT(PLATFORM_WINDOW)
 bool IsPlatformWindowStateFullscreen(PlatformWindowState state);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-enum class PlatformFullscreenType {
-  // kNone represents a non-fullscreen state. This should be set for most cases
-  // except for the window state is `kFullscreen`.
-  kNone,
-
-  // kPlain represents a fullscreen mode without immersive feature. This
-  // corresponds to fullscreen + non-immersive mode. The window state must be
-  // 'kFullscreen`. This state is also used by the locked fullscreen or pinned
-  // mode in other words.
-  kPlain,
-
-  // kImmersive represents a immersive fullscreen mode. This corresponds to
-  // fullscreen + immersive mode. The window state must be `kFullscreen`.
-  kImmersive,
-};
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 enum class PlatformWindowOcclusionState {
   kUnknown,
   kVisible,
@@ -113,27 +95,15 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // This is used by OnStateChanged and currently only by ozone/wayland.
   struct COMPONENT_EXPORT(PLATFORM_WINDOW) State {
     bool operator==(const State& rhs) const {
-      return std::tie(window_state,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                      fullscreen_type,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-                      bounds_dip, size_px, window_scale, raster_scale, ui_scale,
-                      occlusion_state) ==
-             std::tie(rhs.window_state,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-                      rhs.fullscreen_type,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-                      rhs.bounds_dip, rhs.size_px, rhs.window_scale,
-                      rhs.raster_scale, rhs.ui_scale, rhs.occlusion_state);
+      return std::tie(window_state, bounds_dip, size_px, window_scale,
+                      raster_scale, ui_scale, occlusion_state) ==
+             std::tie(rhs.window_state, rhs.bounds_dip, rhs.size_px,
+                      rhs.window_scale, rhs.raster_scale, rhs.ui_scale,
+                      rhs.occlusion_state);
     }
 
     // Current platform window state.
     PlatformWindowState window_state = PlatformWindowState::kUnknown;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Current platform fullscreen type.
-    PlatformFullscreenType fullscreen_type = PlatformFullscreenType::kNone;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
     // Bounds in DIP. The origin of `bounds_dip` does not affect whether it
     // produces a new frame or not. Only the size of `bounds_dip` does.
@@ -197,14 +167,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(ffred): We should just add kImmersiveFullscreen as a state. However,
-  // that will require more refactoring in other places to understand that
-  // kImmersiveFullscreen is a fullscreen status.
-  //
-  // Notifies that fullscreen type has changed.
-  virtual void OnFullscreenTypeChanged(PlatformFullscreenType old_type,
-                                       PlatformFullscreenType new_type);
-
   // Lets the window know that ChromeOS overview mode has changed.
   virtual void OnOverviewModeChanged(bool in_overview) {}
 #endif

@@ -1341,12 +1341,6 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   VerifyAndClearExpectations();
 
   // Now, set to fullscreen.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_CALL(delegate_,
-              OnFullscreenTypeChanged(PlatformFullscreenType::kNone,
-                                      PlatformFullscreenType::kPlain))
-      .Times(1);
-#endif
   EXPECT_CALL(delegate_, CalculateInsetsInDIP(PlatformWindowState::kFullScreen))
       .WillRepeatedly(Return(gfx::Insets()));
   EXPECT_CALL(delegate_,
@@ -1364,11 +1358,6 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   VerifyAndClearExpectations();
 
   // Unfullscreen
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_CALL(delegate_, OnFullscreenTypeChanged(PlatformFullscreenType::kPlain,
-                                                 PlatformFullscreenType::kNone))
-      .Times(1);
-#endif
   EXPECT_CALL(delegate_, CalculateInsetsInDIP(PlatformWindowState::kNormal))
       .WillRepeatedly(Return(kInsets));
   EXPECT_CALL(delegate_,
@@ -1409,12 +1398,6 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   AdvanceFrameToCurrent(window_.get(), delegate_);
   VerifyAndClearExpectations();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_CALL(delegate_,
-              OnFullscreenTypeChanged(PlatformFullscreenType::kNone,
-                                      PlatformFullscreenType::kPlain))
-      .Times(1);
-#endif
   EXPECT_CALL(delegate_, CalculateInsetsInDIP(PlatformWindowState::kFullScreen))
       .WillRepeatedly(Return(gfx::Insets()));
   EXPECT_CALL(delegate_,
@@ -1432,11 +1415,6 @@ TEST_P(WaylandWindowTest, CompositorSideStateChanges) {
   VerifyAndClearExpectations();
 
   // Restore
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_CALL(delegate_, OnFullscreenTypeChanged(PlatformFullscreenType::kPlain,
-                                                 PlatformFullscreenType::kNone))
-      .Times(1);
-#endif
   EXPECT_CALL(delegate_, CalculateInsetsInDIP(PlatformWindowState::kNormal))
       .WillRepeatedly(Return(kInsets));
   EXPECT_CALL(delegate_,
@@ -4503,72 +4481,6 @@ TEST_P(WaylandWindowTest, SecondarySnappedState) {
   toplevel->HandleSurfaceConfigure(2);
   EXPECT_EQ(gfx::Rect(100, 0, 100, 200), toplevel->GetBoundsInDIP());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-TEST_P(WaylandWindowTest, ImmersiveFullscreen) {
-  if (!IsAuraShellEnabled()) {
-    GTEST_SKIP();
-  }
-
-  testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate_2;
-  auto toplevel = CreateWaylandWindowWithParams(
-      PlatformWindowType::kWindow, gfx::Rect(10, 10, 200, 200), &delegate_2);
-
-  EXPECT_CALL(delegate_2,
-              OnFullscreenTypeChanged(PlatformFullscreenType::kNone,
-                                      PlatformFullscreenType::kImmersive))
-      .Times(1);
-  {
-    WaylandWindow::WindowStates window_states;
-    window_states.is_maximized = false;
-    window_states.is_fullscreen = true;
-    window_states.is_immersive_fullscreen = true;
-    window_states.is_activated = true;
-    toplevel->HandleAuraToplevelConfigure(0, 0, 0, 0, window_states);
-  }
-  toplevel->HandleSurfaceConfigure(2);
-}
-
-TEST_P(WaylandWindowTest, ImmersiveFullscreen_Disabled) {
-  if (!IsAuraShellEnabled()) {
-    GTEST_SKIP();
-  }
-
-  uint32_t serial = 0;
-
-  testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate_2;
-  auto toplevel = CreateWaylandWindowWithParams(
-      PlatformWindowType::kWindow, gfx::Rect(10, 10, 200, 200), &delegate_2);
-
-  // First we have to enable it, or the top level window will not detect
-  // immersive state change.
-  {
-    WaylandWindow::WindowStates window_states;
-    window_states.is_maximized = false;
-    window_states.is_fullscreen = true;
-    window_states.is_immersive_fullscreen = true;
-    window_states.is_activated = true;
-    toplevel->HandleAuraToplevelConfigure(0, 0, 0, 0, window_states);
-  }
-  toplevel->HandleSurfaceConfigure(++serial);
-
-  EXPECT_CALL(delegate_2,
-              OnFullscreenTypeChanged(PlatformFullscreenType::kImmersive,
-                                      PlatformFullscreenType::kNone))
-      .Times(1);
-  {
-    WaylandWindow::WindowStates window_states;
-    window_states.is_maximized = false;
-    window_states.is_fullscreen = false;
-    window_states.is_immersive_fullscreen = false;
-    window_states.is_activated = true;
-    toplevel->HandleAuraToplevelConfigure(0, 0, 0, 0, window_states);
-  }
-  toplevel->HandleSurfaceConfigure(++serial);
-}
-
-#endif
 
 namespace {
 

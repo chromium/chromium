@@ -787,17 +787,6 @@ std::string WaylandWindow::WindowStates::ToString() const {
   if (is_fullscreen) {
     states += "fullscreen ";
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (is_immersive_fullscreen) {
-    states += "immersive ";
-  }
-  if (is_pinned_fullscreen) {
-    states += "pinned ";
-  }
-  if (is_trusted_pinned_fullscreen) {
-    states += "trusted_pinned ";
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   if (is_activated) {
     states += "activated ";
   }
@@ -1351,11 +1340,6 @@ void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
   if (pending_configure_state_.window_state.has_value()) {
     state.window_state = pending_configure_state_.window_state.value();
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (pending_configure_state_.fullscreen_type.has_value()) {
-    state.fullscreen_type = pending_configure_state_.fullscreen_type.value();
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   if (pending_configure_state_.bounds_dip.has_value()) {
     state.bounds_dip = pending_configure_state_.bounds_dip.value();
   }

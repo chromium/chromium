@@ -52,11 +52,6 @@ class MockPlatformWindowDelegate : public ui::PlatformWindowDelegate {
               (override));
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  MOCK_METHOD(void,
-              OnFullscreenTypeChanged,
-              (ui::PlatformFullscreenType old_type,
-               ui::PlatformFullscreenType new_type),
-              (override));
   MOCK_METHOD(void, OnOverviewModeChanged, (bool overview), (override));
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   MOCK_METHOD(void, OnLostCapture, (), (override));

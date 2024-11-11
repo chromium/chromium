@@ -269,11 +269,6 @@ class WaylandWindow : public PlatformWindow,
 
     bool is_maximized = false;
     bool is_fullscreen = false;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    bool is_immersive_fullscreen = false;
-    bool is_pinned_fullscreen = false;
-    bool is_trusted_pinned_fullscreen = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     bool is_activated = false;
     bool is_minimized = false;
     bool is_snapped_primary = false;
@@ -530,9 +525,6 @@ class WaylandWindow : public PlatformWindow,
   // wayland server.
   struct PendingConfigureState {
     std::optional<PlatformWindowState> window_state;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    std::optional<PlatformFullscreenType> fullscreen_type;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     std::optional<gfx::Rect> bounds_dip;
     std::optional<gfx::Size> size_px;
     std::optional<float> raster_scale;

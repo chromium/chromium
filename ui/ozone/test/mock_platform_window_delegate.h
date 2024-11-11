@@ -39,11 +39,6 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD1(OnWindowTiledStateChanged,
                void(WindowTiledEdges new_tiled_edges));
 #endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  MOCK_METHOD2(OnFullscreenTypeChanged,
-               void(PlatformFullscreenType old_type,
-                    PlatformFullscreenType new_type));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   MOCK_METHOD0(OnLostCapture, void());
   MOCK_METHOD1(OnAcceleratedWidgetAvailable,
                void(gfx::AcceleratedWidget widget));

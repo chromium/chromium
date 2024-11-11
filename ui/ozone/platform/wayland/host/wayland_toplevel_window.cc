@@ -60,13 +60,6 @@ bool ShouldSetBounds(PlatformWindowState state) {
          state == PlatformWindowState::kFloated;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool IsPinnedOrFullscreen(const WaylandWindow::WindowStates& states) {
-  return states.is_fullscreen || states.is_pinned_fullscreen ||
-         states.is_trusted_pinned_fullscreen;
-}
-#endif  // BUILDFLAG(IS_CHOMEOS_LACROS)
-
 }  // namespace
 
 constexpr int kVisibleOnAllWorkspaces = -1;
@@ -616,23 +609,6 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   // No matter what mode we have, the display id doesn't matter at this time
   // anymore.
   fullscreen_display_id_ = display::kInvalidDisplayId;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  CHECK(!window_states.is_immersive_fullscreen ||
-        IsPinnedOrFullscreen(window_states))
-      << "Immersive state should not be set when it's not fullscreen.";
-
-  // TODO(crbug.com/41485096): Refer to window_states.is_pinned_fullscreen and
-  // is_trusted_window_fullscreen and set kPinned/kTrustedPinned as a fullscreen
-  // type when it's supported.
-  PlatformFullscreenType fullscreen_type =
-      window_states.is_immersive_fullscreen
-          ? PlatformFullscreenType::kImmersive
-          : (IsPinnedOrFullscreen(window_states)
-                 ? PlatformFullscreenType::kPlain
-                 : PlatformFullscreenType::kNone);
-  pending_configure_state_.fullscreen_type = fullscreen_type;
-#endif
 
   // Update state before notifying delegate.
   const bool did_active_change = is_active_ != window_states.is_activated;
