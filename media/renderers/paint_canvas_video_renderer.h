@@ -257,9 +257,6 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
     // This is only set if the VideoFrame was texture-backed.
     gfx::Rect visible_rect;
 
-    // True if the underlying resource was created with a top left origin.
-    bool texture_origin_is_top_left = true;
-
     // Used to allow recycling of the previous shared image. This requires that
     // no external users have access to this resource via SkImage. Returns true
     // if the existing resource can be recycled.
@@ -269,14 +266,11 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   // Update the cache holding the most-recently-painted frame. Returns false
   // if the image couldn't be updated.
   bool UpdateLastImage(scoped_refptr<VideoFrame> video_frame,
-                       viz::RasterContextProvider* raster_context_provider,
-                       bool allow_wrap_texture);
+                       viz::RasterContextProvider* raster_context_provider);
 
   bool PrepareVideoFrame(scoped_refptr<VideoFrame> video_frame,
                          viz::RasterContextProvider* raster_context_provider,
                          const gpu::MailboxHolder& dest_holder);
-
-  bool CacheBackingWrapsTexture() const;
 
   std::optional<Cache> cache_;
 
