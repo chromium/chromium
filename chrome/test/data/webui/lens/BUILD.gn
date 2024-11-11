@@ -20,6 +20,7 @@ build_webui_tests("build") {
     "overlay/overlay_theme_test.ts",
     "overlay/post_selection_renderer_test.ts",
     "overlay/region_selection_test.ts",
+    "overlay/searchbox_test.ts",
     "overlay/selection_overlay_test.ts",
     "overlay/test_language_browser_proxy.ts",
     "overlay/test_overlay_browser_proxy.ts",

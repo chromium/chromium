@@ -87,6 +87,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
       },
       searchBoxHidden: {
         type: Boolean,
+        computed:
+            'computeShouldHideSearchBox(isTranslateModeActive, sidePanelOpened, forceHideSearchBox)',
         reflectToAttribute: true,
       },
       isClosing: {
@@ -146,9 +148,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private initialFlashAnimationHasEnded: boolean = false;
   // Whether the side panel has been opened.
   private sidePanelOpened: boolean = false;
-  // Whether the search box should be hidden. Updated on overlay selection and
-  // translate mode state change.
+  // Whether the search box should be hidden.
   private searchBoxHidden: boolean = false;
+  // Whether the search box should be forced to hide. Used to prevent the search
+  // box from showing when we know the side panel will be opened.
+  private forceHideSearchBox: boolean = false;
   // Whether the overlay is being shut down.
   private isClosing: boolean = false;
   // Whether more options menu should be shown.
@@ -220,8 +224,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     this.eventTracker_.add(
         document, 'translate-mode-state-changed', (e: CustomEvent) => {
           this.isTranslateModeActive = e.detail.translateModeEnabled;
-          this.searchBoxHidden =
-              this.isTranslateModeActive || this.sidePanelOpened;
         });
     this.eventTracker_.add(document, 'text-copied', () => {
       this.showToast(this.i18n('copyToastMessage'));
@@ -310,13 +312,13 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     const newSearchboxWidth = areSuggestionsShowing ?
         suggestionsContainer.offsetWidth :
         (this.$.searchboxGhostLoader.offsetWidth > 0 ?
-        this.$.searchboxGhostLoader.offsetWidth:
-        this.$.searchbox.offsetWidth);
+             this.$.searchboxGhostLoader.offsetWidth :
+             this.$.searchbox.offsetWidth);
     const newSearchboxHeight = areSuggestionsShowing ?
         suggestionsContainer.offsetHeight :
         (this.$.searchboxGhostLoader.offsetHeight > 0 ?
-          this.$.searchboxGhostLoader.offsetHeight:
-          this.$.searchbox.offsetHeight);
+             this.$.searchboxGhostLoader.offsetHeight :
+             this.$.searchbox.offsetHeight);
 
     // Get the top and left position of the searchbox relative to the selection
     // overlay.
@@ -430,7 +432,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private handleSelectionStarted() {
     this.$.cursorTooltip.setPauseTooltipChanges(true);
     this.isPointerDown = true;
-    this.searchBoxHidden = true;
+    this.forceHideSearchBox = true;
   }
 
   // The user finished making their selection on the selection overlay.
@@ -451,6 +453,11 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   private computeShouldFadeOutButtons(): boolean {
     return !this.isTranslateModeActive && this.isPointerDown;
+  }
+
+  private computeShouldHideSearchBox(): boolean {
+    return this.isTranslateModeActive || this.sidePanelOpened ||
+        this.forceHideSearchBox;
   }
 
   private async showToast(message: string) {

@@ -191,6 +191,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, TranslatePromo) {
                  "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, Searchbox) {
+  RunOverlayTest("lens/overlay/searchbox_test.js", "mocha.run()");
+}
+
 #if defined(UNDEFINED_SANITIZER)
 #define MAYBE_TranslateButton DISABLED_TranslateButton
 #else
