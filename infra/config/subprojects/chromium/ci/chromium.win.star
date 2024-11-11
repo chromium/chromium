@@ -209,6 +209,12 @@ ci.builder(
             "blink_wpt_tests": targets.remove(
                 reason = "Not enabled on dbg due to resource limits.",
             ),
+            "chrome_wpt_tests": targets.remove(
+                reason = "Not enabled on dbg due to resource limits.",
+            ),
+            "headless_shell_wpt_tests": targets.remove(
+                reason = "Not enabled on dbg due to resource limits.",
+            ),
             "browser_tests": targets.remove(
                 reason = "Disabled due to failing test suites (crbug/40565753)",
             ),
@@ -826,6 +832,12 @@ ci.thin_tester(
                 reason = "Not enabled on dbg due to resource limits.",
             ),
             "blink_wpt_tests": targets.remove(
+                reason = "Not enabled on dbg due to resource limits.",
+            ),
+            "chrome_wpt_tests": targets.remove(
+                reason = "Not enabled on dbg due to resource limits.",
+            ),
+            "headless_shell_wpt_tests": targets.remove(
                 reason = "Not enabled on dbg due to resource limits.",
             ),
             "browser_tests": targets.remove(
