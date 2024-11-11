@@ -2341,11 +2341,6 @@ BASE_FEATURE(kOsSettingsDeprecateDnsDialog,
              "OsSettingsDeprecateDnsDialog",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the wayfinding improvements for the ChromeOS Settings revamp
-BASE_FEATURE(kOsSettingsRevampWayfinding,
-             "OsSettingsRevampWayfinding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables staying in overview when navigating between desks using a swipe
 // gesture or keyboard shortcut.
 BASE_FEATURE(kOverviewDeskNavigation,
@@ -4383,7 +4378,8 @@ bool IsOsSettingsDeprecateDnsDialogEnabled() {
 }
 
 bool IsOsSettingsRevampWayfindingEnabled() {
-  return base::FeatureList::IsEnabled(kOsSettingsRevampWayfinding);
+  // TODO(crbug.com/370836442): remove after all code cleanup is done.
+  return true;
 }
 
 bool IsOsSyncConsentRevampEnabled() {

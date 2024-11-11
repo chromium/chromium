@@ -4150,9 +4150,6 @@ extern const char kNotificationsIgnoreRequireInteractionDescription[];
 extern const char kOnDeviceAppControlsName[];
 extern const char kOnDeviceAppControlsDescription[];
 
-extern const char kOsSettingsRevampWayfindingName[];
-extern const char kOsSettingsRevampWayfindingDescription[];
-
 extern const char kPcieBillboardNotificationName[];
 extern const char kPcieBillboardNotificationDescription[];
 
