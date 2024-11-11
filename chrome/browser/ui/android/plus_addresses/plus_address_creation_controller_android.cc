@@ -362,6 +362,9 @@ void PlusAddressCreationControllerAndroid::RecordModalShownOutcome(
           base::UserMetricsAction("PlusAddresses.OfferedPlusAddressDeclined"));
       break;
     case kModalConfirmed:
+      base::RecordAction(
+          base::UserMetricsAction("PlusAddresses.OfferedPlusAddressAccepted"));
+      break;
     case kReservePlusAddressError:
     case kConfirmPlusAddressError:
       break;

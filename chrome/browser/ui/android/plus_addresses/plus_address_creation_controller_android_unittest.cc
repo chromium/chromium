@@ -121,6 +121,7 @@ class PlusAddressCreationControllerAndroidEnabledTest
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, AcceptCreation) {
   base::test::ScopedFeatureList features_{
       features::kPlusAddressUserOnboardingEnabled};
+  base::UserActionTester user_action_tester;
   std::unique_ptr<content::WebContents> web_contents =
       ChromeRenderViewHostTestHarness::CreateTestWebContents();
 
@@ -161,6 +162,9 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, AcceptCreation) {
   EXPECT_EQ(
       profile()->GetPrefs()->GetTime(prefs::kFirstPlusAddressCreationTime),
       base::Time());
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.OfferedPlusAddressAccepted"),
+            1);
 }
 
 // Tests that no notice is shown if the onboarding feature is disabled.
