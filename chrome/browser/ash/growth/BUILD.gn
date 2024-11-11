@@ -46,6 +46,7 @@ static_library("growth") {
     "//chromeos/ash/components/growth:config_provider",
     "//chromeos/ash/components/growth:utils",
     "//chromeos/ash/resources:resources_grit",
+    "//chromeos/dbus/power",
     "//components/account_id",
     "//components/app_constants",
     "//components/component_updater/ash",
