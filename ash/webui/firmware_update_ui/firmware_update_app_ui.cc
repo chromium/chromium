@@ -134,6 +134,11 @@ void FirmwareUpdateAppUI::BindInterface(
 }
 
 void FirmwareUpdateAppUI::BindInterface(
+    mojo::PendingReceiver<firmware_update::mojom::SystemUtils> receiver) {
+  FirmwareUpdateManager::Get()->BindInterface(std::move(receiver));
+}
+
+void FirmwareUpdateAppUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));

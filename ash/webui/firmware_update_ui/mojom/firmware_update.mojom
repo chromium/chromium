@@ -163,3 +163,9 @@ interface InstallController {
   // the inflight update's progress.
   AddUpdateProgressObserver(pending_remote<UpdateProgressObserver> observer);
 };
+
+// Various utility functions to interact with the operating system from the UI.
+interface SystemUtils {
+  // Restarts the devices to finish installing UEFI firmware updates.
+  Restart();
+};

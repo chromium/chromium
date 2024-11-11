@@ -108,6 +108,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
     : public FwupdClient::Observer,
       public firmware_update::mojom::UpdateProvider,
       public firmware_update::mojom::InstallController,
+      public firmware_update::mojom::SystemUtils,
       public NetworkStateHandlerObserver {
  public:
   enum class Source {
@@ -199,6 +200,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   void set_refresh_remote_for_testing(bool for_testing) {
     refresh_remote_for_testing_ = for_testing;
   }
+
+  // firmware_update::mojom::SystemUtils
+  void Restart() override;
+
+  void BindInterface(mojo::PendingReceiver<firmware_update::mojom::SystemUtils>
+                         pending_receiver);
 
  protected:
   friend class FirmwareUpdateManagerTest;
@@ -418,6 +425,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
 
   mojo::Receiver<firmware_update::mojom::InstallController>
       install_controller_receiver_{this};
+
+  mojo::Receiver<firmware_update::mojom::SystemUtils> system_utils_receiver_{
+      this};
 
   base::WeakPtrFactory<FirmwareUpdateManager> weak_ptr_factory_{this};
 };

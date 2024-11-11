@@ -1527,6 +1527,9 @@ void PopulateChromeWebUIFrameBinders(
       ash::firmware_update::mojom::UpdateProvider, ash::FirmwareUpdateAppUI>(
       map);
 
+  RegisterWebUIControllerInterfaceBinder<
+      ash::firmware_update::mojom::SystemUtils, ash::FirmwareUpdateAppUI>(map);
+
   if (ash::features::IsDriveFsMirroringEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
         ash::manage_mirrorsync::mojom::PageHandlerFactory,
