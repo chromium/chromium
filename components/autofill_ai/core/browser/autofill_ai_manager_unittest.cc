@@ -128,7 +128,7 @@ class BaseAutofillAiManagerTest : public testing::Test {
   optimization_guide::MockOptimizationGuideDecider& decider() {
     return decider_;
   }
-  MockAutofillAiModelExecutor& filling_engine() { return filling_engine_; }
+  MockAutofillAiModelExecutor& model_executor() { return model_executor_; }
   MockAutofillAiClient& client() { return client_; }
   AutofillAiManager& manager() { return manager_; }
   autofill::TestStrikeDatabase& strike_database() { return strike_database_; }
@@ -138,7 +138,7 @@ class BaseAutofillAiManagerTest : public testing::Test {
   autofill::test::AutofillUnitTestEnvironment autofill_test_env_;
   autofill::TestAutofillClient autofill_client_;
   NiceMock<optimization_guide::MockOptimizationGuideDecider> decider_;
-  NiceMock<MockAutofillAiModelExecutor> filling_engine_;
+  NiceMock<MockAutofillAiModelExecutor> model_executor_;
   NiceMock<MockAutofillAiClient> client_;
   autofill::TestStrikeDatabase strike_database_;
   AutofillAiManager manager_{&client(), &decider(), &strike_database_};
@@ -151,8 +151,8 @@ class AutofillAiManagerTest : public BaseAutofillAiManagerTest {
         kAutofillAi, {{"skip_allowlist", "true"},
                       {"extract_ax_tree_for_predictions", "true"},
                       {"send_title_url", "false"}});
-    ON_CALL(client(), GetFillingEngine)
-        .WillByDefault(Return(&filling_engine()));
+    ON_CALL(client(), GetModelExecutor)
+        .WillByDefault(Return(&model_executor()));
     ON_CALL(client(), GetLastCommittedOrigin)
         .WillByDefault(ReturnRef(origin()));
     ON_CALL(client(), GetTitle).WillByDefault(Return("title"));
@@ -225,7 +225,7 @@ TEST_F(AutofillAiManagerTest, RetrievalFailed_ShowError) {
     EXPECT_CALL(client(), GetAXTree)
         .WillOnce(
             RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate()));
-    EXPECT_CALL(filling_engine(), GetPredictions)
+    EXPECT_CALL(model_executor(), GetPredictions)
         .WillOnce(RunOnceCallback<4>(PredictionsByGlobalId{}, ""));
     EXPECT_CALL(update_suggestions_callback,
                 Run(ElementsAre(HasType(kPredictionImprovementsError),
@@ -265,7 +265,7 @@ TEST_F(AutofillAiManagerTest, RetrievalFailed_FallbackToAutofill) {
     EXPECT_CALL(client(), GetAXTree)
         .WillOnce(
             RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate()));
-    EXPECT_CALL(filling_engine(), GetPredictions)
+    EXPECT_CALL(model_executor(), GetPredictions)
         .WillOnce(RunOnceCallback<4>(PredictionsByGlobalId{}, ""));
     EXPECT_CALL(update_suggestions_callback,
                 Run(ElementsAre(HasType(kAddressEntry), HasType(kSeparator),
@@ -288,7 +288,7 @@ TEST_F(AutofillAiManagerTest, EndToEnd) {
       .fields = {{.role = autofill::NAME_FIRST,
                   .heuristic_type = autofill::NAME_FIRST}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
-  // Filled form, as returned by the filling engine.
+  // Filled form, as returned by the model executor.
   form_description.host_frame = form.host_frame();
   form_description.renderer_id = form.renderer_id();
   form_description.fields[0].value = u"John";
@@ -310,7 +310,7 @@ TEST_F(AutofillAiManagerTest, EndToEnd) {
     EXPECT_CALL(client(), GetAXTree)
         .WillOnce(
             RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate()));
-    EXPECT_CALL(filling_engine(), GetPredictions)
+    EXPECT_CALL(model_executor(), GetPredictions)
         .WillOnce(MoveArg<4>(&predictions_received_callback));
     EXPECT_CALL(
         update_suggestions_callback,
@@ -377,7 +377,7 @@ TEST_F(AutofillAiManagerTest, AutofillSuggestionsAreCachedOnMultipleFocus) {
     EXPECT_CALL(client(), GetAXTree)
         .WillOnce(
             RunOnceCallback<0>(optimization_guide::proto::AXTreeUpdate()));
-    EXPECT_CALL(filling_engine(), GetPredictions)
+    EXPECT_CALL(model_executor(), GetPredictions)
         .WillOnce(MoveArg<4>(&predictions_received_callback));
     EXPECT_CALL(update_suggestions_callback,
                 Run(ElementsAre(HasType(kPredictionImprovementsError),
@@ -1131,8 +1131,8 @@ class AutofillAiManagerTriggerAutomaticallyTest
          {"extract_ax_tree_for_predictions", GetParam() ? "true" : "false"}});
     ON_CALL(client(), GetLastCommittedOrigin)
         .WillByDefault(ReturnRef(origin()));
-    ON_CALL(client(), GetFillingEngine)
-        .WillByDefault(Return(&filling_engine()));
+    ON_CALL(client(), GetModelExecutor)
+        .WillByDefault(Return(&model_executor()));
   }
 
  private:

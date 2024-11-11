@@ -155,9 +155,9 @@ TEST_F(ChromeAutofillAiClientTest, EligibilityOfSignedInUserWithMlEnabled) {
   EXPECT_TRUE(client().IsUserEligible());
 }
 
-// Tests that the filling engine is initialized and returned.
-TEST_F(ChromeAutofillAiClientTest, GetFillingEngine) {
-  EXPECT_TRUE(client().GetFillingEngine());
+// Tests that the Autofill AI model executor is initialized and returned.
+TEST_F(ChromeAutofillAiClientTest, GetModelExecutor) {
+  EXPECT_TRUE(client().GetModelExecutor());
 }
 
 // Tests that GetLastCommittedURL() accurately returns the last committed URL.

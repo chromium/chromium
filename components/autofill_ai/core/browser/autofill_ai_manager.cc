@@ -297,7 +297,7 @@ void AutofillAiManager::OnReceivedAXTree(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
     optimization_guide::proto::AXTreeUpdate ax_tree_update) {
-  client_->GetFillingEngine()->GetPredictions(
+  client_->GetModelExecutor()->GetPredictions(
       form, GetFieldFillingEligibilityMap(form),
       GetFieldValueSensitivityMap(form), std::move(ax_tree_update),
       base::BindOnce(&AutofillAiManager::OnReceivedPredictions,

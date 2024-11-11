@@ -99,7 +99,7 @@ autofill_ai::AutofillAiManager& ChromeAutofillAiClient::GetManager() {
 }
 
 autofill_ai::AutofillAiModelExecutor*
-ChromeAutofillAiClient::GetFillingEngine() {
+ChromeAutofillAiClient::GetModelExecutor() {
   if (!filling_engine_) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents_->GetBrowserContext());

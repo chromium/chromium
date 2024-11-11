@@ -55,9 +55,10 @@ class AutofillAiClient {
   // client.
   virtual AutofillAiManager& GetManager() = 0;
 
-  // Returns the filling engine associated with the client's web contents.
+  // Returns the Autofill AI model executor associated with the client's web
+  // contents.
   // TODO(crbug.com/372432481): Make this return a reference.
-  virtual AutofillAiModelExecutor* GetFillingEngine() = 0;
+  virtual AutofillAiModelExecutor* GetModelExecutor() = 0;
 
   // Returns the last committed URL of the primary main frame.
   virtual const GURL& GetLastCommittedURL() = 0;

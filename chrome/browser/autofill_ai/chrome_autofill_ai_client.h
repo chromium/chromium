@@ -35,7 +35,7 @@ class ChromeAutofillAiClient : public autofill_ai::AutofillAiClient {
   autofill::ContentAutofillClient& GetAutofillClient() override;
   void GetAXTree(AXTreeCallback callback) override;
   autofill_ai::AutofillAiManager& GetManager() override;
-  autofill_ai::AutofillAiModelExecutor* GetFillingEngine() override;
+  autofill_ai::AutofillAiModelExecutor* GetModelExecutor() override;
   const GURL& GetLastCommittedURL() override;
   const url::Origin& GetLastCommittedOrigin() override;
   std::string GetTitle() override;
