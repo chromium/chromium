@@ -48,7 +48,6 @@ AddressEditorController::AddressEditorController(
   countries_.SetCountries(pdm_.get(), std::move(filter), locale_);
   std::u16string profile_country_code =
       profile_to_edit_.GetRawInfo(ADDRESS_HOME_COUNTRY);
-  CHECK(!profile_country_code.empty());
   UpdateEditorFields(base::UTF16ToASCII(profile_country_code));
 }
 
