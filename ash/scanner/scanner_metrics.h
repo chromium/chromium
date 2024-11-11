@@ -11,6 +11,26 @@
 
 namespace ash {
 
+inline constexpr std::string_view
+    kScannerFeatureTimerExecutePopulatedNewCalendarEventAction =
+        "Ash.ScannerFeature.Timer.ExecutePopulatedNewCalendarEventAction";
+
+inline constexpr std::string_view
+    kScannerFeatureTimerExecutePopulatedNewContactAction =
+        "Ash.ScannerFeature.Timer.ExecutePopulatedNewContactAction";
+
+inline constexpr std::string_view
+    kScannerFeatureTimerExecutePopulatedNewGoogleSheetAction =
+        "Ash.ScannerFeature.Timer.ExecutePopulatedNewGoogleSheetAction";
+
+inline constexpr std::string_view
+    kScannerFeatureTimerExecutePopulatedNewGoogleDocAction =
+        "Ash.ScannerFeature.Timer.ExecutePopulatedNewGoogleDocAction";
+
+inline constexpr std::string_view
+    kScannerFeatureTimerExecutePopulatedNewCopyToClipboardAction =
+        "Ash.ScannerFeature.Timer.ExecutePopulatedNewCopyToClipboardAction";
+
 inline constexpr std::string_view kScannerFeatureTimerFetchActionsForImage =
     "Ash.ScannerFeature.Timer.FetchActionsForImage";
 

@@ -29,6 +29,39 @@ namespace {
 
 using enum ScannerFeatureUserState;
 
+void RecordExecutePopulatedActionTimer(
+    manta::proto::ScannerAction::ActionCase action_case,
+    base::TimeTicks execute_start_time) {
+  // TODO(b/363101363): Add tests once scanner action view model tests are set
+  // up.
+  std::string_view variant_name;
+  switch (action_case) {
+    case manta::proto::ScannerAction::kNewEvent:
+      variant_name = kScannerFeatureTimerExecutePopulatedNewCalendarEventAction;
+      break;
+    case manta::proto::ScannerAction::kNewContact:
+      variant_name = kScannerFeatureTimerExecutePopulatedNewContactAction;
+      break;
+    case manta::proto::ScannerAction::kNewGoogleDoc:
+      variant_name = kScannerFeatureTimerExecutePopulatedNewGoogleDocAction;
+      break;
+    case manta::proto::ScannerAction::kNewGoogleSheet:
+      variant_name = kScannerFeatureTimerExecutePopulatedNewGoogleSheetAction;
+      break;
+    case manta::proto::ScannerAction::kCopyToClipboard:
+      variant_name =
+          kScannerFeatureTimerExecutePopulatedNewCopyToClipboardAction;
+      break;
+    case manta::proto::ScannerAction::ACTION_NOT_SET:
+      break;
+  }
+  if (variant_name.empty()) {
+    return;
+  }
+  base::UmaHistogramMediumTimes(variant_name,
+                                base::TimeTicks::Now() - execute_start_time);
+}
+
 void RecordPopulateActionTimer(
     manta::proto::ScannerAction::ActionCase action_case,
     base::TimeTicks request_start_time) {
@@ -88,6 +121,7 @@ void RecordPopulateActionFailure(
 
 void RecordActionExecutionAndRun(
     manta::proto::ScannerAction::ActionCase action_case,
+    base::TimeTicks execute_start_time,
     ScannerCommandCallback action_finished_callback,
     bool success) {
   // TODO(b/363101363): Add tests once scanner action view model tests are set
@@ -121,7 +155,7 @@ void RecordActionExecutionAndRun(
     case manta::proto::ScannerAction::ACTION_NOT_SET:
       break;
   }
-
+  RecordExecutePopulatedActionTimer(action_case, execute_start_time);
   std::move(action_finished_callback).Run(success);
 }
 
@@ -139,9 +173,9 @@ void ExecutePopulatedAction(manta::proto::ScannerAction::ActionCase action_case,
     return;
   }
 
-  ScannerCommandCallback record_metrics_callback =
-      base::BindOnce(&RecordActionExecutionAndRun, action_case,
-                     std::move(action_finished_callback));
+  ScannerCommandCallback record_metrics_callback = base::BindOnce(
+      &RecordActionExecutionAndRun, action_case, base::TimeTicks::Now(),
+      std::move(action_finished_callback));
 
   HandleScannerCommand(std::move(delegate),
                        ScannerActionToCommand(std::move(*populated_action)),
