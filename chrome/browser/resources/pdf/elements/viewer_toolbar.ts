@@ -21,6 +21,7 @@ import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 // </if>
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -103,6 +104,7 @@ export class ViewerToolbarElement extends CrLitElement {
 
       printingEnabled: {type: Boolean},
       rotated: {type: Boolean},
+      strings: {type: Object},
       viewportZoom: {type: Number},
       zoomBounds: {type: Object},
       sidenavCollapsed: {type: Boolean},
@@ -137,6 +139,7 @@ export class ViewerToolbarElement extends CrLitElement {
   pdfCr23Enabled: boolean = false;
   printingEnabled: boolean = false;
   rotated: boolean = false;
+  strings?: {[key: string]: string};
   viewportZoom: number = 0;
   zoomBounds: {min: number, max: number} = {min: 0, max: 0};
   sidenavCollapsed: boolean = false;
@@ -232,10 +235,13 @@ export class ViewerToolbarElement extends CrLitElement {
   }
 
   /** @return The appropriate tooltip for the current state. */
-  protected getFitToButtonTooltip_(
-      fitToPageTooltip: string, fitToWidthTooltip: string): string {
-    return this.fittingType_ === FittingType.FIT_TO_PAGE ? fitToPageTooltip :
-                                                           fitToWidthTooltip;
+  protected getFitToButtonTooltip_() {
+    if (!this.strings) {
+      return '';
+    }
+    return loadTimeData.getString(
+        this.fittingType_ === FittingType.FIT_TO_PAGE ? 'tooltipFitToPage' :
+                                                        'tooltipFitToWidth');
   }
 
   // <if expr="enable_ink">

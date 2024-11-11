@@ -2,6 +2,7 @@
     .docTitle="${this.title_}" .docLength="${this.docLength_}"
     .embeddedViewer="${this.embedded_}" .pageNo="${this.pageNo_}"
     .loadProgress="${this.loadProgress_}" .hasEdits="${this.hasEdits_}"
+    .strings="${this.strings}"
     .hasEnteredAnnotationMode="${this.hasEnteredAnnotationMode_}"
 <if expr="enable_pdf_ink2">
     .hasInk2Edits="${this.hasInk2Edits_}"
@@ -103,5 +104,6 @@ ${this.showPropertiesDialog_ ? html`<viewer-properties-dialog
     .documentMetadata="${this.documentMetadata_}"
     .fileName="${this.fileName_}"
     .pageCount="${this.docLength_}"
+    .strings="${this.strings}"
     @close="${this.onPropertiesDialogClose_}">
 </viewer-properties-dialog>` : ''}
