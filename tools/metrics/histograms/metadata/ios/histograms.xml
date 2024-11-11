@@ -3984,17 +3984,6 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
-<histogram name="IOS.SafetyCheck.MagicStack.ModuleExistsInModuleOrder"
-    enum="BooleanMatched" expires_after="2024-12-24">
-  <owner>bwwilliams@google.com</owner>
-  <owner>thegreenfrog@google.com</owner>
-  <summary>
-    This histogram counts the number of times the Safety Check (Magic Stack)
-    module is requested for display, but not yet added to the Magic Stack module
-    order.
-  </summary>
-</histogram>
-
 <histogram name="IOS.SandboxMetrics.ApplicationSupportSize" units="MB"
     expires_after="2024-03-09">
   <owner>michaeldo@chromium.org</owner>
