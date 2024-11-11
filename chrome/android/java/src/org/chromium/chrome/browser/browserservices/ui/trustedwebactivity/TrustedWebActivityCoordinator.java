@@ -23,14 +23,13 @@ import org.chromium.components.embedder_support.util.Origin;
 import javax.inject.Inject;
 
 /**
- * Coordinator for the Trusted Web Activity component.
- * Add methods here if other components need to communicate with Trusted Web Activity component.
+ * Coordinator for the Trusted Web Activity component. Add methods here if other components need to
+ * communicate with Trusted Web Activity component.
  */
 @ActivityScope
 public class TrustedWebActivityCoordinator {
     private final SharedActivityCoordinator mSharedActivityCoordinator;
     private final CurrentPageVerifier mCurrentPageVerifier;
-    private final InstalledWebappRegistrar mInstalledWebappRegistrar;
     private final ClientPackageNameProvider mClientPackageNameProvider;
 
     @Inject
@@ -42,13 +41,11 @@ public class TrustedWebActivityCoordinator {
             CurrentPageVerifier currentPageVerifier,
             Lazy<TwaSplashController> splashController,
             BrowserServicesIntentDataProvider intentDataProvider,
-            InstalledWebappRegistrar installedWebappRegistrar,
             BaseCustomTabActivity activity) {
         // We don't need to do anything with the unused_ classes above, we just need to resolve them
         // so they start working.
         mSharedActivityCoordinator = sharedActivityCoordinator;
         mCurrentPageVerifier = currentPageVerifier;
-        mInstalledWebappRegistrar = installedWebappRegistrar;
         mClientPackageNameProvider = activity.getClientPackageNameProvider();
 
         initSplashScreen(splashController, intentDataProvider);
@@ -75,8 +72,11 @@ public class TrustedWebActivityCoordinator {
         // The state will start off as null and progress to PENDING then SUCCESS/FAILURE. We only
         // want to register the clients once the state reaches SUCCESS.
         if (state != null && state.status == VerificationStatus.SUCCESS) {
-            mInstalledWebappRegistrar.registerClient(
-                    mClientPackageNameProvider.get(), Origin.create(state.scope), state.url);
+            InstalledWebappRegistrar.getInstance()
+                    .registerClient(
+                            mClientPackageNameProvider.get(),
+                            Origin.create(state.scope),
+                            state.url);
         }
     }
 

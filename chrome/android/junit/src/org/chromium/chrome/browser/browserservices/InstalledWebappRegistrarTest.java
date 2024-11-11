@@ -10,10 +10,9 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
@@ -31,22 +30,23 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 
-/** Tests for {@link InstalledWebappDataRecorder}. */
+/** Tests for {@link InstalledWebappRegistrar}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowUrlUtilities.class})
-public class InstalledWebappDataRecorderTest {
+public class InstalledWebappRegistrarTest {
     private static final int APP_UID = 123;
     private static final String APP_NAME = "Example App";
     private static final String APP_PACKAGE = "com.example.app";
     private static final String MISSING_PACKAGE = "com.missing.app";
-    private static final Origin ORIGIN = Origin.create("https://www.example.com/");
+    private static final String PAGE_URL = "https://www.example.com/";
+    private static final Origin ORIGIN = Origin.create(PAGE_URL);
     private static final Origin OTHER_ORIGIN = Origin.create("https://www.other.com/");
 
     @Mock private PackageManager mPackageManager;
 
-    private InstalledWebappDataRecorder mRecorder;
+    private InstalledWebappRegistrar mRegistrar;
 
     private static String transform(String origin) {
         // Just an arbitrary string transformation so we can check it is applied.
@@ -69,8 +69,13 @@ public class InstalledWebappDataRecorderTest {
                 .when(mPackageManager)
                 .getApplicationInfo(eq(MISSING_PACKAGE), anyInt());
 
-        Context context = mock(Context.class);
-        when(context.getPackageManager()).thenReturn(mPackageManager);
+        Context context =
+                new ContextWrapper(ContextUtils.getApplicationContext()) {
+                    @Override
+                    public PackageManager getPackageManager() {
+                        return mPackageManager;
+                    }
+                };
         ContextUtils.initApplicationContextForTests(context);
 
         ShadowUrlUtilities.setTestImpl(
@@ -82,7 +87,7 @@ public class InstalledWebappDataRecorderTest {
                     }
                 });
 
-        mRecorder = new InstalledWebappDataRecorder();
+        mRegistrar = new InstalledWebappRegistrar();
     }
 
     @After
@@ -93,23 +98,23 @@ public class InstalledWebappDataRecorderTest {
     @Test
     @Feature("TrustedWebActivities")
     public void testRegister() {
-        mRecorder.register(APP_PACKAGE, ORIGIN);
+        mRegistrar.registerClient(APP_PACKAGE, ORIGIN, PAGE_URL);
         verifyRegistration(ORIGIN);
     }
 
     @Test
     @Feature("TrustedWebActivities")
     public void testDeduplicate() {
-        mRecorder.register(APP_PACKAGE, ORIGIN);
-        mRecorder.register(APP_PACKAGE, ORIGIN);
+        mRegistrar.registerClient(APP_PACKAGE, ORIGIN, PAGE_URL);
+        mRegistrar.registerClient(APP_PACKAGE, ORIGIN, PAGE_URL);
         verifyRegistration(ORIGIN);
     }
 
     @Test
     @Feature("TrustedWebActivities")
     public void testDifferentOrigins() {
-        mRecorder.register(APP_PACKAGE, ORIGIN);
-        mRecorder.register(APP_PACKAGE, OTHER_ORIGIN);
+        mRegistrar.registerClient(APP_PACKAGE, ORIGIN, PAGE_URL);
+        mRegistrar.registerClient(APP_PACKAGE, OTHER_ORIGIN, PAGE_URL);
         verifyRegistration(ORIGIN);
         verifyRegistration(OTHER_ORIGIN);
     }
@@ -118,7 +123,7 @@ public class InstalledWebappDataRecorderTest {
     @Feature("TrustedWebActivities")
     public void testMisingPackage() {
         var uids = InstalledWebappDataRegister.getUids();
-        mRecorder.register(MISSING_PACKAGE, ORIGIN);
+        mRegistrar.registerClient(MISSING_PACKAGE, ORIGIN, PAGE_URL);
         // Implicitly checking we don't throw.
         assertEquals(uids, InstalledWebappDataRegister.getUids());
     }

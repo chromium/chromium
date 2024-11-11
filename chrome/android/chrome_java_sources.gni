@@ -241,7 +241,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/browserservices/ClearDataDialogActivity.java",
   "java/src/org/chromium/chrome/browser/browserservices/ClearDataDialogResultRecorder.java",
   "java/src/org/chromium/chrome/browser/browserservices/InstalledWebappBroadcastReceiver.java",
-  "java/src/org/chromium/chrome/browser/browserservices/InstalledWebappDataRecorder.java",
   "java/src/org/chromium/chrome/browser/browserservices/InstalledWebappDataRegister.java",
   "java/src/org/chromium/chrome/browser/browserservices/InstalledWebappRegistrar.java",
   "java/src/org/chromium/chrome/browser/browserservices/ManageTrustedWebActivityDataActivity.java",

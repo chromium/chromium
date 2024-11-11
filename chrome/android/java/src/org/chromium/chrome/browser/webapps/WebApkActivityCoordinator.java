@@ -30,7 +30,6 @@ import javax.inject.Inject;
 public class WebApkActivityCoordinator implements DestroyObserver {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final Lazy<WebApkUpdateManager> mWebApkUpdateManager;
-    private final InstalledWebappRegistrar mInstalledWebappRegistrar;
 
     @Inject
     public WebApkActivityCoordinator(
@@ -40,13 +39,11 @@ public class WebApkActivityCoordinator implements DestroyObserver {
             WebApkActivityLifecycleUmaTracker unused_webApkActivityLifecycleUmaTracker,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             BrowserServicesIntentDataProvider intendDataProvider,
-            Lazy<WebApkUpdateManager> webApkUpdateManager,
-            InstalledWebappRegistrar installedWebappRegistrar) {
+            Lazy<WebApkUpdateManager> webApkUpdateManager) {
         // The unused_ params are present just to initialize them.
 
         mIntentDataProvider = intendDataProvider;
         mWebApkUpdateManager = webApkUpdateManager;
-        mInstalledWebappRegistrar = installedWebappRegistrar;
 
         deferredStartupWithStorageHandler.addTask(
                 (storage, didCreateStorage) -> {
@@ -76,7 +73,8 @@ public class WebApkActivityCoordinator implements DestroyObserver {
         Origin origin = Origin.create(scope);
         String packageName = storage.getWebApkPackageName();
 
-        mInstalledWebappRegistrar.registerClient(packageName, origin, storage.getUrl());
+        InstalledWebappRegistrar.getInstance()
+                .registerClient(packageName, origin, storage.getUrl());
         PermissionUpdater.onWebApkLaunch(origin, packageName);
     }
 
