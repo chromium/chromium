@@ -321,8 +321,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, OnUpdated) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_updated")) << message_;
 }
 
-// TODO(crbug.com/378027647) Failing on Linux
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/378027647) Failing on ChromeOS
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_OnUpdated DISABLED_OnUpdated
 #else
 #define MAYBE_OnUpdated OnUpdated
