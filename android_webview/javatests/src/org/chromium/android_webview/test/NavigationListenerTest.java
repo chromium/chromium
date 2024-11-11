@@ -28,6 +28,7 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedTitleHelper;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
@@ -94,6 +95,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView", "NavigationListener"})
     @CommandLineFlags.Add({"enable-features=EnableNavigationListener"})
+    @DisabledTest(message = "crbug.com/332809183")
     public void testNavigationVariousCases() throws Throwable {
         // Add the special listener object which will receive navigation messages.
         addWebMessageListenerOnUiThread(
@@ -589,6 +591,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView", "NavigationListener"})
     @CommandLineFlags.Add({"enable-features=EnableNavigationListener"})
+    @DisabledTest(message = "crbug.com/332809183")
     public void testNavigationLoadDataWithBaseURL() throws Throwable {
         // Add the special listener object which will receive navigation messages.
         setUpAndGetInitialProxy();
@@ -627,6 +630,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView", "NavigationListener"})
     @CommandLineFlags.Add({"enable-features=EnableNavigationListener"})
+    @DisabledTest(message = "crbug.com/332809183")
     public void testNavigationIntercepted() throws Throwable {
         // Add the special listener object which will receive navigation messages.
         setUpAndGetInitialProxy();
