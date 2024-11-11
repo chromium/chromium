@@ -22,7 +22,8 @@ namespace ash {
 PickerSkeletonLoaderView::PickerSkeletonLoaderView() {
   views::Builder<views::ImageView>(this)
       .SetImage(ui::ImageModel::FromVectorIcon(
-          kPickerSkeletonLoaderIcon, cros_tokens::kCrosSysSystemOnBase, 260))
+          kQuickInsertSkeletonLoaderIcon, cros_tokens::kCrosSysSystemOnBase,
+          260))
       .SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(12, 16, 0, 16)))
       .SetPaintToLayer()
       .CustomConfigure(base::BindOnce([](views::ImageView* view) {

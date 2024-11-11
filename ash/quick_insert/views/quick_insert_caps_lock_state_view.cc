@@ -69,7 +69,7 @@ PickerCapsLockStateView::PickerCapsLockStateView(
 
   icon_view_ = AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          enabled ? kPickerCapsLockOnIcon : kPickerCapsLockOffIcon,
+          enabled ? kQuickInsertCapsLockOnIcon : kQuickInsertCapsLockOffIcon,
           cros_tokens::kCrosSysOnSurface)));
 
   BubbleDialogDelegateView::CreateBubble(this);

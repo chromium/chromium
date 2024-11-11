@@ -348,7 +348,8 @@ void PickerZeroStateView::OnFetchSuggestedResults(
                 .SetText(l10n_util::GetStringUTF16(
                     IDS_PICKER_CHANGE_CAPITALIZATION_MENU_LABEL))
                 .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
-                    kPickerSentenceCaseIcon, cros_tokens::kCrosSysOnSurface))
+                    kQuickInsertSentenceCaseIcon,
+                    cros_tokens::kCrosSysOnSurface))
                 .Build();
       }
 

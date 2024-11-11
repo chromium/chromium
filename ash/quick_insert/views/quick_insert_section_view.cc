@@ -136,11 +136,11 @@ const gfx::VectorIcon& GetIconForCaseTransformType(
     QuickInsertCaseTransformResult::Type type) {
   switch (type) {
     case QuickInsertCaseTransformResult::Type::kUpperCase:
-      return kPickerUpperCaseIcon;
+      return kQuickInsertUpperCaseIcon;
     case QuickInsertCaseTransformResult::Type::kLowerCase:
-      return kPickerLowerCaseIcon;
+      return kQuickInsertLowerCaseIcon;
     case QuickInsertCaseTransformResult::Type::kTitleCase:
-      return kPickerTitleCaseIcon;
+      return kQuickInsertTitleCaseIcon;
   }
 }
 
@@ -392,7 +392,8 @@ QuickInsertSectionView::CreateItemFromResult(
                 data.enabled ? IDS_PICKER_CAPS_LOCK_ON_MENU_LABEL
                              : IDS_PICKER_CAPS_LOCK_OFF_MENU_LABEL));
             item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
-                data.enabled ? kPickerCapsLockOnIcon : kPickerCapsLockOffIcon,
+                data.enabled ? kQuickInsertCapsLockOnIcon
+                             : kQuickInsertCapsLockOffIcon,
                 cros_tokens::kCrosSysOnSurface));
             item_view->SetShortcutHintView(
                 std::make_unique<PickerShortcutHintView>(data.shortcut));

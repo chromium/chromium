@@ -26,7 +26,7 @@ TEST_F(QuickInsertCapsLockStateViewTest, ShowsCapsLockOn) {
                    .GetVectorIcon()
                    .vector_icon()
                    ->name,
-               kPickerCapsLockOnIcon.name);
+               kQuickInsertCapsLockOnIcon.name);
 }
 
 TEST_F(QuickInsertCapsLockStateViewTest, ShowsCapsLockOff) {
@@ -38,7 +38,7 @@ TEST_F(QuickInsertCapsLockStateViewTest, ShowsCapsLockOff) {
                    .GetVectorIcon()
                    .vector_icon()
                    ->name,
-               kPickerCapsLockOffIcon.name);
+               kQuickInsertCapsLockOffIcon.name);
 }
 
 class QuickInsertCapsLockStateViewRTLTest

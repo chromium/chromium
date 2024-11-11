@@ -55,7 +55,7 @@ PickerBadgeView::PickerBadgeView() {
                       ash::TypographyToken::kCrosLabel1)),
           views::Builder<views::ImageView>()
               .SetImage(ui::ImageModel::FromVectorIcon(
-                  kPickerReturnIcon, cros_tokens::kCrosSysOnSurface))
+                  kQuickInsertReturnIcon, cros_tokens::kCrosSysOnSurface))
               .SetImageSize(kIconSize))
       .BuildChildren();
 }

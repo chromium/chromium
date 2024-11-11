@@ -271,7 +271,7 @@ PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
           ->AddChildView(std::make_unique<IconButton>(
               base::BindRepeating(&PickerEmojiBarView::OpenMoreEmojis,
                                   base::Unretained(this)),
-              IconButton::Type::kSmallFloating, &kPickerMoreEmojisIcon,
+              IconButton::Type::kSmallFloating, &kQuickInsertMoreEmojisIcon,
               is_gifs_enabled
                   ? IDS_PICKER_MORE_EMOJIS_AND_GIFS_BUTTON_ACCESSIBLE_NAME
                   : IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME));

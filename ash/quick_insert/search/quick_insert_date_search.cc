@@ -88,7 +88,7 @@ QuickInsertSearchResult MakeResult(const ResolvedDate& date) {
   return QuickInsertTextResult(
       base::LocalizedTimeFormatWithPattern(date.time, "LLLd"),
       date.disambiguation_text.value_or(u""),
-      ui::ImageModel::FromVectorIcon(kPickerCalendarIcon,
+      ui::ImageModel::FromVectorIcon(kQuickInsertCalendarIcon,
                                      cros_tokens::kCrosSysOnSurface),
       QuickInsertTextResult::Source::kDate);
 }
@@ -98,7 +98,7 @@ QuickInsertSearchResult MakeSuggestedResult(std::u16string_view query_text,
   CHECK(!date.disambiguation_text.has_value());
   return QuickInsertSearchRequestResult(
       query_text, base::LocalizedTimeFormatWithPattern(date.time, "LLLd"),
-      ui::ImageModel::FromVectorIcon(kPickerCalendarIcon,
+      ui::ImageModel::FromVectorIcon(kQuickInsertCalendarIcon,
                                      cros_tokens::kCrosSysOnSurface));
 }
 
