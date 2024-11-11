@@ -1,6 +1,6 @@
 {
-  "version": "49.3",
-  "log_list_timestamp": "2024-11-10T12:55:17Z",
+  "version": "50.1",
+  "log_list_timestamp": "2024-11-11T12:55:23Z",
   "operators": [
     {
       "name": "Google",
@@ -219,8 +219,8 @@
           "url": "https://ct.cloudflare.com/logs/nimbus2026/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-08-28T03:00:00Z"
+            "usable": {
+              "timestamp": "2024-11-08T18:00:00Z"
             }
           },
           "temporal_interval": {
@@ -356,8 +356,8 @@
           "url": "https://wyvern.ct.digicert.com/2026h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-08-26T00:00:00Z"
+            "usable": {
+              "timestamp": "2024-11-08T00:00:00Z"
             }
           },
           "temporal_interval": {
@@ -372,8 +372,8 @@
           "url": "https://wyvern.ct.digicert.com/2026h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-08-26T00:00:00Z"
+            "usable": {
+              "timestamp": "2024-11-08T00:00:00Z"
             }
           },
           "temporal_interval": {
@@ -436,8 +436,8 @@
           "url": "https://sphinx.ct.digicert.com/2026h1/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-08-26T00:00:00Z"
+            "usable": {
+              "timestamp": "2024-11-08T00:00:00Z"
             }
           },
           "temporal_interval": {
@@ -452,8 +452,8 @@
           "url": "https://sphinx.ct.digicert.com/2026h2/",
           "mmd": 86400,
           "state": {
-            "qualified": {
-              "timestamp": "2024-08-26T00:00:00Z"
+            "usable": {
+              "timestamp": "2024-11-08T00:00:00Z"
             }
           },
           "temporal_interval": {
