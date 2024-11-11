@@ -136,10 +136,11 @@
   AutofillCountrySelectionTableViewController*
       autofillCountrySelectionTableViewController =
           [[AutofillCountrySelectionTableViewController alloc]
-              initWithDelegate:self
-               selectedCountry:country
-                  allCountries:allCountries
-                  settingsView:YES];
+                         initWithDelegate:self
+                          selectedCountry:country
+                             allCountries:allCountries
+                             settingsView:YES
+              previousViewControllerTitle:nil];
   [self.baseNavigationController
       pushViewController:autofillCountrySelectionTableViewController
                 animated:YES];
@@ -156,6 +157,10 @@
   [self.baseNavigationController popViewControllerAnimated:YES];
   self.isCountrySelectorPresented = NO;
   [self.mediator didSelectCountry:selectedCountry];
+}
+
+- (void)dismissCountryViewController {
+  NOTREACHED();
 }
 
 #pragma mark - Private

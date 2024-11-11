@@ -18,6 +18,9 @@
 // code.
 - (void)didSelectCountry:(CountryItem*)selectedCountry;
 
+// Informs the delegate to dismiss the view controller.
+- (void)dismissCountryViewController;
+
 @end
 
 // Controller for the UI that allows the user to select a country.
@@ -31,7 +34,8 @@
                         delegate
                  selectedCountry:(NSString*)country
                     allCountries:(NSArray<CountryItem*>*)allCountries
-                    settingsView:(BOOL)settingsView NS_DESIGNATED_INITIALIZER;
+                    settingsView:(BOOL)settingsView
+     previousViewControllerTitle:(NSString*)title NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 

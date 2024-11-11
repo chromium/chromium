@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/autofill_edit_profile_bottom_sheet_coordinator.h"
 
+#import <Foundation/Foundation.h>
+
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -223,10 +225,12 @@
   AutofillCountrySelectionTableViewController*
       autofillCountrySelectionTableViewController =
           [[AutofillCountrySelectionTableViewController alloc]
-              initWithDelegate:self
-               selectedCountry:country
-                  allCountries:allCountries
-                  settingsView:NO];
+                         initWithDelegate:self
+                          selectedCountry:country
+                             allCountries:allCountries
+                             settingsView:NO
+              previousViewControllerTitle:_navigationController
+                                              .topViewController.title];
 
   [_navigationController
       pushViewController:autofillCountrySelectionTableViewController
@@ -250,6 +254,10 @@
 - (void)didSelectCountry:(CountryItem*)selectedCountry {
   [_navigationController popViewControllerAnimated:YES];
   [_autofillProfileEditMediator didSelectCountry:selectedCountry];
+}
+
+- (void)dismissCountryViewController {
+  [_navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - AutofillEditProfileBottomSheetTableViewControllerDelegate

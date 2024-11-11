@@ -156,10 +156,11 @@ using autofill_address_profile_infobar_overlays::
   AutofillCountrySelectionTableViewController*
       autofillCountrySelectionTableViewController =
           [[AutofillCountrySelectionTableViewController alloc]
-              initWithDelegate:self
-               selectedCountry:country
-                  allCountries:allCountries
-                  settingsView:NO];
+                         initWithDelegate:self
+                          selectedCountry:country
+                             allCountries:allCountries
+                             settingsView:NO
+              previousViewControllerTitle:nil];
 
   [self.modalViewController.navigationController
       pushViewController:autofillCountrySelectionTableViewController
@@ -180,6 +181,10 @@ using autofill_address_profile_infobar_overlays::
   [self.modalViewController.navigationController popViewControllerAnimated:YES];
   CHECK(self.sharedEditViewMediator);
   [self.sharedEditViewMediator didSelectCountry:selectedCountry];
+}
+
+- (void)dismissCountryViewController {
+  NOTREACHED();
 }
 
 @end

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/cells/country_item.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -24,6 +25,9 @@ namespace {
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierCountries = kSectionIdentifierEnumZero,
 };
+
+/// Size of the back button.
+const CGFloat kBackButtonSize = 24;
 
 }  // namespace
 
@@ -50,6 +54,12 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   // If YES, denotes that the view is shown in the settings.
   BOOL _settingsView;
+
+  // Refers to the title of the view controller on top of which the country view
+  // controller is presented. It is set only when
+  // `kAutofillDynamicallyLoadsFieldsForAddressInput` is enabled and for
+  // non-settings view.
+  NSString* _previousViewControllerTitle;
 }
 
 @end
@@ -61,7 +71,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
                         delegate
                  selectedCountry:(NSString*)selectedCountry
                     allCountries:(NSArray<CountryItem*>*)allCountries
-                    settingsView:(BOOL)settingsView {
+                    settingsView:(BOOL)settingsView
+     previousViewControllerTitle:(NSString*)title {
   DCHECK(delegate);
 
   UITableViewStyle viewStyle =
@@ -76,6 +87,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
     _currentlySelectedCountry = selectedCountry;
     _allCountries = allCountries;
     _settingsView = settingsView;
+    _previousViewControllerTitle = title;
   }
   return self;
 }
@@ -89,11 +101,40 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       l10n_util::GetNSString(_settingsView ? IDS_IOS_AUTOFILL_EDIT_ADDRESS
                                            : IDS_IOS_AUTOFILL_SELECT_COUNTRY);
 
-  if (!_settingsView && !base::FeatureList::IsEnabled(
-                            kAutofillDynamicallyLoadsFieldsForAddressInput)) {
-    self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-    self.tableView.sectionHeaderHeight = 0;
-    self.tableView.sectionFooterHeight = 0;
+  if (!_settingsView) {
+    if (base::FeatureList::IsEnabled(
+            kAutofillDynamicallyLoadsFieldsForAddressInput)) {
+      CHECK(_previousViewControllerTitle);
+      UIImage* image =
+          DefaultSymbolWithPointSize(kChevronBackwardSymbol, kBackButtonSize);
+
+      UIButton* backButton = [UIButton buttonWithType:UIButtonTypeSystem];
+      [backButton setImage:image forState:UIControlStateNormal];
+      [backButton setTitle:_previousViewControllerTitle
+                  forState:UIControlStateNormal];
+      [backButton addTarget:self
+                     action:@selector(dismissViewController)
+           forControlEvents:UIControlEventTouchUpInside];
+
+      if (@available(iOS 15.0, *)) {
+        UIButtonConfiguration* config = backButton.configuration;
+        config.contentInsets =
+            NSDirectionalEdgeInsetsMake(0, 8, 0, 0);  // Adjust values as needed
+        backButton.configuration = config;
+      }
+
+      // Size the button to fit the content
+      [backButton sizeToFit];
+
+      // Create a UIBarButtonItem with the custom button
+      UIBarButtonItem* customBackButton =
+          [[UIBarButtonItem alloc] initWithCustomView:backButton];
+      self.navigationItem.leftBarButtonItem = customBackButton;
+    } else {
+      self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+      self.tableView.sectionHeaderHeight = 0;
+      self.tableView.sectionFooterHeight = 0;
+    }
   }
 
   [self.tableView
@@ -255,6 +296,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // Dismisses the search controller when the scrim overlay is tapped.
 - (void)dismissSearchController:(UIControl*)sender {
   _searchController.active = NO;
+}
+
+- (void)dismissViewController {
+  [_delegate dismissCountryViewController];
 }
 
 // Reloads the countries items in thes ection.
