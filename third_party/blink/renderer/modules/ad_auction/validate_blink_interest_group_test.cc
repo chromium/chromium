@@ -288,15 +288,7 @@ TEST_F(ValidateBlinkInterestGroupTest,
 //
 // Ad URLs do not have to be same origin, so they're checked in a different
 // test.
-//
-// TODO(morlovich): Remove checking of trusted signals URLs from here once
-// the feature blink::features::kFledgePermitCrossOriginTrustedSignals is
-// removed.
 TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      blink::features::kFledgePermitCrossOriginTrustedSignals);
-
   // Strings when each field has a bad URL, copied from cc file.
   const char kBadBiddingUrlError[] =
       "biddingLogicURL must have the same origin as the InterestGroup owner "
@@ -307,10 +299,6 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
   const char kBadUpdateUrlError[] =
       "updateURL must have the same origin as the InterestGroup owner "
       "and have no fragment identifier or embedded credentials.";
-  const char kBadTrustedBiddingSignalsUrlError[] =
-      "trustedBiddingSignalsURL must have the same origin as the "
-      "InterestGroup owner and have no query string, fragment identifier "
-      "or embedded credentials.";
 
   // Nested URL schemes, like filesystem URLs, are the only cases where a URL
   // being same origin with an HTTPS origin does not imply the URL itself is
@@ -381,45 +369,13 @@ TEST_F(ValidateBlinkInterestGroupTest, RejectedUrls) {
         /*expected_error_field_name=*/String::FromUTF8("updateURL"),
         /*expected_error_field_value=*/rejected_url.GetString(),
         /*expected_error=*/String::FromUTF8(kBadUpdateUrlError));
-
-    // Test `trusted_bidding_signals_url`.
-    blink_interest_group = CreateMinimalInterestGroup();
-    blink_interest_group->trusted_bidding_signals_url = rejected_url;
-    ExpectInterestGroupIsNotValid(
-        blink_interest_group,
-        /*expected_error_field_name=*/
-        String::FromUTF8("trustedBiddingSignalsURL"),
-        /*expected_error_field_value=*/rejected_url.GetString(),
-        /*expected_error=*/String::FromUTF8(kBadTrustedBiddingSignalsUrlError));
   }
-
-  // `trusted_bidding_signals_url` also can't include query strings.
-  mojom::blink::InterestGroupPtr blink_interest_group =
-      CreateMinimalInterestGroup();
-  KURL rejected_url = KURL(String::FromUTF8("https://origin.test/?query"));
-  blink_interest_group->trusted_bidding_signals_url = rejected_url;
-  ExpectInterestGroupIsNotValid(
-      blink_interest_group,
-      /*expected_error_field_name=*/
-      String::FromUTF8("trustedBiddingSignalsURL"),
-      /*expected_error_field_value=*/rejected_url.GetString(),
-      /*expected_error=*/String::FromUTF8(kBadTrustedBiddingSignalsUrlError));
-
-  // That includes an empty query string.
-  KURL rejected_url2 = KURL(String::FromUTF8("https://origin.test/?"));
-  blink_interest_group->trusted_bidding_signals_url = rejected_url2;
-  ExpectInterestGroupIsNotValid(
-      blink_interest_group,
-      /*expected_error_field_name=*/
-      String::FromUTF8("trustedBiddingSignalsURL"),
-      /*expected_error_field_value=*/rejected_url2.GetString(),
-      /*expected_error=*/String::FromUTF8(kBadTrustedBiddingSignalsUrlError));
 }
 
-// By default, cross-origin trusted signals URL are accepted, but other checks
-// still happen.
-TEST_F(ValidateBlinkInterestGroupTest,
-       CrossOriginTrustedBiddingSignalsUrlPermitted) {
+// The trusted bidding signals URL has slightly different logic, so test it
+// separately. In particular, cross origin URLs are allowed, while query strings
+// are not.
+TEST_F(ValidateBlinkInterestGroupTest, TrustedBiddingSignalsUrl) {
   // Note that cross-origin checks here refer to the group's owner,
   // https://origin.test
   const struct {

@@ -756,7 +756,6 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         /*disabled_features=*/
         {blink::features::kFencedFrames,
          blink::features::kFledgeEnforceKAnonymity,
-         blink::features::kFledgePermitCrossOriginTrustedSignals,
          blink::features::kFledgeRealTimeReporting,
          features::kCookieDeprecationFacilitatedTesting});
   }
@@ -2343,23 +2342,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
               /*name=*/"tricycles")
               .SetUpdateUrl(GURL("https://update.a.test"))
               .Build()));
-
-  // This join should fail and throw an exception since a.test is not the same
-  // origin as the trusted_bidding_signals_url, signals.a.test.
-  EXPECT_EQ(base::StringPrintf(
-                "TypeError: Failed to execute 'joinAdInterestGroup' on "
-                "'Navigator': trustedBiddingSignalsURL "
-                "'https://signals.a.test/' for AuctionAdInterestGroup with "
-                "owner '%s' and name 'four-wheelers' trustedBiddingSignalsURL "
-                "must have the same origin as the InterestGroup owner and have "
-                "no query string, fragment identifier or embedded credentials.",
-                test_origin_a.Serialize().c_str()),
-            JoinInterestGroupAndVerify(
-                blink::TestInterestGroupBuilder(
-                    /*owner=*/test_origin_a,
-                    /*name=*/"four-wheelers")
-                    .SetTrustedBiddingSignalsUrl(GURL("https://signals.a.test"))
-                    .Build()));
 
   // This join should silently fail since d.test is not allowlisted for the API,
   // and allowlist checks only happen in the browser process, so don't throw an
@@ -5613,7 +5595,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
-                       RunAuctionWithTooLongTrustedSellerSignalsUrl) {
+                       RunAuctionWithTooLongTrustedScoringSignalsUrl) {
   GURL url = embedded_https_test_server().GetURL("a.test", "/echo");
   url::Origin origin = url::Origin::Create(url);
   GURL decision_url = embedded_https_test_server().GetURL(
@@ -5653,8 +5635,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                                })",
                                origin, decision_url,
                                almost_too_long_trusted_scoring_signals_url)));
-  EXPECT_EQ(url,
-            RunAuctionAndWaitForUrl(JsReplace(
+
+  // This should fail with an attestation failure, since the too-long URL will
+  // be passed as a null URL to the cross-origin attestion check, which will
+  // fail on a null URL.
+  EXPECT_EQ(nullptr,
+            RunAuctionAndWait(JsReplace(
                 R"({
                   seller: $1,
                   decisionLogicURL: $2,
@@ -5835,27 +5821,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       RunAuctionAndWait(R"({
     seller: "https://a.test/",
     decisionLogicURL: "https://b.test/foo",
-    interestGroupBuyers: ["https://c.test/"],
-                        })"));
-  WaitForAccessObserved({});
-}
-
-IN_PROC_BROWSER_TEST_F(
-    InterestGroupBrowserTest,
-    RunAdAuctionTrustedScoringSignalsUrlDifferentFromSeller) {
-  GURL test_url = embedded_https_test_server().GetURL("a.test", "/echo");
-  ASSERT_TRUE(NavigateToURL(shell(), test_url));
-  url::Origin test_origin = url::Origin::Create(test_url);
-  AttachInterestGroupObserver();
-
-  EXPECT_EQ(
-      "TypeError: Failed to execute 'runAdAuction' on 'Navigator': "
-      "trustedScoringSignalsURL 'https://b.test/foo' for AuctionAdConfig with "
-      "seller 'https://a.test/' must match seller origin.",
-      RunAuctionAndWait(R"({
-    seller: "https://a.test/",
-    decisionLogicURL: "https://a.test/foo",
-    trustedScoringSignalsURL: "https://b.test/foo",
     interestGroupBuyers: ["https://c.test/"],
                         })"));
   WaitForAccessObserved({});
@@ -9103,18 +9068,22 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
     GURL url;
     const char* accept_header;
     bool expect_trusted_params;
+    network::mojom::RequestMode expected_request_mode;
   } kExpectedRequests[] = {
       {embedded_https_test_server().GetURL("a.test",
                                            "/interest_group/bidding_logic.js"),
-       "application/javascript", /*expect_trusted_params=*/true},
+       "application/javascript", /*expect_trusted_params=*/true,
+       network::mojom::RequestMode::kNoCors},
       {embedded_https_test_server().GetURL(
            "a.test",
            "/interest_group/trusted_bidding_signals.json?"
            "hostname=a.test&keys=key1&interestGroupNames=cars"),
-       "application/json", /*expect_trusted_params=*/true},
+       "application/json", /*expect_trusted_params=*/true,
+       network::mojom::RequestMode::kCors},
       {embedded_https_test_server().GetURL("a.test",
                                            "/interest_group/decision_logic.js"),
-       "application/javascript", /*expect_trusted_params=*/false},
+       "application/javascript", /*expect_trusted_params=*/false,
+       network::mojom::RequestMode::kNoCors},
   };
   for (const auto& expected_request : kExpectedRequests) {
     SCOPED_TRACE(expected_request.url);
@@ -9133,7 +9102,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionWithWinner) {
 
     EXPECT_EQ(expected_request.expect_trusted_params,
               request->trusted_params.has_value());
-    EXPECT_EQ(network::mojom::RequestMode::kNoCors, request->mode);
+    EXPECT_EQ(expected_request.expected_request_mode, request->mode);
     if (request->trusted_params) {
       // Requests for interest-group provided URLs are cross-origin to the
       // publisher page, and set trusted params to use the right cache shard,
@@ -11650,18 +11619,22 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
     GURL url;
     const char* accept_header;
     bool expect_trusted_params;
+    network::mojom::RequestMode expected_request_mode;
   } kExpectedRequests[] = {
       {embedded_https_test_server().GetURL("a.test",
                                            "/interest_group/bidding_logic.js"),
-       "application/javascript", /*expect_trusted_params=*/true},
+       "application/javascript", /*expect_trusted_params=*/true,
+       network::mojom::RequestMode::kNoCors},
       {embedded_https_test_server().GetURL(
            "a.test",
            "/interest_group/trusted_bidding_signals.json"
            "?hostname=a.test&keys=key1&interestGroupNames=cars"),
-       "application/json", /*expect_trusted_params=*/true},
+       "application/json", /*expect_trusted_params=*/true,
+       network::mojom::RequestMode::kCors},
       {embedded_https_test_server().GetURL("a.test",
                                            "/interest_group/decision_logic.js"),
-       "application/javascript", /*expect_trusted_params=*/false},
+       "application/javascript", /*expect_trusted_params=*/false,
+       network::mojom::RequestMode::kNoCors},
   };
   for (const auto& expected_request : kExpectedRequests) {
     SCOPED_TRACE(expected_request.url);
@@ -11680,7 +11653,7 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
 
     EXPECT_EQ(expected_request.expect_trusted_params,
               request->trusted_params.has_value());
-    EXPECT_EQ(network::mojom::RequestMode::kNoCors, request->mode);
+    EXPECT_EQ(expected_request.expected_request_mode, request->mode);
     if (request->trusted_params) {
       // Requests for interest-group provided URLs are cross-origin to the
       // publisher page, and set trusted params to use the right cache shard,
@@ -23969,14 +23942,14 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, FeatureDetection) {
   EXPECT_EQ(true, EvalJs(shell(), kQueryReportingTimeout));
   EXPECT_EQ(true, EvalJs(shell(), kQuerySelectableReportingIds));
   EXPECT_EQ(true, EvalJs(shell(), kQueryTrustedSignalsKVv2Support));
-  EXPECT_EQ(false, EvalJs(shell(), kQueryCrossOriginTrustedSignals));
+  EXPECT_EQ(true, EvalJs(shell(), kQueryCrossOriginTrustedSignals));
   EXPECT_EQ(false, EvalJs(shell(), kQueryRealTimeReporting));
   EXPECT_EQ(true, EvalJs(shell(), kQuerySellerNonce));
   auto all_result = EvalJs(shell(), kQueryAll);
   EXPECT_THAT(all_result.value, base::test::IsJson(R"({
    "adComponentsLimit": 40,
    "deprecatedRenderURLReplacements": true,
-   "permitCrossOriginTrustedSignals": false,
+   "permitCrossOriginTrustedSignals": true,
    "realTimeReporting": false,
    "reportingTimeout": true,
    "selectableReportingIds": true,
@@ -24964,11 +24937,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupOOPIFBrowserTest,
 class InterestGroupCrossOriginTrustedSignalsBrowserTest
     : public InterestGroupBrowserTest {
  public:
-  InterestGroupCrossOriginTrustedSignalsBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kFledgePermitCrossOriginTrustedSignals);
-  }
-
+  InterestGroupCrossOriginTrustedSignalsBrowserTest() = default;
   ~InterestGroupCrossOriginTrustedSignalsBrowserTest() override = default;
 
   void TestTrustedSellerSignals(bool expect_success,
@@ -26729,7 +26698,7 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, FeatureDetection) {
   EXPECT_THAT(all_result.value, base::test::IsJson(R"({
                 "adComponentsLimit": 40,
                 "deprecatedRenderURLReplacements": true,
-                "permitCrossOriginTrustedSignals": false,
+                "permitCrossOriginTrustedSignals": true,
                 "realTimeReporting": true,
                 "reportingTimeout": true,
                 "selectableReportingIds": true,
@@ -26877,11 +26846,7 @@ class InterestGroupPreconnectOwnerAndSignalsOriginsTest
       public testing::WithParamInterface<bool> {
  public:
   InterestGroupPreconnectOwnerAndSignalsOriginsTest() {
-    feature_list_.InitWithFeatures(/*enabled_features=*/
-                                   {blink::features::
-                                        kFledgePermitCrossOriginTrustedSignals,
-                                    features::kFledgeUsePreconnectCache},
-                                   /*disabled_features=*/{});
+    feature_list_.InitAndEnableFeature(features::kFledgeUsePreconnectCache);
   }
 
   ~InterestGroupPreconnectOwnerAndSignalsOriginsTest() override = default;
@@ -27259,8 +27224,7 @@ class InterestGroupTrustedSignalsKVv2BrowserTest
     std::vector<base::test::FeatureRefAndParams> enabled_features{
         {blink::features::kFledgeBiddingAndAuctionServer,
          {{"FledgeBiddingAndAuctionKeyURL", kKeyUrl.spec()}}},
-        {blink::features::kFledgeTrustedSignalsKVv2Support, {}},
-        {blink::features::kFledgePermitCrossOriginTrustedSignals, {}}};
+        {blink::features::kFledgeTrustedSignalsKVv2Support, {}}};
     std::vector<base::test::FeatureRef> disabled_features;
     if (EnableSignalsCache()) {
       enabled_features.emplace_back(features::kFledgeUseKVv2SignalsCache,

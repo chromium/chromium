@@ -50,29 +50,15 @@ bool IsUrlAllowedForTrustedBiddingSignals(
     const KURL& url,
     const mojom::blink::InterestGroup& group,
     String& error_out) {
-  bool allow_cross_origin = base::FeatureList::IsEnabled(
-      blink::features::kFledgePermitCrossOriginTrustedSignals);
-  if (allow_cross_origin) {
+  if (!IsUrlAllowedForRenderUrls(url) || url.HasFragmentIdentifier() ||
+      !group.trusted_bidding_signals_url->Query().IsNull()) {
     error_out =
         "trustedBiddingSignalsURL must have https schema and have no query "
         "string, fragment identifier or embedded credentials.";
-  } else {
-    error_out =
-        "trustedBiddingSignalsURL must have the same origin as the "
-        "InterestGroup owner and have no query string, fragment identifier or "
-        "embedded credentials.";
-  }
-
-  if (!IsUrlAllowedForRenderUrls(url) || url.HasFragmentIdentifier() ||
-      !group.trusted_bidding_signals_url->Query().IsNull()) {
     return false;
   }
 
-  if (allow_cross_origin) {
-    return true;
-  } else {
-    return group.owner->IsSameOriginWith(SecurityOrigin::Create(url).get());
-  }
+  return true;
 }
 
 size_t EstimateHashMapSize(const HashMap<String, double>& hash_map) {

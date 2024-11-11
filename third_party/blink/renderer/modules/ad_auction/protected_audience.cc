@@ -48,11 +48,8 @@ WTF::Vector<std::pair<String, FeatureVal>> MakeFeatureStatusVector(
       String("reportingTimeout"),
       FeatureVal(RuntimeEnabledFeatures::FledgeReportingTimeoutEnabled(
           execution_context)));
-  feature_status.emplace_back(
-      String("permitCrossOriginTrustedSignals"),
-      FeatureVal(
-          RuntimeEnabledFeatures::FledgePermitCrossOriginTrustedSignalsEnabled(
-              execution_context)));
+  feature_status.emplace_back(String("permitCrossOriginTrustedSignals"),
+                              FeatureVal(true));
   feature_status.emplace_back(
       String("realTimeReporting"),
       FeatureVal(RuntimeEnabledFeatures::FledgeRealTimeReportingEnabled(

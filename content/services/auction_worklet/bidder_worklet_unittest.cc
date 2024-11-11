@@ -1195,18 +1195,6 @@ class BidderWorkletMultiBidAndCookieDeprecationTest : public BidderWorkletTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-class BidderWorkletCrossOriginTrustedSignalsDisabledTest
-    : public BidderWorkletTest {
- public:
-  BidderWorkletCrossOriginTrustedSignalsDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        blink::features::kFledgePermitCrossOriginTrustedSignals);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Test the case the BidderWorklet pipe is closed before invoking the
 // GenerateBidCallback. The invocation of the GenerateBidCallback is not
 // observed, since the callback is on the pipe that was just closed. There
@@ -6462,14 +6450,6 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignals) {
           /*ad_component_descriptors=*/std::nullopt,
           /*modeling_signals=*/std::nullopt, base::TimeDelta()));
   EXPECT_EQ(observed_requests += 2, url_loader_factory_.total_requests());
-}
-
-// With the cross-origin trusted signals flag off, nothing is passed in to the
-// cross-original signals parameter.
-TEST_F(BidderWorkletCrossOriginTrustedSignalsDisabledTest, Basic) {
-  RunGenerateBidExpectingExpressionIsTrue(
-      "crossOriginTrustedSignals === undefined");
-  RunGenerateBidExpectingExpressionIsTrue("arguments.length === 6");
 }
 
 TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsV1) {
@@ -13628,20 +13608,9 @@ TEST_F(BidderWorkletSampleDebugReportsDisabledTest,
   )");
 }
 
-class BidderWorkletCrossOriginTrustedSignalsTest : public BidderWorkletTest {
- public:
-  BidderWorkletCrossOriginTrustedSignalsTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kFledgePermitCrossOriginTrustedSignals);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // With the feature on, same-origin trusted signals still come in the same,
 // only there is an extra null param.
-TEST_F(BidderWorkletCrossOriginTrustedSignalsTest, SameOrigin) {
+TEST_F(BidderWorkletTest, SameOrigin) {
   base::HistogramTester histogram_tester;
 
   const GURL kBaseSignalsUrl("https://signals.test/");
@@ -13686,7 +13655,7 @@ TEST_F(BidderWorkletCrossOriginTrustedSignalsTest, SameOrigin) {
 
 // Cross-origin signals (and their version) come in as different parameters
 // and fields.
-TEST_F(BidderWorkletCrossOriginTrustedSignalsTest, CrossOrigin) {
+TEST_F(BidderWorkletTest, CrossOrigin) {
   base::HistogramTester histogram_tester;
   const GURL kBaseSignalsUrl("https://signals.test/");
   interest_group_bidding_url_ = GURL("https://url.test/");

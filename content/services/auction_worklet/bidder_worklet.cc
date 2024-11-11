@@ -1732,20 +1732,16 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   }
   args.push_back(direct_from_seller_signals);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFledgePermitCrossOriginTrustedSignals)) {
-    v8::Local<v8::Value> cross_origin_trusted_bidding_signals_value;
-    if (trusted_signals_relation ==
-        SignalsOriginRelation::kCrossOriginSignals) {
-      cross_origin_trusted_bidding_signals_value =
-          TrustedSignals::Result::WrapCrossOriginSignals(
-              v8_helper_.get(), context, *trusted_bidding_signals_origin_,
-              trusted_signals);
-    } else {
-      cross_origin_trusted_bidding_signals_value = v8::Null(isolate);
-    }
-    args.push_back(cross_origin_trusted_bidding_signals_value);
+  v8::Local<v8::Value> cross_origin_trusted_bidding_signals_value;
+  if (trusted_signals_relation == SignalsOriginRelation::kCrossOriginSignals) {
+    cross_origin_trusted_bidding_signals_value =
+        TrustedSignals::Result::WrapCrossOriginSignals(
+            v8_helper_.get(), context, *trusted_bidding_signals_origin_,
+            trusted_signals);
+  } else {
+    cross_origin_trusted_bidding_signals_value = v8::Null(isolate);
   }
+  args.push_back(cross_origin_trusted_bidding_signals_value);
 
   v8::Local<v8::Value> generate_bid_result;
 

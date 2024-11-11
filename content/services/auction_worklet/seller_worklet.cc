@@ -1056,20 +1056,17 @@ void SellerWorklet::V8State::ScoreAd(
   }
   args.push_back(direct_from_seller_signals);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFledgePermitCrossOriginTrustedSignals)) {
-    v8::Local<v8::Value> cross_origin_trusted_scoring_signals_value;
-    if (trusted_signals_relation_ ==
-        SignalsOriginRelation::kPermittedCrossOriginSignals) {
-      cross_origin_trusted_scoring_signals_value =
-          TrustedSignals::Result::WrapCrossOriginSignals(
-              v8_helper_.get(), context, *trusted_scoring_signals_origin_,
-              trusted_scoring_signals_value);
-    } else {
-      cross_origin_trusted_scoring_signals_value = v8::Null(isolate);
-    }
-    args.push_back(cross_origin_trusted_scoring_signals_value);
+  v8::Local<v8::Value> cross_origin_trusted_scoring_signals_value;
+  if (trusted_signals_relation_ ==
+      SignalsOriginRelation::kPermittedCrossOriginSignals) {
+    cross_origin_trusted_scoring_signals_value =
+        TrustedSignals::Result::WrapCrossOriginSignals(
+            v8_helper_.get(), context, *trusted_scoring_signals_origin_,
+            trusted_scoring_signals_value);
+  } else {
+    cross_origin_trusted_scoring_signals_value = v8::Null(isolate);
   }
+  args.push_back(cross_origin_trusted_scoring_signals_value);
 
   v8::Local<v8::Value> score_ad_result;
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(

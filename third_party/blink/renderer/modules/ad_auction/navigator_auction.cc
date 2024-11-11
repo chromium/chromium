@@ -1436,17 +1436,12 @@ bool CopyTrustedScoringSignalsFromIdlToMojo(
     return false;
   }
 
-  // Need to check scheme of the URL in addition to comparing origins because
-  // FLEDGE currently only supports HTTPS URLs, and some non-HTTPS URLs can have
-  // HTTPS origins.
-  if (trusted_scoring_signals_url.Protocol() != url::kHttpsScheme ||
-      (!base::FeatureList::IsEnabled(
-           blink::features::kFledgePermitCrossOriginTrustedSignals) &&
-       !output.seller->IsSameOriginWith(
-           SecurityOrigin::Create(trusted_scoring_signals_url).get()))) {
+  // Need to check scheme of the URL because FLEDGE currently only supports
+  // HTTPS URLs, and some non-HTTPS URLs can have HTTPS origins.
+  if (trusted_scoring_signals_url.Protocol() != url::kHttpsScheme) {
     exception_state.ThrowTypeError(ErrorInvalidAuctionConfig(
         input, "trustedScoringSignalsURL", input.trustedScoringSignalsURL(),
-        "must match seller origin."));
+        "must be HTTPS."));
     return false;
   }
 

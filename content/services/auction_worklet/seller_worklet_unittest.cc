@@ -931,18 +931,6 @@ class SellerWorkletTest : public testing::Test {
   mojo::UniqueReceiverSet<mojom::SellerWorklet> seller_worklets_;
 };
 
-class SellerWorkletCrossOriginTrustedSignalsDisabledTest
-    : public SellerWorkletTest {
- public:
-  SellerWorkletCrossOriginTrustedSignalsDisabledTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        blink::features::kFledgePermitCrossOriginTrustedSignals);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 class SellerWorkletTwoThreadsTest : public SellerWorkletTest {
  private:
   size_t NumThreads() override { return 2u; }
@@ -2107,14 +2095,6 @@ TEST_P(SellerWorkletMultiThreadingTest, ScoreAdTrustedScoringSignals) {
       mojom::ComponentAuctionModifiedBidParamsPtr(),
       TrustedSignalsRequestManager::kAutoSendDelay, /*expected_errors=*/{},
       /*expected_data_version=*/5);
-}
-
-// With the cross-origin trusted signals flag off, nothing is passed in to the
-// cross-original signals parameter.
-TEST_F(SellerWorkletCrossOriginTrustedSignalsDisabledTest, Basic) {
-  RunScoreAdWithReturnValueExpectingResult(
-      "crossOriginTrustedSignals === undefined ? 1 : 0", 1);
-  RunScoreAdWithReturnValueExpectingResult("arguments.length", 6);
 }
 
 TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignalsLatency) {
@@ -7481,20 +7461,9 @@ TEST_F(SellerWorkletDeprecatedRenderURLReplacementsEnabledTest,
       /*expected_debug_win_report_url=*/std::nullopt);
 }
 
-class SellerWorkletCrossOriginTrustedSignalsTest : public SellerWorkletTest {
- public:
-  SellerWorkletCrossOriginTrustedSignalsTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kFledgePermitCrossOriginTrustedSignals);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // With the feature on, same-origin trusted signals still come in the same,
 // only there is an extra null param.
-TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, SameOrigin) {
+TEST_F(SellerWorkletTest, SameOrigin) {
   trusted_scoring_signals_url_ =
       GURL("https://url.test/trusted_scoring_signals");
   const GURL kNoComponentSignalsUrl(
@@ -7527,7 +7496,7 @@ TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, SameOrigin) {
 
 // Cross-origin signals need explicit header to work; so if it's not there,
 // or doesn't permit the origin, they will get blocked including the version.
-TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, ForbiddenCrossOrigin) {
+TEST_F(SellerWorkletTest, ForbiddenCrossOrigin) {
   trusted_scoring_signals_url_ =
       GURL("https://other.test/trusted_scoring_signals");
   const GURL kNoComponentSignalsUrl(
@@ -7572,8 +7541,7 @@ TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, ForbiddenCrossOrigin) {
 }
 
 // Not allowed cross-origin trusted seller signals do not get fetched
-TEST_F(SellerWorkletCrossOriginTrustedSignalsTest,
-       ForbiddenCrossOriginNoFetch) {
+TEST_F(SellerWorkletTest, ForbiddenCrossOriginNoFetch) {
   trusted_scoring_signals_url_ =
       GURL("https://other.test/trusted_scoring_signals");
   const char kScoreExpr[] = "crossOriginTrustedSignals === null ? 1 : 0";
@@ -7646,7 +7614,7 @@ TEST_F(SellerWorkletCrossOriginTrustedSignalsTest,
 // Note that the fetch also involves CORS, but this isn't really a good place
 // to test it since we're using a TestURLLoaderFactory so all the CORS code is
 // bypassed.
-TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, AllowedCrossOrigin) {
+TEST_F(SellerWorkletTest, AllowedCrossOrigin) {
   trusted_scoring_signals_url_ =
       GURL("https://other.test/trusted_scoring_signals");
   const GURL kNoComponentSignalsUrl(
@@ -7697,7 +7665,7 @@ TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, AllowedCrossOrigin) {
 // When cross-origin trusted seller signals are allowed, they must happen
 // after the script headers complete (approximated as script /fetch/
 // completes in this test, since TestURLLoaderFactory isn't that fine-grained).
-TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, AllowedCrossOriginTiming) {
+TEST_F(SellerWorkletTest, AllowedCrossOriginTiming) {
   trusted_scoring_signals_url_ =
       GURL("https://other.test/trusted_scoring_signals");
   const GURL kNoComponentSignalsUrl(
@@ -7784,7 +7752,7 @@ TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, AllowedCrossOriginTiming) {
 
 // Handling of errors in trusted signals other than the cross-origin permission;
 // it should look identical except for the error message test.
-TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, ErrorCrossOrigin) {
+TEST_F(SellerWorkletTest, ErrorCrossOrigin) {
   trusted_scoring_signals_url_ =
       GURL("https://other.test/trusted_scoring_signals");
   const GURL kNoComponentSignalsUrl(

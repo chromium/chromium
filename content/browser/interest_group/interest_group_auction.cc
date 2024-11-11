@@ -4522,11 +4522,6 @@ void InterestGroupAuction::MaybeLogPrivateAggregationWebFeatures(
 
 bool InterestGroupAuction::
     BlockDueToDisallowedCrossOriginTrustedSellerSignals() {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kFledgePermitCrossOriginTrustedSignals)) {
-    return false;
-  }
-
   if (!config_->trusted_scoring_signals_url.has_value()) {
     return false;
   }

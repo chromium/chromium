@@ -240,9 +240,7 @@ void AdAuctionServiceImpl::JoinInterestGroup(
 
   // If the group is allowed, we also do a permissions/attestation check on
   // trusted bidding signals URL, in case it's 3rd party.
-  if (!report_result_only && group.trusted_bidding_signals_url.has_value() &&
-      base::FeatureList::IsEnabled(
-          blink::features::kFledgePermitCrossOriginTrustedSignals)) {
+  if (!report_result_only && group.trusted_bidding_signals_url.has_value()) {
     url::Origin trusted_bidding_signals_origin =
         url::Origin::Create(group.trusted_bidding_signals_url.value());
     if (!trusted_bidding_signals_origin.IsSameOriginWith(group.owner) &&
