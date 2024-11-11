@@ -962,7 +962,7 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
 
   CSSParserToken selector_name_token = range.Peek(ident_start);
   if (selector_name_token.GetType() == kIdentToken) {
-    if (!selector_name_token.Value().Is8Bit()) {
+    if (!selector_name_token.Value().ContainsOnlyASCIIOrEmpty()) {
       return kPseudoIdInvalid;
     }
     if (range.Peek(ident_start + 1).GetType() != kEOFToken) {
