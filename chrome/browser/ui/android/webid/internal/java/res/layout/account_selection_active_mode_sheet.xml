@@ -30,11 +30,11 @@ found in the LICENSE file.
 
     <org.chromium.ui.widget.LoadingView
         android:id="@+id/spinner"
-        android:layout_width="@dimen/account_selection_active_mode_sheet_spinner_size"
-        android:layout_height="@dimen/account_selection_active_mode_sheet_spinner_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="@dimen/account_selection_active_mode_sheet_spinner_top_margin"
-        android:layout_marginBottom="@dimen/account_selection_active_mode_sheet_spinner_bottom_margin"
+        android:layout_marginTop="@dimen/account_selection_active_mode_sheet_spinner_margin"
+        android:layout_marginBottom="@dimen/account_selection_active_mode_sheet_spinner_margin"
         android:visibility="gone" />
 
     <FrameLayout

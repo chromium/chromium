@@ -6,7 +6,7 @@ found in the LICENSE file.
 -->
 
 <resources>
-  <!-- FedCM widget mode bottom sheet dimensions. -->
+  <!-- FedCM passive mode bottom sheet dimensions. -->
   <!--
   account_selection_sheet_horizontal_margin - 12dp between 'x' in button and right edge of button.
   -->
@@ -24,9 +24,7 @@ found in the LICENSE file.
   <dimen name="account_selection_active_mode_sheet_icon_size">32dp</dimen>
   <dimen name="account_selection_active_mode_sheet_arrow_range_icon_size">22dp</dimen>
   <dimen name="account_selection_active_mode_sheet_add_account_icon_size">26dp</dimen>
-  <dimen name="account_selection_active_mode_sheet_spinner_size">20dp</dimen>
-  <dimen name="account_selection_active_mode_sheet_spinner_top_margin">45dp</dimen>
-  <dimen name="account_selection_active_mode_sheet_spinner_bottom_margin">69dp</dimen>
+  <dimen name="account_selection_active_mode_sheet_spinner_margin">42dp</dimen>
   <dimen name="account_selection_active_mode_sheet_drag_handlebar_padding">8dp</dimen>
   <dimen name="account_selection_active_mode_sheet_icon_padding">8dp</dimen>
   <dimen name="account_selection_active_mode_sheet_continue_button_top_margin">24dp</dimen>
