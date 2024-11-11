@@ -56,10 +56,10 @@ enum class RenderDocumentLevel {
   kAllFrames = 4,
 };
 
-// Whether same-site navigations will result in a change of RenderFrameHosts,
-// which will happen when RenderDocument is enabled. Due to the various levels
-// of the feature, the result may differ depending on whether the
-// RenderFrameHost is a main/local root/non-local-root frame, whether it has
+// Whether same-SiteInstance navigations will result in a change of
+// RenderFrameHosts, which will happen when RenderDocument is enabled. Due to
+// the various levels of the feature, the result may differ depending on whether
+// the RenderFrameHost is a main/local root/non-local-root frame, whether it has
 // committed any navigations or not, and whether it's a crashed frame that
 // must be replaced or not.
 // Note: It is up to the caller to ensure this is called for same-SiteInstance

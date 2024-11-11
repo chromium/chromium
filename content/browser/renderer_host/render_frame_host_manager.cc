@@ -4699,8 +4699,8 @@ RenderFrameHostManager::GetReplacementFrameToken(
     // frames.
     DCHECK(frame_tree_node_->parent());
     if (current_frame_host()->IsRenderFrameLive()) {
-      CHECK_EQ(render_frame_host->GetSiteInstance(),
-               current_frame_host()->GetSiteInstance());
+      CHECK_EQ(render_frame_host->GetSiteInstance()->group(),
+               current_frame_host()->GetSiteInstance()->group());
       // The new frame will replace an existing frame in the renderer. For now
       // this can only be when RenderDocument-subframe is enabled or when
       // navigating to a different SiteInstance in the same SiteInstanceGroup in
