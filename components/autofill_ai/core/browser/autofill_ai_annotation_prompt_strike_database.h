@@ -13,7 +13,7 @@
 
 namespace autofill_ai {
 
-struct AutofillPrectionImprovementsAnnotationPromptStrikeDatabaseTraits {
+struct AutofillAiAnnotationPromptStrikeDatabaseTraits {
   static constexpr std::string_view kName = "AutofillAiAnnotationPrompt";
   static constexpr size_t kMaxStrikeEntities = 200;
   static constexpr size_t kMaxStrikeEntitiesAfterCleanup = 150;
@@ -30,7 +30,7 @@ struct AutofillPrectionImprovementsAnnotationPromptStrikeDatabaseTraits {
 // form signature.
 using AutofillPrectionImprovementsAnnotationPromptStrikeDatabase =
     autofill::HistoryClearableStrikeDatabase<
-        AutofillPrectionImprovementsAnnotationPromptStrikeDatabaseTraits>;
+        AutofillAiAnnotationPromptStrikeDatabaseTraits>;
 
 }  // namespace autofill_ai
 

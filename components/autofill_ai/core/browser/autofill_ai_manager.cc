@@ -89,7 +89,7 @@ bool AutofillAiManager::IsFormBlockedForImport(
   }
 
   return user_annotation_prompt_strike_database_->ShouldBlockFeature(
-      AutofillPrectionImprovementsAnnotationPromptStrikeDatabaseTraits::GetId(
+      AutofillAiAnnotationPromptStrikeDatabaseTraits::GetId(
           form.form_signature()));
 }
 void AutofillAiManager::AddStrikeForImportFromForm(
@@ -99,7 +99,7 @@ void AutofillAiManager::AddStrikeForImportFromForm(
   }
 
   user_annotation_prompt_strike_database_->AddStrike(
-      AutofillPrectionImprovementsAnnotationPromptStrikeDatabaseTraits::GetId(
+      AutofillAiAnnotationPromptStrikeDatabaseTraits::GetId(
           form.form_signature()));
 }
 
@@ -110,7 +110,7 @@ void AutofillAiManager::RemoveStrikesForImportFromForm(
   }
 
   user_annotation_prompt_strike_database_->ClearStrikes(
-      AutofillPrectionImprovementsAnnotationPromptStrikeDatabaseTraits::GetId(
+      AutofillAiAnnotationPromptStrikeDatabaseTraits::GetId(
           form.form_signature()));
 }
 
