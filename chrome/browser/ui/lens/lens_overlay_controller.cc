@@ -1644,13 +1644,12 @@ void LensOverlayController::UpdatePageContextualization(
   initialization_data_->page_content_bytes_ = bytes;
   initialization_data_->page_content_type_ = content_type;
 
-  // If the PageContentMimeType is kNone we won't be able to contextualize the
-  // page. We should notify the side panel so the ghost loader isn't shown. We
-  // don't need to update the overlay as this update only happens on
-  // navigation where the side panel will already be open.
+  // If no bytes were retrieved from the page, the query won't be able to be
+  // contextulized. Notify the side panel so the ghost loader isn't shown. No
+  // need to update update the overlay as this update only happens on navigation
+  // where the side panel will already be open.
   UpdateGhostLoaderState(
-      /*suppress_ghost_loader=*/content_type ==
-          lens::PageContentMimeType::kNone,
+      /*suppress_ghost_loader=*/bytes.empty(),
       /*reset_loading_state=*/false);
 
   lens_overlay_query_controller_->SendPageContentUpdateRequest(
