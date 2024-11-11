@@ -197,8 +197,4 @@ BASE_FEATURE(kThrottleUnimportantFrameRate,
              "ThrottleUnimportantFrameRate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLoadingPerformanceScenario,
-             "LoadingPerformanceScenario",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace performance_manager::features

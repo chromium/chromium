@@ -46,11 +46,11 @@ class GraphFeatures {
       bool frame_visibility_decorator : 1;
       bool frozen_frame_aggregator : 1;
       bool important_frame_decorator : 1;
-      bool loading_scenario : 1;
       bool metrics_collector : 1;
       bool node_impl_describers : 1;
       bool page_aggregator : 1;
       bool page_load_tracker_decorator : 1;
+      bool performance_scenarios : 1;
       bool priority_tracking : 1;
       bool process_hosted_content_types_aggregator : 1;
       bool resource_attribution_scheduler : 1;
@@ -79,8 +79,8 @@ class GraphFeatures {
     return *this;
   }
 
-  constexpr GraphFeatures& EnableLoadingScenario() {
-    flags_.loading_scenario = true;
+  constexpr GraphFeatures& EnablePerformanceScenarios() {
+    flags_.performance_scenarios = true;
     return *this;
   }
 
@@ -155,6 +155,7 @@ class GraphFeatures {
     EnableNodeImplDescribers();
     EnablePageAggregator();
     EnablePageLoadTrackerDecorator();
+    EnablePerformanceScenarios();
     EnablePriorityTracking();
     EnableProcessHostedContentTypesAggregator();
     EnableResourceAttributionScheduler();

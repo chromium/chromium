@@ -77,7 +77,7 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
   if (flags_.frozen_frame_aggregator) {
     Install<FrozenFrameAggregator>(graph);
   }
-  if (flags_.loading_scenario) {
+  if (flags_.performance_scenarios) {
     Install<LoadingScenarioObserver>(graph);
     Install<PerformanceScenarioNotifier>(graph);
   }

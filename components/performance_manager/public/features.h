@@ -190,10 +190,6 @@ BASE_DECLARE_FEATURE(kUnimportantFramesPriority);
 // reduced to half of normal frame rate.
 BASE_DECLARE_FEATURE(kThrottleUnimportantFrameRate);
 
-// When enabled, PerformanceManager will update
-// blink::performance_scenarios::LoadingScenario.
-BASE_DECLARE_FEATURE(kLoadingPerformanceScenario);
-
 }  // namespace performance_manager::features
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_

@@ -258,14 +258,9 @@ ChromeBrowserMainExtraPartsPerformanceManager::GetFeatureObserverClient() {
 }
 
 void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
-  auto graph_features = performance_manager::GraphFeatures::WithDefault();
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::kLoadingPerformanceScenario)) {
-    graph_features.EnableLoadingScenario();
-  }
   performance_manager_lifetime_ =
       std::make_unique<performance_manager::PerformanceManagerLifetime>(
-          graph_features,
+          performance_manager::GraphFeatures::WithDefault(),
           base::BindOnce(&ChromeBrowserMainExtraPartsPerformanceManager::
                              CreatePoliciesAndDecorators));
 

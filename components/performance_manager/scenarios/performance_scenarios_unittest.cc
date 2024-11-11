@@ -65,8 +65,8 @@ class PerformanceScenariosTest : public PerformanceManagerTestHarness,
   }
 
   void SetUp() override {
-    // The LoadingScenario also enabled PerformanceScenarioNotifier.
-    GetGraphFeatures().EnableLoadingScenario();
+    // Enable the PerformanceScenarioNotifier.
+    GetGraphFeatures().EnablePerformanceScenarios();
 
     PerformanceManagerTestHarness::SetUp();
 
