@@ -1153,6 +1153,11 @@
                 "optional": true,
                 "description": "The tab's new audible state."
               },
+              "frozen": {
+                "type": "boolean",
+                "optional": true,
+                "description": "The tab's new frozen state."
+              },
               "discarded": {
                 "type": "boolean",
                 "optional": true,
