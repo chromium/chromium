@@ -7002,6 +7002,27 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Cookies.Blocked.DueToOriginMismatch">
+  <owner>amarjotgill@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    A collection of metrics which are recorded for cookies which will be blocked
+    due to an origin mismatch, this means either the port or scheme it is being
+    accessed by does not match that of the origin which originally set the
+    cookie.
+  </summary>
+  <metric name="PortMismatch" enum="Boolean">
+    <summary>
+      True if the cookie was accessed by port which was mismatched.
+    </summary>
+  </metric>
+  <metric name="SchemeMismatch" enum="Boolean">
+    <summary>
+      True if the cookie was accessed by scheme which was mismatched.
+    </summary>
+  </metric>
+</event>
+
 <event name="Cookies.FirstPartyPartitionedInCrossSiteContextV3">
   <owner>selya@chromium.org</owner>
   <owner>dylancutler@google.com</owner>
