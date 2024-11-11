@@ -37,4 +37,23 @@ enum class IncognitoLockSettingInteraction {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IncognitoLockSettingInteractionType)
 
+// Histogram name for Incognito lock overlay interactions.
+const char kIncognitoLockOverlayInteractionHistogram[] =
+    "IOS.IncognitoLockOverlayInteraction";
+
+// Enum for the IOS.IncognitoLockOverlayInteraction histogram.
+// LINT.IfChange(IncognitoLockOverlayInteraction)
+enum class IncognitoLockOverlayInteraction {
+  // User clicked unlock with reauth method button on the overlay.
+  kUnlockWithReauthButtonClicked = 0,
+  // User clicked continue in incognito button on the overlay.
+  kContinueInIncognitoButtonClicked,
+  // User clicked close incognito tabs button on the overlay.
+  kCloseIncognitoTabsButtonClicked,
+  // User clicked see other tabs button on the overlay.
+  kSeeOtherTabsButtonClicked,
+  kMaxValue = kSeeOtherTabsButtonClicked,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IncognitoLockOverlayInteractionType)
+
 #endif  // IOS_CHROME_BROWSER_INCOGNITO_REAUTH_UI_BUNDLED_INCOGNITO_REAUTH_CONSTANTS_H_

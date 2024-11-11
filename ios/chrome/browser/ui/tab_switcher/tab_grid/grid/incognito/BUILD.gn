@@ -61,6 +61,7 @@ source_set("incognito_ui") {
     "//base",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:features",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_commands",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:ui",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",

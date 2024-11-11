@@ -8,6 +8,9 @@
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/enterprise/idle/idle_pref_names.h"
@@ -26,6 +29,7 @@
 #import "ios/chrome/browser/find_in_page/model/util.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_view.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
@@ -2400,6 +2404,14 @@ enum HeaderBehaviour {
       __weak __typeof(self) weakSelf = self;
       [self.blockingView.tabSwitcherButton
                  addAction:[UIAction actionWithHandler:^(UIAction* action) {
+                   if (IsIOSSoftLockEnabled()) {
+                     base::UmaHistogramEnumeration(
+                         kIncognitoLockOverlayInteractionHistogram,
+                         IncognitoLockOverlayInteraction::
+                             kSeeOtherTabsButtonClicked);
+                     base::RecordAction(base::UserMetricsAction(
+                         "IOS.IncognitoLock.Overlay.SeeOtherTabs"));
+                   }
                    [weakSelf.applicationCommandsHandler
                        displayTabGridInMode:TabGridOpeningMode::kRegular];
                  }]
@@ -2410,6 +2422,14 @@ enum HeaderBehaviour {
         id<IncognitoReauthCommands> reauthHandler = self.reauthHandler;
         [self.blockingView.exitIncognitoButton
                    addAction:[UIAction actionWithHandler:^(UIAction* action) {
+                     if (IsIOSSoftLockEnabled()) {
+                       base::UmaHistogramEnumeration(
+                           kIncognitoLockOverlayInteractionHistogram,
+                           IncognitoLockOverlayInteraction::
+                               kCloseIncognitoTabsButtonClicked);
+                       base::RecordAction(base::UserMetricsAction(
+                           "IOS.IncognitoLock.Overlay.CloseIncognitoTabs"));
+                     }
                      if (webStateList) {
                        CloseAllWebStates(*(webStateList),
                                          WebStateList::CLOSE_USER_ACTION);

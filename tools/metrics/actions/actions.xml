@@ -14483,6 +14483,46 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.IncognitoLock.Overlay.CloseIncognitoTabs">
+  <owner>rubindl@chromium.org</owner>
+  <owner>alimariam@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Recorded when a user clicks the Close Incognito button on the Incognito lock
+    overlay screen on iOS.
+  </description>
+</action>
+
+<action name="IOS.IncognitoLock.Overlay.ContinueInIncognito">
+  <owner>rubindl@chromium.org</owner>
+  <owner>alimariam@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Recorded when a user clicks the Continue In Incognito button on the
+    Incognito lock overlay screen on iOS.
+  </description>
+</action>
+
+<action name="IOS.IncognitoLock.Overlay.SeeOtherTabs">
+  <owner>rubindl@chromium.org</owner>
+  <owner>alimariam@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Recorded when a user clicks the See other tabs button on the Incognito lock
+    overlay screen on iOS.
+  </description>
+</action>
+
+<action name="IOS.IncognitoLock.Overlay.UnlockWithReauth">
+  <owner>rubindl@chromium.org</owner>
+  <owner>alimariam@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Recorded when a user clicks the Unlock with Reauth method button on the
+    Incognito lock overlay screen on iOS.
+  </description>
+</action>
+
 <action name="IOS.InsecureFormCancel">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>

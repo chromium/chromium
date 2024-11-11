@@ -125,6 +125,20 @@ the generic promo launch. -->
   <int value="2" label="Disabled"/>
 </enum>
 
+<!-- LINT.IfChange(IncognitoLockOverlayInteractionType) -->
+
+<enum name="IncognitoLockOverlayInteractionType">
+  <int value="0"
+      label="User clicked unlock with reauth method button on the overlay."/>
+  <int value="1"
+      label="User clicked continue in incognito button on the overlay."/>
+  <int value="2"
+      label="User clicked close incognito tabs button on the overlay."/>
+  <int value="3" label="User clicked see other tabs button on the overlay."/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h:IncognitoLockOverlayInteraction) -->
+
 <!-- LINT.IfChange(IncognitoLockSettingInteractionType) -->
 
 <enum name="IncognitoLockSettingInteractionType">

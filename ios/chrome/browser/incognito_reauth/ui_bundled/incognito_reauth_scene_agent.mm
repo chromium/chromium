@@ -138,8 +138,18 @@
 
   if ([self isReauthFeatureEnabled]) {
     [self reauthIncognitoContentWithCompletionBlock:completion];
+    base::UmaHistogramEnumeration(
+        kIncognitoLockOverlayInteractionHistogram,
+        IncognitoLockOverlayInteraction::kUnlockWithReauthButtonClicked);
+    base::RecordAction(
+        base::UserMetricsAction("IOS.IncognitoLock.Overlay.UnlockWithReauth"));
   } else if ([self isSoftLockFeatureEnabled]) {
     [self unlockIncognitoContentWithCompletionBlock:completion];
+    base::UmaHistogramEnumeration(
+        kIncognitoLockOverlayInteractionHistogram,
+        IncognitoLockOverlayInteraction::kContinueInIncognitoButtonClicked);
+    base::RecordAction(base::UserMetricsAction(
+        "IOS.IncognitoLock.Overlay.ContinueInIncognito"));
   }
 }
 

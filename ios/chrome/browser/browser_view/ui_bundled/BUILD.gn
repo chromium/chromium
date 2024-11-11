@@ -104,6 +104,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/incognito_reauth/ui_bundled:features",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_commands",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
+    "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:ui",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/intents:intents_donation_helper",
