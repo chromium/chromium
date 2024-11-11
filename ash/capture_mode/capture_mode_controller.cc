@@ -376,14 +376,6 @@ void ShowVideoRecordingStoppedByHdcpNotification() {
       kCaptureModeIcon);
 }
 
-// Shows a toast informing the user that text has been copied to clipboard.
-void ShowTextCopiedToast() {
-  // TODO(crbug.com/375967525): Finalize and translate the toast string.
-  ToastManager::Get()->Show(ToastData(kCaptureModeTextCopiedToastId,
-                                      ToastCatalogName::kCaptureModeTextCopied,
-                                      u"Text copied to clipboard"));
-}
-
 // Copies the bitmap representation of the given |image| to the clipboard.
 void CopyImageToClipboard(const gfx::Image& image) {
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
@@ -696,6 +688,14 @@ bool CaptureModeController::IsSunfishAllowedAndEnabled() {
          // Gracefully handle this case.
          Shell::Get()->session_controller()->IsActiveUserSessionStarted() &&
          GetActiveUserPrefService()->GetBoolean(prefs::kSunfishEnabled);
+}
+
+// static
+void CaptureModeController::ShowTextCopiedToast() {
+  // TODO(crbug.com/375967525): Finalize and translate the toast string.
+  ToastManager::Get()->Show(ToastData(kCaptureModeTextCopiedToastId,
+                                      ToastCatalogName::kCaptureModeTextCopied,
+                                      u"Text copied to clipboard"));
 }
 
 SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {

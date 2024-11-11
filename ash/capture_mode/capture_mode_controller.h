@@ -103,6 +103,9 @@ class ASH_EXPORT CaptureModeController
   // Returns whether the Sunfish feature is allowed and enabled by the user.
   static bool IsSunfishAllowedAndEnabled();
 
+  // Shows a toast informing the user that text has been copied to clipboard.
+  static void ShowTextCopiedToast();
+
   CaptureModeCameraController* camera_controller() {
     return camera_controller_.get();
   }

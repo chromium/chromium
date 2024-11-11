@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/scanner/scanner_action.h"
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
@@ -257,7 +258,9 @@ void ScannerSession::SetClipboard(std::unique_ptr<ui::ClipboardData> data) {
   CHECK_DEREF(ui::ClipboardNonBacked::GetForCurrentThread())
       .WriteClipboardData(std::move(data));
 
-  // TODO: b/367871707 - Display a toast / notification if necessary.
+  // TODO: b/367871707 - Update this to be separate to the plain text copy toast
+  // once we have finalised UX.
+  CaptureModeController::ShowTextCopiedToast();
 }
 
 }  // namespace ash
