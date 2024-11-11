@@ -26,129 +26,86 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_ARRAY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_ARRAY_H_
 
-#include <string.h>
+#include <concepts>
 
-#include "base/check_op.h"
-#include "base/memory/raw_ptr.h"
-#include "base/numerics/checked_math.h"
+#include "base/compiler_specific.h"
+#include "base/memory/aligned_memory.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
 template <typename T>
-class AudioArray {
-  USING_FAST_MALLOC(AudioArray);
-
+class GSL_OWNER AudioArray {
  public:
-  AudioArray() : allocation_(nullptr), aligned_data_(nullptr), size_(0) {}
-  explicit AudioArray(size_t n)
-      : allocation_(nullptr), aligned_data_(nullptr), size_(0) {
-    Allocate(n);
-  }
+  // Other trivially constructible and destructible types would also be valid,
+  // but guard against the only types that are used for now.
+  static_assert(std::same_as<T, float> || std::same_as<T, double>,
+                "AudioArray must be float or double");
+
+  using iterator = base::AlignedHeapArray<T>::iterator;
+  using const_iterator = base::AlignedHeapArray<T>::const_iterator;
+
+  AudioArray() = default;
+  explicit AudioArray(size_t n) { Allocate(n); }
+
   AudioArray(const AudioArray&) = delete;
   AudioArray& operator=(const AudioArray&) = delete;
 
-  ~AudioArray() { WTF::Partitions::FastFree(allocation_); }
+  ~AudioArray() = default;
 
-  // It's OK to call Allocate() multiple times, but data will *not* be copied
-  // from an initial allocation if re-allocated. Allocations are
+  // It's OK to call Allocate() multiple times, but data will *not* be
+  // copied from an initial allocation if re-allocated. Allocations are
   // zero-initialized.
   void Allocate(size_t n) {
-    // Although n is a size_t, its true limit is max unsigned because we use
-    // unsigned in zeroRange() and copyToRange(). Also check for integer
-    // overflow.
-    CHECK_LE(n, std::numeric_limits<unsigned>::max() / sizeof(T));
-    uint32_t initial_size = static_cast<uint32_t>(sizeof(T) * n);
-
-    // Minimmum alignment requirements for arrays so that we can use
-    // SIMD.
+    // Minimum alignment requirements for arrays so that we can use SIMD.
 #if defined(ARCH_CPU_X86_FAMILY)
-    const unsigned kAlignment = 32;
+    static constexpr unsigned kAlignment = 32;
 #else
-    const unsigned kAlignment = 16;
+    static constexpr unsigned kAlignment = 16;
 #endif
 
-    if (allocation_) {
-      WTF::Partitions::FastFree(allocation_);
-    }
+    data_ = base::AlignedUninit<T>(n, kAlignment);
 
-    // Always allocate extra space so that we are guaranteed to get
-    // the desired alignment.  Some memory is wasted, but it should be
-    // small since most arrays are probably at least 128 floats (or
-    // doubles).
-    unsigned total = base::CheckAdd(initial_size, kAlignment).ValueOrDie();
-    allocation_ = static_cast<T*>(WTF::Partitions::FastZeroedMalloc(
-        total, WTF_HEAP_PROFILER_TYPE_NAME(AudioArray<T>)));
-    CHECK(allocation_);
-
-    aligned_data_ = AlignedAddress(allocation_.get(), kAlignment);
-    size_ = static_cast<uint32_t>(n);
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_ANDROID)
+    // The android emulators crash when accessing the begin()/end() iterators
+    // for `data_` for some reason. Manually set this memory here, before the
+    // first time it's accessed.
+    // SAFETY: `data_` owns exactly `n` elements of type T. The
+    // `base::AlignedUninit` already CHECKs if `n * sizeof(T)` overflows.
+    UNSAFE_BUFFERS(memset(data_.data(), 0, n * sizeof(T)));
+#else
+    Zero();
+#endif
   }
 
-  T* Data() { return aligned_data_; }
-  const T* Data() const { return aligned_data_; }
-  uint32_t size() const { return size_; }
+  // TODO(crbug.com/375449662): Attempt to remove these functions, and favor
+  // range-based operations. If this isn't possible, at least mark these these
+  // functions as UNSAFE_BUFFER_USAGE.
+  T* Data() { return data_.data(); }
+  const T* Data() const { return data_.data(); }
+  uint32_t size() const { return data_.size(); }
 
-  T& at(size_t i) {
-    // Note that although it is a size_t, m_size is now guaranteed to be
-    // no greater than max unsigned. This guarantee is enforced in Allocate().
-    SECURITY_DCHECK(i < size());
-    return Data()[i];
-  }
+  iterator begin() { return data_.begin(); }
+  const_iterator begin() const { return data_.begin(); }
+
+  iterator end() { return data_.end(); }
+  const_iterator end() const { return data_.end(); }
+
+  T& at(size_t i) { return data_[i]; }
 
   T& operator[](size_t i) { return at(i); }
 
-  void Zero() {
-    // This multiplication is made safe by the check in Allocate().
-    memset(Data(), 0, sizeof(T) * size());
-  }
+  void Zero() { std::ranges::fill(data_, 0); }
 
   void ZeroRange(unsigned start, unsigned end) {
-    bool is_safe = (start <= end) && (end <= size());
-    DCHECK(is_safe);
-    if (!is_safe) {
-      return;
-    }
-
-    // This expression cannot overflow because end - start cannot be
-    // greater than m_size, which is safe due to the check in Allocate().
-    memset(Data() + start, 0, sizeof(T) * (end - start));
-  }
-
-  void CopyToRange(const T* source_data, unsigned start, unsigned end) {
-    bool is_safe = (start <= end) && (end <= size());
-    DCHECK(is_safe);
-    if (!is_safe) {
-      return;
-    }
-
-    // This expression cannot overflow because end - start cannot be
-    // greater than m_size, which is safe due to the check in Allocate().
-    memcpy(Data() + start, source_data, sizeof(T) * (end - start));
+    std::ranges::fill(data_.subspan(start, end - start), 0);
   }
 
  private:
-  // Return an address that is aligned to an |alignment| boundary.
-  // |alignment| MUST be a power of two!
-  static T* AlignedAddress(T* address, intptr_t alignment) {
-    intptr_t value = reinterpret_cast<intptr_t>(address);
-    return reinterpret_cast<T*>((value + alignment - 1) & ~(alignment - 1));
-  }
-
-  raw_ptr<T, DanglingUntriaged> allocation_;
-  raw_ptr<T, DanglingUntriaged> aligned_data_;
-  uint32_t size_;
+  base::AlignedHeapArray<T> data_;
 };
 
 typedef AudioArray<float> AudioFloatArray;

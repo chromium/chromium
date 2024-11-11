@@ -79,7 +79,10 @@ ReverbConvolverStage::ReverbConvolverStage(
     DCHECK_LE(stage_length, fft_size / 2);
 
     auto direct_kernel = std::make_unique<AudioFloatArray>(fft_size / 2);
-    direct_kernel->CopyToRange(impulse_response, 0, stage_length);
+    // TODO(crbug.com/375449662): spanify the parameters of this function.
+    std::ranges::copy(UNSAFE_TODO(base::span(impulse_response, stage_length)),
+                      direct_kernel->begin());
+
     // Account for the normalization (if any) of the convolver node.
     if (scale != 1) {
       vector_math::Vsmul(direct_kernel->Data(), 1, &scale,

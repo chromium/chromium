@@ -9,6 +9,8 @@
 
 #include "third_party/blink/renderer/platform/audio/simple_fft_convolver.h"
 
+#include <algorithm>
+
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 
 namespace blink {
@@ -43,7 +45,10 @@ void SimpleFFTConvolver::Process(const float* source_p,
   // Do padded FFT (get frequency-domain version) by copying samples to the 1st
   // half of the input buffer (the second half is always zero), multiply in
   // frequency-domain and do inverse FFT to get output samples.
-  input_buffer_.CopyToRange(source_p, 0, half_size);
+  // TODO(crbug.com/375449662): Convert this class to use spans.
+  std::ranges::copy(UNSAFE_TODO(base::span(source_p, half_size)),
+                    input_buffer_.begin());
+
   frame_.DoFFT(input_buffer_.Data());
   frame_.Multiply(fft_kernel_);
   frame_.DoInverseFFT(output_buffer_.Data());
@@ -54,8 +59,10 @@ void SimpleFFTConvolver::Process(const float* source_p,
                     dest_p, 1, half_size);
 
   // Finally, save 2nd half for the next time.
-  last_overlap_buffer_.CopyToRange(output_buffer_.Data() + half_size, 0,
-                                   half_size);
+  auto remaining_half = base::span(output_buffer_).subspan(half_size);
+  CHECK_EQ(remaining_half.size(), half_size);
+
+  std::ranges::copy(remaining_half, last_overlap_buffer_.begin());
 }
 
 void SimpleFFTConvolver::Reset() {
