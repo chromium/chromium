@@ -12,10 +12,15 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   await fs.reportCreatedPromise();
 
   await UI.ViewManager.ViewManager.instance().showView('workspace');
-  const workspaceElement = (await UI.ViewManager.ViewManager.instance().view('workspace').widget()).element;
+  const workspaceElement = (await UI.ViewManager.ViewManager.instance().view('workspace').widget()).contentElement;
 
-  const fsName = workspaceElement.querySelector('.file-system-name').textContent;
-  const fsPath = workspaceElement.querySelector('.file-system-path').textContent;
+  // The first card contains the general folder exclude pattern.
+  // Starting from the second card, we list the specific folders to be excluded.
+  const card = workspaceElement.querySelectorAll('devtools-card')[1];
+  const fsName = card?.shadowRoot.querySelector('.heading').textContent;
+
+  const mappingView = card.querySelector('.file-system-mapping-view');
+  const fsPath = mappingView?.shadowRoot?.querySelector('.excluded-folder-url')?.textContent;
 
   TestRunner.addResult(`File system name: ${fsName}`);
   TestRunner.addResult(`File system path: ${fsPath}`);

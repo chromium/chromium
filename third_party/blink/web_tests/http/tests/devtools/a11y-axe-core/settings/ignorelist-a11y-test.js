@@ -13,7 +13,7 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   const ignoreListWidget = await UI.ViewManager.ViewManager.instance().view('blackbox').widget();
 
   async function testAddPattern() {
-    const addPatternButton = ignoreListWidget.defaultFocusedElement;
+    const addPatternButton = ignoreListWidget.contentElement.querySelector('.add-button');
     // Make add pattern editor visible
     addPatternButton.click();
 
