@@ -4267,6 +4267,27 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_CERT_INFO_DETAILS_TAB_LABEL" desc="Title of the notebook page displaying the details about the certificate">
           &amp;Details
         </message>
+        <message name="IDS_CERT_INFO_MODIFICATIONS_TAB_LABEL" desc="Title of the tab displaying the modifications applied to the certificate">
+          &amp;Modifications
+        </message>
+        <message name="IDS_CERT_INFO_TRUST_LABEL" desc="Label of the section displaying the trust modifications applied to the certificate">
+          Trust
+        </message>
+        <message name="IDS_CERT_INFO_TRUST_STATE_LABEL" desc="Label for the field describing the trust state of the certificate">
+          Trust State
+        </message>
+        <message name="IDS_CERT_INFO_TRUST_STATE_DISTRUSTED" desc="The description of the trust state for a certificate that has been distrusted.">
+          Distrusted
+        </message>
+        <message name="IDS_CERT_INFO_TRUST_STATE_HINT" desc="The description of the trust state for a certificate that has been provided as a hint for path building.">
+          Hint
+        </message>
+        <message name="IDS_CERT_INFO_TRUST_STATE_TRUSTED" desc="The description of the trust state for a certificate that has been trusted.">
+          Trusted
+        </message>
+        <message name="IDS_CERT_INFO_CONSTRAINTS_LABEL" desc="Label of the section displaying constraints restricting the usage of the certificate.">
+          Constraints
+        </message>
         <message name="IDS_CERT_USAGE_SSL_CLIENT" desc="The description of a certificate that is verified for use as an SSL client">
           SSL Client Certificate
         </message>

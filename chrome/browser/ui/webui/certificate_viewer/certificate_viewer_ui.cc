@@ -33,6 +33,7 @@ void CreateAndAddWebUIDataSource(Profile* profile, const std::string& host) {
   static constexpr webui::LocalizedString kStrings[] = {
       {"general", IDS_CERT_INFO_GENERAL_TAB_LABEL},
       {"details", IDS_CERT_INFO_DETAILS_TAB_LABEL},
+      {"modifications", IDS_CERT_INFO_MODIFICATIONS_TAB_LABEL},
       {"close", IDS_CLOSE},
       {"export", IDS_CERT_DETAILS_EXPORT_CERTIFICATE},
       {"exportA11yLabel", IDS_CERT_DETAILS_EXPORT_CERTIFICATE_A11Y_LABEL},
@@ -51,6 +52,12 @@ void CreateAndAddWebUIDataSource(Profile* profile, const std::string& host) {
       {"certFields", IDS_CERT_DETAILS_CERTIFICATE_FIELDS_LABEL},
       {"certFieldVal", IDS_CERT_DETAILS_CERTIFICATE_FIELD_VALUE_LABEL},
       {"certError", IDS_CERT_DUMP_ERROR},
+      {"trust", IDS_CERT_INFO_TRUST_LABEL},
+      {"trustState", IDS_CERT_INFO_TRUST_STATE_LABEL},
+      {"trustStateDistrusted", IDS_CERT_INFO_TRUST_STATE_DISTRUSTED},
+      {"trustStateHint", IDS_CERT_INFO_TRUST_STATE_HINT},
+      {"trustStateTrusted", IDS_CERT_INFO_TRUST_STATE_TRUSTED},
+      {"constraints", IDS_CERT_INFO_CONSTRAINTS_LABEL},
   };
   html_source->AddLocalizedStrings(kStrings);
 

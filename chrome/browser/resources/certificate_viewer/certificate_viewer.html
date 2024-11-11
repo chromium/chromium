@@ -18,8 +18,7 @@
       </div>
       <div slot="tab" id="modifications-tab" role="tab"
           aria-controls="modifications" hidden>
-        <!-- TODO(crbug.com/40928765): localize -->
-        Modifications
+        $i18n{modifications}
       </div>
       <!-- General -->
       <div slot="panel" id="general" role="tabpanel"
@@ -121,22 +120,22 @@
       </div>
 
       <!-- Modifications -->
-      <!-- TODO(crbug.com/40928765): translations,
+      <!-- TODO(crbug.com/40928765):
            hook up to allow for modifications, add tests. -->
       <div slot="panel" id="modifications" role="tabpanel">
         <div class="vertical-box">
-          <h3 role="heading">Trust</h3>
+          <h3 role="heading">$i18n{trust}</h3>
           <div class="horizontal-row">
-            <label class="modifications-row-label">Trust State</label>
+            <label class="modifications-row-label">$i18n{trustState}</label>
             <select id="trust-state-select" class="md-select" disabled>
-              <option value="0">Distrusted</option>
-              <option value="1">Hint</option>
-              <option value="2">Trusted</option>
+              <option value="0">$i18n{trustStateDistrusted}</option>
+              <option value="1">$i18n{trustStateHint}</option>
+              <option value="2">$i18n{trustStateTrusted}</option>
             </select>
 
           </div>
           <div class="horizontal-row">
-            <div class="modifications-row-label">Constraints</div>
+            <div class="modifications-row-label">$i18n{constraints}</div>
             <constraint-list></constraint-list>
           </div>
         </div>
