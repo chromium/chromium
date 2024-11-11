@@ -204,6 +204,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
+    public boolean isAlwaysBlock3pcsIncognitoEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO);
+    }
+
+    @Override
     public String getChannelIdForOrigin(String origin) {
         return SiteChannelsManager.getInstance().getChannelIdForOrigin(origin);
     }

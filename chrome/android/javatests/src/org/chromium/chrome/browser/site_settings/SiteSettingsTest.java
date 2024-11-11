@@ -1067,6 +1067,36 @@ public class SiteSettingsTest {
         settingsActivity.finish();
     }
 
+    /** Ensure correct radio buttons are shown and enabled when AlwaysBlock3pcsIncognito is on. */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+    public void testAlwaysBlock3pcsIncognitoHidesCookiesOffOption() throws Exception {
+        checkDefaultCookiesSettingManaged(false);
+        checkThirdPartyCookieBlockingManaged(false);
+
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+        checkTriStateCookieToggleButtonState(
+                settingsActivity,
+                CookieControlsMode.INCOGNITO_ONLY,
+                ToggleButtonState.EnabledChecked);
+        checkTriStateCookieToggleButtonState(
+                settingsActivity,
+                CookieControlsMode.BLOCK_THIRD_PARTY,
+                ToggleButtonState.EnabledUnchecked);
+        SingleCategorySettings preferences =
+                (SingleCategorySettings) settingsActivity.getMainFragment();
+        TriStateCookieSettingsPreference triStateCookieToggle =
+                preferences.findPreference(SingleCategorySettings.TRI_STATE_COOKIE_TOGGLE);
+        Assert.assertFalse(triStateCookieToggle.isButtonVisibleForTesting(CookieControlsMode.OFF));
+        onView(getManagedViewMatcher(/* activeView= */ true)).check(matches(not(isDisplayed())));
+        onView(getManagedViewMatcher(/* activeView= */ false)).check(matches(not(isDisplayed())));
+        settingsActivity.finish();
+    }
+
     /** Ensure no radio buttons are enforced when cookie settings are unmanaged. */
     @Test
     @SmallTest

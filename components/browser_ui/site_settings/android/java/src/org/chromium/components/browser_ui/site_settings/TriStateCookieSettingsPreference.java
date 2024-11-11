@@ -47,6 +47,8 @@ public class TriStateCookieSettingsPreference extends Preference
         public boolean cookieControlsModeEnforced;
         // Whether Related Website Sets are enabled.
         public boolean isRelatedWebsiteSetsDataAccessEnabled;
+        // Whether 3pcs are always blocked in incognito.
+        public boolean isAlwaysBlock3pcsIncognitoEnabled;
     }
 
     // Keeps the params that are applied to the UI if the params are set before the UI is ready.
@@ -197,7 +199,11 @@ public class TriStateCookieSettingsPreference extends Preference
     }
 
     private @CookieControlsMode int getActiveState(Params params) {
-        if (params.cookieControlsMode == CookieControlsMode.INCOGNITO_ONLY
+        if (params.isAlwaysBlock3pcsIncognitoEnabled) {
+            if (params.cookieControlsMode == CookieControlsMode.OFF) {
+                return CookieControlsMode.INCOGNITO_ONLY;
+            }
+        } else if (params.cookieControlsMode == CookieControlsMode.INCOGNITO_ONLY
                 && !params.isIncognitoModeEnabled) {
             return CookieControlsMode.OFF;
         }
@@ -206,6 +212,12 @@ public class TriStateCookieSettingsPreference extends Preference
 
     private void configureRadioButtons(Params params) {
         assert (mRadioGroup != null);
+        mAllowButton.setVisibility(
+                params.isAlwaysBlock3pcsIncognitoEnabled ? View.GONE : View.VISIBLE);
+        if (params.isAlwaysBlock3pcsIncognitoEnabled) {
+            int allowLabelId = R.string.website_settings_third_party_cookies_page_allow_radio_label;
+            mBlockThirdPartyIncognitoButton.setPrimaryText(getResources().getString(allowLabelId));
+        }
         mAllowButton.setEnabled(true);
         mBlockThirdPartyIncognitoButton.setEnabled(true);
         mBlockThirdPartyButton.setEnabled(true);
@@ -265,5 +277,10 @@ public class TriStateCookieSettingsPreference extends Preference
     public boolean isButtonCheckedForTesting(@CookieControlsMode int state) {
         assert getButton(state) != null;
         return getButton(state).isChecked();
+    }
+
+    public boolean isButtonVisibleForTesting(@CookieControlsMode int state) {
+        assert getButton(state) != null;
+        return getButton(state).getVisibility() == View.VISIBLE;
     }
 }

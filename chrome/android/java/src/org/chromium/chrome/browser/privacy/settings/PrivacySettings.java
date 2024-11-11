@@ -49,6 +49,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
+import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.SpanApplier;
@@ -398,9 +399,14 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
 
         Preference thirdPartyCookies = findPreference(PREF_THIRD_PARTY_COOKIES);
         if (thirdPartyCookies != null) {
+            @CookieControlsMode
+            int cookieControlsMode = UserPrefs.get(getProfile()).getInteger(COOKIE_CONTROLS_MODE);
             thirdPartyCookies.setSummary(
-                    ContentSettingsResources.getThirdPartyCookieListSummary(
-                            UserPrefs.get(getProfile()).getInteger(COOKIE_CONTROLS_MODE)));
+                    ChromeFeatureList.isEnabled(ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO)
+                                    && cookieControlsMode == CookieControlsMode.INCOGNITO_ONLY
+                            ? R.string.third_party_cookies_link_row_sub_label_enabled
+                            : ContentSettingsResources.getThirdPartyCookieListSummary(
+                                    UserPrefs.get(getProfile()).getInteger(COOKIE_CONTROLS_MODE)));
         }
     }
 

@@ -1335,6 +1335,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUiFeatureEnabled();
         params.isRelatedWebsiteSetsDataAccessEnabled =
                 getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled();
+        params.isAlwaysBlock3pcsIncognitoEnabled =
+                getSiteSettingsDelegate().isAlwaysBlock3pcsIncognitoEnabled();
         triStateCookieToggle.setState(params);
     }
 
