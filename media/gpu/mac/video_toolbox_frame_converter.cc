@@ -234,7 +234,7 @@ void VideoToolboxFrameConverter::Convert(
   }
 
   auto shared_image = shared_image_interface->CreateSharedImage(
-      {*format, coded_size, metadata->color_space, kTopLeft_GrSurfaceOrigin,
+      {*format, coded_size, color_space, kTopLeft_GrSurfaceOrigin,
        kOpaque_SkAlphaType, shared_image_usage, kSharedImageDebugLabel},
       std::move(handle));
   if (!shared_image) {
