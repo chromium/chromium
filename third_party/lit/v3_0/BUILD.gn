@@ -76,6 +76,7 @@ ts_library("build_ts") {
     "//components/commerce/core/internals/resources:build_ts",
     "//components/download/resources/download_internals:build_ts",
     "//components/flags_ui/resources:build_ts",
+    "//content/browser/resources/indexed_db:build_ts",
     "//content/browser/resources/traces_internals:build_ts",
     "//ui/webui/resources/cr_components/certificate_manager:build_ts",
     "//ui/webui/resources/cr_components/customize_color_scheme_mode:build_ts",

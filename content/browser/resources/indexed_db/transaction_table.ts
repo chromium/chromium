@@ -3,17 +3,11 @@
 // found in the LICENSE file.
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
 import {IdbTransactionMode, IdbTransactionState} from './indexed_db_internals_types.mojom-webui.js';
 import type {IdbTransactionMetadata} from './indexed_db_internals_types.mojom-webui.js';
+import {scope} from './mojo_utils.js';
 import {getTemplate} from './transaction_table.html.js';
-
-// Joins a list of Mojom strings to a comma separated JS string.
-function scope(mojoScope: String16[]): string {
-  return `[${mojoScope.map(s => mojoString16ToString(s)).join(', ')}]`;
-}
 
 // Converts IdbTransactionState enum into a readable string.
 function transactionState(mojoState: IdbTransactionState): string {

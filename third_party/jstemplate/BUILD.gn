@@ -19,7 +19,6 @@ ts_library("library") {
   # TODO(crbug.com/40433145): Replace remaining usages with alternatives.
   visibility = [
     "//components/sync/service/resources:build_ts",
-    "//content/browser/resources/indexed_db:build_ts",
   ]
   composite = true
   definitions = [ "jstemplate.d.ts" ]
