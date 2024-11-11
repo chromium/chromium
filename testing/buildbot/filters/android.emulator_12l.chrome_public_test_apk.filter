@@ -183,3 +183,6 @@
 # crbug.com/1523756
 -org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragmentTest.testNullStateDisplayedCorrectlySyncOnNoUsingSplitStores
 -org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragmentTest.testNullStateDisplayedCorrectlySyncOnUsingSplitStores
+
+# crbug.com/378427042
+-org.chromium.chrome.browser.page_info.PageInfoViewTest.testBottomGravity
