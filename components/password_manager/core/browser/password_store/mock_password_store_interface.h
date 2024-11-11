@@ -54,6 +54,7 @@ class MockPasswordStoreInterface : public PasswordStoreInterface {
               (const base::Location&,
                base::Time,
                base::Time,
+               base::OnceCallback<void(bool)>,
                base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void,

@@ -133,7 +133,9 @@ void PasswordStoreAndroidLocalBackend::RemoveLoginsCreatedBetweenAsync(
     const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end,
+    base::OnceCallback<void(bool)> sync_completion,
     PasswordChangesOrErrorReply callback) {
+  CHECK(!sync_completion);
   RemoveLoginsCreatedBetweenInternal(std::string(), delete_begin, delete_end,
                                      std::move(callback));
 }

@@ -261,7 +261,9 @@ void PasswordStoreAndroidAccountBackend::RemoveLoginsCreatedBetweenAsync(
     const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end,
+    base::OnceCallback<void(bool)> sync_completion,
     PasswordChangesOrErrorReply callback) {
+  CHECK(!sync_completion);
   if (!password_manager::sync_util::HasChosenToSyncPasswords(sync_service_)) {
     ReplyWithEmptyList<PasswordStoreChangeList>(std::move(callback));
     return;

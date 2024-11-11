@@ -618,8 +618,8 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   backend->AddLoginAsync(form, base::DoNothing());
   RunUntilIdle();
 
-  backend->RemoveLoginsCreatedBetweenAsync(FROM_HERE, kStart, kEnd,
-                                           base::DoNothing());
+  backend->RemoveLoginsCreatedBetweenAsync(
+      FROM_HERE, kStart, kEnd, base::DoNothing(), base::DoNothing());
 
   AdvanceClock(kLatencyDelta);
   RunUntilIdle();
@@ -649,8 +649,8 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   backend->AddLoginAsync(form, base::DoNothing());
   RunUntilIdle();
 
-  backend->RemoveLoginsCreatedBetweenAsync(FROM_HERE, kStart, kEnd,
-                                           base::DoNothing());
+  backend->RemoveLoginsCreatedBetweenAsync(
+      FROM_HERE, kStart, kEnd, base::DoNothing(), base::DoNothing());
 
   AdvanceClock(kLatencyDelta);
   RunUntilIdle();
@@ -676,8 +676,8 @@ TEST_P(PasswordStoreBuiltInBackendTest,
   PasswordStoreBackend* bad_backend =
       Initialize(std::make_unique<BadLoginDatabase>(GetParam()));
 
-  bad_backend->RemoveLoginsCreatedBetweenAsync(FROM_HERE, kStart, kEnd,
-                                               base::DoNothing());
+  bad_backend->RemoveLoginsCreatedBetweenAsync(
+      FROM_HERE, kStart, kEnd, base::DoNothing(), base::DoNothing());
 
   AdvanceClock(kLatencyDelta);
   RunUntilIdle();

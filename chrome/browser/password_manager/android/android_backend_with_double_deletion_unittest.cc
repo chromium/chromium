@@ -165,13 +165,14 @@ TEST_F(AndroidBackendWithDoubleDeletionTest, RemoveLoginsByURLAndTimeAsync) {
 TEST_F(AndroidBackendWithDoubleDeletionTest, RemoveLoginsCreatedBetweenAsync) {
   base::Time delete_begin = base::Time::FromTimeT(1000);
   base::Time delete_end = base::Time::FromTimeT(2000);
-  EXPECT_CALL(built_in_backend(),
-              RemoveLoginsCreatedBetweenAsync(_, delete_begin, delete_end, _));
-  EXPECT_CALL(android_backend(),
-              RemoveLoginsCreatedBetweenAsync(_, delete_begin, delete_end, _));
+  EXPECT_CALL(built_in_backend(), RemoveLoginsCreatedBetweenAsync(
+                                      _, delete_begin, delete_end, _, _));
+  EXPECT_CALL(android_backend(), RemoveLoginsCreatedBetweenAsync(
+                                     _, delete_begin, delete_end, _, _));
 
   proxy_backend()->RemoveLoginsCreatedBetweenAsync(
-      FROM_HERE, delete_begin, delete_end, base::DoNothing());
+      FROM_HERE, delete_begin, delete_end, base::OnceCallback<void(bool)>(),
+      base::DoNothing());
 }
 
 TEST_F(AndroidBackendWithDoubleDeletionTest, DisableAutoSignInForOriginsAsync) {

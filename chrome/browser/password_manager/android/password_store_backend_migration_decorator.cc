@@ -184,12 +184,15 @@ void PasswordStoreBackendMigrationDecorator::RemoveLoginsCreatedBetweenAsync(
     const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end,
+    base::OnceCallback<void(bool)> sync_completion,
     PasswordChangesOrErrorReply callback) {
   active_backend()->RemoveLoginsCreatedBetweenAsync(
-      location, delete_begin, delete_end, std::move(callback));
+      location, delete_begin, delete_end, std::move(sync_completion),
+      std::move(callback));
   if (UsesSplitStoresAndUPMForLocal(prefs_)) {
     built_in_backend_->RemoveLoginsCreatedBetweenAsync(
-        location, delete_begin, delete_end, base::DoNothing());
+        location, delete_begin, delete_end, base::NullCallback(),
+        base::DoNothing());
   }
 }
 
