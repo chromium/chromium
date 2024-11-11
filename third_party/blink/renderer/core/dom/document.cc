@@ -7949,7 +7949,8 @@ void Document::RemoveFromTopLayerImmediately(Element* element) {
   }
   element->SetIsInTopLayer(false);
   display_lock_document_state_->ElementRemovedFromTopLayer(element);
-  if (RuntimeEnabledFeatures::PopoverAnchorRelationshipsEnabled()) {
+  if (RuntimeEnabledFeatures::PopoverAnchorRelationshipsEnabled() ||
+      RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
     if (auto* html_element = DynamicTo<HTMLElement>(element)) {
       if (html_element->HasPopoverAttribute()) {
         html_element->SetImplicitAnchor(nullptr);
