@@ -130,7 +130,7 @@ void SavedTabGroupModelListener::OnTabGroupChanged(
 
 void SavedTabGroupModelListener::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> new_local_group_id,
-    tabs::TabModel* tab,
+    tabs::TabInterface* tab,
     int index) {
   // Remove `contents` from its current saved group, if it's in one.
   for (auto& [local_group_id, listener] : local_tab_group_listeners_) {

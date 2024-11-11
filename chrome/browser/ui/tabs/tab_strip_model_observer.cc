@@ -20,7 +20,7 @@ TabStripModelChange::RemovedTab::RemovedTab(
     RemoveReason remove_reason,
     tabs::TabInterface::DetachReason tab_detach_reason,
     std::optional<SessionID> session_id,
-    tabs::TabModel* tab)
+    tabs::TabInterface* tab)
     : contents(contents),
       index(index),
       remove_reason(remove_reason),
@@ -230,7 +230,7 @@ void TabStripModelObserver::TabBlockedStateChanged(WebContents* contents,
 
 void TabStripModelObserver::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> group,
-    tabs::TabModel* tab,
+    tabs::TabInterface* tab,
     int index) {}
 
 void TabStripModelObserver::TabStripEmpty() {

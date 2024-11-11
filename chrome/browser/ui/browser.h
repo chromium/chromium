@@ -82,7 +82,7 @@ class TabStripModelDelegate;
 class TabMenuModelDelegate;
 
 namespace tabs {
-class TabModel;
+class TabInterface;
 }
 
 namespace tab_groups {
@@ -731,7 +731,7 @@ class Browser : public TabStripModelObserver,
                              content::WebContents* contents,
                              int index) override;
   void TabGroupedStateChanged(std::optional<tab_groups::TabGroupId> group,
-                              tabs::TabModel* tab,
+                              tabs::TabInterface* tab,
                               int index) override;
   void TabStripEmpty() override;
 

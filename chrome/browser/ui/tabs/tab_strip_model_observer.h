@@ -25,10 +25,6 @@ namespace content {
 class WebContents;
 }
 
-namespace tabs {
-class TabModel;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 //
 // TabStripModelChange / TabStripSelectionChange
@@ -78,7 +74,7 @@ class TabStripModelChange {
                RemoveReason remove_reason,
                tabs::TabInterface::DetachReason tab_detach_reason,
                std::optional<SessionID> session_id,
-               tabs::TabModel* tab);
+               tabs::TabInterface* tab);
     virtual ~RemovedTab();
     RemovedTab(RemovedTab&& other);
 
@@ -89,7 +85,7 @@ class TabStripModelChange {
     RemoveReason remove_reason;
     tabs::TabInterface::DetachReason tab_detach_reason;
     std::optional<SessionID> session_id;
-    raw_ptr<tabs::TabModel> tab;
+    raw_ptr<tabs::TabInterface> tab;
   };
 
   struct ContentsWithIndex {
@@ -395,7 +391,7 @@ class TabStripModelObserver {
   // Called when the tab at |index| is added to the group with id |group|.
   virtual void TabGroupedStateChanged(
       std::optional<tab_groups::TabGroupId> group,
-      tabs::TabModel* tab,
+      tabs::TabInterface* tab,
       int index);
 
   // The TabStripModel now no longer has any tabs. The implementer may

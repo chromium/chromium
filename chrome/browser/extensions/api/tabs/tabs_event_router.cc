@@ -286,11 +286,12 @@ void TabsEventRouter::TabPinnedStateChanged(TabStripModel* tab_strip_model,
 
 void TabsEventRouter::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> group,
-    tabs::TabModel* tab,
+    tabs::TabInterface* tab,
     int index) {
   std::set<std::string> changed_property_names;
   changed_property_names.insert(kGroupIdKey);
-  DispatchTabUpdatedEvent(tab->contents(), std::move(changed_property_names));
+  DispatchTabUpdatedEvent(tab->GetContents(),
+                          std::move(changed_property_names));
 }
 
 void TabsEventRouter::OnZoomControllerDestroyed(

@@ -801,7 +801,7 @@ void BrowserTabStripController::TabBlockedStateChanged(WebContents* contents,
 
 void BrowserTabStripController::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> group,
-    tabs::TabModel* tab,
+    tabs::TabInterface* tab,
     int index) {
   tabstrip_->AddTabToGroup(std::move(group), index);
 }

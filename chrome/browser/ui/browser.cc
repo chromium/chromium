@@ -133,12 +133,12 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
-#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -1603,7 +1603,7 @@ void Browser::TabPinnedStateChanged(TabStripModel* tab_strip_model,
 
 void Browser::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> group,
-    tabs::TabModel* tab,
+    tabs::TabInterface* tab,
     int index) {
   // See comment in Browser::OnTabGroupChanged
   DCHECK(!IsRelevantToAppSessionService(type_));
@@ -1613,7 +1613,7 @@ void Browser::TabGroupedStateChanged(
     return;
 
   sessions::SessionTabHelper* const session_tab_helper =
-      sessions::SessionTabHelper::FromWebContents(tab->contents());
+      sessions::SessionTabHelper::FromWebContents(tab->GetContents());
   session_service->SetTabGroup(session_id(), session_tab_helper->session_id(),
                                std::move(group));
 }

@@ -144,7 +144,7 @@ class BrowserTabStripController : public TabStripController,
   void TabBlockedStateChanged(content::WebContents* contents,
                               int model_index) override;
   void TabGroupedStateChanged(std::optional<tab_groups::TabGroupId> group,
-                              tabs::TabModel* tab,
+                              tabs::TabInterface* tab,
                               int index) override;
   void SetTabNeedsAttentionAt(int index, bool attention) override;
   bool IsFrameButtonsRightAligned() const override;
