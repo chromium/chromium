@@ -17,16 +17,13 @@ import type {Tab} from '../tab_search.mojom-webui.js';
 import {DeclutterCTREvent} from '../tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from '../tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from '../tab_search_api_proxy.js';
+import type {TabSearchItemElement} from '../tab_search_item.js';
 
 import {getCss} from './declutter_page.css.js';
 import {getHtml} from './declutter_page.html.js';
 
 const MINIMUM_SCROLLABLE_MAX_HEIGHT: number = 238;
 const NON_SCROLLABLE_VERTICAL_SPACING: number = 164;
-
-function getEventTargetIndex(e: Event): number {
-  return Number((e.currentTarget as HTMLElement).dataset['index']);
-}
 
 export class DeclutterPageElement extends CrLitElement {
   static get is() {
@@ -213,8 +210,7 @@ export class DeclutterPageElement extends CrLitElement {
   }
 
   protected onTabRemove_(e: Event) {
-    const index = getEventTargetIndex(e);
-    const tabData = this.staleTabDatas_[index]!;
+    const tabData = (e.currentTarget as TabSearchItemElement).data;
     this.apiProxy_.excludeFromStaleTabs(tabData.tab.tabId);
   }
 

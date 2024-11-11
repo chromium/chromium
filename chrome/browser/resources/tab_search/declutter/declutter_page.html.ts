@@ -4,6 +4,8 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {TabData} from '../tab_data.js';
+
 import type {DeclutterPageElement} from './declutter_page.js';
 
 export function getHtml(this: DeclutterPageElement) {
@@ -27,42 +29,48 @@ export function getHtml(this: DeclutterPageElement) {
       </div>
     </div>
     ${
-      this.staleTabDatas_.length === 0 ? html`
+      this.staleTabDatas_.length === 0 ?
+          html`
       <div class="empty-content">
         <div class="empty-title">$i18n{declutterEmptyTitle}</div>
         <div class="empty-subheading">$i18n{declutterEmptyBody}</div>
       </div>
     ` :
-                                         html`
+          html`
       <div id="scrollable">
         <div id="staleTabList" class="tabList">
-          ${this.staleTabDatas_.map((item, index) => html`
-              <tab-search-item class="mwb-list-item" .data="${item}"
-                  close-button-aria-label=
-                      "${this.getCloseButtonAriaLabel_(item)}"
-                  close-button-tooltip="$i18n{declutterCloseTabTooltip}"
-                  close-button-icon="tab-search:remove"
-                  role="option"
-                  data-index="${index}"
-                  @keydown="${this.onTabKeyDown_}"
-                  @close="${this.onTabRemove_}"
-                  @focus="${this.onTabFocus_}"
-                  @blur="${this.onTabBlur_}"
-                  hide-url>
-              </tab-search-item>
-          `)}
+          ${
+              this.staleTabDatas_.map(
+                  (item) => getTabSearchItem.bind(this)(item))}
         </div>
         ${
-                                             this.dedupeEnabled_ ? html`
+              this.dedupeEnabled_ ? html`
           <div id="duplicateTabList" class="tabList">
             Duplicate tab placeholder
           </div>
         ` :
-                                                                   ''}
+                                    ''}
       </div>
       <cr-button class="action-button" @click="${this.onCloseTabsClick_}">
         $i18n{closeTabs}
       </cr-button>
     `}
   </div><!--_html_template_end_-->`;
+}
+
+function getTabSearchItem(this: DeclutterPageElement, data: TabData) {
+  return html`
+    <tab-search-item class="mwb-list-item" .data="${data}"
+        close-button-icon="tab-search:remove"
+        close-button-aria-label=
+                      "${this.getCloseButtonAriaLabel_(data)}"
+        close-button-tooltip="$i18n{declutterCloseTabTooltip}"
+        role="option"
+        @keydown="${this.onTabKeyDown_}"
+        @close="${this.onTabRemove_}"
+        @focus="${this.onTabFocus_}"
+        @blur="${this.onTabBlur_}"
+        hide-url>
+    </tab-search-item>
+  `;
 }
