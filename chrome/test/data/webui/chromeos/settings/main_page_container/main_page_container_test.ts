@@ -182,10 +182,6 @@ suite('<main-page-container>', () => {
 
         // Advanced section pages
         {
-          pageName: 'kDateAndTime',
-          elementName: 'settings-date-time-page',
-        },
-        {
           pageName: 'kLanguagesAndInput',
           elementName: 'os-settings-languages-section',
         },

@@ -653,13 +653,6 @@ export function createRoutes(): OsSettingsRoutes {
           Subpage.kSyncSetup);
     }
   } else {
-    // Date and Time section.
-    r.DATETIME = createSection(
-        r.ADVANCED, routesMojom.DATE_AND_TIME_SECTION_PATH,
-        Section.kDateAndTime);
-    r.DATETIME_TIMEZONE_SUBPAGE = createSubpage(
-        r.DATETIME, routesMojom.TIME_ZONE_SUBPAGE_PATH, Subpage.kTimeZone);
-
     // Device section.
     r.STORAGE = createSubpage(
         r.DEVICE, routesMojom.STORAGE_SUBPAGE_PATH, Subpage.kStorage);

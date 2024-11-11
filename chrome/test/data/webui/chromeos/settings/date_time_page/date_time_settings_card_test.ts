@@ -84,11 +84,6 @@ function getFakePrefs() {
 }
 
 suite('<date-time-settings-card>', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
-  const route =
-      isRevampWayfindingEnabled ? routes.SYSTEM_PREFERENCES : routes.DATETIME;
-
   let dateTimeSettingsCard: DateTimeSettingsCardElement;
   let testBrowserProxy: TestDateTimeBrowserProxy;
 
@@ -251,7 +246,7 @@ suite('<date-time-settings-card>', () => {
       const params = new URLSearchParams();
       const settingId = settingMojom.Setting.kChangeTimeZone.toString();
       params.append('settingId', settingId);
-      Router.getInstance().navigateTo(route, params);
+      Router.getInstance().navigateTo(routes.SYSTEM_PREFERENCES, params);
       flush();
 
       const toggle = getTimezoneAutoDetectToggle();

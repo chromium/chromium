@@ -587,12 +587,6 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
 
     const advancedMenuItems: MenuItemData[] = [
       {
-        section: Section.kDateAndTime,
-        path: `/${routesMojom.DATE_AND_TIME_SECTION_PATH}`,
-        icon: 'os-settings:clock',
-        label: this.i18n('dateTimePageTitle'),
-      },
-      {
         section: Section.kLanguagesAndInput,
         path: `/${routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH}`,
         icon: 'os-settings:language',

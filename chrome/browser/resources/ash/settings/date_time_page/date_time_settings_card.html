@@ -4,7 +4,7 @@
     padding-inline-start: var(--cr-section-indent-padding);
   }
 
-  :host-context(body.revamp-wayfinding-enabled) settings-toggle-button {
+  settings-toggle-button {
     --cr-icon-button-margin-end: 16px;
     --iron-icon-fill-color: var(--cros-sys-primary);
   }
@@ -24,7 +24,7 @@
       if="[[prefs.cros.flags.fine_grained_time_zone_detection_enabled.value]]"
       restamp>
     <cr-link-row id="timeZoneSettingsTrigger"
-        start-icon="[[rowIcons_.timezone]]"
+        start-icon="os-settings:clock"
         on-click="openTimeZoneSubpage_"
         label="$i18n{timeZoneButton}"
         sub-label="[[timeZoneSettingSublabel_]]"
@@ -42,13 +42,13 @@
   </div>
   <settings-toggle-button
       class="hr"
-      icon="[[rowIcons_.use24hour]]"
+      icon="os-settings:24hour"
       pref="{{prefs.settings.clock.use_24hour_clock}}"
       label="$i18n{use24HourClock}"
       deep-link-focus-id$="[[Setting.k24HourClock]]">
   </settings-toggle-button>
   <cr-link-row class="hr" id="setDateTimeRow"
-      start-icon="[[rowIcons_.setDateTime]]"
+      start-icon="os-settings:set-date-time"
       on-click="onSetDateTimeClick_"
       label="$i18n{setDateTime}"
       hidden$="[[!canSetDateTime_]]">

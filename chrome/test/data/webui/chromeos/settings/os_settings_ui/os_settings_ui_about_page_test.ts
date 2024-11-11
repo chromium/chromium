@@ -108,23 +108,5 @@ suite('<os-settings-ui> About page', () => {
         assertFalse(isVisible(basicPageContainer));
         assertFalse(isVisible(advancedPageContainer));
         assertTrue(isVisible(aboutPageContainer));
-
-        // Show advanced page
-        menuItem =
-            queryMenuItemByPath(`/${routesMojom.DATE_AND_TIME_SECTION_PATH}`);
-        assertTrue(!!menuItem);
-        await clickMenuItemAndWaitForPage(menuItem);
-        assertTrue(isVisible(basicPageContainer));
-        assertTrue(isVisible(advancedPageContainer));
-        assertFalse(isVisible(aboutPageContainer));
-
-        // Show about page
-        menuItem =
-            queryMenuItemByPath(`/${routesMojom.ABOUT_CHROME_OS_SECTION_PATH}`);
-        assertTrue(!!menuItem);
-        await clickMenuItemAndWaitForPage(menuItem);
-        assertFalse(isVisible(basicPageContainer));
-        assertFalse(isVisible(advancedPageContainer));
-        assertTrue(isVisible(aboutPageContainer));
       });
 });

@@ -295,14 +295,6 @@
     <div id="advancedPageContainer"
         hidden$="[[!shouldShowAdvancedPageContainer_]]">
       <template is="dom-if"
-          if="[[shouldStampPage_(pageAvailability, Section.kDateAndTime)]]"
-          restamp>
-        <page-displayer section="[[Section.kDateAndTime]]">
-          <settings-date-time-page prefs="{{prefs}}">
-          </settings-date-time-page>
-        </page-displayer>
-      </template>
-      <template is="dom-if"
           if="[[shouldStampPage_(pageAvailability,
               Section.kLanguagesAndInput)]]"
           restamp>
