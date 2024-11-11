@@ -1474,23 +1474,35 @@ static xmlEntityPtr SharedXHTMLEntity() {
   return &entity;
 }
 
-static size_t ConvertUTF16EntityToUTF8(const DecodedHTMLEntity& entity,
-                                       base::span<char> target_span) {
+template <size_t N>
+static base::span<const char, N - 1> CopyToEntityBuffer(
+    base::span<const char, N> expanded_entity_chars) {
+  auto entity_buffer =
+      base::as_writable_chars(base::span(g_shared_xhtml_entity_result));
+  entity_buffer.first<N>().copy_from(expanded_entity_chars);
+  return entity_buffer.first<N - 1>();
+}
+
+static base::span<const char> ConvertUTF16EntityToUTF8(
+    const DecodedHTMLEntity& entity) {
+  DCHECK_LE(entity.length, 4u);
   const UChar* utf16_entity = entity.data.data();
-  char* target = target_span.data();
+  auto entity_buffer =
+      base::as_writable_chars(base::span(g_shared_xhtml_entity_result));
+  char* target = entity_buffer.data();
   const char* original_target = target;
   WTF::unicode::ConversionResult conversion_result =
       WTF::unicode::ConvertUTF16ToUTF8(&utf16_entity,
                                        utf16_entity + entity.length, &target,
-                                       target + target_span.size());
+                                       target + entity_buffer.size());
   if (conversion_result != WTF::unicode::kConversionOK)
-    return 0;
+    return {};
 
   DCHECK_GT(target, original_target);
   // Even though we must pass the length, libxml expects the entity string to be
   // null terminated.
   *target = '\0';
-  return target - original_target;
+  return entity_buffer.first(static_cast<size_t>(target - original_target));
 }
 
 static xmlEntityPtr GetXHTMLEntity(const xmlChar* name) {
@@ -1500,49 +1512,27 @@ static xmlEntityPtr GetXHTMLEntity(const xmlChar* name) {
     return nullptr;
   }
 
-  size_t entity_length_in_utf8;
-  // Unlike HTML parser, XML parser parses the content of named
+  base::span<const char> entity_utf8;
+
+  // Unlike the HTML parser, the XML parser parses the content of named
   // entities. So we need to escape '&' and '<'.
   if (decoded_entity->length == 1 && decoded_entity->data[0] == '&') {
-    g_shared_xhtml_entity_result[0] = '&';
-    g_shared_xhtml_entity_result[1] = '#';
-    g_shared_xhtml_entity_result[2] = '3';
-    g_shared_xhtml_entity_result[3] = '8';
-    g_shared_xhtml_entity_result[4] = ';';
-    g_shared_xhtml_entity_result[5] = 0;
-    entity_length_in_utf8 = 5;
+    entity_utf8 = CopyToEntityBuffer(base::span_with_nul_from_cstring("&#38;"));
   } else if (decoded_entity->length == 1 && decoded_entity->data[0] == '<') {
-    g_shared_xhtml_entity_result[0] = '&';
-    g_shared_xhtml_entity_result[1] = '#';
-    g_shared_xhtml_entity_result[2] = '6';
-    g_shared_xhtml_entity_result[3] = '0';
-    g_shared_xhtml_entity_result[4] = ';';
-    g_shared_xhtml_entity_result[5] = 0;
-    entity_length_in_utf8 = 5;
+    entity_utf8 = CopyToEntityBuffer(base::span_with_nul_from_cstring("&#60;"));
   } else if (decoded_entity->length == 2 && decoded_entity->data[0] == '<' &&
              decoded_entity->data[1] == 0x20D2) {
-    g_shared_xhtml_entity_result[0] = '&';
-    g_shared_xhtml_entity_result[1] = '#';
-    g_shared_xhtml_entity_result[2] = '6';
-    g_shared_xhtml_entity_result[3] = '0';
-    g_shared_xhtml_entity_result[4] = ';';
-    g_shared_xhtml_entity_result[5] = 0xE2;
-    g_shared_xhtml_entity_result[6] = 0x83;
-    g_shared_xhtml_entity_result[7] = 0x92;
-    g_shared_xhtml_entity_result[8] = 0;
-    entity_length_in_utf8 = 8;
+    entity_utf8 = CopyToEntityBuffer(
+        base::span_with_nul_from_cstring("&#60;\xE2\x83\x92"));
   } else {
-    DCHECK_LE(decoded_entity->length, 4u);
-    entity_length_in_utf8 = ConvertUTF16EntityToUTF8(
-        *decoded_entity,
-        base::as_writable_chars(base::span(g_shared_xhtml_entity_result)));
-    if (entity_length_in_utf8 == 0)
+    entity_utf8 = ConvertUTF16EntityToUTF8(*decoded_entity);
+    if (entity_utf8.empty()) {
       return nullptr;
+    }
   }
-  CHECK_LE(entity_length_in_utf8, std::size(g_shared_xhtml_entity_result));
 
   xmlEntityPtr entity = SharedXHTMLEntity();
-  entity->length = static_cast<int>(entity_length_in_utf8);
+  entity->length = static_cast<int>(entity_utf8.size());
   entity->name = name;
   return entity;
 }
