@@ -5173,8 +5173,15 @@ class MHTMLImprovementsLoadingTest : public MhtmlLoadingTest {
   std::unique_ptr<DownloadTestContentBrowserClient> browser_client_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_FormsDisabledWhenRenderedFromHttp \
+  DISABLED_FormsDisabledWhenRenderedFromHttp
+#else
+#define MAYBE_FormsDisabledWhenRenderedFromHttp \
+  FormsDisabledWhenRenderedFromHttp
+#endif
 IN_PROC_BROWSER_TEST_F(MHTMLImprovementsLoadingTest,
-                       FormsDisabledWhenRenderedFromHttp) {
+                       MAYBE_FormsDisabledWhenRenderedFromHttp) {
   // Note that normally Chrome will not load MHTML over HTTP(s), and instead
   // will download the file. On Android, Chrome supports loading 'trusted'
   // offline pages, which are loaded through `OfflinePageURLLoader`, and are
