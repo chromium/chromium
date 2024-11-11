@@ -144,7 +144,7 @@ const base::FeatureParam<DevToolsFreestylerUserTier>
 // Whether the DevTools AI Assistance File Agent is enabled.
 BASE_FEATURE(kDevToolsAiAssistanceFileAgent,
              "DevToolsAiAssistanceFileAgent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kDevToolsAiAssistanceFileAgentModelId{
     &kDevToolsAiAssistanceFileAgent, "aida_model_id",
     /*default_value=*/""};
