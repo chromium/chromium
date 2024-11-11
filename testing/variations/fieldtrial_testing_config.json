@@ -17615,30 +17615,6 @@
             ]
         }
     ],
-    "PreloadSystemFonts": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "preload_system_fonts_required_memory_gb": "4",
-                        "preload_system_fonts_targets": "[{\"family\":\"arial\",\"weight\":400,\"size\":14,\"csize\":14,\"text\":\"ab\"}]"
-                    },
-                    "enable_features": [
-                        "PreloadSystemFonts"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreloadTopChromeWebUI": [
         {
             "platforms": [
