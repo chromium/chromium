@@ -191,6 +191,10 @@ BASE_DECLARE_FEATURE(kUseNewEncryptionMethod);
 // Enables re-encryption of all passwords. Done separately for each store.
 BASE_DECLARE_FEATURE(kEncryptAllPasswordsWithOSCryptAsync);
 
+// Marks all submitted credentials as leaked, useful for testing of a password
+// leak dialog.
+BASE_DECLARE_FEATURE(kMarkAllCredentialsAsLeaked);
+
 // All features parameters in alphabetical order.
 }  // namespace password_manager::features
 
