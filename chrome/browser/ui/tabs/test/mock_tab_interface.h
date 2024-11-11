@@ -12,7 +12,7 @@
 
 namespace tabs {
 
-class MockTabInterface : public TabInterface {
+class MockTabInterface : public testing::NiceMock<TabInterface> {
  public:
   MockTabInterface();
   ~MockTabInterface();
