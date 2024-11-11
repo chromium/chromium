@@ -501,7 +501,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/MismatchNotificationController.java",
   "java/src/org/chromium/chrome/browser/customtabs/NavigationInfoCaptureTrigger.java",
   "java/src/org/chromium/chrome/browser/customtabs/PageLoadMetricsObserver.java",
-  "java/src/org/chromium/chrome/browser/customtabs/ReparentingTaskProvider.java",
   "java/src/org/chromium/chrome/browser/customtabs/RequestThrottler.java",
   "java/src/org/chromium/chrome/browser/customtabs/TranslucentCustomTabActivity.java",
   "java/src/org/chromium/chrome/browser/customtabs/TwaOfflineDataProvider.java",

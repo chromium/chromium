@@ -39,6 +39,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.content.WebContentsFactory;
+import org.chromium.chrome.browser.content.WebContentsFactoryJni;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.cookies.CookiesFetcherJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -70,6 +72,7 @@ public class CustomTabActivityTabControllerUnitTest {
     @Mock private Network mNetwork;
 
     @Mock private CookiesFetcher.Natives mCookiesFetcherJni;
+    @Mock private WebContentsFactory.Natives mWebContentsFactoryJni;
 
     private static final long TEST_TARGET_NETWORK = 1000;
 
@@ -85,6 +88,7 @@ public class CustomTabActivityTabControllerUnitTest {
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManager);
 
         jniMocker.mock(CookiesFetcherJni.TEST_HOOKS, mCookiesFetcherJni);
+        jniMocker.mock(WebContentsFactoryJni.TEST_HOOKS, mWebContentsFactoryJni);
     }
 
     @Test
@@ -198,16 +202,18 @@ public class CustomTabActivityTabControllerUnitTest {
         Tab hiddenTab = env.prepareHiddenTab();
         mTabController.setUpInitialTab(hiddenTab);
         mTabController.finishNativeInitialization();
-        verify(env.reparentingTaskProvider.get(hiddenTab)).finish(any(), any());
+        verify(env.reparentingTask).finish(any(), any());
     }
 
     @Test
     public void usesWebContentsCreatedWithWarmRenderer_ByDefault() {
         WebContents webContents = mock(WebContents.class);
-        when(env.webContentsFactory.createWebContentsWithWarmRenderer(
+        when(mWebContentsFactoryJni.createWebContents(
                         /* profile= */ any(),
                         /* initiallyHidden= */ anyBoolean(),
-                        /* targetNetwork= */ anyLong()))
+                        /* initializeRenderer= */ eq(true),
+                        /* targetNetwork= */ anyLong(),
+                        any()))
                 .thenReturn(webContents);
         mTabController.setUpInitialTab(null);
         mTabController.finishNativeInitialization();
@@ -219,26 +225,32 @@ public class CustomTabActivityTabControllerUnitTest {
         when(env.intentDataProvider.getTargetNetwork()).thenReturn(TEST_TARGET_NETWORK);
         mTabController.setUpInitialTab(null);
         mTabController.finishNativeInitialization();
-        verify(env.webContentsFactory, never())
-                .createWebContentsWithWarmRenderer(
+        verify(mWebContentsFactoryJni, never())
+                .createWebContents(
                         /* profile= */ any(),
                         /* initiallyHidden= */ anyBoolean(),
-                        /* targetNetwork= */ not(eq(TEST_TARGET_NETWORK)));
-        verify(env.webContentsFactory)
-                .createWebContentsWithWarmRenderer(
+                        /* initializeRenderer= */ eq(true),
+                        /* targetNetwork= */ not(eq(TEST_TARGET_NETWORK)),
+                        any());
+        verify(mWebContentsFactoryJni)
+                .createWebContents(
                         /* profile= */ any(),
                         /* initiallyHidden= */ anyBoolean(),
-                        /* targetNetwork= */ eq(TEST_TARGET_NETWORK));
+                        /* initializeRenderer= */ eq(true),
+                        /* targetNetwork= */ eq(TEST_TARGET_NETWORK),
+                        any());
     }
 
     @Test
     public void createsWebContentsFromScratch_whenIntentDataProviderTargetsNetwork() {
         WebContents webContents = mock(WebContents.class);
         when(env.intentDataProvider.getTargetNetwork()).thenReturn(TEST_TARGET_NETWORK);
-        when(env.webContentsFactory.createWebContentsWithWarmRenderer(
+        when(mWebContentsFactoryJni.createWebContents(
                         /* profile= */ any(),
                         /* initiallyHidden= */ anyBoolean(),
-                        /* targetNetwork= */ eq(TEST_TARGET_NETWORK)))
+                        /* initializeRenderer= */ eq(true),
+                        /* targetNetwork= */ eq(TEST_TARGET_NETWORK),
+                        any()))
                 .thenReturn(webContents);
         mTabController.setUpInitialTab(null);
         mTabController.finishNativeInitialization();

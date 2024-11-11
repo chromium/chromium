@@ -107,13 +107,12 @@ public class SplashController extends CustomTabTabObserver
             BaseCustomTabActivity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             CustomTabOrientationController orientationController,
-            TwaFinishHandler finishHandler,
             Lazy<CompositorViewHolder> compositorViewHolder) {
         mActivity = activity;
         mLifecycleDispatcher = lifecycleDispatcher;
         mTabObserverRegistrar = activity.getTabObserverRegistrar();
         mObservers = new ObserverList<>();
-        mFinishHandler = finishHandler;
+        mFinishHandler = activity.getTwaFinishHandler();
         mTabProvider = activity.getCustomTabActivityTabProvider();
         mCompositorViewHolder = compositorViewHolder;
 

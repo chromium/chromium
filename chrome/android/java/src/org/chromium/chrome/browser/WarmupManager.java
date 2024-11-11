@@ -698,11 +698,10 @@ public class WarmupManager {
             if (!LibraryLoader.getInstance().isInitialized() || mSpareWebContents != null) return;
 
             mSpareWebContents =
-                    new WebContentsFactory()
-                            .createWebContentsWithWarmRenderer(
-                                    profile,
-                                    /* initiallyHidden= */ true,
-                                    /* targetNetwork= */ NetId.INVALID);
+                    WebContentsFactory.createWebContentsWithWarmRenderer(
+                            profile,
+                            /* initiallyHidden= */ true,
+                            /* targetNetwork= */ NetId.INVALID);
             mObserver = new RenderProcessGoneObserver();
             mSpareWebContents.addObserver(mObserver);
         }

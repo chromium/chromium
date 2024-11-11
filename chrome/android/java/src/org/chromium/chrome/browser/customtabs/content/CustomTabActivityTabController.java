@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.FirstMeaningfulPaintObserver;
 import org.chromium.chrome.browser.customtabs.HiddenTabHolder.HiddenTab;
 import org.chromium.chrome.browser.customtabs.PageLoadMetricsObserver;
-import org.chromium.chrome.browser.customtabs.ReparentingTaskProvider;
 import org.chromium.chrome.browser.customtabs.TwaOfflineDataProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -109,11 +108,9 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     private final CustomTabTabPersistencePolicy mTabPersistencePolicy;
     private final CustomTabActivityTabFactory mTabFactory;
     private final CustomTabObserver mCustomTabObserver;
-    private final WebContentsFactory mWebContentsFactory;
     private final CustomTabNavigationEventObserver mTabNavigationEventObserver;
     private final ActivityTabProvider mActivityTabProvider;
     private final CustomTabActivityTabProvider mTabProvider;
-    private final ReparentingTaskProvider mReparentingTaskProvider;
     private final Supplier<Bundle> mSavedInstanceStateSupplier;
     private final ActivityWindowAndroid mWindowAndroid;
     private final TabModelInitializer mTabModelInitializer;
@@ -134,8 +131,6 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             ActivityLifecycleDispatcher lifecycleDispatcher,
             CustomTabTabPersistencePolicy persistencePolicy,
             CustomTabActivityTabFactory tabFactory,
-            WebContentsFactory webContentsFactory,
-            ReparentingTaskProvider reparentingTaskProvider,
             @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier,
             ActivityWindowAndroid windowAndroid,
             TabModelInitializer tabModelInitializer) {
@@ -148,11 +143,9 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         mTabPersistencePolicy = persistencePolicy;
         mTabFactory = tabFactory;
         mCustomTabObserver = activity.getCustomTabObserver();
-        mWebContentsFactory = webContentsFactory;
         mTabNavigationEventObserver = activity.getCustomTabNavigationEventObserver();
         mActivityTabProvider = activityTabProvider;
         mTabProvider = activity.getCustomTabActivityTabProvider();
-        mReparentingTaskProvider = reparentingTaskProvider;
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
         mWindowAndroid = windowAndroid;
         mTabModelInitializer = tabModelInitializer;
@@ -188,15 +181,13 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             mTabProvider.removeTab();
         }
 
-        mReparentingTaskProvider
-                .get(tab)
-                .begin(mActivity, intent, startActivityOptions, finishCallback);
+        ReparentingTask.from(tab).begin(mActivity, intent, startActivityOptions, finishCallback);
     }
 
     /**
-     * Closes the current tab. This doesn't necessarily lead to closing the entire activity, in
-     * case links with target="_blank" were followed. See the comment to
-     * {@link CustomTabActivityTabProvider.Observer#onAllTabsClosed}.
+     * Closes the current tab. This doesn't necessarily lead to closing the entire activity, in case
+     * links with target="_blank" were followed. See the comment to {@link
+     * CustomTabActivityTabProvider.Observer#onAllTabsClosed}.
      */
     public void closeTab() {
         TabModel model = mTabFactory.getTabModelSelector().getCurrentModel();
@@ -363,8 +354,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
             TabReparentingParams params =
                     (TabReparentingParams)
                             AsyncTabParamsManagerSingleton.getInstance().remove(tab.getId());
-            mReparentingTaskProvider
-                    .get(tab)
+            ReparentingTask.from(tab)
                     .finish(
                             ReparentingDelegateFactory.createReparentingTaskDelegate(
                                     mCompositorViewHolder.get(),
@@ -486,7 +476,7 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         }
 
         recordWebContentsStateOnLaunch(WebContentsState.NO_WEBCONTENTS);
-        return mWebContentsFactory.createWebContentsWithWarmRenderer(
+        return WebContentsFactory.createWebContentsWithWarmRenderer(
                 ProfileProvider.getOrCreateProfile(
                         mProfileProviderSupplier.get(), mIntentDataProvider.isOffTheRecord()),
                 /* initiallyHidden= */ false,

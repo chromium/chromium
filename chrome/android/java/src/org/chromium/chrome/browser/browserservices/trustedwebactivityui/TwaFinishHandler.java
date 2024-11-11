@@ -10,14 +10,11 @@ import android.os.Bundle;
 
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.webapps.WebApkServiceClient;
 
-import javax.inject.Inject;
-
 /** Applies TWA-specific logic when the activity is about to finish. */
-@ActivityScope
 public class TwaFinishHandler {
     private static final String FINISH_TASK_COMMAND_NAME = "finishAndRemoveTask";
     private static final String SUCCESS_KEY = "success";
@@ -27,11 +24,9 @@ public class TwaFinishHandler {
 
     private boolean mShouldAttemptFinishingTask;
 
-    @Inject
-    public TwaFinishHandler(
-            Activity activity, BrowserServicesIntentDataProvider intentDataProvider) {
+    public TwaFinishHandler(BaseCustomTabActivity activity) {
         mActivity = activity;
-        mIntentDataProvider = intentDataProvider;
+        mIntentDataProvider = activity.getIntentDataProvider();
     }
 
     public void setShouldAttemptFinishingTask(boolean shouldAttemptFinishingTask) {

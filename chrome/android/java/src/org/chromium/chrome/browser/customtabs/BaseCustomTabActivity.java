@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.browserservices.InstalledWebappDataRegister;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
+import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaFinishHandler;
 import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.EmptyVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
@@ -125,6 +126,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     private CustomTabObserver mCustomTabObserver;
     private CustomTabNavigationEventObserver mCustomTabNavigationEventObserver;
     private ClientPackageNameProvider mClientPackageNameProvider;
+    private TwaFinishHandler mTwaFinishHandler;
 
     protected @interface PictureInPictureMode {
         int NONE = 0;
@@ -695,7 +697,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             // and SeparateTaskActivityFinishHandler, all implementing
             // CustomTabActivityNavigationController#FinishHandler. Pass the mode enum into
             // CustomTabActivityModule, so that it can provide the correct implementation.
-            getComponent().resolveTwaFinishHandler().onFinish(defaultBehavior);
+            getTwaFinishHandler().onFinish(defaultBehavior);
         } else if (intentDataProvider.isPartialCustomTab()) {
             // WebContents is missing during the close animation due to android:windowIsTranslucent.
             // We let partial CCT handle the animation.
@@ -911,5 +913,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
     public CipherFactory getCipherFactory() {
         return mCipherFactory;
+    }
+
+    public TwaFinishHandler getTwaFinishHandler() {
+        if (mTwaFinishHandler == null) mTwaFinishHandler = new TwaFinishHandler(this);
+        return mTwaFinishHandler;
     }
 }

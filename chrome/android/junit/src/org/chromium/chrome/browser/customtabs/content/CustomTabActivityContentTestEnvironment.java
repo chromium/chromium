@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CloseButtonNavigator;
@@ -46,7 +45,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabNavigationEventObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabObserver;
 import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
-import org.chromium.chrome.browser.customtabs.ReparentingTaskProvider;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManagerHolder;
 import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -87,13 +85,11 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
     @Mock public CustomTabActivityTabFactory tabFactory;
     @Mock public CustomTabsTabModelOrchestrator tabModelOrchestrator;
     @Mock public CustomTabObserver customTabObserver;
-    @Mock public WebContentsFactory webContentsFactory;
     @Mock public ActivityTabProvider activityTabProvider;
     @Mock public ActivityLifecycleDispatcher lifecycleDispatcher;
     @Mock public CustomTabsSessionToken session;
     @Mock public TabModelSelectorImpl tabModelSelector;
     @Mock public TabModel tabModel;
-    @Mock public ReparentingTaskProvider reparentingTaskProvider;
     @Mock public ReparentingTask reparentingTask;
     @Mock public CustomTabNavigationEventObserver navigationEventObserver;
     @Mock public CloseButtonNavigator closeButtonNavigator;
@@ -143,7 +139,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         // Default setup is toolbarManager doesn't consume back press event.
         when(toolbarManager.back()).thenReturn(false);
 
-        when(reparentingTaskProvider.get(any())).thenReturn(reparentingTask);
         when(activityTabProvider.addObserver(activityTabObserverCaptor.capture())).thenReturn(null);
         when(intentDataProvider.getColorProvider()).thenReturn(colorProvider);
 
@@ -176,8 +171,6 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
                 lifecycleDispatcher,
                 tabPersistencePolicy,
                 tabFactory,
-                webContentsFactory,
-                reparentingTaskProvider,
                 () -> activity.getSavedInstanceState(),
                 activity.getWindowAndroid(),
                 tabModelInitializer);
@@ -258,6 +251,7 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         when(tab.isOffTheRecord()).thenAnswer((mock) -> isOffTheRecord);
         when(tab.isIncognitoBranded()).thenAnswer((mock) -> isOffTheRecord);
         when(intentDataProvider.isOffTheRecord()).thenReturn(isOffTheRecord);
+        tab.getUserDataHost().setUserData(ReparentingTask.class, reparentingTask);
         return tab;
     }
 }

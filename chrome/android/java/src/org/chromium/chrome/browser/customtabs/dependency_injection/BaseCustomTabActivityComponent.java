@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.customtabs.dependency_injection;
 
 import dagger.Subcomponent;
 
-import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaFinishHandler;
 import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
@@ -23,7 +22,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabSessionHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabStatusBarColorProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
 import org.chromium.chrome.browser.customtabs.CustomTabTaskDescriptionHelper;
-import org.chromium.chrome.browser.customtabs.ReparentingTaskProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabFactory;
@@ -76,8 +74,6 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
 
     CustomTabToolbarCoordinator resolveToolbarCoordinator();
 
-    TwaFinishHandler resolveTwaFinishHandler();
-
     CustomTabMinimizationManagerHolder resolveCustomTabMinimizationManagerHolder();
 
     CustomTabFeatureOverridesManager resolveCustomTabFeatureOverridesManager();
@@ -96,8 +92,6 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
 
     // For testing
     CustomTabTabPersistencePolicy resolveTabPersistencePolicy();
-
-    ReparentingTaskProvider resolveReparentingTaskProvider();
 
     SplashController resolveSplashController();
 }

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.content;
 
-import dagger.Reusable;
-
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -13,16 +11,12 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.NetId;
 
-import javax.inject.Inject;
-
 /**
  * This factory creates WebContents objects and the associated native counterpart. TODO(dtrainor):
  * Move this to the content/ layer if BrowserContext is ever supported in Java.
  */
-@Reusable
 public class WebContentsFactory {
-    @Inject
-    public WebContentsFactory() {}
+    private WebContentsFactory() {}
 
     /** For capturing where WebContentsImpl is created. */
     private static class WebContentsCreationException extends RuntimeException {
@@ -96,13 +90,13 @@ public class WebContentsFactory {
      * @param targetNetwork target network handle.
      * @return A newly created {@link WebContents} object.
      */
-    public WebContents createWebContentsWithWarmRenderer(
+    public static WebContents createWebContentsWithWarmRenderer(
             Profile profile, boolean initiallyHidden, long targetNetwork) {
         return createWebContents(profile, initiallyHidden, true, targetNetwork);
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         WebContents createWebContents(
                 @JniType("Profile*") Profile profile,
                 boolean initiallyHidden,
