@@ -2103,7 +2103,6 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
 
   RefreshCachedKeyboardSettings();
   RefreshBatteryInfoForConnectedDevices();
-  RefreshCompanionAppInfoForConnectedDevices();
 }
 
 void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
@@ -2125,7 +2124,6 @@ void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
 
   RefreshCachedTouchpadSettings();
   RefreshBatteryInfoForConnectedDevices();
-  RefreshCompanionAppInfoForConnectedDevices();
 }
 
 void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
@@ -2200,7 +2198,6 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
   }
   RefreshStoredLoginScreenGraphicsTabletSettings();
   RefreshBatteryInfoForConnectedDevices();
-  RefreshCompanionAppInfoForConnectedDevices();
 }
 
 void InputDeviceSettingsControllerImpl::RestoreDefaultKeyboardRemappings(
@@ -3096,6 +3093,23 @@ void InputDeviceSettingsControllerImpl::DispatchTouchpadCompanionAppInfoChanged(
 }
 
 void InputDeviceSettingsControllerImpl::
+    RefreshCompanionAppInfoForConnectedDevices() {
+  if (!delegate_ || !active_pref_service_) {
+    return;
+  }
+  for (const auto& [id, mouse] : mice_) {
+    if (!DeviceHasCompanionAppAvailable(mouse->device_key)) {
+      continue;
+    }
+    delegate_->GetCompanionAppInfo(
+        mouse->device_key,
+        base::BindOnce(
+            &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
+            weak_ptr_factory_.GetWeakPtr(), id, mouse->device_key));
+  }
+}
+
+void InputDeviceSettingsControllerImpl::
     DispatchGraphicsTabletCompanionAppInfoChanged(
         const mojom::GraphicsTablet& graphics_tablet) {
   CHECK(features::IsWelcomeExperienceEnabled());
@@ -3112,7 +3126,7 @@ void InputDeviceSettingsControllerImpl::SetPeripheralsAppDelegate(
 
 void InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived(
     DeviceId id,
-    const std::string& device_key,
+    const std::string device_key,
     const std::optional<mojom::CompanionAppInfo>& info) {
   if (!info) {
     return;
@@ -3124,77 +3138,6 @@ void InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived(
     mouse->app_info = info->Clone();
     package_id_to_device_id_map_[mouse->app_info->package_id] = id;
     DispatchMouseCompanionAppInfoChanged(*mouse);
-    return;
-  }
-
-  if (auto* keyboard = FindKeyboard(id); keyboard != nullptr) {
-    keyboard->app_info = info->Clone();
-    package_id_to_device_id_map_[keyboard->app_info->package_id] = id;
-    DispatchKeyboardCompanionAppInfoChanged(*keyboard);
-    return;
-  }
-
-  if (auto* touchpad = FindTouchpad(id); touchpad != nullptr) {
-    touchpad->app_info = info->Clone();
-    package_id_to_device_id_map_[touchpad->app_info->package_id] = id;
-    DispatchTouchpadCompanionAppInfoChanged(*touchpad);
-    return;
-  }
-
-  if (auto* graphics_tablet = FindGraphicsTablet(id);
-      graphics_tablet != nullptr) {
-    graphics_tablet->app_info = info->Clone();
-    package_id_to_device_id_map_[graphics_tablet->app_info->package_id] = id;
-    DispatchGraphicsTabletCompanionAppInfoChanged(*graphics_tablet);
-    return;
-  }
-}
-
-void InputDeviceSettingsControllerImpl::
-    RefreshCompanionAppInfoForConnectedDevices() {
-  if (!delegate_ || !active_pref_service_) {
-    return;
-  }
-
-  for (const auto& [id, mouse] : mice_) {
-    if (!mouse->is_external) {
-      continue;
-    }
-    delegate_->GetCompanionAppInfo(
-        mouse->device_key,
-        base::BindOnce(
-            &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
-            weak_ptr_factory_.GetWeakPtr(), id, mouse->device_key));
-  }
-
-  for (const auto& [id, touchpad] : touchpads_) {
-    if (!touchpad->is_external) {
-      continue;
-    }
-    delegate_->GetCompanionAppInfo(
-        touchpad->device_key,
-        base::BindOnce(
-            &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
-            weak_ptr_factory_.GetWeakPtr(), id, touchpad->device_key));
-  }
-
-  for (const auto& [id, keyboard] : keyboards_) {
-    if (!keyboard->is_external) {
-      continue;
-    }
-    delegate_->GetCompanionAppInfo(
-        keyboard->device_key,
-        base::BindOnce(
-            &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
-            weak_ptr_factory_.GetWeakPtr(), id, keyboard->device_key));
-  }
-
-  for (const auto& [id, graphics_tablet] : graphics_tablets_) {
-    delegate_->GetCompanionAppInfo(
-        graphics_tablet->device_key,
-        base::BindOnce(
-            &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
-            weak_ptr_factory_.GetWeakPtr(), id, graphics_tablet->device_key));
   }
 }
 

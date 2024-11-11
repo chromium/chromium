@@ -128,6 +128,10 @@ GetTabletButtonRemappingListForConfig(
 ASH_EXPORT const base::flat_map<VendorProductId, VendorProductId>&
 GetVidPidAliasList();
 
+// This function returns whether or not a device has an associated companion
+// app.
+ASH_EXPORT bool DeviceHasCompanionAppAvailable(const std::string& device_key);
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_METADATA_H_

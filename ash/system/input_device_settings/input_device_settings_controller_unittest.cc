@@ -215,6 +215,16 @@ const ui::KeyboardDevice kSampleSplitModifierKeyboard(
     /*has_assistant_key=*/true,
     /*has_function_key=*/true);
 
+const ui::InputDevice kSampleMouseWithCompanionApp(
+    29,
+    ui::INPUT_DEVICE_USB,
+    "kSampleMouseUsb",
+    /*phys=*/"",
+    /*sys_path=*/base::FilePath(),
+    /*vendor=*/0x1038,
+    /*product=*/0x1836,
+    /*version=*/0x0003);
+
 constexpr char kUserEmail1[] = "example1@abc.com";
 constexpr char kUserEmail2[] = "joy@abc.com";
 constexpr char kUserEmail3[] = "joy1@abc.com";
@@ -724,6 +734,11 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
     test_app->readiness = readiness;
     apps::AppUpdate test_update(nullptr, /*delta=*/test_app.get(), AccountId());
     controller_->OnAppUpdate(test_update);
+  }
+
+  void AddFakeMouse(const ui::InputDevice& mouse) {
+    fake_device_manager_->AddFakeMouse(mouse);
+    task_runner_->RunUntilIdle();
   }
 
  protected:
@@ -2144,8 +2159,8 @@ TEST_F(InputDeviceSettingsControllerNoSignInTest, ModifierKeyRefresh) {
 
 TEST_F(InputDeviceSettingsControllerTest, GetCompanionAppInfo) {
   base::HistogramTester histogram_tester;
-  fake_device_manager_->AddFakeMouse(kSampleMouseUsb);
-  auto* mouse = controller_->GetMouse(kSampleMouseUsb.id);
+  AddFakeMouse(kSampleMouseWithCompanionApp);
+  auto* mouse = controller_->GetMouse(kSampleMouseWithCompanionApp.id);
   ASSERT_FALSE(mouse->app_info.is_null());
   histogram_tester.ExpectBucketCount(
       "ChromeOS.WelcomeExperienceCompanionAppState",
@@ -2153,15 +2168,15 @@ TEST_F(InputDeviceSettingsControllerTest, GetCompanionAppInfo) {
       /*expected_count=*/1u);
   fake_device_manager_->RemoveAllDevices();
   delegate_->set_should_fail(/*should_fail=*/true);
-  fake_device_manager_->AddFakeMouse(kSampleMouseUsb);
-  mouse = controller_->GetMouse(kSampleMouseUsb.id);
+  fake_device_manager_->AddFakeMouse(kSampleMouseWithCompanionApp);
+  mouse = controller_->GetMouse(kSampleMouseWithCompanionApp.id);
   ASSERT_TRUE(mouse->app_info.is_null());
 }
 
 TEST_F(InputDeviceSettingsControllerTest, CompanionAppStateUpdated) {
   base::HistogramTester histogram_tester;
-  fake_device_manager_->AddFakeMouse(kSampleMouseUsb);
-  auto* mouse = controller_->GetMouse(kSampleMouseUsb.id);
+  AddFakeMouse(kSampleMouseWithCompanionApp);
+  auto* mouse = controller_->GetMouse(kSampleMouseWithCompanionApp.id);
   auto expected_package_id = GetPackageIdForTesting(mouse->device_key);
   ASSERT_FALSE(mouse->app_info.is_null());
   ASSERT_EQ(mojom::CompanionAppState::kAvailable, mouse->app_info->state);
