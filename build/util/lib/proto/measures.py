@@ -57,16 +57,16 @@ def time_consumption(*name_pieces: str) -> TimeConsumption:
 
 
 def clear() -> None:
-  """Clear all the registered Measures."""
+  """Clears all the registered Measures."""
   _metric.clear()
 
 
 def size() -> int:
-  """Get the current size of registered Measures."""
+  """Gets the current size of registered Measures."""
   return _metric.size()
 
 def to_dict() -> dict:
-  """Convert all the registered Measures to a dict.
+  """Converts all the registered Measures to a dict.
 
   The records are wrapped in protobuf Any message before exported as dict
   so that an additional key "@type" is included.
@@ -77,7 +77,7 @@ def to_dict() -> dict:
 
 
 def to_json() -> str:
-  """Convert all the registered Measures to a json str."""
+  """Converts all the registered Measures to a json str."""
   return json.dumps(to_dict(), sort_keys=True, indent=2)
 
 # TODO(crbug.com/343242386): May need to implement a lock and reset logic to

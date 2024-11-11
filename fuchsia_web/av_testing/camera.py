@@ -36,7 +36,7 @@ class Parameters:
 def start(parameters: Parameters) -> None:
     """Starts an av_sync_record process to record the video from the camera.
     Executing of this function shouldn't be terminated as it would create a
-    bad constructed mp4 file. If the recorder binary does not exist, the
+    bad constructed video file. If the recorder binary does not exist, the
     function returns immediately."""
     assert parameters.output_path
     assert parameters.file
