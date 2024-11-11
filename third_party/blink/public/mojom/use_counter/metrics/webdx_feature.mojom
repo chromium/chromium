@@ -268,6 +268,7 @@ enum WebDXFeature {
   kInitialLetter = 210,
   kHyphenateCharacter = 211,
   kHyphenateLimitChars = 212,
+  kQuotes = 213,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

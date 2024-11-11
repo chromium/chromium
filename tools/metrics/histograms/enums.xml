@@ -33915,6 +33915,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="210" label="InitialLetter"/>
   <int value="211" label="HyphenateCharacter"/>
   <int value="212" label="HyphenateLimitChars"/>
+  <int value="213" label="Quotes"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
