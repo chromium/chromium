@@ -72,13 +72,6 @@
 #include "components/policy/core/common/proxy_policy_provider.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/device_settings_lacros.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_params_proxy.h"
-#include "components/policy/core/common/policy_loader_lacros.h"
-#endif
-
 namespace policy {
 namespace {
 bool g_command_line_enabled_for_testing = false;
@@ -132,23 +125,8 @@ void ChromeBrowserPolicyConnector::Init(
 
 void ChromeBrowserPolicyConnector::OnBrowserStarted() {}
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool ChromeBrowserPolicyConnector::IsMainUserManaged() const {
-  return PolicyLoaderLacros::IsMainUserManaged();
-}
-
-crosapi::mojom::DeviceSettings*
-ChromeBrowserPolicyConnector::GetDeviceSettings() const {
-  return device_settings_->GetDeviceSettings();
-}
-#endif
-
 bool ChromeBrowserPolicyConnector::IsDeviceEnterpriseManaged() const {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsDeviceEnterprisedManaged();
-#else
   NOTREACHED() << "This method is only defined for ChromeOS";
-#endif
 }
 
 bool ChromeBrowserPolicyConnector::HasMachineLevelPolicies() {
@@ -282,9 +260,7 @@ ChromeBrowserPolicyConnector::device_affiliation_ids() const {
   if (!device_affiliation_ids_for_testing_.empty()) {
     return device_affiliation_ids_for_testing_;
   }
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return PolicyLoaderLacros::device_affiliation_ids();
-#elif !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!machine_level_user_cloud_policy_manager_ ||
       !machine_level_user_cloud_policy_manager_->IsClientRegistered() ||
       !machine_level_user_cloud_policy_manager_->core() ||
@@ -299,7 +275,7 @@ ChromeBrowserPolicyConnector::device_affiliation_ids() const {
   return {ids.begin(), ids.end()};
 #else
   return {};
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ChromeBrowserPolicyConnector::SetDeviceAffiliatedIdsForTesting(
@@ -321,20 +297,6 @@ ChromeBrowserPolicyConnector::CreatePolicyProviders() {
 #if !BUILDFLAG(IS_CHROMEOS)
   MaybeCreateCloudPolicyManager(&providers);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  device_settings_ = std::make_unique<DeviceSettingsLacros>();
-  auto loader = std::make_unique<PolicyLoaderLacros>(
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
-      PolicyPerProfileFilter::kFalse);
-  device_account_policy_loader_ = loader.get();
-  std::unique_ptr<AsyncPolicyProvider> ash_policy_provider =
-      std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
-                                            std::move(loader));
-  ash_policy_provider_ = ash_policy_provider.get();
-  providers.push_back(std::move(ash_policy_provider));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   std::unique_ptr<CommandLinePolicyProvider> command_line_provider =
       CommandLinePolicyProvider::CreateIfAllowed(
