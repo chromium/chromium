@@ -2042,6 +2042,7 @@
       origin_trial_feature_name: "FledgeBiddingAndAuctionServer",
       origin_trial_allows_third_party: true,
       base_feature: "none",
+      status: "stable",
     },
     {
       name: "FledgeCustomMaxAuctionAdComponents",
