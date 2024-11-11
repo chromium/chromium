@@ -112,6 +112,13 @@ class MockOptGuideDecider
       const std::string& gpc_title = "example_gpc_title",
       const std::vector<std::vector<std::string>>& product_categories = {});
 
+  void AddPriceSummaryToPriceTrackingResponse(
+      OptimizationMetadata* out_meta,
+      const PriceSummary_ProductOfferCondition condition,
+      const int64_t lowest_price,
+      const int64_t highest_price,
+      const std::string& country_code);
+
   void AddPriceUpdateToPriceTrackingResponse(OptimizationMetadata* out_meta,
                                              const std::string& currency_code,
                                              const int64_t current_price,

@@ -24,6 +24,7 @@
 #include "components/commerce/core/proto/product_category.pb.h"
 #include "components/commerce/core/proto/shopping_page_types.pb.h"
 #include "components/commerce/core/test_utils.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -35,6 +36,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
+using optimization_guide::AnyWrapProto;
 using optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback;
 using optimization_guide::OptimizationGuideDecision;
 using optimization_guide::OptimizationGuideDecisionCallback;
@@ -201,6 +203,30 @@ OptimizationMetadata MockOptGuideDecider::BuildPriceTrackingResponse(
   meta.set_any_metadata(any);
 
   return meta;
+}
+
+void MockOptGuideDecider::AddPriceSummaryToPriceTrackingResponse(
+    OptimizationMetadata* out_meta,
+    const PriceSummary_ProductOfferCondition condition,
+    const int64_t lowest_price,
+    const int64_t highest_price,
+    const std::string& currency_code) {
+  PriceTrackingData price_tracking_data =
+      optimization_guide::ParsedAnyMetadata<PriceTrackingData>(
+          out_meta->any_metadata().value())
+          .value();
+  BuyableProduct* buyable_product =
+      price_tracking_data.mutable_buyable_product();
+  buyable_product->add_price_summary();
+  PriceSummary* summary = buyable_product->mutable_price_summary(
+      buyable_product->price_summary_size() - 1);
+  summary->set_condition(condition);
+  summary->mutable_lowest_price()->set_currency_code(currency_code);
+  summary->mutable_lowest_price()->set_amount_micros(lowest_price);
+  summary->mutable_highest_price()->set_currency_code(currency_code);
+  summary->mutable_highest_price()->set_amount_micros(highest_price);
+
+  out_meta->set_any_metadata(AnyWrapProto(price_tracking_data));
 }
 
 void MockOptGuideDecider::AddPriceUpdateToPriceTrackingResponse(

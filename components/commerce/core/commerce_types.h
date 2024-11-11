@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/tuple.h"
 #include "components/commerce/core/proto/parcel.pb.h"
+#include "components/commerce/core/proto/price_tracking.pb.h"
 #include "components/commerce/core/proto/product_category.pb.h"
 #include "url/gurl.h"
 
@@ -131,6 +132,7 @@ struct ProductInfo {
   std::optional<int64_t> previous_amount_micros;
   std::string country_code;
   CategoryData category_data;
+  std::vector<PriceSummary> price_summary;
 
  private:
   friend class ShoppingService;

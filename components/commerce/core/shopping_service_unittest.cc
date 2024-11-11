@@ -105,6 +105,8 @@ const std::vector<std::vector<std::string>> kProductCategories = {
     {"Dress", "Red Dress"}};
 
 using NiceMockWebWrapper = testing::NiceMock<MockWebWrapper>;
+using PriceSummary_ProductOfferCondition::
+    PriceSummary_ProductOfferCondition_CONDITION_NEW;
 
 }  // namespace
 
@@ -171,6 +173,9 @@ TEST_P(ShoppingServiceTest, TestProductInfoResponse) {
   OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
       kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
       kCurrencyCode, kGpcTitle, kProductCategories);
+  opt_guide_->AddPriceSummaryToPriceTrackingResponse(
+      &meta, PriceSummary_ProductOfferCondition_CONDITION_NEW, 100u, 200u,
+      "usd");
   opt_guide_->AddPriceUpdateToPriceTrackingResponse(&meta, kCurrencyCode,
                                                     kNewPrice, kPrice);
 
@@ -211,6 +216,19 @@ TEST_P(ShoppingServiceTest, TestProductInfoResponse) {
                           labels[j].category_default_label());
               }
             }
+
+            ASSERT_EQ(1u, info->price_summary.size());
+            ASSERT_EQ(PriceSummary_ProductOfferCondition_CONDITION_NEW,
+                      info->price_summary[0].condition());
+            ASSERT_EQ(100u,
+                      info->price_summary[0].lowest_price().amount_micros());
+            ASSERT_EQ("usd",
+                      info->price_summary[0].lowest_price().currency_code());
+            ASSERT_EQ(200u,
+                      info->price_summary[0].highest_price().amount_micros());
+            ASSERT_EQ("usd",
+                      info->price_summary[0].highest_price().currency_code());
+
             run_loop->Quit();
           },
           &run_loop));

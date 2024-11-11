@@ -1110,6 +1110,10 @@ std::unique_ptr<ProductInfo> ShoppingService::OptGuideResultToProductInfo(
     info->category_data = buyable_product.category_data();
   }
 
+  for (int i = 0; i < buyable_product.price_summary_size(); ++i) {
+    info->price_summary.push_back(buyable_product.price_summary(i));
+  }
+
   return info;
 }
 
