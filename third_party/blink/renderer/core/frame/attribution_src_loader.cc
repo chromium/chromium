@@ -95,16 +95,28 @@ using mojom::blink::AttributionReportingIssueType;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(AttributionSrcRequestStatus)
 enum class AttributionSrcRequestStatus {
   kRequested = 0,
   kReceived = 1,
   kFailed = 2,
-  kMaxValue = kFailed,
+  kRedirected = 3,
+  kReceivedAfterRedirected = 4,
+  kFailedAfterRedirected = 5,
+  kMaxValue = kFailedAfterRedirected,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionAttributionSrcRequestStatus)
 
-void RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus status) {
-  base::UmaHistogramEnumeration("Conversions.AttributionSrcRequestStatus",
+void RecordAttributionSrcRequestStatus(const ResourceRequestHead& request,
+                                       AttributionSrcRequestStatus status) {
+  base::UmaHistogramEnumeration("Conversions.AttributionSrcRequestStatus.All",
                                 status);
+  if (request.GetAttributionReportingEligibility() ==
+      AttributionReportingEligibility::kNavigationSource) {
+    base::UmaHistogramEnumeration(
+        "Conversions.AttributionSrcRequestStatus.Navigation", status);
+  }
 }
 
 void LogAuditIssue(ExecutionContext* execution_context,
@@ -422,6 +434,8 @@ class AttributionSrcLoader::ResourceClient
 
   const network::mojom::AttributionSupport support_;
 
+  bool redirected_ = false;
+
   SelfKeepAlive<ResourceClient> keep_alive_{this};
 };
 
@@ -614,7 +628,8 @@ bool AttributionSrcLoader::DoRegistration(
         MakeGarbageCollected<ResourceClient>(this, eligibility, source_type,
                                              data_host, GetSupport()));
 
-    RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kRequested);
+    RecordAttributionSrcRequestStatus(request,
+                                      AttributionSrcRequestStatus::kRequested);
   }
 
   return true;
@@ -853,6 +868,11 @@ bool AttributionSrcLoader::ResourceClient::RedirectReceived(
     Resource* resource,
     const ResourceRequest& request,
     const ResourceResponse& response) {
+  if (!redirected_) {
+    redirected_ = true;
+    RecordAttributionSrcRequestStatus(request,
+                                      AttributionSrcRequestStatus::kRedirected);
+  }
   HandleResponseHeaders(resource, response, request.InspectorId());
   return true;
 }
@@ -861,9 +881,15 @@ void AttributionSrcLoader::ResourceClient::NotifyFinished(Resource* resource) {
   ClearResource();
 
   if (resource->ErrorOccurred()) {
-    RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kFailed);
+    RecordAttributionSrcRequestStatus(
+        resource->GetResourceRequest(),
+        redirected_ ? AttributionSrcRequestStatus::kFailedAfterRedirected
+                    : AttributionSrcRequestStatus::kFailed);
   } else {
-    RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kReceived);
+    RecordAttributionSrcRequestStatus(
+        resource->GetResourceRequest(),
+        redirected_ ? AttributionSrcRequestStatus::kReceivedAfterRedirected
+                    : AttributionSrcRequestStatus::kReceived);
   }
 
   Finish();

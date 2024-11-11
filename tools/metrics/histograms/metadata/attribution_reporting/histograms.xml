@@ -365,15 +365,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.AttributionSrcRequestStatus"
+<histogram name="Conversions.AttributionSrcRequestStatus.{Type}"
     enum="ConversionAttributionSrcRequestStatus" expires_after="2025-05-04">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
     Records the status of the attributionsrc requests. Recorded when the request
-    started and finished.
+    started, redirected and finished.
   </summary>
+  <token key="Type">
+    <variant name="All"/>
+    <variant name="Navigation"/>
+  </token>
 </histogram>
 
 <histogram name="Conversions.BackgroundNavigation.Outcome"
