@@ -120,13 +120,16 @@ AIAssistant::Context::Context(const Context& context) = default;
 
 AIAssistant::Context::~Context() = default;
 
-void AIAssistant::Context::AddContextItem(ContextItem context_item) {
+bool AIAssistant::Context::AddContextItem(ContextItem context_item) {
+  bool is_overflow = false;
   context_items_.emplace_back(context_item);
   current_tokens_ += context_item.tokens;
   while (current_tokens_ > max_tokens_) {
+    is_overflow = true;
     current_tokens_ -= context_items_.begin()->tokens;
     context_items_.pop_front();
   }
+  return is_overflow;
 }
 
 std::unique_ptr<google::protobuf::MessageLite>
@@ -237,13 +240,15 @@ void AIAssistant::AddPromptHistoryAndSendCompletion(
   // If the on device model service fails to get the size, it will be 0.
   // TODO(crbug.com/351935691): make sure the error is explicitly returned and
   // handled accordingly.
+  bool did_overflow = false;
   if (size) {
     auto item = Context::ContextItem();
     item.tokens = size;
     item.prompts = history_request.prompt_history();
-    context_->AddContextItem(std::move(item));
+    did_overflow = context_->AddContextItem(std::move(item));
   }
-  responder->OnCompletion(context_->current_tokens());
+  responder->OnCompletion(blink::mojom::ModelExecutionContextInfo::New(
+      context_->current_tokens(), did_overflow));
 }
 
 void AIAssistant::ModelExecutionCallback(

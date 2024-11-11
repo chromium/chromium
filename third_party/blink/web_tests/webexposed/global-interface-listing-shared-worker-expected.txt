@@ -32,9 +32,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method capabilities
 [Worker]     method constructor
 [Worker]     method create
-[Worker] interface AILanguageModel
+[Worker] interface AILanguageModel : EventTarget
 [Worker]     attribute @@toStringTag
 [Worker]     getter maxTokens
+[Worker]     getter oncontextoverflow
 [Worker]     getter temperature
 [Worker]     getter tokensLeft
 [Worker]     getter tokensSoFar
@@ -45,6 +46,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method destroy
 [Worker]     method prompt
 [Worker]     method promptStreaming
+[Worker]     setter oncontextoverflow
 [Worker] interface AILanguageModelCapabilities
 [Worker]     attribute @@toStringTag
 [Worker]     getter available

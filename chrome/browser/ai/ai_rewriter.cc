@@ -97,7 +97,7 @@ void AIRewriter::ModelExecutionCallback(
     responder->OnStreaming(compose_response->output());
   }
   if (result.response->is_complete) {
-    responder->OnCompletion(/*current_tokens=*/std::nullopt);
+    responder->OnCompletion(/*context_info=*/nullptr);
     responder_set_.Remove(responder_id);
   }
 }

@@ -19,7 +19,7 @@ void EchoAIWriter::Write(
   mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
       std::move(pending_responder));
   responder->OnStreaming("Model not available in Chromium\n" + input);
-  responder->OnCompletion(/*current_tokens=*/std::nullopt);
+  responder->OnCompletion(/*context_info=*/nullptr);
 }
 
 }  // namespace content

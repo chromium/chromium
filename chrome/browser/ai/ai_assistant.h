@@ -58,7 +58,9 @@ class AIAssistant : public AIContextBoundObject,
 
     // Insert a new context item, this may evict some oldest items to ensure the
     // total number of tokens in the context is below the limit.
-    void AddContextItem(ContextItem context_item);
+    // It returns whether the context overflows and some existing item gets
+    // evicted.
+    bool AddContextItem(ContextItem context_item);
 
     // Combines the initial prompts and all current items into a request.
     // The type of request produced is either PromptApiRequest or StringValue,

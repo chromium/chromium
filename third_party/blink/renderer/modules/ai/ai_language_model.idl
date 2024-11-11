@@ -16,7 +16,7 @@ dictionary AILanguageModelPromptOptions {
   Exposed=(Window,Worker),
   RuntimeEnabled=AIPromptAPI
 ]
-interface AILanguageModel {
+interface AILanguageModel : EventTarget {
   [
     Measure,
     CallWith=ScriptState,
@@ -57,6 +57,8 @@ interface AILanguageModel {
   readonly attribute unsigned long topK;
   [Measure]
   readonly attribute float temperature;
+
+  attribute EventHandler oncontextoverflow;
 
   [
     Measure,

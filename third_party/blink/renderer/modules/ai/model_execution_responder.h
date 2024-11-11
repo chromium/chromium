@@ -38,7 +38,7 @@ CreateModelExecutionStreamingResponder(
     AbortSignal* signal,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     AIMetrics::AISessionType session_type,
-    base::OnceCallback<void(std::optional<uint64_t> current_tokens)>
+    base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
         complete_callback);
 
 // Creates a ModelStreamingResponder that handles the streaming output of the
@@ -52,7 +52,7 @@ CreateModelExecutionResponder(
     ScriptPromiseResolver<IDLString>* resolver,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     AIMetrics::AISessionType session_type,
-    base::OnceCallback<void(std::optional<uint64_t> current_tokens)>
+    base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
         complete_callback);
 
 }  // namespace blink

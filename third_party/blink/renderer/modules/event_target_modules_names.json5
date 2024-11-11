@@ -9,6 +9,7 @@
   // you'd like to change recorded names in ActivityLogger.
   data: [
     "AICreateMonitor",
+    "AILanguageModel",
     "BackgroundFetchRegistration",
     "BatteryManager",
     "Bluetooth",

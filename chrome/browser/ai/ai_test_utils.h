@@ -41,7 +41,7 @@ class AITestUtils {
                 (override));
     MOCK_METHOD(void,
                 OnCompletion,
-                (std::optional<uint64_t> current_tokens),
+                (blink::mojom::ModelExecutionContextInfoPtr context_info),
                 (override));
 
    private:

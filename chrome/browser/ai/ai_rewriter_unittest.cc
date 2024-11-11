@@ -192,14 +192,15 @@ void AIRewriterTest::RunSimpleRewriteTest(
   AITestUtils::MockModelStreamingResponder mock_responder;
 
   base::RunLoop run_loop;
-
   EXPECT_CALL(mock_responder, OnStreaming(_))
       .WillOnce(testing::Invoke(
           [&](const std::string& text) { EXPECT_THAT(text, "Result text"); }));
 
   EXPECT_CALL(mock_responder, OnCompletion(_))
       .WillOnce(testing::Invoke(
-          [&](std::optional<uint64_t> current_tokens) { run_loop.Quit(); }));
+          [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+            run_loop.Quit();
+          }));
 
   rewriter_remote->Rewrite(kInputString, kContextString,
                            mock_responder.BindNewPipeAndPassRemote());
@@ -678,7 +679,9 @@ TEST_F(AIRewriterTest, RewriteMultipleResponse) {
 
   EXPECT_CALL(mock_responder, OnCompletion(_))
       .WillOnce(testing::Invoke(
-          [&](std::optional<uint64_t> current_tokens) { run_loop.Quit(); }));
+          [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+            run_loop.Quit();
+          }));
 
   rewriter_remote->Rewrite(kInputString, kContextString,
                            mock_responder.BindNewPipeAndPassRemote());
@@ -755,7 +758,6 @@ TEST_F(AIRewriterTest, MultipleRewrite) {
   {
     AITestUtils::MockModelStreamingResponder mock_responder;
     base::RunLoop run_loop;
-
     EXPECT_CALL(mock_responder, OnStreaming(_))
         .WillOnce(testing::Invoke([&](const std::string& text) {
           EXPECT_THAT(text, "Result text");
@@ -763,7 +765,9 @@ TEST_F(AIRewriterTest, MultipleRewrite) {
 
     EXPECT_CALL(mock_responder, OnCompletion(_))
         .WillOnce(testing::Invoke(
-            [&](std::optional<uint64_t> current_tokens) { run_loop.Quit(); }));
+            [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+              run_loop.Quit();
+            }));
 
     rewriter_remote->Rewrite(kInputString, kContextString,
                              mock_responder.BindNewPipeAndPassRemote());
@@ -772,7 +776,6 @@ TEST_F(AIRewriterTest, MultipleRewrite) {
   {
     AITestUtils::MockModelStreamingResponder mock_responder;
     base::RunLoop run_loop;
-
     EXPECT_CALL(mock_responder, OnStreaming(_))
         .WillOnce(testing::Invoke([&](const std::string& text) {
           EXPECT_THAT(text, "Result text 2");
@@ -780,7 +783,9 @@ TEST_F(AIRewriterTest, MultipleRewrite) {
 
     EXPECT_CALL(mock_responder, OnCompletion(_))
         .WillOnce(testing::Invoke(
-            [&](std::optional<uint64_t> current_tokens) { run_loop.Quit(); }));
+            [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+              run_loop.Quit();
+            }));
 
     rewriter_remote->Rewrite("input string 2", "test context 2",
                              mock_responder.BindNewPipeAndPassRemote());
@@ -919,6 +924,7 @@ TEST_F(AIRewriterTest, RewriterDisconnected) {
 
   AITestUtils::MockModelStreamingResponder mock_responder;
   base::RunLoop run_loop_for_response;
+
   EXPECT_CALL(mock_responder, OnError(_))
       .WillOnce(testing::Invoke([&](blink::mojom::ModelStreamingResponseStatus
                                         status) {

@@ -68,9 +68,9 @@ TEST(CreateModelExecutionResponder, Simple) {
       AIMetrics::AISessionType::kLanguageModel,
       base::BindOnce(
           [](uint64_t expected_tokens, base::RunLoop* runloop,
-             std::optional<uint64_t> current_tokens) {
-            EXPECT_TRUE(current_tokens.has_value());
-            EXPECT_EQ(current_tokens.value(), expected_tokens);
+             mojom::blink::ModelExecutionContextInfoPtr context_info) {
+            EXPECT_TRUE(context_info);
+            EXPECT_EQ(context_info->current_tokens, expected_tokens);
             runloop->Quit();
           },
           kTestTokenNumber, &callback_runloop));
@@ -80,7 +80,8 @@ TEST(CreateModelExecutionResponder, Simple) {
       std::move(pending_remote));
   responder.set_disconnect_handler(runloop.QuitClosure());
   responder->OnStreaming("result");
-  responder->OnCompletion(kTestTokenNumber);
+  responder->OnCompletion(mojom::blink::ModelExecutionContextInfo::New(
+      kTestTokenNumber, /*did_overflow=*/false));
   // Check that the promise will be resolved with the "result" string.
   ScriptPromiseTester tester(scope.GetScriptState(), promise);
   tester.WaitUntilSettled();
@@ -183,7 +184,8 @@ TEST(CreateModelExecutionResponder, AbortAfterResponse) {
   base::RunLoop runloop;
   responder.set_disconnect_handler(runloop.QuitClosure());
   responder->OnStreaming("result");
-  responder->OnCompletion(/*current_tokens=*/1u);
+  responder->OnCompletion(mojom::blink::ModelExecutionContextInfo::New(
+      /*current_tokens=*/1u, /*did_overflow=*/false));
 
   controller->abort(scope.GetScriptState());
 
@@ -216,7 +218,8 @@ TEST(CreateModelExecutionStreamingResponder, Simple) {
   base::RunLoop runloop;
   responder.set_disconnect_handler(runloop.QuitClosure());
   responder->OnStreaming("result");
-  responder->OnCompletion(/*current_tokens=*/1u);
+  responder->OnCompletion(mojom::blink::ModelExecutionContextInfo::New(
+      /*current_tokens=*/1u, /*did_overflow=*/false));
 
   // Check that we can read the stream.
   auto* reader =
@@ -321,7 +324,8 @@ TEST(CreateModelExecutionStreamingResponder, AbortAfterResponse) {
   base::RunLoop runloop;
   responder.set_disconnect_handler(runloop.QuitClosure());
   responder->OnStreaming("result");
-  responder->OnCompletion(/*current_tokens=*/1u);
+  responder->OnCompletion(
+      mojom::blink::ModelExecutionContextInfo::New(1u, /*did_overflow=*/false));
 
   // Check that the AbortError is passed to the stream.
   auto* reader =

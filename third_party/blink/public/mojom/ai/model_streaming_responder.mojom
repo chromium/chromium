@@ -45,6 +45,14 @@ enum ModelStreamingResponseStatus {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AIModelStreamingResponseStatus)
 
+// The struct stores the information about the context for the session.
+struct ModelExecutionContextInfo {
+  // The latest number of existing tokens.
+  uint64 current_tokens;
+  // Whether the context overflow happened in this round of model execution.
+  bool did_overflow;
+};
+
 // The responder provides methods for the session to return the execution
 // response in a streaming manner.
 interface ModelStreamingResponder {
@@ -53,9 +61,10 @@ interface ModelStreamingResponder {
   // Called when there is a new chunk of data available for streaming.
   // The data will be stored in `text`.
   OnStreaming(string text);
-  // Called when the model execution completes. It optionally returns the
-  // current number of tokens.
+  // Called when the model execution completes. The optional `context_info`
+  // contain information about the session like the current number of tokens
+  // and if the context overflows.
   // It will only be set when necessary, for example, in the `AIAssistant`
   // interface as it maintains the context of the past model execution.
-  OnCompletion(uint64? current_tokens);
+  OnCompletion(ModelExecutionContextInfo? context_info);
 };

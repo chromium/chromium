@@ -25,6 +25,10 @@ namespace content {
 // will be set using the default value.
 class EchoAIManagerImpl : public blink::mojom::AIManager {
  public:
+  // The context size for EchoAIManagerImpl is intentionally set to a small
+  // value so we can easily simulate the context overflow scenario.
+  static constexpr int kMaxContextSizeInTokens = 1000;
+
   EchoAIManagerImpl(const EchoAIManagerImpl&) = delete;
   EchoAIManagerImpl& operator=(const EchoAIManagerImpl&) = delete;
 

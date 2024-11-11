@@ -154,6 +154,7 @@ class AIAssistantTest : public AITestUtils::AITestBase {
         kExpectedFormattedTestPrompt + kTestResponse + "\n";
     std::string expected_prompt = kExpectedFormattedTestPrompt;
     bool use_prompt_api_proto = false;
+    bool should_overflow_context = false;
   };
 
   void SetUp() override {
@@ -219,6 +220,18 @@ class AIAssistantTest : public AITestUtils::AITestBase {
 
           SetUpMockSession(*session, options.use_prompt_api_proto);
 
+          ON_CALL(*session, GetContextSizeInTokens(_, _))
+              .WillByDefault(
+                  [&](const google::protobuf::MessageLite& request_metadata,
+                      optimization_guide::
+                          OptimizationGuideModelSizeInTokenCallback callback) {
+                    std::move(callback).Run(
+                        options.should_overflow_context
+                            ? AITestUtils::GetFakeTokenLimits()
+                                      .max_context_tokens +
+                                  1
+                            : 1);
+                  });
           ON_CALL(*session, AddContext(_))
               .WillByDefault(
                   [&](const google::protobuf::MessageLite& request_metadata) {
@@ -311,7 +324,8 @@ class AIAssistantTest : public AITestUtils::AITestBase {
 
     AITestUtils::MockModelStreamingResponder mock_responder;
 
-    TestPromptCall(mock_session, options.prompt_input);
+    TestPromptCall(mock_session, options.prompt_input,
+                   options.should_overflow_context);
 
     // Test session cloning.
     mojo::Remote<blink::mojom::AIAssistant> mock_cloned_session;
@@ -330,7 +344,8 @@ class AIAssistantTest : public AITestUtils::AITestBase {
     mock_session->Fork(mock_clone_assistant_client.BindNewPipeAndPassRemote());
     clone_run_loop.Run();
 
-    TestPromptCall(mock_cloned_session, options.prompt_input);
+    TestPromptCall(mock_cloned_session, options.prompt_input,
+                   /*should_overflow_context=*/false);
   }
 
  private:
@@ -383,7 +398,8 @@ class AIAssistantTest : public AITestUtils::AITestBase {
   }
 
   void TestPromptCall(mojo::Remote<blink::mojom::AIAssistant>& mock_session,
-                      std::string& prompt) {
+                      std::string& prompt,
+                      bool should_overflow_context) {
     AITestUtils::MockModelStreamingResponder mock_responder;
 
     base::RunLoop responder_run_loop;
@@ -393,9 +409,10 @@ class AIAssistantTest : public AITestUtils::AITestBase {
         }));
 
     EXPECT_CALL(mock_responder, OnCompletion(_))
-        .WillOnce(testing::Invoke([&](std::optional<uint64_t> current_tokens) {
-          responder_run_loop.Quit();
-        }));
+        .WillOnce(testing::Invoke(
+            [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+              responder_run_loop.Quit();
+            }));
 
     mock_session->Prompt(prompt, mock_responder.BindNewPipeAndPassRemote());
     responder_run_loop.Run();
@@ -485,6 +502,12 @@ TEST_F(AIAssistantTest, PromptSessionWithPromptApiRequests) {
       .expected_prompt = "U: Test prompt\nM: ",
       .use_prompt_api_proto = true,
   });
+}
+
+TEST_F(AIAssistantTest, PromptSessionWithContextOverflow) {
+  RunPromptTest({.prompt_input = kTestPrompt,
+                 .expected_prompt = kExpectedFormattedTestPrompt,
+                 .should_overflow_context = true});
 }
 
 // Tests `AIAssistant::Context` creation without initial prompts.

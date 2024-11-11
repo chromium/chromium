@@ -115,7 +115,7 @@ void EchoAIManagerImpl::ReturnAIAssistantCreationResult(
   client_remote->OnResult(
       std::move(assistant),
       blink::mojom::AIAssistantInfo::New(
-          optimization_guide::features::GetOnDeviceModelMaxTokensForContext(),
+          kMaxContextSizeInTokens,
           blink::mojom::AIAssistantSamplingParams::New(
               optimization_guide::features::GetOnDeviceModelDefaultTopK(),
               optimization_guide::features::

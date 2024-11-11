@@ -10,6 +10,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_clone_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_options.h"
+#include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/ai/ai_language_model_factory.h"
@@ -18,7 +20,7 @@
 namespace blink {
 
 // The class that represents an `AILanguageModel` object.
-class AILanguageModel final : public ScriptWrappable,
+class AILanguageModel final : public EventTarget,
                               public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -31,6 +33,12 @@ class AILanguageModel final : public ScriptWrappable,
   ~AILanguageModel() override = default;
 
   void Trace(Visitor* visitor) const override;
+
+  // EventTarget implementation
+  const AtomicString& InterfaceName() const override;
+  ExecutionContext* GetExecutionContext() const override;
+
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(contextoverflow, kContextoverflow)
 
   // ai_language_model.idl implementation.
   ScriptPromise<IDLString> prompt(ScriptState* script_state,
@@ -71,7 +79,9 @@ class AILanguageModel final : public ScriptWrappable,
   uint64_t GetCurrentTokens();
 
  private:
-  void OnResponseComplete(std::optional<uint64_t> current_tokens);
+  void OnResponseComplete(
+      mojom::blink::ModelExecutionContextInfoPtr context_info);
+  void OnContextOverflow();
 
   uint64_t current_tokens_;
   uint64_t max_tokens_ = 0;

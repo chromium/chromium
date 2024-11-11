@@ -8,12 +8,15 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom-blink.h"
+#include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/modules/ai/ai_language_model_factory.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_mojo_client.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
+#include "third_party/blink/renderer/modules/event_target_modules_names.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -160,9 +163,17 @@ AILanguageModel::AILanguageModel(
 }
 
 void AILanguageModel::Trace(Visitor* visitor) const {
-  ScriptWrappable::Trace(visitor);
+  EventTarget::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(language_model_remote_);
+}
+
+const AtomicString& AILanguageModel::InterfaceName() const {
+  return event_target_names::kAILanguageModel;
+}
+
+ExecutionContext* AILanguageModel::GetExecutionContext() const {
+  return ExecutionContextClient::GetExecutionContext();
 }
 
 ScriptPromise<IDLString> AILanguageModel::prompt(
@@ -337,9 +348,12 @@ void AILanguageModel::destroy(ScriptState* script_state,
 }
 
 void AILanguageModel::OnResponseComplete(
-    std::optional<uint64_t> current_tokens) {
-  if (current_tokens.has_value()) {
-    current_tokens_ = current_tokens.value();
+    mojom::blink::ModelExecutionContextInfoPtr context_info) {
+  if (context_info) {
+    current_tokens_ = context_info->current_tokens;
+    if (context_info->did_overflow) {
+      OnContextOverflow();
+    }
   }
 }
 
@@ -364,6 +378,10 @@ scoped_refptr<base::SequencedTaskRunner> AILanguageModel::GetTaskRunner() {
 
 uint64_t AILanguageModel::GetCurrentTokens() {
   return current_tokens_;
+}
+
+void AILanguageModel::OnContextOverflow() {
+  DispatchEvent(*Event::Create(event_type_names::kContextoverflow));
 }
 
 }  // namespace blink

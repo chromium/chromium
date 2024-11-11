@@ -31,9 +31,10 @@ interface AILanguageDetectorFactory
     method capabilities
     method constructor
     method create
-interface AILanguageModel
+interface AILanguageModel : EventTarget
     attribute @@toStringTag
     getter maxTokens
+    getter oncontextoverflow
     getter temperature
     getter tokensLeft
     getter tokensSoFar
@@ -44,6 +45,7 @@ interface AILanguageModel
     method destroy
     method prompt
     method promptStreaming
+    setter oncontextoverflow
 interface AILanguageModelCapabilities
     attribute @@toStringTag
     getter available

@@ -40,7 +40,8 @@ class Responder final : public GarbageCollected<Responder>,
             AbortSignal* signal,
             ScriptPromiseResolver<IDLString>* resolver,
             AIMetrics::AISessionType session_type,
-            base::OnceCallback<void(std::optional<uint64_t>)> complete_callback)
+            base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
+                complete_callback)
       : script_state_(script_state),
         resolver_(resolver),
         receiver_(this, ExecutionContext::From(script_state)),
@@ -76,7 +77,6 @@ class Responder final : public GarbageCollected<Responder>,
   }
 
   // `mojom::blink::ModelStreamingResponder` implementation.
-  // `mojom::blink::ModelStreamingResponder` implementation.
   void OnStreaming(const String& text) override {
     RecordResponseStatusMetrics(
         mojom::blink::ModelStreamingResponseStatus::kOngoing);
@@ -85,14 +85,15 @@ class Responder final : public GarbageCollected<Responder>,
     response_ = text;
   }
 
-  void OnCompletion(std::optional<uint64_t> tokens) override {
+  void OnCompletion(
+      mojom::blink::ModelExecutionContextInfoPtr context_info) override {
     RecordResponseStatusMetrics(
         mojom::blink::ModelStreamingResponseStatus::kComplete);
     response_callback_count_++;
 
     resolver_->Resolve(response_);
-    if (complete_callback_) {
-      std::move(complete_callback_).Run(std::move(tokens));
+    if (context_info && complete_callback_) {
+      std::move(complete_callback_).Run(std::move(context_info));
     }
     RecordResponseMetrics();
     Cleanup();
@@ -155,7 +156,8 @@ class Responder final : public GarbageCollected<Responder>,
   const AIMetrics::AISessionType session_type_;
   // The callback will be invoked once when the responder receive the first
   // `kComplete`.
-  base::OnceCallback<void(std::optional<uint64_t> current_tokens)>
+  base::OnceCallback<void(
+      mojom::blink::ModelExecutionContextInfoPtr context_info)>
       complete_callback_;
 };
 
@@ -170,7 +172,8 @@ class StreamingResponder final
       ScriptState* script_state,
       AbortSignal* signal,
       AIMetrics::AISessionType session_type,
-      base::OnceCallback<void(std::optional<uint64_t>)> complete_callback)
+      base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
+          complete_callback)
       : UnderlyingSourceBase(script_state),
         script_state_(script_state),
         receiver_(this, ExecutionContext::From(script_state)),
@@ -222,7 +225,9 @@ class StreamingResponder final
   }
 
   // `blink::mojom::blink::ModelStreamingResponder` implementation.
-  void OnStreaming(const String& text) override {
+  void OnStreaming(
+
+      const String& text) override {
     RecordResponseStatusMetrics(
         mojom::blink::ModelStreamingResponseStatus::kOngoing);
     // Update the response info and enqueue the latest response.
@@ -232,13 +237,14 @@ class StreamingResponder final
     Controller()->Enqueue(V8String(script_state_->GetIsolate(), text));
   }
 
-  void OnCompletion(std::optional<uint64_t> tokens) override {
+  void OnCompletion(
+      mojom::blink::ModelExecutionContextInfoPtr context_info) override {
     RecordResponseStatusMetrics(
         mojom::blink::ModelStreamingResponseStatus::kComplete);
     response_callback_count_++;
     Controller()->Close();
-    if (complete_callback_) {
-      std::move(complete_callback_).Run(std::move(tokens));
+    if (context_info && complete_callback_) {
+      std::move(complete_callback_).Run(std::move(context_info));
     }
     RecordResponseMetrics();
     Cleanup();
@@ -299,7 +305,7 @@ class StreamingResponder final
   const AIMetrics::AISessionType session_type_;
   // The callback will be invoked once when the responder receive the first
   // `kComplete`.
-  base::OnceCallback<void(std::optional<uint64_t> current_tokens)>
+  base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
       complete_callback_;
 };
 
@@ -312,7 +318,7 @@ CreateModelExecutionResponder(
     ScriptPromiseResolver<IDLString>* resolver,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     AIMetrics::AISessionType session_type,
-    base::OnceCallback<void(std::optional<uint64_t> current_tokens)>
+    base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
         complete_callback) {
   Responder* responder = MakeGarbageCollected<Responder>(
       script_state, signal, resolver, session_type,
@@ -327,7 +333,7 @@ CreateModelExecutionStreamingResponder(
     AbortSignal* signal,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     AIMetrics::AISessionType session_type,
-    base::OnceCallback<void(std::optional<uint64_t> current_tokens)>
+    base::OnceCallback<void(mojom::blink::ModelExecutionContextInfoPtr)>
         complete_callback) {
   StreamingResponder* streaming_responder =
       MakeGarbageCollected<StreamingResponder>(

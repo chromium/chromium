@@ -381,7 +381,9 @@ TEST_F(AIWriterTest, SimpleWrite) {
 
   EXPECT_CALL(mock_responder, OnCompletion(_))
       .WillOnce(testing::Invoke(
-          [&](std::optional<uint64_t> current_tokens) { run_loop.Quit(); }));
+          [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+            run_loop.Quit();
+          }));
 
   writer_remote->Write(kInputString, kContextString,
                        mock_responder.BindNewPipeAndPassRemote());
@@ -521,7 +523,9 @@ TEST_F(AIWriterTest, WriteMultipleResponse) {
 
   EXPECT_CALL(mock_responder, OnCompletion(_))
       .WillOnce(testing::Invoke(
-          [&](std::optional<uint64_t> current_tokens) { run_loop.Quit(); }));
+          [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+            run_loop.Quit();
+          }));
 
   writer_remote->Write(kInputString, kContextString,
                        mock_responder.BindNewPipeAndPassRemote());
@@ -602,7 +606,9 @@ TEST_F(AIWriterTest, MultipleWrite) {
 
     EXPECT_CALL(mock_responder, OnCompletion(_))
         .WillOnce(testing::Invoke(
-            [&](std::optional<uint64_t> current_tokens) { run_loop.Quit(); }));
+            [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+              run_loop.Quit();
+            }));
 
     writer_remote->Write(kInputString, kContextString,
                          mock_responder.BindNewPipeAndPassRemote());
@@ -618,7 +624,9 @@ TEST_F(AIWriterTest, MultipleWrite) {
 
     EXPECT_CALL(mock_responder, OnCompletion(_))
         .WillOnce(testing::Invoke(
-            [&](std::optional<uint64_t> current_tokens) { run_loop.Quit(); }));
+            [&](blink::mojom::ModelExecutionContextInfoPtr context_info) {
+              run_loop.Quit();
+            }));
 
     writer_remote->Write("input string 2", "test context 2",
                          mock_responder.BindNewPipeAndPassRemote());

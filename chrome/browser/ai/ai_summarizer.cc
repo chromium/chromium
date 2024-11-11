@@ -93,7 +93,7 @@ void AISummarizer::ModelExecutionCallback(
     responder->OnStreaming(response->value());
   }
   if (result.response->is_complete) {
-    responder->OnCompletion(/*current_tokens=*/std::nullopt);
+    responder->OnCompletion(/*context_info=*/nullptr);
   }
 }
 
