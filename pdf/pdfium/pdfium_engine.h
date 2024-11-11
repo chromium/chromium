@@ -419,6 +419,9 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   ink_modeled_shape_map_for_testing() const {
     return ink_modeled_shape_map_;
   }
+
+  // Regenerate contents for all pages that need it due to Ink strokes.
+  void RegenerateContents();
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   // DocumentLoader::Client:

@@ -818,12 +818,7 @@ void PDFiumEngine::AppendPage(PDFiumEngine* engine, int index) {
 
 std::vector<uint8_t> PDFiumEngine::GetSaveData() {
 #if BUILDFLAG(ENABLE_PDF_INK2)
-  for (int page_index : ink_stroked_pages_needing_regeneration_) {
-    FPDF_PAGE page = GetPage(page_index)->GetPage();
-    bool result = FPDFPage_GenerateContent(page);
-    CHECK(result);
-  }
-  ink_stroked_pages_needing_regeneration_.clear();
+  RegenerateContents();
 #endif
 
   PDFiumMemBufferFileWrite output_file_write;
@@ -1073,6 +1068,9 @@ bool PDFiumEngine::HandleInputEvent(const blink::WebInputEvent& event) {
 
 void PDFiumEngine::PrintBegin() {
   FORM_DoDocumentAAction(form(), FPDFDOC_AACTION_WP);
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  RegenerateContents();
+#endif
 }
 
 std::vector<uint8_t> PDFiumEngine::PrintPages(
@@ -4454,6 +4452,15 @@ void PDFiumEngine::UpdateShapeActive(int page_index,
   bool result = FPDFPageObj_SetIsActive(it->second, active);
   CHECK(result);
   ink_stroked_pages_needing_regeneration_.insert(page_index);
+}
+
+void PDFiumEngine::RegenerateContents() {
+  for (int page_index : ink_stroked_pages_needing_regeneration_) {
+    FPDF_PAGE page = GetPage(page_index)->GetPage();
+    bool result = FPDFPage_GenerateContent(page);
+    CHECK(result);
+  }
+  ink_stroked_pages_needing_regeneration_.clear();
 }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
