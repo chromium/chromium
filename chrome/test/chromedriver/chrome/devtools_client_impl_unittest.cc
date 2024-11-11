@@ -1389,6 +1389,15 @@ TEST(ParseInspectorError, InspectedTargetNavigatedOrClosed) {
             status.message());
 }
 
+TEST(ParseInspectorError, NotAttachedToActivePage) {
+  const std::string error(
+      "{\"code\":-32000,\"message\":\"Not attached to an active page\"}");
+  Status status = internal::ParseInspectorError(error);
+  ASSERT_EQ(kAbortedByNavigation, status.code());
+  ASSERT_EQ("aborted by navigation: Not attached to an active page",
+            status.message());
+}
+
 TEST_F(DevToolsClientImplTest, HandleEventsUntil) {
   MockListener listener;
   SocketHolder<StubSyncWebSocket> socket_holder;
