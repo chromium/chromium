@@ -3,9 +3,13 @@
 // found in the LICENSE file.
 
 // clang-format off
+
+import '/strings.m.js';
+
 import type { PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
 // clang-format on
@@ -19,6 +23,8 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
         wasScrolledToBottom: boolean = true;
 
         private didStartWithScrollbar_: boolean = false;
+        private shouldShowV2_: boolean = loadTimeData.getBoolean(
+            'isPrivacySandboxAdsApiUxEnhancementsEnabled');
         private wasScrolledToBottomResolver_: PromiseResolver<void>;
         private moreButtonInitialized_: PromiseResolver<void>;
 
@@ -156,8 +162,13 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
             this.wasScrolledToBottom = false;
 
             const buttonRowHeight = 64;
+            let lastTextElementId = '#lastTextElement';
+            if (this.shouldShowV2_ &&
+                scrollable.querySelector('#lastTextElementV2')) {
+              lastTextElementId = '#lastTextElementV2';
+            }
             const lastTextElement =
-                scrollable.querySelector('#lastTextElement')!;
+                scrollable.querySelector(lastTextElementId)!;
 
             const options = {
               root: scrollable,
