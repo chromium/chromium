@@ -56,6 +56,14 @@ TtsExtension.prototype = {
   currentUtterance_: null,
 
   /**
+   * The HTML5 audio element we use for playing the sound served by the
+   * speech server.
+   * @type {HTMLAudioElement}
+   * @private
+   */
+  audioElement_: null,
+
+  /**
    * A mapping from voice name to language and gender, derived from the
    * manifest file.  This is used in case the speech synthesis request
    * specifies a voice name but doesn't specify a language code or gender.
@@ -70,7 +78,7 @@ TtsExtension.prototype = {
    */
   init() {
     // Get voices from manifest.
-    const voices = chrome.runtime.getManifest().tts_engine.voices;
+    const voices = chrome.app.getDetails().tts_engine.voices;
     for (let i = 0; i < voices.length; i++) {
       this.voiceNameToLangAndGender_[voices[i].voice_name] = {
         lang: voices[i].lang,
@@ -78,30 +86,19 @@ TtsExtension.prototype = {
       };
     }
 
-    chrome.offscreen.createDocument({
-      url: chrome.runtime.getURL('audio.html'),
-      reasons: ['AUDIO_PLAYBACK'],
-      justification: 'Use the audio element',
-    });
+    // Initialize the audio element and event listeners on it.
+    this.audioElement_ = document.createElement('audio');
+    document.body.appendChild(this.audioElement_);
+    this.audioElement_.addEventListener(
+        'ended', this.onStop_.bind(this), false);
+    this.audioElement_.addEventListener(
+        'canplaythrough', this.onStart_.bind(this), false);
 
     // Install event listeners for the ttsEngine API.
     chrome.ttsEngine.onSpeak.addListener(this.onSpeak_.bind(this));
     chrome.ttsEngine.onStop.addListener(this.onStop_.bind(this));
     chrome.ttsEngine.onPause.addListener(this.onPause_.bind(this));
     chrome.ttsEngine.onResume.addListener(this.onResume_.bind(this));
-
-    chrome.runtime.onMessage.addListener(message => {
-      switch (message.command) {
-        case 'onStart':
-          if (this.currentUtterance_) {
-            this.currentUtterance_.callback({'type': 'start', 'charIndex': 0});
-          }
-          break;
-        case 'onStop':
-          this.onStop_();
-          break;
-      }
-    });
   },
 
   /**
@@ -139,11 +136,6 @@ TtsExtension.prototype = {
         callback: callback,
       };
 
-      chrome.runtime.sendMessage({
-        command: 'setCurrentUtterance',
-        currentUtterance: this.currentUtterance_,
-      });
-
       let lang = options.lang;
       let gender = options.gender;
       if (options.voiceName) {
@@ -163,34 +155,35 @@ TtsExtension.prototype = {
       const voiceName = this.LANG_AND_GENDER_TO_VOICE_NAME_[key];
 
       let url = this.SPEECH_SERVER_URL_;
-      chrome.systemPrivate.getApiKey(key => {
-        url += '&key=' + key;
-        url += '&text=' + encodeURIComponent(utterance);
-        url += '&lang=' + lang.toLowerCase();
+      chrome.systemPrivate.getApiKey(
+          (function(key) {
+            url += '&key=' + key;
+            url += '&text=' + encodeURIComponent(utterance);
+            url += '&lang=' + lang.toLowerCase();
 
-        if (voiceName) {
-          url += '&name=' + voiceName;
-        }
+            if (voiceName) {
+              url += '&name=' + voiceName;
+            }
 
-        if (options.rate) {
-          // Input rate is between 0.1 and 10.0 with a default of 1.0.
-          // Output speed is between 0.0 and 1.0 with a default of 0.5.
-          url += '&speed=' + (options.rate / 2.0);
-        }
+            if (options.rate) {
+              // Input rate is between 0.1 and 10.0 with a default of 1.0.
+              // Output speed is between 0.0 and 1.0 with a default of 0.5.
+              url += '&speed=' + (options.rate / 2.0);
+            }
 
-        if (options.pitch) {
-          // Input pitch is between 0.0 and 2.0 with a default of 1.0.
-          // Output pitch is between 0.0 and 1.0 with a default of 0.5.
-          url += '&pitch=' + (options.pitch / 2.0);
-        }
+            if (options.pitch) {
+              // Input pitch is between 0.0 and 2.0 with a default of 1.0.
+              // Output pitch is between 0.0 and 1.0 with a default of 0.5.
+              url += '&pitch=' + (options.pitch / 2.0);
+            }
 
-        // This begins loading the audio but does not play it.
-        // When enough of the audio has loaded to begin playback,
-        // the 'canplaythrough' handler will call this.onStart_,
-        // which sends a start event to the ttsEngine callback and
-        // then begins playing audio.
-        chrome.runtime.sendMessage({command: 'setUrl', url});
-      });
+            // This begins loading the audio but does not play it.
+            // When enough of the audio has loaded to begin playback,
+            // the 'canplaythrough' handler will call this.onStart_,
+            // which sends a start event to the ttsEngine callback and
+            // then begins playing audio.
+            this.audioElement_.src = url;
+          }).bind(this));
     } catch (err) {
       console.error(String(err));
       callback({'type': 'error', 'errorMessage': String(err)});
@@ -211,7 +204,7 @@ TtsExtension.prototype = {
    */
   onStop_() {
     if (this.currentUtterance_) {
-      chrome.runtime.sendMessage({command: 'pause'});
+      this.audioElement_.pause();
       this.currentUtterance_.callback({
         'type': 'end',
         'charIndex': this.currentUtterance_.utterance.length,
@@ -221,13 +214,31 @@ TtsExtension.prototype = {
   },
 
   /**
+   * Handler for the canplaythrough event on the audio element.
+   * Called when the audio element has buffered enough audio to begin
+   * playback. Send the 'start' event to the ttsEngine callback and
+   * then begin playing the audio element.
+   * @private
+   */
+  onStart_() {
+    if (this.currentUtterance_) {
+      if (this.currentUtterance_.options.volume !== undefined) {
+        // Both APIs use the same range for volume, between 0.0 and 1.0.
+        this.audioElement_.volume = this.currentUtterance_.options.volume;
+      }
+      this.audioElement_.play();
+      this.currentUtterance_.callback({'type': 'start', 'charIndex': 0});
+    }
+  },
+
+  /**
    * Handler for the chrome.ttsEngine.onPause interface.
    * Pauses audio if we're in the middle of an utterance.
    * @private
    */
   onPause_() {
     if (this.currentUtterance_) {
-      chrome.runtime.sendMessage({command: 'pause'});
+      this.audioElement_.pause();
     }
   },
 
@@ -238,7 +249,7 @@ TtsExtension.prototype = {
    */
   onResume_() {
     if (this.currentUtterance_) {
-      chrome.runtime.sendMessage({command: 'play'});
+      this.audioElement_.play();
     }
   },
 
