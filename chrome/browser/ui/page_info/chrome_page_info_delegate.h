@@ -95,6 +95,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
 #endif
 
   bool IsHttpsFirstModeEnabled() override;
+  bool IsIncognitoProfile() override;
 
  private:
   Profile* GetProfile() const;

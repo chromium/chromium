@@ -15,6 +15,7 @@
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/page_info/page_info.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -59,7 +60,7 @@ PageInfoCookiesContentView::CookiesNewInfo DefaultCookieInfoForTests(
   cookie_info.protections_on = true;
   cookie_info.enforcement = CookieControlsEnforcement::kNoEnforcement;
   cookie_info.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
-  cookie_info.is_otr = false;
+  cookie_info.is_incognito = false;
   cookie_info.features = {{FeatureType::kThirdPartyCookies,
                            CookieControlsEnforcement::kNoEnforcement,
                            Status::kAllowed}};
@@ -606,7 +607,7 @@ TEST_F(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
   PageInfoCookiesContentView::CookiesNewInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.blocking_status = CookieBlocking3pcdStatus::kAll;
-  cookie_info.is_otr = true;
+  cookie_info.is_incognito = true;
   cookie_info.features = GetTrackingProtectionFeatures(cookie_info);
   content_view()->SetCookieInfo(cookie_info);
 
@@ -631,7 +632,7 @@ TEST_F(PageInfoCookiesContentView3pcdTitleAndDescriptionTest,
       DefaultCookieInfoForTests();
   cookie_info.protections_on = false;
   cookie_info.blocking_status = CookieBlocking3pcdStatus::kAll;
-  cookie_info.is_otr = true;
+  cookie_info.is_incognito = true;
   cookie_info.features = GetTrackingProtectionFeatures(cookie_info);
   content_view()->SetCookieInfo(cookie_info);
 
@@ -708,6 +709,37 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(CookieBlocking3pcdStatus::kLimited,
                                          CookieBlocking3pcdStatus::kAll));
 
+class PageInfoCookiesContentViewAlwaysBlock3pcsIncognito
+    : public PageInfoCookiesContentViewBaseTestClass {
+  std::vector<base::test::FeatureRefAndParams> EnabledFeatures() override {
+    return {{privacy_sandbox::kAlwaysBlock3pcsIncognito, {}}};
+  }
+};
+
+TEST_F(PageInfoCookiesContentViewAlwaysBlock3pcsIncognito,
+       DisplaysIncognitoDescriptionWhenInIncognito) {
+  PageInfoCookiesContentView::CookiesNewInfo cookie_info =
+      DefaultCookieInfoForTests();
+  cookie_info.is_incognito = true;
+  content_view()->SetCookieInfo(cookie_info);
+
+  EXPECT_EQ(
+      third_party_cookies_description_label()->GetText(),
+      l10n_util::GetStringFUTF16(
+          IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION,
+          l10n_util::GetStringUTF16(
+              IDS_PAGE_INFO_TRACKING_PROTECTION_SETTINGS_LINK)));
+}
+
+TEST_F(PageInfoCookiesContentViewAlwaysBlock3pcsIncognito,
+       DisplaysStandardDescriptionWhenInRegularMode) {
+  EXPECT_EQ(
+      third_party_cookies_description_label()->GetText(),
+      l10n_util::GetStringFUTF16(
+          IDS_PAGE_INFO_COOKIES_DESCRIPTION,
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK)));
+}
+
 class PageInfoCookiesContentView3pcdCookieToggleTest
     : public PageInfoCookiesContentViewBaseTestClass,
       public testing::WithParamInterface<CookieBlocking3pcdStatus> {};
@@ -757,7 +789,7 @@ TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
   PageInfoCookiesContentView::CookiesNewInfo cookie_info =
       DefaultCookieInfoForTests();
   cookie_info.blocking_status = CookieBlocking3pcdStatus::kAll;
-  cookie_info.is_otr = true;
+  cookie_info.is_incognito = true;
   cookie_info.features = GetTrackingProtectionFeatures(cookie_info);
   content_view()->SetCookieInfo(cookie_info);
 
@@ -779,7 +811,7 @@ TEST_F(PageInfoCookiesContentView3pcdCookieToggleTest,
       DefaultCookieInfoForTests();
   cookie_info.protections_on = false;
   cookie_info.blocking_status = CookieBlocking3pcdStatus::kAll;
-  cookie_info.is_otr = true;
+  cookie_info.is_incognito = true;
   cookie_info.features = GetTrackingProtectionFeatures(cookie_info);
   content_view()->SetCookieInfo(cookie_info);
 

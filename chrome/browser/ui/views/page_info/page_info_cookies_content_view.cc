@@ -183,7 +183,7 @@ void PageInfoCookiesContentView::CookiesSettingsLinkClicked(
 void PageInfoCookiesContentView::SetCookieInfo(
     const CookiesNewInfo& cookie_info) {
   SetDescriptionLabel(cookie_info.blocking_status, cookie_info.enforcement,
-                      cookie_info.is_otr);
+                      cookie_info.is_incognito);
 
   for (const auto& feature : cookie_info.features) {
     switch (feature.feature_type) {
@@ -263,26 +263,27 @@ void PageInfoCookiesContentView::SetThirdPartyCookiesToggle(
 void PageInfoCookiesContentView::SetDescriptionLabel(
     CookieBlocking3pcdStatus blocking_status,
     CookieControlsEnforcement enforcement,
-    bool is_otr) {
+    bool is_incognito) {
   // Text on cookies description label has an embedded link to cookies settings.
   std::u16string settings_text_for_link = l10n_util::GetStringUTF16(
-      blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd
-          ? IDS_PAGE_INFO_TRACKING_PROTECTION_SETTINGS_LINK
-          : IDS_PAGE_INFO_COOKIES_SETTINGS_LINK);
+      IDS_PAGE_INFO_TRACKING_PROTECTION_SETTINGS_LINK);
 
   size_t offset;
   int description;
-  if (blocking_status == CookieBlocking3pcdStatus::kNotIn3pcd) {
+  if (blocking_status == CookieBlocking3pcdStatus::kNotIn3pcd &&
+      !(base::FeatureList::IsEnabled(
+            privacy_sandbox::kAlwaysBlock3pcsIncognito) &&
+        is_incognito)) {
     description = IDS_PAGE_INFO_COOKIES_DESCRIPTION;
+    settings_text_for_link =
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK);
   } else if (enforcement == CookieControlsEnforcement::kEnforcedByTpcdGrant) {
     description = IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_GRANT_DESCRIPTION;
   } else if (blocking_status == CookieBlocking3pcdStatus::kLimited) {
     description = IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION;
   } else {
-    // Since prefs are set to default in Guest, we won't ever end up in this
-    // branch, so `is_otr` means incognito here.
     description =
-        is_otr
+        is_incognito
             ? IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION
             : IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION;
   }

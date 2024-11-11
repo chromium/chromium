@@ -444,6 +444,10 @@ bool ChromePageInfoDelegate::IsHttpsFirstModeEnabled() {
           https_first_mode_enabled_in_incognito);
 }
 
+bool ChromePageInfoDelegate::IsIncognitoProfile() {
+  return GetProfile()->IsIncognitoProfile();
+}
+
 void ChromePageInfoDelegate::SetSecurityStateForTests(
     security_state::SecurityLevel security_level,
     security_state::VisibleSecurityState visible_security_state) {

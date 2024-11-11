@@ -1515,7 +1515,7 @@ void PageInfo::PresentSiteDataInternal(base::OnceClosure done) {
   cookies_info.blocking_status = blocking_status_;
   cookies_info.features = features_;
   cookies_info.expiration = cookie_exception_expiration_;
-  cookies_info.is_otr = web_contents_->GetBrowserContext()->IsOffTheRecord();
+  cookies_info.is_incognito = delegate_->IsIncognitoProfile();
   ui_->SetCookieInfo(cookies_info);
 
   std::move(done).Run();

@@ -122,8 +122,8 @@ class PageInfoUI {
     // The expiration of the active third-party cookie exception.
     base::Time expiration;
 
-    // Whether the current profile is "off the record".
-    bool is_otr = false;
+    // Whether the current profile is incognito.
+    bool is_incognito = false;
   };
 
   // |ChosenObjectInfo| contains information about a single |chooser_object| of
