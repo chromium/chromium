@@ -68,7 +68,7 @@
   Oct
 </message>
 <message name="IDS_IOS_WHATS_NEW_OTHERBUYINGOPTIONS_TITLE" desc="OtherBuyingOptions Title displayed in What's New. [iOS only]">
-  Other buying options
+  Other Buying Options
 </message>
 <message name="IDS_IOS_WHATS_NEW_OTHERBUYINGOPTIONS_SUBTITLE" desc="OtherBuyingOptions Subtitle displayed in What's New. [iOS only]">
   Easily find more stores that offer the products you want to buy
@@ -80,7 +80,7 @@
   In the address bar, tap the price history icon to see price changes over time
 </message>
 <message name="IDS_IOS_WHATS_NEW_OTHERBUYINGOPTIONS_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of OtherBuyingOptions in What's New. [iOS only]">
-  Scroll to the bottom and tap Other buying options
+  Scroll to the bottom and tap Other Buying Options
 </message>
 <message name="IDS_IOS_WHATS_NEW_OTHERBUYINGOPTIONS_SCREENSHOT_TEXT_1" desc="Text in image displaying: See more buying options for the feature: OtherBuyingOptions in What's New. [iOS only]">
   See more buying options

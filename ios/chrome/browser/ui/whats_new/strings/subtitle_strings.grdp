@@ -2,6 +2,6 @@
 <grit-part>
   <!-- Subtitle specific strings -->
   <message name="IDS_IOS_WHATS_NEW_PRICE_INSIGHTS_SUBTITLE" desc="Subtitle in What's New for Price Insights release.">
-    Get shopping insights that help you track prices, see price history, and buy at the best time.
+    Get shopping insights that help you track prices, see price history, and buy at the best time
   </message>
 </grit-part>
