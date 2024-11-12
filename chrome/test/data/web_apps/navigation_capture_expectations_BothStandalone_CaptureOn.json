@@ -9762,7 +9762,7 @@
       },
       "Tab_ScopeA2A_Direct_ViaFormPost_LeftClick_WithOpener_TargetBlank": {
          "_params": "BothStandalone_CaptureOn_Tab_ScopeA2A_Direct_ViaFormPost_LeftClick_WithOpener_TargetBlank",
-         "disabled": true,
+        "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -9795,7 +9795,7 @@
       },
       "Tab_ScopeA2A_Direct_ViaFormPost_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "BothStandalone_CaptureOn_Tab_ScopeA2A_Direct_ViaFormPost_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+        "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -11720,7 +11720,7 @@
       },
       "Tab_ScopeA2B_Direct_ViaFormPost_LeftClick_WithOpener_TargetBlank": {
          "_params": "BothStandalone_CaptureOn_Tab_ScopeA2B_Direct_ViaFormPost_LeftClick_WithOpener_TargetBlank",
-         "disabled": true,
+        "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -11753,7 +11753,7 @@
       },
       "Tab_ScopeA2B_Direct_ViaFormPost_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "BothStandalone_CaptureOn_Tab_ScopeA2B_Direct_ViaFormPost_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+        "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -13706,7 +13706,7 @@
       },
       "Tab_ScopeA2X_Direct_ViaFormPost_LeftClick_WithOpener_TargetBlank": {
          "_params": "BothStandalone_CaptureOn_Tab_ScopeA2X_Direct_ViaFormPost_LeftClick_WithOpener_TargetBlank",
-         "disabled": true,
+        "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
@@ -13739,7 +13739,7 @@
       },
       "Tab_ScopeA2X_Direct_ViaFormPost_LeftClick_WithoutOpener_TargetBlank": {
          "_params": "BothStandalone_CaptureOn_Tab_ScopeA2X_Direct_ViaFormPost_LeftClick_WithoutOpener_TargetBlank",
-         "disabled": true,
+        "disabled": false,
          "expected_state": {
             "browsers": [ {
                "browser_type": "TYPE_NORMAL",
