@@ -4159,6 +4159,21 @@ const FeatureEntry::FeatureVariation kSensitiveContentVariations[] = {
     {"with password manager heuristics", kSensitiveContentUsePwmHeuristics,
      std::size(kSensitiveContentUsePwmHeuristics), nullptr},
 };
+
+const FeatureEntry::FeatureParam kAndroidHubEnableBookmarks[] = {
+    {"enable_bookmark_provider", "true"}};
+const FeatureEntry::FeatureParam kAndroidHubEnableHistory[] = {
+    {"enable_history_provider", "true"}};
+const FeatureEntry::FeatureParam kAndroidHubEnableAllExtraProviders[] = {
+    {"enable_bookmark_provider", "true"},
+    {"enable_history_provider", "true"}};
+const FeatureEntry::FeatureVariation kAndroidHubSearchVariations[] = {
+    {"with bookmarks", kAndroidHubEnableBookmarks,
+     std::size(kAndroidHubEnableBookmarks), nullptr},
+    {"with history", kAndroidHubEnableHistory,
+     std::size(kAndroidHubEnableHistory), nullptr},
+    {"with all extra providers", kAndroidHubEnableAllExtraProviders,
+     std::size(kAndroidHubEnableAllExtraProviders), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Feature variations for kSubframeProcessReuseThresholds.
@@ -10571,7 +10586,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"android-hub-search", flag_descriptions::kAndroidHubSearchName,
      flag_descriptions::kAndroidHubSearchDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kAndroidHubSearch)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kAndroidHubSearch,
+                                    kAndroidHubSearchVariations,
+                                    "AndroidHubSearch")},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

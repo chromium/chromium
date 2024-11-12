@@ -41,6 +41,7 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/base/page_transition_types.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_util.h"
@@ -110,7 +111,14 @@ void HistoryQuickProvider::DoAutocomplete() {
     for (const auto& history_match : matches) {
       // Set max_match_score to the score we'll assign this result.
       max_match_score = std::min(max_match_score, history_match.raw_score);
-      matches_.push_back(QuickMatchToACMatch(history_match, max_match_score));
+      auto match = QuickMatchToACMatch(history_match, max_match_score);
+      if (autocomplete_input_.current_page_classification() ==
+          PageClassification::
+              OmniboxEventProto_PageClassification_ANDROID_HUB) {
+        match.suggestion_group_id = omnibox::GROUP_MOBILE_HISTORY;
+      }
+
+      matches_.push_back(std::move(match));
       // Mark this max_match_score as being used.
       max_match_score--;
     }

@@ -479,6 +479,34 @@ public class TabSwitcherSearchTest {
         onView(withText("Bookmarks")).check(matches(isCompletelyDisplayed()));
     }
 
+    @Test
+    @MediumTest
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH + ":enable_history_provider/true")
+    public void testHistorySuggestions() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        mActivityTestRule.loadUrl(
+                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html"));
+        mActivityTestRule.loadUrl(
+                mActivityTestRule
+                        .getTestServer()
+                        .getURL("/chrome/test/data/android/navigate/one.html"));
+        enterTabSwitcher(cta);
+
+        SearchActivity searchActivity =
+                TabSwitcherSearchTestUtils.launchSearchActivityFromTabSwitcherAndWaitForLoad(cta);
+        assertEquals(ActivityState.STOPPED, ApplicationStatus.getStateForActivity(cta));
+        assertEquals(ActivityState.RESUMED, ApplicationStatus.getStateForActivity(searchActivity));
+
+        OmniboxTestUtils omniboxTestUtils = new OmniboxTestUtils(searchActivity);
+        omniboxTestUtils.requestFocus();
+        omniboxTestUtils.typeText("test.html", /* execute= */ false);
+        omniboxTestUtils.waitAnimationsComplete();
+
+        verifySuggestions(
+                Arrays.asList("/chrome/test/data/android/test.html"), /* includePrefix= */ true);
+        onView(withText("History")).check(matches(isDisplayed()));
+    }
+
     private void verifySuggestions(List<String> suggestionUrls, boolean includePrefix) {
         for (int i = 0; i < suggestionUrls.size(); i++) {
             String url = adjustUrl(suggestionUrls.get(i), includePrefix);

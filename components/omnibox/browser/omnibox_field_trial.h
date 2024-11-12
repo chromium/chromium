@@ -773,6 +773,17 @@ bool IsStarterPackIPHEnabled();
 
 // <- Site Search Starter Pack
 // ---------------------------------------------------------
+// Android Hub Search -->
+//
+// Controls different variations of android hub search including what
+// primitives are included.
+#if BUILDFLAG(IS_ANDROID)
+constexpr base::FeatureParam<bool> kAndroidHubSearchEnableBookmarkProvider{
+    &omnibox::kAndroidHubSearch, "enable_bookmark_provider", false};
+
+constexpr base::FeatureParam<bool> kAndroidHubSearchEnableHistoryProvider{
+    &omnibox::kAndroidHubSearch, "enable_history_provider", false};
+#endif
 
 // New params should be inserted above this comment. They should be ordered
 // consistently with `omnibox_features.h`. They should be formatted as:

@@ -399,6 +399,9 @@
   <message name="IDS_OMNIBOX_HUB_SEARCH_HEADER" desc="The header for the search typed suggestions section.">
     Search the web
   </message>
+  <message name="IDS_OMNIBOX_HUB_HISTORY_HEADER" desc="The header for the history suggestions section.">
+    History
+  </message>
 
 
 </grit-part>
