@@ -3011,7 +3011,6 @@ crbug.com/345868497 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 crbug.com/345585682 external/wpt/html/rendering/widgets/input-number-text-size.tentative.html [ Failure ]
 crbug.com/343886935 external/wpt/webrtc/RTCPeerConnection-addTcpIceCandidate.html [ Skip Timeout ]
 crbug.com/343515409 external/wpt/focus/focus-event-after-switching-iframes.sub.html [ Timeout ]
-crbug.com/343263984 external/wpt/css/css-masking/mask-image/mask-mode-luminance-with-mask-size.html [ Failure ]
 crbug.com/341151623 [ Win11-arm64 ] external/wpt/fetch/api/basic/request-headers.any.sharedworker.html [ Failure Timeout ]
 external/wpt/notifications/instance.https.window.html [ Timeout ]
 crbug.com/340167179 [ Win11-arm64 ] external/wpt/fetch/api/request/request-consume.any.serviceworker.html [ Failure Timeout ]
