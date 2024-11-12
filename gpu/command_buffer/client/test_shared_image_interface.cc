@@ -441,7 +441,8 @@ void TestSharedImageInterface::WaitSyncToken(const SyncToken& sync_token) {
 }
 
 void TestSharedImageInterface::Flush() {
-  // No need to flush in this implementation.
+  // No need to flush in this implementation. DoFlush() is for mock.
+  DoFlush();
 }
 
 scoped_refptr<gfx::NativePixmap> TestSharedImageInterface::GetNativePixmap(

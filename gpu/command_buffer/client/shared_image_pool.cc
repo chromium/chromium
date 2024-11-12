@@ -47,10 +47,13 @@ void ClientImage::SetReleaseSyncToken(SyncToken release_sync_token) {
 SharedImagePoolBase::SharedImagePoolBase(
     const ImageInfo& image_info,
     const scoped_refptr<SharedImageInterface> sii,
-    std::optional<uint8_t> max_pool_size)
+    std::optional<uint8_t> max_pool_size,
+    std::optional<base::TimeDelta> unused_resource_expiration_time)
     : image_info_(image_info),
       sii_(std::move(sii)),
-      max_pool_size_(std::move(max_pool_size)) {}
+      max_pool_size_(std::move(max_pool_size)),
+      unused_resource_expiration_time_(
+          std::move(unused_resource_expiration_time)) {}
 
 SharedImagePoolBase::~SharedImagePoolBase() {
   ClearInternal();
@@ -58,6 +61,10 @@ SharedImagePoolBase::~SharedImagePoolBase() {
 
 size_t SharedImagePoolBase::GetPoolSizeForTesting() const {
   return image_pool_.size();
+}
+
+bool SharedImagePoolBase::IsReclaimTimerRunningForTesting() const {
+  return unused_resources_reclaim_timer_.IsRunning();
 }
 
 scoped_refptr<ClientSharedImage>
@@ -106,20 +113,14 @@ void SharedImagePoolBase::ReleaseImageInternal(
   // will get destroyed automatically.
   if (!max_pool_size_.has_value() ||
       image_pool_.size() < max_pool_size_.value()) {
+    // Update the last used time.
+    image->last_used_time_ = base::TimeTicks::Now();
     image_pool_.push_back(std::move(image));
+    MaybePostUnusedResourcesReclaimTask();
   }
 }
 
 void SharedImagePoolBase::ClearInternal() {
-  // Explicitly clear the pool and delete all images.
-  for (auto& image : image_pool_) {
-    auto shared_image = image->GetSharedImage();
-    CHECK(shared_image);
-
-    // Note that |sync_token_| has to be waited upon before the image
-    // is re-used or deleted to ensure that previous user has finished using it.
-    shared_image->UpdateDestructionSyncToken(image->sync_token_);
-  }
   image_pool_.clear();
 }
 
@@ -130,6 +131,45 @@ void SharedImagePoolBase::ReconfigureInternal(const ImageInfo& image_info) {
   // If ImageInfo does not matches, we clear the existing images.
   ClearInternal();
   image_info_ = image_info;
+}
+
+void SharedImagePoolBase::MaybePostUnusedResourcesReclaimTask() {
+  if (!unused_resources_reclaim_timer_.IsRunning() && !image_pool_.empty() &&
+      unused_resource_expiration_time_.has_value()) {
+    unused_resources_reclaim_timer_.Start(
+        FROM_HERE, unused_resource_expiration_time_.value(),
+        base::BindOnce(&SharedImagePoolBase::ClearOldUnusedResources,
+                       base::Unretained(this)));
+  }
+}
+
+void SharedImagePoolBase::ClearOldUnusedResources() {
+  CHECK(unused_resource_expiration_time_.has_value());
+
+  // Get the current time.
+  auto now = base::TimeTicks::Now();
+
+  // Clear the resources that have expired.
+  // Remove elements that satisfy the predicate by using std::remove_if and
+  // erase.
+  auto new_end =
+      std::remove_if(image_pool_.begin(), image_pool_.end(),
+                     [this, now](const scoped_refptr<ClientImage>& resource) {
+                       return now - resource->last_used_time_ >=
+                              unused_resource_expiration_time_.value();
+                     });
+
+  const bool cleared_resources = new_end != image_pool_.end();
+
+  // Erase the "removed" elements from the vector.
+  image_pool_.erase(new_end, image_pool_.end());
+
+  if (cleared_resources) {
+    sii_->Flush();
+  }
+
+  // Reclaim unused resource again.
+  MaybePostUnusedResourcesReclaimTask();
 }
 
 }  // namespace gpu

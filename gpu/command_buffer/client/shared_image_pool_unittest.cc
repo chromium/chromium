@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/client/shared_image_pool.h"
 
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,6 +23,8 @@ class SharedImagePoolTest : public testing::Test {
     test_sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
   }
 
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
@@ -342,6 +346,160 @@ TEST_F(SharedImagePoolTest, DoesNotReuseSharedImageWithDifferentBufferUsage) {
   // Ensure the new image is different from the first one due to different
   // buffer usage.
   EXPECT_NE(image1, image2);
+}
+
+// Test for verifying the reclaim timer is started when an image is released.
+TEST_F(SharedImagePoolTest, ReclaimTimerStartedOnRelease) {
+  ImageInfo info = {
+      gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
+  constexpr auto kExpirationTime = base::Seconds(30);
+  auto pool = SharedImagePool<ClientImage>::Create(
+      info, test_sii_,
+      /*max_pool_size=*/std::nullopt, kExpirationTime);
+
+  auto image = pool->GetImage();
+  pool->ReleaseImage(std::move(image));
+
+  EXPECT_TRUE(pool->IsReclaimTimerRunningForTesting());
+}
+
+// Test for verifying the reclaim timer is not started when expiration time is
+// not set.
+TEST_F(SharedImagePoolTest, ReclaimTimerNotStartedWhenExpirationTimeNotSet) {
+  ImageInfo info = {
+      gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
+  auto pool = SharedImagePool<ClientImage>::Create(
+      info, test_sii_, /*max_pool_size=*/std::nullopt,
+      /*unused_resource_expiration_time=*/std::nullopt);
+
+  auto image = pool->GetImage();
+  pool->ReleaseImage(std::move(image));
+
+  EXPECT_FALSE(pool->IsReclaimTimerRunningForTesting());
+}
+
+// Test for verifying the reclaim timer is not started when the pool is empty.
+TEST_F(SharedImagePoolTest, ReclaimTimerNotStartedWhenPoolIsEmpty) {
+  ImageInfo info = {
+      gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
+  constexpr auto kExpirationTime = base::Seconds(30);
+  auto pool = SharedImagePool<ClientImage>::Create(
+      info, test_sii_,
+      /*max_pool_size=*/std::nullopt, kExpirationTime);
+
+  EXPECT_FALSE(pool->IsReclaimTimerRunningForTesting());
+}
+
+// Test for verifying that unused resources are reclaimed after expiration.
+TEST_F(SharedImagePoolTest, UnusedResourcesReclaimedAfterExpiration) {
+  ImageInfo info = {
+      gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
+  constexpr auto kExpirationTime = base::Seconds(30);
+  auto pool = SharedImagePool<ClientImage>::Create(
+      info, test_sii_,
+      /*max_pool_size=*/std::nullopt, kExpirationTime);
+
+  auto image1 = pool->GetImage();
+  pool->ReleaseImage(std::move(image1));
+  EXPECT_EQ(pool->GetPoolSizeForTesting(), 1u);
+
+  // Advance time past the expiration time.
+  task_environment_.FastForwardBy(kExpirationTime + base::Seconds(1));
+
+  // Verify that the image is reclaimed.
+  EXPECT_EQ(pool->GetPoolSizeForTesting(), 0u);
+}
+
+// Test for verifying that unused resources are not reclaimed before expiration.
+TEST_F(SharedImagePoolTest, UnusedResourcesNotReclaimedBeforeExpiration) {
+  ImageInfo info = {
+      gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
+  constexpr auto kExpirationTime = base::Seconds(30);
+  auto pool = SharedImagePool<ClientImage>::Create(
+      info, test_sii_,
+      /*max_pool_size=*/std::nullopt, kExpirationTime);
+
+  auto image1 = pool->GetImage();
+  pool->ReleaseImage(std::move(image1));
+  EXPECT_EQ(pool->GetPoolSizeForTesting(), 1u);
+
+  // Advance time to just before the expiration time.
+  task_environment_.FastForwardBy(kExpirationTime - base::Seconds(1));
+
+  // Verify that the image is not reclaimed.
+  EXPECT_EQ(pool->GetPoolSizeForTesting(), 1u);
+}
+
+// Test to verify that only resources older than the expiration time are
+// reclaimed.
+TEST_F(SharedImagePoolTest, OnlyResourcesOlderThanExpirationAreReclaimed) {
+  ImageInfo info = {
+      gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
+  constexpr auto kExpirationTime = base::Seconds(30);
+  auto pool = SharedImagePool<ClientImage>::Create(
+      info, test_sii_,
+      /*max_pool_size=*/std::nullopt, kExpirationTime);
+
+  auto image1 = pool->GetImage();
+  pool->ReleaseImage(std::move(image1));
+
+  // Advance time to half the expiration time.
+  task_environment_.FastForwardBy(kExpirationTime / 2);
+
+  auto image2 = pool->GetImage();
+  pool->ReleaseImage(std::move(image2));
+
+  // Advance time past the expiration time.
+  task_environment_.FastForwardBy(kExpirationTime / 2 + base::Seconds(1));
+
+  // Verify that only the first image is reclaimed.
+  EXPECT_EQ(pool->GetPoolSizeForTesting(), 1u);
+}
+
+// Test to verify that the reclaim timer is restarted after reclaiming
+// resources.
+TEST_F(SharedImagePoolTest, ReclaimTimerRestartedAfterReclaiming) {
+  ImageInfo info = {
+      gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
+  constexpr auto kExpirationTime = base::Seconds(30);
+  auto pool = SharedImagePool<ClientImage>::Create(
+      info, test_sii_,
+      /*max_pool_size=*/std::nullopt, kExpirationTime);
+
+  auto image1 = pool->GetImage();
+  pool->ReleaseImage(std::move(image1));
+
+  // Advance time past the expiration time.
+  task_environment_.FastForwardBy(kExpirationTime + base::Seconds(1));
+
+  // Verify that the image is reclaimed.
+  EXPECT_EQ(pool->GetPoolSizeForTesting(), 0u);
+
+  auto image2 = pool->GetImage();
+  pool->ReleaseImage(std::move(image2));
+  EXPECT_EQ(pool->GetPoolSizeForTesting(), 1u);
+
+  EXPECT_TRUE(pool->IsReclaimTimerRunningForTesting());
+}
+
+// Test to verify that Flush() is called on SharedImageInterface after
+// reclaiming resources.
+TEST_F(SharedImagePoolTest, FlushCalledAfterReclaiming) {
+  ImageInfo info = {
+      gfx::Size(1920, 1080), viz::SinglePlaneFormat::kRGBA_8888, {}};
+  constexpr auto kExpirationTime = base::Seconds(30);
+  auto pool = SharedImagePool<ClientImage>::Create(
+      info, test_sii_,
+      /*max_pool_size=*/std::nullopt, kExpirationTime);
+
+  auto image = pool->GetImage();
+  pool->ReleaseImage(std::move(image));
+
+  // Expect that Flush() will be called on the SharedImageInterface.
+  EXPECT_CALL(*test_sii_, DoFlush()).Times(1);
+
+  // Advance time past the expiration time.
+  task_environment_.FastForwardBy(kExpirationTime + base::Seconds(1));
 }
 
 }  // namespace gpu
