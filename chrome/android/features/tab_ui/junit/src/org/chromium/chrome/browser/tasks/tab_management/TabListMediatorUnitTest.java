@@ -136,6 +136,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
@@ -299,6 +300,8 @@ public class TabListMediatorUnitTest {
     @Mock RecyclerView.Adapter mAdapter;
     @Mock TabGroupModelFilter mTabGroupModelFilter;
     @Mock TabGroupModelFilter mIncognitoTabGroupModelFilter;
+    @Mock TabUngrouper mTabUngrouper;
+    @Mock TabUngrouper mIncognitoTabUngrouper;
     @Mock TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
     @Mock TabListMediator.GridCardOnClickListenerProvider mGridCardOnClickListenerProvider;
     @Mock TabFavicon mFavicon;
@@ -401,6 +404,8 @@ public class TabListMediatorUnitTest {
         doReturn(true).when(mIncognitoTabGroupModelFilter).isTabModelRestored();
         doReturn(mProfile).when(mTabModel).getProfile();
 
+        when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
+        when(mIncognitoTabGroupModelFilter.getTabUngrouper()).thenReturn(mIncognitoTabUngrouper);
         doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
         doReturn(mIncognitoTabModel).when(mIncognitoTabGroupModelFilter).getTabModel();
         mCurrentTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
@@ -4294,8 +4299,8 @@ public class TabListMediatorUnitTest {
         when(mIncognitoTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mIncognitoTabGroupModelFilter.getRelatedTabListForRootId(TAB1_ID)).thenReturn(tabs);
         mMediator.onMenuItemClicked(R.id.ungroup_tab, TAB1_ID, /* collaborationId= */ null);
-        verify(mIncognitoTabGroupModelFilter)
-                .moveTabOutOfGroupInDirection(TAB1_ID, /* trailing= */ true);
+        verify(mIncognitoTabUngrouper)
+                .ungroupTabs(TAB1_ID, /* trailing= */ true, /* allowDialog= */ true);
     }
 
     @Test

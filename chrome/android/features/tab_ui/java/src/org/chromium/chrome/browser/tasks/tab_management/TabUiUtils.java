@@ -112,47 +112,12 @@ public class TabUiUtils {
      * Ungroups a tab group and maybe shows a confirmation dialog.
      *
      * @param filter The {@link TabGroupModelFilter} to act on.
-     * @param actionConfirmationManager The {@link ActionConfirmationManager} to use to confirm
-     *     actions.
      * @param tabId The ID of one of the tabs in the tab group.
-     * @param isSyncEnabled Whether the Tab Group Sync flag is enabled.
      */
-    public static void ungroupTabGroup(
-            TabGroupModelFilter filter,
-            ActionConfirmationManager actionConfirmationManager,
-            int tabId,
-            boolean isSyncEnabled) {
+    public static void ungroupTabGroup(TabGroupModelFilter filter, int tabId) {
         TabModel tabModel = filter.getTabModel();
         int rootId = tabModel.getTabById(tabId).getRootId();
-        boolean isIncognito = filter.getTabModel().isIncognito();
-        List<Tab> tabs = filter.getRelatedTabListForRootId(rootId);
-        List<Integer> tabIds = TabUtils.getTabIds(tabs);
-
-        if (isIncognito || !isSyncEnabled || actionConfirmationManager == null) {
-            for (Tab tab : tabs) {
-                filter.moveTabOutOfGroupInDirection(tab.getId(), /* trailing= */ true);
-            }
-        } else {
-            // Present a confirmation dialog to the user before ungrouping the tab group.
-            Callback<Integer> onResult =
-                    (@ActionConfirmationResult Integer result) -> {
-                        if (result != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
-                            List<Tab> tabsToUngroup =
-                                    TabModelUtils.getTabsById(
-                                            tabIds,
-                                            filter.getTabModel(),
-                                            /* allowClosing= */ false,
-                                            tab -> filter.isTabInTabGroup(tab));
-
-                            for (Tab tab : tabsToUngroup) {
-                                filter.moveTabOutOfGroupInDirection(
-                                        tab.getId(), /* trailing= */ true);
-                            }
-                        }
-                    };
-
-            actionConfirmationManager.processUngroupAttempt(onResult);
-        }
+        filter.getTabUngrouper().ungroupTabs(rootId, /* trailing= */ true, /* allowDialog= */ true);
     }
 
     /**

@@ -202,11 +202,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             boolean isTabGroupSyncEnabled) {
         return (menuId, tabId, collaborationId) -> {
             if (menuId == org.chromium.chrome.R.id.ungroup_tab) {
-                TabUiUtils.ungroupTabGroup(
-                        tabGroupModelFilter,
-                        actionConfirmationManager,
-                        tabId,
-                        isTabGroupSyncEnabled);
+                TabUiUtils.ungroupTabGroup(tabGroupModelFilter, tabId);
                 recordUserAction("Ungroup");
             } else if (menuId == org.chromium.chrome.R.id.close_tab_group) {
                 TabUiUtils.closeTabGroup(

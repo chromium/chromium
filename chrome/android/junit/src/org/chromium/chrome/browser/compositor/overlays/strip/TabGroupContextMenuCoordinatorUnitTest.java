@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoordinator.OnItemClickedCallback;
@@ -91,6 +92,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     private OnItemClickedCallback mOnItemClickedCallback;
     private int mTabId;
     private MockTabModel mTabModel;
+    @Mock private TabUngrouper mTabUngrouper;
     @Mock private View mMenuView;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private Profile mProfile;
@@ -306,12 +308,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
         // Verify tab group is ungrouped.
         mOnItemClickedCallback.onClick(R.id.ungroup_tab, mTabId, /* collaborationId= */ null);
-        verify(mActionConfirmationManager)
-                .processUngroupAttempt(mActionConfirmationResultCaptor.capture());
-        mActionConfirmationResultCaptor
-                .getValue()
-                .onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
-        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(mTabId, /* trailing= */ true);
+        verify(mTabUngrouper).ungroupTabs(mTabId, /* trailing= */ true, /* allowDialog= */ true);
     }
 
     @Test
@@ -402,6 +399,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         mTabModel.addTab(mTabId);
         Tab tab = mTabModel.getTabById(mTabId);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);
         when(mTabGroupModelFilter.getRelatedTabCountForRootId(eq(mTabId))).thenReturn(1);
         List<Tab> tabsInGroup = Arrays.asList(tab);
