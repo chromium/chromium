@@ -418,6 +418,61 @@ TEST_F(InteractiveTestTest, InteractionVerbsInSameContext) {
                                InputType::kDontCare}));
 }
 
+TEST_F(InteractiveTestTest, InteractionVerbsInSameContextAs) {
+  constexpr char kElementName[] = "name";
+  TestElement e1(kTestId1, kTestContext1);
+  TestElement e2(kTestId2, kTestContext1);
+  TestElement e3(kTestId3, kTestContext1);
+  TestElement e4(kTestId4, kTestContext1);
+  e1.Show();
+  e2.Show();
+  e3.Show();
+  e4.Show();
+  RunTestSequenceInContext(
+      kTestContext2,
+      // Name element 1.
+      InAnyContext(NameElementRelative(
+          kTestId1, kElementName, [](ui::TrackedElement* el) { return el; })),
+      // Use the named element to find an element.
+      InSameContextAs(kElementName,
+                      SelectMenuItem(kTestId2, InputType::kKeyboard)),
+      // Use the element ID instead as it is unique.
+      InSameContextAs(kTestId1, DoDefaultAction(kTestId3, InputType::kMouse)),
+      // Ensure that we handle groups of steps with a named element as well.
+      InSameContextAs(
+          kElementName,
+          Steps(SelectTab(kTestId4, 3U, InputType::kTouch),
+                SelectDropdownItem(kTestId1, 2U, InputType::kDontCare),
+                EnterText(kTestId2, u"The quick brown fox."))),
+      // Ensure that we handle groups of steps with a unique element ID.
+      InSameContextAs(kTestId1, Steps(ActivateSurface(kTestId3),
+#if !BUILDFLAG(IS_IOS)
+                                      SendAccelerator(kTestId4, Accelerator()),
+#endif
+                                      Confirm(kTestId1))));
+
+  EXPECT_THAT(simulator()->records(),
+              testing::ElementsAre(
+                  ActionRecord{ActionType::kSelectMenuItem, kTestId2,
+                               kTestContext1, InputType::kKeyboard},
+                  ActionRecord{ActionType::kDoDefaultAction, kTestId3,
+                               kTestContext1, InputType::kMouse},
+                  ActionRecord{ActionType::kSelectTab, kTestId4, kTestContext1,
+                               InputType::kTouch},
+                  ActionRecord{ActionType::kSelectDropdownItem, kTestId1,
+                               kTestContext1, InputType::kDontCare},
+                  ActionRecord{ActionType::kEnterText, kTestId2, kTestContext1,
+                               InputType::kKeyboard},
+                  ActionRecord{ActionType::kActivateSurface, kTestId3,
+                               kTestContext1, InputType::kMouse},
+#if !BUILDFLAG(IS_IOS)
+                  ActionRecord{ActionType::kSendAccelerator, kTestId4,
+                               kTestContext1, InputType::kKeyboard},
+#endif
+                  ActionRecord{ActionType::kConfirm, kTestId1, kTestContext1,
+                               InputType::kDontCare}));
+}
+
 TEST_F(InteractiveTestTest, Do) {
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, f);
   EXPECT_CALL_IN_SCOPE(f, Run,

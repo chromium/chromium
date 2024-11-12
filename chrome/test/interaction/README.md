@@ -348,6 +348,15 @@ RunTestSequence(
 - **InContext** allows the modified verb (or verbs) to execute in the specified context instead of
   the default context for the sequence. Example:
 
+- **InSameContextAs** allows the modified verb (or verbs) to find an element in the same context
+  as an element you specify, either by name, or by identifier. The element will be located in any
+  context and should be unique. Example:
+```cpp
+RunTestSequence(
+    InAnyContext(NameElementRelative(kBaseElementId, kNamedElement, &FindMyDialog)),
+    InSameContextAs(kNamedElement, PressButton(kMyButton)));
+```
+
 ```cpp
 Browser* const incognito = CreateIncognitoBrowser();
 RunTestSequence(

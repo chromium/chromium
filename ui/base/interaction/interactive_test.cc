@@ -349,6 +349,18 @@ InteractiveTestApi::MultiStep InteractiveTestApi::InContext(
 }
 
 // static
+InteractiveTestApi::MultiStep InteractiveTestApi::InSameContextAs(
+    ElementSpecifier element,
+    MultiStep steps) {
+  return Steps(
+      std::move(
+          WithElement(element, base::DoNothing())
+              .SetContext(InteractionSequence::ContextMode::kAny)
+              .SetDescription("InSameContextAs() - locate reference element")),
+      InSameContext(std::move(steps)));
+}
+
+// static
 InteractiveTestApi::MultiStep InteractiveTestApi::WithoutDelay(
     MultiStep steps) {
   for (auto& step : steps) {
