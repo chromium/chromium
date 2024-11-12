@@ -558,7 +558,8 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
             << encoded_duration.InMilliseconds() << "ms).";
       }
     }
-  } else if (block_duration_time_delta != kNoTimestamp) {
+  } else if (block_duration_time_delta != kNoTimestamp &&
+             block_duration_time_delta != kInfiniteDuration) {
     buffer->set_duration(block_duration_time_delta);
   } else {
     buffer->set_duration(track->default_duration());
