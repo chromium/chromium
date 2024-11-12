@@ -127,7 +127,7 @@ BASE_FEATURE(kUseMapRectForPixelMovement,
 
 BASE_FEATURE(kEvictionThrottlesDraw,
              "EvictionThrottlesDraw",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAdjustFastMainThreadThreshold,
              "AdjustFastMainThreadThreshold",
