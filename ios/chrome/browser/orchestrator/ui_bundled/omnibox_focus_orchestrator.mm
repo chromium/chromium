@@ -5,10 +5,11 @@
 #import "ios/chrome/browser/orchestrator/ui_bundled/omnibox_focus_orchestrator.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
+#import "base/ios/ios_util.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/location_bar_animatee.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/toolbar_animatee.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/material_timing.h"
 
 @interface OmniboxFocusOrchestrator ()
@@ -313,18 +314,27 @@
         delay:0
         options:UIViewAnimationCurveEaseInOut
         animations:^{
-          [UIView addKeyframeWithRelativeStartTime:0
-                                  relativeDuration:1
-                                        animations:^{
-                                          [self expansion];
-                                        }];
-          [UIView
-              addKeyframeWithRelativeStartTime:0
-                              relativeDuration:kMaterialDuration2 /
-                                               kMaterialDuration1
-                                    animations:^{
-                                      [self.toolbarAnimatee hideControlButtons];
-                                    }];
+          BOOL isLowerThan17 = !base::ios::IsRunningOnOrLater(17, 0, 0);
+          BOOL isHigherThan17_2 = base::ios::IsRunningOnOrLater(17, 2, 0);
+          if (isLowerThan17 || isHigherThan17_2) {
+            [UIView addKeyframeWithRelativeStartTime:0
+                                    relativeDuration:1
+                                          animations:^{
+                                            [self expansion];
+                                          }];
+            [UIView addKeyframeWithRelativeStartTime:0
+                                    relativeDuration:kMaterialDuration2 /
+                                                     kMaterialDuration1
+                                          animations:^{
+                                            [self.toolbarAnimatee
+                                                    hideControlButtons];
+                                          }];
+          } else {
+            // This is a workaround for a crash that is mostly happening on
+            // iOS 17.0-17.1. See crbug.com/369988988.
+            [self expansion];
+            [self.toolbarAnimatee hideControlButtons];
+          }
         }
         completion:^(BOOL finished) {
           [self animationFinished];
