@@ -1570,6 +1570,10 @@ mojom("mojom") {
     enabled_features += [ "use_network_interface_change_listener" ]
   }
 
+  if (enable_device_bound_sessions) {
+    enabled_features += [ "enable_device_bound_sessions" ]
+  }
+
   # Typemaps which apply to both Blink and non-Blink bindings.
   shared_cpp_typemaps = []
 

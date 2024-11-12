@@ -302,6 +302,13 @@ component("network_service") {
     ]
   }
 
+  if (enable_device_bound_sessions) {
+    sources += [
+      "device_bound_session_manager.cc",
+      "device_bound_session_manager.h",
+    ]
+  }
+
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [

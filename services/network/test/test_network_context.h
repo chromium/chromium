@@ -43,6 +43,10 @@
 #include "services/network/public/mojom/websocket.mojom.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
+#endif
+
 namespace net {
 class NetworkAnonymizationKey;
 class NetworkIsolationKey;
@@ -373,6 +377,11 @@ class TestNetworkContext : public mojom::NetworkContext {
                     traffic_annotation) override {}
   void GetBoundNetworkForTesting(
       GetBoundNetworkForTestingCallback callback) override {}
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  void GetDeviceBoundSessionManager(
+      mojo::PendingReceiver<network::mojom::DeviceBoundSessionManager>
+          device_bound_session_manager) override {}
+#endif
 };
 
 }  // namespace network

@@ -83,6 +83,9 @@ import "services/network/public/mojom/p2p_trusted.mojom";
 [EnableIf=is_win]
 import "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom";
 
+[EnableIf=enable_device_bound_sessions]
+import "services/network/public/mojom/device_bound_sessions.mojom";
+
 const uint32 kWebSocketOptionNone = 0;
 // Disallow the request from sending cookies. Disallow the response from writing
 // cookies.
@@ -944,7 +947,7 @@ interface NetworkContext {
   // |origin| represents the domain for which the RestrictedCookieManager can
   // access cookies. It could either be a frame origin when |role| is
   // RestrictedCookieManagerRole::SCRIPT (a script scoped to a particular
-  // document's frame)), or a request origin when |role| is
+  // document's frame), or a request origin when |role| is
   // RestrictedCookieManagerRole::NETWORK (a network request).
   //
   // |isolation_info| contains info for SameSite cookie queries.
@@ -1698,4 +1701,12 @@ interface NetworkContext {
   // `bound_network` == -1 means that this NetworkContext is not bound to any
   // network. Refer to NetworkContextParams::bound_network for more info.
   GetBoundNetworkForTesting() => (int64 bound_network);
+
+  // Gets the DeviceBoundSessionManager associated with this network context.
+  //
+  // This must only be passed to trusted processes.
+  [EnableIf=enable_device_bound_sessions,
+      AllowedContext=sandbox.mojom.Context.kBrowser]
+  GetDeviceBoundSessionManager(
+      pending_receiver<DeviceBoundSessionManager> device_bound_session_manager);
 };

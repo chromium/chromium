@@ -198,6 +198,7 @@
 
 #if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 #include "net/device_bound_sessions/session_service.h"
+#include "services/network/device_bound_session_manager.h"
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 namespace network {
@@ -813,6 +814,11 @@ NetworkContext::NetworkContext(
   if (prefetch_enabled_) {
     InitializePrefetchURLLoaderFactory();
   }
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  device_bound_session_manager_ = std::make_unique<DeviceBoundSessionManager>(
+      url_request_context_->device_bound_session_service());
+#endif
 }
 
 NetworkContext::NetworkContext(
@@ -3401,6 +3407,15 @@ void NetworkContext::GetBoundNetworkForTesting(
     GetBoundNetworkForTestingCallback callback) {
   std::move(callback).Run(url_request_context()->bound_network());
 }
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+void NetworkContext::GetDeviceBoundSessionManager(
+    mojo::PendingReceiver<network::mojom::DeviceBoundSessionManager>
+        device_bound_session_manager) {
+  device_bound_session_manager_->AddReceiver(
+      std::move(device_bound_session_manager));
+}
+#endif
 
 bool NetworkContext::IsNetworkForNonceAndUrlAllowed(
     const base::UnguessableToken& nonce,

@@ -59,6 +59,11 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
                                    const GURL& request_url,
                                    const SessionChallengeParam& param) override;
 
+  void GetAllSessionsAsync(
+      base::OnceCallback<void(const std::vector<SessionKey>&)> callback)
+      override;
+  void DeleteSession(const SchemefulSite& site, const Session::Id& id) override;
+
   Session* GetSessionForTesting(const SchemefulSite& site,
                                 const std::string& session_id) const;
 
@@ -80,7 +85,6 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       // TODO(crbug.com/353764893): Replace this callback placeholder.
       OnAccessCallback on_access_callback);
   void AddSession(const SchemefulSite& site, std::unique_ptr<Session> session);
-  void ClearSession(const SchemefulSite& site, const Session::Id& id);
 
   // Get all the unexpired sessions for a given site. This also removes
   // expired sessions for the site and extends the TTL of used sessions.
@@ -90,9 +94,14 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // Remove a session from the session map. It also clears the session from
   // `session_store_` and any BFCache entries.
   // Return the iterator to the next session in the map.
-  [[nodiscard]] SessionsMap::iterator ClearSessionInternal(
+  [[nodiscard]] SessionsMap::iterator DeleteSessionInternal(
       const SchemefulSite& site,
       SessionsMap::iterator it);
+
+  // Whether we are waiting on the initial load of saved sessions to complete.
+  bool pending_initialization_ = false;
+  // Functions to call once initialization completes.
+  std::vector<base::OnceClosure> queued_operations_;
 
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   raw_ptr<const URLRequestContext> context_;

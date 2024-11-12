@@ -80,6 +80,15 @@ class NET_EXPORT SessionService {
       const GURL& request_url,
       const SessionChallengeParam& param) = 0;
 
+  // Get all sessions. If sessions have not yet been loaded from disk,
+  // defer until completely initialized.
+  virtual void GetAllSessionsAsync(
+      base::OnceCallback<void(const std::vector<SessionKey>&)> callback) = 0;
+
+  // Delete the session matching `key`.
+  virtual void DeleteSession(const SchemefulSite& site,
+                             const Session::Id& id) = 0;
+
  protected:
   SessionService() = default;
 };

@@ -16,6 +16,7 @@
 using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::StrictMock;
+using ::testing::UnorderedElementsAre;
 
 namespace net::device_bound_sessions {
 
@@ -23,6 +24,11 @@ namespace {
 
 constexpr net::NetworkTrafficAnnotationTag kDummyAnnotation =
     net::DefineNetworkTrafficAnnotation("dbsc_registration", "");
+
+// Matcher for SessionKeys
+auto ExpectId(std::string_view id) {
+  return testing::Field(&SessionKey::id, Session::Id(std::string(id)));
+}
 
 class SessionServiceImplTest : public TestWithTaskEnvironment {
  protected:
@@ -312,6 +318,51 @@ TEST_F(SessionServiceImplTest, AccessObserverCalledOnSetChallenge) {
   EXPECT_EQ(session_key.id.value(), g_session_id);
 }
 
+TEST_F(SessionServiceImplTest, GetAllSessions) {
+  // Set the session id to be used for in TestFetcher()
+  g_session_id = "SessionId";
+  ScopedTestFetcher scopedTestFetcher;
+
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      "challenge", /*authorization=*/std::nullopt);
+  service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
+                                 IsolationInfo::CreateTransient());
+
+  g_session_id = "SessionId2";
+  fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      "challenge", /*authorization=*/std::nullopt);
+  service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
+                                 IsolationInfo::CreateTransient());
+
+  base::test::TestFuture<std::vector<SessionKey>> future;
+  service().GetAllSessionsAsync(
+      future.GetCallback<const std::vector<SessionKey>&>());
+  EXPECT_THAT(future.Take(), UnorderedElementsAre(ExpectId("SessionId"),
+                                                  ExpectId("SessionId2")));
+}
+
+TEST_F(SessionServiceImplTest, DeleteSession) {
+  // Set the session id to be used for in TestFetcher()
+  g_session_id = "SessionId";
+  ScopedTestFetcher scopedTestFetcher;
+
+  auto fetch_param = RegistrationFetcherParam::CreateInstanceForTesting(
+      kTestUrl, {crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256},
+      "challenge", /*authorization=*/std::nullopt);
+  service().RegisterBoundSession(base::DoNothing(), std::move(fetch_param),
+                                 IsolationInfo::CreateTransient());
+
+  ASSERT_TRUE(
+      service().GetSessionForTesting(SchemefulSite(kTestUrl), g_session_id));
+
+  service().DeleteSession(SchemefulSite(kTestUrl), Session::Id(g_session_id));
+
+  EXPECT_FALSE(
+      service().GetSessionForTesting(SchemefulSite(kTestUrl), g_session_id));
+}
+
 }  // namespace
 
 class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
@@ -328,6 +379,10 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
 
   void OnSessionsLoaded() {
     service().OnLoadSessionsComplete(SessionStore::SessionsMap());
+  }
+
+  void FinishLoadingSessions(SessionStore::SessionsMap loaded_sessions) {
+    service().OnLoadSessionsComplete(std::move(loaded_sessions));
   }
 
   size_t GetSiteSessionsCount(const SchemefulSite& site) {
@@ -373,6 +428,31 @@ TEST_F(SessionServiceImplWithStoreTest, UsesSessionStore) {
   session->set_expiry_date(base::Time::Now() - base::Days(1));
   // Will invoke the store's delete session method.
   EXPECT_EQ(GetSiteSessionsCount(site), 0u);
+}
+
+TEST_F(SessionServiceImplWithStoreTest, GetAllSessionsWaitsForSessionsToLoad) {
+  // Start loading
+  EXPECT_CALL(store(), LoadSessions).Times(1);
+  service().LoadSessionsAsync();
+
+  // Request sessions, which should wait until we finish loading.
+  base::test::TestFuture<std::vector<SessionKey>> future;
+  service().GetAllSessionsAsync(
+      future.GetCallback<const std::vector<SessionKey>&>());
+
+  std::unique_ptr<Session> session = Session::CreateIfValid(
+      SessionParams("session_id", "https://example.com/refresh", /*scope=*/{},
+                    /*credentials=*/{}),
+      kTestUrl);
+  ASSERT_TRUE(session);
+
+  // Complete loading. If we did not defer, we'd miss this session.
+  SessionStore::SessionsMap session_map;
+  session_map.insert({SchemefulSite(kTestUrl), std::move(session)});
+  FinishLoadingSessions(std::move(session_map));
+
+  // But we did defer, so we found it.
+  EXPECT_THAT(future.Take(), UnorderedElementsAre(ExpectId("session_id")));
 }
 
 }  // namespace net::device_bound_sessions

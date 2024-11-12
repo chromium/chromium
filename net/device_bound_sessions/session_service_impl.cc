@@ -4,7 +4,9 @@
 
 #include "net/device_bound_sessions/session_service_impl.h"
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/schemeful_site.h"
 #include "net/device_bound_sessions/registration_request_param.h"
@@ -44,6 +46,7 @@ void SessionServiceImpl::LoadSessionsAsync() {
   if (!session_store_) {
     return;
   }
+  pending_initialization_ = true;
   session_store_->LoadSessions(base::BindOnce(
       &SessionServiceImpl::OnLoadSessionsComplete, weak_factory_.GetWeakPtr()));
 }
@@ -63,6 +66,13 @@ void SessionServiceImpl::RegisterBoundSession(
 void SessionServiceImpl::OnLoadSessionsComplete(
     SessionStore::SessionsMap sessions) {
   unpartitioned_sessions_.merge(sessions);
+  pending_initialization_ = false;
+
+  std::vector<base::OnceClosure> queued_operations =
+      std::move(queued_operations_);
+  for (base::OnceClosure& closure : queued_operations) {
+    std::move(closure).Run();
+  }
 }
 
 void SessionServiceImpl::OnRegistrationComplete(
@@ -83,8 +93,8 @@ void SessionServiceImpl::OnRegistrationComplete(
 
   // Clear the existing session which initiated the registration.
   if (params->referral_session_identifier) {
-    ClearSession(site,
-                 Session::Id(std::move(*params->referral_session_identifier)));
+    DeleteSession(site,
+                  Session::Id(std::move(*params->referral_session_identifier)));
   }
   AddSession(site, std::move(session));
 }
@@ -96,7 +106,7 @@ SessionServiceImpl::GetSessionsForSite(const SchemefulSite& site) {
   auto [begin, end] = unpartitioned_sessions_.equal_range(site);
   for (auto it = begin; it != end;) {
     if (now >= it->second->expiry_date()) {
-      it = ClearSessionInternal(site, it);
+      it = DeleteSessionInternal(site, it);
     } else {
       it->second->RecordAccess();
       it++;
@@ -152,6 +162,25 @@ void SessionServiceImpl::SetChallengeForBoundSession(
   }
 }
 
+void SessionServiceImpl::GetAllSessionsAsync(
+    base::OnceCallback<void(const std::vector<SessionKey>&)> callback) {
+  if (pending_initialization_) {
+    queued_operations_.push_back(base::BindOnce(
+        &SessionServiceImpl::GetAllSessionsAsync,
+        // `base::Unretained` is safe because the callback is stored in
+        // `queued_operations_`, which is owned by `this`.
+        base::Unretained(this), std::move(callback)));
+  } else {
+    std::vector<SessionKey> sessions =
+        base::ToVector(unpartitioned_sessions_, [](const auto& pair) {
+          const auto& [site, session] = pair;
+          return SessionKey(site, session->id());
+        });
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(sessions)));
+  }
+}
+
 Session* SessionServiceImpl::GetSessionForTesting(
     const SchemefulSite& site,
     const std::string& session_id) const {
@@ -176,19 +205,19 @@ void SessionServiceImpl::AddSession(const SchemefulSite& site,
   unpartitioned_sessions_.emplace(site, std::move(session));
 }
 
-void SessionServiceImpl::ClearSession(const SchemefulSite& site,
-                                      const Session::Id& id) {
+void SessionServiceImpl::DeleteSession(const SchemefulSite& site,
+                                       const Session::Id& id) {
   auto range = unpartitioned_sessions_.equal_range(site);
   for (auto it = range.first; it != range.second; ++it) {
     if (it->second->id() == id) {
-      it = ClearSessionInternal(site, it);
+      std::ignore = DeleteSessionInternal(site, it);
       return;
     }
   }
 }
 
 SessionServiceImpl::SessionsMap::iterator
-SessionServiceImpl::ClearSessionInternal(
+SessionServiceImpl::DeleteSessionInternal(
     const SchemefulSite& site,
     SessionServiceImpl::SessionsMap::iterator it) {
   if (session_store_) {

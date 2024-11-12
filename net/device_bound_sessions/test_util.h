@@ -69,6 +69,15 @@ class SessionServiceMock : public SessionService {
                const GURL& request_url,
                const SessionChallengeParam& challenge_param),
               (override));
+  MOCK_METHOD(
+      void,
+      GetAllSessionsAsync,
+      (base::OnceCallback<void(const std::vector<SessionKey>&)> callback),
+      (override));
+  MOCK_METHOD(void,
+              DeleteSession,
+              (const SchemefulSite& site, const Session::Id& id),
+              (override));
 };
 
 // Return a hard-coded RS256 public key's SPKI bytes and JWK string for testing.

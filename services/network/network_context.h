@@ -135,6 +135,10 @@ class WebTransport;
 
 struct ResourceRequest;
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+class DeviceBoundSessionManager;
+#endif
+
 // A NetworkContext creates and manages access to a URLRequestContext.
 //
 // When the network service is enabled, NetworkContexts are created through
@@ -557,6 +561,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   void GetBoundNetworkForTesting(
       GetBoundNetworkForTestingCallback callback) override;
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  void GetDeviceBoundSessionManager(
+      mojo::PendingReceiver<network::mojom::DeviceBoundSessionManager>
+          device_bound_session_manager) override;
+#endif
 
   // Destroys |request| when a proxy lookup completes.
   void OnProxyLookupComplete(ProxyLookupRequest* proxy_lookup_request);
@@ -1041,6 +1051,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 
   // The URLLoaderFactory to use for prefetches. Created on first use.
   mojo::Remote<mojom::URLLoaderFactory> prefetch_url_loader_factory_remote_;
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  // Manager for device bound sessions.
+  std::unique_ptr<DeviceBoundSessionManager> device_bound_session_manager_;
+#endif
 
   SEQUENCE_CHECKER(sequence_checker_);
 

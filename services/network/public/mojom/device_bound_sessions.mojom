@@ -4,6 +4,7 @@
 
 module network.mojom;
 
+import "sandbox/policy/mojom/context.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/url.mojom";
 
@@ -14,6 +15,17 @@ struct DeviceBoundSessionKey {
 
   // The site-scoped identifier for the session.
   string id;
+};
+
+// DeviceBoundSessionManager is a privileged interface that should only
+// be used in trusted processes.
+[RequireContext=sandbox.mojom.Context.kBrowser]
+interface DeviceBoundSessionManager {
+  // Asynchronously fetch all sessions currently registered.
+  GetAllSessions() => (array<DeviceBoundSessionKey> sessions);
+
+  // Delete a session by key.
+  DeleteSession(DeviceBoundSessionKey session);
 };
 
 // Observer that is notified on use of a device bound session.
