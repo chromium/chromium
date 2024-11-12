@@ -1335,7 +1335,8 @@
     "bases": ["external/wpt/css/css-view-transitions/layered-capture/"],
     "exclusive_tests": "ALL",
     "args": ["--enable-threaded-compositing",
-             "--enable-blink-features=ViewTransitionLayeredCapture"],
+             "--enable-blink-features=ViewTransitionLayeredCapture",
+             "--enable-blink-features=SerializeViewTransitionStateInSPA"],
     "expires": "April 1, 2025"
   },
 

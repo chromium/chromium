@@ -79,35 +79,35 @@ CSSPropertyID kPropertiesToCapture[] = {
 };
 
 CSSPropertyID kLayeredCaptureProperties[] = {
-    CSSPropertyID::kOpacity,
+    CSSPropertyID::kBackground,
+    CSSPropertyID::kBorderBottom,
+    CSSPropertyID::kBorderImage,
+    CSSPropertyID::kBorderLeft,
+    CSSPropertyID::kBorderRadius,
+    CSSPropertyID::kBorderRight,
+    CSSPropertyID::kBorderTop,
+    CSSPropertyID::kBoxShadow,
+    CSSPropertyID::kBoxSizing,
     CSSPropertyID::kClipPath,
+    CSSPropertyID::kContain,
     CSSPropertyID::kFilter,
     // Deliberately capturing the shorthand, to include all the mask-related
     // properties.
     CSSPropertyID::kMask,
-    CSSPropertyID::kBorderTop,
-    CSSPropertyID::kBorderRight,
-    CSSPropertyID::kBorderBottom,
-    CSSPropertyID::kBorderLeft,
-    CSSPropertyID::kBackground,
-    CSSPropertyID::kBorderRadius,
-    CSSPropertyID::kBoxShadow,
+    CSSPropertyID::kOpacity,
     CSSPropertyID::kOutline,
-    CSSPropertyID::kBorderImage,
     CSSPropertyID::kOverflow,
     CSSPropertyID::kOverflowClipMargin,
-    CSSPropertyID::kContain,
-    CSSPropertyID::kBoxSizing,
     CSSPropertyID::kPadding,
 };
 
 CSSPropertyID kPropertiesToAnimate[] = {
     CSSPropertyID::kBackdropFilter, CSSPropertyID::kOpacity,
-    CSSPropertyID::kClipPath,       CSSPropertyID::kFilter,
-    CSSPropertyID::kMask,           CSSPropertyID::kBorderTop,
-    CSSPropertyID::kBorderRight,    CSSPropertyID::kBorderBottom,
     CSSPropertyID::kBorderLeft,     CSSPropertyID::kBackground,
     CSSPropertyID::kBorderRadius,   CSSPropertyID::kBoxShadow,
+    CSSPropertyID::kBorderRight,    CSSPropertyID::kBorderBottom,
+    CSSPropertyID::kClipPath,       CSSPropertyID::kFilter,
+    CSSPropertyID::kMask,           CSSPropertyID::kBorderTop,
     CSSPropertyID::kOutline,        CSSPropertyID::kBorderImage,
     CSSPropertyID::kPadding,
 };
@@ -131,26 +131,37 @@ class FlatMapBuilder {
       ALLOW_DISCOURAGED_TYPE("flat_map underlying type");
 };
 
+#define FOR_EACH_CSS_PROPERTY(OP) \
+  OP(BackdropFilter)              \
+  OP(Background)                  \
+  OP(BorderBottom)                \
+  OP(BorderImage)                 \
+  OP(BorderLeft)                  \
+  OP(BorderRadius)                \
+  OP(BorderRight)                 \
+  OP(BorderTop)                   \
+  OP(BoxShadow)                   \
+  OP(BoxSizing)                   \
+  OP(ClipPath)                    \
+  OP(ColorScheme)                 \
+  OP(Contain)                     \
+  OP(Filter)                      \
+  OP(Mask)                        \
+  OP(MixBlendMode)                \
+  OP(Opacity)                     \
+  OP(Outline)                     \
+  OP(Overflow)                    \
+  OP(OverflowClipMargin)          \
+  OP(Padding)                     \
+  OP(TextOrientation)             \
+  OP(WritingMode)
+
 mojom::blink::ViewTransitionPropertyId ToTranstionPropertyId(CSSPropertyID id) {
+#define TO_TRANSITION_PROPERTY_ID(id) \
+  case CSSPropertyID::k##id:          \
+    return mojom::blink::ViewTransitionPropertyId::k##id;
   switch (id) {
-    case CSSPropertyID::kBackdropFilter:
-      return mojom::blink::ViewTransitionPropertyId::kBackdropFilter;
-    case CSSPropertyID::kColorScheme:
-      return mojom::blink::ViewTransitionPropertyId::kColorScheme;
-    case CSSPropertyID::kMixBlendMode:
-      return mojom::blink::ViewTransitionPropertyId::kMixBlendMode;
-    case CSSPropertyID::kTextOrientation:
-      return mojom::blink::ViewTransitionPropertyId::kTextOrientation;
-    case CSSPropertyID::kWritingMode:
-      return mojom::blink::ViewTransitionPropertyId::kWritingMode;
-    case CSSPropertyID::kOpacity:
-      return mojom::blink::ViewTransitionPropertyId::kOpacity;
-    case CSSPropertyID::kClipPath:
-      return mojom::blink::ViewTransitionPropertyId::kClipPath;
-    case CSSPropertyID::kFilter:
-      return mojom::blink::ViewTransitionPropertyId::kFilter;
-    case CSSPropertyID::kMask:
-      return mojom::blink::ViewTransitionPropertyId::kMask;
+    FOR_EACH_CSS_PROPERTY(TO_TRANSITION_PROPERTY_ID)
     default:
       NOTREACHED() << "Unknown id " << static_cast<uint32_t>(id);
   }
@@ -158,26 +169,10 @@ mojom::blink::ViewTransitionPropertyId ToTranstionPropertyId(CSSPropertyID id) {
 
 CSSPropertyID FromTransitionPropertyId(
     mojom::blink::ViewTransitionPropertyId id) {
-  switch (id) {
-    case mojom::blink::ViewTransitionPropertyId::kBackdropFilter:
-      return CSSPropertyID::kBackdropFilter;
-    case mojom::blink::ViewTransitionPropertyId::kColorScheme:
-      return CSSPropertyID::kColorScheme;
-    case mojom::blink::ViewTransitionPropertyId::kMixBlendMode:
-      return CSSPropertyID::kMixBlendMode;
-    case mojom::blink::ViewTransitionPropertyId::kTextOrientation:
-      return CSSPropertyID::kTextOrientation;
-    case mojom::blink::ViewTransitionPropertyId::kWritingMode:
-      return CSSPropertyID::kWritingMode;
-    case mojom::blink::ViewTransitionPropertyId::kOpacity:
-      return CSSPropertyID::kOpacity;
-    case mojom::blink::ViewTransitionPropertyId::kClipPath:
-      return CSSPropertyID::kClipPath;
-    case mojom::blink::ViewTransitionPropertyId::kFilter:
-      return CSSPropertyID::kFilter;
-    case mojom::blink::ViewTransitionPropertyId::kMask:
-      return CSSPropertyID::kMask;
-  }
+#define FROM_TRANSITION_PROPERTY_ID(id)               \
+  case mojom::blink::ViewTransitionPropertyId::k##id: \
+    return CSSPropertyID::k##id;
+  switch (id) { FOR_EACH_CSS_PROPERTY(FROM_TRANSITION_PROPERTY_ID) }
   return CSSPropertyID::kInvalid;
 }
 

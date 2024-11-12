@@ -19,6 +19,20 @@ enum ViewTransitionPropertyId {
   kClipPath,
   kFilter,
   kMask,
+  kBorderTop,
+  kBorderRight,
+  kBorderBottom,
+  kBorderLeft,
+  kBackground,
+  kBorderRadius,
+  kBoxShadow,
+  kBoxSizing,
+  kOutline,
+  kBorderImage,
+  kPadding,
+  kOverflow,
+  kOverflowClipMargin,
+  kContain,
 };
 
 enum ViewTransitionElementBoxSizing {
