@@ -97,6 +97,16 @@ bool TaskQueueWebView::Sequence::HasTasksAcquiringLock() const {
 }
 
 uint32_t TaskQueueWebView::Sequence::AddTaskAcquiringLock(
+    gpu::TaskCallback task_callback,
+    std::vector<gpu::SyncToken> wait_fences,
+    const gpu::SyncToken& release,
+    ReportingCallback report_callback) {
+  base::AutoLock auto_lock(lock());
+  return AddTask(std::move(task_callback), std::move(wait_fences), release,
+                 std::move(report_callback));
+}
+
+uint32_t TaskQueueWebView::Sequence::AddTaskAcquiringLock(
     base::OnceClosure task_closure,
     std::vector<gpu::SyncToken> wait_fences,
     const gpu::SyncToken& release,
@@ -205,6 +215,23 @@ void TaskQueueWebView::EnsureSequenceInitialized() {
 gpu::SequenceId TaskQueueWebView::GetSequenceId() {
   base::AutoLock lock(lock_);
   return sequence_->sequence_id();
+}
+
+void TaskQueueWebView::ScheduleTask(
+    gpu::TaskCallback task,
+    std::vector<gpu::SyncToken> sync_token_fences,
+    const gpu::SyncToken& release,
+    ReportingCallback report_callback) {
+  TRACE_EVENT0("android_webview", "ScheduleTask");
+  DCHECK(viz_task_runner_->BelongsToCurrentThread());
+
+  DCHECK(allow_schedule_task_);
+
+  base::AutoLock lock(lock_);
+  sequence_->AddTaskAcquiringLock(std::move(task), std::move(sync_token_fences),
+                                  release, std::move(report_callback));
+
+  condvar_.Signal();
 }
 
 void TaskQueueWebView::ScheduleTask(

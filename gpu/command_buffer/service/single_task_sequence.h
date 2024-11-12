@@ -38,13 +38,16 @@ class GPU_GLES2_EXPORT SingleTaskSequence {
   using ReportingCallback =
       base::OnceCallback<void(base::TimeTicks task_ready)>;
 
-  // Schedule a task with provided sync token dependencies and release. The
-  // dependencies are hints for sync token waits within the task, and can be
-  // ignored by the implementation.
+  // Schedule a task with provided sync token dependencies and release.
   // For scheduling from viz thread, due to limitations in Android WebView,
   // ScheduleTask is only available to be called inside initialization,
   // teardown, and DrawAndSwap.
   // |report_callback| will be called on the same thread and before |task| runs.
+  virtual void ScheduleTask(
+      gpu::TaskCallback task,
+      std::vector<SyncToken> sync_token_fences,
+      const SyncToken& release,
+      ReportingCallback report_callback = ReportingCallback()) = 0;
   virtual void ScheduleTask(
       base::OnceClosure task,
       std::vector<SyncToken> sync_token_fences,
@@ -65,6 +68,7 @@ class GPU_GLES2_EXPORT SingleTaskSequence {
       ReportingCallback report_callback = ReportingCallback()) = 0;
 
   // Continue running the current task after yielding execution.
+  virtual void ContinueTask(gpu::TaskCallback task) = 0;
   virtual void ContinueTask(base::OnceClosure task) = 0;
 
   // Creates a SyncPointClientState associated with the sequence.

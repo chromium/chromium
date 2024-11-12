@@ -591,8 +591,6 @@ void CommandBufferStub::SignalQuery(uint32_t query_id, uint32_t id) {
 }
 
 void CommandBufferStub::OnFenceSyncRelease(uint64_t release) {
-  SyncToken sync_token(CommandBufferNamespace::GPU_IO, command_buffer_id_,
-                       release);
   command_buffer_->SetReleaseCount(release);
 
   CHECK(release_delegate_);

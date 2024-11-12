@@ -25,6 +25,15 @@ bool TaskForwardingSequence::ShouldYield() {
 }
 
 void TaskForwardingSequence::ScheduleTask(
+    gpu::TaskCallback task,
+    std::vector<gpu::SyncToken> sync_token_fences,
+    const gpu::SyncToken& release,
+    ReportingCallback report_callback) {
+  task_queue_->ScheduleTask(std::move(task), std::move(sync_token_fences),
+                            release, std::move(report_callback));
+}
+
+void TaskForwardingSequence::ScheduleTask(
     base::OnceClosure task,
     std::vector<gpu::SyncToken> sync_token_fences,
     const gpu::SyncToken& release,
@@ -45,6 +54,10 @@ void TaskForwardingSequence::ScheduleOrRetainTask(
 
 // Should not be called because tasks aren't reposted to wait for sync tokens,
 // or for yielding execution since ShouldYield() returns false.
+void TaskForwardingSequence::ContinueTask(gpu::TaskCallback task) {
+  NOTREACHED();
+}
+
 void TaskForwardingSequence::ContinueTask(base::OnceClosure task) {
   NOTREACHED();
 }

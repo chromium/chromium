@@ -76,6 +76,10 @@ class TaskQueueWebView {
   gpu::SequenceId GetSequenceId();
 
   using ReportingCallback = gpu::SingleTaskSequence::ReportingCallback;
+  void ScheduleTask(gpu::TaskCallback task,
+                    std::vector<gpu::SyncToken> sync_token_fences,
+                    const gpu::SyncToken& release,
+                    ReportingCallback report_callback);
   void ScheduleTask(base::OnceClosure task,
                     std::vector<gpu::SyncToken> sync_token_fences,
                     const gpu::SyncToken& release,
@@ -102,6 +106,11 @@ class TaskQueueWebView {
     // The following methods acquire the TaskGraph lock before calling the
     // corresponding methods in gpu::TaskGraph::Sequence.
     bool HasTasksAcquiringLock() const LOCKS_EXCLUDED(lock());
+    uint32_t AddTaskAcquiringLock(gpu::TaskCallback task_callback,
+                                  std::vector<gpu::SyncToken> wait_fences,
+                                  const gpu::SyncToken& release,
+                                  ReportingCallback report_callback)
+        LOCKS_EXCLUDED(lock());
     uint32_t AddTaskAcquiringLock(base::OnceClosure task_closure,
                                   std::vector<gpu::SyncToken> wait_fences,
                                   const gpu::SyncToken& release,

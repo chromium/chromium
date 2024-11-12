@@ -36,6 +36,11 @@ class TaskForwardingSequence : public gpu::SingleTaskSequence {
   bool ShouldYield() override;
 
   void ScheduleTask(
+      gpu::TaskCallback task,
+      std::vector<gpu::SyncToken> sync_token_fences,
+      const gpu::SyncToken& release,
+      ReportingCallback report_callback = ReportingCallback()) override;
+  void ScheduleTask(
       base::OnceClosure task,
       std::vector<gpu::SyncToken> sync_token_fences,
       const gpu::SyncToken& release,
@@ -48,6 +53,7 @@ class TaskForwardingSequence : public gpu::SingleTaskSequence {
 
   // Should not be called because tasks aren't reposted to wait for sync tokens,
   // or for yielding execution since ShouldYield() returns false.
+  void ContinueTask(gpu::TaskCallback task) override;
   void ContinueTask(base::OnceClosure task) override;
 
   [[nodiscard]] gpu::ScopedSyncPointClientState CreateSyncPointClientState(
