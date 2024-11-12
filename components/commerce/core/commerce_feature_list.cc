@@ -267,21 +267,37 @@ BASE_FEATURE(kEnableDiscountInfoApiRegionLaunched,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+const char kHistoryClustersBehaviorParam[] = "history-cluster-behavior";
+const char kMerchantWideBehaviorParam[] = "merchant-wide-behavior";
+const char kNonMerchantWideBehaviorParam[] = "non-merchant-wide-behavior";
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kDiscountDialogAutoPopupBehaviorSetting,
              "DiscountDialogAutoPopupBehaviorSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const char kHistoryClustersBehaviorParam[] = "history-cluster-behavior";
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kHistoryClustersBehavior{
     &commerce::kDiscountDialogAutoPopupBehaviorSetting,
-    kHistoryClustersBehaviorParam, 0};
-const char kMerchantWideBehaviorParam[] = "merchant-wide-behavior";
+    kHistoryClustersBehaviorParam, 1};
 const base::FeatureParam<int> kMerchantWideBehavior{
     &commerce::kDiscountDialogAutoPopupBehaviorSetting,
     kMerchantWideBehaviorParam, 2};
-const char kNonMerchantWideBehaviorParam[] = "non-merchant-wide-behavior";
+const base::FeatureParam<int> kNonMerchantWideBehavior{
+    &commerce::kDiscountDialogAutoPopupBehaviorSetting,
+    kNonMerchantWideBehaviorParam, 0};
+#else
+BASE_FEATURE(kDiscountDialogAutoPopupBehaviorSetting,
+             "DiscountDialogAutoPopupBehaviorSetting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kHistoryClustersBehavior{
+    &commerce::kDiscountDialogAutoPopupBehaviorSetting,
+    kHistoryClustersBehaviorParam, 0};
+const base::FeatureParam<int> kMerchantWideBehavior{
+    &commerce::kDiscountDialogAutoPopupBehaviorSetting,
+    kMerchantWideBehaviorParam, 2};
 const base::FeatureParam<int> kNonMerchantWideBehavior{
     &commerce::kDiscountDialogAutoPopupBehaviorSetting,
     kNonMerchantWideBehaviorParam, 2};
+#endif
 
 BASE_FEATURE(kDiscountDialogAutoPopupCounterfactual,
              "DiscountDialogAutoPopupCounterfactual",
