@@ -213,8 +213,8 @@ void ModelValidatorKeyedService::OnDeviceModelExecuteResponse(
     const std::unique_ptr<optimization_guide::proto::ExecuteRequest>& request,
     OptimizationGuideModelStreamingExecutionResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!result.response->is_complete) {
+  if (result.response.has_value() && !result.response->is_complete) {
+    // Ignore partial responses.
     return;
   }
   // Complete responses with empty log entry indicate errors.
