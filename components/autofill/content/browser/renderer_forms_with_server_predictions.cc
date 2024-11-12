@@ -30,10 +30,8 @@ RendererFormsWithServerPredictions::FromBrowserForm(AutofillManager& manager,
     return std::nullopt;
   }
 
-  FormDataAndServerPredictions form_and_predictions =
-      GetFormDataAndServerPredictions(*browser_form);
   RendererFormsWithServerPredictions result;
-  result.predictions = std::move(form_and_predictions.predictions);
+  result.predictions = browser_form->GetServerPredictions();
   // The cast is safe, since this method can only get called by content
   // embedders.
   ContentAutofillClient& client =
@@ -41,7 +39,7 @@ RendererFormsWithServerPredictions::FromBrowserForm(AutofillManager& manager,
   const AutofillDriverRouter& router =
       client.GetAutofillDriverFactory().router();
   std::vector<FormData> renderer_forms =
-      router.GetRendererForms(form_and_predictions.form_data);
+      router.GetRendererForms(browser_form->ToFormData());
 
   result.renderer_forms.reserve(renderer_forms.size());
   base::flat_map<LocalFrameToken, content::GlobalRenderFrameHostId>

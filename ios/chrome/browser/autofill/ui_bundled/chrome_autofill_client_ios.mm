@@ -438,8 +438,7 @@ PasswordFormClassification ChromeAutofillClientIOS::ClassifyAsPasswordForm(
     return {};
   }
 
-  FormDataAndServerPredictions form_and_predictions =
-      GetFormDataAndServerPredictions(*form_structure);
+  FormData form_data = form_structure->ToFormData();
 
   // Gets the renderer form corresponding to `field_id` when Autofill across
   // iframes is enabled.
@@ -447,8 +446,7 @@ PasswordFormClassification ChromeAutofillClientIOS::ClassifyAsPasswordForm(
     const AutofillDriverRouter& router =
         AutofillDriverIOSFactory::FromWebState(web_state_)->router();
 
-    std::vector<FormData> renderer_forms =
-        router.GetRendererForms(form_and_predictions.form_data);
+    std::vector<FormData> renderer_forms = router.GetRendererForms(form_data);
 
     // Find the form to which `field_id` belongs.
     auto renderer_forms_it =
@@ -467,7 +465,7 @@ PasswordFormClassification ChromeAutofillClientIOS::ClassifyAsPasswordForm(
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillAcrossIframesIos)
           ? GetRendererForm()
-          : std::move(form_and_predictions.form_data);
+          : std::move(form_data);
 
   if (!renderer_form) {
     return {};
@@ -476,9 +474,9 @@ PasswordFormClassification ChromeAutofillClientIOS::ClassifyAsPasswordForm(
   // The driver id is irrelevant here because it would only be used by password
   // manager logic that handles the `PasswordForm` returned by the parser.
   return password_manager::ClassifyAsPasswordForm(
-      *renderer_form,
-      password_manager::ConvertToFormPredictions(
-          /*driver_id=*/0, *renderer_form, form_and_predictions.predictions));
+      *renderer_form, password_manager::ConvertToFormPredictions(
+                          /*driver_id=*/0, *renderer_form,
+                          form_structure->GetServerPredictions()));
 }
 
 AutofillSaveCardInfoBarDelegateIOS*

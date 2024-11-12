@@ -392,6 +392,9 @@ class FormStructure {
 
   FormAssociations form_associations() const { return form_associations_; }
 
+  base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
+  GetServerPredictions() const;
+
  private:
   friend class FormStructureTestApi;
 
@@ -562,23 +565,6 @@ class FormStructure {
 
 LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form);
 std::ostream& operator<<(std::ostream& buffer, const FormStructure& form);
-
-// Helper struct for `GetFormDataAndServerPredictions`.
-struct FormDataAndServerPredictions {
-  FormDataAndServerPredictions();
-  FormDataAndServerPredictions(const FormDataAndServerPredictions&);
-  FormDataAndServerPredictions& operator=(const FormDataAndServerPredictions&);
-  FormDataAndServerPredictions(FormDataAndServerPredictions&&);
-  FormDataAndServerPredictions& operator=(FormDataAndServerPredictions&&);
-  ~FormDataAndServerPredictions();
-
-  FormData form_data;
-  base::flat_map<FieldGlobalId, AutofillType::ServerPrediction> predictions;
-};
-
-// Returns the `FormData` and `ServerPrediction` objects underlying `form`.
-FormDataAndServerPredictions GetFormDataAndServerPredictions(
-    const FormStructure& form);
 
 }  // namespace autofill
 

@@ -465,8 +465,10 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   if (!form_structure) {
     return;
   }
-  autofill::FormDataAndServerPredictions forms_and_predictions =
-      autofill::GetFormDataAndServerPredictions(*form_structure);
+  FormData form_data = form_structure->ToFormData();
+  base::flat_map<autofill::FieldGlobalId,
+                 autofill::AutofillType::ServerPrediction>
+      predictions = form_structure->GetServerPredictions();
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAcrossIframesIos)) {
@@ -476,8 +478,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     // Split the browser form into renderer forms.
     const autofill::AutofillDriverRouter& router =
         autofill::AutofillDriverIOSFactory::FromWebState(_webState)->router();
-    std::vector<FormData> renderer_forms =
-        router.GetRendererForms(forms_and_predictions.form_data);
+    std::vector<FormData> renderer_forms = router.GetRendererForms(form_data);
 
     // Process predictions for each renderer form.
     web::WebFramesManager* webFramesManager = [self webFramesManager];
@@ -490,7 +491,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
       _passwordManager->ProcessAutofillPredictions(
           IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
                                                                    child_frame),
-          renderer_form, forms_and_predictions.predictions);
+          renderer_form, predictions);
     }
   } else {
     auto& driver = static_cast<autofill::AutofillDriverIOS&>(manager.driver());
@@ -504,7 +505,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     _passwordManager->ProcessAutofillPredictions(
         IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(_webState,
                                                                  frame),
-        forms_and_predictions.form_data, forms_and_predictions.predictions);
+        form_data, predictions);
   }
 }
 
