@@ -2693,6 +2693,7 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
+[ Mac13 ] external/wpt/mst-content-hint/RTCRtpSendParameters-degradationPreference.html [ Timeout ]
 crbug.com/378158976 external/wpt/css/css-contain/content-visibility/content-visibility-auto-svg-text.html [ Failure ]
 crbug.com/378408473 [ Mac14 ] external/wpt/webrtc/RTCPeerConnection-restartIce-onnegotiationneeded.https.html [ Timeout ]
 crbug.com/378408473 [ Mac14 ] external/wpt/webrtc/legacy/RTCPeerConnection-createOffer-offerToReceive.html [ Timeout ]
@@ -2701,7 +2702,9 @@ crbug.com/378231214 [ Mac12 ] virtual/view-transition-wide-gamut/external/wpt/cs
 crbug.com/378014590 [ Mac11 ] external/wpt/mediacapture-streams/BrowserCaptureMediaStreamTrack-restrictTo.https.html [ Timeout ]
 crbug.com/378158966 [ Mac13 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2 [ Timeout ]
 crbug.com/378158966 [ Mac14 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2 [ Timeout ]
+crbug.com/378158966 [ Mac15 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2 [ Timeout ]
 crbug.com/378158966 [ Mac13 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2 [ Timeout ]
+crbug.com/378158966 [ Mac15 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.worker.html?vp9_p2 [ Timeout ]
 [ Mac13 ] wpt_internal/css/css-overflow/scroll-markers-updated-by-user-scroll.html [ Timeout ]
 [ Mac14 ] wpt_internal/css/css-overflow/scroll-markers-updated-by-user-scroll.html [ Timeout ]
 crbug.com/377971439 [ Mac13 ] external/wpt/webrtc/RTCCertificate.html [ Timeout ]
@@ -2711,6 +2714,7 @@ crbug.com/377943753 [ Mac14 ] external/wpt/html/semantics/interactive-elements/t
 crbug.com/377943754 [ Mac14 ] external/wpt/webrtc/RTCPeerConnection-addIceCandidate-timing.https.html [ Timeout ]
 crbug.com/377572928 external/wpt/css/css-masking/clip-path/clip-path-shape-hline-vline-keywords.tentative.html [ Failure ]
 crbug.com/377576485 [ Mac13 ] external/wpt/webrtc-extensions/RTCRtpParameters-adaptivePtime.html [ Timeout ]
+crbug.com/377576485 [ Mac14 ] external/wpt/webrtc-extensions/RTCRtpParameters-adaptivePtime.html [ Timeout ]
 crbug.com/377576485 [ Mac15 ] external/wpt/webrtc-extensions/RTCRtpParameters-adaptivePtime.html [ Timeout ]
 crbug.com/377543821 [ Mac13 ] external/wpt/css/css-shapes/shape-functions/shape-function-valid.tentative.html [ Failure ]
 crbug.com/377543821 [ Mac13 ] external/wpt/webrtc/RTCRtpEncodingParameters-codec-opus-stereo.https.html [ Timeout ]

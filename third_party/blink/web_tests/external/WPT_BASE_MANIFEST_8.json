@@ -4013,6 +4013,13 @@
         null,
         {}
        ]
+      ],
+      "webkit-line-clamp-bug-1926732-crash.html": [
+       "1333b5458a925140389eb9b70c4373f09dbd1b00",
+       [
+        null,
+        {}
+       ]
       ]
      },
      "multicol-in-orthogonal-writing-mode-crash.html": [
@@ -166142,6 +166149,32 @@
         {}
        ]
       ],
+      "line-clamp-032.tentative.html": [
+       "5c203dd0d21051cc9e93fb4eb3e08c0edb0a310e",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-033.tentative.html": [
+       "5e893512d87df1fac0fff3d9736b4e89fc7d62e9",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "line-clamp-auto-001.tentative.html": [
        "02d8479736d4d6fd7e26df53611624e7a75d0989",
        [
@@ -177047,6 +177080,19 @@
        ]
       ]
      },
+     "collapse-trailing-whitespace.html": [
+      "e6e01278349d671e9df47149f7b42636e80dcbf2",
+      [
+       null,
+       [
+        [
+         "/css/css-ruby/collapse-trailing-whitespace-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "empty-ruby-base-container.html": [
       "4d86e07985d0e99e586848f7ca3195e63371c4d4",
       [
@@ -305152,6 +305198,14 @@
       []
      ]
     },
+    "shared-storage": {
+     "trusted-origins": {
+      "default.py": [
+       "4dbd83639715edc8e59f2c6d077291fd7d86a249",
+       []
+      ]
+     }
+    },
     "web-identity": [
      "3369c96de284723699219b856f48f7862edb80e6",
      []
@@ -321575,6 +321629,10 @@
       "b28f7fbbdb4bc0d5c2e152d92a33a309de6887a8",
       []
      ],
+     "WEB_FEATURES.yml": [
+      "49ecf06d287f792b35b5d58ba28225f6b4bce965",
+      []
+     ],
      "abspos-in-clipped-overflow-print-ref.html": [
       "205856035b1a2c51a1806caf4ef4c6b4e2b92fd7",
       []
@@ -321968,6 +322026,10 @@
       []
      ],
      "parsing": {
+      "WEB_FEATURES.yml": [
+       "49ecf06d287f792b35b5d58ba28225f6b4bce965",
+       []
+      ],
       "break-after-computed-expected.txt": [
        "73eccd2c1add6d4ee9446de03a5d2e1561a2c70b",
        []
@@ -342887,6 +342949,10 @@
       "b28f7fbbdb4bc0d5c2e152d92a33a309de6887a8",
       []
      ],
+     "WEB_FEATURES.yml": [
+      "ab327a89b24efa62231d036ca6171a5d75b0a0e4",
+      []
+     ],
      "background-image-only-for-print-ref.html": [
       "c3e5d8d1c5ed202868602e8fdea57225be448dbf",
       []
@@ -343636,6 +343702,10 @@
       []
      ],
      "parsing": {
+      "WEB_FEATURES.yml": [
+       "528ea131e94644d3e20e2281e813edbc286e65ec",
+       []
+      ],
       "page-orientation-invalid.tentative-expected.txt": [
        "75e557371401720c2aad9c322a0c840d3b0c4b87",
        []
@@ -345621,6 +345691,10 @@
        []
       ]
      },
+     "collapse-trailing-whitespace-ref.html": [
+      "de2fa938679acad71f2c61a598c63453b59b63c1",
+      []
+     ],
      "empty-ruby-base-container-ref.html": [
       "e6119468c59af5581d9deeb6e20f60bb18f6aab6",
       []
@@ -388089,10 +388163,6 @@
         "7eb9256b0f63af643eae5e7337cab7b8c5d9ffd9",
         []
        ],
-       "object-setcustomvalidity-expected.txt": [
-        "2076046d0e428e3d0ac3ca6755b6e7e86c6e7e47",
-        []
-       ],
        "test0.html": [
         "17df71daa24803500b79572df081af962b87fc04",
         []
@@ -408357,6 +408427,10 @@
       "cb762eff806849df46dc758ef7b98b63f27f54c9",
       []
      ],
+     "trusted-origins.py": [
+      "c9e0a776a67f7badaaeb397aa6513709d54ad65f",
+      []
+     ],
      "util.js": [
       "b1456fc01db71a46244068e264782916051087b1",
       []
@@ -416392,7 +416466,7 @@
     },
     "resources": {
      "utils.js": [
-      "112d48774863cdcd9a96d216c92c9076e4971343",
+      "fca728de7961e034e0f63c063a815b4b0b3c5630",
       []
      ],
      "utils_validation.js": [
@@ -608396,6 +608470,13 @@
          {}
         ]
        ],
+       "object-constraint-validation.html": [
+        "ff2d38ae74332e51b7092937ee354eab0600e843",
+        [
+         null,
+         {}
+        ]
+       ],
        "object-events.html": [
         "38f92c3d356c297a779d6ebaefed6547bc654b43",
         [
@@ -708457,7 +708538,7 @@
    "webnn": {
     "conformance_tests": {
      "abs.https.any.js": [
-      "0f8a6cd33099b01176bc45b2e1532ef17a5a8361",
+      "ad5ef12c0297660162b0d81ec2fdf8c863df87b4",
       [
        "webnn/conformance_tests/abs.https.any.html?cpu",
        {
@@ -708676,7 +708757,7 @@
       ]
      ],
      "add.https.any.js": [
-      "c084dd009e230da10da59703461e091266cfbb42",
+      "302cc53b9ac09f60ffdc420452396546f8c6b985",
       [
        "webnn/conformance_tests/add.https.any.html?cpu",
        {
@@ -708895,7 +708976,7 @@
       ]
      ],
      "arg_min_max.https.any.js": [
-      "a3711d3ab81e5c32a8f23b04c00afc9c3d9baf68",
+      "27425c9f35f5dfb30ed4dee173128e10ddb2e974",
       [
        "webnn/conformance_tests/arg_min_max.https.any.html?cpu",
        {
@@ -709114,7 +709195,7 @@
       ]
      ],
      "batch_normalization.https.any.js": [
-      "55c8ddbe761da5a676e1a7a27629c878196eac55",
+      "342b1420cf871e95f6ac1355257ccddfe42ec7a7",
       [
        "webnn/conformance_tests/batch_normalization.https.any.html?cpu",
        {
@@ -709576,7 +709657,7 @@
       ]
      ],
      "cast.https.any.js": [
-      "3f2ef698146ec9b86727f6e2aa2ebb3e1ad9c2ae",
+      "8dbb46e5ea6c3d41c349d8e157dc69a8d94bd3ad",
       [
        "webnn/conformance_tests/cast.https.any.html?cpu",
        {
@@ -709795,7 +709876,7 @@
       ]
      ],
      "ceil.https.any.js": [
-      "93549ad3cfed8e7593aeb49afccb0cc528e05a57",
+      "3e8bd3013d024f1915780180e10d5a17c62a6932",
       [
        "webnn/conformance_tests/ceil.https.any.html?cpu",
        {
@@ -710014,7 +710095,7 @@
       ]
      ],
      "clamp.https.any.js": [
-      "4253ca3449a2f56832e0abce5ea7b7a48ee9255b",
+      "0f91e4eec0cc71c7369e2e5bb412f28811014668",
       [
        "webnn/conformance_tests/clamp.https.any.html?cpu",
        {
@@ -710422,7 +710503,7 @@
       ]
      ],
      "concat.https.any.js": [
-      "bb6a92a93b6b1cfc644b7bdcdebd3622200f8ef3",
+      "92bf7d0ba8b3fc619e1727aea61285721ab74d81",
       [
        "webnn/conformance_tests/concat.https.any.html?cpu",
        {
@@ -710641,7 +710722,7 @@
       ]
      ],
      "conv2d.https.any.js": [
-      "3cb964bc3b77a02d8f1628267ba3f912b99ab164",
+      "daa77b043572d31ab9034c226794eab3f3da5e0f",
       [
        "webnn/conformance_tests/conv2d.https.any.html?cpu",
        {
@@ -710860,7 +710941,7 @@
       ]
      ],
      "conv_transpose2d.https.any.js": [
-      "1833f5ce473c4702da57604c82ef3b0b2f6e73bb",
+      "aa5fc7b62939bd8ae97bd535788afbf5111ec14b",
       [
        "webnn/conformance_tests/conv_transpose2d.https.any.html?cpu",
        {
@@ -711079,7 +711160,7 @@
       ]
      ],
      "cos.https.any.js": [
-      "4a50dff594b5f3f79205737d67db125cb92f86a9",
+      "b5d10addb19f2d2774b926272d8696eabd715f86",
       [
        "webnn/conformance_tests/cos.https.any.html?cpu",
        {
@@ -711298,7 +711379,7 @@
       ]
      ],
      "cumulative_sum.https.any.js": [
-      "5ef2ac6ed715dd27bdecd82a53c969d9ebe0b21c",
+      "95b56d8e72ece2ada36af07ccf60c6441762ae79",
       [
        "webnn/conformance_tests/cumulative_sum.https.any.html?cpu",
        {
@@ -711517,7 +711598,7 @@
       ]
      ],
      "dequantizeLinear.https.any.js": [
-      "6b8ba3716936446749e0bfdc4c441307449863fe",
+      "54940e3f482a0c4e1c0012733670fdae0372940a",
       [
        "webnn/conformance_tests/dequantizeLinear.https.any.html?cpu",
        {
@@ -711736,7 +711817,7 @@
       ]
      ],
      "div.https.any.js": [
-      "2c36884ce91f9f3289cb1e1c975a6891bfab898b",
+      "bcf2e05d58a7a592b3ffe728a9d50c6bfb8ba1ed",
       [
        "webnn/conformance_tests/div.https.any.html?cpu",
        {
@@ -711955,7 +712036,7 @@
       ]
      ],
      "elu.https.any.js": [
-      "ed4d0c42490215af8ed54a7a842b39d78a38ea35",
+      "9f572fea01616d5988f36623baea1f80d296006c",
       [
        "webnn/conformance_tests/elu.https.any.html?cpu",
        {
@@ -712174,7 +712255,7 @@
       ]
      ],
      "equal.https.any.js": [
-      "37cd0ca97dc2062dccae90859e39911750dfc756",
+      "d8278bc607db5f49aabf96bae0fbf1633d16d4ab",
       [
        "webnn/conformance_tests/equal.https.any.html?cpu",
        {
@@ -712393,7 +712474,7 @@
       ]
      ],
      "erf.https.any.js": [
-      "7e8a8e0c739cf630c9bfda2d15d2bda5df671ebe",
+      "5411c8f73d2211d3631760e6840f5b4b57d8d0f9",
       [
        "webnn/conformance_tests/erf.https.any.html?cpu",
        {
@@ -712612,7 +712693,7 @@
       ]
      ],
      "exp.https.any.js": [
-      "7b1dae9ac8b922619baa3fffc472bf32f72b899b",
+      "f00a9fedb1299dec3c44fc37714f750f9c792b0e",
       [
        "webnn/conformance_tests/exp.https.any.html?cpu",
        {
@@ -712831,7 +712912,7 @@
       ]
      ],
      "expand.https.any.js": [
-      "6668a5cc216ebe7a7fd4dfc7e036893dab2a2623",
+      "904e4e7b806fb096e088ee4179083ecbb691b986",
       [
        "webnn/conformance_tests/expand.https.any.html?cpu",
        {
@@ -713050,7 +713131,7 @@
       ]
      ],
      "floor.https.any.js": [
-      "e59f220f4eb3cabbe6438c0997331f04eed80624",
+      "138f7874ce3f08ffb6d71b83ed4b09d14b38a1c1",
       [
        "webnn/conformance_tests/floor.https.any.html?cpu",
        {
@@ -713269,7 +713350,7 @@
       ]
      ],
      "gather.https.any.js": [
-      "17c314137586e44c259292e46b64fd283e2e236f",
+      "cc89dbf37ae27d99ad40e4b58b2cce732c129d46",
       [
        "webnn/conformance_tests/gather.https.any.html?cpu",
        {
@@ -713488,7 +713569,7 @@
       ]
      ],
      "gatherElements.https.any.js": [
-      "2cd3159ca0ed7826402d500ec9543bc1e7e7dbb8",
+      "a7bea51de1303aec2f9ea512c31328e54ea3d4be",
       [
        "webnn/conformance_tests/gatherElements.https.any.html?cpu",
        {
@@ -713707,7 +713788,7 @@
       ]
      ],
      "gatherND.https.any.js": [
-      "4e9adf4c1bf8d9e33c59bd4f64b17779d9e6169e",
+      "83c9d6c8ffaa248ff4d1bcbbb457595ec0cd4de6",
       [
        "webnn/conformance_tests/gatherND.https.any.html?cpu",
        {
@@ -713926,7 +714007,7 @@
       ]
      ],
      "gelu.https.any.js": [
-      "aa72bb65c83fb63c676482503b709b4b5feb2ddf",
+      "b9d57a2bc8f4bca150d0391c7a17432a88a3f43d",
       [
        "webnn/conformance_tests/gelu.https.any.html?cpu",
        {
@@ -714145,7 +714226,7 @@
       ]
      ],
      "gemm.https.any.js": [
-      "099486c7f58072b1c91b3360b0e712eda299a05b",
+      "7f8181dd5dd9fed9d1920cf3a6e34bfea051c298",
       [
        "webnn/conformance_tests/gemm.https.any.html?cpu",
        {
@@ -714364,7 +714445,7 @@
       ]
      ],
      "greater.https.any.js": [
-      "7017d0860d5b6919f97d1081aed790d6a8fdeb61",
+      "41408be41206503e46e49f5e25a4c6a559e13bd3",
       [
        "webnn/conformance_tests/greater.https.any.html?cpu",
        {
@@ -714583,7 +714664,7 @@
       ]
      ],
      "greater_or_equal.https.any.js": [
-      "36cb9900ae4871e48601360e818cece31f0afe89",
+      "19818cd7e46ede13f866bb22ad146d4672059d28",
       [
        "webnn/conformance_tests/greater_or_equal.https.any.html?cpu",
        {
@@ -714802,7 +714883,7 @@
       ]
      ],
      "gru.https.any.js": [
-      "4a144cce8484685f3ec855416ea47021b8619083",
+      "870813f87c7fcbdf8834b2ae82ae69603fee0a03",
       [
        "webnn/conformance_tests/gru.https.any.html?cpu",
        {
@@ -715021,7 +715102,7 @@
       ]
      ],
      "gru_cell.https.any.js": [
-      "6155a37490da5a9b290fc606c6b2ee725f29adab",
+      "fe648cf30a58c09bd54dda5e43f4ea0f0271d92e",
       [
        "webnn/conformance_tests/gru_cell.https.any.html?cpu",
        {
@@ -715240,7 +715321,7 @@
       ]
      ],
      "hard_sigmoid.https.any.js": [
-      "af8c3918f3defea06ae457af28322d283b424d3a",
+      "8beb041733d0e795f6c4fa253c2977695e51aa25",
       [
        "webnn/conformance_tests/hard_sigmoid.https.any.html?cpu",
        {
@@ -715459,7 +715540,7 @@
       ]
      ],
      "hard_swish.https.any.js": [
-      "e9c341b770706e4d7f31ba6bb356698939f20d7d",
+      "8677bf6e37ef03f31ce392bb9f96233e11a63fef",
       [
        "webnn/conformance_tests/hard_swish.https.any.html?cpu",
        {
@@ -715678,7 +715759,7 @@
       ]
      ],
      "identity.https.any.js": [
-      "6e1b1e7f6db7cffe920e34c856ef08ca12540485",
+      "d54741a21c43b249b592f30b37198003880723d8",
       [
        "webnn/conformance_tests/identity.https.any.html?cpu",
        {
@@ -716116,7 +716197,7 @@
       ]
      ],
      "instance_normalization.https.any.js": [
-      "46f434bd245d4fbbab59ac493bcda6671b67c2e1",
+      "71ab3012cb36eb6d27ee8092e58a4951176e12c8",
       [
        "webnn/conformance_tests/instance_normalization.https.any.html?cpu",
        {
@@ -716335,7 +716416,7 @@
       ]
      ],
      "layer_normalization.https.any.js": [
-      "23ba642e2426bc77e4518b750d6d59b446cc8fe2",
+      "01f181c45b37c717d1325548967325c8412440f8",
       [
        "webnn/conformance_tests/layer_normalization.https.any.html?cpu",
        {
@@ -716554,7 +716635,7 @@
       ]
      ],
      "leaky_relu.https.any.js": [
-      "f49c2d02809afaa10c83f68e7cb4a477fc473352",
+      "eeb01d3936e56a3939a3eec07edf4086fc32e392",
       [
        "webnn/conformance_tests/leaky_relu.https.any.html?cpu",
        {
@@ -716773,7 +716854,7 @@
       ]
      ],
      "lesser.https.any.js": [
-      "322209f18a1818a52a5e03b6944420d340e8977c",
+      "f514c3d16aeb26c747d0c8c949ddcebbb8ef9af5",
       [
        "webnn/conformance_tests/lesser.https.any.html?cpu",
        {
@@ -716992,7 +717073,7 @@
       ]
      ],
      "lesser_or_equal.https.any.js": [
-      "aceec9dc135ff61c9c3ed64495d8c58e1b8f2352",
+      "751d35a8a98a3b51ed62f37d2c123c744be866f3",
       [
        "webnn/conformance_tests/lesser_or_equal.https.any.html?cpu",
        {
@@ -717211,7 +717292,7 @@
       ]
      ],
      "linear.https.any.js": [
-      "a959403aff4a6f418c882df4a6dd0de6c54f445d",
+      "957e207bf3f88d473bd6d3b96cd2882fba76d9eb",
       [
        "webnn/conformance_tests/linear.https.any.html?cpu",
        {
@@ -717430,7 +717511,7 @@
       ]
      ],
      "log.https.any.js": [
-      "8d6b5885c28f1d17aab4ca282db27d830b2ddf40",
+      "e31a771d8cabb830b601c43493539b7bcbfab5c4",
       [
        "webnn/conformance_tests/log.https.any.html?cpu",
        {
@@ -717649,7 +717730,7 @@
       ]
      ],
      "logical_and.https.any.js": [
-      "3d46c0b2406c7253ccc18ebc351a1bb5063f7855",
+      "32fe4d1edbd91177e9303c1c45cce1b21a0c1782",
       [
        "webnn/conformance_tests/logical_and.https.any.html?cpu",
        {
@@ -717868,7 +717949,7 @@
       ]
      ],
      "logical_not.https.any.js": [
-      "e56c5626ef8ab7c43971adf6556a351f803fc52e",
+      "bb6b42a70b27817cfe5b6322f486ad02dfe8f013",
       [
        "webnn/conformance_tests/logical_not.https.any.html?cpu",
        {
@@ -718087,7 +718168,7 @@
       ]
      ],
      "logical_or.https.any.js": [
-      "3be3b0090f2435a28b81036c232a90baabbe43b0",
+      "838988f9c7371d9d48deeb5fab588c2f8f4f172d",
       [
        "webnn/conformance_tests/logical_or.https.any.html?cpu",
        {
@@ -718306,7 +718387,7 @@
       ]
      ],
      "logical_xor.https.any.js": [
-      "cab96c27237f16e8773b9539e173271d3f335eb0",
+      "50a12c7c5cfd6c2b1b30b417534354dc2b924d1f",
       [
        "webnn/conformance_tests/logical_xor.https.any.html?cpu",
        {
@@ -718525,7 +718606,7 @@
       ]
      ],
      "lstm.https.any.js": [
-      "20198bfb2f5cede820bcc662a2498d003642e050",
+      "13bf49261c12530222d4db89d052e9dda6566003",
       [
        "webnn/conformance_tests/lstm.https.any.html?cpu",
        {
@@ -718744,7 +718825,7 @@
       ]
      ],
      "lstm_cell.https.any.js": [
-      "d6b16029b0df4621837889fa82184145b7e8ccdf",
+      "8fb7ce4ca35c0b138dabca6773409258aedd7fa1",
       [
        "webnn/conformance_tests/lstm_cell.https.any.html?cpu",
        {
@@ -718963,7 +719044,7 @@
       ]
      ],
      "matmul.https.any.js": [
-      "ef0b7f20051d199afcbdd306fb0f540d19b40967",
+      "8a16c567c8afb9143a7226729223ff14a7f1587d",
       [
        "webnn/conformance_tests/matmul.https.any.html?cpu",
        {
@@ -719182,7 +719263,7 @@
       ]
      ],
      "max.https.any.js": [
-      "08befe3da0cbaff6ebb4288837e5a1e248e58eca",
+      "16c8819ac84d9a5a0b019b4f5453523294208495",
       [
        "webnn/conformance_tests/max.https.any.html?cpu",
        {
@@ -719401,7 +719482,7 @@
       ]
      ],
      "min.https.any.js": [
-      "1dda0bb44a77883d9a8689272126ec2617faaeeb",
+      "6d67daef1a188bc21acc4df7d9c9a1db264ef215",
       [
        "webnn/conformance_tests/min.https.any.html?cpu",
        {
@@ -719620,7 +719701,7 @@
       ]
      ],
      "mul.https.any.js": [
-      "27a5dbd32499157c7ddba47030e67adf9c70bfa4",
+      "b869e687257f1141b13a4a374cbaeed7ccfbe769",
       [
        "webnn/conformance_tests/mul.https.any.html?cpu",
        {
@@ -719839,7 +719920,7 @@
       ]
      ],
      "neg.https.any.js": [
-      "a77109a9ef1a7861cceabe597ed6d2207c31bf7e",
+      "53006267d4c1a261af55f7c5c5bef80d86cbbcba",
       [
        "webnn/conformance_tests/neg.https.any.html?cpu",
        {
@@ -720058,7 +720139,7 @@
       ]
      ],
      "pad.https.any.js": [
-      "203d0b7299c57204e3ffa4480fa6595979594f3d",
+      "c828da3831f3dd827a361a95258f3efd31f9ea1b",
       [
        "webnn/conformance_tests/pad.https.any.html?cpu",
        {
@@ -720715,7 +720796,7 @@
       ]
      ],
      "pooling.https.any.js": [
-      "52c6c80c7b53b52a374d7ec330ebad495d6da8b9",
+      "d6d5a2a7afacda57da834c716bb128388adb14a5",
       [
        "webnn/conformance_tests/pooling.https.any.html?cpu",
        {
@@ -720934,7 +721015,7 @@
       ]
      ],
      "pow.https.any.js": [
-      "fa18368d94e92f3b1d6e6bc678e00a2d415c9cda",
+      "9f14780e58c072260e0113c4e27c057fc61d23aa",
       [
        "webnn/conformance_tests/pow.https.any.html?cpu",
        {
@@ -721153,7 +721234,7 @@
       ]
      ],
      "prelu.https.any.js": [
-      "02f545ad5964c3c7ba568ca5c1d24215d4943389",
+      "af9467f1e4d2f86857c17a4516d7b0511dec2e33",
       [
        "webnn/conformance_tests/prelu.https.any.html?cpu",
        {
@@ -721372,7 +721453,7 @@
       ]
      ],
      "quantizeLinear.https.any.js": [
-      "8333f7b1b58a0a9e0ac98cc8a2c5d8339f456811",
+      "1e25d5b136806676caa400627b65d23fec26fb11",
       [
        "webnn/conformance_tests/quantizeLinear.https.any.html?cpu",
        {
@@ -721591,7 +721672,7 @@
       ]
      ],
      "reciprocal.https.any.js": [
-      "bbf49a1e0ac46a0b8805a809b4d50bf1f1a1ff27",
+      "bbe1ec106c8302b2d2b97665a6a284fc0667cf72",
       [
        "webnn/conformance_tests/reciprocal.https.any.html?cpu",
        {
@@ -721810,7 +721891,7 @@
       ]
      ],
      "reduce_l1.https.any.js": [
-      "8fa1b4c09c28ce0fe8fd21975cea07a53df240cc",
+      "3bbb85b32c4f66554936b5c2fabf6089ca924575",
       [
        "webnn/conformance_tests/reduce_l1.https.any.html?cpu",
        {
@@ -722029,7 +722110,7 @@
       ]
      ],
      "reduce_l2.https.any.js": [
-      "7fc2ee8e621214073ff532d28fa49f6f3180ba44",
+      "d579158921c2c7f4afc927d280a9a17ac9c4d6fb",
       [
        "webnn/conformance_tests/reduce_l2.https.any.html?cpu",
        {
@@ -722248,7 +722329,7 @@
       ]
      ],
      "reduce_log_sum.https.any.js": [
-      "5ed23e1af47d968326fd1a8c2526aa56db8fbded",
+      "ab827e31452d3f61709239f0749e925a312344df",
       [
        "webnn/conformance_tests/reduce_log_sum.https.any.html?cpu",
        {
@@ -722467,7 +722548,7 @@
       ]
      ],
      "reduce_log_sum_exp.https.any.js": [
-      "e9a0b7b54930e1f995882eef1619047e2d298973",
+      "eecdf56f15b99a4db8352fd3ffe52a06c2e85258",
       [
        "webnn/conformance_tests/reduce_log_sum_exp.https.any.html?cpu",
        {
@@ -722686,7 +722767,7 @@
       ]
      ],
      "reduce_max.https.any.js": [
-      "5096e553239cb84acb8364ab0f23385547e1dc37",
+      "3695d1d0db2aed63c853ee5de769f732b8614e99",
       [
        "webnn/conformance_tests/reduce_max.https.any.html?cpu",
        {
@@ -722905,7 +722986,7 @@
       ]
      ],
      "reduce_mean.https.any.js": [
-      "ee5bf3673c08e0b378b76c9c75d404819fde1d09",
+      "01d2a548b639486519eb9509e55ad7c27e314e9f",
       [
        "webnn/conformance_tests/reduce_mean.https.any.html?cpu",
        {
@@ -723124,7 +723205,7 @@
       ]
      ],
      "reduce_min.https.any.js": [
-      "7a5989045db858baccc022f8860987e3f0e38be8",
+      "b09fd5cf8a37461bb8f368b9b20b1bae253173fa",
       [
        "webnn/conformance_tests/reduce_min.https.any.html?cpu",
        {
@@ -723343,7 +723424,7 @@
       ]
      ],
      "reduce_product.https.any.js": [
-      "1a2e23c4f76e124dbc6990db83e03fba102e1090",
+      "721c9a1e499bbd83abdcb71eb3ec4e215ec23562",
       [
        "webnn/conformance_tests/reduce_product.https.any.html?cpu",
        {
@@ -723562,7 +723643,7 @@
       ]
      ],
      "reduce_sum.https.any.js": [
-      "6b91802745552743f2e8c8dbd14aaa5de38944f5",
+      "48b65a77b00f07e54d5564d90a4f02e5702a1557",
       [
        "webnn/conformance_tests/reduce_sum.https.any.html?cpu",
        {
@@ -723781,7 +723862,7 @@
       ]
      ],
      "reduce_sum_square.https.any.js": [
-      "0f92d817e6157c3f278cc549c5ae13a8b9619a78",
+      "435e748f7b56a3f9aa80951a39781ef2a5c8f159",
       [
        "webnn/conformance_tests/reduce_sum_square.https.any.html?cpu",
        {
@@ -724000,7 +724081,7 @@
       ]
      ],
      "relu.https.any.js": [
-      "ea7fd9b9552b29cb5419f96d4291def27b2de554",
+      "596af967cfb5eb6db43274db16f488266f8fdd9e",
       [
        "webnn/conformance_tests/relu.https.any.html?cpu",
        {
@@ -724219,7 +724300,7 @@
       ]
      ],
      "resample2d.https.any.js": [
-      "c10b4182ec0c5e9d22e72c594ef2b28ff85999cf",
+      "4d4fadcba20d2c1beda25e74cc2431a2935ea83b",
       [
        "webnn/conformance_tests/resample2d.https.any.html?cpu",
        {
@@ -724438,7 +724519,7 @@
       ]
      ],
      "reshape.https.any.js": [
-      "23a8675e13f9bbbf4e8fcf8cc4e525fa9637d631",
+      "1eb8f259f5a8efa0caff51b723eb2779f1c72c9d",
       [
        "webnn/conformance_tests/reshape.https.any.html?cpu",
        {
@@ -724876,7 +724957,7 @@
       ]
      ],
      "scatterElements.https.any.js": [
-      "561260d47ecf66943cb8c3a463ba3f6dc7c22c06",
+      "18aebf98b4c159cd87eca11faef8994691d52dc5",
       [
        "webnn/conformance_tests/scatterElements.https.any.html?cpu",
        {
@@ -725095,7 +725176,7 @@
       ]
      ],
      "scatterND.https.any.js": [
-      "002ee3e4914e7a2d4d2c4d68c27743ddd596a9ae",
+      "3edf28bbe7c95a176193258b11ef843d26909419",
       [
        "webnn/conformance_tests/scatterND.https.any.html?cpu",
        {
@@ -725314,7 +725395,7 @@
       ]
      ],
      "sigmoid.https.any.js": [
-      "2149de9573a48cbc63be56418ad4c82127d17bb9",
+      "a886418c0c1943ab86513e0be60dade03eb39cd3",
       [
        "webnn/conformance_tests/sigmoid.https.any.html?cpu",
        {
@@ -725533,7 +725614,7 @@
       ]
      ],
      "sign.https.any.js": [
-      "aad8685447153411fe5f4f0acd789e30fdbf6f3a",
+      "f529daadf6b46da116655cfaa4b5bb8f4b9803ec",
       [
        "webnn/conformance_tests/sign.https.any.html?cpu",
        {
@@ -725752,7 +725833,7 @@
       ]
      ],
      "sin.https.any.js": [
-      "d0dd150c6c2f9048aef6475921009d21a981fab0",
+      "ff3245d9b95dccdae34fe1bdb773f21220f8e2fc",
       [
        "webnn/conformance_tests/sin.https.any.html?cpu",
        {
@@ -725971,7 +726052,7 @@
       ]
      ],
      "slice.https.any.js": [
-      "27ac1c265729ca41f48ef143c4789c9843f56e35",
+      "7880159ae124930cb742307b2712e993b36df558",
       [
        "webnn/conformance_tests/slice.https.any.html?cpu",
        {
@@ -726190,7 +726271,7 @@
       ]
      ],
      "softmax.https.any.js": [
-      "a364f65ccc1f1301fe7b57c6d41111470e9cada9",
+      "552e5d12fe357f4022bfda19bf3b1e45914dff74",
       [
        "webnn/conformance_tests/softmax.https.any.html?cpu",
        {
@@ -726409,7 +726490,7 @@
       ]
      ],
      "softplus.https.any.js": [
-      "0294172dd035c71382f6676cfe1e8ebef1ad393a",
+      "0176288f53fa7f6517dd1a621cc402d2ba3079e2",
       [
        "webnn/conformance_tests/softplus.https.any.html?cpu",
        {
@@ -726628,7 +726709,7 @@
       ]
      ],
      "softsign.https.any.js": [
-      "344701e210af9dec4b9b7009dbfd7a57e121c29a",
+      "9ca2627ad9c53ad73c76337bbbfb50c932f7d90f",
       [
        "webnn/conformance_tests/softsign.https.any.html?cpu",
        {
@@ -726847,7 +726928,7 @@
       ]
      ],
      "split.https.any.js": [
-      "461afce9ab9c4b51ba6f368417fcd2f6fb710339",
+      "967f1724a18ccfbf7827be82e100a3eea2534ad5",
       [
        "webnn/conformance_tests/split.https.any.html?cpu",
        {
@@ -727066,7 +727147,7 @@
       ]
      ],
      "sqrt.https.any.js": [
-      "b6b13ec07595feb29a9cb20df70524dceba970e2",
+      "2b8a1b2f1daf91d737d5e7d9a15a3912f91e6422",
       [
        "webnn/conformance_tests/sqrt.https.any.html?cpu",
        {
@@ -727285,7 +727366,7 @@
       ]
      ],
      "sub.https.any.js": [
-      "3bb23caf5f519d8cba099bcce8f3149bb2085daf",
+      "3dbd25019b5deab94f71f1d5f4cec7f0b32b53e5",
       [
        "webnn/conformance_tests/sub.https.any.html?cpu",
        {
@@ -727504,7 +727585,7 @@
       ]
      ],
      "subgraph.https.any.js": [
-      "454eb62415f9b97765836c0cd0f6d9705cfe571d",
+      "ed35637b43c98f2cc3ec90c544c3e62509e56454",
       [
        "webnn/conformance_tests/subgraph.https.any.html?cpu",
        {
@@ -727723,7 +727804,7 @@
       ]
      ],
      "tan.https.any.js": [
-      "a8b6bba13c17c0349329602c48823c6273ca9678",
+      "0d509cf23fbcc77c5a7fb3f898b7d6acc762eaa7",
       [
        "webnn/conformance_tests/tan.https.any.html?cpu",
        {
@@ -727942,7 +728023,7 @@
       ]
      ],
      "tanh.https.any.js": [
-      "211ae972ebbdfc662d9cea84211250e7723bd58e",
+      "5c8c45f29c0a39cf568846c0798802d968debe4c",
       [
        "webnn/conformance_tests/tanh.https.any.html?cpu",
        {
@@ -728404,7 +728485,7 @@
       ]
      ],
      "tile.https.any.js": [
-      "f85518e52486058d8af9a5f5ff8eefcb2e4241d7",
+      "a3e2841403b483507075abb2e232d6234c64724d",
       [
        "webnn/conformance_tests/tile.https.any.html?cpu",
        {
@@ -728623,7 +728704,7 @@
       ]
      ],
      "transpose.https.any.js": [
-      "4370c63de4ab7c3e69fda7f588ff67f8abe17870",
+      "741771fc8fd625253a09f73f67e191d679d8b59d",
       [
        "webnn/conformance_tests/transpose.https.any.html?cpu",
        {
@@ -728842,7 +728923,7 @@
       ]
      ],
      "triangular.https.any.js": [
-      "64a33e4a4c2d10d97692ab898eee51c5acb99fdb",
+      "3dcb73b7d72b8e640c70ce821a70f9053a6376b4",
       [
        "webnn/conformance_tests/triangular.https.any.html?cpu",
        {
@@ -729061,7 +729142,7 @@
       ]
      ],
      "where.https.any.js": [
-      "1c1860fd9a1e0c011552a909e8d0d826a4e2ce0b",
+      "e436fd766b06fc6e48228d2576879070d6d44a55",
       [
        "webnn/conformance_tests/where.https.any.html?cpu",
        {
