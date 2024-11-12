@@ -145,7 +145,7 @@ struct FileSelectHelper::ActiveDirectoryEnumeration {
 
   std::unique_ptr<net::DirectoryLister> lister_;
   const base::FilePath path_;
-  std::vector<base::FilePath> results_;
+  std::vector<blink::mojom::NativeFileInfoPtr> results_;
 };
 
 FileSelectHelper::FileSelectHelper(Profile* profile)
@@ -234,7 +234,14 @@ void FileSelectHelper::OnListFile(
   if (data.info.IsDirectory())
     return;
 
-  directory_enumeration_->results_.push_back(data.path);
+  std::vector<std::u16string> base_subdirs;
+#if BUILDFLAG(IS_ANDROID)
+  for (const auto& subdir : data.info.subdirs()) {
+    base_subdirs.push_back(base::UTF8ToUTF16(subdir));
+  }
+#endif
+  directory_enumeration_->results_.push_back(blink::mojom::NativeFileInfo::New(
+      data.path, data.info.GetName().AsUTF16Unsafe(), std::move(base_subdirs)));
 }
 
 std::unique_ptr<ui::DialogModel> FileSelectHelper::CreateConfirmationDialog(
@@ -287,10 +294,9 @@ void FileSelectHelper::OnListDone(int error) {
   }
 
   std::vector<FileChooserFileInfoPtr> chooser_files;
-  for (const auto& file_path : entry->results_) {
+  for (const auto& native_file : entry->results_) {
     chooser_files.push_back(
-        FileChooserFileInfo::NewNativeFile(blink::mojom::NativeFileInfo::New(
-            file_path, std::u16string(), std::vector<std::u16string>())));
+        FileChooserFileInfo::NewNativeFile(native_file->Clone()));
   }
 
   if (dialog_type_ == ui::SelectFileDialog::SELECT_UPLOAD_FOLDER) {

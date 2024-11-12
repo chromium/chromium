@@ -101,6 +101,7 @@ class CORE_EXPORT File final : public Blob {
 
   static File* CreateWithRelativePath(ExecutionContext* context,
                                       const String& path,
+                                      const String& name,
                                       const String& relative_path);
 
   // If filesystem files live in the remote filesystem, the port might pass the
