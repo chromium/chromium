@@ -343,7 +343,6 @@ void BrowsingDataRemoverImpl::RemoveInRange(base::Time start_time,
          (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::CLOSE_TABS) &&
           !profile_->IsOffTheRecord()));
 
-  // browsing_data::RecordDeletionForPeriod(time_period);
   removal_queue_.emplace(start_time, end_time, mask, std::move(callback),
                          params);
 

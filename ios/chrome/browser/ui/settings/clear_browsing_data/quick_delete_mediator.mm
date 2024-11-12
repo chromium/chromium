@@ -383,6 +383,9 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   } else {
     _browsingDataRemover->RemoveInRange(beginTime, endTime, removeMask,
                                         std::move(delayedCompletion), params);
+    // This metric is not recorded in BrowsingDataRemoverImpl since the deletion
+    // is trigger with timestamps.
+    browsing_data::RecordDeletionForPeriod(_selectedTimeRange);
   }
 
   RecordCookieOrCacheDeletedFromDialogHistogram(removeMask);
