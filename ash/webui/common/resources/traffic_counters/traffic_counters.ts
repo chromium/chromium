@@ -216,9 +216,9 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
   }
 
   private countersToString_(counters: TrafficCounter[]): string {
-    // '\t' describes the number of white space characters to use as white space
+    // '4' describes the number of white space characters to use as white space
     // while forming the JSON string.
-    return JSON.stringify(counters, replacer, '\t');
+    return JSON.stringify(counters, replacer, 4);
   }
 
   private lastResetTimeString_(network: Network): string {
