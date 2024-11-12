@@ -12,7 +12,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
-#include "content/public/browser/devtools_agent_host_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "headless/lib/browser/headless_window_tree_host.h"
@@ -22,7 +21,6 @@
 class SkBitmap;
 
 namespace content {
-class DevToolsAgentHost;
 class WebContents;
 }
 
@@ -36,7 +34,6 @@ class HeadlessBrowserImpl;
 // Exported for tests.
 class HEADLESS_EXPORT HeadlessWebContentsImpl
     : public HeadlessWebContents,
-      public content::DevToolsAgentHostObserver,
       public content::RenderProcessHostObserver,
       public content::WebContentsObserver {
  public:
@@ -74,8 +71,6 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
 
   void Close() override;
 
-  std::string GetDevToolsAgentHostId();
-
   HeadlessBrowserImpl* browser() const;
   HeadlessBrowserContextImpl* browser_context() const;
 
@@ -112,10 +107,8 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
                   FrameFinishedCallback frame_finished_callback);
 
  private:
-  // Takes ownership of |web_contents|.
-  HeadlessWebContentsImpl(std::unique_ptr<content::WebContents> web_contents,
-                          HeadlessBrowserContextImpl* browser_context,
-                          bool use_tab_target);
+  explicit HeadlessWebContentsImpl(
+      std::unique_ptr<content::WebContents> web_contents);
 
   void InitializeWindow(const gfx::Rect& initial_bounds);
 
@@ -123,7 +116,6 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
       viz::BeginFrameArgs::kStartingFrameNumber;
   bool begin_frame_control_enabled_ = false;
 
-  raw_ptr<HeadlessBrowserContextImpl> browser_context_;  // Not owned.
   // TODO(alexclarke): With OOPIF there may be more than one renderer, we need
   // to fix this. See crbug.com/715924
   raw_ptr<content::RenderProcessHost> render_process_host_;  // Not owned.
@@ -134,9 +126,7 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
   int window_id_ = 0;
   std::string window_state_;
   std::unique_ptr<content::WebContents> const web_contents_;
-  scoped_refptr<content::DevToolsAgentHost> agent_host_;
   bool devtools_target_ready_notification_sent_ = false;
-  bool use_tab_target_ = false;
 
   base::ObserverList<HeadlessWebContents::Observer>::Unchecked observers_;
 

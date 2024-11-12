@@ -70,10 +70,14 @@ Response TargetHandler::CreateTarget(const std::string& url,
               height.value_or(browser_->options()->window_size.height())))
           .SetEnableBeginFrameControl(
               enable_begin_frame_control.value_or(false))
-          .SetUseTabTarget(for_tab.value_or(false))
           .Build());
 
-  *out_target_id = web_contents_impl->GetDevToolsAgentHostId();
+  content::WebContents* wc = web_contents_impl->web_contents();
+  auto devtools_agent_host =
+      for_tab.value_or(false)
+          ? content::DevToolsAgentHost::GetOrCreateForTab(wc)
+          : content::DevToolsAgentHost::GetOrCreateFor(wc);
+  *out_target_id = devtools_agent_host->GetId();
   return Response::Success();
 }
 

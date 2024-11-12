@@ -84,9 +84,6 @@ class HEADLESS_EXPORT HeadlessWebContents::Builder {
   // Specify whether BeginFrames should be controlled via DevTools commands.
   Builder& SetEnableBeginFrameControl(bool enable_begin_frame_control);
 
-  // Specify whether to create the CDP target of type "tab".
-  Builder& SetUseTabTarget(bool use_tab_target);
-
   // The returned object is owned by HeadlessBrowser. Call
   // HeadlessWebContents::Close() to dispose it.
   HeadlessWebContents* Build();
@@ -104,7 +101,6 @@ class HEADLESS_EXPORT HeadlessWebContents::Builder {
   GURL initial_url_ = GURL("about:blank");
   gfx::Size window_size_;
   bool enable_begin_frame_control_ = false;
-  bool use_tab_target_ = false;
 };
 
 }  // namespace headless

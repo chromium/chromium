@@ -24,7 +24,6 @@
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_termination_info.h"
-#include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -358,9 +357,8 @@ class HeadlessWebContentsImpl::PendingFrame final
 std::unique_ptr<HeadlessWebContentsImpl> HeadlessWebContentsImpl::Create(
     HeadlessWebContents::Builder* builder) {
   content::WebContents::CreateParams create_params(builder->browser_context_);
-  auto headless_web_contents = base::WrapUnique(new HeadlessWebContentsImpl(
-      content::WebContents::Create(create_params), builder->browser_context_,
-      builder->use_tab_target_));
+  auto headless_web_contents = base::WrapUnique(
+      new HeadlessWebContentsImpl(content::WebContents::Create(create_params)));
 
   headless_web_contents->begin_frame_control_enabled_ =
       builder->enable_begin_frame_control_ ||
@@ -376,9 +374,8 @@ std::unique_ptr<HeadlessWebContentsImpl>
 HeadlessWebContentsImpl::CreateForChildContents(
     HeadlessWebContentsImpl* parent,
     std::unique_ptr<content::WebContents> child_contents) {
-  auto child = base::WrapUnique(new HeadlessWebContentsImpl(
-      std::move(child_contents), parent->browser_context(),
-      parent->use_tab_target_));
+  auto child =
+      base::WrapUnique(new HeadlessWebContentsImpl(std::move(child_contents)));
 
   // Child contents have their own root window and inherit the BeginFrameControl
   // setting.
@@ -414,28 +411,19 @@ void HeadlessWebContentsImpl::SetBounds(const gfx::Rect& bounds) {
 }
 
 HeadlessWebContentsImpl::HeadlessWebContentsImpl(
-    std::unique_ptr<content::WebContents> web_contents,
-    HeadlessBrowserContextImpl* browser_context,
-    bool use_tab_target)
+    std::unique_ptr<content::WebContents> web_contents)
     : content::WebContentsObserver(web_contents.get()),
-      browser_context_(browser_context),
       render_process_host_(web_contents->GetPrimaryMainFrame()->GetProcess()),
       web_contents_delegate_(new HeadlessWebContentsImpl::Delegate(this)),
-      web_contents_(std::move(web_contents)),
-      agent_host_(use_tab_target
-                      ? content::DevToolsAgentHost::GetOrCreateForTab(
-                            web_contents_.get())
-                      : content::DevToolsAgentHost::GetOrCreateFor(
-                            web_contents_.get())),
-      use_tab_target_(use_tab_target) {
+      web_contents_(std::move(web_contents)) {
 #if BUILDFLAG(ENABLE_PRINTING)
   HeadlessPrintManager::CreateForWebContents(web_contents_.get());
 #endif
   UpdatePrefsFromSystemSettings(web_contents_->GetMutableRendererPrefs());
   web_contents_->GetMutableRendererPrefs()->accept_languages =
-      browser_context->options()->accept_language();
+      browser_context()->options()->accept_language();
   web_contents_->GetMutableRendererPrefs()->hinting =
-      browser_context->options()->font_render_hinting();
+      browser_context()->options()->font_render_hinting();
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(::switches::kForceWebRtcIPHandlingPolicy)) {
@@ -446,11 +434,9 @@ HeadlessWebContentsImpl::HeadlessWebContentsImpl(
 
   web_contents_->SetDelegate(web_contents_delegate_.get());
   render_process_host_->AddObserver(this);
-  agent_host_->AddObserver(this);
 }
 
 HeadlessWebContentsImpl::~HeadlessWebContentsImpl() {
-  agent_host_->RemoveObserver(this);
   if (render_process_host_)
     render_process_host_->RemoveObserver(this);
   // Defer destruction of WindowTreeHost, as it does sync mojo calls
@@ -491,10 +477,6 @@ void HeadlessWebContentsImpl::Close() {
   browser_context()->DestroyWebContents(this);
 }
 
-std::string HeadlessWebContentsImpl::GetDevToolsAgentHostId() {
-  return agent_host_->GetId();
-}
-
 void HeadlessWebContentsImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -523,11 +505,11 @@ content::WebContents* HeadlessWebContentsImpl::web_contents() const {
 }
 
 HeadlessBrowserImpl* HeadlessWebContentsImpl::browser() const {
-  return browser_context_->browser();
+  return browser_context()->browser();
 }
 
 HeadlessBrowserContextImpl* HeadlessWebContentsImpl::browser_context() const {
-  return browser_context_;
+  return HeadlessBrowserContextImpl::From(web_contents()->GetBrowserContext());
 }
 
 void HeadlessWebContentsImpl::BeginFrame(
@@ -599,12 +581,6 @@ HeadlessWebContents::Builder&
 HeadlessWebContents::Builder::SetEnableBeginFrameControl(
     bool enable_begin_frame_control) {
   enable_begin_frame_control_ = enable_begin_frame_control;
-  return *this;
-}
-
-HeadlessWebContents::Builder& HeadlessWebContents::Builder::SetUseTabTarget(
-    bool use_tab_target) {
-  use_tab_target_ = use_tab_target;
   return *this;
 }
 
