@@ -625,6 +625,11 @@
       ]
     },
     {
+      // crbug.com/40681980
+      name: "ButtonNoAlignItems",
+      status: "stable",
+    },
+    {
       // Bypasses the enforcement of the Page Embedded Permission Control
       // security checks. This flag is disabled by default and should only be
       // enabled in automated tests in order to allow them to avoid needing to
