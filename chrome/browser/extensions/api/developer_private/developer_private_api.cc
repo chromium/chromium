@@ -179,6 +179,9 @@ const char kExtensionNotAffectedByMV2Deprecation[] =
 const char kCannotRepairNonWebstoreExtension[] =
     "Cannot repair an extension that is not installed from the Chrome Web "
     "Store.";
+const char kCannotDismissExtensionOnUnsupportedStage[] =
+    "Cannot dismiss the MV2 deprecation notice for extension with ID '*' on "
+    "the unsupported stage.";
 
 const char kUnpackedAppsFolder[] = "apps_target";
 const char kManifestFile[] = "manifest.json";
@@ -2886,9 +2889,8 @@ DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::Run() {
     }
 
     case MV2ExperimentStage::kUnsupported:
-      // TODO(https://crbug.com/367395349): Add handling for the kUnsupported
-      // experiment stage.
-      NOTREACHED();
+      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
+          kCannotDismissExtensionOnUnsupportedStage, extension_id_)));
   }
 }
 

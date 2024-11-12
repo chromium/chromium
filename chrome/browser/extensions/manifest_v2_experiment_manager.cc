@@ -387,8 +387,10 @@ bool ManifestV2ExperimentManager::DidUserAcknowledgeNotice(
 
 void ManifestV2ExperimentManager::MarkNoticeAsAcknowledged(
     const ExtensionId& extension_id) {
-  // There is no notice for kNone stage, thus it cannot be acknowledged.
-  if (experiment_stage_ == MV2ExperimentStage::kNone) {
+  // There is no notice for kNone stage, thus it cannot be acknowledged. The
+  // notice cannot be acknowledged in kUnsupported stage.
+  if (experiment_stage_ == MV2ExperimentStage::kNone ||
+      experiment_stage_ == MV2ExperimentStage::kUnsupported) {
     return;
   }
 

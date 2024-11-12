@@ -1235,23 +1235,33 @@ class ExtensionInfoGeneratorWithMV2DeprecationUnitTest
             extensions_features::kExtensionManifestV2DeprecationWarning);
         disabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Unsupported);
         break;
       case MV2ExperimentStage::kDisableWithReEnable:
         enabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
         disabled_features.push_back(
             extensions_features::kExtensionManifestV2DeprecationWarning);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Unsupported);
         break;
       case MV2ExperimentStage::kNone:
         disabled_features.push_back(
+            extensions_features::kExtensionManifestV2DeprecationWarning);
+        disabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
         disabled_features.push_back(
-            extensions_features::kExtensionManifestV2DeprecationWarning);
+            extensions_features::kExtensionManifestV2Unsupported);
         break;
       case MV2ExperimentStage::kUnsupported:
-        // TODO(https://crbug.com/367395349): Add tests for the kUnsupported
-        // experiment stage.
-        NOTREACHED();
+        enabled_features.push_back(
+            extensions_features::kExtensionManifestV2Unsupported);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2DeprecationWarning);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Disabled);
+        break;
     }
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -1272,7 +1282,20 @@ INSTANTIATE_TEST_SUITE_P(
     ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
     testing::Values(MV2ExperimentStage::kNone,
                     MV2ExperimentStage::kWarning,
-                    MV2ExperimentStage::kDisableWithReEnable));
+                    MV2ExperimentStage::kDisableWithReEnable,
+                    MV2ExperimentStage::kUnsupported),
+    [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
+      switch (info.param) {
+        case MV2ExperimentStage::kNone:
+          return "NoneExperiment";
+        case MV2ExperimentStage::kWarning:
+          return "WarningExperiment";
+        case MV2ExperimentStage::kDisableWithReEnable:
+          return "DisableExperiment";
+        case MV2ExperimentStage::kUnsupported:
+          return "UnsupportedExperiment";
+      }
+    });
 
 // Tests that acknowledging the MV2 deprecation notice updates the extension
 // info when the experiment stage is different than 'kNone'.
@@ -1305,8 +1328,10 @@ TEST_P(ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
   {
     std::unique_ptr<developer::ExtensionInfo> info =
         GenerateExtensionInfo(extension->id());
-    if (experiment_stage() == MV2ExperimentStage::kNone) {
-      // Cannot acknowledge a notice that doesn't exist.
+    if (experiment_stage() == MV2ExperimentStage::kNone ||
+        experiment_stage() == MV2ExperimentStage::kUnsupported) {
+      // Cannot acknowledge a notice that doesn't exist (none stage) or cannot
+      // be dismissed (unsupported stage).
       EXPECT_FALSE(info->did_acknowledge_mv2_deprecation_notice);
     } else {
       EXPECT_TRUE(info->did_acknowledge_mv2_deprecation_notice);
