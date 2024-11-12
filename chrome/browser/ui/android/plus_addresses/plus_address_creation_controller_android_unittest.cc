@@ -316,6 +316,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, RefreshPlusAddress) {
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnConfirmedError) {
+  base::UserActionTester user_action_tester;
   std::unique_ptr<content::WebContents> web_contents =
       ChromeRenderViewHostTestHarness::CreateTestWebContents();
 
@@ -356,6 +357,9 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnConfirmedError) {
           metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError,
           /*notice_shown=*/false),
       0, 1);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("PlusAddresses.CreateErrorCanceled"),
+      1);
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnReservedError) {
