@@ -2684,6 +2684,12 @@ inline constexpr char kAmbientAuthenticationInPrivateModesEnabled[] =
 inline constexpr char kBasicAuthOverHttpEnabled[] =
     "auth.basic_over_http_enabled";
 
+// A list of dictionaries for force-installed Isolated Web Apps. Each dictionary
+// contains two strings: the update manifest URL and Web Bundle ID of the
+// Isolated Web App,
+inline constexpr char kIsolatedWebAppInstallForceList[] =
+    "profile.isolated_web_app.install.forcelist";
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 // Boolean that specifies whether OK-AS-DELEGATE flag from KDC is respected
 // along with kAuthNegotiateDelegateAllowlist.
@@ -2699,12 +2705,6 @@ inline constexpr char kNtlmV2Enabled[] = "auth.ntlm_v2_enabled";
 #if BUILDFLAG(IS_CHROMEOS)
 // Boolean whether Kerberos functionality is enabled.
 inline constexpr char kKerberosEnabled[] = "kerberos.enabled";
-
-// A list of dictionaries for force-installed Isolated Web Apps. Each dictionary
-// contains two strings: the update manifest URL and Web Bundle ID of the
-// Isolated Web App,
-inline constexpr char kIsolatedWebAppInstallForceList[] =
-    "profile.isolated_web_app.install.forcelist";
 
 // An integer pref that remembers how many force install initializations are
 // pending. If more than `kIsolatedWebAppForceInstallMaxRetryTreshold`
