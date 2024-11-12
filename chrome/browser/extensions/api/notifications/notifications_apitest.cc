@@ -48,7 +48,6 @@
 #include "base/mac/mac_util.h"
 #endif
 
-using ContextType = extensions::ExtensionBrowserTest::ContextType;
 using extensions::AppWindow;
 using extensions::AppWindowRegistry;
 using extensions::Extension;
@@ -67,8 +66,7 @@ enum class WindowState {
 
 class NotificationsApiTest : public extensions::ExtensionApiTest {
  public:
-  explicit NotificationsApiTest(ContextType context_type = ContextType::kNone)
-      : ExtensionApiTest(context_type) {}
+  NotificationsApiTest() = default;
   ~NotificationsApiTest() override = default;
   NotificationsApiTest(const NotificationsApiTest&) = delete;
   NotificationsApiTest& operator=(const NotificationsApiTest&) = delete;
@@ -178,28 +176,11 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
 
 // TODO(crbug.com/40170747): We should merge this class with the base
 // class once the issues mentioned in the bug are resolved.
-class NotificationsApiTestWithBackgroundType
-    : public NotificationsApiTest,
-      public testing::WithParamInterface<ContextType> {
- public:
-  NotificationsApiTestWithBackgroundType() : NotificationsApiTest(GetParam()) {}
-  ~NotificationsApiTestWithBackgroundType() override = default;
-  NotificationsApiTestWithBackgroundType(
-      const NotificationsApiTestWithBackgroundType&) = delete;
-  NotificationsApiTestWithBackgroundType& operator=(
-      const NotificationsApiTestWithBackgroundType&) = delete;
-};
+using NotificationsApiTestWithServiceWorker = NotificationsApiTest;
 
 }  // namespace
 
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         NotificationsApiTestWithBackgroundType,
-                         testing::Values(ContextType::kPersistentBackground));
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         NotificationsApiTestWithBackgroundType,
-                         testing::Values(ContextType::kServiceWorker));
-
-IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType, TestBasicUsage) {
+IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker, TestBasicUsage) {
   ASSERT_TRUE(RunExtensionTest("notifications/api/basic_usage")) << message_;
 }
 
@@ -209,12 +190,12 @@ IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType, TestBasicUsage) {
 #else
 #define MAYBE_TestEvents TestEvents
 #endif
-IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType,
+IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker,
                        MAYBE_TestEvents) {
   ASSERT_TRUE(RunExtensionTest("notifications/api/events")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType, TestCSP) {
+IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker, TestCSP) {
   ASSERT_TRUE(RunExtensionTest("notifications/api/csp")) << message_;
 }
 
@@ -260,7 +241,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestByUser) {
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
-IN_PROC_BROWSER_TEST_P(NotificationsApiTestWithBackgroundType,
+IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker,
                        TestPartialUpdate) {
   ASSERT_TRUE(RunExtensionTest("notifications/api/partial_update")) << message_;
   const extensions::Extension* extension = GetSingleLoadedExtension();
