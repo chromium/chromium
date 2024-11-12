@@ -41,6 +41,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -378,6 +379,7 @@ public class SensitiveContentTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "Flakey test. See https://crbug.com/378742136")
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
     public void testSwipingBetweenTabsIsSensitive() {
         // Set up.
