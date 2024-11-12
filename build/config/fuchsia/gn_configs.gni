@@ -56,3 +56,16 @@ declare_args() {
 fuchsia_target_api_level = 24
 fuchsia_arch_root =
     "${fuchsia_sdk}/obj/${target_cpu}-api-${fuchsia_target_api_level}"
+
+# Write Fuchsia arch root paths to gn_logs.txt, so that Siso can reference
+# these GN variables.
+_fuchsia_arch_root = rebase_path(fuchsia_arch_root, "//")
+
+# The legacy directory is still used. But, will be removed soon.
+_fuchsia_legacy_arch_root =
+    rebase_path("${fuchsia_sdk}/arch/${target_cpu}", "//")
+
+fuchsia_gn_logs = [
+  "fuchsia_arch_root=${_fuchsia_arch_root}",
+  "fuchsia_legacy_arch_root=${_fuchsia_legacy_arch_root}",
+]

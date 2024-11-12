@@ -6,16 +6,7 @@
 
 load("@builtin//lib/gn.star", "gn")
 load("@builtin//struct.star", "module")
-
-# TODO: crbug.com/323091468 - Propagate the target fuchsia arch and API version
-# from GN, and remove the hardcoded filegroups.
-fuchsia_archs = [
-    "arm64",
-    "riscv64",
-    "x64",
-]
-
-fuchsia_versions = ["16", "20", "22", "23", "24", "NEXT"]
+load("./gn_logs.star", "gn_logs")
 
 def __enabled(ctx):
     if "args.gn" in ctx.metadata:
@@ -25,28 +16,31 @@ def __enabled(ctx):
     return False
 
 def __filegroups(ctx):
-    fg = {}
-    for arch in fuchsia_archs:
-        libpath = "third_party/fuchsia-sdk/sdk/arch/%s/lib" % arch
-        fg[libpath + ":libs"] = {
+    gn_logs_data = gn_logs.read(ctx)
+    fuchsia_arch_root = gn_logs_data.get("fuchsia_arch_root")
+    fuchsia_legacy_arch_root = gn_logs_data.get("fuchsia_legacy_arch_root")
+    if not fuchsia_arch_root or not fuchsia_legacy_arch_root:
+        print("could not find fuchsia_arch_root or fuchsia_legacy_arch_root from gn_logs.txt")
+        return {}
+    fg = {
+        # The legacy directory is still used. But, will be removed soon.
+        fuchsia_legacy_arch_root + "/lib:libs": {
             "type": "glob",
             "includes": ["*.o", "*.a", "*.so"],
-        }
-        for ver in fuchsia_versions:
-            sysroot = "third_party/fuchsia-sdk/sdk/obj/%s-api-%s/sysroot" % (arch, ver)
-            libpath = "third_party/fuchsia-sdk/sdk/obj/%s-api-%s/lib" % (arch, ver)
-            fg[sysroot + ":headers"] = {
-                "type": "glob",
-                "includes": ["*.h", "*.inc", "*.o"],
-            }
-            fg[sysroot + ":link"] = {
-                "type": "glob",
-                "includes": ["*.o", "*.a", "*.so"],
-            }
-            fg[libpath + ":link"] = {
-                "type": "glob",
-                "includes": ["*.o", "*.a", "*.so"],
-            }
+        },
+        fuchsia_arch_root + "/sysroot:headers": {
+            "type": "glob",
+            "includes": ["*.h", "*.inc", "*.o"],
+        },
+        fuchsia_arch_root + "/sysroot:link": {
+            "type": "glob",
+            "includes": ["*.o", "*.a", "*.so"],
+        },
+        fuchsia_arch_root + "/lib:link": {
+            "type": "glob",
+            "includes": ["*.o", "*.a", "*.so"],
+        },
+    }
     return fg
 
 fuchsia = module(
