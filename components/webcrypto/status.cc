@@ -390,12 +390,6 @@ Status Status::ErrorPbkdf2DeriveBitsLengthNotSpecified() {
       "No length was specified for the PBKDF2 Derive Bits operation.");
 }
 
-Status Status::ErrorPbkdf2DeriveBitsLengthZero() {
-  return Status(
-      blink::kWebCryptoErrorTypeOperation,
-      "A length of 0 was specified for PBKDF2's Derive Bits operation.");
-}
-
 Status Status::ErrorPbkdf2Iterations0() {
   return Status(blink::kWebCryptoErrorTypeOperation,
                 "PBKDF2 requires iterations > 0");

@@ -1,7 +1,5 @@
 This is a testharness.js-based test.
-Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] empty password, long salt, SHA-512, with 1000 iterations with 0 length
-  assert_unreached: deriveBits failed with error OperationError: A length of 0 was specified for PBKDF2's Derive Bits operation. Reached unreachable code
+Found 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty password, long salt, SHA-512, with 1000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty password, long salt, SHA-512, with 1000 iterations
@@ -10,8 +8,6 @@ Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty password, long salt, SHA-512, with 1000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty password, long salt, SHA-512, with 100000 iterations with 0 length
-  assert_unreached: deriveBits failed with error OperationError: A length of 0 was specified for PBKDF2's Derive Bits operation. Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty password, long salt, SHA-512, with 100000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty password, long salt, SHA-512, with 100000 iterations
@@ -20,8 +16,6 @@ Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty password, long salt, SHA-512, with 100000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty password, long salt, SHA-1, with 1 iterations with 0 length
-  assert_unreached: deriveBits failed with error OperationError: A length of 0 was specified for PBKDF2's Derive Bits operation. Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty password, long salt, SHA-1, with 1 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty password, long salt, SHA-1, with 1 iterations
@@ -30,8 +24,6 @@ Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty password, long salt, SHA-1, with 1 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty password, long salt, SHA-1, with 1000 iterations with 0 length
-  assert_unreached: deriveBits failed with error OperationError: A length of 0 was specified for PBKDF2's Derive Bits operation. Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty password, long salt, SHA-1, with 1000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty password, long salt, SHA-1, with 1000 iterations
@@ -40,8 +32,6 @@ Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty password, long salt, SHA-1, with 1000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty password, long salt, SHA-1, with 100000 iterations with 0 length
-  assert_unreached: deriveBits failed with error OperationError: A length of 0 was specified for PBKDF2's Derive Bits operation. Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty password, long salt, SHA-1, with 100000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty password, long salt, SHA-1, with 100000 iterations
@@ -50,8 +40,6 @@ Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty password, long salt, SHA-1, with 100000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty password, long salt, SHA-256, with 1 iterations with 0 length
-  assert_unreached: deriveBits failed with error OperationError: A length of 0 was specified for PBKDF2's Derive Bits operation. Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty password, long salt, SHA-256, with 1 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty password, long salt, SHA-256, with 1 iterations
@@ -60,8 +48,6 @@ Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty password, long salt, SHA-256, with 1 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty password, long salt, SHA-256, with 1000 iterations with 0 length
-  assert_unreached: deriveBits failed with error OperationError: A length of 0 was specified for PBKDF2's Derive Bits operation. Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty password, long salt, SHA-256, with 1000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty password, long salt, SHA-256, with 1000 iterations
@@ -70,8 +56,6 @@ Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty password, long salt, SHA-256, with 1000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty password, long salt, SHA-256, with 100000 iterations with 0 length
-  assert_unreached: deriveBits failed with error OperationError: A length of 0 was specified for PBKDF2's Derive Bits operation. Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty password, long salt, SHA-256, with 100000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty password, long salt, SHA-256, with 100000 iterations
@@ -80,8 +64,6 @@ Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty password, long salt, SHA-256, with 100000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty password, empty salt, SHA-384, with 1 iterations with 0 length
-  assert_unreached: deriveBits failed with error OperationError: A length of 0 was specified for PBKDF2's Derive Bits operation. Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty password, empty salt, SHA-384, with 1 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty password, empty salt, SHA-384, with 1 iterations
@@ -90,8 +72,6 @@ Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty password, empty salt, SHA-384, with 1 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty password, empty salt, SHA-384, with 1000 iterations with 0 length
-  assert_unreached: deriveBits failed with error OperationError: A length of 0 was specified for PBKDF2's Derive Bits operation. Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty password, empty salt, SHA-384, with 1000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty password, empty salt, SHA-384, with 1000 iterations
@@ -100,8 +80,6 @@ Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty password, empty salt, SHA-384, with 1000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty password, empty salt, SHA-384, with 100000 iterations with 0 length
-  assert_unreached: deriveBits failed with error OperationError: A length of 0 was specified for PBKDF2's Derive Bits operation. Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty password, empty salt, SHA-384, with 100000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty password, empty salt, SHA-384, with 100000 iterations
@@ -110,8 +88,6 @@ Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty password, empty salt, SHA-384, with 100000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty password, empty salt, SHA-512, with 1 iterations with 0 length
-  assert_unreached: deriveBits failed with error OperationError: A length of 0 was specified for PBKDF2's Derive Bits operation. Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty password, empty salt, SHA-512, with 1 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty password, empty salt, SHA-512, with 1 iterations
@@ -120,8 +96,6 @@ Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-KW length: 192  using empty password, empty salt, SHA-512, with 1 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
-[FAIL] empty password, empty salt, SHA-512, with 1000 iterations with 0 length
-  assert_unreached: deriveBits failed with error OperationError: A length of 0 was specified for PBKDF2's Derive Bits operation. Reached unreachable code
 [FAIL] Derived key of type name: AES-CBC length: 192  using empty password, empty salt, SHA-512, with 1000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 [FAIL] Derived key of type name: AES-CTR length: 192  using empty password, empty salt, SHA-512, with 1000 iterations
@@ -129,3 +103,4 @@ Found 64 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Derived key of type name: AES-GCM length: 192  using empty password, empty salt, SHA-512, with 1000 iterations
   assert_unreached: deriveKey failed with error OperationError: 192-bit AES keys are not supported Reached unreachable code
 Harness: the test ran to completion.
+
