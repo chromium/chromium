@@ -928,6 +928,7 @@ enum class ToolbarKind {
 - (void)destroyViewController {
   self.viewController.active = NO;
   self.viewController.webUsageEnabled = NO;
+  self.viewController.browserViewVisibilityConsumer = nil;
 
   [self.contextMenuProvider stop];
   self.contextMenuProvider = nil;
@@ -2191,6 +2192,11 @@ enum class ToolbarKind {
 #pragma mark - BrowserViewVisibilityConsumer
 
 - (void)browserViewDidChangeVisibility {
+  // TODO(crbug.com/377763682): This is a temporary fix to avoid a crash.
+  if (!self.browser) {
+    NOTREACHED(base::NotFatalUntil::M133);
+    return;
+  }
   raw_ptr<TabBasedIPHBrowserAgent> tabBasedIPHBrowserAgent =
       TabBasedIPHBrowserAgent::FromBrowser(self.browser);
   if (!tabBasedIPHBrowserAgent) {
