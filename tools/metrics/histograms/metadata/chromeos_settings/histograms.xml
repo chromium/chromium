@@ -263,7 +263,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.KeyboardFunctionKeys"
-    enum="BooleanToggled" expires_after="2024-12-15">
+    enum="BooleanToggled" expires_after="2025-12-15">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
