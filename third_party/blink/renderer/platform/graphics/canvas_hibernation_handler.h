@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_HIBERNATION_HANDLER_H_
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -16,6 +17,8 @@
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
+
+class CanvasResourceHost;
 
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvasHibernationSnapshotZstd);
 
@@ -40,6 +43,10 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
     kHibernationAbortedBecauseNoSurface = 12,
     kMaxValue = kHibernationAbortedBecauseNoSurface,
   };
+
+  explicit CanvasHibernationHandler(CanvasResourceHost& resource_host);
+  CanvasHibernationHandler(const CanvasHibernationHandler&) = delete;
+  CanvasHibernationHandler& operator=(const CanvasHibernationHandler&) = delete;
 
   ~CanvasHibernationHandler();
   // Semi-arbitrary threshold. Some past experiments (e.g. tile discard) have
@@ -149,6 +156,7 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
   int height_;
   int bytes_per_pixel_;
 
+  const base::raw_ref<CanvasResourceHost> resource_host_;
   base::WeakPtrFactory<CanvasHibernationHandler> weak_ptr_factory_{this};
 };
 

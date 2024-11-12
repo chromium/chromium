@@ -181,9 +181,9 @@ TEST_P(CanvasHibernationHandlerTest, SimpleTest) {
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  CanvasHibernationHandler handler;
   FakeCanvasResourceHost host(gfx::Size(300, 200));
   host.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  CanvasHibernationHandler handler(host);
 
   Draw(host);
 
@@ -240,9 +240,9 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundTooEarly) {
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  CanvasHibernationHandler handler;
   FakeCanvasResourceHost host(gfx::Size(300, 200));
   host.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  CanvasHibernationHandler handler(host);
 
   Draw(host);
 
@@ -267,9 +267,9 @@ TEST_P(CanvasHibernationHandlerTest, BackgroundForeground) {
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  CanvasHibernationHandler handler;
   FakeCanvasResourceHost host(gfx::Size(300, 200));
   host.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  CanvasHibernationHandler handler(host);
 
   Draw(host);
 
@@ -293,9 +293,9 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundAfterEncoding) {
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  CanvasHibernationHandler handler;
   FakeCanvasResourceHost host(gfx::Size(300, 200));
   host.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  CanvasHibernationHandler handler(host);
 
   Draw(host);
 
@@ -322,9 +322,9 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundFlipForAfterEncoding) {
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  CanvasHibernationHandler handler;
   FakeCanvasResourceHost host(gfx::Size(300, 200));
   host.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  CanvasHibernationHandler handler(host);
 
   Draw(host);
 
@@ -360,9 +360,9 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundFlipForBeforeEncoding) {
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  CanvasHibernationHandler handler;
   FakeCanvasResourceHost host(gfx::Size(300, 200));
   host.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  CanvasHibernationHandler handler(host);
 
   Draw(host);
 
@@ -392,9 +392,9 @@ TEST_P(CanvasHibernationHandlerTest, ClearEndsHibernation) {
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  CanvasHibernationHandler handler;
   FakeCanvasResourceHost host(gfx::Size(300, 200));
   host.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  CanvasHibernationHandler handler(host);
 
   Draw(host);
 
@@ -419,9 +419,9 @@ TEST_P(CanvasHibernationHandlerTest, ClearWhileCompressingEndsHibernation) {
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  CanvasHibernationHandler handler;
   FakeCanvasResourceHost host(gfx::Size(300, 200));
   host.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  CanvasHibernationHandler handler(host);
 
   Draw(host);
 
@@ -457,9 +457,9 @@ TEST_P(CanvasHibernationHandlerTest, HibernationMemoryMetrics) {
 
   auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  auto handler = std::make_unique<CanvasHibernationHandler>();
   FakeCanvasResourceHost host(gfx::Size(300, 200));
   host.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  auto handler = std::make_unique<CanvasHibernationHandler>(host);
 
   Draw(host);
 

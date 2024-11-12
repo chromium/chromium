@@ -27,6 +27,7 @@
 
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "cc/layers/texture_layer.h"
 #include "cc/layers/texture_layer_impl.h"
@@ -60,7 +61,8 @@ gpu::ContextSupport* GetContextSupport() {
 }  // namespace
 
 Canvas2DLayerBridge::Canvas2DLayerBridge(CanvasResourceHost* resource_host)
-    : resource_host_(resource_host) {
+    : hibernation_handler_(CHECK_DEREF(resource_host)),
+      resource_host_(resource_host) {
   CHECK(resource_host_);
 }
 
