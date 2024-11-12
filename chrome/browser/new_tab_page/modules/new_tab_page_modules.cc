@@ -50,6 +50,13 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
     details.emplace_back("sharepoint", IDS_NTP_MODULES_SHAREPOINT_NAME);
   }
 
+  // TODO(crbug.com/377888363): Add conditional display logic.
+  if (base::FeatureList::IsEnabled(
+          ntp_features::kNtpMicrosoftAuthenticationModule)) {
+    details.emplace_back("microsoft_authentication",
+                         IDS_NTP_MODULES_MICROSOFT_AUTHENTICATION_NAME);
+  }
+
   if (base::FeatureList::IsEnabled(
           ntp_features::kNtpMostRelevantTabResumptionModule)) {
     details.emplace_back("tab_resumption",

@@ -421,6 +421,12 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
        IDS_TAB_RESUME_DECORATORS_FREQUENTLY_VISITED},
       {"modulesMostRelevantTabResumptionVisitedXAgo",
        IDS_TAB_RESUME_DECORATORS_VISITED_X_AGO},
+      {"modulesMicrosoftAuthName",
+       IDS_NTP_MODULES_MICROSOFT_AUTHENTICATION_NAME},
+      {"modulesMicrosoftAuthDisable",
+       IDS_NTP_MICROSOFT_AUTHENTICATION_DISABLE_BUTTON_TEXT},
+      {"modulesMicrosoftAuthDismiss",
+       IDS_NTP_MICROSOFT_AUTHENTICATION_DISMISS_BUTTON_TEXT},
 
       // Middle slot promo.
       {"undoDismissPromoButtonToast", IDS_NTP_UNDO_DISMISS_PROMO_BUTTON_TOAST},

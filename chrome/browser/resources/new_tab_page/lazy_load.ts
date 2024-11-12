@@ -26,6 +26,7 @@ export {counterfactualLoad} from './modules/module_descriptors.js';
 export {ModuleHeaderElement} from './modules/module_header.js';
 export {ModuleRegistry} from './modules/module_registry.js';
 export {ModuleWrapperElement} from './modules/module_wrapper.js';
+export {microsoftAuthModuleDescriptor, MicrosoftAuthModuleElement} from './modules/v2/authentication/microsoft_auth_module.js';
 export {CalendarElement} from './modules/v2/calendar/calendar.js';
 export {CalendarEventElement} from './modules/v2/calendar/calendar_event.js';
 export {CalendarAction} from './modules/v2/calendar/common.js';

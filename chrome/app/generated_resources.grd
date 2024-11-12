@@ -8821,6 +8821,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_MOST_RELEVANT_TAB_RESUMPTION_SEE_MORE" desc="A label for the see more button in the most relevant tab resumption module.">
         See more
       </message>
+      <message name="IDS_NTP_MODULES_MICROSOFT_AUTHENTICATION_NAME" desc="Name of the Microsoft Authentication module as shown in various UIs.">
+        Microsoft Authentication
+      </message>
+      <message name="IDS_NTP_MICROSOFT_AUTHENTICATION_DISABLE_BUTTON_TEXT" desc="Text shown on the disable button of the Microsoft Authentication module.">
+       Don't show this card
+      </message>
+      <message name="IDS_NTP_MICROSOFT_AUTHENTICATION_DISMISS_BUTTON_TEXT" desc="Text shown on the disable button of the Microsoft Authentication module.">
+       Hide for 12 hours
+      </message>
 
       <!-- Mobile NTP Middle Slot Promo -->
       <message name="IDS_NTP_MOBILE_PROMO_HEADER" desc="Header for a promo that shows on the Desktop NTP prompting user to scan a QR code with their mobile device">
