@@ -181,10 +181,6 @@ export class ModuleElement extends I18nMixinLit
     }
   }
 
-  protected onMenuButtonClick_(e: Event) {
-    this.$.moduleHeaderElementV2.showAt(e);
-  }
-
   protected onUrlVisitClick_(e: Event) {
     this.fire('usage');
     const currentTarget = e.currentTarget as HTMLElement;

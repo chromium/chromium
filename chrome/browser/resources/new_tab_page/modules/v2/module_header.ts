@@ -51,10 +51,6 @@ export class ModuleHeaderElement extends CrLitElement {
   menuItemGroups: MenuItem[][] = [];
   moreActionsText: string;
 
-  showAt(e: Event) {
-    this.$.actionMenu.showAt(e.target as HTMLElement);
-  }
-
   protected onButtonClick_(e: Event) {
     const action = (e.currentTarget as HTMLElement).dataset['action'];
     assert(action);
@@ -70,9 +66,7 @@ export class ModuleHeaderElement extends CrLitElement {
   }
 
   protected onMenuButtonClick_(e: Event) {
-    e.stopPropagation();
-    this.dispatchEvent(
-        new Event('menu-button-click', {bubbles: true, composed: true}));
+    this.$.actionMenu.showAt(e.target as HTMLElement);
   }
 
   protected showDivider_(index: number): boolean {

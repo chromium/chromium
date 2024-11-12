@@ -91,4 +91,19 @@ suite('ModuleHeaderV2', () => {
         assertTrue(!!horizontalRule);
         assertFalse(horizontalRule.hidden);
       });
+
+  test('clicking the menu button shows the action menu', async () => {
+    // Arrange.
+    const menuButton =
+        moduleHeaderElementV2.shadowRoot!.querySelector<HTMLElement>(
+            '#menuButton');
+    assertTrue(!!menuButton);
+
+    // Act
+    menuButton.click();
+    await microtasksFinished();
+
+    // Assert.
+    assertTrue(moduleHeaderElementV2.$.actionMenu.open);
+  });
 });

@@ -73,10 +73,6 @@ export class MicrosoftAuthModuleElement extends MicrosoftAuthModuleElementBase {
   protected onDismissButtonClick_() {
     // TODO(crbug.com/377378212): Handle button click.
   }
-
-  protected onMenuButtonClick_(e: Event) {
-    this.$.moduleHeaderElementV2.showAt(e);
-  }
 }
 
 customElements.define(

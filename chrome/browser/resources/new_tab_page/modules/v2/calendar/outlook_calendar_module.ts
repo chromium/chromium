@@ -85,10 +85,6 @@ export class OutlookCalendarModuleElement extends
     });
     this.dispatchEvent(disableEvent);
   }
-
-  protected onMenuButtonClick_(e: Event) {
-    this.$.moduleHeaderElementV2.showAt(e);
-  }
 }
 
 customElements.define(

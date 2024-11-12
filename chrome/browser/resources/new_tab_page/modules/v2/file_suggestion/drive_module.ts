@@ -116,10 +116,6 @@ export class DriveModuleElement extends DriveModuleElementBase {
   protected onInfoDialogClose_() {
     this.showInfoDialog_ = false;
   }
-
-  protected onMenuButtonClick_(e: Event) {
-    this.$.moduleHeaderElementV2.showAt(e);
-  }
 }
 
 customElements.define(DriveModuleElement.is, DriveModuleElement);
