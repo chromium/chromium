@@ -120,12 +120,12 @@ Matcher<ActionButtonView*> ActionButtonIsCollapsed() {
                   Property(&views::Label::GetVisible, false));
 }
 
-class SunfishTest : public AshTestBase {
+class SunfishTestBase : public AshTestBase {
  public:
-  SunfishTest() = default;
-  SunfishTest(const SunfishTest&) = delete;
-  SunfishTest& operator=(const SunfishTest&) = delete;
-  ~SunfishTest() override = default;
+  SunfishTestBase() = default;
+  SunfishTestBase(const SunfishTestBase&) = delete;
+  SunfishTestBase& operator=(const SunfishTestBase&) = delete;
+  ~SunfishTestBase() override = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -140,7 +140,73 @@ class SunfishTest : public AshTestBase {
  private:
   // Calling the factory constructor is enough to set it up.
   TestAshWebViewFactory test_web_view_factory_;
+};
 
+class SunfishDisabledTest : public SunfishTestBase {
+ public:
+  SunfishDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(features::kSunfishFeature);
+  }
+  SunfishDisabledTest(const SunfishDisabledTest&) = delete;
+  SunfishDisabledTest& operator=(const SunfishDisabledTest&) = delete;
+  ~SunfishDisabledTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that the accelerator entry point is a no-op when the feature is not
+// enabled.
+TEST_F(SunfishDisabledTest, AccelEntryPointIsNoop) {
+  PressAndReleaseKey(ui::VKEY_8,
+                     ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
+
+  auto* controller = CaptureModeController::Get();
+  EXPECT_FALSE(controller->IsActive());
+}
+
+// Tests that the search action button is not shown in the default capture mode
+// if the feature is disabled.
+TEST_F(SunfishDisabledTest, SearchActionButtonNotShown) {
+  // Start default capture mode *not* region selection.
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kImage);
+  auto* controller = CaptureModeController::Get();
+  ASSERT_TRUE(controller->IsActive());
+  auto* session =
+      static_cast<CaptureModeSession*>(controller->capture_mode_session());
+  CaptureModeSessionTestApi session_test_api(session);
+  // Since we cannot select a region, no action buttons are shown.
+  ASSERT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+
+  // Set the source type to region, then select a region.
+  controller->SetSource(CaptureModeSource::kRegion);
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  // There should not be any buttons.
+  EXPECT_THAT(session_test_api.GetActionButtons(), IsEmpty());
+}
+
+// Tests that no text detection request is ever made in default capture mode if
+// the feature is disabled.
+TEST_F(SunfishDisabledTest, NoTextDetectionInDefaultMode) {
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+
+  // No text detection request should have been made, so there should not be a
+  // pending DLP check.
+  EXPECT_FALSE(CaptureModeTestApi().IsPendingDlpCheck());
+}
+
+class SunfishTest : public SunfishTestBase {
+ public:
+  SunfishTest() = default;
+  SunfishTest(const SunfishTest&) = delete;
+  SunfishTest& operator=(const SunfishTest&) = delete;
+  ~SunfishTest() override = default;
+
+ private:
   base::test::ScopedFeatureList scoped_feature_list_{features::kSunfishFeature};
   base::AutoReset<bool> ignore_sunfish_secret_key =
       switches::SetIgnoreSunfishSecretKeyForTest();
