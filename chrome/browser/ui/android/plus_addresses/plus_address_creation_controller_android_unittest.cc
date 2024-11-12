@@ -281,9 +281,9 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeCancel) {
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, RefreshPlusAddress) {
+  base::UserActionTester user_action_tester;
   std::unique_ptr<content::WebContents> web_contents =
       ChromeRenderViewHostTestHarness::CreateTestWebContents();
-
   PlusAddressCreationControllerAndroid::CreateForWebContents(
       web_contents.get());
   PlusAddressCreationControllerAndroid* controller =
@@ -294,6 +294,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, RefreshPlusAddress) {
       url::Origin::Create(GURL("https://mattwashere.example")),
       future.GetCallback());
   controller->OnRefreshClicked();
+  EXPECT_EQ(user_action_tester.GetActionCount("PlusAddresses.Refreshed"), 1);
   FastForwardBy(kDuration);
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());

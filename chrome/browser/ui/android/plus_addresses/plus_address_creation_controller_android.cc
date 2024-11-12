@@ -225,6 +225,7 @@ void PlusAddressCreationControllerAndroid::OnRefreshClicked() {
   if (!plus_address_service) {
     return;
   }
+  base::RecordAction(base::UserMetricsAction("PlusAddresses.Refreshed"));
   plus_address_service->RefreshPlusAddress(
       relevant_origin_,
       base::BindOnce(
