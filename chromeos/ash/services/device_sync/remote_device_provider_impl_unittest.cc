@@ -315,11 +315,9 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
     EXPECT_EQ(0u, remote_device_provider_->GetSyncedDevices().size());
 
     // A new loader should be created to load the initial list of devices.
-    if (features::ShouldUseV2DeviceSync()) {
-      ++expected_v2_loader_count_;
-      EXPECT_EQ(expected_v2_loader_count_,
-                fake_remote_device_v2_loader_factory_->instances().size());
-    }
+    ++expected_v2_loader_count_;
+    EXPECT_EQ(expected_v2_loader_count_,
+              fake_remote_device_v2_loader_factory_->instances().size());
   }
 
   void NotifyV1SyncFinished(bool success, bool did_devices_change) {

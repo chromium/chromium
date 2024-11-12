@@ -445,10 +445,8 @@ void DeviceSyncImpl::ForceSyncNow(ForceSyncNowCallback callback) {
     return;
   }
 
-  if (features::ShouldUseV2DeviceSync()) {
-    cryptauth_v2_device_manager_->ForceDeviceSyncNow(
-        cryptauthv2::ClientMetadata::MANUAL, std::nullopt /* session_id */);
-  }
+  cryptauth_v2_device_manager_->ForceDeviceSyncNow(
+      cryptauthv2::ClientMetadata::MANUAL, std::nullopt /* session_id */);
 
   std::move(callback).Run(true /* success */);
   RecordForceSyncNowResult(
@@ -631,19 +629,17 @@ void DeviceSyncImpl::GetDebugInfo(GetDebugInfoCallback callback) {
     return;
   }
 
-  if (features::ShouldUseV2DeviceSync()) {
-    std::move(callback).Run(mojom::DebugInfo::New(
-        cryptauth_enrollment_manager_->GetLastEnrollmentTime(),
-        cryptauth_enrollment_manager_->GetTimeToNextAttempt(),
-        cryptauth_enrollment_manager_->IsRecoveringFromFailure(),
-        cryptauth_enrollment_manager_->IsEnrollmentInProgress(),
-        cryptauth_v2_device_manager_->GetLastDeviceSyncTime().value_or(
-            base::Time()),
-        cryptauth_v2_device_manager_->GetTimeToNextAttempt().value_or(
-            base::TimeDelta::Max()),
-        cryptauth_v2_device_manager_->IsRecoveringFromFailure(),
-        cryptauth_v2_device_manager_->IsDeviceSyncInProgress()));
-  }
+  std::move(callback).Run(mojom::DebugInfo::New(
+      cryptauth_enrollment_manager_->GetLastEnrollmentTime(),
+      cryptauth_enrollment_manager_->GetTimeToNextAttempt(),
+      cryptauth_enrollment_manager_->IsRecoveringFromFailure(),
+      cryptauth_enrollment_manager_->IsEnrollmentInProgress(),
+      cryptauth_v2_device_manager_->GetLastDeviceSyncTime().value_or(
+          base::Time()),
+      cryptauth_v2_device_manager_->GetTimeToNextAttempt().value_or(
+          base::TimeDelta::Max()),
+      cryptauth_v2_device_manager_->IsRecoveringFromFailure(),
+      cryptauth_v2_device_manager_->IsDeviceSyncInProgress()));
 }
 
 void DeviceSyncImpl::OnEnrollmentFinished(bool success) {
@@ -955,17 +951,14 @@ void DeviceSyncImpl::InitializeCryptAuthManagementObjects() {
           cryptauth_scheduler_.get(), profile_prefs_, clock_);
 
   // Start() is not called yet since the device has not completed enrollment.
-  if (features::ShouldUseV2DeviceSync()) {
-    cryptauth_device_registry_ =
-        CryptAuthDeviceRegistryImpl::Factory::Create(profile_prefs_);
+  cryptauth_device_registry_ =
+      CryptAuthDeviceRegistryImpl::Factory::Create(profile_prefs_);
 
-    cryptauth_v2_device_manager_ =
-        CryptAuthV2DeviceManagerImpl::Factory::Create(
-            *client_app_metadata_, cryptauth_device_registry_.get(),
-            cryptauth_key_registry_.get(), cryptauth_client_factory_.get(),
-            cryptauth_gcm_manager_.get(), cryptauth_scheduler_.get(),
-            profile_prefs_, get_attestation_certificates_function_);
-  }
+  cryptauth_v2_device_manager_ = CryptAuthV2DeviceManagerImpl::Factory::Create(
+      *client_app_metadata_, cryptauth_device_registry_.get(),
+      cryptauth_key_registry_.get(), cryptauth_client_factory_.get(),
+      cryptauth_gcm_manager_.get(), cryptauth_scheduler_.get(), profile_prefs_,
+      get_attestation_certificates_function_);
 
   cryptauth_enrollment_manager_->AddObserver(this);
   cryptauth_enrollment_manager_->Start();
@@ -977,26 +970,22 @@ void DeviceSyncImpl::CompleteInitializationAfterSuccessfulEnrollment() {
 
   // Now that enrollment has completed, the current device has been registered
   // with the CryptAuth back-end and can begin monitoring synced devices.
-  if (features::ShouldUseV2DeviceSync()) {
-    cryptauth_v2_device_manager_->Start();
-  }
+  cryptauth_v2_device_manager_->Start();
 
   remote_device_provider_ = RemoteDeviceProviderImpl::Factory::Create(
       cryptauth_v2_device_manager_.get(), primary_account_info_.email,
       cryptauth_enrollment_manager_->GetUserPrivateKey());
   remote_device_provider_->AddObserver(this);
 
-  if (features::ShouldUseV2DeviceSync()) {
-    feature_status_setter_ = CryptAuthFeatureStatusSetterImpl::Factory::Create(
-        client_app_metadata_->instance_id(),
-        client_app_metadata_->instance_id_token(),
-        cryptauth_client_factory_.get());
+  feature_status_setter_ = CryptAuthFeatureStatusSetterImpl::Factory::Create(
+      client_app_metadata_->instance_id(),
+      client_app_metadata_->instance_id_token(),
+      cryptauth_client_factory_.get());
 
-    device_notifier_ = CryptAuthDeviceNotifierImpl::Factory::Create(
-        client_app_metadata_->instance_id(),
-        client_app_metadata_->instance_id_token(),
-        cryptauth_client_factory_.get());
-  }
+  device_notifier_ = CryptAuthDeviceNotifierImpl::Factory::Create(
+      client_app_metadata_->instance_id(),
+      client_app_metadata_->instance_id_token(),
+      cryptauth_client_factory_.get());
 
   status_ = InitializationStatus::kReady;
   PA_LOG(VERBOSE) << "DeviceSyncImpl: CryptAuth Enrollment is valid; service "

@@ -27,12 +27,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   CryptAuthV2EnrollmentManagerImpl::RegisterPrefs(registry);
   CryptAuthKeyRegistryImpl::RegisterPrefs(registry);
   CryptAuthSchedulerImpl::RegisterPrefs(registry);
-
-  if (features::ShouldUseV2DeviceSync()) {
-    CryptAuthDeviceRegistryImpl::RegisterPrefs(registry);
-    CryptAuthMetadataSyncerImpl::RegisterPrefs(registry);
-    SyncedBluetoothAddressTrackerImpl::RegisterPrefs(registry);
-  }
+  CryptAuthDeviceRegistryImpl::RegisterPrefs(registry);
+  CryptAuthMetadataSyncerImpl::RegisterPrefs(registry);
+  SyncedBluetoothAddressTrackerImpl::RegisterPrefs(registry);
 
   if (features::IsCryptauthAttestationSyncingEnabled()) {
     AttestationCertificatesSyncerImpl::RegisterPrefs(registry);

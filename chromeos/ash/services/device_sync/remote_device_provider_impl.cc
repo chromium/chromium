@@ -49,11 +49,9 @@ RemoteDeviceProviderImpl::RemoteDeviceProviderImpl(
     : v2_device_manager_(v2_device_manager),
       user_email_(user_email),
       user_private_key_(user_private_key) {
-  if (features::ShouldUseV2DeviceSync()) {
-    DCHECK(v2_device_manager_);
-    v2_device_manager_->AddObserver(this);
-    LoadV2RemoteDevices();
-  }
+  DCHECK(v2_device_manager_);
+  v2_device_manager_->AddObserver(this);
+  LoadV2RemoteDevices();
 }
 
 RemoteDeviceProviderImpl::~RemoteDeviceProviderImpl() {
