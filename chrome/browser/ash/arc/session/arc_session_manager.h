@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/browser/ash/policy/arc/android_management_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -406,9 +407,15 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   class ScopedOptInFlowTracker;
 
   // Handles the completion of the hardware compatibility check for ARC on a
-  // Reven device. If the device is compatible with ARC, it adds a job for
-  // installing the Android DLC image.
+  // reven device. If the device is compatible with ARC, the DLC service client
+  // starts to install the Android DLC image.
   void OnEnableArcOnReven(std::deque<JobDesc> jobs, bool is_compatible);
+
+  // Handles the completion of the arcvm DLC installation. If the installation
+  // succeeds, adds a job to mount the DLC directory to the arc root directory.
+  void OnDlcInstalled(
+      std::deque<JobDesc> jobs,
+      const ash::DlcserviceClient::InstallResult& install_result);
 
   // Requests to disable ARC session and allows to optionally remove ARC data.
   // If ARC is already disabled, no-op.

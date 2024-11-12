@@ -109,6 +109,7 @@ static_library("session") {
     "//chromeos/ash/components/dbus/cdm_factory_daemon",
     "//chromeos/ash/components/dbus/cicerone",
     "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/spaced",
     "//chromeos/ash/components/dbus/upstart",

@@ -96,8 +96,10 @@ constexpr const char kArcSaltPath[] = "/var/lib/misc/arc_salt";
 constexpr const char kArcPrepareHostGeneratedDirJobName[] =
     "arc_2dprepare_2dhost_2dgenerated_2ddir";
 
-constexpr const char kArcvmInstallAndroidImageDlc[] =
-    "arcvm_2dinstall_2dandroid_2dimage_2ddlc";
+constexpr const char kArcvmBindMountDlcPath[] =
+    "arcvm_2dbind_2dmount_2ddlc_2dpath";
+
+constexpr const char kArcvmDlcId[] = "android-vm-dlc";
 
 // Maximum amount of time we'll wait for ARC to finish booting up. Once this
 // timeout expires, keep ARC running in case the user wants to file feedback,
@@ -1952,17 +1954,34 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
 void ArcSessionManager::OnEnableArcOnReven(std::deque<JobDesc> jobs,
                                            bool is_compatible) {
   if (is_compatible) {
-    VLOG(1) << "Reven device is compatible for ARC. Adding and starting the "
-               "Android DLC install job.";
-    jobs.emplace_front(JobDesc{kArcvmInstallAndroidImageDlc,
-                               UpstartOperation::JOB_STOP_AND_START,
-                               {}});
+    VLOG(1) << "Reven device is compatible for ARC. Installing arcvm image "
+               "from DLC.";
+    dlcservice::InstallRequest install_request;
+    install_request.set_id(kArcvmDlcId);
+    ash::DlcserviceClient::Get()->Install(
+        install_request,
+        base::BindOnce(&ArcSessionManager::OnDlcInstalled,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(jobs)),
+        base::DoNothing());
+  } else {
+    VLOG(1) << "Reven device is not compatible for ARC.";
+    OnExpandPropertyFilesAndReadSalt(
+        ArcSessionManager::ExpansionResult{{}, false});
+  }
+}
+
+void ArcSessionManager::OnDlcInstalled(
+    std::deque<JobDesc> jobs,
+    const ash::DlcserviceClient::InstallResult& install_result) {
+  if (install_result.error == dlcservice::kErrorNone) {
+    jobs.emplace_front(JobDesc{
+        kArcvmBindMountDlcPath, UpstartOperation::JOB_STOP_AND_START, {}});
     ConfigureUpstartJobs(
         std::move(jobs),
         base::BindOnce(&ArcSessionManager::OnExpandPropertyFiles,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
-    VLOG(1) << "Reven device is not compatible for ARC.";
+    VLOG(1) << "Failed to install arcvm DLC: " << install_result.error;
     OnExpandPropertyFilesAndReadSalt(
         ArcSessionManager::ExpansionResult{{}, false});
   }
