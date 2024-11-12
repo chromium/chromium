@@ -20,7 +20,8 @@ void UseCounterCallback(v8::Isolate* isolate,
   if (V8PerIsolateData::From(isolate)->IsUseCounterDisabled())
     return;
 
-  WebFeature blink_feature;
+  std::optional<WebFeature> blink_feature;
+  std::optional<WebDXFeature> webdx_feature;
   bool deprecated = false;
   switch (feature) {
     case v8::Isolate::kUseAsm:
@@ -398,11 +399,21 @@ void UseCounterCallback(v8::Isolate* isolate,
       // does not know about. It's harmless.
       return;
   }
-  if (deprecated) {
-    Deprecation::CountDeprecation(CurrentExecutionContext(isolate),
-                                  blink_feature);
+  if (blink_feature.has_value()) {
+    CHECK(!webdx_feature.has_value());
+
+    if (deprecated) {
+      Deprecation::CountDeprecation(CurrentExecutionContext(isolate),
+                                    *blink_feature);
+    } else {
+      UseCounter::Count(CurrentExecutionContext(isolate), *blink_feature);
+    }
   } else {
-    UseCounter::Count(CurrentExecutionContext(isolate), blink_feature);
+    CHECK(webdx_feature.has_value());
+    CHECK(!deprecated);
+
+    UseCounter::CountWebDXFeature(CurrentExecutionContext(isolate),
+                                  *webdx_feature);
   }
 }
 
