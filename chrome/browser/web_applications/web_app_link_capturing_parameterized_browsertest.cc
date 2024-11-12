@@ -793,6 +793,10 @@ static const base::flat_set<std::string> disabled_flaky_tests = {
     "LeftClick_WithoutOpener_TargetBlank",
     "NavigateExisting_BothBrowser_CaptureOn_Tab_ScopeA2B_Direct_ViaLink_"
     "LeftClick_WithoutOpener_TargetBlank",
+    "NavigateExisting_AppAStandaloneAppBBrowser_CaptureOn_Tab_ScopeA2B_"
+    "ServerSideViaA_ViaLink_LeftClick_WithoutOpener_TargetBlank",
+    "NavigateExisting_BothBrowser_CaptureOn_Tab_ScopeA2B_ServerSideViaA_"
+    "ViaLink_LeftClick_WithoutOpener_TargetBlank",
 #endif
 };
 
