@@ -222,10 +222,6 @@ class ExtensionHost : public DeferredStartRenderHost,
   // DeferredStartRenderHost:
   void CreateRendererNow() override;
 
-  // Message handlers.
-  void OnIncrementLazyKeepaliveCount();
-  void OnDecrementLazyKeepaliveCount();
-
   void MaybeNotifyRenderProcessReady();
   void NotifyRenderProcessReady();
 
