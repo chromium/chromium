@@ -45,6 +45,8 @@ class Image;
 
 namespace bookmarks_helper {
 
+// TODO(crbug.com/332532186): Adopt standard matchers defined under
+// components/bookmarks and remove these.
 MATCHER_P(HasUuid, expected_uuid, "") {
   const bookmarks::BookmarkNode* actual_node = arg;
   return actual_node->uuid() == expected_uuid;
