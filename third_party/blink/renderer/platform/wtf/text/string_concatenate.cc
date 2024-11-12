@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/string_concatenate.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 
 void WTF::StringTypeAdapter<const char*>::WriteTo(
@@ -13,7 +14,7 @@ void WTF::StringTypeAdapter<const char*>::WriteTo(
 
 void WTF::StringTypeAdapter<const char*>::WriteTo(
     base::span<UChar> destination) const {
-  StringImpl::CopyChars(destination.data(), buffer_.data(), buffer_.size());
+  StringImpl::CopyChars(destination, buffer_);
 }
 
 WTF::StringTypeAdapter<const UChar*>::StringTypeAdapter(const UChar* buffer)
@@ -26,16 +27,12 @@ void WTF::StringTypeAdapter<const UChar*>::WriteTo(
 
 void WTF::StringTypeAdapter<StringView>::WriteTo(
     base::span<LChar> destination) const {
-  DCHECK(Is8Bit());
   destination.copy_from(view_.Span8());
 }
 
 void WTF::StringTypeAdapter<StringView>::WriteTo(
     base::span<UChar> destination) const {
-  if (Is8Bit()) {
-    StringImpl::CopyChars(destination.data(), view_.Characters8(),
-                          view_.length());
-  } else {
-    destination.copy_from(view_.Span16());
-  }
+  VisitCharacters(view_, [destination](auto chars) {
+    StringImpl::CopyChars(destination, chars);
+  });
 }

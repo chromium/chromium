@@ -349,19 +349,16 @@ class WTF_EXPORT StringImpl {
 
   // FIXME: Does this really belong in StringImpl?
   template <typename T>
-  static void CopyChars(T* destination,
-                        const T* source,
-                        wtf_size_t num_characters) {
-    if (num_characters > 0) {
-      memcpy(destination, source, num_characters * sizeof(T));
-    }
+  static void CopyChars(base::span<T> destination, base::span<const T> source) {
+    destination.copy_from(source);
   }
 
-  ALWAYS_INLINE static void CopyChars(UChar* destination,
-                                      const LChar* source,
-                                      wtf_size_t num_characters) {
-    for (wtf_size_t i = 0; i < num_characters; ++i)
+  ALWAYS_INLINE static void CopyChars(base::span<UChar> destination,
+                                      base::span<const LChar> source) {
+    CHECK_EQ(destination.size(), source.size());
+    for (size_t i = 0; i < source.size(); ++i) {
       destination[i] = source[i];
+    }
   }
 
   // It is no longer required to create isolated copies for thread-safety

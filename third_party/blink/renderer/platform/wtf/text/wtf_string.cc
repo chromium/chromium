@@ -451,12 +451,10 @@ String String::Make16BitFrom8BitSource(base::span<const LChar> source) {
     return g_empty_string16_bit;
   }
 
-  const wtf_size_t length = base::checked_cast<wtf_size_t>(source.size());
   base::span<UChar> destination;
-  String result = String::CreateUninitialized(length, destination);
+  String result = String::CreateUninitialized(source.size(), destination);
 
-  StringImpl::CopyChars(destination.data(), source.data(), length);
-
+  StringImpl::CopyChars(destination, source);
   return result;
 }
 

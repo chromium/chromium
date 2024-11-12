@@ -262,10 +262,12 @@ void TextLatin1MoveInPrimaryContext(UText* text,
                           : 0;
   text->nativeIndexingLimit = text->chunkLength;
   text->chunkOffset = forward ? 0 : text->chunkLength;
-  StringImpl::CopyChars(
-      const_cast<UChar*>(text->chunkContents),
+  auto source = base::span(
       static_cast<const LChar*>(text->p) + (text->chunkNativeStart - text->b),
       static_cast<unsigned>(text->chunkLength));
+  auto dest = base::span(const_cast<UChar*>(text->chunkContents),
+                         static_cast<unsigned>(text->chunkLength));
+  StringImpl::CopyChars(dest, source);
 }
 
 void TextLatin1SwitchToPrimaryContext(UText* text,

@@ -73,10 +73,11 @@ static LCID LCIDFromLocaleInternal(LCID user_default_lcid,
   if (locale.length() >= LOCALE_NAME_MAX_LENGTH)
     return 0;
   UChar buffer[LOCALE_NAME_MAX_LENGTH];
+  auto buffer_slice = base::span(buffer).first(locale.length());
   if (locale.Is8Bit())
-    StringImpl::CopyChars(buffer, locale.Characters8(), locale.length());
+    StringImpl::CopyChars(buffer_slice, locale.Span8());
   else
-    StringImpl::CopyChars(buffer, locale.Characters16(), locale.length());
+    StringImpl::CopyChars(buffer_slice, locale.Span16());
   buffer[locale.length()] = '\0';
   return ::LocaleNameToLCID(base::as_writable_wcstr(buffer), 0);
 }

@@ -414,10 +414,9 @@ wtf_size_t StringImpl::CopyTo(UChar* buffer,
       std::min(length() - start, max_length);
   if (!number_of_characters_to_copy)
     return 0;
-  if (Is8Bit())
-    CopyChars(buffer, Characters8() + start, number_of_characters_to_copy);
-  else
-    CopyChars(buffer, Characters16() + start, number_of_characters_to_copy);
+  auto buffer_span = base::span(buffer, number_of_characters_to_copy);
+  VisitCharacters(StringView(*this, start, number_of_characters_to_copy),
+                  [buffer_span](auto chars) { CopyChars(buffer_span, chars); });
   return number_of_characters_to_copy;
 }
 
@@ -659,18 +658,15 @@ scoped_refptr<StringImpl> StringImpl::Remove(wtf_size_t start,
   length_to_remove = std::min(length_ - start, length_to_remove);
   wtf_size_t removed_end = start + length_to_remove;
 
-  if (Is8Bit()) {
-    StringBuffer<LChar> buffer(length_ - length_to_remove);
-    CopyChars(buffer.Characters(), Characters8(), start);
-    CopyChars(buffer.Characters() + start, Characters8() + removed_end,
-              length_ - removed_end);
-    return buffer.Release();
-  }
-  StringBuffer<UChar> buffer(length_ - length_to_remove);
-  CopyChars(buffer.Characters(), Characters16(), start);
-  CopyChars(buffer.Characters() + start, Characters16() + removed_end,
-            length_ - removed_end);
-  return buffer.Release();
+  return VisitCharacters(
+      *this, [start, length_to_remove, removed_end](auto chars) {
+        using CharType = decltype(chars)::value_type;
+        StringBuffer<CharType> buffer(chars.size() - length_to_remove);
+        auto [before, after] = buffer.Span().split_at(start);
+        CopyChars(before, chars.first(start));
+        CopyChars(after, chars.subspan(removed_end));
+        return buffer.Release();
+      });
 }
 
 template <typename CharType, class UCharPredicate>
