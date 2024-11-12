@@ -602,6 +602,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityAutoclickMovementThreshold] =
       settings_api::PrefType::kNumber;
+  (*s_allowlist)[ash::prefs::kAccessibilityBounceKeysDelay] =
+      settings_api::PrefType::kNumber;
+  (*s_allowlist)[ash::prefs::kAccessibilityBounceKeysEnabled] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityColorCorrectionEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityColorVisionCorrectionAmount] =
@@ -627,6 +631,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::prefs::kAccessibilityScreenMagnifierScale] =
       settings_api::PrefType::kNumber;
+  (*s_allowlist)[ash::prefs::kAccessibilitySlowKeysDelay] =
+      settings_api::PrefType::kNumber;
+  (*s_allowlist)[ash::prefs::kAccessibilitySlowKeysEnabled] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityChromeVoxAutoRead] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)

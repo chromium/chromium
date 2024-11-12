@@ -123,6 +123,12 @@ class OSSettingsMochaTestMagnifierFollowsChromeVoxEnabled
       ::features::kAccessibilityMagnifierFollowsChromeVox};
 };
 
+class OSSettingsMochaTestFilterKeysEnabled : public OSSettingsMochaTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ::features::kAccessibilityFilterKeys};
+};
+
 class OSSettingsMochaTestMouseKeysEnabled : public OSSettingsMochaTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -987,6 +993,11 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestOverlayScrollbarEnabled,
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestMagnifierFollowsChromeVoxEnabled,
                        OsA11yPageDisplayAndMagnificationSubpage) {
   RunSettingsTest("os_a11y_page/display_and_magnification_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestFilterKeysEnabled,
+                       OsA11yPageFilterKeys) {
+  RunSettingsTest("os_a11y_page/filter_keys_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,

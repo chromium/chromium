@@ -204,6 +204,7 @@ build_webui_tests("build") {
     "os_a11y_page/facegaze_actions_add_dialog_test.ts",
     "os_a11y_page/facegaze_subpage_test.ts",
     "os_a11y_page/display_and_magnification_subpage_test.ts",
+    "os_a11y_page/filter_keys_test.ts",
     "os_a11y_page/keyboard_and_text_input_page_test.ts",
     "os_a11y_page/live_caption_section_test.ts",
     "os_a11y_page/live_translate_section_test.ts",

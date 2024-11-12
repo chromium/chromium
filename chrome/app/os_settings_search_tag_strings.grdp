@@ -1602,6 +1602,13 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT5" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable color correction. One common type of color vision deficiency that can be helped by color correction is tritanopia, and color correction filters include a tritanopia filter.">
     Tritanomaly
   </message>
+  <!-- TODO(https://issuetracker.google.com/377562475): Finalize and translate strings for filter keys. -->
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_BOUNCE_KEYS" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable bounce keys." translateable="false">
+    Bounce keys
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_SLOW_KEYS" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable slow keys." translateable="false">
+    Slow keys
+  </message>
 
   <!-- Reset section. -->
   <message name="IDS_OS_SETTINGS_TAG_RESET" desc="Text for search result item which, when clicked, navigates the user to reset settings.">

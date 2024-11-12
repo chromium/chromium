@@ -2080,6 +2080,22 @@ Use Ctrl + Alt + Brightness down to zoom out.
   <message name="IDS_SETTINGS_AUTOCLICK_MOVEMENT_THRESHOLD_EXTRA_LARGE" desc="Description of an extra large mouse movement threshold for autoclick mouse movements">
     Extra large
   </message>
+  <!-- TODO(https://issuetracker.google.com/377562475): Finalize and translate strings for bounce keys. -->
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_BOUNCE_KEYS_LABEL" desc="Label for the bounce keys setting toggle." translateable="false">
+    Bounce keys
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_BOUNCE_KEYS_DESCRIPTION" desc="Description for the bounce keys setting toggle." translateable="false">
+    Ignores quickly repeated presses of the same keyboard key
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_BOUNCE_KEYS_DELAY_LABEL" desc="Label for the bounce keys delay slider." translateable="false">
+    Delay before activating the same key again
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_BOUNCE_KEYS_DELAY_SLIDER_SHORT" desc="Label for the minimum value on the bounce keys delay slider." translateable="false">
+    Short
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_BOUNCE_KEYS_DELAY_SLIDER_LONG" desc="Label for the maximum value on the bounce keys delay slider." translateable="false">
+    Long
+  </message>
   <message name="IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_TITLE" desc="Title for the overscroll history navigation setting, which allows you to navigate back and forward by swiping left or right with a touch device.">
     Use a swipe gesture to navigate between pages
   </message>
@@ -2326,6 +2342,22 @@ Use Ctrl + Alt + Brightness down to zoom out.
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_OPTIONS_LABEL" desc="In the settings tab, the label for the button that opens the Options page for the Select-to-Speak feature.">
     Open select-to-speak settings
+  </message>
+  <!-- TODO(https://issuetracker.google.com/377562475): Finalize and translate strings for slow keys. -->
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_LABEL" desc="Label for the slow keys setting toggle." translateable="false">
+    Slow keys
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_DESCRIPTION" desc="Description for the slow keys setting toggle." translateable="false">
+    Adds a delay between when you press a key and when it activates
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_DELAY_LABEL" desc="Label for the slow keys delay slider." translateable="false">
+    Delay before activating key
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_DELAY_SLIDER_SHORT" desc="Label for the minimum value on the slow keys delay slider." translateable="false">
+    Short
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_DELAY_SLIDER_LONG" desc="Label for the maximum value on the slow keys delay slider." translateable="false">
+    Long
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SWITCH_ACCESS_DESCRIPTION" desc="In the settings tab, the text next to the checkbox to enable Switch Access (for users with limited motor control).">
     Switch Access

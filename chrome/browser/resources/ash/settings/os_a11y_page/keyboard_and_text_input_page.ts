@@ -120,6 +120,7 @@ export class SettingsKeyboardAndTextInputPageElement extends
       supportedSettingIds: {
         type: Object,
         value: () => new Set<Setting>([
+          Setting.kBounceKeys,
           Setting.kCaretBlinkInterval,
           Setting.kCaretBrowsing,
           Setting.kDictation,
@@ -127,6 +128,7 @@ export class SettingsKeyboardAndTextInputPageElement extends
           Setting.kHighlightKeyboardFocus,
           Setting.kHighlightTextCaret,
           Setting.kOnScreenKeyboard,
+          Setting.kSlowKeys,
           Setting.kStickyKeys,
         ]),
       },
@@ -144,6 +146,25 @@ export class SettingsKeyboardAndTextInputPageElement extends
             'prefs.settings.a11y.sticky_keys_enabled.value, ' +
             'prefs.settings.accessibility.value)',
       },
+
+      isFilterKeysFeatureEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isAccessibilityFilterKeysEnabled');
+        },
+      },
+
+      slowKeysDelayVirtualPref_: {
+        type: Object,
+        computed: 'computeSlowKeysDelayVirtualPref_(' +
+            'prefs.settings.a11y.slow_keys_delay.value)',
+      },
+
+      bounceKeysDelayVirtualPref_: {
+        type: Object,
+        computed: 'computeBounceKeysDelayVirtualPref_(' +
+            'prefs.settings.a11y.bounce_keys_delay.value)',
+      },
     };
   }
 
@@ -151,6 +172,10 @@ export class SettingsKeyboardAndTextInputPageElement extends
     return [
       'updateCaretBlinkIntervalFromVirtualPref_(' +
           'caretBlinkIntervalVirtualPref_.*)',
+      'updateSlowKeysDelayFromVirtualPref_(' +
+          'slowKeysDelayVirtualPref_.*)',
+      'updateBounceKeysDelayFromVirtualPref_(' +
+          'bounceKeysDelayVirtualPref_.*)',
     ];
   }
 
@@ -172,6 +197,17 @@ export class SettingsKeyboardAndTextInputPageElement extends
       chrome.settingsPrivate.PrefObject<number>;
   private defaultCaretBlinkRateMs_: number;
   private caretBlinkIntervalOffSliderValue_ = 40;
+  private isFilterKeysFeatureEnabled_: boolean;
+  private slowKeysDelayVirtualPref_: chrome.settingsPrivate.PrefObject<number>;
+  private bounceKeysDelayVirtualPref_:
+      chrome.settingsPrivate.PrefObject<number>;
+  private millisInSec_ = 1000;
+  private microsInMillis_ = 1000;
+  private microsInSec_ = 1000000;
+  private filterKeysSliderMinMillis_ = 0;
+  private filterKeysSliderMaxMillis_ = 2000;
+  private filterKeysSliderIncrementMillis = 100;
+
 
   constructor() {
     super();
@@ -409,6 +445,83 @@ export class SettingsKeyboardAndTextInputPageElement extends
     this.setPrefValue(
         'settings.a11y.sticky_keys_enabled',
         !this.getPref<boolean>('settings.a11y.sticky_keys_enabled').value);
+  }
+
+  private computeSlowKeysDelayVirtualPref_():
+      chrome.settingsPrivate.PrefObject<number> {
+    const delayMicros = (this.isFilterKeysFeatureEnabled_ && this.prefs) ?
+        this.getPref<number>('settings.a11y.slow_keys_delay').value :
+        (loadTimeData.getInteger('defaultSlowKeysDelayMillis') *
+         this.microsInMillis_);
+    const delaySecs = delayMicros / this.microsInSec_;
+    return {
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: delaySecs,
+      key: 'slow_keys_delay_virtual_pref',
+    };
+  }
+
+  private updateSlowKeysDelayFromVirtualPref_(): void {
+    if (!this.isFilterKeysFeatureEnabled_) {
+      return;
+    }
+    const delaySecs = this.slowKeysDelayVirtualPref_.value;
+    const delayMicros = Math.round(delaySecs * this.microsInSec_);
+    this.setPrefValue('settings.a11y.slow_keys_delay', delayMicros);
+  }
+
+  private computeSlowKeysDelayTicks_(): SliderTick[] {
+    return this.computeFilterKeysDelayTicks_(
+        this.filterKeysSliderMinMillis_, this.filterKeysSliderMaxMillis_,
+        this.filterKeysSliderIncrementMillis);
+  }
+
+  private computeBounceKeysDelayVirtualPref_():
+      chrome.settingsPrivate.PrefObject<number> {
+    const delayMicros = (this.isFilterKeysFeatureEnabled_ && this.prefs) ?
+        this.getPref<number>('settings.a11y.bounce_keys_delay').value :
+        (loadTimeData.getInteger('defaultBounceKeysDelayMillis') *
+         this.microsInMillis_);
+    const delaySecs = delayMicros / this.microsInSec_;
+    return {
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: delaySecs,
+      key: 'bounce_keys_delay_virtual_pref',
+    };
+  }
+
+  private updateBounceKeysDelayFromVirtualPref_(): void {
+    if (!this.isFilterKeysFeatureEnabled_) {
+      return;
+    }
+    const delaySecs = this.bounceKeysDelayVirtualPref_.value;
+    const delayMicros = Math.round(delaySecs * this.microsInSec_);
+    this.setPrefValue('settings.a11y.bounce_keys_delay', delayMicros);
+  }
+
+  private computeBounceKeysDelayTicks_(): SliderTick[] {
+    return this.computeFilterKeysDelayTicks_(
+        this.filterKeysSliderMinMillis_, this.filterKeysSliderMaxMillis_,
+        this.filterKeysSliderIncrementMillis);
+  }
+
+  private computeFilterKeysDelayTicks_(
+      minMillis: number, maxMillis: number,
+      incrementMillis: number): SliderTick[] {
+    const ticks: SliderTick[] = [];
+    const formatter = new Intl.NumberFormat(
+        window.navigator.language,
+        {style: 'unit', unit: 'second', unitDisplay: 'long'});
+    for (let delayMillis = minMillis; delayMillis <= maxMillis;
+         delayMillis += incrementMillis) {
+      const delaySecs = delayMillis / this.millisInSec_;
+      ticks.push({
+        value: delaySecs,
+        ariaValue: delaySecs,
+        label: formatter.format(delaySecs),
+      });
+    }
+    return ticks;
   }
 }
 

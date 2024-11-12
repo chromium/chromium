@@ -375,6 +375,8 @@ chromium-metrics-reviews@google.com.
   <int value="1551" label="Flash screen for notifications"/>
   <int value="1552" label="Always show scrollbars"/>
   <int value="1553" label="Face control"/>
+  <int value="1554" label="Bounce keys"/>
+  <int value="1555" label="Slow keys"/>
   <int value="1600" label="Powerwash"/>
   <int value="1601" label="Sanitize ChromeOS"/>
   <int value="1700" label="Change Chrome Channel"/>

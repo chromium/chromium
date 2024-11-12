@@ -531,6 +531,24 @@ base::span<const SearchConcept> GetA11yFaceGazeSearchConcepts() {
   return tags;
 }
 
+base::span<const SearchConcept> GetA11yFilterKeysSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
+      {IDS_OS_SETTINGS_TAG_A11Y_BOUNCE_KEYS,
+       mojom::kKeyboardAndTextInputSubpagePath,
+       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kBounceKeys}},
+      {IDS_OS_SETTINGS_TAG_A11Y_SLOW_KEYS,
+       mojom::kKeyboardAndTextInputSubpagePath,
+       mojom::SearchResultIcon::kA11y,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kSlowKeys}},
+  });
+  return tags;
+}
+
 bool IsLiveCaptionEnabled() {
   return captions::IsLiveCaptionFeatureSupported();
 }
@@ -575,6 +593,10 @@ bool IsAccessibilityDisableTouchpadEnabled() {
 
 bool IsAccessibilityFlashNotificationFeatureEnabled() {
   return ::features::IsAccessibilityFlashScreenFeatureEnabled();
+}
+
+bool IsAccessibilityFilterKeysEnabled() {
+  return ::features::IsAccessibilityFilterKeysEnabled();
 }
 
 }  // namespace
@@ -691,6 +713,15 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_AUTOCLICK_REVERT_TO_LEFT_CLICK},
       {"autoclickStabilizeCursorPosition",
        IDS_SETTINGS_AUTOCLICK_STABILIZE_CURSOR_POSITION},
+      {"bounceKeysLabel", IDS_OS_SETTINGS_ACCESSIBILITY_BOUNCE_KEYS_LABEL},
+      {"bounceKeysDescription",
+       IDS_OS_SETTINGS_ACCESSIBILITY_BOUNCE_KEYS_DESCRIPTION},
+      {"bounceKeysDelayLabel",
+       IDS_OS_SETTINGS_ACCESSIBILITY_BOUNCE_KEYS_DELAY_LABEL},
+      {"bounceKeysDelaySliderShort",
+       IDS_OS_SETTINGS_ACCESSIBILITY_BOUNCE_KEYS_DELAY_SLIDER_SHORT},
+      {"bounceKeysDelaySliderLong",
+       IDS_OS_SETTINGS_ACCESSIBILITY_BOUNCE_KEYS_DELAY_SLIDER_LONG},
       {"mouseKeysLabel", IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_LABEL},
       {"mouseKeysDescription",
        IDS_OS_SETTINGS_ACCESSIBILITY_MOUSE_KEYS_DESCRIPTION},
@@ -1275,6 +1306,15 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_SETTINGS_SLIDER_MIN_MAX_ARIA_ROLE_DESCRIPTION},
       {"sliderLabel1", IDS_OS_SETTINGS_SLIDER_LABEL_1},
       {"sliderLabel100", IDS_OS_SETTINGS_SLIDER_LABEL_100},
+      {"slowKeysLabel", IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_LABEL},
+      {"slowKeysDescription",
+       IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_DESCRIPTION},
+      {"slowKeysDelayLabel",
+       IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_DELAY_LABEL},
+      {"slowKeysDelaySliderShort",
+       IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_DELAY_SLIDER_SHORT},
+      {"slowKeysDelaySliderLong",
+       IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_DELAY_SLIDER_LONG},
       {"startupSoundLabel", IDS_SETTINGS_STARTUP_SOUND_LABEL},
       {"stickyKeysDescription", IDS_SETTINGS_STICKY_KEYS_DESCRIPTION},
       {"stickyKeysLabel", IDS_SETTINGS_STICKY_KEYS_LABEL},
@@ -1495,6 +1535,14 @@ void AccessibilitySection::AddLoadTimeData(
   html_source->AddBoolean("isAccessibilityFlashNotificationFeatureEnabled",
                           IsAccessibilityFlashNotificationFeatureEnabled());
 
+  html_source->AddBoolean("isAccessibilityFilterKeysEnabled",
+                          IsAccessibilityFilterKeysEnabled());
+  html_source->AddInteger("defaultSlowKeysDelayMillis",
+                          kDefaultAccessibilitySlowKeysDelay.InMilliseconds());
+  html_source->AddInteger(
+      "defaultBounceKeysDelayMillis",
+      kDefaultAccessibilityBounceKeysDelay.InMilliseconds());
+
   ::settings::AddAxAnnotationsSectionStrings(html_source);
   ::settings::AddCaptionSubpageStrings(html_source);
 }
@@ -1692,6 +1740,15 @@ bool AccessibilitySection::LogMetric(mojom::Setting setting,
       base::UmaHistogramBoolean(
           "ChromeOS.Settings.Accessibility.FaceGaze.Enabled", value.GetBool());
       return true;
+    case mojom::Setting::kBounceKeys:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.BounceKeys.Enabled",
+          value.GetBool());
+      return true;
+    case mojom::Setting::kSlowKeys:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.SlowKeys.Enabled", value.GetBool());
+      return true;
     default:
       return false;
   }
@@ -1799,6 +1856,8 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kOverscrollEnabled,
       mojom::Setting::kFlashNotifications,
       mojom::Setting::kFaceGaze,
+      mojom::Setting::kBounceKeys,
+      mojom::Setting::kSlowKeys,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kManageAccessibility,
                             kManageAccessibilitySettings, generator);
@@ -1928,6 +1987,10 @@ void AccessibilitySection::UpdateSearchTags() {
 
   if (IsAccessibilityFaceGazeEnabled()) {
     updater.AddSearchTags(GetA11yFaceGazeSearchConcepts());
+  }
+
+  if (IsAccessibilityFilterKeysEnabled()) {
+    updater.AddSearchTags(GetA11yFilterKeysSearchConcepts());
   }
 
   if (!pref_service_->GetBoolean(prefs::kAccessibilitySwitchAccessEnabled)) {
