@@ -247,25 +247,6 @@ void ExtensionsRendererClient::WillSendRequest(
     }
   }
 
-  // TODO(devlin): Is this check necessary?
-  // Any (cross-origin) navigations or requests should also be checked in the
-  // browser process, since the renderer is less trusted. That will rewrite
-  // these requests as necessary to chrome-extension://invalid. Additionally,
-  // having this check here could (potentially) be used in timing attacks to
-  // determine if a given extension is installed.
-  if (!extension_id.empty()) {
-    const extensions::RendererExtensionRegistry* extension_registry =
-        extensions::RendererExtensionRegistry::Get();
-    if (!extension_registry->Contains(extension_id) &&
-        !extension_registry->ContainsGUID(extension_id)) {
-      // If there is no extension installed for the origin, it may be from a
-      // recently uninstalled extension.  The tabs of such extensions are
-      // automatically closed, but subframes and content scripts may stick
-      // around. Fail such requests without killing the process.
-      *new_url = GURL(kExtensionInvalidRequestURL);
-    }
-  }
-
   // The rest of this method is only concerned with extensions URLs.
   if (!target_url.ProtocolIs(extensions::kExtensionScheme)) {
     return;
