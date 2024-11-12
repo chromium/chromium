@@ -268,16 +268,16 @@ SubresourceIntegrity::ParseAlgorithmPrefix(
 bool SubresourceIntegrity::ParseDigest(const UChar*& position,
                                        const UChar* end,
                                        String& digest) {
-  const UChar* begin = position;
+  base::span<const UChar> input_span(position, end);
   SkipWhile<UChar, IsIntegrityCharacter>(position, end);
-  if (position == begin || (position != end && *position != '?')) {
+  if (position == input_span.data() || (position != end && *position != '?')) {
     digest = g_empty_string;
     return false;
   }
 
   // We accept base64url encoding, but normalize to "normal" base64 internally:
-  digest = NormalizeToBase64(
-      String(begin, static_cast<wtf_size_t>(position - begin)));
+  digest = NormalizeToBase64(String(
+      input_span.first(static_cast<wtf_size_t>(position - input_span.data()))));
   return true;
 }
 
@@ -372,12 +372,14 @@ void SubresourceIntegrity::ParseIntegrityAttribute(
     // have been defined yet. Thus, for forward compatibility, ignore any
     // options specified.
     if (SkipExactly<UChar>(position, end, '?')) {
-      const UChar* begin = position;
+      base::span<const UChar> input_span(position, end);
       SkipWhile<UChar, IsValueCharacter>(position, end);
-      if (begin != position && report_info) {
+      if (input_span.data() != position && report_info) {
         report_info->AddConsoleErrorMessage(
             "Ignoring unrecogized 'integrity' attribute option '" +
-            String(begin, static_cast<wtf_size_t>(position - begin)) + "'.");
+            String(input_span.first(
+                static_cast<wtf_size_t>(position - input_span.data()))) +
+            "'.");
       }
     }
 

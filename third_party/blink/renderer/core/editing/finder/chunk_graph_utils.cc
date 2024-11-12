@@ -62,7 +62,7 @@ String CreateLevel(
   String delimiter;
   for (const auto [max, current] : depth_context) {
     builder.Append(delimiter);
-    delimiter = String(&kLevelDelimiter, 1u);
+    delimiter = String(base::span_from_ref(kLevelDelimiter));
     builder.AppendNumber(max - current + 1);
   }
   return builder.ToString();

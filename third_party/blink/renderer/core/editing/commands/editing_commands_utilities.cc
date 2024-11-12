@@ -524,7 +524,7 @@ VisibleSelection SelectionForParagraphIteration(
 
 const String& NonBreakingSpaceString() {
   DEFINE_STATIC_LOCAL(String, non_breaking_space_string,
-                      (&kNoBreakSpaceCharacter, 1u));
+                      (base::span_from_ref(kNoBreakSpaceCharacter)));
   return non_breaking_space_string;
 }
 

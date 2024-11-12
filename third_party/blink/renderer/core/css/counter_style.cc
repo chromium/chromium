@@ -248,7 +248,7 @@ String CJKIdeoGraphicAlgorithm(unsigned number,
   };
 
   if (number == 0) {
-    return String(&table[kDigit0], 1u);
+    return String(base::span_from_ref(table[kDigit0]));
   }
 
   constexpr unsigned kGroupLength =
@@ -361,7 +361,7 @@ String CJKIdeoGraphicAlgorithm(unsigned number,
     --length;
   }
 
-  return String(characters.data(), length);
+  return String(base::span(characters).first(length));
 }
 
 String SimpChineseInformalAlgorithm(unsigned value) {
@@ -461,7 +461,7 @@ String HebrewAlgorithm(unsigned number) {
 
   if (number == 0) {
     static const UChar kHebrewZero[3] = {0x05D0, 0x05E4, 0x05E1};
-    return String(kHebrewZero, 3u);
+    return String(base::span(kHebrewZero));
   }
 
   if (number <= 999) {
@@ -540,7 +540,7 @@ String EthiopicNumericAlgorithm(unsigned value) {
     return String();
   }
   if (value < 10u) {
-    return String(&units[value - 1], 1u);
+    return String(base::span_from_ref(units[value - 1]));
   }
 
   // Generate characters in the reversed ordering
@@ -573,7 +573,7 @@ String EthiopicNumericAlgorithm(unsigned value) {
   std::reverse(result.begin(), result.end());
   // Remove the extra character from group 0
   result.pop_back();
-  return String(result.data(), result.size());
+  return String(result);
 }
 
 }  // namespace

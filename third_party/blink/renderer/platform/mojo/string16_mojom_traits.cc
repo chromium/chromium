@@ -48,8 +48,8 @@ bool StructTraits<mojo_base::mojom::String16DataView, WTF::String>::Read(
   data.GetDataDataView(&view);
   if (view.size() > std::numeric_limits<uint32_t>::max())
     return false;
-  *out = WTF::String(reinterpret_cast<const UChar*>(view.data()),
-                     static_cast<uint32_t>(view.size()));
+  *out = WTF::String(
+      base::span(reinterpret_cast<const UChar*>(view.data()), view.size()));
   return true;
 }
 
@@ -84,8 +84,8 @@ bool StructTraits<mojo_base::mojom::BigString16DataView, WTF::String>::Read(
   if (!size) {
     *out = g_empty_string;
   } else {
-    *out = WTF::String(reinterpret_cast<const UChar*>(buffer.data()),
-                       static_cast<uint32_t>(size));
+    *out = WTF::String(
+        base::span(reinterpret_cast<const UChar*>(buffer.data()), size));
   }
 
   return true;

@@ -497,8 +497,9 @@ void DateTimeEditBuilder::VisitLiteral(const String& text) {
     if (dir == WTF::unicode::kSegmentSeparator ||
         dir == WTF::unicode::kWhiteSpaceNeutral ||
         dir == WTF::unicode::kOtherNeutral) {
-      element->AppendChild(Text::Create(
-          EditElement().GetDocument(), String(&kRightToLeftMarkCharacter, 1u)));
+      element->AppendChild(
+          Text::Create(EditElement().GetDocument(),
+                       String(base::span_from_ref(kRightToLeftMarkCharacter))));
     }
   }
   element->AppendChild(Text::Create(EditElement().GetDocument(), text));

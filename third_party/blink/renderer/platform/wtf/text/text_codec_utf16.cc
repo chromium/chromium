@@ -82,7 +82,7 @@ String TextCodecUTF16::Decode(base::span<const uint8_t> bytes,
     if (really_flush && (have_lead_byte_ || have_lead_surrogate_)) {
       have_lead_byte_ = have_lead_surrogate_ = false;
       saw_error = true;
-      return String(&kReplacementCharacter, 1u);
+      return String(base::span_from_ref(kReplacementCharacter));
     }
     return String();
   }

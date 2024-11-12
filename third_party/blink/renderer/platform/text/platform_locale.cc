@@ -504,7 +504,7 @@ bool Locale::IsDigit(UChar ch) {
   if (ch >= '0' && ch <= '9')
     return true;
   // Check each digit otherwise
-  String ch_str(&ch, 1u);
+  String ch_str(base::span_from_ref(ch));
   return (ch_str == decimal_symbols_[0] || ch_str == decimal_symbols_[1] ||
           ch_str == decimal_symbols_[2] || ch_str == decimal_symbols_[3] ||
           ch_str == decimal_symbols_[4] || ch_str == decimal_symbols_[5] ||
@@ -516,7 +516,7 @@ bool Locale::IsDigit(UChar ch) {
 bool Locale::IsDecimalSeparator(UChar ch) {
   if (ch == '.')
     return true;
-  return LocalizedDecimalSeparator() == String(&ch, 1u);
+  return LocalizedDecimalSeparator() == String(base::span_from_ref(ch));
 }
 
 // Is there a decimal separator in a string?

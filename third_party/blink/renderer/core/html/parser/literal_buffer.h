@@ -266,7 +266,7 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
     if (Is8Bit()) {
       return String::Make8BitFrom16BitSource(base::span(*this));
     }
-    return String(this->data(), this->size());
+    return String(*this);
   }
 
   String AsString8() const {

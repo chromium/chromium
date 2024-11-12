@@ -67,7 +67,6 @@ class WTF_EXPORT String {
 
   // Construct a string with UTF-16 data.
   explicit String(base::span<const UChar> utf16_data);
-  String(const UChar* characters, unsigned length);
 
   // Construct a string by copying the contents of a vector.
   // This method will never create a null string. Vectors with size() == 0
@@ -87,12 +86,6 @@ class WTF_EXPORT String {
   explicit String(base::span<const char> latin1_data)
       : String(base::as_bytes(latin1_data)) {}
   explicit String(const std::string& s) : String(base::as_byte_span(s)) {}
-
-#if defined(ARCH_CPU_64_BITS)
-  // Delete a size_t constructor if size_t is 64 bit.
-  // Use constructors with base::span instead.
-  String(const UChar* characters, size_t length) = delete;
-#endif  // defined(ARCH_CPU_64_BITS)
 
   // Construct a string with latin1 data, from a null-terminated source. The
   // `LChar` constructor is explicit to avoid misinterpreting byte arrays.

@@ -61,9 +61,6 @@ ASSERT_SIZE(String, void*);
 String::String(base::span<const UChar> utf16_data)
     : impl_(utf16_data.data() ? StringImpl::Create(utf16_data) : nullptr) {}
 
-String::String(const UChar* characters, unsigned length)
-    : impl_(characters ? StringImpl::Create({characters, length}) : nullptr) {}
-
 // Construct a string with UTF-16 data, from a null-terminated source.
 String::String(const UChar* str) {
   if (!str)

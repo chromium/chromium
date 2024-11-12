@@ -52,7 +52,7 @@ void LineTruncator::SetupEllipsis() {
   ellipsis_text_ =
       ellipsis_font_data_ && ellipsis_font_data_->GlyphForCharacter(
                                  kHorizontalEllipsisCharacter)
-          ? String(&kHorizontalEllipsisCharacter, 1u)
+          ? String(base::span_from_ref(kHorizontalEllipsisCharacter))
           : String(u"...");
   HarfBuzzShaper shaper(ellipsis_text_);
   ellipsis_shape_result_ =

@@ -198,7 +198,7 @@ static String TruncateString(const String& string,
         truncate_to_buffer(string, length, keep_count, string_buffer);
   }
 
-  return String(string_buffer, truncated_length);
+  return String(base::span(string_buffer).first(truncated_length));
 }
 
 String StringTruncator::CenterTruncate(const String& string,
