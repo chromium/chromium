@@ -1223,7 +1223,8 @@ public class TabListMediatorUnitTest {
         itemTouchHelperCallback.onSelectedChanged(
                 mFakeViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
 
-        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(TAB1_ID, /* trailing= */ true);
+        verify(mTabUngrouper)
+                .ungroupTabs(List.of(mTab1), /* trailing= */ true, /* allowDialog= */ true);
         verify(mGridLayoutManager).removeView(mItemView1);
     }
 

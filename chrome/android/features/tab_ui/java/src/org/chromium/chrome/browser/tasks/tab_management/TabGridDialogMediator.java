@@ -843,8 +843,7 @@ public class TabGridDialogMediator
                         mActivity,
                         ShowMode.MENU_ONLY,
                         ButtonType.ICON_AND_TEXT,
-                        IconPosition.START,
-                        mActionConfirmationManager));
+                        IconPosition.START));
         actions.add(
                 TabListEditorBookmarkAction.createAction(
                         mActivity,

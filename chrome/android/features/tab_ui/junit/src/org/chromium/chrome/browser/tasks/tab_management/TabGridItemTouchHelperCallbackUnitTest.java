@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -64,6 +65,8 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
+
+import java.util.List;
 
 /** Tests for {@link TabGridItemTouchHelperCallback}. */
 @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -98,6 +101,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     @Mock private TabModel mTabModel;
     @Mock private TabListMediator.TabActionListener mTabClosedListener;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabUngrouper mTabUngrouper;
     @Mock private TabListMediator.TabGridDialogHandler mTabGridDialogHandler;
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
@@ -150,12 +154,17 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemView4 = prepareItemView(5, 5, 9, 9);
 
         mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
+        when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
         doReturn(mProfile).when(mTabModel).getProfile();
         doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
         doReturn(tab1).when(mTabModel).getTabAt(POSITION1);
         doReturn(tab2).when(mTabModel).getTabAt(POSITION2);
         doReturn(tab3).when(mTabModel).getTabAt(POSITION3);
         doReturn(tab4).when(mTabModel).getTabAt(POSITION4);
+        doReturn(tab1).when(mTabModel).getTabById(TAB1_ID);
+        doReturn(tab2).when(mTabModel).getTabById(TAB2_ID);
+        doReturn(tab3).when(mTabModel).getTabById(TAB3_ID);
+        doReturn(tab4).when(mTabModel).getTabById(TAB4_ID);
         doReturn(4).when(mTabModel).getCount();
         doReturn(tab1).when(mTabGroupModelFilter).getTabAt(POSITION1);
         doReturn(tab2).when(mTabGroupModelFilter).getTabAt(POSITION2);
@@ -379,7 +388,11 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemTouchHelperCallback.onSelectedChanged(
                 mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
 
-        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(TAB1_ID, /* trailing= */ true);
+        verify(mTabUngrouper)
+                .ungroupTabs(
+                        List.of(mTabModel.getTabById(TAB1_ID)),
+                        /* trailing= */ true,
+                        /* allowDialog= */ true);
         verify(mTabGridDialogHandler)
                 .updateUngroupBarStatus(TabGridDialogView.UngroupBarStatus.HIDE);
         verify(mGridLayoutManager).removeView(mItemView1);
@@ -396,8 +409,11 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemTouchHelperCallback.onSelectedChanged(
                 mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
 
-        verify(mTabGroupModelFilter, never())
-                .moveTabOutOfGroupInDirection(TAB1_ID, /* trailing= */ true);
+        verify(mTabUngrouper, never())
+                .ungroupTabs(
+                        List.of(mTabModel.getTabById(TAB1_ID)),
+                        /* trailing= */ true,
+                        /* allowDialog= */ true);
         verify(mTabGridDialogHandler)
                 .updateUngroupBarStatus(TabGridDialogView.UngroupBarStatus.HIDE);
         verify(mGridLayoutManager, never()).removeView(mItemView1);
@@ -414,8 +430,11 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemTouchHelperCallback.onSelectedChanged(
                 mMockViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
 
-        verify(mTabGroupModelFilter, never())
-                .moveTabOutOfGroupInDirection(TAB1_ID, /* trailing= */ true);
+        verify(mTabUngrouper, never())
+                .ungroupTabs(
+                        List.of(mTabModel.getTabById(TAB1_ID)),
+                        /* trailing= */ true,
+                        /* allowDialog= */ true);
         verify(mTabGridDialogHandler)
                 .updateUngroupBarStatus(TabGridDialogView.UngroupBarStatus.HIDE);
         verify(mGridLayoutManager, never()).removeView(mItemView1);

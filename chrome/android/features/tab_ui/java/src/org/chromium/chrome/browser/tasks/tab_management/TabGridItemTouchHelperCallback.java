@@ -314,9 +314,15 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                         mRecyclerView.findViewHolderForAdapterPosition(mUnGroupTabIndex);
                 if (ungroupViewHolder != null && !mRecyclerView.isComputingLayout()) {
                     View ungroupItemView = ungroupViewHolder.itemView;
-                    filter.moveTabOutOfGroupInDirection(
-                            mModel.get(mUnGroupTabIndex).model.get(TabProperties.TAB_ID),
-                            /* trailing= */ true);
+                    int tabId = mModel.get(mUnGroupTabIndex).model.get(TabProperties.TAB_ID);
+                    @Nullable Tab tab = filter.getTabModel().getTabById(tabId);
+                    if (tab != null) {
+                        filter.getTabUngrouper()
+                                .ungroupTabs(
+                                        List.of(tab),
+                                        /* trailing= */ true,
+                                        /* allowDialog= */ true);
+                    }
                     // Handle the case where the recyclerView is cleared out after ungrouping the
                     // last tab in group.
                     if (mRecyclerView.getAdapter().getItemCount() != 0) {

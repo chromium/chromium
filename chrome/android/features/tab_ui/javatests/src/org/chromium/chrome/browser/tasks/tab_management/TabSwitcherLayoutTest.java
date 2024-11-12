@@ -447,7 +447,12 @@ public class TabSwitcherLayoutTest {
                         .getTabGroupModelFilterProvider()
                         .getCurrentTabGroupModelFilter();
         ThreadUtils.runOnUiThreadBlocking(
-                () -> filter.moveTabOutOfGroupInDirection(childTab.getId(), /* trailing= */ true));
+                () ->
+                        filter.getTabUngrouper()
+                                .ungroupTabs(
+                                        List.of(childTab),
+                                        /* trailing= */ true,
+                                        /* allowDialog= */ false));
         verifyTabSwitcherCardCount(cta, 2);
 
         ThreadUtils.runOnUiThreadBlocking(
