@@ -93,6 +93,8 @@ class ChannelWin : public Channel,
   }
 
   void Write(MessagePtr message) override {
+    RecordSentMessageMetrics(message->data_num_bytes());
+
     if (remote_process().IsValid()) {
       // If we know the remote process handle, we transfer all outgoing handles
       // to the process now rewriting them in the message.

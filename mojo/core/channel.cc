@@ -1154,6 +1154,13 @@ MOJO_SYSTEM_IMPL_EXPORT void Channel::OfferChannelUpgrade() {
 }
 #endif
 
+void Channel::RecordSentMessageMetrics(size_t payload_size) {
+  if (ShouldRecordSubsampledHistograms()) {
+    UMA_HISTOGRAM_COUNTS_100000("Mojo.Channel.WriteMessageSize", payload_size);
+    LogHistogramForIPCMetrics(MessageType::kSent);
+  }
+}
+
 bool Channel::ShouldRecordSubsampledHistograms() {
   base::AutoLock hold(lock_);
   return sub_sampler_.ShouldSample(0.001);

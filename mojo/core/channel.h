@@ -509,14 +509,15 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
     kReceive,
   };
 
+  void RecordSentMessageMetrics(size_t payload_size);
+
+ private:
+  // Returns true for ~1/1000 calls. Used to reduce reporting overhead.
+  bool ShouldRecordSubsampledHistograms();
   // Records histograms that count sent/received messages per process type.
   // Must be guarded by a call to ShouldRecordSubsampledHistograms().
   static void LogHistogramForIPCMetrics(MessageType type);
 
-  // Returns true for ~1/1000 calls. Used to reduce reporting overhead.
-  bool ShouldRecordSubsampledHistograms();
-
- private:
   friend class base::RefCountedThreadSafe<Channel>;
 
   class ReadBuffer;

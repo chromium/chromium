@@ -158,11 +158,7 @@ void ChannelPosix::ShutDownImpl() {
 }
 
 void ChannelPosix::Write(MessagePtr message) {
-  if (ShouldRecordSubsampledHistograms()) {
-    UMA_HISTOGRAM_COUNTS_100000("Mojo.Channel.WriteMessageSize",
-                                message->data_num_bytes());
-    LogHistogramForIPCMetrics(MessageType::kSent);
-  }
+  RecordSentMessageMetrics(message->data_num_bytes());
 
   bool write_error = false;
   {
