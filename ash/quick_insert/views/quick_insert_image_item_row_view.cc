@@ -47,11 +47,11 @@ std::unique_ptr<views::View> CreateEmptyCell() {
 
 }  // namespace
 
-PickerImageItemRowView::PickerImageItemRowView(
+QuickInsertImageItemRowView::QuickInsertImageItemRowView(
     base::RepeatingClosure more_items_callback,
     std::u16string more_items_accessible_name) {
   views::View* row_view = nullptr;
-  views::Builder<PickerImageItemRowView>(this)
+  views::Builder<QuickInsertImageItemRowView>(this)
       .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
       .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
       .SetInsideBorderInsets(kMargin)
@@ -99,60 +99,60 @@ PickerImageItemRowView::PickerImageItemRowView(
               kQuickInsertSearchResultsImageRowElementId);
 }
 
-PickerImageItemRowView::~PickerImageItemRowView() = default;
+QuickInsertImageItemRowView::~QuickInsertImageItemRowView() = default;
 
-void PickerImageItemRowView::SetLeadingIcon(const ui::ImageModel& icon) {
+void QuickInsertImageItemRowView::SetLeadingIcon(const ui::ImageModel& icon) {
   leading_icon_view_->SetImage(icon);
 }
 
-PickerImageItemView* PickerImageItemRowView::AddImageItem(
-    std::unique_ptr<PickerImageItemView> image_item) {
+QuickInsertImageItemView* QuickInsertImageItemRowView::AddImageItem(
+    std::unique_ptr<QuickInsertImageItemView> image_item) {
   auto* view = items_container_->AddChildView(CreateEmptyCell())
                    ->AddChildView(std::move(image_item));
   on_items_changed_.Notify();
   return view;
 }
 
-gfx::Size PickerImageItemRowView::CalculatePreferredSize(
+gfx::Size QuickInsertImageItemRowView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   const int preferred_width =
       views::BoxLayoutView::CalculatePreferredSize(available_size).width();
   return gfx::Size(preferred_width, kHeight);
 }
 
-views::View* PickerImageItemRowView::GetTopItem() {
+views::View* QuickInsertImageItemRowView::GetTopItem() {
   return GetLeftmostItem();
 }
 
-views::View* PickerImageItemRowView::GetBottomItem() {
+views::View* QuickInsertImageItemRowView::GetBottomItem() {
   return GetLeftmostItem();
 }
 
-views::View* PickerImageItemRowView::GetItemAbove(views::View* item) {
+views::View* QuickInsertImageItemRowView::GetItemAbove(views::View* item) {
   return nullptr;
 }
 
-views::View* PickerImageItemRowView::GetItemBelow(views::View* item) {
+views::View* QuickInsertImageItemRowView::GetItemBelow(views::View* item) {
   return nullptr;
 }
 
-views::View* PickerImageItemRowView::GetItemLeftOf(views::View* item) {
+views::View* QuickInsertImageItemRowView::GetItemLeftOf(views::View* item) {
   views::View* item_left_of = GetNextPickerPseudoFocusableView(
-      item, PickerPseudoFocusDirection::kBackward, /*should_loop=*/false);
+      item, QuickInsertPseudoFocusDirection::kBackward, /*should_loop=*/false);
   return Contains(item_left_of) ? item_left_of : nullptr;
 }
 
-views::View* PickerImageItemRowView::GetItemRightOf(views::View* item) {
+views::View* QuickInsertImageItemRowView::GetItemRightOf(views::View* item) {
   views::View* item_left_of = GetNextPickerPseudoFocusableView(
-      item, PickerPseudoFocusDirection::kForward, /*should_loop=*/false);
+      item, QuickInsertPseudoFocusDirection::kForward, /*should_loop=*/false);
   return Contains(item_left_of) ? item_left_of : nullptr;
 }
 
-bool PickerImageItemRowView::ContainsItem(views::View* item) {
+bool QuickInsertImageItemRowView::ContainsItem(views::View* item) {
   return Contains(item);
 }
 
-views::View::Views PickerImageItemRowView::GetItems() const {
+views::View::Views QuickInsertImageItemRowView::GetItems() const {
   views::View::Views items;
   for (views::View* child : items_container_->children()) {
     items.push_back(child->children().front());
@@ -160,12 +160,13 @@ views::View::Views PickerImageItemRowView::GetItems() const {
   return items;
 }
 
-base::CallbackListSubscription PickerImageItemRowView::AddItemsChangedCallback(
+base::CallbackListSubscription
+QuickInsertImageItemRowView::AddItemsChangedCallback(
     views::PropertyChangedCallback callback) {
   return on_items_changed_.Add(std::move(callback));
 }
 
-views::View* PickerImageItemRowView::GetLeftmostItem() {
+views::View* QuickInsertImageItemRowView::GetLeftmostItem() {
   if (GetFocusManager() == nullptr) {
     return nullptr;
   }
@@ -175,7 +176,7 @@ views::View* PickerImageItemRowView::GetLeftmostItem() {
   return Contains(leftmost_item) ? leftmost_item : nullptr;
 }
 
-BEGIN_METADATA(PickerImageItemRowView)
+BEGIN_METADATA(QuickInsertImageItemRowView)
 END_METADATA
 
 }  // namespace ash

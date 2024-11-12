@@ -17,29 +17,30 @@
 
 namespace ash {
 
-enum class PickerLayoutType;
+enum class QuickInsertLayoutType;
 class QuickInsertSearchFieldView;
-class PickerPageView;
+class QuickInsertPageView;
 class SystemShadow;
 
 // View for the main Quick Insert container, which consists of the search field
 // and the main contents (e.g. search results page).
-class ASH_EXPORT PickerMainContainerView
+class ASH_EXPORT QuickInsertMainContainerView
     : public views::View,
-      public PickerTraversableItemContainer {
-  METADATA_HEADER(PickerMainContainerView, views::View)
+      public QuickInsertTraversableItemContainer {
+  METADATA_HEADER(QuickInsertMainContainerView, views::View)
 
  public:
-  PickerMainContainerView();
-  PickerMainContainerView(const PickerMainContainerView&) = delete;
-  PickerMainContainerView& operator=(const PickerMainContainerView&) = delete;
-  ~PickerMainContainerView() override;
+  QuickInsertMainContainerView();
+  QuickInsertMainContainerView(const QuickInsertMainContainerView&) = delete;
+  QuickInsertMainContainerView& operator=(const QuickInsertMainContainerView&) =
+      delete;
+  ~QuickInsertMainContainerView() override;
 
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
-  // PickerTraversableItemContainer:
+  // QuickInsertTraversableItemContainer:
   views::View* GetTopItem() override;
   views::View* GetBottomItem() override;
   views::View* GetItemAbove(views::View* item) override;
@@ -53,25 +54,25 @@ class ASH_EXPORT PickerMainContainerView
 
   // Creates and adds the contents view, which will contain the main contents of
   // the container (e.g. search results page).
-  PickerContentsView* AddContentsView(PickerLayoutType layout_type);
+  QuickInsertContentsView* AddContentsView(QuickInsertLayoutType layout_type);
 
   template <typename T>
   T* AddPage(std::unique_ptr<T> view) {
     return contents_view_->AddPage(std::move(view));
   }
 
-  PickerPageView* active_page() { return active_page_; }
-  void SetActivePage(PickerPageView* page_view);
+  QuickInsertPageView* active_page() { return active_page_; }
+  void SetActivePage(QuickInsertPageView* page_view);
 
  private:
   std::unique_ptr<SystemShadow> shadow_;
 
   raw_ptr<QuickInsertSearchFieldView> search_field_view_ = nullptr;
-  raw_ptr<PickerContentsView> contents_view_ = nullptr;
+  raw_ptr<QuickInsertContentsView> contents_view_ = nullptr;
 
   // The currently visible page of `contents_view_`, or nullptr if there is no
   // such page.
-  raw_ptr<PickerPageView> active_page_ = nullptr;
+  raw_ptr<QuickInsertPageView> active_page_ = nullptr;
 };
 
 }  // namespace ash

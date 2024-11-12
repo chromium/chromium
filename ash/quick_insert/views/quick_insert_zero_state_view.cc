@@ -90,21 +90,22 @@ EditorSubmenu GetEditorSubmenu(
 
 }  // namespace
 
-PickerZeroStateView::PickerZeroStateView(
-    PickerZeroStateViewDelegate* delegate,
+QuickInsertZeroStateView::QuickInsertZeroStateView(
+    QuickInsertZeroStateViewDelegate* delegate,
     base::span<const QuickInsertCategory> available_categories,
     int quick_insert_view_width,
-    PickerAssetFetcher* asset_fetcher,
-    PickerSubmenuController* submenu_controller,
-    PickerPreviewBubbleController* preview_controller)
+    QuickInsertAssetFetcher* asset_fetcher,
+    QuickInsertSubmenuController* submenu_controller,
+    QuickInsertPreviewBubbleController* preview_controller)
     : delegate_(delegate),
       submenu_controller_(submenu_controller),
       preview_controller_(preview_controller) {
   SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
-  section_list_view_ = AddChildView(std::make_unique<PickerSectionListView>(
-      quick_insert_view_width, asset_fetcher, submenu_controller_));
+  section_list_view_ =
+      AddChildView(std::make_unique<QuickInsertSectionListView>(
+          quick_insert_view_width, asset_fetcher, submenu_controller_));
 
   for (QuickInsertCategory category : available_categories) {
     // kEditorRewrite and LobsterWithSelectedText are not visible in the
@@ -125,28 +126,28 @@ PickerZeroStateView::PickerZeroStateView(
     GetOrCreateSectionView(category)->AddResult(
         std::move(result), preview_controller_,
         QuickInsertSectionView::LocalFileResultStyle::kList,
-        base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
+        base::BindRepeating(&QuickInsertZeroStateView::OnCategorySelected,
                             weak_ptr_factory_.GetWeakPtr(), category));
   }
 
   delegate_->GetZeroStateSuggestedResults(
-      base::BindRepeating(&PickerZeroStateView::OnFetchSuggestedResults,
+      base::BindRepeating(&QuickInsertZeroStateView::OnFetchSuggestedResults,
                           weak_ptr_factory_.GetWeakPtr()));
 
   delegate_->OnZeroStateViewHeightChanged();
 }
 
-PickerZeroStateView::~PickerZeroStateView() = default;
+QuickInsertZeroStateView::~QuickInsertZeroStateView() = default;
 
-views::View* PickerZeroStateView::GetTopItem() {
+views::View* QuickInsertZeroStateView::GetTopItem() {
   return section_list_view_->GetTopItem();
 }
 
-views::View* PickerZeroStateView::GetBottomItem() {
+views::View* QuickInsertZeroStateView::GetBottomItem() {
   return section_list_view_->GetBottomItem();
 }
 
-views::View* PickerZeroStateView::GetItemAbove(views::View* item) {
+views::View* QuickInsertZeroStateView::GetItemAbove(views::View* item) {
   if (!Contains(item)) {
     return nullptr;
   }
@@ -156,11 +157,11 @@ views::View* PickerZeroStateView::GetItemAbove(views::View* item) {
     return section_list_view_->GetItemAbove(item);
   }
   views::View* prev_item = GetNextPickerPseudoFocusableView(
-      item, PickerPseudoFocusDirection::kBackward, /*should_loop=*/false);
+      item, QuickInsertPseudoFocusDirection::kBackward, /*should_loop=*/false);
   return Contains(prev_item) ? prev_item : nullptr;
 }
 
-views::View* PickerZeroStateView::GetItemBelow(views::View* item) {
+views::View* QuickInsertZeroStateView::GetItemBelow(views::View* item) {
   if (!Contains(item)) {
     return nullptr;
   }
@@ -170,29 +171,29 @@ views::View* PickerZeroStateView::GetItemBelow(views::View* item) {
     return section_list_view_->GetItemBelow(item);
   }
   views::View* next_item = GetNextPickerPseudoFocusableView(
-      item, PickerPseudoFocusDirection::kForward, /*should_loop=*/false);
+      item, QuickInsertPseudoFocusDirection::kForward, /*should_loop=*/false);
   return Contains(next_item) ? next_item : nullptr;
 }
 
-views::View* PickerZeroStateView::GetItemLeftOf(views::View* item) {
+views::View* QuickInsertZeroStateView::GetItemLeftOf(views::View* item) {
   if (!Contains(item)) {
     return nullptr;
   }
   return section_list_view_->GetItemLeftOf(item);
 }
 
-views::View* PickerZeroStateView::GetItemRightOf(views::View* item) {
+views::View* QuickInsertZeroStateView::GetItemRightOf(views::View* item) {
   if (!Contains(item)) {
     return nullptr;
   }
   return section_list_view_->GetItemRightOf(item);
 }
 
-bool PickerZeroStateView::ContainsItem(views::View* item) {
+bool QuickInsertZeroStateView::ContainsItem(views::View* item) {
   return Contains(item);
 }
 
-QuickInsertSectionView* PickerZeroStateView::GetOrCreateSectionView(
+QuickInsertSectionView* QuickInsertZeroStateView::GetOrCreateSectionView(
     QuickInsertCategoryType category_type) {
   auto section_view_iterator = category_section_views_.find(category_type);
   if (section_view_iterator != category_section_views_.end()) {
@@ -206,21 +207,22 @@ QuickInsertSectionView* PickerZeroStateView::GetOrCreateSectionView(
   return section_view;
 }
 
-QuickInsertSectionView* PickerZeroStateView::GetOrCreateSectionView(
+QuickInsertSectionView* QuickInsertZeroStateView::GetOrCreateSectionView(
     QuickInsertCategory category) {
   return GetOrCreateSectionView(GetQuickInsertCategoryType(category));
 }
 
-void PickerZeroStateView::OnCategorySelected(QuickInsertCategory category) {
+void QuickInsertZeroStateView::OnCategorySelected(
+    QuickInsertCategory category) {
   delegate_->SelectZeroStateCategory(category);
 }
 
-void PickerZeroStateView::OnResultSelected(
+void QuickInsertZeroStateView::OnResultSelected(
     const QuickInsertSearchResult& result) {
   delegate_->SelectZeroStateResult(result);
 }
 
-void PickerZeroStateView::AddResultToSection(
+void QuickInsertZeroStateView::AddResultToSection(
     const QuickInsertSearchResult& result,
     QuickInsertSectionView* section) {
   QuickInsertItemView* view = section->AddResult(
@@ -228,19 +230,19 @@ void PickerZeroStateView::AddResultToSection(
       base::FeatureList::IsEnabled(ash::features::kPickerGrid)
           ? QuickInsertSectionView::LocalFileResultStyle::kRow
           : QuickInsertSectionView::LocalFileResultStyle::kList,
-      base::BindRepeating(&PickerZeroStateView::OnResultSelected,
+      base::BindRepeating(&QuickInsertZeroStateView::OnResultSelected,
                           weak_ptr_factory_.GetWeakPtr(), result));
 
   if (auto* list_item_view =
           views::AsViewClass<QuickInsertListItemView>(view)) {
     list_item_view->SetBadgeAction(delegate_->GetActionForResult(result));
   } else if (auto* image_item_view =
-                 views::AsViewClass<PickerImageItemView>(view)) {
+                 views::AsViewClass<QuickInsertImageItemView>(view)) {
     image_item_view->SetAction(delegate_->GetActionForResult(result));
   }
 }
 
-void PickerZeroStateView::OnFetchSuggestedResults(
+void QuickInsertZeroStateView::OnFetchSuggestedResults(
     std::vector<QuickInsertSearchResult> results) {
   if (results.empty()) {
     return;
@@ -251,35 +253,35 @@ void PickerZeroStateView::OnFetchSuggestedResults(
     primary_section_view_ = section_list_view_->AddSectionAt(0);
     primary_section_view_->SetImageRowProperties(
         l10n_util::GetStringUTF16(IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL),
-        base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
+        base::BindRepeating(&QuickInsertZeroStateView::OnCategorySelected,
                             weak_ptr_factory_.GetWeakPtr(),
                             QuickInsertCategory::kLocalFiles),
         l10n_util::GetStringUTF16(
             IDS_PICKER_SEE_MORE_LOCAL_FILES_BUTTON_ACCESSIBLE_NAME));
   }
 
-  std::unique_ptr<PickerItemWithSubmenuView> new_window_submenu;
-  std::unique_ptr<PickerItemWithSubmenuView> length_submenu;
-  std::unique_ptr<PickerItemWithSubmenuView> tone_submenu;
-  std::unique_ptr<PickerItemWithSubmenuView> case_transform_submenu;
+  std::unique_ptr<QuickInsertItemWithSubmenuView> new_window_submenu;
+  std::unique_ptr<QuickInsertItemWithSubmenuView> length_submenu;
+  std::unique_ptr<QuickInsertItemWithSubmenuView> tone_submenu;
+  std::unique_ptr<QuickInsertItemWithSubmenuView> case_transform_submenu;
 
   for (const QuickInsertSearchResult& result : results) {
     if (std::holds_alternative<QuickInsertCapsLockResult>(result)) {
       delegate_->SetCapsLockDisplayed(true);
       switch (delegate_->GetCapsLockPosition()) {
-        case PickerCapsLockPosition::kTop:
+        case QuickInsertCapsLockPosition::kTop:
           AddResultToSection(result, primary_section_view_);
           break;
-        case PickerCapsLockPosition::kMiddle:
+        case QuickInsertCapsLockPosition::kMiddle:
           // TODO(b/357987564): Find a better way to put CapsLock at the end of
           // the suggested section and remove the delay timer.
           add_caps_lock_delay_timer_.Start(
               FROM_HERE, kCapsLockDisplayDelay,
-              base::BindOnce(&PickerZeroStateView::AddResultToSection,
+              base::BindOnce(&QuickInsertZeroStateView::AddResultToSection,
                              weak_ptr_factory_.GetWeakPtr(), result,
                              primary_section_view_));
           break;
-        case PickerCapsLockPosition::kBottom:
+        case QuickInsertCapsLockPosition::kBottom:
           AddResultToSection(
               result, GetOrCreateSectionView(QuickInsertCategoryType::kMore));
           break;
@@ -287,7 +289,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
     } else if (std::holds_alternative<QuickInsertNewWindowResult>(result)) {
       if (new_window_submenu == nullptr) {
         new_window_submenu =
-            views::Builder<PickerItemWithSubmenuView>()
+            views::Builder<QuickInsertItemWithSubmenuView>()
                 .SetSubmenuController(submenu_controller_)
                 .SetText(l10n_util::GetStringUTF16(IDS_PICKER_NEW_MENU_LABEL))
                 .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
@@ -296,12 +298,13 @@ void PickerZeroStateView::OnFetchSuggestedResults(
       }
 
       new_window_submenu->AddEntry(
-          result, base::BindRepeating(&PickerZeroStateView::OnResultSelected,
-                                      weak_ptr_factory_.GetWeakPtr(), result));
+          result,
+          base::BindRepeating(&QuickInsertZeroStateView::OnResultSelected,
+                              weak_ptr_factory_.GetWeakPtr(), result));
     } else if (const auto* editor_data =
                    std::get_if<QuickInsertEditorResult>(&result)) {
       auto callback =
-          base::BindRepeating(&PickerZeroStateView::OnResultSelected,
+          base::BindRepeating(&QuickInsertZeroStateView::OnResultSelected,
                               weak_ptr_factory_.GetWeakPtr(), result);
       switch (GetEditorSubmenu(editor_data->category)) {
         case EditorSubmenu::kNone:
@@ -312,7 +315,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
           break;
         case EditorSubmenu::kLength:
           if (length_submenu == nullptr) {
-            length_submenu = views::Builder<PickerItemWithSubmenuView>()
+            length_submenu = views::Builder<QuickInsertItemWithSubmenuView>()
                                  .SetSubmenuController(submenu_controller_)
                                  .SetText(l10n_util::GetStringUTF16(
                                      IDS_PICKER_CHANGE_LENGTH_MENU_LABEL))
@@ -325,7 +328,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
           break;
         case EditorSubmenu::kTone:
           if (tone_submenu == nullptr) {
-            tone_submenu = views::Builder<PickerItemWithSubmenuView>()
+            tone_submenu = views::Builder<QuickInsertItemWithSubmenuView>()
                                .SetSubmenuController(submenu_controller_)
                                .SetText(l10n_util::GetStringUTF16(
                                    IDS_PICKER_CHANGE_TONE_MENU_LABEL))
@@ -343,7 +346,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
     } else if (std::holds_alternative<QuickInsertCaseTransformResult>(result)) {
       if (case_transform_submenu == nullptr) {
         case_transform_submenu =
-            views::Builder<PickerItemWithSubmenuView>()
+            views::Builder<QuickInsertItemWithSubmenuView>()
                 .SetSubmenuController(submenu_controller_)
                 .SetText(l10n_util::GetStringUTF16(
                     IDS_PICKER_CHANGE_CAPITALIZATION_MENU_LABEL))
@@ -354,8 +357,9 @@ void PickerZeroStateView::OnFetchSuggestedResults(
       }
 
       case_transform_submenu->AddEntry(
-          result, base::BindRepeating(&PickerZeroStateView::OnResultSelected,
-                                      weak_ptr_factory_.GetWeakPtr(), result));
+          result,
+          base::BindRepeating(&QuickInsertZeroStateView::OnResultSelected,
+                              weak_ptr_factory_.GetWeakPtr(), result));
     } else {
       AddResultToSection(result, primary_section_view_);
     }
@@ -382,7 +386,7 @@ void PickerZeroStateView::OnFetchSuggestedResults(
   delegate_->OnZeroStateViewHeightChanged();
 }
 
-BEGIN_METADATA(PickerZeroStateView)
+BEGIN_METADATA(QuickInsertZeroStateView)
 END_METADATA
 
 }  // namespace ash

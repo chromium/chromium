@@ -21,14 +21,15 @@ class Widget;
 namespace ash {
 
 class QuickInsertListItemView;
-class PickerSubmenuView;
+class QuickInsertSubmenuView;
 
-class ASH_EXPORT PickerSubmenuController : public views::ViewObserver {
+class ASH_EXPORT QuickInsertSubmenuController : public views::ViewObserver {
  public:
-  PickerSubmenuController();
-  PickerSubmenuController(const PickerSubmenuController&) = delete;
-  PickerSubmenuController& operator=(const PickerSubmenuController&) = delete;
-  ~PickerSubmenuController() override;
+  QuickInsertSubmenuController();
+  QuickInsertSubmenuController(const QuickInsertSubmenuController&) = delete;
+  QuickInsertSubmenuController& operator=(const QuickInsertSubmenuController&) =
+      delete;
+  ~QuickInsertSubmenuController() override;
 
   // ViewObserver:
   void OnViewVisibilityChanged(views::View* observed_view,
@@ -46,7 +47,7 @@ class ASH_EXPORT PickerSubmenuController : public views::ViewObserver {
 
   // Gets the currently showing submenu view, or returns nullptr if no submenu
   // is showing.
-  PickerSubmenuView* GetSubmenuView();
+  QuickInsertSubmenuView* GetSubmenuView();
 
   // Gets the anchor view for the currently showing submenu, or returns nullptr
   // if no submenu is showing.

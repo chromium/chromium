@@ -48,7 +48,7 @@ views::BubbleBorder::Arrow GetArrowForTextDirection(
 
 }  // namespace
 
-PickerCapsLockStateView::PickerCapsLockStateView(
+QuickInsertCapsLockStateView::QuickInsertCapsLockStateView(
     gfx::NativeView parent,
     bool enabled,
     gfx::Rect caret_bounds,
@@ -81,17 +81,17 @@ PickerCapsLockStateView::PickerCapsLockStateView(
   SetAnchorRect(caret_bounds);
 }
 
-PickerCapsLockStateView::~PickerCapsLockStateView() = default;
+QuickInsertCapsLockStateView::~QuickInsertCapsLockStateView() = default;
 
-void PickerCapsLockStateView::Close() {
+void QuickInsertCapsLockStateView::Close() {
   GetWidget()->Close();
 }
 
-void PickerCapsLockStateView::Show() {
+void QuickInsertCapsLockStateView::Show() {
   GetWidget()->Show();
 }
 
-BEGIN_METADATA(PickerCapsLockStateView)
+BEGIN_METADATA(QuickInsertCapsLockStateView)
 END_METADATA
 
 }  // namespace ash

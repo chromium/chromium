@@ -19,7 +19,8 @@ TEST(QuickInsertPreviewMetadataTest, ReturnsLastModified) {
   ASSERT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00",
                                      &only_modified.last_modified));
 
-  EXPECT_EQ(PickerGetFilePreviewDescription(only_modified), u"Edited · Dec 23");
+  EXPECT_EQ(QuickInsertGetFilePreviewDescription(only_modified),
+            u"Edited · Dec 23");
 }
 
 TEST(QuickInsertPreviewMetadataTest, ReturnsLastAccessed) {
@@ -27,7 +28,7 @@ TEST(QuickInsertPreviewMetadataTest, ReturnsLastAccessed) {
   ASSERT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00",
                                      &only_accessed.last_accessed));
 
-  EXPECT_EQ(PickerGetFilePreviewDescription(only_accessed),
+  EXPECT_EQ(QuickInsertGetFilePreviewDescription(only_accessed),
             u"You opened · Dec 23");
 }
 
@@ -38,7 +39,7 @@ TEST(QuickInsertPreviewMetadataTest, ReturnsModifiedIfNewer) {
   ASSERT_TRUE(base::Time::FromString("23 Dec 2021 09:00:00",
                                      &modified_newer.last_accessed));
 
-  EXPECT_EQ(PickerGetFilePreviewDescription(modified_newer),
+  EXPECT_EQ(QuickInsertGetFilePreviewDescription(modified_newer),
             u"Edited · Dec 23");
 }
 
@@ -49,7 +50,7 @@ TEST(QuickInsertPreviewMetadataTest, ReturnsAccessedIfNewer) {
   ASSERT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00",
                                      &accessed_newer.last_accessed));
 
-  EXPECT_EQ(PickerGetFilePreviewDescription(accessed_newer),
+  EXPECT_EQ(QuickInsertGetFilePreviewDescription(accessed_newer),
             u"You opened · Dec 23");
 }
 
@@ -60,7 +61,7 @@ TEST(QuickInsertPreviewMetadataTest, ReturnsModifiedIfSameAsAccessed) {
   ASSERT_TRUE(base::Time::FromString("23 Dec 2021 09:01:00",
                                      &modified_newer.last_accessed));
 
-  EXPECT_EQ(PickerGetFilePreviewDescription(modified_newer),
+  EXPECT_EQ(QuickInsertGetFilePreviewDescription(modified_newer),
             u"Edited · Dec 23");
 }
 

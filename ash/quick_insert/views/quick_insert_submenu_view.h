@@ -22,17 +22,18 @@ class QuickInsertSectionView;
 
 // View for a Quick Insert submenu, which shows a list of results in a bubble
 // outside the main Quick Insert container.
-class ASH_EXPORT PickerSubmenuView : public views::WidgetDelegateView,
-                                     public PickerTraversableItemContainer {
-  METADATA_HEADER(PickerSubmenuView, views::WidgetDelegateView)
+class ASH_EXPORT QuickInsertSubmenuView
+    : public views::WidgetDelegateView,
+      public QuickInsertTraversableItemContainer {
+  METADATA_HEADER(QuickInsertSubmenuView, views::WidgetDelegateView)
 
  public:
-  PickerSubmenuView(
+  QuickInsertSubmenuView(
       const gfx::Rect& anchor_rect,
       std::vector<std::unique_ptr<QuickInsertListItemView>> items);
-  PickerSubmenuView(const PickerSubmenuView&) = delete;
-  PickerSubmenuView& operator=(const PickerSubmenuView&) = delete;
-  ~PickerSubmenuView() override;
+  QuickInsertSubmenuView(const QuickInsertSubmenuView&) = delete;
+  QuickInsertSubmenuView& operator=(const QuickInsertSubmenuView&) = delete;
+  ~QuickInsertSubmenuView() override;
 
   // views::WidgetDelegateView:
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
@@ -40,7 +41,7 @@ class ASH_EXPORT PickerSubmenuView : public views::WidgetDelegateView,
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
-  // PickerTraversableItemContainer:
+  // QuickInsertTraversableItemContainer:
   views::View* GetTopItem() override;
   views::View* GetBottomItem() override;
   views::View* GetItemAbove(views::View* item) override;

@@ -140,8 +140,8 @@ input_method::ImeKeyboard& GetImeKeyboard() {
 }
 
 // The user can ask to insert rich media, a clipboard item, or insert nothing.
-using InsertionContent =
-    std::variant<PickerRichMedia, QuickInsertClipboardResult, std::monostate>;
+using InsertionContent = std::
+    variant<QuickInsertRichMedia, QuickInsertClipboardResult, std::monostate>;
 
 InsertionContent GetInsertionContentForResult(
     const QuickInsertSearchResult& result) {
@@ -149,26 +149,28 @@ InsertionContent GetInsertionContentForResult(
   return std::visit(
       base::Overloaded{
           [](const QuickInsertTextResult& data) -> ReturnType {
-            return PickerTextMedia(data.primary_text);
+            return QuickInsertTextMedia(data.primary_text);
           },
           [](const QuickInsertEmojiResult& data) -> ReturnType {
-            return PickerTextMedia(data.text);
+            return QuickInsertTextMedia(data.text);
           },
           [](const QuickInsertClipboardResult& data) -> ReturnType {
             return data;
           },
           [](const QuickInsertBrowsingHistoryResult& data) -> ReturnType {
-            return PickerLinkMedia(data.url, base::UTF16ToUTF8(data.title));
+            return QuickInsertLinkMedia(data.url,
+                                        base::UTF16ToUTF8(data.title));
           },
           [](const QuickInsertGifResult& data) -> ReturnType {
-            return PickerImageMedia(data.full_url, data.full_dimensions,
-                                    data.content_description);
+            return QuickInsertImageMedia(data.full_url, data.full_dimensions,
+                                         data.content_description);
           },
           [](const QuickInsertLocalFileResult& data) -> ReturnType {
-            return PickerLocalFileMedia(data.file_path);
+            return QuickInsertLocalFileMedia(data.file_path);
           },
           [](const QuickInsertDriveFileResult& data) -> ReturnType {
-            return PickerLinkMedia(data.url, base::UTF16ToUTF8(data.title));
+            return QuickInsertLinkMedia(data.url,
+                                        base::UTF16ToUTF8(data.title));
           },
           [](const QuickInsertCategoryResult& data) -> ReturnType {
             return std::monostate();
@@ -210,11 +212,11 @@ std::u16string TransformText(std::u16string_view text,
                              QuickInsertCaseTransformResult::Type type) {
   switch (type) {
     case QuickInsertCaseTransformResult::Type::kUpperCase:
-      return PickerTransformToUpperCase(text);
+      return QuickInsertTransformToUpperCase(text);
     case QuickInsertCaseTransformResult::Type::kLowerCase:
-      return PickerTransformToLowerCase(text);
+      return QuickInsertTransformToLowerCase(text);
     case QuickInsertCaseTransformResult::Type::kTitleCase:
-      return PickerTransformToTitleCase(text);
+      return QuickInsertTransformToTitleCase(text);
   }
   NOTREACHED();
 }
@@ -258,7 +260,7 @@ ui::EmojiPickerCategory EmojiResultTypeToCategory(
 
 QuickInsertController::QuickInsertController()
     : caps_lock_bubble_controller_(&GetImeKeyboard()),
-      asset_fetcher_(std::make_unique<PickerAssetFetcherImpl>(this)),
+      asset_fetcher_(std::make_unique<QuickInsertAssetFetcherImpl>(this)),
       search_controller_(kBurnInPeriod) {}
 
 QuickInsertController::~QuickInsertController() {
@@ -270,8 +272,8 @@ QuickInsertController::~QuickInsertController() {
 }
 
 void QuickInsertController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  PickerFeatureTour::RegisterProfilePrefs(registry);
-  PickerSessionMetrics::RegisterProfilePrefs(registry);
+  QuickInsertFeatureTour::RegisterProfilePrefs(registry);
+  QuickInsertSessionMetrics::RegisterProfilePrefs(registry);
 }
 
 void QuickInsertController::DisableFeatureTourForTesting() {
@@ -280,7 +282,7 @@ void QuickInsertController::DisableFeatureTourForTesting() {
 }
 
 void QuickInsertController::SetClient(QuickInsertClient* client) {
-  // `PickerSearchController` may depend on the current client via
+  // `QuickInsertSearchController` may depend on the current client via
   // `StartSearch`. Stop the search before changing the `client`. This may send
   // a `StopSearch` call to the current `client_`.
   search_controller_.StopSearch();
@@ -303,8 +305,8 @@ void QuickInsertController::ToggleWidget(
       feature_tour_.MaybeShowForFirstUse(
           prefs,
           client_->IsEligibleForEditor()
-              ? PickerFeatureTour::EditorStatus::kEligible
-              : PickerFeatureTour::EditorStatus::kNotEligible,
+              ? QuickInsertFeatureTour::EditorStatus::kEligible
+              : QuickInsertFeatureTour::EditorStatus::kNotEligible,
           base::BindRepeating(OpenLink, GURL(kSupportUrl)),
           base::BindRepeating(&QuickInsertController::ShowWidgetPostFeatureTour,
                               weak_ptr_factory_.GetWeakPtr()))) {
@@ -356,7 +358,7 @@ void QuickInsertController::StartSearch(
   search_controller_.StartSearch(
       client_, query, std::move(category), GetAvailableCategories(),
       !session_->model.is_caps_lock_enabled(),
-      session_->model.GetMode() == PickerModeType::kHasSelection,
+      session_->model.GetMode() == QuickInsertModeType::kHasSelection,
       std::move(callback));
 }
 
@@ -396,17 +398,17 @@ void QuickInsertController::OpenResult(const QuickInsertSearchResult& result) {
           [](const QuickInsertClipboardResult& data) { NOTREACHED(); },
           [&](const QuickInsertBrowsingHistoryResult& data) {
             session_->session_metrics.SetOutcome(
-                PickerSessionMetrics::SessionOutcome::kOpenLink);
+                QuickInsertSessionMetrics::SessionOutcome::kOpenLink);
             OpenLink(data.url);
           },
           [&](const QuickInsertLocalFileResult& data) {
             session_->session_metrics.SetOutcome(
-                PickerSessionMetrics::SessionOutcome::kOpenFile);
+                QuickInsertSessionMetrics::SessionOutcome::kOpenFile);
             OpenFile(data.file_path);
           },
           [&](const QuickInsertDriveFileResult& data) {
             session_->session_metrics.SetOutcome(
-                PickerSessionMetrics::SessionOutcome::kOpenLink);
+                QuickInsertSessionMetrics::SessionOutcome::kOpenLink);
             OpenLink(data.url);
           },
           [](const QuickInsertCategoryResult& data) { NOTREACHED(); },
@@ -415,14 +417,14 @@ void QuickInsertController::OpenResult(const QuickInsertSearchResult& result) {
           [](const QuickInsertLobsterResult& data) { NOTREACHED(); },
           [&](const QuickInsertNewWindowResult& data) {
             session_->session_metrics.SetOutcome(
-                PickerSessionMetrics::SessionOutcome::kCreate);
+                QuickInsertSessionMetrics::SessionOutcome::kCreate);
             OpenLink(GetUrlForNewWindow(data.type));
           },
           [&](const QuickInsertCapsLockResult& data) {
             session_->session_metrics.SetOutcome(
-                PickerSessionMetrics::SessionOutcome::kFormat);
+                QuickInsertSessionMetrics::SessionOutcome::kFormat);
             caps_lock_request_ =
-                std::make_unique<PickerActionOnNextFocusRequest>(
+                std::make_unique<QuickInsertActionOnNextFocusRequest>(
                     widget_->GetInputMethod(), kCapsLockRequestTimeout,
                     base::BindOnce(
                         [](bool enabled) {
@@ -440,7 +442,7 @@ void QuickInsertController::OpenResult(const QuickInsertSearchResult& result) {
               return;
             }
             session_->session_metrics.SetOutcome(
-                PickerSessionMetrics::SessionOutcome::kFormat);
+                QuickInsertSessionMetrics::SessionOutcome::kFormat);
             std::u16string_view selected_text = session_->model.selected_text();
             InsertResultOnNextFocus(QuickInsertTextResult(
                 TransformText(selected_text, data.type),
@@ -478,51 +480,51 @@ void QuickInsertController::ShowLobster(
   }
 }
 
-PickerAssetFetcher* QuickInsertController::GetAssetFetcher() {
+QuickInsertAssetFetcher* QuickInsertController::GetAssetFetcher() {
   return asset_fetcher_.get();
 }
 
-PickerSessionMetrics& QuickInsertController::GetSessionMetrics() {
+QuickInsertSessionMetrics& QuickInsertController::GetSessionMetrics() {
   return session_->session_metrics;
 }
 
 QuickInsertActionType QuickInsertController::GetActionForResult(
     const QuickInsertSearchResult& result) {
   CHECK(session_);
-  const PickerModeType mode = session_->model.GetMode();
+  const QuickInsertModeType mode = session_->model.GetMode();
   return std::visit(
       base::Overloaded{[mode](const QuickInsertTextResult& data) {
-                         CHECK(mode == PickerModeType::kNoSelection ||
-                               mode == PickerModeType::kHasSelection);
+                         CHECK(mode == QuickInsertModeType::kNoSelection ||
+                               mode == QuickInsertModeType::kHasSelection);
                          return QuickInsertActionType::kInsert;
                        },
                        [mode](const QuickInsertEmojiResult& data) {
-                         CHECK(mode == PickerModeType::kNoSelection ||
-                               mode == PickerModeType::kHasSelection);
+                         CHECK(mode == QuickInsertModeType::kNoSelection ||
+                               mode == QuickInsertModeType::kHasSelection);
                          return QuickInsertActionType::kInsert;
                        },
                        [mode](const QuickInsertGifResult& data) {
-                         CHECK(mode == PickerModeType::kNoSelection ||
-                               mode == PickerModeType::kHasSelection);
+                         CHECK(mode == QuickInsertModeType::kNoSelection ||
+                               mode == QuickInsertModeType::kHasSelection);
                          return QuickInsertActionType::kInsert;
                        },
                        [mode](const QuickInsertClipboardResult& data) {
-                         CHECK(mode == PickerModeType::kNoSelection ||
-                               mode == PickerModeType::kHasSelection);
+                         CHECK(mode == QuickInsertModeType::kNoSelection ||
+                               mode == QuickInsertModeType::kHasSelection);
                          return QuickInsertActionType::kInsert;
                        },
                        [mode](const QuickInsertBrowsingHistoryResult& data) {
-                         return mode == PickerModeType::kUnfocused
+                         return mode == QuickInsertModeType::kUnfocused
                                     ? QuickInsertActionType::kOpen
                                     : QuickInsertActionType::kInsert;
                        },
                        [mode](const QuickInsertLocalFileResult& data) {
-                         return mode == PickerModeType::kUnfocused
+                         return mode == QuickInsertModeType::kUnfocused
                                     ? QuickInsertActionType::kOpen
                                     : QuickInsertActionType::kInsert;
                        },
                        [mode](const QuickInsertDriveFileResult& data) {
-                         return mode == PickerModeType::kUnfocused
+                         return mode == QuickInsertModeType::kUnfocused
                                     ? QuickInsertActionType::kOpen
                                     : QuickInsertActionType::kInsert;
                        },
@@ -565,7 +567,7 @@ PrefService* QuickInsertController::GetPrefs() {
   return client_->GetPrefs();
 }
 
-PickerModeType QuickInsertController::GetMode() {
+QuickInsertModeType QuickInsertController::GetMode() {
   CHECK(session_);
   return session_->model.GetMode();
 }
@@ -594,7 +596,7 @@ QuickInsertController::Session::Session(
     input_method::ImeKeyboard* ime_keyboard,
     QuickInsertModel::EditorStatus editor_status,
     QuickInsertModel::LobsterStatus lobster_status,
-    PickerEmojiSuggester::GetNameCallback get_name)
+    QuickInsertEmojiSuggester::GetNameCallback get_name)
     : model(prefs, focused_client, ime_keyboard, editor_status, lobster_status),
       emoji_history_model(prefs),
       emoji_suggester(&emoji_history_model, std::move(get_name)),
@@ -645,7 +647,7 @@ void QuickInsertController::ShowWidget(base::TimeTicks trigger_event_timestamp,
   const gfx::Rect anchor_bounds = GetPickerAnchorBounds(
       GetCaretBounds(), GetCursorPoint(), GetFocusedWindowBounds());
   if (trigger_source == WidgetTriggerSource::kFeatureTour &&
-      session_->model.GetMode() == PickerModeType::kUnfocused) {
+      session_->model.GetMode() == QuickInsertModeType::kUnfocused) {
     widget_ = QuickInsertWidget::CreateCentered(this, anchor_bounds,
                                                 trigger_event_timestamp);
   } else {
@@ -663,7 +665,7 @@ void QuickInsertController::CloseWidget() {
   }
 
   session_->session_metrics.SetOutcome(
-      PickerSessionMetrics::SessionOutcome::kAbandoned);
+      QuickInsertSessionMetrics::SessionOutcome::kAbandoned);
   widget_->Close();
 }
 
@@ -671,7 +673,8 @@ void QuickInsertController::ShowWidgetPostFeatureTour() {
   ShowWidget(base::TimeTicks::Now(), WidgetTriggerSource::kFeatureTour);
 }
 
-std::optional<PickerWebPasteTarget> QuickInsertController::GetWebPasteTarget() {
+std::optional<QuickInsertWebPasteTarget>
+QuickInsertController::GetWebPasteTarget() {
   return client_ ? client_->GetWebPasteTarget() : std::nullopt;
 }
 
@@ -691,14 +694,15 @@ void QuickInsertController::InsertResultOnNextFocus(
 
   std::visit(
       base::Overloaded{
-          [&](PickerRichMedia media) {
+          [&](QuickInsertRichMedia media) {
             ui::InputMethod* input_method = widget_->GetInputMethod();
             if (input_method == nullptr) {
               return;
             }
 
             // This cancels the previous request if there was one.
-            insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
+            insert_media_request_ = std::make_unique<
+                QuickInsertInsertMediaRequest>(
                 input_method, media, kInsertMediaTimeout,
                 base::BindOnce(
                     [](base::WeakPtr<QuickInsertController> weak_controller) {
@@ -712,7 +716,7 @@ void QuickInsertController::InsertResultOnNextFocus(
           },
           [&](QuickInsertClipboardResult data) {
             // This cancels the previous request if there was one.
-            paste_request_ = std::make_unique<PickerPasteRequest>(
+            paste_request_ = std::make_unique<QuickInsertPasteRequest>(
                 ClipboardHistoryController::Get(),
                 aura::client::GetFocusClient(widget_->GetNativeView()),
                 data.item_id);
@@ -722,28 +726,28 @@ void QuickInsertController::InsertResultOnNextFocus(
       GetInsertionContentForResult(result));
 
   session_->session_metrics.SetOutcome(
-      PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
+      QuickInsertSessionMetrics::SessionOutcome::kInsertedOrCopied);
 }
 
 void QuickInsertController::OnInsertCompleted(
-    const PickerRichMedia& media,
-    PickerInsertMediaRequest::Result result) {
+    const QuickInsertRichMedia& media,
+    QuickInsertInsertMediaRequest::Result result) {
   // Fallback to copying to the clipboard on failure.
-  if (result != PickerInsertMediaRequest::Result::kSuccess) {
+  if (result != QuickInsertInsertMediaRequest::Result::kSuccess) {
     CopyMediaToClipboard(media);
   }
 }
 
-PickerCapsLockPosition QuickInsertController::GetCapsLockPosition() {
+QuickInsertCapsLockPosition QuickInsertController::GetCapsLockPosition() {
   // Always put the caps lock entry point at the top if the user has caps lock
   // enabled, since it is they will likely want to disable it.
   if (GetImeKeyboard().IsCapsLockEnabled()) {
-    return PickerCapsLockPosition::kTop;
+    return QuickInsertCapsLockPosition::kTop;
   }
 
   PrefService* prefs = GetPrefs();
   if (prefs == nullptr) {
-    return PickerCapsLockPosition::kTop;
+    return QuickInsertCapsLockPosition::kTop;
   }
 
   int caps_lock_displayed_count =
@@ -755,12 +759,12 @@ PickerCapsLockPosition QuickInsertController::GetCapsLockPosition() {
 
   if (caps_lock_displayed_count < kCapsLockMinimumTopDisplayCount ||
       caps_lock_selected_ratio >= kCapsLockRatioThresholdForTop) {
-    return PickerCapsLockPosition::kTop;
+    return QuickInsertCapsLockPosition::kTop;
   }
   if (caps_lock_selected_ratio >= kCapsLockRatioThresholdForBottom) {
-    return PickerCapsLockPosition::kMiddle;
+    return QuickInsertCapsLockPosition::kMiddle;
   }
-  return PickerCapsLockPosition::kBottom;
+  return QuickInsertCapsLockPosition::kBottom;
 }
 
 }  // namespace ash

@@ -26,10 +26,11 @@ class TextInputClient;
 
 namespace ash {
 
-struct PickerWebPasteTarget;
+struct QuickInsertWebPasteTarget;
 
 // Inserts rich media such as text and images into an input field.
-class ASH_EXPORT PickerInsertMediaRequest : public ui::InputMethodObserver {
+class ASH_EXPORT QuickInsertInsertMediaRequest
+    : public ui::InputMethodObserver {
  public:
   enum class Result {
     kSuccess,
@@ -50,14 +51,14 @@ class ASH_EXPORT PickerInsertMediaRequest : public ui::InputMethodObserver {
   // If `on_complete_callback` is valid, it is called when the insert
   // completed successfully, or when there is an error, such as no insertion
   // happened before the timeout.
-  explicit PickerInsertMediaRequest(
+  explicit QuickInsertInsertMediaRequest(
       ui::InputMethod* input_method,
-      const PickerRichMedia& media,
+      const QuickInsertRichMedia& media,
       base::TimeDelta insert_timeout,
-      base::OnceCallback<std::optional<PickerWebPasteTarget>()>
+      base::OnceCallback<std::optional<QuickInsertWebPasteTarget>()>
           get_web_paste_target = {},
       OnCompleteCallback on_complete_callback = {});
-  ~PickerInsertMediaRequest() override;
+  ~QuickInsertInsertMediaRequest() override;
 
   // ui::InputMethodObserver:
   void OnFocus() override {}
@@ -71,8 +72,8 @@ class ASH_EXPORT PickerInsertMediaRequest : public ui::InputMethodObserver {
   // Does nothing if the insertion has already happened.
   void CancelPendingInsert();
 
-  std::optional<PickerRichMedia> media_to_insert_;
-  base::OnceCallback<std::optional<PickerWebPasteTarget>()>
+  std::optional<QuickInsertRichMedia> media_to_insert_;
+  base::OnceCallback<std::optional<QuickInsertWebPasteTarget>()>
       get_web_paste_target_;
   base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
       observation_{this};

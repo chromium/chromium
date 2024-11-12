@@ -19,18 +19,18 @@ class Label;
 namespace ash {
 
 // Quick Insert item which contains just an emoji.
-class ASH_EXPORT PickerEmojiItemView : public QuickInsertItemView {
-  METADATA_HEADER(PickerEmojiItemView, QuickInsertItemView)
+class ASH_EXPORT QuickInsertEmojiItemView : public QuickInsertItemView {
+  METADATA_HEADER(QuickInsertEmojiItemView, QuickInsertItemView)
 
  public:
   enum class Style { kEmoji, kEmoticon, kSymbol };
 
-  PickerEmojiItemView(Style style,
-                      SelectItemCallback select_item_callback,
-                      const std::u16string& text);
-  PickerEmojiItemView(const PickerEmojiItemView&) = delete;
-  PickerEmojiItemView& operator=(const PickerEmojiItemView&) = delete;
-  ~PickerEmojiItemView() override;
+  QuickInsertEmojiItemView(Style style,
+                           SelectItemCallback select_item_callback,
+                           const std::u16string& text);
+  QuickInsertEmojiItemView(const QuickInsertEmojiItemView&) = delete;
+  QuickInsertEmojiItemView& operator=(const QuickInsertEmojiItemView&) = delete;
+  ~QuickInsertEmojiItemView() override;
 
   std::u16string_view GetTextForTesting() const;
 

@@ -36,7 +36,7 @@ constexpr int kBadgeCornerRadius = 4;
 
 }  // namespace
 
-PickerBadgeView::PickerBadgeView() {
+QuickInsertBadgeView::QuickInsertBadgeView() {
   // TODO: b/342478227 - Ensure this works with tall text.
   views::Builder<views::BoxLayoutView>(this)
       .SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -60,24 +60,24 @@ PickerBadgeView::PickerBadgeView() {
       .BuildChildren();
 }
 
-PickerBadgeView::~PickerBadgeView() = default;
+QuickInsertBadgeView::~QuickInsertBadgeView() = default;
 
-const std::u16string& PickerBadgeView::GetText() const {
+const std::u16string& QuickInsertBadgeView::GetText() const {
   return label_->GetText();
 }
 
-void PickerBadgeView::SetText(const std::u16string& text) {
+void QuickInsertBadgeView::SetText(const std::u16string& text) {
   label_->SetText(std::move(text));
 }
 
-gfx::Size PickerBadgeView::CalculatePreferredSize(
+gfx::Size QuickInsertBadgeView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   const int preferred_width =
       BoxLayoutView::CalculatePreferredSize(available_size).width();
   return gfx::Size(preferred_width, kBadgeHeight);
 }
 
-BEGIN_METADATA(PickerBadgeView)
+BEGIN_METADATA(QuickInsertBadgeView)
 END_METADATA
 
 }  // namespace ash

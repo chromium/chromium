@@ -14,14 +14,15 @@
 
 namespace ash {
 
-class ASH_EXPORT PickerShortcutHintView : public views::View {
-  METADATA_HEADER(PickerShortcutHintView, views::View)
+class ASH_EXPORT QuickInsertShortcutHintView : public views::View {
+  METADATA_HEADER(QuickInsertShortcutHintView, views::View)
 
  public:
-  explicit PickerShortcutHintView(QuickInsertCapsLockResult::Shortcut);
-  PickerShortcutHintView(const PickerShortcutHintView&) = delete;
-  PickerShortcutHintView& operator=(const PickerShortcutHintView&) = delete;
-  ~PickerShortcutHintView() override;
+  explicit QuickInsertShortcutHintView(QuickInsertCapsLockResult::Shortcut);
+  QuickInsertShortcutHintView(const QuickInsertShortcutHintView&) = delete;
+  QuickInsertShortcutHintView& operator=(const QuickInsertShortcutHintView&) =
+      delete;
+  ~QuickInsertShortcutHintView() override;
 
   const std::u16string& GetShortcutText() const;
 

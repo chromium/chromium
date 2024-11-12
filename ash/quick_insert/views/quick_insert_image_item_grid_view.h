@@ -16,25 +16,26 @@
 
 namespace ash {
 
-class PickerImageItemView;
+class QuickInsertImageItemView;
 
 // Container view for the image items in a section. The image items are
 // displayed in a grid with two columns.
-class ASH_EXPORT PickerImageItemGridView
+class ASH_EXPORT QuickInsertImageItemGridView
     : public views::View,
-      public PickerTraversableItemContainer {
-  METADATA_HEADER(PickerImageItemGridView, views::View)
+      public QuickInsertTraversableItemContainer {
+  METADATA_HEADER(QuickInsertImageItemGridView, views::View)
 
  public:
-  explicit PickerImageItemGridView(int grid_width);
-  PickerImageItemGridView(const PickerImageItemGridView&) = delete;
-  PickerImageItemGridView& operator=(const PickerImageItemGridView&) = delete;
-  ~PickerImageItemGridView() override;
+  explicit QuickInsertImageItemGridView(int grid_width);
+  QuickInsertImageItemGridView(const QuickInsertImageItemGridView&) = delete;
+  QuickInsertImageItemGridView& operator=(const QuickInsertImageItemGridView&) =
+      delete;
+  ~QuickInsertImageItemGridView() override;
 
   // views::View:
   views::FocusTraversable* GetPaneFocusTraversable() override;
 
-  // PickerTraversableItemContainer:
+  // QuickInsertTraversableItemContainer:
   views::View* GetTopItem() override;
   views::View* GetBottomItem() override;
   views::View* GetItemAbove(views::View* item) override;
@@ -43,8 +44,8 @@ class ASH_EXPORT PickerImageItemGridView
   views::View* GetItemRightOf(views::View* item) override;
   bool ContainsItem(views::View* item) override;
 
-  PickerImageItemView* AddImageItem(
-      std::unique_ptr<PickerImageItemView> image_item);
+  QuickInsertImageItemView* AddImageItem(
+      std::unique_ptr<QuickInsertImageItemView> image_item);
 
  private:
   class FocusSearch : public views::FocusSearch,

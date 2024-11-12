@@ -30,7 +30,7 @@ TEST_F(QuickInsertSubmenuViewTest, GetsTopItem) {
   items.push_back(std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   items.push_back(std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   auto* top_item_ptr = items.front().get();
-  PickerSubmenuView submenu_view(kDefaultAnchorBounds, std::move(items));
+  QuickInsertSubmenuView submenu_view(kDefaultAnchorBounds, std::move(items));
 
   EXPECT_EQ(submenu_view.GetTopItem(), top_item_ptr);
 }
@@ -40,7 +40,7 @@ TEST_F(QuickInsertSubmenuViewTest, GetsBottomItem) {
   items.push_back(std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   items.push_back(std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   auto* bottom_item_ptr = items.back().get();
-  PickerSubmenuView submenu_view(kDefaultAnchorBounds, std::move(items));
+  QuickInsertSubmenuView submenu_view(kDefaultAnchorBounds, std::move(items));
 
   EXPECT_EQ(submenu_view.GetBottomItem(), bottom_item_ptr);
 }
@@ -51,7 +51,7 @@ TEST_F(QuickInsertSubmenuViewTest, GetsItemAbove) {
   items.push_back(std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   auto* top_item_ptr = items.front().get();
   auto* bottom_item_ptr = items.back().get();
-  PickerSubmenuView submenu_view(kDefaultAnchorBounds, std::move(items));
+  QuickInsertSubmenuView submenu_view(kDefaultAnchorBounds, std::move(items));
 
   EXPECT_EQ(submenu_view.GetItemAbove(top_item_ptr), nullptr);
   EXPECT_EQ(submenu_view.GetItemAbove(bottom_item_ptr), top_item_ptr);
@@ -63,7 +63,7 @@ TEST_F(QuickInsertSubmenuViewTest, GetItemBelow) {
   items.push_back(std::make_unique<QuickInsertListItemView>(base::DoNothing()));
   auto* top_item_ptr = items.front().get();
   auto* bottom_item_ptr = items.back().get();
-  PickerSubmenuView submenu_view(kDefaultAnchorBounds, std::move(items));
+  QuickInsertSubmenuView submenu_view(kDefaultAnchorBounds, std::move(items));
 
   EXPECT_EQ(submenu_view.GetItemBelow(top_item_ptr), bottom_item_ptr);
   EXPECT_EQ(submenu_view.GetItemBelow(bottom_item_ptr), nullptr);
@@ -74,7 +74,7 @@ TEST_F(QuickInsertSubmenuViewTest, TriggersItemCallbackOnPseudoFocusAction) {
   base::test::TestFuture<void> select_item_future;
   items.push_back(std::make_unique<QuickInsertListItemView>(
       select_item_future.GetRepeatingCallback()));
-  PickerSubmenuView submenu_view(kDefaultAnchorBounds, std::move(items));
+  QuickInsertSubmenuView submenu_view(kDefaultAnchorBounds, std::move(items));
 
   EXPECT_TRUE(DoPickerPseudoFocusedActionOnView(submenu_view.GetTopItem()));
 

@@ -18,8 +18,8 @@ namespace {
 using QuickInsertCapsLockStateViewTest = views::ViewsTestBase;
 
 TEST_F(QuickInsertCapsLockStateViewTest, ShowsCapsLockOn) {
-  PickerCapsLockStateView* view =
-      new PickerCapsLockStateView(GetContext(), true, gfx::Rect(0, 0, 120, 20));
+  QuickInsertCapsLockStateView* view = new QuickInsertCapsLockStateView(
+      GetContext(), true, gfx::Rect(0, 0, 120, 20));
 
   EXPECT_STREQ(view->icon_view_for_testing()
                    .GetImageModel()
@@ -30,7 +30,7 @@ TEST_F(QuickInsertCapsLockStateViewTest, ShowsCapsLockOn) {
 }
 
 TEST_F(QuickInsertCapsLockStateViewTest, ShowsCapsLockOff) {
-  PickerCapsLockStateView* view = new PickerCapsLockStateView(
+  QuickInsertCapsLockStateView* view = new QuickInsertCapsLockStateView(
       GetContext(), false, gfx::Rect(0, 0, 120, 20));
 
   EXPECT_STREQ(view->icon_view_for_testing()
@@ -59,9 +59,9 @@ INSTANTIATE_TEST_SUITE_P(,
 
 TEST_P(QuickInsertCapsLockStateViewRTLTest,
        ShowsCapsLockRightAlignedForLTRTextDirection) {
-  PickerCapsLockStateView* view =
-      new PickerCapsLockStateView(GetContext(), true, gfx::Rect(500, 0, 1, 1),
-                                  base::i18n::TextDirection::LEFT_TO_RIGHT);
+  QuickInsertCapsLockStateView* view = new QuickInsertCapsLockStateView(
+      GetContext(), true, gfx::Rect(500, 0, 1, 1),
+      base::i18n::TextDirection::LEFT_TO_RIGHT);
   view->Show();
 
   EXPECT_LT(view->GetBoundsInScreen().right(), 500);
@@ -69,9 +69,9 @@ TEST_P(QuickInsertCapsLockStateViewRTLTest,
 
 TEST_P(QuickInsertCapsLockStateViewRTLTest,
        ShowsCapsLockLeftAlignedForRTLTextDirection) {
-  PickerCapsLockStateView* view =
-      new PickerCapsLockStateView(GetContext(), true, gfx::Rect(500, 0, 1, 1),
-                                  base::i18n::TextDirection::RIGHT_TO_LEFT);
+  QuickInsertCapsLockStateView* view = new QuickInsertCapsLockStateView(
+      GetContext(), true, gfx::Rect(500, 0, 1, 1),
+      base::i18n::TextDirection::RIGHT_TO_LEFT);
   view->Show();
 
   EXPECT_GT(view->GetBoundsInScreen().x(), 500);
@@ -79,9 +79,9 @@ TEST_P(QuickInsertCapsLockStateViewRTLTest,
 
 TEST_P(QuickInsertCapsLockStateViewRTLTest,
        ShowsCapsLockAlignedBasedOnLocaleForUnknownTextDirection) {
-  PickerCapsLockStateView* view =
-      new PickerCapsLockStateView(GetContext(), true, gfx::Rect(500, 0, 1, 1),
-                                  base::i18n::TextDirection::UNKNOWN_DIRECTION);
+  QuickInsertCapsLockStateView* view = new QuickInsertCapsLockStateView(
+      GetContext(), true, gfx::Rect(500, 0, 1, 1),
+      base::i18n::TextDirection::UNKNOWN_DIRECTION);
   view->Show();
 
   if (GetParam()) {

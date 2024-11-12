@@ -16,15 +16,16 @@ namespace ash {
 class QuickInsertSearchFieldView;
 
 // The textfield in the Quick Insert search bar view.
-class ASH_EXPORT PickerSearchBarTextfield : public views::Textfield {
-  METADATA_HEADER(PickerSearchBarTextfield, views::Textfield)
+class ASH_EXPORT QuickInsertSearchBarTextfield : public views::Textfield {
+  METADATA_HEADER(QuickInsertSearchBarTextfield, views::Textfield)
 
  public:
-  explicit PickerSearchBarTextfield(
+  explicit QuickInsertSearchBarTextfield(
       QuickInsertSearchFieldView* search_field_view);
-  PickerSearchBarTextfield(const PickerSearchBarTextfield&) = delete;
-  PickerSearchBarTextfield& operator=(const PickerSearchBarTextfield&) = delete;
-  ~PickerSearchBarTextfield() override;
+  QuickInsertSearchBarTextfield(const QuickInsertSearchBarTextfield&) = delete;
+  QuickInsertSearchBarTextfield& operator=(
+      const QuickInsertSearchBarTextfield&) = delete;
+  ~QuickInsertSearchBarTextfield() override;
 
   void SetShouldShowFocusIndicator(bool should_show_focus_indicator);
 
@@ -33,11 +34,11 @@ class ASH_EXPORT PickerSearchBarTextfield : public views::Textfield {
   raw_ptr<QuickInsertSearchFieldView> search_field_view_;
 };
 
-BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerSearchBarTextfield, views::Textfield)
+BEGIN_VIEW_BUILDER(ASH_EXPORT, QuickInsertSearchBarTextfield, views::Textfield)
 END_VIEW_BUILDER
 
 }  // namespace ash
 
-DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::PickerSearchBarTextfield)
+DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::QuickInsertSearchBarTextfield)
 
 #endif  // ASH_QUICK_INSERT_VIEWS_QUICK_INSERT_SEARCH_BAR_TEXTFIELD_H_

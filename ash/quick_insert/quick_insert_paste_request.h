@@ -20,14 +20,15 @@ namespace ash {
 class ClipboardHistoryController;
 
 // Pastes a clipboard item on the next window focus change.
-class ASH_EXPORT PickerPasteRequest : public aura::client::FocusChangeObserver {
+class ASH_EXPORT QuickInsertPasteRequest
+    : public aura::client::FocusChangeObserver {
  public:
   // Creates a request to paste `clipboard_item_id` in the next focused Widget.
-  explicit PickerPasteRequest(
+  explicit QuickInsertPasteRequest(
       ClipboardHistoryController* clipboard_history_controller,
       aura::client::FocusClient* focus_client,
       base::UnguessableToken clipboard_item_id);
-  ~PickerPasteRequest() override;
+  ~QuickInsertPasteRequest() override;
 
   // aura::client::FocusChangeObserver:
   void OnWindowFocused(aura::Window* gained_focus,

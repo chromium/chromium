@@ -98,18 +98,18 @@ bool ShouldUseLinkTitle(const GURL& url_of_target) {
 }
 
 void InsertMediaToInputFieldNoClipboard(
-    PickerRichMedia media,
+    QuickInsertRichMedia media,
     ui::TextInputClient& client,
     OnInsertMediaCompleteCallback callback) {
   std::visit(
       base::Overloaded{
-          [&client, &callback](PickerTextMedia media) mutable {
+          [&client, &callback](QuickInsertTextMedia media) mutable {
             client.InsertText(media.text,
                               ui::TextInputClient::InsertTextCursorBehavior::
                                   kMoveCursorAfterText);
             std::move(callback).Run(InsertMediaResult::kSuccess);
           },
-          [&client, &callback](PickerImageMedia media) mutable {
+          [&client, &callback](QuickInsertImageMedia media) mutable {
             if (!client.CanInsertImage()) {
               std::move(callback).Run(InsertMediaResult::kUnsupported);
               return;
@@ -117,13 +117,13 @@ void InsertMediaToInputFieldNoClipboard(
             client.InsertImage(media.url);
             std::move(callback).Run(InsertMediaResult::kSuccess);
           },
-          [&client, &callback](PickerLinkMedia media) mutable {
+          [&client, &callback](QuickInsertLinkMedia media) mutable {
             client.InsertText(base::UTF8ToUTF16(media.url.spec()),
                               ui::TextInputClient::InsertTextCursorBehavior::
                                   kMoveCursorAfterText);
             std::move(callback).Run(InsertMediaResult::kSuccess);
           },
-          [&client, &callback](PickerLocalFileMedia media) mutable {
+          [&client, &callback](QuickInsertLocalFileMedia media) mutable {
             if (!client.CanInsertImage()) {
               std::move(callback).Run(InsertMediaResult::kUnsupported);
               return;
@@ -159,32 +159,32 @@ void InsertMediaToInputFieldNoClipboard(
 
 }  // namespace
 
-bool InputFieldSupportsInsertingMedia(const PickerRichMedia& media,
+bool InputFieldSupportsInsertingMedia(const QuickInsertRichMedia& media,
                                       ui::TextInputClient& client) {
   return std::visit(base::Overloaded{
-                        [](const PickerTextMedia& media) { return true; },
-                        [&client](const PickerImageMedia& media) {
+                        [](const QuickInsertTextMedia& media) { return true; },
+                        [&client](const QuickInsertImageMedia& media) {
                           return client.CanInsertImage();
                         },
-                        [](const PickerLinkMedia& media) { return true; },
-                        [&client](const PickerLocalFileMedia& media) {
+                        [](const QuickInsertLinkMedia& media) { return true; },
+                        [&client](const QuickInsertLocalFileMedia& media) {
                           return client.CanInsertImage();
                         },
                     },
                     media);
 }
 
-void InsertMediaToInputField(PickerRichMedia media,
+void InsertMediaToInputField(QuickInsertRichMedia media,
                              ui::TextInputClient& client,
                              WebPasteTargetCallback get_web_paste_target,
                              OnInsertMediaCompleteCallback callback) {
-  if (std::holds_alternative<PickerLinkMedia>(media) &&
+  if (std::holds_alternative<QuickInsertLinkMedia>(media) &&
       client.GetTextInputType() == ui::TEXT_INPUT_TYPE_CONTENT_EDITABLE) {
-    std::optional<PickerWebPasteTarget> web_paste_target =
+    std::optional<QuickInsertWebPasteTarget> web_paste_target =
         get_web_paste_target.is_null() ? std::nullopt
                                        : std::move(get_web_paste_target).Run();
     base::OnceClosure do_paste;
-    PickerClipboardDataOptions clipboard_data_options;
+    QuickInsertClipboardDataOptions clipboard_data_options;
     bool skip_clipboard_insertion = false;
     if (web_paste_target.has_value()) {
       do_paste = std::move(web_paste_target->do_paste);
@@ -199,7 +199,7 @@ void InsertMediaToInputField(PickerRichMedia media,
           ClipboardDataFromMedia(media, clipboard_data_options),
           std::move(do_paste),
           base::BindOnce(
-              [](PickerRichMedia media,
+              [](QuickInsertRichMedia media,
                  base::WeakPtr<ui::TextInputClient> client,
                  OnInsertMediaCompleteCallback callback, bool success) {
                 if (success) {

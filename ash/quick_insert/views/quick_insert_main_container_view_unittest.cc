@@ -23,8 +23,8 @@
 namespace ash {
 namespace {
 
-class MockPickerPageView : public PickerPageView {
-  METADATA_HEADER(MockPickerPageView, PickerPageView)
+class MockPickerPageView : public QuickInsertPageView {
+  METADATA_HEADER(MockPickerPageView, QuickInsertPageView)
 
  public:
   MockPickerPageView() = default;
@@ -32,7 +32,7 @@ class MockPickerPageView : public PickerPageView {
   MockPickerPageView& operator=(const MockPickerPageView&) = delete;
   ~MockPickerPageView() override = default;
 
-  // PickerPageView:
+  // QuickInsertPageView:
   views::View* GetTopItem() override { return nullptr; }
   views::View* GetBottomItem() override { return nullptr; }
   views::View* GetItemAbove(views::View* item) override { return nullptr; }
@@ -51,7 +51,7 @@ TEST_F(QuickInsertMainContainerViewTest, BackgroundColor) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* container =
-      widget->SetContentsView(std::make_unique<PickerMainContainerView>());
+      widget->SetContentsView(std::make_unique<QuickInsertMainContainerView>());
 
   EXPECT_EQ(container->background()->get_color(),
             container->GetColorProvider()->GetColor(
@@ -59,36 +59,36 @@ TEST_F(QuickInsertMainContainerViewTest, BackgroundColor) {
 }
 
 TEST_F(QuickInsertMainContainerViewTest, LayoutWithContentsBelowSearchField) {
-  PickerKeyEventHandler key_event_handler;
-  PickerPerformanceMetrics metrics;
+  QuickInsertKeyEventHandler key_event_handler;
+  QuickInsertPerformanceMetrics metrics;
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* container =
-      widget->SetContentsView(std::make_unique<PickerMainContainerView>());
+      widget->SetContentsView(std::make_unique<QuickInsertMainContainerView>());
 
   auto* search_field = container->AddSearchFieldView(
       std::make_unique<QuickInsertSearchFieldView>(
           base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
-  PickerContentsView* contents = container->AddContentsView(
-      PickerLayoutType::kMainResultsBelowSearchField);
+  QuickInsertContentsView* contents = container->AddContentsView(
+      QuickInsertLayoutType::kMainResultsBelowSearchField);
 
   EXPECT_GE(contents->GetBoundsInScreen().y(),
             search_field->GetBoundsInScreen().bottom());
 }
 
 TEST_F(QuickInsertMainContainerViewTest, LayoutWithContentsAboveSearchField) {
-  PickerKeyEventHandler key_event_handler;
-  PickerPerformanceMetrics metrics;
+  QuickInsertKeyEventHandler key_event_handler;
+  QuickInsertPerformanceMetrics metrics;
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* container =
-      widget->SetContentsView(std::make_unique<PickerMainContainerView>());
+      widget->SetContentsView(std::make_unique<QuickInsertMainContainerView>());
 
   auto* search_field = container->AddSearchFieldView(
       std::make_unique<QuickInsertSearchFieldView>(
           base::DoNothing(), base::DoNothing(), &key_event_handler, &metrics));
-  PickerContentsView* contents = container->AddContentsView(
-      PickerLayoutType::kMainResultsAboveSearchField);
+  QuickInsertContentsView* contents = container->AddContentsView(
+      QuickInsertLayoutType::kMainResultsAboveSearchField);
 
   EXPECT_LE(contents->GetBoundsInScreen().bottom(),
             search_field->GetBoundsInScreen().y());
@@ -98,8 +98,9 @@ TEST_F(QuickInsertMainContainerViewTest, SetsActivePage) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* container =
-      widget->SetContentsView(std::make_unique<PickerMainContainerView>());
-  container->AddContentsView(PickerLayoutType::kMainResultsBelowSearchField);
+      widget->SetContentsView(std::make_unique<QuickInsertMainContainerView>());
+  container->AddContentsView(
+      QuickInsertLayoutType::kMainResultsBelowSearchField);
   auto* page1 = container->AddPage(std::make_unique<MockPickerPageView>());
   auto* page2 = container->AddPage(std::make_unique<MockPickerPageView>());
 

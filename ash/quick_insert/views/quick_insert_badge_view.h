@@ -21,14 +21,14 @@ class Label;
 namespace ash {
 
 // View for a badge containing a label with an icon after it.
-class ASH_EXPORT PickerBadgeView : public views::BoxLayoutView {
-  METADATA_HEADER(PickerBadgeView, views::BoxLayoutView)
+class ASH_EXPORT QuickInsertBadgeView : public views::BoxLayoutView {
+  METADATA_HEADER(QuickInsertBadgeView, views::BoxLayoutView)
 
  public:
-  PickerBadgeView();
-  PickerBadgeView(const PickerBadgeView&) = delete;
-  PickerBadgeView& operator=(const PickerBadgeView&) = delete;
-  ~PickerBadgeView() override;
+  QuickInsertBadgeView();
+  QuickInsertBadgeView(const QuickInsertBadgeView&) = delete;
+  QuickInsertBadgeView& operator=(const QuickInsertBadgeView&) = delete;
+  ~QuickInsertBadgeView() override;
 
   const std::u16string& GetText() const;
   void SetText(const std::u16string& text);
@@ -41,12 +41,12 @@ class ASH_EXPORT PickerBadgeView : public views::BoxLayoutView {
   raw_ptr<views::Label> label_ = nullptr;
 };
 
-BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerBadgeView, views::BoxLayoutView)
+BEGIN_VIEW_BUILDER(ASH_EXPORT, QuickInsertBadgeView, views::BoxLayoutView)
 VIEW_BUILDER_PROPERTY(const std::u16string&, Text)
 END_VIEW_BUILDER
 
 }  // namespace ash
 
-DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::PickerBadgeView)
+DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::QuickInsertBadgeView)
 
 #endif  // ASH_QUICK_INSERT_VIEWS_QUICK_INSERT_BADGE_VIEW_H_

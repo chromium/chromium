@@ -16,7 +16,7 @@ namespace ash {
 
 enum class QuickInsertCategory;
 
-ASH_EXPORT std::vector<QuickInsertSearchResult> PickerActionSearch(
+ASH_EXPORT std::vector<QuickInsertSearchResult> QuickInsertActionSearch(
     base::span<const QuickInsertCategory> available_categories,
     bool caps_lock_state_to_search,
     bool search_case_transforms,

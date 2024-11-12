@@ -21,20 +21,21 @@ namespace ash {
 
 // An ImageView that fetches the thumbnail preview of a file asynchronously and
 // updates itself when the preview is fetched.
-class ASH_EXPORT PickerAsyncPreviewImageView : public views::ImageView {
-  METADATA_HEADER(PickerAsyncPreviewImageView, views::ImageView)
+class ASH_EXPORT QuickInsertAsyncPreviewImageView : public views::ImageView {
+  METADATA_HEADER(QuickInsertAsyncPreviewImageView, views::ImageView)
 
  public:
   using AsyncBitmapResolver = HoldingSpaceImage::AsyncBitmapResolver;
 
-  explicit PickerAsyncPreviewImageView(
+  explicit QuickInsertAsyncPreviewImageView(
       base::FilePath path,
       const gfx::Size& max_size,
       AsyncBitmapResolver async_bitmap_resolver);
-  PickerAsyncPreviewImageView(const PickerAsyncPreviewImageView&) = delete;
-  PickerAsyncPreviewImageView& operator=(const PickerAsyncPreviewImageView&) =
+  QuickInsertAsyncPreviewImageView(const QuickInsertAsyncPreviewImageView&) =
       delete;
-  ~PickerAsyncPreviewImageView() override;
+  QuickInsertAsyncPreviewImageView& operator=(
+      const QuickInsertAsyncPreviewImageView&) = delete;
+  ~QuickInsertAsyncPreviewImageView() override;
 
   // views::ImageView:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -50,11 +51,13 @@ class ASH_EXPORT PickerAsyncPreviewImageView : public views::ImageView {
   base::CallbackListSubscription async_preview_subscription_;
 };
 
-BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerAsyncPreviewImageView, views::ImageView)
+BEGIN_VIEW_BUILDER(ASH_EXPORT,
+                   QuickInsertAsyncPreviewImageView,
+                   views::ImageView)
 END_VIEW_BUILDER
 
 }  // namespace ash
 
-DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::PickerAsyncPreviewImageView)
+DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::QuickInsertAsyncPreviewImageView)
 
 #endif  // ASH_QUICK_INSERT_VIEWS_QUICK_INSERT_ASYNC_PREVIEW_IMAGE_VIEW_H_

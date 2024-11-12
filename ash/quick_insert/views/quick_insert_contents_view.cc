@@ -26,30 +26,31 @@
 namespace ash {
 namespace {
 
-gfx::Insets GetScrollViewContentsBorderInsets(PickerLayoutType layout_type) {
+gfx::Insets GetScrollViewContentsBorderInsets(
+    QuickInsertLayoutType layout_type) {
   switch (layout_type) {
-    case PickerLayoutType::kMainResultsBelowSearchField:
+    case QuickInsertLayoutType::kMainResultsBelowSearchField:
       return gfx::Insets::TLBR(0, 0, 8, 0);
-    case PickerLayoutType::kMainResultsAboveSearchField:
+    case QuickInsertLayoutType::kMainResultsAboveSearchField:
       return gfx::Insets::TLBR(8, 0, 8, 0);
   }
 }
 
-gfx::Insets GetPickerScrollBarInsets(PickerLayoutType layout_type) {
+gfx::Insets GetPickerScrollBarInsets(QuickInsertLayoutType layout_type) {
   switch (layout_type) {
-    case PickerLayoutType::kMainResultsBelowSearchField:
+    case QuickInsertLayoutType::kMainResultsBelowSearchField:
       return gfx::Insets::TLBR(1, 0, 12, 0);
-    case PickerLayoutType::kMainResultsAboveSearchField:
+    case QuickInsertLayoutType::kMainResultsAboveSearchField:
       return gfx::Insets::TLBR(12, 0, 1, 0);
   }
 }
 
 // Scroll view to contain the main Quick Insert contents.
-class PickerScrollView : public views::ScrollView {
-  METADATA_HEADER(PickerScrollView, views::ScrollView)
+class QuickInsertScrollView : public views::ScrollView {
+  METADATA_HEADER(QuickInsertScrollView, views::ScrollView)
 
  public:
-  PickerScrollView()
+  QuickInsertScrollView()
       : views::ScrollView(views::ScrollView::ScrollWithLayers::kEnabled) {
     views::Builder<views::ScrollView>(this)
         .ClipHeightTo(0, std::numeric_limits<int>::max())
@@ -58,20 +59,21 @@ class PickerScrollView : public views::ScrollView {
         .SetHorizontalScrollBarMode(views::ScrollView::ScrollBarMode::kDisabled)
         .BuildChildren();
   }
-  PickerScrollView(const PickerScrollView&) = delete;
-  PickerScrollView& operator=(const PickerScrollView&) = delete;
-  ~PickerScrollView() override = default;
+  QuickInsertScrollView(const QuickInsertScrollView&) = delete;
+  QuickInsertScrollView& operator=(const QuickInsertScrollView&) = delete;
+  ~QuickInsertScrollView() override = default;
 };
 
-BEGIN_METADATA(PickerScrollView)
+BEGIN_METADATA(QuickInsertScrollView)
 END_METADATA
 
 }  // namespace
 
-PickerContentsView::PickerContentsView(PickerLayoutType layout_type) {
+QuickInsertContentsView::QuickInsertContentsView(
+    QuickInsertLayoutType layout_type) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  auto* scroll_view = AddChildView(std::make_unique<PickerScrollView>());
+  auto* scroll_view = AddChildView(std::make_unique<QuickInsertScrollView>());
   auto vertical_scroll_bar = std::make_unique<RoundedScrollBar>(
       views::ScrollBar::Orientation::kVertical);
   vertical_scroll_bar->SetInsets(GetPickerScrollBarInsets(layout_type));
@@ -86,15 +88,15 @@ PickerContentsView::PickerContentsView(PickerLayoutType layout_type) {
           .Build());
 }
 
-PickerContentsView::~PickerContentsView() = default;
+QuickInsertContentsView::~QuickInsertContentsView() = default;
 
-void PickerContentsView::SetActivePage(views::View* view) {
+void QuickInsertContentsView::SetActivePage(views::View* view) {
   for (views::View* child : page_container_->children()) {
     child->SetVisible(child == view);
   }
 }
 
-BEGIN_METADATA(PickerContentsView)
+BEGIN_METADATA(QuickInsertContentsView)
 END_METADATA
 
 }  // namespace ash

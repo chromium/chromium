@@ -19,7 +19,7 @@ class PrefService;
 
 namespace ash {
 
-class ASH_EXPORT PickerEmojiHistoryModel {
+class ASH_EXPORT QuickInsertEmojiHistoryModel {
  public:
   struct EmojiHistoryItem {
     std::string text;
@@ -29,7 +29,7 @@ class ASH_EXPORT PickerEmojiHistoryModel {
     bool operator==(const EmojiHistoryItem&) const;
   };
 
-  explicit PickerEmojiHistoryModel(
+  explicit QuickInsertEmojiHistoryModel(
       PrefService* prefs,
       base::Clock* clock = base::DefaultClock::GetInstance());
 

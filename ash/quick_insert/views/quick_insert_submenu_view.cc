@@ -42,12 +42,12 @@ std::unique_ptr<views::BubbleBorder> CreateBorder() {
 
 }  // namespace
 
-PickerSubmenuView::PickerSubmenuView(
+QuickInsertSubmenuView::QuickInsertSubmenuView(
     const gfx::Rect& anchor_rect,
     std::vector<std::unique_ptr<QuickInsertListItemView>> items) {
   SetShowCloseButton(false);
   set_desired_bounds_delegate(
-      base::BindRepeating(&PickerSubmenuView::GetDesiredBounds,
+      base::BindRepeating(&QuickInsertSubmenuView::GetDesiredBounds,
                           base::Unretained(this), anchor_rect));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
                        views::BoxLayout::Orientation::kVertical,
@@ -67,17 +67,17 @@ PickerSubmenuView::PickerSubmenuView(
   }
 }
 
-PickerSubmenuView::~PickerSubmenuView() = default;
+QuickInsertSubmenuView::~QuickInsertSubmenuView() = default;
 
 std::unique_ptr<views::NonClientFrameView>
-PickerSubmenuView::CreateNonClientFrameView(views::Widget* widget) {
+QuickInsertSubmenuView::CreateNonClientFrameView(views::Widget* widget) {
   auto frame =
       std::make_unique<views::BubbleFrameView>(gfx::Insets(), gfx::Insets());
   frame->SetBubbleBorder(CreateBorder());
   return frame;
 }
 
-gfx::Size PickerSubmenuView::CalculatePreferredSize(
+gfx::Size QuickInsertSubmenuView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   const int preferred_height =
       views::WidgetDelegateView::CalculatePreferredSize(available_size)
@@ -85,35 +85,35 @@ gfx::Size PickerSubmenuView::CalculatePreferredSize(
   return gfx::Size(kSubmenuWidth, preferred_height);
 }
 
-views::View* PickerSubmenuView::GetTopItem() {
+views::View* QuickInsertSubmenuView::GetTopItem() {
   return section_view_->GetTopItem();
 }
 
-views::View* PickerSubmenuView::GetBottomItem() {
+views::View* QuickInsertSubmenuView::GetBottomItem() {
   return section_view_->GetBottomItem();
 }
 
-views::View* PickerSubmenuView::GetItemAbove(views::View* item) {
+views::View* QuickInsertSubmenuView::GetItemAbove(views::View* item) {
   return section_view_->GetItemAbove(item);
 }
 
-views::View* PickerSubmenuView::GetItemBelow(views::View* item) {
+views::View* QuickInsertSubmenuView::GetItemBelow(views::View* item) {
   return section_view_->GetItemBelow(item);
 }
 
-views::View* PickerSubmenuView::GetItemLeftOf(views::View* item) {
+views::View* QuickInsertSubmenuView::GetItemLeftOf(views::View* item) {
   return section_view_->GetItemLeftOf(item);
 }
 
-views::View* PickerSubmenuView::GetItemRightOf(views::View* item) {
+views::View* QuickInsertSubmenuView::GetItemRightOf(views::View* item) {
   return section_view_->GetItemRightOf(item);
 }
 
-bool PickerSubmenuView::ContainsItem(views::View* item) {
+bool QuickInsertSubmenuView::ContainsItem(views::View* item) {
   return Contains(item);
 }
 
-gfx::Rect PickerSubmenuView::GetDesiredBounds(gfx::Rect anchor_rect) {
+gfx::Rect QuickInsertSubmenuView::GetDesiredBounds(gfx::Rect anchor_rect) {
   // Inset the anchor rect so that the submenu overlaps slightly with the
   // anchor.
   anchor_rect.Inset(gfx::Insets::VH(0, kSubmenuHorizontalOverlap));
@@ -134,7 +134,7 @@ gfx::Rect PickerSubmenuView::GetDesiredBounds(gfx::Rect anchor_rect) {
   return bounds;
 }
 
-BEGIN_METADATA(PickerSubmenuView)
+BEGIN_METADATA(QuickInsertSubmenuView)
 END_METADATA
 
 }  // namespace ash

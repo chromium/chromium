@@ -14,10 +14,10 @@
 
 namespace ash {
 
-ASH_EXPORT std::optional<QuickInsertSearchResult> PickerMathSearch(
+ASH_EXPORT std::optional<QuickInsertSearchResult> QuickInsertMathSearch(
     std::u16string_view query);
 
-ASH_EXPORT std::vector<QuickInsertSearchResult> PickerMathExamples();
+ASH_EXPORT std::vector<QuickInsertSearchResult> QuickInsertMathExamples();
 
 }  // namespace ash
 

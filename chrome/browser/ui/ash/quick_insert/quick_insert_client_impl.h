@@ -28,8 +28,8 @@
 class PrefService;
 class Profile;
 class ChromeSearchResult;
-class PickerFileSuggester;
-class PickerThumbnailLoader;
+class QuickInsertFileSuggester;
+class QuickInsertThumbnailLoader;
 
 namespace app_list {
 class SearchEngine;
@@ -82,7 +82,7 @@ class QuickInsertClientImpl
                           const gfx::Size& size,
                           FetchFileThumbnailCallback callback) override;
   PrefService* GetPrefs() override;
-  std::optional<ash::PickerWebPasteTarget> GetWebPasteTarget() override;
+  std::optional<ash::QuickInsertWebPasteTarget> GetWebPasteTarget() override;
   void Announce(std::u16string_view message) override;
 
   // user_manager::UserManager::UserSessionStateObserver:
@@ -93,7 +93,7 @@ class QuickInsertClientImpl
     ranker_manager_ = std::move(ranker_manager);
   }
 
-  PickerLinkSuggester* get_link_suggester_for_test() {
+  QuickInsertLinkSuggester* get_link_suggester_for_test() {
     return link_suggester_.get();
   }
 
@@ -132,9 +132,9 @@ class QuickInsertClientImpl
 
   std::unique_ptr<app_list::RankerManager> ranker_manager_;
 
-  std::unique_ptr<PickerFileSuggester> file_suggester_;
-  std::unique_ptr<PickerLinkSuggester> link_suggester_;
-  std::unique_ptr<PickerThumbnailLoader> thumbnail_loader_;
+  std::unique_ptr<QuickInsertFileSuggester> file_suggester_;
+  std::unique_ptr<QuickInsertLinkSuggester> link_suggester_;
+  std::unique_ptr<QuickInsertThumbnailLoader> thumbnail_loader_;
 
   std::unique_ptr<ash::LobsterController::Trigger> lobster_trigger_;
 

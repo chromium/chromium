@@ -24,7 +24,7 @@ namespace input_method {
 class ImeKeyboard;
 }
 
-enum class PickerModeType;
+enum class QuickInsertModeType;
 
 class ASH_EXPORT QuickInsertModel {
  public:
@@ -49,7 +49,7 @@ class ASH_EXPORT QuickInsertModel {
 
   bool is_caps_lock_enabled() const;
 
-  PickerModeType GetMode() const;
+  QuickInsertModeType GetMode() const;
 
   bool IsGifsEnabled() const;
 

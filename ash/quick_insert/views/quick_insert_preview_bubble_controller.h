@@ -29,9 +29,10 @@ class Widget;
 
 namespace ash {
 
-class PickerPreviewBubbleView;
+class QuickInsertPreviewBubbleView;
 
-class ASH_EXPORT PickerPreviewBubbleController : public views::WidgetObserver {
+class ASH_EXPORT QuickInsertPreviewBubbleController
+    : public views::WidgetObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -39,11 +40,12 @@ class ASH_EXPORT PickerPreviewBubbleController : public views::WidgetObserver {
     virtual void OnPreviewBubbleVisibilityChanged(bool visible) = 0;
   };
 
-  PickerPreviewBubbleController();
-  PickerPreviewBubbleController(const PickerPreviewBubbleController&) = delete;
-  PickerPreviewBubbleController& operator=(
-      const PickerPreviewBubbleController&) = delete;
-  ~PickerPreviewBubbleController() override;
+  QuickInsertPreviewBubbleController();
+  QuickInsertPreviewBubbleController(
+      const QuickInsertPreviewBubbleController&) = delete;
+  QuickInsertPreviewBubbleController& operator=(
+      const QuickInsertPreviewBubbleController&) = delete;
+  ~QuickInsertPreviewBubbleController() override;
 
   // Creates the preview bubble if needed and shows it after a delay. If called
   // while a bubble was previously already created, the existing bubble is kept
@@ -75,7 +77,7 @@ class ASH_EXPORT PickerPreviewBubbleController : public views::WidgetObserver {
   void ShowBubbleImmediatelyForTesting(HoldingSpaceImage* async_preview_image,
                                        views::View* anchor_view);
 
-  PickerPreviewBubbleView* bubble_view_for_testing() const;
+  QuickInsertPreviewBubbleView* bubble_view_for_testing() const;
 
  private:
   void UpdateBubbleImage();
@@ -93,7 +95,7 @@ class ASH_EXPORT PickerPreviewBubbleController : public views::WidgetObserver {
   raw_ptr<HoldingSpaceImage> async_preview_image_;
 
   // Owned by the bubble widget.
-  raw_ptr<PickerPreviewBubbleView> bubble_view_;
+  raw_ptr<QuickInsertPreviewBubbleView> bubble_view_;
 
   base::ObserverList<Observer> observers_;
 
@@ -101,7 +103,8 @@ class ASH_EXPORT PickerPreviewBubbleController : public views::WidgetObserver {
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
 
-  base::WeakPtrFactory<PickerPreviewBubbleController> weak_ptr_factory_{this};
+  base::WeakPtrFactory<QuickInsertPreviewBubbleController> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace ash

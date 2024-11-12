@@ -109,30 +109,30 @@ void DownloadGifMediaToString(
 
 }  // namespace
 
-PickerAssetFetcherImpl::PickerAssetFetcherImpl(
-    PickerAssetFetcherImplDelegate* delegate)
+QuickInsertAssetFetcherImpl::QuickInsertAssetFetcherImpl(
+    QuickInsertAssetFetcherImplDelegate* delegate)
     : delegate_(delegate) {}
 
-PickerAssetFetcherImpl::~PickerAssetFetcherImpl() = default;
+QuickInsertAssetFetcherImpl::~QuickInsertAssetFetcherImpl() = default;
 
-void PickerAssetFetcherImpl::FetchGifFromUrl(
+void QuickInsertAssetFetcherImpl::FetchGifFromUrl(
     const GURL& url,
-    PickerGifFetchedCallback callback) {
+    QuickInsertGifFetchedCallback callback) {
   DownloadGifMediaToString(
       url, delegate_->GetSharedURLLoaderFactory(),
       base::BindOnce(&image_util::DecodeAnimationData, std::move(callback)));
 }
 
-void PickerAssetFetcherImpl::FetchGifPreviewImageFromUrl(
+void QuickInsertAssetFetcherImpl::FetchGifPreviewImageFromUrl(
     const GURL& url,
-    PickerImageFetchedCallback callback) {
+    QuickInsertImageFetchedCallback callback) {
   DownloadGifMediaToString(
       url, delegate_->GetSharedURLLoaderFactory(),
       base::BindOnce(&image_util::DecodeImageData, std::move(callback),
                      data_decoder::mojom::ImageCodec::kDefault));
 }
 
-void PickerAssetFetcherImpl::FetchFileThumbnail(
+void QuickInsertAssetFetcherImpl::FetchFileThumbnail(
     const base::FilePath& path,
     const gfx::Size& size,
     FetchFileThumbnailCallback callback) {

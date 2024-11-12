@@ -20,19 +20,19 @@ namespace ash {
 class ClipboardHistoryItem;
 
 // A provider to fetch clipboard history.
-class ASH_EXPORT PickerClipboardHistoryProvider {
+class ASH_EXPORT QuickInsertClipboardHistoryProvider {
  public:
   using OnFetchResultsCallback =
       base::OnceCallback<void(std::vector<QuickInsertSearchResult>)>;
 
-  explicit PickerClipboardHistoryProvider(
+  explicit QuickInsertClipboardHistoryProvider(
       base::Clock* clock = base::DefaultClock::GetInstance());
 
-  PickerClipboardHistoryProvider(const PickerClipboardHistoryProvider&) =
-      delete;
-  PickerClipboardHistoryProvider& operator=(
-      const PickerClipboardHistoryProvider&) = delete;
-  ~PickerClipboardHistoryProvider();
+  QuickInsertClipboardHistoryProvider(
+      const QuickInsertClipboardHistoryProvider&) = delete;
+  QuickInsertClipboardHistoryProvider& operator=(
+      const QuickInsertClipboardHistoryProvider&) = delete;
+  ~QuickInsertClipboardHistoryProvider();
 
   // Fetches clipboard items which were copied within `recency` time duration.
   void FetchResults(OnFetchResultsCallback callback,
@@ -44,7 +44,8 @@ class ASH_EXPORT PickerClipboardHistoryProvider {
                       std::vector<ClipboardHistoryItem> items);
 
   raw_ptr<base::Clock> clock_;
-  base::WeakPtrFactory<PickerClipboardHistoryProvider> weak_ptr_factory_{this};
+  base::WeakPtrFactory<QuickInsertClipboardHistoryProvider> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace ash

@@ -215,7 +215,7 @@ TEST(QuickInsertModelTest, GetModeForUnfocusedState) {
                          QuickInsertModel::EditorStatus::kEnabled,
                          QuickInsertModel::LobsterStatus::kEnabled);
 
-  EXPECT_EQ(model.GetMode(), PickerModeType::kUnfocused);
+  EXPECT_EQ(model.GetMode(), QuickInsertModeType::kUnfocused);
 }
 
 TEST(QuickInsertModelTest, GetModeForInputTypeNone) {
@@ -225,7 +225,7 @@ TEST(QuickInsertModelTest, GetModeForInputTypeNone) {
                          QuickInsertModel::EditorStatus::kEnabled,
                          QuickInsertModel::LobsterStatus::kEnabled);
 
-  EXPECT_EQ(model.GetMode(), PickerModeType::kUnfocused);
+  EXPECT_EQ(model.GetMode(), QuickInsertModeType::kUnfocused);
 }
 
 TEST(QuickInsertModelTest, GetModeForNoSelectionState) {
@@ -236,7 +236,7 @@ TEST(QuickInsertModelTest, GetModeForNoSelectionState) {
                          QuickInsertModel::EditorStatus::kEnabled,
                          QuickInsertModel::LobsterStatus::kEnabled);
 
-  EXPECT_EQ(model.GetMode(), PickerModeType::kNoSelection);
+  EXPECT_EQ(model.GetMode(), QuickInsertModeType::kNoSelection);
 }
 
 TEST(QuickInsertModelTest, GetModeForSelectionState) {
@@ -248,7 +248,7 @@ TEST(QuickInsertModelTest, GetModeForSelectionState) {
                          QuickInsertModel::EditorStatus::kEnabled,
                          QuickInsertModel::LobsterStatus::kEnabled);
 
-  EXPECT_EQ(model.GetMode(), PickerModeType::kHasSelection);
+  EXPECT_EQ(model.GetMode(), QuickInsertModeType::kHasSelection);
 }
 
 TEST(QuickInsertModelTest, GifsDisabledWhenPrefDoesNotExist) {
@@ -302,7 +302,7 @@ TEST(QuickInsertModelTest, GetModeForBlankStringsSelectionState) {
                          QuickInsertModel::EditorStatus::kEnabled,
                          QuickInsertModel::LobsterStatus::kEnabled);
 
-  EXPECT_EQ(model.GetMode(), PickerModeType::kNoSelection);
+  EXPECT_EQ(model.GetMode(), QuickInsertModeType::kNoSelection);
 }
 
 TEST(QuickInsertModelTest, UnfocusedShouldLearn) {

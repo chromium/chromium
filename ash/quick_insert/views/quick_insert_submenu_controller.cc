@@ -31,7 +31,7 @@ views::Widget::InitParams CreateInitParams(
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.autosize = true;
   // TODO(b/309706053): Replace this with the finalized string.
-  params.name = "PickerSubmenu";
+  params.name = "QuickInsertSubmenu";
   params.parent = anchor_view->GetWidget()->GetNativeWindow();
   params.delegate = delegate.release();
   return params;
@@ -39,11 +39,11 @@ views::Widget::InitParams CreateInitParams(
 
 }  // namespace
 
-PickerSubmenuController::PickerSubmenuController() = default;
+QuickInsertSubmenuController::QuickInsertSubmenuController() = default;
 
-PickerSubmenuController::~PickerSubmenuController() = default;
+QuickInsertSubmenuController::~QuickInsertSubmenuController() = default;
 
-void PickerSubmenuController::OnViewVisibilityChanged(
+void QuickInsertSubmenuController::OnViewVisibilityChanged(
     views::View* observed_view,
     views::View* starting_view) {
   if (!observed_view->IsDrawn()) {
@@ -51,15 +51,16 @@ void PickerSubmenuController::OnViewVisibilityChanged(
   }
 }
 
-void PickerSubmenuController::OnViewIsDeleting(views::View* observed_view) {
+void QuickInsertSubmenuController::OnViewIsDeleting(
+    views::View* observed_view) {
   Close();
 }
 
-void PickerSubmenuController::Show(
+void QuickInsertSubmenuController::Show(
     views::View* anchor_view,
     std::vector<std::unique_ptr<QuickInsertListItemView>> items) {
   widget_ = std::make_unique<views::Widget>(CreateInitParams(
-      anchor_view, std::make_unique<PickerSubmenuView>(
+      anchor_view, std::make_unique<QuickInsertSubmenuView>(
                        anchor_view->GetBoundsInScreen(), std::move(items))));
   views::Widget::ReparentNativeView(widget_->GetNativeWindow(),
                                     anchor_view->GetWidget()->GetNativeView());
@@ -72,7 +73,7 @@ void PickerSubmenuController::Show(
   widget_->OnRootViewLayoutInvalidated();
 }
 
-void PickerSubmenuController::Close() {
+void QuickInsertSubmenuController::Close() {
   if (widget_) {
     widget_->Close();
   }
@@ -80,14 +81,14 @@ void PickerSubmenuController::Close() {
   anchor_view_observation_.Reset();
 }
 
-PickerSubmenuView* PickerSubmenuController::GetSubmenuView() {
+QuickInsertSubmenuView* QuickInsertSubmenuController::GetSubmenuView() {
   if (!widget_) {
     return nullptr;
   }
-  return static_cast<PickerSubmenuView*>(widget_->widget_delegate());
+  return static_cast<QuickInsertSubmenuView*>(widget_->widget_delegate());
 }
 
-views::View* PickerSubmenuController::GetAnchorView() {
+views::View* QuickInsertSubmenuController::GetAnchorView() {
   return anchor_view_;
 }
 

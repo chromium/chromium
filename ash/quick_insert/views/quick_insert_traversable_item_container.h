@@ -15,9 +15,9 @@ namespace ash {
 
 // Interface implemented by Quick Insert item containers that support item
 // traversal.
-class ASH_EXPORT PickerTraversableItemContainer {
+class ASH_EXPORT QuickInsertTraversableItemContainer {
  public:
-  virtual ~PickerTraversableItemContainer() = default;
+  virtual ~QuickInsertTraversableItemContainer() = default;
 
   // Returns the item to highlight to when navigating to this container from the
   // top, or nullptr if the container is empty.

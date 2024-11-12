@@ -18,7 +18,7 @@ using QuickInsertBubbleEventFilterTest = AshTestBase;
 TEST_F(QuickInsertBubbleEventFilterTest, ClickingOnWidgetDoesNotCloseWidget) {
   auto widget =
       TestWidgetBuilder().SetBounds({10, 10, 100, 100}).BuildClientOwnsWidget();
-  PickerBubbleEventFilter filter(widget.get());
+  QuickInsertBubbleEventFilter filter(widget.get());
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(widget->GetWindowBoundsInScreen().CenterPoint());
@@ -38,7 +38,7 @@ TEST_F(QuickInsertBubbleEventFilterTest,
                    .BuildClientOwnsWidget();
   views::Widget::ReparentNativeView(child->GetNativeView(),
                                     widget->GetNativeView());
-  PickerBubbleEventFilter filter(widget.get());
+  QuickInsertBubbleEventFilter filter(widget.get());
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(child->GetWindowBoundsInScreen().CenterPoint());
@@ -50,7 +50,7 @@ TEST_F(QuickInsertBubbleEventFilterTest,
 TEST_F(QuickInsertBubbleEventFilterTest, ClickingOutsideWidgetClosesWidget) {
   auto widget =
       TestWidgetBuilder().SetBounds({10, 10, 100, 100}).BuildClientOwnsWidget();
-  PickerBubbleEventFilter filter(widget.get());
+  QuickInsertBubbleEventFilter filter(widget.get());
 
   // Click above the top left corner.
   ui::test::EventGenerator* generator = GetEventGenerator();

@@ -7,7 +7,7 @@
 
 namespace ash {
 
-enum class PickerCapsLockPosition {
+enum class QuickInsertCapsLockPosition {
   // First item in the zero-state view.
   kTop,
   // Last item in the suggested section in the zero-state view (best effort).

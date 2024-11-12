@@ -19,7 +19,7 @@
 
 namespace ash {
 
-PickerSkeletonLoaderView::PickerSkeletonLoaderView() {
+QuickInsertSkeletonLoaderView::QuickInsertSkeletonLoaderView() {
   views::Builder<views::ImageView>(this)
       .SetImage(ui::ImageModel::FromVectorIcon(
           kQuickInsertSkeletonLoaderIcon, cros_tokens::kCrosSysSystemOnBase,
@@ -34,21 +34,21 @@ PickerSkeletonLoaderView::PickerSkeletonLoaderView() {
       .BuildChildren();
 }
 
-PickerSkeletonLoaderView::~PickerSkeletonLoaderView() = default;
+QuickInsertSkeletonLoaderView::~QuickInsertSkeletonLoaderView() = default;
 
-void PickerSkeletonLoaderView::StartAnimationAfter(
+void QuickInsertSkeletonLoaderView::StartAnimationAfter(
     base::TimeDelta initial_delay) {
   animation_start_timer_.Start(FROM_HERE, initial_delay, this,
-                               &PickerSkeletonLoaderView::StartAnimation);
+                               &QuickInsertSkeletonLoaderView::StartAnimation);
 }
 
-void PickerSkeletonLoaderView::StopAnimation() {
+void QuickInsertSkeletonLoaderView::StopAnimation() {
   animation_start_timer_.Stop();
   abort_handle_.reset();
   layer()->SetOpacity(0.0f);
 }
 
-void PickerSkeletonLoaderView::StartAnimation() {
+void QuickInsertSkeletonLoaderView::StartAnimation() {
   // TODO: b/333729037 - Replace this with a Lottie animation.
   layer()->SetOpacity(1.0f);
   views::AnimationBuilder builder;
@@ -64,11 +64,11 @@ void PickerSkeletonLoaderView::StartAnimation() {
       .SetOpacity(layer(), 1.0f, gfx::Tween::LINEAR);
 }
 
-bool PickerSkeletonLoaderView::HasStartedAnimationForTesting() const {
+bool QuickInsertSkeletonLoaderView::HasStartedAnimationForTesting() const {
   return animation_start_timer_.IsRunning() || abort_handle_ != nullptr;
 }
 
-BEGIN_METADATA(PickerSkeletonLoaderView)
+BEGIN_METADATA(QuickInsertSkeletonLoaderView)
 END_METADATA
 
 }  // namespace ash

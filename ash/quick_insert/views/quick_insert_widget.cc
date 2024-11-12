@@ -30,22 +30,22 @@ namespace {
 constexpr int kQuickInsertViewMaxHeight = 356;
 
 // Gets the preferred layout to use given `anchor_bounds` in screen coordinates.
-PickerLayoutType GetLayoutType(const gfx::Rect& anchor_bounds,
-                               PickerPositionType position_type) {
-  return position_type == PickerPositionType::kCentered ||
+QuickInsertLayoutType GetLayoutType(const gfx::Rect& anchor_bounds,
+                                    QuickInsertPositionType position_type) {
+  return position_type == QuickInsertPositionType::kCentered ||
                  anchor_bounds.bottom() + kQuickInsertViewMaxHeight <=
                      display::Screen::GetScreen()
                          ->GetDisplayMatching(anchor_bounds)
                          .work_area()
                          .bottom()
-             ? PickerLayoutType::kMainResultsBelowSearchField
-             : PickerLayoutType::kMainResultsAboveSearchField;
+             ? QuickInsertLayoutType::kMainResultsBelowSearchField
+             : QuickInsertLayoutType::kMainResultsAboveSearchField;
 }
 
 views::Widget::InitParams CreateInitParams(
     QuickInsertViewDelegate* delegate,
     const gfx::Rect& anchor_bounds,
-    PickerPositionType position_type,
+    QuickInsertPositionType position_type,
     const base::TimeTicks trigger_event_timestamp) {
   auto quick_insert_view = std::make_unique<QuickInsertView>(
       delegate, anchor_bounds, GetLayoutType(anchor_bounds, position_type),
@@ -74,18 +74,18 @@ views::UniqueWidgetPtr QuickInsertWidget::Create(
     QuickInsertViewDelegate* delegate,
     const gfx::Rect& anchor_bounds,
     base::TimeTicks trigger_event_timestamp) {
-  return base::WrapUnique(new QuickInsertWidget(delegate, anchor_bounds,
-                                                PickerPositionType::kNearAnchor,
-                                                trigger_event_timestamp));
+  return base::WrapUnique(new QuickInsertWidget(
+      delegate, anchor_bounds, QuickInsertPositionType::kNearAnchor,
+      trigger_event_timestamp));
 }
 
 views::UniqueWidgetPtr QuickInsertWidget::CreateCentered(
     QuickInsertViewDelegate* delegate,
     const gfx::Rect& anchor_bounds,
     base::TimeTicks trigger_event_timestamp) {
-  return base::WrapUnique(new QuickInsertWidget(delegate, anchor_bounds,
-                                                PickerPositionType::kCentered,
-                                                trigger_event_timestamp));
+  return base::WrapUnique(new QuickInsertWidget(
+      delegate, anchor_bounds, QuickInsertPositionType::kCentered,
+      trigger_event_timestamp));
 }
 
 void QuickInsertWidget::OnNativeBlur() {
@@ -93,14 +93,14 @@ void QuickInsertWidget::OnNativeBlur() {
       views::Widget::VisibilityTransition::ANIMATE_NONE);
   if (delegate_ != nullptr) {
     delegate_->GetSessionMetrics().SetOutcome(
-        PickerSessionMetrics::SessionOutcome::kAbandoned);
+        QuickInsertSessionMetrics::SessionOutcome::kAbandoned);
   }
   Close();
 }
 
 QuickInsertWidget::QuickInsertWidget(QuickInsertViewDelegate* delegate,
                                      const gfx::Rect& anchor_bounds,
-                                     PickerPositionType position_type,
+                                     QuickInsertPositionType position_type,
                                      base::TimeTicks trigger_event_timestamp)
     : views::Widget(CreateInitParams(delegate,
                                      anchor_bounds,

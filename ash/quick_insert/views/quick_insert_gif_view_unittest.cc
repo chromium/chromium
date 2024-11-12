@@ -27,7 +27,7 @@ image_util::AnimationFrame CreateGifFrame(base::TimeDelta duration) {
           .duration = duration};
 }
 
-gfx::ImageSkia GetImage(const PickerGifView& gif_view) {
+gfx::ImageSkia GetImage(const QuickInsertGifView& gif_view) {
   return gif_view.GetImageModel().GetImage().AsImageSkia();
 }
 
@@ -38,9 +38,9 @@ class GifAssetFetcher {
   GifAssetFetcher& operator=(const GifAssetFetcher&) = delete;
   ~GifAssetFetcher() = default;
 
-  PickerGifView::FramesFetcher GetFramesFetcher() {
+  QuickInsertGifView::FramesFetcher GetFramesFetcher() {
     return base::BindLambdaForTesting(
-        [this](PickerGifView::FramesFetchedCallback callback) {
+        [this](QuickInsertGifView::FramesFetchedCallback callback) {
           frames_fetched_callback_ = std::move(callback);
         });
   }
@@ -50,9 +50,9 @@ class GifAssetFetcher {
     std::move(frames_fetched_callback_).Run(frames);
   }
 
-  PickerGifView::PreviewImageFetcher GetPreviewImageFetcher() {
+  QuickInsertGifView::PreviewImageFetcher GetPreviewImageFetcher() {
     return base::BindLambdaForTesting(
-        [this](PickerGifView::PreviewImageFetchedCallback callback) {
+        [this](QuickInsertGifView::PreviewImageFetchedCallback callback) {
           preview_image_fetched_callback_ = std::move(callback);
         });
   }
@@ -63,24 +63,26 @@ class GifAssetFetcher {
   }
 
  private:
-  PickerGifView::FramesFetchedCallback frames_fetched_callback_;
-  PickerGifView::PreviewImageFetchedCallback preview_image_fetched_callback_;
+  QuickInsertGifView::FramesFetchedCallback frames_fetched_callback_;
+  QuickInsertGifView::PreviewImageFetchedCallback
+      preview_image_fetched_callback_;
 };
 
 TEST(QuickInsertGifViewTest, PreferredHeightPreservesAspectRatio) {
   constexpr gfx::Size kOriginalGifDimensions(100, 200);
   GifAssetFetcher asset_fetcher;
-  PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(),
-                         kOriginalGifDimensions);
+  QuickInsertGifView gif_view(asset_fetcher.GetFramesFetcher(),
+                              asset_fetcher.GetPreviewImageFetcher(),
+                              kOriginalGifDimensions);
 
   EXPECT_EQ(gif_view.GetHeightForWidth(50), 100);
 }
 
 TEST(QuickInsertGifViewTest, CorrectSizeBeforePreviewFetched) {
   GifAssetFetcher asset_fetcher;
-  PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize);
+  QuickInsertGifView gif_view(asset_fetcher.GetFramesFetcher(),
+                              asset_fetcher.GetPreviewImageFetcher(),
+                              kImageSize);
 
   EXPECT_EQ(gif_view.GetImageModel().Size(), kImageSize);
 }
@@ -89,8 +91,9 @@ TEST(QuickInsertGifViewTest, ShowsPreviewImageWhenFramesNotFetched) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
   GifAssetFetcher asset_fetcher;
-  PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize);
+  QuickInsertGifView gif_view(asset_fetcher.GetFramesFetcher(),
+                              asset_fetcher.GetPreviewImageFetcher(),
+                              kImageSize);
 
   const gfx::ImageSkia preview_image = image_util::CreateEmptyImage(kImageSize);
   asset_fetcher.CompleteFetchPreviewImage(preview_image);
@@ -103,8 +106,9 @@ TEST(QuickInsertGifViewTest, ShowsGifFrameAfterFramesAreFetched) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
   GifAssetFetcher asset_fetcher;
-  PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize);
+  QuickInsertGifView gif_view(asset_fetcher.GetFramesFetcher(),
+                              asset_fetcher.GetPreviewImageFetcher(),
+                              kImageSize);
 
   asset_fetcher.CompleteFetchPreviewImage(
       image_util::CreateEmptyImage(kImageSize));
@@ -121,8 +125,9 @@ TEST(QuickInsertGifViewTest, ShowsGifFrameIfPreviewAndFramesBothFetched) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
   GifAssetFetcher asset_fetcher;
-  PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize);
+  QuickInsertGifView gif_view(asset_fetcher.GetFramesFetcher(),
+                              asset_fetcher.GetPreviewImageFetcher(),
+                              kImageSize);
 
   const std::vector<image_util::AnimationFrame> frames = {
       CreateGifFrame(base::Milliseconds(30)),
@@ -142,8 +147,9 @@ TEST(QuickInsertGifViewTest, FrameDurations) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
   GifAssetFetcher asset_fetcher;
-  PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize);
+  QuickInsertGifView gif_view(asset_fetcher.GetFramesFetcher(),
+                              asset_fetcher.GetPreviewImageFetcher(),
+                              kImageSize);
 
   const std::vector<image_util::AnimationFrame> frames = {
       CreateGifFrame(base::Milliseconds(30)),
@@ -168,8 +174,9 @@ TEST(QuickInsertGifViewTest, AdjustsShortFrameDurations) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
   GifAssetFetcher asset_fetcher;
-  PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize);
+  QuickInsertGifView gif_view(asset_fetcher.GetFramesFetcher(),
+                              asset_fetcher.GetPreviewImageFetcher(),
+                              kImageSize);
 
   const std::vector<image_util::AnimationFrame> frames = {
       CreateGifFrame(base::Milliseconds(0)),
@@ -193,8 +200,9 @@ TEST(QuickInsertGifViewTest, RecordsTimeToFirstFrameWhenGifIsFetchedFirst) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   base::HistogramTester histogram_tester;
   GifAssetFetcher asset_fetcher;
-  PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize);
+  QuickInsertGifView gif_view(asset_fetcher.GetFramesFetcher(),
+                              asset_fetcher.GetPreviewImageFetcher(),
+                              kImageSize);
 
   task_environment.FastForwardBy(base::Milliseconds(100));
   asset_fetcher.CompleteFetchFrames({CreateGifFrame(base::Milliseconds(0))});
@@ -212,8 +220,9 @@ TEST(QuickInsertGifViewTest, RecordsTimeToFirstFrameWhenPreviewIsFetchedFirst) {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   base::HistogramTester histogram_tester;
   GifAssetFetcher asset_fetcher;
-  PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize);
+  QuickInsertGifView gif_view(asset_fetcher.GetFramesFetcher(),
+                              asset_fetcher.GetPreviewImageFetcher(),
+                              kImageSize);
 
   task_environment.FastForwardBy(base::Milliseconds(100));
   asset_fetcher.CompleteFetchPreviewImage(
@@ -232,8 +241,9 @@ TEST(QuickInsertGifViewTest,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   base::HistogramTester histogram_tester;
   GifAssetFetcher asset_fetcher;
-  PickerGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                         asset_fetcher.GetPreviewImageFetcher(), kImageSize);
+  QuickInsertGifView gif_view(asset_fetcher.GetFramesFetcher(),
+                              asset_fetcher.GetPreviewImageFetcher(),
+                              kImageSize);
 
   task_environment.FastForwardBy(base::Milliseconds(100));
   asset_fetcher.CompleteFetchPreviewImage(gfx::ImageSkia());

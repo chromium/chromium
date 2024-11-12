@@ -77,33 +77,33 @@ base::i18n::TextDirection GetTextDirection() {
 
 }  // namespace
 
-PickerCapsLockBubbleController::PickerCapsLockBubbleController(
+QuickInsertCapsLockBubbleController::QuickInsertCapsLockBubbleController(
     input_method::ImeKeyboard* keyboard) {
   ime_keyboard_observation_.Observe(keyboard);
 
   Shell::Get()->AddPreTargetHandler(this);
 }
 
-PickerCapsLockBubbleController::~PickerCapsLockBubbleController() {
+QuickInsertCapsLockBubbleController::~QuickInsertCapsLockBubbleController() {
   Shell::Get()->RemovePreTargetHandler(this);
 
   // Close the bubble if it's open to avoid a dangling pointer.
   CloseBubble();
 }
 
-void PickerCapsLockBubbleController::OnMouseEvent(ui::MouseEvent* event) {
+void QuickInsertCapsLockBubbleController::OnMouseEvent(ui::MouseEvent* event) {
   MaybeCloseBubbleByEvent(event);
 }
 
-void PickerCapsLockBubbleController::OnTouchEvent(ui::TouchEvent* event) {
+void QuickInsertCapsLockBubbleController::OnTouchEvent(ui::TouchEvent* event) {
   MaybeCloseBubbleByEvent(event);
 }
 
-void PickerCapsLockBubbleController::OnKeyEvent(ui::KeyEvent* event) {
+void QuickInsertCapsLockBubbleController::OnKeyEvent(ui::KeyEvent* event) {
   MaybeCloseBubbleByEvent(event);
 }
 
-void PickerCapsLockBubbleController::CloseBubble() {
+void QuickInsertCapsLockBubbleController::CloseBubble() {
   bubble_close_timer_.Stop();
   if (bubble_view_ != nullptr) {
     bubble_view_->Close();
@@ -111,25 +111,26 @@ void PickerCapsLockBubbleController::CloseBubble() {
   }
 }
 
-void PickerCapsLockBubbleController::OnCapsLockChanged(bool enabled) {
+void QuickInsertCapsLockBubbleController::OnCapsLockChanged(bool enabled) {
   CloseBubble();
   if (GetFocusedTextInputClient() == nullptr) {
     return;
   }
-  bubble_view_ = new PickerCapsLockStateView(
+  bubble_view_ = new QuickInsertCapsLockStateView(
       GetParentView(), enabled, GetCaretBounds(), GetTextDirection());
   bubble_view_->Show();
   bubble_close_timer_.Start(
       FROM_HERE, kBubbleViewDisplayTime,
-      base::BindOnce(&PickerCapsLockBubbleController::CloseBubble,
+      base::BindOnce(&QuickInsertCapsLockBubbleController::CloseBubble,
                      weak_ptr_factory_.GetWeakPtr()));
   last_shown_ = base::TimeTicks::Now();
 }
 
-void PickerCapsLockBubbleController::OnLayoutChanging(
+void QuickInsertCapsLockBubbleController::OnLayoutChanging(
     const std::string& layout_name) {}
 
-void PickerCapsLockBubbleController::MaybeCloseBubbleByEvent(ui::Event* event) {
+void QuickInsertCapsLockBubbleController::MaybeCloseBubbleByEvent(
+    ui::Event* event) {
   if (ShouldCloseBubbleOnEvent(event) &&
       base::TimeTicks::Now() - last_shown_ > kIgnoreCloseBubbleEventsDuration) {
     CloseBubble();

@@ -74,10 +74,11 @@ constexpr std::u16string_view kAnnouncementViewName = u"Picker";
 // Returns an `AppListControllerDelegate` with empty methods. Used only for
 // constructing search engine providers.
 AppListControllerDelegate* GetEmptyAppListControllerDelegate() {
-  class PickerAppListControllerDelegate : public AppListControllerDelegate {
+  class QuickInsertAppListControllerDelegate
+      : public AppListControllerDelegate {
    public:
-    PickerAppListControllerDelegate() = default;
-    ~PickerAppListControllerDelegate() override = default;
+    QuickInsertAppListControllerDelegate() = default;
+    ~QuickInsertAppListControllerDelegate() override = default;
 
     // AppListControllerDelegate overrides:
     void DismissView() override { NOTIMPLEMENTED_LOG_ONCE(); }
@@ -119,16 +120,16 @@ AppListControllerDelegate* GetEmptyAppListControllerDelegate() {
     }
   };
 
-  static base::NoDestructor<PickerAppListControllerDelegate> delegate;
+  static base::NoDestructor<QuickInsertAppListControllerDelegate> delegate;
   return delegate.get();
 }
 
 std::vector<ash::QuickInsertSearchResult>
 CreateSearchResultsForRecentLocalImages(
-    std::vector<PickerFileSuggester::LocalFile> files) {
+    std::vector<QuickInsertFileSuggester::LocalFile> files) {
   std::vector<ash::QuickInsertSearchResult> results;
   results.reserve(files.size());
-  for (PickerFileSuggester::LocalFile& file : files) {
+  for (QuickInsertFileSuggester::LocalFile& file : files) {
     results.push_back(ash::QuickInsertLocalFileResult(std::move(file.title),
                                                       std::move(file.path)));
   }
@@ -137,10 +138,10 @@ CreateSearchResultsForRecentLocalImages(
 
 std::vector<ash::QuickInsertSearchResult>
 CreateSearchResultsForRecentDriveFiles(
-    std::vector<PickerFileSuggester::DriveFile> files) {
+    std::vector<QuickInsertFileSuggester::DriveFile> files) {
   std::vector<ash::QuickInsertSearchResult> results;
   results.reserve(files.size());
-  for (PickerFileSuggester::DriveFile& file : files) {
+  for (QuickInsertFileSuggester::DriveFile& file : files) {
     results.push_back(ash::QuickInsertDriveFileResult(
         std::move(file.id), std::move(file.title), std::move(file.url),
         file.local_path));
@@ -473,7 +474,7 @@ PrefService* QuickInsertClientImpl::GetPrefs() {
 }
 
 // Forked from `ClipboardHistoryControllerDelegateImpl::Paste`.
-std::optional<ash::PickerWebPasteTarget>
+std::optional<ash::QuickInsertWebPasteTarget>
 QuickInsertClientImpl::GetWebPasteTarget() {
   std::unique_ptr<content::RenderWidgetHostIterator> widgets =
       content::RenderWidgetHost::GetRenderWidgetHosts();
@@ -511,7 +512,7 @@ QuickInsertClientImpl::GetWebPasteTarget() {
       continue;
     }
 
-    return std::make_optional<ash::PickerWebPasteTarget>(
+    return std::make_optional<ash::QuickInsertWebPasteTarget>(
         focused_web_contents->GetLastCommittedURL(),
         // SAFETY: Callers must call this synchronously as per the
         // documentation, so this `base::Unretained` is safe.
@@ -560,9 +561,9 @@ void QuickInsertClientImpl::SetProfile(Profile* profile) {
 
   ranker_manager_ = std::make_unique<app_list::RankerManager>(profile_);
 
-  file_suggester_ = std::make_unique<PickerFileSuggester>(profile_);
-  link_suggester_ = std::make_unique<PickerLinkSuggester>(profile_);
-  thumbnail_loader_ = std::make_unique<PickerThumbnailLoader>(profile_);
+  file_suggester_ = std::make_unique<QuickInsertFileSuggester>(profile_);
+  link_suggester_ = std::make_unique<QuickInsertLinkSuggester>(profile_);
+  thumbnail_loader_ = std::make_unique<QuickInsertThumbnailLoader>(profile_);
 
   if (controller_ != nullptr) {
     controller_->OnClientPrefsSet(profile == nullptr ? nullptr

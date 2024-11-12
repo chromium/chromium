@@ -21,14 +21,15 @@ namespace ash {
 // The initial state is a blank view.
 // Calling `StartAnimation` will render a skeleton loader animation after a
 // delay. Calling `StopAnimation` will reset this back to a blank view.
-class ASH_EXPORT PickerSkeletonLoaderView : public views::ImageView {
-  METADATA_HEADER(PickerSkeletonLoaderView, views::ImageView)
+class ASH_EXPORT QuickInsertSkeletonLoaderView : public views::ImageView {
+  METADATA_HEADER(QuickInsertSkeletonLoaderView, views::ImageView)
 
  public:
-  PickerSkeletonLoaderView();
-  PickerSkeletonLoaderView(const PickerSkeletonLoaderView&) = delete;
-  PickerSkeletonLoaderView& operator=(const PickerSkeletonLoaderView&) = delete;
-  ~PickerSkeletonLoaderView() override;
+  QuickInsertSkeletonLoaderView();
+  QuickInsertSkeletonLoaderView(const QuickInsertSkeletonLoaderView&) = delete;
+  QuickInsertSkeletonLoaderView& operator=(
+      const QuickInsertSkeletonLoaderView&) = delete;
+  ~QuickInsertSkeletonLoaderView() override;
 
   // Starts the loading animation after `initial_delay`.
   // If this is called while an animation is happening, the existing animation
@@ -47,11 +48,11 @@ class ASH_EXPORT PickerSkeletonLoaderView : public views::ImageView {
   std::unique_ptr<views::AnimationAbortHandle> abort_handle_;
 };
 
-BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerSkeletonLoaderView, views::ImageView)
+BEGIN_VIEW_BUILDER(ASH_EXPORT, QuickInsertSkeletonLoaderView, views::ImageView)
 END_VIEW_BUILDER
 
 }  // namespace ash
 
-DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::PickerSkeletonLoaderView)
+DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::QuickInsertSkeletonLoaderView)
 
 #endif  // ASH_QUICK_INSERT_VIEWS_QUICK_INSERT_SKELETON_LOADER_VIEW_H_

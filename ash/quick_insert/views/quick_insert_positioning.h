@@ -15,7 +15,7 @@ class Point;
 namespace ash {
 
 // How Quick Insert should try to position itself relative to its anchor.
-enum class PickerPositionType {
+enum class QuickInsertPositionType {
   // Near the anchor bounds.
   kNearAnchor,
   // Centered on the display containing the anchor bounds.

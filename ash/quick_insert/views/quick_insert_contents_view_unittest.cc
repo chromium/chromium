@@ -25,8 +25,9 @@ TEST_F(QuickInsertContentsViewTest, DefaultHasNoChildren) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
-  auto* view = widget->SetContentsView(std::make_unique<PickerContentsView>(
-      PickerLayoutType::kMainResultsBelowSearchField));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertContentsView>(
+          QuickInsertLayoutType::kMainResultsBelowSearchField));
 
   EXPECT_THAT(view->page_container_for_testing()->children(), IsEmpty());
 }
@@ -35,8 +36,9 @@ TEST_F(QuickInsertContentsViewTest, AddPageFirstChildIsVisible) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
-  auto* view = widget->SetContentsView(std::make_unique<PickerContentsView>(
-      PickerLayoutType::kMainResultsBelowSearchField));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertContentsView>(
+          QuickInsertLayoutType::kMainResultsBelowSearchField));
   auto* page1 = view->AddPage(std::make_unique<views::View>());
   auto* page2 = view->AddPage(std::make_unique<views::View>());
 
@@ -50,8 +52,9 @@ TEST_F(QuickInsertContentsViewTest, AddPageFirstChildIsVisible) {
 TEST_F(QuickInsertContentsViewTest, SetActivePageChangesVisibility) {
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  auto* view = widget->SetContentsView(std::make_unique<PickerContentsView>(
-      PickerLayoutType::kMainResultsBelowSearchField));
+  auto* view =
+      widget->SetContentsView(std::make_unique<QuickInsertContentsView>(
+          QuickInsertLayoutType::kMainResultsBelowSearchField));
   auto* page1 = view->AddPage(std::make_unique<views::View>());
   auto* page2 = view->AddPage(std::make_unique<views::View>());
 

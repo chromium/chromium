@@ -10,19 +10,19 @@
 
 namespace ash {
 
-class ASH_EXPORT MockPickerAssetFetcher : public PickerAssetFetcher {
+class ASH_EXPORT MockPickerAssetFetcher : public QuickInsertAssetFetcher {
  public:
   MockPickerAssetFetcher();
   MockPickerAssetFetcher(const MockPickerAssetFetcher&) = delete;
   MockPickerAssetFetcher& operator=(const MockPickerAssetFetcher&) = delete;
   ~MockPickerAssetFetcher() override;
 
-  // PickerAssetFetcher:
+  // QuickInsertAssetFetcher:
   void FetchGifFromUrl(const GURL& url,
-                       PickerGifFetchedCallback callback) override;
+                       QuickInsertGifFetchedCallback callback) override;
   void FetchGifPreviewImageFromUrl(
       const GURL& url,
-      PickerImageFetchedCallback callback) override;
+      QuickInsertImageFetchedCallback callback) override;
   void FetchFileThumbnail(const base::FilePath& path,
                           const gfx::Size& size,
                           FetchFileThumbnailCallback callback) override;

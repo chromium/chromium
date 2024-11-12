@@ -13,11 +13,11 @@
 
 namespace ash {
 
-PickerKeyEventHandler::PickerKeyEventHandler() = default;
+QuickInsertKeyEventHandler::QuickInsertKeyEventHandler() = default;
 
-PickerKeyEventHandler::~PickerKeyEventHandler() = default;
+QuickInsertKeyEventHandler::~QuickInsertKeyEventHandler() = default;
 
-bool PickerKeyEventHandler::HandleKeyEvent(const ui::KeyEvent& event) {
+bool QuickInsertKeyEventHandler::HandleKeyEvent(const ui::KeyEvent& event) {
   if (active_pseudo_focus_handler_ == nullptr || event.handled() ||
       event.type() != ui::EventType::kKeyPressed) {
     return false;
@@ -25,8 +25,8 @@ bool PickerKeyEventHandler::HandleKeyEvent(const ui::KeyEvent& event) {
 
   if (views::FocusManager::IsTabTraversalKeyEvent(event)) {
     active_pseudo_focus_handler_->AdvancePseudoFocus(
-        event.IsShiftDown() ? PickerPseudoFocusDirection::kBackward
-                            : PickerPseudoFocusDirection::kForward);
+        event.IsShiftDown() ? QuickInsertPseudoFocusDirection::kBackward
+                            : QuickInsertPseudoFocusDirection::kForward);
     return true;
   }
 
@@ -59,8 +59,8 @@ bool PickerKeyEventHandler::HandleKeyEvent(const ui::KeyEvent& event) {
   }
 }
 
-void PickerKeyEventHandler::SetActivePseudoFocusHandler(
-    PickerPseudoFocusHandler* active_pseudo_focus_handler) {
+void QuickInsertKeyEventHandler::SetActivePseudoFocusHandler(
+    QuickInsertPseudoFocusHandler* active_pseudo_focus_handler) {
   active_pseudo_focus_handler_ = active_pseudo_focus_handler;
 }
 

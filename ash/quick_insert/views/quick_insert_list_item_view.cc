@@ -148,7 +148,7 @@ QuickInsertListItemView::QuickInsertListItemView(
 
   // Trailing badge should always be preferred size.
   trailing_badge_ = item_contents->AddChildView(
-      views::Builder<PickerBadgeView>()
+      views::Builder<QuickInsertBadgeView>()
           .SetProperty(views::kMarginsKey, kBadgeLeftPadding)
           .SetVisible(false)
           .Build());
@@ -239,7 +239,7 @@ void QuickInsertListItemView::SetSecondaryText(
 }
 
 void QuickInsertListItemView::SetShortcutHintView(
-    std::unique_ptr<PickerShortcutHintView> shortcut_hint_view) {
+    std::unique_ptr<QuickInsertShortcutHintView> shortcut_hint_view) {
   shortcut_hint_view_ = nullptr;
   shortcut_hint_container_->RemoveAllChildViews();
   shortcut_hint_view_ =
@@ -287,7 +287,7 @@ void QuickInsertListItemView::SetBadgeVisible(bool visible) {
 }
 
 void QuickInsertListItemView::SetPreview(
-    PickerPreviewBubbleController* preview_bubble_controller,
+    QuickInsertPreviewBubbleController* preview_bubble_controller,
     FileInfoResolver get_file_info,
     const base::FilePath& file_path,
     AsyncBitmapResolver async_bitmap_resolver,
@@ -297,7 +297,7 @@ void QuickInsertListItemView::SetPreview(
   }
 
   async_preview_image_ = std::make_unique<ash::HoldingSpaceImage>(
-      PickerPreviewBubbleView::kPreviewImageSize, file_path,
+      QuickInsertPreviewBubbleView::kPreviewImageSize, file_path,
       async_bitmap_resolver);
   file_path_ = file_path;
   preview_bubble_controller_ = preview_bubble_controller;
@@ -403,7 +403,7 @@ void QuickInsertListItemView::OnFileInfoResolved(
     std::optional<base::File::Info> info) {
   file_info_ = std::move(info);
 
-  std::u16string description = PickerGetFilePreviewDescription(file_info_);
+  std::u16string description = QuickInsertGetFilePreviewDescription(file_info_);
 
   if (preview_bubble_controller_ != nullptr) {
     // Update the bubble main text if it's open.
@@ -418,7 +418,7 @@ void QuickInsertListItemView::ShowPreview() {
     return;
   }
 
-  std::u16string description = PickerGetFilePreviewDescription(file_info_);
+  std::u16string description = QuickInsertGetFilePreviewDescription(file_info_);
 
   // Update the bubble main text before it becomes visible.
   preview_bubble_controller_->ShowBubbleAfterDelay(async_preview_image_.get(),

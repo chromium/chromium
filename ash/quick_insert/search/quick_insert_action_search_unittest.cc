@@ -36,11 +36,11 @@ class QuickInsertActionSearchTest : public testing::TestWithParam<TestCase> {};
 
 TEST_P(QuickInsertActionSearchTest, MatchesExpectedCategories) {
   const TestCase& test_case = GetParam();
-  EXPECT_THAT(
-      PickerActionSearch(test_case.available_categories,
-                         test_case.caps_lock_state_to_search,
-                         test_case.search_case_transforms, test_case.query),
-      test_case.expected_results);
+  EXPECT_THAT(QuickInsertActionSearch(test_case.available_categories,
+                                      test_case.caps_lock_state_to_search,
+                                      test_case.search_case_transforms,
+                                      test_case.query),
+              test_case.expected_results);
 }
 
 INSTANTIATE_TEST_SUITE_P(

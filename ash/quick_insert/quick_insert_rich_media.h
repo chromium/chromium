@@ -16,44 +16,45 @@
 
 namespace ash {
 
-struct ASH_EXPORT PickerTextMedia {
+struct ASH_EXPORT QuickInsertTextMedia {
   std::u16string text;
 
-  explicit PickerTextMedia(std::u16string text);
-  explicit PickerTextMedia(std::string_view text);
+  explicit QuickInsertTextMedia(std::u16string text);
+  explicit QuickInsertTextMedia(std::string_view text);
 };
 
-struct ASH_EXPORT PickerImageMedia {
+struct ASH_EXPORT QuickInsertImageMedia {
   GURL url;
   // `dimensions` is std::nullopt if it's unknown.
   std::optional<gfx::Size> dimensions;
   std::u16string content_description;
 
-  explicit PickerImageMedia(base::span<const uint8_t> png);
+  explicit QuickInsertImageMedia(base::span<const uint8_t> png);
 
-  explicit PickerImageMedia(GURL url,
-                            std::optional<gfx::Size> dimensions = std::nullopt,
-                            std::u16string content_description = u"");
+  explicit QuickInsertImageMedia(
+      GURL url,
+      std::optional<gfx::Size> dimensions = std::nullopt,
+      std::u16string content_description = u"");
 };
 
-struct ASH_EXPORT PickerLinkMedia {
+struct ASH_EXPORT QuickInsertLinkMedia {
   GURL url;
   std::string title;
 
-  explicit PickerLinkMedia(GURL url, std::string title);
+  explicit QuickInsertLinkMedia(GURL url, std::string title);
 };
 
-struct ASH_EXPORT PickerLocalFileMedia {
+struct ASH_EXPORT QuickInsertLocalFileMedia {
   base::FilePath path;
 
-  explicit PickerLocalFileMedia(base::FilePath path);
+  explicit QuickInsertLocalFileMedia(base::FilePath path);
 };
 
 // Rich media that can be inserted or copied, such as text and images.
-using PickerRichMedia = std::variant<PickerTextMedia,
-                                     PickerImageMedia,
-                                     PickerLinkMedia,
-                                     PickerLocalFileMedia>;
+using QuickInsertRichMedia = std::variant<QuickInsertTextMedia,
+                                          QuickInsertImageMedia,
+                                          QuickInsertLinkMedia,
+                                          QuickInsertLocalFileMedia>;
 
 }  // namespace ash
 

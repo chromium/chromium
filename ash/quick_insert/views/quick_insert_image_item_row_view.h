@@ -22,31 +22,32 @@ class View;
 
 namespace ash {
 
-class PickerImageItemView;
+class QuickInsertImageItemView;
 
 // Container view for a single row of image items in a section.
-class ASH_EXPORT PickerImageItemRowView
+class ASH_EXPORT QuickInsertImageItemRowView
     : public views::BoxLayoutView,
-      public PickerTraversableItemContainer {
-  METADATA_HEADER(PickerImageItemRowView, views::BoxLayoutView)
+      public QuickInsertTraversableItemContainer {
+  METADATA_HEADER(QuickInsertImageItemRowView, views::BoxLayoutView)
 
  public:
-  explicit PickerImageItemRowView(
+  explicit QuickInsertImageItemRowView(
       base::RepeatingClosure more_items_button = {},
       std::u16string more_items_accessible_name = u"");
-  PickerImageItemRowView(const PickerImageItemRowView&) = delete;
-  PickerImageItemRowView& operator=(const PickerImageItemRowView&) = delete;
-  ~PickerImageItemRowView() override;
+  QuickInsertImageItemRowView(const QuickInsertImageItemRowView&) = delete;
+  QuickInsertImageItemRowView& operator=(const QuickInsertImageItemRowView&) =
+      delete;
+  ~QuickInsertImageItemRowView() override;
 
   void SetLeadingIcon(const ui::ImageModel& icon);
-  PickerImageItemView* AddImageItem(
-      std::unique_ptr<PickerImageItemView> image_item);
+  QuickInsertImageItemView* AddImageItem(
+      std::unique_ptr<QuickInsertImageItemView> image_item);
 
   // views::BoxLayoutView:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
-  // PickerTraversableItemContainer:
+  // QuickInsertTraversableItemContainer:
   views::View* GetTopItem() override;
   views::View* GetBottomItem() override;
   views::View* GetItemAbove(views::View* item) override;
@@ -72,11 +73,13 @@ class ASH_EXPORT PickerImageItemRowView
   base::RepeatingClosureList on_items_changed_;
 };
 
-BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerImageItemRowView, views::BoxLayoutView)
+BEGIN_VIEW_BUILDER(ASH_EXPORT,
+                   QuickInsertImageItemRowView,
+                   views::BoxLayoutView)
 END_VIEW_BUILDER
 
 }  // namespace ash
 
-DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::PickerImageItemRowView)
+DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::QuickInsertImageItemRowView)
 
 #endif  // ASH_QUICK_INSERT_VIEWS_QUICK_INSERT_IMAGE_ITEM_ROW_VIEW_H_

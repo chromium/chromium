@@ -22,7 +22,7 @@ class PrefService;
 namespace ash {
 
 // Records metrics for a session of using Quick Insert.
-class ASH_EXPORT PickerSessionMetrics {
+class ASH_EXPORT QuickInsertSessionMetrics {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -46,9 +46,9 @@ class ASH_EXPORT PickerSessionMetrics {
     kMaxValue = kCreate,
   };
 
-  PickerSessionMetrics();
-  explicit PickerSessionMetrics(PrefService* prefs);
-  ~PickerSessionMetrics();
+  QuickInsertSessionMetrics();
+  explicit QuickInsertSessionMetrics(PrefService* prefs);
+  ~QuickInsertSessionMetrics();
 
   // Registers prefs to the provided `registry`.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);

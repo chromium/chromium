@@ -99,7 +99,7 @@ class ASH_EXPORT QuickInsertClient {
   virtual PrefService* GetPrefs() = 0;
   // SAFETY: The returned `do_paste` MUST be called synchronously. Calling it
   // after a delay, such as in a different task, may result in use-after-frees.
-  virtual std::optional<PickerWebPasteTarget> GetWebPasteTarget() = 0;
+  virtual std::optional<QuickInsertWebPasteTarget> GetWebPasteTarget() = 0;
 
   // Make an announcement via an offscreen live region.
   virtual void Announce(std::u16string_view message) = 0;

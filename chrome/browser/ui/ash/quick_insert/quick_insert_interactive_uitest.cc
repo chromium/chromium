@@ -194,7 +194,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertEmoji) {
                   /*transition_only_on_event=*/true),
       NameDescendantViewByProperty(
           ash::kQuickInsertEmojiBarElementId, kFirstEmojiResultName,
-          &ash::PickerEmojiItemView::GetTextForTesting, kExpectedFirstEmoji),
+          &ash::QuickInsertEmojiItemView::GetTextForTesting,
+          kExpectedFirstEmoji),
       PressButton(kFirstEmojiResultName),
       WaitForHide(ash::kQuickInsertElementId),
       InContext(browser_context,
@@ -229,7 +230,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertSymbol) {
                   /*transition_only_on_event=*/true),
       NameDescendantViewByProperty(
           ash::kQuickInsertEmojiBarElementId, kFirstSymbolResultName,
-          &ash::PickerEmojiItemView::GetTextForTesting, kExpectedFirstSymbol),
+          &ash::QuickInsertEmojiItemView::GetTextForTesting,
+          kExpectedFirstSymbol),
       PressButton(kFirstSymbolResultName),
       WaitForHide(ash::kQuickInsertElementId),
       InContext(browser_context,
@@ -264,7 +266,8 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest, SearchAndInsertEmoticon) {
                   /*transition_only_on_event=*/true),
       NameDescendantViewByProperty(
           ash::kQuickInsertEmojiBarElementId, kFirstEmoticonResultName,
-          &ash::PickerEmojiItemView::GetTextForTesting, kExpectedFirstEmoticon),
+          &ash::QuickInsertEmojiItemView::GetTextForTesting,
+          kExpectedFirstEmoticon),
       PressButton(kFirstEmoticonResultName),
       WaitForHide(ash::kQuickInsertElementId),
       InContext(browser_context,
@@ -577,12 +580,12 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
       WaitForState(kSearchFieldFocusedState, true),
       WaitForShow(ash::kQuickInsertSearchResultsImageRowElementId),
       WaitForViewProperty(ash::kQuickInsertSearchResultsImageRowElementId,
-                          ash::PickerImageItemRowView, Items, SizeIs(3)),
-      NameDescendantViewByType<ash::PickerImageItemView>(
+                          ash::QuickInsertImageItemRowView, Items, SizeIs(3)),
+      NameDescendantViewByType<ash::QuickInsertImageItemView>(
           ash::kQuickInsertElementId, kFile1Name, 0),
-      NameDescendantViewByType<ash::PickerImageItemView>(
+      NameDescendantViewByType<ash::QuickInsertImageItemView>(
           ash::kQuickInsertElementId, kFile2Name, 1),
-      NameDescendantViewByType<ash::PickerImageItemView>(
+      NameDescendantViewByType<ash::QuickInsertImageItemView>(
           ash::kQuickInsertElementId, kFile3Name, 2),
       CheckViewProperty(kFile1Name, &views::View::GetAccessibleName,
                         u"Insert test1.png"),
@@ -620,9 +623,9 @@ IN_PROC_BROWSER_TEST_F(QuickInsertInteractiveUiTest,
           ash::kQuickInsertElementId, kItem1Name, 0),
       NameDescendantViewByType<ash::QuickInsertListItemView>(
           ash::kQuickInsertElementId, kItem2Name, 1),
-      NameDescendantViewByType<ash::PickerEmojiItemView>(
+      NameDescendantViewByType<ash::QuickInsertEmojiItemView>(
           ash::kQuickInsertElementId, kEmoji1Name, 0),
-      NameDescendantViewByType<ash::PickerEmojiItemView>(
+      NameDescendantViewByType<ash::QuickInsertEmojiItemView>(
           ash::kQuickInsertElementId, kEmoji2Name, 1),
       // The first item should be selected by default.
       CheckViewProperty(kItem1Name, &ash::QuickInsertItemView::GetItemState,

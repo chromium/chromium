@@ -15,24 +15,25 @@
 
 namespace ash {
 
-class PickerItemWithSubmenuView;
+class QuickInsertItemWithSubmenuView;
 class QuickInsertListItemView;
 
 // Container view for the list items in a section. The list items are displayed
 // in a vertical list, each spanning the width of the container.
-class ASH_EXPORT PickerListItemContainerView
+class ASH_EXPORT QuickInsertListItemContainerView
     : public views::View,
-      public PickerTraversableItemContainer {
-  METADATA_HEADER(PickerListItemContainerView, views::View)
+      public QuickInsertTraversableItemContainer {
+  METADATA_HEADER(QuickInsertListItemContainerView, views::View)
 
  public:
-  PickerListItemContainerView();
-  PickerListItemContainerView(const PickerListItemContainerView&) = delete;
-  PickerListItemContainerView& operator=(const PickerListItemContainerView&) =
+  QuickInsertListItemContainerView();
+  QuickInsertListItemContainerView(const QuickInsertListItemContainerView&) =
       delete;
-  ~PickerListItemContainerView() override;
+  QuickInsertListItemContainerView& operator=(
+      const QuickInsertListItemContainerView&) = delete;
+  ~QuickInsertListItemContainerView() override;
 
-  // PickerTraversableItemContainer:
+  // QuickInsertTraversableItemContainer:
   views::View* GetTopItem() override;
   views::View* GetBottomItem() override;
   views::View* GetItemAbove(views::View* item) override;
@@ -43,8 +44,8 @@ class ASH_EXPORT PickerListItemContainerView
 
   QuickInsertListItemView* AddListItem(
       std::unique_ptr<QuickInsertListItemView> list_item);
-  PickerItemWithSubmenuView* AddItemWithSubmenu(
-      std::unique_ptr<PickerItemWithSubmenuView> item_with_submenu);
+  QuickInsertItemWithSubmenuView* AddItemWithSubmenu(
+      std::unique_ptr<QuickInsertItemWithSubmenuView> item_with_submenu);
 
  private:
   views::ViewModelT<views::View> items_;

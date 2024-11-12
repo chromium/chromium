@@ -19,10 +19,10 @@
 namespace ash {
 
 enum class QuickInsertActionType;
-enum class PickerCapsLockPosition;
-class PickerAssetFetcher;
+enum class QuickInsertCapsLockPosition;
+class QuickInsertAssetFetcher;
 class QuickInsertSearchResultsSection;
-class PickerSessionMetrics;
+class QuickInsertSessionMetrics;
 
 // Delegate for `QuickInsertView`.
 class ASH_EXPORT QuickInsertViewDelegate {
@@ -88,9 +88,9 @@ class ASH_EXPORT QuickInsertViewDelegate {
   virtual QuickInsertActionType GetActionForResult(
       const QuickInsertSearchResult& result) = 0;
 
-  virtual PickerAssetFetcher* GetAssetFetcher() = 0;
+  virtual QuickInsertAssetFetcher* GetAssetFetcher() = 0;
 
-  virtual PickerSessionMetrics& GetSessionMetrics() = 0;
+  virtual QuickInsertSessionMetrics& GetSessionMetrics() = 0;
 
   // Gets suggested emoji results.
   virtual std::vector<QuickInsertEmojiResult> GetSuggestedEmoji() = 0;
@@ -98,9 +98,9 @@ class ASH_EXPORT QuickInsertViewDelegate {
   // Whether GIFs are enabled or not.
   virtual bool IsGifsEnabled() = 0;
 
-  virtual PickerModeType GetMode() = 0;
+  virtual QuickInsertModeType GetMode() = 0;
 
-  virtual PickerCapsLockPosition GetCapsLockPosition() = 0;
+  virtual QuickInsertCapsLockPosition GetCapsLockPosition() = 0;
 };
 
 }  // namespace ash

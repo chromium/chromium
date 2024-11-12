@@ -17,7 +17,7 @@ class Rect;
 
 namespace ash {
 
-enum class PickerPositionType;
+enum class QuickInsertPositionType;
 class QuickInsertViewDelegate;
 
 class ASH_EXPORT QuickInsertWidget : public views::Widget {
@@ -51,11 +51,11 @@ class ASH_EXPORT QuickInsertWidget : public views::Widget {
  private:
   explicit QuickInsertWidget(QuickInsertViewDelegate* delegate,
                              const gfx::Rect& anchor_bounds,
-                             PickerPositionType position_type,
+                             QuickInsertPositionType position_type,
                              base::TimeTicks trigger_event_timestamp);
 
   // Used to close the Quick Insert widget when the user clicks outside of it.
-  PickerBubbleEventFilter bubble_event_filter_;
+  QuickInsertBubbleEventFilter bubble_event_filter_;
 
   raw_ptr<QuickInsertViewDelegate> delegate_;
 };

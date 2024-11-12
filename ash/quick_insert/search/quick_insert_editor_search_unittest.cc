@@ -22,7 +22,7 @@ using ::testing::VariantWith;
 
 TEST(QuickInsertEditorSearchTest, MatchesEnglishString) {
   EXPECT_THAT(
-      PickerEditorSearch(QuickInsertEditorResult::Mode::kWrite, u"cat"),
+      QuickInsertEditorSearch(QuickInsertEditorResult::Mode::kWrite, u"cat"),
       Optional(VariantWith<QuickInsertEditorResult>(AllOf(
           Field("mode", &QuickInsertEditorResult::mode,
                 QuickInsertEditorResult::Mode::kWrite),
@@ -32,13 +32,14 @@ TEST(QuickInsertEditorSearchTest, MatchesEnglishString) {
 }
 
 TEST(QuickInsertEditorSearchTest, DoesNotMatchShortEnglishString) {
-  EXPECT_EQ(PickerEditorSearch(QuickInsertEditorResult::Mode::kWrite, u"ca"),
-            std::nullopt);
+  EXPECT_EQ(
+      QuickInsertEditorSearch(QuickInsertEditorResult::Mode::kWrite, u"ca"),
+      std::nullopt);
 }
 
 TEST(QuickInsertEditorSearchTest, MatchesJapaneseString) {
   EXPECT_THAT(
-      PickerEditorSearch(QuickInsertEditorResult::Mode::kWrite, u"キツネ"),
+      QuickInsertEditorSearch(QuickInsertEditorResult::Mode::kWrite, u"キツネ"),
       Optional(VariantWith<QuickInsertEditorResult>(AllOf(
           Field("mode", &QuickInsertEditorResult::mode,
                 QuickInsertEditorResult::Mode::kWrite),
@@ -48,8 +49,9 @@ TEST(QuickInsertEditorSearchTest, MatchesJapaneseString) {
 }
 
 TEST(QuickInsertEditorSearchTest, DoesNotMatchShortJapaneseString) {
-  EXPECT_EQ(PickerEditorSearch(QuickInsertEditorResult::Mode::kWrite, u"ねこ"),
-            std::nullopt);
+  EXPECT_EQ(
+      QuickInsertEditorSearch(QuickInsertEditorResult::Mode::kWrite, u"ねこ"),
+      std::nullopt);
 }
 
 }  // namespace

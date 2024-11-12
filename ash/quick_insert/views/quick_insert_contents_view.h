@@ -11,19 +11,19 @@
 
 namespace ash {
 
-enum class PickerLayoutType;
+enum class QuickInsertLayoutType;
 
 // View for the main contents of Quick Insert.
 // Consists of multiple "pages", with at most one page visible at a time.
-class ASH_EXPORT PickerContentsView : public views::View {
-  METADATA_HEADER(PickerContentsView, views::View)
+class ASH_EXPORT QuickInsertContentsView : public views::View {
+  METADATA_HEADER(QuickInsertContentsView, views::View)
 
  public:
   // Creates an empty view with no pages.
-  explicit PickerContentsView(PickerLayoutType layout_type);
-  PickerContentsView(const PickerContentsView&) = delete;
-  PickerContentsView& operator=(const PickerContentsView&) = delete;
-  ~PickerContentsView() override;
+  explicit QuickInsertContentsView(QuickInsertLayoutType layout_type);
+  QuickInsertContentsView(const QuickInsertContentsView&) = delete;
+  QuickInsertContentsView& operator=(const QuickInsertContentsView&) = delete;
+  ~QuickInsertContentsView() override;
 
   // Adds a new page. If this is the first page, then it is also set as the
   // active page.

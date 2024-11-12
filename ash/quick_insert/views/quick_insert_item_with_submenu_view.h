@@ -25,15 +25,16 @@ class Label;
 namespace ash {
 
 // View for a Quick Insert item which has a submenu.
-class ASH_EXPORT PickerItemWithSubmenuView : public QuickInsertItemView {
-  METADATA_HEADER(PickerItemWithSubmenuView, QuickInsertItemView)
+class ASH_EXPORT QuickInsertItemWithSubmenuView : public QuickInsertItemView {
+  METADATA_HEADER(QuickInsertItemWithSubmenuView, QuickInsertItemView)
 
  public:
-  PickerItemWithSubmenuView();
-  PickerItemWithSubmenuView(const PickerItemWithSubmenuView&) = delete;
-  PickerItemWithSubmenuView& operator=(const PickerItemWithSubmenuView&) =
+  QuickInsertItemWithSubmenuView();
+  QuickInsertItemWithSubmenuView(const QuickInsertItemWithSubmenuView&) =
       delete;
-  ~PickerItemWithSubmenuView() override;
+  QuickInsertItemWithSubmenuView& operator=(
+      const QuickInsertItemWithSubmenuView&) = delete;
+  ~QuickInsertItemWithSubmenuView() override;
 
   void SetLeadingIcon(const ui::ImageModel& icon);
 
@@ -55,16 +56,18 @@ class ASH_EXPORT PickerItemWithSubmenuView : public QuickInsertItemView {
   raw_ptr<views::Label> label_ = nullptr;
   std::vector<std::pair<QuickInsertSearchResult, SelectItemCallback>> entries_;
 
-  base::WeakPtrFactory<PickerItemWithSubmenuView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<QuickInsertItemWithSubmenuView> weak_ptr_factory_{this};
 };
 
-BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerItemWithSubmenuView, QuickInsertItemView)
+BEGIN_VIEW_BUILDER(ASH_EXPORT,
+                   QuickInsertItemWithSubmenuView,
+                   QuickInsertItemView)
 VIEW_BUILDER_PROPERTY(ui::ImageModel, LeadingIcon)
 VIEW_BUILDER_PROPERTY(std::u16string, Text)
 END_VIEW_BUILDER
 
 }  // namespace ash
 
-DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::PickerItemWithSubmenuView)
+DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::QuickInsertItemWithSubmenuView)
 
 #endif  // ASH_QUICK_INSERT_VIEWS_QUICK_INSERT_ITEM_WITH_SUBMENU_VIEW_H_

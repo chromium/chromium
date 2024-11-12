@@ -20,15 +20,16 @@ namespace gfx {
 class Size;
 }
 
-class PickerThumbnailLoader {
+class QuickInsertThumbnailLoader {
  public:
   using LoadCallback =
       base::OnceCallback<void(const SkBitmap* bitmap, base::File::Error error)>;
 
-  explicit PickerThumbnailLoader(Profile* profile);
-  ~PickerThumbnailLoader();
-  PickerThumbnailLoader(const PickerThumbnailLoader&) = delete;
-  PickerThumbnailLoader& operator=(const PickerThumbnailLoader&) = delete;
+  explicit QuickInsertThumbnailLoader(Profile* profile);
+  ~QuickInsertThumbnailLoader();
+  QuickInsertThumbnailLoader(const QuickInsertThumbnailLoader&) = delete;
+  QuickInsertThumbnailLoader& operator=(const QuickInsertThumbnailLoader&) =
+      delete;
 
   void Load(const base::FilePath& path,
             const gfx::Size& size,
@@ -43,7 +44,7 @@ class PickerThumbnailLoader {
   raw_ptr<Profile> profile_;
   ash::ThumbnailLoader thumbnail_loader_;
 
-  base::WeakPtrFactory<PickerThumbnailLoader> weak_factory_{this};
+  base::WeakPtrFactory<QuickInsertThumbnailLoader> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_QUICK_INSERT_QUICK_INSERT_THUMBNAIL_LOADER_H_

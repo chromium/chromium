@@ -19,7 +19,7 @@ class PrefService;
 
 namespace ash {
 
-struct PickerWebPasteTarget;
+struct QuickInsertWebPasteTarget;
 
 class ASH_EXPORT MockQuickInsertClient : public QuickInsertClient {
  public:
@@ -66,7 +66,7 @@ class ASH_EXPORT MockQuickInsertClient : public QuickInsertClient {
                FetchFileThumbnailCallback callback),
               (override));
   MOCK_METHOD(PrefService*, GetPrefs, (), (override));
-  MOCK_METHOD(std::optional<PickerWebPasteTarget>,
+  MOCK_METHOD(std::optional<QuickInsertWebPasteTarget>,
               GetWebPasteTarget,
               (),
               (override));

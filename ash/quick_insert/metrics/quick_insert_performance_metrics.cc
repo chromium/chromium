@@ -10,13 +10,13 @@
 
 namespace ash {
 
-PickerPerformanceMetrics::PickerPerformanceMetrics(
+QuickInsertPerformanceMetrics::QuickInsertPerformanceMetrics(
     const base::TimeTicks trigger_start_timestamp)
     : trigger_start_timestamp_(trigger_start_timestamp) {}
 
-PickerPerformanceMetrics::~PickerPerformanceMetrics() = default;
+QuickInsertPerformanceMetrics::~QuickInsertPerformanceMetrics() = default;
 
-void PickerPerformanceMetrics::StartRecording(views::Widget& widget) {
+void QuickInsertPerformanceMetrics::StartRecording(views::Widget& widget) {
   // Initialize presentation time recorders based on the new widget's
   // compositor. After this, a presentation latency metric is recorded every
   // time `RequestNext` is called on the recorder.
@@ -31,11 +31,11 @@ void PickerPerformanceMetrics::StartRecording(views::Widget& widget) {
   is_recording_ = true;
 }
 
-void PickerPerformanceMetrics::StopRecording() {
+void QuickInsertPerformanceMetrics::StopRecording() {
   is_recording_ = false;
 }
 
-void PickerPerformanceMetrics::MarkInputFocus() {
+void QuickInsertPerformanceMetrics::MarkInputFocus() {
   if (!is_recording_ || marked_first_focus_) {
     return;
   }
@@ -47,7 +47,7 @@ void PickerPerformanceMetrics::MarkInputFocus() {
   marked_first_focus_ = true;
 }
 
-void PickerPerformanceMetrics::MarkContentsChanged() {
+void QuickInsertPerformanceMetrics::MarkContentsChanged() {
   if (!is_recording_) {
     return;
   }
@@ -60,7 +60,7 @@ void PickerPerformanceMetrics::MarkContentsChanged() {
 }
 
 // TODO: b/349913604 - Handle the different types of `update`.
-void PickerPerformanceMetrics::MarkSearchResultsUpdated(
+void QuickInsertPerformanceMetrics::MarkSearchResultsUpdated(
     SearchResultsUpdate update) {
   if (!is_recording_) {
     return;

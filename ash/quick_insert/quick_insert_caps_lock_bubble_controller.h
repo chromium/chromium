@@ -21,20 +21,21 @@ class Event;
 
 namespace ash {
 
-class PickerCapsLockStateView;
+class QuickInsertCapsLockStateView;
 
 // TODO: b/358248370 - This class is not related to Quick Insert. We should move
 // this code to a different directory.
-class ASH_EXPORT PickerCapsLockBubbleController
+class ASH_EXPORT QuickInsertCapsLockBubbleController
     : public input_method::ImeKeyboard::Observer,
       public ui::EventHandler {
  public:
-  explicit PickerCapsLockBubbleController(input_method::ImeKeyboard* keyboard);
-  PickerCapsLockBubbleController(const PickerCapsLockBubbleController&) =
-      delete;
-  PickerCapsLockBubbleController& operator=(
-      const PickerCapsLockBubbleController&) = delete;
-  ~PickerCapsLockBubbleController() override;
+  explicit QuickInsertCapsLockBubbleController(
+      input_method::ImeKeyboard* keyboard);
+  QuickInsertCapsLockBubbleController(
+      const QuickInsertCapsLockBubbleController&) = delete;
+  QuickInsertCapsLockBubbleController& operator=(
+      const QuickInsertCapsLockBubbleController&) = delete;
+  ~QuickInsertCapsLockBubbleController() override;
 
   void CloseBubble();
 
@@ -47,7 +48,7 @@ class ASH_EXPORT PickerCapsLockBubbleController
   void OnTouchEvent(ui::TouchEvent* event) override;
   void OnKeyEvent(ui::KeyEvent* event) override;
 
-  PickerCapsLockStateView* bubble_view_for_testing() {
+  QuickInsertCapsLockStateView* bubble_view_for_testing() {
     return bubble_view_.get();
   }
 
@@ -55,7 +56,7 @@ class ASH_EXPORT PickerCapsLockBubbleController
   // Closes the bubble due to an input event.
   void MaybeCloseBubbleByEvent(ui::Event* event);
 
-  raw_ptr<PickerCapsLockStateView> bubble_view_ = nullptr;
+  raw_ptr<QuickInsertCapsLockStateView> bubble_view_ = nullptr;
 
   // Timer to close the bubble after a delay.
   base::OneShotTimer bubble_close_timer_;
@@ -67,7 +68,8 @@ class ASH_EXPORT PickerCapsLockBubbleController
                           input_method::ImeKeyboard::Observer>
       ime_keyboard_observation_{this};
 
-  base::WeakPtrFactory<PickerCapsLockBubbleController> weak_ptr_factory_{this};
+  base::WeakPtrFactory<QuickInsertCapsLockBubbleController> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace ash

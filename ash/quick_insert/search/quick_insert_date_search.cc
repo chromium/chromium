@@ -226,7 +226,7 @@ std::vector<ResolvedDate> ResolveQuery(const base::Time& now,
 
 }  // namespace
 
-std::vector<QuickInsertSearchResult> PickerDateSearch(
+std::vector<QuickInsertSearchResult> QuickInsertDateSearch(
     const base::Time& now,
     std::u16string_view query) {
   std::vector<ResolvedDate> resolved_dates = ResolveQuery(now, query);
@@ -238,7 +238,7 @@ std::vector<QuickInsertSearchResult> PickerDateSearch(
   return results;
 }
 
-std::vector<QuickInsertSearchResult> PickerSuggestedDateResults() {
+std::vector<QuickInsertSearchResult> QuickInsertSuggestedDateResults() {
   std::vector<QuickInsertSearchResult> results;
 
   for (const std::u16string_view query : kSuggestedDates) {

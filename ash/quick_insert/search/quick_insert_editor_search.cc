@@ -22,7 +22,7 @@ bool HasMinCharsNeededForEditorMatch(std::u16string_view query) {
 }
 }  // namespace
 
-std::optional<QuickInsertSearchResult> PickerEditorSearch(
+std::optional<QuickInsertSearchResult> QuickInsertEditorSearch(
     QuickInsertEditorResult::Mode mode,
     std::u16string_view query) {
   CHECK(!query.empty());

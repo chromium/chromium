@@ -14,25 +14,26 @@ class KeyEvent;
 
 namespace ash {
 
-class PickerPseudoFocusHandler;
+class QuickInsertPseudoFocusHandler;
 
 // Helper for routing and handling key events, e.g. for keyboard navigation.
-class ASH_EXPORT PickerKeyEventHandler {
+class ASH_EXPORT QuickInsertKeyEventHandler {
  public:
-  PickerKeyEventHandler();
-  PickerKeyEventHandler(const PickerKeyEventHandler&) = delete;
-  PickerKeyEventHandler& operator=(const PickerKeyEventHandler&) = delete;
-  ~PickerKeyEventHandler();
+  QuickInsertKeyEventHandler();
+  QuickInsertKeyEventHandler(const QuickInsertKeyEventHandler&) = delete;
+  QuickInsertKeyEventHandler& operator=(const QuickInsertKeyEventHandler&) =
+      delete;
+  ~QuickInsertKeyEventHandler();
 
   // Returns true if the key event was handled and should not be further
   // processed.
   bool HandleKeyEvent(const ui::KeyEvent& event);
 
   void SetActivePseudoFocusHandler(
-      PickerPseudoFocusHandler* active_pseudo_focus_handler);
+      QuickInsertPseudoFocusHandler* active_pseudo_focus_handler);
 
  private:
-  raw_ptr<PickerPseudoFocusHandler> active_pseudo_focus_handler_ = nullptr;
+  raw_ptr<QuickInsertPseudoFocusHandler> active_pseudo_focus_handler_ = nullptr;
 };
 
 }  // namespace ash

@@ -83,7 +83,8 @@ class MockPickerAssetUrlLoaderFactory : public network::SharedURLLoaderFactory {
   network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
-class MockPickerAssetFetcherDelegate : public PickerAssetFetcherImplDelegate {
+class MockPickerAssetFetcherDelegate
+    : public QuickInsertAssetFetcherImplDelegate {
  public:
   MOCK_METHOD(scoped_refptr<network::SharedURLLoaderFactory>,
               GetSharedURLLoaderFactory,
@@ -120,7 +121,7 @@ TEST_F(QuickInsertAssetFetcherImplTest,
   MockPickerAssetFetcherDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetSharedURLLoaderFactory)
       .WillRepeatedly(Return(url_loader_factory));
-  PickerAssetFetcherImpl asset_fetcher(&mock_delegate);
+  QuickInsertAssetFetcherImpl asset_fetcher(&mock_delegate);
 
   base::test::TestFuture<std::vector<image_util::AnimationFrame>> future;
   asset_fetcher.FetchGifFromUrl(kGifUrl, future.GetCallback());
@@ -140,7 +141,7 @@ TEST_F(QuickInsertAssetFetcherImplTest, FetchesGifPreviewImageFromTenorUrl) {
   MockPickerAssetFetcherDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetSharedURLLoaderFactory)
       .WillRepeatedly(Return(url_loader_factory));
-  PickerAssetFetcherImpl asset_fetcher(&mock_delegate);
+  QuickInsertAssetFetcherImpl asset_fetcher(&mock_delegate);
 
   base::test::TestFuture<const gfx::ImageSkia&> future;
   asset_fetcher.FetchGifPreviewImageFromUrl(kGifPreviewImageUrl,
@@ -161,7 +162,7 @@ TEST_F(QuickInsertAssetFetcherImplTest,
   MockPickerAssetFetcherDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetSharedURLLoaderFactory)
       .WillRepeatedly(Return(url_loader_factory));
-  PickerAssetFetcherImpl asset_fetcher(&mock_delegate);
+  QuickInsertAssetFetcherImpl asset_fetcher(&mock_delegate);
 
   base::test::TestFuture<const gfx::ImageSkia&> future;
   asset_fetcher.FetchGifPreviewImageFromUrl(kNonTenorUrl, future.GetCallback());
@@ -172,14 +173,15 @@ TEST_F(QuickInsertAssetFetcherImplTest,
 TEST_F(QuickInsertAssetFetcherImplTest, ForwardsToDelegateToFetchThumbnail) {
   MockPickerAssetFetcherDelegate mock_delegate;
   base::test::TestFuture<base::FilePath, gfx::Size,
-                         PickerAssetFetcher::FetchFileThumbnailCallback>
+                         QuickInsertAssetFetcher::FetchFileThumbnailCallback>
       future;
   EXPECT_CALL(mock_delegate, FetchFileThumbnail)
-      .WillOnce([&](const base::FilePath& path, const gfx::Size& size,
-                    PickerAssetFetcher::FetchFileThumbnailCallback callback) {
-        future.SetValue(path, size, std::move(callback));
-      });
-  PickerAssetFetcherImpl asset_fetcher(&mock_delegate);
+      .WillOnce(
+          [&](const base::FilePath& path, const gfx::Size& size,
+              QuickInsertAssetFetcher::FetchFileThumbnailCallback callback) {
+            future.SetValue(path, size, std::move(callback));
+          });
+  QuickInsertAssetFetcherImpl asset_fetcher(&mock_delegate);
 
   const base::FilePath kPath("test/image.png");
   constexpr gfx::Size kThumbnailSize(10, 20);

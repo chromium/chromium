@@ -21,30 +21,31 @@ class Button;
 namespace ash {
 
 class IconButton;
-class PickerEmojiBarViewDelegate;
+class QuickInsertEmojiBarViewDelegate;
 class SystemShadow;
 
 // View for the Quick Insert emoji bar, which is a small bar above the main
 // Quick Insert container that shows expression search results (i.e. emojis,
 // symbols and emoticons).
-class ASH_EXPORT PickerEmojiBarView : public views::View,
-                                      public PickerTraversableItemContainer {
-  METADATA_HEADER(PickerEmojiBarView, views::View)
+class ASH_EXPORT QuickInsertEmojiBarView
+    : public views::View,
+      public QuickInsertTraversableItemContainer {
+  METADATA_HEADER(QuickInsertEmojiBarView, views::View)
 
  public:
   // `delegate` must remain valid for the lifetime of this class.
-  PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
-                     int quick_insert_view_width,
-                     bool is_gifs_enabled = false);
-  PickerEmojiBarView(const PickerEmojiBarView&) = delete;
-  PickerEmojiBarView& operator=(const PickerEmojiBarView&) = delete;
-  ~PickerEmojiBarView() override;
+  QuickInsertEmojiBarView(QuickInsertEmojiBarViewDelegate* delegate,
+                          int quick_insert_view_width,
+                          bool is_gifs_enabled = false);
+  QuickInsertEmojiBarView(const QuickInsertEmojiBarView&) = delete;
+  QuickInsertEmojiBarView& operator=(const QuickInsertEmojiBarView&) = delete;
+  ~QuickInsertEmojiBarView() override;
 
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
-  // PickerTraversableItemContainer:
+  // QuickInsertTraversableItemContainer:
   views::View* GetTopItem() override;
   views::View* GetBottomItem() override;
   views::View* GetItemAbove(views::View* item) override;
@@ -84,7 +85,7 @@ class ASH_EXPORT PickerEmojiBarView : public views::View,
   std::unique_ptr<SystemShadow> shadow_;
 
   // `delegate_` outlives `this`.
-  raw_ptr<PickerEmojiBarViewDelegate> delegate_;
+  raw_ptr<QuickInsertEmojiBarViewDelegate> delegate_;
 
   // The width of the QuickInsertView that contains this emoji bar.
   int quick_insert_view_width_ = 0;

@@ -11,21 +11,23 @@
 
 namespace ash {
 
-class PickerAssetFetcher;
+class QuickInsertAssetFetcher;
 class QuickInsertSectionView;
-class PickerSubmenuController;
+class QuickInsertSubmenuController;
 
 // View which displays Quick Insert sections in a vertical list.
-class ASH_EXPORT PickerSectionListView : public views::View {
-  METADATA_HEADER(PickerSectionListView, views::View)
+class ASH_EXPORT QuickInsertSectionListView : public views::View {
+  METADATA_HEADER(QuickInsertSectionListView, views::View)
 
  public:
-  explicit PickerSectionListView(int section_width,
-                                 PickerAssetFetcher* asset_fetcher,
-                                 PickerSubmenuController* submenu_controller);
-  PickerSectionListView(const PickerSectionListView&) = delete;
-  PickerSectionListView& operator=(const PickerSectionListView&) = delete;
-  ~PickerSectionListView() override;
+  explicit QuickInsertSectionListView(
+      int section_width,
+      QuickInsertAssetFetcher* asset_fetcher,
+      QuickInsertSubmenuController* submenu_controller);
+  QuickInsertSectionListView(const QuickInsertSectionListView&) = delete;
+  QuickInsertSectionListView& operator=(const QuickInsertSectionListView&) =
+      delete;
+  ~QuickInsertSectionListView() override;
 
   // Returns the item to highlight to when navigating to this section list from
   // the top, or nullptr if the section list is empty.
@@ -69,10 +71,10 @@ class ASH_EXPORT PickerSectionListView : public views::View {
   int section_width_;
 
   // `asset_fetcher` outlives `this`.
-  raw_ptr<PickerAssetFetcher> asset_fetcher_ = nullptr;
+  raw_ptr<QuickInsertAssetFetcher> asset_fetcher_ = nullptr;
 
   // `submenu_controller_` outlives `this`.
-  raw_ptr<PickerSubmenuController> submenu_controller_ = nullptr;
+  raw_ptr<QuickInsertSubmenuController> submenu_controller_ = nullptr;
 };
 
 }  // namespace ash

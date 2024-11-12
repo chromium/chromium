@@ -43,30 +43,32 @@ bool IsLinkLikelyPersonalized(const GURL& url) {
 
 }  // namespace
 
-PickerLinkSuggester::PickerLinkSuggester(Profile* profile) {
+QuickInsertLinkSuggester::QuickInsertLinkSuggester(Profile* profile) {
   history_service_ = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
   favicon_service_ = FaviconServiceFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
 }
 
-PickerLinkSuggester::~PickerLinkSuggester() = default;
+QuickInsertLinkSuggester::~QuickInsertLinkSuggester() = default;
 
-void PickerLinkSuggester::GetSuggestedLinks(size_t max_links,
-                                            SuggestedLinksCallback callback) {
+void QuickInsertLinkSuggester::GetSuggestedLinks(
+    size_t max_links,
+    SuggestedLinksCallback callback) {
   CHECK(history_service_);
   history::QueryOptions options;
   options.max_count = max_links;
   options.SetRecentDayRange(kRecentDayRange);
   history_service_->QueryHistory(
       std::u16string(), options,
-      base::BindOnce(&PickerLinkSuggester::OnGetBrowsingHistory,
+      base::BindOnce(&QuickInsertLinkSuggester::OnGetBrowsingHistory,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
       &history_query_tracker_);
 }
 
-void PickerLinkSuggester::OnGetBrowsingHistory(SuggestedLinksCallback callback,
-                                               history::QueryResults results) {
+void QuickInsertLinkSuggester::OnGetBrowsingHistory(
+    SuggestedLinksCallback callback,
+    history::QueryResults results) {
   std::vector<history::URLResult> filtered_results;
   base::ranges::copy_if(
       results, std::back_inserter(filtered_results),
@@ -88,7 +90,7 @@ void PickerLinkSuggester::OnGetBrowsingHistory(SuggestedLinksCallback callback,
     for (size_t i = 0; i < filtered_results.size(); ++i) {
       favicon_service_->GetFaviconImageForPageURL(
           filtered_results[i].url(),
-          base::BindOnce(&PickerLinkSuggester::OnGetFaviconImage,
+          base::BindOnce(&QuickInsertLinkSuggester::OnGetFaviconImage,
                          weak_factory_.GetWeakPtr(), filtered_results[i],
                          barrier_callback),
           &favicon_query_trackers_[i]);
@@ -108,7 +110,7 @@ void PickerLinkSuggester::OnGetBrowsingHistory(SuggestedLinksCallback callback,
   }
 }
 
-void PickerLinkSuggester::OnGetFaviconImage(
+void QuickInsertLinkSuggester::OnGetFaviconImage(
     history::URLResult result,
     base::OnceCallback<void(ash::QuickInsertSearchResult)> callback,
     const favicon_base::FaviconImageResult& favicon_image_result) {

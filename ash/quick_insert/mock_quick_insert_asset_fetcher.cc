@@ -16,11 +16,11 @@ MockPickerAssetFetcher::~MockPickerAssetFetcher() = default;
 
 void MockPickerAssetFetcher::FetchGifFromUrl(
     const GURL& url,
-    PickerGifFetchedCallback callback) {}
+    QuickInsertGifFetchedCallback callback) {}
 
 void MockPickerAssetFetcher::FetchGifPreviewImageFromUrl(
     const GURL& url,
-    PickerImageFetchedCallback callback) {}
+    QuickInsertImageFetchedCallback callback) {}
 
 void MockPickerAssetFetcher::FetchFileThumbnail(
     const base::FilePath& path,

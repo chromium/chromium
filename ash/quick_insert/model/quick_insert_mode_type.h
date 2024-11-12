@@ -9,7 +9,7 @@
 
 namespace ash {
 
-enum class PickerModeType {
+enum class QuickInsertModeType {
   // Triggered without focusing on an input field.
   kUnfocused,
   // Triggered with focus, but no selected text in a non-password field.

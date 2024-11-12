@@ -26,15 +26,15 @@ class View;
 
 namespace ash {
 
-class PickerAssetFetcher;
+class QuickInsertAssetFetcher;
 class QuickInsertSearchResultsViewDelegate;
-class PickerSectionListView;
+class QuickInsertSectionListView;
 class QuickInsertSectionView;
-class PickerPreviewBubbleController;
-class PickerSkeletonLoaderView;
+class QuickInsertPreviewBubbleController;
+class QuickInsertSkeletonLoaderView;
 
-class ASH_EXPORT QuickInsertSearchResultsView : public PickerPageView {
-  METADATA_HEADER(QuickInsertSearchResultsView, PickerPageView)
+class ASH_EXPORT QuickInsertSearchResultsView : public QuickInsertPageView {
+  METADATA_HEADER(QuickInsertSearchResultsView, QuickInsertPageView)
 
  public:
   // Describes the way local file results are visually presented.
@@ -50,9 +50,9 @@ class ASH_EXPORT QuickInsertSearchResultsView : public PickerPageView {
   explicit QuickInsertSearchResultsView(
       QuickInsertSearchResultsViewDelegate* delegate,
       int quick_insert_view_width,
-      PickerAssetFetcher* asset_fetcher,
-      PickerSubmenuController* submenu_controller,
-      PickerPreviewBubbleController* preview_controller);
+      QuickInsertAssetFetcher* asset_fetcher,
+      QuickInsertSubmenuController* submenu_controller,
+      QuickInsertPreviewBubbleController* preview_controller);
   QuickInsertSearchResultsView(const QuickInsertSearchResultsView&) = delete;
   QuickInsertSearchResultsView& operator=(const QuickInsertSearchResultsView&) =
       delete;
@@ -65,7 +65,7 @@ class ASH_EXPORT QuickInsertSearchResultsView : public PickerPageView {
 
   void SetLocalFileResultStyle(LocalFileResultStyle style);
 
-  // PickerPageView:
+  // QuickInsertPageView:
   views::View* GetTopItem() override;
   views::View* GetBottomItem() override;
   views::View* GetItemAbove(views::View* item) override;
@@ -96,7 +96,7 @@ class ASH_EXPORT QuickInsertSearchResultsView : public PickerPageView {
   // Sets the number of emoji results for accessibility.
   void SetNumEmojiResultsForA11y(size_t num_emoji_results);
 
-  PickerSectionListView* section_list_view_for_testing() {
+  QuickInsertSectionListView* section_list_view_for_testing() {
     return section_list_view_;
   }
 
@@ -113,7 +113,7 @@ class ASH_EXPORT QuickInsertSearchResultsView : public PickerPageView {
 
   views::View& throbber_container_for_testing() { return *throbber_container_; }
 
-  PickerSkeletonLoaderView& skeleton_loader_view_for_testing() {
+  QuickInsertSkeletonLoaderView& skeleton_loader_view_for_testing() {
     return *skeleton_loader_view_;
   }
 
@@ -139,7 +139,7 @@ class ASH_EXPORT QuickInsertSearchResultsView : public PickerPageView {
   raw_ptr<QuickInsertSearchResultsViewDelegate> delegate_;
 
   // The section list view, contains the section views.
-  raw_ptr<PickerSectionListView> section_list_view_ = nullptr;
+  raw_ptr<QuickInsertSectionListView> section_list_view_ = nullptr;
 
   // Used to track the views for each section of results.
   std::vector<raw_ptr<QuickInsertSectionView>> section_views_;
@@ -158,9 +158,9 @@ class ASH_EXPORT QuickInsertSearchResultsView : public PickerPageView {
   raw_ptr<views::Throbber> throbber_ = nullptr;
 
   // The skeleton loader can be shown when results are pending.
-  raw_ptr<PickerSkeletonLoaderView> skeleton_loader_view_ = nullptr;
+  raw_ptr<QuickInsertSkeletonLoaderView> skeleton_loader_view_ = nullptr;
 
-  raw_ptr<PickerPreviewBubbleController> preview_controller_;
+  raw_ptr<QuickInsertPreviewBubbleController> preview_controller_;
 
   // Number of emoji search results displayed by the emoji bar. Used for
   // accessibility announcements.

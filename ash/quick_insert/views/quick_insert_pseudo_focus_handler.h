@@ -9,7 +9,7 @@
 
 namespace ash {
 
-enum class PickerPseudoFocusDirection;
+enum class QuickInsertPseudoFocusDirection;
 
 // Interface for classes that have pseudo focusable elements, which can look and
 // behave as if they were focused without having actual focus. We use "pseudo
@@ -17,9 +17,9 @@ enum class PickerPseudoFocusDirection;
 // field, which just forwards user actions to be handled by pseudo focused
 // elements if needed (e.g. to select an item when the user presses the enter
 // key).
-class ASH_EXPORT PickerPseudoFocusHandler {
+class ASH_EXPORT QuickInsertPseudoFocusHandler {
  public:
-  virtual ~PickerPseudoFocusHandler() = default;
+  virtual ~QuickInsertPseudoFocusHandler() = default;
 
   // Returns true if an action was performed.
   virtual bool DoPseudoFocusedAction() = 0;
@@ -33,7 +33,8 @@ class ASH_EXPORT PickerPseudoFocusHandler {
 
   // Moves pseudo focus to the next (or previous) pseudo focusable element, or
   // returns false if there is no such element.
-  virtual bool AdvancePseudoFocus(PickerPseudoFocusDirection direction) = 0;
+  virtual bool AdvancePseudoFocus(
+      QuickInsertPseudoFocusDirection direction) = 0;
 };
 
 }  // namespace ash

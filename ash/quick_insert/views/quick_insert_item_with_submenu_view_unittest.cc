@@ -33,7 +33,7 @@ class QuickInsertItemWithSubmenuViewTest : public views::ViewsTestBase {
 };
 
 TEST_F(QuickInsertItemWithSubmenuViewTest, HasAccessibilityAttributes) {
-  PickerItemWithSubmenuView view;
+  QuickInsertItemWithSubmenuView view;
 
   ui::AXNodeData data;
   view.GetViewAccessibility().GetAccessibleNodeData(&data);
@@ -43,10 +43,10 @@ TEST_F(QuickInsertItemWithSubmenuViewTest, HasAccessibilityAttributes) {
 }
 
 TEST_F(QuickInsertItemWithSubmenuViewTest, ShowsSubmenu) {
-  PickerSubmenuController submenu_controller;
+  QuickInsertSubmenuController submenu_controller;
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  auto* item_view =
-      widget->SetContentsView(std::make_unique<PickerItemWithSubmenuView>());
+  auto* item_view = widget->SetContentsView(
+      std::make_unique<QuickInsertItemWithSubmenuView>());
   item_view->SetText(u"abc");
   item_view->SetSubmenuController(&submenu_controller);
   widget->Show();
@@ -58,10 +58,10 @@ TEST_F(QuickInsertItemWithSubmenuViewTest, ShowsSubmenu) {
 }
 
 TEST_F(QuickInsertItemWithSubmenuViewTest, ShowsSubmenuOnMouseEnter) {
-  PickerSubmenuController submenu_controller;
+  QuickInsertSubmenuController submenu_controller;
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  auto* item_view =
-      widget->SetContentsView(std::make_unique<PickerItemWithSubmenuView>());
+  auto* item_view = widget->SetContentsView(
+      std::make_unique<QuickInsertItemWithSubmenuView>());
   item_view->SetText(u"abc");
   item_view->SetSubmenuController(&submenu_controller);
   widget->Show();
@@ -75,10 +75,10 @@ TEST_F(QuickInsertItemWithSubmenuViewTest, ShowsSubmenuOnMouseEnter) {
 }
 
 TEST_F(QuickInsertItemWithSubmenuViewTest, ShowsSubmenuOnGestureTap) {
-  PickerSubmenuController submenu_controller;
+  QuickInsertSubmenuController submenu_controller;
   auto widget = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-  auto* item_view =
-      widget->SetContentsView(std::make_unique<PickerItemWithSubmenuView>());
+  auto* item_view = widget->SetContentsView(
+      std::make_unique<QuickInsertItemWithSubmenuView>());
   item_view->SetText(u"abc");
   item_view->SetSubmenuController(&submenu_controller);
   widget->Show();

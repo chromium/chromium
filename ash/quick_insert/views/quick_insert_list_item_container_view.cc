@@ -32,24 +32,24 @@ std::unique_ptr<views::View> CreateListItemView() {
 
 }  // namespace
 
-PickerListItemContainerView::PickerListItemContainerView() {
+QuickInsertListItemContainerView::QuickInsertListItemContainerView() {
   // Lay out items as a full-width vertical list.
   SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 }
 
-PickerListItemContainerView::~PickerListItemContainerView() = default;
+QuickInsertListItemContainerView::~QuickInsertListItemContainerView() = default;
 
-views::View* PickerListItemContainerView::GetTopItem() {
+views::View* QuickInsertListItemContainerView::GetTopItem() {
   return items_.view_size() == 0u ? nullptr : items_.view_at(0u);
 }
 
-views::View* PickerListItemContainerView::GetBottomItem() {
+views::View* QuickInsertListItemContainerView::GetBottomItem() {
   return items_.view_size() == 0u ? nullptr
                                   : items_.view_at(items_.view_size() - 1u);
 }
 
-views::View* PickerListItemContainerView::GetItemAbove(views::View* item) {
+views::View* QuickInsertListItemContainerView::GetItemAbove(views::View* item) {
   const std::optional<size_t> index = items_.GetIndexOfView(item);
   if (!index.has_value() || *index == 0u) {
     return nullptr;
@@ -58,7 +58,7 @@ views::View* PickerListItemContainerView::GetItemAbove(views::View* item) {
   return items_.view_at(*index - 1u);
 }
 
-views::View* PickerListItemContainerView::GetItemBelow(views::View* item) {
+views::View* QuickInsertListItemContainerView::GetItemBelow(views::View* item) {
   const std::optional<size_t> index = items_.GetIndexOfView(item);
   if (!index.has_value() || *index == items_.view_size() - 1u) {
     return nullptr;
@@ -67,32 +67,35 @@ views::View* PickerListItemContainerView::GetItemBelow(views::View* item) {
   return items_.view_at(*index + 1u);
 }
 
-views::View* PickerListItemContainerView::GetItemLeftOf(views::View* item) {
+views::View* QuickInsertListItemContainerView::GetItemLeftOf(
+    views::View* item) {
   return nullptr;
 }
 
-views::View* PickerListItemContainerView::GetItemRightOf(views::View* item) {
+views::View* QuickInsertListItemContainerView::GetItemRightOf(
+    views::View* item) {
   return nullptr;
 }
 
-bool PickerListItemContainerView::ContainsItem(views::View* item) {
+bool QuickInsertListItemContainerView::ContainsItem(views::View* item) {
   return items_.GetIndexOfView(item).has_value();
 }
 
-QuickInsertListItemView* PickerListItemContainerView::AddListItem(
+QuickInsertListItemView* QuickInsertListItemContainerView::AddListItem(
     std::unique_ptr<QuickInsertListItemView> list_item) {
   items_.Add(list_item.get(), items_.view_size());
   return AddChildView(CreateListItemView())->AddChildView(std::move(list_item));
 }
 
-PickerItemWithSubmenuView* PickerListItemContainerView::AddItemWithSubmenu(
-    std::unique_ptr<PickerItemWithSubmenuView> item_with_submenu) {
+QuickInsertItemWithSubmenuView*
+QuickInsertListItemContainerView::AddItemWithSubmenu(
+    std::unique_ptr<QuickInsertItemWithSubmenuView> item_with_submenu) {
   items_.Add(item_with_submenu.get(), items_.view_size());
   return AddChildView(CreateListItemView())
       ->AddChildView(std::move(item_with_submenu));
 }
 
-BEGIN_METADATA(PickerListItemContainerView)
+BEGIN_METADATA(QuickInsertListItemContainerView)
 END_METADATA
 
 }  // namespace ash

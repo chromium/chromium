@@ -28,7 +28,7 @@
 namespace ash {
 
 class QuickInsertClient;
-class PickerClipboardHistoryProvider;
+class QuickInsertClipboardHistoryProvider;
 
 // Represents a single Quick Insert search query. Constructing this class starts
 // a search, and destructing it stops the search.
@@ -89,7 +89,7 @@ class ASH_EXPORT QuickInsertSearchRequest {
   bool is_category_specific_search_;
   const raw_ref<QuickInsertClient> client_;
 
-  std::unique_ptr<PickerClipboardHistoryProvider> clipboard_provider_;
+  std::unique_ptr<QuickInsertClipboardHistoryProvider> clipboard_provider_;
 
   SearchResultsCallback current_callback_;
   // Set to true once all the searches have started at the end of the ctor.

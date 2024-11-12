@@ -144,7 +144,7 @@ class ScopedFakeResourceBundleDelegate {
 TEST_F(QuickInsertSearchControllerTest, SendsQueryToCrosSearchImmediately) {
   NiceMock<MockSearchResultsCallback> search_results_callback;
   EXPECT_CALL(client(), StartCrosSearch(Eq(u"cat"), _, _)).Times(1);
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -155,7 +155,8 @@ TEST_F(QuickInsertSearchControllerTest, SendsQueryToCrosSearchImmediately) {
 TEST_F(QuickInsertSearchControllerTest, DoesNotPublishResultsDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
-  PickerSearchController controller(/*burn_in_period=*/base::Milliseconds(100));
+  QuickInsertSearchController controller(
+      /*burn_in_period=*/base::Milliseconds(100));
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -187,7 +188,7 @@ TEST_F(QuickInsertSearchControllerTest, ShowsResultsFromOmniboxSearch) {
                         Property("spec", &GURL::spec,
                                  "https://www.google.com/search?q=cat")))))))))
       .Times(AtLeast(1));
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -256,9 +257,9 @@ TEST_F(QuickInsertSearchControllerTest,
       // section.
       .Times(0);
   // As `StopCrosQuery` may be called in the destructor of
-  // `PickerSearchController`, ensure that it gets destructed before any of the
-  // variables used in the above mocks are used.
-  PickerSearchController controller(kBurnInPeriod);
+  // `QuickInsertSearchController`, ensure that it gets destructed before any of
+  // the variables used in the above mocks are used.
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -279,7 +280,7 @@ TEST_F(QuickInsertSearchControllerTest,
 TEST_F(QuickInsertSearchControllerTest, RecordsOmniboxMetricsBeforeBurnIn) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -299,7 +300,7 @@ TEST_F(QuickInsertSearchControllerTest, RecordsOmniboxMetricsBeforeBurnIn) {
 TEST_F(QuickInsertSearchControllerTest, RecordsOmniboxMetricsAfterBurnIn) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -341,7 +342,7 @@ TEST_F(QuickInsertSearchControllerTest,
             search_started = true;
             client().cros_search_callback() = std::move(callback);
           });
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -378,7 +379,7 @@ TEST_F(QuickInsertSearchControllerTest,
             search_started = true;
             client().cros_search_callback() = std::move(callback);
           });
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -422,7 +423,7 @@ TEST_F(
             search_started = true;
             client().cros_search_callback() = std::move(callback);
           });
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -450,7 +451,7 @@ TEST_F(QuickInsertSearchControllerTest, ShowsResultsFromFileSearch) {
                                "text", &QuickInsertTextResult::primary_text,
                                u"monorail_cat.jpg"))))))))
       .Times(AtLeast(1));
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -465,7 +466,7 @@ TEST_F(QuickInsertSearchControllerTest, ShowsResultsFromFileSearch) {
 TEST_F(QuickInsertSearchControllerTest, RecordsFileMetricsBeforeBurnIn) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -483,7 +484,7 @@ TEST_F(QuickInsertSearchControllerTest, RecordsFileMetricsBeforeBurnIn) {
 TEST_F(QuickInsertSearchControllerTest, RecordsFileMetricsAfterBurnIn) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -523,7 +524,7 @@ TEST_F(QuickInsertSearchControllerTest,
             search_started = true;
             client().cros_search_callback() = std::move(callback);
           });
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -560,7 +561,7 @@ TEST_F(QuickInsertSearchControllerTest,
             search_started = true;
             client().cros_search_callback() = std::move(callback);
           });
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -589,7 +590,7 @@ TEST_F(QuickInsertSearchControllerTest, ShowsResultsFromDriveSearch) {
                                "text", &QuickInsertTextResult::primary_text,
                                u"catrbug_135117.jpg"))))))))
       .Times(AtLeast(1));
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -604,7 +605,7 @@ TEST_F(QuickInsertSearchControllerTest, ShowsResultsFromDriveSearch) {
 TEST_F(QuickInsertSearchControllerTest, RecordsDriveMetricsBeforeBurnIn) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -622,7 +623,7 @@ TEST_F(QuickInsertSearchControllerTest, RecordsDriveMetricsBeforeBurnIn) {
 TEST_F(QuickInsertSearchControllerTest, RecordsDriveMetricsAfterBurnIn) {
   base::HistogramTester histogram;
   NiceMock<MockSearchResultsCallback> search_results_callback;
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -662,7 +663,7 @@ TEST_F(QuickInsertSearchControllerTest,
             search_started = true;
             client().cros_search_callback() = std::move(callback);
           });
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -699,7 +700,7 @@ TEST_F(QuickInsertSearchControllerTest,
             search_started = true;
             client().cros_search_callback() = std::move(callback);
           });
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -744,7 +745,7 @@ TEST_F(QuickInsertSearchControllerTest, CombinesSearchResults) {
                            u"drive"))))),
       })))
       .Times(AtLeast(1));
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -765,7 +766,7 @@ TEST_F(QuickInsertSearchControllerTest, CombinesSearchResults) {
 TEST_F(QuickInsertSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"zz", std::nullopt, kAllCategories, false, false,
@@ -781,7 +782,7 @@ TEST_F(QuickInsertSearchControllerTest, DoNotShowEmptySectionsDuringBurnIn) {
 TEST_F(QuickInsertSearchControllerTest, DoNotShowEmptySectionsAfterBurnIn) {
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"zz", std::nullopt, kAllCategories, false, false,
@@ -806,7 +807,7 @@ TEST_F(QuickInsertSearchControllerTest, ShowResultsEvenAfterBurnIn) {
                        "primary_text", &QuickInsertTextResult::primary_text,
                        u"test")))))))))
       .Times(AtLeast(1));
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -831,7 +832,7 @@ TEST_F(QuickInsertSearchControllerTest,
       client(),
       StartCrosSearch(Eq(u"cat"), Eq(QuickInsertCategory::kLocalFiles), _))
       .Times(1);
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(&client(), u"ant", QuickInsertCategory::kLinks,
                          kAllCategories, false, false, base::DoNothing());
@@ -854,7 +855,7 @@ TEST_F(QuickInsertSearchControllerTest,
         .Times(1);
     EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
   }
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt,
@@ -880,7 +881,7 @@ TEST_F(QuickInsertSearchControllerTest,
         .Times(1);
     EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(1);
   }
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt,
@@ -902,7 +903,7 @@ TEST_F(QuickInsertSearchControllerTest,
       Call(Contains(Property("type", &QuickInsertSearchResultsSection::type,
                              QuickInsertSectionType::kLinks))))
       .Times(0);
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -920,7 +921,7 @@ TEST_F(QuickInsertSearchControllerTest,
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(0);
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -939,7 +940,7 @@ TEST_F(QuickInsertSearchControllerTest,
   EXPECT_CALL(search_results_callback, Call).Times(AnyNumber());
   EXPECT_CALL(search_results_callback, Call(IsEmpty())).Times(0);
   NiceMock<MockSearchResultsCallback> second_search_results_callback;
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -957,7 +958,7 @@ TEST_F(QuickInsertSearchControllerTest,
   MockSearchResultsCallback search_results_callback;
   EXPECT_CALL(search_results_callback, Call).Times(0);
   MockSearchResultsCallback second_search_results_callback;
-  PickerSearchController controller(kBurnInPeriod);
+  QuickInsertSearchController controller(kBurnInPeriod);
 
   controller.StartSearch(
       &client(), u"cat", std::nullopt, kAllCategories, false, false,
@@ -1018,7 +1019,7 @@ TEST_F(QuickInsertSearchControllerTest, LoadsEmojiDataInAllLanguages) {
           Field("text", &QuickInsertEmojiResult::text, Eq(u":-)")))))
       .Times(1);
 
-  PickerSearchController controller(
+  QuickInsertSearchController controller(
       /*burn_in_period=*/base::Milliseconds(100));
   controller.LoadEmojiLanguagesFromPrefs(&prefs_service());
   controller.StartEmojiSearch(
@@ -1063,7 +1064,7 @@ TEST_F(QuickInsertSearchControllerTest,
                   Field("text", &QuickInsertEmojiResult::text, Eq(u":-)")))))
       .Times(1);
 
-  PickerSearchController controller(
+  QuickInsertSearchController controller(
       /*burn_in_period=*/base::Milliseconds(100));
   controller.LoadEmojiLanguagesFromPrefs(&prefs_service());
   controller.StartEmojiSearch(
@@ -1108,7 +1109,7 @@ TEST_F(QuickInsertSearchControllerTest, LoadsEmojiDataOnPrefsChange) {
   prefs_service().registry()->RegisterDictionaryPref(
       prefs::kEmojiPickerPreferences, base::Value::Dict());
 
-  PickerSearchController controller(
+  QuickInsertSearchController controller(
       /*burn_in_period=*/base::Milliseconds(100));
 
   // First search, only English results
@@ -1179,7 +1180,7 @@ TEST_F(QuickInsertSearchControllerTest, LoadsEmojiDataForJapaneseUiLocale) {
   prefs_service().registry()->RegisterDictionaryPref(
       prefs::kEmojiPickerPreferences, base::Value::Dict());
 
-  PickerSearchController controller(
+  QuickInsertSearchController controller(
       /*burn_in_period=*/base::Milliseconds(100));
 
   controller.LoadEmojiLanguagesFromPrefs(&prefs_service());

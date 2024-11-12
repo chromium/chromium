@@ -54,7 +54,7 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesTextResult) {
           });
 
   base::SimpleTestClock clock;
-  PickerClipboardHistoryProvider provider(&clock);
+  QuickInsertClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
@@ -86,7 +86,7 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesImageResult) {
           });
 
   base::SimpleTestClock clock;
-  PickerClipboardHistoryProvider provider(&clock);
+  QuickInsertClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
@@ -116,7 +116,7 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesSingleFileResult) {
           });
 
   base::SimpleTestClock clock;
-  PickerClipboardHistoryProvider provider(&clock);
+  QuickInsertClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
@@ -149,7 +149,7 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FetchesMultipleFileResults) {
           });
 
   base::SimpleTestClock clock;
-  PickerClipboardHistoryProvider provider(&clock);
+  QuickInsertClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
@@ -178,7 +178,7 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, SetsIsRecentFieldFalse) {
           });
 
   base::SimpleTestClock clock;
-  PickerClipboardHistoryProvider provider(&clock);
+  QuickInsertClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
   clock.Advance(base::Hours(1));
 
@@ -208,7 +208,7 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FiletersResultByQuery) {
           });
 
   base::SimpleTestClock clock;
-  PickerClipboardHistoryProvider provider(&clock);
+  QuickInsertClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
@@ -231,7 +231,7 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FiltersOutHtmlResults) {
       });
 
   base::SimpleTestClock clock;
-  PickerClipboardHistoryProvider provider(&clock);
+  QuickInsertClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
@@ -253,7 +253,7 @@ TEST_F(QuickInsertClipboardHistoryProviderTest, FiltersOutLongResults) {
           });
 
   base::SimpleTestClock clock;
-  PickerClipboardHistoryProvider provider(&clock);
+  QuickInsertClipboardHistoryProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;

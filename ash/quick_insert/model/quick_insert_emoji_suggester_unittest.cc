@@ -35,15 +35,15 @@ class QuickInsertEmojiSuggesterTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable prefs_;
 };
 
-PickerEmojiSuggester::GetNameCallback GetName() {
+QuickInsertEmojiSuggester::GetNameCallback GetName() {
   return base::BindRepeating([](std::string_view emoji) -> std::string {
     return base::StrCat({emoji, " name"});
   });
 }
 
 TEST_F(QuickInsertEmojiSuggesterTest, ReturnsDefaultEmojis) {
-  PickerEmojiHistoryModel model(pref_service());
-  PickerEmojiSuggester suggester(&model, GetName());
+  QuickInsertEmojiHistoryModel model(pref_service());
+  QuickInsertEmojiSuggester suggester(&model, GetName());
 
   EXPECT_THAT(suggester.GetSuggestedEmoji(),
               ElementsAre(QuickInsertEmojiResult::Emoji(u"🙂", u"🙂 name"),
@@ -56,8 +56,8 @@ TEST_F(QuickInsertEmojiSuggesterTest, ReturnsDefaultEmojis) {
 
 TEST_F(QuickInsertEmojiSuggesterTest,
        ReturnsRecentEmojiFollowedByDefaultEmojis) {
-  PickerEmojiHistoryModel model(pref_service());
-  PickerEmojiSuggester suggester(&model, GetName());
+  QuickInsertEmojiHistoryModel model(pref_service());
+  QuickInsertEmojiSuggester suggester(&model, GetName());
   base::Value::List history_value;
   history_value.Append(base::Value::Dict().Set("text", "abc"));
   history_value.Append(base::Value::Dict().Set("text", "xyz"));
@@ -74,8 +74,8 @@ TEST_F(QuickInsertEmojiSuggesterTest,
 }
 
 TEST_F(QuickInsertEmojiSuggesterTest, SuggestedEmojiDoesNotContainDup) {
-  PickerEmojiHistoryModel model(pref_service());
-  PickerEmojiSuggester suggester(&model, GetName());
+  QuickInsertEmojiHistoryModel model(pref_service());
+  QuickInsertEmojiSuggester suggester(&model, GetName());
   base::Value::List history_value;
   history_value.Append(base::Value::Dict().Set("text", "😂"));
   history_value.Append(base::Value::Dict().Set("text", "xyz"));
@@ -92,8 +92,8 @@ TEST_F(QuickInsertEmojiSuggesterTest, SuggestedEmojiDoesNotContainDup) {
 }
 
 TEST_F(QuickInsertEmojiSuggesterTest, ReturnsRecentEmojiEmoticonAndSymbol) {
-  PickerEmojiHistoryModel model(pref_service());
-  PickerEmojiSuggester suggester(&model, GetName());
+  QuickInsertEmojiHistoryModel model(pref_service());
+  QuickInsertEmojiSuggester suggester(&model, GetName());
   base::Value::List emoji_history_value;
   emoji_history_value.Append(
       base::Value::Dict().Set("text", "emoji1").Set("timestamp", "10"));

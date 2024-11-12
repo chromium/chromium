@@ -19,12 +19,12 @@ using ::testing::Property;
 using ::testing::VariantWith;
 
 TEST(QuickInsertMathSearchTest, NoResult) {
-  EXPECT_FALSE(PickerMathSearch(u"abc").has_value());
+  EXPECT_FALSE(QuickInsertMathSearch(u"abc").has_value());
 }
 
 TEST(QuickInsertMathSearchTest, OnePlusOneEqualsTwo) {
   EXPECT_THAT(
-      PickerMathSearch(u"1 + 1"),
+      QuickInsertMathSearch(u"1 + 1"),
       Optional(AllOf(VariantWith<QuickInsertTextResult>(Field(
                          "text", &QuickInsertTextResult::primary_text, u"2")),
                      VariantWith<QuickInsertTextResult>(
@@ -33,7 +33,7 @@ TEST(QuickInsertMathSearchTest, OnePlusOneEqualsTwo) {
 }
 
 TEST(QuickInsertMathSearchTest, ReturnsExamples) {
-  std::vector<QuickInsertSearchResult> results = PickerMathExamples();
+  std::vector<QuickInsertSearchResult> results = QuickInsertMathExamples();
   EXPECT_THAT(results, Not(IsEmpty()));
   EXPECT_THAT(
       results,

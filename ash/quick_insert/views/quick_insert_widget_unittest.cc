@@ -56,8 +56,8 @@ class FakeQuickInsertViewDelegate : public QuickInsertViewDelegate {
   void ShowEditor(std::optional<std::string> preset_query_id,
                   std::optional<std::string> freeform_text) override {}
   void ShowLobster(std::optional<std::string> freeform_text) override {}
-  PickerAssetFetcher* GetAssetFetcher() override { return nullptr; }
-  PickerSessionMetrics& GetSessionMetrics() override {
+  QuickInsertAssetFetcher* GetAssetFetcher() override { return nullptr; }
+  QuickInsertSessionMetrics& GetSessionMetrics() override {
     return session_metrics_;
   }
   QuickInsertActionType GetActionForResult(
@@ -68,13 +68,15 @@ class FakeQuickInsertViewDelegate : public QuickInsertViewDelegate {
     return {};
   }
   bool IsGifsEnabled() override { return true; }
-  PickerModeType GetMode() override { return PickerModeType::kNoSelection; }
-  PickerCapsLockPosition GetCapsLockPosition() override {
-    return PickerCapsLockPosition::kTop;
+  QuickInsertModeType GetMode() override {
+    return QuickInsertModeType::kNoSelection;
+  }
+  QuickInsertCapsLockPosition GetCapsLockPosition() override {
+    return QuickInsertCapsLockPosition::kTop;
   }
 
  private:
-  PickerSessionMetrics session_metrics_;
+  QuickInsertSessionMetrics session_metrics_;
 };
 
 using QuickInsertWidgetTest = AshTestBase;
@@ -133,7 +135,7 @@ TEST_F(QuickInsertWidgetTest, LosingFocusClosesQuickInsertWidget) {
 
   EXPECT_TRUE(quick_insert_widget->IsClosed());
   EXPECT_EQ(delegate.GetSessionMetrics().GetOutcomeForTesting(),
-            PickerSessionMetrics::SessionOutcome::kAbandoned);
+            QuickInsertSessionMetrics::SessionOutcome::kAbandoned);
 }
 
 TEST_F(QuickInsertWidgetTest, PreviewBubbleDoesNotStealFocusQuickInsertWidget) {
@@ -148,7 +150,7 @@ TEST_F(QuickInsertWidgetTest, PreviewBubbleDoesNotStealFocusQuickInsertWidget) {
 
   // Show bubble widget and expect the QuickInsertWidget to not close.
   views::View* bubble_view =
-      new PickerPreviewBubbleView(anchor_widget->GetContentsView());
+      new QuickInsertPreviewBubbleView(anchor_widget->GetContentsView());
   bubble_view->GetWidget()->Show();
 
   EXPECT_FALSE(quick_insert_widget->IsClosed());

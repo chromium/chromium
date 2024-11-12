@@ -24,17 +24,17 @@ class Label;
 
 namespace ash {
 
-class PickerAssetFetcher;
-class PickerImageItemGridView;
-class PickerImageItemRowView;
-class PickerImageItemView;
-class PickerItemWithSubmenuView;
+class QuickInsertAssetFetcher;
+class QuickInsertImageItemGridView;
+class QuickInsertImageItemRowView;
+class QuickInsertImageItemView;
+class QuickInsertItemWithSubmenuView;
 class QuickInsertItemView;
-class PickerListItemContainerView;
+class QuickInsertListItemContainerView;
 class QuickInsertListItemView;
-class PickerPreviewBubbleController;
-class PickerSubmenuController;
-class PickerTraversableItemContainer;
+class QuickInsertPreviewBubbleController;
+class QuickInsertSubmenuController;
+class QuickInsertTraversableItemContainer;
 enum class QuickInsertActionType;
 
 // View for a Quick Insert section with a title and related items.
@@ -54,9 +54,10 @@ class ASH_EXPORT QuickInsertSectionView : public views::View {
     kRow,
   };
 
-  explicit QuickInsertSectionView(int section_width,
-                                  PickerAssetFetcher* asset_fetcher,
-                                  PickerSubmenuController* submenu_controller);
+  explicit QuickInsertSectionView(
+      int section_width,
+      QuickInsertAssetFetcher* asset_fetcher,
+      QuickInsertSubmenuController* submenu_controller);
   QuickInsertSectionView(const QuickInsertSectionView&) = delete;
   QuickInsertSectionView& operator=(const QuickInsertSectionView&) = delete;
   ~QuickInsertSectionView() override;
@@ -68,8 +69,8 @@ class ASH_EXPORT QuickInsertSectionView : public views::View {
   // value.
   static std::unique_ptr<QuickInsertItemView> CreateItemFromResult(
       const QuickInsertSearchResult& result,
-      PickerPreviewBubbleController* preview_controller,
-      PickerAssetFetcher* asset_fetcher,
+      QuickInsertPreviewBubbleController* preview_controller,
+      QuickInsertAssetFetcher* asset_fetcher,
       int available_width,
       LocalFileResultStyle local_file_result_style,
       SelectResultCallback select_result_callback);
@@ -86,22 +87,22 @@ class ASH_EXPORT QuickInsertSectionView : public views::View {
 
   // Adds an image item to the section. These are displayed in a grid with two
   // columns.
-  PickerImageItemView* AddImageGridItem(
-      std::unique_ptr<PickerImageItemView> image_item);
+  QuickInsertImageItemView* AddImageGridItem(
+      std::unique_ptr<QuickInsertImageItemView> image_item);
 
   // Adds an image item to the section. These are displayed in a single row.
-  PickerImageItemView* AddImageRowItem(
-      std::unique_ptr<PickerImageItemView> image_item);
+  QuickInsertImageItemView* AddImageRowItem(
+      std::unique_ptr<QuickInsertImageItemView> image_item);
 
   // Adds an item with submenu to the section.
-  PickerItemWithSubmenuView* AddItemWithSubmenu(
-      std::unique_ptr<PickerItemWithSubmenuView> item_with_submenu);
+  QuickInsertItemWithSubmenuView* AddItemWithSubmenu(
+      std::unique_ptr<QuickInsertItemWithSubmenuView> item_with_submenu);
 
   // Same as `CreateItemFromResult`, but additionally adds the item to this
   // section.
   QuickInsertItemView* AddResult(
       const QuickInsertSearchResult& result,
-      PickerPreviewBubbleController* preview_controller,
+      QuickInsertPreviewBubbleController* preview_controller,
       LocalFileResultStyle local_file_result_style,
       SelectResultCallback select_result_callback);
 
@@ -167,9 +168,9 @@ class ASH_EXPORT QuickInsertSectionView : public views::View {
     ~ImageRowProperties();
   };
 
-  PickerListItemContainerView* GetOrCreateListItemContainer();
-  PickerImageItemGridView* GetOrCreateImageItemGrid();
-  PickerImageItemRowView* GetOrCreateImageItemRow();
+  QuickInsertListItemContainerView* GetOrCreateListItemContainer();
+  QuickInsertImageItemGridView* GetOrCreateImageItemGrid();
+  QuickInsertImageItemRowView* GetOrCreateImageItemRow();
 
   // Width available for laying out section items. This is needed to determine
   // row and column widths for grid items in the section.
@@ -181,19 +182,19 @@ class ASH_EXPORT QuickInsertSectionView : public views::View {
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::Link> title_trailing_link_ = nullptr;
 
-  std::vector<raw_ptr<PickerTraversableItemContainer>> item_containers_;
-  raw_ptr<PickerListItemContainerView> list_item_container_ = nullptr;
-  raw_ptr<PickerImageItemGridView> image_item_grid_ = nullptr;
-  raw_ptr<PickerImageItemRowView> image_item_row_ = nullptr;
+  std::vector<raw_ptr<QuickInsertTraversableItemContainer>> item_containers_;
+  raw_ptr<QuickInsertListItemContainerView> list_item_container_ = nullptr;
+  raw_ptr<QuickInsertImageItemGridView> image_item_grid_ = nullptr;
+  raw_ptr<QuickInsertImageItemRowView> image_item_row_ = nullptr;
 
   // The views for each result item.
   std::vector<raw_ptr<QuickInsertItemView>> item_views_;
 
   // `asset_fetcher` outlives `this`.
-  raw_ptr<PickerAssetFetcher> asset_fetcher_ = nullptr;
+  raw_ptr<QuickInsertAssetFetcher> asset_fetcher_ = nullptr;
 
   // `submenu_controller` outlives `this`.
-  raw_ptr<PickerSubmenuController> submenu_controller_ = nullptr;
+  raw_ptr<QuickInsertSubmenuController> submenu_controller_ = nullptr;
 
   ImageRowProperties image_row_properties_;
 };

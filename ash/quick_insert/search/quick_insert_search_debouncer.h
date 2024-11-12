@@ -12,9 +12,9 @@
 
 namespace ash {
 
-class ASH_EXPORT PickerSearchDebouncer {
+class ASH_EXPORT QuickInsertSearchDebouncer {
  public:
-  explicit PickerSearchDebouncer(base::TimeDelta delay);
+  explicit QuickInsertSearchDebouncer(base::TimeDelta delay);
 
   // Request to call `search` if there are no other calls to `RequestSearch`
   // within the delay specified in the constructor.

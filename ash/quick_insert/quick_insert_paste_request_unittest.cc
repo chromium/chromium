@@ -33,7 +33,7 @@ TEST_F(QuickInsertPasteRequestTest, DoesNotPasteWithoutNewFocus) {
   EXPECT_CALL(clipboard_history_controller, PasteClipboardItemById(_, _, _))
       .Times(0);
 
-  PickerPasteRequest request(
+  QuickInsertPasteRequest request(
       &clipboard_history_controller,
       aura::client::GetFocusClient(widget->GetNativeView()), item_id);
   widget->CloseNow();
@@ -54,7 +54,7 @@ TEST_F(QuickInsertPasteRequestTest, PastesOnNewFocus) {
                       kVirtualKeyboard))
       .Times(1);
 
-  PickerPasteRequest request(
+  QuickInsertPasteRequest request(
       &clipboard_history_controller,
       aura::client::GetFocusClient(old_widget->GetNativeView()), item_id);
   old_widget->CloseNow();
@@ -76,7 +76,7 @@ TEST_F(QuickInsertPasteRequestTest, DoesNotPasteAfterDestruction) {
       .Times(0);
 
   {
-    PickerPasteRequest request(
+    QuickInsertPasteRequest request(
         &clipboard_history_controller,
         aura::client::GetFocusClient(old_widget->GetNativeView()), item_id);
     old_widget->CloseNow();

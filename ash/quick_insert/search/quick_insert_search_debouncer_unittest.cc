@@ -26,7 +26,7 @@ class QuickInsertSearchDebouncerTest : public testing::Test {
 TEST_F(QuickInsertSearchDebouncerTest,
        RequestSearchDoesNotTriggerSearchUntilDelay) {
   base::test::TestFuture<void> future;
-  PickerSearchDebouncer debouncer(base::Milliseconds(100));
+  QuickInsertSearchDebouncer debouncer(base::Milliseconds(100));
 
   debouncer.RequestSearch(future.GetCallback());
   task_environment().FastForwardBy(base::Milliseconds(99));
@@ -36,7 +36,7 @@ TEST_F(QuickInsertSearchDebouncerTest,
 
 TEST_F(QuickInsertSearchDebouncerTest, RequestSearchTriggersSearchAfterDelay) {
   base::test::TestFuture<void> future;
-  PickerSearchDebouncer debouncer(base::Milliseconds(100));
+  QuickInsertSearchDebouncer debouncer(base::Milliseconds(100));
 
   debouncer.RequestSearch(future.GetCallback());
   task_environment().FastForwardBy(base::Milliseconds(100));
@@ -46,7 +46,7 @@ TEST_F(QuickInsertSearchDebouncerTest, RequestSearchTriggersSearchAfterDelay) {
 
 TEST_F(QuickInsertSearchDebouncerTest, NewRequestSearchCancelsPreviousRequest) {
   base::test::TestFuture<void> future;
-  PickerSearchDebouncer debouncer(base::Milliseconds(100));
+  QuickInsertSearchDebouncer debouncer(base::Milliseconds(100));
 
   debouncer.RequestSearch(future.GetCallback());
   task_environment().FastForwardBy(base::Milliseconds(99));
@@ -59,7 +59,7 @@ TEST_F(QuickInsertSearchDebouncerTest, NewRequestSearchCancelsPreviousRequest) {
 TEST_F(QuickInsertSearchDebouncerTest,
        NewRequestSearchTriggersSearchAfterDelay) {
   base::test::TestFuture<void> future;
-  PickerSearchDebouncer debouncer(base::Milliseconds(100));
+  QuickInsertSearchDebouncer debouncer(base::Milliseconds(100));
 
   debouncer.RequestSearch(future.GetCallback());
   task_environment().FastForwardBy(base::Milliseconds(99));

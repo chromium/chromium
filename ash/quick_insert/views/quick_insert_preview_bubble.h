@@ -23,14 +23,15 @@ class Label;
 
 namespace ash {
 
-class ASH_EXPORT PickerPreviewBubbleView
+class ASH_EXPORT QuickInsertPreviewBubbleView
     : public views::BubbleDialogDelegateView {
-  METADATA_HEADER(PickerPreviewBubbleView, views::BubbleDialogDelegateView)
+  METADATA_HEADER(QuickInsertPreviewBubbleView, views::BubbleDialogDelegateView)
 
  public:
-  explicit PickerPreviewBubbleView(views::View* anchor_view);
-  PickerPreviewBubbleView(const PickerPreviewBubbleView&) = delete;
-  PickerPreviewBubbleView& operator=(const PickerPreviewBubbleView&) = delete;
+  explicit QuickInsertPreviewBubbleView(views::View* anchor_view);
+  QuickInsertPreviewBubbleView(const QuickInsertPreviewBubbleView&) = delete;
+  QuickInsertPreviewBubbleView& operator=(const QuickInsertPreviewBubbleView&) =
+      delete;
 
   static constexpr auto kPreviewImageSize = gfx::Size(240, 135);
 
@@ -58,12 +59,12 @@ class ASH_EXPORT PickerPreviewBubbleView
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT,
-                   PickerPreviewBubbleView,
+                   QuickInsertPreviewBubbleView,
                    views::BubbleDialogDelegateView)
 END_VIEW_BUILDER
 
 }  // namespace ash
 
-DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::PickerPreviewBubbleView)
+DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::QuickInsertPreviewBubbleView)
 
 #endif  // ASH_QUICK_INSERT_VIEWS_QUICK_INSERT_PREVIEW_BUBBLE_H_

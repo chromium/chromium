@@ -55,16 +55,17 @@ class SharedURLLoaderFactory;
 
 namespace ash {
 
-class PickerAssetFetcher;
+class QuickInsertAssetFetcher;
 class QuickInsertClient;
 class QuickInsertModel;
-class PickerPasteRequest;
-class PickerActionOnNextFocusRequest;
+class QuickInsertPasteRequest;
+class QuickInsertActionOnNextFocusRequest;
 
 // Controls a Quick Insert widget.
-class ASH_EXPORT QuickInsertController : public QuickInsertViewDelegate,
-                                         public views::ViewObserver,
-                                         public PickerAssetFetcherImplDelegate {
+class ASH_EXPORT QuickInsertController
+    : public QuickInsertViewDelegate,
+      public views::ViewObserver,
+      public QuickInsertAssetFetcherImplDelegate {
  public:
   QuickInsertController();
   QuickInsertController(const QuickInsertController&) = delete;
@@ -110,8 +111,9 @@ class ASH_EXPORT QuickInsertController : public QuickInsertViewDelegate,
 
   // Returns the Quick Insert widget for tests.
   views::Widget* widget_for_testing() { return widget_.get(); }
-  PickerFeatureTour& feature_tour_for_testing() { return feature_tour_; }
-  PickerCapsLockBubbleController& caps_lock_bubble_controller_for_testing() {
+  QuickInsertFeatureTour& feature_tour_for_testing() { return feature_tour_; }
+  QuickInsertCapsLockBubbleController&
+  caps_lock_bubble_controller_for_testing() {
     return caps_lock_bubble_controller_;
   }
 
@@ -134,19 +136,19 @@ class ASH_EXPORT QuickInsertController : public QuickInsertViewDelegate,
   void ShowEditor(std::optional<std::string> preset_query_id,
                   std::optional<std::string> freeform_text) override;
   void ShowLobster(std::optional<std::string> freeform_text) override;
-  PickerAssetFetcher* GetAssetFetcher() override;
-  PickerSessionMetrics& GetSessionMetrics() override;
+  QuickInsertAssetFetcher* GetAssetFetcher() override;
+  QuickInsertSessionMetrics& GetSessionMetrics() override;
   QuickInsertActionType GetActionForResult(
       const QuickInsertSearchResult& result) override;
   std::vector<QuickInsertEmojiResult> GetSuggestedEmoji() override;
   bool IsGifsEnabled() override;
-  PickerModeType GetMode() override;
-  PickerCapsLockPosition GetCapsLockPosition() override;
+  QuickInsertModeType GetMode() override;
+  QuickInsertCapsLockPosition GetCapsLockPosition() override;
 
   // views:ViewObserver:
   void OnViewIsDeleting(views::View* view) override;
 
-  // PickerAssetFetcherImplDelegate:
+  // QuickInsertAssetFetcherImplDelegate:
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override;
   void FetchFileThumbnail(const base::FilePath& path,
@@ -170,19 +172,19 @@ class ASH_EXPORT QuickInsertController : public QuickInsertViewDelegate,
   // Active Quick Insert session tied to the lifetime of the QuickInsertWidget.
   struct Session {
     QuickInsertModel model;
-    PickerEmojiHistoryModel emoji_history_model;
-    PickerEmojiSuggester emoji_suggester;
-    PickerSessionMetrics session_metrics;
+    QuickInsertEmojiHistoryModel emoji_history_model;
+    QuickInsertEmojiSuggester emoji_suggester;
+    QuickInsertSessionMetrics session_metrics;
     // Periodically records usage metrics based on the Standard Feature Usage
     // Logging (SFUL) framework.
-    PickerFeatureUsageMetrics feature_usage_metrics;
+    QuickInsertFeatureUsageMetrics feature_usage_metrics;
 
     Session(PrefService* prefs,
             ui::TextInputClient* focused_client,
             input_method::ImeKeyboard* ime_keyboard,
             QuickInsertModel::EditorStatus editor_status,
             QuickInsertModel::LobsterStatus lobster_status,
-            PickerEmojiSuggester::GetNameCallback get_name);
+            QuickInsertEmojiSuggester::GetNameCallback get_name);
     ~Session();
   };
 
@@ -191,22 +193,22 @@ class ASH_EXPORT QuickInsertController : public QuickInsertViewDelegate,
   void CloseWidget();
   void ShowWidgetPostFeatureTour();
   void InsertResultOnNextFocus(const QuickInsertSearchResult& result);
-  void OnInsertCompleted(const PickerRichMedia& media,
-                         PickerInsertMediaRequest::Result result);
+  void OnInsertCompleted(const QuickInsertRichMedia& media,
+                         QuickInsertInsertMediaRequest::Result result);
   PrefService* GetPrefs();
 
-  std::optional<PickerWebPasteTarget> GetWebPasteTarget();
+  std::optional<QuickInsertWebPasteTarget> GetWebPasteTarget();
 
-  PickerFeatureTour feature_tour_;
-  PickerCapsLockBubbleController caps_lock_bubble_controller_;
+  QuickInsertFeatureTour feature_tour_;
+  QuickInsertCapsLockBubbleController caps_lock_bubble_controller_;
   std::unique_ptr<Session> session_;
   views::UniqueWidgetPtr widget_;
-  std::unique_ptr<PickerAssetFetcher> asset_fetcher_;
-  std::unique_ptr<PickerInsertMediaRequest> insert_media_request_;
-  std::unique_ptr<PickerPasteRequest> paste_request_;
-  std::unique_ptr<PickerActionOnNextFocusRequest> caps_lock_request_;
-  PickerSuggestionsController suggestions_controller_;
-  PickerSearchController search_controller_;
+  std::unique_ptr<QuickInsertAssetFetcher> asset_fetcher_;
+  std::unique_ptr<QuickInsertInsertMediaRequest> insert_media_request_;
+  std::unique_ptr<QuickInsertPasteRequest> paste_request_;
+  std::unique_ptr<QuickInsertActionOnNextFocusRequest> caps_lock_request_;
+  QuickInsertSuggestionsController suggestions_controller_;
+  QuickInsertSearchController search_controller_;
 
   raw_ptr<QuickInsertClient> client_ = nullptr;
 

@@ -13,9 +13,8 @@
 
 namespace ash {
 
-ASH_EXPORT std::u16string PickerGetFilePreviewDescription(
+ASH_EXPORT std::u16string QuickInsertGetFilePreviewDescription(
     std::optional<base::File::Info> info);
-
 }
 
 #endif  // ASH_QUICK_INSERT_VIEWS_QUICK_INSERT_PREVIEW_METADATA_H_

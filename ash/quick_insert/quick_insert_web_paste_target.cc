@@ -11,13 +11,15 @@
 
 namespace ash {
 
-PickerWebPasteTarget::PickerWebPasteTarget(GURL url, base::OnceClosure do_paste)
+QuickInsertWebPasteTarget::QuickInsertWebPasteTarget(GURL url,
+                                                     base::OnceClosure do_paste)
     : url(std::move(url)), do_paste(std::move(do_paste)) {}
 
-PickerWebPasteTarget::PickerWebPasteTarget(PickerWebPasteTarget&&) = default;
-PickerWebPasteTarget& PickerWebPasteTarget::operator=(PickerWebPasteTarget&&) =
-    default;
+QuickInsertWebPasteTarget::QuickInsertWebPasteTarget(
+    QuickInsertWebPasteTarget&&) = default;
+QuickInsertWebPasteTarget& QuickInsertWebPasteTarget::operator=(
+    QuickInsertWebPasteTarget&&) = default;
 
-PickerWebPasteTarget::~PickerWebPasteTarget() = default;
+QuickInsertWebPasteTarget::~QuickInsertWebPasteTarget() = default;
 
 }  // namespace ash

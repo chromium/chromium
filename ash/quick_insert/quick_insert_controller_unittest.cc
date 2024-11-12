@@ -187,7 +187,7 @@ class QuickInsertControllerTest : public AshTestBase {
     client_ = std::make_unique<NiceMock<TestQuickInsertClient>>(
         controller_.get(), &prefs_);
     prefs_.registry()->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
-    PickerSessionMetrics::RegisterProfilePrefs(prefs_.registry());
+    QuickInsertSessionMetrics::RegisterProfilePrefs(prefs_.registry());
     metrics_recorder_ =
         std::make_unique<metrics::structured::TestStructuredMetricsRecorder>();
     metrics_recorder_->Initialize();
@@ -302,7 +302,7 @@ TEST_F(QuickInsertControllerTest, ToggleWidgetShowsWidgetIfOpenedThenClosed) {
 }
 
 TEST_F(QuickInsertControllerTest, ToggleWidgetShowsFeatureTourForFirstTime) {
-  PickerFeatureTour::RegisterProfilePrefs(client().registry());
+  QuickInsertFeatureTour::RegisterProfilePrefs(client().registry());
   controller().ToggleWidget();
 
   EXPECT_TRUE(controller().feature_tour_for_testing().widget_for_testing());
@@ -316,7 +316,7 @@ TEST_F(QuickInsertControllerTest,
   ASSERT_EQ(focus_controller->GetFocusedWindow(), nullptr);
 
   // Show the feature tour.
-  PickerFeatureTour::RegisterProfilePrefs(client().registry());
+  QuickInsertFeatureTour::RegisterProfilePrefs(client().registry());
   controller().ToggleWidget();
   auto& feature_tour = controller().feature_tour_for_testing();
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
@@ -361,7 +361,7 @@ TEST_F(QuickInsertControllerTest,
             test_widget->GetNativeWindow());
 
   // Show the feature tour.
-  PickerFeatureTour::RegisterProfilePrefs(client().registry());
+  QuickInsertFeatureTour::RegisterProfilePrefs(client().registry());
   controller().ToggleWidget();
   auto& feature_tour = controller().feature_tour_for_testing();
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
@@ -413,7 +413,7 @@ TEST_F(QuickInsertControllerTest,
   ASSERT_TRUE(textfield->HasFocus());
 
   // Show the feature tour.
-  PickerFeatureTour::RegisterProfilePrefs(client().registry());
+  QuickInsertFeatureTour::RegisterProfilePrefs(client().registry());
   controller().ToggleWidget();
   auto& feature_tour = controller().feature_tour_for_testing();
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
@@ -450,7 +450,7 @@ TEST_F(QuickInsertControllerTest,
 }
 
 TEST_F(QuickInsertControllerTest, ToggleWidgetOpensUrlAfterLearnMore) {
-  PickerFeatureTour::RegisterProfilePrefs(client().registry());
+  QuickInsertFeatureTour::RegisterProfilePrefs(client().registry());
   controller().ToggleWidget();
   auto& feature_tour = controller().feature_tour_for_testing();
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
@@ -1164,14 +1164,16 @@ TEST_F(QuickInsertControllerTest,
        ReturnsCapsLockPositionTopWhenCapsLockHasNotShownEnoughTimes) {
   prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 4);
   prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 0);
-  EXPECT_EQ(controller().GetCapsLockPosition(), PickerCapsLockPosition::kTop);
+  EXPECT_EQ(controller().GetCapsLockPosition(),
+            QuickInsertCapsLockPosition::kTop);
 }
 
 TEST_F(QuickInsertControllerTest,
        ReturnsCapsLockPositionTopWhenCapsLockIsAlwaysUsed) {
   prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 15);
   prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 14);
-  EXPECT_EQ(controller().GetCapsLockPosition(), PickerCapsLockPosition::kTop);
+  EXPECT_EQ(controller().GetCapsLockPosition(),
+            QuickInsertCapsLockPosition::kTop);
 }
 
 TEST_F(QuickInsertControllerTest,
@@ -1179,7 +1181,7 @@ TEST_F(QuickInsertControllerTest,
   prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 15);
   prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 7);
   EXPECT_EQ(controller().GetCapsLockPosition(),
-            PickerCapsLockPosition::kMiddle);
+            QuickInsertCapsLockPosition::kMiddle);
 }
 
 TEST_F(QuickInsertControllerTest,
@@ -1187,7 +1189,7 @@ TEST_F(QuickInsertControllerTest,
   prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 15);
   prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 0);
   EXPECT_EQ(controller().GetCapsLockPosition(),
-            PickerCapsLockPosition::kBottom);
+            QuickInsertCapsLockPosition::kBottom);
 }
 
 TEST_F(QuickInsertControllerTest,
@@ -1196,7 +1198,8 @@ TEST_F(QuickInsertControllerTest,
   prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 0);
   GetImeKeyboard()->SetCapsLockEnabled(true);
 
-  EXPECT_EQ(controller().GetCapsLockPosition(), PickerCapsLockPosition::kTop);
+  EXPECT_EQ(controller().GetCapsLockPosition(),
+            QuickInsertCapsLockPosition::kTop);
 }
 
 struct ActionTestCase {

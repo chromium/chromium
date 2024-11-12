@@ -114,12 +114,12 @@ void QuickInsertItemView::SetCornerRadius(int corner_radius) {
   UpdateBackground();
 }
 
-PickerSubmenuController* QuickInsertItemView::GetSubmenuController() {
+QuickInsertSubmenuController* QuickInsertItemView::GetSubmenuController() {
   return submenu_controller_;
 }
 
 void QuickInsertItemView::SetSubmenuController(
-    PickerSubmenuController* submenu_controller) {
+    QuickInsertSubmenuController* submenu_controller) {
   submenu_controller_ = submenu_controller;
 }
 

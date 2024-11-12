@@ -21,10 +21,10 @@
 
 namespace ash {
 
-PickerSectionListView::PickerSectionListView(
+QuickInsertSectionListView::QuickInsertSectionListView(
     int section_width,
-    PickerAssetFetcher* asset_fetcher,
-    PickerSubmenuController* submenu_controller)
+    QuickInsertAssetFetcher* asset_fetcher,
+    QuickInsertSubmenuController* submenu_controller)
     : section_width_(section_width),
       asset_fetcher_(asset_fetcher),
       submenu_controller_(submenu_controller) {
@@ -33,9 +33,9 @@ PickerSectionListView::PickerSectionListView(
       ->set_cross_axis_alignment(views::LayoutAlignment::kStretch);
 }
 
-PickerSectionListView::~PickerSectionListView() = default;
+QuickInsertSectionListView::~QuickInsertSectionListView() = default;
 
-views::View* PickerSectionListView::GetTopItem() {
+views::View* QuickInsertSectionListView::GetTopItem() {
   for (views::View* section : children()) {
     if (views::View* top_item =
             views::AsViewClass<QuickInsertSectionView>(section)->GetTopItem()) {
@@ -45,7 +45,7 @@ views::View* PickerSectionListView::GetTopItem() {
   return nullptr;
 }
 
-views::View* PickerSectionListView::GetBottomItem() {
+views::View* QuickInsertSectionListView::GetBottomItem() {
   for (views::View* section : base::Reversed(children())) {
     if (views::View* bottom_item =
             views::AsViewClass<QuickInsertSectionView>(section)
@@ -56,7 +56,7 @@ views::View* PickerSectionListView::GetBottomItem() {
   return nullptr;
 }
 
-views::View* PickerSectionListView::GetItemAbove(views::View* item) {
+views::View* QuickInsertSectionListView::GetItemAbove(views::View* item) {
   QuickInsertSectionView* section = GetSectionContaining(item);
   if (section == nullptr) {
     return nullptr;
@@ -82,7 +82,7 @@ views::View* PickerSectionListView::GetItemAbove(views::View* item) {
   return nullptr;
 }
 
-views::View* PickerSectionListView::GetItemBelow(views::View* item) {
+views::View* QuickInsertSectionListView::GetItemBelow(views::View* item) {
   QuickInsertSectionView* section = GetSectionContaining(item);
   if (section == nullptr) {
     return nullptr;
@@ -106,33 +106,33 @@ views::View* PickerSectionListView::GetItemBelow(views::View* item) {
   return nullptr;
 }
 
-views::View* PickerSectionListView::GetItemLeftOf(views::View* item) {
+views::View* QuickInsertSectionListView::GetItemLeftOf(views::View* item) {
   QuickInsertSectionView* section = GetSectionContaining(item);
   return section != nullptr ? section->GetItemLeftOf(item) : nullptr;
 }
 
-views::View* PickerSectionListView::GetItemRightOf(views::View* item) {
+views::View* QuickInsertSectionListView::GetItemRightOf(views::View* item) {
   QuickInsertSectionView* section = GetSectionContaining(item);
   return section != nullptr ? section->GetItemRightOf(item) : nullptr;
 }
 
-QuickInsertSectionView* PickerSectionListView::AddSection() {
+QuickInsertSectionView* QuickInsertSectionListView::AddSection() {
   return AddChildView(std::make_unique<QuickInsertSectionView>(
       section_width_, asset_fetcher_, submenu_controller_));
 }
 
-QuickInsertSectionView* PickerSectionListView::AddSectionAt(size_t index) {
+QuickInsertSectionView* QuickInsertSectionListView::AddSectionAt(size_t index) {
   return AddChildViewAt(
       std::make_unique<QuickInsertSectionView>(section_width_, asset_fetcher_,
                                                submenu_controller_),
       index);
 }
 
-void PickerSectionListView::ClearSectionList() {
+void QuickInsertSectionListView::ClearSectionList() {
   RemoveAllChildViews();
 }
 
-QuickInsertSectionView* PickerSectionListView::GetSectionContaining(
+QuickInsertSectionView* QuickInsertSectionListView::GetSectionContaining(
     views::View* item) {
   for (views::View* view = item->parent(); view != nullptr;
        view = view->parent()) {
@@ -144,7 +144,7 @@ QuickInsertSectionView* PickerSectionListView::GetSectionContaining(
   return nullptr;
 }
 
-BEGIN_METADATA(PickerSectionListView)
+BEGIN_METADATA(QuickInsertSectionListView)
 END_METADATA
 
 }  // namespace ash

@@ -44,7 +44,7 @@ std::unique_ptr<views::Label> CreateShortcutTextLabel(
 
 }  // namespace
 
-PickerShortcutHintView::PickerShortcutHintView(
+QuickInsertShortcutHintView::QuickInsertShortcutHintView(
     QuickInsertCapsLockResult::Shortcut shortcut) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
@@ -95,13 +95,13 @@ PickerShortcutHintView::PickerShortcutHintView(
   }
 }
 
-PickerShortcutHintView::~PickerShortcutHintView() = default;
+QuickInsertShortcutHintView::~QuickInsertShortcutHintView() = default;
 
-const std::u16string& PickerShortcutHintView::GetShortcutText() const {
+const std::u16string& QuickInsertShortcutHintView::GetShortcutText() const {
   return shortcut_text_;
 }
 
-BEGIN_METADATA(PickerShortcutHintView)
+BEGIN_METADATA(QuickInsertShortcutHintView)
 END_METADATA
 
 }  // namespace ash

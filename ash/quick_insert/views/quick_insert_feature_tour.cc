@@ -61,13 +61,14 @@ constexpr auto kFeatureTourDialogIllustrationCornerRadii =
 constexpr char kFeatureTourCompletedPref[] =
     "ash.picker.feature_tour.completed";
 
-std::u16string GetHeadingText(PickerFeatureTour::EditorStatus editor_status) {
+std::u16string GetHeadingText(
+    QuickInsertFeatureTour::EditorStatus editor_status) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   switch (editor_status) {
-    case PickerFeatureTour::EditorStatus::kEligible:
+    case QuickInsertFeatureTour::EditorStatus::kEligible:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_FEATURE_TOUR_WITH_EDITOR_HEADING_TEXT);
-    case PickerFeatureTour::EditorStatus::kNotEligible:
+    case QuickInsertFeatureTour::EditorStatus::kNotEligible:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_FEATURE_TOUR_WITHOUT_EDITOR_HEADING_TEXT);
   }
@@ -76,13 +77,13 @@ std::u16string GetHeadingText(PickerFeatureTour::EditorStatus editor_status) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-std::u16string GetBodyText(PickerFeatureTour::EditorStatus editor_status) {
+std::u16string GetBodyText(QuickInsertFeatureTour::EditorStatus editor_status) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   switch (editor_status) {
-    case PickerFeatureTour::EditorStatus::kEligible:
+    case QuickInsertFeatureTour::EditorStatus::kEligible:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_FEATURE_TOUR_WITH_EDITOR_BODY_TEXT);
-    case PickerFeatureTour::EditorStatus::kNotEligible:
+    case QuickInsertFeatureTour::EditorStatus::kNotEligible:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_FEATURE_TOUR_WITHOUT_EDITOR_BODY_TEXT);
   }
@@ -101,7 +102,7 @@ ui::ImageModel GetIllustration() {
 }
 
 std::unique_ptr<views::Widget> CreateWidget(
-    PickerFeatureTour::EditorStatus editor_status,
+    QuickInsertFeatureTour::EditorStatus editor_status,
     base::OnceClosure learn_more_callback,
     base::OnceClosure completion_callback) {
   auto feature_tour_dialog =
@@ -130,7 +131,7 @@ std::unique_ptr<views::Widget> CreateWidget(
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
   params.delegate = feature_tour_dialog.release();
-  params.name = "PickerFeatureTourWidget";
+  params.name = "QuickInsertFeatureTourWidget";
   params.activatable = views::Widget::InitParams::Activatable::kYes;
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
@@ -140,19 +141,20 @@ std::unique_ptr<views::Widget> CreateWidget(
 
 }  // namespace
 
-PickerFeatureTour::PickerFeatureTour() = default;
+QuickInsertFeatureTour::QuickInsertFeatureTour() = default;
 
-PickerFeatureTour::~PickerFeatureTour() {
+QuickInsertFeatureTour::~QuickInsertFeatureTour() {
   if (widget_) {
     widget_->CloseNow();
   }
 }
 
-void PickerFeatureTour::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+void QuickInsertFeatureTour::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kFeatureTourCompletedPref, false);
 }
 
-bool PickerFeatureTour::MaybeShowForFirstUse(
+bool QuickInsertFeatureTour::MaybeShowForFirstUse(
     PrefService* prefs,
     EditorStatus editor_status,
     base::RepeatingClosure learn_more_callback,
@@ -168,10 +170,10 @@ bool PickerFeatureTour::MaybeShowForFirstUse(
 
   widget_ = CreateWidget(
       editor_status,
-      base::BindOnce(&PickerFeatureTour::SetOnWindowDeactivatedCallback,
+      base::BindOnce(&QuickInsertFeatureTour::SetOnWindowDeactivatedCallback,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(learn_more_callback)),
-      base::BindOnce(&PickerFeatureTour::SetOnWindowDeactivatedCallback,
+      base::BindOnce(&QuickInsertFeatureTour::SetOnWindowDeactivatedCallback,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(completion_callback)));
 
@@ -189,7 +191,8 @@ bool PickerFeatureTour::MaybeShowForFirstUse(
   return true;
 }
 
-const views::Button* PickerFeatureTour::learn_more_button_for_testing() const {
+const views::Button* QuickInsertFeatureTour::learn_more_button_for_testing()
+    const {
   if (!widget_) {
     return nullptr;
   }
@@ -201,7 +204,8 @@ const views::Button* PickerFeatureTour::learn_more_button_for_testing() const {
              : nullptr;
 }
 
-const views::Button* PickerFeatureTour::complete_button_for_testing() const {
+const views::Button* QuickInsertFeatureTour::complete_button_for_testing()
+    const {
   if (!widget_) {
     return nullptr;
   }
@@ -213,24 +217,24 @@ const views::Button* PickerFeatureTour::complete_button_for_testing() const {
              : nullptr;
 }
 
-views::Widget* PickerFeatureTour::widget_for_testing() {
+views::Widget* QuickInsertFeatureTour::widget_for_testing() {
   return widget_.get();
 }
 
-void PickerFeatureTour::OnWindowActivated(ActivationReason reason,
-                                          aura::Window* gained_active,
-                                          aura::Window* lost_active) {
+void QuickInsertFeatureTour::OnWindowActivated(ActivationReason reason,
+                                               aura::Window* gained_active,
+                                               aura::Window* lost_active) {
   RunOnWindowDeactivatedIfNeeded();
 }
 
-void PickerFeatureTour::SetOnWindowDeactivatedCallback(
+void QuickInsertFeatureTour::SetOnWindowDeactivatedCallback(
     base::OnceClosure callback) {
   on_window_deactivated_callback_ = std::move(callback);
 
   RunOnWindowDeactivatedIfNeeded();
 }
 
-void PickerFeatureTour::RunOnWindowDeactivatedIfNeeded() {
+void QuickInsertFeatureTour::RunOnWindowDeactivatedIfNeeded() {
   if (on_window_deactivated_callback_.is_null()) {
     return;
   }

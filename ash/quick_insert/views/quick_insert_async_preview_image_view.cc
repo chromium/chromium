@@ -35,7 +35,7 @@ CreateEmptyPlaceholderImageSkiaResolver() {
 }
 }  // namespace
 
-PickerAsyncPreviewImageView::PickerAsyncPreviewImageView(
+QuickInsertAsyncPreviewImageView::QuickInsertAsyncPreviewImageView(
     base::FilePath path,
     const gfx::Size& max_size,
     AsyncBitmapResolver async_bitmap_resolver)
@@ -51,17 +51,17 @@ PickerAsyncPreviewImageView::PickerAsyncPreviewImageView(
   // member. During destruction, `async_icon_subscription_` will be destroyed
   // before the other members, so the callback is guaranteed to be safe.
   async_preview_subscription_ =
-      async_preview_image_.AddImageSkiaChangedCallback(
-          base::BindRepeating(&PickerAsyncPreviewImageView::UpdateImageSkia,
-                              base::Unretained(this)));
+      async_preview_image_.AddImageSkiaChangedCallback(base::BindRepeating(
+          &QuickInsertAsyncPreviewImageView::UpdateImageSkia,
+          base::Unretained(this)));
 
   // Use the initial placeholder image.
   UpdateImageSkia();
 }
 
-PickerAsyncPreviewImageView::~PickerAsyncPreviewImageView() = default;
+QuickInsertAsyncPreviewImageView::~QuickInsertAsyncPreviewImageView() = default;
 
-void PickerAsyncPreviewImageView::OnBoundsChanged(
+void QuickInsertAsyncPreviewImageView::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {
   UpdateImageSkia();
 
@@ -73,7 +73,7 @@ void PickerAsyncPreviewImageView::OnBoundsChanged(
   views::ImageView::OnBoundsChanged(previous_bounds);
 }
 
-gfx::Size PickerAsyncPreviewImageView::CalculatePreferredSize(
+gfx::Size QuickInsertAsyncPreviewImageView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   // Calculate the height to retain aspect ratio.
   const int preferred_width =
@@ -85,14 +85,14 @@ gfx::Size PickerAsyncPreviewImageView::CalculatePreferredSize(
   return gfx::Size(preferred_width, height);
 }
 
-void PickerAsyncPreviewImageView::UpdateImageSkia() {
+void QuickInsertAsyncPreviewImageView::UpdateImageSkia() {
   const gfx::Size local_bounds = GetLocalBounds().size();
   SetImage(ui::ImageModel::FromImageSkia(async_preview_image_.GetImageSkia(
       local_bounds.IsEmpty() ? std::nullopt
                              : std::make_optional(local_bounds))));
 }
 
-BEGIN_METADATA(PickerAsyncPreviewImageView)
+BEGIN_METADATA(QuickInsertAsyncPreviewImageView)
 END_METADATA
 
 }  // namespace ash

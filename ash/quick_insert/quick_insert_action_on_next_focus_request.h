@@ -19,7 +19,7 @@ class InputMethod;
 namespace ash {
 
 // A request to perform an action the next time an input field gains focus.
-class ASH_EXPORT PickerActionOnNextFocusRequest
+class ASH_EXPORT QuickInsertActionOnNextFocusRequest
     : public ui::InputMethodObserver {
  public:
   // Creates a request to perform `action_callback` the next time an input field
@@ -27,11 +27,11 @@ class ASH_EXPORT PickerActionOnNextFocusRequest
   // `timeout_callback` is run instead of `action_callback`. If this request is
   // destroyed before the action could happen, then neither `action_callback`
   // nor `timeout_callback` are run.
-  PickerActionOnNextFocusRequest(ui::InputMethod* input_method,
-                                 base::TimeDelta action_timeout,
-                                 base::OnceClosure action_callback,
-                                 base::OnceClosure timeout_callback);
-  ~PickerActionOnNextFocusRequest() override;
+  QuickInsertActionOnNextFocusRequest(ui::InputMethod* input_method,
+                                      base::TimeDelta action_timeout,
+                                      base::OnceClosure action_callback,
+                                      base::OnceClosure timeout_callback);
+  ~QuickInsertActionOnNextFocusRequest() override;
 
   // ui::InputMethodObserver:
   void OnFocus() override {}

@@ -16,22 +16,23 @@
 
 namespace ash {
 
-class PickerEmojiHistoryModel;
+class QuickInsertEmojiHistoryModel;
 
-class ASH_EXPORT PickerEmojiSuggester {
+class ASH_EXPORT QuickInsertEmojiSuggester {
  public:
   using GetNameCallback =
       base::RepeatingCallback<std::string(std::string_view emoji)>;
-  explicit PickerEmojiSuggester(PickerEmojiHistoryModel* history_model,
-                                GetNameCallback get_name);
-  ~PickerEmojiSuggester();
+  explicit QuickInsertEmojiSuggester(
+      QuickInsertEmojiHistoryModel* history_model,
+      GetNameCallback get_name);
+  ~QuickInsertEmojiSuggester();
 
   std::vector<QuickInsertEmojiResult> GetSuggestedEmoji() const;
 
  private:
   GetNameCallback get_name_;
 
-  raw_ref<PickerEmojiHistoryModel> history_model_;
+  raw_ref<QuickInsertEmojiHistoryModel> history_model_;
 };
 
 }  // namespace ash

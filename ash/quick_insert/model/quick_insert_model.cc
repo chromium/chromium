@@ -77,13 +77,13 @@ QuickInsertModel::QuickInsertModel(PrefService* prefs,
 std::vector<QuickInsertCategory> QuickInsertModel::GetAvailableCategories()
     const {
   switch (GetMode()) {
-    case PickerModeType::kUnfocused:
+    case QuickInsertModeType::kUnfocused:
       return std::vector<QuickInsertCategory>{
           QuickInsertCategory::kLinks,
           QuickInsertCategory::kDriveFiles,
           QuickInsertCategory::kLocalFiles,
       };
-    case PickerModeType::kHasSelection: {
+    case QuickInsertModeType::kHasSelection: {
       std::vector<QuickInsertCategory> categories;
       if (editor_status_ == EditorStatus::kEnabled) {
         categories.push_back(QuickInsertCategory::kEditorRewrite);
@@ -94,7 +94,7 @@ std::vector<QuickInsertCategory> QuickInsertModel::GetAvailableCategories()
       }
       return categories;
     }
-    case PickerModeType::kNoSelection: {
+    case QuickInsertModeType::kNoSelection: {
       std::vector<QuickInsertCategory> categories;
       if (editor_status_ == EditorStatus::kEnabled) {
         categories.push_back(QuickInsertCategory::kEditorWrite);
@@ -119,7 +119,7 @@ std::vector<QuickInsertCategory> QuickInsertModel::GetAvailableCategories()
 
       return categories;
     }
-    case PickerModeType::kPassword: {
+    case QuickInsertModeType::kPassword: {
       return {};
     }
   }
@@ -127,7 +127,7 @@ std::vector<QuickInsertCategory> QuickInsertModel::GetAvailableCategories()
 
 std::vector<QuickInsertCategory> QuickInsertModel::GetRecentResultsCategories()
     const {
-  if (GetMode() == PickerModeType::kHasSelection) {
+  if (GetMode() == QuickInsertModeType::kHasSelection) {
     return std::vector<QuickInsertCategory>{};
   }
 
@@ -150,19 +150,19 @@ bool QuickInsertModel::is_caps_lock_enabled() const {
   return is_caps_lock_enabled_;
 }
 
-PickerModeType QuickInsertModel::GetMode() const {
+QuickInsertModeType QuickInsertModel::GetMode() const {
   if (!has_focus_) {
-    return PickerModeType::kUnfocused;
+    return QuickInsertModeType::kUnfocused;
   }
 
   if (text_input_type_ == ui::TextInputType::TEXT_INPUT_TYPE_PASSWORD) {
-    return PickerModeType::kPassword;
+    return QuickInsertModeType::kPassword;
   }
 
   return chromeos::editor_helpers::NonWhitespaceAndSymbolsLength(
              selected_text_, gfx::Range(0, selected_text_.size())) == 0
-             ? PickerModeType::kNoSelection
-             : PickerModeType::kHasSelection;
+             ? QuickInsertModeType::kNoSelection
+             : QuickInsertModeType::kHasSelection;
 }
 
 bool QuickInsertModel::IsGifsEnabled() const {

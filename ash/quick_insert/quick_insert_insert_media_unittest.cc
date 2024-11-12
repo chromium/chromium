@@ -42,7 +42,7 @@ class ScopedTestFile {
 
 struct TestCase {
   // The media to insert.
-  PickerRichMedia media_to_insert;
+  QuickInsertRichMedia media_to_insert;
 
   // The expected text in the input field if the insertion was successful.
   std::u16string expected_text;
@@ -79,16 +79,18 @@ INSTANTIATE_TEST_SUITE_P(
     QuickInsertInsertMediaTest,
     testing::Values(
         TestCase{
-            .media_to_insert = PickerTextMedia(u"hello"),
+            .media_to_insert = QuickInsertTextMedia(u"hello"),
             .expected_text = u"hello",
         },
         TestCase{
-            .media_to_insert = PickerImageMedia(GURL("http://foo.com/fake.jpg"),
-                                                gfx::Size(10, 10)),
+            .media_to_insert =
+                QuickInsertImageMedia(GURL("http://foo.com/fake.jpg"),
+                                      gfx::Size(10, 10)),
             .expected_image_url = GURL("http://foo.com/fake.jpg"),
         },
         TestCase{
-            .media_to_insert = PickerLinkMedia(GURL("http://foo.com"), "foo"),
+            .media_to_insert = QuickInsertLinkMedia(GURL("http://foo.com"),
+                                                    "foo"),
             .expected_text = u"http://foo.com/",
         }));
 
@@ -97,7 +99,8 @@ TEST(QuickInsertInsertImageMediaTest, UnsupportedInputField) {
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
 
   EXPECT_FALSE(InputFieldSupportsInsertingMedia(
-      PickerImageMedia(GURL("http://foo.com"), gfx::Size(10, 10)), client));
+      QuickInsertImageMedia(GURL("http://foo.com"), gfx::Size(10, 10)),
+      client));
 }
 
 TEST(QuickInsertInsertImageMediaTest,
@@ -107,7 +110,7 @@ TEST(QuickInsertInsertImageMediaTest,
 
   base::test::TestFuture<InsertMediaResult> future;
   InsertMediaToInputField(
-      PickerImageMedia(GURL("http://foo.com"), gfx::Size(10, 10)), client,
+      QuickInsertImageMedia(GURL("http://foo.com"), gfx::Size(10, 10)), client,
       /*get_web_paste_target=*/{}, future.GetCallback());
 
   EXPECT_EQ(future.Get(), InsertMediaResult::kUnsupported);
@@ -119,7 +122,7 @@ TEST(QuickInsertInsertLocalFileMediaTest, SupportedInputField) {
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
 
   EXPECT_TRUE(InputFieldSupportsInsertingMedia(
-      PickerLocalFileMedia(base::FilePath("foo.txt")), client));
+      QuickInsertLocalFileMedia(base::FilePath("foo.txt")), client));
 }
 
 TEST(QuickInsertInsertLocalFileMediaTest, UnsupportedInputField) {
@@ -127,7 +130,7 @@ TEST(QuickInsertInsertLocalFileMediaTest, UnsupportedInputField) {
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
 
   EXPECT_FALSE(InputFieldSupportsInsertingMedia(
-      PickerLocalFileMedia(base::FilePath("foo.txt")), client));
+      QuickInsertLocalFileMedia(base::FilePath("foo.txt")), client));
 }
 
 TEST(QuickInsertInsertLocalFileMediaTest, InsertsAsynchronously) {
@@ -138,7 +141,7 @@ TEST(QuickInsertInsertLocalFileMediaTest, InsertsAsynchronously) {
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
 
   base::test::TestFuture<InsertMediaResult> future;
-  InsertMediaToInputField(PickerLocalFileMedia(file.path()), client,
+  InsertMediaToInputField(QuickInsertLocalFileMedia(file.path()), client,
                           /*get_web_paste_target=*/{}, future.GetCallback());
 
   EXPECT_EQ(future.Get(), InsertMediaResult::kSuccess);
@@ -156,7 +159,7 @@ TEST(QuickInsertInsertLocalFileMediaTest,
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = false});
 
   base::test::TestFuture<InsertMediaResult> future;
-  InsertMediaToInputField(PickerLocalFileMedia(file.path()), client,
+  InsertMediaToInputField(QuickInsertLocalFileMedia(file.path()), client,
                           /*get_web_paste_target=*/{}, future.GetCallback());
 
   EXPECT_EQ(future.Get(), InsertMediaResult::kUnsupported);
@@ -173,7 +176,7 @@ TEST(QuickInsertInsertLocalFileMediaTest,
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
 
   base::test::TestFuture<InsertMediaResult> future;
-  InsertMediaToInputField(PickerLocalFileMedia(file.path()), client,
+  InsertMediaToInputField(QuickInsertLocalFileMedia(file.path()), client,
                           /*get_web_paste_target=*/{}, future.GetCallback());
 
   EXPECT_EQ(future.Get(), InsertMediaResult::kUnsupported);
@@ -188,7 +191,7 @@ TEST(QuickInsertInsertLocalFileMediaTest,
       {.type = ui::TEXT_INPUT_TYPE_TEXT, .can_insert_image = true});
 
   base::test::TestFuture<InsertMediaResult> future;
-  InsertMediaToInputField(PickerLocalFileMedia(base::FilePath("foo.txt")),
+  InsertMediaToInputField(QuickInsertLocalFileMedia(base::FilePath("foo.txt")),
                           client,
                           /*get_web_paste_target=*/{}, future.GetCallback());
 

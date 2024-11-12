@@ -14,8 +14,8 @@ enum class EmojiPickerCategory;
 
 namespace ash {
 
-// Delegate for `PickerEmojiBarView`.
-class ASH_EXPORT PickerEmojiBarViewDelegate {
+// Delegate for `QuickInsertEmojiBarView`.
+class ASH_EXPORT QuickInsertEmojiBarViewDelegate {
  public:
   virtual void SelectSearchResult(const QuickInsertSearchResult& result) = 0;
 

@@ -17,11 +17,12 @@ class Time;
 
 namespace ash {
 
-ASH_EXPORT std::vector<QuickInsertSearchResult> PickerDateSearch(
+ASH_EXPORT std::vector<QuickInsertSearchResult> QuickInsertDateSearch(
     const base::Time& now,
     std::u16string_view query);
 
-ASH_EXPORT std::vector<QuickInsertSearchResult> PickerSuggestedDateResults();
+ASH_EXPORT std::vector<QuickInsertSearchResult>
+QuickInsertSuggestedDateResults();
 
 }  // namespace ash
 

@@ -12,11 +12,11 @@ namespace ash {
 
 // Tracks Quick Insert feature usage for the Standard Feature Usage Logging
 // (SFUL) framework.
-class ASH_EXPORT PickerFeatureUsageMetrics
+class ASH_EXPORT QuickInsertFeatureUsageMetrics
     : public feature_usage::FeatureUsageMetrics::Delegate {
  public:
-  PickerFeatureUsageMetrics();
-  ~PickerFeatureUsageMetrics() override;
+  QuickInsertFeatureUsageMetrics();
+  ~QuickInsertFeatureUsageMetrics() override;
 
   // Starts recording the usage time of the feature.
   void StartUsage();

@@ -13,14 +13,14 @@
 
 namespace ash {
 
-PickerSearchDebouncer::PickerSearchDebouncer(base::TimeDelta delay)
+QuickInsertSearchDebouncer::QuickInsertSearchDebouncer(base::TimeDelta delay)
     : delay_(std::move(delay)) {}
 
-void PickerSearchDebouncer::RequestSearch(base::OnceClosure search) {
+void QuickInsertSearchDebouncer::RequestSearch(base::OnceClosure search) {
   timer_.Start(FROM_HERE, delay_, std::move(search));
 }
 
-bool PickerSearchDebouncer::IsSearchPending() {
+bool QuickInsertSearchDebouncer::IsSearchPending() {
   return timer_.IsRunning();
 }
 

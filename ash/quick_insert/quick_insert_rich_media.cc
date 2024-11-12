@@ -15,26 +15,28 @@
 
 namespace ash {
 
-PickerTextMedia::PickerTextMedia(std::u16string text) : text(std::move(text)) {}
+QuickInsertTextMedia::QuickInsertTextMedia(std::u16string text)
+    : text(std::move(text)) {}
 
-PickerTextMedia::PickerTextMedia(std::string_view text)
-    : PickerTextMedia(base::UTF8ToUTF16(text)) {}
+QuickInsertTextMedia::QuickInsertTextMedia(std::string_view text)
+    : QuickInsertTextMedia(base::UTF8ToUTF16(text)) {}
 
-PickerImageMedia::PickerImageMedia(base::span<const uint8_t> png)
+QuickInsertImageMedia::QuickInsertImageMedia(base::span<const uint8_t> png)
     : url(GURL(
           base::StrCat({"data:image/png;base64,", base::Base64Encode(png)}))) {}
 
-PickerImageMedia::PickerImageMedia(GURL url,
-                                   std::optional<gfx::Size> dimensions,
-                                   std::u16string content_description)
+QuickInsertImageMedia::QuickInsertImageMedia(
+    GURL url,
+    std::optional<gfx::Size> dimensions,
+    std::u16string content_description)
     : url(std::move(url)),
       dimensions(dimensions),
       content_description(std::move(content_description)) {}
 
-PickerLinkMedia::PickerLinkMedia(GURL url, std::string title)
+QuickInsertLinkMedia::QuickInsertLinkMedia(GURL url, std::string title)
     : url(std::move(url)), title(std::move(title)) {}
 
-PickerLocalFileMedia::PickerLocalFileMedia(base::FilePath path)
+QuickInsertLocalFileMedia::QuickInsertLocalFileMedia(base::FilePath path)
     : path(std::move(path)) {}
 
 }  // namespace ash

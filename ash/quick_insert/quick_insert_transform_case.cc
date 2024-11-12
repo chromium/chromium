@@ -16,15 +16,15 @@ namespace ash {
 // TODO: b/333490858 - These functions should take in a locale as a parameter
 // instead of using the default locale.
 
-std::u16string PickerTransformToLowerCase(std::u16string_view text) {
+std::u16string QuickInsertTransformToLowerCase(std::u16string_view text) {
   return base::i18n::ToLower(text);
 }
 
-std::u16string PickerTransformToUpperCase(std::u16string_view text) {
+std::u16string QuickInsertTransformToUpperCase(std::u16string_view text) {
   return base::i18n::ToUpper(text);
 }
 
-std::u16string PickerTransformToTitleCase(std::u16string_view text) {
+std::u16string QuickInsertTransformToTitleCase(std::u16string_view text) {
   icu::UnicodeString unicode_text(text.data(), text.length());
   return base::i18n::UnicodeStringToString16(
       unicode_text.toTitle(/*titleIter=*/nullptr));

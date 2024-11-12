@@ -20,7 +20,7 @@ namespace ash {
 namespace {
 
 using ::testing::ElementsAre;
-using HistoryItem = PickerEmojiHistoryModel::EmojiHistoryItem;
+using HistoryItem = QuickInsertEmojiHistoryModel::EmojiHistoryItem;
 
 base::Time TimeFromMicroSeconds(int64_t microseconds) {
   return base::Time::FromDeltaSinceWindowsEpoch(
@@ -47,7 +47,7 @@ TEST_F(QuickInsertEmojiHistoryModelTest, ReturnsRecentEmojisFromPrefs) {
           .Append(base::Value::Dict().Set("text", "abc").Set("timestamp", "10"))
           .Append(
               base::Value::Dict().Set("text", "xyz").Set("timestamp", "5")));
-  PickerEmojiHistoryModel model(pref_service());
+  QuickInsertEmojiHistoryModel model(pref_service());
 
   EXPECT_THAT(
       model.GetRecentEmojis(ui::EmojiPickerCategory::kEmojis),
@@ -68,7 +68,7 @@ TEST_F(QuickInsertEmojiHistoryModelTest, AddsNewRecentEmoji) {
           .Append(
               base::Value::Dict().Set("text", "xyz").Set("timestamp", "5")));
   base::SimpleTestClock clock;
-  PickerEmojiHistoryModel model(pref_service(), &clock);
+  QuickInsertEmojiHistoryModel model(pref_service(), &clock);
   clock.SetNow(TimeFromMicroSeconds(20));
 
   model.UpdateRecentEmoji(ui::EmojiPickerCategory::kEmojis, "def");
@@ -95,7 +95,7 @@ TEST_F(QuickInsertEmojiHistoryModelTest, AddsExistingRecentEmoji) {
           .Append(
               base::Value::Dict().Set("text", "xyz").Set("timestamp", "5")));
   base::SimpleTestClock clock;
-  PickerEmojiHistoryModel model(pref_service(), &clock);
+  QuickInsertEmojiHistoryModel model(pref_service(), &clock);
   clock.SetNow(TimeFromMicroSeconds(20));
 
   model.UpdateRecentEmoji(ui::EmojiPickerCategory::kEmojis, "xyz");
@@ -112,7 +112,7 @@ TEST_F(QuickInsertEmojiHistoryModelTest, AddsExistingRecentEmoji) {
 
 TEST_F(QuickInsertEmojiHistoryModelTest, AddsRecentEmojiEmptyHistory) {
   base::SimpleTestClock clock;
-  PickerEmojiHistoryModel model(pref_service(), &clock);
+  QuickInsertEmojiHistoryModel model(pref_service(), &clock);
   clock.SetNow(TimeFromMicroSeconds(5));
 
   model.UpdateRecentEmoji(ui::EmojiPickerCategory::kEmojis, "abc");

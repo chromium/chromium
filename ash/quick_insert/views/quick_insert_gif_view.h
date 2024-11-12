@@ -23,8 +23,8 @@ namespace image_util {
 struct AnimationFrame;
 }  // namespace image_util
 
-class ASH_EXPORT PickerGifView : public views::ImageView {
-  METADATA_HEADER(PickerGifView, views::ImageView)
+class ASH_EXPORT QuickInsertGifView : public views::ImageView {
+  METADATA_HEADER(QuickInsertGifView, views::ImageView)
 
  public:
   using FramesFetchedCallback =
@@ -36,12 +36,12 @@ class ASH_EXPORT PickerGifView : public views::ImageView {
   using PreviewImageFetcher =
       base::OnceCallback<void(PreviewImageFetchedCallback)>;
 
-  PickerGifView(FramesFetcher frames_fetcher,
-                PreviewImageFetcher preview_image_fetcher,
-                const gfx::Size& original_dimensions);
-  PickerGifView(const PickerGifView&) = delete;
-  PickerGifView& operator=(const PickerGifView&) = delete;
-  ~PickerGifView() override;
+  QuickInsertGifView(FramesFetcher frames_fetcher,
+                     PreviewImageFetcher preview_image_fetcher,
+                     const gfx::Size& original_dimensions);
+  QuickInsertGifView(const QuickInsertGifView&) = delete;
+  QuickInsertGifView& operator=(const QuickInsertGifView&) = delete;
+  ~QuickInsertGifView() override;
 
   // views::ImageViewBase:
   gfx::Size CalculatePreferredSize(
@@ -71,14 +71,14 @@ class ASH_EXPORT PickerGifView : public views::ImageView {
 
   std::optional<base::TimeTicks> fetch_frames_start_time_;
 
-  base::WeakPtrFactory<PickerGifView> weak_factory_{this};
+  base::WeakPtrFactory<QuickInsertGifView> weak_factory_{this};
 };
 
-BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerGifView, views::ImageView)
+BEGIN_VIEW_BUILDER(ASH_EXPORT, QuickInsertGifView, views::ImageView)
 END_VIEW_BUILDER
 
 }  // namespace ash
 
-DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::PickerGifView)
+DEFINE_VIEW_BUILDER(ASH_EXPORT, ash::QuickInsertGifView)
 
 #endif  // ASH_QUICK_INSERT_VIEWS_QUICK_INSERT_GIF_VIEW_H_

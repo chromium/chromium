@@ -29,15 +29,15 @@ class URLResult;
 }  // namespace history
 
 // A class to suggest links based on recent browsing history.
-class PickerLinkSuggester {
+class QuickInsertLinkSuggester {
  public:
   using SuggestedLinksCallback =
       base::RepeatingCallback<void(std::vector<ash::QuickInsertSearchResult>)>;
 
-  explicit PickerLinkSuggester(Profile* profile);
-  ~PickerLinkSuggester();
-  PickerLinkSuggester(const PickerLinkSuggester&) = delete;
-  PickerLinkSuggester& operator=(const PickerLinkSuggester&) = delete;
+  explicit QuickInsertLinkSuggester(Profile* profile);
+  ~QuickInsertLinkSuggester();
+  QuickInsertLinkSuggester(const QuickInsertLinkSuggester&) = delete;
+  QuickInsertLinkSuggester& operator=(const QuickInsertLinkSuggester&) = delete;
 
   void GetSuggestedLinks(size_t max_links, SuggestedLinksCallback callback);
 
@@ -59,7 +59,7 @@ class PickerLinkSuggester {
   std::vector<base::CancelableTaskTracker> favicon_query_trackers_;
   std::vector<ash::QuickInsertSearchResult> suggested_links_;
 
-  base::WeakPtrFactory<PickerLinkSuggester> weak_factory_{this};
+  base::WeakPtrFactory<QuickInsertLinkSuggester> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_QUICK_INSERT_QUICK_INSERT_LINK_SUGGESTER_H_

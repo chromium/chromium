@@ -13,29 +13,31 @@ class GURL;
 
 namespace ash {
 
-class PickerAssetFetcherImplDelegate;
+class QuickInsertAssetFetcherImplDelegate;
 
-// Implementation of PickerAssetFetcher using a delegate.
-class ASH_EXPORT PickerAssetFetcherImpl : public PickerAssetFetcher {
+// Implementation of QuickInsertAssetFetcher using a delegate.
+class ASH_EXPORT QuickInsertAssetFetcherImpl : public QuickInsertAssetFetcher {
  public:
   // `delegate` must remain valid while this class is alive.
-  explicit PickerAssetFetcherImpl(PickerAssetFetcherImplDelegate* delegate);
-  PickerAssetFetcherImpl(const PickerAssetFetcherImpl&) = delete;
-  PickerAssetFetcherImpl& operator=(const PickerAssetFetcherImpl&) = delete;
-  ~PickerAssetFetcherImpl() override;
+  explicit QuickInsertAssetFetcherImpl(
+      QuickInsertAssetFetcherImplDelegate* delegate);
+  QuickInsertAssetFetcherImpl(const QuickInsertAssetFetcherImpl&) = delete;
+  QuickInsertAssetFetcherImpl& operator=(const QuickInsertAssetFetcherImpl&) =
+      delete;
+  ~QuickInsertAssetFetcherImpl() override;
 
-  // PickerAssetFetcher:
+  // QuickInsertAssetFetcher:
   void FetchGifFromUrl(const GURL& url,
-                       PickerGifFetchedCallback callback) override;
+                       QuickInsertGifFetchedCallback callback) override;
   void FetchGifPreviewImageFromUrl(
       const GURL& url,
-      PickerImageFetchedCallback callback) override;
+      QuickInsertImageFetchedCallback callback) override;
   void FetchFileThumbnail(const base::FilePath& path,
                           const gfx::Size& size,
                           FetchFileThumbnailCallback callback) override;
 
  private:
-  raw_ptr<PickerAssetFetcherImplDelegate> delegate_;
+  raw_ptr<QuickInsertAssetFetcherImplDelegate> delegate_;
 };
 
 }  // namespace ash

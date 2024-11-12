@@ -20,7 +20,7 @@ inline constexpr ui::ColorId kQuickInsertContainerBackgroundColor =
 inline constexpr auto kQuickInsertContainerShadowType =
     SystemShadow::Type::kElevation12;
 
-enum class PickerLayoutType {
+enum class QuickInsertLayoutType {
   kMainResultsBelowSearchField,
   kMainResultsAboveSearchField,
 };

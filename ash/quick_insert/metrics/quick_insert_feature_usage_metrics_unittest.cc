@@ -27,26 +27,26 @@ class QuickInsertFeatureUsageMetricsTest : public testing::Test {
 };
 
 TEST_F(QuickInsertFeatureUsageMetricsTest, IsAlwaysEligible) {
-  PickerFeatureUsageMetrics metrics;
+  QuickInsertFeatureUsageMetrics metrics;
 
   EXPECT_TRUE(metrics.IsEnabled());
 }
 
 TEST_F(QuickInsertFeatureUsageMetricsTest, IsAlwaysAccessible) {
-  PickerFeatureUsageMetrics metrics;
+  QuickInsertFeatureUsageMetrics metrics;
 
   EXPECT_THAT(metrics.IsAccessible(), Optional(true));
 }
 
 TEST_F(QuickInsertFeatureUsageMetricsTest, IsAlwaysEnabled) {
-  PickerFeatureUsageMetrics metrics;
+  QuickInsertFeatureUsageMetrics metrics;
 
   EXPECT_EQ(metrics.IsEnabled(), true);
 }
 
 TEST_F(QuickInsertFeatureUsageMetricsTest, RecordsUsageEvent) {
   base::HistogramTester histogram_tester;
-  PickerFeatureUsageMetrics metrics;
+  QuickInsertFeatureUsageMetrics metrics;
 
   metrics.StartUsage();
 
@@ -64,7 +64,7 @@ TEST_F(QuickInsertFeatureUsageMetricsTest, RecordsUsageEvent) {
 
 TEST_F(QuickInsertFeatureUsageMetricsTest, RecordsUsageTime) {
   base::HistogramTester histogram_tester;
-  PickerFeatureUsageMetrics metrics;
+  QuickInsertFeatureUsageMetrics metrics;
 
   metrics.StartUsage();
   task_environment().FastForwardBy(base::Seconds(1));

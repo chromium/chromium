@@ -28,24 +28,25 @@ constexpr base::TimeDelta kShowBubbleDelay = base::Milliseconds(600);
 
 }  // namespace
 
-PickerPreviewBubbleController::PickerPreviewBubbleController() = default;
+QuickInsertPreviewBubbleController::QuickInsertPreviewBubbleController() =
+    default;
 
-PickerPreviewBubbleController::~PickerPreviewBubbleController() {
+QuickInsertPreviewBubbleController::~QuickInsertPreviewBubbleController() {
   CloseBubble();
 }
 
-void PickerPreviewBubbleController::ShowBubbleAfterDelay(
+void QuickInsertPreviewBubbleController::ShowBubbleAfterDelay(
     HoldingSpaceImage* async_preview_image,
     const base::FilePath& path,
     views::View* anchor_view) {
   CreateBubbleWidget(async_preview_image, anchor_view);
   show_bubble_timer_.Start(
       FROM_HERE, kShowBubbleDelay,
-      base::BindOnce(&PickerPreviewBubbleController::ShowBubble,
+      base::BindOnce(&QuickInsertPreviewBubbleController::ShowBubble,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PickerPreviewBubbleController::CloseBubble() {
+void QuickInsertPreviewBubbleController::CloseBubble() {
   if (bubble_view_ == nullptr) {
     return;
   }
@@ -56,19 +57,19 @@ void PickerPreviewBubbleController::CloseBubble() {
   }
 }
 
-bool PickerPreviewBubbleController::IsBubbleVisible() const {
+bool QuickInsertPreviewBubbleController::IsBubbleVisible() const {
   return bubble_view_ != nullptr;
 }
 
-void PickerPreviewBubbleController::AddObserver(Observer* observer) {
+void QuickInsertPreviewBubbleController::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void PickerPreviewBubbleController::RemoveObserver(Observer* observer) {
+void QuickInsertPreviewBubbleController::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void PickerPreviewBubbleController::SetBubbleMainText(
+void QuickInsertPreviewBubbleController::SetBubbleMainText(
     const std::u16string& text) {
   if (bubble_view_ == nullptr) {
     return;
@@ -81,34 +82,35 @@ void PickerPreviewBubbleController::SetBubbleMainText(
   }
 }
 
-void PickerPreviewBubbleController::OnWidgetDestroying(views::Widget* widget) {
+void QuickInsertPreviewBubbleController::OnWidgetDestroying(
+    views::Widget* widget) {
   widget_observation_.Reset();
   bubble_view_ = nullptr;
 
   async_preview_image_ = nullptr;
 }
 
-void PickerPreviewBubbleController::ShowBubbleImmediatelyForTesting(
+void QuickInsertPreviewBubbleController::ShowBubbleImmediatelyForTesting(
     HoldingSpaceImage* async_preview_image,
     views::View* anchor_view) {
   CreateBubbleWidget(async_preview_image, anchor_view);
   bubble_view_->GetWidget()->Show();
 }
 
-PickerPreviewBubbleView*
-PickerPreviewBubbleController::bubble_view_for_testing() const {
+QuickInsertPreviewBubbleView*
+QuickInsertPreviewBubbleController::bubble_view_for_testing() const {
   return bubble_view_;
 }
 
-void PickerPreviewBubbleController::UpdateBubbleImage() {
+void QuickInsertPreviewBubbleController::UpdateBubbleImage() {
   if (bubble_view_ != nullptr) {
     bubble_view_->SetPreviewImage(
         ui::ImageModel::FromImageSkia(async_preview_image_->GetImageSkia(
-            PickerPreviewBubbleView::kPreviewImageSize)));
+            QuickInsertPreviewBubbleView::kPreviewImageSize)));
   }
 }
 
-void PickerPreviewBubbleController::CreateBubbleWidget(
+void QuickInsertPreviewBubbleController::CreateBubbleWidget(
     HoldingSpaceImage* async_preview_image,
     views::View* anchor_view) {
   if (bubble_view_ != nullptr) {
@@ -116,21 +118,22 @@ void PickerPreviewBubbleController::CreateBubbleWidget(
   }
 
   CHECK(anchor_view);
-  bubble_view_ = new PickerPreviewBubbleView(anchor_view);
+  bubble_view_ = new QuickInsertPreviewBubbleView(anchor_view);
   async_preview_image_ = async_preview_image;
   bubble_view_->SetPreviewImage(
       ui::ImageModel::FromImageSkia(async_preview_image_->GetImageSkia()));
   // base::Unretained is safe here since `image_subscription_` is a member.
   // During destruction, `image_subscription_` will be destroyed before the
   // other members, so the callback is guaranteed to be safe.
-  image_subscription_ = async_preview_image_->AddImageSkiaChangedCallback(
-      base::BindRepeating(&PickerPreviewBubbleController::UpdateBubbleImage,
-                          base::Unretained(this)));
+  image_subscription_ =
+      async_preview_image_->AddImageSkiaChangedCallback(base::BindRepeating(
+          &QuickInsertPreviewBubbleController::UpdateBubbleImage,
+          base::Unretained(this)));
 
   widget_observation_.Observe(bubble_view_->GetWidget());
 }
 
-void PickerPreviewBubbleController::ShowBubble() {
+void QuickInsertPreviewBubbleController::ShowBubble() {
   if (bubble_view_ == nullptr) {
     return;
   }

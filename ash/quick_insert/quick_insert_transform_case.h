@@ -12,11 +12,14 @@
 
 namespace ash {
 
-ASH_EXPORT std::u16string PickerTransformToLowerCase(std::u16string_view str);
+ASH_EXPORT std::u16string QuickInsertTransformToLowerCase(
+    std::u16string_view str);
 
-ASH_EXPORT std::u16string PickerTransformToUpperCase(std::u16string_view str);
+ASH_EXPORT std::u16string QuickInsertTransformToUpperCase(
+    std::u16string_view str);
 
-ASH_EXPORT std::u16string PickerTransformToTitleCase(std::u16string_view str);
+ASH_EXPORT std::u16string QuickInsertTransformToTitleCase(
+    std::u16string_view str);
 
 }  // namespace ash
 

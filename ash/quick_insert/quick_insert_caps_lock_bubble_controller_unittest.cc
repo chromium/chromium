@@ -27,7 +27,7 @@ class QuickInsertCapsLockBubbleControllerTest : public AshTestBase {
 TEST_F(QuickInsertCapsLockBubbleControllerTest,
        ToggleCapsLockWhenNotFocusedDoesNotShowBubble) {
   input_method::FakeImeKeyboard ime_keyboard;
-  PickerCapsLockBubbleController controller(&ime_keyboard);
+  QuickInsertCapsLockBubbleController controller(&ime_keyboard);
 
   ime_keyboard.SetCapsLockEnabled(true);
 
@@ -37,7 +37,7 @@ TEST_F(QuickInsertCapsLockBubbleControllerTest,
 TEST_F(QuickInsertCapsLockBubbleControllerTest,
        ToggleCapsLockInTextFieldShowsBubbleForAShortTime) {
   input_method::FakeImeKeyboard ime_keyboard;
-  PickerCapsLockBubbleController controller(&ime_keyboard);
+  QuickInsertCapsLockBubbleController controller(&ime_keyboard);
   ui::FakeTextInputClient input_field(
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod(),
       {.type = ui::TEXT_INPUT_TYPE_TEXT});
@@ -53,7 +53,7 @@ TEST_F(QuickInsertCapsLockBubbleControllerTest,
 TEST_F(QuickInsertCapsLockBubbleControllerTest,
        ToggleCapsLockTwiceQuicklyInTextFieldExtendsBubbleShowTime) {
   input_method::FakeImeKeyboard ime_keyboard;
-  PickerCapsLockBubbleController controller(&ime_keyboard);
+  QuickInsertCapsLockBubbleController controller(&ime_keyboard);
   ui::FakeTextInputClient input_field(
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod(),
       {.type = ui::TEXT_INPUT_TYPE_TEXT});
@@ -72,7 +72,7 @@ TEST_F(QuickInsertCapsLockBubbleControllerTest,
 
 TEST_F(QuickInsertCapsLockBubbleControllerTest, InputEventClosesBubble) {
   input_method::FakeImeKeyboard ime_keyboard;
-  PickerCapsLockBubbleController controller(&ime_keyboard);
+  QuickInsertCapsLockBubbleController controller(&ime_keyboard);
   ui::FakeTextInputClient input_field(
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod(),
       {.type = ui::TEXT_INPUT_TYPE_TEXT});
@@ -92,7 +92,7 @@ TEST_F(QuickInsertCapsLockBubbleControllerTest, InputEventClosesBubble) {
 TEST_F(QuickInsertCapsLockBubbleControllerTest,
        InputEventDoesNotCloseBubbleIfTooEarly) {
   input_method::FakeImeKeyboard ime_keyboard;
-  PickerCapsLockBubbleController controller(&ime_keyboard);
+  QuickInsertCapsLockBubbleController controller(&ime_keyboard);
   ui::FakeTextInputClient input_field(
       Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod(),
       {.type = ui::TEXT_INPUT_TYPE_TEXT});

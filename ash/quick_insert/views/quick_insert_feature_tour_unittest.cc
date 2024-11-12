@@ -34,10 +34,10 @@ class QuickInsertFeatureTourTest : public AshTestBase {
 };
 
 TEST_F(QuickInsertFeatureTourTest, ShowShowsDialogForFirstTime) {
-  PickerFeatureTour feature_tour;
+  QuickInsertFeatureTour feature_tour;
 
   EXPECT_TRUE(feature_tour.MaybeShowForFirstUse(
-      pref_service(), PickerFeatureTour::EditorStatus::kEligible,
+      pref_service(), QuickInsertFeatureTour::EditorStatus::kEligible,
       base::DoNothing(), base::DoNothing()));
   views::Widget* widget = feature_tour.widget_for_testing();
   EXPECT_NE(widget, nullptr);
@@ -46,10 +46,10 @@ TEST_F(QuickInsertFeatureTourTest, ShowShowsDialogForFirstTime) {
 
 TEST_F(QuickInsertFeatureTourTest,
        ClickingCompleteButtonClosesWidgetAndTriggersCallback) {
-  PickerFeatureTour feature_tour;
+  QuickInsertFeatureTour feature_tour;
   base::test::TestFuture<void> completed_future;
   feature_tour.MaybeShowForFirstUse(
-      pref_service(), PickerFeatureTour::EditorStatus::kEligible,
+      pref_service(), QuickInsertFeatureTour::EditorStatus::kEligible,
       base::DoNothing(), completed_future.GetRepeatingCallback());
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
 
@@ -64,10 +64,10 @@ TEST_F(QuickInsertFeatureTourTest,
 
 TEST_F(QuickInsertFeatureTourTest,
        ClickingLearnMoreButtonClosesWidgetAndTriggersCallback) {
-  PickerFeatureTour feature_tour;
+  QuickInsertFeatureTour feature_tour;
   base::test::TestFuture<void> learn_more_future;
   feature_tour.MaybeShowForFirstUse(
-      pref_service(), PickerFeatureTour::EditorStatus::kEligible,
+      pref_service(), QuickInsertFeatureTour::EditorStatus::kEligible,
       learn_more_future.GetRepeatingCallback(), base::DoNothing());
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
 
@@ -82,10 +82,10 @@ TEST_F(QuickInsertFeatureTourTest,
 
 TEST_F(QuickInsertFeatureTourTest,
        PressingEnterClosesWidgetAndTriggersCallback) {
-  PickerFeatureTour feature_tour;
+  QuickInsertFeatureTour feature_tour;
   base::test::TestFuture<void> completed_future;
   feature_tour.MaybeShowForFirstUse(
-      pref_service(), PickerFeatureTour::EditorStatus::kEligible,
+      pref_service(), QuickInsertFeatureTour::EditorStatus::kEligible,
       base::DoNothing(), completed_future.GetRepeatingCallback());
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
 
@@ -97,14 +97,14 @@ TEST_F(QuickInsertFeatureTourTest,
 }
 
 TEST_F(QuickInsertFeatureTourTest, ShouldNotShowDialogSecondTime) {
-  PickerFeatureTour feature_tour;
-  feature_tour.MaybeShowForFirstUse(pref_service(),
-                                    PickerFeatureTour::EditorStatus::kEligible,
-                                    base::DoNothing(), base::DoNothing());
+  QuickInsertFeatureTour feature_tour;
+  feature_tour.MaybeShowForFirstUse(
+      pref_service(), QuickInsertFeatureTour::EditorStatus::kEligible,
+      base::DoNothing(), base::DoNothing());
   feature_tour.widget_for_testing()->CloseNow();
 
   EXPECT_FALSE(feature_tour.MaybeShowForFirstUse(
-      pref_service(), PickerFeatureTour::EditorStatus::kEligible,
+      pref_service(), QuickInsertFeatureTour::EditorStatus::kEligible,
       base::DoNothing(), base::DoNothing()));
   EXPECT_EQ(feature_tour.widget_for_testing(), nullptr);
 }

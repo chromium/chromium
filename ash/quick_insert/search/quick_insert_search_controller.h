@@ -29,12 +29,13 @@ namespace ash {
 
 class QuickInsertClient;
 
-class ASH_EXPORT PickerSearchController {
+class ASH_EXPORT QuickInsertSearchController {
  public:
-  explicit PickerSearchController(base::TimeDelta burn_in_period);
-  PickerSearchController(const PickerSearchController&) = delete;
-  PickerSearchController& operator=(const PickerSearchController&) = delete;
-  ~PickerSearchController();
+  explicit QuickInsertSearchController(base::TimeDelta burn_in_period);
+  QuickInsertSearchController(const QuickInsertSearchController&) = delete;
+  QuickInsertSearchController& operator=(const QuickInsertSearchController&) =
+      delete;
+  ~QuickInsertSearchController();
 
   // Adds emoji keywords for enabled languages in `prefs` and whenever the
   // enabled languages change. This does not unload any keywords loaded
@@ -61,8 +62,8 @@ class ASH_EXPORT PickerSearchController {
 
   // Gets the emoji name for the given emoji / emoticon / symbol.
   // Used for getting emoji tooltips for zero state emoji.
-  // TODO: b/358492493 - Refactor this out of `PickerSearchController`, as this
-  // is unrelated to search.
+  // TODO: b/358492493 - Refactor this out of `QuickInsertSearchController`, as
+  // this is unrelated to search.
   std::string GetEmojiName(std::string_view emoji);
 
  private:
@@ -78,7 +79,7 @@ class ASH_EXPORT PickerSearchController {
   std::unique_ptr<QuickInsertSearchAggregator> aggregator_;
   std::unique_ptr<QuickInsertSearchRequest> search_request_;
 
-  base::WeakPtrFactory<PickerSearchController> weak_ptr_factory_{this};
+  base::WeakPtrFactory<QuickInsertSearchController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

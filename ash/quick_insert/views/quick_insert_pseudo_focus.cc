@@ -36,8 +36,9 @@ void ApplyPickerPseudoFocusToView(views::View* view) {
     return;
   }
 
-  // PickerSearchBarTextfield has special pseudo focus appearance.
-  if (auto* textfield = views::AsViewClass<PickerSearchBarTextfield>(view)) {
+  // QuickInsertSearchBarTextfield has special pseudo focus appearance.
+  if (auto* textfield =
+          views::AsViewClass<QuickInsertSearchBarTextfield>(view)) {
     textfield->SetShouldShowFocusIndicator(true);
     return;
   }
@@ -68,8 +69,9 @@ void RemovePickerPseudoFocusFromView(views::View* view) {
     return;
   }
 
-  // PickerSearchBarTextfield has special pseudo focus appearance.
-  if (auto* textfield = views::AsViewClass<PickerSearchBarTextfield>(view)) {
+  // QuickInsertSearchBarTextfield has special pseudo focus appearance.
+  if (auto* textfield =
+          views::AsViewClass<QuickInsertSearchBarTextfield>(view)) {
     textfield->SetShouldShowFocusIndicator(false);
     return;
   }
@@ -89,8 +91,8 @@ bool DoPickerPseudoFocusedActionOnView(views::View* view) {
     return false;
   }
 
-  // PickerSearchBarTextfield has no pseudo focus action.
-  if (views::IsViewClass<PickerSearchBarTextfield>(view)) {
+  // QuickInsertSearchBarTextfield has no pseudo focus action.
+  if (views::IsViewClass<QuickInsertSearchBarTextfield>(view)) {
     return true;
   }
 
@@ -115,13 +117,13 @@ bool DoPickerPseudoFocusedActionOnView(views::View* view) {
 
 views::View* GetNextPickerPseudoFocusableView(
     views::View* view,
-    PickerPseudoFocusDirection direction,
+    QuickInsertPseudoFocusDirection direction,
     bool should_loop) {
   return view == nullptr || view->GetFocusManager() == nullptr
              ? nullptr
              : view->GetFocusManager()->GetNextFocusableView(
                    view, view->GetWidget(),
-                   direction == PickerPseudoFocusDirection::kBackward,
+                   direction == QuickInsertPseudoFocusDirection::kBackward,
                    !should_loop);
 }
 

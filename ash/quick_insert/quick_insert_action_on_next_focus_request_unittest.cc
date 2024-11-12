@@ -32,7 +32,7 @@ TEST_F(QuickInsertActionOnNextFocusRequestTest, PerformsActionOnNextFocus) {
   InputMethodAsh input_method(nullptr);
 
   base::test::TestFuture<void> action_future;
-  PickerActionOnNextFocusRequest request(
+  QuickInsertActionOnNextFocusRequest request(
       &input_method, /*action_timeout=*/base::Seconds(1),
       action_future.GetCallback(), base::DoNothing());
   input_method.SetFocusedTextInputClient(&client);
@@ -47,7 +47,7 @@ TEST_F(QuickInsertActionOnNextFocusRequestTest,
   InputMethodAsh input_method(nullptr);
 
   base::test::TestFuture<void> action_future;
-  PickerActionOnNextFocusRequest request(
+  QuickInsertActionOnNextFocusRequest request(
       &input_method, /*action_timeout=*/base::Seconds(1),
       action_future.GetCallback(), base::DoNothing());
   input_method.SetFocusedTextInputClient(&client1);
@@ -62,7 +62,7 @@ TEST_F(QuickInsertActionOnNextFocusRequestTest,
   InputMethodAsh input_method(nullptr);
   base::test::TestFuture<void> action_future;
   base::test::TestFuture<void> timeout_future;
-  PickerActionOnNextFocusRequest request(
+  QuickInsertActionOnNextFocusRequest request(
       &input_method, /*action_timeout=*/base::Seconds(1),
       action_future.GetCallback(), timeout_future.GetCallback());
 
@@ -77,7 +77,7 @@ TEST_F(QuickInsertActionOnNextFocusRequestTest, CallsTimeoutCallbackOnTimeout) {
   InputMethodAsh input_method(nullptr);
 
   base::test::TestFuture<void> timeout_future;
-  PickerActionOnNextFocusRequest request(
+  QuickInsertActionOnNextFocusRequest request(
       &input_method, /*action_timeout=*/base::Seconds(1), base::DoNothing(),
       timeout_future.GetCallback());
   task_environment().FastForwardBy(base::Seconds(2));
@@ -91,7 +91,7 @@ TEST_F(QuickInsertActionOnNextFocusRequestTest,
   InputMethodAsh input_method(nullptr);
   base::test::TestFuture<void> action_future;
   base::test::TestFuture<void> timeout_future;
-  PickerActionOnNextFocusRequest request(
+  QuickInsertActionOnNextFocusRequest request(
       &input_method, /*action_timeout=*/base::Seconds(1),
       action_future.GetCallback(), timeout_future.GetCallback());
 

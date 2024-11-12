@@ -9,18 +9,18 @@
 
 namespace ash {
 
-PickerSearchBarTextfield::PickerSearchBarTextfield(
+QuickInsertSearchBarTextfield::QuickInsertSearchBarTextfield(
     QuickInsertSearchFieldView* search_field_view)
     : search_field_view_(search_field_view) {}
 
-PickerSearchBarTextfield::~PickerSearchBarTextfield() = default;
+QuickInsertSearchBarTextfield::~QuickInsertSearchBarTextfield() = default;
 
-void PickerSearchBarTextfield::SetShouldShowFocusIndicator(
+void QuickInsertSearchBarTextfield::SetShouldShowFocusIndicator(
     bool should_show_focus_indicator) {
   search_field_view_->SetShouldShowFocusIndicator(should_show_focus_indicator);
 }
 
-BEGIN_METADATA(PickerSearchBarTextfield)
+BEGIN_METADATA(QuickInsertSearchBarTextfield)
 END_METADATA
 
 }  // namespace ash

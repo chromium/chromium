@@ -23,7 +23,7 @@
 namespace ash {
 namespace {
 
-using HistoryItem = PickerEmojiHistoryModel::EmojiHistoryItem;
+using HistoryItem = QuickInsertEmojiHistoryModel::EmojiHistoryItem;
 
 constexpr std::string_view kDefaultSuggestedEmojis[] = {"🙂", "😂", "🤔",
                                                         "😢", "👏", "👍"};
@@ -39,18 +39,18 @@ bool ContainsEmoji(const std::vector<HistoryItem>& vec,
 
 }  // namespace
 
-PickerEmojiSuggester::PickerEmojiSuggester(
-    PickerEmojiHistoryModel* history_model,
+QuickInsertEmojiSuggester::QuickInsertEmojiSuggester(
+    QuickInsertEmojiHistoryModel* history_model,
     GetNameCallback get_name)
     : get_name_(std::move(get_name)),
       history_model_(CHECK_DEREF(history_model)) {
   CHECK(!get_name_.is_null());
 }
 
-PickerEmojiSuggester::~PickerEmojiSuggester() = default;
+QuickInsertEmojiSuggester::~QuickInsertEmojiSuggester() = default;
 
-std::vector<QuickInsertEmojiResult> PickerEmojiSuggester::GetSuggestedEmoji()
-    const {
+std::vector<QuickInsertEmojiResult>
+QuickInsertEmojiSuggester::GetSuggestedEmoji() const {
   std::vector<HistoryItem> recent_emojis =
       history_model_->GetRecentEmojis(ui::EmojiPickerCategory::kEmojis);
   std::vector<HistoryItem> recent_emoticons =

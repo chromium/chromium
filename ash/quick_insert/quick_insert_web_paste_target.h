@@ -14,13 +14,14 @@ namespace ash {
 // Wrapper around a `content::WebContents` for pasting directly, as well as
 // containing information about the `content::WebContents` used for determining
 // what contents to paste.
-struct ASH_EXPORT PickerWebPasteTarget {
-  explicit PickerWebPasteTarget(GURL url, base::OnceClosure do_paste);
-  PickerWebPasteTarget(const PickerWebPasteTarget&) = delete;
-  PickerWebPasteTarget& operator=(const PickerWebPasteTarget&) = delete;
-  PickerWebPasteTarget(PickerWebPasteTarget&&);
-  PickerWebPasteTarget& operator=(PickerWebPasteTarget&&);
-  ~PickerWebPasteTarget();
+struct ASH_EXPORT QuickInsertWebPasteTarget {
+  explicit QuickInsertWebPasteTarget(GURL url, base::OnceClosure do_paste);
+  QuickInsertWebPasteTarget(const QuickInsertWebPasteTarget&) = delete;
+  QuickInsertWebPasteTarget& operator=(const QuickInsertWebPasteTarget&) =
+      delete;
+  QuickInsertWebPasteTarget(QuickInsertWebPasteTarget&&);
+  QuickInsertWebPasteTarget& operator=(QuickInsertWebPasteTarget&&);
+  ~QuickInsertWebPasteTarget();
 
   // The last committed URL of the `content::WebContents`.
   GURL url;

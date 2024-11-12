@@ -21,12 +21,12 @@ class SharedURLLoaderFactory;
 
 namespace ash {
 
-class ASH_EXPORT PickerAssetFetcherImplDelegate {
+class ASH_EXPORT QuickInsertAssetFetcherImplDelegate {
  public:
   using FetchFileThumbnailCallback =
       base::OnceCallback<void(const SkBitmap* bitmap, base::File::Error error)>;
 
-  virtual ~PickerAssetFetcherImplDelegate() = default;
+  virtual ~QuickInsertAssetFetcherImplDelegate() = default;
 
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetSharedURLLoaderFactory() = 0;

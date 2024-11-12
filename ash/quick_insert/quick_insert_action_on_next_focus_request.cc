@@ -19,7 +19,7 @@
 
 namespace ash {
 
-PickerActionOnNextFocusRequest::PickerActionOnNextFocusRequest(
+QuickInsertActionOnNextFocusRequest::QuickInsertActionOnNextFocusRequest(
     ui::InputMethod* input_method,
     base::TimeDelta action_timeout,
     base::OnceClosure action_callback,
@@ -28,12 +28,13 @@ PickerActionOnNextFocusRequest::PickerActionOnNextFocusRequest(
       timeout_callback_(std::move(timeout_callback)) {
   observation_.Observe(input_method);
   action_timeout_timer_.Start(FROM_HERE, action_timeout, this,
-                              &PickerActionOnNextFocusRequest::OnTimeout);
+                              &QuickInsertActionOnNextFocusRequest::OnTimeout);
 }
 
-PickerActionOnNextFocusRequest::~PickerActionOnNextFocusRequest() = default;
+QuickInsertActionOnNextFocusRequest::~QuickInsertActionOnNextFocusRequest() =
+    default;
 
-void PickerActionOnNextFocusRequest::OnTextInputStateChanged(
+void QuickInsertActionOnNextFocusRequest::OnTextInputStateChanged(
     const ui::TextInputClient* client) {
   ui::TextInputClient* mutable_client =
       observation_.GetSource()->GetTextInputClient();
@@ -49,14 +50,14 @@ void PickerActionOnNextFocusRequest::OnTextInputStateChanged(
   std::move(action_callback_).Run();
 }
 
-void PickerActionOnNextFocusRequest::OnInputMethodDestroyed(
+void QuickInsertActionOnNextFocusRequest::OnInputMethodDestroyed(
     const ui::InputMethod* input_method) {
   if (observation_.GetSource() == input_method) {
     observation_.Reset();
   }
 }
 
-void PickerActionOnNextFocusRequest::OnTimeout() {
+void QuickInsertActionOnNextFocusRequest::OnTimeout() {
   observation_.Reset();
   std::move(timeout_callback_).Run();
 }

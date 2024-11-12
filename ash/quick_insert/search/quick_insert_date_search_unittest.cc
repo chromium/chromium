@@ -202,13 +202,14 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(QuickInsertDateSearchTest, ReturnsExpectedDates) {
   std::string_view time = std::get<0>(GetParam());
   const auto& [date, query, expected_results] = std::get<1>(GetParam());
-  EXPECT_THAT(PickerDateSearch(
+  EXPECT_THAT(QuickInsertDateSearch(
                   TimeFromDateString(base::StrCat({date, " ", time})), query),
               Pointwise(ResultMatchesDate(), expected_results));
 }
 
-TEST(PickerSuggestedDateResults, ReturnsSuggestedResults) {
-  std::vector<QuickInsertSearchResult> results = PickerSuggestedDateResults();
+TEST(QuickInsertSuggestedDateResults, ReturnsSuggestedResults) {
+  std::vector<QuickInsertSearchResult> results =
+      QuickInsertSuggestedDateResults();
   EXPECT_THAT(results, Not(IsEmpty()));
   EXPECT_THAT(
       results,

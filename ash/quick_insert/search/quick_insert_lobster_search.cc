@@ -13,7 +13,7 @@
 
 namespace ash {
 
-std::optional<QuickInsertSearchResult> PickerLobsterSearch(
+std::optional<QuickInsertSearchResult> QuickInsertLobsterSearch(
     QuickInsertLobsterResult::Mode mode,
     std::u16string_view query) {
   CHECK(!query.empty());

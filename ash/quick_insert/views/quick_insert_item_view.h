@@ -15,7 +15,7 @@
 namespace ash {
 
 enum class QuickInsertActionType;
-class PickerSubmenuController;
+class QuickInsertSubmenuController;
 
 // View for a Quick Insert item which can be selected.
 class ASH_EXPORT QuickInsertItemView : public views::Button {
@@ -66,8 +66,8 @@ class ASH_EXPORT QuickInsertItemView : public views::Button {
 
   void SetCornerRadius(int corner_radius);
 
-  PickerSubmenuController* GetSubmenuController();
-  void SetSubmenuController(PickerSubmenuController* submenu_controller);
+  QuickInsertSubmenuController* GetSubmenuController();
+  void SetSubmenuController(QuickInsertSubmenuController* submenu_controller);
 
   ItemState GetItemState() const;
   virtual void SetItemState(ItemState item_state);
@@ -87,11 +87,11 @@ class ASH_EXPORT QuickInsertItemView : public views::Button {
   // Corner radius of the item background and highlight.
   int corner_radius_ = 0;
 
-  raw_ptr<PickerSubmenuController> submenu_controller_ = nullptr;
+  raw_ptr<QuickInsertSubmenuController> submenu_controller_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, QuickInsertItemView, views::Button)
-VIEW_BUILDER_PROPERTY(PickerSubmenuController*, SubmenuController)
+VIEW_BUILDER_PROPERTY(QuickInsertSubmenuController*, SubmenuController)
 END_VIEW_BUILDER
 
 }  // namespace ash

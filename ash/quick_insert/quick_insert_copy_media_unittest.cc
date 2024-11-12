@@ -18,7 +18,7 @@ namespace {
 class QuickInsertCopyMediaTest : public AshTestBase {};
 
 TEST_F(QuickInsertCopyMediaTest, CopiesText) {
-  CopyMediaToClipboard(PickerTextMedia(u"hello"));
+  CopyMediaToClipboard(QuickInsertTextMedia(u"hello"));
 
   EXPECT_EQ(ReadTextFromClipboard(ui::Clipboard::GetForCurrentThread()),
             u"hello");
@@ -26,7 +26,7 @@ TEST_F(QuickInsertCopyMediaTest, CopiesText) {
 
 TEST_F(QuickInsertCopyMediaTest, CopiesImageWithKnownDimensionsAsHtml) {
   CopyMediaToClipboard(
-      PickerImageMedia(GURL("https://foo.com"), gfx::Size(30, 20)));
+      QuickInsertImageMedia(GURL("https://foo.com"), gfx::Size(30, 20)));
 
   EXPECT_EQ(
       ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
@@ -34,7 +34,7 @@ TEST_F(QuickInsertCopyMediaTest, CopiesImageWithKnownDimensionsAsHtml) {
 }
 
 TEST_F(QuickInsertCopyMediaTest, CopiesImageWithUnknownDimensionsAsHtml) {
-  CopyMediaToClipboard(PickerImageMedia(GURL("https://foo.com")));
+  CopyMediaToClipboard(QuickInsertImageMedia(GURL("https://foo.com")));
 
   EXPECT_EQ(
       ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
@@ -43,9 +43,9 @@ TEST_F(QuickInsertCopyMediaTest, CopiesImageWithUnknownDimensionsAsHtml) {
 
 TEST_F(QuickInsertCopyMediaTest,
        CopiesImagesWithBothAltTextAndDimensionsAsHtml) {
-  CopyMediaToClipboard(PickerImageMedia(GURL("https://foo.com"),
-                                        gfx::Size(30, 20),
-                                        /*content_description=*/u"img"));
+  CopyMediaToClipboard(QuickInsertImageMedia(GURL("https://foo.com"),
+                                             gfx::Size(30, 20),
+                                             /*content_description=*/u"img"));
 
   EXPECT_EQ(
       ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
@@ -53,9 +53,10 @@ TEST_F(QuickInsertCopyMediaTest,
 }
 
 TEST_F(QuickInsertCopyMediaTest, EscapesAltTextForImages) {
-  CopyMediaToClipboard(PickerImageMedia(GURL("https://foo.com"),
-                                        /*dimensions=*/std::nullopt,
-                                        /*content_description=*/u"\"img\""));
+  CopyMediaToClipboard(
+      QuickInsertImageMedia(GURL("https://foo.com"),
+                            /*dimensions=*/std::nullopt,
+                            /*content_description=*/u"\"img\""));
 
   EXPECT_EQ(
       ReadHtmlFromClipboard(ui::Clipboard::GetForCurrentThread()),
@@ -63,7 +64,7 @@ TEST_F(QuickInsertCopyMediaTest, EscapesAltTextForImages) {
 }
 
 TEST_F(QuickInsertCopyMediaTest, CopiesLinks) {
-  CopyMediaToClipboard(PickerLinkMedia(GURL("https://foo.com"), "Foo"));
+  CopyMediaToClipboard(QuickInsertLinkMedia(GURL("https://foo.com"), "Foo"));
 
   EXPECT_EQ(ReadTextFromClipboard(ui::Clipboard::GetForCurrentThread()),
             u"https://foo.com/");
@@ -74,7 +75,7 @@ TEST_F(QuickInsertCopyMediaTest, CopiesLinks) {
 }
 
 TEST_F(QuickInsertCopyMediaTest, LinksAreEscaped) {
-  CopyMediaToClipboard(PickerLinkMedia(
+  CopyMediaToClipboard(QuickInsertLinkMedia(
       GURL("https://foo.com/?\"><svg onload=\"alert(1)\"><a href=\""),
       "<svg onload=\"alert(1)\">"));
 
@@ -92,7 +93,7 @@ TEST_F(QuickInsertCopyMediaTest, LinksAreEscaped) {
 }
 
 TEST_F(QuickInsertCopyMediaTest, CopiesFiles) {
-  CopyMediaToClipboard(PickerLocalFileMedia(base::FilePath("/foo.txt")));
+  CopyMediaToClipboard(QuickInsertLocalFileMedia(base::FilePath("/foo.txt")));
 
   EXPECT_EQ(ReadFilenameFromClipboard(ui::Clipboard::GetForCurrentThread()),
             base::FilePath("/foo.txt"));
@@ -100,16 +101,16 @@ TEST_F(QuickInsertCopyMediaTest, CopiesFiles) {
 
 class QuickInsertCopyMediaToastTest
     : public AshTestBase,
-      public testing::WithParamInterface<PickerRichMedia> {};
+      public testing::WithParamInterface<QuickInsertRichMedia> {};
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     QuickInsertCopyMediaToastTest,
-    ::testing::Values(PickerTextMedia(u"hello"),
-                      PickerImageMedia(GURL("https://foo.com"),
-                                       gfx::Size(30, 20)),
-                      PickerLinkMedia(GURL("https://foo.com"), "Foo"),
-                      PickerLocalFileMedia(base::FilePath("/foo.txt"))));
+    ::testing::Values(QuickInsertTextMedia(u"hello"),
+                      QuickInsertImageMedia(GURL("https://foo.com"),
+                                            gfx::Size(30, 20)),
+                      QuickInsertLinkMedia(GURL("https://foo.com"), "Foo"),
+                      QuickInsertLocalFileMedia(base::FilePath("/foo.txt"))));
 
 TEST_P(QuickInsertCopyMediaToastTest, ShowsToastAfterCopyingLink) {
   CopyMediaToClipboard(GetParam());

@@ -26,9 +26,9 @@ class ImageButton;
 
 namespace ash {
 
-class PickerKeyEventHandler;
-class PickerPerformanceMetrics;
-class PickerSearchBarTextfield;
+class QuickInsertKeyEventHandler;
+class QuickInsertPerformanceMetrics;
+class QuickInsertSearchBarTextfield;
 
 // View for the Quick Insert search field.
 class ASH_EXPORT QuickInsertSearchFieldView
@@ -57,8 +57,8 @@ class ASH_EXPORT QuickInsertSearchFieldView
   explicit QuickInsertSearchFieldView(
       SearchCallback search_callback,
       BackCallback back_callback,
-      PickerKeyEventHandler* key_event_handler,
-      PickerPerformanceMetrics* performance_metrics);
+      QuickInsertKeyEventHandler* key_event_handler,
+      QuickInsertPerformanceMetrics* performance_metrics);
   QuickInsertSearchFieldView(const QuickInsertSearchFieldView&) = delete;
   QuickInsertSearchFieldView& operator=(const QuickInsertSearchFieldView&) =
       delete;
@@ -118,9 +118,9 @@ class ASH_EXPORT QuickInsertSearchFieldView
   void OnGainedPseudoFocusFromLeftEvent(views::View* pseudo_focused_view);
   void OnGainedPseudoFocusFromRightEvent(views::View* pseudo_focused_view);
 
-  PickerSearchBarTextfield* textfield() { return textfield_; }
+  QuickInsertSearchBarTextfield* textfield() { return textfield_; }
 
-  PickerSearchBarTextfield& textfield_for_testing() { return *textfield_; }
+  QuickInsertSearchBarTextfield& textfield_for_testing() { return *textfield_; }
   views::ImageButton& back_button_for_testing() { return *back_button_; }
   views::ImageButton& clear_button_for_testing() { return *clear_button_; }
 
@@ -144,9 +144,9 @@ class ASH_EXPORT QuickInsertSearchFieldView
   bool should_show_focus_indicator_ = false;
 
   SearchCallback search_callback_;
-  raw_ptr<PickerKeyEventHandler> key_event_handler_ = nullptr;
-  raw_ptr<PickerPerformanceMetrics> performance_metrics_ = nullptr;
-  raw_ptr<PickerSearchBarTextfield> textfield_ = nullptr;
+  raw_ptr<QuickInsertKeyEventHandler> key_event_handler_ = nullptr;
+  raw_ptr<QuickInsertPerformanceMetrics> performance_metrics_ = nullptr;
+  raw_ptr<QuickInsertSearchBarTextfield> textfield_ = nullptr;
   raw_ptr<views::ImageButton> back_button_ = nullptr;
   raw_ptr<views::ImageButton> clear_button_ = nullptr;
 

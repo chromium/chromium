@@ -17,7 +17,7 @@
 
 class Profile;
 
-class PickerFileSuggester {
+class QuickInsertFileSuggester {
  public:
   struct LocalFile {
     std::u16string title;
@@ -46,10 +46,10 @@ class PickerFileSuggester {
   using RecentDriveFilesCallback =
       base::OnceCallback<void(std::vector<DriveFile>)>;
 
-  explicit PickerFileSuggester(Profile* profile);
-  ~PickerFileSuggester();
-  PickerFileSuggester(const PickerFileSuggester&) = delete;
-  PickerFileSuggester& operator=(const PickerFileSuggester&) = delete;
+  explicit QuickInsertFileSuggester(Profile* profile);
+  ~QuickInsertFileSuggester();
+  QuickInsertFileSuggester(const QuickInsertFileSuggester&) = delete;
+  QuickInsertFileSuggester& operator=(const QuickInsertFileSuggester&) = delete;
 
   // Any in-flight requests are cancelled when this object is destroyed.
   void GetRecentLocalImages(size_t max_files,
@@ -64,7 +64,7 @@ class PickerFileSuggester {
                              const std::vector<ash::RecentFile>& recent_files);
 
   raw_ptr<Profile> profile_;
-  base::WeakPtrFactory<PickerFileSuggester> weak_factory_{this};
+  base::WeakPtrFactory<QuickInsertFileSuggester> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_QUICK_INSERT_QUICK_INSERT_FILE_SUGGESTER_H_

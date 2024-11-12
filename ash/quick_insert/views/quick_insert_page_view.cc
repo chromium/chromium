@@ -8,7 +8,7 @@
 
 namespace ash {
 
-BEGIN_METADATA(PickerPageView)
+BEGIN_METADATA(QuickInsertPageView)
 END_METADATA
 
 }  // namespace ash

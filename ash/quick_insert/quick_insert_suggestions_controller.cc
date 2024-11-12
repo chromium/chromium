@@ -25,8 +25,8 @@ constexpr base::TimeDelta kMaxLocalFileSuggestionRecencyDelta = base::Days(30);
 constexpr base::TimeDelta kMaxLocalFileCategoryRecencyDelta = base::Days(3652);
 }  // namespace
 
-PickerSuggestionsController::PickerSuggestionsController() = default;
-PickerSuggestionsController::~PickerSuggestionsController() = default;
+QuickInsertSuggestionsController::QuickInsertSuggestionsController() = default;
+QuickInsertSuggestionsController::~QuickInsertSuggestionsController() = default;
 
 std::vector<QuickInsertSearchResult> GetMostRecentResults(
     size_t n,
@@ -37,10 +37,11 @@ std::vector<QuickInsertSearchResult> GetMostRecentResults(
   return results;
 }
 
-void PickerSuggestionsController::GetSuggestions(QuickInsertClient& client,
-                                                 const QuickInsertModel& model,
-                                                 SuggestionsCallback callback) {
-  if (model.GetMode() == PickerModeType::kUnfocused) {
+void QuickInsertSuggestionsController::GetSuggestions(
+    QuickInsertClient& client,
+    const QuickInsertModel& model,
+    SuggestionsCallback callback) {
+  if (model.GetMode() == QuickInsertModeType::kUnfocused) {
     std::vector<QuickInsertSearchResult> new_window_results;
     for (QuickInsertNewWindowResult::Type type : {
              QuickInsertNewWindowResult::Type::kDoc,
@@ -53,8 +54,8 @@ void PickerSuggestionsController::GetSuggestions(QuickInsertClient& client,
     callback.Run(std::move(new_window_results));
   }
 
-  if (model.GetMode() == PickerModeType::kUnfocused ||
-      model.GetMode() == PickerModeType::kNoSelection) {
+  if (model.GetMode() == QuickInsertModeType::kUnfocused ||
+      model.GetMode() == QuickInsertModeType::kNoSelection) {
     callback.Run({QuickInsertCapsLockResult(!model.is_caps_lock_enabled(),
                                             GetPickerShortcutForCapsLock())});
   }
@@ -70,7 +71,7 @@ void PickerSuggestionsController::GetSuggestions(QuickInsertClient& client,
         QuickInsertLobsterResult::Mode::kWithSelection, /*display_name=*/u"")});
   }
 
-  if (model.GetMode() == PickerModeType::kHasSelection) {
+  if (model.GetMode() == QuickInsertModeType::kHasSelection) {
     std::vector<QuickInsertSearchResult> case_transform_results;
     for (QuickInsertCaseTransformResult::Type type : {
              QuickInsertCaseTransformResult::Type::kUpperCase,
@@ -122,7 +123,7 @@ void PickerSuggestionsController::GetSuggestions(QuickInsertClient& client,
   }
 }
 
-void PickerSuggestionsController::GetSuggestionsForCategory(
+void QuickInsertSuggestionsController::GetSuggestionsForCategory(
     QuickInsertClient& client,
     QuickInsertCategory category,
     SuggestionsCallback callback) {
@@ -156,10 +157,10 @@ void PickerSuggestionsController::GetSuggestionsForCategory(
           std::move(callback));
       return;
     case QuickInsertCategory::kDatesTimes:
-      std::move(callback).Run(PickerSuggestedDateResults());
+      std::move(callback).Run(QuickInsertSuggestedDateResults());
       break;
     case QuickInsertCategory::kUnitsMaths:
-      std::move(callback).Run(PickerMathExamples());
+      std::move(callback).Run(QuickInsertMathExamples());
       break;
     case QuickInsertCategory::kClipboard:
       clipboard_provider_.FetchResults(std::move(callback));

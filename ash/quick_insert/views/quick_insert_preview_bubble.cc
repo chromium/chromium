@@ -70,7 +70,8 @@ DEFINE_VIEW_BUILDER(/* no export */, ash::RoundedPreviewImageView)
 
 namespace ash {
 
-PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
+QuickInsertPreviewBubbleView::QuickInsertPreviewBubbleView(
+    views::View* anchor_view)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::LEFT_CENTER,
                                views::BubbleBorder::STANDARD_SHADOW,
@@ -86,7 +87,7 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
   // Highlighting of the anchor is done by the anchor itself.
   set_highlight_button_when_shown(false);
 
-  views::Builder<PickerPreviewBubbleView>(this)
+  views::Builder<QuickInsertPreviewBubbleView>(this)
       .set_margins(kMargins)
       .set_corner_radius(kQuickInsertBubbleCornerRadius)
       .SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone))
@@ -114,48 +115,49 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
   views::BubbleDialogDelegateView::CreateBubble(this);
 }
 
-ui::ImageModel PickerPreviewBubbleView::GetPreviewImage() const {
+ui::ImageModel QuickInsertPreviewBubbleView::GetPreviewImage() const {
   return image_view_->GetImageModel();
 }
 
-void PickerPreviewBubbleView::SetPreviewImage(ui::ImageModel image) {
+void QuickInsertPreviewBubbleView::SetPreviewImage(ui::ImageModel image) {
   image_view_->SetImage(std::move(image));
 }
 
-bool PickerPreviewBubbleView::GetLabelVisibleForTesting() const {
+bool QuickInsertPreviewBubbleView::GetLabelVisibleForTesting() const {
   return box_layout_view_->GetVisible();
 }
 
-std::u16string_view PickerPreviewBubbleView::GetMainTextForTesting() const {
+std::u16string_view QuickInsertPreviewBubbleView::GetMainTextForTesting()
+    const {
   return main_label_->GetText();
 }
 
-void PickerPreviewBubbleView::SetText(const std::u16string& main_text) {
+void QuickInsertPreviewBubbleView::SetText(const std::u16string& main_text) {
   main_label_->SetText(main_text);
   box_layout_view_->SetVisible(true);
 }
 
-void PickerPreviewBubbleView::ClearText() {
+void QuickInsertPreviewBubbleView::ClearText() {
   main_label_->SetText(u"");
   box_layout_view_->SetVisible(false);
 }
 
-void PickerPreviewBubbleView::OnThemeChanged() {
+void QuickInsertPreviewBubbleView::OnThemeChanged() {
   BubbleDialogDelegateView::OnThemeChanged();
   set_color(GetColorProvider()->GetColor(kBackgroundColor));
 }
 
-gfx::Rect PickerPreviewBubbleView::GetAnchorRect() const {
+gfx::Rect QuickInsertPreviewBubbleView::GetAnchorRect() const {
   gfx::Rect rect = BubbleDialogDelegateView::GetAnchorRect();
   rect.Inset(kBubbleOverlapOverPicker);
   return rect;
 }
 
-void PickerPreviewBubbleView::Close() {
+void QuickInsertPreviewBubbleView::Close() {
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }
 
-BEGIN_METADATA(PickerPreviewBubbleView)
+BEGIN_METADATA(QuickInsertPreviewBubbleView)
 END_METADATA
 
 }  // namespace ash

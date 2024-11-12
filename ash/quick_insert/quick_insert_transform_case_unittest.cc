@@ -12,40 +12,42 @@
 namespace ash {
 namespace {
 
-TEST(PickerTransformCase, TransformsCaseCorrectlyForEnglish) {
+TEST(QuickInsertTransformCase, TransformsCaseCorrectlyForEnglish) {
   base::test::ScopedRestoreICUDefaultLocale restore_locale;
   base::i18n::SetICUDefaultLocale("en_US");
 
-  EXPECT_EQ(PickerTransformToUpperCase(u"Text with UPPer & lowER casE."),
+  EXPECT_EQ(QuickInsertTransformToUpperCase(u"Text with UPPer & lowER casE."),
             u"TEXT WITH UPPER & LOWER CASE.");
-  EXPECT_EQ(PickerTransformToLowerCase(u"Text with UPPer & lowER casE."),
+  EXPECT_EQ(QuickInsertTransformToLowerCase(u"Text with UPPer & lowER casE."),
             u"text with upper & lower case.");
-  EXPECT_EQ(PickerTransformToTitleCase(u"Text with UPPer & lowER casE."),
+  EXPECT_EQ(QuickInsertTransformToTitleCase(u"Text with UPPer & lowER casE."),
             u"Text With Upper & Lower Case.");
 }
 
-TEST(PickerTransformCase, TransformsCaseCorrectlyForMixedScripts) {
+TEST(QuickInsertTransformCase, TransformsCaseCorrectlyForMixedScripts) {
   base::test::ScopedRestoreICUDefaultLocale restore_locale;
   base::i18n::SetICUDefaultLocale("en_US");
 
-  EXPECT_EQ(PickerTransformToUpperCase(u"«丰(aBc)»"), u"«丰(ABC)»");
-  EXPECT_EQ(PickerTransformToLowerCase(u"«丰(aBc)»"), u"«丰(abc)»");
-  EXPECT_EQ(PickerTransformToTitleCase(u"«丰(aBc)»"), u"«丰(Abc)»");
+  EXPECT_EQ(QuickInsertTransformToUpperCase(u"«丰(aBc)»"), u"«丰(ABC)»");
+  EXPECT_EQ(QuickInsertTransformToLowerCase(u"«丰(aBc)»"), u"«丰(abc)»");
+  EXPECT_EQ(QuickInsertTransformToTitleCase(u"«丰(aBc)»"), u"«丰(Abc)»");
 }
 
-TEST(PickerTransformCase, TransformsTitleCaseCorrectlyForDutchInEnglishLocale) {
+TEST(QuickInsertTransformCase,
+     TransformsTitleCaseCorrectlyForDutchInEnglishLocale) {
   base::test::ScopedRestoreICUDefaultLocale restore_locale;
   base::i18n::SetICUDefaultLocale("en_us");
 
-  EXPECT_EQ(PickerTransformToTitleCase(u"ijssel igloo IJMUIDEN"),
+  EXPECT_EQ(QuickInsertTransformToTitleCase(u"ijssel igloo IJMUIDEN"),
             u"Ijssel Igloo Ijmuiden");
 }
 
-TEST(PickerTransformCase, TransformsTitleCaseCorrectlyForDutchInDutchLocale) {
+TEST(QuickInsertTransformCase,
+     TransformsTitleCaseCorrectlyForDutchInDutchLocale) {
   base::test::ScopedRestoreICUDefaultLocale restore_locale;
   base::i18n::SetICUDefaultLocale("nl");
 
-  EXPECT_EQ(PickerTransformToTitleCase(u"ijssel igloo IJMUIDEN"),
+  EXPECT_EQ(QuickInsertTransformToTitleCase(u"ijssel igloo IJMUIDEN"),
             u"IJssel Igloo IJmuiden");
 }
 

@@ -22,7 +22,7 @@ namespace ash {
 
 // Records performance metrics for a session of using Quick Insert, such as
 // latency.
-class ASH_EXPORT PickerPerformanceMetrics {
+class ASH_EXPORT QuickInsertPerformanceMetrics {
  public:
   enum class SearchResultsUpdate {
     // Stale search results were cleared to an empty list of results.
@@ -36,11 +36,11 @@ class ASH_EXPORT PickerPerformanceMetrics {
   };
 
   // `trigger_event_timestamp` is the timestamp of the event that triggered the
-  // session. By default, this uses the time PickerPerformanceMetrics is
+  // session. By default, this uses the time QuickInsertPerformanceMetrics is
   // created. Call `StartRecording` to start recording metrics for the session.
-  PickerPerformanceMetrics(
+  QuickInsertPerformanceMetrics(
       base::TimeTicks trigger_start_timestamp = base::TimeTicks::Now());
-  ~PickerPerformanceMetrics();
+  ~QuickInsertPerformanceMetrics();
 
   // Starts recording metrics for this session.
   // `widget` is the widget that contains the Quick Insert UI. It must outlive

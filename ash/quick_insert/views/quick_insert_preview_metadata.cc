@@ -50,7 +50,7 @@ std::u16string GetJustificationString(base::Time viewed, base::Time modified) {
 
 }  // namespace
 
-std::u16string PickerGetFilePreviewDescription(
+std::u16string QuickInsertGetFilePreviewDescription(
     std::optional<base::File::Info> info) {
   if (!info.has_value()) {
     return u"";

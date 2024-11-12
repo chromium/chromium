@@ -157,7 +157,8 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
 
   if ((!category.has_value() || category == QuickInsertCategory::kClipboard) &&
       base::Contains(available_categories, QuickInsertCategory::kClipboard)) {
-    clipboard_provider_ = std::make_unique<PickerClipboardHistoryProvider>();
+    clipboard_provider_ =
+        std::make_unique<QuickInsertClipboardHistoryProvider>();
     MarkSearchStarted(QuickInsertSearchSource::kClipboard);
     clipboard_provider_->FetchResults(
         base::BindOnce(&QuickInsertSearchRequest::HandleClipboardSearchResults,
@@ -169,14 +170,14 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
       base::Contains(available_categories, QuickInsertCategory::kDatesTimes)) {
     MarkSearchStarted(QuickInsertSearchSource::kDate);
     // Date results is currently synchronous.
-    HandleDateSearchResults(PickerDateSearch(base::Time::Now(), query));
+    HandleDateSearchResults(QuickInsertDateSearch(base::Time::Now(), query));
   }
 
   if ((!category.has_value() || category == QuickInsertCategory::kUnitsMaths) &&
       base::Contains(available_categories, QuickInsertCategory::kUnitsMaths)) {
     MarkSearchStarted(QuickInsertSearchSource::kMath);
     // Math results is currently synchronous.
-    HandleMathSearchResults(PickerMathSearch(query));
+    HandleMathSearchResults(QuickInsertMathSearch(query));
   }
 
   // These searches do not have category-specific search.
@@ -184,8 +185,8 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
     MarkSearchStarted(QuickInsertSearchSource::kAction);
     // Action results are currently synchronous.
     HandleActionSearchResults(
-        PickerActionSearch(available_categories, caps_lock_state_to_search,
-                           search_case_transforms, query));
+        QuickInsertActionSearch(available_categories, caps_lock_state_to_search,
+                                search_case_transforms, query));
 
     if (base::Contains(available_categories,
                        QuickInsertCategory::kEditorWrite)) {
@@ -193,7 +194,8 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
       MarkSearchStarted(QuickInsertSearchSource::kEditorWrite);
       HandleEditorSearchResults(
           QuickInsertSearchSource::kEditorWrite,
-          PickerEditorSearch(QuickInsertEditorResult::Mode::kWrite, query));
+          QuickInsertEditorSearch(QuickInsertEditorResult::Mode::kWrite,
+                                  query));
     }
 
     if (base::Contains(available_categories,
@@ -202,7 +204,8 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
       MarkSearchStarted(QuickInsertSearchSource::kEditorRewrite);
       HandleEditorSearchResults(
           QuickInsertSearchSource::kEditorRewrite,
-          PickerEditorSearch(QuickInsertEditorResult::Mode::kRewrite, query));
+          QuickInsertEditorSearch(QuickInsertEditorResult::Mode::kRewrite,
+                                  query));
     }
 
     if (base::Contains(available_categories,
@@ -211,8 +214,8 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
       MarkSearchStarted(QuickInsertSearchSource::kLobsterWithNoSelectedText);
       HandleLobsterSearchResults(
           QuickInsertSearchSource::kLobsterWithNoSelectedText,
-          PickerLobsterSearch(QuickInsertLobsterResult::Mode::kNoSelection,
-                              query));
+          QuickInsertLobsterSearch(QuickInsertLobsterResult::Mode::kNoSelection,
+                                   query));
     }
 
     if (base::Contains(available_categories,
@@ -221,8 +224,8 @@ QuickInsertSearchRequest::QuickInsertSearchRequest(
       MarkSearchStarted(QuickInsertSearchSource::kLobsterWithSelectedText);
       HandleLobsterSearchResults(
           QuickInsertSearchSource::kLobsterWithSelectedText,
-          PickerLobsterSearch(QuickInsertLobsterResult::Mode::kWithSelection,
-                              query));
+          QuickInsertLobsterSearch(
+              QuickInsertLobsterResult::Mode::kWithSelection, query));
     }
   }
 

@@ -30,10 +30,10 @@ using ::testing::IsEmpty;
 
 constexpr int kDefaultSectionWidth = 320;
 
-std::unique_ptr<PickerImageItemView> CreateGifItem(
+std::unique_ptr<QuickInsertImageItemView> CreateGifItem(
     const gfx::Size& gif_dimensions) {
-  return std::make_unique<PickerImageItemView>(
-      std::make_unique<PickerGifView>(
+  return std::make_unique<QuickInsertImageItemView>(
+      std::make_unique<QuickInsertGifView>(
           /*frames_fetcher=*/base::DoNothing(),
           /*preview_image_fetcher=*/base::DoNothing(), gif_dimensions),
       u"gif", base::DoNothing());
@@ -43,9 +43,9 @@ using QuickInsertSectionListViewTest = views::ViewsTestBase;
 
 TEST_F(QuickInsertSectionListViewTest, AddsSection) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSubmenuController submenu_controller;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
-                                     &submenu_controller);
+  QuickInsertSubmenuController submenu_controller;
+  QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                          &submenu_controller);
 
   QuickInsertSectionView* section = section_list.AddSection();
 
@@ -54,9 +54,9 @@ TEST_F(QuickInsertSectionListViewTest, AddsSection) {
 
 TEST_F(QuickInsertSectionListViewTest, ClearsSectionList) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSubmenuController submenu_controller;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
-                                     &submenu_controller);
+  QuickInsertSubmenuController submenu_controller;
+  QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                          &submenu_controller);
 
   section_list.AddSection();
   section_list.ClearSectionList();
@@ -66,9 +66,9 @@ TEST_F(QuickInsertSectionListViewTest, ClearsSectionList) {
 
 TEST_F(QuickInsertSectionListViewTest, GetsTopItem) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSubmenuController submenu_controller;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
-                                     &submenu_controller);
+  QuickInsertSubmenuController submenu_controller;
+  QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                          &submenu_controller);
 
   QuickInsertSectionView* section1 = section_list.AddSection();
   QuickInsertItemView* top_item = section1->AddListItem(
@@ -84,9 +84,9 @@ TEST_F(QuickInsertSectionListViewTest, GetsTopItem) {
 
 TEST_F(QuickInsertSectionListViewTest, AddsSectionAtTheTop) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSubmenuController submenu_controller;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
-                                     &submenu_controller);
+  QuickInsertSubmenuController submenu_controller;
+  QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                          &submenu_controller);
 
   QuickInsertSectionView* section1 = section_list.AddSection();
   section1->AddListItem(
@@ -100,9 +100,9 @@ TEST_F(QuickInsertSectionListViewTest, AddsSectionAtTheTop) {
 
 TEST_F(QuickInsertSectionListViewTest, GetsTopItemWhenTopSectionIsEmpty) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSubmenuController submenu_controller;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
-                                     &submenu_controller);
+  QuickInsertSubmenuController submenu_controller;
+  QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                          &submenu_controller);
 
   QuickInsertSectionView* section = section_list.AddSection();
   QuickInsertItemView* top_item = section->AddListItem(
@@ -117,18 +117,18 @@ TEST_F(QuickInsertSectionListViewTest, GetsTopItemWhenTopSectionIsEmpty) {
 
 TEST_F(QuickInsertSectionListViewTest, EmptySectionListHasNoTopItem) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSubmenuController submenu_controller;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
-                                     &submenu_controller);
+  QuickInsertSubmenuController submenu_controller;
+  QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                          &submenu_controller);
 
   EXPECT_EQ(section_list.GetTopItem(), nullptr);
 }
 
 TEST_F(QuickInsertSectionListViewTest, GetsBottomItem) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSubmenuController submenu_controller;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
-                                     &submenu_controller);
+  QuickInsertSubmenuController submenu_controller;
+  QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                          &submenu_controller);
 
   QuickInsertSectionView* section1 = section_list.AddSection();
   section1->AddListItem(
@@ -144,9 +144,9 @@ TEST_F(QuickInsertSectionListViewTest, GetsBottomItem) {
 
 TEST_F(QuickInsertSectionListViewTest, GetsBottomItemWhenBottomSectionIsEmpty) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSubmenuController submenu_controller;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
-                                     &submenu_controller);
+  QuickInsertSubmenuController submenu_controller;
+  QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                          &submenu_controller);
 
   QuickInsertSectionView* section = section_list.AddSection();
   QuickInsertItemView* top_item = section->AddListItem(
@@ -161,18 +161,18 @@ TEST_F(QuickInsertSectionListViewTest, GetsBottomItemWhenBottomSectionIsEmpty) {
 
 TEST_F(QuickInsertSectionListViewTest, EmptySectionListHasNoBottomItem) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSubmenuController submenu_controller;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
-                                     &submenu_controller);
+  QuickInsertSubmenuController submenu_controller;
+  QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                          &submenu_controller);
 
   EXPECT_EQ(section_list.GetBottomItem(), nullptr);
 }
 
 TEST_F(QuickInsertSectionListViewTest, GetsItemAbove) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSubmenuController submenu_controller;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
-                                     &submenu_controller);
+  QuickInsertSubmenuController submenu_controller;
+  QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                          &submenu_controller);
 
   QuickInsertSectionView* section1 = section_list.AddSection();
   QuickInsertItemView* item1 = section1->AddListItem(
@@ -190,9 +190,9 @@ TEST_F(QuickInsertSectionListViewTest, GetsItemAbove) {
 
 TEST_F(QuickInsertSectionListViewTest, ItemNotInSectionListHasNoItemAbove) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSubmenuController submenu_controller;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
-                                     &submenu_controller);
+  QuickInsertSubmenuController submenu_controller;
+  QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                          &submenu_controller);
   QuickInsertListItemView item_not_in_section_list(base::DoNothing());
 
   EXPECT_EQ(section_list.GetItemAbove(&item_not_in_section_list), nullptr);
@@ -200,9 +200,9 @@ TEST_F(QuickInsertSectionListViewTest, ItemNotInSectionListHasNoItemAbove) {
 
 TEST_F(QuickInsertSectionListViewTest, GetsItemBelow) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSubmenuController submenu_controller;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
-                                     &submenu_controller);
+  QuickInsertSubmenuController submenu_controller;
+  QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                          &submenu_controller);
 
   QuickInsertSectionView* section1 = section_list.AddSection();
   QuickInsertItemView* item1 = section1->AddListItem(
@@ -220,9 +220,9 @@ TEST_F(QuickInsertSectionListViewTest, GetsItemBelow) {
 
 TEST_F(QuickInsertSectionListViewTest, ItemNotInSectionListHasNoItemBelow) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSubmenuController submenu_controller;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
-                                     &submenu_controller);
+  QuickInsertSubmenuController submenu_controller;
+  QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                          &submenu_controller);
   QuickInsertListItemView item_not_in_section_list(base::DoNothing());
 
   EXPECT_EQ(section_list.GetItemBelow(&item_not_in_section_list), nullptr);
@@ -230,9 +230,9 @@ TEST_F(QuickInsertSectionListViewTest, ItemNotInSectionListHasNoItemBelow) {
 
 TEST_F(QuickInsertSectionListViewTest, GetsItemLeftOf) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSubmenuController submenu_controller;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
-                                     &submenu_controller);
+  QuickInsertSubmenuController submenu_controller;
+  QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                          &submenu_controller);
 
   QuickInsertSectionView* section1 = section_list.AddSection();
   QuickInsertItemView* item1 =
@@ -250,9 +250,9 @@ TEST_F(QuickInsertSectionListViewTest, GetsItemLeftOf) {
 
 TEST_F(QuickInsertSectionListViewTest, ItemNotInSectionListHasNoItemLeftOf) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSubmenuController submenu_controller;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
-                                     &submenu_controller);
+  QuickInsertSubmenuController submenu_controller;
+  QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                          &submenu_controller);
   QuickInsertListItemView item_not_in_section_list(base::DoNothing());
 
   EXPECT_EQ(section_list.GetItemLeftOf(&item_not_in_section_list), nullptr);
@@ -260,9 +260,9 @@ TEST_F(QuickInsertSectionListViewTest, ItemNotInSectionListHasNoItemLeftOf) {
 
 TEST_F(QuickInsertSectionListViewTest, GetsItemRightOf) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSubmenuController submenu_controller;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
-                                     &submenu_controller);
+  QuickInsertSubmenuController submenu_controller;
+  QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                          &submenu_controller);
 
   QuickInsertSectionView* section1 = section_list.AddSection();
   QuickInsertItemView* item1 =
@@ -280,9 +280,9 @@ TEST_F(QuickInsertSectionListViewTest, GetsItemRightOf) {
 
 TEST_F(QuickInsertSectionListViewTest, ItemNotInSectionListHasNoItemRightOf) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSubmenuController submenu_controller;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
-                                     &submenu_controller);
+  QuickInsertSubmenuController submenu_controller;
+  QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                          &submenu_controller);
   QuickInsertListItemView item_not_in_section_list(base::DoNothing());
 
   EXPECT_EQ(section_list.GetItemRightOf(&item_not_in_section_list), nullptr);

@@ -21,25 +21,25 @@ namespace ash {
 
 namespace {
 
-PickerInsertMediaRequest::Result ConvertInsertMediaResult(
+QuickInsertInsertMediaRequest::Result ConvertInsertMediaResult(
     InsertMediaResult result) {
   switch (result) {
     case InsertMediaResult::kSuccess:
-      return PickerInsertMediaRequest::Result::kSuccess;
+      return QuickInsertInsertMediaRequest::Result::kSuccess;
     case InsertMediaResult::kUnsupported:
-      return PickerInsertMediaRequest::Result::kUnsupported;
+      return QuickInsertInsertMediaRequest::Result::kUnsupported;
     case InsertMediaResult::kNotFound:
-      return PickerInsertMediaRequest::Result::kNotFound;
+      return QuickInsertInsertMediaRequest::Result::kNotFound;
   }
 }
 
 }  // namespace
 
-PickerInsertMediaRequest::PickerInsertMediaRequest(
+QuickInsertInsertMediaRequest::QuickInsertInsertMediaRequest(
     ui::InputMethod* input_method,
-    const PickerRichMedia& media_to_insert,
+    const QuickInsertRichMedia& media_to_insert,
     const base::TimeDelta insert_timeout,
-    base::OnceCallback<std::optional<PickerWebPasteTarget>()>
+    base::OnceCallback<std::optional<QuickInsertWebPasteTarget>()>
         get_web_paste_target,
     OnCompleteCallback on_complete_callback)
     : media_to_insert_(media_to_insert),
@@ -48,13 +48,14 @@ PickerInsertMediaRequest::PickerInsertMediaRequest(
                                 ? base::DoNothing()
                                 : std::move(on_complete_callback)) {
   observation_.Observe(input_method);
-  insert_timeout_timer_.Start(FROM_HERE, insert_timeout, this,
-                              &PickerInsertMediaRequest::CancelPendingInsert);
+  insert_timeout_timer_.Start(
+      FROM_HERE, insert_timeout, this,
+      &QuickInsertInsertMediaRequest::CancelPendingInsert);
 }
 
-PickerInsertMediaRequest::~PickerInsertMediaRequest() = default;
+QuickInsertInsertMediaRequest::~QuickInsertInsertMediaRequest() = default;
 
-void PickerInsertMediaRequest::OnTextInputStateChanged(
+void QuickInsertInsertMediaRequest::OnTextInputStateChanged(
     const ui::TextInputClient* client) {
   // `OnTextInputStateChanged` can be called multiple times before the insert
   // timeout. For each `client` change, attempt to insert the media. Only notify
@@ -83,14 +84,14 @@ void PickerInsertMediaRequest::OnTextInputStateChanged(
                               .Then(std::move(on_complete_callback_)));
 }
 
-void PickerInsertMediaRequest::OnInputMethodDestroyed(
+void QuickInsertInsertMediaRequest::OnInputMethodDestroyed(
     const ui::InputMethod* input_method) {
   if (observation_.GetSource() == input_method) {
     observation_.Reset();
   }
 }
 
-void PickerInsertMediaRequest::CancelPendingInsert() {
+void QuickInsertInsertMediaRequest::CancelPendingInsert() {
   observation_.Reset();
 
   if (media_to_insert_.has_value()) {

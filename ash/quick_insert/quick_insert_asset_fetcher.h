@@ -26,30 +26,30 @@ struct AnimationFrame;
 }  // namespace image_util
 
 // Helper for asynchronously fetching Quick Insert assets.
-class ASH_EXPORT PickerAssetFetcher {
+class ASH_EXPORT QuickInsertAssetFetcher {
  public:
   // TODO: b/316936723 - Pass the frames by reference to avoid a copy.
-  using PickerGifFetchedCallback =
+  using QuickInsertGifFetchedCallback =
       base::OnceCallback<void(std::vector<image_util::AnimationFrame>)>;
-  using PickerImageFetchedCallback =
+  using QuickInsertImageFetchedCallback =
       base::OnceCallback<void(const gfx::ImageSkia&)>;
   using FetchFileThumbnailCallback =
       base::OnceCallback<void(const SkBitmap* bitmap, base::File::Error error)>;
 
-  virtual ~PickerAssetFetcher() = default;
+  virtual ~QuickInsertAssetFetcher() = default;
 
   // Fetches and decodes a gif from `url`. If successful, the decoded gif frames
   // will be returned via `callback`. Otherwise, `callback` is run with an empty
   // vector of frames.
   virtual void FetchGifFromUrl(const GURL& url,
-                               PickerGifFetchedCallback callback) = 0;
+                               QuickInsertGifFetchedCallback callback) = 0;
 
   // Fetches and decodes a gif preview image from `url`. If successful, the
   // decoded gif preview image will be returned via `callback`. Otherwise,
   // `callback` is run with an empty ImageSkia.
   virtual void FetchGifPreviewImageFromUrl(
       const GURL& url,
-      PickerImageFetchedCallback callback) = 0;
+      QuickInsertImageFetchedCallback callback) = 0;
 
   // Fetches the thumbnail for a file and calls `callback` with the result.
   virtual void FetchFileThumbnail(const base::FilePath& path,

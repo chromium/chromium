@@ -17,11 +17,12 @@ class TextInputClient;
 
 namespace ash {
 
-struct PickerWebPasteTarget;
+struct QuickInsertWebPasteTarget;
 
 // Returns whether the `client` supports inserting `media`.
-ASH_EXPORT bool InputFieldSupportsInsertingMedia(const PickerRichMedia& media,
-                                                 ui::TextInputClient& client);
+ASH_EXPORT bool InputFieldSupportsInsertingMedia(
+    const QuickInsertRichMedia& media,
+    ui::TextInputClient& client);
 
 enum class ASH_EXPORT InsertMediaResult {
   kSuccess,
@@ -30,14 +31,14 @@ enum class ASH_EXPORT InsertMediaResult {
 };
 
 using WebPasteTargetCallback =
-    base::OnceCallback<std::optional<PickerWebPasteTarget>()>;
+    base::OnceCallback<std::optional<QuickInsertWebPasteTarget>()>;
 using OnInsertMediaCompleteCallback =
     base::OnceCallback<void(InsertMediaResult)>;
 
 // Inserts `media` into `client` asynchronously.
 // `callback` is called with whether the insertion was successful.
 ASH_EXPORT void InsertMediaToInputField(
-    PickerRichMedia media,
+    QuickInsertRichMedia media,
     ui::TextInputClient& client,
     WebPasteTargetCallback get_web_paste_target,
     OnInsertMediaCompleteCallback callback);

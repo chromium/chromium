@@ -53,26 +53,27 @@ bool MatchQuery(const ClipboardHistoryItem& item, std::u16string_view query) {
 }
 }  // namespace
 
-PickerClipboardHistoryProvider::PickerClipboardHistoryProvider(
+QuickInsertClipboardHistoryProvider::QuickInsertClipboardHistoryProvider(
     base::Clock* clock)
     : clock_(clock) {}
 
-PickerClipboardHistoryProvider::~PickerClipboardHistoryProvider() = default;
+QuickInsertClipboardHistoryProvider::~QuickInsertClipboardHistoryProvider() =
+    default;
 
-void PickerClipboardHistoryProvider::FetchResults(
+void QuickInsertClipboardHistoryProvider::FetchResults(
     OnFetchResultsCallback callback,
     std::u16string_view query) {
   ash::ClipboardHistoryController* clipboard_history_controller =
       ash::ClipboardHistoryController::Get();
   if (clipboard_history_controller) {
     clipboard_history_controller->GetHistoryValues(
-        base::BindOnce(&PickerClipboardHistoryProvider::OnFetchHistory,
+        base::BindOnce(&QuickInsertClipboardHistoryProvider::OnFetchHistory,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::u16string(query)));
   }
 }
 
-void PickerClipboardHistoryProvider::OnFetchHistory(
+void QuickInsertClipboardHistoryProvider::OnFetchHistory(
     OnFetchResultsCallback callback,
     std::u16string query,
     std::vector<ClipboardHistoryItem> items) {

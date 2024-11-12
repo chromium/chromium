@@ -10,33 +10,33 @@
 
 namespace ash {
 
-PickerFeatureUsageMetrics::PickerFeatureUsageMetrics()
+QuickInsertFeatureUsageMetrics::QuickInsertFeatureUsageMetrics()
     : feature_usage_metrics_("Picker", this) {}
 
-PickerFeatureUsageMetrics::~PickerFeatureUsageMetrics() = default;
+QuickInsertFeatureUsageMetrics::~QuickInsertFeatureUsageMetrics() = default;
 
-bool PickerFeatureUsageMetrics::IsEligible() const {
+bool QuickInsertFeatureUsageMetrics::IsEligible() const {
   // All devices support Quick Insert.
   return true;
 }
 
-std::optional<bool> PickerFeatureUsageMetrics::IsAccessible() const {
+std::optional<bool> QuickInsertFeatureUsageMetrics::IsAccessible() const {
   // TODO(b/321865738): Check enterprise policy.
   return true;
 }
 
-bool PickerFeatureUsageMetrics::IsEnabled() const {
+bool QuickInsertFeatureUsageMetrics::IsEnabled() const {
   // TODO(b/321865738): Check settings.
   return true;
 }
 
-void PickerFeatureUsageMetrics::StartUsage() {
+void QuickInsertFeatureUsageMetrics::StartUsage() {
   // There are no "failed" usages. All attempts should succeed.
   feature_usage_metrics_.RecordUsage(/*success=*/true);
   feature_usage_metrics_.StartSuccessfulUsage();
 }
 
-void PickerFeatureUsageMetrics::StopUsage() {
+void QuickInsertFeatureUsageMetrics::StopUsage() {
   feature_usage_metrics_.StopSuccessfulUsage();
 }
 

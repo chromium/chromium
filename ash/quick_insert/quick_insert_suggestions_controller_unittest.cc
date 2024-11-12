@@ -45,13 +45,14 @@ using QuickInsertSuggestionsControllerTest = testing::Test;
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenUnfocusedReturnsNewWindowResults) {
   NiceMock<MockQuickInsertClient> client;
-  PickerSuggestionsController controller;
+  QuickInsertSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
   QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
                          &keyboard, QuickInsertModel::EditorStatus::kEnabled,
                          QuickInsertModel::LobsterStatus::kEnabled);
 
-  base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
+  base::MockCallback<QuickInsertSuggestionsController::SuggestionsCallback>
+      callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(callback,
               Run(Contains(VariantWith<QuickInsertNewWindowResult>(_))))
@@ -68,7 +69,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
           QuickInsertEditorResult(QuickInsertEditorResult::Mode::kRewrite, u"",
                                   {}, {}),
       }));
-  PickerSuggestionsController controller;
+  QuickInsertSuggestionsController controller;
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_field.SetTextAndSelection(u"a", gfx::Range(0, 1));
   input_method::FakeImeKeyboard keyboard;
@@ -76,7 +77,8 @@ TEST_F(QuickInsertSuggestionsControllerTest,
                          &keyboard, QuickInsertModel::EditorStatus::kEnabled,
                          QuickInsertModel::LobsterStatus::kEnabled);
 
-  base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
+  base::MockCallback<QuickInsertSuggestionsController::SuggestionsCallback>
+      callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(callback,
               Run(AllOf(Not(IsEmpty()),
@@ -91,7 +93,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWithSelectionReturnsLobsterResult) {
   NiceMock<MockQuickInsertClient> client;
-  PickerSuggestionsController controller;
+  QuickInsertSuggestionsController controller;
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_field.SetTextAndSelection(u"a", gfx::Range(0, 1));
   input_method::FakeImeKeyboard keyboard;
@@ -99,7 +101,8 @@ TEST_F(QuickInsertSuggestionsControllerTest,
                          QuickInsertModel::EditorStatus::kEnabled,
                          QuickInsertModel::LobsterStatus::kEnabled);
 
-  base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
+  base::MockCallback<QuickInsertSuggestionsController::SuggestionsCallback>
+      callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(callback,
               Run(IsSupersetOf({
@@ -114,14 +117,15 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenFocusedDoesNotReturnNewWindowResults) {
   NiceMock<MockQuickInsertClient> client;
-  PickerSuggestionsController controller;
+  QuickInsertSuggestionsController controller;
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_method::FakeImeKeyboard keyboard;
   QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/&input_field,
                          &keyboard, QuickInsertModel::EditorStatus::kEnabled,
                          QuickInsertModel::LobsterStatus::kEnabled);
 
-  base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
+  base::MockCallback<QuickInsertSuggestionsController::SuggestionsCallback>
+      callback;
   EXPECT_CALL(callback,
               Run(Contains(VariantWith<QuickInsertNewWindowResult>(_))))
       .Times(0);
@@ -133,14 +137,15 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenCapsOffReturnsCapsOn) {
   NiceMock<MockQuickInsertClient> client;
-  PickerSuggestionsController controller;
+  QuickInsertSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
   keyboard.SetCapsLockEnabled(false);
   QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
                          &keyboard, QuickInsertModel::EditorStatus::kEnabled,
                          QuickInsertModel::LobsterStatus::kEnabled);
 
-  base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
+  base::MockCallback<QuickInsertSuggestionsController::SuggestionsCallback>
+      callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(
       callback,
@@ -154,14 +159,15 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenCapsOnReturnsCapsOff) {
   NiceMock<MockQuickInsertClient> client;
-  PickerSuggestionsController controller;
+  QuickInsertSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
   keyboard.SetCapsLockEnabled(true);
   QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
                          &keyboard, QuickInsertModel::EditorStatus::kEnabled,
                          QuickInsertModel::LobsterStatus::kEnabled);
 
-  base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
+  base::MockCallback<QuickInsertSuggestionsController::SuggestionsCallback>
+      callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(
       callback,
@@ -175,7 +181,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWithSelectionReturnsCaseTransforms) {
   NiceMock<MockQuickInsertClient> client;
-  PickerSuggestionsController controller;
+  QuickInsertSuggestionsController controller;
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_field.SetTextAndSelection(u"a", gfx::Range(0, 1));
   input_method::FakeImeKeyboard keyboard;
@@ -183,7 +189,8 @@ TEST_F(QuickInsertSuggestionsControllerTest,
                          QuickInsertModel::EditorStatus::kEnabled,
                          QuickInsertModel::LobsterStatus::kEnabled);
 
-  base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
+  base::MockCallback<QuickInsertSuggestionsController::SuggestionsCallback>
+      callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(callback,
               Run(IsSupersetOf({
@@ -202,14 +209,15 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWithNoSelectionDoesNotReturnCaseTransforms) {
   NiceMock<MockQuickInsertClient> client;
-  PickerSuggestionsController controller;
+  QuickInsertSuggestionsController controller;
   ui::FakeTextInputClient input_field({.type = ui::TEXT_INPUT_TYPE_TEXT});
   input_method::FakeImeKeyboard keyboard;
   QuickInsertModel model(/*prefs=*/nullptr, &input_field, &keyboard,
                          QuickInsertModel::EditorStatus::kEnabled,
                          QuickInsertModel::LobsterStatus::kEnabled);
 
-  base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
+  base::MockCallback<QuickInsertSuggestionsController::SuggestionsCallback>
+      callback;
   EXPECT_CALL(callback, Run(_)).Times(AnyNumber());
   EXPECT_CALL(callback, Run(Contains(QuickInsertCaseTransformResult(
                             QuickInsertCaseTransformResult::Type::kUpperCase))))
@@ -251,13 +259,14 @@ TEST_F(QuickInsertSuggestionsControllerTest,
               QuickInsertLocalFileResult(u"a", /*file_path=*/{}),
               QuickInsertLocalFileResult(u"b", /*file_path=*/{}),
           })));
-  PickerSuggestionsController controller;
+  QuickInsertSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
   QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
                          &keyboard, QuickInsertModel::EditorStatus::kEnabled,
                          QuickInsertModel::LobsterStatus::kEnabled);
 
-  base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
+  base::MockCallback<QuickInsertSuggestionsController::SuggestionsCallback>
+      callback;
   EXPECT_CALL(callback, Run).Times(AnyNumber());
   EXPECT_CALL(
       callback,
@@ -301,13 +310,14 @@ TEST_F(QuickInsertSuggestionsControllerTest,
               QuickInsertLocalFileResult(u"c", /*file_path=*/{}),
               QuickInsertLocalFileResult(u"d", /*file_path=*/{}),
           })));
-  PickerSuggestionsController controller;
+  QuickInsertSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
   QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
                          &keyboard, QuickInsertModel::EditorStatus::kEnabled,
                          QuickInsertModel::LobsterStatus::kEnabled);
 
-  base::MockCallback<PickerSuggestionsController::SuggestionsCallback> callback;
+  base::MockCallback<QuickInsertSuggestionsController::SuggestionsCallback>
+      callback;
   EXPECT_CALL(callback, Run).Times(AnyNumber());
   EXPECT_CALL(
       callback,
@@ -333,7 +343,7 @@ TEST_F(QuickInsertSuggestionsControllerTest, GetSuggestionsForLinkCategory) {
   NiceMock<MockQuickInsertClient> client;
   EXPECT_CALL(client, GetSuggestedLinkResults)
       .WillRepeatedly(WithArg<1>(RunCallbackArgWith(suggested_links)));
-  PickerSuggestionsController controller;
+  QuickInsertSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   controller.GetSuggestionsForCategory(client, QuickInsertCategory::kLinks,
@@ -353,7 +363,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   NiceMock<MockQuickInsertClient> client;
   EXPECT_CALL(client, GetRecentDriveFileResults)
       .WillRepeatedly(WithArg<1>(RunCallbackArgWith(suggested_files)));
-  PickerSuggestionsController controller;
+  QuickInsertSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   controller.GetSuggestionsForCategory(client, QuickInsertCategory::kDriveFiles,
@@ -371,7 +381,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   NiceMock<MockQuickInsertClient> client;
   EXPECT_CALL(client, GetRecentLocalFileResults)
       .WillRepeatedly(WithArg<2>(RunCallbackArgWith(suggested_files)));
-  PickerSuggestionsController controller;
+  QuickInsertSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   controller.GetSuggestionsForCategory(client, QuickInsertCategory::kLocalFiles,
@@ -383,7 +393,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsForDatesCategoryReturnsSomeResults) {
   NiceMock<MockQuickInsertClient> client;
-  PickerSuggestionsController controller;
+  QuickInsertSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   controller.GetSuggestionsForCategory(client, QuickInsertCategory::kDatesTimes,
@@ -395,7 +405,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsForMathsCategoryReturnsSomeResults) {
   NiceMock<MockQuickInsertClient> client;
-  PickerSuggestionsController controller;
+  QuickInsertSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   controller.GetSuggestionsForCategory(client, QuickInsertCategory::kUnitsMaths,
@@ -416,7 +426,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
       .WillOnce(RunCallbackArgWith(
           std::vector<ClipboardHistoryItem>{clipboard_item}));
   NiceMock<MockQuickInsertClient> client;
-  PickerSuggestionsController controller;
+  QuickInsertSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
   controller.GetSuggestionsForCategory(client, QuickInsertCategory::kClipboard,

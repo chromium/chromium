@@ -39,7 +39,7 @@ std::unique_ptr<views::Separator> CreateSeparator() {
 
 }  // namespace
 
-PickerMainContainerView::PickerMainContainerView() {
+QuickInsertMainContainerView::QuickInsertMainContainerView() {
   SetPaintToLayer();
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF{kQuickInsertContainerBorderRadius});
@@ -64,9 +64,9 @@ PickerMainContainerView::PickerMainContainerView() {
       ->SetOrientation(views::LayoutOrientation::kVertical);
 }
 
-PickerMainContainerView::~PickerMainContainerView() = default;
+QuickInsertMainContainerView::~QuickInsertMainContainerView() = default;
 
-gfx::Size PickerMainContainerView::CalculatePreferredSize(
+gfx::Size QuickInsertMainContainerView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   const int preferred_height =
       views::View::CalculatePreferredSize(available_size).height();
@@ -74,18 +74,19 @@ gfx::Size PickerMainContainerView::CalculatePreferredSize(
                    std::min(preferred_height, kMainContainerMaxHeight));
 }
 
-views::View* PickerMainContainerView::GetTopItem() {
+views::View* QuickInsertMainContainerView::GetTopItem() {
   return active_page_->GetTopItem();
 }
 
-views::View* PickerMainContainerView::GetBottomItem() {
+views::View* QuickInsertMainContainerView::GetBottomItem() {
   return active_page_->GetBottomItem();
 }
 
-views::View* PickerMainContainerView::GetItemAbove(views::View* item) {
+views::View* QuickInsertMainContainerView::GetItemAbove(views::View* item) {
   if (search_field_view_->Contains(item)) {
     views::View* prev_item = GetNextPickerPseudoFocusableView(
-        item, PickerPseudoFocusDirection::kBackward, /*should_loop=*/false);
+        item, QuickInsertPseudoFocusDirection::kBackward,
+        /*should_loop=*/false);
     return Contains(prev_item) ? prev_item : nullptr;
   }
   // Try to get an item above `item`, skipping items outside of the active page
@@ -93,10 +94,10 @@ views::View* PickerMainContainerView::GetItemAbove(views::View* item) {
   return active_page_->GetItemAbove(item);
 }
 
-views::View* PickerMainContainerView::GetItemBelow(views::View* item) {
+views::View* QuickInsertMainContainerView::GetItemBelow(views::View* item) {
   if (search_field_view_->Contains(item)) {
     views::View* next_item = GetNextPickerPseudoFocusableView(
-        item, PickerPseudoFocusDirection::kForward, /*should_loop=*/false);
+        item, QuickInsertPseudoFocusDirection::kForward, /*should_loop=*/false);
     return Contains(next_item) ? next_item : nullptr;
   }
   // Try to get an item below `item`, skipping items outside of the active page
@@ -104,35 +105,35 @@ views::View* PickerMainContainerView::GetItemBelow(views::View* item) {
   return active_page_->GetItemBelow(item);
 }
 
-views::View* PickerMainContainerView::GetItemLeftOf(views::View* item) {
+views::View* QuickInsertMainContainerView::GetItemLeftOf(views::View* item) {
   return active_page_->GetItemLeftOf(item);
 }
 
-views::View* PickerMainContainerView::GetItemRightOf(views::View* item) {
+views::View* QuickInsertMainContainerView::GetItemRightOf(views::View* item) {
   return active_page_->GetItemRightOf(item);
 }
 
-bool PickerMainContainerView::ContainsItem(views::View* item) {
+bool QuickInsertMainContainerView::ContainsItem(views::View* item) {
   return Contains(item);
 }
 
-QuickInsertSearchFieldView* PickerMainContainerView::AddSearchFieldView(
+QuickInsertSearchFieldView* QuickInsertMainContainerView::AddSearchFieldView(
     std::unique_ptr<QuickInsertSearchFieldView> search_field_view) {
   search_field_view_ = AddChildView(std::move(search_field_view));
   return search_field_view_;
 }
 
-PickerContentsView* PickerMainContainerView::AddContentsView(
-    PickerLayoutType layout_type) {
+QuickInsertContentsView* QuickInsertMainContainerView::AddContentsView(
+    QuickInsertLayoutType layout_type) {
   switch (layout_type) {
-    case PickerLayoutType::kMainResultsBelowSearchField:
+    case QuickInsertLayoutType::kMainResultsBelowSearchField:
       AddChildView(CreateSeparator());
       contents_view_ =
-          AddChildView(std::make_unique<PickerContentsView>(layout_type));
+          AddChildView(std::make_unique<QuickInsertContentsView>(layout_type));
       break;
-    case PickerLayoutType::kMainResultsAboveSearchField:
-      contents_view_ =
-          AddChildViewAt(std::make_unique<PickerContentsView>(layout_type), 0);
+    case QuickInsertLayoutType::kMainResultsAboveSearchField:
+      contents_view_ = AddChildViewAt(
+          std::make_unique<QuickInsertContentsView>(layout_type), 0);
       AddChildViewAt(CreateSeparator(), 1);
       break;
   }
@@ -144,12 +145,13 @@ PickerContentsView* PickerMainContainerView::AddContentsView(
   return contents_view_;
 }
 
-void PickerMainContainerView::SetActivePage(PickerPageView* page_view) {
+void QuickInsertMainContainerView::SetActivePage(
+    QuickInsertPageView* page_view) {
   contents_view_->SetActivePage(page_view);
   active_page_ = page_view;
 }
 
-BEGIN_METADATA(PickerMainContainerView)
+BEGIN_METADATA(QuickInsertMainContainerView)
 END_METADATA
 
 }  // namespace ash

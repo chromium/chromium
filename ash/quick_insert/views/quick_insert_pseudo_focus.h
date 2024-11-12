@@ -14,7 +14,7 @@ class View;
 namespace ash {
 
 // Direction to traverse pseudo focusable elements.
-enum class PickerPseudoFocusDirection {
+enum class QuickInsertPseudoFocusDirection {
   kForward,
   kBackward,
 };
@@ -33,7 +33,7 @@ bool ASH_EXPORT DoPickerPseudoFocusedActionOnView(views::View* view);
 // returned at the start/end.
 views::View* ASH_EXPORT
 GetNextPickerPseudoFocusableView(views::View* view,
-                                 PickerPseudoFocusDirection direction,
+                                 QuickInsertPseudoFocusDirection direction,
                                  bool should_loop);
 
 }  // namespace ash

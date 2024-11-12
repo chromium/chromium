@@ -35,20 +35,20 @@ const gfx::FontList kSymbolFont({"Google Sans", "Roboto"},
 constexpr int kCornerRadius = 4;
 constexpr auto kEmoticonItemMargins = gfx::Insets::VH(0, 6);
 
-const gfx::FontList& GetFontForStyle(PickerEmojiItemView::Style style) {
+const gfx::FontList& GetFontForStyle(QuickInsertEmojiItemView::Style style) {
   switch (style) {
-    case PickerEmojiItemView::Style::kEmoji:
+    case QuickInsertEmojiItemView::Style::kEmoji:
       return kEmojiFont;
-    case PickerEmojiItemView::Style::kEmoticon:
+    case QuickInsertEmojiItemView::Style::kEmoticon:
       return kEmoticonFont;
-    case PickerEmojiItemView::Style::kSymbol:
+    case QuickInsertEmojiItemView::Style::kSymbol:
       return kSymbolFont;
   }
 }
 
 }  // namespace
 
-PickerEmojiItemView::PickerEmojiItemView(
+QuickInsertEmojiItemView::QuickInsertEmojiItemView(
     Style style,
     SelectItemCallback select_item_callback,
     const std::u16string& text)
@@ -72,13 +72,13 @@ PickerEmojiItemView::PickerEmojiItemView(
   GetViewAccessibility().SetName(*label_);
 }
 
-std::u16string_view PickerEmojiItemView::GetTextForTesting() const {
+std::u16string_view QuickInsertEmojiItemView::GetTextForTesting() const {
   return label_->GetText();
 }
 
-PickerEmojiItemView::~PickerEmojiItemView() = default;
+QuickInsertEmojiItemView::~QuickInsertEmojiItemView() = default;
 
-BEGIN_METADATA(PickerEmojiItemView)
+BEGIN_METADATA(QuickInsertEmojiItemView)
 END_METADATA
 
 }  // namespace ash

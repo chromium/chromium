@@ -13,9 +13,10 @@
 namespace ash {
 
 // View for a page that can act as the main contents of the Quick Insert.
-class ASH_EXPORT PickerPageView : public views::View,
-                                  public PickerTraversableItemContainer {
-  METADATA_HEADER(PickerPageView, views::View)
+class ASH_EXPORT QuickInsertPageView
+    : public views::View,
+      public QuickInsertTraversableItemContainer {
+  METADATA_HEADER(QuickInsertPageView, views::View)
 };
 
 }  // namespace ash

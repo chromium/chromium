@@ -30,14 +30,14 @@ std::optional<base::FilePath> MaybeGetDriveFileRelativePath(
 
 }  // namespace
 
-PickerThumbnailLoader::PickerThumbnailLoader(Profile* profile)
+QuickInsertThumbnailLoader::QuickInsertThumbnailLoader(Profile* profile)
     : profile_(profile), thumbnail_loader_(profile) {}
 
-PickerThumbnailLoader::~PickerThumbnailLoader() = default;
+QuickInsertThumbnailLoader::~QuickInsertThumbnailLoader() = default;
 
-void PickerThumbnailLoader::Load(const base::FilePath& path,
-                                 const gfx::Size& size,
-                                 LoadCallback callback) {
+void QuickInsertThumbnailLoader::Load(const base::FilePath& path,
+                                      const gfx::Size& size,
+                                      LoadCallback callback) {
   // If the file is a drive file, use DriveFS to get the thumbnail.
   if (drive::DriveIntegrationService* drive_integration =
           drive::DriveIntegrationServiceFactory::FindForProfile(profile_)) {
@@ -46,7 +46,7 @@ void PickerThumbnailLoader::Load(const base::FilePath& path,
         relative_path.has_value()) {
       drive_integration->GetThumbnail(
           *relative_path, /*crop_to_square=*/true,
-          base::BindOnce(&PickerThumbnailLoader::DecodeDriveThumbnail,
+          base::BindOnce(&QuickInsertThumbnailLoader::DecodeDriveThumbnail,
                          weak_factory_.GetWeakPtr(), std::move(callback),
                          size));
       return;
@@ -57,7 +57,7 @@ void PickerThumbnailLoader::Load(const base::FilePath& path,
   thumbnail_loader_.Load({path, size}, std::move(callback));
 }
 
-void PickerThumbnailLoader::DecodeDriveThumbnail(
+void QuickInsertThumbnailLoader::DecodeDriveThumbnail(
     LoadCallback callback,
     const gfx::Size& size,
     const std::optional<std::vector<uint8_t>>& bytes) {
@@ -69,12 +69,13 @@ void PickerThumbnailLoader::DecodeDriveThumbnail(
   data_decoder::DecodeImageIsolated(
       *bytes, data_decoder::mojom::ImageCodec::kPng,
       /*shrink_to_fit=*/true, kMaxImageSizeInBytes, size,
-      base::BindOnce(&PickerThumbnailLoader::OnDriveThumbnailDecoded,
+      base::BindOnce(&QuickInsertThumbnailLoader::OnDriveThumbnailDecoded,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void PickerThumbnailLoader::OnDriveThumbnailDecoded(LoadCallback callback,
-                                                    const SkBitmap& image) {
+void QuickInsertThumbnailLoader::OnDriveThumbnailDecoded(
+    LoadCallback callback,
+    const SkBitmap& image) {
   if (image.empty()) {
     std::move(callback).Run(nullptr, base::File::Error::FILE_ERROR_FAILED);
     return;

@@ -22,20 +22,21 @@ class ImageView;
 namespace ash {
 
 // A bubble view to display CapsLock state when it is toggled.
-class ASH_EXPORT PickerCapsLockStateView
+class ASH_EXPORT QuickInsertCapsLockStateView
     : public views::BubbleDialogDelegateView {
-  METADATA_HEADER(PickerCapsLockStateView, views::BubbleDialogDelegateView)
+  METADATA_HEADER(QuickInsertCapsLockStateView, views::BubbleDialogDelegateView)
 
  public:
-  explicit PickerCapsLockStateView(
+  explicit QuickInsertCapsLockStateView(
       gfx::NativeView parent,
       bool enabled,
       gfx::Rect caret_bounds,
       base::i18n::TextDirection text_direction =
           base::i18n::TextDirection::UNKNOWN_DIRECTION);
-  PickerCapsLockStateView(const PickerCapsLockStateView&) = delete;
-  PickerCapsLockStateView& operator=(const PickerCapsLockStateView&) = delete;
-  ~PickerCapsLockStateView() override;
+  QuickInsertCapsLockStateView(const QuickInsertCapsLockStateView&) = delete;
+  QuickInsertCapsLockStateView& operator=(const QuickInsertCapsLockStateView&) =
+      delete;
+  ~QuickInsertCapsLockStateView() override;
 
   void Close();
   void Show();

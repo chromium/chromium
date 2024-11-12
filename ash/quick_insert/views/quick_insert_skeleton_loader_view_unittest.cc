@@ -25,14 +25,14 @@ class QuickInsertSkeletonLoaderViewTest : public views::ViewsTestBase {
 };
 
 TEST_F(QuickInsertSkeletonLoaderViewTest, InitialStateHasNoOpacity) {
-  PickerSkeletonLoaderView view;
+  QuickInsertSkeletonLoaderView view;
 
   EXPECT_EQ(view.layer()->opacity(), 0);
 }
 
 TEST_F(QuickInsertSkeletonLoaderViewTest,
        StartAnimationDoesNotImmediatelyAnimate) {
-  PickerSkeletonLoaderView view;
+  QuickInsertSkeletonLoaderView view;
 
   view.StartAnimationAfter(base::Seconds(1));
 
@@ -43,7 +43,7 @@ TEST_F(QuickInsertSkeletonLoaderViewTest,
 TEST_F(QuickInsertSkeletonLoaderViewTest, AnimationStartsAfterDelay) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  PickerSkeletonLoaderView view;
+  QuickInsertSkeletonLoaderView view;
   view.StartAnimationAfter(base::Seconds(1));
   task_environment()->FastForwardBy(base::Seconds(1));
 
@@ -53,7 +53,7 @@ TEST_F(QuickInsertSkeletonLoaderViewTest, AnimationStartsAfterDelay) {
 
 TEST_F(QuickInsertSkeletonLoaderViewTest,
        StopAnimationStopsUnstartedAnimationAndResetsOpacity) {
-  PickerSkeletonLoaderView view;
+  QuickInsertSkeletonLoaderView view;
   view.StartAnimationAfter(base::Seconds(1));
 
   view.StopAnimation();
@@ -68,7 +68,7 @@ TEST_F(QuickInsertSkeletonLoaderViewTest,
        StopAnimationStopsRunningAnimationAndResetsOpacity) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  PickerSkeletonLoaderView view;
+  QuickInsertSkeletonLoaderView view;
   view.StartAnimationAfter(base::Seconds(1));
   task_environment()->FastForwardBy(base::Seconds(1));
 

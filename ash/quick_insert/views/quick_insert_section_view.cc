@@ -183,7 +183,7 @@ const gfx::VectorIcon& GetIconForClipboardData(
 template <typename Range>
 auto FindContainerForItem(Range&& containers, views::View* item) {
   return base::ranges::find_if(
-      containers, [item](PickerTraversableItemContainer* container) {
+      containers, [item](QuickInsertTraversableItemContainer* container) {
         return container->ContainsItem(item);
       });
 }
@@ -192,8 +192,8 @@ auto FindContainerForItem(Range&& containers, views::View* item) {
 
 QuickInsertSectionView::QuickInsertSectionView(
     int section_width,
-    PickerAssetFetcher* asset_fetcher,
-    PickerSubmenuController* submenu_controller)
+    QuickInsertAssetFetcher* asset_fetcher,
+    QuickInsertSubmenuController* submenu_controller)
     : section_width_(section_width),
       asset_fetcher_(asset_fetcher),
       submenu_controller_(submenu_controller) {
@@ -212,8 +212,8 @@ QuickInsertSectionView::~QuickInsertSectionView() = default;
 std::unique_ptr<QuickInsertItemView>
 QuickInsertSectionView::CreateItemFromResult(
     const QuickInsertSearchResult& result,
-    PickerPreviewBubbleController* preview_controller,
-    PickerAssetFetcher* asset_fetcher,
+    QuickInsertPreviewBubbleController* preview_controller,
+    QuickInsertAssetFetcher* asset_fetcher,
     int available_width,
     LocalFileResultStyle local_file_result_style,
     SelectResultCallback select_result_callback) {
@@ -265,15 +265,15 @@ QuickInsertSectionView::CreateItemFromResult(
           [&](const QuickInsertGifResult& data) -> ReturnType {
             // `base::Unretained` is safe because `asset_fetcher` outlives the
             // return value.
-            auto gif_view = std::make_unique<PickerGifView>(
-                base::BindRepeating(&PickerAssetFetcher::FetchGifFromUrl,
+            auto gif_view = std::make_unique<QuickInsertGifView>(
+                base::BindRepeating(&QuickInsertAssetFetcher::FetchGifFromUrl,
                                     base::Unretained(asset_fetcher),
                                     data.preview_url),
                 base::BindRepeating(
-                    &PickerAssetFetcher::FetchGifPreviewImageFromUrl,
+                    &QuickInsertAssetFetcher::FetchGifPreviewImageFromUrl,
                     base::Unretained(asset_fetcher), data.preview_image_url),
                 data.preview_dimensions);
-            return std::make_unique<PickerImageItemView>(
+            return std::make_unique<QuickInsertImageItemView>(
                 std::move(gif_view), data.content_description,
                 std::move(select_result_callback));
           },
@@ -299,8 +299,9 @@ QuickInsertSectionView::CreateItemFromResult(
                     preview_controller,
                     base::BindOnce(ResolveFileInfo, data.file_path),
                     data.file_path,
-                    base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
-                                        base::Unretained(asset_fetcher)),
+                    base::BindRepeating(
+                        &QuickInsertAssetFetcher::FetchFileThumbnail,
+                        base::Unretained(asset_fetcher)),
                     /*update_icon=*/true);
                 return item_view;
               }
@@ -308,11 +309,14 @@ QuickInsertSectionView::CreateItemFromResult(
               case LocalFileResultStyle::kRow: {
                 // `base::Unretained` is safe because `asset_fetcher` outlives
                 // the return value.
-                auto image_view = std::make_unique<PickerAsyncPreviewImageView>(
-                    data.file_path, gfx::Size(available_width, available_width),
-                    base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
-                                        base::Unretained(asset_fetcher)));
-                return std::make_unique<PickerImageItemView>(
+                auto image_view =
+                    std::make_unique<QuickInsertAsyncPreviewImageView>(
+                        data.file_path,
+                        gfx::Size(available_width, available_width),
+                        base::BindRepeating(
+                            &QuickInsertAssetFetcher::FetchFileThumbnail,
+                            base::Unretained(asset_fetcher)));
+                return std::make_unique<QuickInsertImageItemView>(
                     std::move(image_view), data.title,
                     std::move(select_result_callback));
               }
@@ -331,8 +335,9 @@ QuickInsertSectionView::CreateItemFromResult(
             item_view->SetPreview(
                 preview_controller,
                 base::BindOnce(ResolveFileInfo, data.file_path), data.file_path,
-                base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
-                                    base::Unretained(asset_fetcher)),
+                base::BindRepeating(
+                    &QuickInsertAssetFetcher::FetchFileThumbnail,
+                    base::Unretained(asset_fetcher)),
                 /*update_icon=*/false);
             return item_view;
           },
@@ -396,7 +401,7 @@ QuickInsertSectionView::CreateItemFromResult(
                              : kQuickInsertCapsLockOffIcon,
                 cros_tokens::kCrosSysOnSurface));
             item_view->SetShortcutHintView(
-                std::make_unique<PickerShortcutHintView>(data.shortcut));
+                std::make_unique<QuickInsertShortcutHintView>(data.shortcut));
             return item_view;
           },
           [&](const QuickInsertCaseTransformResult& data) -> ReturnType {
@@ -457,27 +462,27 @@ QuickInsertListItemView* QuickInsertSectionView::AddListItem(
   return list_item_ptr;
 }
 
-PickerImageItemView* QuickInsertSectionView::AddImageGridItem(
-    std::unique_ptr<PickerImageItemView> image_item) {
+QuickInsertImageItemView* QuickInsertSectionView::AddImageGridItem(
+    std::unique_ptr<QuickInsertImageItemView> image_item) {
   image_item->SetSubmenuController(submenu_controller_);
-  PickerImageItemView* image_item_ptr =
+  QuickInsertImageItemView* image_item_ptr =
       GetOrCreateImageItemGrid()->AddImageItem(std::move(image_item));
   item_views_.push_back(image_item_ptr);
   return image_item_ptr;
 }
 
-PickerImageItemView* QuickInsertSectionView::AddImageRowItem(
-    std::unique_ptr<PickerImageItemView> image_item) {
+QuickInsertImageItemView* QuickInsertSectionView::AddImageRowItem(
+    std::unique_ptr<QuickInsertImageItemView> image_item) {
   image_item->SetSubmenuController(submenu_controller_);
-  PickerImageItemView* image_item_ptr =
+  QuickInsertImageItemView* image_item_ptr =
       GetOrCreateImageItemRow()->AddImageItem(std::move(image_item));
   item_views_.push_back(image_item_ptr);
   return image_item_ptr;
 }
 
-PickerItemWithSubmenuView* QuickInsertSectionView::AddItemWithSubmenu(
-    std::unique_ptr<PickerItemWithSubmenuView> item_with_submenu) {
-  PickerItemWithSubmenuView* item_ptr =
+QuickInsertItemWithSubmenuView* QuickInsertSectionView::AddItemWithSubmenu(
+    std::unique_ptr<QuickInsertItemWithSubmenuView> item_with_submenu) {
+  QuickInsertItemWithSubmenuView* item_ptr =
       GetOrCreateListItemContainer()->AddItemWithSubmenu(
           std::move(item_with_submenu));
   item_views_.push_back(item_ptr);
@@ -486,7 +491,7 @@ PickerItemWithSubmenuView* QuickInsertSectionView::AddItemWithSubmenu(
 
 QuickInsertItemView* QuickInsertSectionView::AddResult(
     const QuickInsertSearchResult& result,
-    PickerPreviewBubbleController* preview_controller,
+    QuickInsertPreviewBubbleController* preview_controller,
     LocalFileResultStyle local_file_result_style,
     SelectResultCallback select_result_callback) {
   auto item = CreateItemFromResult(result, preview_controller, asset_fetcher_,
@@ -496,18 +501,18 @@ QuickInsertItemView* QuickInsertSectionView::AddResult(
     return AddListItem(std::unique_ptr<QuickInsertListItemView>(
         views::AsViewClass<QuickInsertListItemView>(item.release())));
   }
-  if (views::IsViewClass<PickerImageItemView>(item.get())) {
-    std::unique_ptr<PickerImageItemView> image_item(
-        views::AsViewClass<PickerImageItemView>(item.release()));
+  if (views::IsViewClass<QuickInsertImageItemView>(item.get())) {
+    std::unique_ptr<QuickInsertImageItemView> image_item(
+        views::AsViewClass<QuickInsertImageItemView>(item.release()));
     if (local_file_result_style == LocalFileResultStyle::kRow) {
       return AddImageRowItem(std::move(image_item));
     } else {
       return AddImageGridItem(std::move(image_item));
     }
   }
-  if (views::IsViewClass<PickerItemWithSubmenuView>(item.get())) {
-    return AddItemWithSubmenu(std::unique_ptr<PickerItemWithSubmenuView>(
-        views::AsViewClass<PickerItemWithSubmenuView>(item.release())));
+  if (views::IsViewClass<QuickInsertItemWithSubmenuView>(item.get())) {
+    return AddItemWithSubmenu(std::unique_ptr<QuickInsertItemWithSubmenuView>(
+        views::AsViewClass<QuickInsertItemWithSubmenuView>(item.release())));
   }
   NOTREACHED();
 }
@@ -594,30 +599,32 @@ QuickInsertSectionView::ImageRowProperties::ImageRowProperties() = default;
 
 QuickInsertSectionView::ImageRowProperties::~ImageRowProperties() = default;
 
-PickerListItemContainerView*
+QuickInsertListItemContainerView*
 QuickInsertSectionView::GetOrCreateListItemContainer() {
   if (list_item_container_ == nullptr) {
     list_item_container_ =
-        AddChildView(std::make_unique<PickerListItemContainerView>());
+        AddChildView(std::make_unique<QuickInsertListItemContainerView>());
     item_containers_.push_back(list_item_container_);
   }
   return list_item_container_;
 }
 
-PickerImageItemGridView* QuickInsertSectionView::GetOrCreateImageItemGrid() {
+QuickInsertImageItemGridView*
+QuickInsertSectionView::GetOrCreateImageItemGrid() {
   if (image_item_grid_ == nullptr) {
-    image_item_grid_ =
-        AddChildView(std::make_unique<PickerImageItemGridView>(section_width_));
+    image_item_grid_ = AddChildView(
+        std::make_unique<QuickInsertImageItemGridView>(section_width_));
     item_containers_.push_back(image_item_grid_);
   }
   return image_item_grid_;
 }
 
-PickerImageItemRowView* QuickInsertSectionView::GetOrCreateImageItemRow() {
+QuickInsertImageItemRowView* QuickInsertSectionView::GetOrCreateImageItemRow() {
   if (image_item_row_ == nullptr) {
-    image_item_row_ = AddChildView(std::make_unique<PickerImageItemRowView>(
-        image_row_properties_.more_items_button_callback,
-        image_row_properties_.more_items_button_accessible_name));
+    image_item_row_ =
+        AddChildView(std::make_unique<QuickInsertImageItemRowView>(
+            image_row_properties_.more_items_button_callback,
+            image_row_properties_.more_items_button_accessible_name));
     image_item_row_->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
         kFilesAppIcon, cros_tokens::kCrosSysOnSurface, kIconSize));
     image_item_row_->GetViewAccessibility().SetName(

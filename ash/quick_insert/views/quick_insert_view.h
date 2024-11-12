@@ -41,36 +41,36 @@ class NonClientFrameView;
 
 namespace ash {
 
-enum class PickerCapsLockPosition;
-enum class PickerLayoutType;
-enum class PickerPositionType;
-enum class PickerPseudoFocusDirection;
-class PickerEmojiBarView;
-class PickerMainContainerView;
+enum class QuickInsertCapsLockPosition;
+enum class QuickInsertLayoutType;
+enum class QuickInsertPositionType;
+enum class QuickInsertPseudoFocusDirection;
+class QuickInsertEmojiBarView;
+class QuickInsertMainContainerView;
 class QuickInsertSearchFieldView;
-class PickerPageView;
+class QuickInsertPageView;
 class QuickInsertSearchResultsSection;
 class QuickInsertSearchResultsView;
-class PickerTraversableItemContainer;
+class QuickInsertTraversableItemContainer;
 class QuickInsertViewDelegate;
-class PickerZeroStateView;
+class QuickInsertZeroStateView;
 
 // View for the Quick Insert widget.
 class ASH_EXPORT QuickInsertView
     : public views::WidgetDelegateView,
-      public PickerZeroStateViewDelegate,
+      public QuickInsertZeroStateViewDelegate,
       public QuickInsertSearchResultsViewDelegate,
-      public PickerEmojiBarViewDelegate,
-      public PickerPseudoFocusHandler,
-      public PickerPreviewBubbleController::Observer {
+      public QuickInsertEmojiBarViewDelegate,
+      public QuickInsertPseudoFocusHandler,
+      public QuickInsertPreviewBubbleController::Observer {
   METADATA_HEADER(QuickInsertView, views::WidgetDelegateView)
 
  public:
   // `delegate` must remain valid for the lifetime of this class.
   explicit QuickInsertView(QuickInsertViewDelegate* delegate,
                            const gfx::Rect& anchor_bounds,
-                           PickerLayoutType layout_type,
-                           PickerPositionType position_type,
+                           QuickInsertLayoutType layout_type,
+                           QuickInsertPositionType position_type,
                            base::TimeTicks trigger_event_timestamp);
   QuickInsertView(const QuickInsertView&) = delete;
   QuickInsertView& operator=(const QuickInsertView&) = delete;
@@ -91,14 +91,14 @@ class ASH_EXPORT QuickInsertView
   void RemovedFromWidget() override;
   void Layout(PassKey) override;
 
-  // PickerZeroStateViewDelegate:
+  // QuickInsertZeroStateViewDelegate:
   void SelectZeroStateCategory(QuickInsertCategory category) override;
   void SelectZeroStateResult(const QuickInsertSearchResult& result) override;
   void GetZeroStateSuggestedResults(SuggestedResultsCallback callback) override;
   void RequestPseudoFocus(views::View* view) override;
   void OnZeroStateViewHeightChanged() override;
   void SetCapsLockDisplayed(bool displayed) override;
-  PickerCapsLockPosition GetCapsLockPosition() override;
+  QuickInsertCapsLockPosition GetCapsLockPosition() override;
 
   // QuickInsertSearchResultsViewDelegate:
   void SelectSearchResult(const QuickInsertSearchResult& result) override;
@@ -107,31 +107,31 @@ class ASH_EXPORT QuickInsertView
       const QuickInsertSearchResult& result) override;
   void OnSearchResultsViewHeightChanged() override;
 
-  // PickerEmojiBarViewDelegate:
+  // QuickInsertEmojiBarViewDelegate:
   void ToggleGifs() override;
   void ShowEmojiPicker(ui::EmojiPickerCategory category) override;
 
-  // PickerPseudoFocusHandler:
+  // QuickInsertPseudoFocusHandler:
   bool DoPseudoFocusedAction() override;
   bool MovePseudoFocusUp() override;
   bool MovePseudoFocusDown() override;
   bool MovePseudoFocusLeft() override;
   bool MovePseudoFocusRight() override;
-  bool AdvancePseudoFocus(PickerPseudoFocusDirection direction) override;
+  bool AdvancePseudoFocus(QuickInsertPseudoFocusDirection direction) override;
 
-  // PickerPreviewBubbleController::Observer:
+  // QuickInsertPreviewBubbleController::Observer:
   void OnPreviewBubbleVisibilityChanged(bool visible) override;
 
   // Returns the target bounds for this Quick Insert view. The target bounds try
   // to vertically align `search_field_view_` with `anchor_bounds`.
   // `anchor_bounds` and returned bounds should be in screen coordinates.
   gfx::Rect GetTargetBounds(const gfx::Rect& anchor_bounds,
-                            PickerLayoutType layout_type);
+                            QuickInsertLayoutType layout_type);
 
-  PickerSubmenuController& submenu_controller_for_testing() {
+  QuickInsertSubmenuController& submenu_controller_for_testing() {
     return submenu_controller_;
   }
-  PickerPreviewBubbleController& preview_controller_for_testing() {
+  QuickInsertPreviewBubbleController& preview_controller_for_testing() {
     return preview_controller_;
   }
 
@@ -144,10 +144,12 @@ class ASH_EXPORT QuickInsertView
   QuickInsertSearchResultsView& category_results_view_for_testing() {
     return *category_results_view_;
   }
-  PickerZeroStateView& zero_state_view_for_testing() {
+  QuickInsertZeroStateView& zero_state_view_for_testing() {
     return *zero_state_view_;
   }
-  PickerEmojiBarView* emoji_bar_view_for_testing() { return emoji_bar_view_; }
+  QuickInsertEmojiBarView* emoji_bar_view_for_testing() {
+    return emoji_bar_view_;
+  }
 
  private:
   // Sets the search text field's query text to the query, focuses it, then
@@ -193,21 +195,21 @@ class ASH_EXPORT QuickInsertView
 
   // Adds the main container, which includes the search field and contents
   // pages.
-  void AddMainContainerView(PickerLayoutType layout_type);
+  void AddMainContainerView(QuickInsertLayoutType layout_type);
 
   // Adds the emoji bar, which contains emoji and other expression results and
   // is shown above the main container.
   void AddEmojiBarView();
 
   // Sets `page_view` as the active page in `main_container_view_`.
-  void SetActivePage(PickerPageView* page_view);
+  void SetActivePage(QuickInsertPageView* page_view);
 
   // Sets emoji bar visibility, or does nothing if the emoji bar is not enabled.
   void SetEmojiBarVisibleIfEnabled(bool visible);
 
   // Moves pseudo focus between different parts of the QuickInsertView, i.e.
   // between the emoji bar and the main container.
-  void AdvanceActiveItemContainer(PickerPseudoFocusDirection direction);
+  void AdvanceActiveItemContainer(QuickInsertPseudoFocusDirection direction);
 
   // Sets `view` as the pseudo focused view, i.e. the view which responds to
   // user actions that trigger `DoPseudoFocusedAction`. If `view` is null,
@@ -254,24 +256,24 @@ class ASH_EXPORT QuickInsertView
   std::u16string last_query_;
   std::optional<QuickInsertCategory> last_selected_category_;
 
-  PickerKeyEventHandler key_event_handler_;
-  PickerSubmenuController submenu_controller_;
-  PickerPreviewBubbleController preview_controller_;
-  PickerPerformanceMetrics performance_metrics_;
+  QuickInsertKeyEventHandler key_event_handler_;
+  QuickInsertSubmenuController submenu_controller_;
+  QuickInsertPreviewBubbleController preview_controller_;
+  QuickInsertPerformanceMetrics performance_metrics_;
   raw_ptr<QuickInsertViewDelegate> delegate_ = nullptr;
 
   // The main container contains the search field and contents pages.
-  raw_ptr<PickerMainContainerView> main_container_view_ = nullptr;
+  raw_ptr<QuickInsertMainContainerView> main_container_view_ = nullptr;
   raw_ptr<QuickInsertSearchFieldView> search_field_view_ = nullptr;
-  raw_ptr<PickerZeroStateView> zero_state_view_ = nullptr;
+  raw_ptr<QuickInsertZeroStateView> zero_state_view_ = nullptr;
   raw_ptr<QuickInsertSearchResultsView> category_results_view_ = nullptr;
   raw_ptr<QuickInsertSearchResultsView> search_results_view_ = nullptr;
 
-  raw_ptr<PickerEmojiBarView> emoji_bar_view_ = nullptr;
+  raw_ptr<QuickInsertEmojiBarView> emoji_bar_view_ = nullptr;
 
   // The item container which contains `pseudo_focused_view_` and will respond
   // to keyboard navigation events.
-  raw_ptr<PickerTraversableItemContainer> active_item_container_ = nullptr;
+  raw_ptr<QuickInsertTraversableItemContainer> active_item_container_ = nullptr;
 
   // Tracks the currently pseudo focused view, which responds to user actions
   // that trigger `DoPseudoFocusedAction`.
@@ -287,8 +289,8 @@ class ASH_EXPORT QuickInsertView
   // have not been published yet.
   base::OneShotTimer clear_results_timer_;
 
-  base::ScopedObservation<PickerPreviewBubbleController,
-                          PickerPreviewBubbleController::Observer>
+  base::ScopedObservation<QuickInsertPreviewBubbleController,
+                          QuickInsertPreviewBubbleController::Observer>
       preview_bubble_observation_{this};
 
   base::WeakPtrFactory<QuickInsertView> weak_ptr_factory_{this};

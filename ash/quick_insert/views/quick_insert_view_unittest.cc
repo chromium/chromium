@@ -119,10 +119,10 @@ auto ContainsEvent(const metrics::structured::Event& event) {
                Eq(std::ref(event.metric_values())))));
 }
 
-class PickerPreviewBubbleVisibleWaiter
-    : public PickerPreviewBubbleController::Observer {
+class QuickInsertPreviewBubbleVisibleWaiter
+    : public QuickInsertPreviewBubbleController::Observer {
  public:
-  void Wait(PickerPreviewBubbleController* preview_controller) {
+  void Wait(QuickInsertPreviewBubbleController* preview_controller) {
     if (!preview_controller->IsBubbleVisible()) {
       preview_bubble_observation_.Observe(preview_controller);
       run_loop_.Run();
@@ -137,8 +137,8 @@ class PickerPreviewBubbleVisibleWaiter
 
  private:
   base::RunLoop run_loop_;
-  base::ScopedObservation<PickerPreviewBubbleController,
-                          PickerPreviewBubbleController::Observer>
+  base::ScopedObservation<QuickInsertPreviewBubbleController,
+                          QuickInsertPreviewBubbleController::Observer>
       preview_bubble_observation_{this};
 };
 
@@ -183,7 +183,7 @@ class FakeQuickInsertViewDelegate : public QuickInsertViewDelegate {
     QuickInsertActionType action_type = QuickInsertActionType::kInsert;
     std::vector<QuickInsertEmojiResult> emoji_results;
     std::vector<std::string> suggested_emojis;
-    PickerModeType mode = PickerModeType::kNoSelection;
+    QuickInsertModeType mode = QuickInsertModeType::kNoSelection;
   };
 
   FakeQuickInsertViewDelegate() = default;
@@ -236,7 +236,7 @@ class FakeQuickInsertViewDelegate : public QuickInsertViewDelegate {
       const QuickInsertSearchResult& result) override {
     last_inserted_result_ = result;
     session_metrics_.SetOutcome(
-        PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
+        QuickInsertSessionMetrics::SessionOutcome::kInsertedOrCopied);
   }
   void OpenResult(const QuickInsertSearchResult& result) override {
     last_opened_result_ = result;
@@ -255,9 +255,11 @@ class FakeQuickInsertViewDelegate : public QuickInsertViewDelegate {
     showed_lobster_ = true;
   }
 
-  PickerAssetFetcher* GetAssetFetcher() override { return &asset_fetcher_; }
+  QuickInsertAssetFetcher* GetAssetFetcher() override {
+    return &asset_fetcher_;
+  }
 
-  PickerSessionMetrics& GetSessionMetrics() override {
+  QuickInsertSessionMetrics& GetSessionMetrics() override {
     return session_metrics_;
   }
   QuickInsertActionType GetActionForResult(
@@ -275,10 +277,10 @@ class FakeQuickInsertViewDelegate : public QuickInsertViewDelegate {
   }
 
   bool IsGifsEnabled() override { return true; }
-  PickerModeType GetMode() override { return options_.mode; }
+  QuickInsertModeType GetMode() override { return options_.mode; }
 
-  PickerCapsLockPosition GetCapsLockPosition() override {
-    return PickerCapsLockPosition::kTop;
+  QuickInsertCapsLockPosition GetCapsLockPosition() override {
+    return QuickInsertCapsLockPosition::kTop;
   }
 
   std::optional<QuickInsertSearchResult> last_inserted_result() const {
@@ -303,7 +305,7 @@ class FakeQuickInsertViewDelegate : public QuickInsertViewDelegate {
  private:
   Options options_;
   MockPickerAssetFetcher asset_fetcher_;
-  PickerSessionMetrics session_metrics_;
+  QuickInsertSessionMetrics session_metrics_;
   std::optional<QuickInsertSearchResult> last_inserted_result_;
   std::optional<QuickInsertSearchResult> last_opened_result_;
   std::optional<ui::EmojiPickerCategory> emoji_picker_category_;
@@ -396,7 +398,7 @@ TEST_F(QuickInsertViewTest, ShowsZeroStateView) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 TEST_F(QuickInsertViewTest, SearchPlaceholderMatchesUnfocusedMode) {
   FakeQuickInsertViewDelegate delegate({
-      .mode = PickerModeType::kUnfocused,
+      .mode = QuickInsertModeType::kUnfocused,
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -412,7 +414,7 @@ TEST_F(QuickInsertViewTest, SearchPlaceholderMatchesUnfocusedMode) {
 TEST_F(QuickInsertViewTest, SearchPlaceholderMatchesNoSelectionModeWithEditor) {
   FakeQuickInsertViewDelegate delegate({
       .available_categories = {QuickInsertCategory::kEditorWrite},
-      .mode = PickerModeType::kNoSelection,
+      .mode = QuickInsertModeType::kNoSelection,
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -429,7 +431,7 @@ TEST_F(QuickInsertViewTest, SearchPlaceholderMatchesNoSelectionModeWithEditor) {
 TEST_F(QuickInsertViewTest,
        SearchPlaceholderMatchesNoSelectionModeWithoutEditor) {
   FakeQuickInsertViewDelegate delegate({
-      .mode = PickerModeType::kNoSelection,
+      .mode = QuickInsertModeType::kNoSelection,
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -446,7 +448,7 @@ TEST_F(QuickInsertViewTest,
        SearchPlaceholderMatchesHasSelectionModeWithEditor) {
   FakeQuickInsertViewDelegate delegate({
       .available_categories = {QuickInsertCategory::kEditorRewrite},
-      .mode = PickerModeType::kHasSelection,
+      .mode = QuickInsertModeType::kHasSelection,
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -463,7 +465,7 @@ TEST_F(QuickInsertViewTest,
 TEST_F(QuickInsertViewTest,
        SearchPlaceholderMatchesHasSelectionModeWithoutEditor) {
   FakeQuickInsertViewDelegate delegate({
-      .mode = PickerModeType::kHasSelection,
+      .mode = QuickInsertModeType::kHasSelection,
   });
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
@@ -1769,8 +1771,8 @@ TEST_P(QuickInsertViewEmojiTest, SearchingShowsExpressionResultsInEmojiBar) {
   EXPECT_TRUE(quick_insert_view->emoji_bar_view_for_testing()->GetVisible());
   EXPECT_THAT(
       quick_insert_view->emoji_bar_view_for_testing()->GetItemsForTesting(),
-      ElementsAre(Truly(&views::IsViewClass<PickerEmojiItemView>),
-                  Truly(&views::IsViewClass<PickerEmojiItemView>)));
+      ElementsAre(Truly(&views::IsViewClass<QuickInsertEmojiItemView>),
+                  Truly(&views::IsViewClass<QuickInsertEmojiItemView>)));
 }
 
 TEST_P(QuickInsertViewEmojiTest, InitiallyShowsSuggestedEmojis) {
@@ -1786,10 +1788,10 @@ TEST_P(QuickInsertViewEmojiTest, InitiallyShowsSuggestedEmojis) {
   EXPECT_TRUE(quick_insert_view->emoji_bar_view_for_testing()->GetVisible());
   EXPECT_THAT(
       quick_insert_view->emoji_bar_view_for_testing()->GetItemsForTesting(),
-      ElementsAre(AsView<PickerEmojiItemView>(
-                      Property(&PickerEmojiItemView::GetTextForTesting, u"😊")),
-                  AsView<PickerEmojiItemView>(Property(
-                      &PickerEmojiItemView::GetTextForTesting, u"👍"))));
+      ElementsAre(AsView<QuickInsertEmojiItemView>(Property(
+                      &QuickInsertEmojiItemView::GetTextForTesting, u"😊")),
+                  AsView<QuickInsertEmojiItemView>(Property(
+                      &QuickInsertEmojiItemView::GetTextForTesting, u"👍"))));
 }
 
 TEST_F(QuickInsertViewTest, NoEmojiBarIfExpressionsCategoryNotAvailable) {
@@ -2001,7 +2003,7 @@ TEST_F(QuickInsertViewTest, BoundsAboveAnchorForAnchorNearBottomRightOfScreen) {
 
 TEST_F(QuickInsertViewTest, BoundsLeftAlignedBelowSelectionNearTopOfScreen) {
   FakeQuickInsertViewDelegate delegate({
-      .mode = PickerModeType::kHasSelection,
+      .mode = QuickInsertModeType::kHasSelection,
   });
   const gfx::Rect screen_work_area =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
@@ -2018,7 +2020,7 @@ TEST_F(QuickInsertViewTest, BoundsLeftAlignedBelowSelectionNearTopOfScreen) {
 
 TEST_F(QuickInsertViewTest, BoundsLeftAlignedAboveSelectionNearBottomOfScreen) {
   FakeQuickInsertViewDelegate delegate({
-      .mode = PickerModeType::kHasSelection,
+      .mode = QuickInsertModeType::kHasSelection,
   });
   const gfx::Rect screen_work_area =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
@@ -2274,7 +2276,7 @@ TEST_F(QuickInsertViewTest, LeftArrowKeyClosesSubmenu) {
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RIGHT, ui::EF_NONE);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_LEFT, ui::EF_NONE);
 
-  PickerSubmenuController& submenu_controller =
+  QuickInsertSubmenuController& submenu_controller =
       GetQuickInsertViewFromWidget(*widget)->submenu_controller_for_testing();
   views::test::WidgetDestroyedWaiter(submenu_controller.widget_for_testing())
       .Wait();
@@ -2292,7 +2294,7 @@ TEST_F(QuickInsertViewTest, PressingEscClosesSubmenuThenWidget) {
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
 
-  PickerSubmenuController& submenu_controller =
+  QuickInsertSubmenuController& submenu_controller =
       GetQuickInsertViewFromWidget(*widget)->submenu_controller_for_testing();
   views::test::WidgetDestroyedWaiter(submenu_controller.widget_for_testing())
       .Wait();
@@ -2322,9 +2324,9 @@ TEST_F(QuickInsertViewTest, PressingEscClosesPreviewThenWidget) {
   auto widget = QuickInsertWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
-  PickerPreviewBubbleController& preview_controller =
+  QuickInsertPreviewBubbleController& preview_controller =
       GetQuickInsertViewFromWidget(*widget)->preview_controller_for_testing();
-  PickerPreviewBubbleVisibleWaiter().Wait(&preview_controller);
+  QuickInsertPreviewBubbleVisibleWaiter().Wait(&preview_controller);
   EXPECT_TRUE(preview_controller.IsBubbleVisible());
 
   PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
@@ -2363,9 +2365,9 @@ TEST_F(QuickInsertViewTest, TabKeyNavigatesItemWithPreview) {
 
   // Should navigate to the file result and show the preview bubble.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
-  PickerPreviewBubbleController& preview_controller =
+  QuickInsertPreviewBubbleController& preview_controller =
       GetQuickInsertViewFromWidget(*widget)->preview_controller_for_testing();
-  PickerPreviewBubbleVisibleWaiter().Wait(&preview_controller);
+  QuickInsertPreviewBubbleVisibleWaiter().Wait(&preview_controller);
 
   EXPECT_TRUE(preview_controller.IsBubbleVisible());
 
@@ -2643,7 +2645,7 @@ TEST_F(QuickInsertViewTest, ShowsSubmenuOnMouseHover) {
           ->GetBoundsInScreen()
           .CenterPoint());
 
-  PickerSubmenuController& submenu_controller =
+  QuickInsertSubmenuController& submenu_controller =
       quick_insert_view->submenu_controller_for_testing();
   views::test::WidgetVisibleWaiter(submenu_controller.widget_for_testing())
       .Wait();
@@ -2679,7 +2681,7 @@ TEST_F(QuickInsertViewTest,
           ->item_views_for_testing()[0]
           ->GetBoundsInScreen()
           .CenterPoint());
-  PickerSubmenuController& submenu_controller =
+  QuickInsertSubmenuController& submenu_controller =
       quick_insert_view->submenu_controller_for_testing();
   views::test::WidgetVisibleWaiter(submenu_controller.widget_for_testing())
       .Wait();
@@ -2804,7 +2806,7 @@ TEST_P(QuickInsertViewEmojiTest,
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
 
-  PickerEmojiBarView* emoji_bar =
+  QuickInsertEmojiBarView* emoji_bar =
       GetQuickInsertViewFromWidget(*widget)->emoji_bar_view_for_testing();
   ASSERT_NE(emoji_bar, nullptr);
   views::View* more_emojis_button = emoji_bar->more_emojis_button_for_testing();
@@ -2824,7 +2826,7 @@ TEST_F(QuickInsertViewTest, ClickingGifsButtonOpensGifPickerWithQuerySearch) {
   widget->Show();
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
 
-  PickerEmojiBarView* emoji_bar =
+  QuickInsertEmojiBarView* emoji_bar =
       GetQuickInsertViewFromWidget(*widget)->emoji_bar_view_for_testing();
   ASSERT_NE(emoji_bar, nullptr);
   views::View* gifs_button = emoji_bar->gifs_button_for_testing();

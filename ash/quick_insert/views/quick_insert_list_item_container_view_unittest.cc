@@ -20,7 +20,7 @@ namespace {
 using QuickInsertListItemContainerViewTest = views::ViewsTestBase;
 
 TEST_F(QuickInsertListItemContainerViewTest, GetsTopItem) {
-  PickerListItemContainerView container;
+  QuickInsertListItemContainerView container;
 
   QuickInsertListItemView* top_item = container.AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
@@ -31,13 +31,13 @@ TEST_F(QuickInsertListItemContainerViewTest, GetsTopItem) {
 }
 
 TEST_F(QuickInsertListItemContainerViewTest, EmptyContainerHasNoTopItem) {
-  PickerListItemContainerView container;
+  QuickInsertListItemContainerView container;
 
   EXPECT_EQ(container.GetTopItem(), nullptr);
 }
 
 TEST_F(QuickInsertListItemContainerViewTest, GetsBottomItem) {
-  PickerListItemContainerView container;
+  QuickInsertListItemContainerView container;
 
   container.AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
@@ -48,13 +48,13 @@ TEST_F(QuickInsertListItemContainerViewTest, GetsBottomItem) {
 }
 
 TEST_F(QuickInsertListItemContainerViewTest, EmptyContainerHasNoBottomItem) {
-  PickerListItemContainerView container;
+  QuickInsertListItemContainerView container;
 
   EXPECT_EQ(container.GetBottomItem(), nullptr);
 }
 
 TEST_F(QuickInsertListItemContainerViewTest, GetsItemAbove) {
-  PickerListItemContainerView container;
+  QuickInsertListItemContainerView container;
 
   QuickInsertListItemView* item1 = container.AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
@@ -66,7 +66,7 @@ TEST_F(QuickInsertListItemContainerViewTest, GetsItemAbove) {
 }
 
 TEST_F(QuickInsertListItemContainerViewTest, ItemNotInContainerHasNoItemAbove) {
-  PickerListItemContainerView container;
+  QuickInsertListItemContainerView container;
 
   QuickInsertListItemView item_not_in_container(base::DoNothing());
 
@@ -74,7 +74,7 @@ TEST_F(QuickInsertListItemContainerViewTest, ItemNotInContainerHasNoItemAbove) {
 }
 
 TEST_F(QuickInsertListItemContainerViewTest, GetsItemBelow) {
-  PickerListItemContainerView container;
+  QuickInsertListItemContainerView container;
 
   QuickInsertListItemView* item1 = container.AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
@@ -86,7 +86,7 @@ TEST_F(QuickInsertListItemContainerViewTest, GetsItemBelow) {
 }
 
 TEST_F(QuickInsertListItemContainerViewTest, ItemNotInContainerHasNoItemBelow) {
-  PickerListItemContainerView container;
+  QuickInsertListItemContainerView container;
 
   QuickInsertListItemView item_not_in_container(base::DoNothing());
 
@@ -94,7 +94,7 @@ TEST_F(QuickInsertListItemContainerViewTest, ItemNotInContainerHasNoItemBelow) {
 }
 
 TEST_F(QuickInsertListItemContainerViewTest, NoItemLeftOf) {
-  PickerListItemContainerView container;
+  QuickInsertListItemContainerView container;
 
   QuickInsertListItemView* item1 = container.AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
@@ -106,7 +106,7 @@ TEST_F(QuickInsertListItemContainerViewTest, NoItemLeftOf) {
 }
 
 TEST_F(QuickInsertListItemContainerViewTest, NoItemRightOf) {
-  PickerListItemContainerView container;
+  QuickInsertListItemContainerView container;
 
   QuickInsertListItemView* item1 = container.AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));
@@ -118,7 +118,7 @@ TEST_F(QuickInsertListItemContainerViewTest, NoItemRightOf) {
 }
 
 TEST_F(QuickInsertListItemContainerViewTest, ChildrenHasListItemRole) {
-  PickerListItemContainerView container;
+  QuickInsertListItemContainerView container;
 
   container.AddListItem(
       std::make_unique<QuickInsertListItemView>(base::DoNothing()));

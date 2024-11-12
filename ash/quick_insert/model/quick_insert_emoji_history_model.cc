@@ -40,15 +40,15 @@ std::string ConvertEmojiCategoryToString(ui::EmojiPickerCategory category) {
 
 }  // namespace
 
-bool PickerEmojiHistoryModel::EmojiHistoryItem::operator==(
-    const PickerEmojiHistoryModel::EmojiHistoryItem&) const = default;
+bool QuickInsertEmojiHistoryModel::EmojiHistoryItem::operator==(
+    const QuickInsertEmojiHistoryModel::EmojiHistoryItem&) const = default;
 
-PickerEmojiHistoryModel::PickerEmojiHistoryModel(PrefService* prefs,
-                                                 base::Clock* clock)
+QuickInsertEmojiHistoryModel::QuickInsertEmojiHistoryModel(PrefService* prefs,
+                                                           base::Clock* clock)
     : prefs_(CHECK_DEREF(prefs)), clock_(clock) {}
 
-std::vector<PickerEmojiHistoryModel::EmojiHistoryItem>
-PickerEmojiHistoryModel::GetRecentEmojis(
+std::vector<QuickInsertEmojiHistoryModel::EmojiHistoryItem>
+QuickInsertEmojiHistoryModel::GetRecentEmojis(
     ui::EmojiPickerCategory category) const {
   const base::Value::List* history =
       prefs_->GetDict(prefs::kEmojiPickerHistory)
@@ -77,7 +77,7 @@ PickerEmojiHistoryModel::GetRecentEmojis(
   return results;
 }
 
-void PickerEmojiHistoryModel::UpdateRecentEmoji(
+void QuickInsertEmojiHistoryModel::UpdateRecentEmoji(
     ui::EmojiPickerCategory category,
     std::string_view latest_emoji) {
   std::vector<EmojiHistoryItem> history = GetRecentEmojis(category);
