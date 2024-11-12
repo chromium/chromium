@@ -68,8 +68,23 @@ class FeaturePromoQueue {
   // canceled.
   bool Cancel(const base::Feature& iph_feature);
 
+  // Removes any ineligible promos from the queue and then returns the feature
+  // associated with the next entry that is eligible to show, or null if none is
+  // found.
+  //
+  // Unlike `UpdateAndGetNextEligiblePromo()`, does not remove the entry from
+  // the queue. Use when you want to determine the next eligible promo without
+  // actually showing it right away.
+  //
+  // Implicitly calls `RemoveIneligiblePromos()` as part of the initial cleanup
+  // process.
+  const base::Feature* UpdateAndIdentifyNextEligiblePromo();
+
   // Removes any ineligible promos from the queue and then returns the next
   // entry that is eligible to show, or null if none is found.
+  //
+  // Unlike `UpdateAndIdentifyNextEligiblePromo()` this removes the promo from
+  // the queue, with the expectation that it will be shown.
   //
   // Implicitly calls `RemoveIneligiblePromos()` as part of the initial cleanup
   // process.
@@ -103,6 +118,11 @@ class FeaturePromoQueue {
   // calling their "show promo result" callbacks with the failure code of the
   // first failed required precondition.
   void RemovePromosWithFailedPreconditions();
+
+  // Finds the first promo whose wait-for preconditions are met without popping
+  // it from the queue. Should be called after the two "Remove..." methods above
+  // to ensure only valid promos are returned.
+  const base::Feature* IdentifyNextEligiblePromo();
 
   // Finds, pops, and returns the first promo whose wait-for preconditions are
   // met. Should be called after the two "Remove..." methods above to ensure

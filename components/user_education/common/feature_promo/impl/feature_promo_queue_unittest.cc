@@ -13,6 +13,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/user_education_storage_service.h"
 #include "components/user_education/test/test_feature_promo_precondition.h"
@@ -94,6 +95,11 @@ class FeaturePromoQueueTest : public testing::Test {
     queue.RemovePromosWithFailedPreconditions();
   }
 
+  static const base::Feature* IdentifyNextEligiblePromo(
+      FeaturePromoQueue& queue) {
+    return queue.IdentifyNextEligiblePromo();
+  }
+
   static std::optional<FeaturePromoParams> GetNextEligiblePromo(
       FeaturePromoQueue& queue) {
     return queue.GetNextEligiblePromo();
@@ -112,8 +118,8 @@ class FeaturePromoQueueTest : public testing::Test {
     task_environment_.FastForwardBy(amount);
   }
 
-  void ExpectNextPromo(FeaturePromoQueue& queue,
-                       std::optional<int> index) const {
+  void GetAndCheckNextPromo(FeaturePromoQueue& queue,
+                            std::optional<int> index) const {
     const auto result = queue.UpdateAndGetNextEligiblePromo();
     if (index) {
       ASSERT_TRUE(result.has_value());
@@ -123,6 +129,18 @@ class FeaturePromoQueueTest : public testing::Test {
                                   << " but got " << actual->name;
     } else {
       EXPECT_FALSE(result.has_value());
+    }
+  }
+
+  void IdentifyAndCheckNextPromo(FeaturePromoQueue& queue,
+                                 std::optional<int> index) const {
+    const base::Feature* actual = queue.UpdateAndIdentifyNextEligiblePromo();
+    if (index) {
+      const base::Feature* const expected = promo_specs_[*index].feature();
+      EXPECT_EQ(expected, actual) << "Expected feature " << expected->name
+                                  << " but got " << actual->name;
+    } else {
+      EXPECT_EQ(nullptr, actual);
     }
   }
 
@@ -255,16 +273,19 @@ TEST_F(FeaturePromoQueueTest, GetNextEligiblePromo) {
   TryToQueue(queue, 1, result2.Get());
   TryToQueue(queue, 2, result3.Get());
 
+  EXPECT_EQ(&kTestFeature1, IdentifyNextEligiblePromo(queue));
   const auto promo1 = GetNextEligiblePromo(queue);
   ASSERT_TRUE(promo1.has_value());
   EXPECT_EQ(&kTestFeature1, &promo1->feature.get());
   EXPECT_EQ(2U, queue.queued_count());
 
+  EXPECT_EQ(&kTestFeature2, IdentifyNextEligiblePromo(queue));
   const auto promo2 = GetNextEligiblePromo(queue);
   ASSERT_TRUE(promo2.has_value());
   EXPECT_EQ(&kTestFeature2, &promo2->feature.get());
   EXPECT_EQ(1U, queue.queued_count());
 
+  EXPECT_EQ(&kTestFeature3, IdentifyNextEligiblePromo(queue));
   const auto promo3 = GetNextEligiblePromo(queue);
   ASSERT_TRUE(promo3.has_value());
   EXPECT_EQ(&kTestFeature3, &promo3->feature.get());
@@ -285,16 +306,19 @@ TEST_F(FeaturePromoQueueTest, GetNextEligiblePromoSkipsWaitFor) {
   // This will block the first feature.
   wait_for().SetForFeature(kTestFeature1, kPrecond3, false);
 
+  EXPECT_EQ(&kTestFeature2, IdentifyNextEligiblePromo(queue));
   const auto promo2 = GetNextEligiblePromo(queue);
   ASSERT_TRUE(promo2.has_value());
   EXPECT_EQ(&kTestFeature2, &promo2->feature.get());
   EXPECT_EQ(2U, queue.queued_count());
 
+  EXPECT_EQ(&kTestFeature3, IdentifyNextEligiblePromo(queue));
   const auto promo3 = GetNextEligiblePromo(queue);
   ASSERT_TRUE(promo3.has_value());
   EXPECT_EQ(&kTestFeature3, &promo3->feature.get());
   EXPECT_EQ(1U, queue.queued_count());
 
+  EXPECT_EQ(nullptr, IdentifyNextEligiblePromo(queue));
   EXPECT_EQ(std::nullopt, GetNextEligiblePromo(queue));
 }
 
@@ -337,10 +361,10 @@ TEST_F(FeaturePromoQueueTest, UpdateAndGetNextEligiblePromo_OnePromo) {
   auto queue = CreateDefaultQueue();
   TryToQueue(queue, 0, result1.Get());
   wait_for().SetForFeature(kTestFeature1, kPrecond3, false);
-  ExpectNextPromo(queue, std::nullopt);
+  GetAndCheckNextPromo(queue, std::nullopt);
   EXPECT_EQ(1U, queue.queued_count());
   wait_for().SetForFeature(kTestFeature1, kPrecond3, true);
-  ExpectNextPromo(queue, 0);
+  GetAndCheckNextPromo(queue, 0);
   EXPECT_EQ(0U, queue.queued_count());
 }
 
@@ -352,11 +376,11 @@ TEST_F(FeaturePromoQueueTest,
   TryToQueue(queue, 2);
   // Block the second feature; the first and third should be ready to go.
   wait_for().SetForFeature(kTestFeature2, kPrecond3, false);
-  ExpectNextPromo(queue, 0);
-  ExpectNextPromo(queue, 2);
+  GetAndCheckNextPromo(queue, 0);
+  GetAndCheckNextPromo(queue, 2);
   // Once the second is unblocked, it should also be able to go.
   wait_for().SetForFeature(kTestFeature2, kPrecond3, true);
-  ExpectNextPromo(queue, 1);
+  GetAndCheckNextPromo(queue, 1);
 }
 
 TEST_F(FeaturePromoQueueTest,
@@ -367,11 +391,11 @@ TEST_F(FeaturePromoQueueTest,
   TryToQueue(queue, 2);
   // Block the second feature; the first should be ready to go.
   wait_for().SetForFeature(kTestFeature2, kPrecond3, false);
-  ExpectNextPromo(queue, 0);
+  GetAndCheckNextPromo(queue, 0);
   // Once the second is unblocked, it should also be able to go.
   wait_for().SetForFeature(kTestFeature2, kPrecond3, true);
-  ExpectNextPromo(queue, 1);
-  ExpectNextPromo(queue, 2);
+  GetAndCheckNextPromo(queue, 1);
+  GetAndCheckNextPromo(queue, 2);
 }
 
 TEST_F(FeaturePromoQueueTest, UpdateAndGetNextEligiblePromo_SomePromosFail) {
@@ -386,7 +410,7 @@ TEST_F(FeaturePromoQueueTest, UpdateAndGetNextEligiblePromo_SomePromosFail) {
   FastForward(base::Seconds(10));
   // Now at t=20, then fail the second feature.
   required().SetForFeature(kTestFeature2, kPrecond1, false);
-  ExpectNextPromo(queue, 2);
+  GetAndCheckNextPromo(queue, 2);
   EXPECT_TRUE(queue.is_empty());
 }
 
@@ -404,7 +428,7 @@ TEST_F(FeaturePromoQueueTest, QueueRequeueAndRetrievePromosOverTime) {
 
   FastForward(base::Seconds(10));
   // Now at t=20.
-  ExpectNextPromo(queue, 1);
+  GetAndCheckNextPromo(queue, 1);
   EXPECT_FALSE(queue.IsQueued(kTestFeature1));
   EXPECT_FALSE(queue.IsQueued(kTestFeature2));
   EXPECT_TRUE(queue.IsQueued(kTestFeature3));
@@ -413,8 +437,52 @@ TEST_F(FeaturePromoQueueTest, QueueRequeueAndRetrievePromosOverTime) {
   EXPECT_TRUE(queue.IsQueued(kTestFeature1));
   FastForward(base::Seconds(10));
   // Queued at t=30
-  ExpectNextPromo(queue, 0);
+  GetAndCheckNextPromo(queue, 0);
   EXPECT_TRUE(queue.is_empty());
+}
+
+TEST_F(FeaturePromoQueueTest, UpdateAndIdentifyNextEligiblePromo_OnePromo) {
+  UNCALLED_MOCK_CALLBACK(ResultCallback, result1);
+  auto queue = CreateDefaultQueue();
+  TryToQueue(queue, 0, result1.Get());
+  wait_for().SetForFeature(kTestFeature1, kPrecond3, false);
+  IdentifyAndCheckNextPromo(queue, std::nullopt);
+  EXPECT_EQ(1U, queue.queued_count());
+  wait_for().SetForFeature(kTestFeature1, kPrecond3, true);
+  IdentifyAndCheckNextPromo(queue, 0);
+  EXPECT_EQ(1U, queue.queued_count());
+  queue.FailAll(FeaturePromoResult::kCanceled);
+  IdentifyAndCheckNextPromo(queue, std::nullopt);
+}
+
+TEST_F(FeaturePromoQueueTest,
+       UpdateAndIdentifyNextEligiblePromo_MultiplePromosOutOfOrder) {
+  auto queue = CreateDefaultQueue();
+  TryToQueue(queue, 0);
+  TryToQueue(queue, 1);
+  // Block the first feature; the second should be ready to go.
+  wait_for().SetForFeature(kTestFeature1, kPrecond3, false);
+  IdentifyAndCheckNextPromo(queue, 1);
+  // Once the second is unblocked, it should also be able to go.
+  wait_for().SetForFeature(kTestFeature1, kPrecond3, true);
+  IdentifyAndCheckNextPromo(queue, 0);
+}
+
+TEST_F(FeaturePromoQueueTest,
+       UpdateAndIdentifyNextEligiblePromo_SomePromosFail) {
+  auto queue = CreateDefaultQueue();
+  // Queued at t=0
+  TryToQueue(queue, 0);
+  FastForward(base::Seconds(10));
+  // Queued at t=10
+  TryToQueue(queue, 1);
+  TryToQueue(queue, 2);
+
+  FastForward(base::Seconds(10));
+  // Now at t=20, then fail the second feature.
+  required().SetForFeature(kTestFeature2, kPrecond1, false);
+  IdentifyAndCheckNextPromo(queue, 2);
+  EXPECT_FALSE(queue.is_empty());
 }
 
 }  // namespace user_education::internal

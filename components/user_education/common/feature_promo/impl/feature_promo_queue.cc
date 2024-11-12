@@ -4,6 +4,7 @@
 
 #include "components/user_education/common/feature_promo/impl/feature_promo_queue.h"
 
+#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
@@ -79,6 +80,11 @@ bool FeaturePromoQueue::Cancel(const base::Feature& iph_feature) {
   return true;
 }
 
+const base::Feature* FeaturePromoQueue::UpdateAndIdentifyNextEligiblePromo() {
+  RemoveIneligiblePromos();
+  return IdentifyNextEligiblePromo();
+}
+
 std::optional<FeaturePromoParams>
 FeaturePromoQueue::UpdateAndGetNextEligiblePromo() {
   RemoveIneligiblePromos();
@@ -143,6 +149,16 @@ void FeaturePromoQueue::RemovePromosWithFailedPreconditions() {
       ++it;
     }
   }
+}
+
+const base::Feature* FeaturePromoQueue::IdentifyNextEligiblePromo() {
+  for (const auto& promo : queued_promos_) {
+    const auto result = promo.wait_for_preconditions.CheckPreconditions();
+    if (result) {
+      return &promo.params.feature.get();
+    }
+  }
+  return nullptr;
 }
 
 std::optional<FeaturePromoParams> FeaturePromoQueue::GetNextEligiblePromo() {

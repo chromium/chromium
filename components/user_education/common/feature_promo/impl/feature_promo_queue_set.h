@@ -58,11 +58,18 @@ class FeaturePromoQueueSet {
   // canceled.
   bool Cancel(const base::Feature& iph_feature);
 
+  // Removes any ineligible promos from the queue and then returns the feature
+  // of the next entry that is eligible to show along with its priority, or
+  // nullopt if there is none.
+  //
+  // Does not remove the found entry (if any) from the queue.
+  std::optional<std::pair<const base::Feature*, Priority>>
+  UpdateAndIdentifyNextEligiblePromo();
+
   // Removes any ineligible promos from the queue and then returns the next
   // entry that is eligible to show, or null if none is found.
   //
-  // Implicitly calls `RemoveIneligiblePromos()` as part of the initial cleanup
-  // process.
+  // Entries that are returned are removed from the queue.
   std::optional<FeaturePromoParams> UpdateAndGetNextEligiblePromo();
 
   // Fails all promos in the queue with the given `failure_reason`.
