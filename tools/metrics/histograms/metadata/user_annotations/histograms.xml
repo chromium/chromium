@@ -30,6 +30,16 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="UserAnnotations.EntryCount" units="Entries"
+    expires_after="M135">
+  <owner>dongyn@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the number of user annotations entries currently on disk. Recorded
+    once for each call to retrieve entries from disk.
+  </summary>
+</histogram>
+
 <histogram name="UserAnnotations.RemoveAllEntries.Result"
     enum="UserAnnotationsExecutionResult" expires_after="M135">
   <owner>rajendrant@chromium.org</owner>

@@ -58,10 +58,14 @@ void RecordUserAnnotationsFormImportResult(
   base::UmaHistogramEnumeration("UserAnnotations.FormImportResult", result);
 }
 
+void RecordMemoryCountEntriesResult(int result) {
+  base::UmaHistogramCounts1000("UserAnnotations.EntryCount", result);
+}
+
 void ProcessEntryRetrieval(
     base::OnceCallback<void(UserAnnotationsEntries)> callback,
     UserAnnotationsEntryRetrievalResult user_annotations) {
-  // TODO: b/36169665 - Record the entry retrieval result metrics.
+  RecordMemoryCountEntriesResult(user_annotations->size());
   if (!user_annotations.has_value()) {
     std::move(callback).Run({});
     return;

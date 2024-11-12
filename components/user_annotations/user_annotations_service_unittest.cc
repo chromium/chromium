@@ -164,7 +164,9 @@ TEST_F(UserAnnotationsServiceTest, ShouldAddFormSubmissionForURL) {
 }
 
 TEST_F(UserAnnotationsServiceTest, RetrieveAllEntriesNoDB) {
+  base::HistogramTester histogram_tester;
   auto entries = GetAllUserAnnotationsEntries();
+  histogram_tester.ExpectUniqueSample("UserAnnotations.EntryCount", 0, 1);
   EXPECT_TRUE(entries.empty());
 }
 
@@ -588,6 +590,7 @@ TEST_F(UserAnnotationsServiceTest, ParallelFormSubmissions) {
 }
 
 TEST_F(UserAnnotationsServiceTest, SaveAutofillProfile) {
+  base::HistogramTester histogram_tester;
   autofill::AutofillProfile autofill_profile(AddressCountryCode("US"));
   autofill::test::SetProfileInfo(&autofill_profile, "Jane", "J", "Doe",
                                  "jd@example.com", "", "123 Main St", "",
@@ -596,6 +599,7 @@ TEST_F(UserAnnotationsServiceTest, SaveAutofillProfile) {
   service()->SaveAutofillProfile(autofill_profile, test_future.GetCallback());
   ASSERT_TRUE(test_future.Wait());
   const UserAnnotationsEntries entries = GetAllUserAnnotationsEntries();
+  histogram_tester.ExpectUniqueSample("UserAnnotations.EntryCount", 10, 1);
   EXPECT_EQ(entries.size(), 10u);
   EXPECT_EQ(entries[0].key(), "First Name");
   EXPECT_EQ(entries[0].value(), "Jane");
