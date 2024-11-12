@@ -41,6 +41,7 @@ def _get_tsc_paths(build_dir: pathlib.Path) -> dict[str, list[str]]:
     mwc_dir = root_dir / "third_party/material_web_components"
     lit_d_ts = mwc_dir / "lit_exports.d.ts"
     mwc_components_dir = mwc_dir / "components-chromium/node_modules/@material"
+    typescript_definition_dir = root_dir / "tools/typescript/definitions"
 
     cros_components_dir = resources_dir / "cros_components/to_be_rewritten"
 
@@ -57,6 +58,7 @@ def _get_tsc_paths(build_dir: pathlib.Path) -> dict[str, list[str]]:
         [str(cros_components_dir / "*")],
         "/images/*": [str(images_dir / "*")],
         "chrome://resources/ash/common/metrics/*": [str(metrics_dir / "*")],
+        "/strings.m.js": [str(typescript_definition_dir / "strings.d.ts")],
     }
 
 
