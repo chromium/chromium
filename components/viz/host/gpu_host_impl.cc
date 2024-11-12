@@ -133,16 +133,25 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
 
   mojom::GpuServiceCreationParamsPtr gpu_service_params =
       mojom::GpuServiceCreationParams::New();
-// NOTE: Linux has an issue when running in single-process mode wherein
-// GetPlatformRuntimeProperties() browser-side calls can have a data race with
-// in-process GPU service initialization. This call tickles that data race. As
-// overlays are not currently supported on Linux, elide the call here at this
-// time.
-// TODO(crbug.com/377886734): Fix the underlying issue and re-enable this call.
-#if BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_LINUX)
-  gpu_service_params->supports_overlays = ui::OzonePlatform::GetInstance()
-                                              ->GetPlatformRuntimeProperties()
-                                              .supports_overlays;
+#if BUILDFLAG(IS_OZONE)
+
+#if BUILDFLAG(IS_LINUX)
+  // Linux has an issue when running in single-process mode wherein
+  // GetPlatformRuntimeProperties() browser-side calls can have a data race with
+  // in-process GPU service initialization. The call to
+  // GetPlatformRuntimeProperties() below tickles that data race. Note that
+  // running in single-process mode on Linux is done only in test contexts.
+  const bool can_initialize_supports_overlays =
+      !params_.gpu_service_running_in_process;
+#else
+  constexpr bool can_initialize_supports_overlays = true;
+#endif
+
+  if (can_initialize_supports_overlays) {
+    gpu_service_params->supports_overlays = ui::OzonePlatform::GetInstance()
+                                                ->GetPlatformRuntimeProperties()
+                                                .supports_overlays;
+  }
 #endif
 
   viz_main_->CreateGpuService(
