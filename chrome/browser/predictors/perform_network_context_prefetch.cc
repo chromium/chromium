@@ -135,7 +135,8 @@ void PrefetchResource(
   variations::AppendVariationsHeaderUnknownSignedIn(
       url, variations::InIncognito::kNo, &request);
 
-  request.load_flags = net::LOAD_SUPPORT_ASYNC_REVALIDATION;
+  request.load_flags =
+      net::LOAD_SUPPORT_ASYNC_REVALIDATION | net::LOAD_PREFETCH;
 
   request.destination = destination;
   request.resource_type = static_cast<int>(type);

@@ -26,6 +26,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "build/buildflag.h"
+#include "net/base/load_flags.h"
 #include "net/base/load_flags_to_string.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
@@ -513,6 +514,18 @@ struct FieldMatcher<Fields::kheaders> {
                     const net::HttpRequestHeaders& real_headers) {
     return MatchHeadersWithExceptions(prefetch_headers, real_headers,
                                       kIgnoredHeaders);
+  }
+};
+
+// We ignore LOAD_PREFETCH in the `load_flags` field.
+template <>
+struct FieldMatcher<Fields::kload_flags> {
+  static bool Match(int prefetch_load_flags, int real_load_flags) {
+    static constexpr auto without_prefetch = [](int load_flags) {
+      return load_flags & ~net::LOAD_PREFETCH;
+    };
+    return without_prefetch(prefetch_load_flags) ==
+           without_prefetch(real_load_flags);
   }
 };
 
