@@ -39,7 +39,7 @@ TabModel* GetActiveTabModel() {
       return model;
     }
   }
-  NOTREACHED_NORETURN() << "No active tab model";
+  NOTREACHED() << "No active tab model";
 }
 
 TabAndroid* GetFirstTabAtGroup(

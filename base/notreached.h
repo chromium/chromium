@@ -32,7 +32,7 @@ namespace logging {
 // Migration in progress: Use NOTREACHED() directly without parameters instead.
 // TODO(crbug.com/40580068): Merge this with NOTREACHED().
 #if CHECK_WILL_STREAM()
-#define NOTREACHED_NORETURN() ::logging::NotReachedNoreturnError()
+#define NOTREACHED_INTERNAL_IMPL() ::logging::NotReachedNoreturnError()
 #else
 // This function is used to be able to detect NOTREACHED() failures in stack
 // traces where this symbol is preserved (even if inlined). Its implementation
@@ -41,7 +41,7 @@ namespace logging {
   base::ImmediateCrash();
 }
 
-#define NOTREACHED_NORETURN() \
+#define NOTREACHED_INTERNAL_IMPL() \
   (true) ? ::logging::NotReachedFailure() : EAT_CHECK_STREAM_PARAMS()
 #endif
 
@@ -49,9 +49,9 @@ namespace logging {
 // milestone is provided the instance is non-fatal (dumps without crashing)
 // until that milestone is hit. That is: `NOTREACHED(base::NotFatalUntil::M120)`
 // starts crashing in M120. See base/check.h.
-#define NOTREACHED(...)                                      \
-  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__), NOTREACHED_NORETURN(), \
-          LOGGING_CHECK_FUNCTION_IMPL(                       \
+#define NOTREACHED(...)                                           \
+  BASE_IF(BASE_IS_EMPTY(__VA_ARGS__), NOTREACHED_INTERNAL_IMPL(), \
+          LOGGING_CHECK_FUNCTION_IMPL(                            \
               ::logging::NotReachedError::NotReached(__VA_ARGS__), false))
 
 // The DUMP_WILL_BE_NOTREACHED() macro provides a convenient way to

@@ -52,7 +52,7 @@ uint32_t get_x_subsample(struct gbm_bo* bo, size_t plane) {
     case GBM_FORMAT_YUV420:
       return 2;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -80,7 +80,7 @@ extern "C" GBM_EXPORT uint32_t gbm_bo_get_bpp(struct gbm_bo* bo) {
     case GBM_FORMAT_P010:
       return 2;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -94,7 +94,7 @@ extern "C" GBM_EXPORT int gbm_bo_get_plane_count(struct gbm_bo* bo) {
     case GBM_FORMAT_YUV420:
       return 3;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
