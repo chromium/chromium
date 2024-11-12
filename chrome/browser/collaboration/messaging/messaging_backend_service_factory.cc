@@ -12,8 +12,11 @@
 #include "chrome/browser/data_sharing/data_sharing_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_group_sync/feature_utils.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
+#include "components/collaboration/internal/messaging/empty_messaging_backend_service.h"
 #include "components/collaboration/internal/messaging/messaging_backend_service_impl.h"
+#include "components/collaboration/internal/messaging/tab_group_change_notifier_impl.h"
 #include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -53,17 +56,24 @@ MessagingBackendServiceFactory::BuildServiceInstanceForBrowserContext(
   DCHECK(context);
   Profile* profile = static_cast<Profile*>(context);
 
-  // This service requires the data sharing feature to be enabled.
-  CHECK(base::FeatureList::IsEnabled(
-      data_sharing::features::kDataSharingFeature));
+  // This service requires the data sharing and tab group sync service features
+  // to be enabled.
+  if (!base::FeatureList::IsEnabled(
+          data_sharing::features::kDataSharingFeature) ||
+      !tab_groups::IsTabGroupSyncEnabled(profile->GetPrefs())) {
+    return std::make_unique<EmptyMessagingBackendService>();
+  }
 
   auto* tab_group_sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   auto* data_sharing_service =
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
+  auto tab_group_change_notifier =
+      std::make_unique<TabGroupChangeNotifierImpl>(tab_group_sync_service);
 
   auto service = std::make_unique<MessagingBackendServiceImpl>(
-      tab_group_sync_service, data_sharing_service);
+      std::move(tab_group_change_notifier), tab_group_sync_service,
+      data_sharing_service);
 
   return std::move(service);
 }

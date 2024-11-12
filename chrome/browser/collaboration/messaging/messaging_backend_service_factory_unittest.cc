@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,8 +20,12 @@ namespace {
 class MessagingBackendServiceFactoryTest : public testing::Test {
  protected:
   MessagingBackendServiceFactoryTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        data_sharing::features::kDataSharingFeature, true);
+    scoped_feature_list_.InitWithFeatureStates(
+        {{data_sharing::features::kDataSharingFeature, true},
+         // Required for desktop platforms.
+         {tab_groups::kTabGroupSyncServiceDesktopMigration, true},
+         // Required for Android.
+         {tab_groups::kTabGroupSyncAndroid, true}});
   }
 
   ~MessagingBackendServiceFactoryTest() override = default;

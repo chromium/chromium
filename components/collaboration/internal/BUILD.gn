@@ -59,8 +59,14 @@ static_library("messaging_internal") {
   sources = [
     "messaging/configuration.cc",
     "messaging/configuration.h",
+    "messaging/empty_messaging_backend_service.cc",
+    "messaging/empty_messaging_backend_service.h",
     "messaging/messaging_backend_service_impl.cc",
     "messaging/messaging_backend_service_impl.h",
+    "messaging/tab_group_change_notifier.cc",
+    "messaging/tab_group_change_notifier.h",
+    "messaging/tab_group_change_notifier_impl.cc",
+    "messaging/tab_group_change_notifier_impl.h",
   ]
 
   deps = [
@@ -118,26 +124,31 @@ source_set("core_unit_tests") {
 
 source_set("messaging_unit_tests") {
   testonly = true
-  sources = []
-  deps = []
+  sources = [
+    "messaging/messaging_backend_service_impl_unittest.cc",
+    "messaging/tab_group_change_notifier_impl_unittest.cc",
+  ]
+  deps = [
+    ":messaging_internal",
+    "//base",
+    "//base/test:test_support",
+    "//components/saved_tab_groups/public",
+    "//components/saved_tab_groups/test_support:test_support",
+    "//components/tab_groups",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 
   if (is_android) {
     sources +=
         [ "android/messaging/messaging_backend_service_bridge_unittest.cc" ]
 
     deps += [
-      ":messaging_internal",
       ":messaging_native_j_unittests_jni_headers",
       ":messaging_native_java_unittests_java",
-      "//base",
-      "//base/test:test_support",
       "//components/collaboration/public:messaging_public",
       "//components/data_sharing/public",
-      "//components/saved_tab_groups/public",
       "//components/saved_tab_groups/public:conversion_utils",
-      "//components/tab_groups",
-      "//testing/gmock",
-      "//testing/gtest",
     ]
   }
 }

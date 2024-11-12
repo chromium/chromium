@@ -5,12 +5,15 @@
 #ifndef COMPONENTS_COLLABORATION_INTERNAL_MESSAGING_MESSAGING_BACKEND_SERVICE_IMPL_H_
 #define COMPONENTS_COLLABORATION_INTERNAL_MESSAGING_MESSAGING_BACKEND_SERVICE_IMPL_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "components/collaboration/internal/messaging/tab_group_change_notifier.h"
 #include "components/collaboration/public/messaging/message.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 
 namespace data_sharing {
 class DataSharingService;
@@ -21,11 +24,12 @@ class TabGroupSyncService;
 }  // namespace tab_groups
 
 namespace collaboration::messaging {
-
 // The implementation of the MessagingBackendService.
-class MessagingBackendServiceImpl : public MessagingBackendService {
+class MessagingBackendServiceImpl : public MessagingBackendService,
+                                    public TabGroupChangeNotifier::Observer {
  public:
   MessagingBackendServiceImpl(
+      std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier,
       tab_groups::TabGroupSyncService* tab_group_sync_service,
       data_sharing::DataSharingService* data_sharing_service);
   ~MessagingBackendServiceImpl() override;
@@ -49,7 +53,26 @@ class MessagingBackendServiceImpl : public MessagingBackendService {
   std::vector<ActivityLogItem> GetActivityLog(
       const ActivityLogQueryParams& params) override;
 
+  // TabGroupChangeNotifier::Observer.
+  void OnTabGroupChangeNotifierInitialized() override;
+  void OnTabGroupAdded(const tab_groups::SavedTabGroup& added_group) override;
+  void OnTabGroupRemoved(tab_groups::SavedTabGroup removed_group) override;
+  void OnTabGroupNameUpdated(
+      const tab_groups::SavedTabGroup& updated_group) override;
+  void OnTabGroupColorUpdated(
+      const tab_groups::SavedTabGroup& updated_group) override;
+  void OnTabAdded(const tab_groups::SavedTabGroupTab& added_tab) override;
+  void OnTabRemoved(tab_groups::SavedTabGroupTab removed_tab) override;
+  void OnTabUpdated(const tab_groups::SavedTabGroupTab& updated_tab) override;
+
  private:
+  // Provides functionality to go from observing the TabGroupSyncService to
+  // a delta based observer API.
+  std::unique_ptr<TabGroupChangeNotifier> tab_group_change_notifier_;
+
+  // Whether the TabGroupChangeNotifier has been initialized.
+  bool tab_group_change_notifier_initialized_ = false;
+
   // Service providing information about tabs and tab groups.
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
 
