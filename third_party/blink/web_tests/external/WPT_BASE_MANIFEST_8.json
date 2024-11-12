@@ -243761,8 +243761,21 @@
         }
        ]
       ],
-      "border-offset.tentative.html": [
-       "d8ba49d6655b889e24506802ace11b9ee2009d54",
+      "border-offset-with-padding-inline.tentative.html": [
+       "ca0be4179c6a7f7d90c0716be602e4a36c354610",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/layered-capture/border-offset-with-padding-inline-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "border-offset-with-padding-nested.tentative.html": [
+       "446d35e36613b797eab55638cd6165acac376eb5",
        [
         null,
         [
@@ -243771,23 +243784,33 @@
           "=="
          ]
         ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             255
-            ],
-            [
-             0,
-             515
-            ]
-           ]
-          ]
+        {}
+       ]
+      ],
+      "border-offset-with-padding.tentative.html": [
+       "e3255677506b7cf39e0f384e2fa593839c6ec985",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/layered-capture/border-offset-ref.tentative.html",
+          "=="
          ]
-        }
+        ],
+        {}
+       ]
+      ],
+      "border-offset.tentative.html": [
+       "7fb6a9a622481175a39b4436f74f55cbc622efbb",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/layered-capture/border-offset-ref.tentative.html",
+          "=="
+         ]
+        ],
+        {}
        ]
       ],
       "border-uneven.tentative.html": [
@@ -243877,13 +243900,39 @@
         }
        ]
       ],
-      "box-model-capture.tentative.html": [
-       "e52edb3bd1db8d95b43dce669ed93822d8bf3a3b",
+      "box-model-capture.tentative.sub.html": [
+       "c4ca0dca97b091069e582d43bfa23af6c865a014",
        [
-        null,
+        "css/css-view-transitions/layered-capture/box-model-capture.tentative.sub.html?sizing=border-box",
         [
          [
-          "/css/css-view-transitions/layered-capture/box-model-capture-ref.html",
+          "/css/css-view-transitions/layered-capture/box-model-capture-ref.sub.html?sizing=border-box",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             10
+            ],
+            [
+             0,
+             200000
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-view-transitions/layered-capture/box-model-capture.tentative.sub.html?sizing=content-box",
+        [
+         [
+          "/css/css-view-transitions/layered-capture/box-model-capture-ref.sub.html?sizing=content-box",
           "=="
          ]
         ],
@@ -358222,16 +358271,16 @@
       []
      ],
      "layered-capture": {
+      "border-offset-with-padding-inline-ref.html": [
+       "976c10cb4148e9e2cab471b9f1af36c4a86b4536",
+       []
+      ],
       "border-uneven-ref.html": [
        "15b27166371ed989b41c33eb8f48a1ae0f588ecf",
        []
       ],
       "box-model-capture-nested-ref.html": [
        "6610adc9f71ce8c5b9bbf0980111cb0745652e3a",
-       []
-      ],
-      "box-model-capture-ref.html": [
-       "b8d14fed501b1e90d4a5d055fdb1ca6b60cb4dac",
        []
       ],
       "nested-opacity-ref.html": [
@@ -638239,7 +638288,7 @@
      ]
     ],
     "getnotifications-across-processes.https.window.js": [
-     "ad0ecf27efd6b9856a4936386c2b303f6fc6df9b",
+     "4b4525311d999e4a2a3d165e28a86a5cd89fe7a7",
      [
       "notifications/getnotifications-across-processes.https.window.html",
       {
@@ -638255,6 +638304,10 @@
         [
          "script",
          "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ],
+        [
+         "script",
+         "resources/helpers.js"
         ]
        ]
       }
@@ -778891,7 +778944,7 @@
        ]
       ],
       "border-offset-ref.tentative.html": [
-       "4e580f9f79c5f1ffc9ef4df33ca40724a2fa2e83",
+       "ca8ee77528463426948101d4047574226c7639a1",
        [
         null,
         {}
@@ -778899,6 +778952,13 @@
       ],
       "box-decorations-ref.tentative.html": [
        "5221c7689af0dfc46a5c2c75430587170608daaa",
+       [
+        null,
+        {}
+       ]
+      ],
+      "box-model-capture-ref.sub.html": [
+       "36401abca0d146f5b76053b2360ec0f3573f7b6c",
        [
         null,
         {}
