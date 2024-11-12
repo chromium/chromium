@@ -86,12 +86,17 @@ void SkiaImageDecoderBase::OnSetData(scoped_refptr<SegmentReader> data) {
     switch (codec_creation_result) {
       case SkCodec::kSuccess: {
         segment_stream_ = segment_stream_ptr;
-        // OnCreateSkCodec needs to read enough of the image to get the image
-        // size.
+        // OnCreateSkCodec needs to read enough of the image to create
+        // SkEncodedInfo so now is an okay time to ask the `codec_` about 1) the
+        // image size and 2) the color profile.
         SkImageInfo image_info = codec_->getInfo();
-        SetSize(static_cast<unsigned>(image_info.width()),
-                static_cast<unsigned>(image_info.height()));
-
+        if (!SetSize(static_cast<unsigned>(image_info.width()),
+                     static_cast<unsigned>(image_info.height()))) {
+          return;
+        }
+        if (const skcms_ICCProfile* profile = codec_->getICCProfile()) {
+          SetEmbeddedColorProfile(std::make_unique<ColorProfile>(*profile));
+        }
         return;
       }
 

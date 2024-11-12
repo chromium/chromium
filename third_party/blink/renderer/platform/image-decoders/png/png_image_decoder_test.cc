@@ -1734,16 +1734,18 @@ TEST_P(PNGTests, cicp) {
   auto* frame = decoder->DecodeFrameBufferAtIndex(0);
   ASSERT_TRUE(frame);
   ASSERT_FALSE(decoder->Failed());
+  ASSERT_TRUE(decoder->HasEmbeddedColorProfile());
+  ColorProfileTransform* transform = decoder->ColorTransform();
+  ASSERT_TRUE(transform);  // Guaranteed by `HasEmbeddedColorProfile`.
+  const skcms_ICCProfile* png_profile = transform->SrcProfile();
+  ASSERT_TRUE(png_profile);
 
   // TODO(https://crbug.com/376758571): Add support for cICP chunks.
   if (skia::IsRustyPngEnabled()) {
-    ASSERT_FALSE(decoder->HasEmbeddedColorProfile());
+    EXPECT_FALSE(
+        skcms_TransferFunction_isPQish(&png_profile->trc[0].parametric));
     GTEST_SKIP() << "SkPngRustCodec doesn't yet support cICP chunks";
   }
-  ASSERT_TRUE(decoder->HasEmbeddedColorProfile());
-  ColorProfileTransform* transform = decoder->ColorTransform();
-
-  const skcms_ICCProfile* png_profile = transform->SrcProfile();
   EXPECT_TRUE(skcms_TransferFunction_isPQish(&png_profile->trc[0].parametric));
 }
 
