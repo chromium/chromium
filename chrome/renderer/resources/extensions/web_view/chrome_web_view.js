@@ -13,6 +13,8 @@ var GuestViewInternalNatives = requireNative('guest_view_internal');
 var idGeneratorNatives = requireNative('id_generator');
 var utils = require('utils');
 var WebViewImpl = require('webView').WebViewImpl;
+var CHROME_WEB_VIEW_CONTEXT_MENUS_PROMISE_API_METHODS =
+    require('chromeWebViewContextMenusApiMethods').PROMISE_API_METHODS;
 
 // This is the only "webViewInternal.onClicked" named event for this renderer.
 //

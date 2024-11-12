@@ -209,6 +209,8 @@ void ChromeExtensionsRendererAPIProvider::PopulateSourceMap(
                              IDR_WEBRTC_LOGGING_PRIVATE_CUSTOM_BINDINGS_JS);
 
   // Platform app sources that are not API-specific..
+  source_map->RegisterSource("chromeWebViewContextMenusApiMethods",
+                             IDR_CHROME_WEB_VIEW_CONTEXT_MENUS_API_METHODS_JS);
   source_map->RegisterSource("chromeWebViewElement",
                              IDR_CHROME_WEB_VIEW_ELEMENT_JS);
   source_map->RegisterSource("chromeWebViewInternal",
