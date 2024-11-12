@@ -28,9 +28,6 @@ ExternalInstallOptions GetConfigForGoogleChat(bool is_standalone,
   options.user_type_allowlist = {"unmanaged"};
   options.only_for_new_users = only_for_new_users;
   options.expected_app_id = ash::kGoogleChatAppId;
-
-// Specifying the factory seems to interfere with "APS" migration on CrOS.
-#if !BUILDFLAG(IS_CHROMEOS)
   options.app_info_factory = base::BindRepeating(
       [](bool is_standalone) {
         GURL start_url = GURL("https://mail.google.com/chat/");
@@ -49,7 +46,6 @@ ExternalInstallOptions GetConfigForGoogleChat(bool is_standalone,
         return info;
       },
       is_standalone);
-#endif
 
   return options;
 }
