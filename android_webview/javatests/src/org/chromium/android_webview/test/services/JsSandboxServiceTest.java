@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 
 import java.io.File;
@@ -48,6 +49,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /** Instrumentation test for JavaScriptSandbox. */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS)
+@Batch(Batch.PER_CLASS)
 public class JsSandboxServiceTest {
     // This value is somewhat arbitrary. It might need bumping if V8 snapshots become significantly
     // larger in future. However, we don't want it too large as that will make the tests slower and

@@ -26,6 +26,7 @@ import org.chromium.android_webview.shell.R;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.test.util.Batch;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 /** Instrumentation tests for JavaScriptSandbox. */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS)
+@Batch(Batch.PER_CLASS)
 public class JsSandboxFledgeTest {
     private static final int TIMEOUT_SECONDS = 5;
 
