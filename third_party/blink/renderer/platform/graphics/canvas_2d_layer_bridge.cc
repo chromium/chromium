@@ -62,10 +62,6 @@ gpu::ContextSupport* GetContextSupport() {
 Canvas2DLayerBridge::Canvas2DLayerBridge(CanvasResourceHost* resource_host)
     : resource_host_(resource_host) {
   CHECK(resource_host_);
-
-  // Used by browser tests to detect the use of a Canvas2DLayerBridge.
-  TRACE_EVENT_INSTANT0("test_gpu", "Canvas2DLayerBridgeCreation",
-                       TRACE_EVENT_SCOPE_GLOBAL);
 }
 
 Canvas2DLayerBridge::~Canvas2DLayerBridge() {
