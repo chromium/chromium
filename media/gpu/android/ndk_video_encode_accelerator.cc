@@ -528,18 +528,13 @@ bool NdkVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  // Conservative upper bound for output buffer size: decoded size + 2KB.
-  // Adding 2KB just in case the frame is really small, we don't want to
-  // end up with no space for a video codec's headers.
-  const size_t output_buffer_capacity =
-      VideoFrame::AllocationSize(config.input_format,
-                                 config.input_visible_size) +
-      2048;
+  const size_t bitstream_buffer_size = EstimateBitstreamBufferSize(
+      config_.bitrate, config_.framerate, config.input_visible_size);
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoEncodeAccelerator::Client::RequireBitstreamBuffers,
                      client_ptr_factory_->GetWeakPtr(), 1,
-                     config.input_visible_size, output_buffer_capacity));
+                     config.input_visible_size, bitstream_buffer_size));
 
   NotifyEncoderInfo();
   return true;

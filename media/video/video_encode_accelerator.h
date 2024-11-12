@@ -513,6 +513,10 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   // Do not delete directly; use Destroy() or own it with a unique_ptr, which
   // will Destroy() it properly by default.
   virtual ~VideoEncodeAccelerator();
+
+  static size_t EstimateBitstreamBufferSize(const Bitrate& bitrate,
+                                            uint32_t framerate,
+                                            const gfx::Size& coded_size);
 };
 
 MEDIA_EXPORT bool operator==(const VideoEncodeAccelerator::SupportedProfile& l,

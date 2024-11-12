@@ -512,7 +512,8 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
   input_visible_size_ = config.input_visible_size;
   frame_rate_ = config.framerate;
   bitrate_ = config.bitrate;
-  bitstream_buffer_size_ = config.input_visible_size.GetArea();
+  bitstream_buffer_size_ = EstimateBitstreamBufferSize(
+      bitrate_, frame_rate_, config.input_visible_size);
   require_low_delay_ = config.require_low_delay;
   required_encoder_type_ = config.required_encoder_type;
 
@@ -840,8 +841,10 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
       codec_, encode_output->sample_buffer.get(), keyframe, buffer_ref->size,
       static_cast<char*>(buffer_ref->mapping.memory()), &used_buffer_size);
   if (!copy_rv) {
-    DLOG(ERROR) << "Cannot copy output from SampleBuffer to AnnexBBuffer.";
-    used_buffer_size = 0;
+    NotifyErrorStatus(
+        {EncoderStatus::Codes::kBitstreamConversionError,
+         "Cannot copy output from SampleBuffer to AnnexBBuffer."});
+    return;
   }
 
   BitstreamBufferMetadata md(used_buffer_size, keyframe,
