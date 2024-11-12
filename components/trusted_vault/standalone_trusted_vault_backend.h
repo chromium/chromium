@@ -142,8 +142,6 @@ class StandaloneTrustedVaultBackend
   std::vector<uint8_t> GetLastAddedRecoveryMethodPublicKeyForTesting() const;
   int GetLastKeyVersionForTesting(const std::string& gaia_id);
 
-  void SetDeviceRegisteredVersionForTesting(const std::string& gaia_id,
-                                            int version);
   void SetLastRegistrationReturnedLocalDataObsoleteForTesting(
       const std::string& gaia_id);
 

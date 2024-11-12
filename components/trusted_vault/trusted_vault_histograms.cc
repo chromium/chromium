@@ -164,13 +164,8 @@ void RecordRecoveryKeyStoreURLFetchResponse(
 }
 
 void RecordTrustedVaultDownloadKeysStatus(
-    TrustedVaultDownloadKeysStatusForUMA status,
-    bool also_log_with_v1_suffix) {
+    TrustedVaultDownloadKeysStatusForUMA status) {
   base::UmaHistogramEnumeration("Sync.TrustedVaultDownloadKeysStatus", status);
-  if (also_log_with_v1_suffix) {
-    base::UmaHistogramEnumeration("Sync.TrustedVaultDownloadKeysStatusV1",
-                                  status);
-  }
 }
 
 void RecordTrustedVaultFileReadStatus(SecurityDomainId security_domain_id,

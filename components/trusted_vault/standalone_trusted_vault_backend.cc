@@ -44,7 +44,7 @@ namespace trusted_vault {
 
 namespace {
 
-constexpr int kCurrentLocalTrustedVaultVersion = 2;
+constexpr int kCurrentLocalTrustedVaultVersion = 3;
 constexpr int kCurrentDeviceRegistrationVersion = 1;
 
 trusted_vault_pb::LocalTrustedVault ReadDataFromDiskImpl(
@@ -227,6 +227,26 @@ void UpgradeToVersion2(
   local_trusted_vault->set_data_version(2);
 }
 
+// Version 2 may contain `device_registered_version` set to 0 or 1, this concept
+// was introduced a while ago to address a bug, upgrade to version 3 resets
+// device registered flag to false if `device_registered_version` is 0, so the
+// rest of the implementation doesn't need to handle this case.
+void UpgradeToVersion3(
+    trusted_vault_pb::LocalTrustedVault* local_trusted_vault) {
+  CHECK(local_trusted_vault);
+  CHECK_EQ(local_trusted_vault->data_version(), 2);
+
+  for (trusted_vault_pb::LocalTrustedVaultPerUser& per_user_vault :
+       *local_trusted_vault->mutable_user()) {
+    if (per_user_vault.local_device_registration_info()
+            .device_registered_version() == 0) {
+      per_user_vault.mutable_local_device_registration_info()
+          ->set_device_registered(false);
+    }
+    local_trusted_vault->set_data_version(3);
+  }
+}
+
 }  // namespace
 
 StandaloneTrustedVaultBackend::PendingTrustedRecoveryMethod::
@@ -341,6 +361,11 @@ void StandaloneTrustedVaultBackend::ReadDataFromDisk() {
 
   if (data_.data_version() == 1) {
     UpgradeToVersion2(&data_);
+    WriteDataToDisk();
+  }
+
+  if (data_.data_version() == 2) {
+    UpgradeToVersion3(&data_);
     WriteDataToDisk();
   }
 
@@ -737,17 +762,6 @@ int StandaloneTrustedVaultBackend::GetLastKeyVersionForTesting(
   return per_user_vault->last_vault_key_version();
 }
 
-void StandaloneTrustedVaultBackend::SetDeviceRegisteredVersionForTesting(
-    const std::string& gaia_id,
-    int version) {
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      FindUserVault(gaia_id);
-  DCHECK(per_user_vault);
-  per_user_vault->mutable_local_device_registration_info()
-      ->set_device_registered_version(version);
-  WriteDataToDisk();
-}
-
 void StandaloneTrustedVaultBackend::
     SetLastRegistrationReturnedLocalDataObsoleteForTesting(
         const std::string& gaia_id) {
@@ -791,10 +805,7 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
       FindUserVault(primary_account_->gaia);
   DCHECK(per_user_vault);
 
-  if (per_user_vault->local_device_registration_info().device_registered() &&
-      per_user_vault->local_device_registration_info()
-              .device_registered_version() ==
-          kCurrentDeviceRegistrationVersion) {
+  if (per_user_vault->local_device_registration_info().device_registered()) {
     static_assert(kCurrentDeviceRegistrationVersion == 1);
     return TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1;
   }
@@ -1096,13 +1107,7 @@ void StandaloneTrustedVaultBackend::FulfillFetchKeys(
       FindUserVault(gaia_id);
 
   if (status_for_uma.has_value()) {
-    const bool also_log_with_v1_suffix =
-        per_user_vault &&
-        per_user_vault->local_device_registration_info().device_registered() &&
-        per_user_vault->local_device_registration_info()
-                .device_registered_version() == 1;
-    RecordTrustedVaultDownloadKeysStatus(*status_for_uma,
-                                         also_log_with_v1_suffix);
+    RecordTrustedVaultDownloadKeysStatus(*status_for_uma);
   }
 
   std::vector<std::vector<uint8_t>> vault_keys;

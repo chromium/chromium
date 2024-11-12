@@ -25,7 +25,7 @@ enum class TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA {
 // numeric values should never be reused.
 // LINT.IfChange(TrustedVaultDeviceRegistrationState)
 enum class TrustedVaultDeviceRegistrationStateForUMA {
-  kAlreadyRegisteredV0 = 0,
+  kAlreadyRegisteredV0 = 0,  // Used only on iOS.
   kLocalKeysAreStale = 1,
   kThrottledClientSide = 2,
   kAttemptingRegistrationWithNewKeyPair = 3,
@@ -118,7 +118,7 @@ void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
 // TODO(crbug.com/369980730): this is used in internals, replace usages with the
 // version below and delete this one.
 void RecordTrustedVaultDeviceRegistrationState(
-  TrustedVaultDeviceRegistrationStateForUMA registration_state);
+    TrustedVaultDeviceRegistrationStateForUMA registration_state);
 
 void RecordTrustedVaultDeviceRegistrationState(
     SecurityDomainId security_domain_id,
@@ -147,12 +147,8 @@ void RecordRecoveryKeyStoreURLFetchResponse(
     int net_error);
 
 // Records the outcome of trying to download keys from the server.
-// |also_log_with_v1_suffix| allows the caller to determine whether the local
-// device's registration is a V1 registration (that is, more reliable), which
-// causes a second histogram to be logged as well.
 void RecordTrustedVaultDownloadKeysStatus(
-    TrustedVaultDownloadKeysStatusForUMA status,
-    bool also_log_with_v1_suffix);
+    TrustedVaultDownloadKeysStatusForUMA status);
 
 void RecordTrustedVaultFileReadStatus(SecurityDomainId security_domain_id,
                                       TrustedVaultFileReadStatusForUMA status);

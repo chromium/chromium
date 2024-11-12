@@ -51,7 +51,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(TrustedVaultDeviceRegistrationState) -->
 
 <enum name="TrustedVaultDeviceRegistrationState">
-  <int value="0" label="Already registered V0"/>
+  <int value="0" label="Already registered V0. Removed on Desktop in 11/2024"/>
   <int value="1" label="Local keys are stale"/>
   <int value="2" label="Throttled client side"/>
   <int value="3" label="Attempting registration with newly generated keys"/>
