@@ -159,7 +159,7 @@ void AILanguageModelFactory::OnCanCreateSessionComplete(
       check_result);
   auto* capabilities = MakeGarbageCollected<AILanguageModelCapabilities>(
       AICapabilityAvailabilityToV8(availability));
-  if (availability == AICapabilityAvailability::kNo) {
+  if (availability != AICapabilityAvailability::kReadily) {
     resolver->Resolve(capabilities);
     return;
   }
