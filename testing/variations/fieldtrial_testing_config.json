@@ -12942,7 +12942,6 @@
                         "CustomProfileStringsForSupervisedUsers",
                         "ForceSafeSearchForUnauthenticatedSupervisedUsers",
                         "ForceSupervisedUserReauthenticationForBlockedSites",
-                        "ForceSupervisedUserReauthenticationForYouTube",
                         "HideGuestModeForSupervisedUsers",
                         "IPH_SupervisedUserProfileSignin",
                         "ShowKiteForSupervisedUsers",
