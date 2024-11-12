@@ -140,6 +140,7 @@ enum class MessageIdentifier {
   TAB_NAVIGATED_THROUGH_COLLABORATION = 55,
   COLLABORATION_MEMBER_ADDED = 56,
   COLLABORATION_REMOVED = 57,
+  CCT_ACCOUNT_MISMATCH_NOTICE = 58,
   // Insert new values before this line.
   COUNT
 };

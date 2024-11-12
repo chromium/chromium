@@ -413,6 +413,8 @@ public class MessagesMetrics {
                 return "CollaborationMemberAdded";
             case MessageIdentifier.COLLABORATION_REMOVED:
                 return "CollaborationRemoved";
+            case MessageIdentifier.CCT_ACCOUNT_MISMATCH_NOTICE:
+                return "CctAccountMismatchNotice";
             default:
                 return "Unknown";
         }

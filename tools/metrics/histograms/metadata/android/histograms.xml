@@ -140,6 +140,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".AdsBlocked"/>
   <variant name=".ArCoreUpgrade"/>
   <variant name=".AutoDarkWebContents"/>
+  <variant name=".CctAccountMismatchNotice"/>
   <variant name=".ChromeSurvey"/>
   <variant name=".CollaborationMemberAdded"/>
   <variant name=".CollaborationRemoved"/>
