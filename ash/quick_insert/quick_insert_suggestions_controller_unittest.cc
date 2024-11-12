@@ -11,6 +11,7 @@
 #include "ash/quick_insert/mock_quick_insert_client.h"
 #include "ash/quick_insert/model/quick_insert_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -20,6 +21,7 @@
 namespace ash {
 namespace {
 
+using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AnyNumber;
@@ -35,10 +37,6 @@ using ::testing::Property;
 using ::testing::Return;
 using ::testing::VariantWith;
 using ::testing::WithArg;
-
-auto RunCallbackArgWith(auto result) {
-  return [result](auto callback) { return std::move(callback).Run(result); };
-}
 
 using QuickInsertSuggestionsControllerTest = testing::Test;
 
@@ -65,7 +63,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsWhenSelectedTextReturnsEditorRewriteResults) {
   NiceMock<MockQuickInsertClient> client;
   EXPECT_CALL(client, GetSuggestedEditorResults)
-      .WillRepeatedly(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
+      .WillOnce(RunOnceCallback<0>(std::vector<QuickInsertSearchResult>{
           QuickInsertEditorResult(QuickInsertEditorResult::Mode::kRewrite, u"",
                                   {}, {}),
       }));
@@ -238,27 +236,24 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   feature_list.InitAndDisableFeature(ash::features::kPickerGrid);
   NiceMock<MockQuickInsertClient> client;
   EXPECT_CALL(client, GetSuggestedLinkResults(_, _))
-      .WillRepeatedly(
-          WithArg<1>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
-              QuickInsertBrowsingHistoryResult(GURL("a.com"), u"a",
-                                               /*icon=*/{}),
-              QuickInsertBrowsingHistoryResult(GURL("b.com"), u"b",
-                                               /*icon=*/{}),
-          })));
+      .WillOnce(RunOnceCallback<1>(std::vector<QuickInsertSearchResult>{
+          QuickInsertBrowsingHistoryResult(GURL("a.com"), u"a",
+                                           /*icon=*/{}),
+          QuickInsertBrowsingHistoryResult(GURL("b.com"), u"b",
+                                           /*icon=*/{}),
+      }));
   EXPECT_CALL(client, GetRecentDriveFileResults(5, _))
-      .WillRepeatedly(
-          WithArg<1>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
-              QuickInsertDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
-                                         /*file_path=*/{}),
-              QuickInsertDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
-                                         /*file_path=*/{}),
-          })));
+      .WillOnce(RunOnceCallback<1>(std::vector<QuickInsertSearchResult>{
+          QuickInsertDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
+                                     /*file_path=*/{}),
+          QuickInsertDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
+                                     /*file_path=*/{}),
+      }));
   EXPECT_CALL(client, GetRecentLocalFileResults(1, _, _))
-      .WillRepeatedly(
-          WithArg<2>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
-              QuickInsertLocalFileResult(u"a", /*file_path=*/{}),
-              QuickInsertLocalFileResult(u"b", /*file_path=*/{}),
-          })));
+      .WillOnce(RunOnceCallback<2>(std::vector<QuickInsertSearchResult>{
+          QuickInsertLocalFileResult(u"a", /*file_path=*/{}),
+          QuickInsertLocalFileResult(u"b", /*file_path=*/{}),
+      }));
   QuickInsertSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
   QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
@@ -287,29 +282,26 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   base::test::ScopedFeatureList feature_list(ash::features::kPickerGrid);
   NiceMock<MockQuickInsertClient> client;
   EXPECT_CALL(client, GetSuggestedLinkResults(_, _))
-      .WillRepeatedly(
-          WithArg<1>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
-              QuickInsertBrowsingHistoryResult(GURL("a.com"), u"a",
-                                               /*icon=*/{}),
-              QuickInsertBrowsingHistoryResult(GURL("b.com"), u"b",
-                                               /*icon=*/{}),
-          })));
+      .WillOnce(RunOnceCallback<1>(std::vector<QuickInsertSearchResult>{
+          QuickInsertBrowsingHistoryResult(GURL("a.com"), u"a",
+                                           /*icon=*/{}),
+          QuickInsertBrowsingHistoryResult(GURL("b.com"), u"b",
+                                           /*icon=*/{}),
+      }));
   EXPECT_CALL(client, GetRecentDriveFileResults(5, _))
-      .WillRepeatedly(
-          WithArg<1>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
-              QuickInsertDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
-                                         /*file_path=*/{}),
-              QuickInsertDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
-                                         /*file_path=*/{}),
-          })));
+      .WillOnce(RunOnceCallback<1>(std::vector<QuickInsertSearchResult>{
+          QuickInsertDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
+                                     /*file_path=*/{}),
+          QuickInsertDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
+                                     /*file_path=*/{}),
+      }));
   EXPECT_CALL(client, GetRecentLocalFileResults(3, _, _))
-      .WillRepeatedly(
-          WithArg<2>(RunCallbackArgWith(std::vector<QuickInsertSearchResult>{
-              QuickInsertLocalFileResult(u"a", /*file_path=*/{}),
-              QuickInsertLocalFileResult(u"b", /*file_path=*/{}),
-              QuickInsertLocalFileResult(u"c", /*file_path=*/{}),
-              QuickInsertLocalFileResult(u"d", /*file_path=*/{}),
-          })));
+      .WillOnce(RunOnceCallback<2>(std::vector<QuickInsertSearchResult>{
+          QuickInsertLocalFileResult(u"a", /*file_path=*/{}),
+          QuickInsertLocalFileResult(u"b", /*file_path=*/{}),
+          QuickInsertLocalFileResult(u"c", /*file_path=*/{}),
+          QuickInsertLocalFileResult(u"d", /*file_path=*/{}),
+      }));
   QuickInsertSuggestionsController controller;
   input_method::FakeImeKeyboard keyboard;
   QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
@@ -342,7 +334,7 @@ TEST_F(QuickInsertSuggestionsControllerTest, GetSuggestionsForLinkCategory) {
   };
   NiceMock<MockQuickInsertClient> client;
   EXPECT_CALL(client, GetSuggestedLinkResults)
-      .WillRepeatedly(WithArg<1>(RunCallbackArgWith(suggested_links)));
+      .WillOnce(RunOnceCallback<1>(suggested_links));
   QuickInsertSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
@@ -362,7 +354,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   };
   NiceMock<MockQuickInsertClient> client;
   EXPECT_CALL(client, GetRecentDriveFileResults)
-      .WillRepeatedly(WithArg<1>(RunCallbackArgWith(suggested_files)));
+      .WillOnce(RunOnceCallback<1>(suggested_files));
   QuickInsertSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
@@ -380,7 +372,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
   };
   NiceMock<MockQuickInsertClient> client;
   EXPECT_CALL(client, GetRecentLocalFileResults)
-      .WillRepeatedly(WithArg<2>(RunCallbackArgWith(suggested_files)));
+      .WillOnce(RunOnceCallback<2>(suggested_files));
   QuickInsertSuggestionsController controller;
 
   base::test::TestFuture<std::vector<QuickInsertSearchResult>> future;
@@ -423,7 +415,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
           .Build();
   MockClipboardHistoryController mock_clipboard;
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
-      .WillOnce(RunCallbackArgWith(
+      .WillOnce(RunOnceCallback<0>(
           std::vector<ClipboardHistoryItem>{clipboard_item}));
   NiceMock<MockQuickInsertClient> client;
   QuickInsertSuggestionsController controller;
