@@ -201,10 +201,9 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
   // Some windows need to be placed in special containers, for example to make
   // them visible at the login or lock screen.
   std::optional<int> container_id;
-  if (create_params.is_ime_window)
+  if (create_params.is_ime_window) {
     container_id = ash::kShellWindowId_ImeWindowParentContainer;
-  else if (create_params.show_on_lock_screen)
-    container_id = ash::kShellWindowId_LockActionHandlerContainer;
+  }
 
   if (container_id.has_value()) {
     ash_util::SetupWidgetInitParamsForContainer(init_params, *container_id);

@@ -131,14 +131,6 @@ enum ShellWindowId {
   // The container for the lock screen.
   kShellWindowId_LockScreenContainer,
 
-  // The container for windows that handle lock tray actions (e.g. new note
-  // action). The action handler container's children should be visible on lock
-  // screen, but only when an action is being handled - i.e. action handling
-  // state is either:
-  //  *  active - the container is stacked above LockScreenContainer
-  //  *  background - the container is stacked below LockScreenContainer
-  kShellWindowId_LockActionHandlerContainer,
-
   // The container for the lock screen modal windows.
   kShellWindowId_LockSystemModalContainer,
 
