@@ -76,10 +76,7 @@ class MultiDeviceSetupGlobalStateFeatureManagerImplTest
     // the former case, only public keys are needed, and in the latter case,
     // only Instance IDs are needed.
     for (multidevice::RemoteDeviceRef device : test_devices_) {
-      if (features::ShouldUseV1DeviceSync())
-        GetMutableRemoteDevice(device)->instance_id.clear();
-      else
-        GetMutableRemoteDevice(device)->public_key.clear();
+      GetMutableRemoteDevice(device)->public_key.clear();
     }
 
     SetFeatureSupportedInDeviceSyncClient();
@@ -186,21 +183,6 @@ class MultiDeviceSetupGlobalStateFeatureManagerImplTest
   void VerifyLatestSetHostNetworkRequest(
       const multidevice::RemoteDeviceRef expected_host,
       bool expected_should_enable) {
-    if (features::ShouldUseV1DeviceSync()) {
-      ASSERT_FALSE(
-          fake_device_sync_client_->set_software_feature_state_inputs_queue()
-              .empty());
-      const device_sync::FakeDeviceSyncClient::SetSoftwareFeatureStateInputs&
-          inputs = fake_device_sync_client_
-                       ->set_software_feature_state_inputs_queue()
-                       .back();
-      EXPECT_EQ(expected_host.public_key(), inputs.public_key);
-      EXPECT_EQ(kTestHostFeature, inputs.software_feature);
-      EXPECT_EQ(expected_should_enable, inputs.enabled);
-      EXPECT_EQ(expected_should_enable, inputs.is_exclusive);
-      return;
-    }
-
     // Verify inputs to SetFeatureStatus().
     ASSERT_FALSE(
         fake_device_sync_client_->set_feature_status_inputs_queue().empty());
@@ -215,22 +197,14 @@ class MultiDeviceSetupGlobalStateFeatureManagerImplTest
   }
 
   int GetSetHostNetworkRequestCallbackQueueSize() {
-    return features::ShouldUseV1DeviceSync()
-               ? fake_device_sync_client_
-                     ->GetSetSoftwareFeatureStateInputsQueueSize()
-               : fake_device_sync_client_->GetSetFeatureStatusInputsQueueSize();
+    return fake_device_sync_client_->GetSetFeatureStatusInputsQueueSize();
   }
 
   void InvokePendingSetHostNetworkRequestCallback(
       device_sync::mojom::NetworkRequestResult result_code,
       bool expected_to_notify_observer_and_start_retry_timer) {
-    if (features::ShouldUseV1DeviceSync()) {
-      fake_device_sync_client_->InvokePendingSetSoftwareFeatureStateCallback(
-          result_code);
-    } else {
-      fake_device_sync_client_->InvokePendingSetFeatureStatusCallback(
-          result_code);
-    }
+    fake_device_sync_client_->InvokePendingSetFeatureStatusCallback(
+        result_code);
 
     EXPECT_EQ(expected_to_notify_observer_and_start_retry_timer,
               mock_timer_->IsRunning());

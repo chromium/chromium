@@ -141,12 +141,8 @@ class MultiDeviceSetupGrandfatheredEasyUnlockHostDisablerTest
   void VerifyEasyUnlockHostDisableRequest(
       int expected_queue_size,
       const std::optional<multidevice::RemoteDeviceRef>& expected_host) {
-    EXPECT_EQ(
-        expected_queue_size,
-        features::ShouldUseV1DeviceSync()
-            ? fake_device_sync_client_
-                  ->GetSetSoftwareFeatureStateInputsQueueSize()
-            : fake_device_sync_client_->GetSetFeatureStatusInputsQueueSize());
+    EXPECT_EQ(expected_queue_size,
+              fake_device_sync_client_->GetSetFeatureStatusInputsQueueSize());
     if (expected_queue_size > 0) {
       ASSERT_TRUE(expected_host);
       VerifyLatestEasyUnlockHostDisableRequest(*expected_host);
