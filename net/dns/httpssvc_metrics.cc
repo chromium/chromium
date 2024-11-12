@@ -56,10 +56,6 @@ void HttpssvcMetrics::SaveForAddressQuery(base::TimeDelta resolve_time,
     disqualified_ = true;
 }
 
-void HttpssvcMetrics::SaveAddressQueryFailure() {
-  disqualified_ = true;
-}
-
 void HttpssvcMetrics::SaveForHttps(enum HttpssvcDnsRcode rcode,
                                    const std::vector<bool>& condensed_records,
                                    base::TimeDelta https_resolve_time) {

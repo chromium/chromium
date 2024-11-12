@@ -244,7 +244,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // HostResolverDnsTask::Delegate implementation:
   void OnDnsTaskComplete(base::TimeTicks start_time,
                          bool allow_fallback,
-                         HostCache::Entry results,
+                         HostResolverDnsTask::Results results,
                          bool secure) override;
   void OnIntermediateTransactionsComplete(
       std::optional<HostResolverDnsTask::SingleTransactionResults>

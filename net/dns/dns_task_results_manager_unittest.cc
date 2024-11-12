@@ -176,10 +176,9 @@ TEST_F(DnsTaskResultsManagerTest, IPv6NotQueried) {
   std::unique_ptr<DnsTaskResultsManager> manager =
       factory().query_types({DnsQueryType::A, DnsQueryType::HTTPS}).Create();
 
-  std::set<std::unique_ptr<HostResolverInternalResult>> results;
-  results.insert(CreateDataResult(kHostName, {MakeIPEndPoint("192.0.2.1")},
-                                  DnsQueryType::A));
-  manager->ProcessDnsTransactionResults(DnsQueryType::A, results);
+  std::unique_ptr<HostResolverInternalResult> result = CreateDataResult(
+      kHostName, {MakeIPEndPoint("192.0.2.1")}, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result.get()});
 
   EXPECT_THAT(manager->GetCurrentEndpoints(),
               ElementsAre(ExpectServiceEndpoint(
@@ -191,18 +190,16 @@ TEST_F(DnsTaskResultsManagerTest, IPv4First) {
   std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
 
   // A comes first. Service endpoints creation should be delayed.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results1;
-  results1.insert(CreateDataResult(kHostName, {MakeIPEndPoint("192.0.2.1")},
-                                   DnsQueryType::A));
-  manager->ProcessDnsTransactionResults(DnsQueryType::A, results1);
+  std::unique_ptr<HostResolverInternalResult> result1 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("192.0.2.1")}, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result1.get()});
 
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
 
   // AAAA is responded. Service endpoints should be available.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results2;
-  results2.insert(CreateDataResult(kHostName, {MakeIPEndPoint("2001:db8::1")},
-                                   DnsQueryType::AAAA));
-  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, results2);
+  std::unique_ptr<HostResolverInternalResult> result2 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("2001:db8::1")}, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result2.get()});
 
   EXPECT_THAT(manager->GetCurrentEndpoints(),
               ElementsAre(ExpectServiceEndpoint(
@@ -214,21 +211,19 @@ TEST_F(DnsTaskResultsManagerTest, IPv6First) {
   std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
 
   // AAAA comes first. Service endpoints should be available immediately.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results1;
-  results1.insert(CreateDataResult(kHostName, {MakeIPEndPoint("2001:db8::1")},
-                                   DnsQueryType::AAAA));
-  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, results1);
+  std::unique_ptr<HostResolverInternalResult> result1 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("2001:db8::1")}, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result1.get()});
 
   EXPECT_THAT(manager->GetCurrentEndpoints(),
               ElementsAre(ExpectServiceEndpoint(
                   IsEmpty(), ElementsAre(MakeIPEndPoint("2001:db8::1", 443)))));
 
   // A is responded. Service endpoints should be updated.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results;
-  results.insert(CreateDataResult(
+  std::unique_ptr<HostResolverInternalResult> result2 = CreateDataResult(
       kHostName, {MakeIPEndPoint("192.0.2.1"), MakeIPEndPoint("192.0.2.2")},
-      DnsQueryType::A));
-  manager->ProcessDnsTransactionResults(DnsQueryType::A, results);
+      DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result2.get()});
 
   EXPECT_THAT(manager->GetCurrentEndpoints(),
               ElementsAre(ExpectServiceEndpoint(
@@ -241,10 +236,9 @@ TEST_F(DnsTaskResultsManagerTest, IPv6Timedout) {
   std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
 
   // A comes first. Service endpoints creation should be delayed.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results1;
-  results1.insert(CreateDataResult(kHostName, {MakeIPEndPoint("192.0.2.1")},
-                                   DnsQueryType::A));
-  manager->ProcessDnsTransactionResults(DnsQueryType::A, results1);
+  std::unique_ptr<HostResolverInternalResult> result1 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("192.0.2.1")}, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result1.get()});
 
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
 
@@ -257,10 +251,9 @@ TEST_F(DnsTaskResultsManagerTest, IPv6Timedout) {
                   ElementsAre(MakeIPEndPoint("192.0.2.1", 443)))));
 
   // AAAA is responded after timeout. Service endpoints should be updated.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results2;
-  results2.insert(CreateDataResult(kHostName, {MakeIPEndPoint("2001:db8::1")},
-                                   DnsQueryType::AAAA));
-  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, results2);
+  std::unique_ptr<HostResolverInternalResult> result2 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("2001:db8::1")}, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result2.get()});
 
   EXPECT_THAT(manager->GetCurrentEndpoints(),
               ElementsAre(ExpectServiceEndpoint(
@@ -272,18 +265,17 @@ TEST_F(DnsTaskResultsManagerTest, IPv6NoDataBeforeIPv4) {
   std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
 
   // AAAA is responded with no data. Service endpoints should not be available.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results1;
-  results1.insert(CreateNoData(kHostName, DnsQueryType::AAAA));
-  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, results1);
+  std::unique_ptr<HostResolverInternalResult> result1 =
+      CreateNoData(kHostName, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result1.get()});
 
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
 
   // A is responded. Service endpoints creation should happen without resolution
   // delay.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results2;
-  results2.insert(CreateDataResult(kHostName, {MakeIPEndPoint("192.0.2.1")},
-                                   DnsQueryType::A));
-  manager->ProcessDnsTransactionResults(DnsQueryType::A, results2);
+  std::unique_ptr<HostResolverInternalResult> result2 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("192.0.2.1")}, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result2.get()});
 
   EXPECT_THAT(manager->GetCurrentEndpoints(),
               ElementsAre(ExpectServiceEndpoint(
@@ -294,18 +286,17 @@ TEST_F(DnsTaskResultsManagerTest, IPv6NoDataAfterIPv4) {
   std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
 
   // A is responded. Service endpoints creation should be delayed.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results1;
-  results1.insert(CreateDataResult(kHostName, {MakeIPEndPoint("192.0.2.1")},
-                                   DnsQueryType::A));
-  manager->ProcessDnsTransactionResults(DnsQueryType::A, results1);
+  std::unique_ptr<HostResolverInternalResult> result1 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("192.0.2.1")}, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result1.get()});
 
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
 
   // AAAA is responded with no data before the resolution delay timer. Service
   // endpoints should be available without waiting for the timeout.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results2;
-  results2.insert(CreateNoData(kHostName, DnsQueryType::AAAA));
-  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, results2);
+  std::unique_ptr<HostResolverInternalResult> result2 =
+      CreateNoData(kHostName, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result2.get()});
 
   EXPECT_THAT(manager->GetCurrentEndpoints(),
               ElementsAre(ExpectServiceEndpoint(
@@ -316,18 +307,16 @@ TEST_F(DnsTaskResultsManagerTest, IPv6EmptyDataAfterIPv4) {
   std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
 
   // A is responded. Service endpoints creation should be delayed.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results1;
-  results1.insert(CreateDataResult(kHostName, {MakeIPEndPoint("192.0.2.1")},
-                                   DnsQueryType::A));
-  manager->ProcessDnsTransactionResults(DnsQueryType::A, results1);
+  std::unique_ptr<HostResolverInternalResult> result1 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("192.0.2.1")}, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result1.get()});
 
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
 
   // AAAA is responded with a non-cacheable result (an empty result) before the
   // resolution delay timer. Service endpoints should be available without
   // waiting for the timeout.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results2;
-  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, results2);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {});
 
   EXPECT_THAT(manager->GetCurrentEndpoints(),
               ElementsAre(ExpectServiceEndpoint(
@@ -338,16 +327,16 @@ TEST_F(DnsTaskResultsManagerTest, IPv4AndIPv6NoData) {
   std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
 
   // AAAA is responded with no data. Service endpoints should not be available.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results1;
-  results1.insert(CreateNoData(kHostName, DnsQueryType::AAAA));
-  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, results1);
+  std::unique_ptr<HostResolverInternalResult> result1 =
+      CreateNoData(kHostName, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result1.get()});
 
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
 
   // A is responded with no data. Service endpoints should not be available.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results2;
-  results2.insert(CreateNoData(kHostName, DnsQueryType::A));
-  manager->ProcessDnsTransactionResults(DnsQueryType::A, results2);
+  std::unique_ptr<HostResolverInternalResult> result2 =
+      CreateNoData(kHostName, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result2.get()});
 
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
 }
@@ -357,9 +346,9 @@ TEST_F(DnsTaskResultsManagerTest, IPv4NoDataIPv6AfterResolutionDelay) {
 
   // A comes first with no data. Service endpoints creation should be delayed
   // and the resolution delay timer should not start.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results1;
-  results1.insert(CreateNoData(kHostName, DnsQueryType::A));
-  manager->ProcessDnsTransactionResults(DnsQueryType::A, results1);
+  std::unique_ptr<HostResolverInternalResult> result1 =
+      CreateNoData(kHostName, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result1.get()});
 
   ASSERT_FALSE(manager->IsResolutionDelayTimerRunningForTest());
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
@@ -371,10 +360,9 @@ TEST_F(DnsTaskResultsManagerTest, IPv4NoDataIPv6AfterResolutionDelay) {
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
 
   // AAAA is responded. Service endpoints should be updated.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results2;
-  results2.insert(CreateDataResult(kHostName, {MakeIPEndPoint("2001:db8::1")},
-                                   DnsQueryType::AAAA));
-  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, results2);
+  std::unique_ptr<HostResolverInternalResult> result2 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("2001:db8::1")}, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result2.get()});
 
   EXPECT_THAT(manager->GetCurrentEndpoints(),
               ElementsAre(ExpectServiceEndpoint(
@@ -386,26 +374,24 @@ TEST_F(DnsTaskResultsManagerTest, MetadataFirst) {
 
   // HTTPS comes first. Service endpoints should not be available yet since
   // Chrome doesn't support ipv{4,6}hint yet.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results1;
-  results1.insert(CreateMetadata(kHostName, kMetadatas));
-  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, results1);
+  std::unique_ptr<HostResolverInternalResult> result1 =
+      CreateMetadata(kHostName, kMetadatas);
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result1.get()});
 
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
   ASSERT_TRUE(manager->IsMetadataReady());
 
   // A is responded. Service endpoints creation should be delayed.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results2;
-  results2.insert(CreateDataResult(kHostName, {MakeIPEndPoint("192.0.2.1")},
-                                   DnsQueryType::A));
-  manager->ProcessDnsTransactionResults(DnsQueryType::A, results2);
+  std::unique_ptr<HostResolverInternalResult> result2 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("192.0.2.1")}, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result2.get()});
 
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
 
   // AAAA is responded. Service endpoints should be available with metadatas.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results3;
-  results3.insert(CreateDataResult(kHostName, {MakeIPEndPoint("2001:db8::1")},
-                                   DnsQueryType::AAAA));
-  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, results3);
+  std::unique_ptr<HostResolverInternalResult> result3 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("2001:db8::1")}, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result3.get()});
 
   EXPECT_THAT(
       manager->GetCurrentEndpoints(),
@@ -426,19 +412,17 @@ TEST_F(DnsTaskResultsManagerTest, MetadataDifferentTargetName) {
       /*supported_protocol_alpns=*/{"h2", "http/1.1"},
       /*ech_config_list=*/{},
       /*target_name=*/"other.example.net.");
-  std::set<std::unique_ptr<HostResolverInternalResult>> results1;
-  results1.insert(
-      CreateMetadata(kHostName, {{1, kMetadataDifferentTargetName}}));
-  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, results1);
+  std::unique_ptr<HostResolverInternalResult> result1 =
+      CreateMetadata(kHostName, {{1, kMetadataDifferentTargetName}});
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result1.get()});
 
   ASSERT_TRUE(manager->IsMetadataReady());
 
   // AAAA is responded. Service endpoints should be available without metadatas
   // since the target name is different.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results2;
-  results2.insert(CreateDataResult(kHostName, {MakeIPEndPoint("2001:db8::1")},
-                                   DnsQueryType::AAAA));
-  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, results2);
+  std::unique_ptr<HostResolverInternalResult> result2 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("2001:db8::1")}, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result2.get()});
 
   ASSERT_TRUE(manager->IsMetadataReady());
   EXPECT_THAT(manager->GetCurrentEndpoints(),
@@ -450,10 +434,9 @@ TEST_F(DnsTaskResultsManagerTest, MetadataAfterIPv6) {
   std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
 
   // AAAA comes first. Service endpoints should be available without metadatas.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results1;
-  results1.insert(CreateDataResult(kHostName, {MakeIPEndPoint("2001:db8::1")},
-                                   DnsQueryType::AAAA));
-  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, results1);
+  std::unique_ptr<HostResolverInternalResult> result1 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("2001:db8::1")}, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result1.get()});
 
   ASSERT_FALSE(manager->IsMetadataReady());
   EXPECT_THAT(manager->GetCurrentEndpoints(),
@@ -461,9 +444,9 @@ TEST_F(DnsTaskResultsManagerTest, MetadataAfterIPv6) {
                   IsEmpty(), ElementsAre(MakeIPEndPoint("2001:db8::1", 443)))));
 
   // HTTPS is responded. Metadata should be available.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results2;
-  results2.insert(CreateMetadata(kHostName, kMetadatas));
-  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, results2);
+  std::unique_ptr<HostResolverInternalResult> result2 =
+      CreateMetadata(kHostName, kMetadatas);
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result2.get()});
 
   ASSERT_TRUE(manager->IsMetadataReady());
   EXPECT_THAT(
@@ -481,10 +464,9 @@ TEST_F(DnsTaskResultsManagerTest, IPv6TimedoutAfterMetadata) {
   std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
 
   // A comes first. Service endpoints creation should be delayed.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results1;
-  results1.insert(CreateDataResult(kHostName, {MakeIPEndPoint("192.0.2.1")},
-                                   DnsQueryType::A));
-  manager->ProcessDnsTransactionResults(DnsQueryType::A, results1);
+  std::unique_ptr<HostResolverInternalResult> result1 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("192.0.2.1")}, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result1.get()});
 
   ASSERT_FALSE(manager->IsMetadataReady());
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
@@ -492,9 +474,9 @@ TEST_F(DnsTaskResultsManagerTest, IPv6TimedoutAfterMetadata) {
   // HTTPS is responded. Service endpoints should not be available because
   // the manager is waiting for the resolution delay and Chrome doesn't support
   // ipv6hint yet.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results2;
-  results2.insert(CreateMetadata(kHostName, kMetadatas));
-  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, results2);
+  std::unique_ptr<HostResolverInternalResult> result2 =
+      CreateMetadata(kHostName, kMetadatas);
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result2.get()});
 
   ASSERT_TRUE(manager->IsMetadataReady());
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
@@ -519,18 +501,18 @@ TEST_F(DnsTaskResultsManagerTest, IPv4NoDataIPv6TimedoutAfterMetadata) {
   // HTTPS is responded. Service endpoints should not be available because
   // the manager is waiting for the resolution delay and Chrome doesn't support
   // address hints yet.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results1;
-  results1.insert(CreateMetadata(kHostName, kMetadatas));
-  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, results1);
+  std::unique_ptr<HostResolverInternalResult> result1 =
+      CreateMetadata(kHostName, kMetadatas);
+  manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, {result1.get()});
 
   ASSERT_TRUE(manager->IsMetadataReady());
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
 
   // A is responded with no address. Service endpoints should not be available
   // since there are no addresses.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results2;
-  results2.insert(CreateNoData(kHostName, DnsQueryType::A));
-  manager->ProcessDnsTransactionResults(DnsQueryType::A, results2);
+  std::unique_ptr<HostResolverInternalResult> result2 =
+      CreateNoData(kHostName, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(DnsQueryType::A, {result2.get()});
 
   ASSERT_TRUE(manager->GetCurrentEndpoints().empty());
 
@@ -594,21 +576,20 @@ TEST_F(DnsTaskResultsManagerTest, EndpointOrdering) {
 
   for (const auto& testdata : kTestDatas) {
     if (!testdata.ipv4_endpoints.empty()) {
-      std::set<std::unique_ptr<HostResolverInternalResult>> results;
-      results.insert(CreateDataResult(testdata.host, testdata.ipv4_endpoints,
-                                      DnsQueryType::A));
-      manager->ProcessDnsTransactionResults(DnsQueryType::A, results);
+      std::unique_ptr<HostResolverInternalResult> result = CreateDataResult(
+          testdata.host, testdata.ipv4_endpoints, DnsQueryType::A);
+      manager->ProcessDnsTransactionResults(DnsQueryType::A, {result.get()});
     }
     if (!testdata.ipv6_endpoints.empty()) {
-      std::set<std::unique_ptr<HostResolverInternalResult>> results;
-      results.insert(CreateDataResult(testdata.host, testdata.ipv6_endpoints,
-                                      DnsQueryType::AAAA));
-      manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, results);
+      std::unique_ptr<HostResolverInternalResult> result = CreateDataResult(
+          testdata.host, testdata.ipv6_endpoints, DnsQueryType::AAAA);
+      manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result.get()});
     }
     if (!testdata.metadatas.empty()) {
-      std::set<std::unique_ptr<HostResolverInternalResult>> results;
-      results.insert(CreateMetadata(testdata.host, testdata.metadatas));
-      manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS, results);
+      std::unique_ptr<HostResolverInternalResult> result =
+          CreateMetadata(testdata.host, testdata.metadatas);
+      manager->ProcessDnsTransactionResults(DnsQueryType::HTTPS,
+                                            {result.get()});
     }
   }
 
@@ -635,13 +616,14 @@ TEST_F(DnsTaskResultsManagerTest, Aliases) {
   std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
 
   // AAAA is responded with aliases.
-  std::set<std::unique_ptr<HostResolverInternalResult>> results1;
-  results1.insert(CreateAlias(kHostName, DnsQueryType::AAAA, kAliasTarget1));
-  results1.insert(
-      CreateAlias(kAliasTarget1, DnsQueryType::AAAA, kAliasTarget2));
-  results1.insert(CreateDataResult(kHostName, {MakeIPEndPoint("2001:db8::1")},
-                                   DnsQueryType::AAAA));
-  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, results1);
+  std::unique_ptr<HostResolverInternalResult> result1 =
+      CreateAlias(kHostName, DnsQueryType::AAAA, kAliasTarget1);
+  std::unique_ptr<HostResolverInternalResult> result2 =
+      CreateAlias(kAliasTarget1, DnsQueryType::AAAA, kAliasTarget2);
+  std::unique_ptr<HostResolverInternalResult> result3 = CreateDataResult(
+      kHostName, {MakeIPEndPoint("2001:db8::1")}, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(
+      DnsQueryType::AAAA, {result1.get(), result2.get(), result3.get()});
 
   EXPECT_THAT(manager->GetCurrentEndpoints(),
               ElementsAre(ExpectServiceEndpoint(
@@ -657,9 +639,9 @@ TEST_F(DnsTaskResultsManagerTest, Ipv4MappedIpv6) {
 
   auto ip_address = *IPAddress::FromIPLiteral("::ffff:192.0.2.1");
   IPEndPoint endpoint(ConvertIPv4MappedIPv6ToIPv4(ip_address), /*port=*/0);
-  std::set<std::unique_ptr<HostResolverInternalResult>> results;
-  results.insert(CreateDataResult(kHostName, {endpoint}, DnsQueryType::AAAA));
-  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, results);
+  std::unique_ptr<HostResolverInternalResult> result =
+      CreateDataResult(kHostName, {endpoint}, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA, {result.get()});
   EXPECT_THAT(manager->GetCurrentEndpoints(),
               ElementsAre(ExpectServiceEndpoint(
                   ElementsAre(MakeIPEndPoint("192.0.2.1", 443)), IsEmpty())));

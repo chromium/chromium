@@ -104,7 +104,7 @@ DnsTaskResultsManager::~DnsTaskResultsManager() = default;
 
 void DnsTaskResultsManager::ProcessDnsTransactionResults(
     DnsQueryType query_type,
-    const std::set<std::unique_ptr<HostResolverInternalResult>>& results) {
+    std::set<const HostResolverInternalResult*> results) {
   CHECK(query_types_.Has(query_type));
 
   bool should_update_endpoints = false;
@@ -130,7 +130,7 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
     }
   }
 
-  for (auto& result : results) {
+  for (const auto& result : results) {
     aliases_.insert(result->domain_name());
 
     switch (result->type()) {
