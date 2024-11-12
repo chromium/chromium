@@ -379,6 +379,9 @@ defaults = args.defaults(
     notifies = None,
     triggered_by = args.COMPUTE,
     contact_team_email = None,
+
+    # Custom Metrics
+    custom_metrics = None,
 )
 
 def builder(
@@ -920,6 +923,41 @@ def builder(
         kwargs["triggered_by"] = triggered_by
 
     contact_team_email = defaults.get_value("contact_team_email", contact_team_email)
+
+    custom_metrics = [
+        buildbucket.custom_metric(
+            name = "/chrome/infra/browser/builds/ran_tests_retry_shard_count",
+            predicates = ["has(build.output.properties.ran_tests_retry_shard)"],
+        ),
+        buildbucket.custom_metric(
+            name = "/chrome/infra/browser/builds/ran_tests_without_patch_count",
+            predicates = ["has(build.output.properties.ran_tests_without_patch)"],
+        ),
+        buildbucket.custom_metric(
+            name = "/chrome/infra/browser/builds/cached_count",
+            predicates = [
+                "has(build.output.properties.is_cached)",
+                'string(build.output.properties.is_cached) == "true"',
+            ],
+        ),
+        buildbucket.custom_metric(
+            name = "/chrome/infra/browser/builds/uncached_count",
+            predicates = [
+                "has(build.output.properties.is_cached)",
+                'string(build.output.properties.is_cached) == "false"',
+            ],
+        ),
+    ]
+
+    kwargs["custom_metrics"] = args.listify(
+        custom_metrics,
+        defaults.get_value_from_kwargs(
+            "custom_metrics",
+            kwargs,
+            merge = args.MERGE_LIST,
+        ),
+    )
+
     builder = branches.builder(
         name = name,
         branch_selector = branch_selector,
