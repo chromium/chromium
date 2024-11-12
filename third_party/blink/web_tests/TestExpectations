@@ -8499,3 +8499,24 @@ crbug.com/377938333 external/wpt/webdriver/tests/interop/beforeunload_prompt.py 
 
 # Gardener 2024-11-08
 crbug.com/377927602 external/wpt/selection/caret/collapse-pre-linestart-1.html [ Failure Pass ]
+
+# Temporarily add TestExpectation for mac-rel and mac14-blink-rel try builder testing
+# To be removed once crbug.com/375028401 is resolved
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/batch_normalization.https.any.html?cpu [ Pass Timeout ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/batch_normalization.https.any.worker.html?cpu [ Pass Timeout ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/pooling.https.any.html?cpu [ Pass Timeout ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/pooling.https.any.worker.html?cpu [ Pass Timeout ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?cpu [ Pass Timeout ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?cpu [ Pass Timeout ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/batch_normalization.https.any.html?npu [ Pass Timeout ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/batch_normalization.https.any.worker.html?npu [ Pass Timeout ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/pooling.https.any.html?npu [ Pass Timeout ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/pooling.https.any.worker.html?npu [ Pass Timeout ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?npu [ Pass Timeout ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?npu [ Pass Timeout ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/batch_normalization.https.any.html?gpu [ Pass Timeout ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/batch_normalization.https.any.worker.html?gpu [ Pass Timeout ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pooling.https.any.html?gpu [ Pass Timeout ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/pooling.https.any.worker.html?gpu [ Pass Timeout ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?gpu [ Pass Timeout ]
+crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?gpu [ Pass Timeout ]

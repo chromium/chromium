@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
 [FAIL] convTranspose2d float32 4D both input and filter non-constant tensors default options
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+  assert_true: assert_array_approx_equals_ulp: test convTranspose2d float32 actual 0 should be close enough to expected 0.1933533400297165 by the acceptable 8 ULP distance, but they have 1044774507 ULP distance expected true got false
 [FAIL] convTranspose2d float32 4D both input and filter constant tensors default options
   assert_true: assert_array_approx_equals_ulp: test convTranspose2d float32 actual 0.1932373046875 should be close enough to expected 0.1933533400297165 by the acceptable 8 ULP distance, but they have 7787 ULP distance expected true got false
 [FAIL] convTranspose2d float32 4D input and filter tensors default options

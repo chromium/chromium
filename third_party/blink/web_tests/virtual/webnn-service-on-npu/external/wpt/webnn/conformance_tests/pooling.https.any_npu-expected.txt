@@ -24,13 +24,13 @@ This is a testharness.js-based test.
 [FAIL] averagePool2d float32 4D tensor options.roundingType=floor
   assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 54.15625 should be close enough to expected 54.20252990722656 by the acceptable 11 ULP distance, but they have 12132 ULP distance expected true got false
 [FAIL] averagePool2d float32 4D tensor options.roundingType=ceil
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 0 should be close enough to expected 54.20252990722656 by the acceptable 11 ULP distance, but they have 1113116516 ULP distance expected true got false
 [FAIL] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=floor
   assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 54.15625 should be close enough to expected 54.20252990722656 by the acceptable 11 ULP distance, but they have 12132 ULP distance expected true got false
 [FAIL] averagePool2d float32 4D tensor options.layout=nhwc and options.roundingType=ceil
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 0 should be close enough to expected 54.20252990722656 by the acceptable 11 ULP distance, but they have 1113116516 ULP distance expected true got false
 [FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+  assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 0 should be close enough to expected 54.20252990722656 by the acceptable 11 ULP distance, but they have 1113116516 ULP distance expected true got false
 [FAIL] averagePool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
   assert_true: assert_array_approx_equals_ulp: test averagePool2d float32 actual 54.15625 should be close enough to expected 54.20252990722656 by the acceptable 11 ULP distance, but they have 12132 ULP distance expected true got false
 [FAIL] averagePool2d float32 4D tensor options.dilations with options.strides
@@ -56,9 +56,9 @@ This is a testharness.js-based test.
 [FAIL] l2Pool2d float32 4D tensor options.roundingType=floor
   assert_true: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 171.375 should be close enough to expected 171.5061492919922 by the acceptable 11 ULP distance, but they have 8595 ULP distance expected true got false
 [FAIL] l2Pool2d float32 4D tensor options.roundingType=ceil
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+  assert_true: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 0 should be close enough to expected 171.5061492919922 by the acceptable 11 ULP distance, but they have 1126924691 ULP distance expected true got false
 [FAIL] l2Pool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+  assert_true: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 0 should be close enough to expected 171.5061492919922 by the acceptable 11 ULP distance, but they have 1126924691 ULP distance expected true got false
 [FAIL] l2Pool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
   assert_true: assert_array_approx_equals_ulp: test l2Pool2d float32 actual 171.375 should be close enough to expected 171.5061492919922 by the acceptable 11 ULP distance, but they have 8595 ULP distance expected true got false
 [FAIL] l2Pool2d float32 4D tensor options.dilations with options.strides
@@ -82,9 +82,9 @@ This is a testharness.js-based test.
 [FAIL] maxPool2d float32 4D tensor options.roundingType=floor
   assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.25 should be close enough to expected 99.28312683105469 by the acceptable 0 ULP distance, but they have 4342 ULP distance expected true got false
 [FAIL] maxPool2d float32 4D tensor options.roundingType=ceil
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 0 should be close enough to expected 99.28312683105469 by the acceptable 0 ULP distance, but they have 1120309494 ULP distance expected true got false
 [FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=floor
-  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
+  assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 0 should be close enough to expected 99.28312683105469 by the acceptable 0 ULP distance, but they have 1120309494 ULP distance expected true got false
 [FAIL] maxPool2d float32 4D tensor options.outputSizes ignores options.roundingType=ceil
   assert_true: assert_array_approx_equals_ulp: test maxPool2d float32 actual 99.25 should be close enough to expected 99.28312683105469 by the acceptable 0 ULP distance, but they have 4342 ULP distance expected true got false
 [FAIL] maxPool2d float32 4D tensor options.dilations with options.strides
