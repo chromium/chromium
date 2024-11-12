@@ -287,6 +287,44 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
+    public void testShowFopSelector_SuccessfullyShown_UiEventRelayed() {
+        mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
+
+        verify(mDelegateMock).onUiEvent(UiEvent.NEW_SCREEN_SHOWN);
+    }
+
+    @Test
+    public void testShowFopSelector_FailedToShow_UiEventRelayed() {
+        Mockito.when(
+                        mBottomSheetController.requestShowContent(
+                                any(BottomSheetContent.class), anyBoolean()))
+                .thenReturn(false);
+
+        mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
+
+        verify(mDelegateMock).onUiEvent(UiEvent.SCREEN_CLOSED_NOT_BY_USER);
+    }
+
+    @Test
+    public void testShowErrorScreen_SuccessfullyShown_UiEventRelayed() {
+        mCoordinator.showErrorScreen();
+
+        verify(mDelegateMock).onUiEvent(UiEvent.NEW_SCREEN_SHOWN);
+    }
+
+    @Test
+    public void testShowErrorScreen_FailedToShow_UiEventRelayed() {
+        Mockito.when(
+                        mBottomSheetController.requestShowContent(
+                                any(BottomSheetContent.class), anyBoolean()))
+                .thenReturn(false);
+
+        mCoordinator.showErrorScreen();
+
+        verify(mDelegateMock).onUiEvent(UiEvent.SCREEN_CLOSED_NOT_BY_USER);
+    }
+
+    @Test
     public void testShowFinancialAccountsManagementSettings() {
         mCoordinator.showSheet(List.of(BANK_ACCOUNT_1, BANK_ACCOUNT_2));
 
@@ -551,6 +589,10 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                         .getAllProperties()
                         .size(),
                 0);
+
+        // Verify that the UI event is relayed to the delegate. New screen shown event should be
+        // triggered twice, once for each screen.
+        verify(mDelegateMock, times(2)).onUiEvent(UiEvent.NEW_SCREEN_SHOWN);
     }
 
     @Test
@@ -579,6 +621,10 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                                 .getAllProperties();
         assertThat(propertyKeys, hasSize(1));
         assertThat(propertyKeys, contains(PRIMARY_BUTTON_CALLBACK));
+
+        // Verify that the UI event is relayed to the delegate. New screen shown event should be
+        // triggered twice, once for each screen.
+        verify(mDelegateMock, times(2)).onUiEvent(UiEvent.NEW_SCREEN_SHOWN);
     }
 
     @Test
@@ -597,7 +643,8 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SCREEN), is(UNINITIALIZED));
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE_STATE), is(HIDDEN));
 
-        // Verify that the bottom sheet closing is triggered.
+        // Verify that the bottom sheet closing is triggered. The bottom sheet is initialized in the
+        // hidden state which triggers hideContent. The second call is from the dismissal.
         verify(mBottomSheetController, times(2)).hideContent(any(), eq(true));
     }
 
