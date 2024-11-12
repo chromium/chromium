@@ -9346,6 +9346,25 @@
             ]
         }
     ],
+    "EnterpriseFileObfuscation": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnterpriseFileObfuscation"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnterprisePasswordReuseUiRefresh": [
         {
             "platforms": [
