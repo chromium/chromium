@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client_delegate.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_consent_presenter.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator_delegate.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
@@ -99,7 +100,8 @@ const CGFloat kMenuSymbolSize = 18;
 
 }  // namespace
 
-@interface LensOverlayCoordinator () <LensOverlayCommands,
+@interface LensOverlayCoordinator () <LensOverlayConsentPresenterDelegate,
+                                      LensOverlayCommands,
                                       LensOverlayMediatorDelegate,
                                       LensOverlayResultConsumer,
                                       LensOverlayDetentsChangeObserver,
@@ -160,6 +162,9 @@ const CGFloat kMenuSymbolSize = 18;
 
   /// A helper object that provides a central point for recording metrics.
   LensOverlayMetricsRecorder* _metricsRecorder;
+
+  /// Consent dialog presenter.
+  LensOverlayConsentPresenter* _lensOverlayConsentPresenter;
 }
 
 #pragma mark - public
@@ -391,7 +396,15 @@ const CGFloat kMenuSymbolSize = 18;
 
 - (void)presentConsentFlow {
   [self createConsentViewController];
-  [self showConsentViewController];
+  [_metricsRecorder recordLensOverlayConsentShown];
+  [self disableSelectionInteraction:YES];
+
+  _lensOverlayConsentPresenter = [[LensOverlayConsentPresenter alloc]
+      initWithPresentingViewController:_containerViewController
+        presentedConsentViewController:_consentViewController];
+  _lensOverlayConsentPresenter.delegate = self;
+  [_lensOverlayConsentPresenter showConsentViewController];
+
   [_metricsRecorder recordPermissionRequestedToBeShown];
 }
 
@@ -698,6 +711,14 @@ const CGFloat kMenuSymbolSize = 18;
   [self openURLInNewTab:GURL(kLearnMoreLensURL)];
 }
 
+#pragma mark - LensOverlayConsentPresenterDelegate
+
+- (void)requestDismissalOfConsentDialog:
+    (LensOverlayConsentPresenter*)presenter {
+  [self destroyLensUI:YES
+               reason:lens::LensOverlayDismissalSource::kBottomSheetDismissed];
+}
+
 #pragma mark - private
 
 - (void)openURLInNewTab:(GURL)URL {
@@ -889,6 +910,7 @@ const CGFloat kMenuSymbolSize = 18;
   _isExiting = NO;
   _associatedTabHelper = nil;
   _metricsRecorder = nil;
+  _lensOverlayConsentPresenter = nil;
   _scopedForceOrientation.reset();
 }
 
@@ -986,23 +1008,6 @@ const CGFloat kMenuSymbolSize = 18;
 
 - (BOOL)isLensOverlayVisible {
   return _containerViewController.presentingViewController != nil;
-}
-
-- (void)showConsentViewController {
-  [_metricsRecorder recordLensOverlayConsentShown];
-  [self disableSelectionInteraction:YES];
-  // Configure sheet presentation
-  UISheetPresentationController* sheet =
-      _consentViewController.sheetPresentationController;
-  sheet.prefersEdgeAttachedInCompactHeight = YES;
-  _detentsManager =
-      [[LensOverlayDetentsManager alloc] initWithBottomSheet:sheet];
-  _detentsManager.observer = self;
-  [_detentsManager adjustDetentsForState:SheetDetentStateConsentDialog];
-
-  [_containerViewController presentViewController:_consentViewController
-                                         animated:YES
-                                       completion:nil];
 }
 
 // Blocks user interaction with the Lens UI.
