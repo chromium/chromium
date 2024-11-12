@@ -36,7 +36,7 @@ void LogPaymentCodeValidationResultAndLatency(
 
 void LogApiAvailabilityCheckResultAndLatency(bool result,
                                              base::TimeDelta duration) {
-  // TODO(b/337929926): Remove hardcoding for Pix and use
+  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
   // FacilitatedPaymentsType enum.
   base::UmaHistogramLongTimes(
       base::StrCat({"FacilitatedPayments.Pix.IsApiAvailable.",
@@ -46,7 +46,7 @@ void LogApiAvailabilityCheckResultAndLatency(bool result,
 
 void LogLoadRiskDataResultAndLatency(bool was_successful,
                                      base::TimeDelta duration) {
-  // TODO(b/337929926): Remove hardcoding for Pix and use
+  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
   // FacilitatedPaymentsType enum.
   base::UmaHistogramLongTimes(
       base::StrCat({"FacilitatedPayments.Pix.LoadRiskData.",
@@ -55,7 +55,7 @@ void LogLoadRiskDataResultAndLatency(bool was_successful,
 }
 
 void LogGetClientTokenResultAndLatency(bool result, base::TimeDelta duration) {
-  // TODO(b/337929926): Remove hardcoding for Pix and use
+  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
   // FacilitatedPaymentsType enum.
   base::UmaHistogramLongTimes(
       base::StrCat({"FacilitatedPayments.Pix.GetClientToken.",
@@ -64,7 +64,7 @@ void LogGetClientTokenResultAndLatency(bool result, base::TimeDelta duration) {
 }
 
 void LogPayflowExitedReason(PayflowExitedReason reason) {
-  // TODO(b/337929926): Remove hardcoding for Pix and use
+  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
   // FacilitatedPaymentsType enum.
   base::UmaHistogramEnumeration("FacilitatedPayments.Pix.PayflowExitedReason",
                                 reason);
@@ -77,17 +77,24 @@ void LogPaymentNotOfferedReason(PaymentNotOfferedReason reason) {
       "FacilitatedPayments.Pix.PaymentNotOfferedReason", reason);
 }
 
-void LogInitiatePaymentResult(bool result, base::TimeDelta duration) {
-  // TODO(b/337929926): Remove hardcoding for Pix and use
+void LogInitiatePaymentAttempt() {
+  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
   // FacilitatedPaymentsType enum.
-  UMA_HISTOGRAM_BOOLEAN("FacilitatedPayments.Pix.InitiatePayment.Result",
-                        result);
-  base::UmaHistogramLongTimes("FacilitatedPayments.Pix.InitiatePayment.Latency",
-                              duration);
+  base::UmaHistogramBoolean("FacilitatedPayments.Pix.InitiatePayment.Attempt",
+                            /*sample=*/true);
+}
+
+void LogInitiatePaymentResultAndLatency(bool result, base::TimeDelta duration) {
+  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
+  // FacilitatedPaymentsType enum.
+  base::UmaHistogramLongTimes(
+      base::StrCat({"FacilitatedPayments.Pix.InitiatePayment.",
+                    result ? "Success" : "Failure", ".Latency"}),
+      duration);
 }
 
 void LogInitiatePurchaseActionResult(bool result, base::TimeDelta duration) {
-  // TODO(b/337929926): Remove hardcoding for Pix and use
+  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
   // FacilitatedPaymentsType enum.
   UMA_HISTOGRAM_BOOLEAN("FacilitatedPayments.Pix.InitiatePurchaseAction.Result",
                         result);
@@ -96,7 +103,7 @@ void LogInitiatePurchaseActionResult(bool result, base::TimeDelta duration) {
 }
 
 void LogFopSelectorShown(bool shown) {
-  // TODO(b/337929926): Remove hardcoding for Pix and use
+  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
   // FacilitatedPaymentsType enum.
   UMA_HISTOGRAM_BOOLEAN("FacilitatedPayments.Pix.FopSelector.Shown", shown);
 }
@@ -105,7 +112,7 @@ void LogTransactionResult(TransactionResult result,
                           TriggerSource trigger_source,
                           base::TimeDelta duration,
                           ukm::SourceId ukm_source_id) {
-  // TODO(b/337929926): Remove hardcoding for Pix and use
+  // TODO(crbug.com/337929926): Remove hardcoding for Pix and use
   // FacilitatedPaymentsType enum.
   base::UmaHistogramEnumeration("FacilitatedPayments.Pix.Transaction.Result",
                                 result);

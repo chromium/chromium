@@ -107,19 +107,29 @@ TEST(FacilitatedPaymentsMetricsTest, LogGetClientTokenResultAndLatency) {
       /*expected_bucket_count=*/1);
 }
 
-TEST(FacilitatedPaymentsMetricsTest, LogInitiatePaymentResult) {
+TEST(FacilitatedPaymentsMetricsTest, LogInitiatePaymentAttempt) {
   base::HistogramTester histogram_tester;
 
-  LogInitiatePaymentResult(/*result=*/true, base::Milliseconds(10));
+  LogInitiatePaymentAttempt();
 
   histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.InitiatePayment.Result",
+      "FacilitatedPayments.Pix.InitiatePayment.Attempt",
       /*sample=*/true,
       /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.InitiatePayment.Latency",
-      /*sample=*/10,
-      /*expected_bucket_count=*/1);
+}
+
+TEST(FacilitatedPaymentsMetricsTest, LogInitiatePaymentResultAndLatency) {
+  for (bool result : {true, false}) {
+    base::HistogramTester histogram_tester;
+
+    LogInitiatePaymentResultAndLatency(result, base::Milliseconds(10));
+
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({"FacilitatedPayments.Pix.InitiatePayment.",
+                      result ? "Success" : "Failure", ".Latency"}),
+        /*sample=*/10,
+        /*expected_count=*/1);
+  }
 }
 
 TEST(FacilitatedPaymentsMetricsTest, LogInitiatePurchaseActionResult) {
@@ -223,7 +233,8 @@ INSTANTIATE_TEST_SUITE_P(
                     PayflowExitedReason::kLandscapeScreenOrientation,
                     PayflowExitedReason::kApiClientNotAvailable,
                     PayflowExitedReason::kRiskDataNotAvailable,
-                    PayflowExitedReason::kClientTokenNotAvailable));
+                    PayflowExitedReason::kClientTokenNotAvailable,
+                    PayflowExitedReason::kInitiatePaymentFailed));
 
 class FacilitatedPaymentsMetricsUkmTest : public testing::Test {
  public:

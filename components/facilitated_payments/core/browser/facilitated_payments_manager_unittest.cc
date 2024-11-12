@@ -608,17 +608,25 @@ TEST_F(FacilitatedPaymentsManagerTest,
 // Test that SendInitiatePaymentRequest initiates payment using the
 // FacilitatedPaymentsNetworkInterface.
 TEST_F(FacilitatedPaymentsManagerTest, SendInitiatePaymentRequest) {
+  base::HistogramTester histogram_tester;
   EXPECT_CALL(payments_network_interface_,
               InitiatePayment(testing::_, testing::_, testing::_));
 
   manager_->SendInitiatePaymentRequest();
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.InitiatePayment.Attempt",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
 // Test that if the response from
 // `FacilitatedPaymentsNetworkInterface::InitiatePayment` call has failure
 // result, purchase action is not invoked. Instead, an error message is shown.
 TEST_F(FacilitatedPaymentsManagerTest,
-       OnInitiatePaymentResponseReceived_FailureResponse_ErrorScreenShown) {
+       OnInitiatePaymentResponseReceived_FailureResponse) {
+  base::HistogramTester histogram_tester;
+  manager_->SendInitiatePaymentRequest();
   ON_CALL(*client_, GetCoreAccountInfo)
       .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
 
@@ -629,10 +637,20 @@ TEST_F(FacilitatedPaymentsManagerTest,
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
   response_details->action_token_ =
       std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
+  FastForwardBy(base::Seconds(2));
   manager_->OnInitiatePaymentResponseReceived(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::
           kPermanentFailure,
       std::move(response_details));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.PayflowExitedReason",
+      /*sample=*/PayflowExitedReason::kInitiatePaymentFailed,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.InitiatePayment.Failure.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
 }
 
 // Test that if the response from
@@ -640,29 +658,40 @@ TEST_F(FacilitatedPaymentsManagerTest,
 // token, purchase action is not invoked. Instead, an error message is shown.
 TEST_F(FacilitatedPaymentsManagerTest,
        OnInitiatePaymentResponseReceived_NoActionToken_ErrorScreenShown) {
+  base::HistogramTester histogram_tester;
+  manager_->SendInitiatePaymentRequest();
   ON_CALL(*client_, GetCoreAccountInfo)
       .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
 
   EXPECT_CALL(*client_, ShowErrorScreen());
   EXPECT_CALL(GetApiClient(), InvokePurchaseAction).Times(0);
 
+  FastForwardBy(base::Seconds(2));
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
   manager_->OnInitiatePaymentResponseReceived(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       std::move(response_details));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.InitiatePayment.Success.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
 }
 
 // Test that if the core account is std::nullopt, purchase action is not
 // invoked. Instead, an error message is shown.
 TEST_F(FacilitatedPaymentsManagerTest,
        OnInitiatePaymentResponseReceived_NoCoreAccountInfo_ErrorScreenShown) {
+  base::HistogramTester histogram_tester;
+  manager_->SendInitiatePaymentRequest();
   ON_CALL(*client_, GetCoreAccountInfo)
       .WillByDefault(testing::Return(std::nullopt));
 
   EXPECT_CALL(*client_, ShowErrorScreen());
   EXPECT_CALL(GetApiClient(), InvokePurchaseAction).Times(0);
 
+  FastForwardBy(base::Seconds(2));
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
   response_details->action_token_ =
@@ -670,18 +699,26 @@ TEST_F(FacilitatedPaymentsManagerTest,
   manager_->OnInitiatePaymentResponseReceived(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       std::move(response_details));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.InitiatePayment.Success.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
 }
 
 // Test that if the user is logged out, purchase action is not invoked. Instead,
 // an error message is shown.
 TEST_F(FacilitatedPaymentsManagerTest,
        OnInitiatePaymentResponseReceived_LoggedOutProfile_ErrorScreenShown) {
+  base::HistogramTester histogram_tester;
+  manager_->SendInitiatePaymentRequest();
   ON_CALL(*client_, GetCoreAccountInfo)
       .WillByDefault(testing::Return(CoreAccountInfo()));
 
   EXPECT_CALL(*client_, ShowErrorScreen());
   EXPECT_CALL(GetApiClient(), InvokePurchaseAction).Times(0);
 
+  FastForwardBy(base::Seconds(2));
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
   response_details->action_token_ =
@@ -689,17 +726,25 @@ TEST_F(FacilitatedPaymentsManagerTest,
   manager_->OnInitiatePaymentResponseReceived(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       std::move(response_details));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.InitiatePayment.Success.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
 }
 
 // Test that the puchase action is invoked after receiving a success response
 // from the `FacilitatedPaymentsNetworkInterface::InitiatePayment` call.
 TEST_F(FacilitatedPaymentsManagerTest,
        OnInitiatePaymentResponseReceived_InvokePurchaseActionTriggered) {
+  base::HistogramTester histogram_tester;
+  manager_->SendInitiatePaymentRequest();
   ON_CALL(*client_, GetCoreAccountInfo)
       .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
 
   EXPECT_CALL(GetApiClient(), InvokePurchaseAction);
 
+  FastForwardBy(base::Seconds(2));
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
   response_details->action_token_ =
@@ -707,6 +752,11 @@ TEST_F(FacilitatedPaymentsManagerTest,
   manager_->OnInitiatePaymentResponseReceived(
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       std::move(response_details));
+
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Pix.InitiatePayment.Success.Latency",
+      /*sample=*/2000,
+      /*expected_bucket_count=*/1);
 }
 
 // Test that when a positive puchase action result is received, the UI prompt is
@@ -796,32 +846,6 @@ TEST_F(FacilitatedPaymentsManagerTest,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
       "FacilitatedPayments.Pix.InitiatePurchaseAction.Latency",
-      /*sample=*/2000,
-      /*expected_bucket_count=*/1);
-}
-
-// Test that once the InitiatePayment response is received, the result and
-// latency of the network call is logged.
-TEST_F(FacilitatedPaymentsManagerTest,
-       OnInitiatePaymentResponseReceived_HistogramLogged) {
-  base::HistogramTester histogram_tester;
-  manager_->SendInitiatePaymentRequest();
-  auto response_details =
-      std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
-  response_details->action_token_ =
-      std::vector<uint8_t>{'t', 'o', 'k', 'e', 'n'};
-
-  FastForwardBy(base::Seconds(2));
-  manager_->OnInitiatePaymentResponseReceived(
-      autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
-      std::move(response_details));
-
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.InitiatePayment.Result",
-      /*sample=*/true,
-      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      "FacilitatedPayments.Pix.InitiatePayment.Latency",
       /*sample=*/2000,
       /*expected_bucket_count=*/1);
 }

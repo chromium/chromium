@@ -35,6 +35,7 @@ reviewer.
   <int value="5" label="API client not available"/>
   <int value="6" label="Risk data not available"/>
   <int value="7" label="Client token not available"/>
+  <int value="8" label="InitiatePayment request failed"/>
 </enum>
 
 <enum name="FacilitatedPayments.PaymentNotOfferedReason">

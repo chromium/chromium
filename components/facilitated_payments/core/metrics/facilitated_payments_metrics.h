@@ -36,7 +36,9 @@ enum class PayflowExitedReason {
   kRiskDataNotAvailable = 6,
   // The client token needed to send the server request is not available.
   kClientTokenNotAvailable = 7,
-  kMaxValue = kClientTokenNotAvailable
+  // The InitiatePayment response indicated a failure.
+  kInitiatePaymentFailed = 8,
+  kMaxValue = kInitiatePaymentFailed
 };
 
 // TODO(crbug.com/367751320): Remove after new PayflowExited histogram is
@@ -105,8 +107,11 @@ void LogPayflowExitedReason(PayflowExitedReason reason);
 // that a valid code has been found.
 void LogPaymentNotOfferedReason(PaymentNotOfferedReason reason);
 
+// Log the attempt to send the call to the InitiatePayment backend endpoint.
+void LogInitiatePaymentAttempt();
+
 // Log the result and latency for the InitiatePayment backend endpoint.
-void LogInitiatePaymentResult(bool result, base::TimeDelta duration);
+void LogInitiatePaymentResultAndLatency(bool result, base::TimeDelta duration);
 
 // Log the result and latency for the InitiatePurchaseAction call made to the
 // payments platform (client).

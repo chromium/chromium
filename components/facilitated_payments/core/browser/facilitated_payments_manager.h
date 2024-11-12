@@ -180,9 +180,8 @@ class FacilitatedPaymentsManager {
                            PayflowExitedReason_ApiClientNotAvailable);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            SendInitiatePaymentRequest);
-  FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerTest,
-      OnInitiatePaymentResponseReceived_FailureResponse_ErrorScreenShown);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           OnInitiatePaymentResponseReceived_FailureResponse);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
       OnInitiatePaymentResponseReceived_NoActionToken_ErrorScreenShown);
@@ -201,8 +200,6 @@ class FacilitatedPaymentsManager {
                            OnPurchaseActionNegativeResult_UiPromptDismissed);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            InvokePurchaseActionCompleted_HistogramLogged);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           OnInitiatePaymentResponseReceived_HistogramLogged);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            TransactionSuccess_HistogramLogged);
   FRIEND_TEST_ALL_PREFIXES(
