@@ -47,6 +47,9 @@ class CONTENT_EXPORT FilePathWatcherFSEventsChangeTracker {
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner() const;
 
+  // Report a change event for the given `ChangeInfo`.
+  void ReportChangeEvent(FilePathWatcher::ChangeInfo change_info);
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   FilePathWatcher::CallbackWithChangeInfo callback_;

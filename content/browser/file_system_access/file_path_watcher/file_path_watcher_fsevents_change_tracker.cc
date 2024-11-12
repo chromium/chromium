@@ -93,6 +93,13 @@ FilePathWatcherFSEventsChangeTracker::task_runner() const {
   return task_runner_;
 }
 
+void FilePathWatcherFSEventsChangeTracker::ReportChangeEvent(
+    FilePathWatcher::ChangeInfo change_info) {
+  callback_.Run(std::move(change_info),
+                report_modified_path_ ? change_info.modified_path : target_,
+                /*error=*/false);
+}
+
 void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
     std::map<FSEventStreamEventId, ChangeEvent> events) {
   DCHECK(task_runner()->RunsTasksInCurrentSequence());
@@ -146,10 +153,8 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
         // If the next event is a deletion of the target path itself, coalesce
         // the following, duplicate delete event.
         coalesce_next_target_deletion_ = true;
-        FilePathWatcher::ChangeInfo change_info = {
-            file_path_type, FilePathWatcher::ChangeType::kDeleted, target_};
-        callback_.Run(std::move(change_info), target_,
-                      /*error=*/false);
+        ReportChangeEvent(
+            {file_path_type, FilePathWatcher::ChangeType::kDeleted, target_});
         continue;
       }
 
@@ -157,10 +162,8 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
       // move into-scope), or the target has been created initially. Both
       // scenarios are reported as 'create' events.
       coalesce_next_target_creation_ = true;
-      FilePathWatcher::ChangeInfo change_info = {
-          file_path_type, FilePathWatcher::ChangeType::kCreated, target_};
-      callback_.Run(std::move(change_info), target_,
-                    /*error=*/false);
+      ReportChangeEvent(
+          {file_path_type, FilePathWatcher::ChangeType::kCreated, target_});
       continue;
     }
 
@@ -213,33 +216,23 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
         // perspective. When this is the case, determine if a move in or
         // out-of-scope has taken place.
         if (!move_to_event_in_scope) {
-          FilePathWatcher::ChangeInfo change_info = {
-              file_path_type, FilePathWatcher::ChangeType::kDeleted,
-              event_path};
-          callback_.Run(std::move(change_info),
-                        report_modified_path_ ? event_path : target_,
-                        /*error=*/false);
+          ReportChangeEvent({file_path_type,
+                             FilePathWatcher::ChangeType::kDeleted,
+                             event_path});
           continue;
         }
 
         if (!event_in_scope) {
-          FilePathWatcher::ChangeInfo change_info = {
-              file_path_type, FilePathWatcher::ChangeType::kCreated,
-              move_to_event_path};
-          callback_.Run(std::move(change_info),
-                        report_modified_path_ ? move_to_event_path : target_,
-                        /*error=*/false);
+          ReportChangeEvent({file_path_type,
+                             FilePathWatcher::ChangeType::kCreated,
+                             move_to_event_path});
           continue;
         }
 
         // Both the current event and the next event must be in-scope for a
         // move within-scope to be reported.
-        FilePathWatcher::ChangeInfo change_info = {
-            file_path_type, FilePathWatcher::ChangeType::kMoved,
-            move_to_event_path, event_path};
-        callback_.Run(std::move(change_info),
-                      report_modified_path_ ? move_to_event_path : target_,
-                      /*error=*/false);
+        ReportChangeEvent({file_path_type, FilePathWatcher::ChangeType::kMoved,
+                           move_to_event_path, event_path});
         continue;
       }
 
@@ -267,14 +260,13 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
       // directory exists. This signals a move into-scope and is reported as
       // a 'created event. Otherwise, the event is reported as a 'deleted'
       // event.
-      FilePathWatcher::ChangeInfo change_info = {
-          file_path_type,
-          exists ? FilePathWatcher::ChangeType::kCreated
-                 : FilePathWatcher::ChangeType::kDeleted,
-          event_path};
-      callback_.Run(std::move(change_info),
-                    report_modified_path_ ? event_path : target_,
-                    /*error=*/false);
+      if (exists) {
+        ReportChangeEvent({file_path_type,
+                           FilePathWatcher::ChangeType::kCreated, event_path});
+      } else {
+        ReportChangeEvent({file_path_type,
+                           FilePathWatcher::ChangeType::kDeleted, event_path});
+      }
       continue;
     }
 
@@ -293,11 +285,8 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
         coalesce_next_target_deletion_ = false;
         continue;
       }
-      FilePathWatcher::ChangeInfo change_info = {
-          file_path_type, FilePathWatcher::ChangeType::kDeleted, event_path};
-      callback_.Run(std::move(change_info),
-                    report_modified_path_ ? event_path : target_,
-                    /*error=*/false);
+      ReportChangeEvent(
+          {file_path_type, FilePathWatcher::ChangeType::kDeleted, event_path});
       continue;
     }
 
@@ -311,11 +300,8 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
     // `kFSEventStreamEventFlagItemModified` flags.
     if ((event_flags & kFSEventStreamEventFlagItemInodeMetaMod) &&
         (event_flags & kFSEventStreamEventFlagItemModified)) {
-      FilePathWatcher::ChangeInfo change_info = {
-          file_path_type, FilePathWatcher::ChangeType::kModified, event_path};
-      callback_.Run(std::move(change_info),
-                    report_modified_path_ ? event_path : target_,
-                    /*error=*/false);
+      ReportChangeEvent(
+          {file_path_type, FilePathWatcher::ChangeType::kModified, event_path});
       continue;
     }
 
@@ -333,22 +319,16 @@ void FilePathWatcherFSEventsChangeTracker::DispatchEvents(
         coalesce_next_target_creation_ = false;
         continue;
       }
-      FilePathWatcher::ChangeInfo change_info = {
-          file_path_type, FilePathWatcher::ChangeType::kCreated, event_path};
-      callback_.Run(std::move(change_info),
-                    report_modified_path_ ? event_path : target_,
-                    /*error=*/false);
+      ReportChangeEvent(
+          {file_path_type, FilePathWatcher::ChangeType::kCreated, event_path});
       continue;
     }
 
     // Otherwise, if the `kFSEventStreamEventFlagItemModified` flag is present,
     // report a 'modified' event.
     if (event_flags & kFSEventStreamEventFlagItemModified) {
-      FilePathWatcher::ChangeInfo change_info = {
-          file_path_type, FilePathWatcher::ChangeType::kModified, event_path};
-      callback_.Run(std::move(change_info),
-                    report_modified_path_ ? event_path : target_,
-                    /*error=*/false);
+      ReportChangeEvent(
+          {file_path_type, FilePathWatcher::ChangeType::kModified, event_path});
       continue;
     }
   }
