@@ -415,8 +415,6 @@ source_set("account_checker") {
     "//base",
     "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/prefs:prefs",
-    "//components/search",
-    "//components/search_engines",
     "//components/signin/public/identity_manager:identity_manager",
     "//components/sync/base",
     "//components/sync/service",

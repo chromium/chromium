@@ -44,7 +44,6 @@
 
 class GURL;
 class PrefService;
-class TemplateURLService;
 
 template <typename T>
 class SessionProtoStorage;
@@ -224,8 +223,7 @@ class ShoppingService : public KeyedService,
           parcel_tracking_proto_db,
       history::HistoryService* history_service,
       std::unique_ptr<commerce::WebExtractor> web_extractor,
-      sessions::TabRestoreService* tab_restore_service,
-      TemplateURLService* template_url_service);
+      sessions::TabRestoreService* tab_restore_service);
   ~ShoppingService() override;
 
   ShoppingService(const ShoppingService&) = delete;

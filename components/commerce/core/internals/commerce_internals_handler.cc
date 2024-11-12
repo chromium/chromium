@@ -302,9 +302,6 @@ void CommerceInternalsHandler::GetShoppingEligibilityDetails(
       account_checker->IsSubjectToParentalControls(),
       /*expected_value=*/false));
   details->details.push_back(mojom::EligibilityDetail::New(
-      "IsDefaultSearchEngineGoogle",
-      account_checker->IsDefaultSearchEngineGoogle(), /*expected_value=*/true));
-  details->details.push_back(mojom::EligibilityDetail::New(
       "CanUseModelExecutionFeatures",
       account_checker->CanUseModelExecutionFeatures(),
       /*expected_value=*/true));

@@ -240,18 +240,5 @@ TEST_F(FeatureUtilsTest,
   ASSERT_FALSE(CanFetchProductSpecificationsData(account_checker_.get()));
 }
 
-TEST_F(FeatureUtilsTest, CanFetchProductSpecificationsData_NoGoogleDSE) {
-  test_features_.InitAndEnableFeature(kProductSpecifications);
-  SetupProductSpecificationsEnabled();
-
-  // We should be able to fetch data while Google is the default search engine.
-  ASSERT_TRUE(CanFetchProductSpecificationsData(account_checker_.get()));
-
-  ON_CALL(*account_checker_, IsDefaultSearchEngineGoogle)
-      .WillByDefault(testing::Return(false));
-
-  ASSERT_FALSE(CanFetchProductSpecificationsData(account_checker_.get()));
-}
-
 }  // namespace
 }  // namespace commerce

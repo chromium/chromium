@@ -10,7 +10,6 @@ include_rules = [
   "+ios/chrome/browser/parcel_tracking",
   "+ios/chrome/browser/power_bookmarks/model",
   "+ios/chrome/browser/push_notification/model",
-  "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",

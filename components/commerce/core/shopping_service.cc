@@ -186,8 +186,7 @@ ShoppingService::ShoppingService(
         parcel_tracking_proto_db,
     history::HistoryService* history_service,
     std::unique_ptr<commerce::WebExtractor> web_extractor,
-    sessions::TabRestoreService* tab_restore_service,
-    TemplateURLService* template_url_service)
+    sessions::TabRestoreService* tab_restore_service)
     : country_on_startup_(country_on_startup),
       locale_on_startup_(locale_on_startup),
       opt_guide_(opt_guide),
@@ -237,7 +236,7 @@ ShoppingService::ShoppingService(
   if (identity_manager) {
     account_checker_ = base::WrapUnique(new AccountChecker(
         country_on_startup_, locale_on_startup_, pref_service, identity_manager,
-        sync_service, url_loader_factory, template_url_service));
+        sync_service, url_loader_factory));
   }
 
   if (identity_manager && account_checker_) {
