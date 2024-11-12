@@ -108,6 +108,9 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
       ResourceRequest&,
       const ResourceLoaderOptions&) override;
 
+  void StartSpeculativeImageDecode(Resource* resource,
+                                   base::OnceClosure callback) override;
+
   bool IsPrerendering() const override;
 
   bool DoesLCPPHaveAnyHintData() override;

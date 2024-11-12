@@ -205,9 +205,15 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // - `first` is the priority with the fix of https://crbug.com/1369823.
   // - `second` is the priority without the fix, ignoring the priority from
   //   ImageLoader.
-  virtual std::pair<ResourcePriority, ResourcePriority>
-  PriorityFromObservers() {
-    return std::make_pair(ResourcePriority(), ResourcePriority());
+  std::pair<ResourcePriority, ResourcePriority> PriorityFromObservers() {
+    std::pair<ResourcePriority, ResourcePriority> result =
+        ComputePriorityFromObservers();
+    last_computed_priority_ = result.first;
+    return result;
+  }
+
+  const ResourcePriority& LastComputedPriority() const {
+    return last_computed_priority_;
   }
 
   // If this Resource is already finished when AddClient is called, the
@@ -229,6 +235,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   ResourceStatus GetStatus() const { return status_; }
   void SetStatus(ResourceStatus status) { status_ = status; }
+  virtual ResourceStatus GetContentStatus() const { return status_; }
 
   size_t size() const { return EncodedSize() + DecodedSize() + OverheadSize(); }
 
@@ -472,6 +479,10 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
            ResourceType,
            const ResourceLoaderOptions&);
 
+  virtual std::pair<ResourcePriority, ResourcePriority>
+  ComputePriorityFromObservers() {
+    return std::make_pair(ResourcePriority(), ResourcePriority());
+  }
   virtual void NotifyDataReceived(base::span<const char> data);
   virtual void NotifyFinished();
 
@@ -596,6 +607,8 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   HeapHashSet<WeakMember<ResourceFinishObserver>> finish_observers_;
 
   ResourceLoaderOptions options_;
+
+  ResourcePriority last_computed_priority_;
 
   base::Time response_timestamp_;
 

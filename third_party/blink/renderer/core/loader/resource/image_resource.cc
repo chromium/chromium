@@ -422,6 +422,10 @@ void ImageResource::DestroyDecodedDataIfPossible() {
   GetContent()->DestroyDecodedData();
 }
 
+ResourceStatus ImageResource::GetContentStatus() const {
+  return GetContent()->GetContentStatus();
+}
+
 void ImageResource::AllClientsAndObserversRemoved() {
   // After ErrorOccurred() is set true in Resource::FinishAsError() before
   // the subsequent UpdateImage() in ImageResource::FinishAsError(),
@@ -654,7 +658,7 @@ const ImageResourceContent* ImageResource::GetContent() const {
 }
 
 std::pair<ResourcePriority, ResourcePriority>
-ImageResource::PriorityFromObservers() {
+ImageResource::ComputePriorityFromObservers() {
   return GetContent()->PriorityFromObservers();
 }
 
