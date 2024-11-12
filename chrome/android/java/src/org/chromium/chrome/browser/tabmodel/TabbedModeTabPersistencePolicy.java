@@ -375,11 +375,13 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
         TabModelSelector selector =
                 TabWindowManagerSingleton.getInstance().getTabModelSelectorById(index);
         if (selector != null) {
-            // Remove all the tabs from the instance if it is in running state to be able to
-            // delete the corresponding tab state file.
             for (int i = 0; i < selector.getModels().size(); i++) {
                 TabModel tabModel = selector.getModels().get(i);
-                while (tabModel.getCount() > 0) tabModel.removeTab(tabModel.getTabAt(0));
+                if (tabModel.getCount() != 0) {
+                    throw new IllegalStateException(
+                            "A running instance that is being cleaned up should have closed all its"
+                                    + " tabs.");
+                }
             }
         }
         synchronized (CLEAN_UP_TASK_LOCK) {

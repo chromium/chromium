@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -378,7 +377,7 @@ public class DataSharingTabGroupUtilsUnitTest {
         }
     }
 
-    private TabModel createTabGroups(List<TabGroupData> groups, boolean isIncognito) {
+    private MockTabModel createTabGroups(List<TabGroupData> groups, boolean isIncognito) {
         MockTabModel mockTabModel =
                 new MockTabModel(isIncognito ? mOtrProfile : mRegularProfile, /* delegate= */ null);
         mockTabModel.setTabCreatorForTesting(mTabCreator);

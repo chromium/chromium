@@ -128,7 +128,7 @@ public class TabbedModeTabPersistencePolicyTest {
     }
 
     private TabbedModeTabModelOrchestrator buildTestTabModelSelector(
-            int[] normalTabIds, int[] incognitoTabIds) throws Exception {
+            int[] normalTabIds, int[] incognitoTabIds, boolean removeTabs) throws Exception {
         final CallbackHelper callbackSignal = new CallbackHelper();
         final int callCount = callbackSignal.getCallCount();
 
@@ -212,7 +212,18 @@ public class TabbedModeTabPersistencePolicyTest {
                             TabModelUtils.setIndex(incognitoTabModel, 0);
                         });
         callbackSignal.waitForCallback(callCount);
+        if (removeTabs) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        removeAllTabs(normalTabModel);
+                        removeAllTabs(incognitoTabModel);
+                    });
+        }
         return orchestrator;
+    }
+
+    private void removeAllTabs(MockTabModel tabModel) {
+        while (tabModel.getCount() > 0) tabModel.removeTab(tabModel.getTabAt(0));
     }
 
     private void addTabToSaveQueue(TabPersistentStore store, TabModel tabModel, Tab tab) {
@@ -239,10 +250,18 @@ public class TabbedModeTabPersistencePolicyTest {
 
         // Delete instance 1. Among the tabs (4, 6, 7) (12, 14, 19), only (4, 12, 14)
         // are not used by any other instances, therefore will be the target for cleanup.
-        buildTestTabModelSelector(new int[] {3, 5, 7}, new int[] {11, 13, 17});
+        //
+        // We remove the tabs to simulate that they weren't cleaned up and the instance is not
+        // running. A running instance would have had its tabs closed in
+        // MultiInstanceManagerApi31#closeInstance already. Failing to do so will throw an
+        // IllegalStateException.
+        buildTestTabModelSelector(
+                new int[] {3, 5, 7}, new int[] {11, 13, 17}, /* removeTabs= */ false);
         TabbedModeTabModelOrchestrator orchestrator1 =
-                buildTestTabModelSelector(new int[] {4, 6, 7}, new int[] {12, 14, 19});
-        buildTestTabModelSelector(new int[] {6, 8, 9}, new int[] {15, 18, 19});
+                buildTestTabModelSelector(
+                        new int[] {4, 6, 7}, new int[] {12, 14, 19}, /* removeTabs= */ true);
+        buildTestTabModelSelector(
+                new int[] {6, 8, 9}, new int[] {15, 18, 19}, /* removeTabs= */ false);
 
         final int id = 1;
         TabPersistencePolicy policy =

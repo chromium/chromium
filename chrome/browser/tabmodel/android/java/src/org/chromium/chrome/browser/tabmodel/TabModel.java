@@ -150,16 +150,6 @@ public interface TabModel extends TabList {
     void addTab(Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState);
 
     /**
-     * Removes the given tab from the model without destroying it. The tab should be inserted into
-     * another model to avoid leaking as after this the link to the old Activity will be broken.
-     *
-     * @param tab The tab to remove.
-     * @deprecated Use {@link TabRemover#removeTab(Tab, boolean)} instead.
-     */
-    @Deprecated
-    void removeTab(Tab tab);
-
-    /**
      * Subscribes a {@link TabModelObserver} to be notified about changes to this model.
      *
      * @param observer The observer to be subscribed.

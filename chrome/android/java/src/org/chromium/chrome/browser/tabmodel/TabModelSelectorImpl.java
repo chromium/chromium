@@ -233,7 +233,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                                         /* allowDialog= */ false);
                     }
 
-                    tabModel.removeTab(tab);
+                    tabModel.getTabRemover().removeTab(tab, /* allowDialog= */ false);
                 }
             }
 

@@ -795,7 +795,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     private void removeArchivedTab(Tab tab) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mArchivedTabModel.removeTab(tab);
+                    mArchivedTabModel.getTabRemover().removeTab(tab, /* allowDialog= */ false);
                     return null;
                 });
     }

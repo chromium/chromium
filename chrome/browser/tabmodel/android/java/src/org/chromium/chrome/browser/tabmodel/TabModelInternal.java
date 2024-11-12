@@ -6,9 +6,19 @@ package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.tab.Tab;
+
 /** Package private internal methods for {@link TabModel}. */
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 public interface TabModelInternal extends TabModel {
+    /**
+     * Removes the given tab from the model without destroying it. The tab should be inserted into
+     * another model to avoid leaking as after this the link to the old Activity will be broken.
+     *
+     * @param tab The tab to remove.
+     */
+    void removeTab(Tab tab);
+
     /**
      * Set when tab model become active and inactive.
      *

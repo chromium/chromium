@@ -118,9 +118,23 @@ public class TabModelSelectorImplTest {
                         NO_RESTORE_TYPE,
                         /* startIncognito= */ false);
 
+        TabRemover regularTabRemover =
+                new PassthroughTabRemover(
+                        () ->
+                                mTabModelSelector
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(false));
         mRegularTabModel = new MockTabModel(mProfile, null);
         mRegularTabModel.setActive(true);
+        mRegularTabModel.setTabRemoverForTesting(regularTabRemover);
+        TabRemover incognitoTabRemover =
+                new PassthroughTabRemover(
+                        () ->
+                                mTabModelSelector
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(true));
         mIncognitoTabModel = new MockTabModel(mIncognitoProfile, null);
+        mIncognitoTabModel.setTabRemoverForTesting(incognitoTabRemover);
 
         assertTrue(currentTabModelSupplierHasObservers());
         assertNull(mTabModelSelector.getCurrentTabModelSupplier().get());
@@ -268,8 +282,8 @@ public class TabModelSelectorImplTest {
         verify(mTabCountSupplierObserverMock, times(2)).onResult(1);
         assertEquals(1, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
 
-        mTabModelSelector.getModel(false).removeTab(normalTab1);
-        mTabModelSelector.getModel(false).removeTab(normalTab2);
+        ((MockTabModel) mTabModelSelector.getModel(false)).removeTab(normalTab1);
+        ((MockTabModel) mTabModelSelector.getModel(false)).removeTab(normalTab2);
         assertEquals(1, mTabModelSelector.getCurrentModelTabCountSupplier().get().intValue());
         verify(mTabCountSupplierObserverMock, times(2)).onResult(1);
 

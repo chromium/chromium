@@ -92,7 +92,7 @@ public class IncognitoTabModelTest {
         assertTrue(tab.isIncognito());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mIncognitoTabModel.removeTab(tab);
+                    mIncognitoTabModel.getTabRemover().removeTab(tab, /* allowDialog= */ false);
                     tab.destroy();
                 });
     }

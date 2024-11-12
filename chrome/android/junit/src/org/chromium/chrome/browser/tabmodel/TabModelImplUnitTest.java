@@ -18,6 +18,8 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -70,8 +72,6 @@ public class TabModelImplUnitTest {
 
     /** Required to handle some tab lookup actions. */
     @Mock private TabModelDelegate mTabModelDelegate;
-
-    @Mock private TabRemover mTabRemover;
 
     /** Required to handle some actions and initialize {@link TabModelOrderControllerImpl}. */
     @Mock private TabModelSelector mTabModelSelector;
@@ -148,6 +148,29 @@ public class TabModelImplUnitTest {
         TabModelOrderControllerImpl orderController =
                 new TabModelOrderControllerImpl(mTabModelSelector);
         Profile profile = isIncognito ? mIncognitoProfile : mProfile;
+        TabRemover tabRemover =
+                new TabRemover() {
+                    @Override
+                    public void closeTabs(
+                            @NonNull TabClosureParams tabClosureParams,
+                            boolean allowDialog,
+                            @Nullable TabModelActionListener listener) {
+                        forceCloseTabs(tabClosureParams);
+                    }
+
+                    @Override
+                    public void forceCloseTabs(@NonNull TabClosureParams tabClosureParams) {
+                        mTabModelSelector.getModel(isIncognito).closeTabs(tabClosureParams);
+                    }
+
+                    @Override
+                    public void removeTab(
+                            @NonNull Tab tab,
+                            boolean allowDialog,
+                            @Nullable TabModelActionListener listener) {
+                        ((TabModelImpl) mTabModelSelector.getModel(isIncognito)).removeTab(tab);
+                    }
+                };
         TabModelImpl tabModel =
                 new TabModelImpl(
                         profile,
@@ -159,7 +182,7 @@ public class TabModelImplUnitTest {
                         () -> NextTabPolicy.HIERARCHICAL,
                         realAsyncTabParamsManager,
                         mTabModelDelegate,
-                        mTabRemover,
+                        tabRemover,
                         /* supportUndo= */ true,
                         /* trackInNativeModelList= */ true);
         when(mTabModelSelector.getModel(isIncognito)).thenReturn(tabModel);
@@ -347,7 +370,7 @@ public class TabModelImplUnitTest {
         assertEquals(2, activeNormal.getTabCountSupplier().get().intValue());
         verify(mTabSupplierObserver, times(2)).onResult(eq(tab0));
 
-        activeNormal.removeTab(tab0);
+        activeNormal.getTabRemover().removeTab(tab0, /* allowDialog= */ true);
         assertEquals(tab1, activeNormal.getCurrentTabSupplier().get());
         assertEquals(1, activeNormal.getTabCountSupplier().get().intValue());
         verify(mTabSupplierObserver, times(2)).onResult(eq(tab1));
@@ -379,7 +402,7 @@ public class TabModelImplUnitTest {
         assertEquals(2, inactiveNormal.getTabCountSupplier().get().intValue());
         verify(mTabSupplierObserver, times(2)).onResult(eq(tab0));
 
-        inactiveNormal.removeTab(tab0);
+        inactiveNormal.getTabRemover().removeTab(tab0, /* allowDialog= */ true);
         assertEquals(tab1, inactiveNormal.getCurrentTabSupplier().get());
         assertEquals(1, inactiveNormal.getTabCountSupplier().get().intValue());
         verify(mTabSupplierObserver, times(2)).onResult(eq(tab1));

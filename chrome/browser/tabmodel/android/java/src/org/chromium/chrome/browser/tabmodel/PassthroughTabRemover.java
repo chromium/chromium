@@ -64,6 +64,6 @@ public class PassthroughTabRemover implements TabRemover {
     }
 
     static void doRemoveTab(@NonNull TabModel model, @NonNull Tab tab) {
-        model.removeTab(tab);
+        ((TabModelInternal) model).removeTab(tab);
     }
 }

@@ -133,7 +133,9 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
             @Override
             public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
                 if (window == null && !isReparentingInProgress()) {
-                    getModel(tab.isIncognito()).removeTab(tab);
+                    getModel(tab.isIncognito())
+                            .getTabRemover()
+                            .removeTab(tab, /* allowDialog= */ false);
                 }
             }
         };
