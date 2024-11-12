@@ -281,18 +281,6 @@ BASE_FEATURE(kFocusFollowsCursor,
              "FocusFollowsCursor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_WIN)
-// Enables using WM_POINTER instead of WM_TOUCH for touch events.
-BASE_FEATURE(kPointerEventsForTouch,
-             "PointerEventsForTouch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsUsingWMPointerForTouch() {
-  return base::FeatureList::IsEnabled(kPointerEventsForTouch);
-}
-
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_CHROMEOS)
 // This feature supersedes kNewShortcutMapping.
 BASE_FEATURE(kImprovedKeyboardShortcuts,
