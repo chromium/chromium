@@ -21,7 +21,7 @@
 namespace ash {
 namespace {
 
-constexpr int kPickerImageItemCornerRadius = 8;
+constexpr int kQuickInsertImageItemCornerRadius = 8;
 
 }  // namespace
 
@@ -33,10 +33,10 @@ PickerImageItemView::PickerImageItemView(
                           FocusIndicatorStyle::kFocusRingWithInsetGap),
       accessible_name_(std::move(accessible_name)) {
   SetUseDefaultFillLayout(true);
-  SetCornerRadius(kPickerImageItemCornerRadius);
+  SetCornerRadius(kQuickInsertImageItemCornerRadius);
   GetViewAccessibility().SetName(accessible_name_);
   SetProperty(views::kElementIdentifierKey,
-              kPickerSearchResultsImageItemElementId);
+              kQuickInsertSearchResultsImageItemElementId);
 
   image_view_ = AddChildView(std::move(image));
   image_view_->SetCanProcessEventsWithinSubtree(false);

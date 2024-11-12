@@ -155,7 +155,7 @@ QuickInsertListItemView::QuickInsertListItemView(
   SetBadgeVisible(false);
 
   SetProperty(views::kElementIdentifierKey,
-              kPickerSearchResultsListItemElementId);
+              kQuickInsertSearchResultsListItemElementId);
 }
 
 QuickInsertListItemView::~QuickInsertListItemView() {

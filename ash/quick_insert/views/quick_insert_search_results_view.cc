@@ -97,7 +97,8 @@ QuickInsertSearchResultsView::QuickInsertSearchResultsView(
     : delegate_(delegate), preview_controller_(preview_controller) {
   SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
-  SetProperty(views::kElementIdentifierKey, kPickerSearchResultsPageElementId);
+  SetProperty(views::kElementIdentifierKey,
+              kQuickInsertSearchResultsPageElementId);
   GetViewAccessibility().SetRole(ax::mojom::Role::kStatus);
   GetViewAccessibility().SetContainerLiveStatus("polite");
 

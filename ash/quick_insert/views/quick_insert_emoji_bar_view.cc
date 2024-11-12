@@ -52,7 +52,7 @@
 namespace ash {
 namespace {
 
-constexpr int kPickerEmojiBarHeight = 48;
+constexpr int kQuickInsertEmojiBarHeight = 48;
 
 // Padding around the emoji bar content.
 constexpr auto kEmojiBarMargins = gfx::Insets::TLBR(8, 16, 8, 12);
@@ -168,7 +168,7 @@ class GifsButton : public views::LabelButton {
     StyleUtil::InstallRoundedCornerHighlightPathGenerator(
         this, gfx::RoundedCornersF(kGifsButtonCornerRadius));
     UpdateBackground();
-    SetProperty(views::kElementIdentifierKey, kPickerGifElementId);
+    SetProperty(views::kElementIdentifierKey, kQuickInsertGifElementId);
   }
   GifsButton(const GifsButton&) = delete;
   GifsButton& operator=(const GifsButton&) = delete;
@@ -220,15 +220,15 @@ PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
   GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       is_gifs_enabled ? IDS_PICKER_EMOJI_BAR_WITH_GIFS_GRID_ACCESSIBLE_NAME
                       : IDS_PICKER_EMOJI_BAR_GRID_ACCESSIBLE_NAME));
-  SetProperty(views::kElementIdentifierKey, kPickerEmojiBarElementId);
+  SetProperty(views::kElementIdentifierKey, kQuickInsertEmojiBarElementId);
   SetBackground(views::CreateThemedRoundedRectBackground(
-      kPickerContainerBackgroundColor, kPickerContainerBorderRadius));
+      kQuickInsertContainerBackgroundColor, kQuickInsertContainerBorderRadius));
   SetBorder(std::make_unique<views::HighlightBorder>(
-      kPickerContainerBorderRadius,
+      kQuickInsertContainerBorderRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
-      this, kPickerContainerShadowType);
-  shadow_->SetRoundedCornerRadius(kPickerContainerBorderRadius);
+      this, kQuickInsertContainerShadowType);
+  shadow_->SetRoundedCornerRadius(kQuickInsertContainerBorderRadius);
 
   auto* row =
       AddChildView(views::Builder<views::BoxLayoutView>()
@@ -276,7 +276,7 @@ PickerEmojiBarView::PickerEmojiBarView(PickerEmojiBarViewDelegate* delegate,
                   ? IDS_PICKER_MORE_EMOJIS_AND_GIFS_BUTTON_ACCESSIBLE_NAME
                   : IDS_PICKER_MORE_EMOJIS_BUTTON_ACCESSIBLE_NAME));
   more_emojis_button_->SetProperty(views::kElementIdentifierKey,
-                                   kPickerMoreEmojisElementId);
+                                   kQuickInsertMoreEmojisElementId);
 
   StyleUtil::SetUpInkDropForButton(more_emojis_button_, gfx::Insets(),
                                    /*highlight_on_hover=*/true,
@@ -287,7 +287,7 @@ PickerEmojiBarView::~PickerEmojiBarView() = default;
 
 gfx::Size PickerEmojiBarView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return gfx::Size(quick_insert_view_width_, kPickerEmojiBarHeight);
+  return gfx::Size(quick_insert_view_width_, kQuickInsertEmojiBarHeight);
 }
 
 views::View* PickerEmojiBarView::GetTopItem() {

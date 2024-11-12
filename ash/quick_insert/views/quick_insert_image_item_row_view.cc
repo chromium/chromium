@@ -96,7 +96,7 @@ PickerImageItemRowView::PickerImageItemRowView(
   row_view->GetViewAccessibility().SetRole(ax::mojom::Role::kRow);
   items_container_->GetViewAccessibility().SetRole(ax::mojom::Role::kNone);
   SetProperty(views::kElementIdentifierKey,
-              kPickerSearchResultsImageRowElementId);
+              kQuickInsertSearchResultsImageRowElementId);
 }
 
 PickerImageItemRowView::~PickerImageItemRowView() = default;

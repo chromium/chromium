@@ -55,7 +55,7 @@ PickerEmojiItemView::PickerEmojiItemView(
     : QuickInsertItemView(std::move(select_item_callback)) {
   SetUseDefaultFillLayout(true);
   SetCornerRadius(kCornerRadius);
-  SetProperty(views::kElementIdentifierKey, kPickerEmojiItemElementId);
+  SetProperty(views::kElementIdentifierKey, kQuickInsertEmojiItemElementId);
 
   label_ = AddChildView(views::Builder<views::Label>()
                             .SetText(text)

@@ -35,7 +35,7 @@ std::unique_ptr<views::BubbleBorder> CreateBorder() {
       base::i18n::IsRTL() ? views::BubbleBorder::Arrow::RIGHT_TOP
                           : views::BubbleBorder::Arrow::LEFT_TOP,
       views::BubbleBorder::CHROMEOS_SYSTEM_UI_SHADOW);
-  border->SetCornerRadius(kPickerContainerBorderRadius);
+  border->SetCornerRadius(kQuickInsertContainerBorderRadius);
   border->SetColor(SK_ColorTRANSPARENT);
   return border;
 }
@@ -55,7 +55,7 @@ PickerSubmenuView::PickerSubmenuView(
       ->set_cross_axis_alignment(
           views::BoxLayout::CrossAxisAlignment::kStretch);
   SetBackground(views::CreateThemedRoundedRectBackground(
-      kPickerContainerBackgroundColor, kPickerContainerBorderRadius));
+      kQuickInsertContainerBackgroundColor, kQuickInsertContainerBorderRadius));
 
   // Don't allow submenus within submenus.
   section_view_ = AddChildView(std::make_unique<QuickInsertSectionView>(

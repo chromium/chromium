@@ -40,7 +40,7 @@ namespace {
 constexpr float kPseudoFocusClipInset =
     views::FocusRing::kDefaultHaloInset * -1.0f + 2.0f;
 
-constexpr auto kPickerItemFocusIndicatorMargins = gfx::Insets::VH(6, 0);
+constexpr auto kQuickInsertItemFocusIndicatorMargins = gfx::Insets::VH(6, 0);
 
 }  // namespace
 
@@ -83,8 +83,8 @@ void QuickInsertItemView::PaintButtonContents(gfx::Canvas* canvas) {
   if (focus_indicator_style_ == FocusIndicatorStyle::kFocusBar &&
       item_state_ == ItemState::kPseudoFocused) {
     PaintPickerFocusIndicator(
-        canvas, gfx::Point(0, kPickerItemFocusIndicatorMargins.top()),
-        height() - kPickerItemFocusIndicatorMargins.height(),
+        canvas, gfx::Point(0, kQuickInsertItemFocusIndicatorMargins.top()),
+        height() - kQuickInsertItemFocusIndicatorMargins.height(),
         GetColorProvider()->GetColor(cros_tokens::kCrosSysFocusRing));
   }
 }

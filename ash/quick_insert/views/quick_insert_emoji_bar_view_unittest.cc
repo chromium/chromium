@@ -38,7 +38,7 @@ using ::testing::SizeIs;
 using ::testing::Truly;
 using ::testing::VariantWith;
 
-constexpr int kPickerWidth = 320;
+constexpr int kQuickInsertWidth = 320;
 
 template <class V, class Matcher>
 auto AsView(Matcher matcher) {
@@ -66,14 +66,14 @@ class QuickInsertEmojiBarViewTest : public views::ViewsTestBase {
 
 TEST_F(QuickInsertEmojiBarViewTest, HasGridRole) {
   MockEmojiBarViewDelegate mock_delegate;
-  PickerEmojiBarView emoji_bar(&mock_delegate, kPickerWidth);
+  PickerEmojiBarView emoji_bar(&mock_delegate, kQuickInsertWidth);
 
   EXPECT_EQ(emoji_bar.GetAccessibleRole(), ax::mojom::Role::kGrid);
 }
 
 TEST_F(QuickInsertEmojiBarViewTest, HasAccessibleNameWithGifsEnabled) {
   MockEmojiBarViewDelegate mock_delegate;
-  PickerEmojiBarView emoji_bar(&mock_delegate, kPickerWidth,
+  PickerEmojiBarView emoji_bar(&mock_delegate, kQuickInsertWidth,
                                /*is_gifs_enabled=*/true);
 
   EXPECT_EQ(emoji_bar.GetAccessibleName(),
@@ -83,7 +83,7 @@ TEST_F(QuickInsertEmojiBarViewTest, HasAccessibleNameWithGifsEnabled) {
 
 TEST_F(QuickInsertEmojiBarViewTest, HasAccessibleNameWithGifsDisabled) {
   MockEmojiBarViewDelegate mock_delegate;
-  PickerEmojiBarView emoji_bar(&mock_delegate, kPickerWidth,
+  PickerEmojiBarView emoji_bar(&mock_delegate, kQuickInsertWidth,
                                /*is_gifs_enabled=*/false);
 
   EXPECT_EQ(
@@ -93,7 +93,7 @@ TEST_F(QuickInsertEmojiBarViewTest, HasAccessibleNameWithGifsDisabled) {
 
 TEST_F(QuickInsertEmojiBarViewTest, HasSingleChildRowRole) {
   MockEmojiBarViewDelegate mock_delegate;
-  PickerEmojiBarView emoji_bar(&mock_delegate, kPickerWidth);
+  PickerEmojiBarView emoji_bar(&mock_delegate, kQuickInsertWidth);
 
   EXPECT_THAT(emoji_bar.children(),
               ElementsAre(Pointee(Property(&views::View::GetAccessibleRole,
@@ -102,7 +102,7 @@ TEST_F(QuickInsertEmojiBarViewTest, HasSingleChildRowRole) {
 
 TEST_F(QuickInsertEmojiBarViewTest, CreatesSearchResultItems) {
   MockEmojiBarViewDelegate mock_delegate;
-  PickerEmojiBarView emoji_bar(&mock_delegate, kPickerWidth);
+  PickerEmojiBarView emoji_bar(&mock_delegate, kQuickInsertWidth);
 
   emoji_bar.SetSearchResults(
       {QuickInsertEmojiResult::Emoji(u"😊"),
@@ -117,7 +117,7 @@ TEST_F(QuickInsertEmojiBarViewTest, CreatesSearchResultItems) {
 
 TEST_F(QuickInsertEmojiBarViewTest, SearchResultsWithNamesHaveTooltips) {
   MockEmojiBarViewDelegate mock_delegate;
-  PickerEmojiBarView emoji_bar(&mock_delegate, kPickerWidth);
+  PickerEmojiBarView emoji_bar(&mock_delegate, kQuickInsertWidth);
 
   emoji_bar.SetSearchResults(
       {QuickInsertEmojiResult::Emoji(u"😊", u"happy"),
@@ -136,7 +136,7 @@ TEST_F(QuickInsertEmojiBarViewTest, SearchResultsWithNamesHaveTooltips) {
 
 TEST_F(QuickInsertEmojiBarViewTest, SearchResultsWithNamesHaveAccessibleNames) {
   MockEmojiBarViewDelegate mock_delegate;
-  PickerEmojiBarView emoji_bar(&mock_delegate, kPickerWidth);
+  PickerEmojiBarView emoji_bar(&mock_delegate, kQuickInsertWidth);
 
   emoji_bar.SetSearchResults(
       {QuickInsertEmojiResult::Emoji(u"😊", u"happy"),
@@ -154,7 +154,7 @@ TEST_F(QuickInsertEmojiBarViewTest, SearchResultsWithNamesHaveAccessibleNames) {
 
 TEST_F(QuickInsertEmojiBarViewTest, SearchResultsWithNoNameHaveNoTooltips) {
   MockEmojiBarViewDelegate mock_delegate;
-  PickerEmojiBarView emoji_bar(&mock_delegate, kPickerWidth);
+  PickerEmojiBarView emoji_bar(&mock_delegate, kQuickInsertWidth);
 
   emoji_bar.SetSearchResults({QuickInsertEmojiResult::Emoji(u"😊"),
                               QuickInsertEmojiResult::Symbol(u"♬"),
@@ -172,7 +172,7 @@ TEST_F(QuickInsertEmojiBarViewTest, SearchResultsWithNoNameHaveNoTooltips) {
 TEST_F(QuickInsertEmojiBarViewTest,
        SearchResultsWithNoNamesUseLabelAsAccessibleName) {
   MockEmojiBarViewDelegate mock_delegate;
-  PickerEmojiBarView emoji_bar(&mock_delegate, kPickerWidth);
+  PickerEmojiBarView emoji_bar(&mock_delegate, kQuickInsertWidth);
 
   emoji_bar.SetSearchResults({QuickInsertEmojiResult::Emoji(u"😊"),
                               QuickInsertEmojiResult::Symbol(u"♬"),
@@ -188,7 +188,7 @@ TEST_F(QuickInsertEmojiBarViewTest,
 
 TEST_F(QuickInsertEmojiBarViewTest, ClearsSearchResults) {
   MockEmojiBarViewDelegate mock_delegate;
-  PickerEmojiBarView emoji_bar(&mock_delegate, kPickerWidth);
+  PickerEmojiBarView emoji_bar(&mock_delegate, kQuickInsertWidth);
   emoji_bar.SetSearchResults({QuickInsertEmojiResult::Emoji(u"😊"),
                               QuickInsertEmojiResult::Symbol(u"♬")});
 
@@ -203,7 +203,7 @@ TEST_F(QuickInsertEmojiBarViewTest, ClickingMoreEmojisButton) {
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetFullscreen(true);
   auto* emoji_bar = widget->SetContentsView(
-      std::make_unique<PickerEmojiBarView>(&mock_delegate, kPickerWidth));
+      std::make_unique<PickerEmojiBarView>(&mock_delegate, kQuickInsertWidth));
   widget->Show();
 
   EXPECT_CALL(mock_delegate, ShowEmojiPicker(ui::EmojiPickerCategory::kEmojis))
@@ -215,7 +215,7 @@ TEST_F(QuickInsertEmojiBarViewTest, ClickingMoreEmojisButton) {
 
 TEST_F(QuickInsertEmojiBarViewTest, MoreEmojisButtonHasTooltipWithGifsEnabled) {
   MockEmojiBarViewDelegate mock_delegate;
-  PickerEmojiBarView view(&mock_delegate, kPickerWidth,
+  PickerEmojiBarView view(&mock_delegate, kQuickInsertWidth,
                           /*is_gifs_enabled=*/true);
 
   EXPECT_EQ(view.more_emojis_button_for_testing()->GetTooltipText(),
@@ -226,7 +226,7 @@ TEST_F(QuickInsertEmojiBarViewTest, MoreEmojisButtonHasTooltipWithGifsEnabled) {
 TEST_F(QuickInsertEmojiBarViewTest,
        MoreEmojisButtonHasTooltipWithGifsDisabled) {
   MockEmojiBarViewDelegate mock_delegate;
-  PickerEmojiBarView view(&mock_delegate, kPickerWidth,
+  PickerEmojiBarView view(&mock_delegate, kQuickInsertWidth,
                           /*is_gifs_enabled=*/false);
 
   EXPECT_EQ(
@@ -241,7 +241,7 @@ TEST_F(QuickInsertEmojiBarViewTest, ClickingGifsButton) {
   widget->SetFullscreen(true);
   auto* emoji_bar =
       widget->SetContentsView(std::make_unique<PickerEmojiBarView>(
-          &mock_delegate, kPickerWidth, /*is_gifs_enabled=*/true));
+          &mock_delegate, kQuickInsertWidth, /*is_gifs_enabled=*/true));
   widget->Show();
 
   EXPECT_CALL(mock_delegate, ToggleGifs()).Times(1);
@@ -257,7 +257,7 @@ TEST_F(QuickInsertEmojiBarViewTest, GifsButtonNotVisibleWhenDisabled) {
   widget->SetFullscreen(true);
   auto* emoji_bar =
       widget->SetContentsView(std::make_unique<PickerEmojiBarView>(
-          &mock_delegate, kPickerWidth, /*is_gifs_enabled=*/false));
+          &mock_delegate, kQuickInsertWidth, /*is_gifs_enabled=*/false));
   widget->Show();
 
   EXPECT_FALSE(emoji_bar->gifs_button_for_testing()->GetVisible());
@@ -265,7 +265,7 @@ TEST_F(QuickInsertEmojiBarViewTest, GifsButtonNotVisibleWhenDisabled) {
 
 TEST_F(QuickInsertEmojiBarViewTest, GifsButtonHasNoTooltip) {
   MockEmojiBarViewDelegate mock_delegate;
-  PickerEmojiBarView view(&mock_delegate, kPickerWidth,
+  PickerEmojiBarView view(&mock_delegate, kQuickInsertWidth,
                           /*is_gifs_enabled=*/true);
 
   EXPECT_EQ(view.gifs_button_for_testing()->GetTooltipText(), u"");
@@ -277,7 +277,7 @@ TEST_F(QuickInsertEmojiBarViewTest, GetsTopItem) {
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetFullscreen(true);
   auto* emoji_bar = widget->SetContentsView(
-      std::make_unique<PickerEmojiBarView>(&mock_delegate, kPickerWidth));
+      std::make_unique<PickerEmojiBarView>(&mock_delegate, kQuickInsertWidth));
   widget->Show();
   emoji_bar->SetSearchResults({QuickInsertEmojiResult::Emoji(u"😊"),
                                QuickInsertEmojiResult::Symbol(u"♬")});
@@ -296,7 +296,7 @@ TEST_F(QuickInsertEmojiBarViewTest, GetsItemLeftOf) {
   widget->SetFullscreen(true);
   auto* emoji_bar =
       widget->SetContentsView(std::make_unique<PickerEmojiBarView>(
-          &mock_delegate, kPickerWidth, /*is_gifs_enabled=*/true));
+          &mock_delegate, kQuickInsertWidth, /*is_gifs_enabled=*/true));
   widget->Show();
   emoji_bar->SetSearchResults({QuickInsertEmojiResult::Emoji(u"😊"),
                                QuickInsertEmojiResult::Symbol(u"♬")});
@@ -319,7 +319,7 @@ TEST_F(QuickInsertEmojiBarViewTest, GetsItemLeftOfSkipsGifsIfGifsDisabled) {
   widget->SetFullscreen(true);
   auto* emoji_bar =
       widget->SetContentsView(std::make_unique<PickerEmojiBarView>(
-          &mock_delegate, kPickerWidth, /*is_gifs_enabled=*/false));
+          &mock_delegate, kQuickInsertWidth, /*is_gifs_enabled=*/false));
   widget->Show();
   emoji_bar->SetSearchResults({QuickInsertEmojiResult::Emoji(u"😊")});
   const views::View::Views& emoji_bar_items = emoji_bar->GetItemsForTesting();
@@ -337,7 +337,7 @@ TEST_F(QuickInsertEmojiBarViewTest, GetsItemRightOf) {
   widget->SetFullscreen(true);
   auto* emoji_bar =
       widget->SetContentsView(std::make_unique<PickerEmojiBarView>(
-          &mock_delegate, kPickerWidth, /*is_gifs_enabled=*/true));
+          &mock_delegate, kQuickInsertWidth, /*is_gifs_enabled=*/true));
   widget->Show();
   emoji_bar->SetSearchResults({QuickInsertEmojiResult::Emoji(u"😊"),
                                QuickInsertEmojiResult::Symbol(u"♬")});
@@ -361,7 +361,7 @@ TEST_F(QuickInsertEmojiBarViewTest, GetsItemRightOfSkipsGifsIfGifsDisabled) {
   widget->SetFullscreen(true);
   auto* emoji_bar =
       widget->SetContentsView(std::make_unique<PickerEmojiBarView>(
-          &mock_delegate, kPickerWidth, /*is_gifs_enabled=*/false));
+          &mock_delegate, kQuickInsertWidth, /*is_gifs_enabled=*/false));
   widget->Show();
   emoji_bar->SetSearchResults({QuickInsertEmojiResult::Emoji(u"😊")});
   const views::View::Views& emoji_bar_items = emoji_bar->GetItemsForTesting();

@@ -35,7 +35,7 @@ namespace {
 constexpr ui::ColorId kBackgroundColor =
     cros_tokens::kCrosSysSystemBaseElevatedOpaque;
 constexpr int kBubbleOverlapOverPicker = 4;
-constexpr int kPickerBubbleCornerRadius = 12;
+constexpr int kQuickInsertBubbleCornerRadius = 12;
 constexpr gfx::Insets kMargins(8);
 constexpr int kPreviewBackgroundBorderRadius = 8;
 constexpr gfx::Insets kLabelPadding = gfx::Insets::TLBR(8, 8, 0, 8);
@@ -88,9 +88,10 @@ PickerPreviewBubbleView::PickerPreviewBubbleView(views::View* anchor_view)
 
   views::Builder<PickerPreviewBubbleView>(this)
       .set_margins(kMargins)
-      .set_corner_radius(kPickerBubbleCornerRadius)
+      .set_corner_radius(kQuickInsertBubbleCornerRadius)
       .SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone))
-      .SetProperty(views::kElementIdentifierKey, kPickerPreviewBubbleElementId)
+      .SetProperty(views::kElementIdentifierKey,
+                   kQuickInsertPreviewBubbleElementId)
       .AddChildren(views::Builder<RoundedPreviewImageView>(
                        std::make_unique<RoundedPreviewImageView>(
                            kPreviewImageSize, kPreviewBackgroundBorderRadius))

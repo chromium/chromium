@@ -32,7 +32,8 @@
 namespace ash {
 namespace {
 
-constexpr char kPickerCopyToClipboardToastId[] = "picker_copy_to_clipboard";
+constexpr char kQuickInsertCopyToClipboardToastId[] =
+    "picker_copy_to_clipboard";
 
 struct HtmlAttr {
  private:
@@ -131,7 +132,7 @@ void CopyMediaToClipboard(const PickerRichMedia& media) {
   // TODO: b/322928125 - Use dedicated toast catalog name.
   // TODO: b/322928125 - Finalize string.
   ToastManager::Get()->Show(ToastData(
-      kPickerCopyToClipboardToastId,
+      kQuickInsertCopyToClipboardToastId,
       ToastCatalogName::kCopyGifToClipboardAction, u"Copied to clipboard"));
 }
 

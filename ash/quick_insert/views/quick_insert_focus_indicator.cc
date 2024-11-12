@@ -17,17 +17,17 @@
 namespace ash {
 namespace {
 
-constexpr int kPickerFocusIndicatorWidth = 3;
+constexpr int kQuickInsertFocusIndicatorWidth = 3;
 
-constexpr SkScalar kPickerFocusIndicatorRadius =
-    SkIntToScalar(kPickerFocusIndicatorWidth);
-constexpr SkScalar kPickerFocusIndicatorRadii[8] = {
+constexpr SkScalar kQuickInsertFocusIndicatorRadius =
+    SkIntToScalar(kQuickInsertFocusIndicatorWidth);
+constexpr SkScalar kQuickInsertFocusIndicatorRadii[8] = {
     0,
     0,  // top-left
-    kPickerFocusIndicatorRadius,
-    kPickerFocusIndicatorRadius,  // top-right
-    kPickerFocusIndicatorRadius,
-    kPickerFocusIndicatorRadius,  // bottom-right
+    kQuickInsertFocusIndicatorRadius,
+    kQuickInsertFocusIndicatorRadius,  // top-right
+    kQuickInsertFocusIndicatorRadius,
+    kQuickInsertFocusIndicatorRadius,  // bottom-right
     0,
     0};  // bottom-left
 
@@ -39,9 +39,9 @@ void PaintPickerFocusIndicator(gfx::Canvas* canvas,
                                SkColor color) {
   SkPath path;
   const gfx::Rect focus_indicator_bounds(
-      origin, gfx::Size(kPickerFocusIndicatorWidth, height));
+      origin, gfx::Size(kQuickInsertFocusIndicatorWidth, height));
   path.addRoundRect(gfx::RectToSkRect(focus_indicator_bounds),
-                    kPickerFocusIndicatorRadii);
+                    kQuickInsertFocusIndicatorRadii);
 
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kFill_Style);

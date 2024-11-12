@@ -94,7 +94,7 @@ constexpr gfx::Insets kPaddingFromScreenEdge(16);
 std::unique_ptr<views::BubbleBorder> CreateBorder() {
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::NO_SHADOW);
-  border->SetCornerRadius(kPickerContainerBorderRadius);
+  border->SetCornerRadius(kQuickInsertContainerBorderRadius);
   border->SetColor(SK_ColorTRANSPARENT);
   return border;
 }
@@ -280,7 +280,7 @@ QuickInsertView::QuickInsertView(QuickInsertViewDelegate* delegate,
                                  const base::TimeTicks trigger_event_timestamp)
     : performance_metrics_(trigger_event_timestamp), delegate_(delegate) {
   SetShowCloseButton(false);
-  SetProperty(views::kElementIdentifierKey, kPickerElementId);
+  SetProperty(views::kElementIdentifierKey, kQuickInsertElementId);
   // TODO: b/357991165 - The desired bounds delegate here is *not* used directly
   // by the widget, because QuickInsertWidget does not use `autosize`. Rather,
   // QuickInsertView manually calls GetDesiredWidgetBounds to adjust the Widget

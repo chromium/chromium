@@ -14,10 +14,10 @@ namespace ash {
 
 inline constexpr int kQuickInsertViewWidth = 320;
 
-inline constexpr int kPickerContainerBorderRadius = 12;
-inline constexpr ui::ColorId kPickerContainerBackgroundColor =
+inline constexpr int kQuickInsertContainerBorderRadius = 12;
+inline constexpr ui::ColorId kQuickInsertContainerBackgroundColor =
     cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-inline constexpr auto kPickerContainerShadowType =
+inline constexpr auto kQuickInsertContainerShadowType =
     SystemShadow::Type::kElevation12;
 
 enum class PickerLayoutType {

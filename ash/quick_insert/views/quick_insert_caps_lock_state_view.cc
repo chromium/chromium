@@ -59,7 +59,7 @@ PickerCapsLockStateView::PickerCapsLockStateView(
   DCHECK(parent);
   set_parent_window(parent);
   set_margins(gfx::Insets());
-  set_corner_radius(kPickerContainerBorderRadius);
+  set_corner_radius(kQuickInsertContainerBorderRadius);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCanActivate(false);
   views::BoxLayout* layout =
@@ -75,7 +75,7 @@ PickerCapsLockStateView::PickerCapsLockStateView(
   BubbleDialogDelegateView::CreateBubble(this);
 
   SetBackground(views::CreateThemedRoundedRectBackground(
-      kPickerContainerBackgroundColor, kPickerContainerBorderRadius));
+      kQuickInsertContainerBackgroundColor, kQuickInsertContainerBorderRadius));
 
   caret_bounds.Outset(kArrowGap);
   SetAnchorRect(caret_bounds);

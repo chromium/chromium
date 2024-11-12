@@ -84,7 +84,7 @@ QuickInsertSearchFieldView::QuickInsertSearchFieldView(
               std::make_unique<PickerSearchBarTextfield>(this))
               .CopyAddressTo(&textfield_)
               .SetProperty(views::kElementIdentifierKey,
-                           kPickerSearchFieldTextfieldElementId)
+                           kQuickInsertSearchFieldTextfieldElementId)
               .SetController(this)
               .SetBackgroundColor(SK_ColorTRANSPARENT)
               .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(

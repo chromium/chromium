@@ -25,7 +25,7 @@ namespace ash {
 
 namespace {
 
-constexpr int kPickerGifCornerRadius = 8;
+constexpr int kQuickInsertGifCornerRadius = 8;
 
 // We use a duration of 100ms for frames that specify a duration of <= 10ms.
 // This is to follow the behavior of blink (see http://webkit.org/b/36082 for
@@ -43,7 +43,7 @@ PickerGifView::PickerGifView(FramesFetcher frames_fetcher,
   // Show a placeholder rect while the gif loads.
   views::Builder<PickerGifView>(this)
       .SetBackground(views::CreateThemedRoundedRectBackground(
-          cros_tokens::kCrosSysAppBaseShaded, kPickerGifCornerRadius))
+          cros_tokens::kCrosSysAppBaseShaded, kQuickInsertGifCornerRadius))
       .SetImage(ui::ImageModel::FromImageSkia(
           image_util::CreateEmptyImage(original_dimensions)))
       .BuildChildren();
@@ -80,8 +80,8 @@ void PickerGifView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
 
   SkPath path;
   path.addRoundRect(gfx::RectToSkRect(GetImageBounds()),
-                    SkIntToScalar(kPickerGifCornerRadius),
-                    SkIntToScalar(kPickerGifCornerRadius));
+                    SkIntToScalar(kQuickInsertGifCornerRadius),
+                    SkIntToScalar(kQuickInsertGifCornerRadius));
   SetClipPath(path);
 }
 
