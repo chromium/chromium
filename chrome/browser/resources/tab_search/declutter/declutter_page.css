@@ -50,6 +50,9 @@ tab-search-item {
   --non-scroll-border: solid 1px transparent;
   border-bottom: var(--non-scroll-border);
   border-top: var(--non-scroll-border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   /* Render the scroll bar and scroll borders at the edge of the dialog */
   margin: 0 calc(-1 * var(--external-margin));
   overflow-y: auto;

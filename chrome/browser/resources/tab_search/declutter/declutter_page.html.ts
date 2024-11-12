@@ -8,6 +8,11 @@ import type {TabData} from '../tab_data.js';
 
 import type {DeclutterPageElement} from './declutter_page.js';
 
+enum DeclutterType {
+  STALE_TABS = 0,
+  DUPLICATE_TABS = 1,
+}
+
 export function getHtml(this: DeclutterPageElement) {
   return html`<!--_html_template_start_-->
   <div id="declutterPage">
@@ -41,15 +46,20 @@ export function getHtml(this: DeclutterPageElement) {
         <div id="staleTabList" class="tabList">
           ${
               this.staleTabDatas_.map(
-                  (item) => getTabSearchItem.bind(this)(item))}
+                  (item) => getTabSearchItem.bind(this)(
+                      item, DeclutterType.STALE_TABS))}
         </div>
         ${
-              this.dedupeEnabled_ ? html`
+              this.dedupeEnabled_ ?
+                  html`
           <div id="duplicateTabList" class="tabList">
-            Duplicate tab placeholder
+            ${
+                      this.getDuplicateTabDataList_().map(
+                          (item) => getTabSearchItem.bind(this)(
+                              item, DeclutterType.DUPLICATE_TABS))}
           </div>
         ` :
-                                    ''}
+                  ''}
       </div>
       <cr-button class="action-button" @click="${this.onCloseTabsClick_}">
         $i18n{closeTabs}
@@ -58,7 +68,8 @@ export function getHtml(this: DeclutterPageElement) {
   </div><!--_html_template_end_-->`;
 }
 
-function getTabSearchItem(this: DeclutterPageElement, data: TabData) {
+function getTabSearchItem(
+    this: DeclutterPageElement, data: TabData, declutterType: DeclutterType) {
   return html`
     <tab-search-item class="mwb-list-item" .data="${data}"
         close-button-icon="tab-search:remove"
@@ -67,7 +78,9 @@ function getTabSearchItem(this: DeclutterPageElement, data: TabData) {
         close-button-tooltip="$i18n{declutterCloseTabTooltip}"
         role="option"
         @keydown="${this.onTabKeyDown_}"
-        @close="${this.onTabRemove_}"
+        @close="${
+      declutterType === DeclutterType.STALE_TABS ? this.onStaleTabRemove_ :
+                                                   this.onDuplicateTabRemove_}"
         @focus="${this.onTabFocus_}"
         @blur="${this.onTabBlur_}"
         hide-url>

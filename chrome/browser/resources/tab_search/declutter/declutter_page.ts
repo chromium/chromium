@@ -35,6 +35,7 @@ export class DeclutterPageElement extends CrLitElement {
       availableHeight: {type: Number},
       showBackButton: {type: Boolean},
       staleTabDatas_: {type: Array},
+      duplicateTabDatas_: {type: Object},
       dedupeEnabled_: {type: Boolean},
     };
   }
@@ -43,6 +44,7 @@ export class DeclutterPageElement extends CrLitElement {
   showBackButton: boolean = false;
 
   protected staleTabDatas_: TabData[] = [];
+  protected duplicateTabDatas_: Map<string, TabData[]> = new Map();
   protected dedupeEnabled_: boolean = loadTimeData.getBoolean('dedupeEnabled');
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
@@ -209,13 +211,36 @@ export class DeclutterPageElement extends CrLitElement {
     e.stopPropagation();
   }
 
-  protected onTabRemove_(e: Event) {
+  protected onStaleTabRemove_(e: Event) {
     const tabData = (e.currentTarget as TabSearchItemElement).data;
     this.apiProxy_.excludeFromStaleTabs(tabData.tab.tabId);
   }
 
+  protected onDuplicateTabRemove_(_e: Event) {
+    // TODO(crbug.com/376739583): Implement this along with api proxy call
+  }
+
+  protected getDuplicateTabDataList_(this: DeclutterPageElement) {
+    const tabDatas: TabData[] = [];
+    this.duplicateTabDatas_.forEach((value: TabData[], key: string, _map) => {
+      const primaryTabData = structuredClone(value[0])!;
+      primaryTabData.tab.title = key;
+      primaryTabData.tab.lastActiveElapsedText = value.length.toString();
+      tabDatas.push(primaryTabData);
+    });
+    return tabDatas;
+  }
+
   private setStaleTabs_(tabs: Tab[]): void {
     this.staleTabDatas_ = tabs.map((tab) => this.tabDataFromTab_(tab));
+    // TODO(crbug.com/376739583): Placeholder, replace with api proxy calls
+    if (this.dedupeEnabled_) {
+      this.duplicateTabDatas_ = new Map();
+      tabs.forEach((tab) => {
+        this.duplicateTabDatas_.set(
+            tab.url.url.toString(), [this.tabDataFromTab_(tab)]);
+      });
+    }
   }
 
   private tabDataFromTab_(tab: Tab): TabData {
