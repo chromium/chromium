@@ -15,6 +15,7 @@ package reporting;
 // unlocks the device.
 message SessionStartEvent {
   enum Reason {
+    UNSPECIFIED = 0;
     LOGIN = 1;
     UNLOCK = 2;
     MULTI_USER_SWITCH = 3;
@@ -33,6 +34,7 @@ message SessionStartEvent {
 // the device.
 message SessionEndEvent {
   enum Reason {
+    UNSPECIFIED = 0;
     LOGOUT = 1;
     LOCK = 2;
     MULTI_USER_SWITCH = 3;
@@ -51,17 +53,18 @@ message SessionEndEvent {
 // Recorded periodically during a session.
 message ActiveIdleState {
   enum State {
+    UNSPECIFIED = 0;
     ACTIVE = 1;
     IDLE = 2;
   }
 
   // The active/idle state of the user in the current session.
-  optional State state = 2;
+  optional State state = 1;
 
   // Time that the state was recorded.
   // Represents UTC time since Unix epoch 1970-01-01T00:00:00Z in microseconds
   // ${COPYBARA_DATAPOL_ST_SENSITIVE_TIMESTAMP}
-  optional int64 timestamp_micro = 1;
+  optional int64 timestamp_micro = 2;
 }
 
 // Captures session start/end events and active/idle states during a user
@@ -79,7 +82,8 @@ message UserSessionActivityRecord {
   // Collected on a regular interval during a session.
   repeated ActiveIdleState active_idle_states = 3;
 
-  // The session user. Always present for regular affiliated.
+  // The session user. Always present for users with a GAIA
+  // account. Never present for guest/public sessions.
   oneof user {
     .reporting.SessionAffiliatedUser affiliated_user = 4;
     .reporting.SessionUnaffiliatedUser unaffiliated_user = 5;
