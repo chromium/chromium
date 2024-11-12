@@ -417,9 +417,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   item.autoCapitalizationType = UITextAutocapitalizationTypeNone;
   item.delegate = self;
   item.hideIcon = YES;
-  if (!self.tableView.editing) {
-    item.textFieldTextColor = [UIColor colorNamed:kTextSecondaryColor];
-  }
+  item.textFieldTextColor = [UIColor colorNamed:kTextSecondaryColor];
 
   // For testing: only use this custom accessibility identifier if there are
   // more than one password shown on the Password Details.
