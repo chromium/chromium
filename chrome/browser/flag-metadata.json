@@ -8626,12 +8626,12 @@
   {
     "name": "tab-strip-layout-optimization",
     "owners": [ "wenyufu@chromium.org", "aishwaryarj@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 133
+    "expiry_milestone": 135
   },
   {
     "name": "tab-strip-transition-in-desktop-window",
     "owners": [ "aishwaryarj@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 133
+    "expiry_milestone": 135
   },
   {
     "name" : "tabstrip-collection-storage",
