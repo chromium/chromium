@@ -116,6 +116,10 @@ PersonalDataManager* WebViewAutofillClientIOS::GetPersonalDataManager() {
   return personal_data_manager_;
 }
 
+SingleFieldFillRouter& WebViewAutofillClientIOS::GetSingleFieldFillRouter() {
+  return single_field_fill_router_;
+}
+
 AutocompleteHistoryManager*
 WebViewAutofillClientIOS::GetAutocompleteHistoryManager() {
   return autocomplete_history_manager_;

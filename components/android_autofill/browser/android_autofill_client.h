@@ -79,6 +79,7 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   autofill::AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
+  autofill::SingleFieldFillRouter& GetSingleFieldFillRouter() override;
   autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager()
       override;
   PrefService* GetPrefs() override;

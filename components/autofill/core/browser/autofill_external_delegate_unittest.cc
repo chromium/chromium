@@ -3258,14 +3258,14 @@ class AutofillExternalDelegate_RemoveSuggestionTest
  public:
   void SetUp() override {
     AutofillExternalDelegateUnitTest::SetUp();
-    test_api(manager()).set_single_field_fill_router(
+    client().set_single_field_fill_router(
         std::make_unique<MockSingleFieldFillRouter>(
             client().GetAutocompleteHistoryManager(), nullptr, nullptr));
   }
 
   MockSingleFieldFillRouter& single_field_fill_router() {
     return static_cast<MockSingleFieldFillRouter&>(
-        test_api(manager()).single_field_fill_router());
+        client().GetSingleFieldFillRouter());
   }
 };
 

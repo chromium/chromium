@@ -82,6 +82,14 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
     infobars::InfoBarManager* infobar_manager =
         InfoBarManagerImpl::FromWebState(web_state_.get());
 
+    // The AutofillClient has strange dependencies:
+    // - It must be initialized *after* `web_state_` because it depends on
+    //   `web_state_`.
+    // - It must be destroyed *after* `web_state_` because AutofillDriverIOS
+    //   holds a reference to it and is destroyed together with `web_state_`.
+    //
+    // That's why we initialize it in the constructor but put it in the
+    // declaration order above `web_state_`.
     autofill_client_ = std::make_unique<TestAutofillClient>(
         profile_.get(), web_state_.get(), infobar_manager, autofill_agent_);
 
@@ -94,9 +102,9 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   web::ScopedTestingWebClient web_client_;
   std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<autofill::AutofillClient> autofill_client_;
   std::unique_ptr<web::WebState> web_state_;
   raw_ptr<AutofillBottomSheetTabHelper> helper_;
-  std::unique_ptr<autofill::AutofillClient> autofill_client_;
   AutofillAgent* autofill_agent_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

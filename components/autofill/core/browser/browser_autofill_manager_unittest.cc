@@ -1125,13 +1125,12 @@ class BrowserAutofillManagerTest : public testing::Test {
     browser_autofill_manager_ =
         std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get());
 
-    test_api(*browser_autofill_manager_)
-        .set_single_field_fill_router(
-            std::make_unique<NiceMock<MockSingleFieldFillRouter>>(
-                autofill_client_.GetAutocompleteHistoryManager(),
-                autofill_client_.GetPaymentsAutofillClient()->GetIbanManager(),
-                autofill_client_.GetPaymentsAutofillClient()
-                    ->GetMerchantPromoCodeManager()));
+    autofill_client_.set_single_field_fill_router(
+        std::make_unique<NiceMock<MockSingleFieldFillRouter>>(
+            autofill_client_.GetAutocompleteHistoryManager(),
+            autofill_client_.GetPaymentsAutofillClient()->GetIbanManager(),
+            autofill_client_.GetPaymentsAutofillClient()
+                ->GetMerchantPromoCodeManager()));
     test_api(*browser_autofill_manager_)
         .SetExternalDelegate(std::make_unique<TestAutofillExternalDelegate>(
             browser_autofill_manager_.get(),
@@ -1352,7 +1351,7 @@ class BrowserAutofillManagerTest : public testing::Test {
   }
   MockSingleFieldFillRouter& single_field_fill_router() {
     return static_cast<MockSingleFieldFillRouter&>(
-        test_api(*browser_autofill_manager_).single_field_fill_router());
+        autofill_client_.GetSingleFieldFillRouter());
   }
 
   base::test::TaskEnvironment task_environment_{

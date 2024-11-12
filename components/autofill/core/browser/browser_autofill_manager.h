@@ -727,14 +727,6 @@ class BrowserAutofillManager : public AutofillManager {
 
   std::string app_locale_;
 
-  // Handles routing single-field form filling requests, such as for
-  // Autocomplete and merchant promo codes.
-  std::unique_ptr<SingleFieldFillRouter> single_field_fill_router_ =
-      std::make_unique<SingleFieldFillRouter>(
-          client().GetAutocompleteHistoryManager(),
-          client().GetPaymentsAutofillClient()->GetIbanManager(),
-          client().GetPaymentsAutofillClient()->GetMerchantPromoCodeManager());
-
   // This is always non-nullopt except very briefly during Reset().
   std::optional<MetricsState> metrics_ = std::make_optional<MetricsState>(this);
 

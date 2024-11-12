@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
+#include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_address_normalizer.h"
 #include "components/autofill/core/browser/test_form_data_importer.h"
@@ -134,6 +135,16 @@ class TestAutofillClientTemplate : public T {
 
   MockAutofillAiDelegate* GetAutofillAiDelegate() override {
     return mock_autofill_ai_delegate_.get();
+  }
+
+  SingleFieldFillRouter& GetSingleFieldFillRouter() override {
+    if (!single_field_fill_router_) {
+      single_field_fill_router_ = std::make_unique<SingleFieldFillRouter>(
+          GetAutocompleteHistoryManager(),
+          GetPaymentsAutofillClient()->GetIbanManager(),
+          GetPaymentsAutofillClient()->GetMerchantPromoCodeManager());
+    }
+    return *single_field_fill_router_;
   }
 
   MockAutocompleteHistoryManager* GetAutocompleteHistoryManager() override {
@@ -410,6 +421,11 @@ class TestAutofillClientTemplate : public T {
     payments_autofill_client_ = std::move(payments_client);
   }
 
+  void set_single_field_fill_router(
+      std::unique_ptr<SingleFieldFillRouter> router) {
+    single_field_fill_router_ = std::move(router);
+  }
+
   void set_test_strike_database(
       std::unique_ptr<TestStrikeDatabase> test_strike_database) {
     test_strike_database_ = std::move(test_strike_database);
@@ -531,6 +547,7 @@ class TestAutofillClientTemplate : public T {
   // because they keep a reference to it.
   std::unique_ptr<payments::TestPaymentsAutofillClient>
       payments_autofill_client_;
+  std::unique_ptr<SingleFieldFillRouter> single_field_fill_router_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
 
   GURL form_origin_{"https://example.test"};

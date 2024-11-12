@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/password_form_classification.h"
+#include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -102,6 +103,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   FieldClassificationModelHandler*
   GetPasswordManagerFieldClassificationModelHandler() override;
   PersonalDataManager* GetPersonalDataManager() override;
+  SingleFieldFillRouter& GetSingleFieldFillRouter() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   AutofillComposeDelegate* GetComposeDelegate() override;
   AutofillPlusAddressDelegate* GetPlusAddressDelegate() override;
@@ -245,6 +247,12 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<FormDataImporter> form_data_importer_;
 
   payments::ChromePaymentsAutofillClient payments_autofill_client_{this};
+  SingleFieldFillRouter single_field_fill_router_{
+      // This call is during construction, so GetAutocompleteHistoryManager()
+      // does not dispatch to more-derived classes, should there be any.
+      GetAutocompleteHistoryManager(),
+      payments_autofill_client_.GetIbanManager(),
+      payments_autofill_client_.GetMerchantPromoCodeManager()};
 
   base::WeakPtr<AutofillSuggestionController> suggestion_controller_;
   FormInteractionsFlowId flow_id_;

@@ -23,6 +23,7 @@
 #import "components/autofill/core/browser/form_data_importer.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
+#import "components/autofill/core/browser/single_field_fill_router.h"
 #import "components/autofill/core/browser/ui/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
@@ -156,6 +157,10 @@ ChromeAutofillClientIOS::GetPasswordManagerFieldClassificationModelHandler() {
   }
 #endif
   return nullptr;
+}
+
+SingleFieldFillRouter& ChromeAutofillClientIOS::GetSingleFieldFillRouter() {
+  return single_field_fill_router_;
 }
 
 AutocompleteHistoryManager*

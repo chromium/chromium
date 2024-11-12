@@ -11,6 +11,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/logging/stub_log_manager.h"
+#import "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #import "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #import "components/autofill/core/browser/test_personal_data_manager.h"
 #import "components/autofill/core/common/autofill_prefs.h"
@@ -55,7 +56,6 @@ using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace ios_web_view {
-
 namespace {
 
 const char kApplicationLocale[] = "en-US";
@@ -65,8 +65,6 @@ NSString* const kTestFieldIdentifier = @"FieldIdentifier";
 FieldRendererId kTestFieldRendererID = FieldRendererId(1);
 NSString* const kTestFieldValue = @"FieldValue";
 NSString* const kTestDisplayDescription = @"DisplayDescription";
-
-}  // namespace
 
 class CWVAutofillControllerTest : public web::WebTest {
  protected:
@@ -110,8 +108,8 @@ class CWVAutofillControllerTest : public web::WebTest {
     password_manager_client_ = password_manager_client.get();
 
     auto autofill_client = std::make_unique<autofill::WebViewAutofillClientIOS>(
-        &pref_service_, &personal_data_manager_,
-        /*autocomplete_history_manager=*/nullptr, &web_state_,
+        &pref_service_, &personal_data_manager_, &autocomplete_history_manager_,
+        &web_state_,
         /*identity_manager=*/nullptr, &strike_database_, &sync_service_,
         std::make_unique<autofill::StubLogManager>());
     autofill_controller_ = [[CWVAutofillController alloc]
@@ -145,6 +143,7 @@ class CWVAutofillControllerTest : public web::WebTest {
   web::FakeWebState web_state_;
   NSString* frame_id_;
   web::FakeWebFramesManager* web_frames_manager_;
+  autofill::MockAutocompleteHistoryManager autocomplete_history_manager_;
   CWVAutofillController* autofill_controller_;
   FakeAutofillAgent* autofill_agent_;
   id password_controller_;
@@ -529,4 +528,5 @@ TEST_F(CWVAutofillControllerTest, SaveNewAutofillProfile) {
   [delegate verify];
 }
 
+}  // namespace
 }  // namespace ios_web_view

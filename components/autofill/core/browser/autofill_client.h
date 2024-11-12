@@ -87,6 +87,7 @@ class FieldClassificationModelHandler;
 class FormDataImporter;
 class LogManager;
 class PersonalDataManager;
+class SingleFieldFillRouter;
 class StrikeDatabase;
 struct Suggestion;
 enum class WebauthnDialogState;
@@ -255,6 +256,10 @@ class AutofillClient {
   // machine learning predictions associated with the client.
   virtual FieldClassificationModelHandler*
   GetPasswordManagerFieldClassificationModelHandler();
+
+  // Handles routing single-field form filling requests, such as for
+  // Autocomplete and merchant promo codes.
+  virtual SingleFieldFillRouter& GetSingleFieldFillRouter() = 0;
 
   // Gets the AutocompleteHistoryManager instance associated with the client.
   virtual AutocompleteHistoryManager* GetAutocompleteHistoryManager() = 0;

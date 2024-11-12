@@ -75,6 +75,7 @@
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
@@ -288,6 +289,10 @@ ChromeAutofillClient::GetPasswordManagerFieldClassificationModelHandler() {
 PersonalDataManager* ChromeAutofillClient::GetPersonalDataManager() {
   return PersonalDataManagerFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext());
+}
+
+SingleFieldFillRouter& ChromeAutofillClient::GetSingleFieldFillRouter() {
+  return single_field_fill_router_;
 }
 
 AutocompleteHistoryManager*

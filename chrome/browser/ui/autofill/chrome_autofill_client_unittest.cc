@@ -163,7 +163,10 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    PreparePersonalDataManager();
+    // Enable MSBB by default. If MSBB has been explicitly turned off, Fast
+    // Checkout is not supported.
+    profile()->GetPrefs()->SetBoolean(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
     // Creates the AutofillDriver and AutofillManager.
     NavigateAndCommit(GURL("about:blank"));
 
@@ -191,7 +194,6 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     // Avoid that the raw pointer becomes dangling.
-    personal_data_manager_ = nullptr;
     autofill_field_promo_controller_ = nullptr;
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -206,7 +208,8 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
   }
 
   TestPersonalDataManager* personal_data_manager() {
-    return personal_data_manager_;
+    return static_cast<TestPersonalDataManager*>(
+        client()->GetPersonalDataManager());
   }
 
   MockAutofillFieldPromoController* autofill_field_promo_controller() {
@@ -221,30 +224,23 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
 #endif
 
  private:
-  void PreparePersonalDataManager() {
-    personal_data_manager_ =
-        autofill::PersonalDataManagerFactory::GetInstance()
-            ->SetTestingSubclassFactoryAndUse(
-                profile(), base::BindOnce([](content::BrowserContext*) {
-                  return std::make_unique<TestPersonalDataManager>();
-                }));
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {TestingProfile::TestingFactory{
+        autofill::PersonalDataManagerFactory::GetInstance(),
+        base::BindRepeating(&CreateTestPersonalDataManager)}};
+  }
 
-    personal_data_manager_->test_address_data_manager()
-        .SetAutofillProfileEnabled(true);
-    personal_data_manager_->test_payments_data_manager()
-        .SetAutofillPaymentMethodsEnabled(true);
-    personal_data_manager_->test_payments_data_manager()
-        .SetAutofillWalletImportEnabled(false);
-
-    // Enable MSBB by default. If MSBB has been explicitly turned off, Fast
-    // Checkout is not supported.
-    profile()->GetPrefs()->SetBoolean(
-        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+  static std::unique_ptr<KeyedService> CreateTestPersonalDataManager(
+      content::BrowserContext* context) {
+    auto pdm = std::make_unique<TestPersonalDataManager>();
+    pdm->test_address_data_manager().SetAutofillProfileEnabled(true);
+    pdm->test_payments_data_manager().SetAutofillPaymentMethodsEnabled(true);
+    pdm->test_payments_data_manager().SetAutofillWalletImportEnabled(false);
+    return pdm;
   }
 
   autofill::test::AutofillUnitTestEnvironment autofill_environment_{
       {.disable_server_communication = true}};
-  raw_ptr<TestPersonalDataManager> personal_data_manager_ = nullptr;
   raw_ptr<MockAutofillFieldPromoController> autofill_field_promo_controller_;
   TestAutofillClientInjector<TestChromeAutofillClient>
       test_autofill_client_injector_;

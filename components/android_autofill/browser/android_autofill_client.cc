@@ -88,6 +88,11 @@ autofill::PersonalDataManager* AndroidAutofillClient::GetPersonalDataManager() {
   return nullptr;
 }
 
+autofill::SingleFieldFillRouter&
+AndroidAutofillClient::GetSingleFieldFillRouter() {
+  NOTREACHED();
+}
+
 autofill::AutocompleteHistoryManager*
 AndroidAutofillClient::GetAutocompleteHistoryManager() {
   NOTREACHED();

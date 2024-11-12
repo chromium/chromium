@@ -75,6 +75,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   PersonalDataManager* GetPersonalDataManager() override;
   FieldClassificationModelHandler*
   GetPasswordManagerFieldClassificationModelHandler() override;
+  SingleFieldFillRouter& GetSingleFieldFillRouter() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
@@ -171,6 +172,9 @@ class ChromeAutofillClientIOS : public AutofillClient {
   // `payments_autofill_client_` are initialized, other than `this`.
   payments::IOSChromePaymentsAutofillClient payments_autofill_client_{
       this, web_state_, infobar_manager_, pref_service_};
+  SingleFieldFillRouter single_field_fill_router_{
+      autocomplete_history_manager_, payments_autofill_client_.GetIbanManager(),
+      payments_autofill_client_.GetMerchantPromoCodeManager()};
 
   // A weak reference to the view controller used to present UI.
   __weak UIViewController* base_view_controller_;

@@ -756,7 +756,7 @@ BrowserAutofillManager::~BrowserAutofillManager() {
   }
   FlushPendingLogQualityAndVotesUploadCallbacks();
 
-  single_field_fill_router_->CancelPendingQueries();
+  client().GetSingleFieldFillRouter().CancelPendingQueries();
 }
 
 base::WeakPtr<AutofillManager> BrowserAutofillManager::GetWeakPtr() {
@@ -1163,7 +1163,7 @@ void BrowserAutofillManager::MaybeImportFromSubmittedForm(
     // TODO(crbug.com/40276862): Verify frequency of plus address (or the other
     // type(s) checked for below, for that matter) slipping through in this code
     // path.
-    single_field_fill_router_->OnWillSubmitForm(
+    client().GetSingleFieldFillRouter().OnWillSubmitForm(
         form, nullptr, client().IsAutocompleteEnabled());
     return;
   }
@@ -1200,7 +1200,7 @@ void BrowserAutofillManager::MaybeImportFromSubmittedForm(
   // TODO crbug.com/40100455 - Eliminate `form_for_autocomplete`.
   FormData form_for_autocomplete = form_structure->ToFormData();
   form_for_autocomplete.set_fields(std::move(fields_for_autocomplete));
-  single_field_fill_router_->OnWillSubmitForm(
+  client().GetSingleFieldFillRouter().OnWillSubmitForm(
       form_for_autocomplete, form_structure, client().IsAutocompleteEnabled());
 }
 
@@ -1552,7 +1552,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
       ShouldSuppressSuggestions(context.suppress_reason, log_manager())) {
     if (context.suppress_reason == SuppressReason::kAblation) {
       CHECK(suggestions.empty());
-      single_field_fill_router_->CancelPendingQueries();
+      client().GetSingleFieldFillRouter().CancelPendingQueries();
       std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions),
                               std::nullopt);
     }
@@ -1736,7 +1736,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
 
   if (should_offer_single_field_form_fill) {
     bool handled_by_single_field_form_filler =
-        single_field_fill_router_->OnGetSingleFieldSuggestions(
+        client().GetSingleFieldFillRouter().OnGetSingleFieldSuggestions(
             form_structure, field, autofill_field, client(),
             base::BindRepeating(
                 [](base::OnceCallback<void(std::vector<Suggestion>)> callback,
@@ -1746,7 +1746,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
                 },
                 barrier_callback));
     if (!handled_by_single_field_form_filler) {
-      single_field_fill_router_->CancelPendingQueries();
+      client().GetSingleFieldFillRouter().CancelPendingQueries();
       std::move(barrier_callback).Run({});
       return;
     }
@@ -2255,7 +2255,7 @@ void BrowserAutofillManager::DidShowSuggestions(
 }
 
 void BrowserAutofillManager::OnHidePopupImpl() {
-  single_field_fill_router_->CancelPendingQueries();
+  client().GetSingleFieldFillRouter().CancelPendingQueries();
   client().HideAutofillSuggestions(SuggestionHidingReason::kRendererEvent);
   client().HideAutofillFieldIph();
   if (fast_checkout_delegate_) {
@@ -2297,15 +2297,16 @@ void BrowserAutofillManager::RemoveCurrentSingleFieldSuggestion(
     const std::u16string& name,
     const std::u16string& value,
     SuggestionType type) {
-  single_field_fill_router_->OnRemoveCurrentSingleFieldSuggestion(name, value,
-                                                                  type);
+  client().GetSingleFieldFillRouter().OnRemoveCurrentSingleFieldSuggestion(
+      name, value, type);
 }
 
 void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
     const Suggestion& suggestion,
     const FormData& form,
     const FormFieldData& field) {
-  single_field_fill_router_->OnSingleFieldSuggestionSelected(suggestion);
+  client().GetSingleFieldFillRouter().OnSingleFieldSuggestionSelected(
+      suggestion);
 
   AutofillField* autofill_trigger_field = GetAutofillField(form, field);
   if (!autofill_trigger_field) {
@@ -2668,7 +2669,6 @@ void BrowserAutofillManager::OnSubmissionFieldTypesDetermined(
 // - No need to reset or recreate:
 //   - external_delegate_
 //   - fast_checkout_delegate_
-//   - single_field_fill_router_
 //   - consider_form_as_secure_for_testing_
 void BrowserAutofillManager::Reset() {
   // Process log events and record into UKM when the FormStructure is destroyed.

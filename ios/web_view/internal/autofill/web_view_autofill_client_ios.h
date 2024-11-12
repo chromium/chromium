@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
@@ -61,6 +62,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   AutofillDriverFactory& GetAutofillDriverFactory() override;
   AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
   PersonalDataManager* GetPersonalDataManager() override;
+  SingleFieldFillRouter& GetSingleFieldFillRouter() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
@@ -128,6 +130,9 @@ class WebViewAutofillClientIOS : public AutofillClient {
   // `payments_autofill_client_` are initialized, other than `this`.
   payments::IOSWebViewPaymentsAutofillClient payments_autofill_client_{
       this, bridge_, web_state_};
+  SingleFieldFillRouter single_field_fill_router_{
+      autocomplete_history_manager_, payments_autofill_client_.GetIbanManager(),
+      payments_autofill_client_.GetMerchantPromoCodeManager()};
 
   base::WeakPtrFactory<WebViewAutofillClientIOS> weak_ptr_factory_{this};
 };

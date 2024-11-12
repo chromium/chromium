@@ -53,17 +53,8 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
         .form_interactions_flow_id_for_test();
   }
 
-  SingleFieldFillRouter& single_field_fill_router() {
-    return *manager_->single_field_fill_router_;
-  }
-
   autofill_metrics::CreditCardFormEventLogger* credit_card_form_event_logger() {
     return &manager_->metrics_->credit_card_form_event_logger;
-  }
-
-  void set_single_field_fill_router(
-      std::unique_ptr<SingleFieldFillRouter> router) {
-    manager_->single_field_fill_router_ = std::move(router);
   }
 
   void set_credit_card_access_manager(
