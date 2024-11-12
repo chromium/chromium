@@ -7541,11 +7541,6 @@ const char kLauncherLocalImageSearchName[] =
 const char kLauncherLocalImageSearchDescription[] =
     "Enables on-device local image search in the launcher.";
 
-const char kLauncherLocalImageSearchOnCoreName[] =
-    "Enable launcher local image search on core devices";
-const char kLauncherLocalImageSearchOnCoreDescription[] =
-    "Enables on-device local image search in the launcher on core devices.";
-
 const char kLauncherLocalImageSearchConfidenceName[] =
     "Launcher Local Image Search Confidence";
 const char kLauncherLocalImageSearchConfidenceDescription[] =

@@ -21096,7 +21096,6 @@ from previous Chrome versions.
   <int value="343286828" label="IgnoreUiGains:disabled"/>
   <int value="343445783" label="AllowScrollSettings:enabled"/>
   <int value="343815157" label="SafeBrowsingHashPrefixRealTimeLookups:enabled"/>
-  <int value="345046566" label="LocalImageSearchOnCore:disabled"/>
   <int value="345430155" label="CrOSDspBasedAgcAllowed:enabled"/>
   <int value="345611669"
       label="OmniboxLocalZeroSuggestFrecencyRanking:enabled"/>
@@ -24667,7 +24666,6 @@ from previous Chrome versions.
       label="OmniboxUpdatedConnectionSecurityIndicators:disabled"/>
   <int value="1781225884" label="FedCmAuthz:disabled"/>
   <int value="1781422070" label="PasspointARCSupport:enabled"/>
-  <int value="1781605287" label="LocalImageSearchOnCore:enabled"/>
   <int value="1782210532" label="PerNavigationMojoInterface:disabled"/>
   <int value="1782416979"
       label="AutofillEnableSaveCardLoadingAndConfirmation:disabled"/>

@@ -1828,11 +1828,6 @@ BASE_FEATURE(kFeatureManagementLobster,
              "FeatureManagementLobster",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables local image search on core devices.
-BASE_FEATURE(kLocalImageSearchOnCore,
-             "LocalImageSearchOnCore",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables local authentication controller with PIN support.
 BASE_FEATURE(kLocalAuthenticationWithPin,
              "LocalAuthenticationWithPin",
@@ -4084,9 +4079,7 @@ bool IsLauncherNudgeSessionResetEnabled() {
 }
 
 bool IsLauncherSearchControlEnabled() {
-  return base::FeatureList::IsEnabled(kLauncherSearchControl) &&
-         (base::FeatureList::IsEnabled(kFeatureManagementLocalImageSearch) ||
-          base::FeatureList::IsEnabled(kLocalImageSearchOnCore));
+  return base::FeatureList::IsEnabled(kLauncherSearchControl);
 }
 
 bool IsLinkCrossDeviceDogfoodFeedbackEnabled() {
@@ -4138,8 +4131,7 @@ bool IsLockScreenNotificationsEnabled() {
 
 bool IsProductivityLauncherImageSearchEnabled() {
   return base::FeatureList::IsEnabled(kProductivityLauncherImageSearch) &&
-         (base::FeatureList::IsEnabled(kFeatureManagementLocalImageSearch) ||
-          base::FeatureList::IsEnabled(kLocalImageSearchOnCore));
+         base::FeatureList::IsEnabled(kFeatureManagementLocalImageSearch);
 }
 
 bool IsMacAddressRandomizationEnabled() {

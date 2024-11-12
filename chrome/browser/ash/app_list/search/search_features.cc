@@ -76,10 +76,8 @@ bool IsLauncherKeywordExtractionScoringEnabled() {
 }
 
 bool IsLauncherImageSearchEnabled() {
-  return (base::FeatureList::IsEnabled(
-              ash::features::kFeatureManagementLocalImageSearch) ||
-          base::FeatureList::IsEnabled(
-              ash::features::kLocalImageSearchOnCore)) &&
+  return base::FeatureList::IsEnabled(
+             ash::features::kFeatureManagementLocalImageSearch) &&
          base::FeatureList::IsEnabled(kLauncherImageSearch);
 }
 

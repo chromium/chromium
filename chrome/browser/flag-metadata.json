@@ -5674,11 +5674,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "launcher-local-image-search-on-core",
-    "owners": ["chenjih@google.com", "chromeos-launcher-search@google.com"],
-    "expiry_milestone": 140
-  },
-  {
     "name": "launcher-local-image-search-relevance",
     "owners": ["chenjih@google.com", "nbowe@chromium.org"],
     "expiry_milestone": 140

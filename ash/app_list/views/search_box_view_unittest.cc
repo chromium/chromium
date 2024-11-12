@@ -308,15 +308,11 @@ TEST_F(SearchBoxViewTest, CloseButtonVisibleAfterTyping) {
   EXPECT_TRUE(view()->filter_and_close_button_container()->GetVisible());
 }
 
-// Tests that the filter button is not created if the image search feature is
+// Tests that the filter button is created even if the image search feature is
 // disabled.
-TEST_F(SearchBoxViewTest, FilterButtonNotCreatedWithDisabledImageSearch) {
+TEST_F(SearchBoxViewTest, FilterButtonCreatedWithDisabledImageSearch) {
   ASSERT_FALSE(features::IsProductivityLauncherImageSearchEnabled());
-  EXPECT_FALSE(view()->filter_button());
-
-  // The filter button is still not created after typing in the search box.
-  KeyPress(ui::VKEY_A);
-  EXPECT_FALSE(view()->filter_button());
+  EXPECT_TRUE(view()->filter_button());
 }
 
 // Tests that the close button is still visible after the search box is
