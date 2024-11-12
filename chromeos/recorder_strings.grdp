@@ -414,6 +414,21 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Header when transcription is off in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_OFF_HEADER">
     Transcript is off
   </message>
+  <message desc="Description when the selected transcription language failed to install in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_UNUSABLE_ERROR_DESCRIPTION">
+    Can’t download transcription model. Try again or restart your Chromebook.
+  </message>
+  <message desc="Header when transcription is unusable in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_UNUSABLE_HEADER">
+    Can't create transcript
+  </message>
+  <message desc="Description when the selected transcription language is not installed in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_UNUSABLE_NOT_INSTALLED_DESCRIPTION">
+    Download transcription model in Settings
+  </message>
+  <message desc="Description when transcription language is not selected in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_UNUSABLE_SELECT_LANGUAGE_DESCRIPTION">
+    Select transcription language and download in Settings
+  </message>
+  <message desc="Description when the selected transcription language is downloading in the transcription view while recording." name="IDS_RECORDER_RECORD_TRANSCRIPTION_WAITING_DOWNLOAD_TEXT">
+    Downloading transcription model…
+  </message>
   <message desc="Tooltip of the button to unmute the microphone while recording." name="IDS_RECORDER_RECORD_UNMUTE_BUTTON_TOOLTIP">
     Turn on mic
   </message>

@@ -47,6 +47,17 @@ export function setTranscriptionLanguage(language: LanguageCode): void {
 }
 
 /**
+ * Reset transcription language to null or default language.
+ *
+ * This should be called when the selected language is not available.
+ */
+export function resetTranscriptionLanguage(resetToDefault: boolean): void {
+  settings.mutate((s) => {
+    s.transcriptionLanguage = resetToDefault ? LanguageCode.EN_US : null;
+  });
+}
+
+/**
  * Toggles `TranscriptionEnabled` state.
  *
  * Returns false if the transcription hasn't been enabled before and needs to

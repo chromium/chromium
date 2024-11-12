@@ -627,6 +627,8 @@ export class RecordPage extends ReactiveLitElement {
     if (!toggleTranscriptionEnabled()) {
       this.transcriptionConsentDialog.value?.show();
     }
+    // TODO: b/377885042 - Show the language picker when there's no selected
+    // language.
   }
 
   private toggleSpeakerLabelEnabled() {
@@ -712,10 +714,68 @@ export class RecordPage extends ReactiveLitElement {
     // use dynamic color tokens yet.
     // TODO: b/344785475 - Change to final illustration when ready.
     switch (settings.value.transcriptionEnabled) {
-      case TranscriptionEnableState.ENABLED:
-        return html`<div id="transcription-waiting">
-          ${i18n.transcriptionWaitingSpeechText}
-        </div>`;
+      // TODO: b/377885042 - Change to final string when ready.
+      case TranscriptionEnableState.ENABLED: {
+        const sodaState = this.platformHandler.getSelectedLanguageState();
+        if (sodaState === null) {
+          return html`
+            <div id="transcription-consent">
+              <cra-image name="transcription_off"></cra-image>
+              <div class="header">
+                ${i18n.recordTranscriptionUnusableHeader}
+              </div>
+              <div class="description">
+                ${i18n.recordTranscriptionUnusableSelectLanguageDescription}
+              </div>
+            </div>
+          `;
+        }
+        switch (sodaState.value.kind) {
+          case 'notInstalled': {
+            return html`
+              <div id="transcription-consent">
+                <cra-image name="transcription_off"></cra-image>
+                <div class="header">
+                  ${i18n.recordTranscriptionUnusableHeader}
+                </div>
+                <div class="description">
+                  ${i18n.recordTranscriptionUnusableNotInstalledDescription}
+                </div>
+              </div>
+            `;
+          }
+          case 'unavailable':
+          case 'error': {
+            return html`
+              <div id="transcription-consent">
+                <cra-image name="transcription_off"></cra-image>
+                <div class="header">
+                  ${i18n.recordTranscriptionUnusableHeader}
+                </div>
+                <div class="description">
+                  ${i18n.recordTranscriptionUnusableErrorDescription}
+                </div>
+              </div>
+            `;
+          }
+          case 'installing': {
+            return html`
+              <div id="transcription-waiting">
+                ${i18n.recordTranscriptionWaitingDownloadText}
+              </div>
+            `;
+          }
+          case 'installed': {
+            return html`
+              <div id="transcription-waiting">
+                ${i18n.transcriptionWaitingSpeechText}
+              </div>
+            `;
+          }
+          default:
+            return assertExhaustive(sodaState.value);
+        }
+      }
       case TranscriptionEnableState.DISABLED:
       case TranscriptionEnableState.DISABLED_FIRST: {
         const description = replacePlaceholderWithHtml(
