@@ -27,6 +27,7 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.filters.MediumTest;
@@ -36,6 +37,8 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
@@ -50,6 +53,7 @@ import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -352,5 +356,56 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                     Criteria.checkThat(
                             mActivityTestRule.getActivity().isDestroyed(), Matchers.is(false));
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testDismissAddAccountCctReopensAccountChooser() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mAccountSelection.showAccounts(
+                            EXAMPLE_ETLD_PLUS_ONE,
+                            TEST_ETLD_PLUS_ONE_2,
+                            Arrays.asList(NEW_BOB, RETURNING_ANA),
+                            mIdpDataWithAddAccount,
+                            /* isAutoReauthn= */ false,
+                            /* newAccounts= */ Collections.EMPTY_LIST);
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
+                });
+        pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);
+
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
+
+        RecyclerView accountsList = contentView.findViewById(R.id.sheet_item_list);
+        assertEquals(accountsList.getChildCount(), 3);
+        assertEquals(
+                accountsList.getAdapter().getItemViewType(2),
+                AccountSelectionProperties.ITEM_TYPE_ADD_ACCOUNT);
+
+        // Close the use other account CCT when it is opened.
+        doAnswer(
+                        new Answer<Void>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) {
+                                mAccountSelection
+                                        .getMediator()
+                                        .onDismissed(IdentityRequestDialogDismissReason.OTHER);
+                                return null;
+                            }
+                        })
+                .when(mMockBridge)
+                .onLoginToIdP(any(), any());
+
+        // Click "Use a different account".
+        runOnUiThreadBlocking(
+                () -> {
+                    accountsList.getChildAt(2).performClick();
+                });
+
+        // Verify that account chooser remains open.
+        assertEquals(mAccountSelection.getMediator().getHeaderType(), HeaderType.SIGN_IN);
+        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        verify(mMockBridge, never()).onAccountSelected(any(), any());
     }
 }
