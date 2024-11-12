@@ -1027,6 +1027,10 @@ const CGFloat kMenuSymbolSize = 18;
 }
 
 - (void)showResultsBottomSheet {
+  if (!_associatedTabHelper) {
+    return;
+  }
+
   UISheetPresentationController* sheet =
       _resultViewController.sheetPresentationController;
   sheet.prefersEdgeAttachedInCompactHeight = YES;
