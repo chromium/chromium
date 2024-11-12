@@ -33,14 +33,15 @@ export function getHtml(this: BatchUploadAppElement) {
     </div>
   </div>
 
-  <div id="action-row" class="action-container">
-    <cr-button id='cancelButton' @click="${this.close_}">
-      ${this.i18n('cancel')}
-    </cr-button>
+  <div id="action-row">
     <cr-button id='saveButton' class="action-button"
         ?disabled="${!this.isSaveEnabled_}"
         @click="${this.saveToAccount_}">
       ${this.i18n('saveToAccount')}
+    </cr-button>
+    <cr-button id='cancelButton' class="tonal-button"
+        @click="${this.close_}">
+      ${this.i18n('cancel')}
     </cr-button>
   </div>
 
