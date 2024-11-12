@@ -1,0 +1,19 @@
+{
+  "src": "refs/branch-heads/6834",
+  "src:src/clank": "refs/heads/chromium/6834",
+  "src:src/components/optimization_guide/internal": "refs/heads/chromium/6834",
+  "src:src/internal": "refs/heads/chromium/6834",
+  "src:src/ios_internal": "refs/heads/chromium/6834",
+  "src:src/third_party/angle": "refs/heads/chromium/6834",
+  "src:src/third_party/dawn": "refs/heads/chromium/6834",
+  "src:src/third_party/devtools-frontend-internal": "refs/heads/chromium/6834",
+  "src:src/third_party/devtools-frontend-internal:devtools-frontend": "refs/heads/chromium/6834",
+  "src:src/third_party/devtools-frontend/src": "refs/heads/chromium/6834",
+  "src:src/third_party/instrumented_libs": "refs/heads/chromium/6834",
+  "src:src/third_party/openscreen/src": "refs/heads/chromium/6834",
+  "src:src/third_party/pdfium": "refs/heads/chromium/6834",
+  "src:src/third_party/skia": "refs/heads/chrome/m132",
+  "src:src/third_party/vulkan-deps": "refs/heads/chromium/6834",
+  "src:src/third_party/webrtc": "refs/branch-heads/6834",
+  "src:src/v8": "refs/heads/chromium/6834"
+}
