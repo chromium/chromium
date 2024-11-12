@@ -36,6 +36,8 @@ reviewer.
   <int value="6" label="Risk data not available"/>
   <int value="7" label="Client token not available"/>
   <int value="8" label="InitiatePayment request failed"/>
+  <int value="9" label="Action token not available"/>
+  <int value="10" label="User logged out after selecting payment method"/>
 </enum>
 
 <enum name="FacilitatedPayments.PaymentNotOfferedReason">
