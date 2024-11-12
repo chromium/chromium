@@ -24,6 +24,13 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.OPEN_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.COLLABORATION_ID1;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.EMAIL1;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.EMAIL2;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.GAIA_ID1;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.GAIA_ID2;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER1;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER2;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
@@ -57,12 +64,9 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
-import org.chromium.components.data_sharing.GroupData;
-import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.PeopleGroupActionFailure;
 import org.chromium.components.data_sharing.PeopleGroupActionOutcome;
-import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.DataType;
@@ -92,13 +96,8 @@ public class TabGroupListMediatorUnitTest {
     private static final String SYNC_GROUP_ID1 = "remote one";
     private static final String SYNC_GROUP_ID2 = "remote two";
     private static final String SYNC_GROUP_ID3 = "remote three";
-    private static final String COLLABORATION_ID1 = "A";
-    private static final String GAIA_ID1 = "Z";
-    private static final String GAIA_ID2 = "Y";
-    private static final String EMAIL = "fake@gmail.com";
     private static final Token LOCAL_GROUP_ID1 = new Token(1, 1);
     private static final Token LOCAL_GROUP_ID2 = new Token(2, 2);
-
     private static final int ROOT_ID1 = 1;
     private static final int ROOT_ID2 = 2;
 
@@ -127,13 +126,13 @@ public class TabGroupListMediatorUnitTest {
     @Captor
     private ArgumentCaptor<SyncService.SyncStateChangedListener> mSyncStateChangedListenerCaptor;
 
-    @Captor private ArgumentCaptor<Callback<GroupDataOrFailureOutcome>> mReadGroupCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<Integer>> mActionOutcomeCallbackCaptor;
     @Captor private ArgumentCaptor<PropertyModel> mModalPropertyModelCaptor;
 
     private PropertyModel mPropertyModel;
     private ModelList mModelList;
     private Context mContext;
+    private SharedGroupTestHelper mSharedGroupTestHelper;
 
     @Before
     public void setUp() {
@@ -147,6 +146,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTabSwitcherPaneBase.requestOpenTabGroupDialog(anyInt())).thenReturn(true);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getComprehensiveModel()).thenReturn(mComprehensiveModel);
+        mSharedGroupTestHelper = new SharedGroupTestHelper(mDataSharingService);
     }
 
     private TabGroupListMediator createMediator() {
@@ -663,7 +663,8 @@ public class TabGroupListMediatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testDeleteRunnable_SharedGroup() {
-        CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(EMAIL, GAIA_ID1);
+        CoreAccountInfo coreAccountInfo =
+                CoreAccountInfo.createFromEmailAndGaiaId(EMAIL1, GAIA_ID1);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
 
         SavedTabGroup group1 = new SavedTabGroup();
@@ -689,27 +690,7 @@ public class TabGroupListMediatorUnitTest {
         PropertyModel model = mModelList.get(0).model;
         assertNull(model.get(DELETE_RUNNABLE));
 
-        verify(mDataSharingService)
-                .readGroup(eq(COLLABORATION_ID1), mReadGroupCallbackCaptor.capture());
-
-        GroupMember groupMember =
-                new GroupMember(
-                        GAIA_ID1,
-                        /* displayName= */ null,
-                        EMAIL,
-                        MemberRole.OWNER,
-                        /* avatarUrl= */ null,
-                        /* givenName= */ null);
-        GroupMember[] groupMemberArray = new GroupMember[] {groupMember};
-        GroupData groupData =
-                new GroupData(
-                        COLLABORATION_ID1,
-                        /* displayName= */ null,
-                        groupMemberArray,
-                        /* groupToken= */ null);
-        GroupDataOrFailureOutcome outcome =
-                new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
-        mReadGroupCallbackCaptor.getValue().onResult(outcome);
+        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1);
 
         assertNotNull(model.get(DELETE_RUNNABLE));
         model.get(DELETE_RUNNABLE).run();
@@ -731,7 +712,8 @@ public class TabGroupListMediatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testLeaveRunnable() {
-        CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(EMAIL, GAIA_ID1);
+        CoreAccountInfo coreAccountInfo =
+                CoreAccountInfo.createFromEmailAndGaiaId(EMAIL2, GAIA_ID2);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
 
         SavedTabGroup group1 = new SavedTabGroup();
@@ -756,35 +738,7 @@ public class TabGroupListMediatorUnitTest {
         PropertyModel model = mModelList.get(0).model;
         assertNull(model.get(LEAVE_RUNNABLE));
 
-        verify(mDataSharingService)
-                .readGroup(eq(COLLABORATION_ID1), mReadGroupCallbackCaptor.capture());
-
-        GroupMember groupMember1 =
-                new GroupMember(
-                        GAIA_ID1,
-                        /* displayName= */ null,
-                        EMAIL,
-                        MemberRole.MEMBER,
-                        /* avatarUrl= */ null,
-                        /* givenName= */ null);
-        GroupMember groupMember2 =
-                new GroupMember(
-                        GAIA_ID2,
-                        /* displayName= */ null,
-                        EMAIL,
-                        MemberRole.OWNER,
-                        /* avatarUrl= */ null,
-                        /* givenName= */ null);
-        GroupMember[] groupMemberArray = new GroupMember[] {groupMember1, groupMember2};
-        GroupData groupData =
-                new GroupData(
-                        COLLABORATION_ID1,
-                        /* displayName= */ null,
-                        groupMemberArray,
-                        /* groupToken= */ null);
-        GroupDataOrFailureOutcome outcome =
-                new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
-        mReadGroupCallbackCaptor.getValue().onResult(outcome);
+        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
 
         assertNotNull(model.get(LEAVE_RUNNABLE));
         model.get(LEAVE_RUNNABLE).run();
@@ -797,7 +751,7 @@ public class TabGroupListMediatorUnitTest {
 
         verify(mDataSharingService)
                 .removeMember(
-                        eq(COLLABORATION_ID1), eq(EMAIL), mActionOutcomeCallbackCaptor.capture());
+                        eq(COLLABORATION_ID1), eq(EMAIL2), mActionOutcomeCallbackCaptor.capture());
         mActionOutcomeCallbackCaptor
                 .getValue()
                 .onResult(PeopleGroupActionOutcome.TRANSIENT_FAILURE);
@@ -813,7 +767,8 @@ public class TabGroupListMediatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testDeleteRunnable_shareReadFailure() {
-        CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(EMAIL, GAIA_ID1);
+        CoreAccountInfo coreAccountInfo =
+                CoreAccountInfo.createFromEmailAndGaiaId(EMAIL1, GAIA_ID1);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
 
         SavedTabGroup group1 = new SavedTabGroup();
@@ -839,13 +794,8 @@ public class TabGroupListMediatorUnitTest {
         PropertyModel model = mModelList.get(0).model;
         assertNull(model.get(DELETE_RUNNABLE));
 
-        verify(mDataSharingService)
-                .readGroup(eq(COLLABORATION_ID1), mReadGroupCallbackCaptor.capture());
-
-        GroupDataOrFailureOutcome outcome =
-                new GroupDataOrFailureOutcome(
-                        /* groupData= */ null, PeopleGroupActionFailure.TRANSIENT_FAILURE);
-        mReadGroupCallbackCaptor.getValue().onResult(outcome);
+        mSharedGroupTestHelper.respondToReadGroup(
+                COLLABORATION_ID1, PeopleGroupActionFailure.TRANSIENT_FAILURE);
 
         assertNotNull(model.get(DELETE_RUNNABLE));
         model.get(DELETE_RUNNABLE).run();

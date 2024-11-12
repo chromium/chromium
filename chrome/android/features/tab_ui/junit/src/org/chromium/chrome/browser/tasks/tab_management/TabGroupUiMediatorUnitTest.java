@@ -27,6 +27,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.COLLABORATION_ID1;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER1;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER2;
 
@@ -92,7 +93,6 @@ import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -120,7 +120,6 @@ public class TabGroupUiMediatorUnitTest {
     private static final int TAB1_ROOT_ID = TAB1_ID;
     private static final int TAB2_ROOT_ID = TAB2_ID;
     private static final int TAB3_ROOT_ID = TAB2_ID;
-    private static final String COLLABORATION_ID1 = "A";
     private static final String GROUP_TITLE = "My Group";
     private static final Token TAB2_GROUP_ID = new Token(1L, 2L);
 
@@ -161,7 +160,6 @@ public class TabGroupUiMediatorUnitTest {
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<Callback<Boolean>> mOmniboxFocusObserverCaptor;
-    @Captor private ArgumentCaptor<Callback<GroupDataOrFailureOutcome>> mReadGroupCallbackCaptor;
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
 
     private final ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier =
@@ -293,8 +291,7 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         DataSharingServiceFactory.setForTesting(mDataSharingService);
-        mSharedGroupTestHelper =
-                new SharedGroupTestHelper(mDataSharingService, mReadGroupCallbackCaptor);
+        mSharedGroupTestHelper = new SharedGroupTestHelper(mDataSharingService);
 
         // Set up Tabs
         mTab1 = prepareTab(TAB1_ID, TAB1_ROOT_ID);

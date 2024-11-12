@@ -14,6 +14,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.GIVEN_NAME1;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER1;
 import static org.chromium.components.messages.MessageBannerProperties.MESSAGE_IDENTIFIER;
 import static org.chromium.components.messages.MessageBannerProperties.ON_FULLY_VISIBLE;
 import static org.chromium.components.messages.MessageBannerProperties.TITLE;
@@ -45,7 +47,6 @@ import org.chromium.components.collaboration.messaging.MessageAttribution;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.TabGroupMessageMetadata;
 import org.chromium.components.collaboration.messaging.TabMessageMetadata;
-import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessagesFactory;
@@ -100,7 +101,7 @@ public class InstantMessageDelegateImplUnitTest {
         attribution.tabGroupMetadata = new TabGroupMessageMetadata();
         attribution.tabGroupMetadata.lastKnownTitle = TAB_GROUP_TITLE;
         attribution.tabGroupMetadata.localTabGroupId = new LocalTabGroupId(TAB_GROUP_ID);
-        attribution.triggeringUser = SharedGroupTestHelper.GROUP_MEMBER1;
+        attribution.triggeringUser = GROUP_MEMBER1;
         InstantMessage instantMessage = new InstantMessage();
         instantMessage.attribution = attribution;
         instantMessage.collaborationEvent = collaborationEvent;
@@ -138,7 +139,7 @@ public class InstantMessageDelegateImplUnitTest {
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
         assertEquals(MessageIdentifier.TAB_REMOVED_THROUGH_COLLABORATION, messageIdentifier);
         String title = propertyModel.get(TITLE);
-        assertTrue(title.contains(SharedGroupTestHelper.GIVEN_NAME1));
+        assertTrue(title.contains(GIVEN_NAME1));
         assertTrue(title.contains(TAB_TITLE));
 
         propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
@@ -156,7 +157,7 @@ public class InstantMessageDelegateImplUnitTest {
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
         assertEquals(MessageIdentifier.TAB_NAVIGATED_THROUGH_COLLABORATION, messageIdentifier);
         String title = propertyModel.get(TITLE);
-        assertTrue(title.contains(SharedGroupTestHelper.GIVEN_NAME1));
+        assertTrue(title.contains(GIVEN_NAME1));
         assertTrue(title.contains(TAB_TITLE));
 
         verify(mSuccessCallback, never()).onResult(anyBoolean());
@@ -180,7 +181,7 @@ public class InstantMessageDelegateImplUnitTest {
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
         assertEquals(MessageIdentifier.COLLABORATION_MEMBER_ADDED, messageIdentifier);
         String title = propertyModel.get(TITLE);
-        assertTrue(title.contains(SharedGroupTestHelper.GIVEN_NAME1));
+        assertTrue(title.contains(GIVEN_NAME1));
         assertTrue(title.contains(TAB_GROUP_TITLE));
 
         propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
@@ -201,7 +202,7 @@ public class InstantMessageDelegateImplUnitTest {
         @MessageIdentifier int messageIdentifier = propertyModel.get(MESSAGE_IDENTIFIER);
         assertEquals(MessageIdentifier.COLLABORATION_MEMBER_ADDED, messageIdentifier);
         String title = propertyModel.get(TITLE);
-        assertTrue(title.contains(SharedGroupTestHelper.GIVEN_NAME1));
+        assertTrue(title.contains(GIVEN_NAME1));
         assertTrue(title.contains(Integer.toString(13)));
 
         propertyModel.get(ON_FULLY_VISIBLE).onResult(true);

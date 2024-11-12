@@ -35,6 +35,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.DESCRIPTION_TEXT;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_SERVICE_ACTION_PROVIDER;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.COLLABORATION_ID1;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.EMAIL2;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.GAIA_ID2;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER1;
@@ -61,7 +62,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -105,7 +105,6 @@ import org.chromium.components.collaboration.messaging.PersistentMessage;
 import org.chromium.components.collaboration.messaging.TabGroupMessageMetadata;
 import org.chromium.components.collaboration.messaging.TabMessageMetadata;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -136,7 +135,6 @@ public class TabGridDialogMediatorUnitTest {
     private static final String DIALOG_TITLE1 = "1 tab";
     private static final String DIALOG_TITLE2 = "2 tabs";
     private static final String CUSTOMIZED_DIALOG_TITLE = "Cool Tabs";
-    private static final String COLLABORATION_ID1 = "A";
     private static final String GROUP_TITLE = "My Group";
     private static final int COLOR_2 = 1;
     private static final int COLOR_3 = 2;
@@ -181,7 +179,6 @@ public class TabGridDialogMediatorUnitTest {
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
     @Captor private ArgumentCaptor<PropertyModel> mCollaborationActivityMessageCardCaptor;
-    @Captor private ArgumentCaptor<Callback<GroupDataOrFailureOutcome>> mReadGroupCallbackCaptor;
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
     @Captor private ArgumentCaptor<PropertyModel> mMessageCardModelCaptor;
 
@@ -214,8 +211,7 @@ public class TabGridDialogMediatorUnitTest {
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
         mockPersistentMessages(/* added= */ 1, /* navigated= */ 2, /* removed= */ 3);
-        mSharedGroupTestHelper =
-                new SharedGroupTestHelper(mDataSharingService, mReadGroupCallbackCaptor);
+        mSharedGroupTestHelper = new SharedGroupTestHelper(mDataSharingService);
 
         mTab1 = prepareTab(TAB1_ID, TAB1_TITLE);
         mTab2 = prepareTab(TAB2_ID, TAB2_TITLE);

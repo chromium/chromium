@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.COLLABORATION_ID1;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER1;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER2;
 
@@ -33,13 +34,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -50,7 +49,6 @@ import org.chromium.ui.base.TestActivity;
 /** Unit tests for {@link TabGroupColorViewProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabGroupColorViewProviderUnitTest {
-    private static final String COLLABORATION_ID1 = "collaborationId1";
     private static final Token REGULAR_TAB_GROUP_ID = new Token(3L, 4L);
     private static final Token INCOGNITO_TAB_GROUP_ID = new Token(5L, 6L);
 
@@ -66,7 +64,6 @@ public class TabGroupColorViewProviderUnitTest {
     @Mock private ServiceStatus mServiceStatus;
 
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
-    @Captor private ArgumentCaptor<Callback<GroupDataOrFailureOutcome>> mReadGroupCallbackCaptor;
 
     private SharedGroupTestHelper mSharedGroupTestHelper;
     private Context mContext;
@@ -78,8 +75,7 @@ public class TabGroupColorViewProviderUnitTest {
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
 
-        mSharedGroupTestHelper =
-                new SharedGroupTestHelper(mDataSharingService, mReadGroupCallbackCaptor);
+        mSharedGroupTestHelper = new SharedGroupTestHelper(mDataSharingService);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
     }
