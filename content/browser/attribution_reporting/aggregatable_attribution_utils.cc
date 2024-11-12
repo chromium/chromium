@@ -38,7 +38,6 @@
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/attribution_reporting/aggregatable_named_budget_pair.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -64,10 +63,8 @@ std::string SerializeTimeRoundedDownToWholeDayInSeconds(base::Time time) {
 
 bool IsAggregatableFilteringIdsEnabled() {
   return base::FeatureList::IsEnabled(
-             attribution_reporting::features::
-                 kAttributionReportingAggregatableFilteringIds) &&
-         base::FeatureList::IsEnabled(
-             kPrivacySandboxAggregationServiceFilteringIds);
+      attribution_reporting::features::
+          kAttributionReportingAggregatableFilteringIds);
 }
 
 }  // namespace

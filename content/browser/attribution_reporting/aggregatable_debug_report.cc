@@ -31,7 +31,6 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_result.mojom.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -195,10 +194,8 @@ GetAggregatableContributions(
 
 bool IsAggregatableFilteringIdsEnabled() {
   return base::FeatureList::IsEnabled(
-             attribution_reporting::features::
-                 kAttributionReportingAggregatableFilteringIds) &&
-         base::FeatureList::IsEnabled(
-             kPrivacySandboxAggregationServiceFilteringIds);
+      attribution_reporting::features::
+          kAttributionReportingAggregatableFilteringIds);
 }
 
 }  // namespace

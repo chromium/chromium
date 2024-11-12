@@ -42,7 +42,6 @@
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/additional_bids_test_util.h"
@@ -16917,8 +16916,8 @@ TEST_F(AuctionRunnerTest,
 TEST_F(AuctionRunnerTest, PrivateAggregationRequestForEventFilteringId) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::kPrivateAggregationApiFilteringIds,
-                            kPrivacySandboxAggregationServiceFilteringIds},
+      /*enabled_features=*/{blink::features::
+                                kPrivateAggregationApiFilteringIds},
       /*disabled_features=*/{});
 
   // Only one bidder participating the auction, to keep things simple.
@@ -17050,7 +17049,6 @@ TEST_F(AuctionRunnerTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{blink::features::kPrivateAggregationApiFilteringIds,
-                            kPrivacySandboxAggregationServiceFilteringIds,
                             blink::features::kFledgeConsiderKAnonymity,
                             blink::features::kFledgeEnforceKAnonymity},
       /*disabled_features=*/{});

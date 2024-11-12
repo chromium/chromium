@@ -28,7 +28,6 @@
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -449,8 +448,7 @@ TEST(AggregatableAttributionUtilsTest,
      AggregatableReportRequestWithFilteringIds) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{kPrivacySandboxAggregationServiceFilteringIds,
-                            attribution_reporting::features::
+      /*enabled_features=*/{attribution_reporting::features::
                                 kAttributionReportingAggregatableFilteringIds},
       /*disabled_features=*/{});
   std::optional<AggregatableReportRequest> request =

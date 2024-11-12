@@ -38,7 +38,6 @@
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
@@ -386,13 +385,8 @@ void PrivateAggregationHost::ContributeToHistogram(
     return;
   }
 
-  bool embed_filtering_ids_in_report =
-      base::FeatureList::IsEnabled(
-          blink::features::kPrivateAggregationApiFilteringIds) &&
-      base::FeatureList::IsEnabled(
-          kPrivacySandboxAggregationServiceFilteringIds);
-
-  if (!embed_filtering_ids_in_report) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiFilteringIds)) {
     base::ranges::for_each(
         incoming_ptrs,
         [](blink::mojom::AggregatableReportHistogramContributionPtr&
@@ -486,11 +480,8 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
             context_id, specified_filtering_id_max_bytes));
   CHECK(debug_mode_details);
 
-  bool use_new_report_version =
-      base::FeatureList::IsEnabled(
-          blink::features::kPrivateAggregationApiFilteringIds) &&
-      base::FeatureList::IsEnabled(
-          kPrivacySandboxAggregationServiceFilteringIds);
+  bool use_new_report_version = base::FeatureList::IsEnabled(
+      blink::features::kPrivateAggregationApiFilteringIds);
 
   std::optional<size_t> applied_filtering_id_max_bytes =
       specified_filtering_id_max_bytes;

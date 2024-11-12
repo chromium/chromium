@@ -19,7 +19,6 @@
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
@@ -103,8 +102,6 @@ class AggregatableDebugReportTest : public testing::Test,
       enabled_features.emplace_back(
           attribution_reporting::features::
               kAttributionReportingAggregatableFilteringIds);
-      enabled_features.emplace_back(
-          kPrivacySandboxAggregationServiceFilteringIds);
     } else {
       disabled_features.emplace_back(
           attribution_reporting::features::

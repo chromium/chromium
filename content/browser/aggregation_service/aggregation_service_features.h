@@ -14,10 +14,6 @@ namespace content {
 // Enables the Aggregation Service. See crbug.com/1207974.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivacySandboxAggregationService);
 
-// Enables filtering IDs. See crbug.com/330744610.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kPrivacySandboxAggregationServiceFilteringIds);
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_AGGREGATION_SERVICE_AGGREGATION_SERVICE_FEATURES_H_

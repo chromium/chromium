@@ -24,7 +24,6 @@
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -40,7 +39,6 @@
 #include "components/aggregation_service/parsing_utils.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
-#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/proto/aggregatable_report.pb.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -779,29 +777,19 @@ AggregatableReportRequest::CreateInternal(
     return std::nullopt;
   }
 
-  if (base::FeatureList::IsEnabled(
-          kPrivacySandboxAggregationServiceFilteringIds)) {
-    if (payload_contents.filtering_id_max_bytes.has_value() &&
-        (*payload_contents.filtering_id_max_bytes <= 0 ||
-         *payload_contents.filtering_id_max_bytes >
-             AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes)) {
-      DVLOG(1) << "Value of filtering_id_max_bytes is out of range";
-      return std::nullopt;
-    }
+  if (payload_contents.filtering_id_max_bytes.has_value() &&
+      (*payload_contents.filtering_id_max_bytes <= 0 ||
+       *payload_contents.filtering_id_max_bytes >
+           AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes)) {
+    DVLOG(1) << "Value of filtering_id_max_bytes is out of range";
+    return std::nullopt;
+  }
 
     if (!FilteringIdsFitInMaxBytes(payload_contents.contributions,
                                    payload_contents.filtering_id_max_bytes)) {
       DVLOG(1) << "Filtering ID does not fit in filtering_id_max_bytes";
       return std::nullopt;
     }
-  } else {
-    // Ignore any values provided if the feature is disabled.
-    payload_contents.filtering_id_max_bytes.reset();
-    base::ranges::for_each(
-        payload_contents.contributions,
-        [](blink::mojom::AggregatableReportHistogramContribution&
-               contribution) { contribution.filtering_id.reset(); });
-  }
 
   // Ensure the ordering of urls is deterministic. This is required for
   // AggregatableReport construction later.

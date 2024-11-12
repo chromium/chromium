@@ -10,8 +10,4 @@ BASE_FEATURE(kPrivacySandboxAggregationService,
              "PrivacySandboxAggregationService",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivacySandboxAggregationServiceFilteringIds,
-             "PrivacySandboxAggregationServiceFilteringIds",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace content

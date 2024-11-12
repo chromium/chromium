@@ -51,7 +51,6 @@
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
@@ -453,8 +452,6 @@ RunAttributionInteropSimulation(
     enabled_features.emplace_back(
         attribution_reporting::features::
             kAttributionReportingAggregatableFilteringIds);
-    enabled_features.emplace_back(
-        kPrivacySandboxAggregationServiceFilteringIds);
   }
 
   if (run.config.needs_attribution_scopes) {

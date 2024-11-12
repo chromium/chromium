@@ -35,7 +35,6 @@
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
-#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
@@ -519,11 +518,8 @@ TEST_F(PrivateAggregationReportGoldenLatestVersionTest, VerifyGoldenReport) {
     // This reflects the logic in
     // `PrivateAggregationHost::ContributeToHistogram()` and is copied here to
     // avoid hitting a CHECK().
-    bool use_new_report_version =
-        base::FeatureList::IsEnabled(
-            blink::features::kPrivateAggregationApiFilteringIds) &&
-        base::FeatureList::IsEnabled(
-            kPrivacySandboxAggregationServiceFilteringIds);
+    bool use_new_report_version = base::FeatureList::IsEnabled(
+        blink::features::kPrivateAggregationApiFilteringIds);
     if (!use_new_report_version) {
       base::ranges::for_each(
           test_case.contributions,

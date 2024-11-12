@@ -32,7 +32,6 @@
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -455,19 +454,7 @@ TEST_F(AggregatableReportTest, AdditionalFieldsPresent_ValidReportReturned) {
       expected_additional_fields, std::move(hpke_keys)));
 }
 
-class AggregatableReportFilteringIdTest : public AggregatableReportTest {
- public:
-  void SetUp() override {
-    AggregatableReportTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        kPrivacySandboxAggregationServiceFilteringIds);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(AggregatableReportFilteringIdTest,
+TEST_F(AggregatableReportTest,
        FilteringIdMaxBytesSpecified_ValidReportReturned) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
@@ -496,8 +483,7 @@ TEST_F(AggregatableReportFilteringIdTest,
       /*expected_additional_fields=*/{}, std::move(hpke_keys)));
 }
 
-TEST_F(AggregatableReportFilteringIdTest,
-       FilteringIdsSpecified_ValidReportReturned) {
+TEST_F(AggregatableReportTest, FilteringIdsSpecified_ValidReportReturned) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
 
@@ -1145,7 +1131,7 @@ TEST_F(AggregatableReportTest, EmptyPayloads) {
   EXPECT_EQ(report_json_string, kExpectedJsonString);
 }
 
-TEST_F(AggregatableReportFilteringIdTest, FilteringIdMaxBytesNullopt) {
+TEST_F(AggregatableReportTest, FilteringIdMaxBytesNullopt) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
 
@@ -1174,7 +1160,7 @@ TEST_F(AggregatableReportFilteringIdTest, FilteringIdMaxBytesNullopt) {
                    .has_value());
 }
 
-TEST_F(AggregatableReportFilteringIdTest, FilteringIdMaxBytesMax) {
+TEST_F(AggregatableReportTest, FilteringIdMaxBytesMax) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
 
@@ -1208,7 +1194,7 @@ TEST_F(AggregatableReportFilteringIdTest, FilteringIdMaxBytesMax) {
   }
 }
 
-TEST_F(AggregatableReportFilteringIdTest, FilteringIdMaxBytesNotMax) {
+TEST_F(AggregatableReportTest, FilteringIdMaxBytesNotMax) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
 
@@ -1252,48 +1238,7 @@ TEST_F(AggregatableReportFilteringIdTest, FilteringIdMaxBytesNotMax) {
   }
 }
 
-TEST_F(AggregatableReportTest, FilteringIdsIgnoredIfFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      kPrivacySandboxAggregationServiceFilteringIds);
-
-  AggregatableReportRequest example_request =
-      aggregation_service::CreateExampleRequest();
-  AggregationServicePayloadContents payload_contents =
-      example_request.payload_contents();
-
-  // No matter what combination is used (even if typically invalid), the
-  // filtering IDs and max bytes should be ignored.
-  const struct {
-    std::optional<uint64_t> filtering_id;
-    std::optional<int> filtering_id_max_bytes;
-  } kTestCases[] = {
-      {std::nullopt, std::nullopt},
-      {0, std::nullopt},
-      {std::nullopt, 1},
-      {0, 1},
-      {std::numeric_limits<uint64_t>::max(), std::nullopt},
-      {std::numeric_limits<uint64_t>::max(), 1},
-      {std::nullopt, -1},
-      {std::nullopt,
-       AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes + 1}};
-
-  for (const auto& test_case : kTestCases) {
-    payload_contents.contributions[0].filtering_id = test_case.filtering_id;
-    payload_contents.filtering_id_max_bytes = test_case.filtering_id_max_bytes;
-
-    AggregatableReportRequest request =
-        AggregatableReportRequest::Create(payload_contents,
-                                          example_request.shared_info().Clone())
-            .value();
-
-    EXPECT_FALSE(request.payload_contents().filtering_id_max_bytes.has_value());
-    EXPECT_FALSE(
-        request.payload_contents().contributions[0].filtering_id.has_value());
-  }
-}
-
-TEST_F(AggregatableReportFilteringIdTest, FilteringIdMaxBytesTooSmall) {
+TEST_F(AggregatableReportTest, FilteringIdMaxBytesTooSmall) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
 
@@ -1310,7 +1255,7 @@ TEST_F(AggregatableReportFilteringIdTest, FilteringIdMaxBytesTooSmall) {
                    .has_value());
 }
 
-TEST_F(AggregatableReportFilteringIdTest, FilteringIdMaxBytesTooLarge) {
+TEST_F(AggregatableReportTest, FilteringIdMaxBytesTooLarge) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
 

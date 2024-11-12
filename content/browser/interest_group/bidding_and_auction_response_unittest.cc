@@ -12,7 +12,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1278,8 +1277,7 @@ TEST(BiddingAndAuctionResponseTest, BAndAPrivateAggregationDisabled) {
       /*enabled_features=*/
       {{blink::features::kPrivateAggregationApi,
         {{"enabled_in_fledge", "true"}}},
-       {blink::features::kPrivateAggregationApiFilteringIds, {}},
-       {kPrivacySandboxAggregationServiceFilteringIds, {}}},
+       {blink::features::kPrivateAggregationApiFilteringIds, {}}},
       /*disabled_features=*/{features::kEnableBandAPrivateAggregation});
 
   base::Value::Dict response = CreateResponseDictWithPAggResponse(
@@ -2053,7 +2051,6 @@ class BiddingAndAuctionPAggResponseTest : public testing::Test {
         {{blink::features::kPrivateAggregationApi,
           {{"enabled_in_fledge", "true"}}},
          {blink::features::kPrivateAggregationApiFilteringIds, {}},
-         {kPrivacySandboxAggregationServiceFilteringIds, {}},
          {features::kEnableBandAPrivateAggregation, {}}},
         /*disabled_features=*/{});
   }

@@ -30,7 +30,6 @@
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "components/aggregation_service/features.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
@@ -607,8 +606,8 @@ TEST_F(PrivateAggregationHostTest,
        TimeoutSetWithNonDefaultFilteringIdMaxBytes_Succeeds) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::kPrivateAggregationApiFilteringIds,
-                            kPrivacySandboxAggregationServiceFilteringIds},
+      /*enabled_features=*/{blink::features::
+                                kPrivateAggregationApiFilteringIds},
       /*disabled_features=*/{});
 
   const url::Origin kExampleOrigin =
@@ -852,8 +851,7 @@ TEST_F(PrivateAggregationHostTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{blink::features::kPrivateAggregationApiFilteringIds,
-                            kPrivateAggregationApiContributionMerging,
-                            kPrivacySandboxAggregationServiceFilteringIds},
+                            kPrivateAggregationApiContributionMerging},
       /*disabled_features=*/{});
 
   const url::Origin kExampleOrigin =
@@ -925,8 +923,8 @@ TEST_F(PrivateAggregationHostTest,
 TEST_F(PrivateAggregationHostTest, ContributionsNotMergedIfFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::kPrivateAggregationApiFilteringIds,
-                            kPrivacySandboxAggregationServiceFilteringIds},
+      /*enabled_features=*/{blink::features::
+                                kPrivateAggregationApiFilteringIds},
       /*disabled_features=*/{kPrivateAggregationApiContributionMerging});
 
   const url::Origin kExampleOrigin =
@@ -1163,8 +1161,7 @@ TEST_F(PrivateAggregationHostTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{blink::features::kPrivateAggregationApiFilteringIds,
-                            kPrivateAggregationApiContributionMerging,
-                            kPrivacySandboxAggregationServiceFilteringIds},
+                            kPrivateAggregationApiContributionMerging},
       /*disabled_features=*/{});
 
   const url::Origin kExampleOrigin =
@@ -1643,8 +1640,8 @@ TEST_F(PrivateAggregationHostTest, AggregationCoordinatorOrigin) {
 TEST_F(PrivateAggregationHostTest, FilteringIdMaxBytesValidated) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::kPrivateAggregationApiFilteringIds,
-                            kPrivacySandboxAggregationServiceFilteringIds},
+      /*enabled_features=*/{blink::features::
+                                kPrivateAggregationApiFilteringIds},
       /*disabled_features=*/{});
 
   const url::Origin kExampleOrigin =
@@ -1698,8 +1695,8 @@ TEST_F(PrivateAggregationHostTest, FilteringIdMaxBytesValidated) {
 TEST_F(PrivateAggregationHostTest, FilteringIdValidatedToFitInMaxBytes) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::kPrivateAggregationApiFilteringIds,
-                            kPrivacySandboxAggregationServiceFilteringIds},
+      /*enabled_features=*/{blink::features::
+                                kPrivateAggregationApiFilteringIds},
       /*disabled_features=*/{});
 
   const url::Origin kExampleOrigin =
