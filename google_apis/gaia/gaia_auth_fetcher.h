@@ -16,6 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -73,19 +74,6 @@ class SharedURLLoaderFactory;
 
 class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
  public:
-  struct COMPONENT_EXPORT(GOOGLE_APIS) MultiloginAccountAuthCredentials {
-    std::string gaia_id;
-    std::string token;
-    std::string token_binding_assertion;
-
-    MultiloginAccountAuthCredentials(std::string gaia_id,
-                                     std::string token,
-                                     std::string token_binding_assertion)
-        : gaia_id(std::move(gaia_id)),
-          token(std::move(token)),
-          token_binding_assertion(std::move(token_binding_assertion)) {}
-  };
-
   // This will later be hidden behind an auth service which caches tokens.
   GaiaAuthFetcher(
       GaiaAuthConsumer* consumer,
@@ -135,7 +123,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthFetcher {
   // Starts a request to get the cookie for list of accounts.
   void StartOAuthMultilogin(
       gaia::MultiloginMode mode,
-      const std::vector<MultiloginAccountAuthCredentials>& accounts,
+      const std::vector<gaia::MultiloginAccountAuthCredentials>& accounts,
       const std::string& external_cc_result);
 
   // Starts a request to list the accounts in the GAIA cookie.

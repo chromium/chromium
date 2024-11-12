@@ -425,4 +425,70 @@ TEST(GaiaAuthUtilTest, CreateBoundOAuthTokenEmpty) {
   EXPECT_EQ(actual, kExpected);
 }
 
+TEST(GaiaAuthUtilTest, CreateMultiOAuthHeader) {
+  // base64url encoded serialzed MultiOAuthHeader message with the following
+  // fields:
+  // {
+  //  "accountRequests": [
+  //   {
+  //    "gaiaId": "test_gaia_id",
+  //    "token": "test_token",
+  //    "tokenBindingAssertion": base64url("test_assertion")
+  //   }
+  //  ]
+  // }
+  const char kExpected[] =
+      "CioKDHRlc3RfZ2FpYV9pZBIKdGVzdF90b2tlbhoOdGVzdF9hc3NlcnRpb24";
+  std::string actual = CreateMultiOAuthHeader({MultiloginAccountAuthCredentials(
+      "test_gaia_id", "test_token", "test_assertion")});
+  EXPECT_EQ(actual, kExpected);
+}
+
+TEST(GaiaAuthUtilTest, CreateMultiOAuthHeaderMultipleRequests) {
+  // base64url encoded serialzed MultiOAuthHeader message with the following
+  // fields:
+  // {
+  //  "accountRequests": [
+  //   {
+  //    "gaiaId": "g1",
+  //    "token": "t1",
+  //    "tokenBindingAssertion": base64url("a1")
+  //   },
+  //   {
+  //    "gaiaId": "g2",
+  //    "token": "t2",
+  //   },
+  //   {
+  //    "gaiaId": "g3",
+  //    "token": "t3",
+  //    "tokenBindingAssertion": base64url("a3")
+  //   }
+  //  ]
+  // }
+  const char kExpected[] =
+      "CgwKAmcxEgJ0MRoCYTEKCAoCZzISAnQyCgwKAmczEgJ0MxoCYTM";
+  std::string actual = CreateMultiOAuthHeader(
+      {MultiloginAccountAuthCredentials("g1", "t1", "a1"),
+       MultiloginAccountAuthCredentials("g2", "t2", ""),
+       MultiloginAccountAuthCredentials("g3", "t3", "a3")});
+  EXPECT_EQ(actual, kExpected);
+}
+
+TEST(GaiaAuthUtilTest, CreateMultiOAuthHeaderEmpty) {
+  // base64url encoded serialzed MultiOAuthHeader message with the following
+  // fields:
+  // {
+  //  "accountRequests": [
+  //   {
+  //    "gaiaId": "",
+  //    "token": ""
+  //   }
+  //  ]
+  // }
+  const char kExpected[] = "CgQKABIA";
+  std::string actual =
+      CreateMultiOAuthHeader({MultiloginAccountAuthCredentials("", "", "")});
+  EXPECT_EQ(actual, kExpected);
+}
+
 }  // namespace gaia

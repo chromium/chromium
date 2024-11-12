@@ -165,8 +165,7 @@ GaiaAuthConsumer::ReAuthProofTokenStatus ErrorMessageToReAuthProofTokenStatus(
 }
 
 std::string CreateMultiBearerAuthorizationHeader(
-    const std::vector<GaiaAuthFetcher::MultiloginAccountAuthCredentials>&
-        accounts) {
+    const std::vector<gaia::MultiloginAccountAuthCredentials>& accounts) {
   std::vector<std::string> authorization_header_parts;
   for (const auto& account : accounts) {
     authorization_header_parts.push_back(base::StringPrintf(
@@ -179,26 +178,9 @@ std::string CreateMultiBearerAuthorizationHeader(
 }
 
 std::string CreateMultiOAuthAuthorizationHeader(
-    const std::vector<GaiaAuthFetcher::MultiloginAccountAuthCredentials>&
-        accounts) {
-  gaia::MultiOAuthHeader header;
-  for (const GaiaAuthFetcher::MultiloginAccountAuthCredentials& account :
-       accounts) {
-    gaia::MultiOAuthHeader::AccountRequest request;
-    request.set_gaia_id(account.gaia_id);
-    request.set_token(account.token);
-    if (!account.token_binding_assertion.empty()) {
-      request.set_token_binding_assertion(account.token_binding_assertion);
-    }
-    header.mutable_account_requests()->Add(std::move(request));
-  }
-
-  std::string base64_encoded_header;
-  base::Base64UrlEncode(header.SerializeAsString(),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &base64_encoded_header);
-
-  return base::StrCat({"Authorization: MultiOAuth ", base64_encoded_header});
+    const std::vector<gaia::MultiloginAccountAuthCredentials>& accounts) {
+  return base::StrCat(
+      {"Authorization: MultiOAuth ", gaia::CreateMultiOAuthHeader(accounts)});
 }
 
 }  // namespace
@@ -535,7 +517,7 @@ void GaiaAuthFetcher::StartListAccounts() {
 
 void GaiaAuthFetcher::StartOAuthMultilogin(
     gaia::MultiloginMode mode,
-    const std::vector<MultiloginAccountAuthCredentials>& accounts,
+    const std::vector<gaia::MultiloginAccountAuthCredentials>& accounts,
     const std::string& external_cc_result) {
   DCHECK(!fetch_pending_) << "Tried to fetch two things at once!";
 
@@ -543,7 +525,7 @@ void GaiaAuthFetcher::StartOAuthMultilogin(
                            accounts.size());
 
   bool has_binding_assertion = std::ranges::any_of(
-      accounts, [](const MultiloginAccountAuthCredentials& account) {
+      accounts, [](const gaia::MultiloginAccountAuthCredentials& account) {
         return !account.token_binding_assertion.empty();
       });
   std::string authorization_header =

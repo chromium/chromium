@@ -24,6 +24,7 @@
 #include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/bound_oauth_token.pb.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -76,26 +77,6 @@ std::string GetRequestBodyAsString(const network::ResourceRequest* request) {
     return "";
   }
   return std::string(elem.As<network::DataElementBytes>().AsStringPiece());
-}
-
-gaia::MultiOAuthHeader::AccountRequest CreateAccountRequestProto(
-    std::string_view gaia_id,
-    std::string_view token,
-    std::string_view token_binding_assertion) {
-  gaia::MultiOAuthHeader::AccountRequest request;
-  request.set_gaia_id(std::string(gaia_id));
-  request.set_token(std::string(token));
-  if (!token_binding_assertion.empty()) {
-    request.set_token_binding_assertion(std::string(token_binding_assertion));
-  }
-  return request;
-}
-
-std::string ToBase64(std::string_view input) {
-  std::string output;
-  base::Base64UrlEncode(input, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &output);
-  return output;
 }
 
 }  // namespace
@@ -376,7 +357,7 @@ TEST_F(GaiaAuthFetcherTest, StartAuthCodeForOAuth2TokenExchangeFailure) {
 TEST_F(GaiaAuthFetcherTest, MultiloginRequestFormat) {
   MockGaiaConsumer consumer;
   TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
-  std::vector<GaiaAuthFetcher::MultiloginAccountAuthCredentials> accounts;
+  std::vector<gaia::MultiloginAccountAuthCredentials> accounts;
   accounts.emplace_back("id1", "token1", "");
   accounts.emplace_back("id2", "token2", "");
   auth.StartOAuthMultilogin(
@@ -408,7 +389,7 @@ TEST_F(GaiaAuthFetcherTest, MultiloginRequestFormat) {
 TEST_F(GaiaAuthFetcherTest, MultiloginRequestMultiOAuthFormat) {
   MockGaiaConsumer consumer;
   TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
-  std::vector<GaiaAuthFetcher::MultiloginAccountAuthCredentials> accounts;
+  std::vector<gaia::MultiloginAccountAuthCredentials> accounts;
   accounts.emplace_back("id1", "token1", "assertion1");
   accounts.emplace_back("id2", "token2", "");
   accounts.emplace_back("id3", "token3", "assertion3");
@@ -417,18 +398,9 @@ TEST_F(GaiaAuthFetcherTest, MultiloginRequestMultiOAuthFormat) {
       "cc_result");
   ASSERT_TRUE(auth.HasPendingFetch());
 
-  gaia::MultiOAuthHeader multioauth_proto;
-  multioauth_proto.mutable_account_requests()->Add(
-      CreateAccountRequestProto("id1", "token1", "assertion1"));
-  multioauth_proto.mutable_account_requests()->Add(
-      CreateAccountRequestProto("id2", "token2", ""));
-  multioauth_proto.mutable_account_requests()->Add(
-      CreateAccountRequestProto("id3", "token3", "assertion3"));
-
-  EXPECT_THAT(
+  EXPECT_EQ(
       received_requests_[0].headers.GetHeader("Authorization"),
-      testing::Optional(base::StrCat(
-          {"MultiOAuth ", ToBase64(multioauth_proto.SerializeAsString())})));
+      base::StrCat({"MultiOAuth ", gaia::CreateMultiOAuthHeader(accounts)}));
 }
 
 TEST_F(GaiaAuthFetcherTest, MultiloginSuccess) {
@@ -441,8 +413,7 @@ TEST_F(GaiaAuthFetcherTest, MultiloginSuccess) {
   TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
   auth.StartOAuthMultilogin(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
-      std::vector<GaiaAuthFetcher::MultiloginAccountAuthCredentials>(),
-      std::string());
+      std::vector<gaia::MultiloginAccountAuthCredentials>(), std::string());
 
   EXPECT_TRUE(auth.HasPendingFetch());
   auth.TestOnURLLoadCompleteInternal(net::OK, net::HTTP_OK,
@@ -478,8 +449,7 @@ TEST_F(GaiaAuthFetcherTest, MultiloginFailureNetError) {
   TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
   auth.StartOAuthMultilogin(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
-      std::vector<GaiaAuthFetcher::MultiloginAccountAuthCredentials>(),
-      std::string());
+      std::vector<gaia::MultiloginAccountAuthCredentials>(), std::string());
 
   EXPECT_TRUE(auth.HasPendingFetch());
   auth.TestOnURLLoadCompleteInternal(net::ERR_ABORTED, net::HTTP_OK,
@@ -515,8 +485,7 @@ TEST_F(GaiaAuthFetcherTest, MultiloginFailureServerError) {
   TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
   auth.StartOAuthMultilogin(
       gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
-      std::vector<GaiaAuthFetcher::MultiloginAccountAuthCredentials>(),
-      std::string());
+      std::vector<gaia::MultiloginAccountAuthCredentials>(), std::string());
 
   EXPECT_TRUE(auth.HasPendingFetch());
   auth.TestOnURLLoadCompleteInternal(net::OK, net::HTTP_OK,

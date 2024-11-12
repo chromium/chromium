@@ -34,7 +34,7 @@ namespace {
 constexpr int kMaxFetcherRetries = 3;
 
 std::string FindTokenForAccount(
-    const std::vector<GaiaAuthFetcher::MultiloginAccountAuthCredentials>&
+    const std::vector<gaia::MultiloginAccountAuthCredentials>&
         multilogin_accounts,
     const std::string& gaia_id) {
   for (const auto& account : multilogin_accounts) {
