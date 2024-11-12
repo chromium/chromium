@@ -49,6 +49,7 @@ using testing::ElementsAre;
 using testing::ElementsAreArray;
 using testing::Field;
 using testing::InSequence;
+using testing::NiceMock;
 using testing::Pair;
 using testing::Pointwise;
 using testing::Return;
@@ -308,7 +309,7 @@ class PdfInkModuleTest : public testing::Test {
  private:
   base::test::ScopedFeatureList feature_list_{features::kPdfInk2};
 
-  FakeClient client_;
+  NiceMock<FakeClient> client_;
   PdfInkModule ink_module_{client_};
 };
 
