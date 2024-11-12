@@ -5904,6 +5904,15 @@
       ]
      ]
     },
+    "parts": {
+     "dom-parts-parseparts-crash.tentative.html": [
+      "e0f7782e23a183ee1a81af3b602ed0daf21c9158",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "svg-insert-crash.html": [
      "80eec1fba7ddc50db35fa53f7f4e72b59e6e31c7",
      [
@@ -7528,6 +7537,13 @@
        ],
        "dialog-not-in-tree-crash.html": [
         "fe3fab8ebb008c1bff270921c0f416def529729d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "dialog-remove-open-attr-crash.html": [
+        "15c93da3eb70b923ae7db53dc6dabaec28b18e9f",
         [
          null,
          {}
@@ -108270,6 +108286,19 @@
         [
          [
           "/css/css-contain/content-visibility/content-visibility-auto-svg-image-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-visibility-auto-svg-text.html": [
+       "93b570999fc7c0834575bbf0f8dc71417ee23c3a",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
           "=="
          ]
         ],
@@ -305472,14 +305501,6 @@
       "5963a852fcfbe1ff42cf4a936ae5bcff86bc7635",
       []
      ],
-     "derived_bits_length.https.any-expected.txt": [
-      "181703383a2f977e2e4cebe60d86dd505c1dbf26",
-      []
-     ],
-     "derived_bits_length.https.any.worker-expected.txt": [
-      "21228fb640dc74cf44a886ffb65e6e0d4126cf8e",
-      []
-     ],
      "derived_bits_length.js": [
       "5a7ed7eb50a0a0b683c1631b639be89b2e428a1c",
       []
@@ -305541,75 +305562,75 @@
       []
      ],
      "pbkdf2.https.any.worker_1-1000-expected.txt": [
-      "c451b7c3e6ed92183c669391ee38dd5af525fab3",
+      "9245ea78730757dc0339ec974f1bfecc6208bdf5",
       []
      ],
      "pbkdf2.https.any.worker_1001-2000-expected.txt": [
-      "665e13d17fff29624e1ae70ff274549f3b678490",
+      "518f1dc34b2c610b95b3af9f6bc00a80ccd37c67",
       []
      ],
      "pbkdf2.https.any.worker_2001-3000-expected.txt": [
-      "9b17ae0e464677b5e29f75fa9c3191cfc95a2fc9",
+      "04eb698fa0756380ea46b0ae14670dd22d33fb88",
       []
      ],
      "pbkdf2.https.any.worker_3001-4000-expected.txt": [
-      "e86efae0844f2c8d5cb2ecbddf19e4d0cd66404f",
+      "daffd296ab93b4d8eab4c9c9355cae8efed6e719",
       []
      ],
      "pbkdf2.https.any.worker_4001-5000-expected.txt": [
-      "d78a95a3b35c53919c1ab4e23fe3e2e9963ea71c",
+      "721329d2c4695d1ea3a7f44ab158414675927ff4",
       []
      ],
      "pbkdf2.https.any.worker_5001-6000-expected.txt": [
-      "4d0f1d952683718504c33b083f54bb3bcb41bb2e",
+      "1adfa4e616e76fbc3a15116c63771ad79de2640a",
       []
      ],
      "pbkdf2.https.any.worker_6001-7000-expected.txt": [
-      "d9b5707443830df19fbd1eadadfe8650f6205e4f",
+      "d9c1c7f54838ca5f9b441dadf957869e0af2a653",
       []
      ],
      "pbkdf2.https.any.worker_7001-8000-expected.txt": [
-      "b86e9cb737b17def3d27cd0d17e2367933aa20b9",
+      "c0a54e849562512cac53d8418d8ec7653c74542e",
       []
      ],
      "pbkdf2.https.any.worker_8001-last-expected.txt": [
-      "01ce9aeaf45df090a1fda507929ddc2c17c429a5",
+      "ecfbc7d75f3ccbfe7b16b8cc81350061b00d4c93",
       []
      ],
      "pbkdf2.https.any_1-1000-expected.txt": [
-      "c451b7c3e6ed92183c669391ee38dd5af525fab3",
+      "9245ea78730757dc0339ec974f1bfecc6208bdf5",
       []
      ],
      "pbkdf2.https.any_1001-2000-expected.txt": [
-      "665e13d17fff29624e1ae70ff274549f3b678490",
+      "518f1dc34b2c610b95b3af9f6bc00a80ccd37c67",
       []
      ],
      "pbkdf2.https.any_2001-3000-expected.txt": [
-      "9b17ae0e464677b5e29f75fa9c3191cfc95a2fc9",
+      "04eb698fa0756380ea46b0ae14670dd22d33fb88",
       []
      ],
      "pbkdf2.https.any_3001-4000-expected.txt": [
-      "e86efae0844f2c8d5cb2ecbddf19e4d0cd66404f",
+      "daffd296ab93b4d8eab4c9c9355cae8efed6e719",
       []
      ],
      "pbkdf2.https.any_4001-5000-expected.txt": [
-      "d78a95a3b35c53919c1ab4e23fe3e2e9963ea71c",
+      "721329d2c4695d1ea3a7f44ab158414675927ff4",
       []
      ],
      "pbkdf2.https.any_5001-6000-expected.txt": [
-      "4d0f1d952683718504c33b083f54bb3bcb41bb2e",
+      "1adfa4e616e76fbc3a15116c63771ad79de2640a",
       []
      ],
      "pbkdf2.https.any_6001-7000-expected.txt": [
-      "d9b5707443830df19fbd1eadadfe8650f6205e4f",
+      "d9c1c7f54838ca5f9b441dadf957869e0af2a653",
       []
      ],
      "pbkdf2.https.any_7001-8000-expected.txt": [
-      "b86e9cb737b17def3d27cd0d17e2367933aa20b9",
+      "c0a54e849562512cac53d8418d8ec7653c74542e",
       []
      ],
      "pbkdf2.https.any_8001-last-expected.txt": [
-      "01ce9aeaf45df090a1fda507929ddc2c17c429a5",
+      "ecfbc7d75f3ccbfe7b16b8cc81350061b00d4c93",
       []
      ],
      "pbkdf2.js": [
@@ -323187,6 +323208,10 @@
        "multiple-scroll-state-containers-comma-separated-queries-expected.txt": [
         "5a8bcda6e57f6754e255b365e440fa1d98db1209",
         []
+       ],
+       "scroll-state-query-with-var-expected.txt": [
+        "274eb4e67dcfa1495d2c751d258926c100e632e1",
+        []
        ]
       },
       "scrollbar-container-units-block-ref.html": [
@@ -323199,6 +323224,10 @@
       ],
       "size-container-with-quotes-ref.html": [
        "e1822fa544ec91a113eaa911f69243d767eaf5cc",
+       []
+      ],
+      "size-query-with-var-expected.txt": [
+       "274eb4e67dcfa1495d2c751d258926c100e632e1",
        []
       ],
       "style-query-no-cycle-expected.txt": [
@@ -365780,6 +365809,10 @@
      ],
      "basic-dom-part-declarative-brace-syntax.tentative-expected.txt": [
       "55de3686e939f25fa0a848fd4047d177a572598f",
+      []
+     ],
+     "dom-parts-parseparts-crash-002.tentative.html": [
+      "bd2a0b588ba7fc6337727e3a5cb44299412a34b4",
       []
      ],
      "resources": {
@@ -467958,6 +467991,13 @@
          {}
         ]
        ],
+       "scroll-state-query-with-var.html": [
+        "457b2612c1e7aeb768197f2c68b598d652a25f67",
+        [
+         null,
+         {}
+        ]
+       ],
        "scroll-state-snapped-change.html": [
         "5dfea29404f5cbdea1fa66b8a0240d2b5a4648ce",
         [
@@ -468068,6 +468108,13 @@
       ],
       "size-feature-evaluation.html": [
        "4ea81271fd23f335b31c9e6c057e736e76a44f63",
+       [
+        null,
+        {}
+       ]
+      ],
+      "size-query-with-var.html": [
+       "9ffb5fa5d83fcfd7b2fd13e199a4cd33f25efa93",
        [
         null,
         {}
