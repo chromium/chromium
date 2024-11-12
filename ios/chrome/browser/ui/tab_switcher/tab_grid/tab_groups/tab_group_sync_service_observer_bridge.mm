@@ -38,3 +38,10 @@ void TabGroupSyncServiceObserverBridge::OnTabGroupRemoved(
     tab_groups::TriggerSource source) {
   [delegate_ tabGroupSyncServiceSavedTabGroupRemoved:sync_id fromSource:source];
 }
+
+void TabGroupSyncServiceObserverBridge::OnTabGroupLocalIdChanged(
+    const base::Uuid& sync_id,
+    const std::optional<tab_groups::LocalTabGroupID>& local_id) {
+  [delegate_ tabGroupSyncServiceSavedTabGroupLocalIdChanged:sync_id
+                                                    localID:local_id];
+}

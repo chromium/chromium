@@ -292,6 +292,15 @@ NSString* CreationText(base::Time creation_date) {
   [self populateItemsFromService];
 }
 
+- (void)tabGroupSyncServiceSavedTabGroupLocalIdChanged:(const base::Uuid&)syncID
+                                               localID:
+                                                   (const std::optional<
+                                                       tab_groups::
+                                                           LocalTabGroupID>&)
+                                                       localID {
+  [self populateItemsFromService];
+}
+
 #pragma mark Private
 
 // Creates and send a tab grid toolbar configuration with button that should be
