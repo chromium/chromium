@@ -360,6 +360,7 @@
 <translation id="2589921777872778654">Меню змянення і выдалення</translation>
 <translation id="2597774443162333062">Файлы будуць адпраўлены ў Google на адладку</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Сканіраванне завершана. Адсканіравана 1 старонка.}one{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонка.}few{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонкі.}many{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонак.}other{Сканіраванне завершана. Адсканіравана {NUMBER_OF_PAGES} старонкі.}}</translation>
+<translation id="261322795497077164">Ідэнтыфікацыя прамоўцы</translation>
 <translation id="2617397783536231890">бавоўна</translation>
 <translation id="2618015542787108131">пясчаная дзюна</translation>
 <translation id="2619761439309613843">Штодзённае абнаўленне</translation>
@@ -440,6 +441,7 @@
 <translation id="3140130301071865159">снег</translation>
 <translation id="3146655726035122603">Эксклюзіўна для <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Мабільная перадача даных</translation>
+<translation id="3153094818810437149">Пазней можна змяніць выбар у наладах Дыктафона</translation>
 <translation id="3156511682997763015">Пераматаць на 10 секунд наперад</translation>
 <translation id="3156846309055100599">Сканіруецца старонка <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Выяўлены партал узаемадзеяння</translation>
@@ -562,6 +564,7 @@
 <translation id="3785643128701396311">піксельная графіка</translation>
 <translation id="3799381533888781854">Выключана. Гэта налада знаходзіцца пад кіраваннем адміністратара.</translation>
 <translation id="380097101658023925">Налады RGB</translation>
+<translation id="380493988330050229">Не ўдаецца стварыць зводку для гэтай мовы расшыфроўкі</translation>
 <translation id="38114475217616659">Ачысціць усю гісторыю</translation>
 <translation id="3820172043799983114">Несапраўдны PIN-код.</translation>
 <translation id="382043424867370667">Шпалеры "Захад сонца"</translation>
@@ -733,6 +736,7 @@
 <translation id="458794348635939462">Не ўдалося супаставіць усе хосты</translation>
 <translation id="4593212453765072419">Патрабуецца аўтэнтыфікацыя проксі-сервера</translation>
 <translation id="4594021849294327751">Ствараць расшыфроўку</translation>
+<translation id="4594541568452132351">Выберыце мову расшыфроўкі і спампуйце мадэль</translation>
 <translation id="4607282946861182308">Не ўдалося стварыць патрэбныя відарысы. Паспрабуйце выкарыстаць іншы запыт.</translation>
 <translation id="4609350030397390689">Паменшыць яркасць клавіятуры</translation>
 <translation id="4623061655523261501">Назвы запісаў створаны</translation>
@@ -1097,6 +1101,7 @@
 <translation id="6359919876285606596">Гэта дзеянне немагчыма адрабіць</translation>
 <translation id="6368342879959028556">Выбраўшы "Стварыць з дапамогай AI", напішыце свой запыт. Або націсніце "Шпалеры ад AI", каб выбраць тэму, а потым націсніце падкрэсленыя словы, каб персаналізаваць шпалеры ад AI.</translation>
 <translation id="636850387210749493">Рэгістрацыя для арганізацый</translation>
+<translation id="6369221585240879141">Не ўдаецца стварыць назвы запісаў для гэтай мовы расшыфроўкі</translation>
 <translation id="6373461326814131011">сажалка</translation>
 <translation id="6379086450106841622">Сэнсарны экран</translation>
 <translation id="6381741036071372448">Праверце клавіятуру</translation>
@@ -1270,6 +1275,7 @@
 <translation id="7130438335435247835">Назва пункта доступу (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер даменных імён}one{Серверы даменных імён}few{Серверы даменных імён}many{Серверы даменных імён}other{Серверы даменных імён}}</translation>
 <translation id="7135814714616751706">Пошук ярлыкоў</translation>
+<translation id="7138614237884624401">Спрошчаны тэкст</translation>
 <translation id="7141470099673912333">Перанос змесціва</translation>
 <translation id="7143207342074048698">Падключэнне</translation>
 <translation id="7144878232160441200">Паўтарыць</translation>
@@ -1689,6 +1695,7 @@
 <translation id="9100765901046053179">Дадатковыя налады</translation>
 <translation id="910415269708673980">Абнавіце білет для <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Сканіруецца старонка <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">Падчас запісу маўлення Дыктафон можа ствараць расшыфроўку. Далей вам трэба будзе выбраць мову расшыфроўкі і спампаваць мадэль (да 100 МБ).</translation>
 <translation id="9111102763498581341">Разблакіраваць</translation>
 <translation id="9122492456897874028">Атрымлівайце дапамогу з падсумаваннем змесціва, азначэннямі і іншым</translation>
 <translation id="9122602430962285795">Каб зноў падключыцца да сеткі, перайдзіце ў Налады</translation>

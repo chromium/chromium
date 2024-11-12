@@ -306,6 +306,7 @@
 <translation id="2308243864813041101">A frissítési folyamat folytatásához húzza ki a(z) <ph name="DEVICE_NAME" /> USB-kábelét</translation>
 <translation id="2320295602967756579">Világos téma bekapcsolása</translation>
 <translation id="2323506179655536734">KIHAGYVA</translation>
+<translation id="2323755382216917952">A frissítés telepítésének befejezéséhez újra kell indítania a számítógépét. A frissítés eltarthat néhány percig. A firmware frissítése közben ne húzza ki és ne állítsa le a számítógépet.</translation>
 <translation id="2324354238778375592">Lebegő</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Kiváló (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -448,6 +449,7 @@
 <translation id="3178532070248519384">avantgárd</translation>
 <translation id="3182676044300231689">Írjon be egy utasítást, például „legyen a szöveg magabiztosabb”.</translation>
 <translation id="3188257591659621405">Saját fájlok</translation>
+<translation id="3188931456353313123">Ezt a frissítést az eszköz gyártója biztosítja, és a Google nem ellenőrizte.</translation>
 <translation id="319101249942218879">Avatarkép módosítva</translation>
 <translation id="3192947282887913208">Audiofájlok</translation>
 <translation id="3199982728237701504">Dokumentumadagoló (kétoldalas)</translation>
@@ -505,6 +507,7 @@
 <translation id="3488065109653206955">Részben aktiválva</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> iroda <ph name="OFFICE_COLOR" /> tónusokkal</translation>
 <translation id="3493187369049186498">Az adatforgalmat a Chromebook méri. Az általa mért forgalom eltérhet a szolgáltató által mérttől.</translation>
+<translation id="349570724365779960">A School Tools össze van kapcsolva a tanulókkal</translation>
 <translation id="3502426834823382181">összes app megtekintése</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Teljesítménykövetési adatok<ph name="END_LINK1" /> elküldése</translation>
 <translation id="3517001332549868749">ChromeOS-frissítés</translation>
@@ -753,6 +756,7 @@
 <translation id="473775607612524610">Frissítés</translation>
 <translation id="4744944742468440486">A kiválasztott elemhez kapcsolódó információ</translation>
 <translation id="4771607256327216405">billentyűzet világosítása</translation>
+<translation id="4771923071974529837">holnap</translation>
 <translation id="4773299976671772492">Leállítva</translation>
 <translation id="4778082030331381943">ametiszt</translation>
 <translation id="4782311465517282004">A szövegre jobb egérgombbal kattintva, illetve a szöveget lenyomva tartva hozzáférhet a definíciókhoz, a fordításokhoz és az átváltott mértékegységekhez.</translation>
@@ -816,6 +820,7 @@
 <translation id="500920857929044050">Teszt leállítása</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Témaszín</translation>
+<translation id="5037240652947866174">ma</translation>
 <translation id="5038292761217083259">többszínű billentyűzet</translation>
 <translation id="5039804452771397117">Engedélyezés</translation>
 <translation id="5049856988445523908">SIM zárolva (<ph name="LOCK_TYPE" />)</translation>

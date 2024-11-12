@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">Сакријте транскрипт</translation>
 <translation id="160633243685262989">Преглед слике</translation>
 <translation id="1611649489706141841">кретање напред</translation>
+<translation id="1615144046047995187">Преузимање није успело. Пробајте поново или рестартујте Chromebook.</translation>
 <translation id="1615335640928990664">Потрошња података од <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Користите тему</translation>
 <translation id="1621067168122174824">Покрени тест пуњења</translation>
@@ -360,6 +361,7 @@
 <translation id="2589921777872778654">Мени за измене и брисање</translation>
 <translation id="2597774443162333062">Фајлови ће се послати Google-у ради отклањања грешака</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Скенирање је завршено. Скенирана је 1 страница}one{Скенирање је завршено. Скенирана је {NUMBER_OF_PAGES} страница}few{Скенирање је завршено. Скениране су {NUMBER_OF_PAGES} странице}other{Скенирање је завршено. Скенирано је {NUMBER_OF_PAGES} страница}}</translation>
+<translation id="261322795497077164">Идентификација говорника</translation>
 <translation id="2617397783536231890">памука</translation>
 <translation id="2618015542787108131">пешчана дина</translation>
 <translation id="2619761439309613843">Дневно освежавање</translation>
@@ -440,6 +442,7 @@
 <translation id="3140130301071865159">снегом</translation>
 <translation id="3146655726035122603">Ексклузивно за <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Мобилни подаци</translation>
+<translation id="3153094818810437149">То можете касније да промените у подешавањима Снимача звука</translation>
 <translation id="3156511682997763015">Премотај 10 секунди унапред</translation>
 <translation id="3156846309055100599">Скенира се <ph name="PAGE_NUMBER" />. страница...</translation>
 <translation id="315738237743207937">Откривен је улазни портал</translation>
@@ -562,6 +565,7 @@
 <translation id="3785643128701396311">пикселска графика</translation>
 <translation id="3799381533888781854">ИСКЉУЧЕНО – Овим подешавањем управља администратор.</translation>
 <translation id="380097101658023925">RGB контроле</translation>
+<translation id="380493988330050229">Прављење резимеа за овај језик транскрипта није успело</translation>
 <translation id="38114475217616659">Обриши сву историју</translation>
 <translation id="3820172043799983114">Неважећи PIN.</translation>
 <translation id="382043424867370667">Позадина са заласком сунца</translation>
@@ -585,6 +589,7 @@
 <translation id="3885327323343477505">Промените чувар екрана</translation>
 <translation id="3889914174935857450">Ресетуј датум</translation>
 <translation id="3897092660631435901">Мени</translation>
+<translation id="3902271751020176019">Језик транскрипције</translation>
 <translation id="391412459402535266">Тестирање уређаја није успело. Пређите на режим лаптопа да бисте га тестирали.</translation>
 <translation id="3916998944874125962">снимите екран</translation>
 <translation id="3923184630988645767">Потрошња података</translation>
@@ -733,6 +738,7 @@
 <translation id="458794348635939462">Разрешење свих хостова није успело</translation>
 <translation id="4593212453765072419">Потребна је потврда аутентичности проксија</translation>
 <translation id="4594021849294327751">Направи транскрипт</translation>
+<translation id="4594541568452132351">Изаберите језик транскрипције и модел преузимања</translation>
 <translation id="4607282946861182308">Не можемо да направимо слике на којима је ово. Пробајте са другим упитом.</translation>
 <translation id="4609350030397390689">Смањите осветљеност тастатуре</translation>
 <translation id="4623061655523261501">Имена за снимак су генерисана</translation>
@@ -937,6 +943,7 @@
 <translation id="5606865426897221650">Картица</translation>
 <translation id="5613201299517339763">Одјављени сте</translation>
 <translation id="5620281292257375798">Само интерно</translation>
+<translation id="5628106863521633649">Доступни језици</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">сажетак</translation>
 <translation id="5655283760733841251">Повећајте осветљеност тастатуре</translation>
@@ -1097,6 +1104,7 @@
 <translation id="6359919876285606596">Ова радња је трајна и не можете да је опозовете</translation>
 <translation id="6368342879959028556">Када изаберете Направи помоћу вештачке интелигенције, напишите прилагођени упит. Можете и да изаберете AI позадине да бисте одабрали тему, па да изаберете подвучене речи да бисте персонализовали AI позадину.</translation>
 <translation id="636850387210749493">Пријављивање за издање за предузећа</translation>
+<translation id="6369221585240879141">Прављење назива снимака за овај језик транскрипта није успело</translation>
 <translation id="6373461326814131011">Језерце</translation>
 <translation id="6379086450106841622">Додирни екран</translation>
 <translation id="6381741036071372448">Тестирајте тастатуру</translation>
@@ -1261,6 +1269,7 @@
 <translation id="710028965487274708">Неуспешно – овлашћење није успело</translation>
 <translation id="7101959270679078188">Откључајте уређај <ph name="DEVICE_NAME" /> да бисте наставили процес ажурирања</translation>
 <translation id="7103252855940681301"><ph name="INDEX" />. уређај од <ph name="COUNT" /> са називом <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Изабрани језик</translation>
 <translation id="7107255225945990211">Одаберите ексклузивне илустрације за <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7117228822971127758">Пробајте поново касније</translation>
@@ -1270,6 +1279,7 @@
 <translation id="7130438335435247835">Назив приступне тачке (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер имена}one{Сервери имена}few{Сервери имена}other{Сервери имена}}</translation>
 <translation id="7135814714616751706">Претражите пречице</translation>
+<translation id="7138614237884624401">Поједностављен текст</translation>
 <translation id="7141470099673912333">Пренос садржаја</translation>
 <translation id="7143207342074048698">Повезивање</translation>
 <translation id="7144878232160441200">Пробај поново</translation>
@@ -1691,6 +1701,7 @@
 <translation id="9100765901046053179">Напредна подешавања</translation>
 <translation id="910415269708673980">Освежите тикет за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Скенира се <ph name="PAGE_NUMBER" />. страница</translation>
+<translation id="9108856746036501072">Снимач звука може да прави транскрипције за снимке са говором. У следећем кораку треба да изаберете језик транскрипције и да преузмете модел (до 100 MB).</translation>
 <translation id="9111102763498581341">Откључај</translation>
 <translation id="9122492456897874028">Генеришите резиме садржаја, добијајте дефиниције и друго</translation>
 <translation id="9122602430962285795">Да бисте се поново повезали, идите у Подешавања</translation>

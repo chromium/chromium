@@ -493,6 +493,7 @@ La política independiente <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> puede usarse
 
       Nota: Puedes consultar más ejemplos detallados en The Chromium Projects: https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett.</translation>
 <translation id="1354280967938151061">Inhabilitar ARC</translation>
+<translation id="1354349503792572661">Fuerza que se permita la ejecución de Native Client (NaCl) en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="1354424209129232709">Máximo:</translation>
 <translation id="1355050231181289439"> Esta política controla si la asignación de combinaciones de teclas internacionales mejoradas está activada.
       Esta función se asegura de que las combinaciones de teclas funcionen de forma coherente con las distribuciones de teclado internacionales y desasiste las combinaciones de teclas antiguas.
@@ -4737,6 +4738,7 @@ Si esta política y la política PostQuantumKeyAgreementEnabled se establecen, e
       Si se inhabilita esta política o no se establece, los sitios no tendrán permiso para abrir nuevas ventanas/pestañas y desplazarse por ellas simultáneamente.</translation>
 <translation id="4572577129745420844">No permitir que los usuarios añadan cuentas de Kerberos</translation>
 <translation id="457430673056611745">Política de configuración del conector OnPrint de <ph name="PRODUCT_NAME" /> Enterprise</translation>
+<translation id="4575789820705765299">Permite el uso de la API Translator</translation>
 <translation id="4576760454200781316">Cuando se habilita, la función <ph name="PRODUCT_NAME" /> hace que los temporizadores de JavaScript de las pestañas que están en segundo plano se limiten considerablemente y se fusionen. Se ejecutan como máximo una vez por minuto después de que una página haya estado en segundo plano durante 5 minutos o más.
 
           Esta función cumple los estándares web, pero es posible que afecte a la funcionalidad
@@ -7826,6 +7828,8 @@ En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.
 
       Si se le asigna el valor "false" a esta política o no se le asigna ninguno, <ph name="PLUGIN_VM_NAME" /> no estará habilitado para el usuario.
       Si se le asigna el valor "true", <ph name="PLUGIN_VM_NAME" /> estará habilitado para el usuario (si los demás ajustes lo permiten). A <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> y <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> se les debe haber asignado el valor "true", y <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> deben haberse configurado para que <ph name="PLUGIN_VM_NAME" /> pueda ejecutarse.</translation>
+<translation id="6741318452269220158">Si se asigna el valor True a esta política, Native Client podrá seguir ejecutándose aunque el comportamiento predeterminado sea que Native Client esté inhabilitado.
+Si se asigna el valor False a esta política o no se define, se usará el comportamiento predeterminado.</translation>
 <translation id="6749641778238480311">Permitir que se llame a las APIs subApps sin ningún gesto previo del usuario ni requerir la confirmación del usuario.</translation>
 <translation id="6750902920405577210">Lista de datos de telemetría que deben registrarse en los eventos de cambio de intensidad de la señal.
 
@@ -9860,6 +9864,17 @@ Para obtener más información sobre las tecnologías antiguas, consulta la pág
           Si no se establece esta política, el comportamiento de las políticas más específicas no se verá afectado.</translation>
 <translation id="8350643689940867542">Inhabilitar informes de datos sobre políticas</translation>
 <translation id="835283681355955417">Proporcionar información sobre periféricos</translation>
+<translation id="8354001669131263433">A partir de la versión M132, se eliminará esta política, junto con las APIs de pantalla completa específicas de vídeo con prefijo.
+
+Si se asigna el valor <ph name="ENABLED_VALUE_NAME" /> a esta política, las APIs de pantalla completa específicas de vídeo con prefijo (por ejemplo, Video.webkitEnterFullscreen()) se podrán usar desde JavaScript.
+
+Si se asigna el valor <ph name="DISABLED_VALUE_NAME" /> a esta política, se evitará que las APIs de pantalla completa específicas de vídeo con prefijo se utilicen en JavaScript, dejando solo las APIs de pantalla completa estándar (por ejemplo, Element.requestFullscreen()).
+
+Si se asigna el valor <ph name="RUNTIME_ENABLED_VALUE_NAME" /> a esta política, la marca de función con tiempo de ejecución activado de prefixedFullscreenVideo podrá determinar si las APIs de pantalla completa específicas de vídeo con prefijo están disponibles para sitios web.
+
+Si no se define esta política, el comportamiento predeterminado será <ph name="RUNTIME_ENABLED_VALUE_NAME" />.
+
+Nota: Esta política es una solución temporal para dejar de usar las APIs de pantalla completa con prefijo webkit. M131 es la última versión que tendrá esta política.</translation>
 <translation id="8356953698979920095">Si se le asigna un valor a la política, se establecerá como color predeterminado para la retroiluminación del teclado del dispositivo durante el inicio de sesión de usuario.</translation>
 <translation id="8357681633047935212">Limitar la duración de la sesión de un usuario</translation>
 <translation id="8357989008292691856">Lista de usuarios con permiso para iniciar sesión</translation>

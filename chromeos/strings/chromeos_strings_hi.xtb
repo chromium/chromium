@@ -306,6 +306,7 @@
 <translation id="2308243864813041101">अपडेट की प्रोसेस जारी रखने के लिए, <ph name="DEVICE_NAME" /> का यूएसबी केबल हटाएं</translation>
 <translation id="2320295602967756579">हल्के रंग वाली थीम चालू करें</translation>
 <translation id="2323506179655536734">छोड़ दिया गया</translation>
+<translation id="2323755382216917952">इस अपडेट का इंस्टॉलेशन पूरा करने के लिए, कंप्यूटर को रीस्टार्ट करना होगा. इस अपडेट को पूरा होने में कुछ मिनट लग सकते हैं. फ़र्मवेयर के अपडेट होने तक, अपने कंप्यूटर को अनप्लग या शट डाउन न करें.</translation>
 <translation id="2324354238778375592">फ़्लोट</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> डीपीआई</translation>
 <translation id="2346474577291266260">सिग्नल बहुत अच्छा है (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -448,6 +449,7 @@
 <translation id="3178532070248519384">अवांत-गार्द</translation>
 <translation id="3182676044300231689">"इसे बदलकर बेहतर बनाओ" जैसा कोई प्रॉम्प्ट डालें</translation>
 <translation id="3188257591659621405">मेरी फ़ाइलें</translation>
+<translation id="3188931456353313123">यह अपडेट, डिवाइस बनाने वाली कंपनी ने उपलब्ध कराया है और Google ने इसकी पुष्टि नहीं की है.</translation>
 <translation id="319101249942218879">अवतार इमेज बदली गई</translation>
 <translation id="3192947282887913208">ऑडियो फ़ाइलें</translation>
 <translation id="3199982728237701504">डॉक्यूमेंट फ़ीडर (दो तरफ़ वाला)</translation>
@@ -505,6 +507,7 @@
 <translation id="3488065109653206955">आंशिक रूप से सक्रिय किया गया</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> टोन के साथ <ph name="OFFICE_STYLE" /> ऑफ़िस</translation>
 <translation id="3493187369049186498">डेटा का हिसाब Chromebook से लगाया जाता है. सेवा देने वाली कंपनी के डेटा से यह अलग हो सकता है.</translation>
+<translation id="349570724365779960">छात्र-छात्राएं, स्कूल टूल वाले सेशन से कनेक्ट हैं</translation>
 <translation id="3502426834823382181">सभी ऐप्लिकेशन देखें</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />परफ़ॉर्मेंस ट्रेस डेटा<ph name="END_LINK1" /> भेजें</translation>
 <translation id="3517001332549868749">ChromeOS का अपडेट</translation>
@@ -753,6 +756,7 @@
 <translation id="473775607612524610">अपडेट करें</translation>
 <translation id="4744944742468440486">आपके चुने गए कॉन्टेंट से जुड़ी जानकारी</translation>
 <translation id="4771607256327216405">कीबोर्ड की रोशनी बढ़ाएं</translation>
+<translation id="4771923071974529837">कल</translation>
 <translation id="4773299976671772492">रोक दिया गया</translation>
 <translation id="4778082030331381943">ऐमेथिस्ट</translation>
 <translation id="4782311465517282004">परिभाषाएं, अनुवाद या यूनिट कन्वर्ज़न जानने के लिए, टेक्स्ट को दबाकर रखें या उस पर राइट क्लिक करें</translation>
@@ -816,6 +820,7 @@
 <translation id="500920857929044050">टेस्ट बंद करें</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">थीम का रंग</translation>
+<translation id="5037240652947866174">आज</translation>
 <translation id="5038292761217083259">कीबोर्ड की रोशनी के लिए एक से ज़्यादा रंग</translation>
 <translation id="5039804452771397117">अनुमति दें</translation>
 <translation id="5049856988445523908">सिम लॉक है (<ph name="LOCK_TYPE" />)</translation>

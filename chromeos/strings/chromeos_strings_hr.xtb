@@ -360,6 +360,7 @@
 <translation id="2589921777872778654">Izbornik za uređivanje i brisanje</translation>
 <translation id="2597774443162333062">Datoteke će se poslati Googleu radi uklanjanja pogrešaka</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skeniranje je dovršeno. Skenirana je jedna stranica}one{Skeniranje je dovršeno. Skenirana je {NUMBER_OF_PAGES} stranica}few{Skeniranje je dovršeno. Skenirane su {NUMBER_OF_PAGES} stranice}other{Skeniranje je dovršeno. Skenirano je {NUMBER_OF_PAGES} stranica}}</translation>
+<translation id="261322795497077164">Identifikacija govornika</translation>
 <translation id="2617397783536231890">pamuka</translation>
 <translation id="2618015542787108131">pješčane dine</translation>
 <translation id="2619761439309613843">Dnevno osvježavanje</translation>
@@ -440,6 +441,7 @@
 <translation id="3140130301071865159">snijeg</translation>
 <translation id="3146655726035122603">Ekskluzivno za <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobilni podaci</translation>
+<translation id="3153094818810437149">To možete promijeniti poslije u postavkama Snimača</translation>
 <translation id="3156511682997763015">10 sekundi unaprijed</translation>
 <translation id="3156846309055100599">Skeniranje stranice <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Otkriven je zaštitni portal</translation>
@@ -562,6 +564,7 @@
 <translation id="3785643128701396311">pikselna umjetnost</translation>
 <translation id="3799381533888781854">ISKLJUČENO – Ovom postavkom upravlja vaš administrator.</translation>
 <translation id="380097101658023925">kontrole rgb</translation>
+<translation id="380493988330050229">Izrada sažetka za taj jezik prijepisa nije uspjela</translation>
 <translation id="38114475217616659">Izbriši svu povijest</translation>
 <translation id="3820172043799983114">PIN nije važeći.</translation>
 <translation id="382043424867370667">Pozadina s pogledom na zalazak sunca</translation>
@@ -733,6 +736,7 @@
 <translation id="458794348635939462">Razrješavanje svih hostova nije uspjelo</translation>
 <translation id="4593212453765072419">Potrebna je autentifikacija proxy poslužitelja</translation>
 <translation id="4594021849294327751">Izradi prijepis</translation>
+<translation id="4594541568452132351">Odaberite jezik prijepisa i preuzmite model</translation>
 <translation id="4607282946861182308">Ne mogu se izraditi slike tog sadržaja. Isprobajte drugi prompt.</translation>
 <translation id="4609350030397390689">Smanjivanje svjetline tipkovnice</translation>
 <translation id="4623061655523261501">Nazivi snimki uspješno su generirani</translation>
@@ -1097,6 +1101,7 @@
 <translation id="6359919876285606596">Ta je radnja trajna i ne može se poništiti</translation>
 <translation id="6368342879959028556">Kad odaberete Izradite pomoću AI-ja, napišite prilagođeni upit. Možete odabrati i opciju AI pozadine da biste odabrali temu, a zatim podcrtane riječi kako biste personalizirali svoju AI pozadinu.</translation>
 <translation id="636850387210749493">Prijava poduzeća</translation>
+<translation id="6369221585240879141">Izrada naziva snimki za taj jezik prijepisa nije uspjela</translation>
 <translation id="6373461326814131011">jezero</translation>
 <translation id="6379086450106841622">Dodirni zaslon</translation>
 <translation id="6381741036071372448">Testirajte tipkovnicu</translation>
@@ -1270,6 +1275,7 @@
 <translation id="7130438335435247835">Pristupna točka (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Poslužitelj naziva}one{Poslužitelji naziva}few{Poslužitelji naziva}other{Poslužitelji naziva}}</translation>
 <translation id="7135814714616751706">Pretražite prečace</translation>
+<translation id="7138614237884624401">Pojednostavljeni tekst</translation>
 <translation id="7141470099673912333">Prijenos sadržaja</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144878232160441200">Pokušaj ponovno</translation>
@@ -1691,6 +1697,7 @@ Da biste dobili te prijepise, preuzmite model prijepisa (do 100 MB).</translati
 <translation id="9100765901046053179">Napredne postavke</translation>
 <translation id="910415269708673980">Osvježite tiket za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skeniranje stranice <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">Snimač može izrađivati prijepise za snimke s govorom. U sljedećem koraku trebate odabrati jezik prijepisa i preuzeti model (do 100 MB).</translation>
 <translation id="9111102763498581341">Otključaj</translation>
 <translation id="9122492456897874028">Sažimajte sadržaj, saznajte definicije i drugo</translation>
 <translation id="9122602430962285795">Da biste se povezali ponovo, otvorite postavke</translation>

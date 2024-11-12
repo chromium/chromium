@@ -318,6 +318,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1206832039833782423">Your security code is on the back of your card</translation>
 <translation id="1208339823324516598">{GROUP_COUNT,plural, =1{Delete group}other{Delete groups}}</translation>
 <translation id="1208392090861059168">Current schedule is set to <ph name="SUNRISE" /> – <ph name="SUNSET" />. To automatically update the sunset and sunrise schedule, <ph name="BEGIN_LINK" />turn on system location access<ph name="END_LINK" />.</translation>
+<translation id="1210376751550516429">Choose an audio output device</translation>
 <translation id="1210678701920254279">View or add printers and see active print jobs</translation>
 <translation id="1211769675100312947">Shortcuts are curated by you</translation>
 <translation id="1213254615020057352">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. The owner may choose to send diagnostic and usage data for this device to Google. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account.</translation>
@@ -402,6 +403,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1264083566674525434">Edit site permissions</translation>
 <translation id="1264337193001759725">To view network UI logs, see: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1264956950255940376">Squint left eye</translation>
+<translation id="1265094893042958831">Generating suggestions for this page…</translation>
 <translation id="1265279736024499987">Your apps and settings will sync across all Chrome OS Flex devices where you are signed in with your Google Account. For browser sync options, go to <ph name="LINK_BEGIN" />Chrome settings<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Translation language:</translation>
 <translation id="1267649802567297774">Generated image <ph name="INDEX" /> of <ph name="SUBJECT" />, in <ph name="STYLE" /> style, with <ph name="MOOD" /> mood.</translation>
@@ -1231,7 +1233,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1832848789136765277">To make sure that you can always access your sync data, verify that it's you</translation>
 <translation id="1834503245783133039">Download unsuccessful: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Upgrading Linux</translation>
-<translation id="1835612721186505600">Allow access for apps and websites with the camera permission</translation>
 <translation id="1837441256780906162">Microsoft OneDrive rejected the request. Please try again later.</translation>
 <translation id="1838374766361614909">Clear search</translation>
 <translation id="1839021455997460752">Your email address</translation>
@@ -2676,7 +2677,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2822634587701817431">Shrink/Expand</translation>
 <translation id="2822910719211888134">Error while backing up Linux</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> is using proxy settings from your administrator</translation>
-<translation id="2825151610926840364">Allow access for apps and websites with the camera permission. To use the camera, you may need to restart the app or refresh the page.</translation>
 <translation id="2825758591930162672">Subject's Public Key</translation>
 <translation id="2826576843404243001">For sites that don't support secure connections, get warned before visiting the site. You can't change this setting because you have Advanced Protection enabled.</translation>
 <translation id="2828375943530438449">Back from sign in</translation>
@@ -4410,6 +4410,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4047345532928475040">N/A</translation>
 <translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Go home</translation>
+<translation id="4048295959689903187">Select audio output</translation>
 <translation id="4048384495227695211">Show <ph name="FILE_NAME" /> in folder</translation>
 <translation id="404894744863342743">After you've finished using the downloaded file, delete it so that others who use this device can't see your passwords.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# contact is not available. To use Nearby Share with them, add the email address associated with their Google Account to your contacts.}other{# contacts are not available. To use Nearby Share with them, add the email addresses associated with their Google Accounts to your contacts.}}</translation>
@@ -5315,6 +5316,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4730492586225682674">Stylus latest note on lock screen</translation>
 <translation id="4730888769809690665">Notifications allowed for <ph name="SITE" /></translation>
 <translation id="4731306954230393087">Allowed to use info they've saved about you</translation>
+<translation id="4732799736617504962">The connected mic can only support noise cancellation</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (left)</translation>
 <translation id="4733793249294335256">Location</translation>
 <translation id="473546211690256853">This account is managed by <ph name="DOMAIN" /></translation>
@@ -5387,6 +5389,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4789348252524569426">Can't install speech files. Your device needs to be updated. Restart your device and try again.</translation>
 <translation id="4789550509729954245">Show notification when devices are sharing nearby</translation>
 <translation id="4791037424585594169">(UDP)</translation>
+<translation id="4791200512372376561">No suggestions available. Try asking things like 'summarise this page' or your own question.</translation>
 <translation id="4791793693640849493">Save items in account</translation>
 <translation id="4792290259143007505">Enable TrackPoint acceleration</translation>
 <translation id="4792711294155034829">&amp;Report an Issue...</translation>
@@ -6069,6 +6072,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5276357196618041410">Cannot save configuration without login first</translation>
 <translation id="5277127016695466621">Show side panel</translation>
 <translation id="5278823018825269962">Status ID</translation>
+<translation id="5279214046729249716">Yes, keep it separate</translation>
 <translation id="5279600392753459966">Block all</translation>
 <translation id="5280064835262749532">Update credentials for <ph name="SHARE_PATH" /></translation>
 <translation id="5280335021886535443">Press |<ph name="ACCELERATOR" />| to focus this bubble.</translation>
@@ -9256,7 +9260,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7610337976012700501">To use <ph name="FEATURE_NAME" /> with these contacts, add the email address linked with their Google Account to your contacts.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">All extensions</translation>
-<translation id="7612401678989660900">Allow access for apps and websites with the microphone permission</translation>
 <translation id="7612497353238585898">Active site</translation>
 <translation id="7612655942094160088">Connected phone features enable.</translation>
 <translation id="7612989789287281429">Signing you in…</translation>

@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">Amaga la transcripció</translation>
 <translation id="160633243685262989">Previsualitza la imatge</translation>
 <translation id="1611649489706141841">avança</translation>
+<translation id="1615144046047995187">No es pot baixar. Torna-ho a provar o reinicia el Chromebook.</translation>
 <translation id="1615335640928990664">Ús de dades des de <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Utilitza un tema</translation>
 <translation id="1621067168122174824">Executa la prova de càrrega</translation>
@@ -585,6 +586,7 @@
 <translation id="3885327323343477505">Canvia l'estalvi de pantalla</translation>
 <translation id="3889914174935857450">Data de restabliment</translation>
 <translation id="3897092660631435901">Menú</translation>
+<translation id="3902271751020176019">Idioma de transcripció</translation>
 <translation id="391412459402535266">No es pot provar el dispositiu. Canvia al mode de portàtil per fer la prova.</translation>
 <translation id="3916998944874125962">fes una captura de pantalla</translation>
 <translation id="3923184630988645767">Ús de dades</translation>
@@ -937,6 +939,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">S'ha tancat la teva sessió</translation>
 <translation id="5620281292257375798">Només intern</translation>
+<translation id="5628106863521633649">Idiomes disponibles</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">resum</translation>
 <translation id="5655283760733841251">Augmenta la brillantor del teclat</translation>
@@ -1261,6 +1264,7 @@
 <translation id="710028965487274708">Error: s'ha produït un error en l'autorització</translation>
 <translation id="7101959270679078188">Desbloqueja el <ph name="DEVICE_NAME" /> per continuar amb el procés d'actualització</translation>
 <translation id="7103252855940681301">Dispositiu <ph name="INDEX" /> de <ph name="COUNT" />, anomenat <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Idioma seleccionat</translation>
 <translation id="7107255225945990211">Tria obres d'art exclusives de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">retorn</translation>
 <translation id="7117228822971127758">Torna-ho a provar més tard</translation>

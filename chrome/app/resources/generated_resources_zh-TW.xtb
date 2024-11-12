@@ -1222,7 +1222,6 @@
 <translation id="1832848789136765277">為確保你可以隨時存取同步處理的資料，請驗證你的身分</translation>
 <translation id="1834503245783133039">下載失敗：<ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">正在升級 Linux</translation>
-<translation id="1835612721186505600">允許應用程式和網站存取相機</translation>
 <translation id="1837441256780906162">Microsoft OneDrive 已拒絕要求，請稍後再試。</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
 <translation id="1839021455997460752">你的電子郵件地址</translation>
@@ -2663,7 +2662,6 @@
 <translation id="2822634587701817431">縮小/展開</translation>
 <translation id="2822910719211888134">備份 Linux 時發生錯誤</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> 正在使用系統管理員的 Proxy 設定</translation>
-<translation id="2825151610926840364">允許擁有攝影機權限的應用程式和網站存取。如要使用攝影機，可能要重新啟動應用程式或重新整理頁面。</translation>
 <translation id="2825758591930162672">主體的公開金鑰</translation>
 <translation id="2826576843404243001">如果網站不支援安全連線，系統會在造訪前發出警告。由於「進階保護」已啟用，因此你無法變更這項設定。</translation>
 <translation id="2828375943530438449">從「登入」頁面返回</translation>
@@ -9232,7 +9230,6 @@
 <translation id="7610337976012700501">如要與這些聯絡人使用<ph name="FEATURE_NAME" />功能，請將對方用來連結 Google 帳戶的電子郵件地址，加到聯絡人清單。</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612050744024016345">所有擴充功能</translation>
-<translation id="7612401678989660900">允許應用程式和網站存取麥克風</translation>
 <translation id="7612497353238585898">使用中的網站</translation>
 <translation id="7612655942094160088">啟用已連結的手機功能。</translation>
 <translation id="7612989789287281429">正在登入…</translation>

@@ -300,6 +300,7 @@
 <translation id="1197088940767939838">नारंगी</translation>
 <translation id="11978075283960463">ऐप्लिकेशन में सेव डेटा का साइज़: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">कम दृष्टि वाले लोगों के लिए, टेक्स्ट को बोली में बदलने वाले टूल से जुड़ी सेटिंग पर जाएं</translation>
+<translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> ने “<ph name="WEBSITE_TITLE" />” टैब हटा दिया है</translation>
 <translation id="119944043368869598">सारा डेटा मिटाएं</translation>
 <translation id="1199814941632954229">प्रमाणपत्र की इन प्रोफ़ाइलों के लिए, प्रमाणपत्रों का इस्तेमाल किया जा रहा है</translation>
 <translation id="120069043972472860">न देखे जाने लायक</translation>
@@ -1006,6 +1007,7 @@
 <translation id="1692210323591458290">गहरा बैंगनी</translation>
 <translation id="1692713444215319269">रंग बदलने की सुविधा, ज़ूम करने की सुविधा, और डिसप्ले की सेटिंग</translation>
 <translation id="169341880170235617">टैब ग्रुप अपने-आप सेव हो जाते हैं</translation>
+<translation id="1694470329618537745">इस ग्रुप से जुड़े हाल ही के अपडेट</translation>
 <translation id="1695487653372841667">Google के साथ किस जानकारी को शेयर किया जाए और किसे नहीं, यह तय करने का विकल्प आपके पास होता है. सेटिंग में जाकर, इसे कभी भी बदला जा सकता है.</translation>
 <translation id="1695510246756136088">इंटरनेट से कनेक्ट नहीं हो सका. फिर से कोशिश करें.</translation>
 <translation id="1696555181932908973"><ph name="SITE_ETLD_PLUS_ONE" /> पर जारी रखने के लिए, दूसरे तरीके आज़माए जा सकते हैं.</translation>
@@ -1224,7 +1226,6 @@
 <translation id="1832848789136765277">यह पक्का करने के लिए कि आप हमेशा अपना सिंक किया हुआ डेटा ऐक्सेस कर सकें, अपनी पहचान की पुष्टि करें</translation>
 <translation id="1834503245783133039">फ़ाइल डाउनलोड नहीं हो सकी: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux को बेहतर बनाया जा रहा है</translation>
-<translation id="1835612721186505600">ऐसे सभी ऐप्लिकेशन और वेबसाइटों को कैमरे का ऐक्सेस दें जिनके पास कैमरा इस्तेमाल करने की अनुमति है</translation>
 <translation id="1837441256780906162">Microsoft OneDrive ने अनुरोध अस्वीकार कर दिया. कृपया बाद में कोशिश करें.</translation>
 <translation id="1838374766361614909">खोज साफ़ करें</translation>
 <translation id="1839021455997460752">आपका ईमेल पता</translation>
@@ -2404,6 +2405,7 @@
 <translation id="2653659639078652383">सबमिट करें</translation>
 <translation id="265390580714150011">फ़ील्ड मान</translation>
 <translation id="2654553774144920065">प्रिंट करने का अनुरोध</translation>
+<translation id="265680054508313161"><ph name="USERNAME" /> के तौर पर जारी रखें</translation>
 <translation id="265748523151262387">अपने फ़ोन के ज़रिए कनेक्ट रहें</translation>
 <translation id="2657612187216250073">पॉइंटर से जुड़ी सुलभता सेटिंग</translation>
 <translation id="2658510146844889864">पासकी और सुरक्षा कुंजियां</translation>
@@ -2558,6 +2560,7 @@
 <translation id="2754825024506485820">Google Play Store पर, उत्पादकता से लेकर मनोरंजन तक, अपनी ज़रूरत के हिसाब से ऐप्लिकेशन खोजें. किसी भी समय ऐप्लिकेशन को इंस्टॉल किया जा सकता है.</translation>
 <translation id="2755349111255270002">इस <ph name="DEVICE_TYPE" /> को रीसेट करें</translation>
 <translation id="2755367719610958252">सुलभता सुविधाएं प्रबंधित करें</translation>
+<translation id="2755485474385016903">कोई भी बदलाव करने पर, उसे ग्रुप में मौजूद सभी लोग देख सकते हैं</translation>
 <translation id="275662540872599901">स्क्रीन बंद है</translation>
 <translation id="2756936198272359372">JavaScript इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="2757161511365746634">प्रिंटर देखें</translation>
@@ -2568,6 +2571,7 @@
 <translation id="2764920001292228569">कोई प्रोफ़ाइल नाम डालें</translation>
 <translation id="2765100602267695013">कृपया मोबाइल सेवा देने वाली कंपनी से संपर्क करें</translation>
 <translation id="2765217105034171413">छोटा</translation>
+<translation id="2765349783094807040"><ph name="MEMBER_FIRST_NAME" /> ने एक टैब हटा दिया है</translation>
 <translation id="2765820627968019645">हल्के रंग वाला मोड</translation>
 <translation id="276582196519778359">माता-पिता के कंट्रोल वाली सेटिंग के लिए अपना पिन डालें</translation>
 <translation id="2766006623206032690">&amp;चिपकाएं और जाएं</translation>
@@ -2607,6 +2611,7 @@
 <translation id="2787354132612937472">—</translation>
 <translation id="2788135150614412178">+</translation>
 <translation id="2789486458103222910">ठीक है</translation>
+<translation id="2790112944253231361">इस टैब को बदला गया</translation>
 <translation id="2790750268015892264">आइसोलेटेड वेब ऐप्लिकेशन, स्मार्ट कार्ड रीडर को कंट्रोल नहीं कर सकते. इससे ऐप्लिकेशन किसी भी स्मार्ट कार्ड को ऐक्सेस नहीं कर पाएंगे.</translation>
 <translation id="2791529110887957050">Linux हटाएं</translation>
 <translation id="2791952154587244007">एक गड़बड़ी हुई. किओस्क ऐप्लिकेशन इस डिवाइस परअपने-आपलॉन्च नहीं हो सकेंगे.</translation>
@@ -2659,7 +2664,6 @@
 <translation id="2822634587701817431">छोटा करें / पूरा खोलें</translation>
 <translation id="2822910719211888134">Linux का बैकअप लेते समय गड़बड़ी हुई</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> आपके एडमिन की प्रॉक्सी सेटिंग का इस्तेमाल कर रहा है</translation>
-<translation id="2825151610926840364">ऐसे सभी ऐप्लिकेशन और वेबसाइटों को कैमरे का ऐक्सेस दें जिनके पास कैमरा इस्तेमाल करने की अनुमति है. कैमरे का इस्तेमाल करने के लिए, आपको ऐप्लिकेशन को रीस्टार्ट या पेज को रीफ़्रेश करना पड़ सकता है.</translation>
 <translation id="2825758591930162672">विषय की सार्वजनिक कुंजी</translation>
 <translation id="2826576843404243001">सुरक्षित कनेक्शन की सुविधा न देने वाली साइटों पर विज़िट करने से पहले आपको चेतावनी मिलेगी. इस सेटिंग को नहीं बदला जा सकता, क्योंकि आपने ऐडवांस सुरक्षा की सेटिंग चालू की हुई है.</translation>
 <translation id="2828375943530438449">'साइन इन करें' पेज से वापस जाएं</translation>
@@ -3050,6 +3054,7 @@
 <translation id="3109724472072898302">संक्षिप्त</translation>
 <translation id="310979712355504754">सभी मिटाएं</translation>
 <translation id="3112292765614504292">ऐप्लिकेशन का साइज़: <ph name="APP_SIZE" /></translation>
+<translation id="311347022006935575">यह टैब जोड़ा गया</translation>
 <translation id="311394601889664316">साइटों को अपने डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति न दें</translation>
 <translation id="3113970906450647715">बटन अनपिन किया गया</translation>
 <translation id="3115147772012638511">कैश मेमोरी का इंतज़ार कर रहे हैं...</translation>
@@ -3441,6 +3446,7 @@
 <translation id="3416468988018290825">हमेशा पूरे यूआरएल दिखाएं</translation>
 <translation id="3417835166382867856">टैब खोजें</translation>
 <translation id="3417836307470882032">24 घंटे वाली घड़ी का इस्तेमाल करें</translation>
+<translation id="3418798368381485936">इस खाते का इस्तेमाल करके, साइन इन नहीं किया जा सकता</translation>
 <translation id="3420501302812554910">अंदरूनी सुरक्षा कुंजी को रीसेट करने की ज़रूरत है</translation>
 <translation id="3421387094817716717">अंडाकार वक्र वाली सार्वजनिक कुंजी</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />ध्यान दें:<ph name="END_BOLD" /> आपकी आवाज़ से मिलती-जुलती आवाज़ या रिकॉर्डिंग से, आपके निजी खोज नतीजों या आपकी Assistant को ऐक्सेस किया जा सकता है.</translation>
@@ -3647,6 +3653,7 @@
 <translation id="3566211766752891194">टैब के मेमोरी इस्तेमाल करने की जानकारी दिखाएं</translation>
 <translation id="3566325075220776093">इस डिवाइस से</translation>
 <translation id="3566721612727112615">कोई साइट नहीं जोड़ी गई</translation>
+<translation id="3566788242120166275">आपका मौजूदा ब्राउज़िंग डेटा, पुरानी प्रोफ़ाइल में ही रहेगा. इस नई प्रोफ़ाइल में, कोई भी पुराना ब्राउज़िंग डेटा मौजूद नहीं रहेगा.</translation>
 <translation id="3567168891086460374">दूसरे तरीके से सेव करें</translation>
 <translation id="3567284462585300767">अपने आस-पास के लोगों से फ़ाइलें पाने और स्वीकार करने के लिए, 'आस-पास शेयर करना' सेट अप करें और लोगों को दिखाई दें</translation>
 <translation id="356738834800832239">आपका पासवर्ड सेव कर लिया गया है</translation>
@@ -3813,6 +3820,7 @@
 <translation id="3685598397738512288">Linux में यूएसबी से जुड़ी प्राथमिकताएं</translation>
 <translation id="3687598459967813435"><ph name="WEBSITE" /> को हमेशा सूचनाएं भेजने की अनुमति दें</translation>
 <translation id="368789413795732264">फ़ाइल में लिखने का प्रयास करते समय कोई गड़बड़ी आई: <ph name="ERROR_TEXT" />.</translation>
+<translation id="3687957587012862163">नहीं, यह डेटा इस नई प्रोफ़ाइल में ट्रांसफ़र करें</translation>
 <translation id="3688507211863392146">  ऐप्लिकेशन में खोली गईं फ़ाइलों और फ़ोल्डर में लिखें</translation>
 <translation id="3688526734140524629">चैनल बदलें</translation>
 <translation id="3688578402379768763">अद्यतित</translation>
@@ -3906,6 +3914,7 @@
 <translation id="3735039640698208086">ऑडियो चलाते समय...</translation>
 <translation id="3735740477244556633">इसके अनुसार क्रम से लगाएं</translation>
 <translation id="3735827758948958091">सीमित डेटा वाले कनेक्शन का इस्तेमाल करने पर, <ph name="FILE_NAMES" /> को नहीं खोला जा सकता</translation>
+<translation id="3737058101969549870">क्या आपको मौजूदा ब्राउज़िंग डेटा को इस नई प्रोफ़ाइल से अलग रखना है?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> का डेटा 24 घंटे में मिटा दिया जाएगा</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094"><ph name="APPLICATION" /> खोलना चाहते हैं?</translation>
@@ -3974,6 +3983,7 @@
 <translation id="3778208826288864398">सुरक्षा कुंजी लॉक कर दी गई है क्योंकि गलत पिन कई बार डाला गया है. आपको सुरक्षा कुंजी रीसेट करनी होगी.</translation>
 <translation id="3778740492972734840">&amp;डेवलपर टूल</translation>
 <translation id="3778868487658107119">इससे प्रश्न पूछें. इसे कुछ काम करने को कहें. यह आपका व्यक्तिगत Google है, जो हमेशा सहायता के लिए तैयार रहता है.</translation>
+<translation id="3779244863011082655">किसी दूसरे <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> खाते का इस्तेमाल करें</translation>
 <translation id="3780542776224651912">डेटा का गलत इस्तेमाल होने पर, <ph name="BRAND" /> आपके पासवर्ड की जांच नहीं कर सकता. कुछ देर बाद कोशिश करें.</translation>
 <translation id="3781742599892759500">Linux में माइक्रोफ़ोन का ऐक्सेस</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -4120,6 +4130,7 @@
 <translation id="3872991219937722530">डिस्क में स्पेस खाली करें अन्यथा डिवाइस प्रतिक्रिया नहीं देगा.</translation>
 <translation id="3873315167136380065">इसे चालू करने के लिए, <ph name="BEGIN_LINK" />सिंक रीसेट करें<ph name="END_LINK" /> ताकि आपका सिंक करने का लंबा पासवर्ड हटाया जा सके</translation>
 <translation id="3873423927483480833">पिन दिखाएं</translation>
+<translation id="3873893412864594794"><ph name="MEMBER_FIRST_NAME" /> ने एक टैब जोड़ा</translation>
 <translation id="3873915545594852654">एआरसी++ के साथ कोई समस्या हुई.</translation>
 <translation id="3874164307099183178">Google Assistant चालू करें</translation>
 <translation id="3875511946736639169">इमेज दिखाने की सुविधा चालू करें</translation>
@@ -4246,6 +4257,7 @@
 <translation id="3958821725268247062"><ph name="APP_NAME" /> को पहले ही इंस्टॉल कर दिया गया है</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120"><ph name="IBAN_DESCRIPTION" /> के लिए और कार्रवाइयां</translation>
+<translation id="3962607437409665666"><ph name="MEMBER_FIRST_NAME" /> ने ग्रुप छोड़ दिया</translation>
 <translation id="3963753386716096475">किसी दूसरे फ़ोन, टैबलेट या सुरक्षा कुंजी का इस्तेमाल करें</translation>
 <translation id="3964480518399667971">सेल्युलर नेटवर्क बंद करें</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> से बाहर निकलें</translation>
@@ -4324,6 +4336,7 @@
 <translation id="4015163439792426608">एक्सटेंशन मिल गए? एक ही जगह पर आसानी से अपने <ph name="BEGIN_LINK" />एक्सटेंशन प्रबंधित करें<ph name="END_LINK" />.</translation>
 <translation id="4016762287427926315">आपने <ph name="APP_NAME" /> को जो अनुमतियां दी हैं वे इस ऐप्लिकेशन के लिए भी लागू होंगी. <ph name="BEGIN_LINK" />मैनेज करें<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">इस लिंक के लिए क्यूआर कोड बनाएं</translation>
+<translation id="4019150221059185859"><ph name="TAB_TITLE" /> को सूची से हटाएं</translation>
 <translation id="4019983356493507433">बुकमार्क की सूची में बदलाव करें</translation>
 <translation id="4020327272915390518">विकल्प मेन्यू</translation>
 <translation id="4021279097213088397">–</translation>
@@ -5995,6 +6008,7 @@
 <translation id="5256174546894739043">जब कोई साइट आपके हाथों को ट्रैक करना चाहे, तो इसके लिए पूछें</translation>
 <translation id="52566111838498928">फ़ॉन्ट लोड हो रहे हैं...</translation>
 <translation id="5256861893479663409">सभी साइट पर</translation>
+<translation id="5258473597674772367">"<ph name="GROUP_NAME" />" टैब ग्रुप अब मौजूद नहीं है</translation>
 <translation id="5258992782919386492">इस डिवाइस पर इंस्टॉल करें</translation>
 <translation id="5260334392110301220">Smart Quotes</translation>
 <translation id="5260508466980570042">क्षमा करें, आपका ईमेल या पासवर्ड सत्‍यापित नहीं हो सका. कृपया फिर से प्रयास करें.</translation>
@@ -6348,6 +6362,7 @@
 <translation id="5503982651688210506"><ph name="HOST" /> को कैमरे का इस्तेमाल और उसे मूव करते रहने दें. साथ ही, माइक्रोफ़ोन का इस्तेमाल करते रहने दें</translation>
 <translation id="5505307013568720083">इंक खत्म हो गया है</translation>
 <translation id="5507756662695126555">गैर-अस्वीकरण</translation>
+<translation id="5508864312047847614">क्या आपको मौजूदा ब्राउज़िंग डेटा को अपनी स्कूल प्रोफ़ाइल से अलग रखना है?</translation>
 <translation id="5509693895992845810">इस रूप में सेव करें...</translation>
 <translation id="5509914365760201064">जारीकर्ता: <ph name="CERTIFICATE_AUTHORITY" /></translation>
 <translation id="5510775624736435856">Google से इमेज की जानकारी पाएं</translation>
@@ -6877,6 +6892,7 @@
 <translation id="5911533659001334206">शॉर्टकट व्यूअर</translation>
 <translation id="5911545422157959623">बुकमार्क करने की सुविधा मेहमान मोड में उपलब्ध नहीं है</translation>
 <translation id="5914016309240354769">प्रकृति</translation>
+<translation id="5914465277418006379"><ph name="MEMBER_FIRST_NAME" /> ने यह टैब जोड़ा</translation>
 <translation id="5914724413750400082">मापांक (<ph name="MODULUS_NUM_BITS" /> बिट):
   <ph name="MODULUS_HEX_DUMP" />
 
@@ -7688,6 +7704,7 @@
 <translation id="6519689855001245063">ज़रूरी शर्तों की जांच की जा रही है</translation>
 <translation id="6520087076882753524">Google पासवर्ड मैनेजर में जाकर, सेव किए गए पासवर्ड देखे और मैनेज किए जा सकते हैं</translation>
 <translation id="6520115099532274511"><ph name="SITE" /> को आपकी पहचान की पुष्टि करनी है. Google Password Manager के लिए, अंकों और अक्षरों वाला अपना पिन डालें</translation>
+<translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" />, अब "<ph name="GROUP_NAME" />" टैब ग्रुप का हिस्सा हैं</translation>
 <translation id="6520876759015997832"><ph name="LIST_SIZE" /> में से खोज का नतीजा <ph name="LIST_POSITION" />: <ph name="SEARCH_RESULT_TEXT" />. सेक्शन पर जाने के लिए Enter दबाएं.</translation>
 <translation id="6521214596282732365">आम तौर पर, साइटें आपके फ़ॉन्ट इसलिए इस्तेमाल करती हैं, ताकि आप ऑनलाइन डिज़ाइन और ग्राफ़िक टूल से हाई-फ़िडेलिटी कॉन्टेंट बना सकें</translation>
 <translation id="6523574494641144162">Google Password Manager, इन पासवर्ड को आपके Google खाते में सेव नहीं कर सका. इन्हें इस डिवाइस पर सेव किया जा सकता है.</translation>
@@ -8607,6 +8624,8 @@
 <translation id="7180865173735832675">पसंद के मुताबिक बनाएं</translation>
 <translation id="7181117767881540376">बुकमार्क बार छिपाएं</translation>
 <translation id="7181329571386134105">आने वाले समय में, <ph name="CHILD_NAME" /> को आपकी अनुमति के बिना एक्सटेंशन इंस्टॉल करने की अनुमति देने के लिए, अपने डिवाइस पर Family Link ऐप्लिकेशन खोलें और <ph name="CHILD_NAME" /> के लिए Google Chrome की सेटिंग अपडेट करें.</translation>
+<translation id="7181840534454431748"><ph name="OWNER_FIRST_NAME" /> के साथ टैब ग्रुप में शामिल हों
+            {NUM_OTHER_MEMBERS,plural, =0{<ph name="OWNER_FIRST_NAME" /> के साथ टैब ग्रुप में शामिल हों}=1{<ph name="OWNER_FIRST_NAME" /> और # अन्य व्यक्ति के साथ टैब ग्रुप में शामिल हों}one{<ph name="OWNER_FIRST_NAME" /> और # अन्य व्यक्ति के साथ टैब ग्रुप में शामिल हों}other{<ph name="OWNER_FIRST_NAME" /> और # अन्य लोगों के साथ टैब ग्रुप में शामिल हों}}</translation>
 <translation id="7182051712900867547">किसी दूसरे खाते का इस्तेमाल करें</translation>
 <translation id="7182063559013288142">इंस्टैंट हॉटस्पॉट</translation>
 <translation id="7182791023900310535">अपने पासवर्ड को खाते में ले जाएं</translation>
@@ -8619,6 +8638,7 @@
 <translation id="7189234443051076392">पक्का करें कि आपके डिवाइस पर ज़रूरी जगह मौजूद हो</translation>
 <translation id="7189451821249468368">आपके सॉफ़्टवेयर लाइसेंस अपग्रेड नहीं हैं, इसलिए आप इस डिवाइस का नाम दर्ज नहीं कर सकते. कृपया सॉफ़्टवेयर लाइसेंस खरीदने के लिए, सेल्स टीम से संपर्क करें. अगर आपको लगता है कि आप यह मैसेज किसी गड़बड़ी की वजह से देख रहे हैं, तो सहायता टीम से संपर्क करें.</translation>
 <translation id="7189965711416741966">फ़िंगरप्रिंट जोड़ा गया.</translation>
+<translation id="7190883804815364931">इस टैब से जुड़ा पिछला अपडेट</translation>
 <translation id="7191063546666816478">कुछ सहायता लिंक <ph name="APP_NAME" />, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, और <ph name="NUMBER_OF_OTHER_APPS" /> अन्य ऐप्लिकेशन में अब भी खुलेंगे.</translation>
 <translation id="7191159667348037">अज्ञात प्रिंटर (USB)</translation>
 <translation id="7191631508323321927">गलियारा</translation>
@@ -8951,6 +8971,7 @@
 <translation id="742130257665691897">बुकमार्क हटाए गए</translation>
 <translation id="7421925624202799674">पेज का स्रोत &amp;देखें</translation>
 <translation id="7422192691352527311">प्राथमिकताएं...</translation>
+<translation id="7422516375032300779"><ph name="MEMBER_FIRST_NAME" /> ने ग्रुप का नाम बदल दिया</translation>
 <translation id="7423425410216218516">'किसको दिखाई दे' सेटिंग <ph name="MINUTES" /> मिनट तक चालू है</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> हटाएं</translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> को चलाने के लिए अनुमति चाहिए</translation>
@@ -9002,6 +9023,7 @@
 <translation id="7461924472993315131">पिन करें</translation>
 <translation id="746216226901520237">अगली बार, आपका फ़ोन आपके <ph name="DEVICE_TYPE" /> को अनलॉक कर देगा. आप सेटिंग में जाकर Smart Lock को बंद कर सकते हैं</translation>
 <translation id="746329643760972486">MacOS</translation>
+<translation id="7464645554245611385">इस टैब से जुड़ा पिछला अपडेट</translation>
 <translation id="7465522323587461835">{NUM_OPEN_TABS,plural, =1{# टैब खोलें, टैब बार को टॉगल करने के लिए बटन दबाएं}one{# टैब खोलें, टैब बार को टॉगल करने के लिए बटन दबाएं}other{# टैब खोलें, टैब बार को टॉगल करने के लिए बटन दबाएं}}</translation>
 <translation id="7465635034594602553">कोई गड़बड़ी हुई. कृपया कुछ देर इंतज़ार करें और <ph name="APP_NAME" /> को फिर से चलाएं.</translation>
 <translation id="7465777686629334728">मैनेज किए गए डेवलपमेंट एनवायरमेंट को हटाएं (<ph name="SPECIFIC_NAME" />)</translation>
@@ -9189,7 +9211,6 @@
 <translation id="7610337976012700501">इन संपर्कों के साथ <ph name="FEATURE_NAME" /> का इस्तेमाल करने के लिए, उनके Google खाते से लिंक किए गए ईमेल पते अपने संपर्कों में जोड़ें.</translation>
 <translation id="7611713099524036757">मेटा</translation>
 <translation id="7612050744024016345">सभी एक्सटेंशन</translation>
-<translation id="7612401678989660900">ऐसे सभी ऐप्लिकेशन और वेबसाइटों को माइक्रोफ़ोन का ऐक्सेस दें जिनके पास माइक्रोफ़ोन इस्तेमाल करने की अनुमति है</translation>
 <translation id="7612497353238585898">साइट खुली है</translation>
 <translation id="7612655942094160088">कनेक्ट किए गए फ़ोन की सुविधाएं चालू करें.</translation>
 <translation id="7612989789287281429">साइन इन किया जा रहा है…</translation>
@@ -9435,6 +9456,7 @@
 <translation id="7772032839648071052">'पासफ़्रेज' की पुष्टि करें</translation>
 <translation id="7772127298218883077"><ph name="PRODUCT_NAME" /> के बारे में</translation>
 <translation id="7773726648746946405">सत्र संग्ररण</translation>
+<translation id="7773887159761725143"><ph name="MEMBER_FIRST_NAME" />, अब ग्रुप का हिस्सा हैं</translation>
 <translation id="7774365994322694683">पक्षी</translation>
 <translation id="7774581652827321413">इस पेज के बारे में खास जानकारी, इससे मिलती-जुलती खोजें, और इससे जुड़ी काम की अन्य जानकारी पाएं</translation>
 <translation id="7774792847912242537">बहुत सारे अनुरोध.</translation>
@@ -9552,6 +9574,7 @@
 <translation id="7851716364080026749">कैमरा और माइक्रोफ़ोन एक्सेस कभी भी ब्लॉक करें</translation>
 <translation id="7851720427268294554">आईपीपी पार्सर</translation>
 <translation id="78526636422538552">और Google खाते जोड़ने की सुविधा बंद है</translation>
+<translation id="785371335555334021"><ph name="TITLE" /> से बाहर आने के लिए, क्लिक करें</translation>
 <translation id="7853747251428735">ज़्यादा टू&amp;ल</translation>
 <translation id="7855678561139483478">टैब को नई विंडो पर ले जाएं</translation>
 <translation id="7857004848504343806">आपके कंप्यूटर में एक ऐसा सुरक्षित मॉड्यूल है जिसे ChromeOS Flex की सुरक्षा से जुड़ी कई अहम सुविधाओं को लागू करने में इस्तेमाल किया जाता है. ज़्यादा जानने के लिए Chromebook सहायता केंद्र पर जाएं: https://support.google.com/chromebook/?p=sm</translation>
@@ -9745,6 +9768,7 @@
 <translation id="7981662863948574132">डिवाइस का ईआईडी और क्यूआर कोड पॉप-अप दिखाएं</translation>
 <translation id="7981670705071137488">इसके बाद, आपके डिवाइस के सॉफ़्टवेयर, बैकग्राउंड में अपडेट होंगे. सेटिंग में जाकर, अपडेट से जुड़ी प्राथमिकताओं की समीक्षा की जा सकती है.</translation>
 <translation id="7982083145464587921">इस गड़बड़ी को ठीक करने के लिए कृपया अपना डिवाइस फिर से प्रारंभ करें.</translation>
+<translation id="7982578888426609524">इस ग्रुप से जुड़े हाल ही के अपडेट</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>
 <translation id="7982878511129296052">बंद हो रहा है...</translation>
 <translation id="7984068253310542383"><ph name="DISPLAY_NAME" /> की स्क्रीन शेयर करें</translation>
@@ -11029,6 +11053,7 @@
 <translation id="8888253246822647887">अपग्रेड पूरा होने पर आपका ऐप्लिकेशन खुल जाएगा. अपग्रेड में कुछ समय लग सकता है.</translation>
 <translation id="8888459276890791557">आसानी से ऐक्सेस करने के लिए, इस साइड पैनल को पिन किया जा सकता है</translation>
 <translation id="8889294078294184559">आपके ब्राउज़ करने के दौरान, साइटें Chrome की मदद से यह जांच कर सकती हैं कि आप असली उपयोगकर्ता हैं या नहीं. ऐसा, आपकी पहले विज़िट की गई साइट की जानकारी से किया जाता है</translation>
+<translation id="88895904696396879"><ph name="MEMBER_FIRST_NAME" /> ने ग्रुप का रंग बदला</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> नीचे दी गई फ़ाइलों और फ़ोल्डर में बदलाव कर सकती है</translation>
 <translation id="8890170499370378450">हो सकता है कि आपको मोबाइल डेटा का शुल्क देना पड़े</translation>
 <translation id="8890516388109605451">स्रोत</translation>
@@ -11177,6 +11202,7 @@
 <translation id="8991520179165052608">साइट आपके माइक्रोफ़ोन का इस्तेमाल कर सकती है</translation>
 <translation id="8991694323904646277">कोई कैमरा कनेक्ट नहीं है</translation>
 <translation id="8991766915726096402">स्थानीय डेटा वापस पाने की प्रक्रिया</translation>
+<translation id="8992268506092808992">{TIME_DIMENSION,plural, =0{<ph name="TIME_COUNT" /> मिनट पहले}=1{<ph name="TIME_COUNT" /> घंटा पहले}one{<ph name="TIME_COUNT" /> दिन पहले}other{<ph name="TIME_COUNT" /> दिन पहले}}</translation>
 <translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - मेमोरी का इस्तेमाल - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">अगर आपको <ph name="DEVICE_TYPE" /> का पासवर्ड याद नहीं है, तब भी आपको अपना लोकल डेटा वापस मिल सकता है. आपको अपने Google खाते में साइन इन करना होगा या खाता वापस पाने की सुविधा का इस्तेमाल करना होगा.</translation>
 <translation id="8993198843374358393"><ph name="CERT_NAME" /> के लिए सर्टिफ़िकेट हैश कॉपी करें</translation>
@@ -11469,6 +11495,7 @@
 <translation id="918352324374649435">{COUNT,plural, =1{ऐप्लिकेशन}one{# ऐप्लिकेशन}other{# ऐप्लिकेशन}}</translation>
 <translation id="9186963452600581158">अपने बच्चे के Google खाते से साइन इन करें</translation>
 <translation id="9187967020623675250">कुंजियां मेल नहीं खा रही हैं. <ph name="RESPONSE" /> के लिए कोई भी बटन दबाएं.</translation>
+<translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> ने यह टैब बदला है</translation>
 <translation id="9192019773545828776">बोलकर दिया गया जवाब सुनें, ताकि बिना स्क्रीन देखे डिवाइस का इस्तेमाल किया जा सके. कनेक्ट किए गए डिवाइस से, ब्रेल का इस्तेमाल करके सुझाव, शिकायत या राय देने की सुविधा उपलब्ध होती है. ChromeVox को चालू या बंद करने के लिए, Ctrl + Alt + Z का इस्तेमाल करें. एक जगह से दूसरी जगह पर जाने के लिए Search + लेफ़्ट ऐरो या राइट ऐरो का इस्तेमाल करें. चुनने के लिए, Search + Space का इस्तेमाल करें (चालू करें).</translation>
 <translation id="9195969368671142407">जब आपका संगठन, Google खाते में डेटा सेव करने की सुविधा को सीमित कर देता है, तब आपके पास टैब ग्रुप शेयर करने या उनमें शामिल होने का विकल्प नहीं होता</translation>
 <translation id="919686179725692564">अपने ऐप्लिकेशन का बैक अप लेने के बारे में ज़्यादा जानें</translation>
@@ -11580,6 +11607,7 @@
 <translation id="973558314812359997">कर्सर को बड़ा करने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="973788791897303708">इस टैब ग्रुप में अब और लोग नहीं जोड़े जा सकते</translation>
 <translation id="97381968209917373"><ph name="CERT_NAME" /> सर्टिफ़िकेट को मिटाएं</translation>
+<translation id="973825986436797073"><ph name="MEMBER_FIRST_NAME" /> ने एक टैब बदला है</translation>
 <translation id="975893173032473675">वह भाषा जिसमें अनुवाद करना है</translation>
 <translation id="976499800099896273"><ph name="TYPED_WORD" /> को सही करके <ph name="CORRECTED_WORD" /> किया गया, जिसके लिए 'ऑटो करेक्ट को पहले जैसा करें' डायलॉग दिखाया गया.  ऐक्सेस करने के लिए 'अप ऐरो', अनदेखा करने के लिए escape दबाएं.</translation>
 <translation id="976572010712028687">पुष्टि करें कि आप माता, पिता या अभिभावक हैं</translation>

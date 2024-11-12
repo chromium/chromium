@@ -306,6 +306,7 @@
 <translation id="2308243864813041101">Khipha ikhebuli ye-USB yokuthi <ph name="DEVICE_NAME" /> ukuze uqhubeke nenqubo yokubuyekeza</translation>
 <translation id="2320295602967756579">Nika amandla itimu ekhanyayo</translation>
 <translation id="2323506179655536734">KWEQIWE</translation>
+<translation id="2323755382216917952">Lesi sibuyekezo sidinga ukuthi uqale kabusha ikhompyutha yakho ukuze uqedele ukufaka. Lesi sibuyekezo singase sithathe amaminithi ambalwa ukuqeda. Ngenkathi ifirmware ibuyekeza, unganqamuli noma uvale ikhompyutha yakho.</translation>
 <translation id="2324354238778375592">Ukuntanta</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Kuhle kakhulu (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -448,6 +449,7 @@
 <translation id="3178532070248519384">i-avant-garde</translation>
 <translation id="3182676044300231689">Faka umyalelo ofana nokuthi "yenze izethembe kakhulu"</translation>
 <translation id="3188257591659621405">Amafayela ami</translation>
+<translation id="3188931456353313123">Lesi sibuyekezo sinikezwa umkhiqizi wedivayisi futhi asikaze siqinisekiswe iGoogle.</translation>
 <translation id="319101249942218879">Umfanekiso wesithombe ushintshile</translation>
 <translation id="3192947282887913208">Amafayela womsindo</translation>
 <translation id="3199982728237701504">Isiphakeli Sedokhumenti (Amahlangothi amabili)</translation>
@@ -505,6 +507,7 @@
 <translation id="3488065109653206955">Yenziwe yasebenza ngokungaphelele</translation>
 <translation id="3492882532495507361">Ihhovisi le-<ph name="OFFICE_STYLE" /> elinamathoni e-<ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Idatha ilinganiswa nge-Chromebook yakho. Lokhu kungase kuhluke kudatha yomhlinzeki.</translation>
+<translation id="349570724365779960">Amathuluzi Esikole axhunywe kubafundi</translation>
 <translation id="3502426834823382181">Buka wonke ama-app</translation>
 <translation id="3510890413042482857">Thumela <ph name="BEGIN_LINK1" />idatha yokulandelela ukusebenza<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Isibuyekezo se-ChromeOS</translation>
@@ -753,6 +756,7 @@
 <translation id="473775607612524610">Buyekeza</translation>
 <translation id="4744944742468440486">Ulwazi oluhambisana nokukhethile</translation>
 <translation id="4771607256327216405">ukukhanyiswa kwekhibhodi</translation>
+<translation id="4771923071974529837">kusasa</translation>
 <translation id="4773299976671772492">Imisiwe</translation>
 <translation id="4778082030331381943">i-amethyst</translation>
 <translation id="4782311465517282004">Thola izincazelo, ukuhunyushwa, noma ukuguqulwa kweyunithi lapho uchofoza ngakwesokudla noma uthinta uphinde ubambe umbhalo</translation>
@@ -816,6 +820,7 @@
 <translation id="500920857929044050">Misa ukuhlola</translation>
 <translation id="5017508259293544172">I-LEAP</translation>
 <translation id="5035083460461104704">Umbala wetimu</translation>
+<translation id="5037240652947866174">namhlanje</translation>
 <translation id="5038292761217083259">imibala eminingi yekhibhodi</translation>
 <translation id="5039804452771397117">Vumela</translation>
 <translation id="5049856988445523908">I-SIM Ikhiyiwe (<ph name="LOCK_TYPE" />)</translation>

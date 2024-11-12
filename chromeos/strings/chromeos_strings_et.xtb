@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">Transkriptsiooni peitmine</translation>
 <translation id="160633243685262989">Pildi eelvaade</translation>
 <translation id="1611649489706141841">edasi</translation>
+<translation id="1615144046047995187">Ei saa alla laadida. Proovige uuesti või taaskäivitage Chromebook.</translation>
 <translation id="1615335640928990664">Andmekasutus alates: <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Teema kasutamine</translation>
 <translation id="1621067168122174824">Käita laadimistest</translation>
@@ -360,6 +361,7 @@
 <translation id="2589921777872778654">Muutmise ja kustutamise menüü</translation>
 <translation id="2597774443162333062">Failid saadetakse silumiseks Google'ile</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Skannimine on lõpetatud. Skanniti 1 leht.}other{Skannimine on lõpetatud. Skanniti {NUMBER_OF_PAGES} lehte.}}</translation>
+<translation id="261322795497077164">Kõlari tuvastamine</translation>
 <translation id="2617397783536231890">puuvillast</translation>
 <translation id="2618015542787108131">liivaluide</translation>
 <translation id="2619761439309613843">Igapäevane värskendamine</translation>
@@ -440,6 +442,7 @@
 <translation id="3140130301071865159">lumi</translation>
 <translation id="3146655726035122603">Ainult teenuses <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobiilne andmeside</translation>
+<translation id="3153094818810437149">Saate seda hiljem Helisalvesti seadetes muuta</translation>
 <translation id="3156511682997763015">Keri 10 sekundit edasi</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. lehe skannimine …</translation>
 <translation id="315738237743207937">Tuvastati hõiveportaal</translation>
@@ -562,6 +565,7 @@
 <translation id="3785643128701396311">pikslikunst</translation>
 <translation id="3799381533888781854">VÄLAS – seda seadet haldab administraator.</translation>
 <translation id="380097101658023925">RGB juhtelemendid</translation>
+<translation id="380493988330050229">Selle transkriptsiooni keele puhul ei saa kokkuvõtet luua</translation>
 <translation id="38114475217616659">Kustuta kogu ajalugu</translation>
 <translation id="3820172043799983114">Vale PIN-kood.</translation>
 <translation id="382043424867370667">Päikeseloojangu taustapilt</translation>
@@ -585,6 +589,7 @@
 <translation id="3885327323343477505">Muuda ekraanisäästjat</translation>
 <translation id="3889914174935857450">Lähtestamiskuupäev</translation>
 <translation id="3897092660631435901">Menüü</translation>
+<translation id="3902271751020176019">Transkribeerimise keel</translation>
 <translation id="391412459402535266">Seadet ei saa testida. Testimiseks lülituge sülearvutirežiimile.</translation>
 <translation id="3916998944874125962">teeb kuvatõmmise</translation>
 <translation id="3923184630988645767">Andmekasutus</translation>
@@ -733,6 +738,7 @@
 <translation id="458794348635939462">Kõikide hostide lahendamine ebaõnnestus</translation>
 <translation id="4593212453765072419">Vajalik on puhverserveri autentimine</translation>
 <translation id="4594021849294327751">Loo transkriptsioon</translation>
+<translation id="4594541568452132351">Valige transkriptsiooni keel ja laadige alla mudel</translation>
 <translation id="4607282946861182308">Ei saa selle kohta pilte luua. Proovige muud päringut.</translation>
 <translation id="4609350030397390689">Klaviatuuri ereduse vähendamine</translation>
 <translation id="4623061655523261501">Salvestiste nimede genereerimine õnnestus</translation>
@@ -937,6 +943,7 @@
 <translation id="5606865426897221650">Tabulaator</translation>
 <translation id="5613201299517339763">Olete välja logitud</translation>
 <translation id="5620281292257375798">Ainult sisemine</translation>
+<translation id="5628106863521633649">Saadaolevad keeled</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstraktne</translation>
 <translation id="5655283760733841251">Klaviatuuri ereduse suurendamine</translation>
@@ -1097,6 +1104,7 @@
 <translation id="6359919876285606596">See toiming on jäädav ja seda ei saa tagasi võtta</translation>
 <translation id="6368342879959028556">Kui teete valiku „Looge AI-ga”, kirjutage kohandatud päring. Või saate teema valimiseks teha valiku „AI taustapildid” ja seejärel AI taustapildi isikupärastamiseks allajoonitud sõnad valida.</translation>
 <translation id="636850387210749493">Ettevõtte registreerimine</translation>
+<translation id="6369221585240879141">Selle transkriptsiooni keele puhul ei saa salvestiste nimesid luua</translation>
 <translation id="6373461326814131011">tiik</translation>
 <translation id="6379086450106841622">Puuteekraan</translation>
 <translation id="6381741036071372448">Testige oma klaviatuuri</translation>
@@ -1261,6 +1269,7 @@
 <translation id="710028965487274708">Ebaõnnestus – volitamine ebaõnnestus</translation>
 <translation id="7101959270679078188">Avage <ph name="DEVICE_NAME" />, et värskendamist jätkata</translation>
 <translation id="7103252855940681301">Seade <ph name="INDEX" />/<ph name="COUNT" /> nimega <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Valitud keel</translation>
 <translation id="7107255225945990211">Vali seadme <ph name="PRODUCT_NAME" /> eksklusiivne kujundus</translation>
 <translation id="7108668606237948702">sisestusklahv</translation>
 <translation id="7117228822971127758">Proovige hiljem uuesti</translation>
@@ -1270,6 +1279,7 @@
 <translation id="7130438335435247835">Pääsupunkti nimi (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nimeserver}other{Nimeserverid}}</translation>
 <translation id="7135814714616751706">Otseteede otsing</translation>
+<translation id="7138614237884624401">Lihtsustatud tekst</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Ühendamine</translation>
 <translation id="7144878232160441200">Proovi uuesti</translation>
@@ -1691,6 +1701,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="9100765901046053179">Täpsemad seaded</translation>
 <translation id="910415269708673980">Kasutaja <ph name="PRINCIPAL_NAME" /> pileti värskendamine</translation>
 <translation id="9106415115617144481">Lehe <ph name="PAGE_NUMBER" /> skannimine</translation>
+<translation id="9108856746036501072">Salvesti saab luua transkriptsioone kõnega salvestiste jaoks. Järgmises etapis peate valima transkriptsiooni keele ja mudeli (kuni 100 MB) alla laadima.</translation>
 <translation id="9111102763498581341">Ava lukk</translation>
 <translation id="9122492456897874028">Tehke sisu kokkuvõtteid, kasutage definitsioone ja veel</translation>
 <translation id="9122602430962285795">Uuesti ühendamiseks avage leht Seaded</translation>

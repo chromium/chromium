@@ -306,6 +306,7 @@
 <translation id="2308243864813041101">Koble fra USB-kabelen for <ph name="DEVICE_NAME" /> for å fortsette oppdateringsprosessen</translation>
 <translation id="2320295602967756579">Slå på lyst tema</translation>
 <translation id="2323506179655536734">HOPPET OVER</translation>
+<translation id="2323755382216917952">Denne oppdateringen krever at du starter datamaskinen på nytt for å fullføre installasjonen. Det kan ta noen minutter å fullføre denne oppdateringen. Ikke koble fra eller slå av datamaskinen mens fastvaren oppdateres.</translation>
 <translation id="2324354238778375592">Løsne</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Utmerket (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -450,6 +451,7 @@
 <translation id="3178532070248519384">avant-garde</translation>
 <translation id="3182676044300231689">Skriv inn en forespørsel som «Vær mer selvsikker»</translation>
 <translation id="3188257591659621405">Mine filer</translation>
+<translation id="3188931456353313123">Denne oppdateringen leveres av enhetsprodusenten og er ikke bekreftet av Google.</translation>
 <translation id="319101249942218879">Brukerbildet er endret</translation>
 <translation id="3192947282887913208">Lydfiler</translation>
 <translation id="3199982728237701504">Dokumentmater (tosidig)</translation>
@@ -507,6 +509,7 @@
 <translation id="3488065109653206955">Delvis aktivert</translation>
 <translation id="3492882532495507361">Et <ph name="OFFICE_STYLE" /> kontor med <ph name="OFFICE_COLOR" /> toner</translation>
 <translation id="3493187369049186498">Chromebook måler databruk. Disse målingene kan avvike fra operatørens.</translation>
+<translation id="349570724365779960">Skoleverktøy er koblet til elever</translation>
 <translation id="3502426834823382181">se alle appene</translation>
 <translation id="3510890413042482857">Send <ph name="BEGIN_LINK1" />ytelsessporingsdata<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS-oppdatering</translation>
@@ -757,6 +760,7 @@
 <translation id="473775607612524610">Oppdater</translation>
 <translation id="4744944742468440486">Informasjon om det du har markert</translation>
 <translation id="4771607256327216405">tastatur gjør lysere</translation>
+<translation id="4771923071974529837">i morgen</translation>
 <translation id="4773299976671772492">Stoppet</translation>
 <translation id="4778082030331381943">ametyst</translation>
 <translation id="4782311465517282004">Få definisjoner, oversettelser eller enhetskonverteringer når du høyreklikker eller trykker og holder inne på tekst</translation>
@@ -820,6 +824,7 @@
 <translation id="500920857929044050">Stans testen</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Temafarge</translation>
+<translation id="5037240652947866174">i dag</translation>
 <translation id="5038292761217083259">tastatur med flere farger</translation>
 <translation id="5039804452771397117">Tillat</translation>
 <translation id="5049856988445523908">SIM-kortet er låst (<ph name="LOCK_TYPE" />)</translation>

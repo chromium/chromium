@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">นำออก</translation>
 <translation id="1191518099344003522">เปิดใช้ APN แล้ว</translation>
 <translation id="1195447618553298278">ข้อผิดพลาดที่ไม่รู้จัก</translation>
+<translation id="1196264380943975940">สรุปไม่ได้ โปรดลองใช้ข้อความถอดเสียงที่ยาวกว่านี้</translation>
 <translation id="1196959502276349371">เวอร์ชัน <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">เล่น/หยุดชั่วคราว</translation>
 <translation id="1201402288615127009">ถัดไป</translation>
@@ -750,6 +751,7 @@
 <translation id="4665014895760275686">ผู้ผลิต</translation>
 <translation id="467510802200863975">รหัสผ่านไม่ตรงกัน</translation>
 <translation id="467715984478005772">คาดว่าติดไฟร์วอลล์</translation>
+<translation id="4678534708181186163">สรุปไม่ได้ โปรดลองใช้ข้อความถอดเสียงที่สั้นกว่านี้</translation>
 <translation id="4683762547447150570">แตะปุ่มเพื่อโฟกัสที่การกําหนดคีย์</translation>
 <translation id="4691278870498629773">หยุดพิมพ์ - ไม่มีถาด</translation>
 <translation id="469379815867856270">ความแรงของสัญญาณ</translation>
@@ -852,6 +854,7 @@
 <translation id="5168185087976003268">ประสิทธิภาพของแบตเตอรี่</translation>
 <translation id="5170568018924773124">แสดงในโฟลเดอร์</translation>
 <translation id="517075088756846356">ถอดสายไฟของ <ph name="DEVICE_NAME" /> แล้วเสียบใหม่เพื่ออัปเดตต่อ</translation>
+<translation id="5178021559562393163">สร้างชื่อไม่ได้ โปรดลองใช้ข้อความถอดเสียงที่สั้นกว่านี้</translation>
 <translation id="5180108905184566358">ต้นบาวบับ</translation>
 <translation id="5180712487038406644">ชัดเจน</translation>
 <translation id="5190187232518914472">ระลึกถึงความทรงจำดีๆ ที่คุณโปรดปราน หากต้องการเพิ่มหรือแก้ไขอัลบั้ม ให้ไปที่ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /></translation>
@@ -886,6 +889,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ข้อมูลประจำตัว</translation>
 <translation id="5317780077021120954">บันทึก</translation>
+<translation id="5318310531701770497">สร้างชื่อไม่ได้ โปรดลองใช้ข้อความถอดเสียงที่ยาวกว่านี้</translation>
 <translation id="5318334351163689047">ขอ TCP ไม่สำเร็จ</translation>
 <translation id="53196409393069519">เปิดการถอดเสียงเป็นคำไหม</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

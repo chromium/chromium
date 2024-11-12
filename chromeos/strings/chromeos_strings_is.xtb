@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">Fela textauppskrift</translation>
 <translation id="160633243685262989">Forskoða mynd</translation>
 <translation id="1611649489706141841">áfram</translation>
+<translation id="1615144046047995187">Ekki er hægt að sækja. Reyndu aftur eða endurræstu Chromebook.</translation>
 <translation id="1615335640928990664">Gagnanotkun síðan <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Nota þema</translation>
 <translation id="1621067168122174824">Keyra hleðslupróf</translation>
@@ -585,6 +586,7 @@
 <translation id="3885327323343477505">Breyta skjávara</translation>
 <translation id="3889914174935857450">Endurstilla dagsetningu</translation>
 <translation id="3897092660631435901">Valmynd</translation>
+<translation id="3902271751020176019">Umritunartungumál</translation>
 <translation id="391412459402535266">Ekki hægt að prófa tæki. Skiptu yfir í fartölvustillingu til að prófa</translation>
 <translation id="3916998944874125962">taka skjámynd</translation>
 <translation id="3923184630988645767">Gagnanotkun</translation>
@@ -937,6 +939,7 @@
 <translation id="5606865426897221650">Dálkalykill</translation>
 <translation id="5613201299517339763">Þú hefur verið skráð(ur) út</translation>
 <translation id="5620281292257375798">Aðeins innanhúss</translation>
+<translation id="5628106863521633649">Tiltæk tungumál</translation>
 <translation id="5630438231335788050">bauhausstíl</translation>
 <translation id="5631759159893697722">ágrip</translation>
 <translation id="5655283760733841251">Auka birtustig lyklaborðs</translation>
@@ -1261,6 +1264,7 @@
 <translation id="710028965487274708">Mistókst – Heimild fékkst ekki</translation>
 <translation id="7101959270679078188">Taktu <ph name="DEVICE_NAME" /> úr lás til að halda uppfærsluferlinu áfram</translation>
 <translation id="7103252855940681301">Tæki <ph name="INDEX" /> af <ph name="COUNT" /> sem nefnist <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Valið tungumál</translation>
 <translation id="7107255225945990211">Velja sérstök <ph name="PRODUCT_NAME" />-listaverk</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7117228822971127758">Reyndu aftur síðar</translation>

@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">Ocultar transcripción</translation>
 <translation id="160633243685262989">Vista previa de imagen</translation>
 <translation id="1611649489706141841">adelante</translation>
+<translation id="1615144046047995187">No se puede descargar. Vuelve a intentarlo o reinicia tu Chromebook.</translation>
 <translation id="1615335640928990664">Uso de datos desde el <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Usar un tema</translation>
 <translation id="1621067168122174824">Realizar prueba de carga</translation>
@@ -585,6 +586,7 @@
 <translation id="3885327323343477505">Cambiar salvapantallas</translation>
 <translation id="3889914174935857450">Fecha de reinicio</translation>
 <translation id="3897092660631435901">Menú</translation>
+<translation id="3902271751020176019">Idioma de la transcripción</translation>
 <translation id="391412459402535266">No se puede probar el dispositivo. Cambia al modo Portátil para hacer la prueba.</translation>
 <translation id="3916998944874125962">hacer captura de pantalla</translation>
 <translation id="3923184630988645767">Uso de datos</translation>
@@ -937,6 +939,7 @@
 <translation id="5606865426897221650">Tabulador</translation>
 <translation id="5613201299517339763">Se ha cerrado la sesión</translation>
 <translation id="5620281292257375798">Solo para uso interno</translation>
+<translation id="5628106863521633649">Idiomas disponibles</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">resumen</translation>
 <translation id="5655283760733841251">Aumentar el brillo del teclado</translation>
@@ -1261,6 +1264,7 @@
 <translation id="710028965487274708">Se ha producido un error de autorización</translation>
 <translation id="7101959270679078188">Desbloquea tu <ph name="DEVICE_NAME" /> para continuar con el proceso de actualización</translation>
 <translation id="7103252855940681301">Dispositivo <ph name="INDEX" /> de <ph name="COUNT" />; nombre: <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Idioma seleccionado</translation>
 <translation id="7107255225945990211">Elige vídeos exclusivos de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">intro</translation>
 <translation id="7117228822971127758">Inténtalo de nuevo más tarde</translation>

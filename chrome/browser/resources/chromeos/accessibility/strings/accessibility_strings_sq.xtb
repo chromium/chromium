@@ -22,6 +22,7 @@
 <translation id="1120743664840974483">{"a": "akademi", "b": "balet", "c": "cilindër", "ç": “çokollatë", "d": "dentist", “dh”: “dhuratë”, "e": "ekuacion", “ë”: “ëmbëlsirë”, "f": "fustan", "g": "golf", “gj”: “gjethe”, "h": "hotel", "i": "iriq", "j": "jelek", "k": "kripë", "l": "limon", “ll”: “llambë”, "m": "medalje", "n": "nëntor", ‘nj’: “njerkë”, "o": "oksigjen", "p": "pallat", "q": "qielli", "r": "restorant", “rr”: “rreze”, "s": "stacion", “sh”: “sheqer”, "t": "tango", “th”: “thesar”, "u": "ushtar", "v": "violinë", “x”: “xixëllonjë”, “xh”: “xhamadan”, ‘y’: “ylber”, "z": "zog", “zh”: “zhapik”}</translation>
 <translation id="1120938014254001895">Rrëshqit shpejt dy gishta lart</translation>
 <translation id="1126928665165112660">Jo kursiv</translation>
+<translation id="1133751489735776037">Kliko tri herë miun</translation>
 <translation id="113582498867142724"><ph name="TAG" /> grumbullim me <ph name="NUM" /> artikuj</translation>
 <translation id="1146441463334103638">Aktivizo ose çaktivizo ekranin</translation>
 <translation id="1156488781945104845">Ora aktuale</translation>
@@ -549,6 +550,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="4402014469255336455">Blu qielli e thellë</translation>
 <translation id="4406249099130339147">Jehona e pikësimit:</translation>
 <translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Trego të gjithë dhëmbët e tu</translation>
 <translation id="4432457053224379116">E kuqe indiane</translation>
 <translation id="4432896207833262240">Përmbajtje e shënuar</translation>
 <translation id="4437615272777527928">Shkruaj për të kërkuar në meny. Përdor shigjetat lart dhe poshtë për të kaluar në cikël mes rezultateve. Përdor shigjetat majtas dhe djathtas për të rregulluar kursorin e tekstit dhe për të lëvizur mes menyve.</translation>

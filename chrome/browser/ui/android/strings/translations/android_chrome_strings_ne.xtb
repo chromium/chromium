@@ -262,6 +262,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2247789808226901522">कार्डको म्याद सकियो</translation>
 <translation id="2248941474044011069">तपाईंका पासवर्डहरू तपाईंको डिभाइसमा इन्क्रिप्ट गरेपछि मात्र Google पासवर्ड म्यानेजरमा सेभ गरिन्छ</translation>
 <translation id="2249635629516220541">साइटहरूले तपाईंलाई विज्ञापन देखाउन प्रयोग गर्ने जानकारी कस्टमाइज गर्नुहोस्</translation>
+<translation id="2253927598983295051"><ph name="APP_NAME" /> सँग सेयर गर्नु पर्ने कुरा छनौट गर्नुहोस्</translation>
 <translation id="2259659629660284697">पासवर्डहरू एक्सपोर्ट गर्नुहोस्…</translation>
 <translation id="2276696007612801991">आफ्ना पासवर्डहरू जाँच गर्न आफ्नो Google खातामा साइन इन गर्नुहोस्</translation>
 <translation id="2278052315791335171">तपाईंले यो पासवर्ड मेटाउनुभयो भने पनि <ph name="SITE" /> मा रहेको तपाईंको खाता मेटिने छैन</translation>
@@ -321,6 +322,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2527779675047087889">क्लिपबोर्डमा भएका सामग्री लुकाउनुहोस्</translation>
 <translation id="2532336938189706096">वेब दृश्य</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू मेटाइए</translation>
+<translation id="253498598929009420">यो साइटले तपाईंको स्क्रिनमा भएका सामग्री हेर्न सक्ने छ</translation>
 <translation id="2536728043171574184">यो पृष्ठको एक अफलाइन प्रतिलिपि हेर्दै</translation>
 <translation id="2546283357679194313">कुकीहरू र साइट डाटा</translation>
 <translation id="2547843573592965873">तपाईंको प्रोफाइल लकले तपाईंको Google खातामा सेभ गरिएका पासवर्ड र भुक्तानीलगायतका तपाईंका जानकारी कारमा सुरक्षित राख्छ।</translation>
@@ -1037,6 +1039,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5885378508678660271">नोटिफिकेसन <ph name="SEPARATOR" /> यो साइट खतरनाक भएकाले Chrome ले यसलाई दिइएका यी अनुमति रद्द गरेको छ</translation>
 <translation id="5895834791314695851">पासवर्डहरूले यो डिभाइसमा चाँडै नै काम गर्न छाड्न सक्छन्। आफ्ना पासवर्डहरू प्रयोग गरिरहन Google Play services अपडेट गर्नुहोस्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">कुनै पनि पासकी सिट बन्द गरिएको छैन</translation>
+<translation id="5907542076239273525">यो बुकमार्क <ph name="FOLDER_NAME" /> मा सेभ गरिएको छ</translation>
 <translation id="5916664084637901428">अन</translation>
 <translation id="5919204609460789179">सिंक सुरु गर्न <ph name="PRODUCT_NAME" /> लाई अपडेट गर्नुहोस्</translation>
 <translation id="5938820472109305350"><ph name="INTEREST" /> हाल्नुहोस्</translation>

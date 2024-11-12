@@ -360,6 +360,7 @@
 <translation id="2589921777872778654">مینیو میں ترمیم کریں اور حذف کریں</translation>
 <translation id="2597774443162333062">‏ڈیبگ کرنے کیلئے فائلز Google کو بھیج دی جائے گی</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{اسکیننگ مکمل ہو گئی۔ 1 صفحہ اسکین ہو گیا}other{اسکیننگ مکمل ہو گئی۔ {NUMBER_OF_PAGES} صفحات اسکین ہو گئے}}</translation>
+<translation id="261322795497077164">اسپیکر کی شناخت</translation>
 <translation id="2617397783536231890">کاٹن</translation>
 <translation id="2618015542787108131">ریت کا ٹیلہ</translation>
 <translation id="2619761439309613843">روزانہ ریفریش کریں</translation>
@@ -440,6 +441,7 @@
 <translation id="3140130301071865159">برف</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> کیلئے مخصوص</translation>
 <translation id="315116470104423982">موبائل ڈیٹا</translation>
+<translation id="3153094818810437149">آپ اسے بعد میں ریکارڈر کی ترتیبات میں تبدیل کر سکتے ہیں</translation>
 <translation id="3156511682997763015">10 سیکنڈ آگے لے جائیں</translation>
 <translation id="3156846309055100599">صفحہ <ph name="PAGE_NUMBER" /> کو اسکین کیا جا رہا ہے...</translation>
 <translation id="315738237743207937">کیپٹو پورٹل کا پتا چلا</translation>
@@ -562,6 +564,7 @@
 <translation id="3785643128701396311">پکسل آرٹ</translation>
 <translation id="3799381533888781854">آف - یہ ترتیب آپ کے منتظم کے زیر انتظام ہے۔</translation>
 <translation id="380097101658023925">‏RGB کنٹرولز</translation>
+<translation id="380493988330050229">اس ٹرانسکرپٹ کی زبان کے لیے خلاصہ تخلیق نہیں کیا جا سکتا</translation>
 <translation id="38114475217616659">تمام سرگزشت صاف کریں</translation>
 <translation id="3820172043799983114">‏غلط PIN۔</translation>
 <translation id="382043424867370667">سن سیٹ وال پیپر</translation>
@@ -733,6 +736,7 @@
 <translation id="458794348635939462">تمام میزبانوں کو حل کرنے میں ناکام</translation>
 <translation id="4593212453765072419">پراکسی کی تصدیق درکار ہے</translation>
 <translation id="4594021849294327751">ٹرانسکرپٹ بنائیں</translation>
+<translation id="4594541568452132351">ٹرانسکرپشن کی زبان منتخب کریں اور ماڈل ڈاؤن لوڈ کریں</translation>
 <translation id="4607282946861182308">اس کی تصاویر نہیں بنا سکتے۔ کوئی اور پرامپٹ آزمائیں۔</translation>
 <translation id="4609350030397390689">کی بورڈ کی چمک کم کرنے کی کلید</translation>
 <translation id="4623061655523261501">ریکارڈنگ کے نام کامیابی کے ساتھ تخلیق ہو گئے</translation>
@@ -1097,6 +1101,7 @@
 <translation id="6359919876285606596">یہ عمل مستقل ہوتا ہے اور کالعدم نہیں کیا جا سکتا ہے</translation>
 <translation id="6368342879959028556">‏جب آپ ’AI کے ذریعے تخلیق کریں‘ منتخب کریں تو ایک حسب ضرورت پرامپٹ لکھیں۔ یا آپ کوئی تھیم منتخب کرنے کیلئے ’AI وال پیپرز‘ منتخب کریں، پھر اپنے AI وال پیپر کو ذاتی نوعیت کا بنانے کیلئے انڈر لائن کردہ الفاظ کو منتخب کریں۔</translation>
 <translation id="636850387210749493">انٹرپرائز اندراج</translation>
+<translation id="6369221585240879141">اس ٹرانسکرپٹ کی زبان کے لیے ریکارڈنگ کے نام تخلیق نہیں کیے جا سکتے</translation>
 <translation id="6373461326814131011">تالاب</translation>
 <translation id="6379086450106841622">ٹچ اسکرین</translation>
 <translation id="6381741036071372448">اپنے کی بورڈ کو ٹیسٹ کریں</translation>
@@ -1270,6 +1275,7 @@
 <translation id="7130438335435247835">‏رسائی کی جگہ کا نام (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{نام سرور}other{نام سرورز}}</translation>
 <translation id="7135814714616751706">شارٹ کٹس تلاش کریں</translation>
+<translation id="7138614237884624401">آسان کردہ ٹیکسٹ</translation>
 <translation id="7141470099673912333">مواد کی منتقلی</translation>
 <translation id="7143207342074048698">منسلک ہو رہا ہے</translation>
 <translation id="7144878232160441200">دوبارہ کوشش کریں</translation>
@@ -1691,6 +1697,7 @@
 <translation id="9100765901046053179">جدید ترین ترتیبات</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> کے لیے ٹکٹ ریفریش کریں</translation>
 <translation id="9106415115617144481">اسکین شدہ صفحہ <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">‏ریکارڈر اسپیچ کے ساتھ ریکارڈنگ کے لیے ٹرانسکرپشنز تخلیق کر سکتا ہے۔ اگلے مرحلے میں، آپ کو ٹرانسکرپشن کی زبان منتخب کرنے اور ماڈل (100MB تک) ڈاؤن لوڈ کرنے کی ضرورت ہے۔</translation>
 <translation id="9111102763498581341">غیر مقفل کریں</translation>
 <translation id="9122492456897874028">مواد کا خلاصہ کریں، تعریفیں حاصل کریں، اور بہت کچھ</translation>
 <translation id="9122602430962285795">دوبارہ منسلک ہونے کیلئے، ترتیبات پر جائیں</translation>

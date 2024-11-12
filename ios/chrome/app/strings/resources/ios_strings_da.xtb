@@ -472,6 +472,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3119874402040566234">Du logges ud, og browserdataene slettes.</translation>
 <translation id="3130863904455712965">Historik m.m.</translation>
 <translation id="313283613037595347">Opret ny inkognitofane.</translation>
+<translation id="3138611310073113613">Kassér valg</translation>
 <translation id="3143515551205905069">Annuller synkronisering</translation>
 <translation id="314837624430314508">Hold dig opdateret om de seneste nyheder, opdateringer i forbindelse med prissporing m.m.</translation>
 <translation id="3157387275655328056">Føj til læseliste</translation>
@@ -639,6 +640,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3997522473364371632">Din administrator har deaktiveret deling af adgangskoder.</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4004204301268239848">Adgangskoder gemmes på din Google-konto, så du kan bruge dem på enhver enhed.</translation>
+<translation id="4011489366247192265">Fra</translation>
 <translation id="4018440314314549819">Autofyld gemte adgangskoder</translation>
 <translation id="4021447724486050609">Opdater din browser</translation>
 <translation id="4021931095789478915">Føj ${url} til læselisten</translation>
@@ -936,6 +938,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5414763847370083940">Du får en underretning, hvis prisen falder på et website.</translation>
 <translation id="5415289094036440596">Adgangsnøgler kan ikke deles</translation>
 <translation id="5416455648658732408">Flyt til fanegruppe</translation>
+<translation id="542659109038405424">Til</translation>
 <translation id="5429624150850059322">Når du vender tilbage, sløres fanerne, indtil du trykker for at fortsætte</translation>
 <translation id="5431239785743546285">Sider, du har læst</translation>
 <translation id="5431252637281434233">Du logges ud</translation>
@@ -1036,7 +1039,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5817176759448082654">Adgangskodetjek</translation>
 <translation id="5819208479324046259">Administreres af <ph name="MANAGER" /> <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synkroniserer…</translation>
-<translation id="5832166137082209907">Skjul efter 10 minutter</translation>
 <translation id="5844284118433003733">Når du er logget ind, knyttes disse data til din Google-konto for at beskytte dig i Google-tjenester, f.eks. ved at øge beskyttelsen i Gmail efter en sikkerhedshændelse.</translation>
 <translation id="5854790677617711513">Ældre end 30 dage</translation>
 <translation id="5857770089550859117">Angiv adgangssætningen for at påbegynde synkroniseringen.</translation>

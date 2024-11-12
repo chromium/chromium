@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">스크립트 숨기기</translation>
 <translation id="160633243685262989">미리보기 이미지</translation>
 <translation id="1611649489706141841">앞으로</translation>
+<translation id="1615144046047995187">다운로드할 수 없습니다. 다시 시도하거나 Chromebook을 다시 시작하세요.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> 이후 데이터 사용량</translation>
 <translation id="1618566998877964907">테마 사용하기</translation>
 <translation id="1621067168122174824">충전 테스트 실행</translation>
@@ -360,6 +361,7 @@
 <translation id="2589921777872778654">수정 및 삭제 메뉴</translation>
 <translation id="2597774443162333062">디버깅을 위해 파일이 Google로 전송됩니다.</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{스캔이 완료되었습니다. 1페이지가 스캔되었습니다}other{스캔이 완료되었습니다. {NUMBER_OF_PAGES}페이지가 스캔되었습니다}}</translation>
+<translation id="261322795497077164">발화자 식별</translation>
 <translation id="2617397783536231890">면</translation>
 <translation id="2618015542787108131">모래 언덕</translation>
 <translation id="2619761439309613843">매일 새로고침</translation>
@@ -440,6 +442,7 @@
 <translation id="3140130301071865159">눈</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> 전용</translation>
 <translation id="315116470104423982">모바일 데이터</translation>
+<translation id="3153094818810437149">나중에 녹음기 설정에서 변경할 수 있습니다.</translation>
 <translation id="3156511682997763015">10초 앞으로 이동</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />페이지 스캔 중…</translation>
 <translation id="315738237743207937">종속 포털 감지됨</translation>
@@ -562,6 +565,7 @@
 <translation id="3785643128701396311">픽셀 아트</translation>
 <translation id="3799381533888781854">사용 중지됨 - 관리자가 관리하는 설정입니다.</translation>
 <translation id="380097101658023925">RGB 제어</translation>
+<translation id="380493988330050229">이 스크립트 언어의 요약을 만들 수 없습니다.</translation>
 <translation id="38114475217616659">모든 기록 삭제</translation>
 <translation id="3820172043799983114">잘못된 PIN입니다.</translation>
 <translation id="382043424867370667">일몰 배경화면</translation>
@@ -585,6 +589,7 @@
 <translation id="3885327323343477505">화면 보호기 변경</translation>
 <translation id="3889914174935857450">날짜 재설정</translation>
 <translation id="3897092660631435901">메뉴</translation>
+<translation id="3902271751020176019">텍스트 변환 언어</translation>
 <translation id="391412459402535266">기기를 테스트할 수 없습니다. 테스트하려면 노트북 모드로 전환하세요.</translation>
 <translation id="3916998944874125962">스크린샷을 찍습니다</translation>
 <translation id="3923184630988645767">데이터 사용</translation>
@@ -733,6 +738,7 @@
 <translation id="458794348635939462">모든 호스트를 확인할 수 없습니다.</translation>
 <translation id="4593212453765072419">프록시 인증이 필요합니다.</translation>
 <translation id="4594021849294327751">스크립트 만들기</translation>
+<translation id="4594541568452132351">스크립트 작성 언어 선택 및 모델 다운로드</translation>
 <translation id="4607282946861182308">이미지를 만들 수 없습니다. 다른 프롬프트를 사용해 보세요.</translation>
 <translation id="4609350030397390689">키보드 밝기 낮추기</translation>
 <translation id="4623061655523261501">녹화 이름이 생성됨</translation>
@@ -937,6 +943,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">로그아웃되었습니다</translation>
 <translation id="5620281292257375798">내부용</translation>
+<translation id="5628106863521633649">지원 언어</translation>
 <translation id="5630438231335788050">바우하우스</translation>
 <translation id="5631759159893697722">초록</translation>
 <translation id="5655283760733841251">키보드 밝기 높이기</translation>
@@ -1097,6 +1104,7 @@
 <translation id="6359919876285606596">이 작업은 영구적이며, 되돌릴 수 없습니다.</translation>
 <translation id="6368342879959028556">'AI로 만들기'를 선택한 경우 맞춤 프롬프트를 작성하세요. 또는 'AI 배경화면'을 선택하여 테마를 고른 후 밑줄이 그어진 단어를 선택해 AI 배경화면을 맞춤설정하세요.</translation>
 <translation id="636850387210749493">엔터프라이즈 등록</translation>
+<translation id="6369221585240879141">이 스크립트 언어의 녹화 이름을 만들 수 없습니다.</translation>
 <translation id="6373461326814131011">연못</translation>
 <translation id="6379086450106841622">터치스크린</translation>
 <translation id="6381741036071372448">키보드 테스트</translation>
@@ -1261,6 +1269,7 @@
 <translation id="710028965487274708">실패 - 승인 실패</translation>
 <translation id="7101959270679078188">업데이트를 계속하려면 <ph name="DEVICE_NAME" />의 잠금을 해제하세요.</translation>
 <translation id="7103252855940681301">기기 <ph name="COUNT" />대 중 <ph name="INDEX" />번째, 기기 이름은 <ph name="NAME" />입니다.</translation>
+<translation id="7103793063702494489">선택된 언어</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> 전용 포스터 선택</translation>
 <translation id="7108668606237948702">입력</translation>
 <translation id="7117228822971127758">나중에 다시 시도해 주세요</translation>
@@ -1270,6 +1279,7 @@
 <translation id="7130438335435247835">액세스포인트 네임(APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{네임서버}other{네임서버}}</translation>
 <translation id="7135814714616751706">바로가기 검색</translation>
+<translation id="7138614237884624401">간략한 텍스트</translation>
 <translation id="7141470099673912333">콘텐츠 전송</translation>
 <translation id="7143207342074048698">연결 중</translation>
 <translation id="7144878232160441200">다시 시도</translation>
@@ -1691,6 +1701,7 @@
 <translation id="9100765901046053179">고급 설정</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> 티켓을 새로고침하세요.</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />페이지 스캔 중</translation>
+<translation id="9108856746036501072">녹음기에서 음성이 포함된 녹음 파일의 스크립트를 작성할 수 있습니다. 다음 단계에서는 스크립트 작성 언어를 선택하고 모델을 다운로드해야 합니다(최대 100MB).</translation>
 <translation id="9111102763498581341">잠금 해제</translation>
 <translation id="9122492456897874028">콘텐츠를 요약하고, 정의를 확인하는 등 다양한 작업을 해 보세요.</translation>
 <translation id="9122602430962285795">다시 연결하려면 설정으로 이동하세요.</translation>

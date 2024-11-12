@@ -306,6 +306,7 @@
 <translation id="2308243864813041101">അപ്‌ഡേറ്റ് പ്രക്രിയ തുടരുന്നതിന് <ph name="DEVICE_NAME" /> എന്നതിന്റെ USB കേബിൾ അൺപ്ലഗ് ചെയ്യുക</translation>
 <translation id="2320295602967756579">ലൈറ്റ് തീം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="2323506179655536734">ഒഴിവാക്കി</translation>
+<translation id="2323755382216917952">ഇൻസ്റ്റലേഷൻ പൂർത്തിയാക്കാൻ നിങ്ങളുടെ കമ്പ്യൂട്ടർ റീസ്റ്റാർട്ട് ചെയ്യാൻ ഈ അപ്‌ഡേറ്റ് ആവശ്യപ്പെടുന്നു. ഈ അപ്‌ഡേറ്റ് പൂർത്തിയാക്കാൻ കുറച്ച് സമയമെടുത്തേക്കാം. ഫേംവെയർ അപ്ഡേറ്റ് ചെയ്തുകൊണ്ടിരിക്കുമ്പോൾ നിങ്ങളുടെ കമ്പ്യൂട്ടർ അൺപ്ലഗ് ചെയ്യാനോ ഷട്ട് ഡൗൺ ചെയ്യാനോ പാടില്ല.</translation>
 <translation id="2324354238778375592">ഫ്ലോട്ട്</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">വളരെ മികച്ചത് (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -448,6 +449,7 @@
 <translation id="3178532070248519384">അവന്റ്-ഗാർഡ്</translation>
 <translation id="3182676044300231689">"കൂടുതൽ ആത്മവിശ്വാസമുള്ളതാക്കൂ" എന്നത് പോലുള്ള പ്രോംപ്റ്റ് നൽകുക</translation>
 <translation id="3188257591659621405">എൻ്റെ ഫയലുകൾ</translation>
+<translation id="3188931456353313123">ഈ അപ്‌ഡേറ്റ് നൽകുന്നത് ഉപകരണ നിർമ്മാതാവാണ്, ഇത് Google പരിശോധിച്ചുറപ്പിച്ചിട്ടില്ല.</translation>
 <translation id="319101249942218879">അവതാർ ചിത്രം മാറ്റി</translation>
 <translation id="3192947282887913208">ഓഡിയോ ഫയലുകള്‍</translation>
 <translation id="3199982728237701504">ഡോക്യുമെന്റ് ഫീഡർ (രണ്ട് വശമുള്ളത്)</translation>
@@ -505,6 +507,7 @@
 <translation id="3488065109653206955">ഭാഗികമായി പ്രവര്‍ത്തനക്ഷമമാക്കി</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> ടോണോടുകൂടിയ <ph name="OFFICE_STYLE" /> ഓഫീസ്</translation>
 <translation id="3493187369049186498">നിങ്ങളുടെ Chromebook ഉപയോഗിച്ചാണ് ഡാറ്റ അളക്കുന്നത്. ഇത് ദാതാവിന്റെ ഡാറ്റയിൽ നിന്ന് വ്യത്യസ്തമായിരിക്കാം.</translation>
+<translation id="349570724365779960">School Tools വിദ്യാർത്ഥികളുമായി കണക്റ്റ് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="3502426834823382181">എല്ലാ ആപ്പുകളും കാണുക</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />പ്രകടന അടയാള ഡാറ്റ<ph name="END_LINK1" /> അയയ്‌ക്കുക</translation>
 <translation id="3517001332549868749">ChromeOS അപ്ഡേറ്റ്</translation>
@@ -753,6 +756,7 @@
 <translation id="473775607612524610">അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="4744944742468440486">നിങ്ങളുടെ തിരഞ്ഞെടുപ്പുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ</translation>
 <translation id="4771607256327216405">കീബോർഡ് തെളിച്ചമുള്ളതാക്കുക</translation>
+<translation id="4771923071974529837">നാളെ</translation>
 <translation id="4773299976671772492">അവസാനിപ്പിച്ചു</translation>
 <translation id="4778082030331381943">അമെതിസ്റ്റ്</translation>
 <translation id="4782311465517282004">നിങ്ങൾ വലത്-ക്ലിക്ക് ചെയ്യുമ്പോഴോ ടെക്സ്റ്റിൽ സ്‌പർശിച്ച് പിടിക്കുമ്പോഴോ നിർവചനങ്ങളോ വിവർത്തനങ്ങളോ യൂണിറ്റ് കൺവേർഷനുകളോ നേടുക</translation>
@@ -816,6 +820,7 @@
 <translation id="500920857929044050">ടെസ്‌റ്റ് നിർത്തുക</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">തീമിന്റെ നിറം</translation>
+<translation id="5037240652947866174">ഇന്ന്</translation>
 <translation id="5038292761217083259">ഒന്നിലേറെ നിറങ്ങളുള്ള കീബോർഡ്</translation>
 <translation id="5039804452771397117">അനുവദിക്കൂ</translation>
 <translation id="5049856988445523908">സിം ലോക്ക് ചെയ്തു (<ph name="LOCK_TYPE" />)</translation>

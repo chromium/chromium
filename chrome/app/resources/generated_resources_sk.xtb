@@ -1224,7 +1224,6 @@ Povolenia, ktoré ste už udelili aplikáciám, sa môžu vzťahovať na tento �
 <translation id="1832848789136765277">Ak chcete mať neustály prístup k svojim synchronizovaným údajom, overte svoju totožnosť</translation>
 <translation id="1834503245783133039">Sťahovanie sa nepodarilo: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Inovácia systému Linux</translation>
-<translation id="1835612721186505600">Umožniť prístup všetkým aplikáciám a webom s povolením používať kameru</translation>
 <translation id="1837441256780906162">Služba Microsoft OneDrive žiadosť zamietla. Skúste to neskôr.</translation>
 <translation id="1838374766361614909">Vymazať vyhľadávanie</translation>
 <translation id="1839021455997460752">Vaša e‑mailová adresa</translation>
@@ -2665,7 +2664,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2822634587701817431">Zmenšiť/zväčšiť</translation>
 <translation id="2822910719211888134">Pri zálohovaní systému Linux sa vyskytla chyba</translation>
 <translation id="2824942875887026017"><ph name="IDS_SHORT_PRODUCT_NAME" /> používa nastavenia proxy servera od vášho správcu</translation>
-<translation id="2825151610926840364">Umožnite prístup všetkým aplikáciám a webom s povolením používať kameru. Ak chcete použiť kameru, možno budete musieť aplikáciu reštartovať alebo obnoviť stránku.</translation>
 <translation id="2825758591930162672">Verejný kľúč subjektu</translation>
 <translation id="2826576843404243001">V prípade webov, ktoré nepodporujú zabezpečené pripojenia, sa pred ich návštevou zobrazí upozornenie. Toto nastavenie nemôžete zmeniť, pretože máte povolenú rozšírenú ochranu.</translation>
 <translation id="2828375943530438449">Späť z prihlásenia</translation>
@@ -9246,7 +9244,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7610337976012700501">Ak chcete s týmito kontaktmi používať funkciu <ph name="FEATURE_NAME" />, pridajte e‑mailové adresy prepojené s ich účtami Google do svojich kontaktov.</translation>
 <translation id="7611713099524036757">meta</translation>
 <translation id="7612050744024016345">Všetky rozšírenia</translation>
-<translation id="7612401678989660900">Umožniť prístup aplikáciám a webom s povolením používať mikrofón</translation>
 <translation id="7612497353238585898">Aktívny web</translation>
 <translation id="7612655942094160088">Povolenie funkcií pripojeného telefónu</translation>
 <translation id="7612989789287281429">Prihlasuje sa…</translation>

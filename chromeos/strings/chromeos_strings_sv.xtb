@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Ta bort</translation>
 <translation id="1191518099344003522">APN är aktiverat.</translation>
 <translation id="1195447618553298278">Okänt fel.</translation>
+<translation id="1196264380943975940">Det går inte att sammanfatta. Testa med en längre transkription.</translation>
 <translation id="1196959502276349371">Version <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Uppspelnings-/paustangenten</translation>
 <translation id="1201402288615127009">Nästa</translation>
@@ -306,6 +307,7 @@
 <translation id="2308243864813041101">Koppla från USB-kabeln från <ph name="DEVICE_NAME" /> för att fortsätta uppdateringsprocessen</translation>
 <translation id="2320295602967756579">Aktivera ljust tema</translation>
 <translation id="2323506179655536734">HOPPADES ÖVER</translation>
+<translation id="2323755382216917952">Du måste starta om datorn för att slutföra installationen av den här uppdateringen. Uppdateringen kan ta några minuter. Koppla inte från eller stäng av datorn medan firmware uppdateras.</translation>
 <translation id="2324354238778375592">Flytande knapp</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2346474577291266260">Utmärkt (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -448,6 +450,7 @@
 <translation id="3178532070248519384">avantgarde</translation>
 <translation id="3182676044300231689">Skriv en prompt, till exempel ”gör det mer självsäkert”</translation>
 <translation id="3188257591659621405">Mina filer</translation>
+<translation id="3188931456353313123">Den här uppdateringen tillhandahålls av enhetstillverkaren och har inte verifierats av Google.</translation>
 <translation id="319101249942218879">Avatarbild har ändrats</translation>
 <translation id="3192947282887913208">Ljudfiler</translation>
 <translation id="3199982728237701504">Dokumentmatare (tvåsidig)</translation>
@@ -505,6 +508,7 @@
 <translation id="3488065109653206955">Delvis aktiverat</translation>
 <translation id="3492882532495507361">Ett <ph name="OFFICE_STYLE" />-kontor med <ph name="OFFICE_COLOR" /> toner</translation>
 <translation id="3493187369049186498">Data mäts av din Chromebook. Resultatet kan skilja sig från leverantörens data.</translation>
+<translation id="349570724365779960">School Tools är anslutet till elever</translation>
 <translation id="3502426834823382181">visa alla appar</translation>
 <translation id="3510890413042482857">Skicka <ph name="BEGIN_LINK1" />data från resultatspårning<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS-uppdatering</translation>
@@ -745,6 +749,7 @@
 <translation id="4665014895760275686">Tillverkare</translation>
 <translation id="467510802200863975">Lösenorden matchar inte</translation>
 <translation id="467715984478005772">Misstänkt brandvägg</translation>
+<translation id="4678534708181186163">Det går inte att sammanfatta. Prova med en kortare transkription.</translation>
 <translation id="4683762547447150570">Tryck på knappen för att flytta fokus till tangenttilldelningen</translation>
 <translation id="4691278870498629773">Har stoppats – fack saknas</translation>
 <translation id="469379815867856270">Signalstyrka</translation>
@@ -753,6 +758,7 @@
 <translation id="473775607612524610">Uppdatera</translation>
 <translation id="4744944742468440486">Information om det som är markerat</translation>
 <translation id="4771607256327216405">öka ljusstyrkan på tangentbordet</translation>
+<translation id="4771923071974529837">i morgon</translation>
 <translation id="4773299976671772492">Har stoppats</translation>
 <translation id="4778082030331381943">ametist</translation>
 <translation id="4782311465517282004">Få definitioner, översättningar eller enhetskonverteringar när du högerklickar eller trycker länge på text</translation>
@@ -816,6 +822,7 @@
 <translation id="500920857929044050">Avsluta testet</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Temafärg</translation>
+<translation id="5037240652947866174">i dag</translation>
 <translation id="5038292761217083259">flerfärgat tangentbord</translation>
 <translation id="5039804452771397117">Tillåt</translation>
 <translation id="5049856988445523908">SIM-kortet är låst (<ph name="LOCK_TYPE" />)</translation>
@@ -845,6 +852,7 @@
 <translation id="5168185087976003268">Batterihälsa</translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="517075088756846356">Dra ur strömkabeln från <ph name="DEVICE_NAME" /> och sätt i den igen för att fortsätta uppdateringsprocessen</translation>
+<translation id="5178021559562393163">Det går inte att skapa namn. Prova med en kortare transkription.</translation>
 <translation id="5180108905184566358">baobabträd</translation>
 <translation id="5180712487038406644">Uttrycksfull</translation>
 <translation id="5190187232518914472">Återupplev dina favoritminnen. Öppna <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" /> om du vill lägga till eller redigera album.</translation>
@@ -879,6 +887,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identitet</translation>
 <translation id="5317780077021120954">Spara</translation>
+<translation id="5318310531701770497">Det går inte att skapa namn. Testa med en längre transkription.</translation>
 <translation id="5318334351163689047">Misslyckad TCP-begäran</translation>
 <translation id="53196409393069519">Vill du aktivera transkription?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

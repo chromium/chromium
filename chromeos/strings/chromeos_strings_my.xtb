@@ -306,6 +306,7 @@
 <translation id="2308243864813041101">အပ်ဒိတ်လုပ်ငန်းစဉ် ရှေ့ဆက်ရန် <ph name="DEVICE_NAME" /> USB ကြိုးကို ပလတ်ဖြုတ်ပါ</translation>
 <translation id="2320295602967756579">လင်းသည့် အပြင်အဆင် ဖွင့်ရန်</translation>
 <translation id="2323506179655536734">ကျော်လိုက်သည်</translation>
+<translation id="2323755382216917952">ထည့်သွင်းမှု အပြီးသတ်ရန်အတွက် ဤအပ်ဒိတ်သည် သင့်ကွန်ပျူတာကို ပြန်စရန် လိုအပ်သည်။ ဤအပ်ဒိတ်အပြီးသတ်ရန် မိနစ်အနည်းငယ် ကြာနိုင်သည်။ ဖာမ်းဝဲအပ်ဒိတ်လုပ်နေစဉ် သင့်ကွန်ပျူတာကို ပလတ်မဖြုတ်ပါနှင့် (သို့) အပြီးမပိတ်ပါနှင့်။</translation>
 <translation id="2324354238778375592">မျှောရန်</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">အလွန်ကောင်း (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -359,6 +360,7 @@
 <translation id="2589921777872778654">ပြင်၊ ဖျက်ရန် မီနူး</translation>
 <translation id="2597774443162333062">အမှားရှာပြင်ရန် ဖိုင်များကို Google သို့ ပို့ပါမည်</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{စကင်ဖတ်ပြီးပြီ။ စာမျက်နှာ ၁ မျက်နှာကို စကင်ဖတ်ထားသည်}other{စကင်ဖတ်ပြီးပြီ။ စာမျက်နှာ {NUMBER_OF_PAGES} မျက်နှာကို စကင်ဖတ်ထားသည်}}</translation>
+<translation id="261322795497077164">စပီကာ အထောက်အထား</translation>
 <translation id="2617397783536231890">ဝါဂွမ်း</translation>
 <translation id="2618015542787108131">သဲသောင်ခုံ</translation>
 <translation id="2619761439309613843">နေ့စဉ် ပြန်လည်စတင်ရန်</translation>
@@ -439,6 +441,7 @@
 <translation id="3140130301071865159">နှင်း</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> အတွက် အထူးသီးသန့်</translation>
 <translation id="315116470104423982">မိုဘိုင်း ဒေတာ</translation>
+<translation id="3153094818810437149">Recorder ဆက်တင်များ၌ ၎င်းကို နောက်ပိုင်းတွင် ပြောင်းနိုင်သည်</translation>
 <translation id="3156511682997763015">ရှေ့သို့ ၁၀ စက္ကန့်ရစ်ရန်</translation>
 <translation id="3156846309055100599">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို စကင်ဖတ်နေသည်…</translation>
 <translation id="315738237743207937">စတင်ဝင်ရန်စာမျက်နှာကို တွေ့ရှိသည်</translation>
@@ -448,6 +451,7 @@
 <translation id="3178532070248519384">အတွေးအမြင်သစ် အနုပညာ</translation>
 <translation id="3182676044300231689">“ယုံကြည်မှုပိုရှိအောင်လုပ်ပါ” ကဲ့သို့ တိုက်တွန်းချက်ထည့်ရန်</translation>
 <translation id="3188257591659621405">ကျွန်ုပ်၏ဖိုင်များ</translation>
+<translation id="3188931456353313123">ဤအပ်ဒိတ်ကို စက်ထုတ်လုပ်သူက ပံ့ပိုးထားသဖြင့် Google က စိစစ်မထားပါ။</translation>
 <translation id="319101249942218879">အယ်ဗတာပုံ ပြောင်းလိုက်သည်</translation>
 <translation id="3192947282887913208">အသံ ဖိုင်များ</translation>
 <translation id="3199982728237701504">စာရွက်စာတမ်း ထည့်ရန်ဗန်း (နှစ်ဘက်သုံး)</translation>
@@ -505,6 +509,7 @@
 <translation id="3488065109653206955">တစ်စိတ်တစ်ဒေသ ဖွင့်သုံးနေ</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> အရောင်များဖြင့် <ph name="OFFICE_STYLE" /> ရုံးခန်း</translation>
 <translation id="3493187369049186498">ဒေတာကို သင့် Chromebook ဖြင့် တိုင်းတာသည်။ ၎င်းသည် ဝန်ဆောင်မှုပေးသူ၏ ဒေတာနှင့် ကွဲပြားမှုရှိနိုင်သည်။</translation>
+<translation id="349570724365779960">‘ကျောင်းသုံးတူးလ်များ’ ကို ကျောင်းသားများနှင့် ချိတ်ဆက်ထားသည်</translation>
 <translation id="3502426834823382181">အက်ပ်အားလုံး ကြည့်ရန်</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />စွမ်းဆောင်ရည် မှတ်တမ်းဒေတာ<ph name="END_LINK1" /> ပို့ရန်</translation>
 <translation id="3517001332549868749">ChromeOS အပ်ဒိတ်</translation>
@@ -559,6 +564,7 @@
 <translation id="3785643128701396311">ပစ်ဆယ်ပုံ</translation>
 <translation id="3799381533888781854">ပိတ်ထားသည် - ဤဆက်တင်ကို သင့် ကြီးကြပ်သူက စီမံသည်။</translation>
 <translation id="380097101658023925">rgb သတ်မှတ်ချက်များ</translation>
+<translation id="380493988330050229">ဤစာသားမှတ်တမ်း ဘာသာစကားအတွက် အကျဉ်းချုပ် ပြုလုပ်၍မရပါ</translation>
 <translation id="38114475217616659">မှတ်တမ်းအားလုံး ရှင်းထုတ်ရန်</translation>
 <translation id="3820172043799983114">ပင်နံပါတ် မမှန်ကန်ပါ။</translation>
 <translation id="382043424867370667">နေဝင်သည့် နောက်ခံ</translation>
@@ -730,6 +736,7 @@
 <translation id="458794348635939462">ဆာဗာပင်ရင်းအားလုံးကို ဖြေရှင်း၍မရပါ</translation>
 <translation id="4593212453765072419">ပရောက်စီ အထောက်အထားစိစစ်ရန် လိုအပ်သည်</translation>
 <translation id="4594021849294327751">စာသားမှတ်တမ်း ပြုလုပ်ရန်</translation>
+<translation id="4594541568452132351">စာသားမှတ်တမ်း ဘာသာစကားကို ရွေးပြီး မော်ဒယ် ဒေါင်းလုဒ်လုပ်ခြင်း</translation>
 <translation id="4607282946861182308">၎င်း၏ပုံများ ပြုလုပ်၍မရပါ။ အခြားတိုက်တွန်းချက်ဖြင့် စမ်းကြည့်ပါ။</translation>
 <translation id="4609350030397390689">ကီးဘုတ်တောက်ပမှု လျှော့ရန်</translation>
 <translation id="4623061655523261501">အသံဖိုင်အမည်များ ထုတ်လုပ်ပြီးပါပြီ</translation>
@@ -753,6 +760,7 @@
 <translation id="473775607612524610">အပ်ဒိတ်လုပ်ရန်</translation>
 <translation id="4744944742468440486">သင်ရွေးထားသည့်အရာနှင့် သက်ဆိုင်သည့် အချက်အလက်များ</translation>
 <translation id="4771607256327216405">ကီးဘုတ် လင်းသွားခြင်း</translation>
+<translation id="4771923071974529837">မနက်ဖြန်</translation>
 <translation id="4773299976671772492">ဆိုင်းငံ့ထား</translation>
 <translation id="4778082030331381943">ကျောက်ခရမ်းပွင့်</translation>
 <translation id="4782311465517282004">ညာဘက်ခလုတ်ကို နှိပ်ချိန် (သို့) စာသားကိုတို့ထိ၍ ဖိထားချိန်တွင် အဓိပ္ပာယ်ဖွင့်ဆိုချက်၊ ဘာသာပြန်ဆိုချက် (သို့) ယူနစ်ပြောင်းလဲချက်များကို ရယူနိုင်သည်</translation>
@@ -816,6 +824,7 @@
 <translation id="500920857929044050">စစ်ဆေးမှု ရပ်ရန်</translation>
 <translation id="5017508259293544172">နှစ်ထက်နှစ်</translation>
 <translation id="5035083460461104704">အပြင်အဆင် အရောင်</translation>
+<translation id="5037240652947866174">ယနေ့</translation>
 <translation id="5038292761217083259">ကီးဘုတ် ရောင်စုံ</translation>
 <translation id="5039804452771397117">ခွင့်ပြုရန်</translation>
 <translation id="5049856988445523908">ဆင်းမ်ကတ် လော့ခ်ချထားသည် (<ph name="LOCK_TYPE" />)</translation>
@@ -1092,6 +1101,7 @@
 <translation id="6359919876285606596">ဤလုပ်ဆောင်ချက်သည် အတည်ဖြစ်ပြီး ၎င်းကို ပြန်ပြင်၍မရပါ</translation>
 <translation id="6368342879959028556">“AI ဖြင့် ဖန်တီးရန်” ကို ရွေးသည့်အခါ စိတ်ကြိုက်တိုက်တွန်းချက် ရေးပါ။ သို့မဟုတ် အပြင်အဆင်ကို ရွေးရန် “AI နောက်ခံများ” ကို ရွေးနိုင်သည်။ ထို့နောက် သင့် AI နောက်ခံကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် မျဉ်းသားထားသော စာလုံးများ ရွေးနိုင်သည်။</translation>
 <translation id="636850387210749493">လုပ်ငန်း အမည်စာရင်းသွင်းခြင်း</translation>
+<translation id="6369221585240879141">ဤစာသားမှတ်တမ်း ဘာသာစကားအတွက် အသံဖိုင်အမည်များကို ပြုလုပ်၍မရပါ</translation>
 <translation id="6373461326814131011">ရေကန်</translation>
 <translation id="6379086450106841622">တို့ထိမျက်နှာပြင်</translation>
 <translation id="6381741036071372448">ကီးဘုတ်စမ်းသပ်ရန်</translation>
@@ -1265,6 +1275,7 @@
 <translation id="7130438335435247835">APN အချိတ်အဆက် (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{ဆာဗာအမည်}other{ဆာဗာများအမည်}}</translation>
 <translation id="7135814714616751706">ဖြတ်လမ်းလင့်ခ်များ ရှာရန်</translation>
+<translation id="7138614237884624401">ရိုးရှင်းသော စာသား</translation>
 <translation id="7141470099673912333">အချက်အလက် လွှဲပြောင်းခြင်း</translation>
 <translation id="7143207342074048698">ချိတ်ဆက်နေသည်</translation>
 <translation id="7144878232160441200">ထပ်စမ်းရန်</translation>
@@ -1686,6 +1697,7 @@
 <translation id="9100765901046053179">အဆင့်မြင့် ဆက်တင်များ</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> အတွက် လက်မှတ်ကို ပြန်လည်စတင်ပါ</translation>
 <translation id="9106415115617144481">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို စကင်ဖတ်နေသည်</translation>
+<translation id="9108856746036501072">Recorder သည် စကားသံနှင့် အသံသွင်းချက်များအတွက် စာသားမှတ်တမ်းများ ပြုလုပ်နိုင်သည်။ နောက်တစ်ဆင့်တွင် စာသားမှတ်တမ်း ဘာသာစကားကို ရွေးပြီး မော်ဒယ် (၁၀၀ MB အထိ) ဒေါင်းလုဒ်လုပ်ပါ။</translation>
 <translation id="9111102763498581341">သော့ဖွင့်ရန်</translation>
 <translation id="9122492456897874028">အကြောင်းအရာ အကျဉ်းချုပ်ရန်၊ အဓိပ္ပာယ်ဖွင့်ဆိုချက် ရယူရန် စသည်</translation>
 <translation id="9122602430962285795">ပြန်ချိတ်ဆက်ရန် ဆက်တင်များသို့ သွားပါ</translation>

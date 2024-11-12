@@ -360,6 +360,7 @@
 <translation id="2589921777872778654">Menu Bewerken en verwijderen</translation>
 <translation id="2597774443162333062">Bestanden worden naar Google gestuurd voor foutopsporing</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Scannen afgerond. 1 pagina gescand}other{Scannen afgerond. {NUMBER_OF_PAGES} pagina's gescand}}</translation>
+<translation id="261322795497077164">Identificatie van sprekers</translation>
 <translation id="2617397783536231890">katoen</translation>
 <translation id="2618015542787108131">duin</translation>
 <translation id="2619761439309613843">Dagelijks vernieuwen</translation>
@@ -440,6 +441,7 @@
 <translation id="3140130301071865159">sneeuw</translation>
 <translation id="3146655726035122603">Exclusief voor <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobiele data</translation>
+<translation id="3153094818810437149">Je kunt dit later wijzigen in de Recorderinstellingen</translation>
 <translation id="3156511682997763015">10 seconden vooruit</translation>
 <translation id="3156846309055100599">Pagina <ph name="PAGE_NUMBER" /> scannen…</translation>
 <translation id="315738237743207937">Captive portal waargenomen</translation>
@@ -562,6 +564,7 @@
 <translation id="3785643128701396311">pixel art</translation>
 <translation id="3799381533888781854">UIT: deze instelling wordt beheerd door je beheerder.</translation>
 <translation id="380097101658023925">rgb-bedieningselementen</translation>
+<translation id="380493988330050229">Kan geen samenvatting maken voor deze transcripttaal</translation>
 <translation id="38114475217616659">Alle geschiedenis wissen</translation>
 <translation id="3820172043799983114">Ongeldige pincode.</translation>
 <translation id="382043424867370667">Achtergrond Zonsondergang</translation>
@@ -733,6 +736,7 @@
 <translation id="458794348635939462">Kan niet alle hosts omzetten</translation>
 <translation id="4593212453765072419">Proxyverificatie vereist</translation>
 <translation id="4594021849294327751">Transcript maken</translation>
+<translation id="4594541568452132351">Transcriptietaal selecteren en model downloaden</translation>
 <translation id="4607282946861182308">Kan geen afbeeldingen hiervan maken. Probeer een andere prompt.</translation>
 <translation id="4609350030397390689">Helderheid van toetsenbord verlagen</translation>
 <translation id="4623061655523261501">Namen voor opnamen gegenereerd</translation>
@@ -1097,6 +1101,7 @@
 <translation id="6359919876285606596">Deze actie is definitief en kan niet ongedaan worden gemaakt</translation>
 <translation id="6368342879959028556">Als je Maken met AI selecteert, schrijf je een aangepaste prompt. Je kunt ook AI-achtergronden selecteren om een thema te kiezen en dan de onderstreepte woorden selecteren om je AI-achtergrond te personaliseren.</translation>
 <translation id="636850387210749493">Aanmelding voor Enterprise</translation>
+<translation id="6369221585240879141">Kan geen namen voor opnamen maken voor deze transcripttaal</translation>
 <translation id="6373461326814131011">vijver</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6381741036071372448">Je toetsenbord testen</translation>
@@ -1270,6 +1275,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="7130438335435247835">Toegangspuntnaam (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Naamserver}other{Naamservers}}</translation>
 <translation id="7135814714616751706">Sneltoetsen zoeken</translation>
+<translation id="7138614237884624401">Vereenvoudigde tekst</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Verbinden</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
@@ -1691,6 +1697,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="9100765901046053179">Geavanceerde instellingen</translation>
 <translation id="910415269708673980">Ticket voor <ph name="PRINCIPAL_NAME" /> vernieuwen</translation>
 <translation id="9106415115617144481">Pagina <ph name="PAGE_NUMBER" /> scannen</translation>
+<translation id="9108856746036501072">Recorder kan transcripten maken van opnamen met spraak. In de volgende stap moet je de transcriptietaal selecteren en het model downloaden (maximaal 100 MB).</translation>
 <translation id="9111102763498581341">Ontgrendelen</translation>
 <translation id="9122492456897874028">Vat content samen, zoek definities op en meer</translation>
 <translation id="9122602430962285795">Ga naar Instellingen als je weer verbinding wilt maken</translation>

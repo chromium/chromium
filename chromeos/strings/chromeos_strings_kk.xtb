@@ -306,6 +306,7 @@
 <translation id="2308243864813041101">Жаңарту процесін жалғастыру үшін <ph name="DEVICE_NAME" /> USB кабелін ажыратыңыз.</translation>
 <translation id="2320295602967756579">Жарық режимді қосу</translation>
 <translation id="2323506179655536734">ӨТКІЗІП ЖІБЕРІЛДІ</translation>
+<translation id="2323755382216917952">Бұл жаңарту кезінде орнатуды аяқтау үшін компьютерді өшіріп қосуыңыз қажет. Жаңарту бірнеше минутқа созылуы мүмкін. Микробағдарлама жаңартылып жатқанда, компьютерді ажыратпаңыз немесе өшірмеңіз.</translation>
 <translation id="2324354238778375592">Қалқыма</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> нүкте/дюйм</translation>
 <translation id="2346474577291266260">Өте жақсы (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -448,6 +449,7 @@
 <translation id="3178532070248519384">авангард</translation>
 <translation id="3182676044300231689">"Сенімдірек жаз" сияқты нұсқау енгізіңіз.</translation>
 <translation id="3188257591659621405">Файлдарым</translation>
+<translation id="3188931456353313123">Бұл жаңартуды құрылғы өндірушісі ұсынды. Оны Google тексермеді.</translation>
 <translation id="319101249942218879">Аватар суреті өзгертілді.</translation>
 <translation id="3192947282887913208">Аудио файлдары</translation>
 <translation id="3199982728237701504">Құжат беруші (екі жақты)</translation>
@@ -505,6 +507,7 @@
 <translation id="3488065109653206955">Ішінара белсендірілген</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> реңкті <ph name="OFFICE_STYLE" /> кеңсе</translation>
 <translation id="3493187369049186498">Деректі Chromebook өлшейді. Бұл көрсеткіш провайдер дерегінен өзгеше болуы мүмкін.</translation>
+<translation id="349570724365779960">Оқушылар мектепке арналған құралдар сеансына қосылды.</translation>
 <translation id="3502426834823382181">барлық қолданбаны көру</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Өнімділікті бақылау деректерін<ph name="END_LINK1" /> жіберу</translation>
 <translation id="3517001332549868749">Chrome OS жаңарту</translation>
@@ -753,6 +756,7 @@
 <translation id="473775607612524610">Жаңарту</translation>
 <translation id="4744944742468440486">Таңдауға қатысты ақпарат</translation>
 <translation id="4771607256327216405">пернетақтаны жарық ету</translation>
+<translation id="4771923071974529837">ертең</translation>
 <translation id="4773299976671772492">Тоқтатылды</translation>
 <translation id="4778082030331381943">аметист</translation>
 <translation id="4782311465517282004">Тінтуірдің оң жақ түймесін басқанда немесе мәтінді басып тұрғанда мәтіннің анықтамасын, аудармасын немесе өлшем бірліктерін көріңіз.</translation>
@@ -816,6 +820,7 @@
 <translation id="500920857929044050">Тексеруді тоқтату</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Тақырып түсі</translation>
+<translation id="5037240652947866174">бүгін</translation>
 <translation id="5038292761217083259">пернетақтаны көп түсті ету</translation>
 <translation id="5039804452771397117">Рұқсат беру</translation>
 <translation id="5049856988445523908">SIM құлыпталған (<ph name="LOCK_TYPE" />)</translation>

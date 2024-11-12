@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">ამოშლა</translation>
 <translation id="1191518099344003522">APN ჩართულია.</translation>
 <translation id="1195447618553298278">უცნობი შეცდომა.</translation>
+<translation id="1196264380943975940">შეჯამება შეუძლებელია. ცადეთ უფრო გრძელი ტრანსკრიპტი.</translation>
 <translation id="1196959502276349371">ვერსია <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">დაკვრა/პაუზა</translation>
 <translation id="1201402288615127009">შემდეგი</translation>
@@ -138,6 +139,7 @@
 <translation id="1604959087182679653">ტრანსკრიპტის დამალვა</translation>
 <translation id="160633243685262989">სურათის გადახედვა</translation>
 <translation id="1611649489706141841">წინ</translation>
+<translation id="1615144046047995187">ჩამოტვირთვა ვერ ხერხდება. ხელახლა ცადეთ ან გადატვირთეთ Chromebook.</translation>
 <translation id="1615335640928990664">მონაცემთა მოხმარება <ph name="FRIENDLY_DATE" />-დან</translation>
 <translation id="1618566998877964907">გამოიყენეთ თემა</translation>
 <translation id="1621067168122174824">დატენის ტესტის გაშვება</translation>
@@ -588,6 +590,7 @@
 <translation id="3885327323343477505">ეკრანმზოგის შეცვლა</translation>
 <translation id="3889914174935857450">გადაყენების თარიღი</translation>
 <translation id="3897092660631435901">მენიუ</translation>
+<translation id="3902271751020176019">ტრანსკრიფციის ენა</translation>
 <translation id="391412459402535266">მოწყობილობის შემოწმება ვერ ხერხდება. შესამოწმებლად გადადით ლეპტოპის რეჟიმზე.</translation>
 <translation id="3916998944874125962">ეკრანის ანაბეჭდის გადაღება</translation>
 <translation id="3923184630988645767">მონაცემთა მოხმარება</translation>
@@ -752,6 +755,7 @@
 <translation id="4665014895760275686">მწარმოებელი</translation>
 <translation id="467510802200863975">პაროლები არ ემთხვევა</translation>
 <translation id="467715984478005772">სავარაუდოდ, გამოიყენება ქსელის დაცვა</translation>
+<translation id="4678534708181186163">შეჯამება შეუძლებელია. ცადეთ უფრო მოკლე ტრანსკრიპტი.</translation>
 <translation id="4683762547447150570">კლავიშის მინიჭებაზე ფოკუსირებისთვის შეეხეთ ღილაკს</translation>
 <translation id="4691278870498629773">გაჩერდა — ლანგარი აკლია</translation>
 <translation id="469379815867856270">სიგნალის სიძლიერე</translation>
@@ -854,6 +858,7 @@
 <translation id="5168185087976003268">ბატარეის მდგომარეობა</translation>
 <translation id="5170568018924773124">საქაღალდეში ჩვენება</translation>
 <translation id="517075088756846356">გამოაერთეთ და ისევ შეაერთეთ <ph name="DEVICE_NAME" />-ის ელკვების კაბელი, რომ განახლება განაგრძოთ</translation>
+<translation id="5178021559562393163">სახელების შექმნა შეუძლებელია. ცადეთ უფრო მოკლე ტრანსკრიპტი.</translation>
 <translation id="5180108905184566358">ბაობაბები</translation>
 <translation id="5180712487038406644">ექსპრესიული</translation>
 <translation id="5190187232518914472">გააცოცხლეთ თქვენი ყველაზე თბილი მოგონებები. ალბომების დასამატებლად ან რედაქტირებისთვის გადადით <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />-ზე.</translation>
@@ -888,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">მოწმობა</translation>
 <translation id="5317780077021120954">შენახვა</translation>
+<translation id="5318310531701770497">სახელების შექმნა შეუძლებელია. ცადეთ უფრო გრძელი ტრანსკრიპტი.</translation>
 <translation id="5318334351163689047">წარუმატებელი TCP მოთხოვნები</translation>
 <translation id="53196409393069519">გსურთ ტრანსკრიფციის ჩართვა?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -941,6 +947,7 @@
 <translation id="5606865426897221650">ჩანართი</translation>
 <translation id="5613201299517339763">თქვენ სისტემიდან გამოხვედით</translation>
 <translation id="5620281292257375798">მხოლოდ შიდა გამოყენებისთვის</translation>
+<translation id="5628106863521633649">ხელმისაწვდომი ენები</translation>
 <translation id="5630438231335788050">ბაუჰაუსი</translation>
 <translation id="5631759159893697722">რეზიუმე</translation>
 <translation id="5655283760733841251">კლავიატურის სიკაშკაშის მომატება</translation>
@@ -1266,6 +1273,7 @@
 <translation id="710028965487274708">წარუმატებელია — ავტორიზაცია ვერ მოხერხდა</translation>
 <translation id="7101959270679078188">განბლოკეთ <ph name="DEVICE_NAME" />, რომ განახლება განაგრძოთ</translation>
 <translation id="7103252855940681301">მოწყობილობა <ph name="INDEX" /> / <ph name="COUNT" />-დან, სახელწოდებით — <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">არჩეული ენა</translation>
 <translation id="7107255225945990211">ექსკლუზიურად <ph name="PRODUCT_NAME" />-ზე ხელმისაწვდომი ნამუშევრების არჩევა</translation>
 <translation id="7108668606237948702">შეყვანა</translation>
 <translation id="7117228822971127758">გთხოვთ, ცადოთ მოგვიანებით</translation>
