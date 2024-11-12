@@ -1704,6 +1704,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB;
   self.historyCoordinator.presentationDelegate = self;
   self.historyCoordinator.delegate = self;
+  // From recent tabs, the tab grid might not be visible. As such, the animation
+  // should never run in this flow.
+  // TODO(crbug.com/335387869): Reenable animation for when tab groups sync is
+  // enabled for iPads. To trigger the animation, the HistoryCoordiantor owned
+  // by this TabGridCoordinator needs to be stoped before the animation is ran.
+  self.historyCoordinator.canPerformTabsClosureAnimation = NO;
   [self.historyCoordinator start];
   // See crbug.com/368260425.
   // When presenting and dismissing History, the Tab Grid search bar becomes

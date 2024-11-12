@@ -23,10 +23,21 @@
 
 @implementation HistoryCoordinator
 
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser {
+  if ((self = [super initWithBaseViewController:viewController
+                                        browser:browser])) {
+    self.canPerformTabsClosureAnimation = YES;
+  }
+  return self;
+}
+
 - (void)start {
   // Initialize and configure HistoryTableViewController.
   _viewController = [[HistoryTableViewController alloc] init];
   _viewController.searchTerms = self.searchTerms;
+  _viewController.canPerformTabsClosureAnimation =
+      self.canPerformTabsClosureAnimation;
   _viewController.delegate = self;
 
   // Configure and present HistoryNavigationController.

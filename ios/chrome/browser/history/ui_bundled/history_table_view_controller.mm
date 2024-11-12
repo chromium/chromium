@@ -541,7 +541,8 @@ const CGFloat kButtonHorizontalPadding = 30.0;
         self.browser->GetCommandDispatcher(), QuickDeleteCommands);
     [quickDeleteHandler
         showQuickDeleteAndCanPerformTabsClosureAnimation:
-            ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET];
+            ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+            self.canPerformTabsClosureAnimation];
     return;
   }
 
