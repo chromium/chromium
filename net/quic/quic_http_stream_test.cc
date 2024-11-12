@@ -617,6 +617,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   void ExpectLoadTimingValid(const LoadTimingInfo& load_timing_info,
                              bool session_reused) {
     EXPECT_EQ(session_reused, load_timing_info.socket_reused);
+    EXPECT_TRUE(load_timing_info.socket_log_id != 0);
     if (session_reused) {
       ExpectConnectTimingHasNoTimes(load_timing_info.connect_timing);
     } else {

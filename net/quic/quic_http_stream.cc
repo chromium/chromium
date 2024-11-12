@@ -280,6 +280,7 @@ int64_t QuicHttpStream::GetTotalSentBytes() const {
 bool QuicHttpStream::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
   bool is_first_stream = closed_is_first_stream_;
   if (stream_) {
+    load_timing_info->socket_log_id = stream_->net_log().source().id;
     is_first_stream = stream_->IsFirstStream();
     load_timing_info->first_early_hints_time =
         stream_->first_early_hints_time();
