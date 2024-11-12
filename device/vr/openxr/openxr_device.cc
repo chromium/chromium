@@ -85,7 +85,7 @@ OpenXrDevice::OpenXrDevice(
   }
 
   // Only support WebGPU sessions if feature flag is enabled.
-  if (base::FeatureList::IsEnabled(features::kWebXrIncubations)) {
+  if (base::FeatureList::IsEnabled(features::kWebXrWebGpuBinding)) {
     device_data.supported_features.emplace_back(
         mojom::XRSessionFeature::WEBGPU);
   }

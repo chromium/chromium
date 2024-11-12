@@ -2336,6 +2336,9 @@ extern const char kWebXrRuntimeChoiceOrientationSensors[];
 extern const char kWebXrHandInputName[];
 extern const char kWebXrHandInputDescription[];
 
+extern const char kWebXrWebGpuBindingName[];
+extern const char kWebXrWebGpuBindingDescription[];
+
 extern const char kWebXrIncubationsName[];
 extern const char kWebXrIncubationsDescription[];
 

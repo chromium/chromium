@@ -8072,6 +8072,9 @@ const char kPdfUseSkiaRendererDescription[] =
 const char kWebXrHandInputName[] = "WebXR Hand Input";
 const char kWebXrHandInputDescription[] =
     "Enables access to articulated hand tracking sensor input in WebXR.";
+const char kWebXrWebGpuBindingName[] = "WebXR/WebGPU Binding";
+const char kWebXrWebGpuBindingDescription[] =
+    "Enables rendering with WebGPU for WebXR sessions.";
 const char kWebXrInternalsName[] = "WebXR Internals Debugging Page";
 const char kWebXrInternalsDescription[] =
     "Enables the webxr-internals developer page which can be used to help "

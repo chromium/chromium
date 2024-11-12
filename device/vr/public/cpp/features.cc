@@ -18,6 +18,11 @@ BASE_FEATURE(kWebXrHandInput,
              "WebXRHandInput",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables rendering to WebXR sessions with the WebGPU API.
+BASE_FEATURE(kWebXrWebGpuBinding,
+             "WebXRWebGPUBinding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables access to experimental WebXR features.
 BASE_FEATURE(kWebXrIncubations,
              "WebXRIncubations",

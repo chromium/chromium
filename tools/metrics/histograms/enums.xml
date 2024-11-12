@@ -18069,6 +18069,7 @@ from previous Chrome versions.
   <int value="-886296821"
       label="NtpHistoryClustersModuleUseModelRanking:disabled"/>
   <int value="-885601782" label="enable-contextual-search"/>
+  <int value="-885223316" label="WebXRWebGPUBinding:enabled"/>
   <int value="-885209667" label="FilesZipMount:disabled"/>
   <int value="-884864731" label="WebPaymentsSingleAppUiSkip:enabled"/>
   <int value="-884783216" label="ForceEnableFastCheckoutCapabilities:enabled"/>
@@ -21364,6 +21365,7 @@ from previous Chrome versions.
   <int value="438447086" label="AutocorrectToggle:disabled"/>
   <int value="439267320" label="ScreenTime:disabled"/>
   <int value="439858569" label="OmniboxForceAllowedToBeDefault:enabled"/>
+  <int value="439859371" label="WebXRWebGPUBinding:disabled"/>
   <int value="441096714" label="WebBluetoothConfirmPairingSupport:disabled"/>
   <int value="442561299" label="FeatureNotificationGuide:disabled"/>
   <int value="442898264"
