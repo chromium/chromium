@@ -396,9 +396,9 @@ public class EdgeToEdgeControllerImpl
         Insets newInsets = getSystemInsets(windowInsets);
         Insets newKeyboardInsets = windowInsets.getInsets(WindowInsetsCompat.Type.ime());
 
-        if (!newInsets.equals(mSystemInsets)
-                || !newKeyboardInsets.equals(mKeyboardInsets)
-                || updateVisibilityRects(rootView)) {
+        if (updateVisibilityRects(rootView)
+                || !newInsets.equals(mSystemInsets)
+                || !newKeyboardInsets.equals(mKeyboardInsets)) {
             mSystemInsets = newInsets;
             mKeyboardInsets = newKeyboardInsets;
 
@@ -483,7 +483,9 @@ public class EdgeToEdgeControllerImpl
         // In fullscreen mode, there are cases the content isn't being drawn under the system
         // bar (e.g. during multi-window mode). In this case, adjust the padding based on the
         // visibility rects. See https://crbug.com/359659885
-        if (mFullscreenManager.getPersistentFullscreenMode()) {
+        // The exception of this workaround is in PiP mode. See https://crbug.com/377809718.
+        if (mFullscreenManager.getPersistentFullscreenMode()
+                && !mActivity.isInPictureInPictureMode()) {
             topPadding = Math.max(0, mCachedWindowVisibleRect.top - mCachedContentVisibleRect.top);
             bottomPadding =
                     Math.max(0, mCachedContentVisibleRect.bottom - mCachedWindowVisibleRect.bottom);
