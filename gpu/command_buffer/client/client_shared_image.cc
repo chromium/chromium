@@ -502,7 +502,7 @@ SyncToken SharedImageTexture::ScopedAccess::EndAccess(
   gl->EndSharedImageAccessDirectCHROMIUM(scoped_shared_image->texture_->id());
   scoped_shared_image->DidEndAccess();
   SyncToken sync_token;
-  gl->GenSyncTokenCHROMIUM(sync_token.GetData());
+  gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
   return sync_token;
 }
 

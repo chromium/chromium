@@ -94,6 +94,7 @@ ImageToBufferCopier::CopyImage(Image* image) {
   // Cleanup the draw framebuffer and texture.
   gpu::SyncToken sync_token = gpu::SharedImageTexture::ScopedAccess::EndAccess(
       std::move(dest_scoped_si_access));
+  sii_->VerifySyncToken(sync_token);
   dest_si_texture.reset();
 
   static_image->UpdateSyncToken(sync_token);

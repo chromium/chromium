@@ -38,7 +38,7 @@ using testing::Test;
 
 class MockGLES2InterfaceWithSyncTokenSupport : public viz::TestGLES2Interface {
  public:
-  MOCK_METHOD1(GenSyncTokenCHROMIUM, void(GLbyte*));
+  MOCK_METHOD1(GenUnverifiedSyncTokenCHROMIUM, void(GLbyte*));
   MOCK_METHOD1(WaitSyncTokenCHROMIUM, void(const GLbyte*));
 };
 
@@ -111,7 +111,7 @@ TEST_F(AcceleratedStaticBitmapImageTest, CopyToTextureSynchronization) {
   // Posterior synchronization. Generate a sync token on the destination context
   // to ensure mailbox is destroyed after the copy.
   const gpu::SyncToken sync_token2 = GenTestSyncToken(2);
-  EXPECT_CALL(destination_gl, GenSyncTokenCHROMIUM(_))
+  EXPECT_CALL(destination_gl, GenUnverifiedSyncTokenCHROMIUM(_))
       .WillOnce(SetArrayArgument<0>(
           sync_token2.GetConstData(),
           sync_token2.GetConstData() + sizeof(gpu::SyncToken)));

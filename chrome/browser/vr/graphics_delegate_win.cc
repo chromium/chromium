@@ -108,6 +108,7 @@ void GraphicsDelegateWin::PostRender() {
   // Generate a SyncToken after GPU is done accessing the texture.
   access_done_sync_token_ = gpu::SharedImageTexture::ScopedAccess::EndAccess(
       std::move(scoped_shared_image_access_));
+  sii_->VerifySyncToken(access_done_sync_token_);
   shared_image_texture_.reset();
   gl_->BindTexture(GL_TEXTURE_2D, 0);
   draw_frame_buffer_ = 0;
