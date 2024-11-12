@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
+#import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -141,9 +142,13 @@ class ConfigurableProfileManagerIOSImplTest : public PlatformTest {
     chrome_io_ = std::make_unique<IOSChromeIOThread>(
         application_context->GetLocalState(), application_context->GetNetLog());
 
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        application_context->GetSystemIdentityManager(), &profile_manager_);
+
     // Register the objects with the TestingApplicationContext.
     application_context->SetIOSChromeIOThread(chrome_io_.get());
-    application_context->SetProfileManager(&profile_manager_);
+    application_context->SetProfileManagerAndAccountProfileMapper(
+        &profile_manager_, account_profile_mapper_.get());
 
     // Initialize the prediction model store (required by some KeyedServices).
     optimization_guide::IOSChromePredictionModelStore::GetInstance()
@@ -176,9 +181,15 @@ class ConfigurableProfileManagerIOSImplTest : public PlatformTest {
     optimization_guide::IOSChromePredictionModelStore::GetInstance()
         ->ResetForTesting();
 
+    // The profiles must be destroyed before the AccountProfileMapper gets
+    // unregistered from the ApplicationContext, because keyed services may
+    // depend on the AccountProfileMapper.
+    profile_manager_.DestroyAllProfiles();
+
     application_context->GetBrowserPolicyConnector()->Shutdown();
     application_context->GetIOSChromeIOThread()->NetworkTearDown();
-    application_context->SetProfileManager(nullptr);
+    application_context->SetProfileManagerAndAccountProfileMapper(nullptr,
+                                                                  nullptr);
     application_context->SetIOSChromeIOThread(nullptr);
   }
 
@@ -212,6 +223,7 @@ class ConfigurableProfileManagerIOSImplTest : public PlatformTest {
   web::WebTaskEnvironment web_task_environment_{
       web::WebTaskEnvironment::IOThreadType::REAL_THREAD_DELAYED};
   ProfileManagerIOSImpl profile_manager_;
+  std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
 
   // Some KeyedService requires a VariationsIdsProvider to be installed.
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{

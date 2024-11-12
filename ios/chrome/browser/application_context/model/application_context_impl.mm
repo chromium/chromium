@@ -215,7 +215,16 @@ void ApplicationContextImpl::StartTearDown() {
     safe_browsing_service_->ShutDown();
   }
 
-  // Need to clear profiles before the IO thread.
+  // Need to clear profiles before the IO thread. In detail:
+  // - First destroy the profiles, including their keyed services, which may
+  //   depend on the AccountProfileMapper.
+  // - Then destroy the AccountProfileMapper, which depends on the
+  //   ProfileManagerIOS.
+  // - Finally destroy the ProfileManagerIOS.
+  if (profile_manager_) {
+    profile_manager_->DestroyAllProfiles();
+  }
+  account_profile_mapper_.reset();
   profile_manager_.reset();
 
   // The policy providers managed by `browser_policy_connector_` need to shut

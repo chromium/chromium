@@ -168,6 +168,8 @@ class FakeProfileManagerIOS : public ProfileManagerIOS {
   ProfileIOS* LoadProfile(std::string_view name) override { NOTREACHED(); }
   ProfileIOS* CreateProfile(std::string_view name) override { NOTREACHED(); }
 
+  void DestroyAllProfiles() override { NOTREACHED(); }
+
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override {
     return &profile_attributes_storage_;
   }

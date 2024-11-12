@@ -14,7 +14,6 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/resized_avatar_cache.h"
 #import "ios/public/provider/chrome/browser/signin/signin_identity_api.h"

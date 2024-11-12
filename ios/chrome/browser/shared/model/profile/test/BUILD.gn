@@ -29,6 +29,7 @@ source_set("test") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/supervised_user/model:sync_settings_factory",
     "//ios/chrome/test:test_support",
     "//ios/web/public/thread",
