@@ -388,6 +388,10 @@
     "META": {"sizes": {"includes": [120],}},
     "includes": [3920],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/family_link_user_internals/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [3930],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/feed/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [3940],
