@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "RawPtrHelpers.h"
+#include "SeparateRepositoryPaths.h"
+#include "SpanifyManualPathsToIgnore.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
 #include "clang/Basic/SourceLocation.h"
@@ -1152,12 +1154,23 @@ class Spanifier {
         fct_sig_nodes_(sig_nodes, sig_pairs) {}
 
   void addMatchers() {
+    std::vector<std::string> paths_to_exclude_lines;
+    paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
+                                  kSpanifyManualPathsToIgnore.begin(),
+                                  kSpanifyManualPathsToIgnore.end());
+    paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
+                                  kSeparateRepositoryPaths.begin(),
+                                  kSeparateRepositoryPaths.end());
+    paths_to_exclude_ =
+        std::make_unique<raw_ptr_plugin::FilterFile>(paths_to_exclude_lines);
+
     auto exclusions = anyOf(
         isExpansionInSystemHeader(), raw_ptr_plugin::isInExternCContext(),
         raw_ptr_plugin::isInThirdPartyLocation(),
         raw_ptr_plugin::isInGeneratedLocation(),
         raw_ptr_plugin::ImplicitFieldDeclaration(),
         raw_ptr_plugin::isInMacroLocation(),
+        raw_ptr_plugin::isInLocationListedInFilterFile(paths_to_exclude_.get()),
         hasAncestor(cxxRecordDecl(anyOf(hasName("raw_ptr"), hasName("span")))));
 
     // Exclude literal strings as these need to become string_view
@@ -1548,6 +1561,7 @@ class Spanifier {
   MatchFinder& match_finder_;
   PotentialNodes potential_nodes_;
   FunctionSignatureNodes fct_sig_nodes_;
+  std::unique_ptr<raw_ptr_plugin::FilterFile> paths_to_exclude_;
 };
 
 }  // namespace
