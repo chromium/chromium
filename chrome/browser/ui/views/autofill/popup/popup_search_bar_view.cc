@@ -51,6 +51,7 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
           .SetPlaceholderText(placeholder)
           .SetController(this)
           .SetBorder(nullptr)
+          .SetAccessibleName(placeholder)
           .SetProperty(views::kElementIdentifierKey, kInputField)
           .SetProperty(views::kFlexBehaviorKey,
                        views::FlexSpecification(views::FlexSpecification(
