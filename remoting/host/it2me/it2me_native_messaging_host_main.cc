@@ -208,9 +208,7 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
     SetStdHandle(STD_OUTPUT_HANDLE, nullptr);
   }
 #elif BUILDFLAG(IS_POSIX)
-  // The files are automatically closed.
-  read_file = base::File(STDIN_FILENO);
-  write_file = base::File(STDOUT_FILENO);
+  PipeMessagingChannel::OpenAndBlockStdio(read_file, write_file);
 #else
 #error Not implemented.
 #endif
@@ -245,10 +243,6 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
   // Set up the native messaging channel.
   std::unique_ptr<extensions::NativeMessagingChannel> channel(
       new PipeMessagingChannel(std::move(read_file), std::move(write_file)));
-
-#if BUILDFLAG(IS_POSIX)
-  PipeMessagingChannel::ReopenStdinStdout();
-#endif  // BUILDFLAG(IS_POSIX)
 
   std::unique_ptr<ChromotingHostContext> context =
       ChromotingHostContext::Create(new remoting::AutoThreadTaskRunner(
