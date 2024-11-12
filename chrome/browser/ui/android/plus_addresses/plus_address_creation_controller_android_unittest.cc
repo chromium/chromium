@@ -359,6 +359,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnConfirmedError) {
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnReservedError) {
+  base::UserActionTester user_action_tester;
   std::unique_ptr<content::WebContents> web_contents =
       ChromeRenderViewHostTestHarness::CreateTestWebContents();
 
@@ -394,6 +395,9 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnReservedError) {
           metrics::PlusAddressModalCompletionStatus::kReservePlusAddressError,
           /*notice_shown=*/false),
       0, 1);
+  EXPECT_EQ(
+      user_action_tester.GetActionCount("PlusAddresses.ReserveErrorCanceled"),
+      1);
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
