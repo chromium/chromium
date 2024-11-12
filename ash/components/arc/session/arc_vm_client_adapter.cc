@@ -86,6 +86,16 @@ namespace {
 constexpr const char kArcVmBootNotificationServerSocketPath[] =
     "/run/arcvm_boot_notification_server/host.socket";
 
+// Controls the interval between MGLRU reclaims in milliseconds.
+// A value of 0 will disable the MGLRU reclaim feature.
+constexpr const int kArcMglruReclaimIntervalMs = 30000;
+// Controls the swappiness of MGLRU reclaims, in the range of 0 to 200.
+// A value of 0 means only filecache will be used.
+// A lower value increases the proportion of filecache pages reclaimed.
+// Implementation and a more detailed description can be found in ChromeOS.
+// linux/mm/vmscan.c
+constexpr const int kArcMglruReclaimSwappiness = 0;
+
 constexpr int64_t kInvalidCid = -1;
 
 constexpr base::TimeDelta kConnectTimeoutLimit = base::Seconds(20);
@@ -479,13 +489,8 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     }
   }
 
-  if (base::FeatureList::IsEnabled(kMglruReclaim)) {
-    request.set_mglru_reclaim_interval(kMglruReclaimInterval.Get());
-    request.set_mglru_reclaim_swappiness(kMglruReclaimSwappiness.Get());
-  } else {
-    request.set_mglru_reclaim_interval(0);
-    request.set_mglru_reclaim_swappiness(0);
-  }
+  request.set_mglru_reclaim_interval(kArcMglruReclaimIntervalMs);
+  request.set_mglru_reclaim_swappiness(kArcMglruReclaimSwappiness);
 
   if (base::FeatureList::IsEnabled(kVmMemoryPSIReports))
     request.set_vm_memory_psi_period(kVmMemoryPSIReportsPeriod.Get());
