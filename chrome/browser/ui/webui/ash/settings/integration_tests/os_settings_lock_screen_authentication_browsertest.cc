@@ -52,7 +52,8 @@ class OSSettingsLockScreenAuthenticationTest
 INSTANTIATE_TEST_SUITE_P(OSSettingsLockScreenAuthenticationTests,
                          OSSettingsLockScreenAuthenticationTest,
                          testing::Values(ash::AshAuthFactor::kGaiaPassword,
-                                         ash::AshAuthFactor::kLocalPassword));
+                                         ash::AshAuthFactor::kLocalPassword,
+                                         ash::AshAuthFactor::kCryptohomePin));
 
 IN_PROC_BROWSER_TEST_P(OSSettingsLockScreenAuthenticationTest,
                        SuccessfulUnlock) {
