@@ -1263,8 +1263,6 @@ ci.builder(
             ),
         },
     ),
-    # TODO(crbug.com/375275132): Remove after O migration is complete.
-    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "bfcache",
         short_name = "bfc",
