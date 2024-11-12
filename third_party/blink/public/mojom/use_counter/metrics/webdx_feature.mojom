@@ -275,6 +275,7 @@ enum WebDXFeature {
   kActiveViewTransition = 217,
   kBoxDecorationBreak = 218,
   kPageOrientation = 219,
+  kFontSizeAdjust = 220,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

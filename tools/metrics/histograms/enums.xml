@@ -33930,6 +33930,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="217" label="ActiveViewTransition"/>
   <int value="218" label="BoxDecorationBreak"/>
   <int value="219" label="PageOrientation"/>
+  <int value="220" label="FontSizeAdjust"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
