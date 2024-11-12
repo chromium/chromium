@@ -75,7 +75,7 @@ function getTabSearchItem(
         close-button-icon="tab-search:remove"
         close-button-aria-label=
                       "${this.getCloseButtonAriaLabel_(data)}"
-        close-button-tooltip="$i18n{declutterCloseTabTooltip}"
+        close-button-tooltip="${this.getCloseButtonTooltip_()}"
         role="option"
         @keydown="${this.onTabKeyDown_}"
         @close="${
