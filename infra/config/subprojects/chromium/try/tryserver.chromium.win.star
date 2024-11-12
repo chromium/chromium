@@ -157,7 +157,6 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 5,
-        "chromium.compilator_can_outlive_parent": 100,
         # crbug/940930
         "chromium.enable_cleandead": 100,
         # b/346598710
