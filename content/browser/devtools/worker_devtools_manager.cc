@@ -65,6 +65,14 @@ void WorkerDevToolsManager::WorkerCreated(
 
 void WorkerDevToolsManager::WorkerDestroyed(const DedicatedWorkerHost* host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // If the worker thread in the renderer has never establiashed a mojo
+  // connection to the DedicatedWorkerDevToolsAgentHost we need to
+  // explicitly run disconnect.
+  // Generally, the host should be there except for unit tests.
+  if (!hosts_.contains(host)) {
+    return;
+  }
+  hosts_[host]->DisconnectIfNotCreated();
   hosts_.erase(host);
 }
 

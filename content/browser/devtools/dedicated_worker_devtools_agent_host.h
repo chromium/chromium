@@ -30,6 +30,18 @@ class DedicatedWorkerDevToolsAgentHost final
       const std::string& parent_id,
       base::OnceCallback<void(DevToolsAgentHostImpl*)> destroyed_callback);
 
+  void DisconnectIfNotCreated();
+
+  // After PlzDedicatedWorker a DedicatedWorkerDevToolsAgentHost
+  // is created before it is known if a worker thread will be created
+  // in the renderer. This method is used to indicate the the worker
+  // thread is actually created and this agent host is associated with
+  // a renderer agent.
+  void ChildWorkerCreated(
+      const GURL& url,
+      const std::string& name,
+      base::OnceCallback<void(DevToolsAgentHostImpl*)> callback);
+
  private:
   ~DedicatedWorkerDevToolsAgentHost() override;
 
@@ -45,6 +57,7 @@ class DedicatedWorkerDevToolsAgentHost final
   DedicatedWorkerHost* GetDedicatedWorkerHost();
 
   std::unique_ptr<protocol::TargetAutoAttacher> const auto_attacher_;
+  bool child_worker_created_ = false;
 };
 
 }  // namespace content
