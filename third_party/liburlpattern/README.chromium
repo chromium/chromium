@@ -1,7 +1,7 @@
 Name: URL Pattern Library
 Short Name: liburlpattern
-URL: https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/liburlpattern
-Version: 0
+URL: This is the canonical public repository
+Version: N/A
 License: MIT
 License File: LICENSE
 Security Critical: yes
