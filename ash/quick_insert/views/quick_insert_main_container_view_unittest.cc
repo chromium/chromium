@@ -23,14 +23,14 @@
 namespace ash {
 namespace {
 
-class MockPickerPageView : public QuickInsertPageView {
-  METADATA_HEADER(MockPickerPageView, QuickInsertPageView)
+class MockQuickInsertPageView : public QuickInsertPageView {
+  METADATA_HEADER(MockQuickInsertPageView, QuickInsertPageView)
 
  public:
-  MockPickerPageView() = default;
-  MockPickerPageView(const MockPickerPageView&) = delete;
-  MockPickerPageView& operator=(const MockPickerPageView&) = delete;
-  ~MockPickerPageView() override = default;
+  MockQuickInsertPageView() = default;
+  MockQuickInsertPageView(const MockQuickInsertPageView&) = delete;
+  MockQuickInsertPageView& operator=(const MockQuickInsertPageView&) = delete;
+  ~MockQuickInsertPageView() override = default;
 
   // QuickInsertPageView:
   views::View* GetTopItem() override { return nullptr; }
@@ -42,7 +42,7 @@ class MockPickerPageView : public QuickInsertPageView {
   bool ContainsItem(views::View* item) override { return true; }
 };
 
-BEGIN_METADATA(MockPickerPageView)
+BEGIN_METADATA(MockQuickInsertPageView)
 END_METADATA
 
 using QuickInsertMainContainerViewTest = views::ViewsTestBase;
@@ -101,8 +101,8 @@ TEST_F(QuickInsertMainContainerViewTest, SetsActivePage) {
       widget->SetContentsView(std::make_unique<QuickInsertMainContainerView>());
   container->AddContentsView(
       QuickInsertLayoutType::kMainResultsBelowSearchField);
-  auto* page1 = container->AddPage(std::make_unique<MockPickerPageView>());
-  auto* page2 = container->AddPage(std::make_unique<MockPickerPageView>());
+  auto* page1 = container->AddPage(std::make_unique<MockQuickInsertPageView>());
+  auto* page2 = container->AddPage(std::make_unique<MockQuickInsertPageView>());
 
   container->SetActivePage(page1);
 

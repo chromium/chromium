@@ -42,7 +42,7 @@ std::unique_ptr<QuickInsertImageItemView> CreateGifItem(
 using QuickInsertSectionListViewTest = views::ViewsTestBase;
 
 TEST_F(QuickInsertSectionListViewTest, AddsSection) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                           &submenu_controller);
@@ -53,7 +53,7 @@ TEST_F(QuickInsertSectionListViewTest, AddsSection) {
 }
 
 TEST_F(QuickInsertSectionListViewTest, ClearsSectionList) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                           &submenu_controller);
@@ -65,7 +65,7 @@ TEST_F(QuickInsertSectionListViewTest, ClearsSectionList) {
 }
 
 TEST_F(QuickInsertSectionListViewTest, GetsTopItem) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                           &submenu_controller);
@@ -83,7 +83,7 @@ TEST_F(QuickInsertSectionListViewTest, GetsTopItem) {
 }
 
 TEST_F(QuickInsertSectionListViewTest, AddsSectionAtTheTop) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                           &submenu_controller);
@@ -99,7 +99,7 @@ TEST_F(QuickInsertSectionListViewTest, AddsSectionAtTheTop) {
 }
 
 TEST_F(QuickInsertSectionListViewTest, GetsTopItemWhenTopSectionIsEmpty) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                           &submenu_controller);
@@ -116,7 +116,7 @@ TEST_F(QuickInsertSectionListViewTest, GetsTopItemWhenTopSectionIsEmpty) {
 }
 
 TEST_F(QuickInsertSectionListViewTest, EmptySectionListHasNoTopItem) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                           &submenu_controller);
@@ -125,7 +125,7 @@ TEST_F(QuickInsertSectionListViewTest, EmptySectionListHasNoTopItem) {
 }
 
 TEST_F(QuickInsertSectionListViewTest, GetsBottomItem) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                           &submenu_controller);
@@ -143,7 +143,7 @@ TEST_F(QuickInsertSectionListViewTest, GetsBottomItem) {
 }
 
 TEST_F(QuickInsertSectionListViewTest, GetsBottomItemWhenBottomSectionIsEmpty) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                           &submenu_controller);
@@ -160,7 +160,7 @@ TEST_F(QuickInsertSectionListViewTest, GetsBottomItemWhenBottomSectionIsEmpty) {
 }
 
 TEST_F(QuickInsertSectionListViewTest, EmptySectionListHasNoBottomItem) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                           &submenu_controller);
@@ -169,7 +169,7 @@ TEST_F(QuickInsertSectionListViewTest, EmptySectionListHasNoBottomItem) {
 }
 
 TEST_F(QuickInsertSectionListViewTest, GetsItemAbove) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                           &submenu_controller);
@@ -189,7 +189,7 @@ TEST_F(QuickInsertSectionListViewTest, GetsItemAbove) {
 }
 
 TEST_F(QuickInsertSectionListViewTest, ItemNotInSectionListHasNoItemAbove) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                           &submenu_controller);
@@ -199,7 +199,7 @@ TEST_F(QuickInsertSectionListViewTest, ItemNotInSectionListHasNoItemAbove) {
 }
 
 TEST_F(QuickInsertSectionListViewTest, GetsItemBelow) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                           &submenu_controller);
@@ -219,7 +219,7 @@ TEST_F(QuickInsertSectionListViewTest, GetsItemBelow) {
 }
 
 TEST_F(QuickInsertSectionListViewTest, ItemNotInSectionListHasNoItemBelow) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                           &submenu_controller);
@@ -229,7 +229,7 @@ TEST_F(QuickInsertSectionListViewTest, ItemNotInSectionListHasNoItemBelow) {
 }
 
 TEST_F(QuickInsertSectionListViewTest, GetsItemLeftOf) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                           &submenu_controller);
@@ -249,7 +249,7 @@ TEST_F(QuickInsertSectionListViewTest, GetsItemLeftOf) {
 }
 
 TEST_F(QuickInsertSectionListViewTest, ItemNotInSectionListHasNoItemLeftOf) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                           &submenu_controller);
@@ -259,7 +259,7 @@ TEST_F(QuickInsertSectionListViewTest, ItemNotInSectionListHasNoItemLeftOf) {
 }
 
 TEST_F(QuickInsertSectionListViewTest, GetsItemRightOf) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                           &submenu_controller);
@@ -279,7 +279,7 @@ TEST_F(QuickInsertSectionListViewTest, GetsItemRightOf) {
 }
 
 TEST_F(QuickInsertSectionListViewTest, ItemNotInSectionListHasNoItemRightOf) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
                                           &submenu_controller);

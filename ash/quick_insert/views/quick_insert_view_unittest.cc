@@ -304,7 +304,7 @@ class FakeQuickInsertViewDelegate : public QuickInsertViewDelegate {
 
  private:
   Options options_;
-  MockPickerAssetFetcher asset_fetcher_;
+  MockQuickInsertAssetFetcher asset_fetcher_;
   QuickInsertSessionMetrics session_metrics_;
   std::optional<QuickInsertSearchResult> last_inserted_result_;
   std::optional<QuickInsertSearchResult> last_opened_result_;

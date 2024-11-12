@@ -10,19 +10,19 @@
 
 namespace ash {
 
-MockPickerAssetFetcher::MockPickerAssetFetcher() = default;
+MockQuickInsertAssetFetcher::MockQuickInsertAssetFetcher() = default;
 
-MockPickerAssetFetcher::~MockPickerAssetFetcher() = default;
+MockQuickInsertAssetFetcher::~MockQuickInsertAssetFetcher() = default;
 
-void MockPickerAssetFetcher::FetchGifFromUrl(
+void MockQuickInsertAssetFetcher::FetchGifFromUrl(
     const GURL& url,
     QuickInsertGifFetchedCallback callback) {}
 
-void MockPickerAssetFetcher::FetchGifPreviewImageFromUrl(
+void MockQuickInsertAssetFetcher::FetchGifPreviewImageFromUrl(
     const GURL& url,
     QuickInsertImageFetchedCallback callback) {}
 
-void MockPickerAssetFetcher::FetchFileThumbnail(
+void MockQuickInsertAssetFetcher::FetchFileThumbnail(
     const base::FilePath& path,
     const gfx::Size& size,
     FetchFileThumbnailCallback callback) {}

@@ -124,7 +124,7 @@ class QuickInsertZeroStateViewTest : public views::ViewsTestBase {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
  protected:
-  MockPickerAssetFetcher asset_fetcher_;
+  MockQuickInsertAssetFetcher asset_fetcher_;
   QuickInsertSubmenuController submenu_controller_;
   QuickInsertPreviewBubbleController preview_controller_;
 

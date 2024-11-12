@@ -71,7 +71,7 @@ TEST_F(QuickInsertSectionViewTest, HasListRole) {
 }
 
 TEST_F(QuickInsertSectionViewTest, CreatesTitleLabel) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                       &submenu_controller);
@@ -84,7 +84,7 @@ TEST_F(QuickInsertSectionViewTest, CreatesTitleLabel) {
 }
 
 TEST_F(QuickInsertSectionViewTest, TitleHasHeadingRole) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                       &submenu_controller);
@@ -95,7 +95,7 @@ TEST_F(QuickInsertSectionViewTest, TitleHasHeadingRole) {
 }
 
 TEST_F(QuickInsertSectionViewTest, AddsListItem) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                       &submenu_controller);
@@ -110,7 +110,7 @@ TEST_F(QuickInsertSectionViewTest, AddsListItem) {
 }
 
 TEST_F(QuickInsertSectionViewTest, AddsTwoListItems) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                       &submenu_controller);
@@ -128,7 +128,7 @@ TEST_F(QuickInsertSectionViewTest, AddsTwoListItems) {
 }
 
 TEST_F(QuickInsertSectionViewTest, AddsGifItem) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                       &submenu_controller);
@@ -142,7 +142,7 @@ TEST_F(QuickInsertSectionViewTest, AddsGifItem) {
 }
 
 TEST_F(QuickInsertSectionViewTest, AddsResults) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertPreviewBubbleController preview_controller;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
@@ -165,7 +165,7 @@ TEST_F(QuickInsertSectionViewTest, AddsResults) {
 
 TEST_F(QuickInsertSectionViewTest,
        BrowsingHistoryResultsWithTitleShowsTitleAsPrimary) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertPreviewBubbleController preview_controller;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
@@ -188,7 +188,7 @@ TEST_F(QuickInsertSectionViewTest,
 
 TEST_F(QuickInsertSectionViewTest,
        BrowsingHistoryResultsWithoutTitleShowsUrlAsPrimary) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertPreviewBubbleController preview_controller;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
@@ -211,7 +211,7 @@ TEST_F(QuickInsertSectionViewTest,
 
 TEST_F(QuickInsertSectionViewTest,
        TextClipboardHistoryResultsUseDefaultIconIfNotLink) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertPreviewBubbleController preview_controller;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
@@ -244,7 +244,7 @@ TEST_F(QuickInsertSectionViewTest,
 
 TEST_F(QuickInsertSectionViewTest,
        TextClipboardHistoryResultsUsesLinkIconIfValidLink) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertPreviewBubbleController preview_controller;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
@@ -277,7 +277,7 @@ TEST_F(QuickInsertSectionViewTest,
 
 TEST_F(QuickInsertSectionViewTest,
        SingleFileClipboardHistoryResultsUseIconForFiletype) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertPreviewBubbleController preview_controller;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
@@ -310,7 +310,7 @@ TEST_F(QuickInsertSectionViewTest,
 
 TEST_F(QuickInsertSectionViewTest,
        MultipleFileClipboardHistoryResultsUseIconForFiletype) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertPreviewBubbleController preview_controller;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
@@ -342,7 +342,7 @@ TEST_F(QuickInsertSectionViewTest,
 }
 
 TEST_F(QuickInsertSectionViewTest, CapsLockResultShowsShortcutHint) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertPreviewBubbleController preview_controller;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
@@ -363,7 +363,7 @@ TEST_F(QuickInsertSectionViewTest, CapsLockResultShowsShortcutHint) {
 }
 
 TEST_F(QuickInsertSectionViewTest, ClearsItems) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
                                       &submenu_controller);
@@ -392,7 +392,7 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_pair(GURL("file://a/b/c"), u"file://a/b/c")));
 
 TEST_P(QuickInsertSectionViewUrlFormattingTest, AddingHistoryResultFormatsUrl) {
-  MockPickerAssetFetcher asset_fetcher;
+  MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertPreviewBubbleController preview_controller;
   QuickInsertSubmenuController submenu_controller;
   QuickInsertSectionView section_view(kDefaultSectionWidth, &asset_fetcher,

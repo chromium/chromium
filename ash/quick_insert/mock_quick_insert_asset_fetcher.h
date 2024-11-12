@@ -10,12 +10,13 @@
 
 namespace ash {
 
-class ASH_EXPORT MockPickerAssetFetcher : public QuickInsertAssetFetcher {
+class ASH_EXPORT MockQuickInsertAssetFetcher : public QuickInsertAssetFetcher {
  public:
-  MockPickerAssetFetcher();
-  MockPickerAssetFetcher(const MockPickerAssetFetcher&) = delete;
-  MockPickerAssetFetcher& operator=(const MockPickerAssetFetcher&) = delete;
-  ~MockPickerAssetFetcher() override;
+  MockQuickInsertAssetFetcher();
+  MockQuickInsertAssetFetcher(const MockQuickInsertAssetFetcher&) = delete;
+  MockQuickInsertAssetFetcher& operator=(const MockQuickInsertAssetFetcher&) =
+      delete;
+  ~MockQuickInsertAssetFetcher() override;
 
   // QuickInsertAssetFetcher:
   void FetchGifFromUrl(const GURL& url,
