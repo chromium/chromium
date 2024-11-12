@@ -448,12 +448,6 @@ void LaunchPlatformAppWithFilePaths(
 void LaunchPlatformAppWithAction(content::BrowserContext* context,
                                  const extensions::Extension* app,
                                  app_runtime::ActionData action_data) {
-  CHECK(!action_data.is_lock_screen_action ||
-        !*action_data.is_lock_screen_action ||
-        app->permissions_data()->HasAPIPermission(
-            extensions::mojom::APIPermissionID::kLockScreen))
-      << "Launching lock screen action handler requires lockScreen permission.";
-
   scoped_refptr<PlatformAppPathLauncher> launcher =
       new PlatformAppPathLauncher(context, app, base::FilePath());
   launcher->set_action_data(std::move(action_data));
