@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef MEDIA_BASE_VIDEO_FRAME_H_
 #define MEDIA_BASE_VIDEO_FRAME_H_
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -21,6 +17,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/hash/md5.h"
 #include "base/memory/raw_ptr.h"
@@ -651,7 +648,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   const uint8_t* data(size_t plane) const {
     CHECK(IsValidPlane(format(), plane));
     CHECK(IsMappable());
-    return data_[plane];
+    return data_[plane].data();
   }
   uint8_t* writable_data(size_t plane) {
     // TODO(crbug.com/40265179): Also CHECK that the storage type isn't
@@ -659,7 +656,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     CHECK_NE(storage_type_, STORAGE_SHMEM);
     CHECK(IsValidPlane(format(), plane));
     CHECK(IsMappable());
-    return const_cast<uint8_t*>(data_[plane]);
+    return const_cast<uint8_t*>(data_[plane].data());
   }
 
   const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info() const {
@@ -667,11 +664,17 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   }
 
   // Returns pointer to the data in the visible region of the frame, for
-  // IsMappable() storage types. The returned pointer is offsetted into the
+  // IsMappable() storage types. The returned pointer is offset into the
   // plane buffer specified by visible_rect().origin(). Memory is owned by
   // VideoFrame object and must not be freed by the caller.
   const uint8_t* visible_data(size_t plane) const;
   uint8_t* GetWritableVisibleData(size_t plane);
+
+  // Returns spans of data in the visible region of the frame, for
+  // IsMappable() storage types. The returned span is offset into the
+  // plane buffer specified by visible_rect().origin().
+  base::span<const uint8_t> GetVisiblePlaneData(size_t plane) const;
+  base::span<uint8_t> GetWritableVisiblePlaneData(size_t plane);
 
   // Returns the `acquire_sync_token_`
   gpu::SyncToken acquire_sync_token() const;
@@ -885,7 +888,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   bool IsValidSharedMemoryFrame() const;
 
   template <typename T>
-  T GetVisibleDataInternal(T data, size_t plane) const;
+  base::span<T> GetVisibleDataInternal(base::span<T> data, size_t plane) const;
 
   // Meant to be only used by friends until they are fully converted to use
   // MappableSI instead. Note that all the clients should use
@@ -920,7 +923,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // TODO(mcasas): we don't know on ctor if we own |data_| or not. Change
   // to std::unique_ptr<uint8_t, AlignedFreeDeleter> after refactoring
   // VideoFrame.
-  const uint8_t* data_[kMaxPlanes];
+  std::array<base::span<const uint8_t>, kMaxPlanes> data_;
 
   // Sync token associated with the `shared_image_`.
   gpu::SyncToken acquire_sync_token_;

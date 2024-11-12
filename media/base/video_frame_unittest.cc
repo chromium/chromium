@@ -15,6 +15,7 @@
 #include <array>
 #include <memory>
 #include <numeric>
+#include <vector>
 
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
@@ -972,6 +973,44 @@ TEST(VideoFrameMetadata, PartialMergeMetadata) {
   EXPECT_EQ(partial_metadata.processing_time, kTempDelta);
   EXPECT_EQ(partial_metadata.allow_overlay, false);
   EXPECT_EQ(partial_metadata.texture_origin_is_top_left, false);
+}
+
+TEST(VideoFrame, AccessPlaneDataSpans) {
+  for (auto format :
+       {PIXEL_FORMAT_XRGB, PIXEL_FORMAT_I420, PIXEL_FORMAT_NV12}) {
+    gfx::Size coded_size(100, 100);
+    gfx::Rect visible_rect(10, 10, 60, 20);
+    std::vector<uint8_t> pixels;
+    pixels.resize(coded_size.GetArea() * 4);
+
+    auto timestamp = base::Milliseconds(0);
+    auto frame = VideoFrame::WrapExternalData(
+        format, coded_size, visible_rect, visible_rect.size(), pixels.data(),
+        pixels.size(), timestamp);
+
+    int plane_offset = 0;
+    for (size_t plane = 0; plane < VideoFrame::NumPlanes(format); ++plane) {
+      auto sample_size = VideoFrame::SampleSize(format, plane);
+      size_t bytes_per_pixel = VideoFrame::BytesPerElement(format, plane);
+      auto plane_span = frame->GetVisiblePlaneData(plane);
+      auto writable_plane_span = frame->GetWritableVisiblePlaneData(plane);
+      EXPECT_EQ(
+          plane_span.data(),
+          pixels.data() + plane_offset +
+              visible_rect.y() / sample_size.height() * frame->stride(plane) +
+              visible_rect.x() / sample_size.width() * bytes_per_pixel)
+          << " format: " << format << " plane: " << plane;
+      EXPECT_GE(
+          static_cast<int>(plane_span.size()),
+          VideoFrame::PlaneSize(format, plane, visible_rect.size()).GetArea())
+          << " format: " << format << " plane: " << plane;
+      EXPECT_EQ(plane_span.data(), writable_plane_span.data());
+      EXPECT_EQ(writable_plane_span.size(), plane_span.size());
+
+      plane_offset +=
+          VideoFrame::PlaneSize(format, plane, coded_size).GetArea();
+    }
+  }
 }
 
 }  // namespace media

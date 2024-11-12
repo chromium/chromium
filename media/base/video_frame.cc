@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/video_frame.h"
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <climits>
+#include <cstddef>
+#include <memory>
 #include <numeric>
 #include <string_view>
 #include <utility>
@@ -408,10 +406,14 @@ VideoFrame::CreateFrameForGpuMemoryBufferOrMappableSIInternal(
 
   const size_t num_planes = NumberOfPlanesForLinearBufferFormat(buffer_format);
   std::vector<ColorPlaneLayout> planes(num_planes);
-  for (size_t i = 0; i < num_planes; ++i) {
-    planes[i].stride = gpu_memory_buffer
-                           ? gpu_memory_buffer->stride(i)
-                           : shared_image->GetStrideForVideoFrame(i);
+  for (size_t plane = 0; plane < num_planes; ++plane) {
+    planes[plane].stride = gpu_memory_buffer
+                               ? gpu_memory_buffer->stride(plane)
+                               : shared_image->GetStrideForVideoFrame(plane);
+    gfx::Size plane_size = PlaneSizeInSamples(*format, plane, coded_size);
+    planes[plane].size =
+        (plane_size.height() - 1) * planes[plane].stride +
+        plane_size.width() * VideoFrame::BytesPerElement(*format, plane);
   }
   uint64_t modifier = gfx::NativePixmapHandle::kNoModifier;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -570,8 +572,11 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDataWithLayout(
   scoped_refptr<VideoFrame> frame = new VideoFrame(
       layout, storage_type, visible_rect, natural_size, timestamp);
 
+  // TODO(crbug.com/338570700): WrapExternalDataWithLayout() should accept span.
+  auto external_data = UNSAFE_TODO(base::span(data, data_size));
   for (size_t i = 0; i < layout.planes().size(); ++i) {
-    frame->data_[i] = data + layout.planes()[i].offset;
+    auto& plane = layout.planes()[i];
+    frame->data_[i] = external_data.subspan(plane.offset, plane.size);
   }
 
   return frame;
@@ -627,9 +632,12 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvDataWithLayout(
   DCHECK_LE(NumPlanes(format), 3u);
   scoped_refptr<VideoFrame> frame(
       new VideoFrame(layout, storage, visible_rect, natural_size, timestamp));
-  frame->data_[Plane::kY] = y_data;
-  frame->data_[Plane::kU] = u_data;
-  frame->data_[Plane::kV] = v_data;
+  std::array<const uint8_t*, 3> data = {y_data, u_data, v_data};
+  for (size_t plane = 0; plane < NumPlanes(format); ++plane) {
+    // TODO(crbug.com/338570700): y_data, u_data, v_data should be spans
+    frame->data_[plane] =
+        UNSAFE_TODO(base::span(data[plane], layout.planes()[plane].size));
+  }
   return frame;
 }
 
@@ -671,10 +679,12 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvaData(
 
   scoped_refptr<VideoFrame> frame(
       new VideoFrame(*layout, storage, visible_rect, natural_size, timestamp));
-  frame->data_[Plane::kY] = y_data;
-  frame->data_[Plane::kU] = u_data;
-  frame->data_[Plane::kV] = v_data;
-  frame->data_[Plane::kA] = a_data;
+  std::array<const uint8_t*, 4> data = {y_data, u_data, v_data, a_data};
+  for (size_t plane = 0; plane < NumPlanes(format); ++plane) {
+    // TODO(crbug.com/338570700): y_data, u_data, v_data should be spans
+    frame->data_[plane] =
+        UNSAFE_TODO(base::span(data[plane], layout->planes()[plane].size));
+  }
   return frame;
 }
 
@@ -711,9 +721,12 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
 
   scoped_refptr<VideoFrame> frame(
       new VideoFrame(*layout, storage, visible_rect, natural_size, timestamp));
-  frame->data_[Plane::kY] = y_data;
-  frame->data_[Plane::kUV] = uv_data;
-
+  std::array<const uint8_t*, 2> data = {y_data, uv_data};
+  for (size_t plane = 0; plane < NumPlanes(format); ++plane) {
+    // TODO(crbug.com/338570700): y_data, uv_data should be spans
+    frame->data_[plane] =
+        UNSAFE_TODO(base::span(data[plane], layout->planes()[plane].size));
+  }
   return frame;
 }
 
@@ -854,8 +867,14 @@ scoped_refptr<VideoFrame> VideoFrame::WrapUnacceleratedIOSurface(
   scoped_refptr<VideoFrame> frame =
       new VideoFrame(*layout, storage_type, visible_rect, size, timestamp);
   for (size_t i = 0; i < num_planes; ++i) {
-    frame->data_[i] = reinterpret_cast<uint8_t*>(
+    uint8_t* plane_data = reinterpret_cast<uint8_t*>(
         IOSurfaceGetBaseAddressOfPlane(io_surface.get(), i));
+    size_t rows = IOSurfaceGetHeightOfPlane(io_surface.get(), i);
+    size_t plane_size = rows * strides[i];
+    // SAFETY: IOSurface has data allocated for each plane,
+    // the size of the plane is IOSurfaceGetHeightOfPlane() *
+    // IOSurfaceGetBytesPerRowOfPlane().
+    frame->data_[i] = UNSAFE_BUFFERS(base::span(plane_data, plane_size));
   }
   frame->AddDestructionObserver(
       base::BindOnce(unlock_lambda, std::move(io_surface)));
@@ -1141,19 +1160,19 @@ int VideoFrame::BytesPerElement(VideoPixelFormat format, size_t plane) {
     case PIXEL_FORMAT_NV16:
     case PIXEL_FORMAT_NV21:
     case PIXEL_FORMAT_NV24: {
-      static const int bytes_per_element[] = {1, 2};
+      constexpr auto bytes_per_element = std::to_array({1, 2});
       DCHECK_LT(plane, std::size(bytes_per_element));
       return bytes_per_element[plane];
     }
     case PIXEL_FORMAT_NV12A: {
-      static const int bytes_per_element[] = {1, 2, 1};
+      constexpr auto bytes_per_element = std::to_array({1, 2, 1});
       DCHECK_LT(plane, std::size(bytes_per_element));
       return bytes_per_element[plane];
     }
     case PIXEL_FORMAT_P010LE:
     case PIXEL_FORMAT_P210LE:
     case PIXEL_FORMAT_P410LE: {
-      static const int bytes_per_element[] = {1, 2};
+      constexpr auto bytes_per_element = std::to_array({1, 2});
       DCHECK_LT(plane, std::size(bytes_per_element));
       return bytes_per_element[plane] * 2;
     }
@@ -1212,8 +1231,8 @@ void VideoFrame::HashFrameForTesting(base::MD5Context* context,
   for (size_t plane = 0; plane < NumPlanes(frame.format()); ++plane) {
     for (int row = 0; row < frame.rows(plane); ++row) {
       base::MD5Update(context,
-                      base::span<const uint8_t>(
-                          frame.data(plane) + frame.stride(plane) * row,
+                      frame.data_[plane].subspan(
+                          frame.stride(plane) * row,
                           static_cast<size_t>(frame.row_bytes(plane))));
     }
   }
@@ -1416,11 +1435,12 @@ int VideoFrame::columns(size_t plane) const {
 }
 
 template <typename T>
-T VideoFrame::GetVisibleDataInternal(T data, size_t plane) const {
+base::span<T> VideoFrame::GetVisibleDataInternal(base::span<T> data,
+                                                 size_t plane) const {
   DCHECK(IsValidPlane(format(), plane));
   DCHECK(IsMappable());
-  if (!data) [[unlikely]] {
-    return nullptr;
+  if (data.empty()) [[unlikely]] {
+    return {};
   }
 
   // Calculate an offset that is properly aligned for all planes.
@@ -1430,24 +1450,45 @@ T VideoFrame::GetVisibleDataInternal(T data, size_t plane) const {
                           base::bits::AlignDownDeprecatedDoNotUse(
                               visible_rect_.y(), alignment.height()));
 
+  const int visible_plane_rows = Rows(plane, format(), visible_rect_.height());
+  const int plane_stride = stride(plane);
   const gfx::Size subsample = SampleSize(format(), plane);
   DCHECK(offset.x() % subsample.width() == 0);
   DCHECK(offset.y() % subsample.height() == 0);
-  return data +
-         stride(plane) * (offset.y() / subsample.height()) +  // Row offset.
-         BytesPerElement(format(), plane) *                   // Column offset.
-             (offset.x() / subsample.width());
+  int visible_plane_offset =
+      // Row offset.
+      plane_stride * (offset.y() / subsample.height()) +
+      // Column offset.
+      BytesPerElement(format(), plane) * (offset.x() / subsample.width());
+  // In the last row, bytes between visible width and the full stride are not
+  // the part of the visible plane.
+  size_t visible_plane_size = plane_stride * (visible_plane_rows - 1) +
+                              RowBytes(plane, format(), visible_rect_.width());
+  return data.subspan(visible_plane_offset, visible_plane_size);
 }
 
-const uint8_t* VideoFrame::visible_data(size_t plane) const {
-  return GetVisibleDataInternal(data(plane), plane);
+base::span<const uint8_t> VideoFrame::GetVisiblePlaneData(size_t plane) const {
+  return GetVisibleDataInternal(data_[plane], plane);
 }
 
-uint8_t* VideoFrame::GetWritableVisibleData(size_t plane) {
+base::span<uint8_t> VideoFrame::GetWritableVisiblePlaneData(size_t plane) {
   // TODO(crbug.com/40265179): Also CHECK that the storage type isn't
   // STORAGE_UNOWNED_MEMORY once non-compliant usages are fixed.
   CHECK_NE(storage_type_, STORAGE_SHMEM);
-  return GetVisibleDataInternal(writable_data(plane), plane);
+  auto const_span = data_[plane];
+  // SAFETY: We take data() and size() from another span, which supposedly
+  // refers to a valid range in memory.
+  auto non_const_span = UNSAFE_BUFFERS(
+      base::span(const_cast<uint8_t*>(const_span.data()), const_span.size()));
+  return GetVisibleDataInternal(non_const_span, plane);
+}
+
+const uint8_t* VideoFrame::visible_data(size_t plane) const {
+  return GetVisiblePlaneData(plane).data();
+}
+
+uint8_t* VideoFrame::GetWritableVisibleData(size_t plane) {
+  return GetWritableVisiblePlaneData(plane).data();
 }
 
 gpu::SyncToken VideoFrame::acquire_sync_token() const {
@@ -1578,12 +1619,11 @@ VideoFrame::VideoFrame(const VideoFrameLayout& layout,
       natural_size_(natural_size),
       timestamp_(timestamp),
       unique_id_(GetNextID()) {
-  DCHECK(IsValidConfigInternal(format(), frame_control_type, coded_size(),
-                               visible_rect_, natural_size_));
+  CHECK(IsValidConfigInternal(format(), frame_control_type, coded_size(),
+                              visible_rect_, natural_size_));
   DCHECK(visible_rect_ == visible_rect)
       << "visible_rect " << visible_rect.ToString() << " exceeds coded_size "
       << coded_size().ToString();
-  memset(&data_, 0, sizeof(data_));
 }
 
 VideoFrame::~VideoFrame() {
@@ -1802,14 +1842,16 @@ bool VideoFrame::AllocateMemory(bool zero_initialize_memory) {
     }
   }
   private_data_.reset(data);
-
-  data = base::bits::AlignUp(data, layout_.buffer_addr_align());
-  DCHECK_LE(data + buffer_size, private_data_.get() + allocation_size);
+  // SAFETY: We've just allocated a region of `allocation_size` at `data`.
+  auto allocated_region = UNSAFE_BUFFERS(base::span(data, allocation_size));
+  ptrdiff_t alignment_offset =
+      base::bits::AlignUp(data, layout_.buffer_addr_align()) - data;
+  allocated_region = allocated_region.subspan(alignment_offset, buffer_size);
 
   // Note that if layout.buffer_sizes is specified, color planes' layout is
   // the same as buffers'. See CalculatePlaneSize() for detail.
   for (size_t plane = 0, offset = 0; plane < NumPlanes(format()); ++plane) {
-    data_[plane] = data + offset;
+    data_[plane] = allocated_region.subspan(offset, plane_size[plane]);
     offset += plane_size[plane];
   }
 
@@ -1825,26 +1867,14 @@ bool VideoFrame::IsValidSharedMemoryFrame() const {
 // static
 std::vector<size_t> VideoFrame::CalculatePlaneSize(
     const VideoFrameLayout& layout) {
-  // We have two cases for plane size mapping:
-  // 1) If plane size is specified: use planes' size.
-  // 2) VideoFrameLayout::size is unassigned: use legacy calculation formula.
-
   const auto format = layout.format();
   const size_t num_planes = NumPlanes(format);
   const auto& planes = layout.planes();
   std::vector<size_t> plane_size(num_planes);
-  bool plane_size_assigned = true;
   DCHECK_EQ(planes.size(), num_planes);
-  for (size_t i = 0; i < num_planes; ++i) {
-    plane_size[i] = planes[i].size;
-    plane_size_assigned &= plane_size[i] != 0;
-  }
 
-  if (plane_size_assigned)
-    return plane_size;
-
-  // Reset plane size.
-  std::fill(plane_size.begin(), plane_size.end(), 0u);
+  // Calculate minimum required plane sizes using layout info and
+  // extra wisdom accumulated in centuries.
   for (size_t plane = 0; plane < num_planes; ++plane) {
     // These values were chosen to mirror ffmpeg's get_video_buffer().
     // TODO(dalecurtis): This should be configurable; eventually ffmpeg wants
@@ -1866,6 +1896,13 @@ std::vector<size_t> VideoFrame::CalculatePlaneSize(
     plane_size.back() +=
         std::abs(layout.planes()[Plane::kU].stride) + kFrameSizePadding;
   }
+
+  // If a plane size from layout is larger than what was calculated above,
+  // respect the plane size from layout.
+  for (size_t i = 0; i < num_planes; ++i) {
+    plane_size[i] = std::max(planes[i].size, plane_size[i]);
+  }
+
   return plane_size;
 }
 
