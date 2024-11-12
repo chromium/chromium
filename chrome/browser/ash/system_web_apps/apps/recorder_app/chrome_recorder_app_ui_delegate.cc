@@ -20,6 +20,7 @@
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 ChromeRecorderAppUIDelegate::ChromeRecorderAppUIDelegate(content::WebUI* web_ui)
@@ -46,9 +47,9 @@ void ChromeRecorderAppUIDelegate::InstallSoda(
 
 std::u16string ChromeRecorderAppUIDelegate::GetLanguageDisplayName(
     speech::LanguageCode language_code) {
-  return speech::GetLanguageDisplayName(
+  return l10n_util::GetDisplayNameForLocale(
       speech::GetLanguageName(language_code),
-      g_browser_process->GetApplicationLocale());
+      g_browser_process->GetApplicationLocale(), /*is_for_ui=*/true);
 }
 
 void ChromeRecorderAppUIDelegate::OpenAiFeedbackDialog(
