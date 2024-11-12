@@ -4,14 +4,14 @@
 
 #include "media/base/frame_buffer_pool.h"
 
-#include "base/logging.h"
-
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/process/memory.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
@@ -21,6 +21,8 @@
 #include "base/trace_event/process_memory_dump.h"
 
 namespace media {
+
+using BytesArray = base::HeapArray<uint8_t, base::UncheckedFreeDeleter>;
 
 // Helper class to allow thread safe memory dumping without a task runner.
 class FrameBufferPool::FrameBufferMemoryDumpProviderImpl
@@ -49,10 +51,8 @@ class FrameBufferPool::FrameBufferMemoryDumpProviderImpl
 struct FrameBufferPool::FrameBuffer {
   // Not using std::vector<uint8_t> as resize() calls take a really long time
   // for large buffers.
-  std::unique_ptr<uint8_t, base::UncheckedFreeDeleter> data;
-  size_t data_size = 0u;
-  std::unique_ptr<uint8_t, base::UncheckedFreeDeleter> alpha_data;
-  size_t alpha_data_size = 0u;
+  BytesArray data;
+  BytesArray alpha_data;
   bool held_by_library = false;
   // Needs to be a counter since a frame buffer might be used multiple times.
   int held_by_frame = 0;
@@ -70,7 +70,8 @@ FrameBufferPool::~FrameBufferPool() {
   // May be destructed on any thread.
 }
 
-uint8_t* FrameBufferPool::GetFrameBuffer(size_t min_size, void** fb_priv) {
+base::span<uint8_t> FrameBufferPool::GetFrameBuffer(size_t min_size,
+                                                    void** fb_priv) {
   base::AutoLock lock(lock_);
   DCHECK(!in_shutdown_);
 
@@ -91,10 +92,10 @@ uint8_t* FrameBufferPool::GetFrameBuffer(size_t min_size, void** fb_priv) {
 
   // Resize the frame buffer if necessary.
   frame_buffer->held_by_library = true;
-  if (frame_buffer->data_size < min_size) {
+  if (frame_buffer->data.size() < min_size) {
     // Free the existing |data| first so that the memory can be reused,
     // if possible. Note that the new array is purposely not initialized.
-    frame_buffer->data.reset();
+    frame_buffer->data = {};
 
     uint8_t* data = nullptr;
     if (!force_allocation_error_) {
@@ -116,16 +117,17 @@ uint8_t* FrameBufferPool::GetFrameBuffer(size_t min_size, void** fb_priv) {
 
     if (!data) {
       frame_buffers_.erase(it);
-      return nullptr;
+      return {};
     }
 
-    frame_buffer->data.reset(data);
-    frame_buffer->data_size = min_size;
+    // SAFETY: We have just allocated `min_size` of memory for `data`.
+    frame_buffer->data =
+        UNSAFE_BUFFERS(BytesArray::FromOwningPointer(data, min_size));
   }
 
   // Provide the client with a private identifier.
   *fb_priv = frame_buffer.get();
-  return frame_buffer->data.get();
+  return frame_buffer->data;
 }
 
 void FrameBufferPool::ReleaseFrameBuffer(void* fb_priv) {
@@ -142,27 +144,29 @@ void FrameBufferPool::ReleaseFrameBuffer(void* fb_priv) {
   }
 }
 
-uint8_t* FrameBufferPool::AllocateAlphaPlaneForFrameBuffer(size_t min_size,
-                                                           void* fb_priv) {
+base::span<uint8_t> FrameBufferPool::AllocateAlphaPlaneForFrameBuffer(
+    size_t min_size,
+    void* fb_priv) {
   base::AutoLock lock(lock_);
   DCHECK(fb_priv);
 
   auto* frame_buffer = static_cast<FrameBuffer*>(fb_priv);
   DCHECK(IsUsedLocked(frame_buffer));
-  if (frame_buffer->alpha_data_size < min_size) {
+  if (frame_buffer->alpha_data.size() < min_size) {
     // Free the existing |alpha_data| first so that the memory can be reused,
     // if possible. Note that the new array is purposely not initialized.
-    frame_buffer->alpha_data.reset();
+    frame_buffer->alpha_data = {};
     uint8_t* data = nullptr;
     if (force_allocation_error_ ||
         !base::UncheckedMalloc(min_size, reinterpret_cast<void**>(&data)) ||
         !data) {
-      return nullptr;
+      return {};
     }
-    frame_buffer->alpha_data.reset(data);
-    frame_buffer->alpha_data_size = min_size;
+    // SAFETY: We have just allocated `min_size` of memory for `data`.
+    frame_buffer->alpha_data =
+        UNSAFE_BUFFERS(BytesArray::FromOwningPointer(data, min_size));
   }
-  return frame_buffer->alpha_data.get();
+  return frame_buffer->alpha_data;
 }
 
 base::OnceClosure FrameBufferPool::CreateFrameCallback(void* fb_priv) {
@@ -202,9 +206,10 @@ bool FrameBufferPool::OnMemoryDump(
   size_t bytes_reserved = 0;
   for (const auto& frame_buffer : frame_buffers_) {
     if (IsUsedLocked(frame_buffer.get())) {
-      bytes_used += frame_buffer->data_size + frame_buffer->alpha_data_size;
+      bytes_used += frame_buffer->data.size() + frame_buffer->alpha_data.size();
     }
-    bytes_reserved += frame_buffer->data_size + frame_buffer->alpha_data_size;
+    bytes_reserved +=
+        frame_buffer->data.size() + frame_buffer->alpha_data.size();
   }
 
   memory_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,

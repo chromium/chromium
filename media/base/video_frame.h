@@ -275,12 +275,27 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       size_t data_size,
       base::TimeDelta timestamp);
 
+  static scoped_refptr<VideoFrame> WrapExternalData(
+      VideoPixelFormat format,
+      const gfx::Size& coded_size,
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      base::span<const uint8_t> data,
+      base::TimeDelta timestamp);
+
   static scoped_refptr<VideoFrame> WrapExternalDataWithLayout(
       const VideoFrameLayout& layout,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
       const uint8_t* data,
       size_t data_size,
+      base::TimeDelta timestamp);
+
+  static scoped_refptr<VideoFrame> WrapExternalDataWithLayout(
+      const VideoFrameLayout& layout,
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      base::span<const uint8_t> data,
       base::TimeDelta timestamp);
 
   // Wraps external YUV data of the given parameters with a VideoFrame.
@@ -296,6 +311,19 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const uint8_t* y_data,
       const uint8_t* u_data,
       const uint8_t* v_data,
+      base::TimeDelta timestamp);
+
+  static scoped_refptr<VideoFrame> WrapExternalYuvData(
+      VideoPixelFormat format,
+      const gfx::Size& coded_size,
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      int32_t y_stride,
+      int32_t u_stride,
+      int32_t v_stride,
+      base::span<const uint8_t> y_data,
+      base::span<const uint8_t> u_data,
+      base::span<const uint8_t> v_data,
       base::TimeDelta timestamp);
 
   // Wraps external YUV data with VideoFrameLayout. The returned VideoFrame does
@@ -324,6 +352,21 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const uint8_t* u_data,
       const uint8_t* v_data,
       const uint8_t* a_data,
+      base::TimeDelta timestamp);
+
+  static scoped_refptr<VideoFrame> WrapExternalYuvaData(
+      VideoPixelFormat format,
+      const gfx::Size& coded_size,
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      int32_t y_stride,
+      int32_t u_stride,
+      int32_t v_stride,
+      int32_t a_stride,
+      base::span<const uint8_t> y_data,
+      base::span<const uint8_t> u_data,
+      base::span<const uint8_t> v_data,
+      base::span<const uint8_t> a_data,
       base::TimeDelta timestamp);
 
   // Wraps external NV12 data of the given parameters with a VideoFrame.
@@ -645,11 +688,14 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Returns pointer to the buffer for a given plane, if this is an
   // IsMappable() frame type. The memory is owned by VideoFrame object and must
   // not be freed by the caller.
-  const uint8_t* data(size_t plane) const {
+  const uint8_t* data(size_t plane) const { return data_span(plane).data(); }
+
+  base::span<const uint8_t> data_span(size_t plane) const {
     CHECK(IsValidPlane(format(), plane));
     CHECK(IsMappable());
-    return data_[plane].data();
+    return data_[plane];
   }
+
   uint8_t* writable_data(size_t plane) {
     // TODO(crbug.com/40265179): Also CHECK that the storage type isn't
     // STORAGE_UNOWNED_MEMORY once non-compliant usages are fixed.

@@ -550,6 +550,22 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalData(
 }
 
 // static
+scoped_refptr<VideoFrame> VideoFrame::WrapExternalData(
+    VideoPixelFormat format,
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    base::span<const uint8_t> data,
+    base::TimeDelta timestamp) {
+  auto layout = GetDefaultLayout(format, coded_size);
+  if (!layout) {
+    return nullptr;
+  }
+  return WrapExternalDataWithLayout(*layout, visible_rect, natural_size, data,
+                                    timestamp);
+}
+
+// static
 scoped_refptr<VideoFrame> VideoFrame::WrapExternalDataWithLayout(
     const VideoFrameLayout& layout,
     const gfx::Rect& visible_rect,
@@ -557,11 +573,25 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDataWithLayout(
     const uint8_t* data,
     size_t data_size,
     base::TimeDelta timestamp) {
+  // TODO(crbug.com/338570700): Remove this function and migrate to the
+  // version accepting a span.
+  auto data_span = UNSAFE_TODO(base::span(data, data_size));
+  return WrapExternalDataWithLayout(layout, visible_rect, natural_size,
+                                    data_span, timestamp);
+}
+
+// static
+scoped_refptr<VideoFrame> VideoFrame::WrapExternalDataWithLayout(
+    const VideoFrameLayout& layout,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    base::span<const uint8_t> data,
+    base::TimeDelta timestamp) {
   StorageType storage_type = STORAGE_UNOWNED_MEMORY;
 
   if (!IsValidConfig(layout.format(), storage_type, layout.coded_size(),
                      visible_rect, natural_size) ||
-      !layout.FitsInContiguousBufferOfSize(data_size)) {
+      !layout.FitsInContiguousBufferOfSize(data.size())) {
     DLOG(ERROR) << "Invalid config: "
                 << ConfigToString(layout.format(), storage_type,
                                   layout.coded_size(), visible_rect,
@@ -572,11 +602,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDataWithLayout(
   scoped_refptr<VideoFrame> frame = new VideoFrame(
       layout, storage_type, visible_rect, natural_size, timestamp);
 
-  // TODO(crbug.com/338570700): WrapExternalDataWithLayout() should accept span.
-  auto external_data = UNSAFE_TODO(base::span(data, data_size));
   for (size_t i = 0; i < layout.planes().size(); ++i) {
     auto& plane = layout.planes()[i];
-    frame->data_[i] = external_data.subspan(plane.offset, plane.size);
+    frame->data_[i] = data.subspan(plane.offset, plane.size);
   }
 
   return frame;
@@ -695,6 +723,47 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     int32_t y_stride,
+    int32_t u_stride,
+    int32_t v_stride,
+    base::span<const uint8_t> y_data,
+    base::span<const uint8_t> u_data,
+    base::span<const uint8_t> v_data,
+    base::TimeDelta timestamp) {
+  const StorageType storage = STORAGE_UNOWNED_MEMORY;
+  if (!IsValidConfig(format, storage, coded_size, visible_rect, natural_size)) {
+    DLOG(ERROR) << __func__ << " Invalid config."
+                << ConfigToString(format, storage, coded_size, visible_rect,
+                                  natural_size);
+    return nullptr;
+  }
+  if (!IsYuvPlanar(format)) {
+    DLOG(ERROR) << __func__ << " Format is not YUV. " << format;
+    return nullptr;
+  }
+
+  auto layout = VideoFrameLayout::CreateWithStrides(
+      format, coded_size, {y_stride, u_stride, v_stride});
+  if (!layout) {
+    DLOG(ERROR) << "Invalid layout.";
+    return nullptr;
+  }
+
+  scoped_refptr<VideoFrame> frame(
+      new VideoFrame(*layout, storage, visible_rect, natural_size, timestamp));
+  std::array<base::span<const uint8_t>, 3> data = {y_data, u_data, v_data};
+  for (size_t plane = 0; plane < NumPlanes(format); ++plane) {
+    frame->data_[plane] = data[plane];
+  }
+  return frame;
+}
+
+// static
+scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
+    VideoPixelFormat format,
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    int32_t y_stride,
     int32_t uv_stride,
     const uint8_t* y_data,
     const uint8_t* uv_data,
@@ -726,6 +795,52 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
     // TODO(crbug.com/338570700): y_data, uv_data should be spans
     frame->data_[plane] =
         UNSAFE_TODO(base::span(data[plane], layout->planes()[plane].size));
+  }
+  return frame;
+}
+
+// static
+scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvaData(
+    VideoPixelFormat format,
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    int32_t y_stride,
+    int32_t u_stride,
+    int32_t v_stride,
+    int32_t a_stride,
+    base::span<const uint8_t> y_data,
+    base::span<const uint8_t> u_data,
+    base::span<const uint8_t> v_data,
+    base::span<const uint8_t> a_data,
+    base::TimeDelta timestamp) {
+  const StorageType storage = STORAGE_UNOWNED_MEMORY;
+  if (!IsValidConfig(format, storage, coded_size, visible_rect, natural_size)) {
+    DLOG(ERROR) << __func__ << " Invalid config."
+                << ConfigToString(format, storage, coded_size, visible_rect,
+                                  natural_size);
+    return nullptr;
+  }
+
+  if (NumPlanes(format) != 4) {
+    DLOG(ERROR) << "Expecting Y, U, V and A planes to be present for the video"
+                << " format.";
+    return nullptr;
+  }
+
+  auto layout = VideoFrameLayout::CreateWithStrides(
+      format, coded_size, {y_stride, u_stride, v_stride, a_stride});
+  if (!layout) {
+    DLOG(ERROR) << "Invalid layout";
+    return nullptr;
+  }
+
+  scoped_refptr<VideoFrame> frame(
+      new VideoFrame(*layout, storage, visible_rect, natural_size, timestamp));
+  std::array<base::span<const uint8_t>, 4> data = {y_data, u_data, v_data,
+                                                   a_data};
+  for (size_t plane = 0; plane < NumPlanes(format); ++plane) {
+    frame->data_[plane] = data[plane];
   }
   return frame;
 }

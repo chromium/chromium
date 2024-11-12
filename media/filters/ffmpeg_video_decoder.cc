@@ -198,12 +198,12 @@ int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
   // Round up the allocation, but keep `allocation_size` as the usable
   // allocation after aligning `data`.
   void* fb_priv = nullptr;
-  uint8_t* data = frame_pool_->GetFrameBuffer(allocation_size, &fb_priv);
-  if (!data) {
+  auto span = frame_pool_->GetFrameBuffer(allocation_size, &fb_priv);
+  if (span.empty() || !fb_priv) {
     return AVERROR(EINVAL);
   }
 
-  data = base::bits::AlignUp(data, layout->buffer_addr_align());
+  uint8_t* data = base::bits::AlignUp(span.data(), layout->buffer_addr_align());
 
   for (size_t plane = 0; plane < num_planes; ++plane) {
     frame->data[plane] = data + layout->planes()[plane].offset;
