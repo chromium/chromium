@@ -699,8 +699,9 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
     signin_metrics::ProfileSignout profile_signout_source,
     signin_metrics::SourceForRefreshTokenOperation token_signout_source,
     syncer::DataTypeSet unsynced_datatypes) {
+  Profile* profile = browser_->profile();
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser_->profile());
+      IdentityManagerFactory::GetForProfile(profile);
   CoreAccountId primary_account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   if (primary_account_id.empty()) {
@@ -712,6 +713,11 @@ void SigninViewController::SignoutOrReauthWithPromptWithUnsyncedDataTypes(
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           primary_account_id);
   bool sign_out_immediately = unsynced_datatypes.empty() && needs_reauth;
+
+  // Do not show the dialog to users with implicit signin.
+  if (!profile->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin)) {
+    sign_out_immediately = true;
+  }
 
   base::OnceCallback<void(ChromeSignoutConfirmationChoice)> callback =
       base::BindOnce(&HandleSignoutConfirmationChoice, browser_->AsWeakPtr(),
