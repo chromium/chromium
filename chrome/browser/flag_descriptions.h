@@ -4354,9 +4354,6 @@ extern const char kWifiDirectDescription[];
 extern const char kWindowSplittingName[];
 extern const char kWindowSplittingDescription[];
 
-extern const char kLauncherGameSearchName[];
-extern const char kLauncherGameSearchDescription[];
-
 extern const char kLauncherKeyShortcutInBestMatchName[];
 extern const char kLauncherKeyShortcutInBestMatchDescription[];
 

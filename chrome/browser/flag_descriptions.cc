@@ -7520,10 +7520,6 @@ const char kWindowSplittingName[] = "CrOS Labs - Window splitting";
 const char kWindowSplittingDescription[] =
     "Enables splitting windows by dragging one over another.";
 
-const char kLauncherGameSearchName[] = "Enable launcher game search";
-const char kLauncherGameSearchDescription[] =
-    "Enables cloud game search results in the launcher.";
-
 const char kLauncherKeyShortcutInBestMatchName[] =
     "Enable keyshortcut results in best match";
 const char kLauncherKeyShortcutInBestMatchDescription[] =

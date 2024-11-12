@@ -5634,11 +5634,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "launcher-game-search",
-    "owners": ["wrong@chromium.org", "napper@chromium.org", "tby@chromium.org"],
-    "expiry_milestone": 115
-  },
-  {
     "name": "launcher-item-suggest",
     "owners": ["wrong@chromium.org", "amandadeacon@chromium.org", "tby@chromium.org"],
     "expiry_milestone": 115
