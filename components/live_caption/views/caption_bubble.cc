@@ -95,7 +95,7 @@ static constexpr int kLineHeightDip = 24;
 static constexpr int kLiveTranslateLabelLineHeightDip = 18;
 static constexpr int kLiveTranslateImageWidthDip = 16;
 static constexpr int kLanguageButtonImageLabelSpacing = 4;
-static constexpr auto kLanguageButtonInsets = gfx::Insets::TLBR(2, 8, 2, 6);
+static constexpr auto kLanguageButtonInsets = gfx::Insets::VH(0, 4);
 static constexpr int kNumLinesCollapsed = 2;
 static constexpr int kNumLinesExpanded = 8;
 static constexpr int kCornerRadiusDip = 4;
@@ -457,6 +457,7 @@ class LanguageTextButton : public views::MdTextButton {
   explicit LanguageTextButton(views::MdTextButton::PressedCallback callback)
       : views::MdTextButton(std::move(callback)) {
     SetCustomPadding(kLanguageButtonInsets);
+    SetCornerRadius(kLiveTranslateLabelLineHeightDip / 2);
     label()->SetMultiLine(false);
     SetImageLabelSpacing(kLanguageButtonImageLabelSpacing);
     SetBgColorIdOverride(ui::kColorLiveCaptionBubbleButtonBackground);
@@ -489,6 +490,7 @@ class LanguageDropdownButton : public views::MdTextButtonWithDownArrow {
       std::u16string label_text)
       : views::MdTextButtonWithDownArrow(std::move(callback), label_text) {
     SetCustomPadding(kLanguageButtonInsets);
+    SetCornerRadius(kLiveTranslateLabelLineHeightDip / 2);
     label()->SetMultiLine(false);
     SetImageLabelSpacing(kLanguageButtonImageLabelSpacing);
     SetBgColorIdOverride(ui::kColorLiveCaptionBubbleButtonBackground);
@@ -1368,6 +1370,8 @@ void CaptionBubble::SetTextColor() {
   const auto* const color_provider = GetColorProvider();
   SkColor primary_color =
       color_provider->GetColor(ui::kColorLiveCaptionBubbleForegroundDefault);
+  SkColor header_color =
+      color_provider->GetColor(ui::kColorLiveCaptionBubbleButtonIcon);
   SkColor icon_disabled_color =
       color_provider->GetColor(ui::kColorLiveCaptionBubbleButtonIconDisabled);
 
@@ -1378,6 +1382,8 @@ void CaptionBubble::SetTextColor() {
   if (caption_style_) {
     ParseNonTransparentRGBACSSColorString(caption_style_->text_color,
                                           &primary_color, color_provider);
+    ParseNonTransparentRGBACSSColorString(caption_style_->text_color,
+                                          &header_color, color_provider);
   }
 
   label_->SetEnabledColor(primary_color);
@@ -1389,16 +1395,16 @@ void CaptionBubble::SetTextColor() {
 
   if (IsLiveTranslateEnabled() ||
       base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-    source_language_button_->SetEnabledTextColors(primary_color);
-    target_language_button_->SetEnabledTextColors(primary_color);
+    source_language_button_->SetEnabledTextColors(header_color);
+    target_language_button_->SetEnabledTextColors(header_color);
 // On macOS whenever the caption bubble is not in main focus the button state
 // is set to disabled. These buttons are never disabled so it is okay to
 // override this state.
 #if BUILDFLAG(IS_MAC)
     source_language_button_->SetTextColor(views::Button::STATE_DISABLED,
-                                          primary_color);
+                                          header_color);
     target_language_button_->SetTextColor(views::Button::STATE_DISABLED,
-                                          primary_color);
+                                          header_color);
 #endif
 
     // TODO(crbug.com/40259212): The live caption bubble allows users to set
@@ -1407,14 +1413,14 @@ void CaptionBubble::SetTextColor() {
     // equivalent ui::ColorId may not exist. To avoid needing to define around
     // 40 new color ids to account for each combination, we use the deprecated
     // SKColor function.
-    source_language_button_->SetStrokeColorOverrideDeprecated(primary_color);
-    target_language_button_->SetStrokeColorOverrideDeprecated(primary_color);
-    translation_header_text_->SetEnabledColor(primary_color);
+    source_language_button_->SetStrokeColorOverrideDeprecated(header_color);
+    target_language_button_->SetStrokeColorOverrideDeprecated(header_color);
+    translation_header_text_->SetEnabledColor(header_color);
     translate_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kTranslateIcon, primary_color,
+        vector_icons::kTranslateIcon, header_color,
         kLiveTranslateImageWidthDip));
     translate_arrow_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kArrowRightAltIcon, primary_color,
+        vector_icons::kArrowRightAltIcon, header_color,
         kLiveTranslateImageWidthDip));
   }
 
@@ -1455,17 +1461,17 @@ void CaptionBubble::SetTextColor() {
       color_provider->GetColor(ui::kColorLiveCaptionBubbleCheckbox));
 #endif
   views::SetImageFromVectorIconWithColor(
-      back_to_tab_button_, vector_icons::kBackToTabIcon, kButtonDip,
-      primary_color, icon_disabled_color);
+      back_to_tab_button_, vector_icons::kBackToTabChromeRefreshIcon,
+      kButtonDip, header_color, icon_disabled_color);
   views::SetImageFromVectorIconWithColor(
-      close_button_, vector_icons::kCloseRoundedIcon, kButtonDip, primary_color,
+      close_button_, vector_icons::kCloseRoundedIcon, kButtonDip, header_color,
       icon_disabled_color);
   views::SetImageFromVectorIconWithColor(
-      expand_button_, vector_icons::kCaretDownIcon, kButtonDip, primary_color,
+      expand_button_, vector_icons::kCaretDownIcon, kButtonDip, header_color,
       icon_disabled_color);
   views::SetImageFromVectorIconWithColor(collapse_button_,
                                          vector_icons::kCaretUpIcon, kButtonDip,
-                                         primary_color, icon_disabled_color);
+                                         header_color, icon_disabled_color);
 }
 
 void CaptionBubble::SetBackgroundColor() {
@@ -1478,7 +1484,9 @@ void CaptionBubble::SetBackgroundColor() {
     ParseNonTransparentRGBACSSColorString(caption_style_->background_color,
                                           &background_color, color_provider);
   }
+
   set_color(background_color);
+  GetWidget()->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
 }
 
 void CaptionBubble::OnLanguageChanged() {
@@ -1773,8 +1781,6 @@ void CaptionBubble::ShowTranslateOptionsMenu() {
   translation_menu_runner_ = std::make_unique<views::MenuRunner>(
       translation_menu_model_.get(), views::MenuRunner::COMBOBOX);
   const gfx::Rect& screen_bounds = target_language_button_->GetBoundsInScreen();
-  target_language_button_->GetWidget()->SetColorModeOverride(
-      ui::ColorProviderKey::ColorMode::kDark);
   translation_menu_runner_->RunMenuAt(
       target_language_button_->GetWidget(), /*button_controller=*/nullptr,
       screen_bounds, views::MenuAnchorPosition::kTopLeft,
