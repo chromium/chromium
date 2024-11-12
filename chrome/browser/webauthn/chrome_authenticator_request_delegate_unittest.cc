@@ -463,7 +463,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ConditionalUI) {
     transports_info.request_type = device::FidoRequestType::kGetAssertion;
     delegate.OnTransportAvailabilityEnumerated(std::move(transports_info));
     EXPECT_EQ(observer.last_step() ==
-                  AuthenticatorRequestDialogModel::Step::kConditionalMediation,
+                  AuthenticatorRequestDialogModel::Step::kPasskeyAutofill,
               conditional_ui);
   }
 }

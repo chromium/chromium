@@ -953,11 +953,11 @@ void GPMEnclaveController::OnGPMSelected() {
 void GPMEnclaveController::OnGPMPasskeySelected(
     std::vector<uint8_t> credential_id) {
   selected_cred_id_ = std::move(credential_id);
-  // Change the Step from `kConditionalMediation` so that it's clear that an
+  // Change the Step from `kPasskeyAutofill` so that it's clear that an
   // operation is in progress. This was originally motivated because updating
   // the "last used" field in a passkey entity triggered a callback that
   // restarted the request because the Step hadn't been updated.
-  if (model_->step() == Step::kConditionalMediation &&
+  if (model_->step() == Step::kPasskeyAutofill &&
       base::FeatureList::IsEnabled(device::kWebAuthnUpdateLastUsed)) {
     model_->SetStep(Step::kNotStarted);
   }
@@ -976,7 +976,7 @@ void GPMEnclaveController::OnGPMPasskeySelected(
         case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
         case EnclaveUserVerificationMethod::kNone:
         case EnclaveUserVerificationMethod::kImplicit:
-          if (model_->step() != Step::kConditionalMediation) {
+          if (model_->step() != Step::kPasskeyAutofill) {
             // The autofill UI shows its own loading indicator.
             model_->DisableUiOrShowLoadingDialog();
           }
@@ -1009,7 +1009,7 @@ void GPMEnclaveController::OnGPMPasskeySelected(
 
     case AccountState::kLoading:
     case AccountState::kChecking:
-      if (model_->step() != Step::kConditionalMediation &&
+      if (model_->step() != Step::kPasskeyAutofill &&
           model_->step() != Step::kNotStarted) {
         // The autofill UI shows its own loading indicator.
         model_->DisableUiOrShowLoadingDialog();

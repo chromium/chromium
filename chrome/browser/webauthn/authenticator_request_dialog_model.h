@@ -196,9 +196,10 @@ struct AuthenticatorRequestDialogModel
   enum class Step {
     // The UX flow has not started yet, the dialog should still be hidden.
     kNotStarted,
-    // Conditionally mediated UI. No dialog is shown, instead credentials are
-    // offered to the user on the password autofill prompt.
-    kConditionalMediation,
+    // Passkey autofill (i.e. WebAuthn get() with conditional mediation). No
+    // dialog is shown, instead credentials are offered to the user on the
+    // password autofill prompt.
+    kPasskeyAutofill,
     kMechanismSelection,
     // The request errored out before completing. Error will only be sent
     // after user interaction.

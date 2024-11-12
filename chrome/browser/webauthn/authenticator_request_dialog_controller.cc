@@ -645,7 +645,7 @@ void AuthenticatorRequestDialogController::OnUserConfirmedPriorityMechanism() {
 
 void AuthenticatorRequestDialogController::OnPasskeysChanged(
     const std::vector<webauthn::PasskeyModelChange>& changes) {
-  if (model_->step() != Step::kConditionalMediation) {
+  if (model_->step() != Step::kPasskeyAutofill) {
     // Updating an in flight request is only supported for conditional UI.
     return;
   }
@@ -721,7 +721,7 @@ void AuthenticatorRequestDialogController::StartFlow(
 }
 
 void AuthenticatorRequestDialogController::TransitionToModalWebAuthnRequest() {
-  DCHECK_EQ(model_->step(), Step::kConditionalMediation);
+  DCHECK_EQ(model_->step(), Step::kPasskeyAutofill);
 
   // Dispatch requests to any plugged in authenticators.
   for (auto& authenticator :
@@ -1013,7 +1013,7 @@ void AuthenticatorRequestDialogController::
 
 void AuthenticatorRequestDialogController::OnTransportAvailabilityChanged(
     TransportAvailabilityInfo transport_availability) {
-  if (model_->step() != Step::kConditionalMediation) {
+  if (model_->step() != Step::kPasskeyAutofill) {
     // Updating an in flight request is only supported for conditional UI.
     return;
   }
@@ -1775,7 +1775,7 @@ void AuthenticatorRequestDialogController::StartGuidedFlowForTransport(
   DCHECK(model_->step() == Step::kMechanismSelection ||
          model_->step() == Step::kUsbInsertAndActivate ||
          model_->step() == Step::kCableActivate ||
-         model_->step() == Step::kConditionalMediation ||
+         model_->step() == Step::kPasskeyAutofill ||
          model_->step() == Step::kCreatePasskey ||
          model_->step() == Step::kPreSelectAccount ||
          model_->step() == Step::kSelectPriorityMechanism ||
@@ -1975,7 +1975,7 @@ void AuthenticatorRequestDialogController::StartAutofillRequest() {
         ChromeWebAuthnCredentialsDelegate::SecurityKeyOrHybridFlowAvailable(
             is_security_key_or_hybrid_flow_available));
   }
-  SetCurrentStep(Step::kConditionalMediation);
+  SetCurrentStep(Step::kPasskeyAutofill);
 }
 
 void AuthenticatorRequestDialogController::DispatchRequestAsync(

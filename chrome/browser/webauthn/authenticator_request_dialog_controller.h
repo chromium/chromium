@@ -101,7 +101,7 @@ class AuthenticatorRequestDialogController
   // Starts a modal WebAuthn flow (i.e. what you normally get if you call
   // WebAuthn with no mediation parameter) from a conditional request.
   //
-  // Valid action when at step: kConditionalMediation.
+  // Valid action when at step: kPasskeyAutofill.
   void TransitionToModalWebAuthnRequest();
 
   // Starts the UX flow. Tries to figure out the most likely transport to be

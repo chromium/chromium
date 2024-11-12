@@ -1351,7 +1351,7 @@ bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
 
   if (dialog_controller_->ui_presentation() == UIPresentation::kAutofill &&
       (dialog_model_->step() ==
-           AuthenticatorRequestDialogModel::Step::kConditionalMediation ||
+           AuthenticatorRequestDialogModel::Step::kPasskeyAutofill ||
        dialog_model_->step() ==
            AuthenticatorRequestDialogModel::Step::kNotStarted)) {
     // There is an active conditional request that is not showing any UI. The UI

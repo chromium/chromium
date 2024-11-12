@@ -1455,7 +1455,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
                                                : UIPresentation::kModal);
     controller.StartFlow(std::move(transports_info));
     if (is_autofill) {
-      EXPECT_EQ(model->step(), Step::kConditionalMediation);
+      EXPECT_EQ(model->step(), Step::kPasskeyAutofill);
       controller.TransitionToModalWebAuthnRequest();
     }
 
@@ -2025,7 +2025,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   controller.set_ui_presentation(UIPresentation::kAutofill);
   controller.StartFlow(std::move(transports_info));
   task_environment()->RunUntilIdle();
-  EXPECT_EQ(model->step(), Step::kConditionalMediation);
+  EXPECT_EQ(model->step(), Step::kPasskeyAutofill);
   EXPECT_TRUE(model->should_dialog_be_closed());
   EXPECT_EQ(preselect_num_called, 0);
   EXPECT_EQ(request_num_called, 0);
@@ -2066,7 +2066,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   transports_info.recognized_credentials = {kCred1, kCred2};
   controller.set_ui_presentation(UIPresentation::kAutofill);
   controller.StartFlow(std::move(transports_info));
-  EXPECT_EQ(model->step(), Step::kConditionalMediation);
+  EXPECT_EQ(model->step(), Step::kPasskeyAutofill);
   EXPECT_TRUE(model->should_dialog_be_closed());
   EXPECT_EQ(request_num_called, 0);
 
@@ -2096,7 +2096,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUICancelRequest) {
       device::AttestationConveyancePreference::kNone;
   controller.set_ui_presentation(UIPresentation::kAutofill);
   controller.StartFlow(std::move(transports_info));
-  EXPECT_EQ(model->step(), Step::kConditionalMediation);
+  EXPECT_EQ(model->step(), Step::kPasskeyAutofill);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // Cancel an ongoing request (as if e.g. the user clicked the accept button).
@@ -2105,7 +2105,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUICancelRequest) {
   EXPECT_CALL(mock_observer, OnStepTransition()).Times(2);
   controller.SetCurrentStepForTesting(Step::kKeyAlreadyRegistered);
   controller.CancelAuthenticatorRequest();
-  EXPECT_EQ(model->step(), Step::kConditionalMediation);
+  EXPECT_EQ(model->step(), Step::kPasskeyAutofill);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
   model->observers.RemoveObserver(&mock_observer);
 }
@@ -2175,7 +2175,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIPhonePasskey) {
     tai.available_transports = {AuthenticatorTransport::kHybrid};
     controller->set_ui_presentation(UIPresentation::kAutofill);
     controller->StartFlow(tai);
-    CHECK_EQ(model->step(), Step::kConditionalMediation);
+    CHECK_EQ(model->step(), Step::kPasskeyAutofill);
     return std::make_tuple(std::move(model), std::move(controller),
                            std::move(gpm_controller));
   };
@@ -2228,7 +2228,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
       device::AttestationConveyancePreference::kNone;
   controller->set_ui_presentation(UIPresentation::kAutofill);
   controller->StartFlow(std::move(transport_info));
-  ASSERT_EQ(model->step(), Step::kConditionalMediation);
+  ASSERT_EQ(model->step(), Step::kPasskeyAutofill);
   testing::NiceMock<MockDialogModelObserver> mock_observer;
   model->observers.AddObserver(&mock_observer);
 
@@ -2309,7 +2309,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, InvalidPriorityPhonePref) {
   tai.available_transports = {AuthenticatorTransport::kHybrid};
   controller->set_ui_presentation(UIPresentation::kAutofill);
   controller->StartFlow(tai);
-  ASSERT_EQ(model->step(), Step::kConditionalMediation);
+  ASSERT_EQ(model->step(), Step::kPasskeyAutofill);
 
   // Set an invalid base64 string as the last used pairing preference.
   profile()->GetPrefs()->SetString(
@@ -2338,14 +2338,14 @@ TEST_F(AuthenticatorRequestDialogControllerTest, ConditionalUIWindowsCancel) {
       device::AttestationConveyancePreference::kNone;
   controller.set_ui_presentation(UIPresentation::kAutofill);
   controller.StartFlow(std::move(transports_info));
-  EXPECT_EQ(model->step(), Step::kConditionalMediation);
+  EXPECT_EQ(model->step(), Step::kPasskeyAutofill);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // Simulate the Windows authenticator cancelling.
   EXPECT_CALL(mock_observer, OnStepTransition());
   EXPECT_CALL(mock_observer, OnStartOver());
   controller.OnWinUserCancelled();
-  EXPECT_EQ(model->step(), Step::kConditionalMediation);
+  EXPECT_EQ(model->step(), Step::kPasskeyAutofill);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
   model->observers.RemoveObserver(&mock_observer);
 }
