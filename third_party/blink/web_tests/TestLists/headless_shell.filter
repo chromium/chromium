@@ -46,6 +46,7 @@ external/wpt/fullscreen/*
 external/wpt/js*
 external/wpt/longtask-timing/*
 external/wpt/media*
+external/wpt/mixed-content/*
 external/wpt/picture-in-picture/*
 external/wpt/preload/*
 external/wpt/referrer-policy/*
