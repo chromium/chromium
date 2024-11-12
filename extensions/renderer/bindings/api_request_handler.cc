@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/values.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
@@ -662,11 +663,6 @@ void APIRequestHandler::CompleteRequestImpl(int request_id,
   }
 
   if (try_catch.HasCaught()) {
-    v8::Local<v8::Message> v8_message = try_catch.Message();
-    std::optional<std::string> message;
-    if (!v8_message.IsEmpty()) {
-      message = gin::V8ToString(isolate, v8_message->Get());
-    }
     exception_handler_->HandleException(context, "Error handling response",
                                         &try_catch);
   }
