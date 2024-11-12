@@ -132,14 +132,10 @@ public class HubPaneHostMediator {
     }
 
     private void onEdgeToEdgeBottomInsetsChanged(@Px int bottomInset) {
-        assert EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled();
-
         mPropertyModel.set(EDGE_TO_EDGE_BOTTOM_INSETS, bottomInset);
     }
 
     void setEdgeToEdgeController(EdgeToEdgeController edgeToEdgeController) {
-        assert EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled();
-
         if (mEdgeToEdgeController != null) {
             mEdgeToEdgeController.unregisterAdjuster(mEdgeToEdgePadAdjuster);
         }
