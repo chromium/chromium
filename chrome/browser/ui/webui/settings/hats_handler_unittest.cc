@@ -261,8 +261,6 @@ TEST_P(HatsHandlerParamTest, AdPrivacyHats) {
 
   auto interaction_to_survey =
       std::map<HatsHandler::TrustSafetyInteraction, std::string>{
-          {HatsHandler::TrustSafetyInteraction::OPENED_AD_PRIVACY,
-           kHatsSurveyTriggerM1AdPrivacyPage},
           {HatsHandler::TrustSafetyInteraction::OPENED_TOPICS_SUBPAGE,
            kHatsSurveyTriggerM1TopicsSubpage},
           {HatsHandler::TrustSafetyInteraction::OPENED_FLEDGE_SUBPAGE,

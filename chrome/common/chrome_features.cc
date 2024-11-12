@@ -462,14 +462,6 @@ const base::FeatureParam<base::TimeDelta>
         &kHappinessTrackingSurveysForDesktopWhatsNew, "whats-new-time",
         base::Seconds(20)};
 
-// Happiness tracking surveys for the M1 Privacy Sandbox settings.
-BASE_FEATURE(kHappinessTrackingSurveysForDesktopM1AdPrivacyPage,
-             "HappinessTrackingSurveysForDesktopM1AdPrivacyPage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta>
-    kHappinessTrackingSurveysForDesktopM1AdPrivacyPageTime{
-        &kHappinessTrackingSurveysForDesktopM1AdPrivacyPage, "settings-time",
-        base::Seconds(20)};
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopM1TopicsSubpage,
              "HappinessTrackingSurveysForDesktopM1TopicsSubpage",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -57,7 +57,6 @@ constexpr char kHatsSurveyTriggerDownloadWarningPageIgnore[] =
     "download-warning-page-ignore";
 constexpr char kHatsSurveyTriggerHistoryEmbeddings[] = "history-embeddings";
 constexpr char kHatsSurveyTriggerLensOverlayResults[] = "lens-overlay-results";
-constexpr char kHatsSurveyTriggerM1AdPrivacyPage[] = "m1-ad-privacy-page";
 constexpr char kHatsSurveyTriggerM1TopicsSubpage[] = "m1-topics-subpage";
 constexpr char kHatsSurveyTriggerM1FledgeSubpage[] = "m1-fledge-subpage";
 constexpr char kHatsSurveyTriggerM1AdMeasurementSubpage[] =
@@ -247,11 +246,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   const auto ad_privacy_product_specific_bits_data =
       std::vector<std::string>{"3P cookies blocked", "Topics enabled",
                                "Fledge enabled", "Ad Measurement enabled"};
-  survey_configs.emplace_back(
-      &features::kHappinessTrackingSurveysForDesktopM1AdPrivacyPage,
-      kHatsSurveyTriggerM1AdPrivacyPage,
-      /*presupplied_trigger_id=*/std::nullopt,
-      ad_privacy_product_specific_bits_data);
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopM1TopicsSubpage,
       kHatsSurveyTriggerM1TopicsSubpage,

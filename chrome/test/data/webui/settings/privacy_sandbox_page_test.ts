@@ -57,12 +57,6 @@ suite('PrivacySandboxPage', function() {
     assertTrue(isChildVisible(page, '#privacySandboxAdMeasurementLinkRow'));
   });
 
-  test('hatsSurveyRequested', async function() {
-    const result =
-        await hatsBrowserProxy.whenCalled('trustSafetyInteractionOccurred');
-    assertEquals(TrustSafetyInteraction.OPENED_AD_PRIVACY, result);
-  });
-
   test('privacySandboxTopicsRowSublabel', async function() {
     page.setPrefValue('privacy_sandbox.m1.topics_enabled', true);
     await flushTasks();

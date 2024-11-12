@@ -290,16 +290,8 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
           HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
       break;
     }
-    case TrustSafetyInteraction::OPENED_AD_PRIVACY: {
-      trigger = kHatsSurveyTriggerM1AdPrivacyPage;
-      timeout_ms =
-          features::kHappinessTrackingSurveysForDesktopM1AdPrivacyPageTime.Get()
-              .InMilliseconds();
-      navigation_behaviour =
-          HatsService::NavigationBehaviour::REQUIRE_SAME_ORIGIN;
-      product_specific_bits_data = GetAdPrivacyProductSpecificBitsData(profile);
-      break;
-    }
+    case TrustSafetyInteraction::OPENED_AD_PRIVACY:
+      [[fallthrough]];
     case TrustSafetyInteraction::OPENED_TOPICS_SUBPAGE: {
       trigger = kHatsSurveyTriggerM1TopicsSubpage;
       timeout_ms =
