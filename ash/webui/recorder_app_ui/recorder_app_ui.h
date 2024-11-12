@@ -199,7 +199,7 @@ class RecorderAppUI
 
   base::flat_map<speech::LanguageCode, ModelState> soda_states_;
 
-  base::flat_set<speech::LanguageCode> available_languages_;
+  base::flat_set<speech::LanguageCode> transcription_supported_languages_;
 
   base::flat_set<speech::LanguageCode> gen_ai_supported_languages_;
 

@@ -395,6 +395,16 @@ export class PlatformHandler extends PlatformHandlerBase {
     return assertExists(this.langPacks.get(language));
   }
 
+  override isMultipleLanguageAvailable(): boolean {
+    let count = 0;
+    for (const state of this.sodaStates.values()) {
+      if (state.value.kind !== 'unavailable') {
+        count += 1;
+      }
+    }
+    return count > 1;
+  }
+
   override summaryModelLoader = new ModelLoaderDev(new SummaryModelDev(), this);
 
   override titleSuggestionModelLoader = new ModelLoaderDev(

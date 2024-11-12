@@ -152,24 +152,29 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
     speech::SodaInstaller::GetInstance()->AddObserver(this);
     if (base::FeatureList::IsEnabled(
             ash::features::kConchExpandTranscriptionLanguage)) {
-      auto language_list =
-          speech::SodaInstaller::GetInstance()->GetAvailableLanguages();
+      auto language_list = speech::SodaInstaller::GetInstance()
+                               ->GetLiveCaptionEnabledLanguages();
       for (auto language : language_list) {
-        available_languages_.insert(speech::GetLanguageCode(language));
+        auto language_code = speech::GetLanguageCode(language);
+        if (language_code != speech::LanguageCode::kNone) {
+          transcription_supported_languages_.insert(language_code);
+        }
       }
     } else {
-      available_languages_.insert(kDefaultLanguageCode);
-    }
-
-    gen_ai_supported_languages_.insert(kDefaultLanguageCode);
-    if (base::FeatureList::IsEnabled(ash::features::kConchLargeModel)) {
-      gen_ai_supported_languages_.insert(speech::LanguageCode::kJaJp);
+      transcription_supported_languages_.insert(kDefaultLanguageCode);
     }
 
     if (base::FeatureList::IsEnabled(
             speech::kFeatureManagementCrosSodaConchLanguages)) {
       // Currently only en-US is supported.
       speaker_label_supported_languages_.insert(kDefaultLanguageCode);
+    }
+  }
+
+  if (CanUseGenerativeAi()) {
+    gen_ai_supported_languages_.insert(kDefaultLanguageCode);
+    if (base::FeatureList::IsEnabled(ash::features::kConchLargeModel)) {
+      gen_ai_supported_languages_.insert(speech::LanguageCode::kJaJp);
     }
   }
 
@@ -482,22 +487,23 @@ bool RecorderAppUI::IsSodaAvailable(const speech::LanguageCode& language_code) {
   if (!speech::IsOnDeviceSpeechRecognitionSupported()) {
     return false;
   }
-  return available_languages_.contains(language_code);
+  return transcription_supported_languages_.contains(language_code);
 }
 
 void RecorderAppUI::GetAvailableLangPacks(
     GetAvailableLangPacksCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<recorder_app::mojom::LangPackInfoPtr> lang_packs;
-  for (auto language_code : available_languages_) {
+  for (auto config : speech::kLanguageComponentConfigs) {
     recorder_app::mojom::LangPackInfoPtr lang_pack =
         recorder_app::mojom::LangPackInfo::New();
-    lang_pack->language_code = speech::GetLanguageName(language_code);
-    lang_pack->display_name = delegate_->GetLanguageDisplayName(language_code);
+    lang_pack->language_code = config.language_name;
+    lang_pack->display_name =
+        delegate_->GetLanguageDisplayName(config.language_code);
     lang_pack->is_gen_ai_supported =
-        gen_ai_supported_languages_.contains(language_code);
+        gen_ai_supported_languages_.contains(config.language_code);
     lang_pack->is_speaker_label_supported =
-        speaker_label_supported_languages_.contains(language_code);
+        speaker_label_supported_languages_.contains(config.language_code);
     lang_packs.push_back(std::move(lang_pack));
   }
   std::move(callback).Run(std::move(lang_packs));

@@ -133,7 +133,6 @@ interface PageHandler {
       => (ModelState state);
 
   // Returns available language information.
-  // Returns empty array if SODA is unavailable.
   GetAvailableLangPacks() => (array<LangPackInfo> lang_packs);
 
   // Adds a new monitor for SODA state change. `language` is a localized

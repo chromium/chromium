@@ -66,6 +66,10 @@ export abstract class PlatformHandler {
                                        this.getLangPackInfo(selectedLanguage);
   }
 
+  /**
+   * Returns whether there are multiple languages available.
+   */
+  abstract isMultipleLanguageAvailable(): boolean;
 
   /**
    * Requests installation of SODA library and language pack of given language.

@@ -245,7 +245,7 @@ export class OnboardingDialog extends ReactiveLitElement {
             return;
           }
           this.step =
-            this.platformHandler.getLangPackList().length <= 1 ? 1 : 2;
+            this.platformHandler.isMultipleLanguageAvailable() ? 2 : 1;
         };
         return this.renderDialog(
           this.step,

@@ -173,6 +173,16 @@ export class PlatformHandler extends PlatformHandlerBase {
     return assertExists(this.langPacks.get(language));
   }
 
+  override isMultipleLanguageAvailable(): boolean {
+    let count = 0;
+    for (const state of this.sodaStates.values()) {
+      if (state.value.kind !== 'unavailable') {
+        count += 1;
+      }
+    }
+    return count > 1;
+  }
+
   override async installSoda(language: LanguageCode): Promise<void> {
     // Wait the request goes through to make sure all soda states are updated.
     // The install progress is separately tracked in `sodaState`.

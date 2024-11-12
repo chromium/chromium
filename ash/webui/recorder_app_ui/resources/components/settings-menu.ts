@@ -163,7 +163,7 @@ export class SettingsMenu extends ReactiveLitElement {
   private readonly summaryDownloadRequested = signal(false);
 
   private readonly shouldShowLanguagePicker =
-    this.platformHandler.getLangPackList().length > 1;
+    this.platformHandler.isMultipleLanguageAvailable();
 
   private readonly downloadPerfCollected = signal(false);
 

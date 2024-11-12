@@ -63,7 +63,7 @@ export class TranscriptionConsentDialog extends ReactiveLitElement {
   private readonly platformHandler = usePlatformHandler();
 
   private readonly shouldShowSelector =
-    this.platformHandler.getLangPackList().length > 1;
+    this.platformHandler.isMultipleLanguageAvailable();
 
   async show(): Promise<void> {
     await this.dialog.value?.show();
