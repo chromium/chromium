@@ -957,32 +957,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Session.TotalNewDefaultSearchEngineCount" units="count"
-    expires_after="2025-04-20">
-  <owner>aattar@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The number of times a user navigates to their default search engine per
-    session, resulting in the creation of a new renderer process.
-
-    This count measures instances where a user's navigation to their default
-    search engine triggers the browser to spawn a new renderer process. It
-    specifically excludes cases where continuous searches occur within the same
-    renderer, as these do not necessitate new renderer creation. The metric is
-    emitted at the end of each session.
-
-    The primary goal of this metric is to quantify how frequently, within a
-    given session, the browser needs to create a new renderer process
-    specifically for handling default search engine interactions.
-
-    This metric is recorded on Desktop.
-
-    One potential issue to consider is that if the user has multiple profiles
-    open at once, each profile will report its navigations to its own default
-    search engine, potentially inflating the overall count.
-  </summary>
-</histogram>
-
 <histogram name="Session.WebStates.AllSerializedCertPolicyCachesSize"
     units="KB" expires_after="2025-10-08">
   <owner>ajuma@chromium.org</owner>
