@@ -44,6 +44,9 @@ class NetworkAnnotationMonitorBrowserTest
     if (GetParam() == TestCase::kEnabled) {
       feature_list_.InitAndEnableFeature(
           features::kNetworkAnnotationMonitoring);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kNetworkAnnotationMonitoring);
     }
   }
 
