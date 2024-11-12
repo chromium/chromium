@@ -72,14 +72,15 @@ void IOSCollaborationControllerDelegate::ShowJoinDialog(ResultCallback result) {
   const CollaborationFlowConfigurationJoin& join_flow =
       collaboration_flow_->As<CollaborationFlowConfigurationJoin>();
 
-  ShareKitJoinConfiguration* configuration =
-      [[ShareKitJoinConfiguration alloc] init];
-  configuration.URL = join_flow.url();
-  configuration.baseViewController = join_flow.base_view_controller();
-  join_flow.share_kit_service()->JoinGroup(configuration);
-  // TODO(crbug.com/377869115): `result` should be returned when the
-  // ShareKit UI is done.
-  std::move(result).Run(true);
+  ShareKitJoinConfiguration* config = [[ShareKitJoinConfiguration alloc] init];
+  config.URL = join_flow.url();
+  config.baseViewController = join_flow.base_view_controller();
+  auto completion_block = base::CallbackToBlock(std::move(result));
+  config.completionBlock = ^(BOOL completion_result) {
+    completion_block(completion_result);
+  };
+
+  join_flow.share_kit_service()->JoinGroup(config);
 }
 
 void IOSCollaborationControllerDelegate::ShowShareDialog(
@@ -100,10 +101,12 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
   config.baseViewController = share_flow.base_view_controller();
   config.applicationHandler =
       HandlerForProtocol(share_flow.command_dispatcher(), ApplicationCommands);
+  auto completion_block = base::CallbackToBlock(std::move(result));
+  config.completionBlock = ^(BOOL completion_result) {
+    completion_block(completion_result);
+  };
+
   share_flow.share_kit_service()->ShareGroup(config);
-  // TODO(crbug.com/377869115): `result` should be returned when the
-  // ShareKit UI is done.
-  std::move(result).Run(true);
 }
 
 }  // namespace collaboration

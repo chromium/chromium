@@ -18,6 +18,10 @@ class GURL;
 // The URL used to join the group, containing the collab ID and the token.
 @property(nonatomic, assign) GURL URL;
 
+// Executed when the join flow ended. The `result` parameter indicates whether
+// the user successfully joined the group.
+@property(nonatomic, copy) void (^completionBlock)(BOOL result);
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARE_KIT_MODEL_SHARE_KIT_JOIN_CONFIGURATION_H_

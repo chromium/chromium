@@ -22,6 +22,10 @@ class TabGroup;
 // Application commands handler.
 @property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
 
+// Executed when the share flow ended. The `result` parameter indicates whether
+// the user successfully shared the group.
+@property(nonatomic, copy) void (^completionBlock)(BOOL result);
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARE_KIT_MODEL_SHARE_KIT_SHARE_GROUP_CONFIGURATION_H_

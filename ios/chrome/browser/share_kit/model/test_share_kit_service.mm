@@ -24,6 +24,9 @@ void TestShareKitService::ShareGroup(ShareKitShareGroupConfiguration* config) {
   [config.baseViewController presentViewController:navController
                                           animated:YES
                                         completion:nil];
+  if (config.completionBlock) {
+    config.completionBlock(YES);
+  }
 }
 
 void TestShareKitService::ManageGroup(ShareKitManageConfiguration* config) {
@@ -42,6 +45,9 @@ void TestShareKitService::JoinGroup(ShareKitJoinConfiguration* config) {
   [config.baseViewController presentViewController:navController
                                           animated:YES
                                         completion:nil];
+  if (config.completionBlock) {
+    config.completionBlock(YES);
+  }
 }
 
 UIViewController* TestShareKitService::FacePile(
