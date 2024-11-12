@@ -83,16 +83,9 @@ class ChromeTracingDelegate : public content::TracingDelegate,
   void OnBrowserAdded(Browser* browser) override;
 #endif
 
-  // The types of action that are guarded by IsActionAllowed.
-  enum class BackgroundScenarioAction {
-    kStartTracing,
-    kUploadTrace,
-  };
-
-  // Returns true if the delegate should be allowed to perform `action` for the
-  // scenario described in `config`.
-  bool IsActionAllowed(BackgroundScenarioAction action,
-                       bool requires_anonymized_data) const;
+  // Returns true if the delegate should be allowed to perform an action
+  // given `requires_anonymized_data`.
+  bool IsActionAllowed(bool requires_anonymized_data) const;
 
   bool incognito_launched_ = false;
 

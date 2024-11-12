@@ -56,15 +56,4 @@ TEST_F(AwTracingDelegateTest, IsAllowedToBegin) {
   delegate_->OnBackgroundTracingIdle();
 }
 
-TEST_F(AwTracingDelegateTest, IsAllowedToBeginSessionEndedUnexpectedly) {
-  base::Value::Dict dict;
-  dict.Set("state", static_cast<int>(tracing::BackgroundTracingState::STARTED));
-  pref_service_->Set(tracing::kBackgroundTracingSessionState,
-                     base::Value(std::move(dict)));
-  tracing::BackgroundTracingStateManager::GetInstance().ResetForTesting();
-
-  EXPECT_FALSE(delegate_->OnBackgroundTracingActive(
-      /*requires_anonymized_data=*/false));
-}
-
 }  // namespace android_webview
