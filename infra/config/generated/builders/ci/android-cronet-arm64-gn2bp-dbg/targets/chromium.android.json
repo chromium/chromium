@@ -1,8 +1,0 @@
-{
-  "android-cronet-arm64-gn2bp-dbg": {
-    "additional_compile_targets": [
-      "cronet_package",
-      "cronet_package_ci"
-    ]
-  }
-}
