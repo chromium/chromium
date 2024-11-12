@@ -1156,6 +1156,14 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(USHORT max_attribs,
                                     ax::mojom::StringAttribute::kName));
   }
 
+  // Vispero's Inspect tool needs this temporarily, until they start tracking
+  // nodes using the unique id.
+  std::string id_attr =
+      GetOwner()->GetStringAttribute(ax::mojom::StringAttribute::kHtmlId);
+  if (!id_attr.empty()) {
+    ADD_ATTRIBUTE("id", id_attr);
+  }
+
   // Next add serialized attributes.
   const auto& serialized_attrs = GetOwner()->GetHtmlAttributes();
   for (const auto& serialized_attr : serialized_attrs) {
