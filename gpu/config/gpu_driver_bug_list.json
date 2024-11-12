@@ -3475,6 +3475,21 @@
       "features": [
         "disable_dml_meta_commands_for_gpu"
       ]
+    },
+    {
+      "id": 439,
+      "cr_bugs": [ 315860185 ],
+      "description": "Disable hardware secure decryption on AMD GPUs with higher error rates to achieve better playback results.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "device_id": [
+        "0x744c", "0x73a5", "0x73ef", "0x7480", "0x73bf"
+      ],
+      "features": [
+        "disable_media_foundation_hardware_security"
+      ]
     }
   ]
 }
