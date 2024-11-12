@@ -3547,6 +3547,7 @@ if (!is_android) {
     }
 
     if (is_linux || is_chromeos) {
+      # TODO(crbug.com/374696525): enable this test on all desktop platforms.
       sources += [
         "../browser/error_reporting/webui_js_error_reporting_browsertest.cc",
       ]

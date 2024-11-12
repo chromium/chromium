@@ -422,10 +422,6 @@ template("chrome_extra_paks") {
         "//chrome/common/chromeos/extensions:resources",
       ]
     }
-    if (is_linux || is_chromeos) {
-      sources += [ "$root_gen_dir/chrome/webui_js_error_resources.pak" ]
-      deps += [ "//chrome/browser/resources/webui_js_error:resources" ]
-    }
     if (!is_android && !is_chromeos_ash) {
       sources += [
         "$root_gen_dir/chrome/intro_resources.pak",

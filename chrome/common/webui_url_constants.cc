@@ -281,10 +281,9 @@ base::span<const base::cstring_view> ChromeDebugURLs() {
 #if BUILDFLAG(IS_ANDROID)
        blink::kChromeUIGpuJavaCrashURL,
        kChromeUIJavaCrashURL,
-#endif
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#else
        kChromeUIWebUIJsErrorURL,
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
        kChromeUIQuitURL,
        kChromeUIRestartURL});
 

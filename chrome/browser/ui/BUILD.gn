@@ -1611,6 +1611,8 @@ static_library("ui") {
       "webui/web_app_internals/web_app_internals_ui.h",
       "webui/webui_gallery/webui_gallery_ui.cc",
       "webui/webui_gallery/webui_gallery_ui.h",
+      "webui/webui_js_error/webui_js_error_ui.cc",
+      "webui/webui_js_error/webui_js_error_ui.h",
       "webui/webui_util_desktop.cc",
       "webui/webui_util_desktop.h",
     ]
@@ -3658,11 +3660,7 @@ static_library("ui") {
   }
 
   if (is_linux || is_chromeos) {
-    sources += [
-      "process_singleton_dialog_linux.h",
-      "webui/webui_js_error/webui_js_error_ui.cc",
-      "webui/webui_js_error/webui_js_error_ui.h",
-    ]
+    sources += [ "process_singleton_dialog_linux.h" ]
     if (use_aura) {
       deps += [ "//third_party/fontconfig" ]
     }

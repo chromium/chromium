@@ -122,10 +122,6 @@ group("resources") {
     ]
   }
 
-  if (is_linux || is_chromeos) {
-    public_deps += [ "webui_js_error:resources" ]
-  }
-
   if (!is_android && !is_chromeos_ash) {
     public_deps += [
       "inline_login:resources",
@@ -298,6 +294,7 @@ group("dev_ui_resources") {
     public_deps += [
       "media_router/internals:resources",
       "on_device_internals:resources",
+      "webui_js_error:resources",
     ]
   }
 
@@ -357,6 +354,7 @@ repack("dev_ui_paks") {
     sources += [
       "$root_gen_dir/chrome/media_router_internals_resources.pak",
       "$root_gen_dir/chrome/on_device_internals_resources.pak",
+      "$root_gen_dir/chrome/webui_js_error_resources.pak",
     ]
   }
 

@@ -372,6 +372,8 @@ inline constexpr char kChromeUIUntrustedWebUITestURL[] =
 inline constexpr char kChromeUIWebAppInternalsHost[] = "web-app-internals";
 inline constexpr char kChromeUIWebAppInternalsURL[] =
     "chrome://web-app-internals";
+inline constexpr char kChromeUIWebUIJsErrorHost[] = "webuijserror";
+inline constexpr char kChromeUIWebUIJsErrorURL[] = "chrome://webuijserror/";
 inline constexpr char kChromeUIWebUITestHost[] = "webui-test";
 inline constexpr char kCookiesSubPagePath[] = "/cookies";
 inline constexpr char kTrackingProtectionSubPagePath[] = "/trackingProtection";
@@ -576,11 +578,6 @@ inline constexpr char kOsUIShortcutCustomizationAppURL[] =
     "os://shortcut-customization";
 inline constexpr char16_t kOsUISystemURL[] = u"os://system";
 inline constexpr char kOsUIVersionURL[] = "os://version";
-#endif
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-inline constexpr char kChromeUIWebUIJsErrorHost[] = "webuijserror";
-inline constexpr char kChromeUIWebUIJsErrorURL[] = "chrome://webuijserror/";
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
