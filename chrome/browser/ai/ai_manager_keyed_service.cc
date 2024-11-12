@@ -532,15 +532,14 @@ AIManagerKeyedService::GetAssistantDefaultSamplingParams() {
   auto session = service->StartSession(
       optimization_guide::ModelBasedCapabilityKey::kPromptApi, config_params);
 
-  default_assistant_sampling_params_ =
-      session
-          ? session->GetSamplingParams()
-          : optimization_guide::SamplingParams{
-                uint32_t(
-                    optimization_guide::features::GetOnDeviceModelMaxTopK()),
-                float(optimization_guide::features::
-                          GetOnDeviceModelDefaultTemperature())};
-  return default_assistant_sampling_params_.value();
+  if (session) {
+    default_assistant_sampling_params_ = session->GetSamplingParams();
+    return default_assistant_sampling_params_.value();
+  }
+  return optimization_guide::SamplingParams{
+      uint32_t(optimization_guide::features::GetOnDeviceModelMaxTopK()),
+      float(
+          optimization_guide::features::GetOnDeviceModelDefaultTemperature())};
 }
 
 uint32_t AIManagerKeyedService::GetAssistantModelMaxTopK() {
