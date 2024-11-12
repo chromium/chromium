@@ -52,6 +52,7 @@ class TaskManagerView : public TableViewDelegate,
   struct FilterTab {
     int title_id;
     FilterCategory associated_category;
+    raw_ptr<const gfx::VectorIcon> icon;
   };
 
   TaskManagerView(const TaskManagerView&) = delete;
@@ -181,7 +182,6 @@ class TaskManagerView : public TableViewDelegate,
   // True when the Task Manager window should be shown on top of other windows.
   bool is_always_on_top_;
 
-  // An array of FilterTabs, populated when CreateTabbedPane() is called.
   base::WeakPtrFactory<TaskManagerView> weak_factory_{this};
 };
 

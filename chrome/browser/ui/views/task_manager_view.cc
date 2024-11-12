@@ -35,6 +35,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -52,6 +53,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -81,18 +83,21 @@ TaskManagerView* g_task_manager_view = nullptr;
 
 }  // namespace
 
-constexpr auto kTabDefinitions = std::to_array<TaskManagerView::FilterTab>(
+const auto kTabDefinitions = std::to_array<TaskManagerView::FilterTab>(
     {{
          .title_id = IDS_TASK_MANAGER_CATEGORY_TABS_NAME,
          .associated_category = FilterCategory::kTabs,
+         .icon = &views::kNewTabIcon,
      },
      {
          .title_id = IDS_TASK_MANAGER_CATEGORY_EXTENSIONS_NAME,
          .associated_category = FilterCategory::kExtensions,
+         .icon = &vector_icons::kExtensionChromeRefreshIcon,
      },
      {
          .title_id = IDS_TASK_MANAGER_CATEGORY_SYSTEM_NAME,
          .associated_category = FilterCategory::kSystem,
+         .icon = &vector_icons::kSettingsOutlineIcon,
      }});
 
 TaskManagerView::~TaskManagerView() {
@@ -371,7 +376,9 @@ void TaskManagerView::TabSelectedAt(int index) {
 }
 
 std::unique_ptr<views::View> TaskManagerView::CreateTabbedPane() {
-  auto tabs = std::make_unique<views::TabbedPane>();
+  auto tabs = std::make_unique<views::TabbedPane>(
+      views::TabbedPane::Orientation::kHorizontal,
+      views::TabbedPane::TabStripStyle::kCompactWithIcon);
   tabs->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   tabs->SetPreferredSize(
       gfx::Size(kTaskManagerHeaderWidth, kTaskManagerHeaderHeight));
@@ -382,7 +389,7 @@ std::unique_ptr<views::View> TaskManagerView::CreateTabbedPane() {
 
   for (const auto& tab : kTabDefinitions) {
     tabs->AddTab(l10n_util::GetStringUTF16(tab.title_id),
-                 std::make_unique<views::View>());
+                 std::make_unique<views::View>(), tab.icon);
   }
   tabs->set_listener(this);
 
