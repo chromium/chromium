@@ -22,6 +22,7 @@ public class DataSharingUiConfig {
     private Context mContext;
     private Activity mActivity;
     private GURL mLearnMoreHyperLink;
+    private DataSharingStringConfig mDataSharingStringConfig;
     private DataSharingCallback mDataSharingCallback;
 
     /** Callback interface for common data sharing UI events. */
@@ -35,6 +36,7 @@ public class DataSharingUiConfig {
         this.mActivity = builder.mActivity;
         this.mTabGroupName = builder.mTabGroupName;
         this.mLearnMoreHyperLink = builder.mLearnMoreHyperLink;
+        this.mDataSharingStringConfig = builder.mDataSharingStringConfig;
         this.mDataSharingCallback = builder.mDataSharingCallback;
     }
 
@@ -58,6 +60,10 @@ public class DataSharingUiConfig {
         return mLearnMoreHyperLink;
     }
 
+    public DataSharingStringConfig getDataSharingStringConfig() {
+        return mDataSharingStringConfig;
+    }
+
     public DataSharingCallback getDataSharingCallback() {
         return mDataSharingCallback;
     }
@@ -69,6 +75,7 @@ public class DataSharingUiConfig {
         private Activity mActivity;
         private String mTabGroupName;
         private GURL mLearnMoreHyperLink;
+        private DataSharingStringConfig mDataSharingStringConfig;
         private DataSharingCallback mDataSharingCallback;
 
         /**
@@ -118,6 +125,16 @@ public class DataSharingUiConfig {
          */
         public Builder setLearnMoreHyperLink(GURL learnMoreHyperLink) {
             this.mLearnMoreHyperLink = learnMoreHyperLink;
+            return this;
+        }
+
+        /**
+         * Sets the data sharing string config.
+         *
+         * @param dataSharingStringConfig The data sharing string configuration.
+         */
+        public Builder setDataSharingStringConfig(DataSharingStringConfig dataSharingStringConfig) {
+            this.mDataSharingStringConfig = dataSharingStringConfig;
             return this;
         }
 
