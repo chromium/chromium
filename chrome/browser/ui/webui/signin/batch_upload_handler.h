@@ -17,6 +17,14 @@
 
 struct AccountInfo;
 
+class Browser;
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+namespace device_reauth {
+class DeviceAuthenticator;
+}  // namespace device_reauth
+#endif
+
 // WebUI message handler for the Batch Upload dialog bubble.
 class BatchUploadHandler : public batch_upload::mojom::PageHandler {
  public:
@@ -26,8 +34,10 @@ class BatchUploadHandler : public batch_upload::mojom::PageHandler {
       mojo::PendingReceiver<batch_upload::mojom::PageHandler> receiver,
       mojo::PendingRemote<batch_upload::mojom::Page> page,
       const AccountInfo& account_info,
+      Browser* browser,
       std::vector<syncer::LocalDataDescription> local_data_description_list,
       base::RepeatingCallback<void(int)> update_view_height_callback,
+      base::RepeatingCallback<void(bool)> allow_web_view_input_callback,
       BatchUploadSelectedDataTypeItemsCallback completion_callback);
   ~BatchUploadHandler() override;
 
@@ -59,8 +69,16 @@ class BatchUploadHandler : public batch_upload::mojom::PageHandler {
   batch_upload::mojom::BatchUploadDataPtr ConstructMojoBatchUploadData(
       const AccountInfo& account_info);
 
+  // Callback to be used after verififying that saving to account is allowed.
+  void OnSaveToAccountRequestReady(
+      std::map<syncer::DataType,
+               std::vector<syncer::LocalDataItemModel::DataId>> ids_to_move,
+      bool allowed);
+
+  raw_ref<Browser> browser_;
   std::vector<syncer::LocalDataDescription> local_data_description_list_;
   base::RepeatingCallback<void(int)> update_view_height_callback_;
+  base::RepeatingCallback<void(bool)> allow_web_view_input_callback_;
   BatchUploadSelectedDataTypeItemsCallback completion_callback_;
 
   // Internal Id mapping used to map items from their real
@@ -71,6 +89,13 @@ class BatchUploadHandler : public batch_upload::mojom::PageHandler {
   // result from Mojo in `SaveToAccount()`.
   std::vector<std::map<InternalId, syncer::LocalDataItemModel::DataId>>
       internal_data_item_id_mapping_list_;
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  // Allows to trigger the reauth, this needs to be a member field since the
+  // verification is asynchronous and the object needs to live until the
+  // response.
+  std::unique_ptr<device_reauth::DeviceAuthenticator> device_authenticator_;
+#endif
 
   // Allows handling received messages from the web ui page.
   mojo::Receiver<batch_upload::mojom::PageHandler> receiver_;
