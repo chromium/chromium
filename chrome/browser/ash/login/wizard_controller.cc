@@ -3062,8 +3062,15 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
     return;
   }
 
+  // WizardController should not save the pending screen during demo mode, nor
+  // should it save it while exercising the recovery path.
+  const bool isEligibleForSavingPendingScreen =
+      !demo_setup_controller_ &&
+      wizard_context_->knowledge_factor_setup.auth_setup_flow !=
+          WizardContext::AuthChangeFlow::kRecovery;
+
   // First remember how far have we reached so that we can resume if needed.
-  if (!demo_setup_controller_) {
+  if (isEligibleForSavingPendingScreen) {
     if (!wizard_context_->is_add_person_flow &&
         IsResumableOobeScreen(current_screen_->screen_id())) {
       StartupUtils::SaveOobePendingScreen(current_screen_->screen_id().name);
