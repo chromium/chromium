@@ -18,6 +18,7 @@ source_set("web_applications") {
     "commands/command_result.h",
     "commands/compute_app_size_command.cc",
     "commands/compute_app_size_command.h",
+    "commands/computed_app_size.h",
     "commands/dedupe_install_urls_command.cc",
     "commands/dedupe_install_urls_command.h",
     "commands/external_app_resolution_command.cc",

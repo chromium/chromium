@@ -97,10 +97,10 @@ class IsolatedWebAppBrowsingDataTest : public IsolatedWebAppBrowserTestHarness {
   }
 
   int64_t GetIwaUsage(const IsolatedWebAppUrlInfo& url_info) {
-    base::test::TestFuture<base::flat_map<url::Origin, int64_t>> future;
+    base::test::TestFuture<base::flat_map<url::Origin, uint64_t>> future;
     web_app_provider().scheduler().GetIsolatedWebAppBrowsingData(
         future.GetCallback());
-    base::flat_map<url::Origin, int64_t> result = future.Get();
+    base::flat_map<url::Origin, uint64_t> result = future.Get();
     return result.contains(url_info.origin()) ? result.at(url_info.origin())
                                               : 0;
   }

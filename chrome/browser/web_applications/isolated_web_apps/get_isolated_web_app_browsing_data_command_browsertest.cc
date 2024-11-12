@@ -95,10 +95,10 @@ class GetIsolatedWebAppBrowsingDataCommandBrowserTest
 
 IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
                        NoIsolatedWebAppsInstalled) {
-  base::test::TestFuture<base::flat_map<url::Origin, int64_t>> future;
+  base::test::TestFuture<base::flat_map<url::Origin, uint64_t>> future;
   web_app_provider().scheduler().GetIsolatedWebAppBrowsingData(
       future.GetCallback());
-  base::flat_map<url::Origin, int64_t> result = future.Get();
+  base::flat_map<url::Origin, uint64_t> result = future.Get();
 
   EXPECT_THAT(result.size(), Eq(0UL));
 }
@@ -107,10 +107,10 @@ IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
                        IsolatedWebAppWithoutBrowsingData) {
   IsolatedWebAppUrlInfo iwa_url_info = InstallApp();
 
-  base::test::TestFuture<base::flat_map<url::Origin, int64_t>> future;
+  base::test::TestFuture<base::flat_map<url::Origin, uint64_t>> future;
   web_app_provider().scheduler().GetIsolatedWebAppBrowsingData(
       future.GetCallback());
-  base::flat_map<url::Origin, int64_t> result = future.Get();
+  base::flat_map<url::Origin, uint64_t> result = future.Get();
 
   EXPECT_THAT(result, UnorderedElementsAre(Pair(iwa_url_info.origin(), 0)));
 }
@@ -127,10 +127,10 @@ IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
   EXPECT_TRUE(
       ExecJs(iwa2_frame, "localStorage.setItem('key', '!'.repeat(5000))"));
 
-  base::test::TestFuture<base::flat_map<url::Origin, int64_t>> future;
+  base::test::TestFuture<base::flat_map<url::Origin, uint64_t>> future;
   web_app_provider().scheduler().GetIsolatedWebAppBrowsingData(
       future.GetCallback());
-  base::flat_map<url::Origin, int64_t> result = future.Get();
+  base::flat_map<url::Origin, uint64_t> result = future.Get();
 
   EXPECT_THAT(result,
               UnorderedElementsAre(Pair(iwa1_url_info.origin(), Ge(100)),
@@ -144,10 +144,10 @@ IN_PROC_BROWSER_TEST_F(GetIsolatedWebAppBrowsingDataCommandBrowserTest,
   CreateControlledFrame(iwa_frame, proxy_server_url(), "persist:a", 2000);
   CreateControlledFrame(iwa_frame, proxy_server_url(), "in_memory", 1000);
 
-  base::test::TestFuture<base::flat_map<url::Origin, int64_t>> future;
+  base::test::TestFuture<base::flat_map<url::Origin, uint64_t>> future;
   web_app_provider().scheduler().GetIsolatedWebAppBrowsingData(
       future.GetCallback());
-  base::flat_map<url::Origin, int64_t> result = future.Get();
+  base::flat_map<url::Origin, uint64_t> result = future.Get();
 
   EXPECT_THAT(result, UnorderedElementsAre(Pair(iwa_url_info.origin(),
                                                 AllOf(Ge(2000), Lt(2100)))));

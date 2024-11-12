@@ -31,10 +31,10 @@ struct GetIsolatedWebAppSizeJobResult;
 // Computes the total browsing data usage in bytes of every installed Isolated
 // Web App.
 class GetIsolatedWebAppBrowsingDataCommand
-    : public WebAppCommand<AllAppsLock, base::flat_map<url::Origin, int64_t>> {
+    : public WebAppCommand<AllAppsLock, base::flat_map<url::Origin, uint64_t>> {
  public:
   using BrowsingDataCallback =
-      base::OnceCallback<void(base::flat_map<url::Origin, int64_t>)>;
+      base::OnceCallback<void(base::flat_map<url::Origin, uint64_t>)>;
 
   GetIsolatedWebAppBrowsingDataCommand(Profile* profile,
                                        BrowsingDataCallback callback);

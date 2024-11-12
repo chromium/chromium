@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/web_applications/commands/command_result.h"
+#include "chrome/browser/web_applications/commands/computed_app_size.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/locks/with_app_resources.h"
@@ -171,8 +172,12 @@ void GetIsolatedWebAppSizeJob::StoragePartitionSizeFetched(int64_t size) {
 void GetIsolatedWebAppSizeJob::MaybeCompleteCommand() {
   if (pending_task_count_ == 0) {
     std::move(result_callback_)
-        .Run(GetIsolatedWebAppSizeJobResult{.iwa_origin = iwa_origin_,
-                                            .app_size = browsing_data_size_});
+        .Run(GetIsolatedWebAppSizeJobResult{
+            .iwa_origin = iwa_origin_,
+            .size = {// TODO(crbug.com/371604074): Implement app size
+                     // calculation for isolated web apps.
+                     .app_size_in_bytes = 0u,
+                     .data_size_in_bytes = browsing_data_size_}});
   }
 }
 

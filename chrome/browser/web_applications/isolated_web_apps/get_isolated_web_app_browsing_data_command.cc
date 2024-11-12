@@ -34,7 +34,7 @@ namespace web_app {
 GetIsolatedWebAppBrowsingDataCommand::GetIsolatedWebAppBrowsingDataCommand(
     Profile* profile,
     BrowsingDataCallback callback)
-    : WebAppCommand<AllAppsLock, base::flat_map<url::Origin, int64_t>>(
+    : WebAppCommand<AllAppsLock, base::flat_map<url::Origin, uint64_t>>(
           "GetIsolatedWebAppBrowsingDataCommand",
           AllAppsLockDescription(),
           std::move(callback),
@@ -75,13 +75,14 @@ void GetIsolatedWebAppBrowsingDataCommand::StartWithLock(
 void GetIsolatedWebAppBrowsingDataCommand::CompleteCommand(
     std::vector<std::optional<GetIsolatedWebAppSizeJobResult>>
         app_size_results) {
-  base::flat_map<url::Origin, int64_t> results;
+  base::flat_map<url::Origin, uint64_t> results;
   for (const std::optional<GetIsolatedWebAppSizeJobResult>& app_size_result :
        app_size_results) {
     if (!app_size_result) {
       continue;
     }
-    results[app_size_result->iwa_origin] = app_size_result->app_size;
+    results[app_size_result->iwa_origin] =
+        app_size_result->size.data_size_in_bytes;
   }
   CompleteAndSelfDestruct(CommandResult::kSuccess, std::move(results));
 }

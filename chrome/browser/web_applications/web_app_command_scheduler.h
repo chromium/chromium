@@ -247,7 +247,7 @@ class WebAppCommandScheduler {
 
   // Computes the browsing data size of all installed Isolated Web Apps.
   void GetIsolatedWebAppBrowsingData(
-      base::OnceCallback<void(base::flat_map<url::Origin, int64_t>)> callback,
+      base::OnceCallback<void(base::flat_map<url::Origin, uint64_t>)> callback,
       const base::Location& call_location = FROM_HERE);
 
   // Registers a <controlledframe>'s StoragePartition with the given Isolated

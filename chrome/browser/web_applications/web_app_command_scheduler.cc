@@ -348,7 +348,7 @@ void WebAppCommandScheduler::CheckIsolatedWebAppBundleInstallability(
 }
 
 void WebAppCommandScheduler::GetIsolatedWebAppBrowsingData(
-    base::OnceCallback<void(base::flat_map<url::Origin, int64_t>)> callback,
+    base::OnceCallback<void(base::flat_map<url::Origin, uint64_t>)> callback,
     const base::Location& call_location) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<GetIsolatedWebAppBrowsingDataCommand>(

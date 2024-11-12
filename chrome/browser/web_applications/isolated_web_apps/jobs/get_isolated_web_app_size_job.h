@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/command_result.h"
+#include "chrome/browser/web_applications/commands/computed_app_size.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/origin.h"
 
@@ -23,7 +24,7 @@ class WithAppResources;
 
 struct GetIsolatedWebAppSizeJobResult {
   url::Origin iwa_origin;
-  int64_t app_size;
+  ComputedAppSize size;
 };
 
 class GetIsolatedWebAppSizeJob {
@@ -46,7 +47,7 @@ class GetIsolatedWebAppSizeJob {
   const webapps::AppId app_id_;
   url::Origin iwa_origin_;
   int pending_task_count_ = 0;
-  int64_t browsing_data_size_ = 0u;
+  uint64_t browsing_data_size_ = 0u;
   raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<WithAppResources> lock_with_app_resources_ = nullptr;
   const raw_ref<base::Value::Dict> debug_value_;
