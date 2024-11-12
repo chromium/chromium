@@ -85,6 +85,7 @@
 -org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testSyncErrorMessageForPassphraseRequiredView
 -org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testSyncErrorMessageForAuthErrorViewModern
 -org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testActionForPassphraseRequiredForSignedInUsers
+-org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testSyncErrorMessageForClientOutOfDateViewForSignedInUsers
 
 # crbug.com/378557957
 -org.chromium.chrome.browser.permissions.PermissionUpdateMessageTest.testMessageForMediaStreamMicrophone
@@ -93,6 +94,13 @@
 -org.chromium.chrome.browser.permissions.PermissionUpdateMessageTest.testInfobarShutsDownCleanlyForGeolocation
 -org.chromium.chrome.browser.permissions.PermissionUpdateMessageTest.testMessageForMediaStreamCamera
 
-# TODO (Create Bugs)
+# crbug.com/378734549
+-org.chromium.chrome.browser.subresource_filter.SubresourceFilterTest.resourceFilteredReload_MessagesUi
+-org.chromium.chrome.browser.subresource_filter.SubresourceFilterTest.resourceNotFiltered
 -org.chromium.chrome.browser.subresource_filter.SubresourceFilterTest.resourceNotFilteredWithWarning
+
+# crbug.com/378734892
 -org.chromium.chrome.browser.password_manager.PasswordCheckupIntegrationTest.testPasswordCheckOpensPasswordCheckupForLocalWhenStateCompromised
+
+# crbug.com/378735617
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchInstrumentationTest.testNonResolveGesture

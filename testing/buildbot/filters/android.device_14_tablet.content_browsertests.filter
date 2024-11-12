@@ -17,3 +17,6 @@
 # crbug.com/375485604
 -WebContentsImplBrowserTest.SameInitialScaleAcrossNavigations
 -WebContentsImplBrowserTest.ToggleFullscreen
+
+# crbug.com/376867441
+-BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions.BeforeUnload_RequestCancelledBeforeStart
