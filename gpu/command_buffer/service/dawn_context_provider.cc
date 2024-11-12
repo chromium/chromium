@@ -53,6 +53,10 @@
 #include "ui/gl/gl_angle_util_win.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 namespace gpu {
 namespace {
 
@@ -120,6 +124,19 @@ std::vector<const char*> GetEnabledToggles(
     enabled_toggles.push_back("use_packed_depth24_unorm_stencil8_format");
   }
 #endif
+
+  if (backend_type == wgpu::BackendType::Vulkan) {
+#if BUILDFLAG(IS_ANDROID)
+    const auto* build_info = base::android::BuildInfo::GetInstance();
+    // Samsung devices are failing validation checks that texture allocation
+    // size is bigger than AHB size when they should. See
+    // https://crbug.com/377935752 for details.
+    if (std::string_view(build_info->brand()) == "samsung") {
+      enabled_toggles.push_back(
+          "ignore_imported_ahardwarebuffer_vulkan_image_size");
+    }
+#endif
+  }
 
   // Skip expensive swiftshader vkCmdDraw* for tests.
   // TODO(penghuang): rename kDisableGLDrawingForTests to
