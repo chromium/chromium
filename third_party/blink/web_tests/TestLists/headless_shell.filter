@@ -57,6 +57,7 @@ external/wpt/signed-exchange/*
 external/wpt/upgrade-insecure-requests/*
 external/wpt/wasm/*
 external/wpt/web-locks/*
+external/wpt/webaudio/*
 external/wpt/webauthn/*
 external/wpt/WebCryptoAPI/*
 external/wpt/webidl/*
