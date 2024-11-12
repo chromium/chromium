@@ -22,6 +22,9 @@ class TestShareKitService : public ShareKitService {
   void JoinGroup(ShareKitJoinConfiguration* config) override;
   UIViewController* FacePile(ShareKitFacePileConfiguration* config) override;
   void ReadGroups(ShareKitReadConfiguration* config) override;
+  void LeaveGroup(ShareKitLeaveConfiguration* config) override;
+  void DeleteGroup(ShareKitDeleteConfiguration* config) override;
+  void LookupGaiaIdByEmail(ShareKitLookupGaiaIDConfiguration* config) override;
   id<ShareKitAvatarPrimitive> AvatarImage(
       ShareKitAvatarConfiguration* config) override;
 };

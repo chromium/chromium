@@ -8,6 +8,9 @@
 #import "base/functional/callback_helpers.h"
 #import "base/notimplemented.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_delete_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_leave_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_lookup_gaia_id_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_read_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 
@@ -62,13 +65,21 @@ void DataSharingSDKDelegateIOS::RemoveMember(
 void DataSharingSDKDelegateIOS::LeaveGroup(
     const data_sharing_pb::LeaveGroupParams& params,
     base::OnceCallback<void(const absl::Status&)> callback) {
-  NOTIMPLEMENTED();
+  ShareKitLeaveConfiguration* config =
+      [[ShareKitLeaveConfiguration alloc] init];
+  config.collabID = base::SysUTF8ToNSString(params.group_id());
+  config.callback = base::CallbackToBlock(std::move(callback));
+  share_kit_service_->LeaveGroup(config);
 }
 
 void DataSharingSDKDelegateIOS::DeleteGroup(
     const data_sharing_pb::DeleteGroupParams& params,
     base::OnceCallback<void(const absl::Status&)> callback) {
-  NOTIMPLEMENTED();
+  ShareKitDeleteConfiguration* config =
+      [[ShareKitDeleteConfiguration alloc] init];
+  config.collabID = base::SysUTF8ToNSString(params.group_id());
+  config.callback = base::CallbackToBlock(std::move(callback));
+  share_kit_service_->DeleteGroup(config);
 }
 
 void DataSharingSDKDelegateIOS::LookupGaiaIdByEmail(
@@ -76,7 +87,11 @@ void DataSharingSDKDelegateIOS::LookupGaiaIdByEmail(
     base::OnceCallback<
         void(const base::expected<data_sharing_pb::LookupGaiaIdByEmailResult,
                                   absl::Status>&)> callback) {
-  NOTIMPLEMENTED();
+  ShareKitLookupGaiaIDConfiguration* config =
+      [[ShareKitLookupGaiaIDConfiguration alloc] init];
+  config.email = base::SysUTF8ToNSString(params.email());
+  config.callback = base::CallbackToBlock(std::move(callback));
+  share_kit_service_->LookupGaiaIdByEmail(config);
 }
 
 void DataSharingSDKDelegateIOS::Shutdown() {

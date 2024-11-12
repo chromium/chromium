@@ -12,8 +12,11 @@
 
 @protocol ShareKitAvatarPrimitive;
 @class ShareKitAvatarConfiguration;
+@class ShareKitDeleteConfiguration;
 @class ShareKitFacePileConfiguration;
 @class ShareKitJoinConfiguration;
+@class ShareKitLeaveConfiguration;
+@class ShareKitLookupGaiaIDConfiguration;
 @class ShareKitManageConfiguration;
 @class ShareKitReadConfiguration;
 @class ShareKitShareGroupConfiguration;
@@ -45,6 +48,18 @@ class ShareKitService : public KeyedService {
   // Reads the info for the groups passed in `config` and returns the result
   // through the config callback.
   virtual void ReadGroups(ShareKitReadConfiguration* config);
+
+  // Leaves the group passed in `config` and returns the result through the
+  // config callback.
+  virtual void LeaveGroup(ShareKitLeaveConfiguration* config);
+
+  // Deletes the group passed in `config` and returns the result through the
+  // config callback.
+  virtual void DeleteGroup(ShareKitDeleteConfiguration* config);
+
+  // Looks up the gaia ID associated with the email from `config` and returns
+  // the result through the config callback.
+  virtual void LookupGaiaIdByEmail(ShareKitLookupGaiaIDConfiguration* config);
 
   // Returns a wrapper object of the avatar image for the avatar URL passed in
   // `config`.

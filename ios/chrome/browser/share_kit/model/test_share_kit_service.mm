@@ -59,6 +59,19 @@ void TestShareKitService::ReadGroups(ShareKitReadConfiguration* config) {
   // TODO(crbug.com/358373145): add fake implementation.
 }
 
+void TestShareKitService::LeaveGroup(ShareKitLeaveConfiguration* config) {
+  // TODO(crbug.com/358373145): add fake implementation.
+}
+
+void TestShareKitService::DeleteGroup(ShareKitDeleteConfiguration* config) {
+  // TODO(crbug.com/358373145): add fake implementation.
+}
+
+void TestShareKitService::LookupGaiaIdByEmail(
+    ShareKitLookupGaiaIDConfiguration* config) {
+  // TODO(crbug.com/358373145): add fake implementation.
+}
+
 id<ShareKitAvatarPrimitive> TestShareKitService::AvatarImage(
     ShareKitAvatarConfiguration* config) {
   // TODO(crbug.com/375366568): add fake implementation.

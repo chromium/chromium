@@ -23,6 +23,11 @@ class ChromiumShareKitService final : public ShareKitService {
     return nil;
   }
   void ReadGroups(ShareKitReadConfiguration* config) override {}
+  void LeaveGroup(ShareKitLeaveConfiguration* config) override {}
+  void DeleteGroup(ShareKitDeleteConfiguration* config) override {}
+  void LookupGaiaIdByEmail(ShareKitLookupGaiaIDConfiguration* config) override {
+  }
+
   id<ShareKitAvatarPrimitive> AvatarImage(
       ShareKitAvatarConfiguration* config) override {
     return nil;

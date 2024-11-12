@@ -14,3 +14,10 @@ id<ShareKitAvatarPrimitive> ShareKitService::AvatarImage(
     ShareKitAvatarConfiguration* config) {
   return nil;
 }
+
+void ShareKitService::LeaveGroup(ShareKitLeaveConfiguration* config) {}
+
+void ShareKitService::DeleteGroup(ShareKitDeleteConfiguration* config) {}
+
+void ShareKitService::LookupGaiaIdByEmail(
+    ShareKitLookupGaiaIDConfiguration* config) {}
