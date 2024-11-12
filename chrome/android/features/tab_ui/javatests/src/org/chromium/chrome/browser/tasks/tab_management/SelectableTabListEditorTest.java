@@ -71,6 +71,7 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
@@ -549,6 +550,7 @@ public class SelectableTabListEditorTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void testUndoToolbarGroup() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         prepareBlankTab(2, false);
