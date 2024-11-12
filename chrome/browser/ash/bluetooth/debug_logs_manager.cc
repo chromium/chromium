@@ -227,6 +227,18 @@ void DebugLogsManager::OnBluetoothAdapterAvailable(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   adapter_ = std::move(adapter);
   adapter_->AddObserver(this);
+
+  // Bluez does not dynamically set log level (it is persistent).
+  if (!floss::features::IsFlossEnabled()) {
+    return;
+  }
+
+  // We only need to send enable call if BT is powered on and we want to enable
+  // debug logs. We don't need to do anything if it's powered off.
+  if (debug_logs_enabled_ && adapter_ && adapter_->IsPowered()) {
+    SendDBusVerboseLogsMessage(debug_logs_enabled_,
+                               /*num_completed_attempts=*/0);
+  }
 }
 
 void DebugLogsManager::AdapterPoweredChanged(device::BluetoothAdapter* adapter,
