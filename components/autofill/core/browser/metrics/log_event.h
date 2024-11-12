@@ -101,6 +101,9 @@ struct FillFieldLogEvent {
   // autofill security policy that applies to credit cards.
   OptionalBoolean filling_prevented_by_iframe_security_policy =
       OptionalBoolean::kUndefined;
+  // Indicates whether the filling was triggered due to a change in a dynamic
+  // form. (see FormFiller::TriggerRefill()).
+  OptionalBoolean was_refill = OptionalBoolean::kUndefined;
 };
 
 bool AreCollapsible(const FillFieldLogEvent& event1,

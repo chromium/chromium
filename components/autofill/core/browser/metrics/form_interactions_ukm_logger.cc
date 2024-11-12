@@ -220,6 +220,7 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
       OptionalBoolean::kUndefined;
   OptionalBoolean had_value_before_filling = OptionalBoolean::kUndefined;
   DenseSet<FieldFillingSkipReason> autofill_skipped_status;
+  OptionalBoolean was_refill = OptionalBoolean::kUndefined;
   size_t autofill_count = 0;
 
   OptionalBoolean user_typed_into_field = OptionalBoolean::kFalse;
@@ -345,6 +346,8 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
       was_autofilled_after_security_policy |=
           OptionalBoolean(event->filling_prevented_by_iframe_security_policy ==
                           OptionalBoolean::kFalse);
+      was_refill |=
+          OptionalBoolean(event->was_refill == OptionalBoolean::kTrue);
       ++autofill_count;
     }
 
@@ -467,6 +470,8 @@ void FormInteractionsUkmLogger::LogAutofillFieldInfoAtFormRemove(
         OptionalBooleanToBool(was_autofilled_before_security_policy));
     SetStatusVector(AutofillStatus::kHadValueBeforeFilling,
                     OptionalBooleanToBool(had_value_before_filling));
+    SetStatusVector(AutofillStatus::kWasRefill,
+                    OptionalBooleanToBool(was_refill));
     if (was_autofilled_after_security_policy != OptionalBoolean::kUndefined) {
       SetStatusVector(
           AutofillStatus::kWasAutofilledAfterSecurityPolicy,

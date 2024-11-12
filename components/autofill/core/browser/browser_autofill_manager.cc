@@ -2762,6 +2762,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
             .filling_prevented_by_iframe_security_policy =
                 safe_field_ids.contains(field_id) ? OptionalBoolean::kFalse
                                                   : OptionalBoolean::kTrue,
+            .was_refill = ToOptionalBoolean(is_refill),
         });
       } else {
         field.AppendLogEventIfNotRepeated(FillFieldLogEvent{
@@ -2771,6 +2772,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
             .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
             .had_value_after_filling = ToOptionalBoolean(has_value_before),
             .filling_method = FillingMethod::kNone,
+            .was_refill = ToOptionalBoolean(is_refill),
         });
       }
     }

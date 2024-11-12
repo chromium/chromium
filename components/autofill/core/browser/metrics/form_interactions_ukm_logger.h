@@ -47,15 +47,8 @@ class FormInteractionsUkmLogger {
     // This value is true even when the filling was prevented because of the
     // cross iframe autofill security policy.
     kShouldBeAutofilledBeforeSecurityPolicy = 3,
-    // DON'T USE THIS (BROKEN).
-    // This does not refer to Autofill's "refill" concept but just counts if
-    // autofill filled the field more than once - regardless whether an
-    // automatic refill or the user was the reason for this.
-    // This bit does not reflect whether a field was actually filled because
-    // it is set regardless whether security policies allowed filling.
-    // TODO(crbug.com/40225658): Use |is_refill| from
-    // FormFiller::FillOrPreviewForm to indicate if the field was refilled by
-    // Autofill.
+    // Indicates whether the field was ever refilled due to a change in a
+    // dynamic form. (see FormFiller::TriggerRefill()).
     kWasRefill = 4,
     // The below suggestion statuses are set only when kWasFocused is set.
     kSuggestionWasAvailable = 5,
