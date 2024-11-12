@@ -5,7 +5,6 @@
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
-#include <aura-output-management-client-protocol.h>
 #include <aura-shell-client-protocol.h>
 #include <chrome-color-management-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
@@ -112,14 +111,6 @@ void delete_touch(wl_touch* touch) {
   }
 }
 
-void delete_zaura_output_manager(zaura_output_manager* manager) {
-  zaura_output_manager_destroy(manager);
-}
-
-void delete_zaura_output_manager_v2(zaura_output_manager_v2* manager) {
-  zaura_output_manager_v2_destroy(manager);
-}
-
 void delete_zaura_shell(zaura_shell* shell) {
   if (wl::get_version_of_object(shell) >= ZAURA_SHELL_RELEASE_SINCE_VERSION) {
     zaura_shell_release(shell);
@@ -134,14 +125,6 @@ void delete_zaura_surface(zaura_surface* surface) {
     zaura_surface_release(surface);
   } else {
     zaura_surface_destroy(surface);
-  }
-}
-
-void delete_zaura_output(zaura_output* output) {
-  if (wl::get_version_of_object(output) >= ZAURA_OUTPUT_RELEASE_SINCE_VERSION) {
-    zaura_output_release(output);
-  } else {
-    zaura_output_destroy(output);
   }
 }
 
@@ -267,14 +250,9 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_drag_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_icon_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_toplevel_icon_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_wm_base)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_output_manager,
-                                             delete_zaura_output_manager)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_output_manager_v2,
-                                             delete_zaura_output_manager_v2)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_shell, delete_zaura_shell)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_surface,
                                              delete_zaura_surface)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_output, delete_zaura_output)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_toplevel,
                                              delete_zaura_toplevel)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_popup, delete_zaura_popup)

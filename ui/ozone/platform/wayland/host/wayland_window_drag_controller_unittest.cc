@@ -1275,7 +1275,6 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
     auto* output2 =
         server->CreateAndInitializeOutput(wl::TestOutputMetrics(kOutputBounds));
     output2->SetScale(2);
-    output2->SetDeviceScaleFactor(2);
   });
 
   WaitForAllDisplaysReady();

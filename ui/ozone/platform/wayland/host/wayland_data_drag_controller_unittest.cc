@@ -496,7 +496,6 @@ TEST_P(WaylandDataDragControllerTest, ReceiveDrag) {
                           wl::TestWaylandServerThread* server) {
     // HiDPI
     server->output()->SetScale(2);
-    server->output()->SetDeviceScaleFactor(2);
     server->output()->Flush();
 
     // Place the window onto the output.

@@ -165,16 +165,6 @@ float WaylandOutput::scale_factor() const {
 }
 
 bool WaylandOutput::IsReady() const {
-  // zaura_output_manager is guaranteed to have received all relevant output
-  // metrics before the first wl_output.done event. zaura_output_manager is
-  // responsible for updating `metrics_` in an atomic and consistent way as soon
-  // as it receives all its necessary output metrics events.
-  if (connection_->IsUsingZAuraOutputManager()) {
-    // WaylandOutput should be considered ready after the first atomic update to
-    // `metrics_`.
-    return metrics_.output_id == output_id_;
-  }
-
   return is_ready_;
 }
 
@@ -253,10 +243,7 @@ void WaylandOutput::OnMode(void* data,
 // static
 void WaylandOutput::OnDone(void* data, wl_output* output) {
   auto* self = static_cast<WaylandOutput*>(data);
-
-  // zaura_output_manager takes responsibility of keeping `metrics_` up to date
-  // and triggering delegate notifications.
-  if (!self || self->connection_->IsUsingZAuraOutputManager()) {
+  if (!self) {
     return;
   }
 

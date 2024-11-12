@@ -178,8 +178,6 @@ source_set("wayland") {
     "host/wayland_window_manager.h",
     "host/wayland_window_observer.cc",
     "host/wayland_window_observer.h",
-    "host/wayland_zaura_output_manager_v2.cc",
-    "host/wayland_zaura_output_manager_v2.h",
     "host/wayland_zaura_shell.cc",
     "host/wayland_zaura_shell.h",
     "host/wayland_zaura_surface.cc",
@@ -251,7 +249,6 @@ source_set("wayland") {
     "//build/config/linux/libdrm",
     "//components/crash/core/common:crash_key",
     "//components/device_event_log",
-    "//components/exo/wayland/protocol:aura_output_management_protocol",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//components/exo/wayland/protocol:chrome_color_management_protocol",
     "//components/exo/wayland/protocol:overlay_prioritizer_protocol",
@@ -524,12 +521,6 @@ source_set("test_support") {
     "test/test_wp_pointer_gestures.h",
     "test/test_xdg_popup.cc",
     "test/test_xdg_popup.h",
-    "test/test_zaura_output.cc",
-    "test/test_zaura_output.h",
-    "test/test_zaura_output_manager.cc",
-    "test/test_zaura_output_manager.h",
-    "test/test_zaura_output_manager_v2.cc",
-    "test/test_zaura_output_manager_v2.h",
     "test/test_zaura_popup.cc",
     "test/test_zaura_popup.h",
     "test/test_zaura_shell.cc",
@@ -648,7 +639,6 @@ source_set("wayland_unittests") {
     "//build:chromeos_buildflags",
     "//build/config/linux/libdrm",
     "//components/crash/core/common:crash_key",
-    "//components/exo/wayland/protocol:aura_output_management_protocol",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//testing/gmock",
     "//testing/gtest",
@@ -680,10 +670,7 @@ source_set("wayland_unittests") {
     sources += [ "host/wayland_cursor_factory_unittest.cc" ]
   }
   if (is_chromeos_lacros) {
-    sources += [
-      "host/wayland_zaura_output_manager_v2_unittest.cc",
-      "host/wayland_zaura_shell_unittest.cc",
-    ]
+    sources += [ "host/wayland_zaura_shell_unittest.cc" ]
   }
   import("//ui/base/ui_features.gni")
   if (use_xkbcommon) {
