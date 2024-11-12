@@ -98,9 +98,7 @@ class AXRangePhysicalPixelRectDelegate : public AXRangeRectDelegate {
   raw_ptr<AXPlatformNodeTextRangeProviderWin> host_;
 };
 
-AXPlatformNodeTextRangeProviderWin::AXPlatformNodeTextRangeProviderWin() {
-  DVLOG(1) << __func__;
-}
+AXPlatformNodeTextRangeProviderWin::AXPlatformNodeTextRangeProviderWin() {}
 
 AXPlatformNodeTextRangeProviderWin::~AXPlatformNodeTextRangeProviderWin() {}
 
