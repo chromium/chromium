@@ -148,6 +148,9 @@ class ExtensionWebContentsObserver
  private:
   using PassKey = base::PassKey<ExtensionWebContentsObserver>;
 
+  // Temporarily needed to host common code between RenderFrameCreated and
+  // ReadyToCommitNavigation.
+  void SetupRenderFrameHost(content::RenderFrameHost* render_frame_host);
   void OnWindowIdChanged(SessionID id);
 
   // The BrowserContext associated with the WebContents being observed.

@@ -2,8 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/background/background_contents_service.h"
+#include "chrome/browser/background/background_contents_service_factory.h"
+#include "chrome/browser/background/background_contents_service_observer.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
 #include "chrome/common/chrome_switches.h"
@@ -11,10 +18,64 @@
 #include "components/embedder_support/switches.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace task_manager {
+
+namespace {
+
+// A utility class to wait for a BackgroundContents to be created for a given
+// app.
+class BackgroundContentsWaiter : public BackgroundContentsServiceObserver {
+ public:
+  explicit BackgroundContentsWaiter(Profile* profile)
+      : background_contents_service_(
+            BackgroundContentsServiceFactory::GetForProfile(profile)) {}
+  ~BackgroundContentsWaiter() override = default;
+
+  // Waits for a background contents for the given `application_id`. If a
+  // background contents already exists and has loaded, returns immediately.
+  void WaitForBackgroundContents(const std::string& application_id) {
+    BackgroundContents* background_contents =
+        background_contents_service_->GetAppBackgroundContents(application_id);
+    if (!background_contents) {
+      application_id_ = application_id;
+      scoped_observation_.Observe(background_contents_service_);
+      run_loop_.Run();
+      background_contents =
+          background_contents_service_->GetAppBackgroundContents(
+              application_id);
+    }
+
+    ASSERT_TRUE(background_contents);
+    // On windows, the background contents sometimes isn't seen as loading
+    // successfully for some unknown reason. This doesn't impact these tests,
+    // which only rely on the creation of the web contents.
+    content::WaitForLoadStopWithoutSuccessCheck(
+        background_contents->web_contents());
+  }
+
+ private:
+  // BackgroundContentsServiceObserver:
+  void OnBackgroundContentsOpened(
+      const BackgroundContentsOpenedDetails& details) override {
+    if (details.application_id == application_id_) {
+      run_loop_.QuitWhenIdle();
+    }
+  }
+
+  base::ScopedObservation<BackgroundContentsService,
+                          BackgroundContentsServiceObserver>
+      scoped_observation_{this};
+  raw_ptr<BackgroundContentsService> background_contents_service_;
+  std::string application_id_;
+  base::RunLoop run_loop_;
+};
+
+}  // namespace
 
 // Defines a browser test for testing that BackgroundContents are tagged
 // properly and the TagsManager records these tags. It is also used to test that
@@ -31,6 +92,11 @@ class BackgroundContentsTagTest : public extensions::ExtensionBrowserTest {
   const extensions::Extension* LoadBackgroundExtension() {
     auto* extension = LoadExtension(
         test_data_dir_.AppendASCII("app_process_background_instances"));
+    // Wait for the hosted app's background page to start up. Normally, this
+    // is handled by `LoadExtension()`, but only for extension-types (not hosted
+    // apps).
+    BackgroundContentsWaiter(profile()).WaitForBackgroundContents(
+        extension->id());
     return extension;
   }
 

@@ -228,6 +228,11 @@ BASE_DECLARE_FEATURE(kDeclarativeNetRequestHeaderSubstitution);
 
 // Show no warning banner when an extension uses CDP's `chrome.debugger`.
 BASE_DECLARE_FEATURE(kSilentDebuggerExtensionAPI);
+
+// Whether to use commit time for registering extension frames in the process
+// manager.
+BASE_DECLARE_FEATURE(kUseReadyToCommitForExtensionFrameSetup);
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_
