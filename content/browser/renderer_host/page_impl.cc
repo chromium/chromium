@@ -18,6 +18,7 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/shared_storage/shared_storage_features.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/peak_gpu_memory_tracker_factory.h"
 #include "content/public/browser/render_view_host.h"
@@ -36,13 +37,11 @@ PageImpl::PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate)
     : main_document_(rfh),
       delegate_(delegate),
       text_autosizer_page_info_({0, 0, 1.f}) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSharedStorageSelectURLLimit)) {
-    select_url_overall_budget_ = static_cast<double>(
-        blink::features::kSharedStorageSelectURLBitBudgetPerPageLoad.Get());
-    select_url_max_bits_per_site_ = static_cast<double>(
-        blink::features::kSharedStorageSelectURLBitBudgetPerSitePerPageLoad
-            .Get());
+  if (base::FeatureList::IsEnabled(features::kSharedStorageSelectURLLimit)) {
+    select_url_overall_budget_ =
+        features::kSharedStorageSelectURLBitBudgetPerPageLoad.Get();
+    select_url_max_bits_per_site_ =
+        features::kSharedStorageSelectURLBitBudgetPerSitePerPageLoad.Get();
   }
 }
 
@@ -79,8 +78,9 @@ void PageImpl::UpdateManifestUrl(const GURL& manifest_url) {
 
   // If |main_document_| is not active, the notification is sent on the page
   // activation.
-  if (!main_document_->IsActive())
+  if (!main_document_->IsActive()) {
     return;
+  }
 
   main_document_->delegate()->OnManifestUrlChanged(*this);
 }
@@ -154,8 +154,9 @@ void PageImpl::DidInferColorScheme(
 }
 
 void PageImpl::NotifyPageBecameCurrent() {
-  if (!IsPrimary())
+  if (!IsPrimary()) {
     return;
+  }
   delegate_->NotifyPageBecamePrimary(*this);
 }
 
@@ -265,19 +266,22 @@ void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
   // prerender last load progress value if the value is not equal to
   // blink::kFinalLoadProgress, whose notification is dispatched during call
   // to DidStopLoading.
-  if (load_progress() != blink::kFinalLoadProgress)
+  if (load_progress() != blink::kFinalLoadProgress) {
     main_document_->DidChangeLoadProgress(load_progress());
+  }
 
   // Dispatch PrimaryMainDocumentElementAvailable before dispatching following
   // load complete events.
-  if (is_main_document_element_available())
+  if (is_main_document_element_available()) {
     main_document_->MainDocumentElementAvailable(uses_temporary_zoom_level());
+  }
 
   main_document_->ForEachRenderFrameHost(
       &RenderFrameHostImpl::MaybeDispatchDOMContentLoadedOnPrerenderActivation);
 
-  if (is_on_load_completed_in_main_document())
+  if (is_on_load_completed_in_main_document()) {
     main_document_->DocumentOnLoadCompleted();
+  }
 
   main_document_->ForEachRenderFrameHost(
       &RenderFrameHostImpl::MaybeDispatchDidFinishLoadOnPrerenderActivation);
@@ -315,8 +319,9 @@ void PageImpl::UpdateBrowserControlsState(
     const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info) {
   // TODO(crbug.com/40159655): Asking for the LocalMainFrame interface
   // before the RenderFrame is created is racy.
-  if (!GetMainDocument().IsRenderFrameLive())
+  if (!GetMainDocument().IsRenderFrameLive()) {
     return;
+  }
 
   GetMainDocument().GetRenderWidgetHost()->UpdateBrowserControlsState(
       constraints, current, animate, offset_tags_info);
@@ -327,8 +332,9 @@ float PageImpl::GetPageScaleFactor() const {
 }
 
 void PageImpl::UpdateEncoding(const std::string& encoding_name) {
-  if (encoding_name == last_reported_encoding_)
+  if (encoding_name == last_reported_encoding_) {
     return;
+  }
   last_reported_encoding_ = encoding_name;
 
   canonical_encoding_ =
@@ -346,8 +352,9 @@ void PageImpl::NotifyVirtualKeyboardOverlayRect(
 }
 
 void PageImpl::SetVirtualKeyboardMode(ui::mojom::VirtualKeyboardMode mode) {
-  if (virtual_keyboard_mode_ == mode)
+  if (virtual_keyboard_mode_ == mode) {
     return;
+  }
 
   virtual_keyboard_mode_ = mode;
 

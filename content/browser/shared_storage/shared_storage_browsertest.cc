@@ -35,6 +35,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/shared_storage/shared_storage_document_service_impl.h"
 #include "content/browser/shared_storage/shared_storage_event_params.h"
+#include "content/browser/shared_storage/shared_storage_features.h"
 #include "content/browser/shared_storage/shared_storage_header_observer.h"
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/browser/shared_storage/shared_storage_worklet_driver.h"
@@ -147,9 +148,14 @@ constexpr double kBudgetAllowed = 5.0;
 
 constexpr int kStalenessThresholdDays = 1;
 
-constexpr int kSelectURLOverallBitBudget = 12;
+constexpr double kSelectURLOverallBitBudget = 12.0;
 
-constexpr int kSelectURLSiteBitBudget = 6;
+constexpr double kSelectURLSiteBitBudget = 6.0;
+
+// kSelectURLOverallBitBudget % kSelectURLSiteBitBudget
+// TODO(https://crbug.com/378385004): As the value results in 0, the actual
+// test cases can be simplified if we assume this constant value.
+constexpr int kOverallBudgetRemaining = 0;
 
 constexpr char kGenerateURLsListScript[] = R"(
   function generateUrls(size) {
@@ -182,8 +188,9 @@ using MockPrivateAggregationShellContentBrowserClient =
 
 void WaitForHistogram(const std::string& histogram_name) {
   // Continue if histogram was already recorded.
-  if (base::StatisticsRecorder::FindHistogram(histogram_name))
+  if (base::StatisticsRecorder::FindHistogram(histogram_name)) {
     return;
+  }
 
   // Else, wait until the histogram is recorded.
   base::RunLoop run_loop;
@@ -197,20 +204,23 @@ void WaitForHistogram(const std::string& histogram_name) {
 }
 
 void WaitForHistograms(const std::vector<std::string>& histogram_names) {
-  for (const auto& name : histogram_names)
+  for (const auto& name : histogram_names) {
     WaitForHistogram(name);
+  }
 }
 
 std::string SerializeOptionalString(std::optional<std::string> str) {
-  if (str)
+  if (str) {
     return *str;
+  }
 
   return "std::nullopt";
 }
 
 std::string SerializeOptionalBool(std::optional<bool> b) {
-  if (b)
+  if (b) {
     return (*b) ? "true" : "false";
+  }
 
   return "std::nullopt";
 }
@@ -218,8 +228,9 @@ std::string SerializeOptionalBool(std::optional<bool> b) {
 std::string SerializeOptionalUrlsWithMetadata(
     std::optional<std::vector<SharedStorageUrlSpecWithMetadata>>
         urls_with_metadata) {
-  if (!urls_with_metadata)
+  if (!urls_with_metadata) {
     return "std::nullopt";
+  }
 
   std::vector<std::string> urls_str_vector = {"{ "};
   for (const auto& url_with_metadata : *urls_with_metadata) {
@@ -382,8 +393,9 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
           std::move(callback), success, error_message);
     }
 
-    if (initial_message)
+    if (initial_message) {
       OnAddModuleResponseReceived();
+    }
     if (!in_keep_alive) {
       ProcessAddModuleExpirationIfWorkletExpired();
     }
@@ -412,8 +424,9 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
           start_time, success, error_message);
     }
 
-    if (initial_message)
+    if (initial_message) {
       OnWorkletResponseReceived();
+    }
     if (!in_keep_alive) {
       ProcessRunOrSelectURLExpirationIfWorkletExpired();
     }
@@ -462,8 +475,9 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
           use_page_budgets, std::move(budget_result));
     }
 
-    if (initial_message)
+    if (initial_message) {
       OnWorkletResponseReceived();
+    }
     if (!in_keep_alive) {
       ProcessRunOrSelectURLExpirationIfWorkletExpired();
     }
@@ -744,8 +758,9 @@ class TestSharedStorageObserver
     ASSERT_EQ(expected_accesses.size(), accesses_.size());
     for (size_t i = 0; i < accesses_.size(); ++i) {
       EXPECT_TRUE(AccessesMatch(expected_accesses[i], accesses_[i]));
-      if (!AccessesMatch(expected_accesses[i], accesses_[i]))
+      if (!AccessesMatch(expected_accesses[i], accesses_[i])) {
         LOG(ERROR) << "Event access at index " << i << " differs";
+      }
     }
   }
 
@@ -867,7 +882,7 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
 
   SharedStorageBrowserTestBase() {
     privacy_sandbox_ads_apis_override_feature_.InitAndEnableFeature(
-        features::kPrivacySandboxAdsAPIsOverride);
+        ::features::kPrivacySandboxAdsAPIsOverride);
 
     shared_storage_feature_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
@@ -1108,8 +1123,9 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
       const url::Origin& origin,
       FrameTreeNode* parent_node = nullptr,
       bool keep_alive_after_operation = true) {
-    if (!parent_node)
+    if (!parent_node) {
       parent_node = PrimaryFrameTreeNodeRoot();
+    }
 
     // If this is called inside a fenced frame, creating an iframe will need
     // "Supports-Loading-Mode: fenced-frame" response header. Thus, we simply
@@ -9451,7 +9467,7 @@ class SharedStorageSelectURLLimitBrowserTest
     if (LimitSelectURLCalls()) {
       select_url_limit_feature_list_.InitWithFeaturesAndParameters(
           /*enabled_features=*/
-          {{blink::features::kSharedStorageSelectURLLimit,
+          {{features::kSharedStorageSelectURLLimit,
             {{"SharedStorageSelectURLBitBudgetPerPageLoad",
               base::NumberToString(kSelectURLOverallBitBudget)},
              {"SharedStorageSelectURLBitBudgetPerSitePerPageLoad",
@@ -9459,7 +9475,7 @@ class SharedStorageSelectURLLimitBrowserTest
           /*disabled_features=*/{});
     } else {
       select_url_limit_feature_list_.InitAndDisableFeature(
-          blink::features::kSharedStorageSelectURLLimit);
+          features::kSharedStorageSelectURLLimit);
     }
 
     fenced_frame_api_change_feature_.InitWithFeatureState(
@@ -9978,10 +9994,7 @@ IN_PROC_BROWSER_TEST_P(
       base::StrCat({std::string(1, 'b' + num_site_limit), ".test"});
   GURL iframe_url = https_server()->GetURL(iframe_host, kSimplePagePath);
 
-  int overall_budget_remaining =
-      kSelectURLOverallBitBudget % kSelectURLSiteBitBudget;
-
-  for (int j = 0; j < overall_budget_remaining; j++) {
+  for (int j = 0; j < kOverallBudgetRemaining; j++) {
     // Create a new iframe.
     FrameTreeNode* iframe_node =
         CreateIFrame(PrimaryFrameTreeNodeRoot(), iframe_url);
@@ -10027,30 +10040,30 @@ IN_PROC_BROWSER_TEST_P(
   histogram_tester_.ExpectTotalCount(
       kTimingSelectUrlExecutedInWorkletHistogram,
       num_site_limit * (2 + per_site_input2_call_limit) +
-          overall_budget_remaining + 1);
+          kOverallBudgetRemaining + 1);
 
   if (LimitSelectURLCalls()) {
     histogram_tester_.ExpectBucketCount(
         kSelectUrlBudgetStatusHistogram,
         blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget,
         num_site_limit * (1 + per_site_input2_call_limit) +
-            overall_budget_remaining);
+            kOverallBudgetRemaining);
     histogram_tester_.ExpectBucketCount(
         kSelectUrlBudgetStatusHistogram,
         blink::SharedStorageSelectUrlBudgetStatus::
             kInsufficientSitePageloadBudget,
-        overall_budget_remaining ? num_site_limit : num_site_limit - 1);
+        kOverallBudgetRemaining ? num_site_limit : num_site_limit - 1);
     histogram_tester_.ExpectBucketCount(
         kSelectUrlBudgetStatusHistogram,
         blink::SharedStorageSelectUrlBudgetStatus::
             kInsufficientOverallPageloadBudget,
-        overall_budget_remaining ? 1 : 2);
+        kOverallBudgetRemaining ? 1 : 2);
   } else {
     histogram_tester_.ExpectUniqueSample(
         kSelectUrlBudgetStatusHistogram,
         blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget,
         num_site_limit * (2 + per_site_input2_call_limit) +
-            overall_budget_remaining + 1);
+            kOverallBudgetRemaining + 1);
   }
 }
 
@@ -10060,7 +10073,7 @@ class SharedStorageSelectURLSavedQueryBrowserTest
   SharedStorageSelectURLSavedQueryBrowserTest() {
     select_url_limit_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{blink::features::kSharedStorageSelectURLLimit,
+        {{features::kSharedStorageSelectURLLimit,
           {{"SharedStorageSelectURLBitBudgetPerPageLoad",
             base::NumberToString(kSelectURLOverallBitBudget)},
            {"SharedStorageSelectURLBitBudgetPerSitePerPageLoad",

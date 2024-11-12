@@ -1598,19 +1598,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kSharedStorageExposeDebugMessageForSettingsStatus);
 
-// If enabled, limits the number of times per origin per pageload that
-// `sharedStorage.selectURL()` is allowed to be invoked.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageSelectURLLimit);
-// Maximum number of bits of entropy per pageload that are allowed to leak via
-// `sharedStorage.selectURL()`, if `kSharedStorageSelectURLLimit` is enabled.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kSharedStorageSelectURLBitBudgetPerPageLoad;
-// Maximum number of bits of entropy per site per pageload that are allowed to
-// leak via `sharedStorage.selectURL()`, if `kSharedStorageSelectURLLimit` is
-// enabled.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kSharedStorageSelectURLBitBudgetPerSitePerPageLoad;
-
 // If enabled, the shared storage worklet threads (on the same renderer process)
 // will share the same backing thread; otherwise, each will own a dedicated
 // backing thread.
