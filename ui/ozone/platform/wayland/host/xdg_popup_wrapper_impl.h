@@ -38,9 +38,6 @@ class XDGPopupWrapperImpl : public ShellPopupWrapper {
   bool SetBounds(const gfx::Rect& new_bounds) override;
   void SetWindowGeometry(const gfx::Rect& bounds) override;
   void Grab(uint32_t serial) override;
-  bool SupportsDecoration() override;
-  void Decorate(ui::PlatformWindowShadowType shadow_type) override;
-  void SetScaleFactor(float scale_factor) override;
   XDGPopupWrapperImpl* AsXDGPopupWrapper() override;
 
   XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
@@ -67,9 +64,6 @@ class XDGPopupWrapperImpl : public ShellPopupWrapper {
 
   // XDG Shell Stable object.
   wl::Object<xdg_popup> xdg_popup_;
-
-  // Aura shell popup object
-  wl::Object<zaura_popup> aura_popup_;
 
   // Parameters that help to configure this popup.
   ShellPopupParams params_;

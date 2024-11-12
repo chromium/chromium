@@ -68,17 +68,6 @@ class ShellPopupWrapper {
                       OwnedWindowAnchorGravity* anchor_gravity,
                       OwnedWindowConstraintAdjustment* constraints) const;
 
-  // Whether the protocol supports surface decoration.
-  virtual bool SupportsDecoration() = 0;
-
-  // Must only be called if SupportsDecoration() returns true.
-  // Decorates the surface with a drop shadow.
-  virtual void Decorate(ui::PlatformWindowShadowType shadow_type) = 0;
-
-  // Sets the scale factor for the next commit. Scale factor persists until a
-  // new one is set.
-  virtual void SetScaleFactor(float scale_factor) = 0;
-
   // Casts `this` to XDGPopupWrapperImpl, if it is of that type.
   virtual XDGPopupWrapperImpl* AsXDGPopupWrapper();
 

@@ -182,6 +182,8 @@ void WaylandWindow::OnEnteredOutputScaleChanged() {
   UpdateWindowScale(/*update_bounds=*/true);
 }
 
+void WaylandWindow::PropagateBufferScale(float new_scale) {}
+
 WaylandZAuraSurface* WaylandWindow::GetZAuraSurface() {
   return root_surface_ ? root_surface_->zaura_surface() : nullptr;
 }

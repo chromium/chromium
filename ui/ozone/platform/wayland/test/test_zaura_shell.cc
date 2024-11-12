@@ -8,7 +8,6 @@
 #include "ui/ozone/platform/wayland/test/mock_xdg_surface.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_output.h"
-#include "ui/ozone/platform/wayland/test/test_zaura_popup.h"
 #include "ui/ozone/platform/wayland/test/test_zaura_surface.h"
 #include "ui/ozone/platform/wayland/test/test_zaura_toplevel.h"
 
@@ -47,21 +46,12 @@ void GetAuraToplevelForXdgToplevel(wl_client* client,
       GetUserDataAs<TestZAuraToplevel>(zaura_toplevel_resource));
 }
 
-void GetAuraPopupForXdgPopup(wl_client* client,
-                             wl_resource* resource,
-                             uint32_t id,
-                             wl_resource* popup) {
-  CreateResourceWithImpl<TestZAuraPopup>(client, &zaura_popup_interface,
-                                         kZAuraShellVersion,
-                                         &kTestZAuraPopupImpl, id);
-}
-
 const struct zaura_shell_interface kTestZAuraShellImpl = {
     &GetAuraSurface,
     nullptr,
     &SurfaceSubmissionInPixelCoordinates,
     &GetAuraToplevelForXdgToplevel,
-    &GetAuraPopupForXdgPopup,
+    nullptr,
     &DestroyResource,
 };
 

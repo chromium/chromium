@@ -521,8 +521,6 @@ source_set("test_support") {
     "test/test_wp_pointer_gestures.h",
     "test/test_xdg_popup.cc",
     "test/test_xdg_popup.h",
-    "test/test_zaura_popup.cc",
-    "test/test_zaura_popup.h",
     "test/test_zaura_shell.cc",
     "test/test_zaura_shell.h",
     "test/test_zaura_surface.cc",
