@@ -87,7 +87,7 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
 
   using SetCookieHeader = base::RepeatingCallback<void(
       const network::ResourceRequest& request,
-      const std::string& value,
+      std::string_view value,
       const std::optional<base::Time>& server_time)>;
 
   AndroidStreamReaderURLLoader(

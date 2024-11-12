@@ -24,10 +24,7 @@ void VerifyHeaderNameAndValue(net::HttpResponseHeaders* headers,
                               std::string header_name,
                               std::string header_value) {
   EXPECT_TRUE(headers->HasHeader(header_name));
-  std::string actual_header_value;
-  EXPECT_TRUE(
-      headers->EnumerateHeader(NULL, header_name, &actual_header_value));
-  EXPECT_EQ(header_value, actual_header_value);
+  EXPECT_EQ(header_value, headers->EnumerateHeader(nullptr, header_name));
 }
 
 }  // namespace

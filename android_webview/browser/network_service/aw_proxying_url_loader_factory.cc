@@ -1300,7 +1300,7 @@ void AwProxyingURLLoaderFactory::GetCookieHeader(
 
 void AwProxyingURLLoaderFactory::SetCookieHeader(
     const network::ResourceRequest& request,
-    const std::string& cookie_string,
+    std::string_view cookie_string,
     const std::optional<base::Time>& server_time) {
   DCHECK(cookie_manager_.is_bound());
   auto isolation_info = GetIsolationInfo(request);

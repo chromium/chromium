@@ -146,7 +146,7 @@ class AwProxyingURLLoaderFactory : public network::mojom::URLLoaderFactory {
                        base::OnceCallback<void(std::string)> callback);
 
   void SetCookieHeader(const network::ResourceRequest& request,
-                       const std::string& value,
+                       std::string_view value,
                        const std::optional<base::Time>& server_time);
 
   net::IsolationInfo GetIsolationInfo(const network::ResourceRequest& request);
