@@ -4727,7 +4727,7 @@ TEST_F(BrowserAutofillManagerTest, ValuePatternsMetric) {
 // Test that when Autofill is disabled, single field form fill suggestions are
 // still queried as a fallback.
 TEST_F(BrowserAutofillManagerTest,
-       SingleFieldFormFillSuggestions_SomeWhenAutofillDisabled) {
+       SingleFieldFillSuggestions_SomeWhenAutofillDisabled) {
   browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
   browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
                                                               false);
@@ -4749,7 +4749,7 @@ TEST_F(BrowserAutofillManagerTest,
 // Test that we do not query for single field form fill suggestions when there
 // are Autofill suggestions available.
 TEST_F(BrowserAutofillManagerTest,
-       SingleFieldFormFillSuggestions_NoneWhenAutofillPresent) {
+       SingleFieldFillSuggestions_NoneWhenAutofillPresent) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
@@ -4765,7 +4765,7 @@ TEST_F(BrowserAutofillManagerTest,
 // Test that we query for single field form fill suggestions when there are no
 // Autofill suggestions available.
 TEST_F(BrowserAutofillManagerTest,
-       SingleFieldFormFillSuggestions_SomeWhenAutofillEmpty) {
+       SingleFieldFillSuggestions_SomeWhenAutofillEmpty) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   FormFieldData& email_field = test_api(form).field(-1);
@@ -4784,7 +4784,7 @@ TEST_F(BrowserAutofillManagerTest,
 // Test that when Autofill is disabled and the field is a credit card name
 // field, single field form fill suggestions are queried.
 TEST_F(BrowserAutofillManagerTest,
-       SingleFieldFormFillSuggestions_CreditCardNameFieldShouldAutocomplete) {
+       SingleFieldFillSuggestions_CreditCardNameFieldShouldAutocomplete) {
   // Since we are testing a form that submits over HTTP, we also need to set
   // the main frame to HTTP in the client, otherwise mixed form warnings will
   // trigger and autofill will be disabled.
@@ -4814,7 +4814,7 @@ TEST_F(BrowserAutofillManagerTest,
 // Test that when Autofill is disabled and the field is a credit card number
 // field, single field form fill suggestions are not queried.
 TEST_F(BrowserAutofillManagerTest,
-       SingleFieldFormFillSuggestions_CreditCardNumberShouldNotAutocomplete) {
+       SingleFieldFillSuggestions_CreditCardNumberShouldNotAutocomplete) {
   // Since we are testing a form that submits over HTTP, we also need to set
   // the main frame to HTTP in the client, otherwise mixed form warnings will
   // trigger and autofill will be disabled.
@@ -4847,7 +4847,7 @@ TEST_F(BrowserAutofillManagerTest,
 // off and the field is not recognized as a promo code field.
 TEST_F(
     BrowserAutofillManagerTest,
-    SingleFieldFormFillSuggestions_NoneWhenAutofillEmptyAndSingleFieldFormFillConditionsNotMet) {
+    SingleFieldFillSuggestions_NoneWhenAutofillEmptyAndSingleFieldFillConditionsNotMet) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
   FormFieldData& email_field = test_api(form).field(-1);
@@ -4873,9 +4873,8 @@ TEST_F(
 // is handled correctly. The single field form fill conditions were not met
 // because autocomplete is set to off and the field is not recognized as a promo
 // code field.
-TEST_F(
-    BrowserAutofillManagerTest,
-    SingleFieldFormFillSuggestions_NoneWhenSingleFieldFormFillConditionsNotMet) {
+TEST_F(BrowserAutofillManagerTest,
+       SingleFieldFillSuggestions_NoneWhenSingleFieldFillConditionsNotMet) {
   browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
   browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
                                                               false);
@@ -4898,8 +4897,7 @@ TEST_F(
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
 }
 
-TEST_F(BrowserAutofillManagerTest,
-       DestructorCancelsSingleFieldFormFillQueries) {
+TEST_F(BrowserAutofillManagerTest, DestructorCancelsSingleFieldFillQueries) {
   EXPECT_CALL(single_field_fill_router(), CancelPendingQueries);
   browser_autofill_manager_.reset();
 }
@@ -8282,7 +8280,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
 // when single field form suggestions are available. Tests also that plus
 // address suggestions are prioritized over single field form fill suggestions.
 TEST_F(BrowserAutofillManagerPlusAddressTest,
-       CreatePlusAddressSuggestionShownWithSingleFieldFormFillSuggestions) {
+       CreatePlusAddressSuggestionShownWithSingleFieldFillSuggestions) {
   using enum AutofillPlusAddressDelegate::SuggestionContext;
   using enum PasswordFormClassification::Type;
   personal_data().test_address_data_manager().ClearProfiles();

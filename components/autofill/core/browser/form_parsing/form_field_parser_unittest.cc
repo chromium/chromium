@@ -43,12 +43,11 @@ class FormFieldParserTest : public FormFieldParserTestBase,
     return field_candidates_map_.size();
   }
 
-  // Like `ParseFormFields()`, but using `ParseSingleFieldForms()` instead.
-  int ParseSingleFieldForms() {
+  // Like `ParseFormFields()`, but using `ParseSingleFields()` instead.
+  int ParseSingleFields() {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
-    FormFieldParser::ParseSingleFieldForms(context, fields_,
-                                           field_candidates_map_);
+    FormFieldParser::ParseSingleFields(context, fields_, field_candidates_map_);
     return field_candidates_map_.size();
   }
 
@@ -188,44 +187,44 @@ TEST_F(FormFieldParserTest, TestParseableLabels) {
   }
 }
 
-// Tests that `ParseSingleFieldForms` is called as part of `ParseFormFields`.
-TEST_F(FormFieldParserTest, ParseSingleFieldFormsInsideParseFormField) {
+// Tests that `ParseSingleFields` is called as part of `ParseFormFields`.
+TEST_F(FormFieldParserTest, ParseSingleFieldsInsideParseFormField) {
   AddTextFormFieldData("", "Phone", PHONE_HOME_CITY_AND_NUMBER);
   AddTextFormFieldData("", "Email", EMAIL_ADDRESS);
   AddTextFormFieldData("", "Promo code", MERCHANT_PROMO_CODE);
 
-  // `ParseSingleFieldForms` should detect the promo code.
+  // `ParseSingleFields` should detect the promo code.
   EXPECT_EQ(3, ParseFormFields());
   TestClassificationExpectations();
 }
 
-// Test that `ParseSingleFieldForms` parses single field promo codes.
+// Test that `ParseSingleFields` parses single field promo codes.
 TEST_F(FormFieldParserTest, ParseFormFieldsForSingleFieldPromoCode) {
   // Parse single field promo code.
   AddTextFormFieldData("", "Promo code", MERCHANT_PROMO_CODE);
-  EXPECT_EQ(1, ParseSingleFieldForms());
+  EXPECT_EQ(1, ParseSingleFields());
   TestClassificationExpectations();
 
   // Don't parse other fields.
   // UNKNOWN_TYPE is used as the expected type, which prevents it from being
   // part of the expectations in `TestClassificationExpectations()`.
   AddTextFormFieldData("", "Address line 1", UNKNOWN_TYPE);
-  EXPECT_EQ(1, ParseSingleFieldForms());
+  EXPECT_EQ(1, ParseSingleFields());
   TestClassificationExpectations();
 }
 
-// Test that `ParseSingleFieldForms` parses single field IBAN.
-TEST_F(FormFieldParserTest, ParseSingleFieldFormsIban) {
+// Test that `ParseSingleFields` parses single field IBAN.
+TEST_F(FormFieldParserTest, ParseSingleFieldsIban) {
   // Parse single field IBAN.
   AddTextFormFieldData("", "IBAN", IBAN_VALUE);
-  EXPECT_EQ(1, ParseSingleFieldForms());
+  EXPECT_EQ(1, ParseSingleFields());
   TestClassificationExpectations();
 
   // Don't parse other fields.
   // UNKNOWN_TYPE is used as the expected type, which prevents it from being
   // part of the expectations in `TestClassificationExpectations()`.
   AddTextFormFieldData("", "Address line 1", UNKNOWN_TYPE);
-  EXPECT_EQ(1, ParseSingleFieldForms());
+  EXPECT_EQ(1, ParseSingleFields());
   TestClassificationExpectations();
 }
 

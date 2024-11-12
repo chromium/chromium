@@ -597,9 +597,9 @@ class BrowserAutofillManager : public AutofillManager {
 
   // Generates and prioritizes different kinds of suggestions and
   // suggestion surfaces accordingly (e.g. Fast Checkout, Prediction
-  // improvements, SingleFieldFormFiller(s), address and credit card popups).
+  // improvements, SingleFieldFiller(s), address and credit card popups).
   // Suggestion flows that handle their own UI flow (e.g. FastCheckout, TTF,
-  // SingleFieldFormFiller) are triggered from within these functions.
+  // SingleFieldFiller) are triggered from within these functions.
   //
   // This process is split into phrases 1 and 2 to support asynchronous
   // operations in the middle.
@@ -632,7 +632,7 @@ class BrowserAutofillManager : public AutofillManager {
   // and combines them. It gives priority to the plus address suggestions,
   // ensuring they appear first in the final combined list that's sent to
   // `OnGenerateSuggestionsCallback`.
-  void OnGeneratedPlusAddressAndSingleFieldFormFillSuggestions(
+  void OnGeneratedPlusAddressAndSingleFieldFillSuggestions(
       AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
       PasswordFormClassification::Type password_form_type,
       const FormData& form,

@@ -425,7 +425,7 @@ bool FormStructure::ShouldRunHeuristics() const {
          HasAllowedScheme(source_url_);
 }
 
-bool FormStructure::ShouldRunHeuristicsForSingleFieldForms() const {
+bool FormStructure::ShouldRunHeuristicsForSingleFields() const {
   return active_field_count() > 0 && HasAllowedScheme(source_url_);
 }
 
@@ -685,8 +685,8 @@ FieldCandidatesMap FormStructure::ParseFieldTypesWithPatterns(
   if (ShouldRunHeuristics()) {
     FormFieldParser::ParseFormFields(context, fields_, is_form_element(),
                                      field_type_map);
-  } else if (ShouldRunHeuristicsForSingleFieldForms()) {
-    FormFieldParser::ParseSingleFieldForms(context, fields_, field_type_map);
+  } else if (ShouldRunHeuristicsForSingleFields()) {
+    FormFieldParser::ParseSingleFields(context, fields_, field_type_map);
     FormFieldParser::ParseStandaloneCVCFields(context, fields_, field_type_map);
 
     // For standalone email fields, allow heuristics even when the minimum

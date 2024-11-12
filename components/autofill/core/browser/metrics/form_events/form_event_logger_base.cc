@@ -64,7 +64,7 @@ bool DetermineHeuristicOnlyEmailFormStatus(const FormStructure& form) {
       base::FeatureList::IsEnabled(
           features::kAutofillEnableEmailHeuristicOutsideForms);
   if (!form_tag_requirement_passed || form.ShouldRunHeuristics() ||
-      !form.ShouldRunHeuristicsForSingleFieldForms()) {
+      !form.ShouldRunHeuristicsForSingleFields()) {
     return false;
   }
   // Having met the prerequisites, now determine if there's a field whose

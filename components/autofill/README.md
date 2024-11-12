@@ -263,7 +263,7 @@ may sacrifice a little bit of correctness in favor of simplicity.
     exceptions for a few field types (email addresses, promo codes, IBANs, CVV
     fields).
   * We perform local heuristics even for smaller forms but only for promo codes
-    and IBANs (see `ParseSingleFieldForms`).
+    and IBANs (see `ParseSingleFields`).
   * Regular expressions for parsing are provided via
     `components/autofill/core/browser/form_parsing/regex_patterns.h` and
     `components/autofill/core/browser/form_parsing/*/*regex_patterns.json`.

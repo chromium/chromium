@@ -336,7 +336,7 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
   }
 }
 
-void FormFieldParser::ParseSingleFieldForms(
+void FormFieldParser::ParseSingleFields(
     ParsingContext& context,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     FieldCandidatesMap& field_candidates) {

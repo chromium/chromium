@@ -146,7 +146,7 @@ class FormFieldParser {
   // Looks for types that are allowed to appear in solitary (such as merchant
   // promo codes) inside |fields|. Each field has a derived unique name that is
   // used as the key into |field_candidates|.
-  static void ParseSingleFieldForms(
+  static void ParseSingleFields(
       ParsingContext& context,
       const std::vector<std::unique_ptr<AutofillField>>& fields,
       FieldCandidatesMap& field_candidates);

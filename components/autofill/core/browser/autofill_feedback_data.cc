@@ -24,12 +24,12 @@ std::string FillDataTypeToStr(FillDataType type) {
       return "AutofillProfile";
     case FillDataType::kCreditCard:
       return "CreditCard";
-    case FillDataType::kSingleFieldFormFillerAutocomplete:
-      return "SingleFieldFormFillerAutocomplete";
-    case FillDataType::kSingleFieldFormFillerIban:
-      return "SingleFieldFormFillerIban";
-    case FillDataType::kSingleFieldFormFillerPromoCode:
-      return "SingleFieldFormFillerPromoCode";
+    case FillDataType::kSingleFieldFillerAutocomplete:
+      return "SingleFieldFillerAutocomplete";
+    case FillDataType::kSingleFieldFillerIban:
+      return "SingleFieldFillerIban";
+    case FillDataType::kSingleFieldFillerPromoCode:
+      return "SingleFieldFillerPromoCode";
   }
 }
 

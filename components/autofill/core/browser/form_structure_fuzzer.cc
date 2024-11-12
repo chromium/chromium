@@ -77,7 +77,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::ignore = form_structure.IsCompleteCreditCardForm();
   std::ignore = form_structure.ShouldBeParsed();
   std::ignore = form_structure.ShouldRunHeuristics();
-  std::ignore = form_structure.ShouldRunHeuristicsForSingleFieldForms();
+  std::ignore = form_structure.ShouldRunHeuristicsForSingleFields();
   std::ignore = form_structure.ShouldBeQueried();
   std::ignore = form_structure.ShouldBeUploaded();
   return 0;

@@ -178,7 +178,7 @@ TEST_F(AutofillFeedbackDataUnitTest, IncludesLastAutofillEventLogEntry) {
   // Update the expected data with a last_autofill_event entry.
   base::Value::Dict last_autofill_event;
   last_autofill_event.Set("associatedCountry", "");
-  last_autofill_event.Set("type", "SingleFieldFormFillerIban");
+  last_autofill_event.Set("type", "SingleFieldFillerIban");
   expected_data.GetDict().Set("lastAutofillEvent",
                               std::move(last_autofill_event));
 

@@ -271,7 +271,7 @@ void LogValuePatternsMetric(const FormData& form) {
   }
 }
 
-bool IsSingleFieldFormFillerFillingProduct(FillingProduct filling_product) {
+bool IsSingleFieldFillerFillingProduct(FillingProduct filling_product) {
   switch (filling_product) {
     case FillingProduct::kAutocomplete:
     case FillingProduct::kIban:
@@ -292,11 +292,11 @@ bool IsSingleFieldFormFillerFillingProduct(FillingProduct filling_product) {
 FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
   switch (type) {
     case SuggestionType::kAutocompleteEntry:
-      return FillDataType::kSingleFieldFormFillerAutocomplete;
+      return FillDataType::kSingleFieldFillerAutocomplete;
     case SuggestionType::kMerchantPromoCodeEntry:
-      return FillDataType::kSingleFieldFormFillerPromoCode;
+      return FillDataType::kSingleFieldFillerPromoCode;
     case SuggestionType::kIbanEntry:
-      return FillDataType::kSingleFieldFormFillerIban;
+      return FillDataType::kSingleFieldFillerIban;
     case SuggestionType::kAccountStoragePasswordEntry:
     case SuggestionType::kAddressEntry:
     case SuggestionType::kAllSavedPasswordsEntry:
@@ -592,11 +592,10 @@ FieldTypeSet GetTargetFieldsForAddressFillingSuggestionType(
   NOTREACHED();
 }
 
-bool ShouldOfferSingleFieldFormFill(
-    const FormFieldData& field,
-    const AutofillField* autofill_field,
-    AutofillSuggestionTriggerSource trigger_source,
-    SuppressReason suppress_reason) {
+bool ShouldOfferSingleFieldFill(const FormFieldData& field,
+                                const AutofillField* autofill_field,
+                                AutofillSuggestionTriggerSource trigger_source,
+                                SuppressReason suppress_reason) {
   if (trigger_source ==
       AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick) {
     return false;
@@ -1692,8 +1691,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   // Whether or not to request single field form fill suggestions.
   const bool should_offer_single_field_form_fill =
       should_offer_other_suggestions &&
-      ShouldOfferSingleFieldFormFill(field, autofill_field, trigger_source,
-                                     context.suppress_reason);
+      ShouldOfferSingleFieldFill(field, autofill_field, trigger_source,
+                                 context.suppress_reason);
 
   // Whether or not to show plus address suggestions.
   const bool should_offer_plus_addresses =
@@ -1720,7 +1719,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
       barrier_calls,
       base::BindOnce(
           &BrowserAutofillManager::
-              OnGeneratedPlusAddressAndSingleFieldFormFillSuggestions,
+              OnGeneratedPlusAddressAndSingleFieldFillSuggestions,
           weak_ptr_factory_.GetWeakPtr(),
           AutofillPlusAddressDelegate::SuggestionContext::kAutocomplete,
           password_form_classification.type, form, field, std::move(callback)));
@@ -1755,7 +1754,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
 }
 
 void BrowserAutofillManager::
-    OnGeneratedPlusAddressAndSingleFieldFormFillSuggestions(
+    OnGeneratedPlusAddressAndSingleFieldFillSuggestions(
         AutofillPlusAddressDelegate::SuggestionContext suggestions_context,
         PasswordFormClassification::Type password_form_type,
         const FormData& form,
@@ -2312,7 +2311,7 @@ void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
   if (!autofill_trigger_field) {
     return;
   }
-  if (IsSingleFieldFormFillerFillingProduct(
+  if (IsSingleFieldFillerFillingProduct(
           GetFillingProductFromSuggestionType(suggestion.type))) {
     autofill_trigger_field->AppendLogEventIfNotRepeated(
         TriggerFillFieldLogEvent{
@@ -2556,7 +2555,7 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
     WipeLogQualityAndVotesUploadCallback(submitted_form->form_signature());
   }
   if (submitted_form->ShouldRunHeuristics() ||
-      submitted_form->ShouldRunHeuristicsForSingleFieldForms() ||
+      submitted_form->ShouldRunHeuristicsForSingleFields() ||
       submitted_form->ShouldBeQueried()) {
     autofill_metrics::LogQualityMetrics(
         *submitted_form, submitted_form->form_parsed_timestamp(),

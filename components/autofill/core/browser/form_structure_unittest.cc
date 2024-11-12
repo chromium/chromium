@@ -83,8 +83,8 @@ class FormStructureTestImpl : public test::FormStructureTest {
     return FormStructure(form).ShouldRunHeuristics();
   }
 
-  bool FormShouldRunHeuristicsForSingleFieldForms(const FormData& form) {
-    return FormStructure(form).ShouldRunHeuristicsForSingleFieldForms();
+  bool FormShouldRunHeuristicsForSingleFields(const FormData& form) {
+    return FormStructure(form).ShouldRunHeuristicsForSingleFields();
   }
 
   bool FormShouldBeQueried(const FormData& form) {
@@ -867,7 +867,7 @@ TEST_F(FormStructureTestImpl, PromoCodeHeuristics_SmallForm) {
   field.set_renderer_id(test::MakeFieldRendererId());
   test_api(form).Append(field);
 
-  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFieldForms(form));
+  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFields(form));
 
   // Default configuration.
   {
@@ -2311,14 +2311,14 @@ TEST_F(FormStructureTestImpl, GetFormTypes_AutocompleteUnrecognized) {
 }
 
 // The test ensures that single field email forms are correctly parsed via
-// `FormShouldRunHeuristicsForSingleFieldForms`.
+// `FormShouldRunHeuristicsForSingleFields`.
 TEST_F(FormStructureTestImpl, SingleFieldEmailHeuristicsBehavior) {
   FormData form = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
 
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
   EXPECT_FALSE(FormShouldRunHeuristics(form));
-  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFieldForms(form));
+  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFields(form));
 
   {
     FormStructure form_structure(form);
@@ -2331,7 +2331,7 @@ TEST_F(FormStructureTestImpl, SingleFieldEmailHeuristicsBehavior) {
 }
 
 // The test ensures that email fields are correctly parsed (via
-// `FormShouldRunHeuristicsForSingleFieldForms`) on small forms with two fields.
+// `FormShouldRunHeuristicsForSingleFields`) on small forms with two fields.
 TEST_F(FormStructureTestImpl, TwoFieldFormEmailHeuristicsBehavior) {
   FormData form = test::GetFormData(
       {.fields = {{.role = NAME_FULL}, {.role = EMAIL_ADDRESS}}});
@@ -2339,7 +2339,7 @@ TEST_F(FormStructureTestImpl, TwoFieldFormEmailHeuristicsBehavior) {
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
   EXPECT_FALSE(FormShouldRunHeuristics(form));
-  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFieldForms(form));
+  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFields(form));
 
   {
     FormStructure form_structure(form);
@@ -2370,7 +2370,7 @@ TEST_F(FormStructureTestImpl,
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
   EXPECT_FALSE(FormShouldRunHeuristics(form));
-  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFieldForms(form));
+  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFields(form));
 
   {
     FormStructure form_structure(form);
@@ -2399,7 +2399,7 @@ TEST_F(FormStructureTestImpl,
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
   EXPECT_FALSE(FormShouldRunHeuristics(form));
-  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFieldForms(form));
+  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFields(form));
   {
     FormStructure form_structure(form);
     form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
@@ -2429,7 +2429,7 @@ TEST_F(FormStructureTestImpl,
   // The form has too few fields; it should not run heuristics, falling back to
   // the single field parsing.
   EXPECT_FALSE(FormShouldRunHeuristics(form));
-  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFieldForms(form));
+  EXPECT_TRUE(FormShouldRunHeuristicsForSingleFields(form));
   {
     FormStructure form_structure(form);
     form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
