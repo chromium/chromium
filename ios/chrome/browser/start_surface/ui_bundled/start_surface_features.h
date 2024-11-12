@@ -18,12 +18,24 @@ enum class StartupRemediationsType {
 // The feature to enable or disable the Start Surface.
 BASE_DECLARE_FEATURE(kStartSurface);
 
+// Feature to enable Browser Background Termination remediations in the Start
+// Surface.
+BASE_DECLARE_FEATURE(kIOSStartTimeBrowserBackgroundRemediations);
+
 // Feature to enable Startup time remediations in the Start Surface.
 BASE_DECLARE_FEATURE(kIOSStartTimeStartupRemediations);
 
 // The feature parameter to indicate inactive duration to return to the Start
 // Surface in seconds.
 extern const char kReturnToStartSurfaceInactiveDurationInSeconds[];
+
+// The feature parameter for kIOSStartTimeBrowserBackgroundRemediations to
+// indicate if NTP clean-up should be avoided on app background.
+extern const char kIOSStartTimeBackgroundRemediationsAvoidNTPCleanup[];
+
+// The feature parameter for kIOSStartTimeBrowserBackgroundRemediations to
+// indicate if the feed refresh logic should be updated.
+extern const char kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefresh[];
 
 // The feature parameter for kIOSStartTimeStartupRemediations to indicate if the
 // "SaveNewNTPWebState" remediation will be enabled.
@@ -37,5 +49,9 @@ base::TimeDelta GetReturnToStartSurfaceDuration();
 
 // Returns the state of the IOSStartTimeStartupRemediations feature.
 StartupRemediationsType GetIOSStartTimeStartupRemediationsEnabledType();
+
+// Checks whether the kIOSStartTimeBackgroundRemediationsAvoidNTPCleanup arm of
+// the kIOSStartTimeBrowserBackgroundRemediations is enabled.
+bool IsAvoidNTPCleanupOnBackgroundEnabled();
 
 #endif  // IOS_CHROME_BROWSER_START_SURFACE_UI_BUNDLED_START_SURFACE_FEATURES_H_

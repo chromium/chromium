@@ -27,12 +27,14 @@
 #import "ios/chrome/browser/sessions/model/session_window_ios.h"
 #import "ios/chrome/browser/sessions/model/tab_group_util.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/crw_session_user_data.h"
@@ -43,30 +45,45 @@ using tab_group_util::DeserializedGroup;
 
 namespace {
 
-// Whether a particular web state should be kept or filtered out. This checks
-// for empty tabs (i.e. without navigation), and duplicates.
-bool ShouldKeepWebState(const web::WebState* web_state,
-                        const std::set<web::WebStateID>& seen_identifiers,
-                        int& duplicate_count) {
+// Represents what decision should be made on keeping a web state.
+enum class KeepWebStateDecision {
+  kKeep,
+  kDiscard,
+  kDiscardDuplicate,
+};
+
+// Returns a decision on whether a web state should be kept or filtered out.
+// This checks for empty tabs (i.e. without navigation), duplicates, and NTPs.
+KeepWebStateDecision ShouldKeepWebState(
+    const web::WebState* web_state,
+    const std::set<web::WebStateID>& seen_identifiers) {
   if (seen_identifiers.contains(web_state->GetUniqueIdentifier())) {
-    duplicate_count++;
-    return false;
+    return KeepWebStateDecision::kDiscardDuplicate;
   }
 
-  if (web_state->GetNavigationItemCount()) {
+  const int navigation_item_count = web_state->GetNavigationItemCount();
+
+  if (IsAvoidNTPCleanupOnBackgroundEnabled()) {
+    if (IsUrlNtp(web_state->GetVisibleURL())) {
+      return navigation_item_count <= 1 ? KeepWebStateDecision::kDiscard
+                                        : KeepWebStateDecision::kKeep;
+    }
+  }
+
+  if (navigation_item_count) {
     // WebState has navigation history, keep.
-    return true;
+    return KeepWebStateDecision::kKeep;
   }
 
   if (web_state->IsRealized()) {
     const web::NavigationManager* manager = web_state->GetNavigationManager();
     if (manager->GetPendingItem()) {
       // WebState has navigation pending, keep.
-      return true;
+      return KeepWebStateDecision::kKeep;
     }
   }
 
-  return false;
+  return KeepWebStateDecision::kDiscard;
 }
 
 // Creates a RemovingIndexes that records the indexes of the WebStates that
@@ -82,18 +99,29 @@ bool ShouldKeepWebState(const web::WebState* web_state,
 RemovingIndexes GetIndexOfWebStatesToDrop(const WebStateList& web_state_list) {
   std::vector<int> web_state_to_skip_indexes;
   std::set<web::WebStateID> seen_identifiers;
-  // Count the number of dropped tabs because they are duplicates, for
-  // reporting.
+
   int duplicate_count = 0;
+
   for (int index = 0; index < web_state_list.count(); ++index) {
     const web::WebState* web_state = web_state_list.GetWebStateAt(index);
-    if (ShouldKeepWebState(web_state, seen_identifiers, duplicate_count)) {
-      seen_identifiers.insert(web_state->GetUniqueIdentifier());
-      continue;
-    }
+    switch (ShouldKeepWebState(web_state, seen_identifiers)) {
+        // Increment the number of duplicate founds.
+      case KeepWebStateDecision::kDiscardDuplicate:
+        duplicate_count++;
+        [[fallthrough]];
 
-    web_state_to_skip_indexes.push_back(index);
+        // Add the tab to the list of tabs to close.
+      case KeepWebStateDecision::kDiscard:
+        web_state_to_skip_indexes.push_back(index);
+        break;
+
+        // Record the identifier of the tab, and keep it.
+      case KeepWebStateDecision::kKeep:
+        seen_identifiers.insert(web_state->GetUniqueIdentifier());
+        break;
+    }
   }
+
   base::UmaHistogramCounts100("Tabs.DroppedDuplicatesCountOnSessionSave",
                               duplicate_count);
 

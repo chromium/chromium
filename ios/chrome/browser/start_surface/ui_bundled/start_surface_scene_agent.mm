@@ -112,7 +112,8 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   }
   if (level == SceneActivationLevelBackground &&
       self.previousActivationLevel > SceneActivationLevelBackground) {
-    if (base::FeatureList::IsEnabled(kRemoveExcessNTPs)) {
+    if (base::FeatureList::IsEnabled(kRemoveExcessNTPs) &&
+        !IsAvoidNTPCleanupOnBackgroundEnabled()) {
       // Remove duplicate NTP pages upon background event.
       [self removeExcessNTPs];
     }

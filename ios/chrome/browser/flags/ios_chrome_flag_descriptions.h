@@ -551,6 +551,11 @@ extern const char kIOSSharedHighlightingV2Description[];
 extern const char kIOSSoftLockName[];
 extern const char kIOSSoftLockDescription[];
 
+// Title and description for the flag to enable potential Browser Background
+// Termination remediations.
+extern const char kIOSStartTimeBrowserBackgroundRemediationsName[];
+extern const char kIOSStartTimeBrowserBackgroundRemediationsDescription[];
+
 // Title and description for the flag to enable potential startup time
 // remediations.
 extern const char kIOSStartTimeStartupRemediationsName[];

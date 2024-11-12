@@ -16,12 +16,22 @@ constexpr base::TimeDelta kDefaultReturnToStartSurfaceInactiveDuration =
 
 BASE_FEATURE(kStartSurface, "StartSurface", base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSStartTimeBrowserBackgroundRemediations,
+             "IOSStartTimeBrowserBackgroundRemediations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIOSStartTimeStartupRemediations,
              "IOSStartTimeStartupRemediations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kReturnToStartSurfaceInactiveDurationInSeconds[] =
     "ReturnToStartSurfaceInactiveDurationInSeconds";
+
+const char kIOSStartTimeBackgroundRemediationsAvoidNTPCleanup[] =
+    "ios-startup-remediations-avoid-ntp-cleanup";
+
+const char kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefresh[] =
+    "ios-startup-remediations-update-feed-refresh";
 
 const char kIOSStartTimeStartupRemediationsSaveNTPWebState[] =
     "ios-startup-remediations-save-ntp-web-state";
@@ -45,4 +55,10 @@ StartupRemediationsType GetIOSStartTimeStartupRemediationsEnabledType() {
   return base::FeatureList::IsEnabled(kIOSStartTimeStartupRemediations)
              ? StartupRemediationsType::kOpenNewNTPTab
              : StartupRemediationsType::kDisabled;
+}
+
+bool IsAvoidNTPCleanupOnBackgroundEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kIOSStartTimeBrowserBackgroundRemediations,
+      kIOSStartTimeBackgroundRemediationsAvoidNTPCleanup, false);
 }

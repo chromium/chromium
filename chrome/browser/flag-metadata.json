@@ -5435,6 +5435,11 @@
     "expiry_milestone": 136
   },
   {
+    "name": "ios-start-time-browser-background-remediations",
+    "owners": [ "hiramahmood@google.com", "bling-get-set-up@chromium.org"],
+    "expiry_milestone": 136
+  },
+  {
     "name": "ios-start-time-startup-remediations",
     "owners": [ "hiramahmood@google.com", "bling-get-set-up@chromium.org"],
     "expiry_milestone": 136

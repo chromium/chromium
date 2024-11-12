@@ -1208,6 +1208,26 @@ const FeatureEntry::FeatureVariation kNewFeedPositioningVariations[] = {
      std::size(kNewFeedPositioningArm5), nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kIOSStartTimeBackgroundRemediationsAvoidNTPCleanupArm[] = {
+        {kIOSStartTimeBackgroundRemediationsAvoidNTPCleanup, "true"},
+        {kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefresh, "false"}};
+const FeatureEntry::FeatureParam
+    kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefreshArm[] = {
+        {kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefresh, "true"},
+        {kIOSStartTimeBackgroundRemediationsAvoidNTPCleanup, "false"}};
+const FeatureEntry::FeatureVariation
+    kIOSStartTimeBrowserBackgroundRemediationsVariations[] = {
+        {" - Avoid NTP Cleanup",
+         kIOSStartTimeBackgroundRemediationsAvoidNTPCleanupArm,
+         std::size(kIOSStartTimeBackgroundRemediationsAvoidNTPCleanupArm),
+         nullptr},
+        {" - Update Feed Refresh",
+         kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefreshArm,
+         std::size(
+             kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefreshArm),
+         nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2226,6 +2246,14 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillPaymentsSheetV2Name,
      flag_descriptions::kAutofillPaymentsSheetV2Description, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAutofillPaymentsSheetV2Ios)},
+    {"ios-start-time-browser-background-remediations",
+     flag_descriptions::kIOSStartTimeBrowserBackgroundRemediationsName,
+     flag_descriptions::kIOSStartTimeBrowserBackgroundRemediationsDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         kIOSStartTimeBrowserBackgroundRemediations,
+         kIOSStartTimeBrowserBackgroundRemediationsVariations,
+         "IOSStartTimeStartupRemediations")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

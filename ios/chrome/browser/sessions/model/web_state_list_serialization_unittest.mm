@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/test/web_state_list_builder_from_description.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/crw_session_user_data.h"
 #import "ios/web/public/session/proto/proto_util.h"
@@ -692,6 +693,45 @@ TEST_F(WebStateListSerializationTest,
   // Expect a log of 0 duplicate, because the empty one got removed first.
   histogram_tester_.ExpectUniqueSample(
       "Tabs.DroppedDuplicatesCountOnSessionSave", 0, 1);
+}
+
+// Tests that serializing a WebStateList keeps NTPs with navigation and discards
+// NTPs without navigation.
+//
+// Protobuf message variant.
+TEST_F(WebStateListSerializationTest, Serialize_Proto_NTPCleanup) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams startup_remediation_params = {
+      {kIOSStartTimeBackgroundRemediationsAvoidNTPCleanup, "true"}};
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kIOSStartTimeBrowserBackgroundRemediations,
+        startup_remediation_params}},
+      /*disabled_features=*/{});
+
+  // Set up the WebStateList with one NTP tab with navigation.
+  FakeWebStateListDelegate delegate;
+  WebStateList web_state_list(&delegate);
+  web_state_list.InsertWebState(
+      CreateWebStateWithNavigations(0, GURL(kChromeUINewTabURL),
+                                    web::WebStateID::NewUnique()),
+      WebStateList::InsertionParams::AtIndex(0));
+  web_state_list.InsertWebState(
+      CreateWebStateWithNavigations(2, GURL(kChromeUINewTabURL),
+                                    web::WebStateID::NewUnique()),
+      WebStateList::InsertionParams::AtIndex(1).Pinned());
+  web_state_list.InsertWebState(
+      CreateWebStateWithNavigations(0, GURL(kChromeUINewTabURL),
+                                    web::WebStateID::NewUnique()),
+      WebStateList::InsertionParams::AtIndex(2));
+
+  // Serialize the session.
+  ios::proto::WebStateListStorage storage;
+  SerializeWebStateList(web_state_list, storage);
+
+  // Check that there is only one tab left and it is an NTP with navigation.
+  EXPECT_EQ(storage.items_size(), 1);
+  EXPECT_EQ(storage.pinned_item_count(), 1);
 }
 
 // Tests deserializing works when support for pinned tabs is enabled.
