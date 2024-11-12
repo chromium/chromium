@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -31,6 +32,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
+#include "chrome/enterprise_companion/enterprise_companion_client.h"
+#include "chrome/enterprise_companion/enterprise_companion_version.h"
 #include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
@@ -95,6 +98,17 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "This request is made by the Chrome Enterprise Companion App, not "
             "Chrome itself."
         })");
+
+proto::EnterpriseCompanionMetadata GetMetadata() {
+  proto::EnterpriseCompanionMetadata metadata;
+  metadata.set_app_version(kEnterpriseCompanionVersion);
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(kCohortIdSwitch)) {
+    metadata.set_omaha_cohort_id(
+        command_line->GetSwitchValueASCII(kCohortIdSwitch));
+  }
+  return metadata;
+}
 
 class EventUploader {
  public:
@@ -188,6 +202,7 @@ class EventLoggerDelegate : public EventTelemetryLogger::Delegate {
   std::string AggregateAndSerializeEvents(
       base::span<proto::EnterpriseCompanionEvent> events) const override {
     proto::ChromeEnterpriseCompanionAppExtension extension;
+    *extension.mutable_metadata() = GetMetadata();
     for (const proto::EnterpriseCompanionEvent& event : events) {
       *extension.add_event() = event;
     }

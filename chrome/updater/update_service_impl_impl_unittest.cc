@@ -85,7 +85,7 @@ TEST(UpdateServiceImplTest, TestGetComponentsInOrder) {
   base::RunLoop loop;
   internal::GetComponents(
       base::MakeRefCounted<PolicyService>(CreateExternalConstants(),
-                                          /*usage_stats_enabled=*/true,
+                                          /*persisted_data=*/nullptr,
                                           /*is_ceca_experiment_enabled=*/false),
       crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF, metadata, {}, {}, {},
       UpdateService::Priority::kForeground, false,

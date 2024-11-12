@@ -222,7 +222,7 @@ scoped_refptr<PolicyService> CreateTestPolicyService() {
   std::vector<scoped_refptr<PolicyManagerInterface>> managers{
       GetDefaultValuesPolicyManager()};
   return base::MakeRefCounted<PolicyService>(std::move(managers),
-                                             /*usage_stats_enabled=*/true);
+                                             /*persisted_data=*/nullptr);
 }
 
 std::string GetTestName() {

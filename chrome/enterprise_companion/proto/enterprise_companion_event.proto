@@ -43,7 +43,16 @@ message EnterpriseCompanionEvent {
   }
 }
 
+message EnterpriseCompanionMetadata {
+  // The version of the enterprise companion.
+  string app_version = 1;
+
+  // The Omaha cohort ID of the enterprise companion.
+  string omaha_cohort_id = 2;
+}
+
 // The message to serialize and include in the log request.
 message ChromeEnterpriseCompanionAppExtension {
   repeated EnterpriseCompanionEvent event = 1;
+  EnterpriseCompanionMetadata metadata = 2;
 }

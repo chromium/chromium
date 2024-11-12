@@ -19,6 +19,8 @@
 
 namespace updater {
 
+class PersistedData;
+
 // Base class for the policy fetchers.
 class PolicyFetcher : public base::RefCountedThreadSafe<PolicyFetcher> {
  public:
@@ -61,7 +63,7 @@ class FallbackPolicyFetcher : public PolicyFetcher {
 // Creates an out-of-process policy fetcher that delegates fetch tasks to the
 // enterprise companion app.
 [[nodiscard]] scoped_refptr<PolicyFetcher> CreateOutOfProcessPolicyFetcher(
-    bool usage_stats_enabled,
+    scoped_refptr<PersistedData> persisted_data,
     std::optional<bool> override_is_managed_device,
     base::TimeDelta override_ceca_connection_timeout);
 

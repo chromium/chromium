@@ -31,6 +31,7 @@
 namespace enterprise_companion {
 
 const char kEnableUsageStatsSwitch[] = "enable-usage-stats";
+const char kCohortIdSwitch[] = "cohort-id";
 
 namespace {
 
@@ -43,7 +44,8 @@ constexpr char kServerName[] =
 constexpr wchar_t kServerName[] = PRODUCT_FULLNAME_STRING L"Service";
 #endif
 
-bool LaunchEnterpriseCompanionApp(bool enable_usagestats) {
+bool LaunchEnterpriseCompanionApp(bool enable_usagestats,
+                                  const std::optional<std::string>& cohort_id) {
   std::optional<base::FilePath> binary_path = FindExistingInstall();
   if (!binary_path) {
     return false;
@@ -52,6 +54,9 @@ bool LaunchEnterpriseCompanionApp(bool enable_usagestats) {
   base::CommandLine command_line = base::CommandLine(*binary_path);
   if (enable_usagestats) {
     command_line.AppendSwitch(kEnableUsageStatsSwitch);
+  }
+  if (cohort_id) {
+    command_line.AppendSwitch(kCohortIdSwitch);
   }
   return base::LaunchProcess(command_line, {}).IsValid();
 }
@@ -83,6 +88,7 @@ void ConnectWithRetries(
     int tries,
     base::Time deadline,
     bool enable_usagestats,
+    const std::optional<std::string>& cohort_id,
     base::OnceCallback<void(mojo::PlatformChannelEndpoint)> callback) {
   if (clock->Now() > deadline) {
     VLOG(1) << "Failed to connect to EnterpriseCompanionService remote. "
@@ -91,7 +97,8 @@ void ConnectWithRetries(
     return;
   }
 
-  if (tries == 1 && !LaunchEnterpriseCompanionApp(enable_usagestats)) {
+  if (tries == 1 &&
+      !LaunchEnterpriseCompanionApp(enable_usagestats, cohort_id)) {
     VLOG(1) << "Failed to connect to EnterpriseCompanionService remote. "
                "The service could not be launched.";
     std::move(callback).Run({});
@@ -108,7 +115,8 @@ void ConnectWithRetries(
   base::ThreadPool::PostDelayedTask(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&ConnectWithRetries, server_name, clock, tries + 1,
-                     deadline, enable_usagestats, std::move(callback)),
+                     deadline, enable_usagestats, cohort_id,
+                     std::move(callback)),
       base::Milliseconds(30 * tries));
 }
 
@@ -137,13 +145,14 @@ void ConnectAndLaunchServer(
     const base::Clock* clock,
     base::TimeDelta timeout,
     bool enable_usagestats,
+    const std::optional<std::string>& cohort_id,
     base::OnceCallback<void(std::unique_ptr<mojo::IsolatedConnection>,
                             mojo::Remote<mojom::EnterpriseCompanion>)> callback,
     const mojo::NamedPlatformChannel::ServerName& server_name) {
   base::ThreadPool::PostTask(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&ConnectWithRetries, server_name, clock, /*tries=*/0,
-                     clock->Now() + timeout, enable_usagestats,
+                     clock->Now() + timeout, enable_usagestats, cohort_id,
                      base::BindPostTaskToCurrentDefault(base::BindOnce(
                          &OnEndpointReceived, std::move(callback)))));
 }

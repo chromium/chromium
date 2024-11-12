@@ -32,6 +32,7 @@
 #include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/policy_fetcher.h"
 #include "chrome/updater/policy/policy_manager.h"
@@ -137,9 +138,9 @@ PolicyService::PolicyManagers::~PolicyManagers() = default;
 
 PolicyService::PolicyService(
     std::vector<scoped_refptr<PolicyManagerInterface>> managers,
-    bool usage_stats_enabled)
+    scoped_refptr<PersistedData> persisted_data)
     : policy_managers_(SortManagers(std::move(managers))),
-      usage_stats_enabled_(usage_stats_enabled),
+      persisted_data_(persisted_data),
       is_ceca_experiment_enabled_(false) {}
 
 // The policy managers are initialized without taking the Group Policy critical
@@ -148,14 +149,14 @@ PolicyService::PolicyService(
 // policies are reloaded with the critical section lock.
 PolicyService::PolicyService(
     scoped_refptr<ExternalConstants> external_constants,
-    bool usage_stats_enabled,
+    scoped_refptr<PersistedData> persisted_data,
     bool is_ceca_experiment_enabled)
     : policy_managers_(SortManagers(CreateManagers(
           /*should_take_policy_critical_section=*/false,
           external_constants,
           CreateDMPolicyManager(external_constants->IsMachineManaged())))),
       external_constants_(external_constants),
-      usage_stats_enabled_(usage_stats_enabled),
+      persisted_data_(persisted_data),
       is_ceca_experiment_enabled_(is_ceca_experiment_enabled) {
   VLOG(1) << "Current effective policies:" << std::endl
           << GetAllPoliciesAsString();
@@ -201,7 +202,7 @@ void PolicyService::DoFetchPolicies(base::OnceCallback<void(int)> callback,
   if (is_ceca_experiment_enabled_) {
     fetcher = base::MakeRefCounted<FallbackPolicyFetcher>(
         CreateOutOfProcessPolicyFetcher(
-            usage_stats_enabled_, external_constants_->IsMachineManaged(),
+            persisted_data_, external_constants_->IsMachineManaged(),
             external_constants_->CecaConnectionTimeout()),
         fetcher);
   }
