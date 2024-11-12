@@ -11,6 +11,7 @@
 #include <optional>
 #include <vector>
 
+#include "ash/focus/arrow_key_traversal_controller.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -271,6 +272,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
 
   // Measures OOBE WebUI load time.
   std::optional<base::ElapsedTimer> oobe_load_timer_;
+
+  std::optional<ScopedArrowKeyTraversalEnabler> arrow_key_traversal_enabler_;
 
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

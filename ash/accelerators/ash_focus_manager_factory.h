@@ -5,6 +5,7 @@
 #ifndef ASH_ACCELERATORS_ASH_FOCUS_MANAGER_FACTORY_H_
 #define ASH_ACCELERATORS_ASH_FOCUS_MANAGER_FACTORY_H_
 
+#include "ash/focus/arrow_key_traversal_controller.h"
 #include "ui/views/focus/focus_manager_factory.h"
 
 namespace ash {
@@ -22,6 +23,9 @@ class AshFocusManagerFactory : public views::FocusManagerFactory {
   // views::FocusManagerFactory overrides:
   std::unique_ptr<views::FocusManager> CreateFocusManager(
       views::Widget* widget) override;
+
+ private:
+  ArrowKeyTraversalController allow_key_traversal_controller_;
 };
 
 }  // namespace ash

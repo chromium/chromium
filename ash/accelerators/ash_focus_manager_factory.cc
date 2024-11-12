@@ -33,6 +33,9 @@ class PostTargetAcceleratorHandler : public views::FocusManagerDelegate {
 
   // views::FocusManagerDelegate overrides:
   bool ProcessAccelerator(const ui::Accelerator& accelerator) override;
+  bool IsArrowKeyTraversalEnabled() override {
+    return ArrowKeyTraversalController::Get()->enabled();
+  }
 };
 
 bool PostTargetAcceleratorHandler::ProcessAccelerator(

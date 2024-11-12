@@ -718,6 +718,8 @@ component("ash") {
     "fast_ink/view_tree_host_root_view_frame_factory.h",
     "fast_ink/view_tree_host_widget.cc",
     "fast_ink/view_tree_host_widget.h",
+    "focus/arrow_key_traversal_controller.cc",
+    "focus/arrow_key_traversal_controller.h",
     "focus_cycler.cc",
     "focus_cycler.h",
     "frame/frame_context_menu_controller.cc",

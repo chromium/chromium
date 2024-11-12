@@ -612,14 +612,6 @@ class FocusManagerArrowKeyTraversalTest
     }
 
     FocusManagerTest::SetUp();
-    previous_arrow_key_traversal_enabled_ =
-        FocusManager::arrow_key_traversal_enabled();
-  }
-
-  void TearDown() override {
-    FocusManager::set_arrow_key_traversal_enabled(
-        previous_arrow_key_traversal_enabled_);
-    FocusManagerTest::TearDown();
   }
 
   bool is_rtl_ = false;
@@ -658,8 +650,8 @@ TEST_P(FocusManagerArrowKeyTraversalTest, ArrowKeyTraversal) {
     v.push_back(view);
   }
 
-  // Arrow key traversal is off and arrow key does not change focus.
-  FocusManager::set_arrow_key_traversal_enabled(false);
+  GetWidget()->widget_delegate()->SetEnableArrowKeyTraversal(false);
+
   v[0]->RequestFocus();
   focus_manager->OnKeyEvent(right_key);
   EXPECT_EQ(v[0], focus_manager->GetFocusedView());
@@ -671,7 +663,7 @@ TEST_P(FocusManagerArrowKeyTraversalTest, ArrowKeyTraversal) {
   EXPECT_EQ(v[0], focus_manager->GetFocusedView());
 
   // Turn on arrow key traversal.
-  FocusManager::set_arrow_key_traversal_enabled(true);
+  GetWidget()->widget_delegate()->SetEnableArrowKeyTraversal(true);
   v[0]->RequestFocus();
   focus_manager->OnKeyEvent(is_rtl_ ? left_key : right_key);
   EXPECT_EQ(v[1], focus_manager->GetFocusedView());

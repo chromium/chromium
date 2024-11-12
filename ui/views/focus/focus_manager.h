@@ -276,17 +276,6 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
   // pressed).
   static bool IsTabTraversalKeyEvent(const ui::KeyEvent& key_event);
 
-  // Sets whether arrow key traversal is enabled. When enabled, right/down key
-  // behaves like tab and left/up key behaves like shift-tab. Note when this
-  // is enabled, the arrow key movement within grouped views are disabled.
-  static void set_arrow_key_traversal_enabled(bool enabled) {
-    arrow_key_traversal_enabled_ = enabled;
-  }
-  // Returns whether arrow key traversal is enabled.
-  static bool arrow_key_traversal_enabled() {
-    return arrow_key_traversal_enabled_;
-  }
-
   // Returns the next focusable view. Traversal starts at |starting_view|. If
   // |starting_view| is null, |starting_widget| is consulted to determine which
   // Widget to start from. See WidgetDelegate::Params::focus_traverses_out for
@@ -333,9 +322,6 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
 
   // Returns true if arrow key traversal is enabled for the current widget.
   bool IsArrowKeyTraversalEnabledForWidget() const;
-
-  // Whether arrow key traversal is enabled globally.
-  static bool arrow_key_traversal_enabled_;
 
   // The top-level Widget this FocusManager is associated with.
   raw_ptr<Widget> widget_;

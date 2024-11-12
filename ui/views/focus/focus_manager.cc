@@ -31,8 +31,6 @@
 
 namespace views {
 
-bool FocusManager::arrow_key_traversal_enabled_ = false;
-
 FocusManager::FocusManager(Widget* widget,
                            std::unique_ptr<FocusManagerDelegate> delegate)
     : widget_(widget),
@@ -611,8 +609,9 @@ bool FocusManager::RedirectAcceleratorToBubbleAnchorWidget(
 }
 
 bool FocusManager::IsArrowKeyTraversalEnabledForWidget() const {
-  if (arrow_key_traversal_enabled_)
+  if (delegate_ && delegate_->IsArrowKeyTraversalEnabled()) {
     return true;
+  }
 
   Widget* const widget = (focused_view_ && focused_view_->GetWidget())
                              ? focused_view_->GetWidget()

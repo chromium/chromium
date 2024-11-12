@@ -523,7 +523,6 @@ LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {
 
   ResetKeyboardOverscrollBehavior();
 
-  views::FocusManager::set_arrow_key_traversal_enabled(false);
   ResetLoginWindowAndView();
 
   CHECK(!views::WidgetObserver::IsInObserverList());
@@ -952,7 +951,7 @@ void LoginDisplayHostWebUI::InitLoginWindowAndView() {
   }
 
   if (system::InputDeviceSettings::ForceKeyboardDrivenUINavigation()) {
-    views::FocusManager::set_arrow_key_traversal_enabled(true);
+    arrow_key_traversal_enabler_.emplace();
     focus_ring_controller_ = std::make_unique<FocusRingController>();
     focus_ring_controller_->SetVisible(true);
 
