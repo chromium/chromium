@@ -5173,7 +5173,8 @@ class MHTMLImprovementsLoadingTest : public MhtmlLoadingTest {
   std::unique_ptr<DownloadTestContentBrowserClient> browser_client_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+// Test disabled on Android due to flakiness. See https://crbug.com/378746190
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_FormsDisabledWhenRenderedFromHttp \
   DISABLED_FormsDisabledWhenRenderedFromHttp
 #else
