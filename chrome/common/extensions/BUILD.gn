@@ -11,6 +11,7 @@ assert(enable_extensions_core)
 source_set("extensions") {
   # The files that can be included from other modules.
   public = [
+    "api/notifications/notification_style.h",
     "chrome_extensions_client.h",
     "chrome_manifest_url_handlers.h",
     "extension_constants.h",
@@ -29,6 +30,7 @@ source_set("extensions") {
 
   # Files that can only be included from here.
   sources = [
+    "api/notifications/notification_style.cc",
     "chrome_extensions_api_provider.cc",
     "chrome_extensions_api_provider.h",
     "chrome_extensions_client.cc",
@@ -96,7 +98,6 @@ source_set("extensions") {
   if (enable_extensions) {
     public += [
       "api/file_browser_handlers/file_browser_handler.h",
-      "api/notifications/notification_style.h",
       "api/side_panel/side_panel_info.h",
       "api/speech/tts_engine_manifest_handler.h",
       "api/storage/storage_schema_manifest_handler.h",
@@ -106,7 +107,6 @@ source_set("extensions") {
 
     sources += [
       "api/file_browser_handlers/file_browser_handler.cc",
-      "api/notifications/notification_style.cc",
       "api/omnibox/omnibox_handler.cc",
       "api/side_panel/side_panel_info.cc",
       "api/speech/tts_engine_manifest_handler.cc",

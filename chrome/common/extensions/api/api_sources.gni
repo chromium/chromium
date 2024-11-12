@@ -12,7 +12,7 @@ assert(enable_extensions_core)
 # APIs and features included in both normal desktop builds and the experimental
 # desktop-android build.
 # TODO(https://crbug.com/356905053): Continue moving more here.
-schema_sources_ = []
+schema_sources_ = [ "notifications.idl" ]
 
 # Schemas that should be used only to auto-generate the C++ types.
 # In many cases, this includes schemas used to generate types used in manifest
@@ -49,7 +49,6 @@ if (enable_extensions) {
     "image_writer_private.idl",
     "instance_id.json",
     "language_settings_private.idl",
-    "notifications.idl",
     "omnibox.json",
     "page_capture.json",
     "passwords_private.idl",

@@ -37,9 +37,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/app_window_registry.h"
-#include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -57,6 +54,12 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/app_window/native_app_window.h"
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 using message_center::NotifierId;
 
@@ -173,6 +176,7 @@ bool NotificationBitmapToGfxImage(
 // returns false.
 bool ShouldShowOverCurrentFullscreenWindow(Profile* profile,
                                            const GURL& origin) {
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   DCHECK(profile);
   ExtensionId extension_id =
       ExtensionNotificationHandler::GetExtensionId(origin);
@@ -183,6 +187,7 @@ bool ShouldShowOverCurrentFullscreenWindow(Profile* profile,
     if (window->IsFullscreen() && window->GetBaseWindow()->IsActive())
       return true;
   }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
   return false;
 }
 

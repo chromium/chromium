@@ -4,7 +4,8 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions)
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
 
 source_set("notifications") {
   sources = [

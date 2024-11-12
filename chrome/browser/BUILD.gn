@@ -7547,6 +7547,26 @@ static_library("browser") {
     deps += [ "//media/mojo/mojom:remoting" ]
   }
 
+  if (enable_extensions_core) {
+    # Any circular includes must depend on the target
+    # "browser_public_dependencies".
+    allow_circular_includes_from += [
+      # Has dependencies on notification code in //chrome/browser.
+      "//chrome/browser/extensions/api/notifications",
+    ]
+    public_deps += [
+      "//chrome/browser/extensions/api",
+      "//chrome/browser/extensions/keyed_services:keyed_service_factories",
+      "//extensions/browser",
+    ]
+    deps += [
+      # This dependency should be removed when //chrome/browser/notifications
+      # is modularized.
+      "//chrome/browser/extensions/api/notifications",
+      "//extensions/browser/updater",
+    ]
+  }
+
   if (enable_extensions) {
     sources += [
       "accessibility/animation_policy_prefs.cc",
@@ -7721,8 +7741,6 @@ static_library("browser") {
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/controlled_frame",
       "//chrome/browser/extensions",
-      "//chrome/browser/extensions:keyed_service_factories",
-      "//chrome/browser/extensions/api",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//ui/base/mojom:ui_base_types",
     ]
@@ -7740,18 +7758,11 @@ static_library("browser") {
 
       "//chrome/browser/extensions",
 
-      # Has dependencies on notification code in //chrome/browser.
-      "//chrome/browser/extensions/api/notifications",
-
       # TODO(crbug.com/40761673): Remove cycles and simplify all dependencies.
       "//chrome/browser/web_applications/extensions",
     ]
     deps += [
       "//apps",
-
-      # This dependency should be removed when //chrome/browser/notifications
-      # is modularized.
-      "//chrome/browser/extensions/api/notifications",
       "//chrome/browser/web_applications/extensions",
       "//chrome/common/apps/platform_apps",
       "//chrome/common/extensions/api",
@@ -7759,7 +7770,6 @@ static_library("browser") {
       "//components/app_constants",
       "//components/drive",
       "//components/guest_view/browser",
-      "//extensions/browser",
       "//extensions/browser/api/content_settings:content_settings",
       "//extensions/common:mojom",
       "//media/cast:sender",
@@ -7820,8 +7830,6 @@ static_library("browser") {
       "extensions/desktop_android/desktop_android_runtime_api_delegate.cc",
       "extensions/desktop_android/desktop_android_runtime_api_delegate.h",
     ]
-    public_deps += [ "//extensions/browser" ]
-    deps += [ "//extensions/browser/updater" ]
   }
 
   if (enable_library_cdms) {

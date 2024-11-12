@@ -1472,21 +1472,6 @@ source_set("extensions") {
   }
 }
 
-# KeyedService factories initialization.
-source_set("keyed_service_factories") {
-  sources = [
-    "browser_context_keyed_service_factories.cc",
-    "browser_context_keyed_service_factories.h",
-    "chrome_browser_context_keyed_service_factories.cc",
-    "chrome_browser_context_keyed_service_factories.h",
-  ]
-
-  deps = [
-    "//chrome/browser/extensions",
-    "//chrome/browser/extensions/api:keyed_service_factories",
-  ]
-}
-
 proto_library("cws_item_service_proto") {
   sources = [ "cws_item_service.proto" ]
 }

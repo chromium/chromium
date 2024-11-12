@@ -379,6 +379,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/keyed_services/browser_context_keyed_service_factories.h"
 #include "extensions/browser/browser_context_keyed_service_factories.h"
 #include "extensions/browser/extensions_browser_client.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -387,7 +388,6 @@
 #include "apps/browser_context_keyed_service_factories.h"
 #include "chrome/browser/apps/platform_apps/api/browser_context_keyed_service_factories.h"
 #include "chrome/browser/apps/platform_apps/browser_context_keyed_service_factories.h"
-#include "chrome/browser/extensions/browser_context_keyed_service_factories.h"
 #include "chrome/browser/omnibox/omnibox_input_watcher_factory.h"
 #include "chrome/browser/omnibox/omnibox_suggestions_watcher_factory.h"
 #include "chrome/browser/speech/extension_api/tts_extension_api.h"
@@ -600,6 +600,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif  // BUILDFLAG(IS_CHROMEOS)
   extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
 #elif BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  chrome_extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
   // EnsureBrowserContextKeyedServiceFactoriesBuilt() is invoked before the
   // ExtensionsBrowserClient is ready on Android. This is due to Android
   // specific initialization steps in

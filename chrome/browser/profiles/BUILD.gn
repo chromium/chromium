@@ -344,7 +344,10 @@ source_set("profiles_extra_parts_impl") {
   }
 
   if (enable_extensions_core) {
-    deps += [ "//extensions/browser" ]
+    deps += [
+      "//chrome/browser/extensions/keyed_services:keyed_service_factories",
+      "//extensions/browser",
+    ]
   }
 
   if (enable_extensions) {
@@ -353,7 +356,6 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/apps/platform_apps/api",
       "//chrome/browser/extensions",
-      "//chrome/browser/extensions:keyed_service_factories",
       "//chrome/browser/web_applications",
       "//components/omnibox/browser",
     ]
