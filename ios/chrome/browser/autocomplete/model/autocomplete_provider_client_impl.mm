@@ -15,6 +15,7 @@
 #import "components/omnibox/browser/autocomplete_classifier.h"
 #import "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #import "components/omnibox/browser/omnibox_triggered_feature_service.h"
+#import "components/omnibox/browser/on_device_tail_model_service.h"
 #import "components/omnibox/browser/provider_state_service.h"
 #import "components/omnibox/browser/shortcuts_backend.h"
 #import "components/omnibox/common/omnibox_features.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scoring_model_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/in_memory_url_index_factory.h"
 #import "ios/chrome/browser/autocomplete/model/omnibox_pedal_implementation.h"
+#import "ios/chrome/browser/autocomplete/model/on_device_tail_model_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/provider_state_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/remote_suggestions_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
@@ -188,8 +190,7 @@ AutocompleteProviderClientImpl::GetAutocompleteScoringModelService() const {
 
 OnDeviceTailModelService*
 AutocompleteProviderClientImpl::GetOnDeviceTailModelService() const {
-  // TODO(crbug.com/40241602): implement the service factory for iOS.
-  return nullptr;
+  return OnDeviceTailModelServiceFactory::GetForProfile(profile_);
 }
 
 ProviderStateService* AutocompleteProviderClientImpl::GetProviderStateService()
