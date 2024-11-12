@@ -169,10 +169,12 @@ public class BlankCTATabInitialStateRule implements TestRule {
                             for (int i = regularTabModel.getCount() - 1; i >= 0; i--) {
                                 Tab tab = regularTabModel.getTabAt(i);
                                 if (tab != newTab) {
-                                    regularTabModel.closeTabs(
-                                            TabClosureParams.closeTab(tab)
-                                                    .allowUndo(false)
-                                                    .build());
+                                    regularTabModel
+                                            .getTabRemover()
+                                            .forceCloseTabs(
+                                                    TabClosureParams.closeTab(tab)
+                                                            .allowUndo(false)
+                                                            .build());
                                 }
                             }
                             return newTab;

@@ -189,7 +189,9 @@ public class LocalTabGroupMutationHelper {
 
         if (!tabsToClose.isEmpty()) {
             getTabModel()
-                    .closeTabs(TabClosureParams.closeTabs(tabsToClose).allowUndo(false).build());
+                    .getTabRemover()
+                    .forceCloseTabs(
+                            TabClosureParams.closeTabs(tabsToClose).allowUndo(false).build());
         }
         updateTabGroupVisuals(tabGroup, rootId);
         // TODO(crbug.com/346406221): This currently causes the layout strip to flicker as events
@@ -227,7 +229,9 @@ public class LocalTabGroupMutationHelper {
 
         // Close the tabs.
         List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
-        getTabModel().closeTabs(TabClosureParams.closeTabs(tabs).allowUndo(false).build());
+        getTabModel()
+                .getTabRemover()
+                .forceCloseTabs(TabClosureParams.closeTabs(tabs).allowUndo(false).build());
 
         // Remove mapping from service. Collect metrics before that.
         mTabGroupSyncService.removeLocalTabGroupMapping(tabGroupId, closingSource);
