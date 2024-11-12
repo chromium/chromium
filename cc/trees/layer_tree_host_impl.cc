@@ -2825,9 +2825,9 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
     client_->FrameSinksToThrottleUpdated(throttle_decider_.ids());
   }
 
-  if (GetActivelyScrollingType() != ActivelyScrollingType::kNone) {
-    scroll_checkerboards_incomplete_recording_ =
-        frame->checkerboarded_needs_record;
+  if (GetActivelyScrollingType() != ActivelyScrollingType::kNone &&
+      frame->checkerboarded_needs_record) {
+    scroll_checkerboards_incomplete_recording_ = true;
   }
 
   return SubmitInfo{frame_token,
