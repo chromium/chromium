@@ -10646,10 +10646,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"platform-keys-aes-encryption",
-     flag_descriptions::kPlatformKeysAesEncryptionName,
-     flag_descriptions::kPlatformKeysAesEncryptionDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kPlatformKeysAesEncryption)},
+    {"platform-keys-changes-wave-1",
+     flag_descriptions::kPlatformKeysChangesWave1Name,
+     flag_descriptions::kPlatformKeysChangesWave1Description, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kPlatformKeysChangesWave1)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     {"autofill-enable-save-card-loading-and-confirmation",

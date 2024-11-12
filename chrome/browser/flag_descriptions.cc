@@ -7772,11 +7772,12 @@ const char kOneGroupPerRendererName[] =
 const char kOneGroupPerRendererDescription[] =
     "Places each Chrome foreground renderer into its own cgroup";
 
-const char kPlatformKeysAesEncryptionName[] = "Platform Keys AES encryption";
-const char kPlatformKeysAesEncryptionDescription[] =
-    "Enables AES keys support in the chrome.enterprise.platformKeys and "
-    "chrome.platformKeys APIs. For instance, the new operations include sign, "
-    "encrypt, and decrypt.";
+const char kPlatformKeysChangesWave1Name[] = "Platform Keys Changes Wave 1";
+const char kPlatformKeysChangesWave1Description[] =
+    "Enables the first wave of new features for the "
+    "chrome.enterprise.platformKeys API. That includes supporting the "
+    "\"RSA-OAEP\" key type with the \"unwrapKey\" key usage and adding the "
+    "setKeyTag() API method to mark keys for future lookup.";
 
 const char kPrintPreviewCrosPrimaryName[] =
     "Enables the ChromeOS print preview to be the primary print preview.";

@@ -26,6 +26,7 @@
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom-shared.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
@@ -915,6 +916,14 @@ void ExtensionPlatformKeysService::GenerateRSAKey(
   if (!keystore_service_) [[unlikely]] {
     std::move(callback).Run(/*public_key_spki_der=*/std::vector<uint8_t>(),
                             crosapi::mojom::KeystoreError::kMojoUnavailable);
+    return;
+  }
+
+  if (key_type == platform_keys::KeyType::kRsaOaep &&
+      !chromeos::features::IsPlatformKeysChangesWave1Enabled()) {
+    std::move(callback).Run(
+        /*public_key_spki_der=*/std::vector<uint8_t>(),
+        crosapi::mojom::KeystoreError::kAlgorithmNotSupported);
     return;
   }
 

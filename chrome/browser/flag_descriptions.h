@@ -4489,8 +4489,8 @@ extern const char kLockedModeDescription[];
 extern const char kOneGroupPerRendererName[];
 extern const char kOneGroupPerRendererDescription[];
 
-extern const char kPlatformKeysAesEncryptionName[];
-extern const char kPlatformKeysAesEncryptionDescription[];
+extern const char kPlatformKeysChangesWave1Name[];
+extern const char kPlatformKeysChangesWave1Description[];
 
 extern const char kPrintPreviewCrosPrimaryName[];
 extern const char kPrintPreviewCrosPrimaryDescription[];

@@ -260,6 +260,16 @@ BASE_FEATURE(kFeatureManagementRoundedWindows,
              "FeatureManagementRoundedWindows",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the first wave of new features for the chrome.enterprise.platformKeys
+// API. That includes:
+//   - a new key type (RSA-OAEP) with a new allowed key usage (unwrapKey).
+//   - a new API method to `setKeyTag()`, used to mark keys for future lookup.
+// Other features might be added in this first wave, or be hold for the second
+// wave. For additional details, see crbug.com/288880151.
+BASE_FEATURE(kPlatformKeysChangesWave1,
+             "PlatformKeysChangesWave1",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to enable quick answers V2 settings sub-toggles.
 BASE_FEATURE(kQuickAnswersV2SettingsSubToggle,
              "QuickAnswersV2SettingsSubToggle",
@@ -494,6 +504,10 @@ bool IsSparkyEnabled() {
 
 bool IsMahiDebuggingEnabled() {
   return base::FeatureList::IsEnabled(kMahiDebugging);
+}
+
+bool IsPlatformKeysChangesWave1Enabled() {
+  return base::FeatureList::IsEnabled(kPlatformKeysChangesWave1);
 }
 
 bool IsPompanoEnabled() {

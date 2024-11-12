@@ -18472,6 +18472,7 @@ from previous Chrome versions.
   <int value="-718884399" label="NewTabPageUIMd:enabled"/>
   <int value="-718626298" label="SysInternals:enabled"/>
   <int value="-718485659" label="OmniboxGroupingFrameworkForNonZPS:enabled"/>
+  <int value="-718139649" label="PlatformKeysChangesWave1:enabled"/>
   <int value="-717721890" label="(Obsolete) LacrosColorManagement:enabled"/>
   <int value="-716973822" label="PasswordManualFallbackAvailable:disabled"/>
   <int value="-716965886" label="NtpRealboxRoundedCorners:disabled"/>
@@ -19241,6 +19242,7 @@ from previous Chrome versions.
   <int value="-403701720" label="DirectActions:enabled"/>
   <int value="-403649153" label="WebViewBrotliSupport:disabled"/>
   <int value="-403473326" label="VCLightIntensity:disabled"/>
+  <int value="-402485105" label="PlatformKeysChangesWave1:disabled"/>
   <int value="-402038055"
       label="OmniboxUIExperimentBlueTitlesAndGrayUrlsOnPageSuggestions:enabled"/>
   <int value="-401170566"

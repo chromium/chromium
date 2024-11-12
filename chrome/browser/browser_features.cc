@@ -159,15 +159,6 @@ base::FeatureParam<bool> kNotificationOneTapUnsubscribeUseServiceIntentParam{
     &kNotificationOneTapUnsubscribe, "use_service_intent", false};
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Enables AES keys support in the chrome.enterprise.platformKeys and
-// chrome.platformKeys APIs. The new operations include `sign`, `encrypt` and
-// `decrypt`. For additional details, see the proposal tracked in b/288880151.
-BASE_FEATURE(kPlatformKeysAesEncryption,
-             "PlatformKeysAesEncryption",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // Disables prerendering on the default search engine predictor. This is useful
 // in comparing the impact of the SupportSearchSuggestionForPrerender2 feature
 // during its rollout. Once that rollout is complete, this feature should be
