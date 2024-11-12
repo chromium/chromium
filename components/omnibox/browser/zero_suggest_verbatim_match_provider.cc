@@ -159,6 +159,9 @@ void ZeroSuggestVerbatimMatchProvider::CreateVerbatimMatch(
             match.description ==
                 base::UTF8ToUTF16(match.destination_url.spec())) {
           match.description = match.fill_into_edit;
+          if (match.description_class.empty()) {
+            match.description_class.push_back({0, ACMatchClassification::NONE});
+          }
         }
       }
     }
