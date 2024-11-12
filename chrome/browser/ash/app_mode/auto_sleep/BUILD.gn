@@ -39,8 +39,6 @@ static_library("test_support") {
   sources = [
     "device_weekly_scheduled_suspend_test_policy_builder.cc",
     "device_weekly_scheduled_suspend_test_policy_builder.h",
-    "fake_repeating_time_interval_task_executor.cc",
-    "fake_repeating_time_interval_task_executor.h",
   ]
   public_deps = [
     ":auto_sleep",

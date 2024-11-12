@@ -10,13 +10,12 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
-#include "chrome/browser/ash/policy/scheduled_task_handler/scoped_wake_lock.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
@@ -33,30 +32,24 @@ namespace ash {
 class RepeatingTimeIntervalTaskExecutor
     : public system::TimezoneSettings::Observer {
  public:
-  using TimerResultCallback =
-      base::OnceCallback<void(policy::ScopedWakeLock, bool)>;
   class Factory {
    public:
     Factory();
+    Factory(const base::Clock* clock, const base::TickClock* tick_clock);
     Factory(const Factory&) = delete;
     const Factory& operator=(const Factory&) = delete;
-    virtual ~Factory();
+    ~Factory();
 
-    virtual std::unique_ptr<RepeatingTimeIntervalTaskExecutor> Create(
+    std::unique_ptr<RepeatingTimeIntervalTaskExecutor> Create(
         const policy::WeeklyTimeInterval& time_interval,
         base::RepeatingCallback<void(base::TimeDelta)>
             on_interval_start_callback,
         base::RepeatingClosure on_interval_end_callback);
+
+   private:
+    raw_ref<const base::Clock> clock_;
+    raw_ref<const base::TickClock> tick_clock_;
   };
-
-  RepeatingTimeIntervalTaskExecutor() = delete;
-
-  // TODO(b/328421429): Make constructor private and inline `ScheduleTimer()`
-  // method.
-  RepeatingTimeIntervalTaskExecutor(
-      const policy::WeeklyTimeInterval& time_interval,
-      base::RepeatingCallback<void(base::TimeDelta)> on_interval_start_callback,
-      base::RepeatingClosure on_interval_end_callback);
 
   RepeatingTimeIntervalTaskExecutor(const RepeatingTimeIntervalTaskExecutor&) =
       delete;
@@ -70,16 +63,24 @@ class RepeatingTimeIntervalTaskExecutor
   // of the interval and `on_interval_end_callback_` at the end.
   void ScheduleTimer();
 
-  // system::TimezoneSettings::Observer
+  // `system::TimezoneSettings::Observer`
   void TimezoneChanged(const icu::TimeZone& timezone) override;
 
   const policy::WeeklyTimeInterval& time_interval() const {
     return time_interval_;
   }
 
- protected:
+ private:
+  // TODO(crbug.com/328421429): Inline `ScheduleTimer()` method.
+  RepeatingTimeIntervalTaskExecutor(
+      const policy::WeeklyTimeInterval& time_interval,
+      base::RepeatingCallback<void(base::TimeDelta)> on_interval_start_callback,
+      base::RepeatingClosure on_interval_end_callback,
+      const base::Clock* clock,
+      const base::TickClock* tick_clock);
+
   // Clock to get the current system time.
-  raw_ptr<const base::Clock> clock_;
+  raw_ref<const base::Clock> clock_;
 
   // `timer_` is used for two reasons:
   // 1) When we are waiting until the time interval starts to call
@@ -89,7 +90,6 @@ class RepeatingTimeIntervalTaskExecutor
   // `on_interval_end_callback_`.
   std::unique_ptr<base::WallClockTimer> timer_;
 
- private:
   // Called by the `Start` function when the current time falls inside the
   // `time_interval_`.
   void IntervalStartsNow();

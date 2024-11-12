@@ -16,7 +16,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_test_policy_builder.h"
-#include "chrome/browser/ash/app_mode/auto_sleep/fake_repeating_time_interval_task_executor.h"
+#include "chrome/browser/ash/app_mode/auto_sleep/repeating_time_interval_task_executor.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
@@ -63,7 +63,7 @@ class ScopedMockTimeScheduledSuspendTestHelper {
             ->device_weekly_scheduled_suspend_controller_for_testing();
 
     controller->SetTaskExecutorFactoryForTesting(
-        std::make_unique<FakeRepeatingTimeIntervalTaskExecutor::Factory>(
+        std::make_unique<RepeatingTimeIntervalTaskExecutor::Factory>(
             task_runner_->GetMockClock(), task_runner_->GetMockTickClock()));
     controller->SetClockForTesting(task_runner_->GetMockClock());
   }

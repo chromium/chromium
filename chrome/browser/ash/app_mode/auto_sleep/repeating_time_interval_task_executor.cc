@@ -9,10 +9,13 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/ptr_util.h"
 #include "base/time/default_clock.h"
+#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
@@ -44,7 +47,14 @@ bool TimeFallsInInterval(const base::Time& time,
 
 }  // namespace
 
-RepeatingTimeIntervalTaskExecutor::Factory::Factory() = default;
+RepeatingTimeIntervalTaskExecutor::Factory::Factory()
+    : Factory(base::DefaultClock::GetInstance(),
+              base::DefaultTickClock::GetInstance()) {}
+
+RepeatingTimeIntervalTaskExecutor::Factory::Factory(
+    const base::Clock* clock,
+    const base::TickClock* tick_clock)
+    : clock_(CHECK_DEREF(clock)), tick_clock_(CHECK_DEREF(tick_clock)) {}
 
 RepeatingTimeIntervalTaskExecutor::Factory::~Factory() = default;
 
@@ -53,19 +63,24 @@ RepeatingTimeIntervalTaskExecutor::Factory::Create(
     const policy::WeeklyTimeInterval& time_interval,
     base::RepeatingCallback<void(base::TimeDelta)> on_interval_start_callback,
     base::RepeatingClosure on_interval_end_callback) {
-  return std::make_unique<RepeatingTimeIntervalTaskExecutor>(
-      time_interval, on_interval_start_callback, on_interval_end_callback);
+  // We can't use `make_unique` since the constructor is private.
+  return base::WrapUnique(new RepeatingTimeIntervalTaskExecutor(
+      time_interval, on_interval_start_callback, on_interval_end_callback,
+      &clock_.get(), &tick_clock_.get()));
 }
 
 RepeatingTimeIntervalTaskExecutor::RepeatingTimeIntervalTaskExecutor(
     const policy::WeeklyTimeInterval& time_interval,
     base::RepeatingCallback<void(base::TimeDelta)> on_interval_start_callback,
-    base::RepeatingClosure on_interval_end_callback)
-    : clock_(base::DefaultClock::GetInstance()),
-      timer_(std::make_unique<base::WallClockTimer>()),
+    base::RepeatingClosure on_interval_end_callback,
+    const base::Clock* clock,
+    const base::TickClock* tick_clock)
+    : clock_(CHECK_DEREF(clock)),
+      timer_(std::make_unique<base::WallClockTimer>(clock, tick_clock)),
       time_interval_(time_interval),
       on_interval_start_callback_(on_interval_start_callback),
       on_interval_end_callback_(on_interval_end_callback) {
+  CHECK(tick_clock);
   CHECK(on_interval_start_callback_);
   CHECK(on_interval_end_callback_);
   CHECK(system::TimezoneSettings::GetInstance());
