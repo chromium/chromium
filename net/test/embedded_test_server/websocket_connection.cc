@@ -274,16 +274,8 @@ void WebSocketConnection::OnReadComplete(int result)
     if (assemble_result.has_value()) {
       std::unique_ptr<WebSocketFrame> assembled_frame =
           std::move(assemble_result).value();
-      auto payload_length =
-          base::checked_cast<size_t>(assembled_frame->header.payload_length);
-      // Use UNSAFE_BUFFERS temporarily until the problem with WebSocketFrame
-      // payload being a char* is fixed.
-      // SAFETY: assembled_frame->payload is assumed to be properly bounded and
-      // managed.
-      auto payload = UNSAFE_BUFFERS(
-          base::span<const char>(assembled_frame->payload, payload_length));
-
-      HandleFrame(assembled_frame->header.opcode, payload,
+      HandleFrame(assembled_frame->header.opcode,
+                  base::as_chars(assembled_frame->payload),
                   assembled_frame->header.final);
       continue;
     }

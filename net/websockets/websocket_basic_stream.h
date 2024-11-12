@@ -201,7 +201,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicStream final : public WebSocketStream {
   std::unique_ptr<Adapter> connection_;
 
   // Storage for payload of multiple control frames.
-  std::vector<base::HeapArray<char>> control_frame_payloads_;
+  std::vector<base::HeapArray<uint8_t>> control_frame_payloads_;
 
   // Only used during handshake. Some data may be left in this buffer after the
   // handshake, in which case it will be picked up during the first call to
