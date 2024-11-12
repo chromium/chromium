@@ -79,7 +79,7 @@ inline constexpr size_t kMaxListSize = 512;
 // If #fields * (#profiles + #credit-cards) exceeds this number, type matching
 // and voting is omitted.
 // The rationale is that for a form with |kMaxExtractableFields| = 200 fields,
-// this still allows for 25 profiles plus credit cars.
+// this still allows for 25 profiles plus credit cards.
 inline constexpr size_t kMaxTypeMatchingCalls = 5000;
 
 // The minimum number of fields in a form that contains only password fields to
