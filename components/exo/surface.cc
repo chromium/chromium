@@ -10,6 +10,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -83,6 +84,10 @@ BASE_FEATURE(kExoPerSurfaceOcclusion,
              "ExoPerSurfaceOcclusion",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDisableNonYUVOverlaysFromExo,
+             "DisableNonYUVOverlaysFromExo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 bool IsExoOcclusionEnabled() {
@@ -114,6 +119,28 @@ bool ListContainsEntry(T& list, U key) {
 
 bool FormatHasAlpha(gfx::BufferFormat format) {
   return gfx::AlphaBitsForBufferFormat(format) != 0;
+}
+
+// TODO(crbug.com/369003507): Remove this check once we found the root
+// cause of crash on specific hatch platform.
+bool ShouldDisableOverlay(gfx::BufferFormat format) {
+  static bool is_enabled =
+      base::FeatureList::IsEnabled(kDisableNonYUVOverlaysFromExo);
+  if (!is_enabled) {
+    return false;
+  }
+  switch (format) {
+    case gfx::BufferFormat::YVU_420:
+      return false;
+    case gfx::BufferFormat::YUV_420_BIPLANAR:
+      return false;
+    case gfx::BufferFormat::YUVA_420_TRIPLANAR:
+      return false;
+    case gfx::BufferFormat::P010:
+      return false;
+    default:
+      return true;
+  }
 }
 
 Transform InvertY(Transform transform) {
@@ -1861,6 +1888,11 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
             texture_quad->overlay_priority_hint =
                 viz::OverlayPriority::kRegular;
             break;
+        }
+
+        if (state_.buffer.has_value() && state_.buffer->buffer() &&
+            ShouldDisableOverlay(state_.buffer->buffer()->GetFormat())) {
+          texture_quad->overlay_priority_hint = viz::OverlayPriority::kLow;
         }
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
