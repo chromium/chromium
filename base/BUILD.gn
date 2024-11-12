@@ -1046,7 +1046,6 @@ component("base") {
     ":debugging_buildflags",
     ":feature_list_buildflags",
     ":ios_cronet_buildflags",
-    ":logging_buildflags",
     ":orderfile_buildflags",
     ":power_monitor_buildflags",
     ":profiler_buildflags",
@@ -2558,12 +2557,6 @@ buildflag_header("feature_list_buildflags") {
   } else {
     flags = [ "ENABLE_BANNED_BASE_FEATURE_PREFIX=false" ]
   }
-}
-
-buildflag_header("logging_buildflags") {
-  header = "logging_buildflags.h"
-
-  flags = [ "ENABLE_LOG_ERROR_NOT_REACHED=$enable_log_error_not_reached" ]
 }
 
 buildflag_header("orderfile_buildflags") {

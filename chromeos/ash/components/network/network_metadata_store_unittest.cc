@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -806,10 +807,8 @@ TEST_F(NetworkMetadataStoreTest, GetPreRevampCustomApnList) {
     base::test::ScopedFeatureList disabled_feature_list;
     disabled_feature_list.InitAndDisableFeature(ash::features::kApnRevamp);
     EXPECT_EQ(nullptr, metadata_store()->GetCustomApnList(kCellularkGuid));
-#if !BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
-    EXPECT_DEATH(metadata_store()->GetPreRevampCustomApnList(kCellularkGuid),
-                 "");
-#endif  // !BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
+    EXPECT_DCHECK_DEATH(
+        metadata_store()->GetPreRevampCustomApnList(kCellularkGuid));
   }
   {
     base::test::ScopedFeatureList enabled_feature_list;
@@ -851,10 +850,8 @@ TEST_F(NetworkMetadataStoreTest, GetPreRevampCustomApnList) {
     disabled_feature_list.InitAndDisableFeature(ash::features::kApnRevamp);
     EXPECT_EQ(expected_list_feature_disabled,
               *metadata_store()->GetCustomApnList(kCellularkGuid));
-#if !BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
-    EXPECT_DEATH(metadata_store()->GetPreRevampCustomApnList(kCellularkGuid),
-                 "");
-#endif  // !BUILDFLAG(ENABLE_LOG_ERROR_NOT_REACHED)
+    EXPECT_DCHECK_DEATH(
+        metadata_store()->GetPreRevampCustomApnList(kCellularkGuid));
   }
 
   // Verify that values are returned correctly if the APN revamp flag is
