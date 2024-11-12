@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/whats_new/promo/whats_new_scene_agent.h"
 
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/commerce/core/commerce_feature_list.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
@@ -50,6 +52,7 @@ class WhatsNewSceneAgentTest : public PlatformTest {
   WhatsNewSceneAgent* agent_;
   // SceneState only weakly holds AppState, so keep it alive here.
   AppState* app_state_;
+  base::test::ScopedFeatureList feature_list_;
   SceneState* scene_state_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<MockPromosManager> promos_manager_;
@@ -57,6 +60,7 @@ class WhatsNewSceneAgentTest : public PlatformTest {
 
 // Tests that the What's New promo continuous registers in the promo manager.
 TEST_F(WhatsNewSceneAgentTest, TestWhatsNewPromoRegistration) {
+  feature_list_.InitAndEnableFeature(commerce::kPriceInsightsIos);
   EXPECT_CALL(*promos_manager_.get(), RegisterPromoForContinuousDisplay(
                                           promos_manager::Promo::WhatsNew))
       .Times(1);
