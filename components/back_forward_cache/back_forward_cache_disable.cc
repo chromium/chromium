@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/back_forward_cache/back_forward_cache_disable.h"
+
 #include "content/public/browser/back_forward_cache.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace back_forward_cache {
 
@@ -48,11 +50,17 @@ std::string ReasonIdToReportString(DisabledReasonId reason_id) {
   switch (reason_id) {
     case DisabledReasonId::kExtensionMessaging:
     case DisabledReasonId::kExtensionSentMessageToCachedFrame:
-      return "extension-messaging";
+      return base::FeatureList::IsEnabled(
+                 blink::features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                 ? "masked"
+                 : "extension-messaging";
+    case DisabledReasonId::kPermissionRequestManager:
+      return base::FeatureList::IsEnabled(
+                 blink::features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                 ? "masked"
+                 : "pending-permission-request";
     case DisabledReasonId::kModalDialog:
       return "modals";
-    case DisabledReasonId::kPermissionRequestManager:
-      return "pending-permission-request";
     default:
       return "masked";
   }

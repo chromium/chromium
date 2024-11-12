@@ -8,6 +8,8 @@
 #include <map>
 #include <vector>
 
+#include "third_party/blink/public/common/features.h"
+
 namespace blink {
 namespace scheduler {
 
@@ -85,9 +87,17 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kWebNfc:
       return {"webnfc", "WebNfc"};
     case WebSchedulerTrackedFeature::kPrinting:
-      return {"printing", "Printing"};
+      return {base::FeatureList::IsEnabled(
+                  features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                  ? "masked"
+                  : "printing",
+              "Printing"};
     case WebSchedulerTrackedFeature::kWebDatabase:
-      return {"web-database", "WebDatabase"};
+      return {base::FeatureList::IsEnabled(
+                  features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                  ? "masked"
+                  : "web-database",
+              "WebDatabase"};
     case WebSchedulerTrackedFeature::kPictureInPicture:
       return {"pictureinpicturewindow", "PictureInPicture"};
     case WebSchedulerTrackedFeature::kSpeechRecognizer:
@@ -104,9 +114,17 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"outstanding-network-request",
               "outstanding network request (direct socket)"};
     case WebSchedulerTrackedFeature::kInjectedJavascript:
-      return {"injected-javascript", "External javascript injected"};
+      return {base::FeatureList::IsEnabled(
+                  features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                  ? "masked"
+                  : "injected-javascript",
+              "External javascript injected"};
     case WebSchedulerTrackedFeature::kInjectedStyleSheet:
-      return {"injected-stylesheet", "External systesheet injected"};
+      return {base::FeatureList::IsEnabled(
+                  features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                  ? "masked"
+                  : "injected-stylesheet",
+              "External stylesheet injected"};
     case WebSchedulerTrackedFeature::kKeepaliveRequest:
       return {"response-keep-alive", "requests with keepalive set"};
     case WebSchedulerTrackedFeature::kDummy:
@@ -125,7 +143,11 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kLiveMediaStreamTrack:
       return {"mediastream", "page has live MediaStreamTrack"};
     case WebSchedulerTrackedFeature::kUnloadHandler:
-      return {"unload-handler", "page contains unload handler"};
+      return {base::FeatureList::IsEnabled(
+                  features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                  ? "unload-handler"
+                  : "unload-listener",
+              "page contains unload handler"};
     case WebSchedulerTrackedFeature::kParserAborted:
       return {"parser-aborted", "parser was aborted"};
   }
