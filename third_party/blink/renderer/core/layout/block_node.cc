@@ -1692,6 +1692,7 @@ const LayoutResult* BlockNode::LayoutAtomicInline(
 
   builder.SetIsPaintedAtomically(true);
   builder.SetUseFirstLineStyle(use_first_line_style);
+  builder.SetIsHiddenForPaint(parent_constraint_space.IsHiddenForPaint());
 
   builder.SetBaselineAlgorithmType(baseline_algorithm_type);
 
