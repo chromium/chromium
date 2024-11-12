@@ -1286,6 +1286,12 @@ void UserSessionManager::UpdateArcFileSystemCompatibilityAndPrepareProfile() {
   arc::UpdateArcFileSystemCompatibilityPrefIfNeeded(
       user_context_.GetAccountId(),
       ProfileHelper::GetProfilePathByUserIdHash(user_context_.GetUserIDHash()),
+      base::BindOnce(&UserSessionManager::CheckArcVmDlcImageExist,
+                     GetUserSessionManagerAsWeakPtr()));
+}
+
+void UserSessionManager::CheckArcVmDlcImageExist() {
+  arc::CheckArcVmDlcImageExist(
       base::BindOnce(&UserSessionManager::InitializeAccountManager,
                      GetUserSessionManagerAsWeakPtr()));
 }
