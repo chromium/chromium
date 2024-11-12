@@ -762,7 +762,7 @@ void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
 }
 
 void CaptureModeController::OnLocatedEventDragged() {
-  if (IsSearchResultsPanelInteractable()) {
+  if (IsSearchResultsPanelVisible()) {
     // Clear the search box text for the next time the panel is opened. Note we
     // don't need to reset the image or URL since the panel will always be
     // re-opened with those.
@@ -811,12 +811,9 @@ bool CaptureModeController::IsEventOnSearchResultsPanel(
              screen_location);
 }
 
-bool CaptureModeController::IsSearchResultsPanelInteractable() const {
-  // TODO(b/377594071): See if we can hide the panel instead of setting its
-  // opacity.
+bool CaptureModeController::IsSearchResultsPanelVisible() const {
   return search_results_panel_widget_ &&
-         search_results_panel_widget_->IsVisible() &&
-         search_results_panel_widget_->GetLayer()->GetTargetOpacity() == 1.f;
+         search_results_panel_widget_->IsVisible();
 }
 
 bool CaptureModeController::SupportsBehaviorChange(

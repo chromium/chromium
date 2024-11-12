@@ -1582,7 +1582,7 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
 
   // If the results panel is visible, focused, and interactable, let it handle
   // key events.
-  if (controller_->IsSearchResultsPanelInteractable() &&
+  if (controller_->IsSearchResultsPanelVisible() &&
       controller_->GetSearchResultsPanel()->HasFocus()) {
     return;
   }
@@ -2244,7 +2244,7 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   // This must be done after `MaybeUpdateCaptureUisOpacity()` which will hide
   // the panel if a drag is in progress and before running
   // `deferred_cursor_updater` to allow the panel to update the cursor type.
-  if (controller_->IsSearchResultsPanelInteractable() &&
+  if (controller_->IsSearchResultsPanelVisible() &&
       controller_->IsEventOnSearchResultsPanel(screen_location)) {
     if (cursor_setter_) {
       cursor_setter_->ResetCursor();

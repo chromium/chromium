@@ -664,7 +664,7 @@ TEST_F(SunfishTest, UpdateCursor) {
   EXPECT_EQ(ui::mojom::CursorType::kHand, cursor_manager->GetCursor().type());
 }
 
-TEST_F(SunfishTest, IsSearchResultsPanelInteractable) {
+TEST_F(SunfishTest, IsSearchResultsPanelVisible) {
   // Show the panel.
   auto* controller = CaptureModeController::Get();
   controller->StartSunfishSession();
