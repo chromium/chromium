@@ -1752,7 +1752,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.TrackingProtection.SilentOnboardingStartup.WaitingToOnboardSince"
-    units="ms" expires_after="2024-12-08">
+    units="ms" expires_after="2025-11-11">
   <owner>linnan@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
