@@ -51,7 +51,7 @@ struct Suggestion {
                               std::u16string_view display_signon_realm,
                               bool is_cross_domain);
     PasswordSuggestionDetails(const PasswordSuggestionDetails&);
-    PasswordSuggestionDetails(PasswordSuggestionDetails&);
+    PasswordSuggestionDetails(PasswordSuggestionDetails&&);
     PasswordSuggestionDetails& operator=(const PasswordSuggestionDetails&);
     PasswordSuggestionDetails& operator=(PasswordSuggestionDetails&&);
     virtual ~PasswordSuggestionDetails();
@@ -218,7 +218,7 @@ struct Suggestion {
                   IsPrimary is_primary = IsPrimary(false),
                   ShouldTruncate should_truncate = ShouldTruncate(false));
     Text(const Text& other);
-    Text(Text& other);
+    Text(Text&& other);
     Text& operator=(const Text& other);
     Text& operator=(Text&& other);
     ~Text();

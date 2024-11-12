@@ -138,7 +138,7 @@ Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
 Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
     const PasswordSuggestionDetails&) = default;
 Suggestion::PasswordSuggestionDetails::PasswordSuggestionDetails(
-    PasswordSuggestionDetails&) = default;
+    PasswordSuggestionDetails&&) = default;
 Suggestion::PasswordSuggestionDetails&
 Suggestion::PasswordSuggestionDetails::operator=(
     const PasswordSuggestionDetails&) = default;
@@ -263,7 +263,7 @@ Suggestion::Text::Text(std::u16string value,
     : value(value), is_primary(is_primary), should_truncate(should_truncate) {}
 
 Suggestion::Text::Text(const Text& other) = default;
-Suggestion::Text::Text(Text& other) = default;
+Suggestion::Text::Text(Text&& other) = default;
 
 Suggestion::Text& Suggestion::Text::operator=(const Text& other) = default;
 Suggestion::Text& Suggestion::Text::operator=(Text&& other) = default;
