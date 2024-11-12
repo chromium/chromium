@@ -1519,6 +1519,8 @@ void SignOnWorkerThread(std::unique_ptr<SignState> state) {
     case KeyType::kEcdsa:
       SignECOnWorkerThread(std::move(state));
       break;
+    case KeyType::kRsaOaep:
+      NOTREACHED();
   }
 }
 

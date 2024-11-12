@@ -20,7 +20,7 @@
 namespace chromeos::platform_keys {
 
 // Supported key types.
-enum class KeyType { kRsassaPkcs1V15, kEcdsa };
+enum class KeyType { kRsassaPkcs1V15, kEcdsa, kRsaOaep };
 
 // Supported symmetric key types.
 enum class SymKeyType { kAesCbc, kHmac, kSp800Kdf };
@@ -46,7 +46,7 @@ enum class OperationType { kEncrypt, kDecrypt };
 enum class TokenId { kUser, kSystem };
 
 // The service possible statuses.
-// For every platform keys service operation callback, a status is passed
+// For every platform keys service operation callback, a status is passed,
 // signaling the success or failure of the operation.
 enum class Status {
   kSuccess,

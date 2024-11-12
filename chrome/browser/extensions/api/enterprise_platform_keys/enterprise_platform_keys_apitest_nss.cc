@@ -263,8 +263,8 @@ class EnterprisePlatformKeysTest
  private:
   void PrepareTestSystemSlotOnIO(
       crypto::ScopedTestSystemNSSKeySlot* system_slot) override {
-    // Import a private key to the system slot.  The Javascript part of this
-    // test has a prepared certificate for this key.
+    // Import a private key to the system slot. The Javascript part of this test
+    // has a prepared certificate for this key.
     ImportPrivateKeyPKCS8ToSlot(privateKeyPkcs8System,
                                 std::size(privateKeyPkcs8System),
                                 system_slot->slot());
@@ -290,7 +290,7 @@ IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, Basic) {
     NssServiceFactory::GetForContext(profile())
         ->UnsafelyGetNSSCertDatabaseForTesting(get_db_future.GetCallback());
     // In order to use a prepared certificate, import a private key to the
-    // user's token for which the Javscript test will import the certificate.
+    // user's token for which the Javascript test will import the certificate.
     ImportPrivateKeyPKCS8ToSlot(privateKeyPkcs8User,
                                 std::size(privateKeyPkcs8User),
                                 get_db_future.Get()->GetPrivateSlot().get());
@@ -462,16 +462,13 @@ IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysLoginScreenTest, Basic) {
   config.Set("customArg", BuildCustomArg(/*user_session_test=*/false,
                                          /*system_token_enabled=*/true));
   extensions::TestGetConfigFunction::set_test_config_state(&config);
-
   extensions::ResultCatcher catcher;
-
   extensions::ExtensionId extension_id;
 
   ASSERT_TRUE(extension_force_install_mixin()->ForceInstallFromSourceDir(
       GetExtensionDirName(GetParam()), GetExtensionPemFileName(),
       ExtensionForceInstallMixin::WaitMode::kLoad, &extension_id));
   ASSERT_EQ(kExtensionId, extension_id);
-
   ASSERT_TRUE(catcher.GetNextResult());
 }
 

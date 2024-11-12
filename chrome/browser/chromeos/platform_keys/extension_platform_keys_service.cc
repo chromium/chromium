@@ -44,7 +44,9 @@
 
 using content::BrowserThread;
 using crosapi::keystore_service_util::MakeEcdsaKeystoreAlgorithm;
+using crosapi::keystore_service_util::MakeRsaOaepKeystoreAlgorithm;
 using crosapi::keystore_service_util::MakeRsassaPkcs1v15KeystoreAlgorithm;
+using crosapi::mojom::KeystoreAlgorithmPtr;
 using crosapi::mojom::KeystoreBinaryResult;
 using crosapi::mojom::KeystoreBinaryResultPtr;
 using crosapi::mojom::KeystoreError;
@@ -116,8 +118,21 @@ KeystoreSigningScheme GetKeystoreSigningScheme(
           return KeystoreSigningScheme::kEcdsaSha512;
       }
     }
+    case platform_keys::KeyType::kRsaOaep:
+      // Keys with type RSA-OAEP cannot be used for signing.
+      return KeystoreSigningScheme::kUnknown;
   }
-  NOTREACHED();
+}
+
+// Returns whether a key with algorithm `key_type` can be used for signing.
+bool IsKeyUsedForSigning(platform_keys::KeyType key_type) {
+  switch (key_type) {
+    case platform_keys::KeyType::kRsassaPkcs1V15:
+    case platform_keys::KeyType::kEcdsa:
+      return true;
+    case platform_keys::KeyType::kRsaOaep:
+      return false;
+  }
 }
 
 // Returns appropriate KeystoreService for |browser_context|, which can be:
@@ -154,10 +169,12 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
   };
 
   GenerateKeyTask(platform_keys::TokenId token_id,
+                  platform_keys::KeyType key_type,
                   extensions::ExtensionId extension_id,
                   GenerateKeyCallback callback,
                   ExtensionPlatformKeysService* service)
       : token_id_(token_id),
+        key_type_(key_type),
         extension_id_(std::move(extension_id)),
         callback_(std::move(callback)),
         service_(service) {}
@@ -178,6 +195,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
   virtual void GenerateKey(KeystoreService::GenerateKeyCallback callback) = 0;
 
   platform_keys::TokenId token_id_;
+  platform_keys::KeyType key_type_;
   std::vector<uint8_t> public_key_spki_der_;
   const extensions::ExtensionId extension_id_;
   GenerateKeyCallback callback_;
@@ -190,7 +208,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
     switch (next_step_) {
       case Step::GENERATE_KEY:
         next_step_ = Step::GET_EXTENSION_PERMISSIONS;
-        GenerateKey(base::BindOnce(&GenerateKeyTask::GeneratedKey,
+        GenerateKey(base::BindOnce(&GenerateKeyTask::OnKeyGenerated,
                                    weak_factory_.GetWeakPtr()));
         return;
       case Step::GET_EXTENSION_PERMISSIONS:
@@ -210,12 +228,12 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
 
   // Stores the generated key or in case of an error calls |callback_| with the
   // error status.
-  void GeneratedKey(KeystoreBinaryResultPtr result) {
+  void OnKeyGenerated(KeystoreBinaryResultPtr result) {
     using Tag = KeystoreBinaryResult::Tag;
     switch (result->which()) {
       case Tag::kError:
         next_step_ = Step::DONE;
-        std::move(callback_).Run(std::vector<uint8_t>() /* no public key */,
+        std::move(callback_).Run(/*public_key_spki_der=*/std::vector<uint8_t>(),
                                  result->get_error());
         break;
       case Tag::kBlob:
@@ -229,12 +247,12 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
   void GetExtensionPermissions() {
     platform_keys::ExtensionKeyPermissionsServiceFactory::
         GetForBrowserContextAndExtension(
-            base::BindOnce(&GenerateKeyTask::GotPermissions,
+            base::BindOnce(&GenerateKeyTask::OnPermissionsGot,
                            weak_factory_.GetWeakPtr()),
             service_->browser_context_, extension_id_);
   }
 
-  void GotPermissions(
+  void OnPermissionsGot(
       std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
           extension_key_permissions_service) {
     extension_key_permissions_service_ =
@@ -243,8 +261,11 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
   }
 
   void UpdatePermissionsAndCallBack() {
-    extension_key_permissions_service_->RegisterOneTimeSigningPermissionForKey(
-        public_key_spki_der_);
+    // Only set the one-time signing permissions for keys used for signing.
+    if (IsKeyUsedForSigning(key_type_)) {
+      extension_key_permissions_service_
+          ->RegisterOneTimeSigningPermissionForKey(public_key_spki_der_);
+    }
 
     extension_key_permissions_service_->RegisterKeyForCorporateUsage(
         public_key_spki_der_,
@@ -285,7 +306,7 @@ class ExtensionPlatformKeysService::GenerateKeyTask : public Task {
     }
 
     next_step_ = Step::DONE;
-    std::move(callback_).Run(std::vector<uint8_t>() /* no public key */,
+    std::move(callback_).Run(/*public_key_spki_der=*/std::vector<uint8_t>(),
                              corporate_key_registration_error);
     DoStep();
   }
@@ -302,12 +323,17 @@ class ExtensionPlatformKeysService::GenerateRSAKeyTask
   // |modulus_length| and registers it for the extension with id |extension_id|.
   // The generated key will be passed to |callback|.
   GenerateRSAKeyTask(platform_keys::TokenId token_id,
+                     platform_keys::KeyType key_type,
                      unsigned int modulus_length,
                      bool sw_backed,
                      const std::string& extension_id,
                      GenerateKeyCallback callback,
                      ExtensionPlatformKeysService* service)
-      : GenerateKeyTask(token_id, extension_id, std::move(callback), service),
+      : GenerateKeyTask(token_id,
+                        key_type,
+                        extension_id,
+                        std::move(callback),
+                        service),
         modulus_length_(modulus_length),
         sw_backed_(sw_backed) {}
 
@@ -316,10 +342,16 @@ class ExtensionPlatformKeysService::GenerateRSAKeyTask
  private:
   // Generates the RSA key.
   void GenerateKey(KeystoreService::GenerateKeyCallback callback) override {
-    service_->keystore_service_->GenerateKey(
-        KeystoreTypeFromTokenId(token_id_),
-        MakeRsassaPkcs1v15KeystoreAlgorithm(modulus_length_, sw_backed_),
-        std::move(callback));
+    CHECK(key_type_ == platform_keys::KeyType::kRsassaPkcs1V15 ||
+          key_type_ == platform_keys::KeyType::kRsaOaep);
+
+    KeystoreAlgorithmPtr algorithm_ptr =
+        key_type_ == platform_keys::KeyType::kRsassaPkcs1V15
+            ? MakeRsassaPkcs1v15KeystoreAlgorithm(modulus_length_, sw_backed_)
+            : MakeRsaOaepKeystoreAlgorithm(modulus_length_, sw_backed_);
+    service_->keystore_service_->GenerateKey(KeystoreTypeFromTokenId(token_id_),
+                                             std::move(algorithm_ptr),
+                                             std::move(callback));
   }
 
   const unsigned int modulus_length_;
@@ -332,11 +364,13 @@ class ExtensionPlatformKeysService::GenerateECKeyTask : public GenerateKeyTask {
   // |named_curve| and registers it for the extension with id |extension_id|.
   // The generated key will be passed to |callback|.
   GenerateECKeyTask(platform_keys::TokenId token_id,
+                    platform_keys::KeyType key_type,
                     std::string named_curve,
                     std::string extension_id,
                     GenerateKeyCallback callback,
                     ExtensionPlatformKeysService* service)
       : GenerateKeyTask(token_id,
+                        key_type,
                         std::move(extension_id),
                         std::move(callback),
                         service),
@@ -347,6 +381,8 @@ class ExtensionPlatformKeysService::GenerateECKeyTask : public GenerateKeyTask {
  private:
   // Generates the EC key.
   void GenerateKey(KeystoreService::GenerateKeyCallback callback) override {
+    CHECK(key_type_ == platform_keys::KeyType::kEcdsa);
+
     service_->keystore_service_->GenerateKey(
         KeystoreTypeFromTokenId(token_id_),
         MakeEcdsaKeystoreAlgorithm(named_curve_), std::move(callback));
@@ -431,12 +467,12 @@ class ExtensionPlatformKeysService::SignTask : public Task {
   void GetExtensionPermissions() {
     platform_keys::ExtensionKeyPermissionsServiceFactory::
         GetForBrowserContextAndExtension(
-            base::BindOnce(&SignTask::GotPermissions,
+            base::BindOnce(&SignTask::OnPermissionsGot,
                            weak_factory_.GetWeakPtr()),
             service_->browser_context_, extension_id_);
   }
 
-  void GotPermissions(
+  void OnPermissionsGot(
       std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
           extension_key_permissions_service) {
     extension_key_permissions_service_ =
@@ -462,7 +498,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
 
   void OnCanUseKeyForSigningKnown(bool allowed) {
     if (!allowed) {
-      std::move(callback_).Run(std::vector<uint8_t>() /* no signature */,
+      std::move(callback_).Run(/*signature=*/std::vector<uint8_t>(),
                                KeystoreError::kKeyNotAllowedForSigning);
       next_step_ = Step::DONE;
       DoStep();
@@ -486,8 +522,7 @@ class ExtensionPlatformKeysService::SignTask : public Task {
       LOG(ERROR) << "Marking a key used for signing failed: "
                  << platform_keys::KeystoreErrorToString(error);
       next_step_ = Step::DONE;
-      std::move(callback_).Run(std::vector<uint8_t>() /* no signature */,
-                               error);
+      std::move(callback_).Run(/*signature=*/std::vector<uint8_t>(), error);
       DoStep();
       return;
     }
@@ -636,12 +671,12 @@ class ExtensionPlatformKeysService::SelectTask : public Task {
   void GetExtensionPermissions() {
     platform_keys::ExtensionKeyPermissionsServiceFactory::
         GetForBrowserContextAndExtension(
-            base::BindOnce(&SelectTask::GotPermissions,
+            base::BindOnce(&SelectTask::OnPermissionsGot,
                            weak_factory_.GetWeakPtr()),
             service_->browser_context_, extension_id_);
   }
 
-  void GotPermissions(
+  void OnPermissionsGot(
       std::unique_ptr<platform_keys::ExtensionKeyPermissionsService>
           extension_key_permissions_service) {
     extension_key_permissions_service_ =
@@ -870,6 +905,7 @@ void ExtensionPlatformKeysService::SetSelectDelegate(
 
 void ExtensionPlatformKeysService::GenerateRSAKey(
     platform_keys::TokenId token_id,
+    platform_keys::KeyType key_type,
     unsigned int modulus_length,
     bool sw_backed,
     std::string extension_id,
@@ -883,12 +919,13 @@ void ExtensionPlatformKeysService::GenerateRSAKey(
   }
 
   StartOrQueueTask(std::make_unique<GenerateRSAKeyTask>(
-      token_id, modulus_length, sw_backed, std::move(extension_id),
+      token_id, key_type, modulus_length, sw_backed, std::move(extension_id),
       std::move(callback), this));
 }
 
 void ExtensionPlatformKeysService::GenerateECKey(
     platform_keys::TokenId token_id,
+    platform_keys::KeyType key_type,
     std::string named_curve,
     std::string extension_id,
     GenerateKeyCallback callback) {
@@ -901,7 +938,7 @@ void ExtensionPlatformKeysService::GenerateECKey(
   }
 
   StartOrQueueTask(std::make_unique<GenerateECKeyTask>(
-      token_id, std::move(named_curve), std::move(extension_id),
+      token_id, key_type, std::move(named_curve), std::move(extension_id),
       std::move(callback), this));
 }
 

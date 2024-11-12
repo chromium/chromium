@@ -803,6 +803,8 @@ void KeystoreServiceAsh::Sign(bool is_keystore_provided,
       service->SignEcdsa(token_id, data, public_key, hash_algorithm,
                          std::move(cb));
       return;
+    case chromeos::platform_keys::KeyType::kRsaOaep:
+      NOTREACHED();
   }
 }
 

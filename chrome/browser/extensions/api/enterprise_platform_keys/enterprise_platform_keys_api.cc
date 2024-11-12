@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -51,6 +52,20 @@ std::optional<crosapi::mojom::KeystoreType> KeystoreTypeFromString(
   return std::nullopt;
 }
 
+std::optional<chromeos::platform_keys::KeyType> KeyTypeFromString(
+    const std::string& input) {
+  if (input == "RSASSA-PKCS1-v1_5") {
+    return chromeos::platform_keys::KeyType::kRsassaPkcs1V15;
+  }
+  if (input == "RSA-OAEP") {
+    return chromeos::platform_keys::KeyType::kRsaOaep;
+  }
+  if (input == "ECDSA") {
+    return chromeos::platform_keys::KeyType::kEcdsa;
+  }
+  return std::nullopt;
+}
+
 // Validates that |token_id| is well-formed. Converts |token_id| into the output
 // parameter |keystore|. Only populated on success. Returns an empty string on
 // success and an error message on error. A validation error should result in
@@ -90,27 +105,35 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
           browser_context());
   DCHECK(service);
 
-  if (params->algorithm.name == "RSASSA-PKCS1-v1_5") {
-    // TODO(pneubeck): Add support for unsigned integers to IDL.
-    EXTENSION_FUNCTION_VALIDATE(params->algorithm.modulus_length &&
-                                *(params->algorithm.modulus_length) >= 0);
-    service->GenerateRSAKey(
-        platform_keys_token_id.value(), *(params->algorithm.modulus_length),
-        params->software_backed, extension_id(),
-        base::BindOnce(
-            &EnterprisePlatformKeysInternalGenerateKeyFunction::OnGeneratedKey,
-            this));
-  } else if (params->algorithm.name == "ECDSA") {
-    EXTENSION_FUNCTION_VALIDATE(params->algorithm.named_curve);
-    service->GenerateECKey(
-        platform_keys_token_id.value(), *(params->algorithm.named_curve),
-        extension_id(),
-        base::BindOnce(
-            &EnterprisePlatformKeysInternalGenerateKeyFunction::OnGeneratedKey,
-            this));
-  } else {
-    NOTREACHED();
+  std::optional<chromeos::platform_keys::KeyType> key_type =
+      KeyTypeFromString(params->algorithm.name);
+  CHECK(key_type.has_value());
+
+  switch (key_type.value()) {
+    case chromeos::platform_keys::KeyType::kRsassaPkcs1V15:
+    case chromeos::platform_keys::KeyType::kRsaOaep:
+      // TODO(pneubeck): Add support for unsigned integers to IDL.
+      EXTENSION_FUNCTION_VALIDATE(params->algorithm.modulus_length &&
+                                  *(params->algorithm.modulus_length) >= 0);
+      service->GenerateRSAKey(
+          platform_keys_token_id.value(), key_type.value(),
+          *(params->algorithm.modulus_length), params->software_backed,
+          extension_id(),
+          base::BindOnce(&EnterprisePlatformKeysInternalGenerateKeyFunction::
+                             OnGeneratedKey,
+                         this));
+      break;
+    case chromeos::platform_keys::KeyType::kEcdsa:
+      EXTENSION_FUNCTION_VALIDATE(params->algorithm.named_curve);
+      service->GenerateECKey(
+          platform_keys_token_id.value(), key_type.value(),
+          *(params->algorithm.named_curve), extension_id(),
+          base::BindOnce(&EnterprisePlatformKeysInternalGenerateKeyFunction::
+                             OnGeneratedKey,
+                         this));
+      break;
   }
+
   return RespondLater();
 }
 
