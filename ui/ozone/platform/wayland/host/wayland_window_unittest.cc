@@ -5194,33 +5194,6 @@ TEST_P(WaylandWindowTest, SetShape) {
   });
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Tests that the platform window gets the notification when overview mode
-// changes.
-TEST_P(WaylandWindowTest, OverviewMode) {
-  // Only supported with zaura_shell.
-  if (!IsAuraShellEnabled()) {
-    GTEST_SKIP();
-  }
-
-  EXPECT_CALL(delegate_, OnOverviewModeChanged(Eq(true))).Times(1);
-  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
-    auto* surface = server->GetObject<wl::MockSurface>(surface_id_);
-    auto* toplevel = surface->xdg_surface()->xdg_toplevel()->zaura_toplevel();
-    zaura_toplevel_send_overview_change(toplevel->resource(),
-                                        ZAURA_TOPLEVEL_IN_OVERVIEW_IN_OVERVIEW);
-  });
-
-  EXPECT_CALL(delegate_, OnOverviewModeChanged(Eq(false))).Times(1);
-  PostToServerAndWait([&](wl::TestWaylandServerThread* server) {
-    auto* surface = server->GetObject<wl::MockSurface>(surface_id_);
-    auto* toplevel = surface->xdg_surface()->xdg_toplevel()->zaura_toplevel();
-    zaura_toplevel_send_overview_change(
-        toplevel->resource(), ZAURA_TOPLEVEL_IN_OVERVIEW_NOT_IN_OVERVIEW);
-  });
-}
-#endif
-
 // Tests setting and unsetting float state on a wayland toplevel window.
 TEST_P(WaylandWindowTest, SetUnsetFloat) {
   if (!IsAuraShellEnabled()) {

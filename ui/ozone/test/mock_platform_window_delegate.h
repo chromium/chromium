@@ -53,7 +53,6 @@ class MockPlatformWindowDelegate : public PlatformWindowDelegate {
   MOCK_METHOD1(OnOcclusionStateChanged,
                void(PlatformWindowOcclusionState occlusion_state));
   MOCK_METHOD2(OnStateUpdate, int64_t(const State& old, const State& latest));
-  MOCK_METHOD1(OnOverviewModeChanged, void(bool overview));
   MOCK_METHOD2(OnRotateFocus,
                bool(PlatformWindowDelegate::RotateDirection, bool));
   MOCK_CONST_METHOD0(CanMaximize, bool());

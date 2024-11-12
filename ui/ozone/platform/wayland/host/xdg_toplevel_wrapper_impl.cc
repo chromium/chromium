@@ -410,16 +410,6 @@ void XDGToplevelWrapperImpl::OnRotateFocus(void* data,
 }
 
 // static
-void XDGToplevelWrapperImpl::OnOverviewChange(void* data,
-                                              zaura_toplevel* aura_toplevel,
-                                              uint32_t in_overview_as_uint) {
-  auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
-  CHECK(self);
-  self->wayland_window_->AsWaylandToplevelWindow()->OnOverviewChange(
-      in_overview_as_uint);
-}
-
-// static
 void XDGToplevelWrapperImpl::OnConfigureOcclusionState(
     void* data,
     struct zaura_toplevel* zaura_toplevel,
@@ -569,7 +559,7 @@ void XDGToplevelWrapperImpl::EnableScreenCoordinates() {
       .origin_change = &OnOriginChange,
       .configure_raster_scale = &OnConfigureRasterScale,
       .rotate_focus = &OnRotateFocus,
-      .overview_change = &OnOverviewChange,
+      .overview_change = nullptr,
       .configure_occlusion_state = &OnConfigureOcclusionState};
   zaura_toplevel_add_listener(aura_toplevel_.get(), &kAuraToplevelListener,
                               this);

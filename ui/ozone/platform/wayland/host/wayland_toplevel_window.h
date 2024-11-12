@@ -102,7 +102,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   void PropagateBufferScale(float new_scale) override;
   base::WeakPtr<WaylandWindow> AsWeakPtr() override;
   void OnRotateFocus(uint32_t serial, uint32_t direction, bool restart);
-  void OnOverviewChange(uint32_t in_overview_as_int);
 
   // WmDragHandler:
   bool ShouldReleaseCaptureForDrag(ui::OSExchangeData* data) const override;

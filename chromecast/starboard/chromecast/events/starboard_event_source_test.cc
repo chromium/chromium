@@ -51,9 +51,6 @@ class MockPlatformWindowDelegate : public ui::PlatformWindowDelegate {
               (ui::WindowTiledEdges new_tiled_edges),
               (override));
 #endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  MOCK_METHOD(void, OnOverviewModeChanged, (bool overview), (override));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   MOCK_METHOD(void, OnLostCapture, (), (override));
   MOCK_METHOD(void,
               OnAcceleratedWidgetAvailable,

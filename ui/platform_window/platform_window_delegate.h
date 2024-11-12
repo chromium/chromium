@@ -166,11 +166,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   virtual void OnWindowTiledStateChanged(WindowTiledEdges new_tiled_edges);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Lets the window know that ChromeOS overview mode has changed.
-  virtual void OnOverviewModeChanged(bool in_overview) {}
-#endif
-
   enum RotateDirection {
     kForward,
     kBackward,
