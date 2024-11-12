@@ -5040,13 +5040,6 @@ RenderWidgetHostImpl* WebContentsImpl::CreateNewPopupWidget(
     // Don't create popups for hidden tabs. http://crbug.com/1521345
     return nullptr;
   }
-  const bool ignore_focus_state_for_testing =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisablePopupFocusedWindowDetectionForTesting);
-  if (!web_contents_has_focus_ && !ignore_focus_state_for_testing) {
-    // Don't create popups for non-focused tabs. http://crbug.com/365089001
-    return nullptr;
-  }
 
   RenderWidgetHostImpl* widget_host = RenderWidgetHostFactory::CreateSelfOwned(
       &primary_frame_tree_, this, site_instance_group, route_id, IsHidden());
@@ -6337,7 +6330,6 @@ void WebContentsImpl::NotifyWebContentsFocused(
     RenderWidgetHost* render_widget_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::NotifyWebContentsFocused",
                         "render_widget_host", render_widget_host);
-  web_contents_has_focus_ = true;
   observers_.NotifyObservers(&WebContentsObserver::OnWebContentsFocused,
                              render_widget_host);
 }
@@ -6347,7 +6339,6 @@ void WebContentsImpl::NotifyWebContentsLostFocus(
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::NotifyWebContentsLostFocus",
                         "render_widget_host", render_widget_host);
-  web_contents_has_focus_ = false;
   observers_.NotifyObservers(&WebContentsObserver::OnWebContentsLostFocus,
                              render_widget_host);
 }

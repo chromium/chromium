@@ -50,7 +50,6 @@
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/content_navigation_policy.h"
-#include "content/common/content_switches_internal.h"
 #include "content/common/frame.mojom-test-utils.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/back_forward_cache.h"
@@ -6052,53 +6051,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // frame with a media player is destroyed.
   waiter.WaitForMediaDestroyed();
 }
-
-#if !BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
-class SelectPickerBrowserTest : public WebContentsImplBrowserTest {
- public:
-  SelectPickerBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kCSSPseudoOpenClosed);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Tests that popup pickers only open when the webcontents is focused.
-IN_PROC_BROWSER_TEST_F(SelectPickerBrowserTest, PickerOnlyOpensWhenFocused) {
-  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-      switches::kDisablePopupFocusedWindowDetectionForTesting);
-  ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisablePopupFocusedWindowDetectionForTesting));
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-
-  GURL url(R"(data:text/html,<select><option>one</option></select>)");
-  ASSERT_TRUE(NavigateToURL(shell(), url));
-  WaitForLoadStop(web_contents);
-
-  // De-focus the window, which should keep popups from showing.
-  RenderWidgetHost* rwh =
-      web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
-  web_contents->NotifyWebContentsLostFocus(rwh);
-
-  // Open the picker - expect it not to open because window is not focused.
-  ASSERT_TRUE(
-      ExecJs(web_contents, "document.querySelector('select').showPicker();"));
-  EXPECT_EQ(false, EvalJs(web_contents,
-                          "document.querySelector('select').matches(':open')"));
-
-  // Now focus the window, which should enable popups.
-  web_contents->NotifyWebContentsFocused(rwh);
-
-  // Open the picker, and make sure it opened.
-  ASSERT_TRUE(
-      ExecJs(web_contents, "document.querySelector('select').showPicker();"));
-  EXPECT_EQ(true, EvalJs(web_contents,
-                         "document.querySelector('select').matches(':open')"));
-}
-#endif
 
 class WebContentsImplInsecureLocalhostBrowserTest
     : public WebContentsImplBrowserTest {

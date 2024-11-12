@@ -552,7 +552,7 @@ void RenderThreadImpl::Init() {
 
 #if BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
   // On Mac and Android Java UI, the select popups are rendered by the browser.
-  blink::WebView::SetUseExternalPopupMenus(true);
+    blink::WebView::SetUseExternalPopupMenus(true);
 #endif
 
   render_thread = this;

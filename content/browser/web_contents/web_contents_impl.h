@@ -2330,8 +2330,6 @@ class CONTENT_EXPORT WebContentsImpl
   std::unique_ptr<ColorChooserHolder> color_chooser_holder_;
 #endif
 
-  bool web_contents_has_focus_{false};
-
   // All live RenderWidgetHostImpls that are created by this object and may
   // outlive it.
   base::flat_map<viz::FrameSinkId,

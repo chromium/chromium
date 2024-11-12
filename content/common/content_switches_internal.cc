@@ -37,14 +37,6 @@ static void SigUSR1Handler(int signal) {}
 #include "base/win/windows_version.h"
 #endif
 
-namespace switches {
-// Disable popup focused-window detection. Done for tests to avoid
-// focus-dependent behavior.
-const char kDisablePopupFocusedWindowDetectionForTesting[] =
-    "disable-popup-focused-window-detection";
-
-}  // namespace switches
-
 namespace content {
 
 namespace {

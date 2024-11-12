@@ -56,7 +56,6 @@
 #include "content/browser/tracing/memory_instrumentation_util.h"
 #include "content/browser/tracing/startup_tracing_controller.h"
 #include "content/browser/tracing/tracing_controller_impl.h"
-#include "content/common/content_switches_internal.h"
 #include "content/public/app/content_main.h"
 #include "content/public/app/initialize_mojo_core.h"
 #include "content/public/browser/browser_main_parts.h"
@@ -376,11 +375,6 @@ void BrowserTestBase::SetUp() {
   // occlusion when running browser tests.
   command_line->AppendSwitch(
       switches::kDisableBackgroundingOccludedWindowsForTesting);
-
-  // The focused state of windows is unpredictable during tests, so disable
-  // focused window detection for popups when running browser tests.
-  command_line->AppendSwitch(
-      switches::kDisablePopupFocusedWindowDetectionForTesting);
 
   if (enable_pixel_output_) {
     DCHECK(!command_line->HasSwitch(switches::kForceDeviceScaleFactor))

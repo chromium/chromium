@@ -24,7 +24,6 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/viz/common/switches.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/common/content_switches_internal.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -193,10 +192,6 @@ void WebTestBrowserMainRunner::Initialize() {
   // running in parallel to trigger occlusion tracking.
   command_line.AppendSwitch(
       switches::kDisableBackgroundingOccludedWindowsForTesting);
-
-  // Disable popup focused window detection for testing.
-  command_line.AppendSwitch(
-      switches::kDisablePopupFocusedWindowDetectionForTesting);
 
   // Always disable the unsandbox GPU process for DX12 Info collection to avoid
   // interference. This GPU process is launched 120 seconds after chrome starts.
