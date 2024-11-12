@@ -413,6 +413,7 @@ const CGFloat kMenuSymbolSize = 18;
     return;
   }
 
+  _displayLink.paused = YES;
   [_metricsRecorder setLensOverlayInForeground:NO];
   _associatedTabHelper->UpdateSnapshotStorage();
   [self dismissRestorationWindow];
@@ -911,6 +912,8 @@ const CGFloat kMenuSymbolSize = 18;
   _associatedTabHelper = nil;
   _metricsRecorder = nil;
   _lensOverlayConsentPresenter = nil;
+  [_displayLink invalidate];
+  _displayLink = nil;
   _scopedForceOrientation.reset();
 }
 
@@ -1117,6 +1120,9 @@ const CGFloat kMenuSymbolSize = 18;
   // Currently there is no system API for reactively obtaining the position of a
   // bottom sheet. For the lifetime of the LRP, use the display link to monitor
   // the position of it's frame relative to the container.
+
+  // Invalidate any pre-existing display link before creating a new one.
+  [_displayLink invalidate];
   _displayLink =
       [CADisplayLink displayLinkWithTarget:self
                                   selector:@selector(onDisplayLinkUpdate:)];
