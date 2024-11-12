@@ -10,9 +10,15 @@ source_set("coordinator") {
     "ai_prototyping_mediator.mm",
   ]
   deps = [
+    "//base",
+    "//components/optimization_guide:optimization_guide_buildflags",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/ai_prototyping/ui",
+    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
   ]

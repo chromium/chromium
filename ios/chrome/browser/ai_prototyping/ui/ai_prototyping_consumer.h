@@ -8,6 +8,9 @@
 // Consumer protocol for the mediator to interact with the view controller.
 @protocol AIPrototypingConsumer
 
+// Updates the result of a query that was previously executed on a model.
+- (void)updateQueryResult:(NSString*)result;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_UI_AI_PROTOTYPING_CONSUMER_H_

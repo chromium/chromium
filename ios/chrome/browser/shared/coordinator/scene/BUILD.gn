@@ -90,7 +90,7 @@ source_set("scene") {
     "//ios/chrome/app/application_delegate:url_opener_params",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ai_prototyping/ui",
+    "//ios/chrome/browser/ai_prototyping/coordinator",
     "//ios/chrome/browser/app_store_rating/ui_bundled",
     "//ios/chrome/browser/app_store_rating/ui_bundled:features",
     "//ios/chrome/browser/appearance/ui_bundled",

@@ -6,9 +6,9 @@
 
 #import "base/logging.h"
 #import "base/memory/raw_ptr.h"
-#import "base/strings/stringprintf.h"
-#import "base/strings/sys_string_conversions_apple.mm"
+#import "base/strings/sys_string_conversions.h"
 #import "components/optimization_guide/optimization_guide_buildflags.h"
+#import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_mutator.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -16,9 +16,7 @@
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 #import "components/optimization_guide/proto/features/bling_prototyping.pb.h"
-#import "components/optimization_guide/proto/string_value.pb.h"  // nogncheck
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "components/optimization_guide/proto/string_value.pb.h"
 #endif
 
 namespace {
@@ -35,19 +33,7 @@ constexpr CGFloat kVerticalInset = 12;
 
 }  // namespace
 
-@interface AIPrototypingViewController () {
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-  // Service used to execute LLM queries.
-  raw_ptr<OptimizationGuideService> _service;
-
-  // Retains the on-device session in memory.
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      on_device_session_;
-#endif
-
-  // The WebState that triggered the menu.
-  base::WeakPtr<web::WebState> _webState;
-}
+@interface AIPrototypingViewController ()
 
 @property(nonatomic, strong) UIButton* serverSideSubmitButton;
 @property(nonatomic, strong) UIButton* onDeviceSubmitButton;
@@ -59,18 +45,6 @@ constexpr CGFloat kVerticalInset = 12;
 
 @implementation AIPrototypingViewController
 
-- (instancetype)initWithWebState:(web::WebState*)webState {
-  self = [super initWithNibName:nil bundle:nil];
-  if (self) {
-    _webState = webState->GetWeakPtr();
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-    _service = OptimizationGuideServiceFactory::GetForProfile(
-        ProfileIOS::FromBrowserState(_webState->GetBrowserState()));
-#endif
-  }
-  return self;
-}
-
 - (void)viewDidLoad {
   [super viewDidLoad];
 
@@ -78,6 +52,7 @@ constexpr CGFloat kVerticalInset = 12;
   self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   self.sheetPresentationController.detents = @[
     UISheetPresentationControllerDetent.mediumDetent,
+    UISheetPresentationControllerDetent.largeDetent,
   ];
 
   UILabel* label = [[UILabel alloc] init];
@@ -193,101 +168,23 @@ constexpr CGFloat kVerticalInset = 12;
   optimization_guide::proto::BlingPrototypingRequest request;
   request.set_query(base::SysNSStringToUTF8(_queryField.text));
   request.set_name(base::SysNSStringToUTF8(_nameField.text));
-  __weak __typeof(self) weakSelf = self;
-  _service->ExecuteModel(
-      optimization_guide::ModelBasedCapabilityKey::kBlingPrototyping, request,
-      /*execution_timeout*/ std::nullopt,
-      base::BindOnce(
-          ^(optimization_guide::OptimizationGuideModelExecutionResult result,
-            std::unique_ptr<optimization_guide::ModelQualityLogEntry> entry) {
-            [weakSelf onServerModelExecuteResponse:std::move(result)
-                                      withLogEntry:std::move(entry)];
-          }));
+  [self.mutator executeServerQuery:request];
 #endif
 }
 
 - (void)onDeviceSubmitButtonPressed:(UIButton*)button {
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-  optimization_guide::SessionConfigParams configParams =
-      optimization_guide::SessionConfigParams{
-          .execution_mode = optimization_guide::SessionConfigParams::
-              ExecutionMode::kOnDeviceOnly,
-          .logging_mode = optimization_guide::SessionConfigParams::LoggingMode::
-              kAlwaysDisable,
-      };
-
-  if (!on_device_session_) {
-    on_device_session_ = _service->StartSession(
-        optimization_guide::ModelBasedCapabilityKey::kPromptApi, configParams);
-  }
   optimization_guide::proto::StringValue request;
   request.set_value(base::SysNSStringToUTF8(_queryField.text));
-
-  __weak __typeof(self) weakSelf = self;
-  on_device_session_->ExecuteModel(
-      request,
-      base::RepeatingCallback(base::BindRepeating(
-          ^(optimization_guide::OptimizationGuideModelStreamingExecutionResult
-                result) {
-            [weakSelf onDeviceModelExecuteResponse:std::move(result)];
-          })));
+  [self.mutator executeOnDeviceQuery:request];
 #endif
 }
 
-#pragma mark - Model execution
-#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-// Response callback when using server inference.
-- (void)onServerModelExecuteResponse:
-            (optimization_guide::OptimizationGuideModelExecutionResult)result
-                        withLogEntry:
-                            (std::unique_ptr<
-                                optimization_guide::ModelQualityLogEntry>)
-                                log_entry {
-  std::string response = "";
+#pragma mark - AIPrototypingConsumer
 
-  if (result.response.has_value()) {
-    auto parsed = optimization_guide::ParsedAnyMetadata<
-        optimization_guide::proto::BlingPrototypingResponse>(
-        result.response.value());
-    if (!parsed->output().empty()) {
-      response = parsed->output();
-    } else {
-      response = "Empty server response.";
-    }
-  } else {
-    response =
-        base::StringPrintf("Server model execution error: %d",
-                           static_cast<int>(result.response.error().error()));
-  }
-
-  _responseContainer.text = base::SysUTF8ToNSString(response);
+- (void)updateQueryResult:(NSString*)result {
+  _responseContainer.text = result;
 }
-
-// Response callback when using on device model execution.
-- (void)onDeviceModelExecuteResponse:
-    (optimization_guide::OptimizationGuideModelStreamingExecutionResult)result {
-  std::string response = "";
-
-  if (result.response.has_value()) {
-    auto parsed = optimization_guide::ParsedAnyMetadata<
-        optimization_guide::proto::StringValue>(result.response->response);
-    if (parsed->has_value()) {
-      response = parsed->value();
-    } else {
-      response = "Failed to parse device response as a string";
-    }
-    if (result.response->is_complete) {
-      on_device_session_.reset();
-    }
-  } else {
-    response =
-        base::StringPrintf("On-device model execution error: %d",
-                           static_cast<int>(result.response.error().error()));
-  }
-
-  _responseContainer.text = base::SysUTF8ToNSString(response);
-}
-#endif
 
 #pragma mark - Private
 

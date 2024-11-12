@@ -21,14 +21,6 @@
 // The mutator for this view controller to communicate to the mediator.
 @property(nonatomic, weak) id<AIPrototypingMutator> mutator;
 
-- (instancetype)initWithWebState:(web::WebState*)webState
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
-- (instancetype)initWithNibName:(NSString*)nibNAme
-                         bundle:(NSBundle*)nibBundle NS_UNAVAILABLE;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_AI_PROTOTYPING_UI_AI_PROTOTYPING_VIEW_CONTROLLER_H_

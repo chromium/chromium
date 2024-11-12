@@ -49,7 +49,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_view_controller.h"
+#import "ios/chrome/browser/ai_prototyping/coordinator/ai_prototyping_coordinator.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_scene_agent.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
@@ -381,6 +381,9 @@ void OnListFamilyMembersResponse(
 
 // Coordinator for displaying history.
 @property(nonatomic, strong) HistoryCoordinator* historyCoordinator;
+
+// Coordinator for the AI prototyping menu.
+@property(nonatomic, strong) AIPrototypingCoordinator* AIPrototypingCoordinator;
 
 // Coordinates the creation of PDF screenshots with the window's content.
 @property(nonatomic, strong) ScreenshotDelegate* screenshotDelegate;
@@ -2132,17 +2135,14 @@ using UserFeedbackDataCallback =
 }
 
 - (void)openAIMenu {
-  UIViewController* baseViewController = self.currentInterface.viewController;
   DCHECK(self.currentInterface.browser);
-  web::WebState* webState =
-      self.currentInterface.browser->GetWebStateList()->GetActiveWebState();
+  self.AIPrototypingCoordinator = [[AIPrototypingCoordinator alloc]
+      initWithBaseViewController:self.currentInterface.viewController
+                         browser:self.currentInterface.browser];
 
-  // View controllers shouldn't be instantiated here. This is allowed as an
-  // exception since the menu was created for prototyping.
-  AIPrototypingViewController* AIMenu =
-      [[AIPrototypingViewController alloc] initWithWebState:webState];
-
-  [baseViewController presentViewController:AIMenu animated:YES completion:nil];
+  // Since this is only for internal prototyping, the coordinator remains active
+  // once it's been started.
+  [self.AIPrototypingCoordinator start];
 }
 
 #pragma mark - SettingsCommands

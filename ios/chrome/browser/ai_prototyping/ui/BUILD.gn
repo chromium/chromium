@@ -11,9 +11,10 @@ source_set("ui") {
   ]
 
   deps = [
+    "//base",
     "//components/optimization_guide:optimization_guide_buildflags",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/common/ui/colors",
     "//ios/web/public",

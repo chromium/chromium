@@ -25,15 +25,16 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  _viewController = [[AIPrototypingViewController alloc] init];
   _mediator = [[AIPrototypingMediator alloc]
-      initWithWebState:self.browser->GetWebStateList()->GetActiveWebState()];
-
-  // TODO(crbug.com/370768381): Remove web state reference from view controller.
-  _viewController = [[AIPrototypingViewController alloc]
       initWithWebState:self.browser->GetWebStateList()->GetActiveWebState()];
 
   _viewController.mutator = _mediator;
   _mediator.consumer = _viewController;
+
+  [self.baseViewController presentViewController:_viewController
+                                        animated:YES
+                                      completion:nil];
 }
 
 @end
