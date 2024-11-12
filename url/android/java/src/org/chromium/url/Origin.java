@@ -4,11 +4,14 @@
 
 package org.chromium.url;
 
+import androidx.annotation.NonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import java.util.Locale;
 import java.util.Objects;
 
 /** An origin is either a (scheme, host, port) tuple or is opaque. */
@@ -122,8 +125,11 @@ public class Origin {
      * "null" if it's opaque.
      */
     @Override
+    @NonNull
     public String toString() {
-        return isOpaque() ? "null" : String.format("%s://%s:%s", mScheme, mHost, mPort);
+        return isOpaque()
+                ? "null"
+                : String.format(Locale.ROOT, "%s://%s:%d", mScheme, mHost, getPort());
     }
 
     @CalledByNative
