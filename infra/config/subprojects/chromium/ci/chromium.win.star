@@ -417,8 +417,12 @@ ci.builder(
         per_test_modifications = {
             "blink_web_tests": targets.mixin(
                 swarming = targets.swarming(
-                    # blink_web_tests has issues on non-broadwell machines.
+                    # blink_web_tests has issues when mixing different CPUs.
                     # see https://crbug.com/1458859
+                    # As of 2024 Q4, all e2 machines in chromium.tests use
+                    # x86-64-Broadwell_GCE. But, the situation may change when
+                    # GCE replaces the hardwares. If that happens, it needs to
+                    # be updated to run on the most popular CPU platform.
                     dimensions = {
                         "cpu": "x86-64-Broadwell_GCE",
                     },
