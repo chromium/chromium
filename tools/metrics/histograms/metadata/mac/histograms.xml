@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.AppCodeSignCloneCreationTime" units="ms"
-    expires_after="2025-03-06">
+    expires_after="2025-05-11">
   <owner>bur@google.com</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
@@ -64,7 +64,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.AppFileSystemType" enum="MacFileSystemType"
-    expires_after="2025-03-06">
+    expires_after="2025-05-11">
   <owner>bur@google.com</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
@@ -84,7 +84,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.AppUpgradeCodeSignatureValidationStatus"
-    enum="CodeSigningOSStatus" expires_after="2025-03-06">
+    enum="CodeSigningOSStatus" expires_after="2025-05-11">
   <owner>bur@google.com</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>

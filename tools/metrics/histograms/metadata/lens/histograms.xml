@@ -379,7 +379,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Lens.Overlay.Shown" enum="BooleanEnabled" expires_after="M135">
+<histogram name="Lens.Overlay.Shown" enum="BooleanEnabled"
+    expires_after="2025-05-11">
   <owner>erikchen@chromium.org</owner>
   <owner>mercerd@google.com</owner>
   <summary>
