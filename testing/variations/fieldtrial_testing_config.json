@@ -22086,7 +22086,7 @@
                         "en_site_id": "JcjxgSDnh0ugnJ3q1cK0UVkwDj1o",
                         "probability": "1.0",
                         "settings-time": "10s",
-                        "survey": "settings-privacy"
+                        "survey": "settings"
                     },
                     "enable_features": [
                         "HappinessTrackingSurveysForDesktopSettings"
