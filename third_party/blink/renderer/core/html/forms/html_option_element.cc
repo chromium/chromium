@@ -220,6 +220,9 @@ void HTMLOptionElement::ParseAttribute(
     if (HTMLDataListElement* data_list = OwnerDataListElement()) {
       data_list->OptionElementChildrenChanged();
     }
+    if (HTMLSelectElement* select = OwnerSelectElement()) {
+      select->SetNeedsValidityCheck();
+    }
   } else if (name == html_names::kDisabledAttr) {
     if (params.old_value.IsNull() != params.new_value.IsNull()) {
       PseudoStateChanged(CSSSelector::kPseudoDisabled);
