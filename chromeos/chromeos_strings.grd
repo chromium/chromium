@@ -5787,6 +5787,12 @@
         <message name="IDS_FIRMWARE_DONE_BUTTON_TEXT" desc="Label for button shown when the firmware update is completed.">
           Done
         </message>
+        <message name="IDS_FIRMWARE_RESTART_NOW_BUTTON_TEXT" desc="Label for the button shown when the firmware update is completed, but, it needs a restart to apply and the user wants to restart immediately.">
+          Restart Now
+        </message>
+        <message name="IDS_FIRMWARE_RESTART_LATER_BUTTON_TEXT" desc="Label for the button shown when the firmware update is completed and needs a restart but the user wants to defer the restart for later.">
+          Restart Later
+        </message>
         <message name="IDS_FIRMWARE_UPDATE_BUTTON_TEXT" desc="Label for button to start the firmware update.">
           Update
         </message>

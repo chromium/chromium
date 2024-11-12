@@ -21,7 +21,7 @@ import {DeviceRequest, DeviceRequestId, DeviceRequestKind, DeviceRequestObserver
 import {getTemplate} from './firmware_update_dialog.html.js';
 import {DialogContent, OpenUpdateDialogEventDetail} from './firmware_update_types.js';
 import {isAppV2Enabled} from './firmware_update_utils.js';
-import {getUpdateProvider} from './mojo_interface_provider.js';
+import {getSystemUtils, getUpdateProvider} from './mojo_interface_provider.js';
 
 const initialDialogContent: DialogContent = {
   title: '',
@@ -107,6 +107,7 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
       null;
   private deviceRequestObserverReceiver: DeviceRequestObserverReceiver|null =
       null;
+  private systemUtils = getSystemUtils();
   private inactiveDialogStates: UpdateState[] =
       [UpdateState.kUnknown, UpdateState.kIdle];
 
@@ -408,6 +409,11 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
     return this.isWaitingForUserAction();
   }
 
+  protected updateRequiresRestart(): boolean {
+    assert(this.update);
+    return this.update.needsReboot;
+  }
+
   protected computeButtonText(): string {
     if (!this.isUpdateDone()) {
       return '';
@@ -416,6 +422,12 @@ export class FirmwareUpdateDialogElement extends FirmwareUpdateDialogElementBase
     return this.installationProgress.state === UpdateState.kSuccess ?
         this.i18n('doneButton') :
         this.i18n('okButton');
+  }
+
+  protected restartDevice(): void {
+    assert(this.isUpdateDone());
+    this.systemUtils.restart();
+    return;
   }
 
   protected isDialogOpen(): boolean {

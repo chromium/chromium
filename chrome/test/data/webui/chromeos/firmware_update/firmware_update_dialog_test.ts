@@ -4,13 +4,13 @@
 
 import 'chrome://accessory-update/firmware_update_dialog.js';
 
-import {fakeFirmwareUpdate} from 'chrome://accessory-update/fake_data.js';
+import {fakeFirmwareUpdate, fakeFirmwareUpdateWithReboot} from 'chrome://accessory-update/fake_data.js';
 import {DeviceRequest, DeviceRequestId, DeviceRequestKind, UpdateState} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
 import {FirmwareUpdateDialogElement} from 'chrome://accessory-update/firmware_update_dialog.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {PaperProgressElement} from 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
@@ -26,10 +26,10 @@ suite('FirmwareUpdateDialogTest', () => {
     updateDialogElement = null;
   });
 
-  function createUpdateDialogElement(): void {
+  function createUpdateDialogElement(update = fakeFirmwareUpdate): void {
     updateDialogElement = document.createElement('firmware-update-dialog');
     assert(updateDialogElement);
-    updateDialogElement.update = fakeFirmwareUpdate;
+    updateDialogElement.update = update;
     updateDialogElement.installationProgress = {
       percentage: 0,
       state: UpdateState.kIdle,
@@ -100,6 +100,54 @@ suite('FirmwareUpdateDialogTest', () => {
     await clickDoneButton();
     assertFalse(
         !!updateDialogElement.shadowRoot.querySelector('#updateDialog'));
+  });
+
+  test('DialogModifiedForUEFIUpdatesWithReboot', async () => {
+    createUpdateDialogElement(fakeFirmwareUpdateWithReboot);
+    assert(updateDialogElement?.shadowRoot);
+
+    // Finish Update
+    await setInstallationProgress(100, UpdateState.kSuccess);
+
+    // Check that the "Update Done" button isn't visible.
+    assertFalse(isVisible(
+        updateDialogElement.shadowRoot.querySelector('#updateDoneButton')));
+
+    // Check "Restart Now" button for existence and content.
+    assertEquals(
+        getTextContent('#restartNowButton'),
+        loadTimeData.getString('restartNowButton'));
+
+    // Check "Restart Later" button for existence and content.
+    assertEquals(
+        getTextContent('#restartLaterButton'),
+        loadTimeData.getString('restartLaterButton'));
+
+    // Dialog closes when the "Restart Later" button is clicked.
+    const restart_later_button = strictQuery(
+        '#restartLaterButton', updateDialogElement?.shadowRoot, HTMLElement)!;
+    restart_later_button.click();
+    flushTasks();
+    assertFalse(
+        !!updateDialogElement.shadowRoot.querySelector('#updateDialog'));
+  });
+
+  test('RestartButtonsNotShownForPeripheralUpdates', async () => {
+    createUpdateDialogElement();
+    assert(updateDialogElement?.shadowRoot);
+
+    // Finish Update
+    await setInstallationProgress(100, UpdateState.kSuccess);
+
+    // Check that the "Restart Later" and "Restart Now" buttons aren't visible.
+    assertFalse(isVisible(
+        updateDialogElement.shadowRoot.querySelector('#restartNowButton')));
+    assertFalse(isVisible(
+        updateDialogElement.shadowRoot.querySelector('#restartLaterButton')));
+
+    // Check that the "Update Done" button is visible.
+    assertTrue(isVisible(
+        updateDialogElement.shadowRoot.querySelector('#updateDoneButton')));
   });
 
   test('DeviceRestarting', async () => {
