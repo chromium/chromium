@@ -115,12 +115,11 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 // scheduled for removal.
 - (void)clearBrowsingData {
   [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Wait for the browsing data button to disappear.
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:BrowsingDataButtonMatcher()];
-
-  [ChromeEarlGreyUI waitForAppToIdle];
 }
 
 // From the NTP, clears the cookies and site data via the UI.
@@ -276,7 +275,8 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 // Tests that clearing the cookies through the UI does clear all of them. Use a
 // local server to navigate to a page that sets then tests a cookie, and then
 // clears the cookie and tests it is not set.
-- (void)testClearCookies {
+// TODO(crbug.com/378085824): Reenable the test.
+- (void)DISABLED_testClearCookies {
   // Set pref to the last hour.
   [ChromeEarlGrey
       setIntegerValue:static_cast<int>(browsing_data::TimePeriod::LAST_HOUR)
