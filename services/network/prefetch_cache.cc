@@ -21,14 +21,34 @@ namespace network {
 namespace {
 
 size_t GetMaxSize() {
-  const int supplied_size = features::kNetworkContextPrefetchMaxLoaders.Get();
-  return static_cast<size_t>(std::max(supplied_size, 1));
+  // How many prefetches should be cached before old ones are evicted. This
+  // provides rough control over the overall memory used by prefetches.
+  return static_cast<size_t>(std::max(
+      base::GetFieldTrialParamByFeatureAsInt(features::kNetworkContextPrefetch,
+                                             /*name=*/"max_loaders",
+                                             /*default_value=*/10),
+      1));
 }
 
 base::TimeDelta GetEraseGraceTime() {
-  const base::TimeDelta supplied_delta =
-      features::kNetworkContextPrefetchEraseGraceTime.Get();
-  return std::max(base::Seconds(0), supplied_delta);
+  // When "NetworkContextPrefetchUseMatches" is disabled, how long to leave a
+  // matched cache entry alive before deleting it. This corresponds to the
+  // expected maximum time it will take for a request to reach the HttpCache
+  // once it has been initiated. Since it may be delayed by the
+  // ResourceScheduler, give the delay is quite large.
+  //
+  // Why not shorter: the request from the render process may be delayed by the
+  // ResourceScheduler.
+  //
+  // Why not longer: If the prefetch has not yet received response headers, it
+  // has an exclusive cache lock. The real request from the render process
+  // cannot proceed until the cache lock is released. If the response turns out
+  // to be uncacheable, then this time is pure waste.
+  return std::max(base::Seconds(0),
+                  base::GetFieldTrialParamByFeatureAsTimeDelta(
+                      features::kNetworkContextPrefetch,
+                      /*name=*/"erase_grace_time",
+                      /*default_value=*/base::Seconds(1)));
 }
 
 }  // namespace

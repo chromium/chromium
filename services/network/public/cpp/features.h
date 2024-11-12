@@ -20,6 +20,8 @@ class Origin;
 namespace network::features {
 
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kBlockAcceptClientHints);
+// Note: Do not use BASE_DECLARE_FEATURE_PARAM macro as this is called only once
+// per process to construct a static local instance.
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::FeatureParam<std::string> kBlockAcceptClientHintsBlockedSite;
 COMPONENT_EXPORT(NETWORK_CPP)
@@ -46,7 +48,7 @@ BASE_DECLARE_FEATURE(kSplitAuthCacheByNetworkIsolationKey);
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kDnsOverHttpsUpgrade);
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kMaskedDomainList);
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<int> kMaskedDomainListExperimentGroup;
+BASE_DECLARE_FEATURE_PARAM(int, kMaskedDomainListExperimentGroup);
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::FeatureParam<std::string>
     kMaskedDomainListExperimentalVersion;
@@ -75,8 +77,8 @@ enum class TrustTokenOriginTrialSpec {
   kOriginTrialNotRequired,
 };
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<TrustTokenOriginTrialSpec>
-    kTrustTokenOperationsRequiringOriginTrial;
+BASE_DECLARE_FEATURE_PARAM(TrustTokenOriginTrialSpec,
+                           kTrustTokenOperationsRequiringOriginTrial);
 COMPONENT_EXPORT(NETWORK_CPP)
 
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kAcceptCHFrame);
@@ -104,14 +106,9 @@ COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kOmitCorsClientCert);
 
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kPervasivePayloadsList);
 
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<std::string>
-    kCacheTransparencyPervasivePayloads;
-
 COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kReduceAcceptLanguage);
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<base::TimeDelta>
-    kReduceAcceptLanguageCacheDuration;
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kReduceAcceptLanguageCacheDuration);
 
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout);
@@ -121,9 +118,6 @@ BASE_DECLARE_FEATURE(kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin);
 
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kPrivateNetworkAccessPermissionPrompt);
-
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<bool> kPrefetchDNSWithURLAllAnchorElements;
 
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kAccessControlAllowMethodsInCORSPreflightSpecConformant);
@@ -166,13 +160,13 @@ BASE_DECLARE_FEATURE(kReduceTransferSizeUpdatedIPC);
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kSkipTpcdMitigationsForAds);
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsHeuristics;
+BASE_DECLARE_FEATURE_PARAM(bool, kSkipTpcdMitigationsForAdsHeuristics);
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsMetadata;
+BASE_DECLARE_FEATURE_PARAM(bool, kSkipTpcdMitigationsForAdsMetadata);
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsTrial;
+BASE_DECLARE_FEATURE_PARAM(bool, kSkipTpcdMitigationsForAdsTrial);
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsTopLevelTrial;
+BASE_DECLARE_FEATURE_PARAM(bool, kSkipTpcdMitigationsForAdsTopLevelTrial);
 
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kAvoidResourceRequestCopies);
@@ -183,13 +177,6 @@ COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kDocumentIsolationPolicy);
 // kNetworkContextPrefetchUseCache, below.
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kNetworkContextPrefetch);
-
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<int> kNetworkContextPrefetchMaxLoaders;
-
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<base::TimeDelta>
-    kNetworkContextPrefetchEraseGraceTime;
 
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kNetworkContextPrefetchUseMatches);

@@ -142,9 +142,11 @@ BASE_FEATURE(kMaskedDomainList,
 
 // When set, only resources in the MDL that are part of the experiment group
 // will be loaded into the proxy's allow list.
-const base::FeatureParam<int> kMaskedDomainListExperimentGroup{
-    &kMaskedDomainList, /*name=*/"MaskedDomainListExperimentGroup",
-    /*default_value=*/0};
+BASE_FEATURE_PARAM(int,
+                   kMaskedDomainListExperimentGroup,
+                   &kMaskedDomainList,
+                   /*name=*/"MaskedDomainListExperimentGroup",
+                   /*default_value=*/0);
 
 // Used to build the MDL component's installer attributes and possibly control
 // which release version is retrieved.
@@ -209,11 +211,12 @@ const base::FeatureParam<TrustTokenOriginTrialSpec>::Option
          "all-operations-require-origin-trial"},
         {TrustTokenOriginTrialSpec::kOnlyIssuanceRequiresOriginTrial,
          "only-issuance-requires-origin-trial"}};
-const base::FeatureParam<TrustTokenOriginTrialSpec>
-    kTrustTokenOperationsRequiringOriginTrial{
-        &kFledgePst, "TrustTokenOperationsRequiringOriginTrial",
-        TrustTokenOriginTrialSpec::kOriginTrialNotRequired,
-        &kTrustTokenOriginTrialParamOptions};
+BASE_FEATURE_ENUM_PARAM(TrustTokenOriginTrialSpec,
+                        kTrustTokenOperationsRequiringOriginTrial,
+                        &kFledgePst,
+                        "TrustTokenOperationsRequiringOriginTrial",
+                        TrustTokenOriginTrialSpec::kOriginTrialNotRequired,
+                        &kTrustTokenOriginTrialParamOptions);
 
 // Enable support for ACCEPT_CH H2/3 frame as part of Client Hint Reliability.
 // See:
@@ -250,8 +253,9 @@ uint32_t GetDataPipeDefaultAllocationSize(DataPipeAllocationSize option) {
   return kDefaultDataPipeAllocationSize;
 #else
   // For low-memory devices, always use the (smaller) default buffer size.
-  if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 512)
+  if (base::SysInfo::AmountOfPhysicalMemoryMB() <= 512) {
     return kDefaultDataPipeAllocationSize;
+  }
   switch (option) {
     case DataPipeAllocationSize::kDefaultSizeOnly:
       return kDefaultDataPipeAllocationSize;
@@ -277,23 +281,17 @@ BASE_FEATURE(kPervasivePayloadsList,
              "PervasivePayloadsList",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// The list of pervasive payloads. A comma separated list starting with a
-// version number, followed one or more pairs of URL and checksum. The version
-// number is an integer. The URL is the canonical URL as returned by
-// GURL::spec(). The checksum is the SHA-256 of the payload and selected headers
-// converted to uppercase hexadecimal.
-constexpr base::FeatureParam<std::string> kCacheTransparencyPervasivePayloads{
-    &kPervasivePayloadsList, "pervasive-payloads", ""};
-
 // Enables support for the `Variants` response header and reduce
 // accept-language. https://github.com/Tanych/accept-language
 BASE_FEATURE(kReduceAcceptLanguage,
              "ReduceAcceptLanguage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<base::TimeDelta> kReduceAcceptLanguageCacheDuration{
-    &kReduceAcceptLanguage, "reduce-accept-language-cache-duration",
-    base::Days(30)};
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kReduceAcceptLanguageCacheDuration,
+                   &kReduceAcceptLanguage,
+                   "reduce-accept-language-cache-duration",
+                   base::Days(30));
 
 // Reduce PNA preflight response waiting time to 200ms.
 // See: https://wicg.github.io/private-network-access/#cors-preflight
@@ -378,22 +376,29 @@ BASE_FEATURE(kSkipTpcdMitigationsForAds,
              "SkipTpcdMitigationsForAds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether we ignore opener heuristic grants for 3PC accesses.
-const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsHeuristics{
-    &kSkipTpcdMitigationsForAds, /*name=*/"SkipTpcdMitigationsForAdsHeuristics",
-    /*default_value=*/false};
+BASE_FEATURE_PARAM(bool,
+                   kSkipTpcdMitigationsForAdsHeuristics,
+                   &kSkipTpcdMitigationsForAds,
+                   /*name=*/"SkipTpcdMitigationsForAdsHeuristics",
+                   /*default_value=*/false);
 // Controls whether we ignore checks on the metadata allowlist for 3PC cookies.
-const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsMetadata{
-    &kSkipTpcdMitigationsForAds, /*name=*/"SkipTpcdMitigationsForAdsMetadata",
-    /*default_value=*/false};
+BASE_FEATURE_PARAM(bool,
+                   kSkipTpcdMitigationsForAdsMetadata,
+                   &kSkipTpcdMitigationsForAds,
+                   /*name=*/"SkipTpcdMitigationsForAdsMetadata",
+                   /*default_value=*/false);
 // Controls whether we ignore checks on the deprecation trial for 3PC.
-const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsTrial{
-    &kSkipTpcdMitigationsForAds, /*name=*/"SkipTpcdMitigationsForAdsSupport",
-    /*default_value=*/false};
+BASE_FEATURE_PARAM(bool,
+                   kSkipTpcdMitigationsForAdsTrial,
+                   &kSkipTpcdMitigationsForAds,
+                   /*name=*/"SkipTpcdMitigationsForAdsSupport",
+                   /*default_value=*/false);
 // Controls whether we ignore checks on the top-level deprecation trial for 3PC.
-const base::FeatureParam<bool> kSkipTpcdMitigationsForAdsTopLevelTrial{
-    &kSkipTpcdMitigationsForAds,
-    /*name=*/"SkipTpcdMitigationsForAdsTopLevelTrial",
-    /*default_value=*/false};
+BASE_FEATURE_PARAM(bool,
+                   kSkipTpcdMitigationsForAdsTopLevelTrial,
+                   &kSkipTpcdMitigationsForAds,
+                   /*name=*/"SkipTpcdMitigationsForAdsTopLevelTrial",
+                   /*default_value=*/false);
 
 // Avoids copying ResourceRequest when possible.
 BASE_FEATURE(kAvoidResourceRequestCopies,
@@ -411,29 +416,6 @@ BASE_FEATURE(kDocumentIsolationPolicy,
 BASE_FEATURE(kNetworkContextPrefetch,
              "NetworkContextPrefetch",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// How many prefetches should be cached before old ones are evicted. This
-// provides rough control over the overall memory used by prefetches.
-const base::FeatureParam<int> kNetworkContextPrefetchMaxLoaders{
-    &kNetworkContextPrefetch,
-    /*name=*/"max_loaders", /*default_value=*/10};
-
-// When "NetworkContextPrefetchUseMatches" is disabled, how long to leave a
-// matched cache entry alive before deleting it. This corresponds to the
-// expected maximum time it will take for a request to reach the HttpCache once
-// it has been initiated. Since it may be delayed by the ResourceScheduler, give
-// the delay is quite large.
-//
-// Why not shorter: the request from the render process may be delayed by the
-// ResourceScheduler.
-//
-// Why not longer: If the prefetch has not yet received response headers, it
-// has an exclusive cache lock. The real request from the render process
-// cannot proceed until the cache lock is released. If the response turns out
-// to be uncacheable, then this time is pure waste.
-const base::FeatureParam<base::TimeDelta> kNetworkContextPrefetchEraseGraceTime{
-    &kNetworkContextPrefetch, /*name=*/"erase_grace_time",
-    /*default_value=*/base::Seconds(1)};
 
 // This feature makes the matching fetches performed by the Prefetch() actually
 // be consumed directly by renderers. When this is disabled, the disk cache
