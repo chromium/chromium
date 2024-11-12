@@ -143,8 +143,8 @@ void FileChooser::DidCloseChooser() {
 FileChooserFileInfoPtr CreateFileChooserFileInfoNative(
     const String& path,
     const String& display_name) {
-  return FileChooserFileInfo::NewNativeFile(
-      NativeFileInfo::New(StringToFilePath(path), display_name));
+  return FileChooserFileInfo::NewNativeFile(NativeFileInfo::New(
+      StringToFilePath(path), display_name, Vector<String>()));
 }
 
 FileChooserFileInfoPtr CreateFileChooserFileInfoFileSystem(

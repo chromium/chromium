@@ -576,7 +576,8 @@ void FileChooserDelegate::RunFileChooser(
   std::vector<blink::mojom::FileChooserFileInfoPtr> files;
   for (const auto& file : files_) {
     auto file_info = blink::mojom::FileChooserFileInfo::NewNativeFile(
-        blink::mojom::NativeFileInfo::New(file, std::u16string()));
+        blink::mojom::NativeFileInfo::New(file, std::u16string(),
+                                          std::vector<std::u16string>()));
     files.push_back(std::move(file_info));
   }
   listener->FileSelected(std::move(files), base_dir_, params.mode);

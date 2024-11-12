@@ -284,7 +284,8 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
         chooser_info_list_.push_back(
             FileChooserFileInfo::NewNativeFile(NativeFileInfo::New(
                 selected_info_list[i].file_path,
-                base::UTF8ToUTF16(selected_info_list[i].display_name))));
+                base::UTF8ToUTF16(selected_info_list[i].display_name),
+                std::vector<std::u16string>())));
         continue;
       }
 
@@ -293,7 +294,8 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
         chooser_info_list_.push_back(
             FileChooserFileInfo::NewNativeFile(NativeFileInfo::New(
                 selected_info_list[i].local_path,
-                base::UTF8ToUTF16(selected_info_list[i].display_name))));
+                base::UTF8ToUTF16(selected_info_list[i].display_name),
+                std::vector<std::u16string>())));
         continue;
       }
 

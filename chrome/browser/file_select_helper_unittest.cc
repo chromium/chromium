@@ -72,7 +72,8 @@ void PrepareContentAnalysisCompletionCallbackArgs(
     for (auto& path : paths) {
       orig_files->push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
           blink::mojom::NativeFileInfo::New(path,
-                                            path.BaseName().AsUTF16Unsafe())));
+                                            path.BaseName().AsUTF16Unsafe(),
+                                            std::vector<std::u16string>())));
     }
   }
 

@@ -60,7 +60,8 @@ class FileChooserDelegate : public content::WebContentsDelegate {
     std::vector<blink::mojom::FileChooserFileInfoPtr> files;
     auto file_info = blink::mojom::FileChooserFileInfo::NewNativeFile(
         blink::mojom::NativeFileInfo::New(file_.AppendASCII(""),
-                                          std::u16string()));
+                                          std::u16string(),
+                                          std::vector<std::u16string>()));
     files.push_back(std::move(file_info));
     listener->FileSelected(std::move(files), base::FilePath(), params.mode);
   }
