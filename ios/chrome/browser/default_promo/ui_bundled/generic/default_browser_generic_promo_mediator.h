@@ -7,40 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/ios/block_types.h"
-
-namespace segmentation_platform {
-class DeviceSwitcherResultDispatcher;
-class SegmentationPlatformService;
-}  // namespace segmentation_platform
-
-@protocol DefaultBrowserGenericPromoConsumer;
-
-// The mediator for the generic default browser promo, with personalized
-// messaging for users identified by the Segmentation Platform as being in a
-// targeted segment.
+// The mediator for the generic default browser promo.
 @interface DefaultBrowserGenericPromoMediator : NSObject
 
-// Initializer with `segmentationService` and `deviceSwitcherResultDispatcher`.
-- (instancetype)initWithSegmentationService:
-                    (segmentation_platform::SegmentationPlatformService*)
-                        segmentationService
-             deviceSwitcherResultDispatcher:
-                 (segmentation_platform::DeviceSwitcherResultDispatcher*)
-                     dispatcher;
 
 // Handles user tap on primary action. Allows the user to open the iOS settings.
 - (void)didTapPrimaryActionButton;
 
-// Sets the user segment retrieved from the Segmentation Platform.
-- (void)retrieveUserSegmentWithCompletion:(ProceduralBlock)completion;
-
-// Disconnects this mediator.
-- (void)disconnect;
-
-// Returns the Default Browser screen view title with targeted messaging based
-// on the user's segment.
-- (NSString*)promoTitle;
 
 @end
 

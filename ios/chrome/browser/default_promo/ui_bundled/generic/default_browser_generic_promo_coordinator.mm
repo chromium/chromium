@@ -9,14 +9,12 @@
 #import "base/metrics/user_metrics.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_commands.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
-#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -41,10 +39,6 @@ using base::UserMetricsAction;
   raw_ptr<feature_engagement::Tracker> _tracker;
   // Contains all the stats that needs to be recorded for all promo actions.
   PromoStatistics* _promoStats;
-  // TODO(crbug.com/357836827): Transparent view to block user interaction
-  // while waiting for classification results. This ivar is a temporary
-  // solution.
-  UIView* _transparentView;
 }
 
 #pragma mark - ChromeCoordinator
@@ -55,34 +49,9 @@ using base::UserMetricsAction;
 
   ProfileIOS* profile = self.browser->GetProfile();
   _tracker = feature_engagement::TrackerFactory::GetForProfile(profile);
-
-  if (IsSegmentedDefaultBrowserPromoEnabled()) {
-    segmentation_platform::SegmentationPlatformService* segmentationService =
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetForProfile(profile);
-    segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher =
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForProfile(profile);
-
-    _mediator = [[DefaultBrowserGenericPromoMediator alloc]
-           initWithSegmentationService:segmentationService
-        deviceSwitcherResultDispatcher:dispatcher];
-
-    // Present a transparent view to block UI interaction until promo presents.
-    _transparentView =
-        [[UIView alloc] initWithFrame:self.baseViewController.view.bounds];
-    _transparentView.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
-    [self.baseViewController.view addSubview:_transparentView];
-
-    __weak __typeof(self) weakSelf = self;
-    [_mediator retrieveUserSegmentWithCompletion:^{
-      [weakSelf didRetrieveUserSegment];
-    }];
-  } else {
     _mediator = [[DefaultBrowserGenericPromoMediator alloc] init];
-    [self createViewControllerWithTitle:nil];
+
     [self showPromo];
-  }
 }
 
 - (void)stop {
@@ -98,10 +67,8 @@ using base::UserMetricsAction;
 
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
   _viewController = nil;
-  [_mediator disconnect];
   _mediator = nil;
   _promoStats = nil;
-  _transparentView = nil;
 
   [super stop];
 }
@@ -185,14 +152,7 @@ using base::UserMetricsAction;
 
 #pragma mark - Private
 
-- (void)didRetrieveUserSegment {
-  [_transparentView removeFromSuperview];
-  _transparentView = nil;
-  [self createViewControllerWithTitle:[_mediator promoTitle]];
-  [self showPromo];
-}
-
-- (void)createViewControllerWithTitle:(NSString*)promoTitle {
+- (void)showPromo {
   BOOL hasRemindMeLater =
       base::FeatureList::IsEnabled(
           feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature) &&
@@ -202,12 +162,9 @@ using base::UserMetricsAction;
            hasRemindMeLater:hasRemindMeLater
                    hasSteps:NO
               actionHandler:self
-                  titleText:promoTitle];
-}
+                  titleText:nil];
 
-- (void)showPromo {
   CHECK(_viewController);
-  CHECK(!_transparentView);
   RecordAction(
       UserMetricsAction("IOS.DefaultBrowserVideoPromo.Fullscreen.Impression"));
   _viewController.presentationController.delegate = self;
