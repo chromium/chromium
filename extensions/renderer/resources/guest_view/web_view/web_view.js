@@ -14,6 +14,7 @@ var WebViewConstants = require('webViewConstants').WebViewConstants;
 var WebViewAttributes = require('webViewAttributes').WebViewAttributes;
 var WebViewEvents = require('webViewEvents').WebViewEvents;
 var WebViewInternal = getInternalApi('webViewInternal');
+var tagLogMessage = require('webViewConstants').tagLogMessage;
 
 // Represents the internal state of <webview>.
 function WebViewImpl(webviewElement) {
@@ -192,7 +193,8 @@ WebViewImpl.prototype.attachWindow = function(opt_guestInstanceId) {
 // Shared implementation of executeScript() and insertCSS().
 WebViewImpl.prototype.executeCode = function(func, args) {
   if (!this.guest.getId()) {
-    window.console.error(WebViewConstants.ERROR_MSG_CANNOT_INJECT_SCRIPT);
+    window.console.error(tagLogMessage(
+        this.getLogTag(), WebViewConstants.ERROR_MSG_CANNOT_INJECT_SCRIPT));
     return false;
   }
 
@@ -255,6 +257,10 @@ WebViewImpl.prototype.makeElementFullscreen = function() {
   GuestViewInternalNatives.RunWithGesture($Function.bind(function() {
     $Element.webkitRequestFullScreen(this.element);
   }, this));
+};
+
+WebViewImpl.prototype.getLogTag = function() {
+  return 'webview';
 };
 
 // Exports.

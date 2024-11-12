@@ -50,6 +50,10 @@ class ControlledFrameImpl extends ChromeWebViewImpl {
   createWebViewContextMenus() {
     return new ControlledFrameContextMenus(this.viewInstanceId);
   }
+
+  getLogTag() {
+    return 'controlledframe';
+  }
 }
 
 exports.$set('ControlledFrameImpl', ControlledFrameImpl);
