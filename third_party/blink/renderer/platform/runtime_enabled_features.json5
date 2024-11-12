@@ -956,7 +956,7 @@
     {
       // https://chromestatus.com/feature/5082469066604544
       name: "CSSCaretAnimation",
-      status: "test",
+      status: "experimental",
     },
     {
       // Fix for https://issues.chromium.org/40280846 .  Shipped in M130.
