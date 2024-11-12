@@ -29,7 +29,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.OnUserLeaveHintObserver;
+import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCallback;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -88,7 +88,7 @@ class AutocompleteMediator
                 OmniboxSuggestionsDropdown.GestureObserver,
                 OmniboxSuggestionsDropdownScrollListener,
                 TopResumedActivityChangedObserver,
-                OnUserLeaveHintObserver,
+                PauseResumeWithNativeObserver,
                 SuggestionHost {
     private static final int SCHEDULE_FOR_IMMEDIATE_EXECUTION = -1;
 
@@ -1439,7 +1439,10 @@ class AutocompleteMediator
     }
 
     @Override
-    public void onUserLeaveHint() {
+    public void onResumeWithNative() {}
+
+    @Override
+    public void onPauseWithNative() {
         // IMPORTANT:
         // Test builds often mock AutocompleteController. This mock object may be defunct when we
         // this code is reached. Do not execute this code as part of integration tests as it will
