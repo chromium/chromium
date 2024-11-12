@@ -1786,6 +1786,8 @@ source_set("browser") {
     "renderer_host/media/media_stream_ui_proxy.h",
     "renderer_host/media/peer_connection_tracker_host.cc",
     "renderer_host/media/peer_connection_tracker_host.h",
+    "renderer_host/media/preferred_audio_output_device_manager.cc",
+    "renderer_host/media/preferred_audio_output_device_manager.h",
     "renderer_host/media/ref_counted_video_source_provider.cc",
     "renderer_host/media/ref_counted_video_source_provider.h",
     "renderer_host/media/render_frame_audio_input_stream_factory.cc",
