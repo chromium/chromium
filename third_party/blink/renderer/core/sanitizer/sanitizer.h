@@ -21,7 +21,7 @@ class V8UnionSanitizerAttributeNamespaceOrString;
 class V8UnionSanitizerElementNamespaceWithAttributesOrString;
 class V8UnionSanitizerElementNamespaceOrString;
 
-class Sanitizer final : public ScriptWrappable {
+class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -31,6 +31,16 @@ class Sanitizer final : public ScriptWrappable {
                            ExceptionState&);
   Sanitizer() = default;
   ~Sanitizer() override = default;
+
+  // This constructor is meant to be used by generated code to build up the
+  // Sanitizer builtins. You probably don't want to use it in regular code.
+  Sanitizer(HashSet<QualifiedName>,
+            HashSet<QualifiedName>,
+            HashSet<QualifiedName>,
+            HashSet<QualifiedName>,
+            HashSet<QualifiedName>,
+            bool,
+            bool);
 
   // API methods:
   void allowElement(
@@ -53,19 +63,27 @@ class Sanitizer final : public ScriptWrappable {
   void RemoveAttribute(const QualifiedName&);
 
   // Accessors, mainly for testing:
-  const HashSet<QualifiedName>& allow_elements() { return allow_elements_; }
-  const HashSet<QualifiedName>& remove_elements() { return remove_elements_; }
-  const HashSet<QualifiedName>& replace_elements() { return replace_elements_; }
-  const HashSet<QualifiedName>& allow_attrs() { return allow_attrs_; }
-  const HashSet<QualifiedName>& remove_attrs() { return remove_attrs_; }
+  const HashSet<QualifiedName>& allow_elements() const {
+    return allow_elements_;
+  }
+  const HashSet<QualifiedName>& remove_elements() const {
+    return remove_elements_;
+  }
+  const HashSet<QualifiedName>& replace_elements() const {
+    return replace_elements_;
+  }
+  const HashSet<QualifiedName>& allow_attrs() const { return allow_attrs_; }
+  const HashSet<QualifiedName>& remove_attrs() const { return remove_attrs_; }
   const HashMap<QualifiedName, HashSet<QualifiedName>>&
-  allow_attrs_per_element() {
+  allow_attrs_per_element() const {
     return allow_attrs_per_element_;
   }
   const HashMap<QualifiedName, HashSet<QualifiedName>>&
-  remove_attrs_per_element() {
+  remove_attrs_per_element() const {
     return remove_attrs_per_element_;
   }
+  bool allow_data_attrs() const { return allow_data_attrs_; }
+  bool allow_comments() const { return allow_comments_; }
 
  private:
   // Helper for copy constructor and Create: Convert from IDL representation

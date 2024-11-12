@@ -7,6 +7,8 @@ blink_core_sources_sanitizer = [
   "sanitizer.h",
   "sanitizer_api.cc",
   "sanitizer_api.h",
+  "sanitizer_builtins.cc",
+  "sanitizer_builtins.h",
 ]
 
-blink_core_tests_sanitizer = []
+blink_core_tests_sanitizer = [ "sanitizer_builtins_unittest.cc" ]

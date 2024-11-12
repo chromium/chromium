@@ -36,6 +36,21 @@ Sanitizer* Sanitizer::Create(ExecutionContext* execution_context,
   return sanitizer;
 }
 
+Sanitizer::Sanitizer(HashSet<QualifiedName> allow_elements,
+                     HashSet<QualifiedName> remove_elements,
+                     HashSet<QualifiedName> replace_elements,
+                     HashSet<QualifiedName> allow_attrs,
+                     HashSet<QualifiedName> remove_attrs,
+                     bool allow_data_attrs,
+                     bool allow_comments)
+    : allow_elements_(allow_elements),
+      remove_elements_(remove_elements),
+      replace_elements_(replace_elements),
+      allow_attrs_(allow_attrs),
+      remove_attrs_(remove_attrs),
+      allow_data_attrs_(allow_data_attrs),
+      allow_comments_(allow_comments) {}
+
 void Sanitizer::allowElement(
     const V8UnionSanitizerElementNamespaceWithAttributesOrString* element) {
   const QualifiedName name = getFrom(element);
