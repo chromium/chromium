@@ -2284,22 +2284,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // This is not exactly the opposite of IsRenderFrameLive().
   // IsRenderFrameLive() is false when the RenderProcess died, but it is also
   // false when it hasn't been initialized.
-  bool must_be_replaced_for_crash() const {
-    return must_be_replaced_for_crash_;
-  }
+  bool must_be_replaced() const { return must_be_replaced_; }
   // Resets the must_be_replaced after the RFH has been reinitialized. Do not
   // add any more usages of this.
   // TODO(crbug.com/40615943): Remove this.
-  void reset_must_be_replaced() { must_be_replaced_for_crash_ = false; }
-
-  // True if the RenderFrameHost should be replaced because we are navigating
-  // the main frame to about:blank between web tests.
-  bool must_be_replaced_for_webtest() const {
-    return must_be_replaced_for_webtest_;
-  }
-  void set_must_be_replaced_for_webtest() {
-    must_be_replaced_for_webtest_ = true;
-  }
+  void reset_must_be_replaced() { must_be_replaced_ = false; }
 
   int renderer_exit_count() const { return renderer_exit_count_; }
 
@@ -4727,17 +4716,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // whereas this field is updated at CommitNavigation() time.
   bool has_committed_any_navigation_ = false;
 
-  // True if the RenderFrameHost should be replaced because the renderer process
-  // has crashed.
-  // TODO(crbug.com/40228869): After crrev.com/c/5321191 lands, we can commbine
-  // must_be_replaced_for_crash_ and must_be_replaced_for_webtest_ into one.
-  bool must_be_replaced_for_crash_ = false;
-
-  // True if the RenderFrameHost should be replaced because we are navigating
-  // the main frame to about:blank between web tests.
-  // TODO(crbug.com/40228869): After crrev.com/c/5321191 lands, we can commbine
-  // must_be_replaced_for_crash_ and must_be_replaced_for_webtest_ into one.
-  bool must_be_replaced_for_webtest_ = false;
+  bool must_be_replaced_ = false;
 
   // Counts the number of times the associated renderer process has exited.
   // This is used to track problematic RenderFrameHost reuse.

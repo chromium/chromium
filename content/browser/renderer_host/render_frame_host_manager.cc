@@ -508,7 +508,7 @@ bool CanIntentionallyDeferSpeculativeRFHForRequest(
          // to do an early RFH swap, which requires the speculative RFH to be
          // created before the network request is sent.
          frame_tree_node->current_frame_host()->IsRenderFrameLive() &&
-         !frame_tree_node->current_frame_host()->must_be_replaced_for_crash() &&
+         !frame_tree_node->current_frame_host()->must_be_replaced() &&
          // TODO(crbug.com/348125591): Workaround for a mysterious race
          // condition in V8 when navigating to a different site in devtools.
          !DevToolsAgentHost::IsDebuggerAttached(request->GetWebContents());
@@ -1516,7 +1516,7 @@ void RenderFrameHostManager::PerformEarlyRenderFrameHostSwapIfNeeded(
     // experimental feature that skips the early swap for case (1).  Case (2) is
     // possible in cases like WebUI, <webview> tags, and dynamic isolation on
     // Android.
-    if (render_frame_host_->must_be_replaced_for_crash()) {
+    if (render_frame_host_->must_be_replaced()) {
       if (!ShouldSkipEarlyCommitPendingForCrashedFrame()) {
         // Note that we're being slightly imprecise here by using
         // kCrashedFrame for must_be_replaced(), which includes all cases
@@ -1665,8 +1665,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
 
   // Speculative RFHs are deleted immediately.
   if (speculative_render_frame_host_)
-    DUMP_WILL_BE_CHECK(
-        !speculative_render_frame_host_->must_be_replaced_for_crash());
+    DUMP_WILL_BE_CHECK(!speculative_render_frame_host_->must_be_replaced());
 
   // The appropriate RenderFrameHost to commit the navigation.
   RenderFrameHostImpl* navigation_rfh = nullptr;
@@ -1713,15 +1712,9 @@ RenderFrameHostManager::GetFrameHostForNavigation(
 
   // If a crashed RenderFrameHost must not be reused, replace it by a
   // new one immediately.
-  if (use_current_rfh && render_frame_host_->must_be_replaced_for_crash()) {
+  if (use_current_rfh && render_frame_host_->must_be_replaced()) {
     use_current_rfh = false;
     AppendReason(reason, "GetFrameHostForNavigation / rfh-crashed");
-  }
-
-  if (request->force_new_compositor()) {
-    // This will cause ShouldChangeRenderFrameHostOnSameSiteNavigation to return
-    // true in the branch below.
-    render_frame_host_->set_must_be_replaced_for_webtest();
   }
 
   // Force using a different RenderFrameHost when RenderDocument is enabled.
@@ -1801,7 +1794,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   // We only do this if the policy allows it and are recovering a crashed frame.
   bool recovering_without_early_commit =
       ShouldSkipEarlyCommitPendingForCrashedFrame() &&
-      render_frame_host_->must_be_replaced_for_crash();
+      render_frame_host_->must_be_replaced();
 
   bool from_ad_click =
       (request->GetNavigationInitiatorActivationAndAdStatus() ==
@@ -1930,7 +1923,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   DCHECK(navigation_rfh &&
          (navigation_rfh == render_frame_host_.get() ||
           navigation_rfh == speculative_render_frame_host_.get()));
-  DCHECK(!navigation_rfh->must_be_replaced_for_crash());
+  DCHECK(!navigation_rfh->must_be_replaced());
 
   // If the RenderFrame that needs to navigate is not live (its process was just
   // created), initialize it. This can only happen for the initial main frame of
@@ -1949,7 +1942,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
     SCOPED_CRASH_KEY_BOOL("Bug1404162", "nav_rfh_is_current_rfh",
                           navigation_rfh == render_frame_host_.get());
     SCOPED_CRASH_KEY_BOOL("Bug1404162", "must_be_replaced",
-                          navigation_rfh->must_be_replaced_for_crash());
+                          navigation_rfh->must_be_replaced());
     SCOPED_CRASH_KEY_BOOL("Bug1404162", "rf_created",
                           navigation_rfh->is_render_frame_created());
     SCOPED_CRASH_KEY_BOOL(
@@ -3975,7 +3968,7 @@ RenderFrameHostManager::CreateRenderFrameHost(
        static_cast<SiteInstanceImpl*>(site_instance)->group() ==
            render_frame_host_->GetSiteInstance()->group() &&
        frame_tree_node_->IsMainFrame() &&
-       !render_frame_host_->must_be_replaced_for_crash())
+       !render_frame_host_->must_be_replaced())
           ? CreateRenderViewHostCase::kSpeculative
           : CreateRenderViewHostCase::kDefault;
 
@@ -4287,9 +4280,8 @@ void RenderFrameHostManager::CreateRenderFrameProxy(
     // TODO(fergal): We cannot put a CHECK in the else of this if because we do
     // not have enough information about who is calling this. If we knew it was
     // navigating then we could CHECK_EQ and CHECK_NE otherwise.
-    if (!render_frame_host_->must_be_replaced_for_crash()) {
+    if (!render_frame_host_->must_be_replaced())
       CHECK_NE(group, render_frame_host_->GetSiteInstance()->group());
-    }
   } else {
     // If policy allows early commit, a RenderFrameProxyHost should never be
     // created in the same SiteInstanceGroup as the current RFH.
@@ -4722,7 +4714,7 @@ RenderFrameHostManager::GetReplacementFrameToken(
     } else {
       // The renderer crashed and there is no previous proxy or previous frame
       // in the renderer to be replaced.
-      DCHECK(current_frame_host()->must_be_replaced_for_crash());
+      DCHECK(current_frame_host()->must_be_replaced());
       DCHECK_NE(render_frame_host, current_frame_host());
       return std::nullopt;
     }
@@ -4735,7 +4727,7 @@ bool RenderFrameHostManager::ReinitializeMainRenderFrame(
 
   // This should be used only when the RenderFrame is not live.
   DCHECK(!render_frame_host->IsRenderFrameLive());
-  DCHECK(!render_frame_host->must_be_replaced_for_crash());
+  DCHECK(!render_frame_host->must_be_replaced());
 
   // Recreate the opener chain.
   CreateOpenerProxies(render_frame_host->GetSiteInstance()->group(),
