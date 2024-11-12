@@ -114,6 +114,8 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
+  void FinishParsingChildren() override;
+
   // These methods mutate the shadowroot to switch between rendering all
   // children or only text content. SetTextOnlyRendering is used for
   // appearance:base-select. The mechanism by which these methods render all

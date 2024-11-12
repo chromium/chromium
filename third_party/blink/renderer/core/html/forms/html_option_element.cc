@@ -729,4 +729,15 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
   }
 }
 
+void HTMLOptionElement::FinishParsingChildren() {
+  HTMLElement::FinishParsingChildren();
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() && Selected()) {
+    auto* select = OwnerSelectElement();
+    if (select && select->UsesMenuList() && !select->IsMultiple()) {
+      CHECK_EQ(this, select->SelectedOption());
+      select->UpdateAllSelectedcontents();
+    }
+  }
+}
+
 }  // namespace blink
