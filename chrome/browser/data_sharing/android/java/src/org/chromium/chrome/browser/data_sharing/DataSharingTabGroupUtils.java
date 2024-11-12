@@ -64,8 +64,6 @@ public class DataSharingTabGroupUtils {
      */
     public static @NonNull GroupsPendingDestroy getSyncedGroupsDestroyedByTabRemoval(
             @NonNull TabModel tabModel, @Nullable List<Tab> tabsToRemove) {
-        // TODO(crbug.com/345854441): Add feature flag checks.
-
         GroupsPendingDestroy destroyedGroups = new GroupsPendingDestroy();
 
         // Collaborations are not possible in incognito branded mode.
@@ -76,11 +74,13 @@ public class DataSharingTabGroupUtils {
         @Nullable
         TabGroupSyncService tabGroupSyncService =
                 TabGroupSyncServiceFactory.getForProfile(tabModel.getProfile());
-        if (tabGroupSyncService == null) {
-            return destroyedGroups;
-        }
+        if (tabGroupSyncService == null) return destroyedGroups;
 
-        for (String syncId : tabGroupSyncService.getAllGroupIds()) {
+        String[] syncIds = tabGroupSyncService.getAllGroupIds();
+        // This may be null in tests.
+        if (syncIds == null) return destroyedGroups;
+
+        for (String syncId : syncIds) {
             SavedTabGroup group = tabGroupSyncService.getGroup(syncId);
 
             // Tab groups without a local representation won't have local tabs that are being

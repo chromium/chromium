@@ -38,6 +38,7 @@ include_rules = [
   "+components/security_state/content/android/java/src/org/chromium/components/security_state/SecurityStateModel.java",
   "+components/sync/android/java/src/org/chromium/components/sync",
   "+components/sync/test",
+  "+components/saved_tab_groups/public/android",
   "+components/ukm/android",
   "+components/webauthn/android",
   "+components/browser_ui/device_lock/android",
