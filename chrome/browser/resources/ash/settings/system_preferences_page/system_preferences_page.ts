@@ -21,11 +21,10 @@ import './startup_settings_card.js';
 import './storage_and_power_settings_card.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isAssistantAllowed, isExternalStorageEnabled, isGuest, isPowerwashAllowed, isQuickAnswersSupported, isRevampWayfindingEnabled, shouldShowMultitasking, shouldShowStartup} from '../common/load_time_booleans.js';
+import {isAssistantAllowed, isExternalStorageEnabled, isGuest, isPowerwashAllowed, isQuickAnswersSupported, shouldShowMultitasking, shouldShowStartup} from '../common/load_time_booleans.js';
 import type {PrefsState} from '../common/types.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import type {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
@@ -177,14 +176,6 @@ export class SettingsSystemPreferencesPageElement extends
 
   // Storage and Power subsection
   private isExternalStorageEnabled_: boolean;
-
-  override connectedCallback(): void {
-    super.connectedCallback();
-
-    assert(
-        isRevampWayfindingEnabled(),
-        'OsSettingsRevampWayfinding feature must be enabled.');
-  }
 }
 
 declare global {

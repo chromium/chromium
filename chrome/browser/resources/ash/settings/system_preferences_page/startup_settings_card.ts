@@ -16,7 +16,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import type {PrefsState} from '../common/types.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -52,14 +51,6 @@ export class StartupSettingsCardElement extends StartupSettingsCardElementBase {
         value: () => new Set<Setting>([Setting.kRestoreAppsAndPages]),
       },
 
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value() {
-          return isRevampWayfindingEnabled();
-        },
-        readOnly: true,
-      },
-
       /**
        * List of options for the on startup dropdown menu.
        */
@@ -78,7 +69,6 @@ export class StartupSettingsCardElement extends StartupSettingsCardElementBase {
   }
 
   prefs: PrefsState;
-  private readonly isRevampWayfindingEnabled_: boolean;
   private readonly onStartupDropdownOptions_:
       Array<{value: number, name: string}>;
 

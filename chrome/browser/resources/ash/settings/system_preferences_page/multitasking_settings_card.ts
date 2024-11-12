@@ -72,19 +72,6 @@ export class MultitaskingSettingsCardElement extends
 
     this.attemptDeepLink();
   }
-
-  // The following strings are only defined when the OsSettingsRevampWayfinding
-  // feature flag is enabled. Avoid using $i18n{} templating in HTML to avoid
-  // crashes when the feature is disabled.
-  private getHeaderText_(): string {
-    return this.i18n('multitaskingSettingsCardTitle');
-  }
-  private getLabelText_(): string {
-    return this.i18n('snapWindowLabel');
-  }
-  private getDescriptionText_(): string {
-    return this.i18n('snapWindowDescription');
-  }
 }
 
 declare global {

@@ -7309,9 +7309,6 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_ON_STARTUP_SETTINGS_CARD_TITLE" desc="The title of the settings card that allows the user to configure the restore apps and pages options on startup.">
     Startup
   </message>
-  <message name="IDS_OS_SETTINGS_ON_STARTUP_TITLE" desc="The title of the dropdown menu that allows the user to configure the restore apps and pages options on startup.">
-    Restore apps on startup
-  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_ON_STARTUP_TITLE" desc="The title of the dropdown menu that allows the user to configure the restore apps and pages options on startup.">
     Welcome Recap
   </message>
