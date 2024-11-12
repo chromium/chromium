@@ -1422,7 +1422,7 @@ public class AwContentsClientShouldInterceptRequestTest extends AwParameterizedT
     @Feature({"AndroidWebView", "Network"})
     @CommandLineFlags.Add("webview-intercepted-cookie-header")
     public void testCookieHeaders() throws Throwable {
-        var cookieManager = mAwContents.getBrowserContext().getCookieManager();
+        var cookieManager = mAwContents.getBrowserContextForPublicApi().getCookieManager();
         final String destinationUrl =
                 mWebServer.setResponse("/hello.txt", "", new ArrayList<Pair<String, String>>());
 

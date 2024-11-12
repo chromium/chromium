@@ -214,7 +214,7 @@ public class MultiProfileTest extends AwParameterizedTest {
                             "Cannot set new profile on a WebView that has been destroyed",
                             IllegalStateException.class,
                             () -> {
-                                awContents.setBrowserContext(otherProfile);
+                                awContents.setBrowserContextForPublicApi(otherProfile);
                             });
                 });
     }
@@ -230,13 +230,13 @@ public class MultiProfileTest extends AwParameterizedTest {
                 () -> {
                     AwContents awContents =
                             mRule.createAwTestContainerView(mContentsClient).getAwContents();
-                    awContents.getBrowserContext();
+                    awContents.getBrowserContextForPublicApi();
                     Assert.assertThrows(
                             "Cannot set new profile after the current one has been retrieved via. "
                                     + "WebViewCompat#getProfile",
                             IllegalStateException.class,
                             () -> {
-                                awContents.setBrowserContext(otherProfile);
+                                awContents.setBrowserContextForPublicApi(otherProfile);
                             });
                 });
     }
@@ -253,13 +253,13 @@ public class MultiProfileTest extends AwParameterizedTest {
                 () -> {
                     AwContents awContents =
                             mRule.createAwTestContainerView(mContentsClient).getAwContents();
-                    awContents.setBrowserContext(myCoolProfile);
+                    awContents.setBrowserContextForPublicApi(myCoolProfile);
                     Assert.assertThrows(
                             "Cannot set new profile after one has already been set"
                                     + "via. WebViewCompat#setProfile",
                             IllegalStateException.class,
                             () -> {
-                                awContents.setBrowserContext(myOtherCoolProfile);
+                                awContents.setBrowserContextForPublicApi(myOtherCoolProfile);
                             });
                 });
     }
@@ -283,7 +283,7 @@ public class MultiProfileTest extends AwParameterizedTest {
                                 "Cannot set new profile after call to"
                                         + " WebView#evaluateJavascript",
                                 IllegalStateException.class,
-                                () -> awContents.setBrowserContext(myCoolProfile)));
+                                () -> awContents.setBrowserContextForPublicApi(myCoolProfile)));
     }
 
     @Test
@@ -304,7 +304,7 @@ public class MultiProfileTest extends AwParameterizedTest {
                                     + " navigated.",
                             IllegalStateException.class,
                             () -> {
-                                awContents.setBrowserContext(myCoolProfile);
+                                awContents.setBrowserContextForPublicApi(myCoolProfile);
                             });
                     webServer.shutdown();
                 });
@@ -321,8 +321,8 @@ public class MultiProfileTest extends AwParameterizedTest {
         final AwContents firstAwContents = mRule.createAwContents();
         final AwContents secondAwContents = mRule.createAwContents(otherProfile);
 
-        Assert.assertSame(defaultProfile, firstAwContents.getBrowserContext());
-        Assert.assertSame(otherProfile, secondAwContents.getBrowserContext());
+        Assert.assertSame(defaultProfile, firstAwContents.getBrowserContextForPublicApi());
+        Assert.assertSame(otherProfile, secondAwContents.getBrowserContextForPublicApi());
     }
 
     @Test
@@ -339,7 +339,7 @@ public class MultiProfileTest extends AwParameterizedTest {
                     Assert.assertThrows(
                             "Cannot get profile for destroyed WebView.",
                             IllegalStateException.class,
-                            awContents::getBrowserContext);
+                            awContents::getBrowserContextForPublicApi);
                 });
     }
 
@@ -356,12 +356,14 @@ public class MultiProfileTest extends AwParameterizedTest {
 
         AwCookieManager defaultCookieManager = defaultProfile.getCookieManager();
         Assert.assertSame(
-                defaultCookieManager, firstAwContents.getBrowserContext().getCookieManager());
+                defaultCookieManager,
+                firstAwContents.getBrowserContextForPublicApi().getCookieManager());
         defaultCookieManager.setAcceptCookie(true);
 
         AwCookieManager otherCookieManager = otherProfile.getCookieManager();
         Assert.assertSame(
-                otherCookieManager, secondAwContents.getBrowserContext().getCookieManager());
+                otherCookieManager,
+                secondAwContents.getBrowserContextForPublicApi().getCookieManager());
         otherCookieManager.setAcceptCookie(true);
 
         Assert.assertFalse(defaultCookieManager.hasCookies());

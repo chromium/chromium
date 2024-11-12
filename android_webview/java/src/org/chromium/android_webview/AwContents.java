@@ -448,15 +448,16 @@ public class AwContents implements SmartClipProvider {
     private Runnable mUpdateVisibilityRunnable;
 
     /**
-     * Set to true if there is ever a call to {@link AwContents#getBrowserContext()}.
+     * Set to true if there is ever a call to {@link AwContents#getBrowserContextForPublicApi()}.
      * This flag is primarily used to prevent setting a new browser context via. {@link
-     * AwContents#setBrowserContext(AwBrowserContext)} after it has been retrieved externally.
+     * AwContents#setBrowserContextForPublicApi(AwBrowserContext)} after it has been retrieved
+     * externally.
      */
     private boolean mBrowserContextAccessed;
 
     /**
-     * Set to true if the browser context has ever been set explicitly via.
-     * {@link AwContents#setBrowserContext(AwBrowserContext)}.
+     * Set to true if the browser context has ever been set explicitly via. {@link
+     * AwContents#setBrowserContextForPublicApi(AwBrowserContext)}.
      */
     private boolean mBrowserContextSetExplicitly;
 
@@ -1509,15 +1510,25 @@ public class AwContents implements SmartClipProvider {
     }
 
     /**
-     * For multi-profile public API. For internal access to the browser context,
-     * use the member variable {@link AwContents#mBrowserContext} directly. All Exception messages
-     * should be developer friendly and refer to the browser context as a "Profile".
+     * Internal (to WebView code) accessor for the BrowserContext associated with this AwContents.
      *
-     * @throws IllegalStateException if the WebView has been destroyed via. {@link
-     *         AwContents#destroy()}.
+     * <p>This will not perform any checks for {@link AwContents#isDestroyed(int)}.
      */
     @NonNull
-    public AwBrowserContext getBrowserContext() {
+    public AwBrowserContext getBrowserContextInternal() {
+        return mBrowserContext;
+    }
+
+    /**
+     * For multi-profile public API. For internal access to the browser context, use the member
+     * variable {@link AwContents#mBrowserContext} directly. All Exception messages should be
+     * developer friendly and refer to the browser context as a "Profile".
+     *
+     * @throws IllegalStateException if the WebView has been destroyed via. {@link
+     *     AwContents#destroy()}.
+     */
+    @NonNull
+    public AwBrowserContext getBrowserContextForPublicApi() {
         if (isDestroyed(NO_WARN)) {
             throw new IllegalStateException("Cannot get profile for destroyed WebView.");
         }
@@ -1526,21 +1537,21 @@ public class AwContents implements SmartClipProvider {
     }
 
     /**
-     * For multi-profile public API. Sets a new browser context which will
-     * cause the web contents to reinitialize. All Exception messages should
-     * be developer friendly and refer to the browser context as a "Profile".
+     * For multi-profile public API. Sets a new browser context which will cause the web contents to
+     * reinitialize. All Exception messages should be developer friendly and refer to the browser
+     * context as a "Profile".
      *
      * @throws IllegalStateException if the WebView has been destroyed via. {@link
-     *         AwContents#destroy()}.
+     *     AwContents#destroy()}.
      * @throws IllegalStateException if the browser context has been accessed via. {@link
-     *         AwContents#getBrowserContext()}.
+     *     AwContents#getBrowserContextForPublicApi()}.
      * @throws IllegalStateException if the browser context has already been set explicitly via.
-     *         {@link AwContents#setBrowserContext(AwBrowserContext)}.
+     *     {@link AwContents#setBrowserContextForPublicApi(AwBrowserContext)}.
      * @throws IllegalStateException if the {@link AwContents#evaluateJavaScript(String, Callback)}
-     *         has been called on the WebView.
+     *     has been called on the WebView.
      * @throws IllegalStateException if the WebView has previously navigated to a web page.
      */
-    public void setBrowserContext(@NonNull AwBrowserContext browserContext) {
+    public void setBrowserContextForPublicApi(@NonNull AwBrowserContext browserContext) {
         if (browserContext == mBrowserContext) {
             return;
         }
