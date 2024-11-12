@@ -53,6 +53,50 @@ constexpr int kButtonRadius = 12;
 
 constexpr int kContentHorizontalPadding = 12;
 constexpr int kContentVerticalPadding = 8;
+constexpr int kFeedbackSuggestionTargetWidth = 320;
+
+int GetButtonsWrapperInsiderBorderHorizontalMargin() {
+  return kContentHorizontalPadding;
+}
+
+int GetBetweenButtonsMargin() {
+  return ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RELATED_LABEL_HORIZONTAL_LIST);
+}
+
+class FeedbackLabel : public views::StyledLabel {
+  METADATA_HEADER(FeedbackLabel, views::StyledLabel)
+ public:
+  FeedbackLabel() = default;
+
+  // views::StyledLabel:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    if (available_size.width().is_bounded()) {
+      return views::StyledLabel::CalculatePreferredSize(available_size);
+    }
+    // Subtrack the expected size for the button wrapper from the target width.
+    //
+    // Expected size for one button, which is its diameter.
+    int button_size = kButtonRadius * 2;
+    // This is the margin added around the buttons, x2 because it is added in
+    // the left and in the right.
+    int outer_margins = GetButtonsWrapperInsiderBorderHorizontalMargin() * 2;
+    // The margin/space between the buttons.
+    int between_buttons_margin = GetBetweenButtonsMargin();
+    // The total size from the button section is:
+    // 1. button_size * 2 (there are 2 buttons), plus
+    // 2. The outer margins, plus
+    // 3. The space between the buttons.
+    return GetLayoutSizeInfoForWidth(
+               kFeedbackSuggestionTargetWidth -
+               (button_size * 2 + outer_margins + between_buttons_margin))
+        .total_size;
+  }
+};
+
+BEGIN_METADATA(FeedbackLabel)
+END_METADATA
 
 // Creates the suggestion container view.
 std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
@@ -104,7 +148,7 @@ std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
 
   feedback_title_and_button_container->SetFlexForView(
       feedback_title_and_button_container->AddChildView(
-          views::Builder<views::StyledLabel>()
+          views::Builder<views::StyledLabel>(std::make_unique<FeedbackLabel>())
               .SetText(formatted_text)
               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
               .SetDefaultTextStyle(views::style::STYLE_BODY_5)
@@ -215,11 +259,10 @@ PopupRowPredictionImprovementsFeedbackView::
   CHECK(feedback_text_and_buttons_container);
   auto* buttons_wrapper = feedback_text_and_buttons_container->AddChildView(
       views::Builder<views::BoxLayoutView>()
-          .SetInsideBorderInsets(gfx::Insets::VH(0, kContentHorizontalPadding))
+          .SetInsideBorderInsets(gfx::Insets::VH(
+              0, GetButtonsWrapperInsiderBorderHorizontalMargin()))
           .Build());
-  buttons_wrapper->SetBetweenChildSpacing(
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_RELATED_LABEL_HORIZONTAL_LIST));
+  buttons_wrapper->SetBetweenChildSpacing(GetBetweenButtonsMargin());
   thumbs_up_button_ = buttons_wrapper->AddChildView(CreateFeedbackButton(
       vector_icons::kThumbUpIcon,
       base::BindRepeating(
