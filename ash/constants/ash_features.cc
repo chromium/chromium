@@ -568,7 +568,7 @@ BASE_FEATURE(kDisplayPerformanceMode,
 // lower latency when opening the desk bar and overview mode.
 BASE_FEATURE(kDeskBarWindowOcclusionOptimization,
              "DeskBarWindowOcclusionOptimization",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Adds a desk button to the shelf that the user can use to navigate between
 // desks.
