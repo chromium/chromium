@@ -441,7 +441,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   // Verify extension is pinned but not stored as the popped out action.
   auto visible_icons = GetVisibleToolbarActionViews();
-  visible_icons = GetVisibleToolbarActionViews();
   ASSERT_EQ(1u, visible_icons.size());
   EXPECT_EQ(std::nullopt, extensions_container->GetPoppedOutActionId());
 
