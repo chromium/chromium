@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -30,6 +30,8 @@ import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
+import java.util.Arrays;
+
 /**
  * Provides a view for tab group color dots and shared image tiles if a collaboration. To properly
  * cleanup this class {@link #destroy()} must be invoked in order to remove observers and prevent it
@@ -45,7 +47,6 @@ public class TabGroupColorViewProvider implements Destroyable {
     private final @Nullable SharedGroupObserver mSharedGroupObserver;
 
     private @TabGroupColorId int mColorId;
-    private @Px int mStrokeWidth;
     private @Nullable FrameLayout mFrameLayout;
     private @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
 
@@ -125,7 +126,7 @@ public class TabGroupColorViewProvider implements Destroyable {
         mColorId = colorId;
 
         if (mFrameLayout != null) {
-            updateColor();
+            updateColorAndSize();
         }
     }
 
@@ -139,12 +140,12 @@ public class TabGroupColorViewProvider implements Destroyable {
             assert mFrameLayout != null;
 
             maybeCreateAndAttachSharedImageTiles();
-            updateColor();
+            updateColorAndSize();
         }
         return mFrameLayout;
     }
 
-    private void updateColor() {
+    private void updateColorAndSize() {
         assert mFrameLayout != null;
 
         GradientDrawable drawable = (GradientDrawable) mFrameLayout.getBackground().mutate();
@@ -154,18 +155,28 @@ public class TabGroupColorViewProvider implements Destroyable {
                 ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, mColorId, mIsIncognito);
         drawable.setColor(fillColor);
 
-        if (mSharedImageTilesCoordinator != null) {
-            mStrokeWidth = 0;
-            // TODO(crbug.com/370942731): set the tab group color in the shared image tiles
-            // coordinator.
-            drawable.setStroke(mStrokeWidth, /* color= */ Color.TRANSPARENT);
-        } else {
-            mStrokeWidth =
-                    mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.tab_group_color_icon_stroke);
-            @ColorInt int strokeColor = mContext.getColor(R.color.gm3_baseline_surface_light);
-            drawable.setStroke(mStrokeWidth, strokeColor);
+        boolean isColorDot = mSharedImageTilesCoordinator == null;
+
+        Resources res = mContext.getResources();
+        float radius =
+                isColorDot
+                        ? res.getDimension(R.dimen.tab_group_color_icon_item_radius)
+                        : res.getDimension(R.dimen.tab_group_color_icon_with_avatar_item_radius);
+        float[] radii = new float[8];
+        Arrays.fill(radii, radius);
+        drawable.setCornerRadii(radii);
+
+        @Px
+        int size =
+                isColorDot
+                        ? res.getDimensionPixelSize(R.dimen.tab_group_color_icon_item_size)
+                        : res.getDimensionPixelSize(
+                                R.dimen.tab_group_color_icon_with_avatar_item_size);
+        if (mFrameLayout.getMinimumWidth() != size) {
+            mFrameLayout.setMinimumWidth(size);
+            mFrameLayout.setMinimumHeight(size);
         }
+
         mFrameLayout.invalidate();
     }
 
@@ -197,16 +208,18 @@ public class TabGroupColorViewProvider implements Destroyable {
         mSharedImageTilesCoordinator.updateCollaborationId(collaborationId);
 
         View view = mSharedImageTilesCoordinator.getView();
-        // TODO(crbug.com/370942731): Update params to have right spacing for inner/outer container.
         FrameLayout.LayoutParams params =
                 new FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.WRAP_CONTENT,
                         FrameLayout.LayoutParams.WRAP_CONTENT);
         params.gravity = Gravity.CENTER;
+        @Px
+        int marginStart =
+                mContext.getResources().getDimensionPixelSize(R.dimen.tab_group_color_icon_stroke)
+                        / 2;
+        params.setMarginStart(marginStart);
         mFrameLayout.addView(view, params);
-
-        // Stroke may need to be adjusted.
-        updateColor();
+        updateColorAndSize();
     }
 
     private void detachAndDestroySharedImageTiles() {
@@ -216,7 +229,7 @@ public class TabGroupColorViewProvider implements Destroyable {
         }
         if (mFrameLayout != null && mFrameLayout.getChildCount() != 0) {
             mFrameLayout.removeAllViews();
-            updateColor();
+            updateColorAndSize();
         }
     }
 
@@ -245,15 +258,5 @@ public class TabGroupColorViewProvider implements Destroyable {
     @TabGroupColorId
     int getTabGroupColorIdForTesting() {
         return mColorId;
-    }
-
-    /**
-     * Exposes the stroke width for testing because {@link GradientDrawable} lacks this
-     * functionality.
-     */
-    @VisibleForTesting
-    @Px
-    int getStrokeWidthForTesting() {
-        return mStrokeWidth;
     }
 }

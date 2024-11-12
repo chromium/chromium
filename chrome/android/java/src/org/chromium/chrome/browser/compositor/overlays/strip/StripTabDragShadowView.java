@@ -136,7 +136,8 @@ public class StripTabDragShadowView extends FrameLayout {
         // the title to handle this symmetry.
         RelativeLayout.LayoutParams layoutParams =
                 (RelativeLayout.LayoutParams) mTitleView.getLayoutParams();
-        int padding = getResources().getDimensionPixelSize(R.dimen.tab_grid_card_favicon_padding);
+        int padding =
+                getResources().getDimensionPixelSize(R.dimen.tab_grid_card_favicon_padding_start);
         layoutParams.setMarginEnd(padding);
         mTitleView.setLayoutParams(layoutParams);
 

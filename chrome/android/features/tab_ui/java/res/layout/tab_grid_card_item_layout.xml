@@ -34,15 +34,19 @@ found in the LICENSE file.
                 android:id="@+id/tab_favicon"
                 android:layout_height="@dimen/tab_grid_card_header_height"
                 android:layout_width="wrap_content"
-                android:padding="@dimen/tab_grid_card_favicon_padding"
+                android:layout_gravity="center_vertical"
+                android:paddingStart="@dimen/tab_grid_card_favicon_padding_start"
+                android:paddingEnd="@dimen/tab_grid_card_favicon_padding_end"
                 android:adjustViewBounds="true"
                 android:importantForAccessibility="no" />
             <FrameLayout
                 android:id="@+id/tab_group_color_view_container"
                 android:layout_height="@dimen/tab_grid_card_header_height"
                 android:layout_width="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_toEndOf="@id/tab_favicon"
-                android:padding="@dimen/tab_grid_card_favicon_padding"
+                android:paddingStart="@dimen/tab_grid_card_favicon_padding_start"
+                android:paddingEnd="@dimen/tab_grid_card_favicon_padding_end"
                 android:importantForAccessibility="no"
                 android:visibility="gone"/>
             <TextView

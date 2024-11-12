@@ -202,7 +202,7 @@ public class TabGridDialogTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(
                             ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(14)
+                    .setRevision(15)
                     .build();
 
     // Must force tab re-creation to ensure tab group names make sense.

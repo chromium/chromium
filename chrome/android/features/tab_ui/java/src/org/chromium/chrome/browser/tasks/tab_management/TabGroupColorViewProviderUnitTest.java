@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -19,9 +18,11 @@ import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_M
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.GradientDrawable;
 import android.widget.FrameLayout;
 
+import androidx.annotation.Px;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -34,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.collaboration.CollaborationService;
@@ -205,6 +207,11 @@ public class TabGroupColorViewProviderUnitTest {
         FrameLayout colorView = (FrameLayout) viewProvider.getLazyView();
         assertEquals(0, colorView.getChildCount());
 
+        Resources res = mContext.getResources();
+        @Px int size = res.getDimensionPixelSize(R.dimen.tab_group_color_icon_item_size);
+        assertEquals(size, colorView.getMinimumWidth());
+        assertEquals(size, colorView.getMinimumHeight());
+
         GradientDrawable drawable = (GradientDrawable) colorView.getBackground();
         assertNotNull(drawable);
 
@@ -212,7 +219,6 @@ public class TabGroupColorViewProviderUnitTest {
                 ColorPickerUtils.getTabGroupColorPickerItemColor(
                         mContext, initialColorId, isIncognito),
                 drawable.getColor().getDefaultColor());
-        assertNotEquals(0, viewProvider.getStrokeWidthForTesting());
 
         viewProvider.setTabGroupColorId(finalColorId);
         assertEquals(colorView, viewProvider.getLazyView());
@@ -221,12 +227,27 @@ public class TabGroupColorViewProviderUnitTest {
                 ColorPickerUtils.getTabGroupColorPickerItemColor(
                         mContext, finalColorId, isIncognito),
                 drawable.getColor().getDefaultColor());
-        assertNotEquals(0, viewProvider.getStrokeWidthForTesting());
+        float radii = res.getDimension(R.dimen.tab_group_color_icon_item_radius);
+        assertAllCornerRadiiAre(radii, drawable);
     }
 
     private void verifyColorViewCollaboration(@TabGroupColorId int currentColorId) {
         FrameLayout colorView = (FrameLayout) mRegularColorViewProvider.getLazyView();
         assertEquals(1, colorView.getChildCount());
+
+        Resources res = mContext.getResources();
+        @Px
+        int expectedMarginStart =
+                res.getDimensionPixelSize(R.dimen.tab_group_color_icon_stroke) / 2;
+        int marginStart =
+                ((FrameLayout.LayoutParams) colorView.getChildAt(0).getLayoutParams())
+                        .getMarginStart();
+        assertEquals(expectedMarginStart, marginStart);
+
+        @Px
+        int size = res.getDimensionPixelSize(R.dimen.tab_group_color_icon_with_avatar_item_size);
+        assertEquals(size, colorView.getMinimumWidth());
+        assertEquals(size, colorView.getMinimumHeight());
 
         GradientDrawable drawable = (GradientDrawable) colorView.getBackground();
         assertNotNull(drawable);
@@ -234,6 +255,16 @@ public class TabGroupColorViewProviderUnitTest {
         assertEquals(
                 ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, currentColorId, false),
                 drawable.getColor().getDefaultColor());
-        assertEquals(0, mRegularColorViewProvider.getStrokeWidthForTesting());
+        float radius = res.getDimension(R.dimen.tab_group_color_icon_with_avatar_item_radius);
+        assertAllCornerRadiiAre(radius, drawable);
+    }
+
+    void assertAllCornerRadiiAre(float radius, GradientDrawable drawable) {
+        float[] radii = drawable.getCornerRadii();
+        assertNotNull(radii);
+        assertEquals(8, radii.length);
+        for (int i = 0; i < radii.length; i++) {
+            assertEquals("Radii not equal at index " + i, radius, radii[i], MathUtils.EPSILON);
+        }
     }
 }
