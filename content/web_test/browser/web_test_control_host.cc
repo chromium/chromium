@@ -2001,6 +2001,7 @@ void WebTestControlHost::PrepareRendererForNextWebTest() {
   params.force_new_browsing_instance =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kResetBrowsingInstanceBetweenTests);
+  params.force_new_compositor = true;
   web_contents->GetController().LoadURLWithParams(params);
 
   // The navigation might have to wait for before unload handler to execute. The
