@@ -537,6 +537,8 @@ class AutocompleteMediator
                 mDataProvider.getPageClassification(/* isPrefetch= */ false)
                         == PageClassification.ANDROID_HUB_VALUE;
         if (isAndroidHub && suggestion.hasTabMatch() && maybeSwitchToTab(suggestion)) {
+            // This bypasses the execution flow that captures histograms for all other cases.
+            recordMetrics(suggestion, matchIndex, WindowOpenDisposition.SWITCH_TO_TAB);
             return;
         }
 
