@@ -332,8 +332,10 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedBitmap::Bitmap() {
   // The release callback holds a reference to |this| to ensure that the
   // canvas resource that owns the shared memory stays alive at least until
   // the SkImage is destroyed.
+  auto sk_color_info = GetSkColorInfo();
   SkImageInfo image_info = SkImageInfo::Make(
-      SkISize::Make(Size().width(), Size().height()), GetSkColorInfo());
+      SkISize::Make(Size().width(), Size().height()), sk_color_info.colorType(),
+      sk_color_info.alphaType(), sk_color_info.refColorSpace());
   base::span<uint8_t> bytes(shared_mapping_);
   CHECK_GE(bytes.size(), image_info.computeByteSize(image_info.minRowBytes()));
   SkPixmap pixmap(image_info, bytes.data(), image_info.minRowBytes());
@@ -397,8 +399,10 @@ void CanvasResourceSharedBitmap::NotifyResourceLost() {
 }
 
 void CanvasResourceSharedBitmap::TakeSkImage(sk_sp<SkImage> image) {
+  auto sk_color_info = GetSkColorInfo();
   SkImageInfo image_info = SkImageInfo::Make(
-      SkISize::Make(Size().width(), Size().height()), GetSkColorInfo());
+      SkISize::Make(Size().width(), Size().height()), sk_color_info.colorType(),
+      sk_color_info.alphaType(), sk_color_info.refColorSpace());
   base::span<uint8_t> bytes(shared_mapping_);
   CHECK_GE(bytes.size(), image_info.computeByteSize(image_info.minRowBytes()));
   bool read_pixels_successful = image->readPixels(
@@ -1013,8 +1017,10 @@ bool CanvasResourceSwapChain::IsValid() const {
 }
 
 scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
+  auto sk_color_info = GetSkColorInfo();
   SkImageInfo image_info = SkImageInfo::Make(
-      SkISize::Make(Size().width(), Size().height()), GetSkColorInfo());
+      SkISize::Make(Size().width(), Size().height()), sk_color_info.colorType(),
+      sk_color_info.alphaType(), sk_color_info.refColorSpace());
 
   // It's safe to share the back buffer texture id if we're on the same thread
   // since the |release_callback| ensures this resource will be alive.
