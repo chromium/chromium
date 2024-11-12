@@ -3055,6 +3055,20 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_dawn_gtests_no_dxc_use_tint_ir",
+    targets = [
+        "dawn_end2end_no_dxc_use_tint_ir_tests",
+    ],
+    per_test_modifications = {
+        "dawn_end2end_no_dxc_use_tint_ir_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 1,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "gpu_dawn_integration_asan_gtests_passthrough",
     targets = [
         "gpu_common_gtests_passthrough",
@@ -3092,6 +3106,10 @@ targets.bundle(
         "gpu_dawn_gtests",
         "gpu_dawn_gtests_no_dxc",
         "gpu_dawn_gtests_no_dxc_with_validation",
+        # TODO(crbug.com/377296327): Remove when Tint IR is launched on Windows
+        "gpu_dawn_gtests_use_tint_ir",
+        # TODO(crbug.com/377296327): Remove when Tint IR is launched on Windows
+        "gpu_dawn_gtests_no_dxc_use_tint_ir",
         "gpu_dawn_gtests_with_validation",
     ],
 )
