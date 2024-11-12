@@ -1749,6 +1749,16 @@ fuzzer_test("css_parser_proto_fuzzer") {
   dict = "//third_party/blink/renderer/core/css/css.dict"
 }
 
+test("css_parser_fuzzer") {
+  sources = [ "css/parser/css_parser_fuzzer.cc" ]
+  deps = [
+    ":core",
+    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+  fuzztests = [ "CssParser.ParseSheetFuzzer" ]
+}
+
 proto_library("css_proto") {
   sources = [ "$blink_core_output_dir/css/parser/css.proto" ]
   proto_out_dir = "third_party/blink/renderer/core/css/parser"
