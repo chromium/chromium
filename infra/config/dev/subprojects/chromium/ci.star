@@ -95,6 +95,7 @@ def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
         resultdb_bigquery_exports = resultdb_bigquery_exports,
         siso_project = siso.project.DEFAULT_TRUSTED,
         siso_remote_jobs = siso.remote_jobs.DEFAULT,
+        siso_enabled = True,
         resultdb_index_by_timestamp = True,
         **kwargs
     )
