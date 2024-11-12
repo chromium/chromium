@@ -275,7 +275,7 @@ const base::Feature* SelectFeatureByIndex(const base::Feature* features[],
                                           int size,
                                           int index) {
   if (index < 0 || index >= size) {
-    // TODO: b/344673533 - Record error metrics.
+    RecordCampaignsManagerError(CampaignsManagerError::kFeatureIndexOutOfRange);
     return nullptr;
   }
 
@@ -707,7 +707,7 @@ const std::vector<std::string> RuntimeTargeting::GetActiveUrlRegexes() const {
   }
   for (const auto& active_url_regex_value : *active_url_regexes_value) {
     if (!active_url_regex_value.is_string()) {
-      // TODO(b/329124927): Record error.
+      RecordCampaignsManagerError(CampaignsManagerError::kInvalidUrlRegrex);
       CAMPAIGNS_LOG(ERROR) << "Invalid active url regex: "
                            << active_url_regex_value.DebugString();
       continue;
@@ -850,7 +850,7 @@ const gfx::Image* Image::GetBuiltInImage() const {
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  // TODO: b/340895798 - record error metric.
+  RecordCampaignsManagerError(CampaignsManagerError::kUnrecognizedBuiltInImage);
   CAMPAIGNS_LOG(ERROR) << "Unrecognized built in image.";
 
   return nullptr;
@@ -873,7 +873,8 @@ const gfx::VectorIcon* VectorIcon::GetVectorIcon() const {
 const gfx::VectorIcon* VectorIcon::GetBuiltInVectorIcon() const {
   const auto icon = GetBuiltInVectorIconType(vector_icon_dict_);
   if (!icon) {
-    // TODO: b/376659798 - record error metric.
+    RecordCampaignsManagerError(
+        CampaignsManagerError::kMissingBuiltInVectorIcon);
     CAMPAIGNS_LOG(ERROR) << "Missing built in vector icon.";
 
     return nullptr;
@@ -886,7 +887,7 @@ const gfx::VectorIcon* VectorIcon::GetBuiltInVectorIcon() const {
       return &ash::kNotificationHelpAppIcon;
   }
 
-  // TODO: b/376659798 - record error metric.
+  RecordCampaignsManagerError(CampaignsManagerError::kMissingBuiltInVectorIcon);
   CAMPAIGNS_LOG(ERROR) << "Unrecognized built in vector icon.";
 }
 

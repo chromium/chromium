@@ -87,6 +87,10 @@ chromium-metrics-reviews@google.com.
   <int value="49" label="Record events before campaigns loaded"/>
   <int value="50" label="Shelf icon not found for anchoring nudge"/>
   <int value="51" label="No board info is available"/>
+  <int value="52" label="Feature index out of range"/>
+  <int value="53" label="Invalid URL regrex"/>
+  <int value="54" label="Unrecognized built-in image"/>
+  <int value="55" label="Missing built-in vector icon"/>
 </enum>
 
 </enums>
