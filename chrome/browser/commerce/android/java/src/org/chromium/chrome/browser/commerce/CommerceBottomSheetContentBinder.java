@@ -17,9 +17,17 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class CommerceBottomSheetContentBinder {
     public static void bind(PropertyModel model, LinearLayout view, PropertyKey propertyKey) {
         if (propertyKey == CommerceBottomSheetContentProperties.CUSTOM_VIEW) {
+            // Before attaching the custom view, ensure it's detached from any previous parent to
+            // avoid potential conflicts.
+            View customView = model.get(CommerceBottomSheetContentProperties.CUSTOM_VIEW);
+            ViewGroup parent = (ViewGroup) customView.getParent();
+            if (parent != null) {
+                parent.removeView(customView);
+            }
+
             FrameLayout container = view.findViewById(R.id.content_view_container);
             container.addView(
-                    model.get(CommerceBottomSheetContentProperties.CUSTOM_VIEW),
+                    customView,
                     new LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
                             ViewGroup.LayoutParams.WRAP_CONTENT));
