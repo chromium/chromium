@@ -13,6 +13,7 @@ include_rules = [
   "+components/metrics",
   "+components/optimization_guide",
   "+components/optimization_guide/core",
+  "+components/password_manager/core/browser/features/password_features.h",
   "+components/profile_metrics",
   "+components/policy",
   "+components/user_annotations",

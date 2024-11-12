@@ -116,6 +116,28 @@ bool CachedFormNeedsUpdate(const FormData& live_form,
   return false;
 }
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+// Retrieves the ML model handler form the `client` using `get_handler`, and
+// requests ML predictions for `forms` if the handler is available. Passes
+// `callback` to the handler so it is invoked once predictions are available.
+void GetMlPredictionsIfNeeded(
+    base::WeakPtr<AutofillClient> client,
+    FieldClassificationModelHandler* (AutofillClient::*get_handler)(),
+    base::OnceCallback<void(std::vector<std::unique_ptr<FormStructure>>)>
+        callback,
+    std::vector<std::unique_ptr<FormStructure>> forms) {
+  if (!client) {
+    return;
+  }
+  if (FieldClassificationModelHandler* ml_handler = (*client.*get_handler)()) {
+    ml_handler->GetModelPredictionsForForms(std::move(forms),
+                                            std::move(callback));
+  } else {
+    std::move(callback).Run(std::move(forms));
+  }
+}
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
 }  // namespace
 
 // static
@@ -651,16 +673,29 @@ void AutofillManager::ParseFormsAsync(
       std::move(update_cache));
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  // Run ML Model before running heuristics to ensure that
-  // rationalization and sectioning are done.
-  if (auto* ml_handler =
-          client().GetAutofillFieldClassificationModelHandler()) {
-    ml_handler->GetModelPredictionsForForms(
-        std::move(form_structures), std::move(run_heuristics_and_update_cache));
-    return;
-  }
-#endif
+  // Parsing happens in the following order:
+  // (1) Running ML Models (first Autofill, then Password Manager).
+  // (2) Running heuristics (this ensures that rationalization and sectioning
+  // are done for the active Autofill predictions).
+  // (3) Updating the form cache.
+
+  // Chain running heuristics and updating cache after running the Password
+  // Manager model.
+  auto run_password_manager_model_if_needed = base::BindOnce(
+      &GetMlPredictionsIfNeeded, client().GetWeakPtr(),
+      &AutofillClient::GetPasswordManagerFieldClassificationModelHandler,
+      std::move(run_heuristics_and_update_cache));
+
+  // Chain running the Password Manager model after running the Autofill model.
+  GetMlPredictionsIfNeeded(
+      client().GetWeakPtr(),
+      &AutofillClient::GetAutofillFieldClassificationModelHandler,
+      std::move(run_password_manager_model_if_needed),
+      std::move(form_structures));
+
+#else   // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::move(run_heuristics_and_update_cache).Run(std::move(form_structures));
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 }
 
 void AutofillManager::ParseFormAsync(
@@ -764,15 +799,16 @@ void AutofillManager::ParseFormAsync(
       [](base::WeakPtr<AutofillManager> self,
          AsyncContext (*run_heuristics)(AsyncContext),
          base::OnceCallback<void(AsyncContext)> update_cache,
-         std::unique_ptr<FormStructure> form) {
+         std::vector<std::unique_ptr<FormStructure>> forms) {
         if (!self) {
           return;
         }
+        CHECK_EQ(forms.size(), 1u);
         self->parsing_task_runner_->PostTaskAndReplyWithResult(
             FROM_HERE,
             base::BindOnce(
                 run_heuristics,
-                AsyncContext(std::move(form),
+                AsyncContext(std::move(forms[0]),
                              self->client().GetVariationConfigCountryCode(),
                              self->log_manager_)),
             std::move(update_cache));
@@ -780,17 +816,31 @@ void AutofillManager::ParseFormAsync(
       parsing_weak_ptr_factory_.GetWeakPtr(), run_heuristics,
       std::move(update_cache));
 
+  std::vector<std::unique_ptr<FormStructure>> form_structures;
+  form_structures.emplace_back(std::move(form_structure));
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  // Run ML Model before running heuristics to ensure that
-  // rationalization and sectioning are done.
-  if (auto* ml_handler =
-          client().GetAutofillFieldClassificationModelHandler()) {
-    ml_handler->GetModelPredictionsForForm(
-        std::move(form_structure), std::move(run_heuristics_and_update_cache));
-    return;
-  }
+  // Parsing happens in the following order:
+  // (1) Running ML Models (first Autofill, then Password Manager).
+  // (2) Running heuristics (this ensures that rationalization and sectioning
+  // are done for the active Autofill predictions).
+  // (3) Updating the form cache.
+
+  // Chain running heuristics and updating cache after running the Password
+  // Manager model.
+  auto run_password_manager_model_if_needed = base::BindOnce(
+      &GetMlPredictionsIfNeeded, client().GetWeakPtr(),
+      &AutofillClient::GetPasswordManagerFieldClassificationModelHandler,
+      std::move(run_heuristics_and_update_cache));
+
+  // Chain running the Password Manager model after running the Autofill model.
+  GetMlPredictionsIfNeeded(
+      client().GetWeakPtr(),
+      &AutofillClient::GetAutofillFieldClassificationModelHandler,
+      std::move(run_password_manager_model_if_needed),
+      std::move(form_structures));
+#else
+  std::move(run_heuristics_and_update_cache).Run(std::move(form_structures));
 #endif
-  std::move(run_heuristics_and_update_cache).Run(std::move(form_structure));
 }
 
 void AutofillManager::OnLoadedServerPredictions(

@@ -1400,6 +1400,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/os_crypt/async/browser:test_support",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/plus_addresses",
     "//components/policy/core/common",
     "//components/prefs:test_support",
