@@ -44,6 +44,7 @@
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "url/origin.h"
 
@@ -76,6 +77,11 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/webapps/common/web_app_id.h"
 #include "ui/events/event.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/smart_card/smart_card_permission_context.h"
+#include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
 #endif
 
 namespace {
@@ -130,6 +136,13 @@ ChromePageInfoDelegate::GetChooserContext(ContentSettingsType type) {
 #else
       NOTREACHED();
 #endif
+    case ContentSettingsType::SMART_CARD_DATA:
+#if BUILDFLAG(IS_CHROMEOS)
+      if (base::FeatureList::IsEnabled(blink::features::kSmartCard)) {
+        return &SmartCardPermissionContextFactory::GetForProfile(*GetProfile());
+      }
+#endif
+      return nullptr;
     default:
       NOTREACHED();
   }

@@ -477,6 +477,12 @@
     <message name="IDS_PAGE_INFO_DELETE_HID_DEVICE_WITH_NAME" desc="The tooltip displayed when hovering over the button that will remove permission to access a HID device that the user previously granted to the site.">
       Revoke access for <ph name="DEVICE_NAME">$1<ex>Stadia Controller</ex></ph>
     </message>
+    <message name="IDS_PAGE_INFO_SMART_CARD_READER_SECONDARY_LABEL" desc="The label displayed underneath the device name to inform the user that the item refers to a smart card reader.">
+      Smart card reader
+    </message>
+    <message name="IDS_PAGE_INFO_DELETE_SMART_CARD_READER_WITH_NAME" desc="The tooltip displayed when hovering over the button that will remove permission to access a Smart Card Reader that the user previously granted to the site.">
+      Revoke access for <ph name="DEVICE_NAME">$1<ex>Reader 1</ex></ph>
+    </message>
 
     <!-- Site settings link -->
     <message name="IDS_PAGE_INFO_SITE_SETTINGS_LINK" desc="This is the text of the link pointing to Chrome's Site Settings page. This appears at the bottom of the Permissions pane of the Page Information Window.">

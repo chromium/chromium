@@ -594,6 +594,9 @@ const ui::ImageModel PageInfoViewFactory::GetChosenObjectIcon(
     case ContentSettingsType::HID_CHOOSER_DATA:
       icon = &vector_icons::kVideogameAssetIcon;
       break;
+    case ContentSettingsType::SMART_CARD_DATA:
+      icon = &vector_icons::kSmartCardReaderIcon;
+      break;
     default:
       // All other content settings types do not represent chosen object
       // permissions.
