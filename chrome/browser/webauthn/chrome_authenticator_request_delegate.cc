@@ -803,13 +803,8 @@ void ChromeWebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
   }
 
   auto* const sync_service = SyncServiceFactory::GetForProfile(profile);
-
-  // TODO(crbug.com/40066949): Remove this call once IsSyncFeatureEnabled()
-  // is fully deprecated, see ConsentLevel::kSync documentation for details,
-  // in components/signin/public/base/consent_level.h.
-  if (!sync_service || !sync_service->IsSyncFeatureEnabled() ||
-      !sync_service->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kPasswords)) {
+  if (!sync_service || !sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                           syncer::UserSelectableType::kPasswords)) {
     FIDO_LOG(EVENT)
         << "Enclave authenticator disabled because password sync not active";
     std::move(callback).Run(false);
