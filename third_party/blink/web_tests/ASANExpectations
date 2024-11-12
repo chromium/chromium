@@ -33,3 +33,5 @@ crbug.com/243871 [ Linux ] virtual/threaded-prefer-compositing/fast/scroll-behav
 crbug.com/803276 inspector-protocol/memory/sampling-native-profile.js [ Skip ]
 crbug.com/803276 inspector-protocol/memory/sampling-native-snapshot.js [ Skip ]
 
+# Gardener 2024-11-12
+crbug.com/378566920 [ Linux ] external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html* [ Failure Pass ]
