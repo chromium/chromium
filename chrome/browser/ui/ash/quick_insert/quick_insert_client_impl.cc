@@ -68,8 +68,7 @@
 
 namespace {
 
-// TODO: b/345303965 - Finalize this string.
-constexpr std::u16string_view kAnnouncementViewName = u"Picker";
+constexpr std::u16string_view kAnnouncementViewName = u"Quick Insert";
 
 // Returns an `AppListControllerDelegate` with empty methods. Used only for
 // constructing search engine providers.

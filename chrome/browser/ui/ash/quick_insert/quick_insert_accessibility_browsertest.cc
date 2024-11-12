@@ -890,9 +890,9 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
         ash::QuickInsertTextResult(u"abc"));
   });
 
-  sm_.ExpectSpeechPattern("Picker");
+  sm_.ExpectSpeechPattern("Quick Insert");
   sm_.ExpectSpeechPattern(", window");
-  sm_.ExpectSpeechPattern("Picker");
+  sm_.ExpectSpeechPattern("Quick Insert");
   sm_.ExpectSpeechPattern("Status");
   sm_.ExpectSpeechPattern("Inserting selected result");
   sm_.ExpectSpeechPattern("textfield");

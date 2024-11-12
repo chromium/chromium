@@ -62,8 +62,7 @@ views::Widget::InitParams CreateInitParams(
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
-  // TODO(b/309706053): Replace this with the finalized string.
-  params.name = "Picker";
+  params.name = "Quick Insert";
   params.delegate = quick_insert_view.release();
   return params;
 }
