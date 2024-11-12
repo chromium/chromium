@@ -32,8 +32,10 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.Observer;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.sync.ui.bookmark_batch_upload_card.BookmarkBatchUploadCardCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
@@ -147,6 +149,13 @@ class BookmarkManagerMediator
                                 // If the deleted node was selection, unselect it.
                                 if (mSelectionDelegate.isItemSelected(id)) {
                                     mSelectionDelegate.toggleSelectionForItem(id);
+                                }
+                                // Update the batch upload card (in case of refresh() is not called)
+                                // to reflect the right number of the
+                                // local bookmarks.
+                                if (mBookmarkBatchUploadCardCoordinator != null) {
+                                    mBookmarkBatchUploadCardCoordinator
+                                            .hideBatchUploadCardAndUpdate();
                                 }
                             }
                         }
@@ -363,6 +372,7 @@ class BookmarkManagerMediator
                     TaskTraits.UI_DEFAULT, mCallbackController.makeCancelable(this::refresh));
     private final BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
 
+    @Nullable private BookmarkBatchUploadCardCoordinator mBookmarkBatchUploadCardCoordinator;
     // Whether this instance has been destroyed.
     private boolean mIsDestroyed;
     private String mInitialUrl;
@@ -424,6 +434,14 @@ class BookmarkManagerMediator
         mPromoHeaderManager =
                 new BookmarkPromoHeader(
                         mContext, mProfile.getOriginalProfile(), this::updateHeader);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)) {
+            mBookmarkBatchUploadCardCoordinator =
+                    new BookmarkBatchUploadCardCoordinator(
+                            mContext,
+                            mProfile.getOriginalProfile(),
+                            mSnackbarManager,
+                            this::updateBatchUploadCard);
+        }
         mBookmarkUndoController = bookmarkUndoController;
         mBookmarkMoveSnackbarManager = bookmarkMoveSnackbarManager;
 
@@ -979,6 +997,9 @@ class BookmarkManagerMediator
             mModelList.removeRange(index, mModelList.size() - index);
         }
 
+        // Add the batch upload card if possible.
+        updateBatchUploadCard();
+
         updateAllLocations();
         syncAdapterAndSelectionDelegate();
     }
@@ -1071,6 +1092,13 @@ class BookmarkManagerMediator
         }
     }
 
+    private boolean shouldShowBatchUploadCard() {
+        if (mBookmarkBatchUploadCardCoordinator == null) {
+            return false;
+        }
+        return mBookmarkBatchUploadCardCoordinator.shouldShowBatchUploadCard();
+    }
+
     /**
      * Removes, adds, or updates the promo row, depending on the previous state and desired state.
      * Note that this method effectively duplicates the logic in {@link this#setBookmarks} that
@@ -1096,6 +1124,34 @@ class BookmarkManagerMediator
         }
     }
 
+    private void updateBatchUploadCard() {
+        if (getCurrentUiMode() != BookmarkUiMode.FOLDER || !topLevelFoldersShowing()) {
+            return;
+        }
+        int currentBatchUploadCardIndex =
+                searchForFirstIndexOfType(
+                        /* endIndex= */ mModelList.size() - 1,
+                        viewType -> viewType == ViewType.BATCH_UPLOAD_CARD);
+        if (shouldShowBatchUploadCard()) {
+            // In the root folder there can only be exactly zero or two SECTION HEADERs. The
+            // account header is the first of them, and the second header is the local one.
+            if (currentBatchUploadCardIndex < 0) {
+                ListItem batchUploadCardListItem = buildBatchUploadCardListItem();
+                int localSectionHeaderIndex =
+                        searchForLastIndexOfType(
+                                0, viewType -> viewType == ViewType.SECTION_HEADER);
+                if (localSectionHeaderIndex >= 0) {
+                    // Inserting the batch upload card immediately after the local header.
+                    mModelList.add(localSectionHeaderIndex + 1, batchUploadCardListItem);
+                }
+            }
+        } else {
+            if (currentBatchUploadCardIndex >= 0) {
+                mModelList.removeAt(currentBatchUploadCardIndex);
+            }
+        }
+    }
+
     private int getCurrentPromoHeaderIndex() {
         return searchForFirstIndexOfType(/* endIndex= */ PROMO_MAX_INDEX, this::isPromoType);
     }
@@ -1109,6 +1165,19 @@ class BookmarkManagerMediator
     private int searchForFirstIndexOfType(int endIndex, Predicate<Integer> typePredicate) {
         endIndex = Math.min(endIndex, mModelList.size() - 1);
         for (int i = 0; i <= endIndex; ++i) {
+            if (typePredicate.test(mModelList.get(i).type)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Returns the last index that matches up starting from startIndex, or -1 if no match is found.
+     */
+    private int searchForLastIndexOfType(int startIndex, Predicate<Integer> typePredicate) {
+        startIndex = Math.min(startIndex, 0);
+        for (int i = mModelList.size() - 1; i >= startIndex; --i) {
             if (typePredicate.test(mModelList.get(i).type)) {
                 return i;
             }
@@ -1188,6 +1257,17 @@ class BookmarkManagerMediator
         return new ListItem(bookmarkListEntry.getViewType(), builder.build());
     }
 
+    private ListItem buildBatchUploadCardListItem() {
+        BookmarkListEntry bookmarkListEntry = BookmarkListEntry.createBatchUploadCard();
+        PropertyModel.Builder builder =
+                new PropertyModel.Builder(BookmarkManagerProperties.ALL_KEYS)
+                        .with(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, bookmarkListEntry)
+                        .with(
+                                BookmarkManagerProperties.BOOKMARK_BATCH_UPLOAD_CARD_COORDINATOR,
+                                mBookmarkBatchUploadCardCoordinator);
+        return new ListItem(bookmarkListEntry.getViewType(), builder.build());
+    }
+
     private ListItem buildSearchBoxRow() {
         PropertyModel propertyModel =
                 new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
@@ -1259,6 +1339,11 @@ class BookmarkManagerMediator
 
     private void finishLoadingBookmarkModel() {
         mBookmarkModel.finishLoadingBookmarkModel(this::onBookmarkModelLoaded);
+    }
+
+    @VisibleForTesting
+    BookmarkBatchUploadCardCoordinator getBookmarkBatchUploadCardCoordinator() {
+        return mBookmarkBatchUploadCardCoordinator;
     }
 
     @VisibleForTesting

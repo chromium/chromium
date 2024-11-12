@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.sync.settings;
+package org.chromium.chrome.browser.sync;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -35,7 +35,7 @@ import java.util.Set;
  * types to upload. Data type switches will be displayed only if the user has local data for that
  * particular type.
  */
-final class BatchUploadDialogCoordinator {
+public final class BatchUploadDialogCoordinator {
     public interface Listener {
         /** Called when the user clicks the button. */
         void onSaveInAccountDialogButtonClicked(Set<Integer> types, int itemsCount);
@@ -49,7 +49,7 @@ final class BatchUploadDialogCoordinator {
     private final MaterialSwitchWithTitleAndSummary mReadingListSwitch;
 
     @MainThread
-    static void show(
+    public static void show(
             Context context,
             HashMap<Integer, LocalDataDescription> localDataDescriptionsMap,
             ModalDialogManager dialogManager,

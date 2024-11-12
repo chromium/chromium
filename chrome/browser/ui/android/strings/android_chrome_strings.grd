@@ -2643,6 +2643,24 @@ Your Google account may have other forms of browsing history like searches and a
           =1 {1 item is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="ACCOUNT_EMAIL">%2$s<ex>elisa.g.beckett@gmail.com</ex></ph>.}
           other {# items are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL">%2$s<ex>elisa.g.beckett@gmail.com</ex></ph>.}}
       </message>
+      <message name="IDS_BOOKMARKS_LEFT_BEHIND_BOOKMARKS_BUTTON" desc="This message appears in a user's bookmark manager. The text appears in a temporary card to inform them that there is some local data (bookmarks) saved to their device, but the data hasn't been saved to their Google Account yet. The user can click 'Save in Account' to enter a flow where they review the data and choose to save it in their account. When data is saved to the user's Google Account, it's backed up safely and is available on any device where they're signed in to Chrome.">
+        Save in account
+      </message>
+      <message name="IDS_BOOKMARKS_LEFT_BEHIND_BOOKMARK"  desc="This message appears in a user's bookmark manager. The text appears in a temporary card to inform them that there is some local data (bookmarks) saved to their device, but the data hasn't been saved to their Google Account yet. The user can click 'Save in Account' to enter a flow where they review the data and choose to save it in their account. When data is saved to the user's Google Account, it's backed up safely and is available on any device where they're signed in to Chrome.">
+        {BOOKMARKS_COUNT, plural,
+          =1 {1 bookmark is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="ACCOUNT_EMAIL">%2$s<ex>elisa.g.beckett@gmail.com</ex></ph>.}
+          other {# bookmarks are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL">%2$s<ex>elisa.g.beckett@gmail.com</ex></ph>.}}
+      </message>
+      <message name="IDS_BOOKMARKS_LEFT_BEHIND_BOOKMARK_AND_OTHER"  desc="This message appears in a user's bookmark manager. The text appears in a temporary card to inform them that there is some local data (bookmarks and some other data) saved to their device, but the data hasn't been saved to their Google Account yet. The user can click 'Save in Account' to enter a flow where they review the data and choose to save it in their account. When data is saved to the user's Google Account, it's backed up safely and is available on any device where they're signed in to Chrome.">
+        {BOOKMARKS_COUNT, plural,
+          =1 {1 bookmark and other items are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL">%2$s<ex>elisa.g.beckett@gmail.com</ex></ph>.}
+          other {# bookmarks and other items are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL">%2$s<ex>elisa.g.beckett@gmail.com</ex></ph>.}}
+      </message>
+      <message name="IDS_BOOKMARKS_LEFT_BEHIND_OTHER"  desc="This message appears in a user's bookmark manager. The text appears in a temporary card to inform them that there is some local data (something other than bookmarks) saved to their device, but the data hasn't been saved to their Google Account yet. The user can click 'Save in Account' to enter a flow where they review the data and choose to save it in their account. When data is saved to the user's Google Account, it's backed up safely and is available on any device where they're signed in to Chrome.">
+        {ITEMS_COUNT, plural,
+          =1 {1 item is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="ACCOUNT_EMAIL">%2$s<ex>elisa.g.beckett@gmail.com</ex></ph>.}
+          other {# items are saved only to this device. To use them on your other devices, save them in your Google Account, <ph name="ACCOUNT_EMAIL">%2$s<ex>elisa.g.beckett@gmail.com</ex></ph>.}}
+      </message>
       <message name="IDS_ACCOUNT_SETTINGS_BULK_UPLOAD_DIALOG_TITLE" desc="The text appears as the title of a confirmation dialog where the user can choose to save some data to their Google Account. When data is saved to the Google Account, it's backed up safely and is available on any device where they're signed in to Chrome.">
         Save data in your Google Account
       </message>

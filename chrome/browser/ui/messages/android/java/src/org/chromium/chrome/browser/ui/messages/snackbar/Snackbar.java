@@ -126,6 +126,7 @@ public class Snackbar {
     public static final int UMA_SETTINGS_BATCH_UPLOAD = 71;
     public static final int UMA_REVOKE_FILE_EDIT_GRANT = 72;
     public static final int UMA_SEARCH_ENGINE_CHANGED_NOTIFICATION = 73;
+    public static final int UMA_BOOKMARK_BATCH_UPLOAD = 74;
 
     private @Nullable SnackbarController mController;
     private CharSequence mText;

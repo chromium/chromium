@@ -1247,6 +1247,7 @@ if (current_toolchain == default_toolchain) {
       "//components/browser_ui/edge_to_edge/android:junit",
       "//components/browser_ui/media/android:java",
       "//components/browser_ui/media/android:java_resources",
+      "//components/browser_ui/modaldialog/android:java",
       "//components/browser_ui/modaldialog/android:junit",
       "//components/browser_ui/notifications/android:java",
       "//components/browser_ui/settings/android:java",

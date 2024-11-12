@@ -29,6 +29,13 @@ class BookmarkManagerViewBinder {
 
     static void bindLegacyPromoView(PropertyModel model, View view, PropertyKey key) {}
 
+    static void bindBatchUploadCardView(PropertyModel model, View view, PropertyKey key) {
+        if (key == BookmarkManagerProperties.BOOKMARK_BATCH_UPLOAD_CARD_COORDINATOR) {
+            model.get(BookmarkManagerProperties.BOOKMARK_BATCH_UPLOAD_CARD_COORDINATOR)
+                    .setView(view.findViewById(R.id.signin_settings_card));
+        }
+    }
+
     static void bindSectionHeaderView(PropertyModel model, View view, PropertyKey key) {
         if (key == BookmarkManagerProperties.BOOKMARK_LIST_ENTRY) {
             Resources resources = view.getResources();
