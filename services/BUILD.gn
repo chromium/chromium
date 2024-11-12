@@ -132,6 +132,10 @@ if (!is_ios) {
       "//services/test:run_all_unittests",
       "//services/viz/public/cpp/compositing:perftests",
     ]
+
+    if (is_android) {
+      deps += [ "//components/signin/public/android:java" ]
+    }
   }
 }
 
