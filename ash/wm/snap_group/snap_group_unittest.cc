@@ -1677,7 +1677,7 @@ TEST_F(FasterSplitScreenTest, AccessibilityFocusAnnotator) {
   ASSERT_TRUE(focus_widget);
   OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
   ASSERT_FALSE(grid->desks_widget());
-  ASSERT_FALSE(grid->GetSaveDeskForLaterButton());
+  ASSERT_FALSE(OverviewGridTestApi(grid).GetSaveDeskForLaterButton());
   auto* split_view_setup_widget = grid->split_view_setup_widget();
   ASSERT_TRUE(split_view_setup_widget);
 
@@ -6822,7 +6822,8 @@ TEST_F(SnapGroupDesksTest, SaveDeskForSnapGroupWithAnotherSavedDeskOld) {
   ASSERT_TRUE(overview_grid);
   ASSERT_EQ(1u, overview_grid->item_list().size());
 
-  auto* save_for_later_button = overview_grid->GetSaveDeskForLaterButton();
+  auto* save_for_later_button =
+      OverviewGridTestApi(overview_grid).GetSaveDeskForLaterButton();
   ASSERT_TRUE(save_for_later_button);
   base::RunLoop().RunUntilIdle();
   LeftClickOn(save_for_later_button);

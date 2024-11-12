@@ -50,8 +50,6 @@ class OverviewGridEventHandler;
 class OverviewItemBase;
 class OverviewSession;
 class RoundedLabelWidget;
-class SavedDeskSaveDeskButton;
-class SavedDeskSaveDeskButtonContainer;
 class SavedDeskLibraryView;
 class ScopedOverviewHideWindows;
 class ScopedOverviewWallpaperClipper;
@@ -89,8 +87,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   OverviewGrid& operator=(const OverviewGrid&) = delete;
 
   ~OverviewGrid() override;
-
-  const gfx::Rect& bounds() const { return bounds_; }
 
   // Exits overview mode.
   void Shutdown(OverviewEnterExitType exit_type);
@@ -402,8 +398,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   void EnableSaveDeskButtonContainer();
 
   bool IsSaveDeskButtonContainerVisible() const;
-  bool IsSaveDeskAsTemplateButtonVisible() const;
-  bool IsSaveDeskForLaterButtonVisible() const;
 
   // Called by `OverviewSession` when tablet mode changes to update necessary UI
   // if needed.
@@ -413,16 +407,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // if it exists, and if two windows are in a snap group, they are a single
   // item.
   size_t GetNumWindows() const;
-
-  // Returns the save desk as template button if available, otherwise null.
-  SavedDeskSaveDeskButton* GetSaveDeskAsTemplateButton();
-
-  // Returns the save desk for later button if available, otherwise null.
-  SavedDeskSaveDeskButton* GetSaveDeskForLaterButton();
-
-  // Returns the save button container if available, otherwise null.
-  SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer();
-  const SavedDeskSaveDeskButtonContainer* GetSaveDeskButtonContainer() const;
 
   const SplitViewSetupView* GetSplitViewSetupView() const;
 
@@ -470,7 +454,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Returns the root window in which the grid displays the windows.
   aura::Window* root_window() { return root_window_; }
-  const aura::Window* root_window() const { return root_window_; }
 
   OverviewSession* overview_session() { return overview_session_; }
 
@@ -498,7 +481,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // function.
   RoundedLabelWidget* no_windows_widget() { return no_windows_widget_.get(); }
 
-  const views::Widget* desks_widget() const { return desks_widget_.get(); }
   views::Widget* desks_widget() { return desks_widget_.get(); }
 
   const OverviewDeskBarView* desks_bar_view() const { return desks_bar_view_; }
@@ -517,9 +499,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   views::Widget* informed_restore_widget() {
     return informed_restore_widget_.get();
   }
-  const views::Widget* informed_restore_widget() const {
-    return informed_restore_widget_.get();
-  }
 
   views::Widget* save_desk_button_container_widget() {
     return save_desk_button_container_widget_.get();
@@ -528,10 +507,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   ScopedOverviewWallpaperClipper* scoped_overview_wallpaper_clipper() {
     return scoped_overview_wallpaper_clipper_.get();
   }
-
-  int num_incognito_windows() const { return num_incognito_windows_; }
-
-  int num_unsupported_windows() const { return num_unsupported_windows_; }
 
   OverviewUiTaskPool& enter_animation_task_pool() {
     return enter_animation_task_pool_;

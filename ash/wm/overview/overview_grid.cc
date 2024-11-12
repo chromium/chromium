@@ -48,7 +48,6 @@
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_name_view.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
-#include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button_container.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/gestures/wm_gesture_handler.h"
@@ -2549,22 +2548,6 @@ bool OverviewGrid::IsSaveDeskButtonContainerVisible() const {
              1.f;
 }
 
-bool OverviewGrid::IsSaveDeskAsTemplateButtonVisible() const {
-  if (!IsSaveDeskButtonContainerVisible())
-    return false;
-  const auto* container = GetSaveDeskButtonContainer();
-  return container && container->save_desk_as_template_button() &&
-         container->save_desk_as_template_button()->GetVisible();
-}
-
-bool OverviewGrid::IsSaveDeskForLaterButtonVisible() const {
-  if (!IsSaveDeskButtonContainerVisible())
-    return false;
-  const auto* container = GetSaveDeskButtonContainer();
-  return container && container->save_desk_for_later_button() &&
-         container->save_desk_for_later_button()->GetVisible();
-}
-
 void OverviewGrid::OnTabletModeChanged() {
   // We may not show virtual desk bar in clamshell mode such as in split view
   // setup session, and the desk bar will be created in tablet mode either. In
@@ -2580,31 +2563,6 @@ size_t OverviewGrid::GetNumWindows() const {
     size += item->GetWindows().size();
   }
   return size;
-}
-
-SavedDeskSaveDeskButton* OverviewGrid::GetSaveDeskAsTemplateButton() {
-  auto* container = GetSaveDeskButtonContainer();
-  return container ? container->save_desk_as_template_button() : nullptr;
-}
-
-SavedDeskSaveDeskButton* OverviewGrid::GetSaveDeskForLaterButton() {
-  auto* container = GetSaveDeskButtonContainer();
-  return container ? container->save_desk_for_later_button() : nullptr;
-}
-
-SavedDeskSaveDeskButtonContainer* OverviewGrid::GetSaveDeskButtonContainer() {
-  return save_desk_button_container_widget_
-             ? views::AsViewClass<SavedDeskSaveDeskButtonContainer>(
-                   save_desk_button_container_widget_->GetContentsView())
-             : nullptr;
-}
-
-const SavedDeskSaveDeskButtonContainer*
-OverviewGrid::GetSaveDeskButtonContainer() const {
-  return save_desk_button_container_widget_
-             ? views::AsViewClass<SavedDeskSaveDeskButtonContainer>(
-                   save_desk_button_container_widget_->GetContentsView())
-             : nullptr;
 }
 
 const SplitViewSetupView* OverviewGrid::GetSplitViewSetupView() const {

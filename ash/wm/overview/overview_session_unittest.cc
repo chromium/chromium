@@ -3381,7 +3381,8 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotator) {
     return;
   }
 
-  SavedDeskSaveDeskButton* save_button = grid->GetSaveDeskForLaterButton();
+  SavedDeskSaveDeskButton* save_button =
+      OverviewGridTestApi(grid).GetSaveDeskForLaterButton();
   ASSERT_TRUE(save_button);
   views::Widget* save_widget = save_button->GetWidget();
 

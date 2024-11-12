@@ -14,6 +14,7 @@
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button.h"
 #include "ash/wm/overview/overview_grid.h"
+#include "ash/wm/overview/overview_grid_test_api.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
@@ -231,12 +232,16 @@ const views::Button* GetLibraryButton() {
 
 const views::Button* GetSaveDeskAsTemplateButton() {
   auto* overview_grid = GetPrimaryOverviewGrid();
-  return overview_grid ? overview_grid->GetSaveDeskAsTemplateButton() : nullptr;
+  return overview_grid
+             ? OverviewGridTestApi(overview_grid).GetSaveDeskAsTemplateButton()
+             : nullptr;
 }
 
 const views::Button* GetSaveDeskForLaterButton() {
   auto* overview_grid = GetPrimaryOverviewGrid();
-  return overview_grid ? overview_grid->GetSaveDeskForLaterButton() : nullptr;
+  return overview_grid
+             ? OverviewGridTestApi(overview_grid).GetSaveDeskForLaterButton()
+             : nullptr;
 }
 
 const views::Button* GetSavedDeskItemButton(int index) {
