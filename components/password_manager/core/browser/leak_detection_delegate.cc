@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/leak_detection_delegate.h"
 
 #include "build/build_config.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
@@ -74,6 +75,11 @@ void LeakDetectionDelegate::StartLeakCheck(LeakDetectionInitiator initiator,
     is_leaked_timer_ = std::make_unique<base::ElapsedTimer>();
     leak_check_->Start(initiator, credentials.url, credentials.username_value,
                        credentials.password_value);
+    if (base::FeatureList::IsEnabled(
+            features::kImprovedPasswordChangeService)) {
+      client_->GetAffiliationService()->PrefetchChangePasswordURLs(
+          {form_url}, base::DoNothing());
+    }
   }
 }
 
