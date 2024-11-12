@@ -1,6 +1,7 @@
 {
   "gn_args": {
     "dcheck_always_on": false,
+    "enable_mojom_fuzzer": true,
     "ffmpeg_branding": "Chrome",
     "is_asan": true,
     "is_component_build": true,

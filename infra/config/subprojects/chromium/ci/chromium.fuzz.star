@@ -1553,6 +1553,7 @@ ci.builder(
             "pdf_xfa",
             "optimize_for_fuzzing",
             "mac",
+            "mojo_fuzzer",
             "x64",
         ],
     ),
