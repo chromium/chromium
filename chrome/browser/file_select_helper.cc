@@ -42,6 +42,7 @@
 #include "net/base/filename_util.h"
 #include "net/base/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -66,6 +67,8 @@ using blink::mojom::FileChooserParams;
 using blink::mojom::FileChooserParamsPtr;
 using content::BrowserThread;
 using content::WebContents;
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCancelButtonId);
 
 namespace {
 
@@ -234,13 +237,36 @@ void FileSelectHelper::OnListFile(
   directory_enumeration_->results_.push_back(data.path);
 }
 
-void FileSelectHelper::LaunchConfirmationDialog(
+std::unique_ptr<ui::DialogModel> FileSelectHelper::CreateConfirmationDialog(
     const base::FilePath& path,
-    std::vector<ui::SelectedFileInfo> selected_files) {
-  ShowFolderUploadConfirmationDialog(
-      path,
-      base::BindOnce(&FileSelectHelper::ConvertToFileChooserFileInfoList, this),
-      std::move(selected_files), web_contents_);
+    std::vector<FileChooserFileInfoPtr> selected_files,
+    base::OnceCallback<void(std::vector<blink::mojom::FileChooserFileInfoPtr>)>
+        callback) {
+  // Split callback for ok, cancel.
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  auto ok_callback = std::move(split_callback.first);
+  // Split again for cancel and close.
+  auto cancel_callbacks =
+      base::SplitOnceCallback(std::move(split_callback.second));
+
+  ui::DialogModel::Builder dialog_builder;
+  dialog_builder
+      .SetTitle(l10n_util::GetPluralStringFUTF16(IDS_CONFIRM_FILE_UPLOAD_TITLE,
+                                                 selected_files.size()))
+      .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringFUTF16(
+          IDS_CONFIRM_FILE_UPLOAD_TEXT, path.BaseName().LossyDisplayName())))
+      .AddOkButton(
+          base::BindOnce(std::move(ok_callback), std::move(selected_files)),
+          ui::DialogModel::Button::Params().SetLabel(
+              l10n_util::GetStringUTF16(IDS_CONFIRM_FILE_UPLOAD_OK_BUTTON)))
+      .AddCancelButton(base::BindOnce(std::move(cancel_callbacks.first),
+                                      std::vector<FileChooserFileInfoPtr>()),
+                       ui::DialogModel::Button::Params().SetId(kCancelButtonId))
+      .SetCloseActionCallback(
+          base::BindOnce(std::move(cancel_callbacks.second),
+                         std::vector<FileChooserFileInfoPtr>()))
+      .SetInitiallyFocusedField(kCancelButtonId);
+  return dialog_builder.Build();
 }
 
 void FileSelectHelper::OnListDone(int error) {
@@ -260,19 +286,20 @@ void FileSelectHelper::OnListDone(int error) {
     return;
   }
 
-  std::vector<ui::SelectedFileInfo> selected_files =
-      ui::FilePathListToSelectedFileInfoList(entry->results_);
+  std::vector<FileChooserFileInfoPtr> chooser_files;
+  for (const auto& file_path : entry->results_) {
+    chooser_files.push_back(
+        FileChooserFileInfo::NewNativeFile(blink::mojom::NativeFileInfo::New(
+            file_path, std::u16string(), std::vector<std::u16string>())));
+  }
 
   if (dialog_type_ == ui::SelectFileDialog::SELECT_UPLOAD_FOLDER) {
-    LaunchConfirmationDialog(entry->path_, std::move(selected_files));
+    auto model = CreateConfirmationDialog(
+        entry->path_, std::move(chooser_files),
+        base::BindOnce(&FileSelectHelper::PerformContentAnalysisIfNeeded,
+                       this));
+    chrome::ShowTabModal(std::move(model), web_contents_);
   } else {
-    std::vector<FileChooserFileInfoPtr> chooser_files;
-    for (const auto& file_path : entry->results_) {
-      chooser_files.push_back(
-          FileChooserFileInfo::NewNativeFile(blink::mojom::NativeFileInfo::New(
-              file_path, std::u16string(), std::vector<std::u16string>())));
-    }
-
     listener_->FileSelected(std::move(chooser_files), base_dir_,
                             FileChooserParams::Mode::kUploadFolder);
     listener_.reset();

@@ -4102,8 +4102,6 @@ static_library("ui") {
       "views/find_bar_view.h",
       "views/flying_indicator.cc",
       "views/flying_indicator.h",
-      "views/folder_upload_confirmation_view.cc",
-      "views/folder_upload_confirmation_view.h",
       "views/frame/app_menu_button.cc",
       "views/frame/app_menu_button.h",
       "views/frame/app_menu_button_observer.h",

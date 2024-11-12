@@ -35,6 +35,7 @@ class WebContents;
 }
 
 namespace ui {
+class DialogModel;
 struct SelectedFileInfo;
 }
 
@@ -75,6 +76,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   friend class base::RefCountedThreadSafe<FileSelectHelper>;
   friend class base::DeleteHelper<FileSelectHelper>;
   friend class FileSelectHelperContactsAndroid;
+  friend class FileSelectHelperTest;
   friend struct content::BrowserThread::DeleteOnThread<
       content::BrowserThread::UI>;
 
@@ -109,6 +111,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
       ContentAnalysisCompletionCallback_FolderUpload_OKBad);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, GetFileTypesFromAcceptType);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, MultipleFileExtensionsForMime);
+  FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, ConfirmationDialog);
   FRIEND_TEST_ALL_PREFIXES(policy::DlpFilesControllerAshBrowserTest,
                            FilesUploadCallerPassed);
 
@@ -163,9 +166,11 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
       const net::DirectoryLister::DirectoryListerData& data) override;
   void OnListDone(int error) override;
 
-  void LaunchConfirmationDialog(
+  std::unique_ptr<ui::DialogModel> CreateConfirmationDialog(
       const base::FilePath& path,
-      std::vector<ui::SelectedFileInfo> selected_files);
+      std::vector<blink::mojom::FileChooserFileInfoPtr> selected_files,
+      base::OnceCallback<
+          void(std::vector<blink::mojom::FileChooserFileInfoPtr>)> callback);
 
   // Cleans up and releases this instance. This must be called after the last
   // callback is received from the enumeration code.
