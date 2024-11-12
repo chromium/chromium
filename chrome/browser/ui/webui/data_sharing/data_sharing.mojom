@@ -94,4 +94,8 @@ interface Page {
   // Delete the group given group_id.
   // Return status code equivalent to absl::StatusCode.
   DeleteGroup(string group_id) => (int32 status_code);
+
+  // Leave the group given group_id.
+  // Return status code equivalent to absl::StatusCode.
+  LeaveGroup(string group_id) => (int32 status_code);
 };

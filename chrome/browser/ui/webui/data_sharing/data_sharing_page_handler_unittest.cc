@@ -36,6 +36,9 @@ class MockPage : public data_sharing::mojom::Page {
   MOCK_METHOD(void,
               DeleteGroup,
               (const std::string& group_id, DeleteGroupCallback callback));
+  MOCK_METHOD(void,
+              LeaveGroup,
+              (const std::string& group_id, LeaveGroupCallback callback));
 
   mojo::Receiver<data_sharing::mojom::Page> receiver_{this};
 };

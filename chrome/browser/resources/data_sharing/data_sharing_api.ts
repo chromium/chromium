@@ -44,6 +44,14 @@ browserProxy.callbackRouter.readGroups.addListener((groupIds: string[]) => {
   });
 });
 
+browserProxy.callbackRouter.leaveGroup.addListener((groupId: string) => {
+  return new Promise((resolve) => {
+    dataSharingSdk.leaveGroup({groupId}).then(({status}) => {
+      resolve({statusCode: status});
+    });
+  });
+});
+
 browserProxy.callbackRouter.deleteGroup.addListener((groupId: string) => {
   return new Promise((resolve) => {
     dataSharingSdk.deleteGroup({groupId}).then(({status}) => {

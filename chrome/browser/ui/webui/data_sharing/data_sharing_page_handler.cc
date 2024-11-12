@@ -160,3 +160,10 @@ void DataSharingPageHandler::DeleteGroup(
   CHECK(api_initialized_);
   page_->DeleteGroup(group_id, std::move(callback));
 }
+
+void DataSharingPageHandler::LeaveGroup(
+    std::string group_id,
+    data_sharing::mojom::Page::LeaveGroupCallback callback) {
+  CHECK(api_initialized_);
+  page_->LeaveGroup(group_id, std::move(callback));
+}

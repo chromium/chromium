@@ -59,6 +59,9 @@ class DataSharingPageHandler : public data_sharing::mojom::PageHandler {
   void DeleteGroup(std::string group_id,
                    data_sharing::mojom::Page::DeleteGroupCallback callback);
 
+  void LeaveGroup(std::string group_id,
+                  data_sharing::mojom::Page::LeaveGroupCallback callback);
+
  private:
   Profile* GetProfile();
 
