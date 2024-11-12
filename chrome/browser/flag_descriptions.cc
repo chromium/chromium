@@ -69,6 +69,15 @@ const char kAllowInsecureLocalhostDescription[] =
     "Allows requests to localhost over HTTPS even when an invalid certificate "
     "is presented.";
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+const char kAllowLegacyMV2ExtensionsName[] =
+    "Allow legacy extension manifest versions";
+const char kAllowLegacyMV2ExtensionsDescription[] =
+    "Allows extensions with legacy (unsupported) manifest versions to be loaded"
+    " as unpacked extensions. This should only be used for maintaining legacy "
+    "extensions and will be removed in the future.";
+#endif
+
 const char kAndroidAppIntegrationName[] = "Integrate with Android App Search";
 const char kAndroidAppIntegrationDescription[] =
     "If enabled, allows Chrome to integrate with the Android App Search.";

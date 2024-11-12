@@ -16475,6 +16475,7 @@ from previous Chrome versions.
   <int value="-1527094429" label="ArcRtVcpuQuadCore:disabled"/>
   <int value="-1526934250" label="BorealisProvision:disabled"/>
   <int value="-1525721407" label="ComposePopupAnnouncePolitely:enabled"/>
+  <int value="-1525432906" label="AllowLegacyMV2Extensions:disabled"/>
   <int value="-1525129540"
       label="OmniboxUIExperimentRevealSteadyStateUrlPathQueryAndRefOnHover:disabled"/>
   <int value="-1524510718"
@@ -20460,6 +20461,7 @@ from previous Chrome versions.
   <int value="88863813" label="DesktopPWAsDetailedInstallDialog:enabled"/>
   <int value="89036875" label="DeferRendererTasksAfterInput:disabled"/>
   <int value="89357752" label="PdfXfaSupport:enabled"/>
+  <int value="89748527" label="AllowLegacyMV2Extensions:enabled"/>
   <int value="89758831" label="FontAccessChooser:enabled"/>
   <int value="89785725"
       label="DataReductionProxyEnabledWithNetworkService:disabled"/>

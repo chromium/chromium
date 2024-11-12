@@ -249,6 +249,10 @@
 #include "ui/ui_features.h"
 #include "url/url_features.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/extension_features.h"
+#endif
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/allocator/buildflags.h"
 #endif
@@ -11916,6 +11920,13 @@ const FeatureEntry kFeatureEntries[] = {
          "PartitionAllocMemoryTagging")},
 #endif  // BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(HAS_MEMORY_TAGGING) &&
         // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    {"allow-legacy-mv2-extensions",
+     flag_descriptions::kAllowLegacyMV2ExtensionsName,
+     flag_descriptions::kAllowLegacyMV2ExtensionsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(extensions_features::kAllowLegacyMV2Extensions)},
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

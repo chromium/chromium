@@ -132,6 +132,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "allow-legacy-mv2-extensions",
+    "owners": ["emiliapaz@chromium.org", "rdevlin.cronin@chromium.org", "extensions-core@chromium.org"],
+    "expiry_milestone": 139
+  },
+  {
     "name": "allow-scroll-settings",
     "owners": [ "zhangwenyu@chromium.org", "cros-device-enablement@google.com" ],
     "expiry_milestone": 140

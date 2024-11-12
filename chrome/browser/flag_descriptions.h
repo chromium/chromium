@@ -67,6 +67,11 @@ extern const char kAlignWakeUpsDescription[];
 extern const char kAllowInsecureLocalhostName[];
 extern const char kAllowInsecureLocalhostDescription[];
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+extern const char kAllowLegacyMV2ExtensionsName[];
+extern const char kAllowLegacyMV2ExtensionsDescription[];
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 extern const char kAndroidAppIntegrationName[];
 extern const char kAndroidAppIntegrationDescription[];
 
