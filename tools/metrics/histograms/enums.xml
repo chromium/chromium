@@ -5302,6 +5302,8 @@ Called by update_document_policy_enum.py.-->
   <int value="2" label="Payment triggered on user copying the QR code"/>
 </enum>
 
+<!-- LINT.IfChange(FastPairPairFailure) -->
+
 <enum name="FastPairPairFailure">
   <int value="0" label="Failed to create a GATT connection to the device"/>
   <int value="1" label="Failed to find the expected GATT service"/>
@@ -5365,6 +5367,8 @@ Called by update_document_policy_enum.py.-->
   <int value="33"
       label="Timed out while writing to Additional Data characteristic."/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/quick_pair/common/pair_failure.h:FastPairPairFailure) -->
 
 <enum name="FCMInvalidationMessageStatus">
   <int value="0" label="Success"/>

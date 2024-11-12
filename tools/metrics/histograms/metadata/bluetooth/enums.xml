@@ -75,12 +75,16 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="Socket error"/>
 </enum>
 
+<!-- LINT.IfChange(BluetoothConnectToServiceError) -->
+
 <enum name="BluetoothConnectToServiceError">
   <int value="0" label="Unknown"/>
   <int value="1" label="Failed to accept connection"/>
   <int value="2" label="Invalid UUID"/>
   <int value="3" label="Socket is not listening"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.cc:BluetoothConnectToServiceError) -->
 
 <enum name="BluetoothDeviceConnectErrorCode">
   <int value="0" label="Authorization Cancelled"/>
@@ -222,6 +226,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Success"/>
 </enum>
 
+<!-- LINT.IfChange(FastPairAccountKeyFailure) -->
+
 <enum name="FastPairAccountKeyFailure">
   <int value="0" label="Failed to find the Account Key GATT characteristic"/>
   <int value="1"
@@ -238,6 +244,10 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="GATT Error: Not Paired"/>
   <int value="10" label="GATT Error: Not Supported"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/quick_pair/common/account_key_failure.h:FastPairAccountKeyFailure) -->
+
+<!-- LINT.IfChange(FastPairEngagementFlowEvent) -->
 
 <enum name="FastPairEngagementFlowEvent">
   <int value="1" label="Discovery UI Shown"/>
@@ -262,6 +272,10 @@ chromium-metrics-reviews@google.com.
   <int value="1221" label="Pairing Succeeded: Already Paired"/>
 </enum>
 
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairEngagementFlowEvent) -->
+
+<!-- LINT.IfChange(FastPairHandshakeFailureReason) -->
+
 <enum name="FastPairHandshakeFailureReason">
   <int value="0" label="Failed to initialize GATT connection"/>
   <int value="1" label="Failed to create FastPairDataEncryptor"/>
@@ -274,6 +288,10 @@ chromium-metrics-reviews@google.com.
       label="Incorrect Key-based Pairing Characteristic response type"/>
 </enum>
 
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairHandshakeFailureReason) -->
+
+<!-- LINT.IfChange(FastPairHandshakeSteps) -->
+
 <enum name="FastPairHandshakeSteps">
   <int value="0" label="Handshake started"/>
   <int value="1" label="GATT initialized successfully"/>
@@ -282,10 +300,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Handshake completed successfully"/>
 </enum>
 
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairHandshakeSteps) -->
+
+<!-- LINT.IfChange(FastPairPairingMethod) -->
+
 <enum name="FastPairPairingMethod">
   <int value="0" label="Fast Pair Pairing"/>
   <int value="1" label="System UI Pairing"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairPairingMethod) -->
+
+<!-- LINT.IfChange(FastPairRetroactiveEngagementFlowEvent) -->
 
 <enum name="FastPairRetroactiveEngagementFlowEvent">
   <int value="1" label="Associate Account UI Shown"/>
@@ -304,6 +330,8 @@ chromium-metrics-reviews@google.com.
       label="Associate Account Dismissed By Timeout After Learn More Pressed"/>
 </enum>
 
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairRetroactiveEngagementFlowEvent) -->
+
 <enum name="FastPairSavedDevicesUiEvent">
   <int value="0" label="Settings - saved device list subpage shown"/>
   <int value="1" label="Settings - user has devices saved to their account"/>
@@ -312,10 +340,14 @@ chromium-metrics-reviews@google.com.
       label="Settings - remove confirmed on remove saved device dialog"/>
 </enum>
 
+<!-- LINT.IfChange(FastPairVersion) -->
+
 <enum name="FastPairVersion">
   <int value="0" label="v1"/>
   <int value="1" label="v2"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairVersion) -->
 
 <enum name="ForgetResult">
   <int value="0" label="Failure"/>

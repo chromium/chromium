@@ -26,6 +26,8 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(FastPairGattConnectionSteps) -->
+
 <enum name="FastPairGattConnectionSteps">
   <int value="0" label="Connection started"/>
   <int value="1" label="Connection ready"/>
@@ -35,6 +37,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Connection established"/>
 </enum>
 
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairGattConnectionSteps) -->
+
+<!-- LINT.IfChange(FastPairInitializePairingProcessEvent) -->
+
 <enum name="FastPairInitializePairingProcessEvent">
   <int value="0" label="Initialization started"/>
   <int value="1" label="Already pairing failure"/>
@@ -43,6 +49,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Handshake reused"/>
   <int value="5" label="Initialization complete"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairInitializePairingProcessEvent) -->
+
+<!-- LINT.IfChange(FastPairInitialSuccessFunnelEvent) -->
 
 <enum name="FastPairInitialSuccessFunnelEvent">
   <int value="0" label="Notification clicked"/>
@@ -57,6 +67,10 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Process complete"/>
 </enum>
 
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairInitialSuccessFunnelEvent) -->
+
+<!-- LINT.IfChange(FastPairProtocolPairingSteps) -->
+
 <enum name="FastPairProtocolPairingSteps">
   <int value="0" label="Pairing started"/>
   <int value="1" label="Exhausted retries"/>
@@ -68,6 +82,10 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Passkey confirmed"/>
   <int value="8" label="Pairing complete"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairProtocolPairingSteps) -->
+
+<!-- LINT.IfChange(FastPairRetroactiveSuccessFunnelEvent) -->
 
 <enum name="FastPairRetroactiveSuccessFunnelEvent">
   <int value="0" label="Device detected"/>
@@ -81,12 +99,18 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Save to Footprints complete"/>
 </enum>
 
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairRetroactiveSuccessFunnelEvent) -->
+
+<!-- LINT.IfChange(FastPairSubsequentSuccessFunnelEvent) -->
+
 <enum name="FastPairSubsequentSuccessFunnelEvent">
   <int value="0" label="Notification clicked"/>
   <int value="1" label="Initialization started"/>
   <int value="2" label="Pairing started"/>
   <int value="3" label="Process complete"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/quick_pair/common/fast_pair/fast_pair_metrics.h:FastPairSubsequentSuccessFunnelEvent) -->
 
 </enums>
 
