@@ -1,15 +1,17 @@
 use crate::attr::Attribute;
 #[cfg(all(feature = "parsing", feature = "full"))]
 use crate::error::Result;
+#[cfg(feature = "parsing")]
+use crate::ext::IdentExt as _;
 #[cfg(feature = "full")]
 use crate::generics::BoundLifetimes;
 use crate::ident::Ident;
-#[cfg(feature = "full")]
+#[cfg(any(feature = "parsing", feature = "full"))]
 use crate::lifetime::Lifetime;
 use crate::lit::Lit;
 use crate::mac::Macro;
 use crate::op::{BinOp, UnOp};
-#[cfg(all(feature = "parsing", feature = "full"))]
+#[cfg(feature = "parsing")]
 use crate::parse::ParseStream;
 #[cfg(feature = "full")]
 use crate::pat::Pat;
@@ -889,6 +891,36 @@ impl Expr {
         parsing::parse_with_earlier_boundary_rule(input)
     }
 
+    /// Returns whether the next token in the parse stream is one that might
+    /// possibly form the beginning of an expr.
+    ///
+    /// This classification is a load-bearing part of the grammar of some Rust
+    /// expressions, notably `return` and `break`. For example `return < …` will
+    /// never parse `<` as a binary operator regardless of what comes after,
+    /// because `<` is a legal starting token for an expression and so it's
+    /// required to be continued as a return value, such as `return <Struct as
+    /// Trait>::CONST`. Meanwhile `return > …` treats the `>` as a binary
+    /// operator because it cannot be a starting token for any Rust expression.
+    #[cfg(feature = "parsing")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "parsing")))]
+    pub fn peek(input: ParseStream) -> bool {
+        input.peek(Ident::peek_any) // value name or keyword
+            || input.peek(token::Paren) // tuple
+            || input.peek(token::Bracket) // array
+            || input.peek(token::Brace) // block
+            || input.peek(Lit) // literal
+            || input.peek(Token![!]) && !input.peek(Token![!=]) // operator not
+            || input.peek(Token![-]) && !input.peek(Token![-=]) && !input.peek(Token![->]) // unary minus
+            || input.peek(Token![*]) && !input.peek(Token![*=]) // dereference
+            || input.peek(Token![|]) && !input.peek(Token![|=]) // closure
+            || input.peek(Token![&]) && !input.peek(Token![&=]) // reference
+            || input.peek(Token![..]) // range
+            || input.peek(Token![<]) && !input.peek(Token![<=]) && !input.peek(Token![<<=]) // associated path
+            || input.peek(Token![::]) // absolute path
+            || input.peek(Lifetime) // labeled loop
+            || input.peek(Token![#]) // expression attributes
+    }
+
     #[cfg(all(feature = "parsing", feature = "full"))]
     pub(crate) fn replace_attrs(&mut self, new: Vec<Attribute>) -> Vec<Attribute> {
         match self {
@@ -1147,8 +1179,6 @@ pub(crate) mod parsing {
         FieldValue, Index, Member,
     };
     #[cfg(feature = "full")]
-    use crate::ext::IdentExt as _;
-    #[cfg(feature = "full")]
     use crate::generics::BoundLifetimes;
     use crate::ident::Ident;
     #[cfg(feature = "full")]
@@ -1264,25 +1294,6 @@ pub(crate) mod parsing {
         fn clone(&self) -> Self {
             *self
         }
-    }
-
-    #[cfg(feature = "full")]
-    fn can_begin_expr(input: ParseStream) -> bool {
-        input.peek(Ident::peek_any) // value name or keyword
-            || input.peek(token::Paren) // tuple
-            || input.peek(token::Bracket) // array
-            || input.peek(token::Brace) // block
-            || input.peek(Lit) // literal
-            || input.peek(Token![!]) && !input.peek(Token![!=]) // operator not
-            || input.peek(Token![-]) && !input.peek(Token![-=]) && !input.peek(Token![->]) // unary minus
-            || input.peek(Token![*]) && !input.peek(Token![*=]) // dereference
-            || input.peek(Token![|]) && !input.peek(Token![|=]) // closure
-            || input.peek(Token![&]) && !input.peek(Token![&=]) // reference
-            || input.peek(Token![..]) // range notation
-            || input.peek(Token![<]) && !input.peek(Token![<=]) && !input.peek(Token![<<=]) // associated path
-            || input.peek(Token![::]) // global path
-            || input.peek(Lifetime) // labeled loop
-            || input.peek(Token![#]) // expression attributes
     }
 
     #[cfg(feature = "full")]
@@ -2439,7 +2450,7 @@ pub(crate) mod parsing {
                 attrs: Vec::new(),
                 return_token: input.parse()?,
                 expr: {
-                    if can_begin_expr(input) {
+                    if Expr::peek(input) {
                         Some(input.parse()?)
                     } else {
                         None
@@ -2477,7 +2488,7 @@ pub(crate) mod parsing {
                 attrs: Vec::new(),
                 yield_token: input.parse()?,
                 expr: {
-                    if can_begin_expr(input) {
+                    if Expr::peek(input) {
                         Some(input.parse()?)
                     } else {
                         None
@@ -2690,7 +2701,7 @@ pub(crate) mod parsing {
         }
 
         input.advance_to(&ahead);
-        let expr = if can_begin_expr(input) && (allow_struct.0 || !input.peek(token::Brace)) {
+        let expr = if Expr::peek(input) && (allow_struct.0 || !input.peek(token::Brace)) {
             Some(input.parse()?)
         } else {
             None

@@ -2,8 +2,8 @@ use crate::buffer::Cursor;
 use crate::error::{self, Error};
 use crate::sealed::lookahead::Sealed;
 use crate::span::IntoSpans;
-use crate::token::Token;
-use proc_macro2::Span;
+use crate::token::{CustomToken, Token};
+use proc_macro2::{Delimiter, Span};
 use std::cell::RefCell;
 
 /// Support for checking the next token in a stream to decide how to parse.
@@ -110,7 +110,18 @@ impl<'a> Lookahead1<'a> {
     /// The error message will identify all of the expected token types that
     /// have been peeked against this lookahead instance.
     pub fn error(self) -> Error {
-        let comparisons = self.comparisons.into_inner();
+        let mut comparisons = self.comparisons.into_inner();
+        comparisons.retain_mut(|display| {
+            if *display == "`)`" {
+                *display = match self.cursor.scope_delimiter() {
+                    Delimiter::Parenthesis => "`)`",
+                    Delimiter::Brace => "`}`",
+                    Delimiter::Bracket => "`]`",
+                    Delimiter::None => return false,
+                }
+            }
+            true
+        });
         match comparisons.len() {
             0 => {
                 if self.cursor.eof() {
@@ -150,6 +161,160 @@ pub trait Peek: Sealed {
     type Token: Token;
 }
 
+/// Pseudo-token used for peeking the end of a parse stream.
+///
+/// This type is only useful as an argument to one of the following functions:
+///
+/// - [`ParseStream::peek`][crate::parse::ParseBuffer::peek]
+/// - [`ParseStream::peek2`][crate::parse::ParseBuffer::peek2]
+/// - [`ParseStream::peek3`][crate::parse::ParseBuffer::peek3]
+/// - [`Lookahead1::peek`]
+///
+/// The peek will return `true` if there are no remaining tokens after that
+/// point in the parse stream.
+///
+/// # Example
+///
+/// Suppose we are parsing attributes containing core::fmt inspired formatting
+/// arguments:
+///
+/// - `#[fmt("simple example")]`
+/// - `#[fmt("interpolation e{}ample", self.x)]`
+/// - `#[fmt("interpolation e{x}ample")]`
+///
+/// and we want to recognize the cases where no interpolation occurs so that
+/// more efficient code can be generated.
+///
+/// The following implementation uses `input.peek(Token![,]) &&
+/// input.peek2(End)` to recognize the case of a trailing comma without
+/// consuming the comma from the parse stream, because if it isn't a trailing
+/// comma, that same comma needs to be parsed as part of `args`.
+///
+/// ```
+/// use proc_macro2::TokenStream;
+/// use quote::quote;
+/// use syn::parse::{End, Parse, ParseStream, Result};
+/// use syn::{parse_quote, Attribute, LitStr, Token};
+///
+/// struct FormatArgs {
+///     template: LitStr,  // "...{}..."
+///     args: TokenStream, // , self.x
+/// }
+///
+/// impl Parse for FormatArgs {
+///     fn parse(input: ParseStream) -> Result<Self> {
+///         let template: LitStr = input.parse()?;
+///
+///         let args = if input.is_empty()
+///             || input.peek(Token![,]) && input.peek2(End)
+///         {
+///             input.parse::<Option<Token![,]>>()?;
+///             TokenStream::new()
+///         } else {
+///             input.parse()?
+///         };
+///
+///         Ok(FormatArgs {
+///             template,
+///             args,
+///         })
+///     }
+/// }
+///
+/// fn main() -> Result<()> {
+///     let attrs: Vec<Attribute> = parse_quote! {
+///         #[fmt("simple example")]
+///         #[fmt("interpolation e{}ample", self.x)]
+///         #[fmt("interpolation e{x}ample")]
+///     };
+///
+///     for attr in &attrs {
+///         let FormatArgs { template, args } = attr.parse_args()?;
+///         let requires_fmt_machinery =
+///             !args.is_empty() || template.value().contains(['{', '}']);
+///         let out = if requires_fmt_machinery {
+///             quote! {
+///                 ::core::write!(__formatter, #template #args)
+///             }
+///         } else {
+///             quote! {
+///                 __formatter.write_str(#template)
+///             }
+///         };
+///         println!("{}", out);
+///     }
+///     Ok(())
+/// }
+/// ```
+///
+/// Implementing this parsing logic without `peek2(End)` is more clumsy because
+/// we'd need a parse stream actually advanced past the comma before being able
+/// to find out whether there is anything after it. It would look something
+/// like:
+///
+/// ```
+/// # use proc_macro2::TokenStream;
+/// # use syn::parse::{ParseStream, Result};
+/// # use syn::Token;
+/// #
+/// # fn parse(input: ParseStream) -> Result<()> {
+/// use syn::parse::discouraged::Speculative as _;
+///
+/// let ahead = input.fork();
+/// ahead.parse::<Option<Token![,]>>()?;
+/// let args = if ahead.is_empty() {
+///     input.advance_to(&ahead);
+///     TokenStream::new()
+/// } else {
+///     input.parse()?
+/// };
+/// # Ok(())
+/// # }
+/// ```
+///
+/// or:
+///
+/// ```
+/// # use proc_macro2::TokenStream;
+/// # use syn::parse::{ParseStream, Result};
+/// # use syn::Token;
+/// #
+/// # fn parse(input: ParseStream) -> Result<()> {
+/// use quote::ToTokens as _;
+///
+/// let comma: Option<Token![,]> = input.parse()?;
+/// let mut args = TokenStream::new();
+/// if !input.is_empty() {
+///     comma.to_tokens(&mut args);
+///     input.parse::<TokenStream>()?.to_tokens(&mut args);
+/// }
+/// # Ok(())
+/// # }
+/// ```
+pub struct End;
+
+impl Copy for End {}
+
+impl Clone for End {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+
+impl Peek for End {
+    type Token = Self;
+}
+
+impl CustomToken for End {
+    fn peek(cursor: Cursor) -> bool {
+        cursor.eof()
+    }
+
+    fn display() -> &'static str {
+        "`)`" // Lookahead1 error message will fill in the expected close delimiter
+    }
+}
+
 impl<F: Copy + FnOnce(TokenMarker) -> T, T: Token> Peek for F {
     type Token = T;
 }
@@ -163,3 +328,5 @@ impl<S> IntoSpans<S> for TokenMarker {
 }
 
 impl<F: Copy + FnOnce(TokenMarker) -> T, T: Token> Sealed for F {}
+
+impl Sealed for End {}

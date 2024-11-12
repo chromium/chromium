@@ -498,7 +498,7 @@ spanless_eq_struct!(Fn; defaultness generics sig body);
 spanless_eq_struct!(FnDecl; inputs output);
 spanless_eq_struct!(FnHeader; constness coroutine_kind safety ext);
 spanless_eq_struct!(FnSig; header decl span);
-spanless_eq_struct!(ForeignMod; safety abi items);
+spanless_eq_struct!(ForeignMod; extern_span safety abi items);
 spanless_eq_struct!(FormatArgPosition; index kind span);
 spanless_eq_struct!(FormatArgs; span template arguments);
 spanless_eq_struct!(FormatArgument; kind expr);

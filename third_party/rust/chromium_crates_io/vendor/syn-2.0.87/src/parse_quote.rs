@@ -154,6 +154,17 @@ impl ParseQuote for Attribute {
 }
 
 #[cfg(any(feature = "full", feature = "derive"))]
+impl ParseQuote for Vec<Attribute> {
+    fn parse(input: ParseStream) -> Result<Self> {
+        let mut attrs = Vec::new();
+        while !input.is_empty() {
+            attrs.push(ParseQuote::parse(input)?);
+        }
+        Ok(attrs)
+    }
+}
+
+#[cfg(any(feature = "full", feature = "derive"))]
 impl ParseQuote for Field {
     fn parse(input: ParseStream) -> Result<Self> {
         let attrs = input.call(Attribute::parse_outer)?;

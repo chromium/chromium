@@ -183,52 +183,6 @@ impl<'a> Cursor<'a> {
         self.ptr == self.scope
     }
 
-    /// If the cursor is pointing at a `Group` with the given delimiter, returns
-    /// a cursor into that group and one pointing to the next `TokenTree`.
-    pub fn group(mut self, delim: Delimiter) -> Option<(Cursor<'a>, DelimSpan, Cursor<'a>)> {
-        // If we're not trying to enter a none-delimited group, we want to
-        // ignore them. We have to make sure to _not_ ignore them when we want
-        // to enter them, of course. For obvious reasons.
-        if delim != Delimiter::None {
-            self.ignore_none();
-        }
-
-        if let Entry::Group(group, end_offset) = self.entry() {
-            if group.delimiter() == delim {
-                let span = group.delim_span();
-                let end_of_group = unsafe { self.ptr.add(*end_offset) };
-                let inside_of_group = unsafe { Cursor::create(self.ptr.add(1), end_of_group) };
-                let after_group = unsafe { Cursor::create(end_of_group, self.scope) };
-                return Some((inside_of_group, span, after_group));
-            }
-        }
-
-        None
-    }
-
-    pub(crate) fn any_group(self) -> Option<(Cursor<'a>, Delimiter, DelimSpan, Cursor<'a>)> {
-        if let Entry::Group(group, end_offset) = self.entry() {
-            let delimiter = group.delimiter();
-            let span = group.delim_span();
-            let end_of_group = unsafe { self.ptr.add(*end_offset) };
-            let inside_of_group = unsafe { Cursor::create(self.ptr.add(1), end_of_group) };
-            let after_group = unsafe { Cursor::create(end_of_group, self.scope) };
-            return Some((inside_of_group, delimiter, span, after_group));
-        }
-
-        None
-    }
-
-    pub(crate) fn any_group_token(self) -> Option<(Group, Cursor<'a>)> {
-        if let Entry::Group(group, end_offset) = self.entry() {
-            let end_of_group = unsafe { self.ptr.add(*end_offset) };
-            let after_group = unsafe { Cursor::create(end_of_group, self.scope) };
-            return Some((group.clone(), after_group));
-        }
-
-        None
-    }
-
     /// If the cursor is pointing at a `Ident`, returns it along with a cursor
     /// pointing at the next `TokenTree`.
     pub fn ident(mut self) -> Option<(Ident, Cursor<'a>)> {
@@ -277,6 +231,54 @@ impl<'a> Cursor<'a> {
             }
             _ => None,
         }
+    }
+
+    /// If the cursor is pointing at a `Group` with the given delimiter, returns
+    /// a cursor into that group and one pointing to the next `TokenTree`.
+    pub fn group(mut self, delim: Delimiter) -> Option<(Cursor<'a>, DelimSpan, Cursor<'a>)> {
+        // If we're not trying to enter a none-delimited group, we want to
+        // ignore them. We have to make sure to _not_ ignore them when we want
+        // to enter them, of course. For obvious reasons.
+        if delim != Delimiter::None {
+            self.ignore_none();
+        }
+
+        if let Entry::Group(group, end_offset) = self.entry() {
+            if group.delimiter() == delim {
+                let span = group.delim_span();
+                let end_of_group = unsafe { self.ptr.add(*end_offset) };
+                let inside_of_group = unsafe { Cursor::create(self.ptr.add(1), end_of_group) };
+                let after_group = unsafe { Cursor::create(end_of_group, self.scope) };
+                return Some((inside_of_group, span, after_group));
+            }
+        }
+
+        None
+    }
+
+    /// If the cursor is pointing at a `Group`, returns a cursor into the group
+    /// and one pointing to the next `TokenTree`.
+    pub fn any_group(self) -> Option<(Cursor<'a>, Delimiter, DelimSpan, Cursor<'a>)> {
+        if let Entry::Group(group, end_offset) = self.entry() {
+            let delimiter = group.delimiter();
+            let span = group.delim_span();
+            let end_of_group = unsafe { self.ptr.add(*end_offset) };
+            let inside_of_group = unsafe { Cursor::create(self.ptr.add(1), end_of_group) };
+            let after_group = unsafe { Cursor::create(end_of_group, self.scope) };
+            return Some((inside_of_group, delimiter, span, after_group));
+        }
+
+        None
+    }
+
+    pub(crate) fn any_group_token(self) -> Option<(Group, Cursor<'a>)> {
+        if let Entry::Group(group, end_offset) = self.entry() {
+            let end_of_group = unsafe { self.ptr.add(*end_offset) };
+            let after_group = unsafe { Cursor::create(end_of_group, self.scope) };
+            return Some((group.clone(), after_group));
+        }
+
+        None
     }
 
     /// Copies all remaining tokens visible from this cursor into a

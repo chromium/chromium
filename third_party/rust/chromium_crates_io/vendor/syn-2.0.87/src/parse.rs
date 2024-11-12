@@ -202,7 +202,7 @@ use std::rc::Rc;
 use std::str::FromStr;
 
 pub use crate::error::{Error, Result};
-pub use crate::lookahead::{Lookahead1, Peek};
+pub use crate::lookahead::{End, Lookahead1, Peek};
 
 /// Parsing interface implemented by all types that can be parsed in a default
 /// way from a token stream.
@@ -750,6 +750,11 @@ impl<'a> ParseBuffer<'a> {
     /// This method returns true upon reaching the end of the content within a
     /// set of delimiters, as well as at the end of the tokens provided to the
     /// outermost parsing entry point.
+    ///
+    /// This is equivalent to
+    /// <code>.<a href="#method.peek">peek</a>(<a href="struct.End.html">syn::parse::End</a>)</code>.
+    /// Use `.peek2(End)` or `.peek3(End)` to look for the end of a parse stream
+    /// further ahead than the current position.
     ///
     /// # Example
     ///
