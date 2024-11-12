@@ -68,7 +68,8 @@ export class BrowserInstance {
       '--allow-browser-signin=false',
       '--disable-component-update',
       '--disable-default-apps',
-      '--disable-features=DialMediaRouteProvider,TrackingProtection3pcd',
+      // For HttpsFirstBalancedModeAutoEnable, crbug.com/378022921.
+      '--disable-features=DialMediaRouteProvider,TrackingProtection3pcd,HttpsFirstBalancedModeAutoEnable',
       '--disable-infobars',
       '--disable-notifications',
       '--disable-popup-blocking',
