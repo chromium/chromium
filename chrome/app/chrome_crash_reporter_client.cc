@@ -214,12 +214,6 @@ bool ChromeCrashReporterClient::GetCollectStatsConsent() {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-#if BUILDFLAG(IS_ANDROID)
-int ChromeCrashReporterClient::GetAndroidMinidumpDescriptor() {
-  return kAndroidMinidumpDescriptor;
-}
-#endif
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 bool ChromeCrashReporterClient::ShouldMonitorCrashHandlerExpensively() {
   // TODO(jperaza): Turn this on less frequently for stable channels when

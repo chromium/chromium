@@ -23,11 +23,6 @@ base::FilePath GcpCrashReporterClient::GetPathForFileVersionInfo(
   return base::FilePath(exe_path);
 }
 
-bool GcpCrashReporterClient::ShouldCreatePipeName(
-    const std::wstring& process_type) {
-  return true;
-}
-
 bool GcpCrashReporterClient::GetAlternativeCrashDumpLocation(
     std::wstring* crash_dir) {
   return false;
@@ -60,30 +55,8 @@ void GcpCrashReporterClient::GetProductNameAndVersion(
   }
 }
 
-bool GcpCrashReporterClient::ShouldShowRestartDialog(std::wstring* title,
-                                                     std::wstring* message,
-                                                     bool* is_rtl_locale) {
-  // There is no UX associated with GCPW, so no dialog should be shown.
-  return false;
-}
-
-bool GcpCrashReporterClient::AboutToRestart() {
-  // GCPW should never be restarted after a crash.
-  return false;
-}
-
-bool GcpCrashReporterClient::GetIsPerUserInstall() {
-  // GCPW can only be installed at system level.
-  return false;
-}
-
 bool GcpCrashReporterClient::GetShouldDumpLargerDumps() {
   return false;
-}
-
-int GcpCrashReporterClient::GetResultCodeRespawnFailed() {
-  // The restart dialog is never shown for GCPW.
-  NOTREACHED();
 }
 
 bool GcpCrashReporterClient::GetCrashDumpLocation(std::wstring* crash_dir) {

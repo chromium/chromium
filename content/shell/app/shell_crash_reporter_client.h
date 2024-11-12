@@ -48,11 +48,6 @@ class ShellCrashReporterClient : public crash_reporter::CrashReporterClient {
   bool GetCrashDumpLocation(base::FilePath* crash_dir) override;
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-  // Returns the descriptor key of the android minidump global descriptor.
-  int GetAndroidMinidumpDescriptor() override;
-#endif
-
   bool EnableBreakpadForProcess(const std::string& process_type) override;
 };
 

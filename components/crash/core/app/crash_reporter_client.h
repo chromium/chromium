@@ -49,11 +49,6 @@ class CrashReporterClient {
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  // Returns true if the pipe name to connect to breakpad should be computed and
-  // stored in the process's environment block. By default, returns true for the
-  // "browser" process.
-  virtual bool ShouldCreatePipeName(const std::wstring& process_type);
-
   // Returns true if an alternative location to store the minidump files was
   // specified. Returns true if |crash_dir| was set.
   virtual bool GetAlternativeCrashDumpLocation(std::wstring* crash_dir);
@@ -65,25 +60,6 @@ class CrashReporterClient {
                                         std::wstring* version,
                                         std::wstring* special_build,
                                         std::wstring* channel_name);
-
-  // Returns true if a restart dialog should be displayed. In that case,
-  // |message| and |title| are set to a message to display in a dialog box with
-  // the given title before restarting, and |is_rtl_locale| indicates whether
-  // to display the text as RTL.
-  virtual bool ShouldShowRestartDialog(std::wstring* title,
-                                       std::wstring* message,
-                                       bool* is_rtl_locale);
-
-  // Returns true if it is ok to restart the application. Invoked right before
-  // restarting after a crash.
-  virtual bool AboutToRestart();
-
-  // Returns true if the running binary is a per-user installation.
-  virtual bool GetIsPerUserInstall();
-
-  // Returns the result code to return when breakpad failed to respawn a
-  // crashed process.
-  virtual int GetResultCodeRespawnFailed();
 
   // Returns the fully-qualified path for a registered out of process exception
   // helper module. The module is optional. Return an empty string to indicate
@@ -162,17 +138,6 @@ class CrashReporterClient {
   // Returns true if |ptype| was set to a value to override the default `ptype`
   // annotation used for the browser process.
   virtual bool GetBrowserProcessType(std::string* ptype);
-
-  // Returns the descriptor key of the android minidump global descriptor.
-  virtual int GetAndroidMinidumpDescriptor();
-
-  // Returns the file descriptor of the pipe used to inform apps of
-  // webview renderer crashes.
-  virtual int GetAndroidCrashSignalFD();
-
-  // Returns true if breakpad microdumps should be enabled. This orthogonal to
-  // the standard minidump uploader (which depends on the user consent).
-  virtual bool ShouldEnableBreakpadMicrodumps();
 
   // Returns true if minudump should be written to android log.
   virtual bool ShouldWriteMinidumpToLog();

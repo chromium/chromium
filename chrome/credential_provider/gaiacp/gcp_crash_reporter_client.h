@@ -23,20 +23,13 @@ class GcpCrashReporterClient : public crash_reporter::CrashReporterClient {
   ~GcpCrashReporterClient() override;
 
   // crash_reporter::CrashReporterClient:
-  bool ShouldCreatePipeName(const std::wstring& process_type) override;
   bool GetAlternativeCrashDumpLocation(std::wstring* crash_dir) override;
   void GetProductNameAndVersion(const std::wstring& exe_path,
                                 std::wstring* product_name,
                                 std::wstring* version,
                                 std::wstring* special_build,
                                 std::wstring* channel_name) override;
-  bool ShouldShowRestartDialog(std::wstring* title,
-                               std::wstring* message,
-                               bool* is_rtl_locale) override;
-  bool AboutToRestart() override;
-  bool GetIsPerUserInstall() override;
   bool GetShouldDumpLargerDumps() override;
-  int GetResultCodeRespawnFailed() override;
   bool GetCrashDumpLocation(std::wstring* crash_dir) override;
   bool IsRunningUnattended() override;
   bool GetCollectStatsConsent() override;

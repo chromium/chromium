@@ -78,12 +78,6 @@ bool ShellCrashReporterClient::GetCrashDumpLocation(base::FilePath* crash_dir) {
   return true;
 }
 
-#if BUILDFLAG(IS_ANDROID)
-int ShellCrashReporterClient::GetAndroidMinidumpDescriptor() {
-  return kAndroidMinidumpDescriptor;
-}
-#endif
-
 bool ShellCrashReporterClient::EnableBreakpadForProcess(
     const std::string& process_type) {
   return process_type == switches::kRendererProcess ||

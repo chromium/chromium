@@ -77,10 +77,6 @@ bool CastCrashReporterClientAndroid::GetCrashDumpLocation(
   return true;
 }
 
-int CastCrashReporterClientAndroid::GetAndroidMinidumpDescriptor() {
-  return kAndroidMinidumpDescriptor;
-}
-
 bool CastCrashReporterClientAndroid::EnableBreakpadForProcess(
     const std::string& process_type) {
   return process_type == switches::kRendererProcess ||
