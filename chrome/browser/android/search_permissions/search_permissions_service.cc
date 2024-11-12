@@ -117,9 +117,11 @@ bool SearchPermissionsService::Factory::ServiceIsCreatedWithBrowserContext()
   return true;
 }
 
-KeyedService* SearchPermissionsService::Factory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SearchPermissionsService::Factory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new SearchPermissionsService(Profile::FromBrowserContext(context));
+  return std::make_unique<SearchPermissionsService>(
+      Profile::FromBrowserContext(context));
 }
 
 void SearchPermissionsService::Factory::RegisterProfilePrefs(
