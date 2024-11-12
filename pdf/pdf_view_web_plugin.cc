@@ -1722,7 +1722,7 @@ void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
 
   switch (static_cast<SaveRequestType>(request_type)) {
     case SaveRequestType::kAnnotation:
-#if BUILDFLAG(ENABLE_INK)
+#if BUILDFLAG(ENABLE_INK) || BUILDFLAG(ENABLE_PDF_INK2)
       // In annotation mode, assume the user will make edits and prefer saving
       // using the plugin data.
       SetPluginCanSave(true);
@@ -1730,7 +1730,7 @@ void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
       return;
 #else
       NOTREACHED();
-#endif  // BUILDFLAG(ENABLE_INK)
+#endif  // BUILDFLAG(ENABLE_INK) || BUILDFLAG(ENABLE_PDF_INK2)
     case SaveRequestType::kOriginal: {
       const bool can_save = plugin_can_save_ || edit_mode_;
       SetPluginCanSave(false);
@@ -1914,17 +1914,25 @@ void PdfViewWebPlugin::SaveToBuffer(const std::string& token) {
   message.Set("editModeForTesting", edit_mode_);
 
   base::Value data_to_save;
-  if (edit_mode_) {
+
+  bool use_save_data = edit_mode_;
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  use_save_data |= !!ink_module_;
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+  if (use_save_data) {
     base::Value::BlobStorage data = engine_->GetSaveData();
-    if (IsSaveDataSizeValid(data.size()))
+    if (IsSaveDataSizeValid(data.size())) {
       data_to_save = base::Value(std::move(data));
+    }
   } else {
 #if BUILDFLAG(ENABLE_INK)
     uint32_t length = engine_->GetLoadedByteSize();
     if (IsSaveDataSizeValid(length)) {
       base::Value::BlobStorage data(length);
-      if (engine_->ReadLoadedBytes(length, data.data()))
+      if (engine_->ReadLoadedBytes(length, data.data())) {
         data_to_save = base::Value(std::move(data));
+      }
     }
 #else
     NOTREACHED();

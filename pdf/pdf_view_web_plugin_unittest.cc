@@ -2779,6 +2779,62 @@ TEST_F(PdfViewWebPluginInkTest, AnnotationModeSetsFormAndClearsText) {
       CreateSetAnnotationModeMessageForTesting(/*enable=*/false));
   EXPECT_FALSE(plugin_->IsInAnnotationMode());
 }
+
+class PdfViewWebPluginInk2SaveTest : public PdfViewWebPluginSaveTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{features::kPdfInk2};
+};
+
+TEST_F(PdfViewWebPluginInk2SaveTest, AnnotationInNonEditMode) {
+  plugin_->ink_module_client_for_testing()->StrokeFinished();
+
+  base::Value expected_response = base::test::ParseJson(R"({
+    "type": "saveData",
+    "token": "annotation-in-non-edit-mode",
+    "fileName": "example.pdf",
+    "editModeForTesting": false,
+  })");
+  AddDataToValue(base::make_span(TestPDFiumEngine::kSaveData),
+                 expected_response);
+
+  ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
+
+  plugin_->OnMessage(ParseMessage(R"({
+    "type": "save",
+    "saveRequestType": 0,
+    "token": "annotation-in-non-edit-mode",
+  })"));
+
+  pdf_receiver_.FlushForTesting();
+}
+
+TEST_F(PdfViewWebPluginInk2SaveTest, AnnotationInEditMode) {
+  plugin_->ink_module_client_for_testing()->StrokeFinished();
+
+  plugin_->EnteredEditMode();
+  pdf_receiver_.FlushForTesting();
+
+  base::Value expected_response = base::test::ParseJson(R"({
+    "type": "saveData",
+    "token": "annotation-in-edit-mode",
+    "fileName": "example.pdf",
+    "editModeForTesting": true,
+  })");
+  AddDataToValue(base::make_span(TestPDFiumEngine::kSaveData),
+                 expected_response);
+
+  ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
+
+  plugin_->OnMessage(ParseMessage(R"({
+    "type": "save",
+    "saveRequestType": 0,
+    "token": "annotation-in-edit-mode",
+  })"));
+
+  pdf_receiver_.FlushForTesting();
+}
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 }  // namespace chrome_pdf
