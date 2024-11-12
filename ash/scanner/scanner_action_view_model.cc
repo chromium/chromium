@@ -205,7 +205,7 @@ ScannerActionViewModel& ScannerActionViewModel::operator=(
 ScannerActionViewModel::~ScannerActionViewModel() = default;
 
 std::u16string ScannerActionViewModel::GetText() const {
-  // TODO(b/369470078): Replace this with finalised translated strings.
+  // TODO(b/375967525): Replace this with finalised translated strings.
 
   switch (unpopulated_action_.action_case()) {
     case manta::proto::ScannerAction::kNewEvent:
