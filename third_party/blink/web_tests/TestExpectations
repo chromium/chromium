@@ -2693,7 +2693,7 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac13 ] external/wpt/mst-content-hint/RTCRtpSendParameters-degradationPreference.html [ Timeout ]
+crbug.com/378634699 [ Mac13 ] external/wpt/mst-content-hint/RTCRtpSendParameters-degradationPreference.html [ Timeout ]
 crbug.com/378158976 external/wpt/css/css-contain/content-visibility/content-visibility-auto-svg-text.html [ Failure ]
 crbug.com/378408473 [ Mac14 ] external/wpt/webrtc/RTCPeerConnection-restartIce-onnegotiationneeded.https.html [ Timeout ]
 crbug.com/378408473 [ Mac14 ] external/wpt/webrtc/legacy/RTCPeerConnection-createOffer-offerToReceive.html [ Timeout ]
