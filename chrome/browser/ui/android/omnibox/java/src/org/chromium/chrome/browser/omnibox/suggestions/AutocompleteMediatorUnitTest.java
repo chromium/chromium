@@ -193,8 +193,10 @@ public class AutocompleteMediatorUnitTest {
         doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());
 
         mSuggestionModels = new ModelList();
-        mListModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
-        mListModel.set(SuggestionListProperties.SUGGESTION_MODELS, mSuggestionModels);
+        mListModel =
+                new PropertyModel.Builder(SuggestionListProperties.ALL_KEYS)
+                        .with(SuggestionListProperties.SUGGESTION_MODELS, mSuggestionModels)
+                        .build();
 
         mTabWindowManagerSupplier = new ObservableSupplierImpl<>();
         doReturn(mInsetObserver).when(mWindowAndroid).getInsetObserver();

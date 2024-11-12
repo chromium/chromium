@@ -8,6 +8,7 @@ import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -24,15 +25,12 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
             new WritableBooleanPropertyKey();
 
     /** The embedder for the suggestion list. */
-    static final WritableObjectPropertyKey<OmniboxSuggestionsDropdownEmbedder> EMBEDDER =
-            new WritableObjectPropertyKey<>();
+    static final ReadableObjectPropertyKey<OmniboxSuggestionsDropdownEmbedder> EMBEDDER =
+            new ReadableObjectPropertyKey<>();
 
-    /**
-     * The list of models controlling the state of the suggestion items. This should never be bound
-     * to the same view more than once.
-     */
-    static final WritableObjectPropertyKey<ModelList> SUGGESTION_MODELS =
-            new WritableObjectPropertyKey<>(true);
+    /** The list of models controlling the state of the suggestion items. */
+    static final ReadableObjectPropertyKey<ModelList> SUGGESTION_MODELS =
+            new ReadableObjectPropertyKey<>();
 
     /** Whether the list encompasses the final set of suggestions for the current user query. */
     static final WritableBooleanPropertyKey LIST_IS_FINAL = new WritableBooleanPropertyKey();

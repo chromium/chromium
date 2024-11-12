@@ -55,7 +55,10 @@ public class SuggestionListViewBinderUnitTest {
     @Before
     public void setUp() {
         mSuggestionModels = new ModelList();
-        mListModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
+        mListModel =
+                new PropertyModel.Builder(SuggestionListProperties.ALL_KEYS)
+                        .with(SuggestionListProperties.SUGGESTION_MODELS, mSuggestionModels)
+                        .build();
         mContainer =
                 (ViewGroup)
                         LayoutInflater.from(mActivity)
@@ -65,7 +68,6 @@ public class SuggestionListViewBinderUnitTest {
                 mListModel,
                 new SuggestionListViewBinder.SuggestionListViewHolder(mContainer, mDropdown),
                 SuggestionListViewBinder::bind);
-        mListModel.set(SuggestionListProperties.SUGGESTION_MODELS, mSuggestionModels);
     }
 
     @Test
