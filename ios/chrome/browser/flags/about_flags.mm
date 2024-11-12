@@ -1198,13 +1198,13 @@ const FeatureEntry::FeatureParam kNewFeedPositioningArm5[] = {
 };
 
 const FeatureEntry::FeatureVariation kNewFeedPositioningVariations[] = {
-    {"Enabled - Treatment  2", kNewFeedPositioningArm2,
+    {"- Treatment 2", kNewFeedPositioningArm2,
      std::size(kNewFeedPositioningArm2), nullptr},
-    {"Enabled - Treatment  3", kNewFeedPositioningArm3,
+    {"- Treatment 3", kNewFeedPositioningArm3,
      std::size(kNewFeedPositioningArm3), nullptr},
-    {"Enabled - Treatment  4", kNewFeedPositioningArm4,
+    {"- Treatment 4", kNewFeedPositioningArm4,
      std::size(kNewFeedPositioningArm4), nullptr},
-    {"Enabled - Treatment  5", kNewFeedPositioningArm5,
+    {"- Treatment 5", kNewFeedPositioningArm5,
      std::size(kNewFeedPositioningArm5), nullptr},
 };
 
