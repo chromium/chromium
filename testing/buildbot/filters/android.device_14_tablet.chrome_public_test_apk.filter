@@ -75,8 +75,23 @@
 -org.chromium.chrome.browser.tasks.tab_management.TabListContainerViewBinderTest.testSetInitialScrollIndex_Grid
 
 # crbug.com/376528174
--org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testActionForPassphraseRequiredForSignedInUsers
 -org.chromium.chrome.browser.signin.FullscreenSigninAndHistorySyncIntegrationTest.testScreenRotation
+
+# crbug.com/378555170
+-org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testSyncErrorMessageForAuthErrorViewForSignedInUsers
+-org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testSyncErrorMessageForClientOutOfDateView
+-org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testSyncErrorMessageForSyncSetupIncompleteView
+-org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testSyncErrorMessageForPassphraseRequiredViewForSignedInUsers
+-org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testSyncErrorMessageForPassphraseRequiredView
+-org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testSyncErrorMessageForAuthErrorViewModern
+-org.chromium.chrome.browser.sync.ui.SyncErrorMessageTest.testActionForPassphraseRequiredForSignedInUsers
+
+# crbug.com/378557957
+-org.chromium.chrome.browser.permissions.PermissionUpdateMessageTest.testMessageForMediaStreamMicrophone
+-org.chromium.chrome.browser.permissions.PermissionUpdateMessageTest.testMessageForGeolocation
+-org.chromium.chrome.browser.permissions.PermissionUpdateMessageTest.testswitchContentShouldNotReprompt
+-org.chromium.chrome.browser.permissions.PermissionUpdateMessageTest.testInfobarShutsDownCleanlyForGeolocation
+-org.chromium.chrome.browser.permissions.PermissionUpdateMessageTest.testMessageForMediaStreamCamera
 
 # TODO (Create Bugs)
 -org.chromium.chrome.browser.subresource_filter.SubresourceFilterTest.resourceNotFilteredWithWarning
