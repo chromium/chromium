@@ -413,23 +413,30 @@ class PasswordAutofillManagerTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-TEST_F(PasswordAutofillManagerTest, FillSuggestion) {
+TEST_F(PasswordAutofillManagerTest, SuccessfulFillSuggestion) {
   TestPasswordManagerClient client;
-  InitializePasswordAutofillManager(&client, nullptr);
+  NiceMock<MockAutofillClient> autofill_client;
+  InitializePasswordAutofillManager(&client, &autofill_client);
 
   EXPECT_CALL(*client.mock_driver(),
               FillSuggestion(test_username_, test_password_, _));
-  EXPECT_TRUE(
-      password_autofill_manager_->FillSuggestionForTest(test_username_));
-  testing::Mock::VerifyAndClearExpectations(client.mock_driver());
+  password_autofill_manager_->DidAcceptSuggestion(
+      autofill::test::CreateAutofillSuggestion(
+          autofill::SuggestionType::kPasswordEntry, test_username_),
+      SuggestionPosition{.row = 0});
+}
 
-  EXPECT_CALL(*client.mock_driver(), FillSuggestion(_, _, _)).Times(0);
-  EXPECT_FALSE(
-      password_autofill_manager_->FillSuggestionForTest(kInvalidUsername));
+TEST_F(PasswordAutofillManagerTest, NoFillingOnNavigation) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  InitializePasswordAutofillManager(&client, &autofill_client);
 
+  EXPECT_CALL(*client.mock_driver(), FillSuggestion).Times(0);
   password_autofill_manager_->DidNavigateMainFrame();
-  EXPECT_FALSE(
-      password_autofill_manager_->FillSuggestionForTest(test_username_));
+  password_autofill_manager_->DidAcceptSuggestion(
+      autofill::test::CreateAutofillSuggestion(
+          autofill::SuggestionType::kPasswordEntry, test_username_),
+      SuggestionPosition{.row = 0});
 }
 
 TEST_F(PasswordAutofillManagerTest, PreviewSuggestion) {

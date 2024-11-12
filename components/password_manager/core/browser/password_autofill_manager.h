@@ -115,9 +115,6 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
     return CHECK_DEREF(manual_fallback_metrics_recorder_.get());
   }
 
-  // A public version of FillSuggestion(), only for use in tests.
-  bool FillSuggestionForTest(const std::u16string& username);
-
   // A public version of PreviewSuggestion(), only for use in tests.
   bool PreviewSuggestionForTest(const std::u16string& username);
 
@@ -140,11 +137,10 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   // Validates and forwards the given objects to the autofill client.
   void UpdatePopup(std::vector<autofill::Suggestion> suggestions);
 
-  // Attempts to find and fill the suggestions with the user name |username| and
-  // the `type` indicating the store (account-stored or local).
-  // Returns true if it was successful.
-  bool FillSuggestion(const std::u16string& username,
-                      autofill::SuggestionType type);
+  // Fills `password_and_metadata` suggestion by passing username and password
+  // to the password manager driver.
+  void FillSuggestion(
+      const autofill::PasswordAndMetadata& password_and_metadata);
 
   // Attempts to find and preview the suggestions with the user name |username|
   // and the `type` indicating the store (account-stored or
@@ -152,18 +148,16 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   bool PreviewSuggestion(const std::u16string& username,
                          autofill::SuggestionType type);
 
-  // If one of the login mappings in |fill_data| matches |current_username| and
+  // If one of the login mappings in `fill_data_` matches `current_username` and
   // `type` (indicating whether a credential is stored in account
-  // or locally), return true and assign the password and the original signon
-  // realm to |password_and_meta_data|. Note that if the credential comes from
-  // the same realm as the one we're filling to, the |realm| field will be left
-  // empty, as this is the behavior of |PasswordFormFillData|.
-  // Otherwise, returns false and leaves |password_and_meta_data| untouched.
-  bool GetPasswordAndMetadataForUsername(
+  // or locally), returns the matching password credential. Otherwise, returns
+  // `nullptr`. Note that if the credential comes from the same realm as
+  // the one we're filling to, the `realm` field will be left empty, as this is
+  // the behavior of `PasswordFormFillData`. This function uses the fact that
+  // `FindBestMatches` returns only one credential per <username, type> pair.
+  const autofill::PasswordAndMetadata* GetPasswordAndMetadataForUsername(
       const std::u16string& current_username,
-      autofill::SuggestionType type,
-      const autofill::PasswordFormFillData& fill_data,
-      autofill::PasswordAndMetadata* password_and_meta_data);
+      autofill::SuggestionType type);
 
   // Makes a request to the favicon service for the icon of |url|.
   void RequestFavicon(const GURL& url);
@@ -188,9 +182,14 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   // Called when the biometric reauth that guards password filling completes.
   // `type` identifies the suggestion that was selected for
   // filling.
-  void OnBiometricReauthCompleted(const std::u16string& username_value,
-                                  autofill::SuggestionType type,
-                                  bool auth_succeded);
+  void OnBiometricReauthCompleted(
+      const autofill::PasswordAndMetadata& password_and_metadata,
+      bool auth_succeded);
+
+  // Fills the password credential suggestion. Triggers authentication if
+  // needed.
+  void OnPasswordCredentialSuggestionAccepted(
+      const autofill::PasswordAndMetadata& password_and_metadata);
 
   // Cancels an ongoing biometric re-authentication. Usually, because
   // the filling scope has changed or because |this| is being destroyed.
