@@ -4910,8 +4910,6 @@ static_library("ui") {
       "views/webid/account_selection_modal_view.h",
       "views/webid/account_selection_view_base.cc",
       "views/webid/account_selection_view_base.h",
-      "views/webid/fedcm_account_selection_view_controller.cc",
-      "views/webid/fedcm_account_selection_view_controller.h",
       "views/webid/fedcm_account_selection_view_desktop.cc",
       "views/webid/fedcm_account_selection_view_desktop.h",
       "views/webid/fedcm_modal_dialog_view.cc",

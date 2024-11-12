@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
@@ -187,13 +188,23 @@ class MockFedCmModalDialogView : public FedCmModalDialogView {
               (override));
 };
 
+class FakeTabInterface : public tabs::MockTabInterface {
+ public:
+  void SetIsInForeground(bool foreground) { is_in_foreground_ = foreground; }
+  bool IsInForeground() const override { return is_in_foreground_; }
+
+ private:
+  bool is_in_foreground_ = true;
+};
+
 // Test FedCmAccountSelectionView which uses TestAccountSelectionView.
 class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
  public:
   TestFedCmAccountSelectionView(
       Delegate* delegate,
-      TestAccountSelectionView* account_selection_view)
-      : FedCmAccountSelectionView(delegate),
+      TestAccountSelectionView* account_selection_view,
+      tabs::TabInterface* tab)
+      : FedCmAccountSelectionView(delegate, tab),
         account_selection_view_(account_selection_view) {
     auto input_protector =
         std::make_unique<views::MockInputEventActivationProtector>();
@@ -352,7 +363,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kPassive) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
-        delegate_.get(), account_selection_view_.get());
+        delegate_.get(), account_selection_view_.get(), &tab_interface_);
     Show(*controller, accounts, sign_in_mode, rp_mode);
     return controller;
   }
@@ -371,7 +382,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       blink::mojom::RpContext rp_context = blink::mojom::RpContext::kSignIn,
       blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kPassive) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
-        delegate_.get(), account_selection_view_.get());
+        delegate_.get(), account_selection_view_.get(), &tab_interface_);
     controller->ShowFailureDialog(kTopFrameEtldPlusOne, kIdpEtldPlusOne,
                                   rp_context, rp_mode,
                                   content::IdentityProviderMetadata());
@@ -384,7 +395,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       blink::mojom::RpContext rp_context = blink::mojom::RpContext::kSignIn,
       blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kPassive) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
-        delegate_.get(), account_selection_view_.get());
+        delegate_.get(), account_selection_view_.get(), &tab_interface_);
     controller->ShowErrorDialog(
         kTopFrameEtldPlusOne, kIdpEtldPlusOne, rp_context, rp_mode,
         content::IdentityProviderMetadata(), /*error=*/std::nullopt);
@@ -397,7 +408,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       blink::mojom::RpContext rp_context = blink::mojom::RpContext::kSignIn,
       blink::mojom::RpMode rp_mode = blink::mojom::RpMode::kActive) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
-        delegate_.get(), account_selection_view_.get());
+        delegate_.get(), account_selection_view_.get(), &tab_interface_);
     controller->ShowLoadingDialog(kTopFrameEtldPlusOne, kIdpEtldPlusOne,
                                   rp_context, rp_mode);
     EXPECT_EQ(TestAccountSelectionView::SheetType::kLoading,
@@ -422,7 +433,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
       SignInMode sign_in_mode,
       blink::mojom::RpMode rp_mode) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
-        delegate_.get(), account_selection_view_.get());
+        delegate_.get(), account_selection_view_.get(), &tab_interface_);
     controller->Show(kTopFrameEtldPlusOne, idp_list, accounts, sign_in_mode,
                      rp_mode,
                      /*new_accounts=*/std::vector<IdentityRequestAccountPtr>());
@@ -505,12 +516,23 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
                           ui::EF_LEFT_MOUSE_BUTTON, 0);
   }
 
+  void TabWillEnterBackground(TestFedCmAccountSelectionView* view) {
+    view->TabWillEnterBackground(&tab_interface_);
+    tab_interface_.SetIsInForeground(false);
+  }
+
+  void TabForegrounded(TestFedCmAccountSelectionView* view) {
+    tab_interface_.SetIsInForeground(true);
+    view->TabForegrounded(&tab_interface_);
+  }
+
  protected:
   TestingProfile profile_;
 
   // This enables uses of TestWebContents.
   content::RenderViewHostTestEnabler test_render_host_factories_;
 
+  FakeTabInterface tab_interface_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   views::ViewsTestBase::WidgetAutoclosePtr dialog_widget_;
   std::unique_ptr<TestAccountSelectionView> account_selection_view_;
@@ -648,12 +670,12 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // If the user switched tabs to sign-into the IdP, Show() may be called while
   // the associated FedCM tab is inactive. Show() should not show the
   // views::Widget in this case.
-  controller->OnTabBackgrounded();
+  TabWillEnterBackground(controller.get());
   Show(*controller, accounts_, SignInMode::kExplicit,
        blink::mojom::RpMode::kPassive, new_accounts_);
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
-  controller->OnTabForegrounded();
+  TabForegrounded(controller.get());
   EXPECT_TRUE(dialog_widget_->IsVisible());
 
   EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
@@ -1187,7 +1209,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate IdP closing the pop-up window.
   controller->CloseModalDialog();
 
-  controller->OnTabBackgrounded();
+  TabWillEnterBackground(controller.get());
 
   // Emulate IdP sending the IdP sign-in status header which updates the
   // mismatch dialog to an accounts dialog.
@@ -1195,7 +1217,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
        blink::mojom::RpMode::kPassive, new_accounts_);
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
-  controller->OnTabForegrounded();
+  TabForegrounded(controller.get());
   EXPECT_TRUE(dialog_widget_->IsVisible());
   EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
             account_selection_view_->sheet_type_);
@@ -1224,9 +1246,9 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Switch to a different tab and then switch back to the same tab. The widget
   // should remain hidden because the mismatch dialog has not been updated into
   // an accounts dialog yet.
-  controller->OnTabBackgrounded();
+  TabWillEnterBackground(controller.get());
   EXPECT_FALSE(dialog_widget_->IsVisible());
-  controller->OnTabForegrounded();
+  TabForegrounded(controller.get());
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
   // Emulate IdP sending the IdP sign-in status header which updates the
@@ -2336,7 +2358,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       CreateAndShow(accounts_, SignInMode::kExplicit);
 
   // Emulate user changing tabs, hiding the dialog.
-  controller->OnTabBackgrounded();
+  TabWillEnterBackground(controller.get());
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
   // Emulate user resizing the window, making the web contents too small to fit
@@ -2348,7 +2370,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate user changing back to the tab containing the dialog. The dialog
   // should remain hidden because the web contents is still too small to fit the
   // dialog.
-  controller->OnTabForegrounded();
+  TabForegrounded(controller.get());
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
   // Emulate user resizing the window, making the web contents is big enough to
@@ -2364,7 +2386,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
   // Emulate user changing tabs, the dialog should remain hidden.
-  controller->OnTabBackgrounded();
+  TabWillEnterBackground(controller.get());
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
   // Emulate user resizing the window, making the web contents big enough to fit
@@ -2376,7 +2398,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Emulate user changing back to the tab containing the dialog. The dialog
   // should now be visible.
-  controller->OnTabForegrounded();
+  TabForegrounded(controller.get());
   EXPECT_TRUE(dialog_widget_->IsVisible());
 }
 
@@ -2389,13 +2411,13 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
       CreateAndShow(accounts_, SignInMode::kExplicit);
 
   // Emulate user changing tabs, hiding the dialog.
-  controller->OnTabBackgrounded();
+  TabWillEnterBackground(controller.get());
   EXPECT_FALSE(account_selection_view_->dialog_position_updated_);
   EXPECT_FALSE(dialog_widget_->IsVisible());
 
   // Emulate user changing back to the tab containing the dialog, updating the
   // dialog position.
-  controller->OnTabForegrounded();
+  TabForegrounded(controller.get());
   EXPECT_TRUE(account_selection_view_->dialog_position_updated_);
   EXPECT_TRUE(dialog_widget_->IsVisible());
 }

@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
-#include "chrome/browser/ui/views/webid/fedcm_account_selection_view_controller.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -127,15 +126,6 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     privacy_sandbox_tab_observer_ =
         std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
             tab.GetContents());
-  }
-
-  // FedCM is supported in general web content, but not in chrome UI. Of the
-  // BrowserWindow types, devtools show Chrome UI and the rest show general web
-  // content.
-  if (tab.GetBrowserWindowInterface()->GetType() !=
-      BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
-    fedcm_account_selection_view_controller_ =
-        std::make_unique<FedCmAccountSelectionViewController>(&tab);
   }
 
   customize_chrome_side_panel_controller_ =

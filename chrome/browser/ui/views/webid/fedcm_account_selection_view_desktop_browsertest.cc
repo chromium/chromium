@@ -10,11 +10,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
 #include "chrome/browser/ui/views/webid/fake_delegate.h"
-#include "chrome/browser/ui/views/webid/fedcm_account_selection_view_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_features.h"
@@ -31,12 +29,8 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
   void PreShow() override {
     delegate_ = std::make_unique<FakeDelegate>(
         browser()->tab_strip_model()->GetActiveWebContents());
-    account_selection_view_ = browser()
-                                  ->tab_strip_model()
-                                  ->GetActiveTab()
-                                  ->tab_features()
-                                  ->fedcm_account_selection_view_controller()
-                                  ->CreateAccountSelectionView(delegate());
+    account_selection_view_ = std::make_unique<FedCmAccountSelectionView>(
+        delegate(), browser()->GetActiveTabInterface());
   }
 
   void ShowUi(const std::string& name) override { ShowAccounts(); }

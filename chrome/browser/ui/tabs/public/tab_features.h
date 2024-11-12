@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 
 class ChromeAutofillAiClient;
-class FedCmAccountSelectionViewController;
 class LensOverlayController;
 class PinnedTranslateActionListener;
 class Profile;
@@ -82,11 +81,6 @@ class TabFeatures {
   enterprise_data_protection::DataProtectionNavigationController*
   data_protection_controller() {
     return data_protection_controller_.get();
-  }
-
-  FedCmAccountSelectionViewController*
-  fedcm_account_selection_view_controller() {
-    return fedcm_account_selection_view_controller_.get();
   }
 
   permissions::PermissionIndicatorsTabData* permission_indicators_tab_data() {
@@ -158,8 +152,6 @@ class TabFeatures {
   std::unique_ptr<
       enterprise_data_protection::DataProtectionNavigationController>
       data_protection_controller_;
-  std::unique_ptr<FedCmAccountSelectionViewController>
-      fedcm_account_selection_view_controller_;
 
   std::unique_ptr<permissions::PermissionIndicatorsTabData>
       permission_indicators_tab_data_;
