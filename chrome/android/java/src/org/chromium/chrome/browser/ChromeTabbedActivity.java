@@ -1122,6 +1122,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         return false;
     }
 
+    /** Returns whether startup was cold or not. */
     private boolean isColdStart() {
         return ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
                 && SimpleStartupForegroundSessionDetector.runningCleanForegroundSession();
