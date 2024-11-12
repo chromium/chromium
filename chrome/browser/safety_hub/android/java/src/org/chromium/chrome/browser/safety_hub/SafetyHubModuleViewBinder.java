@@ -475,33 +475,19 @@ public class SafetyHubModuleViewBinder {
             case ModuleOption.ACCOUNT_PASSWORDS:
                 return SafetyHubPasswordModuleHelper.getModuleState(model);
             case ModuleOption.UPDATE_CHECK:
-                UpdateStatusProvider.UpdateStatus updateStatus =
-                        model.get(SafetyHubModuleProperties.UPDATE_STATUS);
-                if (updateStatus == null
-                        || updateStatus.updateState
-                                == UpdateStatusProvider.UpdateState.UNSUPPORTED_OS_VERSION) {
-                    return ModuleState.UNAVAILABLE;
-                }
-                if (updateStatus.updateState == UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE) {
-                    return ModuleState.WARNING;
-                }
-                return ModuleState.SAFE;
+                return SafetyHubUtils.getUpdateCheckModuleState(
+                        model.get(SafetyHubModuleProperties.UPDATE_STATUS));
             case ModuleOption.UNUSED_PERMISSIONS:
-                int permissionsCount =
-                        model.get(SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT);
-                return permissionsCount > 0 ? ModuleState.INFO : ModuleState.SAFE;
+                return SafetyHubUtils.getPermissionsModuleState(
+                        model.get(SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT));
             case ModuleOption.NOTIFICATION_REVIEW:
-                int notificationsCount =
+                return SafetyHubUtils.getNotificationModuleState(
                         model.get(
                                 SafetyHubModuleProperties
-                                        .NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT);
-                return notificationsCount > 0 ? ModuleState.INFO : ModuleState.SAFE;
+                                        .NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT));
             case ModuleOption.SAFE_BROWSING:
-                @SafeBrowsingState
-                int safeBrowsingState = model.get(SafetyHubModuleProperties.SAFE_BROWSING_STATE);
-                return safeBrowsingState == SafeBrowsingState.NO_SAFE_BROWSING
-                        ? ModuleState.WARNING
-                        : ModuleState.SAFE;
+                return SafetyHubUtils.getSafeBrowsingModuleState(
+                        model.get(SafetyHubModuleProperties.SAFE_BROWSING_STATE));
             default:
                 throw new IllegalArgumentException();
         }

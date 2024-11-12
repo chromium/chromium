@@ -15,13 +15,18 @@ import org.chromium.content_public.browser.WebContents;
 class SafetyHubHatsBridge {
     /** Tries to trigger the HaTS survey if the flag is enabled. */
     static boolean triggerHatsSurveyIfEnabled(
-            Profile profile, WebContents webContents, String moduleType, boolean hasTappedCard) {
+            Profile profile,
+            WebContents webContents,
+            String moduleType,
+            boolean hasTappedCard,
+            String globalState) {
         if (!ChromeFeatureList.sSafetyHubAndroidSurvey.isEnabled()) {
             return false;
         }
 
         return SafetyHubHatsBridgeJni.get()
-                .triggerHatsSurveyIfEnabled(profile, webContents, moduleType, hasTappedCard);
+                .triggerHatsSurveyIfEnabled(
+                        profile, webContents, moduleType, hasTappedCard, globalState);
     }
 
     @NativeMethods
@@ -30,6 +35,7 @@ class SafetyHubHatsBridge {
                 @JniType("Profile*") Profile profile,
                 WebContents webContents,
                 @JniType("std::string") String moduleType,
-                boolean hasTappedCard);
+                boolean hasTappedCard,
+                @JniType("std::string") String globalState);
     }
 }

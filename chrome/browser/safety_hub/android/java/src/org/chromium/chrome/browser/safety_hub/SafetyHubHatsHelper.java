@@ -8,12 +8,16 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
+import org.chromium.chrome.browser.safety_hub.SafetyHubModuleProperties.ModuleState;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -119,7 +123,7 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
         }
         boolean didShowSurvey =
                 SafetyHubHatsBridge.triggerHatsSurveyIfEnabled(
-                        mProfile, webContents, mModuleType, mHasTappedCard);
+                        mProfile, webContents, mModuleType, mHasTappedCard, getOverallState());
         if (didShowSurvey) {
             removeObserver();
         }
@@ -128,5 +132,85 @@ class SafetyHubHatsHelper extends EmptyTabObserver implements Destroyable {
     @Override
     public void destroy() {
         removeObserver();
+    }
+
+    /**
+     * Returns a string that represents the overall state of Safety Hub. The overall state
+     * represents the most severe state of all the modules. The logic for the state of each module
+     * should be equivalent to {@link SafetyHubModuleViewBinder#getModuleState()}.
+     */
+    @VisibleForTesting
+    String getOverallState() {
+        @ModuleState int[] moduleStates = new int[5];
+
+        moduleStates[0] = getPasswordModuleState();
+        moduleStates[1] = getUpdateCheckModuleState();
+        moduleStates[2] = getPermissionsModuleState();
+        moduleStates[3] = getNotificationModuleState();
+        moduleStates[4] = getSafeBrowsingModuleState();
+
+        @ModuleState int mostSevereState = ModuleState.SAFE;
+        for (@ModuleState int state : moduleStates) {
+            if (state < mostSevereState) {
+                mostSevereState = state;
+            }
+        }
+
+        switch (mostSevereState) {
+            case ModuleState.WARNING:
+                return "Warning";
+            case ModuleState.UNAVAILABLE:
+                return "Unavailable";
+            case ModuleState.INFO:
+                return "Info";
+            case ModuleState.SAFE:
+                return "Safe";
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    /**
+     * Returns the state of the password module. This computation differs slightly from the one in
+     * {@link SafetyHubModuleViewBinder#getModuleState()}.
+     */
+    private @ModuleState int getPasswordModuleState() {
+        int compromisedPasswordsCount =
+                UserPrefs.get(mProfile).getInteger(Pref.BREACHED_CREDENTIALS_COUNT);
+        int weakPasswordsCount = UserPrefs.get(mProfile).getInteger(Pref.WEAK_CREDENTIALS_COUNT);
+        int reusedPasswordsCount =
+                UserPrefs.get(mProfile).getInteger(Pref.REUSED_CREDENTIALS_COUNT);
+
+        if (compromisedPasswordsCount > 0) {
+            return ModuleState.WARNING;
+        } else if (compromisedPasswordsCount < 0) {
+            return ModuleState.UNAVAILABLE;
+        } else if (weakPasswordsCount > 0 || reusedPasswordsCount > 0) {
+            return ModuleState.INFO;
+        }
+
+        return ModuleState.SAFE;
+    }
+
+    private @ModuleState int getUpdateCheckModuleState() {
+        return SafetyHubUtils.getUpdateCheckModuleState(
+                SafetyHubFetchServiceFactory.getForProfile(mProfile).getUpdateStatus());
+    }
+
+    private @ModuleState int getPermissionsModuleState() {
+        return SafetyHubUtils.getPermissionsModuleState(
+                UnusedSitePermissionsBridge.getForProfile(mProfile).getRevokedPermissions().length);
+    }
+
+    private @ModuleState int getNotificationModuleState() {
+        return SafetyHubUtils.getNotificationModuleState(
+                NotificationPermissionReviewBridge.getForProfile(mProfile)
+                        .getNotificationPermissions()
+                        .size());
+    }
+
+    private @ModuleState int getSafeBrowsingModuleState() {
+        return SafetyHubUtils.getSafeBrowsingModuleState(
+                new SafeBrowsingBridge(mProfile).getSafeBrowsingState());
     }
 }

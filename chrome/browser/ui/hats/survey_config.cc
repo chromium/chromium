@@ -610,7 +610,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*product_specific_bits_data_fields=*/
       std::vector<std::string>{"Tapped card"},
       /*product_specific_string_data=*/
-      std::vector<std::string>{"Notification module type"});
+      std::vector<std::string>{"Notification module type", "Global state"});
 #endif  // #if !BUILDFLAG(IS_ANDROID)
 
   return survey_configs;

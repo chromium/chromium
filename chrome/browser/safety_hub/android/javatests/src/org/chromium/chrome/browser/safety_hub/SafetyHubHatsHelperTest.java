@@ -31,8 +31,12 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridgeJni;
+import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -60,6 +64,14 @@ public class SafetyHubHatsHelperTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Mock private SafetyHubHatsBridge.Natives mSafetyHubHatsBridgeNatives;
+    @Mock private SafetyHubFetchService mSafetyHubFetchService;
+    @Mock private SafeBrowsingBridge.Natives mSafeBrowsingBridgeNativeMock;
+
+    private FakeUnusedSitePermissionsBridge mUnusedPermissionsBridge =
+            new FakeUnusedSitePermissionsBridge();
+
+    private FakeNotificationPermissionReviewBridge mNotificationPermissionReviewBridge =
+            new FakeNotificationPermissionReviewBridge();
 
     private TabModelSelector mTabModelSelector;
     private Profile mProfile;
@@ -72,7 +84,26 @@ public class SafetyHubHatsHelperTest {
         mJniMocker.mock(SafetyHubHatsBridgeJni.TEST_HOOKS, mSafetyHubHatsBridgeNatives);
         doReturn(true)
                 .when(mSafetyHubHatsBridgeNatives)
-                .triggerHatsSurveyIfEnabled(any(), any(), any(), anyBoolean());
+                .triggerHatsSurveyIfEnabled(any(), any(), any(), anyBoolean(), any());
+
+        SafetyHubFetchServiceFactory.setSafetyHubFetchServiceForTesting(mSafetyHubFetchService);
+        UpdateStatusProvider.UpdateStatus updateStatus = new UpdateStatusProvider.UpdateStatus();
+        updateStatus.updateState = UpdateStatusProvider.UpdateState.NONE;
+        doReturn(updateStatus).when(mSafetyHubFetchService).getUpdateStatus();
+
+        mJniMocker.mock(UnusedSitePermissionsBridgeJni.TEST_HOOKS, mUnusedPermissionsBridge);
+        mJniMocker.mock(
+                NotificationPermissionReviewBridgeJni.TEST_HOOKS,
+                mNotificationPermissionReviewBridge);
+
+        mUnusedPermissionsBridge.setPermissionsDataForReview(new PermissionsData[] {});
+        mNotificationPermissionReviewBridge.setNotificationPermissionsForReview(
+                new NotificationPermissions[] {});
+
+        mJniMocker.mock(SafeBrowsingBridgeJni.TEST_HOOKS, mSafeBrowsingBridgeNativeMock);
+        doReturn(SafeBrowsingState.NO_SAFE_BROWSING)
+                .when(mSafeBrowsingBridgeNativeMock)
+                .getSafeBrowsingState(mProfile);
 
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivityTestRule.waitForActivityNativeInitializationComplete();
@@ -130,7 +161,8 @@ public class SafetyHubHatsHelperTest {
                         eq(mProfile),
                         any(WebContents.class),
                         eq(MagicStackEntry.ModuleType.PASSWORDS),
-                        eq(true));
+                        eq(true),
+                        any());
 
         // If another survey is attempted to be shown after the a tap has occurred, we should not
         // return that a card was tapped.
@@ -146,7 +178,8 @@ public class SafetyHubHatsHelperTest {
                         eq(mProfile),
                         any(WebContents.class),
                         eq(MagicStackEntry.ModuleType.PASSWORDS),
-                        eq(false));
+                        eq(false),
+                        any());
     }
 
     @Test
@@ -165,7 +198,11 @@ public class SafetyHubHatsHelperTest {
     private void verifyHatsTrigger(String moduleType, boolean hasTappedCard) {
         verify(mSafetyHubHatsBridgeNatives, never())
                 .triggerHatsSurveyIfEnabled(
-                        eq(mProfile), any(WebContents.class), eq(moduleType), eq(hasTappedCard));
+                        eq(mProfile),
+                        any(WebContents.class),
+                        eq(moduleType),
+                        eq(hasTappedCard),
+                        any());
 
         // Verify that the survey is NOT triggered on an Incognito tab.
         ChromeTabUtils.fullyLoadUrlInNewTab(
@@ -175,7 +212,11 @@ public class SafetyHubHatsHelperTest {
                 /* incognito= */ true);
         verify(mSafetyHubHatsBridgeNatives, never())
                 .triggerHatsSurveyIfEnabled(
-                        eq(mProfile), any(WebContents.class), eq(moduleType), eq(hasTappedCard));
+                        eq(mProfile),
+                        any(WebContents.class),
+                        eq(moduleType),
+                        eq(hasTappedCard),
+                        any());
 
         // Verify that the survey is triggered on next page load on a regular tab.
         ChromeTabUtils.fullyLoadUrlInNewTab(
@@ -185,7 +226,11 @@ public class SafetyHubHatsHelperTest {
                 /* incognito= */ false);
         verify(mSafetyHubHatsBridgeNatives, times(1))
                 .triggerHatsSurveyIfEnabled(
-                        eq(mProfile), any(WebContents.class), eq(moduleType), eq(hasTappedCard));
+                        eq(mProfile),
+                        any(WebContents.class),
+                        eq(moduleType),
+                        eq(hasTappedCard),
+                        any());
 
         // Verify that there are no more attempts to trigger the survey.
         ChromeTabUtils.fullyLoadUrlInNewTab(
@@ -195,6 +240,10 @@ public class SafetyHubHatsHelperTest {
                 /* incognito= */ false);
         verify(mSafetyHubHatsBridgeNatives, times(1))
                 .triggerHatsSurveyIfEnabled(
-                        eq(mProfile), any(WebContents.class), eq(moduleType), eq(hasTappedCard));
+                        eq(mProfile),
+                        any(WebContents.class),
+                        eq(moduleType),
+                        eq(hasTappedCard),
+                        any());
     }
 }
