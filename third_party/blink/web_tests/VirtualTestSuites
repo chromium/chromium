@@ -4083,5 +4083,15 @@
       "bmeurer@google.com",
       "changhaohan@google.com"
     ]
+  },
+  {
+    "prefix": "select-audio-output",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/audio-output",
+              "external/wpt/webaudio/the-audio-api/the-mediaelementaudiosourcenode-interface/setSinkId-with-MediaElementAudioSourceNode.https.html"],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=SelectAudioOutput"],
+    "owners": ["agpalak@chromium.org", "guidou@chromium.org"],
+    "expires": "Nov 11, 2025"
   }
 ]
