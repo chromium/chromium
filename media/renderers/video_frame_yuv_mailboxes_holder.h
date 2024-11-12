@@ -25,19 +25,17 @@ class MEDIA_EXPORT VideoFrameYUVMailboxesHolder {
 
   void ReleaseCachedData();
 
-  // Extracts shared image information if |video_frame| is texture backed or
-  // creates new shared image and uploads YUV data to GPU if |video_frame| is
-  // mappable. This function can be called repeatedly to re-use shared image in
-  // the case of CPU backed VideoFrames. The shared image is returned in
-  // |mailbox|.
-  const gpu::Mailbox& VideoFrameToMailbox(
+  // Creates a new shared image if the `video_frame` data differs from that in
+  // `shared_image_`. This function can be called repeatedly to re-use
+  // `shared_image_` in the case of CPU backed VideoFrames.
+  const scoped_refptr<gpu::ClientSharedImage>& GetSharedImage(
       const VideoFrame* video_frame,
       viz::RasterContextProvider* raster_context_provider);
 
  private:
   scoped_refptr<viz::RasterContextProvider> provider_;
 
-  // Populated by VideoFrameToMailbox.
+  // Populated by GetSharedImage.
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
 };
 

@@ -21,17 +21,15 @@ class VideoFrame;
 class VideoFrameYUVMailboxesHolder;
 
 // Converts YUV video frames to RGB format and stores the results in the
-// provided mailbox. The caller of functions in this class maintains ownership
-// of the destination mailbox. VideoFrames that wrap external textures can be
-// I420 or NV12 format. Automatically handles upload of CPU memory backed
-// VideoFrames in I420 format. Converting CPU backed VideoFrames requires
-// creation of shared images to upload the frame to the GPU where the conversion
-// takes place. This will not perform any color space conversion besides the
-// YUV to RGB conversion (it will ignore the color space of the SharedImage
-// backing the destination mailbox).
-// IMPORTANT: Callers of this function can cache this class and call
-// ConvertYUVVideoFrame() to prevent repeated creation/deletion of shared
-// images.
+// provided shared image. The caller of functions in this class maintains
+// ownership of the destination shared image. Automatically handles upload of
+// CPU memory backed VideoFrames in I420 format. Converting CPU backed
+// VideoFrames requires creation of shared images to upload the frame to the GPU
+// where the conversion takes place. This will not perform any color space
+// conversion besides the YUV to RGB conversion (it will ignore the color space
+// of the destination shared image). IMPORTANT: Callers of this function can
+// cache this class and call ConvertYUVVideoFrame() to prevent repeated
+// creation/deletion of shared images.
 class MEDIA_EXPORT VideoFrameYUVConverter {
  public:
   VideoFrameYUVConverter();
@@ -39,8 +37,9 @@ class MEDIA_EXPORT VideoFrameYUVConverter {
   static bool IsVideoFrameFormatSupported(const VideoFrame& video_frame);
 
   // For pure software pixel upload path with video frame that does not have
-  // textures.
-  bool ConvertYUVVideoFrame(const VideoFrame* video_frame,
+  // textures. Gets the shared image in `holder_` and uploads YUV data to GPU if
+  // `video_frame` is mappable.
+  void ConvertYUVVideoFrame(const VideoFrame* video_frame,
                             viz::RasterContextProvider* raster_context_provider,
                             const gpu::MailboxHolder& dest_mailbox_holder,
                             bool use_visible_rect = false);

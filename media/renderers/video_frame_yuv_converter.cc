@@ -2,16 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/renderers/video_frame_yuv_converter.h"
 
 #include <GLES3/gl3.h>
 
 #include "components/viz/common/gpu/raster_context_provider.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/renderers/video_frame_yuv_mailboxes_holder.h"
+#include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace media {
 
@@ -24,7 +34,7 @@ bool VideoFrameYUVConverter::IsVideoFrameFormatSupported(
          SkYUVAInfo::PlaneConfig::kUnknown;
 }
 
-bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
+void VideoFrameYUVConverter::ConvertYUVVideoFrame(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
     const gpu::MailboxHolder& dest_mailbox_holder,
@@ -50,13 +60,45 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
 
   // For pure software pixel upload path with video frame that does not have
   // textures.
-  gpu::Mailbox src_mailbox =
-      holder_->VideoFrameToMailbox(video_frame, raster_context_provider);
+  const scoped_refptr<gpu::ClientSharedImage>& src_shared_image =
+      holder_->GetSharedImage(video_frame, raster_context_provider);
+  CHECK(src_shared_image);
+  const viz::SharedImageFormat si_format = src_shared_image->format();
+  constexpr SkAlphaType kPlaneAlphaType = kPremul_SkAlphaType;
+  SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
 
-  ri->CopySharedImage(src_mailbox, dest_mailbox_holder.mailbox, 0, 0,
-                      source_rect.x(), source_rect.y(), source_rect.width(),
-                      source_rect.height());
-  return true;
+  for (int plane = 0; plane < si_format.NumberOfPlanes(); ++plane) {
+    SkColorType color_type =
+        viz::ToClosestSkColorType(/*gpu_compositing=*/true, si_format, plane);
+    gfx::Size plane_size =
+        si_format.GetPlaneSize(plane, video_frame->coded_size());
+    SkImageInfo info = SkImageInfo::Make(gfx::SizeToSkISize(plane_size),
+                                         color_type, kPlaneAlphaType);
+    pixmaps[plane] =
+        SkPixmap(info, video_frame->data(plane), video_frame->stride(plane));
+  }
+
+  // Prepare the SkYUVAInfo
+  SkISize video_size = gfx::SizeToSkISize(video_frame->coded_size());
+  auto plane_config = SkYUVAInfo::PlaneConfig::kUnknown;
+  auto subsampling = SkYUVAInfo::Subsampling::kUnknown;
+  std::tie(plane_config, subsampling) =
+      VideoPixelFormatToSkiaValues(video_frame->format());
+
+  // TODO(crbug.com/41380578): This should really default to rec709.
+  SkYUVColorSpace color_space = kRec601_SkYUVColorSpace;
+  video_frame->ColorSpace().ToSkYUVColorSpace(video_frame->BitDepth(),
+                                              &color_space);
+  SkYUVAInfo yuva_info =
+      SkYUVAInfo(video_size, plane_config, subsampling, color_space);
+
+  SkYUVAPixmaps yuv_pixmap =
+      SkYUVAPixmaps::FromExternalPixmaps(yuva_info, pixmaps);
+  ri->WritePixelsYUV(src_shared_image->mailbox(), yuv_pixmap);
+
+  ri->CopySharedImage(src_shared_image->mailbox(), dest_mailbox_holder.mailbox,
+                      0, 0, source_rect.x(), source_rect.y(),
+                      source_rect.width(), source_rect.height());
 }
 
 void VideoFrameYUVConverter::ReleaseCachedData() {
