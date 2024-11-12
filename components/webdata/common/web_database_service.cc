@@ -30,7 +30,7 @@ namespace features {
 // guaranteed to be retrievable if OSCrypt Async is not used.
 BASE_FEATURE(kUseNewEncryptionKeyForWebData,
              "UseNewEncryptionKeyForWebData",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 
