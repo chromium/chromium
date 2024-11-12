@@ -285,13 +285,6 @@ class OSSettingsFilesTestCrosComponentsAndJellyEnabled
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class OSSettingsPrivacyTestPrivacyHubV0AndPermissionsEnabled
-    : public OSSettingsMochaTest {
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      ash::features::kCrosPrivacyHubAppPermissions};
-};
-
 class OSSettingsPrivacyTestPrivacyHubAndV0Enabled : public OSSettingsMochaTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -1430,12 +1423,12 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
   RunSettingsTest("os_privacy_page/privacy_hub_app_permission_row_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyTestPrivacyHubV0AndPermissionsEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        OsPrivacyPagePrivacyHubCameraSubpage) {
   RunSettingsTest("os_privacy_page/privacy_hub_camera_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyTestPrivacyHubV0AndPermissionsEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        OsPrivacyPagePrivacyHubMicrophoneSubpage) {
   RunSettingsTest("os_privacy_page/privacy_hub_microphone_subpage_test.js");
 }

@@ -7743,12 +7743,6 @@ const char kCrosMallUrlDescription[] =
 const char kCrosPrivacyHubName[] = "Enable ChromeOS Privacy Hub";
 const char kCrosPrivacyHubDescription[] = "Enables ChromeOS Privacy Hub.";
 
-const char kCrosPrivacyHubAppPermissionsName[] =
-    "Enable app permissions view inside Priacy Hub";
-const char kCrosPrivacyHubAppPermissionsDescription[] =
-    "When enabled, the user will be able to see the list of apps, sites and "
-    "system services affected by the privacy hub toggles.";
-
 const char kCrosPrivacyHubAppPermissionsV2Name[] =
     "Add privacy controls to app specific subpages";
 const char kCrosPrivacyHubAppPermissionsV2Description[] =

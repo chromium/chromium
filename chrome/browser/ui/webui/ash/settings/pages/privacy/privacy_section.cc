@@ -451,10 +451,6 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"privacyHubTitle", IDS_OS_SETTINGS_PRIVACY_HUB_TITLE},
       {"privacyHubSubtext", IDS_OS_SETTINGS_PRIVACY_HUB_SUBTEXT},
       {"cameraToggleTitle", IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_TOGGLE_TITLE},
-      {"cameraToggleSubtext",
-       IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_TOGGLE_SUBTEXT},
-      {"cameraToggleFallbackSubtext",
-       IDS_OS_SETTINGS_PRIVACY_HUB_FALLBACK_CAMERA_TOGGLE_SUBTEXT},
       {"privacyHubPageCameraRowSubtext",
        IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_CAMERA_ROW_SUBTEXT},
       {"privacyHubPageCameraRowFallbackSubtext",
@@ -469,8 +465,6 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_PRIVACY_HUB_NO_CAMERA_CONNECTED_TEXT},
       {"microphoneToggleTitle",
        IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_TITLE},
-      {"microphoneToggleSubtext",
-       IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_SUBTEXT},
       {"privacyHubPageMicrophoneRowSubtext",
        IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_MICROPHONE_ROW_SUBTEXT},
       {"privacyHubMicrophoneSubpageMicrophoneToggleSubtext",
@@ -635,9 +629,6 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "isPrivacyHubHatsEnabled",
       base::FeatureList::IsEnabled(
           ::features::kHappinessTrackingPrivacyHubPostLaunch));
-  html_source->AddBoolean(
-      "showAppPermissionsInsidePrivacyHub",
-      ash::features::IsCrosPrivacyHubAppPermissionsEnabled());
   html_source->AddBoolean("showPrivacyHubLocationControl",
                           ash::features::IsCrosPrivacyHubLocationEnabled());
   html_source->AddBoolean("showSpeakOnMuteDetectionPage",

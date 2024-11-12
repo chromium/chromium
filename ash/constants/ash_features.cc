@@ -468,11 +468,6 @@ BASE_FEATURE(kCrosPrivacyHub,
              "CrosPrivacyHub",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables app permissions view inside Privacy Hub.
-BASE_FEATURE(kCrosPrivacyHubAppPermissions,
-             "CrosPrivacyHubAppPermissions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Adds controls to the OS Apps subpages for managing sensor system access and
 // more.
 BASE_FEATURE(kCrosPrivacyHubAppPermissionsV2,
@@ -3528,10 +3523,6 @@ bool IsConsumerAutoUpdateToggleAllowed() {
 bool IsCopyClientKeysCertsToChapsEnabled() {
   return !IsNssDbClientCertsRollbackEnabled() &&
          base::FeatureList::IsEnabled(kCopyClientKeysCertsToChaps);
-}
-
-bool IsCrosPrivacyHubAppPermissionsEnabled() {
-  return base::FeatureList::IsEnabled(kCrosPrivacyHubAppPermissions);
 }
 
 bool IsCrosPrivacyHubAppPermissionsV2Enabled() {
