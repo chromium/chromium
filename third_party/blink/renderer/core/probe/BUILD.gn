@@ -46,6 +46,10 @@ template("probe_generator") {
 
     deps = [ "//third_party/blink/renderer/platform" ]
 
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+
     public_deps = [ ":${generated_target_name}" ]
   }
 
@@ -62,6 +66,8 @@ probe_generator("instrumentation_probes") {
   probe_set = "core_probes"
   probe_sink = "core_probe_sink"
   output = blink_core_output_dir
+
+  deps = [ "//third_party/blink/renderer/bindings:buildflags" ]
 }
 
 source_set("generated") {
