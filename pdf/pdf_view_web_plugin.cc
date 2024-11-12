@@ -1716,17 +1716,16 @@ void PdfViewWebPlugin::HandleSaveAttachmentMessage(
 
 void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
   const std::string& token = *message.FindString("token");
-  int request_type = message.FindInt("saveRequestType").value();
-  DCHECK_GE(request_type, static_cast<int>(SaveRequestType::kAnnotation));
-  DCHECK_LE(request_type, static_cast<int>(SaveRequestType::kEdited));
+  SaveRequestType request_type =
+      static_cast<SaveRequestType>(message.FindInt("saveRequestType").value());
 
-  switch (static_cast<SaveRequestType>(request_type)) {
+  switch (request_type) {
     case SaveRequestType::kAnnotation:
 #if BUILDFLAG(ENABLE_INK) || BUILDFLAG(ENABLE_PDF_INK2)
       // In annotation mode, assume the user will make edits and prefer saving
       // using the plugin data.
       SetPluginCanSave(true);
-      SaveToBuffer(token);
+      SaveToBuffer(request_type, token);
       return;
 #else
       NOTREACHED();
@@ -1739,7 +1738,7 @@ void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
       return;
     }
     case SaveRequestType::kEdited:
-      SaveToBuffer(token);
+      SaveToBuffer(request_type, token);
       return;
   }
   NOTREACHED();
@@ -1902,7 +1901,11 @@ void PdfViewWebPlugin::HandleViewportMessage(const base::Value::Dict& message) {
   UpdateScroll(GetScrollPositionFromOffset(scroll_offset));
 }
 
-void PdfViewWebPlugin::SaveToBuffer(const std::string& token) {
+void PdfViewWebPlugin::SaveToBuffer(SaveRequestType request_type,
+                                    const std::string& token) {
+  CHECK(request_type == SaveRequestType::kAnnotation ||
+        request_type == SaveRequestType::kEdited);
+
   engine_->KillFormFocus();
 
   base::Value::Dict message;

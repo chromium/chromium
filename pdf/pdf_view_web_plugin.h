@@ -553,7 +553,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void HandleStopScrollingMessage(const base::Value::Dict& message);
   void HandleViewportMessage(const base::Value::Dict& message);
 
-  void SaveToBuffer(const std::string& token);
+  void SaveToBuffer(SaveRequestType request_type, const std::string& token);
   void SaveToFile(const std::string& token);
 
   // Sets whether the plugin can and should handle the save by using `pdf_host_`
