@@ -369,11 +369,23 @@ void ChromeAutofillClientIOS::HideAutofillSuggestions(
   [bridge_ hideAutofillPopup];
 }
 
+bool ChromeAutofillClientIOS::IsAutofillEnabled() const {
+  return IsAutofillProfileEnabled() || IsAutofillPaymentMethodsEnabled();
+}
+
+bool ChromeAutofillClientIOS::IsAutofillProfileEnabled() const {
+  return prefs::IsAutofillProfileEnabled(GetPrefs());
+}
+
+bool ChromeAutofillClientIOS::IsAutofillPaymentMethodsEnabled() const {
+  return prefs::IsAutofillPaymentMethodsEnabled(GetPrefs());
+}
+
 bool ChromeAutofillClientIOS::IsAutocompleteEnabled() const {
   return prefs::IsAutocompleteEnabled(GetPrefs());
 }
 
-bool ChromeAutofillClientIOS::IsPasswordManagerEnabled() {
+bool ChromeAutofillClientIOS::IsPasswordManagerEnabled() const {
   return GetPrefs()->GetBoolean(
       password_manager::prefs::kCredentialsEnableService);
 }

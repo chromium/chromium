@@ -117,8 +117,11 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   void PinAutofillSuggestions() override;
   void HideAutofillSuggestions(
       autofill::SuggestionHidingReason reason) override;
+  bool IsAutofillEnabled() const override;
+  bool IsAutofillProfileEnabled() const override;
+  bool IsAutofillPaymentMethodsEnabled() const override;
   bool IsAutocompleteEnabled() const override;
-  bool IsPasswordManagerEnabled() override;
+  bool IsPasswordManagerEnabled() const override;
   void DidFillOrPreviewForm(
       autofill::mojom::ActionPersistence action_persistence,
       autofill::AutofillTriggerSource trigger_source,

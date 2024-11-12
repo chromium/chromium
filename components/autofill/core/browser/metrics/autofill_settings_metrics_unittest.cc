@@ -62,7 +62,7 @@ INSTANTIATE_TEST_SUITE_P(, AutofillSettingsMetricsTest, ::testing::Bool());
 // Test that we log that Profile Autofill is enabled / disabled when filling a
 // form.
 TEST_P(AutofillSettingsMetricsTest, LogsAutofillProfileIsEnabledAtPageLoad) {
-  autofill_manager().SetAutofillProfileEnabled(*autofill_client_, GetParam());
+  autofill_client_->SetAutofillProfileEnabled(GetParam());
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
                                  /*removed_forms=*/{});
   histogram_tester_.ExpectUniqueSample("Autofill.Address.IsEnabled.PageLoad",
@@ -72,8 +72,7 @@ TEST_P(AutofillSettingsMetricsTest, LogsAutofillProfileIsEnabledAtPageLoad) {
 // Test that we log that CreditCard Autofill is enabled / disabled when filling
 // a form.
 TEST_P(AutofillSettingsMetricsTest, AutofillCreditCardIsEnabledAtPageLoad) {
-  autofill_manager().SetAutofillPaymentMethodsEnabled(*autofill_client_,
-                                                      GetParam());
+  autofill_client_->SetAutofillPaymentMethodsEnabled(GetParam());
   autofill_manager().OnFormsSeen(/*updated_forms=*/{},
                                  /*removed_forms=*/{});
   histogram_tester_.ExpectUniqueSample("Autofill.CreditCard.IsEnabled.PageLoad",
@@ -198,7 +197,7 @@ TEST_P(AutofillSettingsMetricsTest,
 // Tests that Autofill Profile disabled by user setting is logged at page load.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillProfileDisabledByUserAtPageLoad) {
-  autofill_manager().SetAutofillProfileEnabled(*autofill_client_, GetParam());
+  autofill_client_->SetAutofillProfileEnabled(GetParam());
   autofill_client_->GetPrefs()->SetUserPref(prefs::kAutofillProfileEnabled,
                                             base::Value(GetParam()));
 
@@ -213,7 +212,7 @@ TEST_P(AutofillSettingsMetricsTest,
 // Tests that Autofill Profile disabled by admin policy is logged at page load.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillProfileDisabledByAdminPolicyAtPageLoad) {
-  autofill_manager().SetAutofillProfileEnabled(*autofill_client_, GetParam());
+  autofill_client_->SetAutofillProfileEnabled(GetParam());
   autofill_client_->GetPrefs()->SetManagedPref(prefs::kAutofillProfileEnabled,
                                                base::Value(GetParam()));
 
@@ -228,7 +227,7 @@ TEST_P(AutofillSettingsMetricsTest,
 // Tests that Autofill Profile disabled by extension is logged at page load.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillProfileDisabledByExtensionAtPageLoad) {
-  autofill_manager().SetAutofillProfileEnabled(*autofill_client_, GetParam());
+  autofill_client_->SetAutofillProfileEnabled(GetParam());
   autofill_client_->GetPrefs()->SetExtensionPref(prefs::kAutofillProfileEnabled,
                                                  base::Value(GetParam()));
 
@@ -243,7 +242,7 @@ TEST_P(AutofillSettingsMetricsTest,
 // Tests that Autofill Profile disabled by custodian is logged at page load.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillProfileDisabledByCustodianAtPageLoad) {
-  autofill_manager().SetAutofillProfileEnabled(*autofill_client_, GetParam());
+  autofill_client_->SetAutofillProfileEnabled(GetParam());
   autofill_client_->GetPrefs()->SetSupervisedUserPref(
       prefs::kAutofillProfileEnabled, base::Value(GetParam()));
 
@@ -278,7 +277,7 @@ TEST_P(AutofillSettingsMetricsTest,
 // logged at page load.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillProfileDisabledByStandaloneBrowserAtPageLoad) {
-  autofill_manager().SetAutofillProfileEnabled(*autofill_client_, GetParam());
+  autofill_client_->SetAutofillProfileEnabled(GetParam());
   autofill_client_->GetPrefs()->SetStandaloneBrowserPref(
       prefs::kAutofillProfileEnabled, base::Value(GetParam()));
 
@@ -364,8 +363,7 @@ TEST_P(AutofillSettingsMetricsTest,
 // load.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillPaymentMethodsDisabledByUserAtPageLoad) {
-  autofill_manager().SetAutofillPaymentMethodsEnabled(*autofill_client_,
-                                                      GetParam());
+  autofill_client_->SetAutofillPaymentMethodsEnabled(GetParam());
   autofill_client_->GetPrefs()->SetUserPref(prefs::kAutofillCreditCardEnabled,
                                             base::Value(GetParam()));
 
@@ -381,8 +379,7 @@ TEST_P(AutofillSettingsMetricsTest,
 // load.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillPaymentMethodsDisabledByAdminPolicyAtPageLoad) {
-  autofill_manager().SetAutofillPaymentMethodsEnabled(*autofill_client_,
-                                                      GetParam());
+  autofill_client_->SetAutofillPaymentMethodsEnabled(GetParam());
   autofill_client_->GetPrefs()->SetManagedPref(
       prefs::kAutofillCreditCardEnabled, base::Value(GetParam()));
 
@@ -398,8 +395,7 @@ TEST_P(AutofillSettingsMetricsTest,
 // load.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillPaymentMethodsDisabledByExtensionAtPageLoad) {
-  autofill_manager().SetAutofillPaymentMethodsEnabled(*autofill_client_,
-                                                      GetParam());
+  autofill_client_->SetAutofillPaymentMethodsEnabled(GetParam());
   autofill_client_->GetPrefs()->SetExtensionPref(
       prefs::kAutofillCreditCardEnabled, base::Value(GetParam()));
 
@@ -415,8 +411,7 @@ TEST_P(AutofillSettingsMetricsTest,
 // load.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillPaymentMethodsDisabledByCustodianAtPageLoad) {
-  autofill_manager().SetAutofillPaymentMethodsEnabled(*autofill_client_,
-                                                      GetParam());
+  autofill_client_->SetAutofillPaymentMethodsEnabled(GetParam());
   autofill_client_->GetPrefs()->SetSupervisedUserPref(
       prefs::kAutofillCreditCardEnabled, base::Value(GetParam()));
 
@@ -451,8 +446,7 @@ TEST_P(AutofillSettingsMetricsTest,
 // browser is logged at page load.
 TEST_P(AutofillSettingsMetricsTest,
        EmitsAutofillPaymentMethodsDisabledByStandaloneBrowserAtPageLoad) {
-  autofill_manager().SetAutofillPaymentMethodsEnabled(*autofill_client_,
-                                                      GetParam());
+  autofill_client_->SetAutofillPaymentMethodsEnabled(GetParam());
   autofill_client_->GetPrefs()->SetStandaloneBrowserPref(
       prefs::kAutofillCreditCardEnabled, base::Value(GetParam()));
 

@@ -49,6 +49,7 @@
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/prefs/pref_service.h"
@@ -338,9 +339,21 @@ class TestAutofillClientTemplate : public T {
     }
   }
 
+  bool IsAutofillEnabled() const override {
+    return IsAutofillProfileEnabled() || IsAutofillPaymentMethodsEnabled();
+  }
+
+  bool IsAutofillProfileEnabled() const override {
+    return autofill_profile_enabled_;
+  }
+
+  bool IsAutofillPaymentMethodsEnabled() const override {
+    return autofill_payment_methods_enabled_;
+  }
+
   bool IsAutocompleteEnabled() const override { return true; }
 
-  bool IsPasswordManagerEnabled() override { return true; }
+  bool IsPasswordManagerEnabled() const override { return true; }
 
   void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,
                             AutofillTriggerSource trigger_source,
@@ -407,6 +420,30 @@ class TestAutofillClientTemplate : public T {
 
   void SetPrefs(std::unique_ptr<test::AutofillTestingPrefService> prefs) {
     prefs_ = std::move(prefs);
+  }
+
+  void SetAutofillProfileEnabled(bool autofill_profile_enabled) {
+    autofill_profile_enabled_ = autofill_profile_enabled;
+    if (PrefService* prefs = GetPrefs()) {
+      prefs->SetBoolean(prefs::kAutofillProfileEnabled,
+                        autofill_profile_enabled);
+    }
+    if (!autofill_profile_enabled_) {
+      // Profile data is refreshed when this pref is changed.
+      GetPersonalDataManager()->test_address_data_manager().ClearProfiles();
+    }
+  }
+
+  void SetAutofillPaymentMethodsEnabled(bool autofill_payment_methods_enabled) {
+    autofill_payment_methods_enabled_ = autofill_payment_methods_enabled;
+    if (PrefService* prefs = GetPrefs()) {
+      prefs->SetBoolean(prefs::kAutofillCreditCardEnabled,
+                        autofill_payment_methods_enabled);
+    }
+    if (!autofill_payment_methods_enabled) {
+      // Credit card data is refreshed when this pref is changed.
+      GetPersonalDataManager()->test_payments_data_manager().ClearCreditCards();
+    }
   }
 
   void set_personal_data_manager(std::unique_ptr<TestPersonalDataManager> pdm) {
@@ -537,6 +574,9 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<FieldClassificationModelHandler>
       password_ml_prediction_model_handler_;
 #endif
+
+  bool autofill_profile_enabled_ = true;
+  bool autofill_payment_methods_enabled_ = true;
 
   // NULL by default.
   std::unique_ptr<test::AutofillTestingPrefService> prefs_;

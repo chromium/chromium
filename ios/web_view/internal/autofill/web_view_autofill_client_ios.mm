@@ -257,11 +257,23 @@ void WebViewAutofillClientIOS::HideAutofillSuggestions(
   [bridge_ hideAutofillPopup];
 }
 
+bool WebViewAutofillClientIOS::IsAutofillEnabled() const {
+  return IsAutofillProfileEnabled() || IsAutofillPaymentMethodsEnabled();
+}
+
+bool WebViewAutofillClientIOS::IsAutofillProfileEnabled() const {
+  return prefs::IsAutofillProfileEnabled(GetPrefs());
+}
+
+bool WebViewAutofillClientIOS::IsAutofillPaymentMethodsEnabled() const {
+  return prefs::IsAutofillPaymentMethodsEnabled(GetPrefs());
+}
+
 bool WebViewAutofillClientIOS::IsAutocompleteEnabled() const {
   return false;
 }
 
-bool WebViewAutofillClientIOS::IsPasswordManagerEnabled() {
+bool WebViewAutofillClientIOS::IsPasswordManagerEnabled() const {
   return GetPrefs()->GetBoolean(
       password_manager::prefs::kCredentialsEnableService);
 }

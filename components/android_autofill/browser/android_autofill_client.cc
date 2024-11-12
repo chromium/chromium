@@ -221,11 +221,23 @@ void AndroidAutofillClient::HideAutofillSuggestions(
   // TODO(321950502): Analyze hiding the datalist popup here.
 }
 
+bool AndroidAutofillClient::IsAutofillEnabled() const {
+  NOTREACHED();
+}
+
+bool AndroidAutofillClient::IsAutofillProfileEnabled() const {
+  NOTREACHED();
+}
+
+bool AndroidAutofillClient::IsAutofillPaymentMethodsEnabled() const {
+  NOTREACHED();
+}
+
 bool AndroidAutofillClient::IsAutocompleteEnabled() const {
   return false;
 }
 
-bool AndroidAutofillClient::IsPasswordManagerEnabled() {
+bool AndroidAutofillClient::IsPasswordManagerEnabled() const {
   // Android 3P mode and WebView rely on the AndroidAutofillManager which
   // doesn't call this function. If it ever does, the function needs to
   // be implemented in a meaningful way.

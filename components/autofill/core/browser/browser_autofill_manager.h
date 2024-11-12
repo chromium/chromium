@@ -281,17 +281,6 @@ class BrowserAutofillManager : public AutofillManager {
   // for the virtual card last four when checking for standalone CVC field.
   void FetchPotentialCardLastFourDigitsCombinationFromDOM();
 
-  // Returns true if either Profile or CreditCard Autofill is enabled.
-  virtual bool IsAutofillEnabled() const;
-
-  // Returns true if the value of the AutofillProfileEnabled pref is true and
-  // the client supports Autofill.
-  virtual bool IsAutofillProfileEnabled() const;
-
-  // Returns true if the value of the AutofillCreditCardEnabled pref is true
-  // and the client supports Autofill.
-  virtual bool IsAutofillPaymentMethodsEnabled() const;
-
   // Shared code to determine if |form| should be uploaded to the Autofill
   // server. It verifies that uploading is allowed and |form| meets conditions
   // to be uploadable. Exposed for testing.

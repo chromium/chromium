@@ -473,11 +473,22 @@ class AutofillClient {
       FillingProduct filling_product,
       const std::map<std::string, std::string>& field_filling_stats_data);
 
+  // Returns true if either Profile or CreditCard Autofill is enabled.
+  virtual bool IsAutofillEnabled() const = 0;
+
+  // Returns true if the value of the AutofillProfileEnabled pref is true and
+  // the client supports Autofill.
+  virtual bool IsAutofillProfileEnabled() const = 0;
+
+  // Returns true if the value of the AutofillCreditCardEnabled pref is true
+  // and the client supports Autofill.
+  virtual bool IsAutofillPaymentMethodsEnabled() const = 0;
+
   // Whether the Autocomplete feature of Autofill should be enabled.
   virtual bool IsAutocompleteEnabled() const = 0;
 
   // Returns whether password management is enabled as per the user preferences.
-  virtual bool IsPasswordManagerEnabled() = 0;
+  virtual bool IsPasswordManagerEnabled() const = 0;
 
   // Inform the client that the form has been filled.
   virtual void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,

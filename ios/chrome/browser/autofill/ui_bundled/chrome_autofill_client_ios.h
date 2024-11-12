@@ -117,8 +117,11 @@ class ChromeAutofillClientIOS : public AutofillClient {
       base::span<const autofill::SelectOption> datalist) override;
   void PinAutofillSuggestions() override;
   void HideAutofillSuggestions(SuggestionHidingReason reason) override;
+  bool IsAutofillEnabled() const override;
+  bool IsAutofillProfileEnabled() const override;
+  bool IsAutofillPaymentMethodsEnabled() const override;
   bool IsAutocompleteEnabled() const override;
-  bool IsPasswordManagerEnabled() override;
+  bool IsPasswordManagerEnabled() const override;
   void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,
                             AutofillTriggerSource trigger_source,
                             bool is_refill) override;

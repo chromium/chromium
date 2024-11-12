@@ -781,7 +781,7 @@ bool BrowserAutofillManager::ShouldShowScanCreditCard(
     const FormData& form,
     const FormFieldData& field) {
   if (!client().GetPaymentsAutofillClient()->HasCreditCardScanFeature() ||
-      !IsAutofillPaymentMethodsEnabled()) {
+      !client().IsAutofillPaymentMethodsEnabled()) {
     return false;
   }
 
@@ -869,7 +869,7 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
 }
 
 bool BrowserAutofillManager::ShouldParseForms() {
-  bool autofill_enabled = IsAutofillEnabled();
+  bool autofill_enabled = client().IsAutofillEnabled();
   // If autofill is disabled but the password manager is enabled, we still
   // need to parse the forms and query the server as the password manager
   // depends on server classifications.
@@ -885,14 +885,16 @@ bool BrowserAutofillManager::ShouldParseForms() {
     autofill_metrics::LogIsAutofillEnabledAtPageLoad(
         autofill_enabled, metrics_->signin_state_for_metrics);
     autofill_metrics::LogIsAutofillProfileEnabledAtPageLoad(
-        IsAutofillProfileEnabled(), metrics_->signin_state_for_metrics);
-    if (!IsAutofillProfileEnabled()) {
+        client().IsAutofillProfileEnabled(),
+        metrics_->signin_state_for_metrics);
+    if (!client().IsAutofillProfileEnabled()) {
       autofill_metrics::LogAutofillProfileDisabledReasonAtPageLoad(
           CHECK_DEREF(client().GetPrefs()));
     }
     autofill_metrics::LogIsAutofillPaymentMethodsEnabledAtPageLoad(
-        IsAutofillPaymentMethodsEnabled(), metrics_->signin_state_for_metrics);
-    if (!IsAutofillPaymentMethodsEnabled()) {
+        client().IsAutofillPaymentMethodsEnabled(),
+        metrics_->signin_state_for_metrics);
+    if (!client().IsAutofillPaymentMethodsEnabled()) {
       autofill_metrics::LogAutofillPaymentMethodsDisabledReasonAtPageLoad(
           CHECK_DEREF(client().GetPrefs()));
     }
@@ -1170,8 +1172,8 @@ void BrowserAutofillManager::MaybeImportFromSubmittedForm(
   if (!autofill_ai_shows_bubble && form_structure->IsAutofillable()) {
     // Update Personal Data with the form's submitted data.
     client().GetFormDataImporter()->ImportAndProcessFormData(
-        *form_structure, IsAutofillProfileEnabled(),
-        IsAutofillPaymentMethodsEnabled());
+        *form_structure, client().IsAutofillProfileEnabled(),
+        client().IsAutofillPaymentMethodsEnabled());
   }
 
   AutofillPlusAddressDelegate* plus_address_delegate =
@@ -1230,19 +1232,19 @@ void BrowserAutofillManager::LogSubmissionMetrics(
     }
   }
 
-  if (IsAutofillProfileEnabled()) {
+  if (client().IsAutofillProfileEnabled()) {
     metrics_->address_form_event_logger.OnWillSubmitForm(*submitted_form);
   }
-  if (IsAutofillPaymentMethodsEnabled()) {
+  if (client().IsAutofillPaymentMethodsEnabled()) {
     metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
         metrics_->signin_state_for_metrics);
     metrics_->credit_card_form_event_logger.OnWillSubmitForm(*submitted_form);
   }
 
-  if (IsAutofillProfileEnabled()) {
+  if (client().IsAutofillProfileEnabled()) {
     metrics_->address_form_event_logger.OnFormSubmitted(*submitted_form);
   }
-  if (IsAutofillPaymentMethodsEnabled()) {
+  if (client().IsAutofillPaymentMethodsEnabled()) {
     metrics_->credit_card_form_event_logger.set_signin_state_for_metrics(
         metrics_->signin_state_for_metrics);
     metrics_->credit_card_form_event_logger.OnFormSubmitted(*submitted_form);
@@ -1394,7 +1396,7 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
   context.is_context_secure = !IsFormNonSecure(form);
 
   context.is_autofill_available =
-      IsAutofillEnabled() &&
+      client().IsAutofillEnabled() &&
       (IsAutofillManuallyTriggered(trigger_source) || got_autofillable_form);
 
   return context;
@@ -2472,24 +2474,12 @@ void BrowserAutofillManager::OnDidEndTextFieldEditingImpl() {
   // which ends editing.
 }
 
-bool BrowserAutofillManager::IsAutofillEnabled() const {
-  return IsAutofillProfileEnabled() || IsAutofillPaymentMethodsEnabled();
-}
-
-bool BrowserAutofillManager::IsAutofillProfileEnabled() const {
-  return prefs::IsAutofillProfileEnabled(client().GetPrefs());
-}
-
-bool BrowserAutofillManager::IsAutofillPaymentMethodsEnabled() const {
-  return prefs::IsAutofillPaymentMethodsEnabled(client().GetPrefs());
-}
-
 const FormData& BrowserAutofillManager::last_query_form() const {
   return external_delegate_->query_form();
 }
 
 bool BrowserAutofillManager::ShouldUploadForm(const FormStructure& form) {
-  return IsAutofillEnabled() && !client().IsOffTheRecord() &&
+  return client().IsAutofillEnabled() && !client().IsOffTheRecord() &&
          form.ShouldBeUploaded();
 }
 
@@ -2697,7 +2687,7 @@ void BrowserAutofillManager::Reset() {
 }
 
 void BrowserAutofillManager::UpdateLoggersReadinessData() {
-  if (!IsAutofillEnabled()) {
+  if (!client().IsAutofillEnabled()) {
     return;
   }
   GetCreditCardAccessManager().UpdateCreditCardFormEventLogger();

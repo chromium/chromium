@@ -535,7 +535,7 @@ class MockAutofillClient : public TestAutofillClient {
               HideAutofillSuggestions,
               (SuggestionHidingReason reason),
               (override));
-  MOCK_METHOD(bool, IsPasswordManagerEnabled, (), (override));
+  MOCK_METHOD(bool, IsPasswordManagerEnabled, (), (const override));
   MOCK_METHOD(void,
               DidFillOrPreviewForm,
               (mojom::ActionPersistence action_persistence,
@@ -2253,9 +2253,8 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
 
   // Disable Autofill.
-  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
-  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
-                                                              false);
+  autofill_client_.SetAutofillProfileEnabled(false);
+  autofill_client_.SetAutofillPaymentMethodsEnabled(false);
 
   GetAutofillSuggestions(form, form.fields()[0]);
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
@@ -3372,9 +3371,8 @@ TEST_F(BrowserAutofillManagerTest,
        OnFormsSeen_AutofillDisabledPasswordManagerEnabled) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
-  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
-                                                              false);
-  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
+  autofill_client_.SetAutofillPaymentMethodsEnabled(false);
+  autofill_client_.SetAutofillProfileEnabled(false);
   // If the password manager is enabled, that's enough to parse the form.
   EXPECT_CALL(*crowdsourcing_manager(), StartQueryRequest).Times(AnyNumber());
   EXPECT_CALL(
@@ -4686,9 +4684,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogIBANField) {
 // Test that when Autocomplete is enabled and Autofill is disabled, form
 // submissions are still received by the SingleFieldFillRouter.
 TEST_F(BrowserAutofillManagerTest, FormSubmittedAutocompleteEnabled) {
-  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
-  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
-                                                              false);
+  autofill_client_.SetAutofillProfileEnabled(false);
+  autofill_client_.SetAutofillPaymentMethodsEnabled(false);
 
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
@@ -4727,9 +4724,8 @@ TEST_F(BrowserAutofillManagerTest, ValuePatternsMetric) {
 // still queried as a fallback.
 TEST_F(BrowserAutofillManagerTest,
        SingleFieldFillSuggestions_SomeWhenAutofillDisabled) {
-  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
-  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
-                                                              false);
+  autofill_client_.SetAutofillProfileEnabled(false);
+  autofill_client_.SetAutofillPaymentMethodsEnabled(false);
 
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
@@ -4792,9 +4788,8 @@ TEST_F(BrowserAutofillManagerTest,
   autofill_client_.set_form_origin(
       autofill_client_.form_origin().ReplaceComponents(replacements));
   ResetBrowserAutofillManager();
-  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
-  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
-                                                              false);
+  autofill_client_.SetAutofillProfileEnabled(false);
+  autofill_client_.SetAutofillPaymentMethodsEnabled(false);
 
   // Set up our form data.
   FormData form = CreateTestCreditCardFormData(/*is_https=*/false,
@@ -4822,9 +4817,8 @@ TEST_F(BrowserAutofillManagerTest,
   autofill_client_.set_form_origin(
       autofill_client_.form_origin().ReplaceComponents(replacements));
   ResetBrowserAutofillManager();
-  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
-  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
-                                                              false);
+  autofill_client_.SetAutofillProfileEnabled(false);
+  autofill_client_.SetAutofillPaymentMethodsEnabled(false);
 
   // Set up our form data.
   FormData form = CreateTestCreditCardFormData(/*is_https=*/false,
@@ -4874,9 +4868,8 @@ TEST_F(
 // code field.
 TEST_F(BrowserAutofillManagerTest,
        SingleFieldFillSuggestions_NoneWhenSingleFieldFillConditionsNotMet) {
-  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
-  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
-                                                              false);
+  autofill_client_.SetAutofillProfileEnabled(false);
+  autofill_client_.SetAutofillPaymentMethodsEnabled(false);
 
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
@@ -5664,7 +5657,7 @@ TEST_F(BrowserAutofillManagerTest, DontOfferToSavePaymentsCard) {
 }
 
 TEST_F(BrowserAutofillManagerTest, ProfileDisabledDoesNotSuggest) {
-  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
+  autofill_client_.SetAutofillProfileEnabled(false);
 
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
@@ -5677,8 +5670,7 @@ TEST_F(BrowserAutofillManagerTest, ProfileDisabledDoesNotSuggest) {
 }
 
 TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotSuggest) {
-  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
-                                                              false);
+  autofill_client_.SetAutofillPaymentMethodsEnabled(false);
 
   // Set up our form data.
   FormData form =
@@ -5753,9 +5745,8 @@ TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
   // Autofill disabled.
-  browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
-  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
-                                                              false);
+  autofill_client_.SetAutofillProfileEnabled(false);
+  autofill_client_.SetAutofillPaymentMethodsEnabled(false);
   EXPECT_FALSE(
       browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 }
@@ -7032,14 +7023,12 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnAutofillPreference) {
   ASSERT_EQ(card_number_field.name(), u"cardnumber");
 
   // Test case where autofill is enabled.
-  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
-                                                              true);
+  autofill_client_.SetAutofillPaymentMethodsEnabled(true);
   EXPECT_TRUE(browser_autofill_manager_->ShouldShowScanCreditCard(
       form, card_number_field));
 
   // Test case where autofill is disabled.
-  browser_autofill_manager_->SetAutofillPaymentMethodsEnabled(autofill_client_,
-                                                              false);
+  autofill_client_.SetAutofillPaymentMethodsEnabled(false);
   EXPECT_FALSE(browser_autofill_manager_->ShouldShowScanCreditCard(
       form, card_number_field));
 }
