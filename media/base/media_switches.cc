@@ -762,11 +762,7 @@ BASE_FEATURE(kVaapiAV1Encoder,
 // calls for thread safe backends.
 BASE_FEATURE(kGlobalVaapiLock,
              "GlobalVaapiLock",
-#if BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
 );
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
