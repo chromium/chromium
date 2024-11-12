@@ -13,10 +13,6 @@ namespace {
 const CGFloat kThumbnailImageCornerRadius = 12;
 /// The duration of the transition for the thumbnail button.
 const CGFloat kThumbnailButtonTransitionDuration = 0.25f;
-/// Width of the thumbnail.
-// const CGFloat kThumbnailWidth = 48;
-///// Height of the thumbnail.
-// const CGFloat kThumbnailHeight = 40;
 }  // namespace
 
 @implementation OmniboxThumbnailButton {
@@ -25,7 +21,7 @@ const CGFloat kThumbnailButtonTransitionDuration = 0.25f;
 
   /// Last view size. Used for resizing and reaplying the thumbnail image when
   /// the view frame changes.
-  CGSize lastSize;
+  CGSize _lastSize;
 }
 
 - (instancetype)init {
@@ -85,14 +81,14 @@ const CGFloat kThumbnailButtonTransitionDuration = 0.25f;
   [super layoutSubviews];
 
   CGSize frameSize = self.frame.size;
-  if (frameSize.width == lastSize.width &&
-      frameSize.height == lastSize.height) {
+  if (frameSize.width == _lastSize.width &&
+      frameSize.height == _lastSize.height) {
     return;
   }
 
   // If the frame's size or layout constraints are adjusted, the displayed
   // thumbnail image should be resized proportionally to avoid cropping.
-  lastSize = frameSize;
+  _lastSize = frameSize;
   UIImage* resizedImage = [self resizeImageToFillFrame:_thumbnailImage];
   UIImage* imageToSet =
       self.isSelected
