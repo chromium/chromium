@@ -1746,14 +1746,6 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
       routed_service_ ? routed_service_->actions()
                       : std::set<media_session::mojom::MediaSessionAction>();
 
-  // Picture-in-Picture window controller needs to know only actions that are
-  // handled by the website.
-  if (auto* pip_window_controller_ =
-          VideoPictureInPictureWindowControllerImpl::FromWebContents(
-              web_contents())) {
-    pip_window_controller_->MediaSessionActionsChanged(actions);
-  }
-
   // If we are controllable then we should always add these actions as we can
   // support them by directly interacting with the players underneath.
   if (IsControllable()) {
@@ -1804,6 +1796,15 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
       IsAudioOutputDeviceSwitchingSupported()) {
     actions.insert(
         media_session::mojom::MediaSessionAction::kSwitchAudioDevice);
+  }
+
+  // Notify the VideoPictureInPictureWindowControllerImpl regardless of whether
+  // or not the actions have actually changed, since there may or may not have
+  // been a picture-in-picture window last time we updated.
+  if (auto* pip_window_controller_ =
+          VideoPictureInPictureWindowControllerImpl::FromWebContents(
+              web_contents())) {
+    pip_window_controller_->MediaSessionActionsChanged(actions);
   }
 
   if (actions_ == actions)

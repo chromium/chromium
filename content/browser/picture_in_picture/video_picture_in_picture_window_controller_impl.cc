@@ -79,6 +79,8 @@ void VideoPictureInPictureWindowControllerImpl::Show() {
           media_session::mojom::MediaSessionAction::kPreviousSlide);
   media_session_action_next_slide_handled_ = media_session->ShouldRouteAction(
       media_session::mojom::MediaSessionAction::kNextSlide);
+  media_session_action_seek_to_handled_ = media_session->ShouldRouteAction(
+      media_session::mojom::MediaSessionAction::kSeekTo);
 
   UpdatePlayPauseButtonVisibility();
   window_->SetSkipAdButtonVisibility(media_session_action_skip_ad_handled_);
