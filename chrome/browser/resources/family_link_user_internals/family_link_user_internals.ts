@@ -5,24 +5,29 @@
 import 'chrome://resources/js/jstemplate_compiled.js';
 
 import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
-import {$} from 'chrome://resources/js/util.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
+
+interface Result {}
+interface BasicInfo {}
+type UserSettings = Record<string, any>;
 
 function initialize() {
-  function submitURL(event) {
-    $('try-url-result').textContent = '';
-    $('manual-allowlist').textContent = '';
-    sendWithPromise('tryURL', $('try-url-input').value)
+  function submitURL(event: Event) {
+    getRequiredElement('try-url-result').textContent = '';
+    getRequiredElement('manual-allowlist').textContent = '';
+    sendWithPromise(
+        'tryURL', getRequiredElement<HTMLInputElement>('try-url-input').value)
         .then(({allowResult, manual}) => {
-          $('try-url-result').textContent = allowResult;
-          $('manual-allowlist').textContent = manual;
+          getRequiredElement('try-url-result').textContent = allowResult;
+          getRequiredElement('manual-allowlist').textContent = manual;
         });
     event.preventDefault();
   }
 
-  $('try-url').addEventListener('submit', submitURL);
+  getRequiredElement('try-url').addEventListener('submit', submitURL);
 
   // Make the prototype jscontent element disappear.
-  jstProcess({}, $('filtering-results-container'));
+  jstProcess({}, getRequiredElement('filtering-results-container'));
 
   addWebUiListener('basic-info-received', receiveBasicInfo);
   addWebUiListener('user-settings-received', receiveUserSettings);
@@ -33,7 +38,8 @@ function initialize() {
   chrome.send('getBasicInfo');
 }
 
-function highlightIfChanged(node, oldVal, newVal) {
+function highlightIfChanged(
+    node: HTMLElement, oldVal: string, newVal: boolean|string) {
   function clearHighlight() {
     node.removeAttribute('highlighted');
   }
@@ -41,16 +47,13 @@ function highlightIfChanged(node, oldVal, newVal) {
   const oldStr = oldVal.toString();
   const newStr = newVal.toString();
   if (oldStr !== '' && oldStr !== newStr) {
-    // Note the addListener function does not end up creating duplicate
-    // listeners.  There can be only one listener per event at a time.
-    // See https://developer.mozilla.org/en/DOM/element.addEventListener
-    node.addEventListener('animationend', clearHighlight, false);
+    node.onanimationend = clearHighlight;
     node.setAttribute('highlighted', '');
   }
 }
 
-function receiveBasicInfo(info) {
-  jstProcess(new JsEvalContext(info), $('basic-info'));
+function receiveBasicInfo(info: BasicInfo) {
+  jstProcess(new JsEvalContext(info), getRequiredElement('basic-info'));
 
   // Hack: Schedule another refresh after a while.
   setTimeout(function() {
@@ -58,53 +61,51 @@ function receiveBasicInfo(info) {
   }, 5000);
 }
 
-function receiveUserSettings(settings) {
+function receiveUserSettings(settings: UserSettings|null) {
   if (settings === null) {
-    $('user-settings').classList.add('hidden');
+    getRequiredElement('user-settings').classList.add('hidden');
     return;
   }
 
-  $('user-settings').classList.remove('hidden');
+  getRequiredElement('user-settings').classList.remove('hidden');
 
   // The user settings are returned as an object, flatten them into a
   // list of key/value pairs for easier consumption by the HTML template.
   // This is not done recursively, values are passed as their JSON
   // representation.
   const kvpairs = Object.keys(settings).map(function(key) {
-    return {key: key, value: JSON.stringify(settings[key], null, 2)};
+    return {key, value: JSON.stringify(settings[key], null, 2)};
   });
 
-  jstProcess(new JsEvalContext({settings: kvpairs}), $('user-settings'));
+  jstProcess(
+      new JsEvalContext({settings: kvpairs}),
+      getRequiredElement('user-settings'));
 }
 
 /**
  * Helper to determine if an element is scrolled to its bottom limit.
- * @param {Element} elem element to check
- * @return {boolean} true if the element is scrolled to the bottom
  */
-function isScrolledToBottom(elem) {
+function isScrolledToBottom(elem: HTMLElement): boolean {
   return elem.scrollHeight - elem.scrollTop === elem.clientHeight;
 }
 
 /**
  * Helper to scroll an element to its bottom limit.
- * @param {Element} elem element to be scrolled
  */
-function scrollToBottom(elem) {
+function scrollToBottom(elem: HTMLElement) {
   elem.scrollTop = elem.scrollHeight - elem.clientHeight;
 }
 
 /** Container for accumulated filtering results. */
-const filteringResults = [];
+const filteringResults: Result[] = [];
 
 /**
  * Callback for incoming filtering results.
- * @param {Object} result The result.
  */
-function receiveFilteringResult(result) {
+function receiveFilteringResult(result: Result) {
   filteringResults.push(result);
 
-  const container = $('filtering-results-container');
+  const container = getRequiredElement('filtering-results-container');
 
   // Scroll to the bottom if we were already at the bottom.  Otherwise, leave
   // the scrollbar alone.
@@ -118,6 +119,6 @@ function receiveFilteringResult(result) {
 }
 
 // Export on window since it is called with jseval.
-window.highlightIfChanged = highlightIfChanged;
+Object.assign(window, {highlightIfChanged});
 
 document.addEventListener('DOMContentLoaded', initialize);
