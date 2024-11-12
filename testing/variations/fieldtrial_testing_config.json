@@ -23036,6 +23036,21 @@
             ]
         }
     ],
+    "SunfishFeature": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "SunfishFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "SuppressToolbarCapturesAtGestureEndStudy": [
         {
             "platforms": [
