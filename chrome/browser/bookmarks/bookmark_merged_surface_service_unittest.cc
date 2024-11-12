@@ -17,6 +17,7 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -28,17 +29,17 @@ using bookmarks::test::ModelStringFromNode;
 
 base::Value::List ConstructManagedBookmarks(size_t managed_bookmarks_size) {
   const GURL url("http://google.com/");
-  base::Value::List bookamrks_list;
+  base::Value::List bookmarks_list;
   for (size_t i = 0; i < managed_bookmarks_size; ++i) {
     base::Value::List folder_items;
     folder_items.Append(
         base::Value::Dict().Set("name", "Google").Set("url", url.spec()));
-    bookamrks_list.Append(
+    bookmarks_list.Append(
         base::Value::Dict()
             .Set("name", "Bookmark folder " + base::NumberToString(i))
             .Set("children", std::move(folder_items)));
   }
-  return bookamrks_list;
+  return bookmarks_list;
 }
 
 class TestBookmarkClientWithManagedService
@@ -339,6 +340,55 @@ TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeDataElement) {
             "1 2 3 f1:[ 4 5 ] ");
   EXPECT_EQ(ModelStringFromNode(model().other_node()),
             "6 7 8 f2:[ 9 f1:[ 4 5 ] ] ");
+}
+
+TEST_F(BookmarkMergedSurfaceServiceTest,
+       GetUnderlyingNodesForNonPermanentNode) {
+  LoadBookmarkModel();
+  AddNodesFromModelString(&model(), model().bookmark_bar_node(),
+                          "1 2 3 f1:[ 4 5 ] ");
+  const BookmarkNode* node = model().bookmark_bar_node()->children()[3].get();
+  BookmarkParentFolder folder =
+      BookmarkParentFolder::FromNonPermanentNode(node);
+  EXPECT_THAT(service().GetUnderlyingNodes(folder), testing::ElementsAre(node));
+}
+
+TEST_F(BookmarkMergedSurfaceServiceTest,
+       GetUnderlyingNodesManagedPermanentNode) {
+  LoadBookmarkModelWithManaged(/*managed_bookmarks_size=*/2);
+  {
+    BookmarkParentFolder folder = BookmarkParentFolder::ManagedFolder();
+    EXPECT_THAT(service().GetUnderlyingNodes(folder),
+                testing::ElementsAre(managed_node()));
+  }
+
+  {
+    // Non permanent managed node.
+    const BookmarkNode* node = managed_node()->children()[0].get();
+    BookmarkParentFolder folder =
+        BookmarkParentFolder::FromNonPermanentNode(node);
+    EXPECT_THAT(service().GetUnderlyingNodes(folder),
+                testing::ElementsAre(node));
+  }
+}
+
+TEST_F(BookmarkMergedSurfaceServiceTest, GetUnderlyingNodesPermanentNode) {
+  LoadBookmarkModel();
+  {
+    BookmarkParentFolder folder = BookmarkParentFolder::BookmarkBarFolder();
+    EXPECT_THAT(service().GetUnderlyingNodes(folder),
+                testing::ElementsAre(model().bookmark_bar_node()));
+  }
+  {
+    BookmarkParentFolder folder = BookmarkParentFolder::OtherFolder();
+    EXPECT_THAT(service().GetUnderlyingNodes(folder),
+                testing::ElementsAre(model().other_node()));
+  }
+  {
+    BookmarkParentFolder folder = BookmarkParentFolder::MobileFolder();
+    EXPECT_THAT(service().GetUnderlyingNodes(folder),
+                testing::ElementsAre(model().mobile_node()));
+  }
 }
 
 // Tests for `BookmarkParentFolder`

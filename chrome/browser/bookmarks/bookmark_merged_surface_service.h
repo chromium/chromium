@@ -8,10 +8,13 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/keyed_service/core/keyed_service.h"
+
+class PermanentFolderOrderingTracker;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -145,10 +148,10 @@ class BookmarkMergedSurfaceService : public KeyedService {
       size_t index);
 
   // Returns true if `parent` is managed.
-  bool IsParentFolderManaged(const BookmarkParentFolder& parent) const;
+  bool IsParentFolderManaged(const BookmarkParentFolder& folder) const;
 
   // Returns true if `parent` is managed.
-  bool IsNodeManaged(const bookmarks::BookmarkNode* parent) const;
+  bool IsNodeManaged(const bookmarks::BookmarkNode* node) const;
 
   bookmarks::BookmarkModel* bookmark_model() { return model_; }
 
@@ -162,6 +165,9 @@ class BookmarkMergedSurfaceService : public KeyedService {
 
   const raw_ptr<bookmarks::BookmarkModel> model_;
   const raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
+  const base::flat_map<BookmarkParentFolder::PermanentFolderType,
+                       std::unique_ptr<PermanentFolderOrderingTracker>>
+      permanent_folder_to_tracker_;
 };
 
 #endif  // CHROME_BROWSER_BOOKMARKS_BOOKMARK_MERGED_SURFACE_SERVICE_H_

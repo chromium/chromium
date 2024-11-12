@@ -3508,6 +3508,8 @@ static_library("browser") {
       "bookmarks/bookmark_merged_surface_service.h",
       "bookmarks/bookmark_merged_surface_service_factory.cc",
       "bookmarks/bookmark_merged_surface_service_factory.h",
+      "bookmarks/permanent_folder_ordering_tracker.cc",
+      "bookmarks/permanent_folder_ordering_tracker.h",
       "bookmarks/url_and_id.h",
       "cart/cart_db.cc",
       "cart/cart_db.h",
