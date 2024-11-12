@@ -102,7 +102,7 @@ ContentVisibility ContentVisibilityForIncognito(BOOL isIncognito) {
 
 - (void)setRootViewController:(UIViewController*)rootViewController
             makeKeyAndVisible:(BOOL)makeKeyAndVisible {
-  self.window.rootViewController = rootViewController;
+  [self.window setRootViewController:rootViewController];
   if (makeKeyAndVisible) {
     [self.window makeKeyAndVisible];
   }

@@ -11,6 +11,7 @@
 
 class Browser;
 @class SafeModeCoordinator;
+@class SceneState;
 
 @protocol SafeModeCoordinatorDelegate<NSObject>
 - (void)coordinatorDidExitSafeMode:(SafeModeCoordinator*)coordinator;
@@ -19,7 +20,8 @@ class Browser;
 // Coordinator to manage the Safe Mode UI. This should be self-contained.
 @interface SafeModeCoordinator : ChromeCoordinator
 
-- (instancetype)initWithWindow:(UIWindow*)window NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSceneState:(SceneState*)sceneState
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;

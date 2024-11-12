@@ -81,11 +81,8 @@
   DCHECK(!_safeModeBlocker);
 
   self.safeModeCoordinator =
-      [[SafeModeCoordinator alloc] initWithWindow:sceneState.window];
+      [[SafeModeCoordinator alloc] initWithSceneState:sceneState];
   self.safeModeCoordinator.delegate = self;
-
-  // Activate the main window, which will prompt the views to load.
-  [sceneState.window makeKeyAndVisible];
 
   [self.safeModeCoordinator start];
 

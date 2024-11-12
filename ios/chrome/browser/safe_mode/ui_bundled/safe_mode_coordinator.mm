@@ -9,24 +9,27 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/crash_report/model/crash_loop_detection_util.h"
 #import "ios/chrome/browser/safe_mode/ui_bundled/safe_mode_view_controller.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
 namespace {
 const int kStartupCrashLoopThreshold = 3;
 }
 
-@interface SafeModeCoordinator ()<SafeModeViewControllerDelegate>
-@property(weak, nonatomic, readonly) UIWindow* window;
+@interface SafeModeCoordinator () <SafeModeViewControllerDelegate>
 @end
 
-@implementation SafeModeCoordinator
+@implementation SafeModeCoordinator {
+  SceneState* _sceneState;
+}
 
 @synthesize delegate = _delegate;
 
 #pragma mark - Public class methods
 
-- (instancetype)initWithWindow:(UIWindow*)window {
+- (instancetype)initWithSceneState:(SceneState*)sceneState {
+  CHECK(sceneState);
   if ((self = [super initWithBaseViewController:nil browser:nullptr])) {
-    _window = window;
+    _sceneState = sceneState;
   }
   return self;
 }
@@ -52,8 +55,7 @@ const int kStartupCrashLoopThreshold = 3;
   // method.
   SafeModeViewController* viewController =
       [[SafeModeViewController alloc] initWithDelegate:self];
-  DCHECK(self.window);
-  [self.window setRootViewController:viewController];
+  [_sceneState setRootViewController:viewController makeKeyAndVisible:YES];
 
   // Reset the crash count; the user may change something based on the recovery
   // UI that will fix the crash, and having the next launch start in recovery
