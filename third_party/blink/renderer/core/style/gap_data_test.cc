@@ -8,32 +8,34 @@
 
 namespace blink {
 
-TEST(GapData, GapDataEquivalence) {
-  // Gap color data with the same color should be equal.
-  GapData color = GapData(StyleColor(Color(1, 0, 0)));
-  GapData color2 = GapData(StyleColor(Color(1, 0, 0)));
+TEST(GapDataTest, GapDataEquivalence) {
+  // Gap data with the same value should be equal.
+  GapData<StyleColor> color = GapData<StyleColor>(StyleColor(Color(1, 0, 0)));
+  GapData<StyleColor> color2 = GapData<StyleColor>(StyleColor(Color(1, 0, 0)));
 
   EXPECT_EQ(color, color2);
 
-  // Gap color data with different colors should not be equal.
-  GapData color3 = GapData(StyleColor(Color(0, 0, 1)));
+  // Gap data with different values should not be equal.
+  GapData<StyleColor> color3 = GapData<StyleColor>(StyleColor(Color(0, 0, 1)));
   EXPECT_NE(color, color3);
 
-  // Gap color data with a repeater should not be equal to a gap color data with
-  // a color.
-  StyleColorVector colors;
+  // Gap data with a repeater should not be equal to a gap data with
+  // a single value.
+  typename ValueRepeater<StyleColor>::VectorType colors;
   colors.push_back(StyleColor(Color(1, 0, 0)));
-  StyleColorRepeater* repeater =
-      MakeGarbageCollected<StyleColorRepeater>(std::move(colors));
-  GapData color_repeater = GapData(repeater);
+  ValueRepeater<StyleColor>* repeater =
+      MakeGarbageCollected<ValueRepeater<StyleColor>>(
+          std::move(colors), /*repeat_count=*/std::nullopt);
+  GapData<StyleColor> color_repeater = GapData<StyleColor>(repeater);
   EXPECT_NE(color, color_repeater);
 
-  // Gap color data with the same repeater value should be equal.
-  StyleColorVector colors2;
+  // Gap data with the same repeater value should be equal.
+  typename ValueRepeater<StyleColor>::VectorType colors2;
   colors2.push_back(StyleColor(Color(1, 0, 0)));
-  StyleColorRepeater* repeater2 =
-      MakeGarbageCollected<StyleColorRepeater>(std::move(colors2));
-  GapData color_repeater2 = GapData(repeater2);
+  ValueRepeater<StyleColor>* repeater2 =
+      MakeGarbageCollected<ValueRepeater<StyleColor>>(
+          std::move(colors2), /*repeat_count=*/std::nullopt);
+  GapData<StyleColor> color_repeater2 = GapData<StyleColor>(repeater2);
   EXPECT_EQ(color_repeater, color_repeater2);
 }
 

@@ -138,7 +138,7 @@ void LayoutFieldset::UpdateAnonymousChildStyle(
   child_style_builder.SetColumnGap(StyleRef().ColumnGap());
   child_style_builder.SetColumnFill(StyleRef().GetColumnFill());
   child_style_builder.SetColumnRuleColor(
-      GapDataList(StyleColor(LayoutObject::ResolveColor(
+      GapDataList<StyleColor>(StyleColor(LayoutObject::ResolveColor(
           StyleRef(), GetCSSPropertyColumnRuleColor()))));
   child_style_builder.SetColumnRuleStyle(StyleRef().ColumnRuleStyle());
   child_style_builder.SetColumnRuleWidth(StyleRef().ColumnRuleWidth());

@@ -9,14 +9,16 @@
 
 namespace blink {
 
-// These are used to store gap decoration color values in the order they are
+// These are used to store gap decorations values in the order they are
 // specified. These values can be an auto repeater, an integer repeater, or a
-// single color. See:
-// https://kbabbitt.github.io/css-gap-decorations/#column-row-rule-color
+// single value. The value could be a color, style or width. See:
+// https://kbabbitt.github.io/css-gap-decorations/#color-style-width
+template <typename T>
 class CORE_EXPORT GapDataList {
   DISALLOW_NEW();
 
  public:
+  using GapDataVector = HeapVector<GapData<T>, 1>;
   GapDataList() = default;
 
   static GapDataList DefaultGapColorDataList() {
@@ -25,32 +27,32 @@ class CORE_EXPORT GapDataList {
     return default_gap_color_list;
   }
 
-  explicit GapDataList(GapDataVector&& gap_color_data_list)
-      : gap_color_data_list_(gap_color_data_list) {
-    DCHECK(!gap_color_data_list_.empty());
+  explicit GapDataList(GapDataVector&& gap_data_list)
+      : gap_data_list_(gap_data_list) {
+    CHECK(!gap_data_list_.empty());
   }
 
-  explicit GapDataList(const StyleColor& color) {
-    gap_color_data_list_.emplace_back(GapData(color));
+  explicit GapDataList(const T& value) {
+    gap_data_list_.emplace_back(GapData<T>(value));
   }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(gap_color_data_list_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(gap_data_list_); }
 
-  const GapDataVector& GetGapColorList() const { return gap_color_data_list_; }
+  const GapDataVector& GetGapDataList() const { return gap_data_list_; }
 
-  const StyleColor GetLegacyGapColor() const {
-    CHECK_EQ(gap_color_data_list_.size(), 1U);
-    return gap_color_data_list_[0].GetGapColor();
+  const T GetLegacyValue() const {
+    CHECK_EQ(gap_data_list_.size(), 1U);
+    return gap_data_list_[0].GetValue();
   }
 
   bool operator==(const GapDataList& o) const {
-    return gap_color_data_list_ == o.gap_color_data_list_;
+    return gap_data_list_ == o.gap_data_list_;
   }
 
   bool operator!=(const GapDataList& o) const { return !(*this == o); }
 
  private:
-  GapDataVector gap_color_data_list_;
+  GapDataVector gap_data_list_;
 };
 
 }  // namespace blink

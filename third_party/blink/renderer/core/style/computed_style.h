@@ -999,7 +999,7 @@ class ComputedStyle final : public ComputedStyleBase {
   }
   bool ColumnRuleIsTransparent() const {
     return ColumnRuleColor()
-        .GetLegacyGapColor()
+        .GetLegacyValue()
         .Resolve(GetCurrentColor(), UsedColorScheme())
         .IsFullyTransparent();
   }

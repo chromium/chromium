@@ -10,67 +10,81 @@
 
 namespace blink {
 
-typedef HeapVector<StyleColor, 1> StyleColorVector;
-
-struct CORE_EXPORT StyleColorRepeater
-    : public GarbageCollected<StyleColorRepeater> {
+template <typename T>
+class CORE_EXPORT ValueRepeater : public GarbageCollected<ValueRepeater<T>> {
  public:
-  StyleColorRepeater() = default;
-  explicit StyleColorRepeater(StyleColorVector repeated_colors);
-  StyleColorRepeater(StyleColorVector repeated_colors, wtf_size_t repeat_count);
+  using VectorType = typename std::conditional<WTF::IsTraceable<T>::value,
+                                               HeapVector<T, 1>,
+                                               Vector<T>>::type;
+  ValueRepeater() = default;
 
-  bool operator==(const StyleColorRepeater& other) const;
+  explicit ValueRepeater(VectorType repeated_values,
+                         std::optional<wtf_size_t> repeat_count)
+      : repeated_values_(repeated_values), repeat_count_(repeat_count) {
+    CHECK(repeated_values_.size() > 0);
+  }
+
+  bool operator==(const ValueRepeater& other) const {
+    return repeated_values_ == other.repeated_values_ &&
+           repeat_count_ == other.repeat_count_;
+  }
 
   bool IsAutoRepeater() const { return !repeat_count_.has_value(); }
-  const StyleColorVector& RepeatedColors() const { return repeated_colors_; }
+  const VectorType& RepeatedValues() const { return repeated_values_; }
   wtf_size_t RepeatCount() const {
     CHECK(repeat_count_.has_value());
     return repeat_count_.value();
   }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(repeated_colors_); }
+  void Trace(Visitor* visitor) const {
+    TraceIfNeeded<VectorType>::Trace(visitor, repeated_values_);
+  }
 
  private:
-  StyleColorVector repeated_colors_;
+  VectorType repeated_values_;
   std::optional<wtf_size_t> repeat_count_ = std::nullopt;
 };
 
-// A GapColorData is a single StyleColor or a StyleColorRepeater.
+// A GapData is a single value or a ValueRepeater.
+template <typename T>
 class CORE_EXPORT GapData {
   DISALLOW_NEW();
 
  public:
   GapData() = default;
-  explicit GapData(StyleColor gap_color);
-  explicit GapData(StyleColorRepeater* color_repeater);
+  explicit GapData(T value) : value_(value) {}
+  explicit GapData(ValueRepeater<T>* value_repeater)
+      : value_repeater_(value_repeater) {}
   void Trace(Visitor* visitor) const {
-    visitor->Trace(gap_color_);
-    visitor->Trace(color_repeater_);
+    TraceIfNeeded<T>::Trace(visitor, value_);
+    visitor->Trace(value_repeater_);
   }
 
-  bool operator==(const GapData& other) const;
-
-  const StyleColor GetGapColor() const {
-    CHECK(!color_repeater_);
-    return gap_color_;
+  bool operator==(const GapData& other) const {
+    return value_ == other.value_ &&
+           base::ValuesEquivalent(value_repeater_, other.value_repeater_);
   }
 
-  const StyleColorRepeater* GetColorRepeater() const {
-    CHECK(color_repeater_);
-    return color_repeater_.Get();
+  const T GetValue() const {
+    CHECK(!value_repeater_);
+    return value_;
   }
 
-  bool IsRepeaterData() const { return color_repeater_ != nullptr; }
+  const ValueRepeater<T>* GetValueRepeater() const {
+    CHECK(value_repeater_);
+    return value_repeater_.Get();
+  }
+
+  bool IsRepeaterData() const { return value_repeater_ != nullptr; }
 
  private:
-  StyleColor gap_color_;
-  Member<StyleColorRepeater> color_repeater_;
+  T value_;
+  Member<ValueRepeater<T>> value_repeater_;
 };
-
-typedef HeapVector<GapData, 1> GapDataVector;
 
 }  // namespace blink
 
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::GapData)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::GapData<blink::StyleColor>)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GAP_DATA_H_

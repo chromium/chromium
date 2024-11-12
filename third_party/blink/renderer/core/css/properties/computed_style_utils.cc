@@ -3372,68 +3372,91 @@ CSSValue* ComputedStyleUtils::ValueForSVGResource(
 
 namespace {
 
-void PopulateNonRepeaterGapColorData(CSSValueList* list,
-                                     const GapData& gap_data,
-                                     const ComputedStyle& style,
-                                     CSSValuePhase value_phase) {
-  const CSSValue* color = ComputedStyleUtils::CurrentColorOrValidColor(
-      style, gap_data.GetGapColor(), value_phase);
-  list->Append(*color);
+template <typename T>
+const CSSValue* GetGapDecorationPropertyValue(const T& value,
+                                              const ComputedStyle& style,
+                                              CSSValuePhase value_phase);
+
+template <>
+const CSSValue* GetGapDecorationPropertyValue(const StyleColor& value,
+                                              const ComputedStyle& style,
+                                              CSSValuePhase value_phase) {
+  return ComputedStyleUtils::CurrentColorOrValidColor(style, value,
+                                                      value_phase);
 }
 
-void PopulateRepeaterGapColorData(CSSValueList* list,
-                                  const GapData& gap_data,
-                                  const ComputedStyle& style,
-                                  CSSValuePhase value_phase) {
+template <typename T>
+void PopulateNonRepeaterGapData(CSSValueList* list,
+                                const GapData<T>& gap_data,
+                                const ComputedStyle& style,
+                                CSSValuePhase value_phase) {
+  const CSSValue* value =
+      GetGapDecorationPropertyValue(gap_data.GetValue(), style, value_phase);
+  list->Append(*value);
+}
+
+template <typename T>
+void PopulateRepeaterGapData(CSSValueList* list,
+                             const GapData<T>& gap_data,
+                             const ComputedStyle& style,
+                             CSSValuePhase value_phase) {
   CSSPrimitiveValue* repetitions = nullptr;
 
-  if (!gap_data.GetColorRepeater()->IsAutoRepeater()) {
+  if (!gap_data.GetValueRepeater()->IsAutoRepeater()) {
     repetitions = CSSNumericLiteralValue::Create(
-        gap_data.GetColorRepeater()->RepeatCount(),
+        gap_data.GetValueRepeater()->RepeatCount(),
         CSSPrimitiveValue::UnitType::kNumber);
   }
 
-  CSSValueList* repeated_colors = CSSValueList::CreateSpaceSeparated();
+  CSSValueList* repeated_values = CSSValueList::CreateSpaceSeparated();
 
-  for (const auto& gap_color : gap_data.GetColorRepeater()->RepeatedColors()) {
-    const CSSValue* color_value = ComputedStyleUtils::CurrentColorOrValidColor(
-        style, gap_color, value_phase);
-    repeated_colors->Append(*color_value);
+  for (const auto& value : gap_data.GetValueRepeater()->RepeatedValues()) {
+    const CSSValue* css_value =
+        GetGapDecorationPropertyValue(value, style, value_phase);
+    repeated_values->Append(*css_value);
   }
 
   CSSValue* repeater_value = MakeGarbageCollected<cssvalue::CSSRepeatValue>(
-      repetitions, *repeated_colors);
+      repetitions, *repeated_values);
 
   list->Append(*repeater_value);
 }
 
-}  // namespace
-
-const CSSValue* ComputedStyleUtils::ValueForGapColorDataList(
-    const GapDataList& gap_color_list,
+template <typename T>
+const CSSValue* ValueForGapDecorationPropertyDataList(
+    const GapDataList<T>& gap_color_list,
     const ComputedStyle& style,
     CSSValuePhase value_phase) {
-  // The CSS Gap Decorations API [1] can take more than one color. When
+  // The CSS Gap Decorations API [1] can take more than one value. When
   // that feature is enabled, create a space separated list to hold the
-  // values. Otherwise, return a single color value, as is supported in
-  // the legacy `column-rule-color` property.
+  // values. Otherwise, return a single value, as is supported in
+  // the legacy `column-rule-*` property.
   // [1]: https://chromestatus.com/feature/5157805733183488
   if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-    StyleColor color = gap_color_list.GetLegacyGapColor();
-    return ComputedStyleUtils::CurrentColorOrValidColor(style, color,
-                                                        value_phase);
+    return GetGapDecorationPropertyValue(gap_color_list.GetLegacyValue(), style,
+                                         value_phase);
   }
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
 
-  for (const auto& gap_data : gap_color_list.GetGapColorList()) {
+  for (const auto& gap_data : gap_color_list.GetGapDataList()) {
     if (gap_data.IsRepeaterData()) {
-      PopulateRepeaterGapColorData(list, gap_data, style, value_phase);
+      PopulateRepeaterGapData(list, gap_data, style, value_phase);
     } else {
-      PopulateNonRepeaterGapColorData(list, gap_data, style, value_phase);
+      PopulateNonRepeaterGapData(list, gap_data, style, value_phase);
     }
   }
   return list;
+}
+
+}  // namespace
+
+const CSSValue* ComputedStyleUtils::ValueForGapDecorationColorDataList(
+    const GapDataList<StyleColor>& gap_color_list,
+    const ComputedStyle& style,
+    CSSValuePhase value_phase) {
+  return ValueForGapDecorationPropertyDataList(gap_color_list, style,
+                                               value_phase);
 }
 
 CSSValue* ComputedStyleUtils::ValueForShadowData(const ShadowData& shadow,

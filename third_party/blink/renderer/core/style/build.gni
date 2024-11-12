@@ -36,7 +36,6 @@ blink_core_sources_style = [
   "filter_operations.h",
   "font_size_style.h",
   "gap_data_list.h",
-  "gap_data.cc",
   "gap_data.h",
   "geometry_box_clip_path_operation.h",
   "grid_area.h",

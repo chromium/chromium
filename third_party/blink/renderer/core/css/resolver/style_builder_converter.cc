@@ -2246,59 +2246,87 @@ LengthSize StyleBuilderConverter::ConvertRadius(StyleResolverState& state,
   return LengthSize(radius_width, radius_height);
 }
 
-GapDataList StyleBuilderConverter::ConvertGapColorDataList(
+template <typename T>
+T ConvertGapDecorationPropertyValue(
     StyleResolverState& state,
     const CSSValue& value,
+    const CSSGapDecorationPropertyType property_type,
+    bool for_visited_link = false);
+
+template <>
+StyleColor ConvertGapDecorationPropertyValue<StyleColor>(
+    StyleResolverState& state,
+    const CSSValue& value,
+    const CSSGapDecorationPropertyType property_type,
     bool for_visited_link) {
+  CHECK_EQ(property_type, CSSGapDecorationPropertyType::kColor);
+  return StyleBuilderConverter::ConvertStyleColor(state, value,
+                                                  for_visited_link);
+}
+
+template <typename T>
+GapDataList<T> ConvertGapDecorationDataList(
+    StyleResolverState& state,
+    const CSSValue& value,
+    bool for_visited_link,
+    const CSSGapDecorationPropertyType property_type) {
   // The `value` will not be a list in two scenarios:
-  // 1. When using the legacy 'column-rule-color'.
+  // 1. When using the legacy 'column-rule-*' properties.
   // 2. When the fast parse path is taken (see
   // CSSParserFastPaths::MaybeParseValue). In these cases, construct a
-  // GapDataList with a single StyleColor.
+  // GapDataList with a single Value.
   if (!DynamicTo<CSSValueList>(value)) {
-    return GapDataList(ConvertStyleColor(state, value, for_visited_link));
+    return GapDataList<T>(ConvertGapDecorationPropertyValue<T>(
+        state, value, property_type, for_visited_link));
   }
   CHECK(RuntimeEnabledFeatures::CSSGapDecorationEnabled());
 
   // The CSS Gap Decorations API accepts a space separated list of values.
   // These values can be an auto repeater, an integer repeater, or a single
-  // color.
+  // value.
   // See: https://kbabbitt.github.io/css-gap-decorations/#column-row-rule-color
   const auto& values = To<CSSValueList>(value);
-  GapDataVector gap_data_list;
+  typename GapDataList<T>::GapDataVector gap_data_list;
   gap_data_list.ReserveInitialCapacity(values.length());
 
   for (const auto& curr_value : values) {
-    GapData gap_data;
+    GapData<T> gap_data;
     if (auto* gap_repeat_value =
             DynamicTo<cssvalue::CSSRepeatValue>(curr_value.Get())) {
-      StyleColorVector gap_colors;
-      gap_colors.ReserveInitialCapacity(gap_repeat_value->Values().length());
-      for (const auto& color : gap_repeat_value->Values()) {
-        gap_colors.push_back(
-            ConvertStyleColor(state, *color, for_visited_link));
+      typename ValueRepeater<T>::VectorType gap_values;
+      gap_values.ReserveInitialCapacity(gap_repeat_value->Values().length());
+      for (const auto& repeat_value : gap_repeat_value->Values()) {
+        gap_values.push_back(ConvertGapDecorationPropertyValue<T>(
+            state, *repeat_value, property_type, for_visited_link));
       }
 
-      StyleColorRepeater* color_repeater;
-      if (gap_repeat_value->IsAutoRepeatValue()) {
-        color_repeater =
-            MakeGarbageCollected<StyleColorRepeater>(std::move(gap_colors));
-      } else {
-        int repeat_count = gap_repeat_value->Repetitions()->ComputeInteger(
+      std::optional<int> repeat_count = std::nullopt;
+      if (!gap_repeat_value->IsAutoRepeatValue()) {
+        repeat_count = gap_repeat_value->Repetitions()->ComputeInteger(
             state.CssToLengthConversionData());
-        color_repeater = MakeGarbageCollected<StyleColorRepeater>(
-            std::move(gap_colors), repeat_count);
       }
-      gap_data = GapData(color_repeater);
+      ValueRepeater<T>* value_repeater = value_repeater =
+          MakeGarbageCollected<ValueRepeater<T>>(std::move(gap_values),
+                                                 repeat_count);
+      gap_data = GapData<T>(value_repeater);
     } else {
-      gap_data = GapData(
-          ConvertStyleColor(state, *curr_value.Get(), for_visited_link));
+      gap_data = GapData<T>(ConvertGapDecorationPropertyValue<T>(
+          state, *curr_value.Get(), property_type, for_visited_link));
     }
 
     gap_data_list.push_back(gap_data);
   }
 
-  return GapDataList(std::move(gap_data_list));
+  return GapDataList<T>(std::move(gap_data_list));
+}
+
+GapDataList<StyleColor>
+StyleBuilderConverter::ConvertGapDecorationColorDataList(
+    StyleResolverState& state,
+    const CSSValue& value,
+    bool for_visited_link) {
+  return ConvertGapDecorationDataList<blink::StyleColor>(
+      state, value, for_visited_link, CSSGapDecorationPropertyType::kColor);
 }
 
 ShadowData StyleBuilderConverter::ConvertShadow(

@@ -9,25 +9,30 @@
 namespace blink {
 
 TEST(GapDataListTest, GapDataListEquivalence) {
-  // Gap color data list with the same color(s) should be equal.
-  GapDataList gap_colors = GapDataList(StyleColor(Color(0, 0, 1)));
-  GapDataList gap_colors1 = GapDataList(StyleColor(Color(0, 0, 1)));
+  // Gap data list with the same value(s) should be equal.
+  GapDataList<StyleColor> gap_colors =
+      GapDataList<StyleColor>(StyleColor(Color(0, 0, 1)));
+  GapDataList<StyleColor> gap_colors1 =
+      GapDataList<StyleColor>(StyleColor(Color(0, 0, 1)));
   EXPECT_EQ(gap_colors, gap_colors1);
 
-  // Gap color data list with same GapDataVector should equal.
-  GapDataVector gap_data_vector;
-  gap_data_vector.push_back(GapData(StyleColor(Color(0, 0, 1))));
-  gap_data_vector.push_back(GapData(StyleColor(Color(1, 0, 0))));
-  GapDataList gap_colors2 = GapDataList(std::move(gap_data_vector));
+  // Gap data list with same GapDataVector should equal.
+  typename GapDataList<StyleColor>::GapDataVector gap_data_vector;
+  gap_data_vector.push_back(GapData<StyleColor>(StyleColor(Color(0, 0, 1))));
+  gap_data_vector.push_back(GapData<StyleColor>(StyleColor(Color(1, 0, 0))));
+  GapDataList<StyleColor> gap_colors2 =
+      GapDataList<StyleColor>(std::move(gap_data_vector));
 
-  GapDataVector gap_data_vector2;
-  gap_data_vector2.push_back(GapData(StyleColor(Color(0, 0, 1))));
-  gap_data_vector2.push_back(GapData(StyleColor(Color(1, 0, 0))));
-  GapDataList gap_colors3 = GapDataList(std::move(gap_data_vector2));
+  typename GapDataList<StyleColor>::GapDataVector gap_data_vector2;
+  gap_data_vector2.push_back(GapData<StyleColor>(StyleColor(Color(0, 0, 1))));
+  gap_data_vector2.push_back(GapData<StyleColor>(StyleColor(Color(1, 0, 0))));
+  GapDataList<StyleColor> gap_colors3 =
+      GapDataList<StyleColor>(std::move(gap_data_vector2));
   EXPECT_EQ(gap_colors2, gap_colors3);
 
-  // Gap color data with different colors should not be equal.
-  GapDataList default_gap_colors = GapDataList::DefaultGapColorDataList();
+  // Gap data list with different values should not be equal.
+  GapDataList<StyleColor> default_gap_colors =
+      GapDataList<StyleColor>::DefaultGapColorDataList();
   EXPECT_NE(gap_colors3, default_gap_colors);
 }
 

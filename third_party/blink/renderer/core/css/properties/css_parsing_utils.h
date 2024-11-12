@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
+#include "third_party/blink/renderer/core/css/css_gap_decoration_property_enums.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
