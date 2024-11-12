@@ -15,7 +15,6 @@
 #include "base/scoped_observation.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -239,7 +238,7 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
         return true;
       }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       // Chromebooks typically do not have an F11 key, so do not show an
       // accelerator here.
       return false;
@@ -277,11 +276,9 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
 #endif
 
     case IDC_CONTENT_CLIPBOARD_HISTORY_MENU:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       *accel = ui::Accelerator(ui::VKEY_V, ui::EF_COMMAND_DOWN);
       return true;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-      return false;
 #else
       NOTREACHED();
 #endif

@@ -24,7 +24,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
@@ -114,10 +113,6 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/browser_process.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/display/screen.h"
 #endif
 
 namespace {
@@ -221,7 +216,7 @@ OmniboxViewViews::OmniboxViewViews(std::unique_ptr<OmniboxClient> client,
 }
 
 OmniboxViewViews::~OmniboxViewViews() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::input_method::InputMethodManager::Get()->RemoveCandidateWindowObserver(
       this);
 #endif
@@ -264,7 +259,7 @@ void OmniboxViewViews::Init() {
   constexpr gfx::Insets kTextfieldInsets(0);
   SetBorder(views::CreateEmptyBorder(kTextfieldInsets));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::input_method::InputMethodManager::Get()->AddCandidateWindowObserver(
       this);
 #endif
@@ -1018,7 +1013,7 @@ int OmniboxViewViews::GetWidth() const {
 }
 
 bool OmniboxViewViews::IsImeShowingPopup() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return ime_candidate_window_open_;
 #else
   return GetInputMethod() ? GetInputMethod()->IsCandidatePopupOpen() : false;
@@ -1573,7 +1568,7 @@ void OmniboxViewViews::UpdateAccessibleValue() {
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void OmniboxViewViews::CandidateWindowOpened(
     ash::input_method::InputMethodManager* manager) {
   ime_candidate_window_open_ = true;
