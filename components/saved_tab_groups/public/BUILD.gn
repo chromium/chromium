@@ -171,4 +171,17 @@ if (is_android) {
     ]
     sources = [ "types.h" ]
   }
+
+  android_library("test_support_java") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/components/tab_group_sync/SyncedGroupTestHelper.java" ]
+    deps = [
+      ":java",
+      "//base:base_java",
+      "//components/tab_groups:tab_groups_java",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_java_test_support",
+      "//url:gurl_java",
+    ]
+  }
 }

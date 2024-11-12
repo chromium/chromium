@@ -146,6 +146,7 @@ if (is_android) {
       "//components/feature_engagement:feature_engagement_java",
       "//components/prefs/android:java",
       "//components/saved_tab_groups/public:java",
+      "//components/saved_tab_groups/public:test_support_java",
       "//components/tab_groups:tab_groups_java",
       "//content/public/android:content_java",
       "//third_party/android_deps:robolectric_all_java",

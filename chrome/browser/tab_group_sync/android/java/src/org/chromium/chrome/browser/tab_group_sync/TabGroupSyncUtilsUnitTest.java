@@ -14,6 +14,9 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.components.tab_group_sync.SyncedGroupTestHelper.SYNC_GROUP_ID1;
+import static org.chromium.components.tab_group_sync.SyncedGroupTestHelper.SYNC_GROUP_ID2;
+
 import android.util.Pair;
 
 import org.junit.Assert;
@@ -58,8 +61,6 @@ public class TabGroupSyncUtilsUnitTest {
     private static final int ROOT_ID_1 = 1;
     private static final Token TOKEN_1 = new Token(2, 3);
     private static final Token TOKEN_2 = new Token(5, 8);
-    private static final String SYNC_GROUP_ID1 = "remote one";
-    private static final String SYNC_GROUP_ID2 = "remote two";
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_2 = new LocalTabGroupId(TOKEN_2);
 

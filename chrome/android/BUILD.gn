@@ -1316,6 +1316,7 @@ if (current_toolchain == default_toolchain) {
       "//components/prefs/android:java",
       "//components/profile_metrics:browser_profile_type_enum_java",
       "//components/saved_tab_groups/public:java",
+      "//components/saved_tab_groups/public:test_support_java",
       "//components/schema_org/common:mojom_java",
       "//components/search_engines/android:java",
       "//components/search_engines/android:junit",
