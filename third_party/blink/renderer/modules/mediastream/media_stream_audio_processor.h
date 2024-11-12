@@ -72,8 +72,7 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   void ProcessCapturedAudio(const media::AudioBus& audio_source,
                             base::TimeTicks audio_capture_time,
                             int num_preferred_channels,
-                            double volume,
-                            bool key_pressed);
+                            double volume);
 
   // Stops the audio processor. The caller guarantees that there will be no more
   // calls to ProcessCapturedAudio(). Calling Stop() stops any ongoing aecdump

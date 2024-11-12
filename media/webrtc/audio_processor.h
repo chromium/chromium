@@ -108,8 +108,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   void ProcessCapturedAudio(const media::AudioBus& audio_source,
                             base::TimeTicks audio_capture_time,
                             int num_preferred_channels,
-                            double volume,
-                            bool key_pressed);
+                            double volume);
 
   // Analyzes playout audio for e.g. echo cancellation.
   // Must be called on the playout thread.
@@ -186,7 +185,6 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
                                     int process_frames,
                                     base::TimeDelta capture_delay,
                                     double volume,
-                                    bool key_pressed,
                                     int num_preferred_channels,
                                     float* const* output_ptrs);
 

@@ -332,8 +332,7 @@ AudioProcessor::~AudioProcessor() {
 void AudioProcessor::ProcessCapturedAudio(const media::AudioBus& audio_source,
                                           base::TimeTicks audio_capture_time,
                                           int num_preferred_channels,
-                                          double volume,
-                                          bool key_pressed) {
+                                          double volume) {
   DCHECK(deliver_processed_audio_callback_);
   // Sanity-check the input audio format in debug builds.
   DCHECK(input_format_.IsValid());
@@ -359,8 +358,8 @@ void AudioProcessor::ProcessCapturedAudio(const media::AudioBus& audio_source,
       output_bus = output_bus_.get();
       new_volume =
           ProcessData(process_bus->channel_ptrs(), process_bus->bus()->frames(),
-                      capture_delay, volume, key_pressed,
-                      num_preferred_channels, output_bus->channel_ptrs());
+                      capture_delay, volume, num_preferred_channels,
+                      output_bus->channel_ptrs());
     }
 
     // Swap channels before interleaving the data.
@@ -482,7 +481,6 @@ std::optional<double> AudioProcessor::ProcessData(
     int process_frames,
     base::TimeDelta capture_delay,
     double volume,
-    bool key_pressed,
     int num_preferred_channels,
     float* const* output_ptrs) {
   DCHECK(webrtc_audio_processing_);
@@ -540,7 +538,6 @@ std::optional<double> AudioProcessor::ProcessData(
   DCHECK_LE(current_analog_gain_level, max_analog_gain_level);
 
   ap->set_stream_analog_level(current_analog_gain_level);
-  ap->set_stream_key_pressed(key_pressed);
 
   // Depending on how many channels the sinks prefer, the number of APM output
   // channels is allowed to vary between 1 and the number of channels of the

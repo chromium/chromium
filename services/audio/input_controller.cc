@@ -743,11 +743,10 @@ void InputController::OnData(const media::AudioBus* source,
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   if (processing_fifo_) {
     DCHECK(audio_processor_handler_);
-    processing_fifo_->PushData(source, capture_time, volume, key_pressed,
-                               glitch_info);
+    processing_fifo_->PushData(source, capture_time, volume, glitch_info);
   } else if (audio_processor_handler_) {
-    audio_processor_handler_->ProcessCapturedAudio(
-        *source, capture_time, volume, key_pressed, glitch_info);
+    audio_processor_handler_->ProcessCapturedAudio(*source, capture_time,
+                                                   volume, glitch_info);
   } else
 #endif
   {
@@ -775,8 +774,8 @@ void InputController::DeliverProcessedAudio(
     const media::AudioGlitchInfo& glitch_info) {
   // When processing is performed in the audio service, the consumer is not
   // expected to use the input volume and keypress information.
-  sync_writer_->Write(&audio_bus, /*volume=*/1.0,
-                      /*key_pressed=*/false, audio_capture_time, glitch_info);
+  sync_writer_->Write(&audio_bus, /*volume=*/1.0, /*key_pressed=*/false,
+                      audio_capture_time, glitch_info);
   if (new_volume) {
     task_runner_->PostTask(
         FROM_HERE,

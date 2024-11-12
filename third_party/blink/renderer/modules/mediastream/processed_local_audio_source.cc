@@ -558,8 +558,7 @@ void ProcessedLocalAudioSource::Capture(
     // Passing audio to the audio processor is sufficient, the processor will
     // return it to DeliverProcessedAudio() via the registered callback.
     media_stream_audio_processor_->ProcessCapturedAudio(
-        *audio_bus, audio_capture_time, num_preferred_channels, volume,
-        key_pressed);
+        *audio_bus, audio_capture_time, num_preferred_channels, volume);
     return;
   }
 
