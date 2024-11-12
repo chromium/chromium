@@ -102,12 +102,8 @@ bool ProfileImportProcess::UserAccepted() const {
 void ProfileImportProcess::DetermineProfileImportType() {
   AutofillProfileComparator comparator(app_locale_);
   bool is_mergeable_with_existing_profile = false;
-
-  new_profiles_suppressed_for_domain_ =
-      address_data_manager_->IsNewProfileImportBlockedForDomain(
-          form_source_url_);
-
   int number_of_unchanged_profiles = 0;
+  int number_of_blocked_profile_updates = 0;
   std::optional<AutofillProfile> migration_candidate;
 
   // We don't offer an import if `observed_profile_` is a duplicate of an
@@ -125,7 +121,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
     import_metadata_.did_complement_country = false;
   }
 
-  for (const auto* existing_profile : existing_profiles) {
+  for (const AutofillProfile* existing_profile : existing_profiles) {
     // If the existing profile is not mergeable with the observed profile, the
     // existing profile is not altered by this import.
     if (!comparator.AreMergeable(*existing_profile, observed_profile_)) {
@@ -172,7 +168,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
               features::test::kAutofillDisableProfileUpdates);
 
       if (is_blocked_for_update) {
-        ++number_of_blocked_profile_updates_;
+        ++number_of_blocked_profile_updates;
       }
 
       // If a settings-visible value changed, the existing profile is the merge
@@ -209,7 +205,8 @@ void ProfileImportProcess::DetermineProfileImportType() {
     if (!allow_only_silent_updates_) {
       // There should be no import candidate yet.
       DCHECK(!import_candidate_.has_value());
-      if (new_profiles_suppressed_for_domain_) {
+      if (address_data_manager_->IsNewProfileImportBlockedForDomain(
+              form_source_url_)) {
         import_type_ = AutofillProfileImportType::kSuppressedNewProfile;
       } else {
         import_type_ = AutofillProfileImportType::kNewProfile;
@@ -226,7 +223,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
           silent_updates_present
               ? AutofillProfileImportType::kConfirmableMergeAndSilentUpdate
               : AutofillProfileImportType::kConfirmableMerge;
-    } else if (number_of_blocked_profile_updates_ > 0) {
+    } else if (number_of_blocked_profile_updates > 0) {
       import_type_ =
           silent_updates_present
               ? AutofillProfileImportType::

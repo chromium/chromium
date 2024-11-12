@@ -296,16 +296,9 @@ class ProfileImportProcess {
   // The url of the form.
   GURL form_source_url_;
 
-  // Indicates if saving a new profile is blocked for the domain the profile
-  // was observed on.
-  bool new_profiles_suppressed_for_domain_;
-
   // A reference to the address data manager that is used to retrieve additional
   // information about existing profiles and save/update imported profiles.
   raw_ref<AddressDataManager> address_data_manager_;
-
-  // Counts the number of blocked profile updates.
-  int number_of_blocked_profile_updates_{0};
 
   // If true, denotes that the import process allows only silent updates.
   bool allow_only_silent_updates_;
