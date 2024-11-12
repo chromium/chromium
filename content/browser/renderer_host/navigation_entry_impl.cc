@@ -1082,10 +1082,14 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
   // If this is called for the main frame, the FrameNavigationEntry is
   // guaranteed to exist, so just update it directly and return.
   if (frame_tree_node->IsMainFrame()) {
-    // If the document of the FrameNavigationEntry is changing, we must clear
-    // any child FrameNavigationEntries.
+    // If the document of the FrameNavigationEntry is changing (or if this
+    // entry's SiteInstance already exists and differs), we must clear any child
+    // FrameNavigationEntries and replace the FrameNavigationEntry.
+    bool site_instance_differs =
+        this->site_instance() && this->site_instance() != site_instance;
     if (root_node()->frame_entry->document_sequence_number() !=
-        document_sequence_number) {
+            document_sequence_number ||
+        site_instance_differs) {
       root_node()->children.clear();
       if (!url.is_empty()) {
         // A cross-document navigation committed in the main frame, so the
@@ -1096,15 +1100,24 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
         initial_navigation_entry_state_ =
             InitialNavigationEntryState::kNonInitial;
       }
+      root_node()->frame_entry = base::MakeRefCounted<FrameNavigationEntry>(
+          frame_tree_node->unique_name(), item_sequence_number,
+          document_sequence_number, navigation_api_key, site_instance,
+          std::move(source_site_instance), url, origin, referrer,
+          initiator_origin, initiator_base_url, redirect_chain, page_state,
+          method, post_id, std::move(blob_url_loader_factory),
+          std::move(policy_container_policies), protect_url_in_navigation_api);
+    } else {
+      // When staying in the same document (and thus SiteInstance), it is ok to
+      // update the existing (possibly shared) FrameNavigationEntry.
+      root_node()->frame_entry->UpdateEntry(
+          frame_tree_node->unique_name(), item_sequence_number,
+          document_sequence_number, navigation_api_key, site_instance,
+          std::move(source_site_instance), url, origin, referrer,
+          initiator_origin, initiator_base_url, redirect_chain, page_state,
+          method, post_id, std::move(blob_url_loader_factory),
+          std::move(policy_container_policies), protect_url_in_navigation_api);
     }
-
-    root_node()->frame_entry->UpdateEntry(
-        frame_tree_node->unique_name(), item_sequence_number,
-        document_sequence_number, navigation_api_key, site_instance,
-        std::move(source_site_instance), url, origin, referrer,
-        initiator_origin, initiator_base_url, redirect_chain, page_state,
-        method, post_id, std::move(blob_url_loader_factory),
-        std::move(policy_container_policies), protect_url_in_navigation_api);
     return;
   }
 

@@ -1842,10 +1842,8 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
   if (navigation_request->DidEncounterError() &&
       failed_pending_entry_id_ != 0 &&
       nav_entry_id == failed_pending_entry_id_) {
-    // If the renderer was going to a new pending entry that got cleared because
-    // of an error, this is the case of the user trying to retry a failed load
-    // by pressing return. Classify as EXISTING_ENTRY because we probably don't
-    // have a pending entry.
+    // If the renderer was going to a pending entry that got cleared because of
+    // an error, then the error page will replace the existing entry.
     trace_return.set_return_reason(
         "unreachable, matching pending, existing entry");
     return NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY;

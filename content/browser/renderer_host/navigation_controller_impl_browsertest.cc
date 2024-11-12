@@ -11695,6 +11695,65 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(child->current_frame_host()->IsRenderFrameLive());
 }
 
+// Ensure that a redirect or failure that changes the main frame's
+// FrameNavigationEntry replaces it and doesn't affect NavigationEntries that
+// were previously sharing it.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       ReplaceMainFrameSharedFrameNavigationEntry) {
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // 1. Navigate to a page with a cross-site frame.
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  NavigationEntryImpl* entry1 = controller.GetLastCommittedEntry();
+  scoped_refptr<SiteInstance> site_instance1 = entry1->site_instance();
+
+  // 2. Navigate subframe, so that the main frame FNE is shared.
+  {
+    FrameNavigateParamsCapturer capturer(child);
+    EXPECT_TRUE(ExecJs(child, "location.href = '#foo';"));
+    capturer.Wait();
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_SUBFRAME, capturer.navigation_type());
+  }
+  EXPECT_EQ(2, controller.GetEntryCount());
+  NavigationEntryImpl* entry2 = controller.GetLastCommittedEntry();
+  EXPECT_NE(entry1, entry2);
+  EXPECT_EQ(entry1->GetFrameEntry(root), entry2->GetFrameEntry(root));
+  EXPECT_NE(entry1->GetFrameEntry(child), entry2->GetFrameEntry(child));
+  EXPECT_EQ(main_url, entry1->GetFrameEntry(root)->url());
+  EXPECT_EQ(site_instance1, entry1->GetFrameEntry(root)->site_instance());
+
+  // 3. Reload the second entry, but encounter a blocked load.
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(main_url,
+                                                   net::ERR_BLOCKED_BY_CLIENT);
+  {
+    TestNavigationObserver observer(shell()->web_contents());
+    controller.Reload(content::ReloadType::NORMAL, /*check_for_repost=*/false);
+    observer.Wait();
+    EXPECT_FALSE(observer.last_navigation_succeeded());
+  }
+
+  // This should have replaced and stopped sharing the main frame's FNE, in
+  // favor of one in a different (error page) SiteInstance. The URLs will look
+  // the same, because the blocked entry retains the same URL.
+  EXPECT_NE(entry1->GetFrameEntry(root), entry2->GetFrameEntry(root));
+  EXPECT_EQ(site_instance1, entry1->GetFrameEntry(root)->site_instance());
+  EXPECT_NE(site_instance1, entry2->GetFrameEntry(root)->site_instance());
+  EXPECT_FALSE(entry1->site_instance()->GetSiteInfo().is_error_page());
+  EXPECT_TRUE(entry2->site_instance()->GetSiteInfo().is_error_page());
+  EXPECT_EQ(main_url, entry1->GetFrameEntry(root)->url());
+  EXPECT_EQ(main_url, entry2->GetFrameEntry(root)->url());
+}
+
 // Similar to SubframeBackFromSubframeLocationReplace test, but covers a tricky
 // early RFH swap case if the renderer process crashes before location.replace.
 // See https://crbug.com/1515381.
@@ -22541,6 +22600,56 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ("foo", EvalJs(shell(),
                           "document.getElementById('test_iframe')."
                           "contentDocument.body.innerText"));
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, WebUIFailedReload) {
+  // Load a WebUI page.
+  GURL webui_url(std::string(kChromeUIScheme) + "://" +
+                 std::string(kChromeUIGpuHost));
+  EXPECT_TRUE(NavigateToURL(shell(), webui_url));
+
+  // Fail future requests for the WebUI URL.
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(webui_url,
+                                                   net::ERR_BLOCKED_BY_CLIENT);
+
+  // Reload. This should fail, but not crash the browser.
+  TestNavigationObserver nav_observer(contents());
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  // Check that the navigation didn't succeed.
+  EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, WebUIFailedBack) {
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+
+  // Load a WebUI page.
+  GURL webui_url(std::string(kChromeUIScheme) + "://" +
+                 std::string(kChromeUIGpuHost));
+  EXPECT_TRUE(NavigateToURL(shell(), webui_url));
+
+  // Navigate to a normal page.
+  GURL web_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), web_url));
+
+  // Fail future requests for the WebUI URL.
+  std::unique_ptr<URLLoaderInterceptor> url_interceptor =
+      URLLoaderInterceptor::SetupRequestFailForURL(webui_url,
+                                                   net::ERR_BLOCKED_BY_CLIENT);
+
+  // Go back. This should fail, but not crash the browser.
+  TestNavigationObserver nav_observer(contents());
+  controller.GoBack();
+  nav_observer.Wait();
+
+  // Check that the navigation didn't succeed. We should be on the previous
+  // entry with a forward entry.
+  EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(2, controller.GetEntryCount());
+  EXPECT_TRUE(controller.CanGoForward());
 }
 
 class IgnoreDuplicateNavsBrowserTest
