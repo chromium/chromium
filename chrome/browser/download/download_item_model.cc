@@ -682,7 +682,7 @@ DownloadItemModel::MaybeGetMediaAppAction() const {
 
 void DownloadItemModel::OpenUsingMediaApp() {
   ash::SystemAppLaunchParams params;
-  params.launch_paths.push_back(GetTargetFilePath());
+  params.launch_paths.push_back(GetFullPath());
   ash::LaunchSystemWebAppAsync(profile(), ash::SystemWebAppType::MEDIA, params);
 
   RecordDownloadOpen(DOWNLOAD_OPEN_METHOD_MEDIA_APP, GetMimeType());
