@@ -32,6 +32,8 @@ static_library("internal") {
     "group_data_proto_utils.h",
     "group_data_store.cc",
     "group_data_store.h",
+    "partial_failure_sdk_delegate_wrapper.cc",
+    "partial_failure_sdk_delegate_wrapper.h",
     "preview_server_proxy.cc",
     "preview_server_proxy.h",
   ]

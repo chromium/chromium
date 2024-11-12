@@ -38,7 +38,6 @@ GroupDataModel::GroupDataModel(
       collaboration_group_sync_bridge_(collaboration_group_sync_bridge),
       sdk_delegate_(sdk_delegate) {
   CHECK(collaboration_group_sync_bridge_);
-  CHECK(sdk_delegate_);
   collaboration_group_sync_bridge_->AddObserver(this);
 
   if (collaboration_group_sync_bridge_->IsDataLoaded()) {
@@ -213,10 +212,6 @@ void GroupDataModel::ProcessGroupChanges(bool is_initial_load) {
 
 void GroupDataModel::FetchGroupsFromSDK(
     const std::vector<GroupId>& added_or_updated_groups) {
-  if (!sdk_delegate_) {
-    return;
-  }
-
   has_ongoing_group_fetch_ = true;
 
   std::map<GroupId, VersionToken> group_versions;
@@ -232,7 +227,7 @@ void GroupDataModel::FetchGroupsFromSDK(
         ComputeVersionToken(*collaboration_group_specifics_opt);
   }
 
-  sdk_delegate_->ReadGroups(
+  sdk_delegate_.ReadGroups(
       params, base::BindOnce(&GroupDataModel::OnGroupsFetchedFromSDK,
                              weak_ptr_factory_.GetWeakPtr(), group_versions));
 }

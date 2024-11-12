@@ -25,8 +25,21 @@ message ReadGroupsParams {
   repeated string group_ids = 1;
 };
 
+message FailedReadGroupResult {
+  optional string group_id = 1;
+
+  enum FailureReason {
+    FAILURE_REASON_UNSPECIFIED = 0;
+    GROUP_NOT_FOUND = 1;
+    USER_NOT_MEMBER = 2;
+    TRANSIENT_ERROR = 3;
+  }
+  optional FailureReason failure_reason = 2;
+};
+
 message ReadGroupsResult {
   repeated GroupData group_data = 1;
+  repeated FailedReadGroupResult failed_read_group_results = 2;
 };
 
 message AddMemberParams {

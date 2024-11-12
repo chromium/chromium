@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/data_sharing/internal/collaboration_group_sync_bridge.h"
 #include "components/data_sharing/internal/group_data_store.h"
+#include "components/data_sharing/internal/partial_failure_sdk_delegate_wrapper.h"
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
@@ -117,7 +118,7 @@ class GroupDataModel : public CollaborationGroupSyncBridge::Observer {
   bool has_pending_changes_ = false;
 
   raw_ptr<CollaborationGroupSyncBridge> collaboration_group_sync_bridge_;
-  raw_ptr<DataSharingSDKDelegate> sdk_delegate_;
+  PartialFailureSDKDelegateWrapper sdk_delegate_;
 
   // Used only for tests to notify that GroupDataStore has been loaded (either
   // successfully or unsuccessfully).
