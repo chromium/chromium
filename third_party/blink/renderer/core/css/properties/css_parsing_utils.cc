@@ -4976,16 +4976,27 @@ const CSSValue* ParseBorderStyleSide(CSSParserTokenStream& stream,
                        context, stream);
 }
 
-cssvalue::CSSRepeatValue* ConsumeGapColorRepeatFunction(
+CSSValue* ConsumeGapDecorationPropertyValue(
     CSSParserTokenStream& stream,
-    const CSSParserContext& context) {
+    const CSSParserContext& context,
+    CSSGapDecorationPropertyType property_type) {
+  switch (property_type) {
+    case CSSGapDecorationPropertyType::kColor:
+      return ConsumeColor(stream, context);
+      // TODO(crbug.com/357648037): Add kStyle and kWidth when implemented.
+  }
+}
+
+cssvalue::CSSRepeatValue* ConsumeGapDecorationRepeatFunction(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSGapDecorationPropertyType property_type) {
   DCHECK_EQ(stream.Peek().GetType(), kFunctionToken);
   CSSParserTokenStream::RestoringBlockGuard guard(stream);
 
   stream.ConsumeWhitespace();
 
   CSSPrimitiveValue* repetition_value = nullptr;
-  CSSValueList* repeated_colors = CSSValueList::CreateSpaceSeparated();
 
   if (IdentMatches<CSSValueID::kAuto>(stream.Peek().Id())) {
     CHECK(stream.ConsumeIncludingWhitespace().Id() == CSSValueID::kAuto);
@@ -5003,15 +5014,17 @@ cssvalue::CSSRepeatValue* ConsumeGapColorRepeatFunction(
     return nullptr;
   }
 
+  CSSValueList* repeated_values = CSSValueList::CreateSpaceSeparated();
   while (!stream.AtEnd()) {
-    CSSValue* color = ConsumeColor(stream, context);
-    if (!color) {
+    CSSValue* value =
+        ConsumeGapDecorationPropertyValue(stream, context, property_type);
+    if (!value) {
       return nullptr;
     }
-    repeated_colors->Append(*color);
+    repeated_values->Append(*value);
   }
 
-  if (repeated_colors->length() == 0) {
+  if (repeated_values->length() == 0) {
     return nullptr;
   }
 
@@ -5019,19 +5032,18 @@ cssvalue::CSSRepeatValue* ConsumeGapColorRepeatFunction(
   stream.ConsumeWhitespace();
 
   return MakeGarbageCollected<cssvalue::CSSRepeatValue>(repetition_value,
-                                                        *repeated_colors);
+                                                        *repeated_values);
 }
 
-CSSValue* ConsumeGapDecorationColorList(CSSParserTokenStream& stream,
-                                        const CSSParserContext& context) {
-  // Consume single color if the Gap decoration feature flag is not
+CSSValue* ConsumeGapDecorationPropertyList(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    const CSSGapDecorationPropertyType property_type) {
+  // Consume single value if the Gap decoration feature flag is not
   // enabled.
   if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
-    return ConsumeColor(stream, context);
+    return ConsumeGapDecorationPropertyValue(stream, context, property_type);
   }
-
-  // List to holds all the color values.
-  CSSValueList* values = CSSValueList::CreateSpaceSeparated();
 
   if (stream.AtEnd()) {
     return nullptr;
@@ -5040,10 +5052,11 @@ CSSValue* ConsumeGapDecorationColorList(CSSParserTokenStream& stream,
   // Flag to limit to one auto-repeat.
   bool seen_auto_repeat = false;
 
-  // Consume the color values(s) in the stream.
+  CSSValueList* values = CSSValueList::CreateSpaceSeparated();
   do {
     if (stream.Peek().FunctionId() == CSSValueID::kRepeat) {
-      auto* repeat_value = ConsumeGapColorRepeatFunction(stream, context);
+      auto* repeat_value =
+          ConsumeGapDecorationRepeatFunction(stream, context, property_type);
       if (!repeat_value) {
         return nullptr;
       }
@@ -5055,11 +5068,12 @@ CSSValue* ConsumeGapDecorationColorList(CSSParserTokenStream& stream,
       }
       values->Append(*repeat_value);
     } else {
-      CSSValue* color = ConsumeColor(stream, context);
-      if (!color) {
+      CSSValue* value =
+          ConsumeGapDecorationPropertyValue(stream, context, property_type);
+      if (!value) {
         break;
       }
-      values->Append(*color);
+      values->Append(*value);
     }
   } while (!stream.AtEnd());
 
