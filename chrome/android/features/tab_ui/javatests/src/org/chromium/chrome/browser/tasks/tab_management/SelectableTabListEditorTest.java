@@ -326,7 +326,6 @@ public class SelectableTabListEditorTest {
                     true);
             sActivityTestRule.loadUrl(url);
         }
-        if (urls.size() == 1) return;
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
