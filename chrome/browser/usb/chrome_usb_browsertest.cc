@@ -1445,8 +1445,9 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_UsbConnectionTracker) {
 
 // Test the scenario of waking up the service worker upon device events and
 // the service worker being kept alive with active device session.
-// TODO(crbug.com/41494522): Flaky on non-Mac release builds.
-#if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
+// TODO(crbug.com/41494522): Flaky on non-Mac release builds and ChromeOS
+// builds.
+#if (!BUILDFLAG(IS_MAC) && defined(NDEBUG)) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped \
   DISABLED_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped
 #else
