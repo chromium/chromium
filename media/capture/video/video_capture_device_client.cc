@@ -650,7 +650,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
   // media::kCameraMicEffects flag.
 
   if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
-      switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
+      switches::IsVideoCaptureUseGpuMemoryBufferEnabled() &&
+      effects_processor_) {
     // TODO(https://crbug.com/377532863): Skip effects service overhead when
     // having no-op effects config.
 
