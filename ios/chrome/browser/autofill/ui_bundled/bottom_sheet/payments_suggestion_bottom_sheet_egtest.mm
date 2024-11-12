@@ -80,7 +80,9 @@ const char kFormCardExpirationYear[] = "CCExpiresYear";
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector
-            (testOpenPaymentsBottomSheetShowDetailsEditNickname)]) {
+            (testOpenPaymentsBottomSheetShowDetailsEditNickname)] ||
+      [self
+          isRunningTest:@selector(testOpenPaymentsBottomSheetAfterLongPress)]) {
     // Disable V2 for that test case as it doesn't support the flow tested by
     // that test case.
     config.features_disabled.push_back(kAutofillPaymentsSheetV2Ios);
@@ -344,18 +346,7 @@ void CheckAutofillSuggestionAcceptedIndexMetricsCount(
 }
 
 // Tests that accessing a long press menu does not disable the bottom sheet.
-// TODO(crbug.com/40071541): Test fails on iPhone simulator only.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testOpenPaymentsBottomSheetAfterLongPress \
-  DISABLED_testOpenPaymentsBottomSheetAfterLongPress
-#else
-#define MAYBE_testOpenPaymentsBottomSheetAfterLongPress \
-  testOpenPaymentsBottomSheetAfterLongPress
-#endif
-- (void)MAYBE_testOpenPaymentsBottomSheetAfterLongPress {
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iPhone 14 Pro Max 16.4.");
-  }
+- (void)testOpenPaymentsBottomSheetAfterLongPress {
   [self loadPaymentsPage];
 
   // Open the Payments Bottom Sheet.
