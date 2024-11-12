@@ -1498,9 +1498,9 @@ TEST_P(ObfuscatedFileUtilTest, TestCopyOrMoveFileSuccess) {
   const int64_t kSourceLength = 5;
   const int64_t kDestLength = 50;
 
-  for (size_t i = 0; i < std::size(kCopyMoveTestCases); ++i) {
-    SCOPED_TRACE(testing::Message() << "kCopyMoveTestCase " << i);
-    const CopyMoveTestCaseRecord& test_case = kCopyMoveTestCases[i];
+  size_t count = 0u;
+  for (const auto& test_case : kCopyMoveTestCases) {
+    SCOPED_TRACE(testing::Message() << "kCopyMoveTestCase " << count++);
     SCOPED_TRACE(testing::Message()
                  << "\t is_copy_not_move " << test_case.is_copy_not_move);
     SCOPED_TRACE(testing::Message()
@@ -1752,11 +1752,10 @@ TEST_P(ObfuscatedFileUtilTest, TestStorageKeyEnumerator) {
   std::set<blink::StorageKey> storage_keys_expected;
   storage_keys_expected.insert(storage_key());
 
-  for (size_t i = 0; i < std::size(kOriginEnumerationTestRecords); ++i) {
+  size_t count = 0u;
+  for (const auto& record : kOriginEnumerationTestRecords) {
     SCOPED_TRACE(testing::Message()
-                 << "Validating kOriginEnumerationTestRecords " << i);
-    const OriginEnumerationTestRecord& record =
-        kOriginEnumerationTestRecords[i];
+                 << "Validating kOriginEnumerationTestRecords " << count++);
     blink::StorageKey storage_key =
         blink::StorageKey::CreateFromStringForTesting(record.origin_url);
     storage_keys_expected.insert(storage_key);
@@ -1829,9 +1828,9 @@ TEST_P(ObfuscatedFileUtilTest, TestRevokeUsageCache) {
 
   int64_t expected_quota = 0;
 
-  for (size_t i = 0; i < kRegularFileSystemTestCaseSize; ++i) {
-    SCOPED_TRACE(testing::Message() << "Creating kRegularTestCase " << i);
-    const FileSystemTestCaseRecord& test_case = kRegularFileSystemTestCases[i];
+  size_t count = 0u;
+  for (const auto& test_case : kRegularFileSystemTestCases) {
+    SCOPED_TRACE(testing::Message() << "Creating kRegularTestCase " << count++);
     base::FilePath file_path(test_case.path);
     expected_quota += ObfuscatedFileUtil::ComputeFilePathCost(file_path);
     if (test_case.is_directory) {

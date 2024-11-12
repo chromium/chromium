@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -430,8 +425,7 @@ class CopyOrMoveOperationTestHelper {
     root_src.virtual_path().AppendRelativePath(src.virtual_path(),
                                                &src_relative_path);
     src_relative_path = src_relative_path.NormalizePathSeparators();
-    const auto records = base::make_span(kRegularFileSystemTestCases,
-                                         kRegularFileSystemTestCaseSize);
+    const auto records = base::span(kRegularFileSystemTestCases);
     auto record_it = base::ranges::find(
         records, src_relative_path, [](const FileSystemTestCaseRecord& record) {
           return base::FilePath(record.path).NormalizePathSeparators();
@@ -501,11 +495,9 @@ class CopyOrMoveOperationTestHelper {
 
   base::File::Error SetUpTestCaseFiles(
       const FileSystemURL& root,
-      const FileSystemTestCaseRecord* const test_cases,
-      size_t test_case_size) {
+      const base::span<const FileSystemTestCaseRecord> test_cases) {
     base::File::Error result = base::File::FILE_ERROR_FAILED;
-    for (size_t i = 0; i < test_case_size; ++i) {
-      const FileSystemTestCaseRecord& test_case = test_cases[i];
+    for (const auto& test_case : test_cases) {
       FileSystemURL url = file_system_context_->CreateCrackedFileSystemURL(
           root.storage_key(), root.mount_type(),
           root.virtual_path().Append(test_case.path));
@@ -533,14 +525,14 @@ class CopyOrMoveOperationTestHelper {
     ONLY_ALLOWED_FILES,
   };
 
-  void VerifyTestCaseFiles(const FileSystemURL& root,
-                           const FileSystemTestCaseRecord* const test_cases,
-                           size_t test_case_size,
-                           VerifyDirectoryState check_state) {
+  void VerifyTestCaseFiles(
+      const FileSystemURL& root,
+      base::span<const FileSystemTestCaseRecord> test_cases,
+      VerifyDirectoryState check_state) {
     std::map<base::FilePath, const FileSystemTestCaseRecord*> test_case_map;
-    for (size_t i = 0; i < test_case_size; ++i) {
-      test_case_map[base::FilePath(test_cases[i].path)
-                        .NormalizePathSeparators()] = &test_cases[i];
+    for (const auto& test_case : test_cases) {
+      test_case_map[base::FilePath(test_case.path).NormalizePathSeparators()] =
+          &test_case;
     }
 
     base::queue<FileSystemURL> directories;
@@ -596,7 +588,7 @@ class CopyOrMoveOperationTestHelper {
       }
     } else {
       for (const auto& path_record_pair : test_case_map) {
-        auto* record = path_record_pair.second;
+        const auto* record = path_record_pair.second;
         if (check_state ==
             VerifyDirectoryState::ONLY_BLOCKED_FILES_AND_PARENTS) {
           EXPECT_THAT(record->block_action,
@@ -803,8 +795,7 @@ TEST_P(LocalFileSystemCopyOrMoveOperationTest, FilesAndDirectories) {
   // Set up a source directory.
   ASSERT_EQ(base::File::FILE_OK, helper.CreateDirectory(src));
   ASSERT_EQ(base::File::FILE_OK,
-            helper.SetUpTestCaseFiles(src, kRegularFileSystemTestCases,
-                                      kRegularFileSystemTestCaseSize));
+            helper.SetUpTestCaseFiles(src, kRegularFileSystemTestCases));
   int64_t src_increase = helper.GetSourceUsage() - src_initial_usage;
 
   if (IsMove()) {
@@ -846,13 +837,13 @@ TEST_P(LocalFileSystemCopyOrMoveOperationTest, FilesAndDirectories) {
   if (!IsMove()) {
     // For copies, all files should be there!
     helper.VerifyTestCaseFiles(
-        src, kRegularFileSystemTestCases, kRegularFileSystemTestCaseSize,
+        src, kRegularFileSystemTestCases,
         CopyOrMoveOperationTestHelper::VerifyDirectoryState::ALL_FILES_EXIST);
   } else {
     if (BlockingEnabled()) {
       // For moves, only blocked files should remain.
       helper.VerifyTestCaseFiles(
-          src, kRegularFileSystemTestCases, kRegularFileSystemTestCaseSize,
+          src, kRegularFileSystemTestCases,
           CopyOrMoveOperationTestHelper::VerifyDirectoryState::
               ONLY_BLOCKED_FILES_AND_PARENTS);
     }
@@ -862,12 +853,11 @@ TEST_P(LocalFileSystemCopyOrMoveOperationTest, FilesAndDirectories) {
   // move.
   if (BlockingEnabled()) {
     helper.VerifyTestCaseFiles(dest, kRegularFileSystemTestCases,
-                               kRegularFileSystemTestCaseSize,
                                CopyOrMoveOperationTestHelper::
                                    VerifyDirectoryState::ONLY_ALLOWED_FILES);
   } else {
     helper.VerifyTestCaseFiles(
-        dest, kRegularFileSystemTestCases, kRegularFileSystemTestCaseSize,
+        dest, kRegularFileSystemTestCases,
         CopyOrMoveOperationTestHelper::VerifyDirectoryState::ALL_FILES_EXIST);
   }
 
@@ -896,8 +886,7 @@ TEST(LocalFileSystemCopyOrMoveOperationTest,
   // Set up a source directory.
   ASSERT_EQ(base::File::FILE_OK, helper.CreateDirectory(src));
   ASSERT_EQ(base::File::FILE_OK,
-            helper.SetUpTestCaseFiles(src, kRegularFileSystemTestCases,
-                                      kRegularFileSystemTestCaseSize));
+            helper.SetUpTestCaseFiles(src, kRegularFileSystemTestCases));
 
   // Move it.
   helper.Move(src, dest);
@@ -914,7 +903,7 @@ TEST(LocalFileSystemCopyOrMoveOperationTest,
   };
 
   helper.VerifyTestCaseFiles(
-      dest, kMoveDirResultCases, std::size(kMoveDirResultCases),
+      dest, kMoveDirResultCases,
       CopyOrMoveOperationTestHelper::VerifyDirectoryState::ALL_FILES_EXIST);
 }
 
@@ -984,8 +973,7 @@ TEST_P(LocalFileSystemCopyOrMoveOperationTest, FilesAndDirectoriesProgress) {
   // Set up a source directory.
   ASSERT_EQ(base::File::FILE_OK, helper.CreateDirectory(src));
   ASSERT_EQ(base::File::FILE_OK,
-            helper.SetUpTestCaseFiles(src, kRegularFileSystemTestCases,
-                                      kRegularFileSystemTestCaseSize));
+            helper.SetUpTestCaseFiles(src, kRegularFileSystemTestCases));
 
   CopyOrMoveRecordAndSecurityDelegate::ShouldBlockCallback allow_all_callback =
       base::BindRepeating(
@@ -1034,9 +1022,7 @@ TEST_P(LocalFileSystemCopyOrMoveOperationTest, FilesAndDirectoriesProgress) {
   EXPECT_EQ(dest, records[0].dest_url);
 
   // Verify progress records.
-  for (size_t i = 0; i < kRegularFileSystemTestCaseSize; ++i) {
-    const FileSystemTestCaseRecord& test_case = kRegularFileSystemTestCases[i];
-
+  for (const auto& test_case : kRegularFileSystemTestCases) {
     FileSystemURL src_url = helper.SourceURL(
         std::string("a/") + base::FilePath(test_case.path).AsUTF8Unsafe());
     FileSystemURL dest_url = helper.DestURL(

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "storage/browser/file_system/dragged_file_util.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <set>
@@ -55,7 +51,7 @@ using FileEntryList = AsyncFileTestHelper::FileEntryList;
 // Random root paths in which we create each file/directory of the
 // RegularTestCases (so that we can simulate a drop with files/directories
 // from multiple directories).
-constexpr const base::FilePath::CharType* kRootPaths[] = {
+constexpr std::array kRootPaths{
     FILE_PATH_LITERAL("a"),
     FILE_PATH_LITERAL("b/c"),
     FILE_PATH_LITERAL("etc"),
@@ -269,9 +265,7 @@ class DraggedFileUtilTest : public testing::Test {
     size_t root_path_index = 0;
 
     IsolatedContext::FileInfoSet toplevels;
-    for (size_t i = 0; i < kRegularFileSystemTestCaseSize; ++i) {
-      const FileSystemTestCaseRecord& test_case =
-          kRegularFileSystemTestCases[i];
+    for (const auto& test_case : kRegularFileSystemTestCases) {
       base::FilePath path(test_case.path);
       base::FilePath toplevel = GetTopLevelPath(path);
 
@@ -279,7 +273,7 @@ class DraggedFileUtilTest : public testing::Test {
       // to simulate a drop with multiple directories.
       if (!base::Contains(toplevel_root_map_, toplevel)) {
         base::FilePath root = root_path().Append(
-            kRootPaths[(root_path_index++) % std::size(kRootPaths)]);
+            kRootPaths[(root_path_index++) % kRootPaths.size()]);
         toplevel_root_map_[toplevel] = root;
         toplevels.AddPath(root.Append(path), nullptr);
       }
@@ -304,9 +298,9 @@ class DraggedFileUtilTest : public testing::Test {
 };
 
 TEST_F(DraggedFileUtilTest, BasicTest) {
-  for (size_t i = 0; i < kRegularFileSystemTestCaseSize; ++i) {
-    SCOPED_TRACE(testing::Message() << "Testing RegularTestCases " << i);
-    const FileSystemTestCaseRecord& test_case = kRegularFileSystemTestCases[i];
+  size_t count = 0u;
+  for (const auto& test_case : kRegularFileSystemTestCases) {
+    SCOPED_TRACE(testing::Message() << "Testing RegularTestCases " << count++);
 
     FileSystemURL url = GetFileSystemURL(base::FilePath(test_case.path));
 
@@ -329,17 +323,28 @@ TEST_F(DraggedFileUtilTest, BasicTest) {
 }
 
 TEST_F(DraggedFileUtilTest, UnregisteredPathsTest) {
-  static const FileSystemTestCaseRecord kUnregisteredCases[] = {
-      {true, FILE_PATH_LITERAL("nonexistent"), 0},
-      {true, FILE_PATH_LITERAL("nonexistent/dir foo"), 0},
-      {false, FILE_PATH_LITERAL("nonexistent/false"), 0},
-      {false, FILE_PATH_LITERAL("foo"), 30},
-      {false, FILE_PATH_LITERAL("bar"), 20},
+  static constexpr std::array kUnregisteredCases = {
+      FileSystemTestCaseRecord{.is_directory = true,
+                               .path = FILE_PATH_LITERAL("nonexistent"),
+                               .data_file_size = 0},
+      FileSystemTestCaseRecord{.is_directory = true,
+                               .path = FILE_PATH_LITERAL("nonexistent/dir foo"),
+                               .data_file_size = 0},
+      FileSystemTestCaseRecord{.is_directory = false,
+                               .path = FILE_PATH_LITERAL("nonexistent/false"),
+                               .data_file_size = 0},
+      FileSystemTestCaseRecord{.is_directory = false,
+                               .path = FILE_PATH_LITERAL("foo"),
+                               .data_file_size = 30},
+      FileSystemTestCaseRecord{.is_directory = false,
+                               .path = FILE_PATH_LITERAL("bar"),
+                               .data_file_size = 20},
   };
 
-  for (size_t i = 0; i < std::size(kUnregisteredCases); ++i) {
-    SCOPED_TRACE(testing::Message() << "Creating kUnregisteredCases " << i);
-    const FileSystemTestCaseRecord& test_case = kUnregisteredCases[i];
+  size_t count = 0u;
+  for (const auto& test_case : kUnregisteredCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "Creating kUnregisteredCases " << count++);
 
     // Prepare the test file/directory.
     SetUpOneFileSystemTestCase(root_path(), test_case);
@@ -352,9 +357,10 @@ TEST_F(DraggedFileUtilTest, UnregisteredPathsTest) {
     ASSERT_EQ(test_case.is_directory, info.is_directory);
   }
 
-  for (size_t i = 0; i < std::size(kUnregisteredCases); ++i) {
-    SCOPED_TRACE(testing::Message() << "Creating kUnregisteredCases " << i);
-    const FileSystemTestCaseRecord& test_case = kUnregisteredCases[i];
+  count = 0u;
+  for (const auto& test_case : kUnregisteredCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "Creating kUnregisteredCases " << count++);
     FileSystemURL url = GetFileSystemURL(base::FilePath(test_case.path));
 
     // We should not be able to get the valid URL for unregistered files.
@@ -363,13 +369,13 @@ TEST_F(DraggedFileUtilTest, UnregisteredPathsTest) {
 }
 
 TEST_F(DraggedFileUtilTest, ReadDirectoryTest) {
-  for (size_t i = 0; i < kRegularFileSystemTestCaseSize; ++i) {
-    const FileSystemTestCaseRecord& test_case = kRegularFileSystemTestCases[i];
+  size_t count = 0u;
+  for (const auto& test_case : kRegularFileSystemTestCases) {
     if (!test_case.is_directory)
       continue;
 
-    SCOPED_TRACE(testing::Message()
-                 << "Testing RegularTestCases " << i << ": " << test_case.path);
+    SCOPED_TRACE(testing::Message() << "Testing RegularTestCases " << count++
+                                    << ": " << test_case.path);
 
     // Read entries in the directory to construct the expected results map.
     using EntryMap =
@@ -420,8 +426,7 @@ TEST_F(DraggedFileUtilTest, ReadDirectoryTest) {
 }
 
 TEST_F(DraggedFileUtilTest, GetLocalFilePathTest) {
-  for (size_t i = 0; i < kRegularFileSystemTestCaseSize; ++i) {
-    const FileSystemTestCaseRecord& test_case = kRegularFileSystemTestCases[i];
+  for (const auto& test_case : kRegularFileSystemTestCases) {
     FileSystemURL url = GetFileSystemURL(base::FilePath(test_case.path));
 
     FileSystemOperationContext context(file_system_context());
@@ -506,8 +511,7 @@ TEST_F(DraggedFileUtilTest, CopyOutDirectoryTest) {
 // See https://crbug.com/1077456 for details.
 #if !BUILDFLAG(IS_FUCHSIA)
 TEST_F(DraggedFileUtilTest, TouchTest) {
-  for (size_t i = 0; i < kRegularFileSystemTestCaseSize; ++i) {
-    const FileSystemTestCaseRecord& test_case = kRegularFileSystemTestCases[i];
+  for (const auto& test_case : kRegularFileSystemTestCases) {
     if (test_case.is_directory)
       continue;
     SCOPED_TRACE(testing::Message() << test_case.path);
@@ -533,8 +537,7 @@ TEST_F(DraggedFileUtilTest, TouchTest) {
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
 TEST_F(DraggedFileUtilTest, TruncateTest) {
-  for (size_t i = 0; i < kRegularFileSystemTestCaseSize; ++i) {
-    const FileSystemTestCaseRecord& test_case = kRegularFileSystemTestCases[i];
+  for (const auto& test_case : kRegularFileSystemTestCases) {
     if (test_case.is_directory)
       continue;
 
