@@ -231,7 +231,16 @@ bool ProductSpecificationsEntryPointController::ShouldExecuteEntryPointShow() {
 void ProductSpecificationsEntryPointController::OnClusterFinishedForNavigation(
     const GURL& url) {
   // Cluster finished for a navigation that didn't happen in this window.
-  if (!browser_->IsActive()) {
+  bool in_window = false;
+  for (int i = 0; i < browser_->GetTabStripModel()->count(); i++) {
+    if (browser_->GetTabStripModel()
+            ->GetWebContentsAt(i)
+            ->GetLastCommittedURL() == url) {
+      in_window = true;
+      break;
+    }
+  }
+  if (!in_window) {
     return;
   }
 
