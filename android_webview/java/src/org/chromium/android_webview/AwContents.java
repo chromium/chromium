@@ -2152,6 +2152,11 @@ public class AwContents implements SmartClipProvider {
         AwContentsJni.get().flushBackForwardCache(mNativeAwContents, reason);
     }
 
+    public void startPrerendering(String prerenderingUrl) {
+        if (isDestroyed(NO_WARN)) return;
+        AwContentsJni.get().startPrerendering(mNativeAwContents, prerenderingUrl);
+    }
+
     public void cancelAllPrerendering() {
         if (isDestroyed(NO_WARN)) return;
         AwContentsJni.get().cancelAllPrerendering(mNativeAwContents);
@@ -5194,6 +5199,9 @@ public class AwContents implements SmartClipProvider {
         void onConfigurationChanged(long nativeAwContents);
 
         void flushBackForwardCache(long nativeAwContents, int reason);
+
+        void startPrerendering(
+                long nativeAwContents, @JniType("std::string") String prerenderingUrl);
 
         void cancelAllPrerendering(long nativeAwContents);
     }

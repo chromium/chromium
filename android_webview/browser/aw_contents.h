@@ -34,6 +34,7 @@
 class SkBitmap;
 
 namespace content {
+class PrerenderHandle;
 class WebContents;
 }
 
@@ -199,6 +200,7 @@ class AwContents : public FindHelper::Listener,
 
   void FlushBackForwardCache(JNIEnv* env, jint reason);
 
+  void StartPrerendering(JNIEnv* env, const std::string& prerendering_url);
   void CancelAllPrerendering(JNIEnv* env);
 
   bool GetViewTreeForceDarkState() { return view_tree_force_dark_state_; }
@@ -365,6 +367,8 @@ class AwContents : public FindHelper::Listener,
       storage_access_url_loader_factory_;
   std::unique_ptr<content_relationship_verification::DigitalAssetLinksHandler>
       asset_link_handler_;
+
+  std::unique_ptr<content::PrerenderHandle> prerender_handle_;
 
   bool view_tree_force_dark_state_ = false;
   std::string scheme_;

@@ -1514,6 +1514,35 @@ void AwContents::FlushBackForwardCache(JNIEnv* env, jint reason) {
       static_cast<NotRestoredReason>(reason));
 }
 
+void AwContents::StartPrerendering(JNIEnv* env,
+                                   const std::string& prerendering_url) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // Cancel existing prerendering before starting a new one to avoid hitting the
+  // limit.
+  // TODO(https://crbug.com/41490450): Allow multiple prerenders to run
+  // sequentially.
+  prerender_handle_.reset();
+
+  // This is the same as the page transition of WebView.loadUrl().
+  auto page_transition = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_API);
+
+  // TODO(https://crbug.com/41490450): Do the following:
+  // - Pass a valid PreloadingAttempt.
+  // - Support No-Vary-Search hint.
+  // - Pass a valid navigation handle callback.
+  // - Support additional request headers.
+  prerender_handle_ = web_contents_->StartPrerendering(
+      GURL(prerendering_url), content::PreloadingTriggerType::kEmbedder,
+      "WebView", page_transition,
+      /*should_warm_up_compositor=*/false,
+      /*should_prepare_paint_tree=*/false,
+      content::PreloadingHoldbackStatus::kUnspecified,
+      /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
+      /*prerender_navigation_handle_callback=*/{});
+}
+
 void AwContents::CancelAllPrerendering(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   web_contents()->CancelAllPrerendering();
@@ -1625,6 +1654,11 @@ void LogSiteVisit(std::string etld_plus1, jlong site_hash) {
 }
 
 void AwContents::PrimaryPageChanged(content::Page& page) {
+  // TODO(https://crbug.com/378601799): Consider allowing prerendered pages
+  // triggered by the WebView prerender API to outlive PrimaryPageChanged. See
+  // the issue for the context.
+  prerender_handle_.reset();
+
   std::string scheme = page.GetMainDocument().GetLastCommittedURL().scheme();
   const url::Origin& origin = page.GetMainDocument().GetLastCommittedOrigin();
   std::string etld_plus1 =

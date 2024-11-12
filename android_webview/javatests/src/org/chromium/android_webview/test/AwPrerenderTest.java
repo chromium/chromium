@@ -213,6 +213,19 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertEquals(url, data.getAsString());
     }
 
+    // Triggers prerendering for `url`.
+    private void startPrerenderingAndWait(String url) throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAwContents.startPrerendering(url);
+                });
+
+        // Wait until the prerendered page starts running JavaScript.
+        TestWebMessageListener.Data data =
+                mPrerenderLifecycleWebMessageListener.waitForOnPostMessage();
+        Assert.assertEquals(url, data.getAsString());
+    }
+
     // Navigates the primary page to `url` by client side redirection.
     private void navigatePage(String url) throws Exception {
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
@@ -328,6 +341,36 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
 
         activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
+    }
+
+    // Tests basic end-to-end behavior of WebView prerendering trigger with
+    // embedder-initiated activation.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    public void testPrerenderingEmbedderInitiatedActivation() throws Throwable {
+        setSpeculativeLoadingAllowed(SpeculativeLoadingAllowedFlags.PRERENDER_ENABLED);
+        loadInitialPage();
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_WebView",
+                                /*kActivated*/ 0)
+                        .build();
+
+        startPrerenderingAndWait(mPrerenderingUrl);
+
+        OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
+        // onPageStarted should never be called for prerender initial navigation.
+        Assert.assertEquals(onPageStartedHelper.getCallCount(), 1);
+        Assert.assertEquals(onPageStartedHelper.getUrl(), mPageUrl);
+
+        activatePage(mPrerenderingUrl, ActivationBy.LOAD_URL);
+
+        // Wait until the navigation activates the prerendered page.
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 
     // Tests speculation rules prerendering with No-Vary-Search header.
