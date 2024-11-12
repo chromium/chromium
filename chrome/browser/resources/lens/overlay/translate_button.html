@@ -125,7 +125,9 @@
   }
 
   .language-picker-menu-back-button {
-    margin: 2px 0px 2px 10px;
+    --cr-icon-button-fill-color: var(--color-surface-container-highest-dark);
+    --cr-icon-button-size: 20px;
+    margin: 8px 8px 8px 0px;
   }
 
   .language-picker-menu-button {
@@ -165,6 +167,22 @@
     padding-inline-end: 16px;
   }
 
+  .language-picker-menu-search-button {
+    --cr-icon-button-fill-color: var(--color-surface-container-highest-dark);
+    inset-inline-end: 16px;
+    margin-block-end: 2px;
+    margin-block-start: 2px;
+    margin-inline-end: 0;
+    margin-inline-start: 0;
+    position: absolute;
+  }
+
+  :host(:not([should-fetch-supported-languages])) .language-picker-menu-search-button,
+  :host([is-source-language-searchbox-open]) .language-picker-menu-search-button,
+  :host([is-target-language-searchbox-open]) .language-picker-menu-search-button {
+    display: none;
+  }
+
   .language-picker-menu-section {
     display: flex;
     flex-direction: column;
@@ -180,8 +198,45 @@
     padding-inline-end: 2px;
   }
 
+  :host([is-source-language-searchbox-open]) .language-picker-menu-title,
+  :host([is-target-language-searchbox-open]) .language-picker-menu-title {
+    display: none;
+  }
+
   .language-picker-menu-title-section {
     display: flex;
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+
+  :host([is-source-language-searchbox-open]) .language-picker-menu-title-section,
+  :host([is-target-language-searchbox-open]) .language-picker-menu-title-section {
+    border-bottom: 1px solid rgba(31, 28, 14, 0.12);
+  }
+
+  .language-picker-searchbox {
+    border: none;
+    color: var(--color-surface-container-highest-dark);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 22px;
+    outline: none;
+    width: 162px;
+  }
+
+  .language-picker-searchbox::placeholder {
+    font-family: inherit;
+    font-weight: 400;
+  }
+
+  :host(:not([is-source-language-searchbox-open])) #sourceLanguageSearchbox,
+  :host(:not([is-target-language-searchbox-open])) #targetLanguageSearchbox {
+    display: none;
+  }
+
+  .search-highlight {
+    font-weight: 700;
   }
 
   .translate-icon {
@@ -197,6 +252,14 @@
   :host([is-lens-overlay-contextual-searchbox-enabled]) .translate-icon {
     height: 24px;
     width: 24px;
+  }
+
+  :host([searchbox-has-text]) #autoDetectLanguageSection,
+  :host([searchbox-has-text]) #recentSourceLanguagesSection,
+  :host([searchbox-has-text]) #recentTargetLanguagesSection,
+  :host([searchbox-has-text]) #allSourceLanguagesMenu,
+  :host([searchbox-has-text]) #allTargetLanguagesMenu  {
+    display: none;
   }
 
   #languagePicker {
@@ -248,8 +311,15 @@
   }
 
   :host(:not([should-show-recent-source-languages])) #recentSourceLanguagesSection,
-  :host(:not([should-show-recent-target-languages])) #recentTargetLanguagesSection {
+  :host(:not([should-show-recent-target-languages])) #recentTargetLanguagesSection,
+  #searchSourceLanguagePicker,
+  #searchTargetLanguagePicker {
     display: none;
+  }
+
+  :host([searchbox-has-text]) #searchSourceLanguagePicker,
+  :host([searchbox-has-text]) #searchTargetLanguagePicker {
+    display: flex;
   }
 
   #sourceLanguageButton {
@@ -488,12 +558,35 @@
       <cr-icon-button id="sourceLanguagePickerBackButton"
           iron-icon="cr:arrow-back" class="language-picker-menu-back-button"
           role="button" aria-label="$i18n{backButton}" title="$i18n{backButton}"
-          on-click="hideLanguagePickerMenus"></cr-icon-button>
+          on-click="handleBackButtonClick"></cr-icon-button>
+      <input id="sourceLanguageSearchbox" class="language-picker-searchbox"
+          type="text" placeholder="$i18n{translateFrom}"
+          on-input="onSourceSearchboxInputChange">
       <div role="heading" aria-level="1" class="language-picker-menu-title">
         $i18n{translateFrom}
       </div>
+      <cr-icon-button id="sourceLanguageSearchButton"
+        iron-icon="cr:search" class="language-picker-menu-search-button"
+        role="button" aria-label="$i18n{searchButton}"
+        title="$i18n{searchButton}" on-click="openSourceLanguageSearchbox">
+      </cr-icon-button>
     </div>
-    <div class="language-picker-menu-section">
+    <div id="searchSourceLanguagePicker" class="language-picker-menu-section">
+      <template id="searchSourceLanguagesContainer" is="dom-repeat"
+          items="[[searchedLanguageList]]" as="language">
+        <cr-button class="button language-picker-menu-button"
+            on-click="onSourceSearchLanguageItemClick">
+          <cr-icon icon="cr:check" slot="prefix-icon"
+              class$="checked-icon [[getSearchedLanguageCheckedClass(
+              language, sourceLanguage)]]">
+          </cr-icon>
+          <span class="language-picker-menu-button-label">
+            [[language.beforeHighlightText]]<span class="search-highlight">[[language.searchHighlightText]]</span>[[language.afterHighlightText]]
+          </span>
+        </cr-button>
+      </template>
+    </div>
+    <div id="autoDetectLanguageSection" class="language-picker-menu-section">
       <cr-button id="sourceAutoDetectButton"
           class="button language-picker-menu-button"
           on-click="onAutoDetectMenuItemClick">
@@ -555,10 +648,33 @@
       <cr-icon-button id="targetLanguagePickerBackButton"
           iron-icon="cr:arrow-back" class="language-picker-menu-back-button"
           role="button" aria-label="$i18n{backButton}" title="$i18n{backButton}"
-          on-click="hideLanguagePickerMenus"></cr-icon-button>
+          on-click="handleBackButtonClick"></cr-icon-button>
+      <input id="targetLanguageSearchbox" class="language-picker-searchbox"
+              type="text" placeholder="$i18n{translateTo}"
+              on-input="onTargetSearchboxInputChange">
       <div role="heading" aria-level="1" class="language-picker-menu-title">
         $i18n{translateTo}
       </div>
+      <cr-icon-button id="targetLanguageSearchButton"
+        iron-icon="cr:search" class="language-picker-menu-search-button"
+        role="button" aria-label="$i18n{searchButton}"
+        title="$i18n{searchButton}" on-click="openTargetLanguageSearchbox">
+      </cr-icon-button>
+    </div>
+    <div id="searchTargetLanguagePicker" class="language-picker-menu-section">
+      <template id="searchTargetLanguagesContainer" is="dom-repeat"
+          items="[[searchedLanguageList]]" as="language">
+        <cr-button class="button language-picker-menu-button"
+            on-click="onTargetSearchLanguageItemClick">
+          <cr-icon icon="cr:check" slot="prefix-icon"
+              class$="checked-icon [[getSearchedLanguageCheckedClass(
+              language, targetLanguage)]]">
+          </cr-icon>
+          <span class="language-picker-menu-button-label">
+            [[language.beforeHighlightText]]<span class="search-highlight">[[language.searchHighlightText]]</span>[[language.afterHighlightText]]
+          </span>
+        </cr-button>
+      </template>
     </div>
     <div id="recentTargetLanguagesSection" class="language-picker-menu-section">
       <h3 role="heading" aria-level="2" class="language-picker-menu-header">
