@@ -73,6 +73,7 @@ virtual/longtask-from-loaf/external/wpt/*
 virtual/media-foundation-for-clear-frameserver/*
 virtual/media-gpu-accelerated/*
 virtual/oopr-canvas2d/external/wpt/mediacapture-record/*
+virtual/prefetch*
 virtual/single-renderer-process/external/wpt/*
 virtual/split-http-cache/external/wpt/signed-exchange/*
 virtual/third-party-storage-partitioning/external/wpt/web-locks/*
