@@ -191,8 +191,4 @@ BASE_FEATURE(kSilentDebuggerExtensionAPI,
              "SilentDebuggerExtensionAPI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseReadyToCommitForExtensionFrameSetup,
-             "UseReadyToCommitForExtensionFrameSetup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace extensions_features

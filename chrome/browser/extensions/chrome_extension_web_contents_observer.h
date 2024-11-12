@@ -51,15 +51,9 @@ class ChromeExtensionWebContentsObserver
 
   // content::WebContentsObserver overrides.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  void ReadyToCommitNavigation(
-      content::NavigationHandle* navigation_handle) override;
 
   // Reloads an extension if it is on the terminated list.
   void ReloadIfTerminated(content::RenderFrameHost* render_frame_host);
-
-  // Temporarily needed to host common code between RenderFrameCreated and
-  // ReadyToCommitNavigation.
-  void SetupRenderFrameHost(content::RenderFrameHost* render_frame_host);
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
