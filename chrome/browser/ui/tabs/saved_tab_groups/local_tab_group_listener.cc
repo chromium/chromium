@@ -209,9 +209,9 @@ LocalTabGroupListener::MaybeRemoveWebContentsFromLocal(
   const LocalTabID local_tab_id = tab_guid_pair_iter->second.local_tab_id();
   const std::optional<SavedTabGroup> saved_group =
       service_->GetGroup(saved_guid_);
-  const base::Uuid tab_guid =
-      saved_group->GetTab(local_tab_id)->saved_tab_guid();
-  CHECK(saved_group->local_group_id().has_value());
+  CHECK(saved_group);
+  CHECK(saved_group->local_group_id());
+  CHECK(saved_group->ContainsTab(local_tab_id));
 
   tab_listener_mapping_.erase(tab_guid_pair_iter->first);
 
