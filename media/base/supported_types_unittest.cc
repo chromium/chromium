@@ -401,8 +401,7 @@ TEST(SupportedTypesTest, IsEncoderSupportedVideoType_AV1Profiles) {
 
 TEST(SupportedTypesTest, IsDecoderBuiltInVideoCodec) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  EXPECT_EQ(base::FeatureList::IsEnabled(kBuiltInH264Decoder),
-            IsDecoderBuiltInVideoCodec(VideoCodec::kH264));
+  EXPECT_TRUE(IsDecoderBuiltInVideoCodec(VideoCodec::kH264));
 #else
   EXPECT_FALSE(IsDecoderBuiltInVideoCodec(VideoCodec::kH264));
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) &&

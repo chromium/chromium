@@ -1045,17 +1045,6 @@ BASE_FEATURE(kAVDColorSpaceChanges,
              "AVDColorSpaceChanges",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether FFmpeg supports decoding H.264 video in software. Has no effect if
-// BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) is false.
-BASE_FEATURE(kBuiltInH264Decoder,
-             "BuiltInH264Decoder",
-#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
 #if BUILDFLAG(IS_ANDROID)
 // Should we allow video playback to use an overlay if it's not needed for
 // security?  Normally, we'd always want to allow this, except as part of the
@@ -1662,11 +1651,6 @@ BASE_FEATURE(kVideoDecodeBatching,
 // feature is enabled (the default), then we'll use the window bounds.
 BASE_FEATURE(kUseWindowBoundsForPip,
              "UseWindowBoundsForPip",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables FFmpeg allow lists for supported codecs / containers.
-BASE_FEATURE(kFFmpegAllowLists,
-             "FFmpegAllowLists",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)

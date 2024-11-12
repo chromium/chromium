@@ -34,8 +34,6 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
       switches::autoplay::kNoUserGestureRequiredPolicy);
 
   std::vector<base::test::FeatureRef> enabled_features = {
-    media::kBuiltInH264Decoder,
-
 #if BUILDFLAG(IS_ANDROID)
     features::kLogJsConsoleMessages,
 #endif

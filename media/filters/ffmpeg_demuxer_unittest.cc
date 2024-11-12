@@ -28,7 +28,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -305,7 +304,6 @@ class FFmpegDemuxerTest : public testing::Test {
   // Fixture members.
 
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_{kBuiltInH264Decoder};
 
   // TODO(wolenetz): Consider expanding MediaLog verification coverage here
   // using StrictMock<MockMediaLog> for all FFmpegDemuxerTests. See

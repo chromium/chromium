@@ -580,8 +580,7 @@ bool IsDefaultEncoderSupportedVideoType(const VideoType& type) {
 
 bool IsDecoderBuiltInVideoCodec(VideoCodec codec) {
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (codec == VideoCodec::kH264 &&
-      base::FeatureList::IsEnabled(kBuiltInH264Decoder)) {
+  if (codec == VideoCodec::kH264) {
     return true;
   }
 #endif  // BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) &&

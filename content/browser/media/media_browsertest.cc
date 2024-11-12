@@ -53,8 +53,6 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitch(switches::kExposeInternalsForTesting);
 
   std::vector<base::test::FeatureRef> enabled_features = {
-    media::kBuiltInH264Decoder,
-
 #if BUILDFLAG(IS_ANDROID)
     features::kLogJsConsoleMessages,
 #endif
