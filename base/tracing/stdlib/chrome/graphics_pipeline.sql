@@ -2,7 +2,7 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
-INCLUDE PERFETTO MODULE deprecated.v42.common.slices;
+INCLUDE PERFETTO MODULE slices.with_context;
 
 -- `Graphics.Pipeline` steps corresponding to work done by a Viz client to
 -- produce a frame (i.e. before surface aggregation). Covers steps:
