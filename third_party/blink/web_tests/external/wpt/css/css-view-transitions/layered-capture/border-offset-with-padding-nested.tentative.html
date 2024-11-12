@@ -6,9 +6,6 @@
 <script src="/common/reftest-wait.js"></script>
 <script src="resources/compute-test.js"></script>
 <style>
-    * {
-        box-sizing: border-box;
-    }
     html {
         view-transition-name: none;
     }
@@ -17,8 +14,6 @@
     }
 
     div {
-        width: 100px;
-        height: 100px;
         position: absolute;
     }
 
@@ -26,15 +21,19 @@
         view-transition-name: parent;
         border: 10px solid black;
         background: green;
+        padding: 20px;
+        width: 40px;
+        height: 40px;
+        box-sizing: content-box;
     }
 
     .child {
-        top: 20px;
-        left: 20px;
-        width: 40px;
-        height: 40px;
+        width: 30px;
+        padding-left: 6px;
+        height: 36px;
         background: yellow;
         border: 2px dashed blue;
+        view-transition-group: parent;
     }
 
     ::view-transition-old(*),
