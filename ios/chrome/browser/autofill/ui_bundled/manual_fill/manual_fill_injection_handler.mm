@@ -14,6 +14,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
@@ -21,6 +22,7 @@
 #import "components/password_manager/ios/account_select_fill_data.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
 #import "components/password_manager/ios/shared_password_controller.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_accessory_view_handler.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/scoped_form_input_accessory_reauth_module_override.h"
@@ -48,6 +50,11 @@ namespace {
 // announcements have already started and thus won't be interrupted.
 constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 
+// Returns true if the FormSuggestionClient is stateless.
+bool IsStateless() {
+  return base::FeatureList::IsEnabled(kStatelessFormSuggestionController);
+}
+
 }  // namespace
 
 @interface ManualFillInjectionHandler ()<FormActivityObserver>
@@ -71,16 +78,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 @property(nonatomic, assign, getter=isLastFocusedElementPasswordField)
     BOOL lastFocusedElementPasswordField;
 
-// The last seen form ID with focus activity.
-@property(nonatomic, assign)
-    autofill::FormRendererId lastFocusedElementFormIdentifier;
-
 // The last seen frame ID with focus activity.
 @property(nonatomic, assign) std::string lastFocusedElementFrameIdentifier;
-
-// The last seen focused element identifier.
-@property(nonatomic, assign)
-    autofill::FieldRendererId lastFocusedElementUniqueId;
 
 // Used to present alerts.
 @property(nonatomic, weak) id<SecurityAlertCommands> securityAlertHandler;
@@ -90,7 +89,11 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 
 @end
 
-@implementation ManualFillInjectionHandler
+@implementation ManualFillInjectionHandler {
+  // Holds the FormActivityParams from the last focus. Can be nullopt if there
+  // wasn't any focus done.
+  std::optional<autofill::FormActivityParams> _lastFocusedElementParams;
+}
 
 - (instancetype)
       initWithWebStateList:(WebStateList*)webStateList
@@ -201,7 +204,14 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 
 - (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion
                            atIndex:(NSInteger)index {
-  [self.formSuggestionClient didSelectSuggestion:formSuggestion atIndex:index];
+  if (_lastFocusedElementParams && IsStateless()) {
+    [self.formSuggestionClient didSelectSuggestion:formSuggestion
+                                           atIndex:index
+                                            params:*_lastFocusedElementParams];
+  } else {
+    [self.formSuggestionClient didSelectSuggestion:formSuggestion
+                                           atIndex:index];
+  }
 }
 
 - (BOOL)isActiveFormAPasswordForm {
@@ -230,13 +240,12 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   if (params.type != "focus") {
     return;
   }
+  _lastFocusedElementParams = params;
   self.lastFocusedElementSecure =
       autofill::IsContextSecureForWebState(webState);
   self.lastFocusedElementPasswordField = params.field_type == "password";
-  self.lastFocusedElementUniqueId = params.field_renderer_id;
   DCHECK(frame);
   self.lastFocusedElementFrameIdentifier = frame->GetFrameId();
-  self.lastFocusedElementFormIdentifier = params.form_renderer_id;
   const GURL frameSecureOrigin = frame->GetSecurityOrigin();
   if (!frameSecureOrigin.SchemeIsCryptographic()) {
     self.lastFocusedElementSecure = NO;
@@ -269,7 +278,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 
   base::Value::Dict data;
   data.Set("renderer_id",
-           static_cast<int>(self.lastFocusedElementUniqueId.value()));
+           static_cast<int>([self lastFocusedElementUniqueID].value()));
   data.Set("value", base::SysNSStringToUTF16(string));
   autofill::AutofillJavaScriptFeature::GetInstance()->FillActiveFormField(
       activeWebFrame, std::move(data), base::BindOnce(^(BOOL success) {
@@ -336,7 +345,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   CHECK(driver);
 
   return passwordManager->GetParsedObservedForm(
-      driver, self.lastFocusedElementUniqueId);
+      driver, [self lastFocusedElementUniqueID]);
 }
 
 // Creates and returns FillData for the given `credential`.
@@ -345,7 +354,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
                                           currentForm {
   FillData fillData;
   fillData.origin = credential.URL;
-  fillData.form_id = self.lastFocusedElementFormIdentifier;
+  fillData.form_id = [self lastFocusedElementFormIdentifier];
   fillData.username_element_id = currentForm.username_element_renderer_id;
   fillData.username_value = base::SysNSStringToUTF16(credential.username);
   fillData.password_element_id = currentForm.password_element_renderer_id;
@@ -366,7 +375,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   __weak __typeof(self) weakSelf = self;
   [formHelper fillPasswordFormWithFillData:fillData
                                    inFrame:activeWebFrame
-                          triggeredOnField:self.lastFocusedElementUniqueId
+                          triggeredOnField:[self lastFocusedElementUniqueID]
                          completionHandler:^(BOOL success) {
                            if (success) {
                              [weakSelf announceFormWasFilled];
@@ -401,6 +410,20 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
         UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
                                         message);
       });
+}
+
+// Returns the renderer ID of the last focused field. Returns the default
+// renderer ID if there are no params.
+- (autofill::FieldRendererId)lastFocusedElementUniqueID {
+  return _lastFocusedElementParams.value_or(autofill::FormActivityParams())
+      .field_renderer_id;
+}
+
+// Returns the renderer ID of the last focused form. Returns the default
+// renderer ID if there are no params.
+- (autofill::FormRendererId)lastFocusedElementFormIdentifier {
+  return _lastFocusedElementParams.value_or(autofill::FormActivityParams())
+      .form_renderer_id;
 }
 
 @end

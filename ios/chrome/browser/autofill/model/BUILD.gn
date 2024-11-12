@@ -27,6 +27,7 @@ source_set("model") {
     "validation_rules_storage_factory.h",
   ]
   deps = [
+    ":features",
     ":model_shared",
     "//base",
     "//base:i18n",
@@ -125,6 +126,14 @@ source_set("constants") {
   ]
 }
 
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
+}
+
 # This file defines the autofill_test_files list, which contains all input
 # and output files for form_structure_browsertest.mm.
 import("//components/test/data/autofill/heuristics/test_files.gni")
@@ -157,6 +166,7 @@ source_set("unit_tests") {
     "suggestion_controller_java_script_feature_unittest.mm",
   ]
   deps = [
+    ":features",
     ":model",
     ":model_internal",
     ":model_shared",

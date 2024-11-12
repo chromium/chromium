@@ -7,8 +7,10 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
@@ -17,6 +19,7 @@
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/plus_addresses/features.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_navigator.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_controller.mm"
@@ -117,6 +120,26 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
   }
 }
 
+// Make a copy of suggestions with `params` and `provider` set in the copies.
+NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
+    NSArray<FormSuggestion*>* suggestions,
+    const autofill::FormActivityParams& params,
+    id<FormSuggestionProvider> provider) {
+  NSMutableArray<FormSuggestion*>* suggestionsCopy =
+      [NSMutableArray<FormSuggestion*> array];
+  for (FormSuggestion* suggestion in suggestions) {
+    [suggestionsCopy addObject:[FormSuggestion copy:suggestion
+                                       andSetParams:params
+                                           provider:provider]];
+  }
+  return suggestionsCopy;
+}
+
+// Returns true if the form suggestion controller is stateless.
+bool IsStateless() {
+  return base::FeatureList::IsEnabled(kStatelessFormSuggestionController);
+}
+
 }  // namespace
 
 @interface FormSuggestionController () {
@@ -214,7 +237,13 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
 }
 
 - (void)retrieveSuggestionsForForm:(const autofill::FormActivityParams&)params
-                          webState:(web::WebState*)webState {
+                          webState:(web::WebState*)webState
+          accessoryViewUpdateBlock:
+              (FormSuggestionsReadyCompletion)accessoryViewUpdateBlock {
+  [self processPage:webState];
+  _suggestionState = std::make_unique<AutofillSuggestionState>(params);
+  _accessoryViewUpdateBlock = [accessoryViewUpdateBlock copy];
+
   self.requestIdentifier += 1;
   NSUInteger requestIdentifier = self.requestIdentifier;
 
@@ -227,8 +256,7 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
        fieldRendererID:params.field_renderer_id
              fieldType:base::SysUTF8ToNSString(params.field_type)
                   type:base::SysUTF8ToNSString(params.type)
-            typedValue:base::SysUTF8ToNSString(
-                           _suggestionState.get()->typed_value)
+            typedValue:base::SysUTF8ToNSString(params.value)
                frameID:base::SysUTF8ToNSString(params.frame_id)];
 
   BOOL hasUserGesture = params.has_user_gesture;
@@ -255,12 +283,19 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
     [findProviderBlocks addObject:block];
   }
 
-  // Once the suggestions are retrieved, update the suggestions UI.
-  SuggestionsReadyCompletion readyCompletion =
-      ^(NSArray<FormSuggestion*>* suggestions,
-        id<FormSuggestionProvider> provider) {
-        [weakSelf onSuggestionsReady:suggestions provider:provider];
-      };
+  // Push the retrieved suggestions to the caller.
+  SuggestionsReadyCompletion readyCompletion = CallbackToBlock(base::BindOnce(
+      [](__weak __typeof(self) weakSelf,
+         const autofill::FormActivityParams& params,
+         FormSuggestionsReadyCompletion accessoryViewUpdateBlock,
+         NSArray<FormSuggestion*>* suggestions,
+         id<FormSuggestionProvider> provider) {
+        [weakSelf onSuggestionsReady:suggestions
+                            provider:provider
+                              params:params
+                          completion:accessoryViewUpdateBlock];
+      },
+      weakSelf, params, accessoryViewUpdateBlock));
 
   // Once a provider is found, use it to retrieve suggestions.
   PipelineCompletionBlock completion = ^(NSUInteger providerIndex) {
@@ -297,20 +332,40 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
 }
 
 - (void)onSuggestionsReady:(NSArray<FormSuggestion*>*)suggestions
-                  provider:(id<FormSuggestionProvider>)provider {
+                  provider:(id<FormSuggestionProvider>)provider
+                    params:(const autofill::FormActivityParams&)params
+                completion:(FormSuggestionsReadyCompletion)completion {
   // TODO(ios): crbug.com/249916. If we can also pass in the form/field for
   // which `suggestions` are, we should check here if `suggestions` are for
   // the current active element. If not, reset `_suggestionState`.
-  if (!_suggestionState) {
+  if (!_suggestionState && !IsStateless()) {
     // The suggestion state was reset in between the call to Autofill API (e.g.
     // OnAskForValuesToFill) and this method being called back. Results are
     // therefore no longer relevant.
     return;
   }
 
+  NSArray<FormSuggestion*>* suggestionsCopy =
+      [self copyAndAdjustSuggestions:suggestions];
+
+  // TODO(crbug.com/3407699): Make sure the provider is wrapped in the
+  // suggestions when the statless controller is used.
+  //
+  // Cache the provider and state for the stateful controller. Those should not
+  // be used when the provider is stateless.
   _provider = provider;
   _suggestionState->suggestions = [self copyAndAdjustSuggestions:suggestions];
-  [self updateKeyboard:_suggestionState.get()];
+
+  if (IsStateless() && completion) {
+    // Use the stateless way for passing suggestions when the feature is
+    // enabled.
+    suggestionsCopy =
+        SetParamsAndProviderInSuggestions(suggestionsCopy, params, provider);
+    completion(suggestionsCopy, self);
+  } else {
+    // Call the accessory view update block.
+    [self updateKeyboard:_suggestionState.get()];
+  }
 }
 
 - (void)resetSuggestionState {
@@ -345,11 +400,23 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                     atIndex:(NSInteger)index {
-  const AutofillSuggestionState* suggestionState = _suggestionState.get();
-  if (suggestionState) {
+  if (IsStateless()) {
+    // Check that there are always params attached to the suggestion when no
+    // params are provided by the -didSelectSuggestion caller itself.
+    CHECK(suggestion.params, base::NotFatalUntil::M134);
+    if (!suggestion.params) {
+      // Just skip if the check isn't triggered. This is to handle the absence
+      // of params when the CHECK isn't fatal.
+      return;
+    }
+
     [self didSelectSuggestion:suggestion
                       atIndex:index
-                        state:(*suggestionState)];
+                        state:AutofillSuggestionState(*suggestion.params)];
+  } else if (_suggestionState) {
+    [self didSelectSuggestion:suggestion
+                      atIndex:index
+                        state:(*_suggestionState)];
   }
 }
 
@@ -361,16 +428,6 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
 }
 
 #pragma mark - FormInputSuggestionsProvider
-
-- (void)retrieveSuggestionsForForm:(const autofill::FormActivityParams&)params
-                          webState:(web::WebState*)webState
-          accessoryViewUpdateBlock:
-              (FormSuggestionsReadyCompletion)accessoryViewUpdateBlock {
-  [self processPage:webState];
-  _suggestionState.reset(new AutofillSuggestionState(params));
-  _accessoryViewUpdateBlock = [accessoryViewUpdateBlock copy];
-  [self retrieveSuggestionsForForm:params webState:webState];
-}
 
 - (void)inputAccessoryViewControllerDidReset {
   _accessoryViewUpdateBlock = nil;
@@ -446,16 +503,18 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                     atIndex:(NSInteger)index
                       state:(const AutofillSuggestionState&)suggestionState {
+  id<FormSuggestionProvider> provider = suggestion.provider ?: _provider;
+
   // If a password related suggestion was selected, reset the password bottom
   // sheet dismiss count to 0.
-  if (_provider.type == SuggestionProviderTypePassword) {
+  if (provider.type == SuggestionProviderTypePassword) {
     [self resetPasswordBottomSheetDismissCount];
   }
 
   // Send the suggestion to the provider. Upon completion advance the cursor
   // for single-field Autofill, or close the keyboard for full-form Autofill.
   __weak FormSuggestionController* weakSelf = self;
-  [_provider
+  [provider
       didSelectSuggestion:suggestion
                   atIndex:index
                      form:base::SysUTF8ToNSString(suggestionState.form_name)

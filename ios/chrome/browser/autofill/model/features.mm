@@ -2,9 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/features.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 
 #import "base/feature_list.h"
+
+// Enables the stateless form suggestion controller.
+BASE_FEATURE(kStatelessFormSuggestionController,
+             "StatelessFormSuggestionController",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the throttling of form suggestion refresh in the form input keyboard
 // accessory.

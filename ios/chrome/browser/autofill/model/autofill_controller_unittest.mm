@@ -89,9 +89,13 @@ using base::test::ScopedFeatureList;
 @synthesize suggestionRetrievalComplete = _suggestionRetrievalComplete;
 
 - (void)retrieveSuggestionsForForm:(const autofill::FormActivityParams&)params
-                          webState:(web::WebState*)webState {
+                          webState:(web::WebState*)webState
+          accessoryViewUpdateBlock:
+              (FormSuggestionsReadyCompletion)accessoryViewUpdateBlock {
   self.suggestionRetrievalStarted = YES;
-  [super retrieveSuggestionsForForm:params webState:webState];
+  [super retrieveSuggestionsForForm:params
+                           webState:webState
+           accessoryViewUpdateBlock:accessoryViewUpdateBlock];
 }
 
 - (void)updateKeyboardWithSuggestions:(NSArray*)suggestions {

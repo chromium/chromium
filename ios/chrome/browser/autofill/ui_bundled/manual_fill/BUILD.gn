@@ -62,6 +62,7 @@ source_set("manual_fill") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/autofill/model:features",
     "//ios/chrome/browser/autofill/model:model_shared",
     "//ios/chrome/browser/autofill/ui_bundled/form_input_accessory:common",
     "//ios/chrome/browser/autofill/ui_bundled/manual_fill:manual_fill_ui",
