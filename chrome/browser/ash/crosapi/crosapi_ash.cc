@@ -56,7 +56,6 @@
 #include "chrome/browser/ash/crosapi/eye_dropper_ash.h"
 #include "chrome/browser/ash/crosapi/field_trial_service_ash.h"
 #include "chrome/browser/ash/crosapi/file_change_service_bridge_ash.h"
-#include "chrome/browser/ash/crosapi/file_manager_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
 #include "chrome/browser/ash/crosapi/force_installed_tracker_ash.h"
@@ -136,7 +135,6 @@
 #include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 #include "chromeos/crosapi/mojom/eye_dropper.mojom.h"
 #include "chromeos/crosapi/mojom/file_change_service_bridge.mojom.h"
-#include "chromeos/crosapi/mojom/file_manager.mojom.h"
 #include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
 #include "chromeos/crosapi/mojom/kerberos_in_browser.mojom.h"
@@ -238,7 +236,6 @@ CrosapiAsh::CrosapiAsh()
       extension_info_private_ash_(std::make_unique<ExtensionInfoPrivateAsh>()),
       eye_dropper_ash_(std::make_unique<EyeDropperAsh>()),
       field_trial_service_ash_(std::make_unique<FieldTrialServiceAsh>()),
-      file_manager_ash_(std::make_unique<FileManagerAsh>()),
       file_system_access_cloud_identifier_provider_ash_(
           std::make_unique<FileSystemAccessCloudIdentifierProviderAsh>()),
       file_system_provider_service_ash_(
@@ -605,11 +602,6 @@ void CrosapiAsh::BindFileChangeServiceBridge(
         std::make_unique<FileChangeServiceBridgeAsh>(profile);
   }
   file_change_service_bridge_ash_->BindReceiver(std::move(receiver));
-}
-
-void CrosapiAsh::BindFileManager(
-    mojo::PendingReceiver<crosapi::mojom::FileManager> receiver) {
-  file_manager_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindFileSystemAccessCloudIdentifierProvider(

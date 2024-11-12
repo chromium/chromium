@@ -49,7 +49,6 @@ import "chromeos/crosapi/mojom/extension_keeplist.mojom";
 import "chromeos/crosapi/mojom/eye_dropper.mojom";
 import "chromeos/crosapi/mojom/field_trial.mojom";
 import "chromeos/crosapi/mojom/file_change_service_bridge.mojom";
-import "chromeos/crosapi/mojom/file_manager.mojom";
 import "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom";
 import "chromeos/crosapi/mojom/file_system_provider.mojom";
 import "chromeos/crosapi/mojom/firewall_hole.mojom";
@@ -408,11 +407,6 @@ interface Crosapi {
   [MinVersion=128]
   BindFileChangeServiceBridge@130(
       pending_receiver<FileChangeServiceBridge> receiver);
-
-  // Binds the FileManager interface for showing files, folders, etc.
-  // Added in M88.
-  [MinVersion=5]
-  BindFileManager@8(pending_receiver<FileManager> receiver);
 
   // Binds the provider for cloud identifiers for files and folders used through
   // the file system access web API.

@@ -125,8 +125,6 @@ static_library("crosapi") {
     "field_trial_service_ash.h",
     "file_change_service_bridge_ash.cc",
     "file_change_service_bridge_ash.h",
-    "file_manager_ash.cc",
-    "file_manager_ash.h",
     "file_system_access_cloud_identifier_provider_ash.cc",
     "file_system_access_cloud_identifier_provider_ash.h",
     "file_system_provider_service_ash.cc",

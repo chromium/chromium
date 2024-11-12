@@ -62,7 +62,6 @@
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/field_trial.mojom.h"
 #include "chromeos/crosapi/mojom/file_change_service_bridge.mojom.h"
-#include "chromeos/crosapi/mojom/file_manager.mojom.h"
 #include "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
@@ -395,9 +394,6 @@ LacrosService::LacrosService()
       crosapi::mojom::FileChangeServiceBridge,
       &crosapi::mojom::Crosapi::BindFileChangeServiceBridge,
       Crosapi::MethodMinVersions::kBindFileChangeServiceBridgeMinVersion>();
-  ConstructRemote<crosapi::mojom::FileManager,
-                  &crosapi::mojom::Crosapi::BindFileManager,
-                  Crosapi::MethodMinVersions::kBindFileManagerMinVersion>();
   ConstructRemote<
       crosapi::mojom::FileSystemProviderService,
       &crosapi::mojom::Crosapi::BindFileSystemProviderService,
