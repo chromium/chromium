@@ -16,12 +16,14 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   trustedVaultState: TrustedVaultBannerState;
   accountInfo: AccountInfo;
   syncInfo: SyncInfo;
+  localPasswordCount: number;
 
   constructor() {
     super([
       'getTrustedVaultBannerState',
       'getSyncInfo',
       'getAccountInfo',
+      'getLocalPasswordCount',
       'openBatchUpload',
     ]);
 
@@ -33,6 +35,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       isEligibleForAccountStorage: false,
       isSyncingPasswords: false,
     };
+    this.localPasswordCount = 0;
   }
 
   getTrustedVaultBannerState() {
@@ -48,6 +51,11 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   getAccountInfo() {
     this.methodCalled('getAccountInfo');
     return Promise.resolve(this.accountInfo);
+  }
+
+  getLocalPasswordCount() {
+    this.methodCalled('getLocalPasswordCount');
+    return Promise.resolve(this.localPasswordCount);
   }
 
   openBatchUpload(entryPoint: BatchUploadPasswordsEntryPoint): void {

@@ -85,7 +85,8 @@
         on-validate-and-change-pref="changeAccountStorageEnabled_">
     </pref-toggle-button>
   <template is="dom-if"
-      if="[[shouldShowMovePasswordsEntry_(isAccountStoreUser, passwordsOnDevice_)]]"
+      if="[[shouldShowMovePasswordsEntry_(isAccountStoreUser,
+            passwordsOnDevice_, localPasswordCount_)]]"
       restamp>
     <cr-link-row class="cr-row" non-clickable label="[[movePasswordsLabel_]]"
         sub-label="$i18n{movePasswordsInSettingsSubLabel}" hide-icon>

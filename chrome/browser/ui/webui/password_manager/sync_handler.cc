@@ -10,6 +10,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -68,6 +69,10 @@ void SyncHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "GetSyncInfo", base::BindRepeating(&SyncHandler::HandleGetSyncInfo,
                                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "GetLocalPasswordCount",
+      base::BindRepeating(&SyncHandler::HandleGetLocalPasswordCount,
+                          base::Unretained(this)));
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   web_ui()->RegisterMessageCallback(
       "OpenBatchUpload",
@@ -194,10 +199,58 @@ void SyncHandler::HandleOpenBatchUploadDialog(const base::Value::List& args) {
 }
 #endif
 
+void SyncHandler::HandleGetLocalPasswordCount(const base::Value::List& args) {
+  AllowJavascript();
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+
+  syncer::SyncService* sync_service = GetSyncService();
+  if (!sync_service) {
+    ResolveJavascriptCallback(callback_id, base::Value(false));
+    return;
+  }
+
+  sync_service->GetLocalDataDescriptions(
+      {syncer::PASSWORDS},
+      base::BindOnce(&SyncHandler::HandleOnGetLocalDataDescriptionReceived,
+                     base::Unretained(this), callback_id.Clone()));
+}
+
 void SyncHandler::OnStateChanged(syncer::SyncService* sync_service) {
   FireWebUIListener("trusted-vault-banner-state-changed",
                     GetTrustedVaultBannerState());
   FireWebUIListener("sync-info-changed", GetSyncInfo());
+
+  // Only update when the `sync_service` is not configuring to avoid flickering
+  // updates since the state can change between configuring and active multiple
+  // times in a session.
+  if (sync_service->GetTransportState() !=
+      syncer::SyncService::TransportState::CONFIGURING) {
+    sync_service->GetLocalDataDescriptions(
+        {syncer::PASSWORDS},
+        base::BindOnce(&SyncHandler::FireOnGetLocalDataDescriptionReceived,
+                       base::Unretained(this)));
+  }
+}
+
+void SyncHandler::FireOnGetLocalDataDescriptionReceived(
+    std::map<syncer::DataType, syncer::LocalDataDescription> data) {
+  int local_password_count =
+      data.contains(syncer::PASSWORDS)
+          ? data[syncer::PASSWORDS].local_data_models.size()
+          : 0;
+  FireWebUIListener("sync-service-local-password-count",
+                    base::Value(local_password_count));
+}
+
+void SyncHandler::HandleOnGetLocalDataDescriptionReceived(
+    base::Value callback_id,
+    std::map<syncer::DataType, syncer::LocalDataDescription> data) {
+  int local_password_count =
+      data.contains(syncer::PASSWORDS)
+          ? data[syncer::PASSWORDS].local_data_models.size()
+          : 0;
+  ResolveJavascriptCallback(callback_id, base::Value(local_password_count));
 }
 
 void SyncHandler::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
