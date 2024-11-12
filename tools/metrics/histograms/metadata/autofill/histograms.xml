@@ -5438,7 +5438,7 @@ AutofillSaveCreditCardPromptDestination.
   </token>
 </histogram>
 
-<histogram name="Autofill.SettingsPageActions.LocalIban"
+<histogram name="Autofill.SettingsPage.LocalIbanActions"
     enum="AutofillPaymentMethodsActionEnum" expires_after="2025-07-01">
   <owner>jsaul@google.com</owner>
   <owner>averina@google.com</owner>
