@@ -245,7 +245,6 @@ public class StripLayoutHelperManager
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final Callback<Integer> mStripVisibilityStateObserver;
     private ObservableSupplierImpl<Integer> mStripVisibilityStateSupplier;
-    private boolean mAnimationsDisabledForTesting;
 
     // Drag-Drop
     @Nullable private TabDragSource mTabDragSource;
@@ -872,10 +871,6 @@ public class StripLayoutHelperManager
         if (newOpacity == mStripTransitionScrimOpacity) return;
 
         boolean showStrip = newOpacity == 0f;
-        if (mAnimationsDisabledForTesting) {
-            onFadeTransitionEnd(showStrip);
-            return;
-        }
         if (mFadeTransitionAnimator != null && mFadeTransitionAnimator.isRunning()) {
             mFadeTransitionAnimator.cancel();
         }
@@ -1536,10 +1531,6 @@ public class StripLayoutHelperManager
 
     ViewStub getTabHoverCardViewStubForTesting() {
         return mTabHoverCardViewStub;
-    }
-
-    void disableAnimationsForTesting() {
-        mAnimationsDisabledForTesting = true;
     }
 
     public TabDragSource getTabDragSourceForTesting() {

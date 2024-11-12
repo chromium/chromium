@@ -14,7 +14,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.view.View;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
@@ -42,9 +42,6 @@ public class ReorderDelegate {
     static final float FOLIO_ATTACHED_BOTTOM_MARGIN_DP = 0.f;
     private static final float FOLIO_ANIM_INTERMEDIATE_MARGIN_DP = -12.f;
     static final float FOLIO_DETACHED_BOTTOM_MARGIN_DP = 4.f;
-
-    // Test State.
-    private boolean mAnimationsDisabledForTesting;
 
     // Tab State.
     private TabGroupModelFilter mTabGroupModelFilter;
@@ -184,17 +181,12 @@ public class ReorderDelegate {
         prepareStripForReorder(stripTabs, effectiveTabWidth, x);
 
         // 4. Lift the container off the toolbar and perform haptic feedback.
-        ArrayList<Animator> animationList =
-                mAnimationsDisabledForTesting ? null : new ArrayList<>();
+        ArrayList<Animator> animationList = new ArrayList<>();
         updateTabAttachState(mInteractingTab, /* attached= */ false, animationList);
         StripLayoutUtils.performHapticFeedback(mContainerView);
 
         // 5. Kick-off animations and request an update.
-        if (animationList != null) {
-            mAnimationHost.startAnimations(animationList, /* listener= */ null);
-        }
-        // TODO(crbug.com/372546700): Clean-up when mAnimationsDisabledForTesting is removed.
-        mAnimationHost.requestUpdate();
+        mAnimationHost.startAnimations(animationList, /* listener= */ null);
     }
 
     /**
@@ -206,9 +198,7 @@ public class ReorderDelegate {
     void stopReorderMode(StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs) {
         assert getInReorderMode()
                 : "Tried to stop reorder mode, without first starting reorder mode.";
-        ArrayList<Animator> animationList = null;
-        // TODO(crbug.com/372546700): Clean-up when mAnimationsDisabledForTesting is removed.
-        if (!mAnimationsDisabledForTesting) animationList = new ArrayList<>();
+        ArrayList<Animator> animationList = new ArrayList<>();
 
         // 1. Reset the state variables.
         mReorderScrollState = REORDER_SCROLL_NONE;
@@ -218,18 +208,14 @@ public class ReorderDelegate {
         mAnimationHost.finishAnimationsAndPushTabUpdates();
         if (mInteractingTab != null) {
             // TODO(crbug.com/372546700): mInteractingTab may be null if reordering for tab drop.
-            if (animationList != null) {
-                animationList.add(
-                        CompositorAnimator.ofFloatProperty(
-                                mAnimationHost.getAnimationHandler(),
-                                mInteractingTab,
-                                StripLayoutView.X_OFFSET,
-                                mInteractingTab.getOffsetX(),
-                                0f,
-                                ANIM_TAB_MOVE_MS));
-            } else {
-                mInteractingTab.setOffsetX(0f);
-            }
+            animationList.add(
+                    CompositorAnimator.ofFloatProperty(
+                            mAnimationHost.getAnimationHandler(),
+                            mInteractingTab,
+                            StripLayoutView.X_OFFSET,
+                            mInteractingTab.getOffsetX(),
+                            0f,
+                            ANIM_TAB_MOVE_MS));
 
             // Skip reattachment for tab drop to avoid exposing bottom indicator underneath the tab
             // container.
@@ -328,7 +314,7 @@ public class ReorderDelegate {
             StripLayoutTab tab,
             StripLayoutGroupTitle groupTitle,
             boolean shouldHaveTrailingMargin,
-            @Nullable List<Animator> animationList) {
+            @NonNull List<Animator> animationList) {
         // Avoid triggering updates if trailing margin isn't actually changing.
         float trailingMargin = shouldHaveTrailingMargin ? getHalfTabWidth() : 0.f;
         if (tab.getTrailingMargin() == trailingMargin) return false;
@@ -378,7 +364,7 @@ public class ReorderDelegate {
     private void resetTabGroupMargins(
             StripLayoutGroupTitle[] groupTitles,
             StripLayoutTab[] stripTabs,
-            @Nullable ArrayList<Animator> animationList) {
+            @NonNull ArrayList<Animator> animationList) {
         assert !getInReorderMode();
 
         // TODO(crbug.com/372546700): Investigate only resetting first and last margin, as we now
@@ -505,9 +491,6 @@ public class ReorderDelegate {
      */
     void animateGroupIndicatorForTabReorder(
             StripLayoutGroupTitle groupTitle, boolean isMovingOutOfGroup, boolean towardEnd) {
-        // TODO(crbug.com/372546700): Disable animations in tests using CompositorAnimationHandler.
-        if (mAnimationsDisabledForTesting) return;
-
         List<Animator> animators = new ArrayList<>();
 
         // Add the group title swapping animation if the tab is passing through group title.
@@ -555,7 +538,7 @@ public class ReorderDelegate {
             StripLayoutGroupTitle groupTitle,
             boolean isMovingOutOfGroup,
             boolean throughGroupTitle,
-            List<Animator> animators) {
+            @NonNull List<Animator> animators) {
         float endWidth =
                 StripLayoutUtils.calculateBottomIndicatorWidth(
                         groupTitle,
@@ -563,33 +546,23 @@ public class ReorderDelegate {
                         mEffectiveTabWidth);
         float startWidth = endWidth + MathUtils.flipSignIf(mEffectiveTabWidth, !isMovingOutOfGroup);
 
-        if (animators != null) {
-            animators.add(
-                    CompositorAnimator.ofFloatProperty(
-                            animationHandler,
-                            groupTitle,
-                            StripLayoutGroupTitle.BOTTOM_INDICATOR_WIDTH,
-                            startWidth,
-                            endWidth,
-                            throughGroupTitle ? ANIM_TAB_MOVE_MS : ANIM_TAB_SLIDE_OUT_MS));
-        } else {
-            groupTitle.setBottomIndicatorWidth(endWidth);
-        }
+        animators.add(
+                CompositorAnimator.ofFloatProperty(
+                        animationHandler,
+                        groupTitle,
+                        StripLayoutGroupTitle.BOTTOM_INDICATOR_WIDTH,
+                        startWidth,
+                        endWidth,
+                        throughGroupTitle ? ANIM_TAB_MOVE_MS : ANIM_TAB_SLIDE_OUT_MS));
     }
 
     void updateTabAttachState(
-            StripLayoutTab tab, boolean attached, @Nullable ArrayList<Animator> animationList) {
+            StripLayoutTab tab, boolean attached, @NonNull ArrayList<Animator> animationList) {
         float startValue =
                 attached ? FOLIO_DETACHED_BOTTOM_MARGIN_DP : FOLIO_ATTACHED_BOTTOM_MARGIN_DP;
         float intermediateValue = FOLIO_ANIM_INTERMEDIATE_MARGIN_DP;
         float endValue =
                 attached ? FOLIO_ATTACHED_BOTTOM_MARGIN_DP : FOLIO_DETACHED_BOTTOM_MARGIN_DP;
-
-        if (animationList == null) {
-            tab.setBottomMargin(endValue);
-            tab.setFolioAttached(attached);
-            return;
-        }
 
         ArrayList<Animator> attachAnimationList = new ArrayList<>();
         CompositorAnimator dropAnimation =
@@ -623,14 +596,5 @@ public class ReorderDelegate {
         AnimatorSet set = new AnimatorSet();
         set.playSequentially(attachAnimationList);
         animationList.add(set);
-    }
-
-    // ============================================================================================
-    // Test support
-    // ============================================================================================
-
-    /** Disables animations for testing purposes. */
-    void disableAnimationsForTesting() {
-        mAnimationsDisabledForTesting = true;
     }
 }

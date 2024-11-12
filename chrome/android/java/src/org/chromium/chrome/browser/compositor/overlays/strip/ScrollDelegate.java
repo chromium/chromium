@@ -308,4 +308,10 @@ public class ScrollDelegate {
     StackScroller getScrollerForTesting() {
         return mScroller;
     }
+
+    // Abort scroll animation and set offset.
+    void finishScrollForTesting() {
+        mScroller.abortAnimation();
+        setScrollOffset(mScroller.getFinalX());
+    }
 }

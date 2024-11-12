@@ -33,6 +33,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -885,7 +886,7 @@ public class TabStripTest {
 
         // Disable animations. The animation that normally runs when scrolling the tab strip makes
         // this test flaky.
-        strip.disableAnimationsForTesting();
+        CompositorAnimationHandler.setTestingMode(true);
 
         // Create callback helper to be notified when first tab becomes visible.
         final CallbackHelper visibleHelper = new CallbackHelper();
@@ -943,6 +944,9 @@ public class TabStripTest {
 
         // Wait for the first tab in the strip to no longer be visible.
         notVisibleHelper.waitForCallback(0);
+
+        // Re-enable animations.
+        CompositorAnimationHandler.setTestingMode(false);
     }
 
     /** Tests that switching tabs hides keyboard. */

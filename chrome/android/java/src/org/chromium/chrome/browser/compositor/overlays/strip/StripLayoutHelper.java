@@ -400,7 +400,6 @@ public class StripLayoutHelper
     // 3-dots menu button with tab strip end padding
     private final boolean mIncognito;
     private boolean mIsFirstLayoutPass;
-    private boolean mAnimationsDisabledForTesting;
     // Whether tab strip scrolling is in progress
     private boolean mIsStripScrollInProgress;
 
@@ -1312,7 +1311,7 @@ public class StripLayoutHelper
         // selected, scroll the currently selected tab to view. Skip auto-scrolling if the tab is
         // being created due to a tab closure being undone.
         if (stripTab != null && !closureCancelled && !collapsed) {
-            boolean animate = !onStartup && !mAnimationsDisabledForTesting;
+            boolean animate = !onStartup;
             if (selected) {
                 float delta = calculateDeltaToMakeTabVisible(stripTab);
                 setScrollForScrollingTabStacker(delta, animate, time);
@@ -2109,18 +2108,14 @@ public class StripLayoutHelper
         if (isViewCompletelyHidden(hoveredTab)) return;
 
         mLastHoveredTab = hoveredTab;
-        if (!mAnimationsDisabledForTesting) {
-            CompositorAnimator.ofFloatProperty(
-                            mUpdateHost.getAnimationHandler(),
-                            hoveredTab,
-                            StripLayoutTab.OPACITY,
-                            hoveredTab.getContainerOpacity(),
-                            TAB_OPACITY_VISIBLE,
-                            ANIM_HOVERED_TAB_CONTAINER_FADE_MS)
-                    .start();
-        } else {
-            hoveredTab.setContainerOpacity(TAB_OPACITY_VISIBLE);
-        }
+        CompositorAnimator.ofFloatProperty(
+                        mUpdateHost.getAnimationHandler(),
+                        hoveredTab,
+                        StripLayoutTab.OPACITY,
+                        hoveredTab.getContainerOpacity(),
+                        TAB_OPACITY_VISIBLE,
+                        ANIM_HOVERED_TAB_CONTAINER_FADE_MS)
+                .start();
         updateHoveredTabAttachedState(mLastHoveredTab, true);
 
         // Show the tab hover card.
@@ -2135,10 +2130,9 @@ public class StripLayoutHelper
     }
 
     private boolean shouldShowHoverCardImmediately() {
-        if (mAnimationsDisabledForTesting) {
+        if (CompositorAnimationHandler.isInTestingMode()) {
             return true;
         }
-
         if (mLastHoverCardExitTime == INVALID_TIME) {
             return false;
         }
@@ -2692,6 +2686,8 @@ public class StripLayoutHelper
 
     void collapseTabGroupForTesting(StripLayoutGroupTitle groupTitle, boolean isCollapsed) {
         updateTabGroupCollapsed(groupTitle, isCollapsed, true);
+        // End animator set to invoke all pending listeners on set.
+        finishAnimations();
     }
 
     private Animator updateTabCollapsed(StripLayoutTab tab, boolean isCollapsed, boolean animate) {
@@ -2723,8 +2719,7 @@ public class StripLayoutHelper
         if (!ChromeFeatureList.sTabStripGroupCollapse.isEnabled()) return;
         if (groupTitle.isCollapsed() == isCollapsed) return;
 
-        List<Animator> collapseAnimationList = null;
-        if (animate && !mAnimationsDisabledForTesting) collapseAnimationList = new ArrayList<>();
+        List<Animator> collapseAnimationList = animate ? new ArrayList<>() : null;
 
         finishAnimations();
         groupTitle.setCollapsed(isCollapsed);
@@ -3216,8 +3211,7 @@ public class StripLayoutHelper
         // 5. Prepare animations and propagate width to all tabs.
         finishAnimationsAndPushTabUpdates();
         ArrayList<Animator> resizeAnimationList = null;
-        if (animate && !mAnimationsDisabledForTesting) resizeAnimationList = new ArrayList<>();
-
+        if (animate) resizeAnimationList = new ArrayList<>();
         for (int i = 0; i < mStripTabs.length; i++) {
             StripLayoutTab tab = mStripTabs[i];
             if (tab.isClosed()) tab.setWidth(TAB_OVERLAP_WIDTH_DP);
@@ -3596,8 +3590,7 @@ public class StripLayoutHelper
         // Animate bottom indicator. Done after merging the dropped tab into a group, so that the
         // calculated bottom indicator width will be correct.
         if (groupTitle != null) {
-            List<Animator> animators = null;
-            if (!mAnimationsDisabledForTesting) animators = new ArrayList<>();
+            List<Animator> animators = new ArrayList<>();
             mReorderDelegate.updateBottomIndicatorWidthForTabReorder(
                     mUpdateHost.getAnimationHandler(),
                     mTabGroupModelFilter,
@@ -3663,7 +3656,6 @@ public class StripLayoutHelper
         if (mReorderDelegate.getInReorderMode()) return;
 
         StripLayoutView interactingView = getViewAtPositionX(x, false);
-
         // Attempt to start reordering a tab.
         StripLayoutTab interactingTab = null;
         if (mActiveClickedTab != null) {
@@ -3704,13 +3696,11 @@ public class StripLayoutHelper
 
         // 4. Add a tab group margin to the "interacting" tab to indicate where the tab will be
         // inserted should the drag be dropped.
-        ArrayList<Animator> animationList =
-                mAnimationsDisabledForTesting ? null : new ArrayList<>();
+        ArrayList<Animator> animationList = new ArrayList<>();
         setTrailingMarginForTab(hoveredTab, /* shouldHaveTrailingMargin= */ true, animationList);
 
         // 5. Kick-off animations and request an update.
-        if (animationList != null) startAnimations(animationList);
-        mUpdateHost.requestUpdate();
+        startAnimations(animationList);
     }
 
     void stopReorderModeForTesting() {
@@ -3721,7 +3711,7 @@ public class StripLayoutHelper
     private boolean setTrailingMarginForTab(
             StripLayoutTab tab,
             boolean shouldHaveTrailingMargin,
-            @Nullable List<Animator> animationList) {
+            @NonNull List<Animator> animationList) {
         StripLayoutGroupTitle groupTitle = findGroupTitle(getStripTabRootId(tab));
         return mReorderDelegate.setTrailingMarginForTab(
                 tab, groupTitle, shouldHaveTrailingMargin, animationList);
@@ -4083,7 +4073,7 @@ public class StripLayoutHelper
                 && tab == mReorderDelegate.getInteractingTab()) return;
 
         // 3. Animate if necessary.
-        if (animate && !mAnimationsDisabledForTesting) {
+        if (animate) {
             final boolean towardEnd = oldIndex <= newIndex;
             final int direction = towardEnd ? 1 : -1;
             final float animationLength =
@@ -4299,8 +4289,6 @@ public class StripLayoutHelper
 
     private void setScrollForScrollingTabStacker(float delta, boolean shouldAnimate, long time) {
         if (delta == 0.f) return;
-
-        shouldAnimate = shouldAnimate && !mAnimationsDisabledForTesting;
         mScrollDelegate.startScroll(time, delta, shouldAnimate);
     }
 
@@ -4441,12 +4429,6 @@ public class StripLayoutHelper
         return mReorderDelegate.getInteractingTab();
     }
 
-    /** Disables animations for testing purposes. */
-    public void disableAnimationsForTesting() {
-        mAnimationsDisabledForTesting = true;
-        mReorderDelegate.disableAnimationsForTesting(); // IN-TEST
-    }
-
     Animator getRunningAnimatorForTesting() {
         return mRunningAnimator;
     }
@@ -4473,6 +4455,10 @@ public class StripLayoutHelper
 
     ReorderDelegate getReorderDelegateForTesting() {
         return mReorderDelegate;
+    }
+
+    void finishScrollForTesting() {
+        mScrollDelegate.finishScrollForTesting();
     }
 
     private void setAccessibilityDescription(StripLayoutTab stripTab, Tab tab) {
