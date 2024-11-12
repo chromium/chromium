@@ -3430,7 +3430,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Pages
       </message>
       <message name="IDS_DOWNLOAD_MANAGER_UI_VIDEO" desc="Indicates that clicking on this button shows only downloaded videos.">
-        Video
+        Videos
       </message>
       <message name="IDS_DOWNLOAD_MANAGER_UI_AUDIO" desc="Indicates that clicking on this button shows only downloaded audio files.">
         Audio
