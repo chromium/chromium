@@ -2693,11 +2693,11 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/css/css-contain/content-visibility/content-visibility-auto-svg-text.html [ Failure ]
-[ Mac14 ] external/wpt/webrtc/RTCPeerConnection-restartIce-onnegotiationneeded.https.html [ Timeout ]
-[ Mac14 ] external/wpt/webrtc/legacy/RTCPeerConnection-createOffer-offerToReceive.html [ Timeout ]
-[ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-negative-bounds.html [ Failure ]
-[ Mac12 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nothing-captured.html [ Failure ]
+crbug.com/378158976 external/wpt/css/css-contain/content-visibility/content-visibility-auto-svg-text.html [ Failure ]
+crbug.com/378408473 [ Mac14 ] external/wpt/webrtc/RTCPeerConnection-restartIce-onnegotiationneeded.https.html [ Timeout ]
+crbug.com/378408473 [ Mac14 ] external/wpt/webrtc/legacy/RTCPeerConnection-createOffer-offerToReceive.html [ Timeout ]
+crbug.com/377971732 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-negative-bounds.html [ Failure ]
+crbug.com/378231214 [ Mac12 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/nothing-captured.html [ Failure ]
 crbug.com/378014590 [ Mac11 ] external/wpt/mediacapture-streams/BrowserCaptureMediaStreamTrack-restrictTo.https.html [ Timeout ]
 crbug.com/378158966 [ Mac13 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2 [ Timeout ]
 crbug.com/378158966 [ Mac14 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?vp9_p2 [ Timeout ]
