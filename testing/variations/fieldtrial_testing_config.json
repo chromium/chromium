@@ -22129,25 +22129,6 @@
             ]
         }
     ],
-    "ServiceWorkerStorageSuppressPostTask": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ServiceWorkerStorageSuppressPostTask"
-                    ]
-                }
-            ]
-        }
-    ],
     "SettingSearchExplorationHaTS": [
         {
             "platforms": [
