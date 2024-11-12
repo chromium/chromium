@@ -14,7 +14,7 @@
 
 namespace content {
 
-class WebContentsAutoScaler final {
+class CONTENT_EXPORT WebContentsAutoScaler final {
  public:
   // Delegate used to get and set the device scale ratio override for the
   // currently captured tab.
