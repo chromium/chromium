@@ -159,7 +159,8 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
       const base::FilePath& path);
 
   // Kicks off a new directory enumeration.
-  void StartNewEnumeration(const base::FilePath& path);
+  void StartNewEnumeration(const base::FilePath& path,
+                           const std::u16string& display_name);
 
   // net::DirectoryLister::DirectoryListerDelegate overrides.
   void OnListFile(
@@ -167,7 +168,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   void OnListDone(int error) override;
 
   std::unique_ptr<ui::DialogModel> CreateConfirmationDialog(
-      const base::FilePath& path,
+      const std::u16string& display_name,
       std::vector<blink::mojom::FileChooserFileInfoPtr> selected_files,
       base::OnceCallback<
           void(std::vector<blink::mojom::FileChooserFileInfoPtr>)> callback);

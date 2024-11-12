@@ -56,10 +56,12 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/content_uri_utils.h"
+#else
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/picture_in_picture/scoped_disallow_picture_in_picture.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using blink::mojom::FileChooserFileInfo;
 using blink::mojom::FileChooserFileInfoPtr;
@@ -137,14 +139,24 @@ void InterpretSafeBrowsingVerdict(base::OnceCallback<void(bool)> recipient,
 
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+std::u16string GetDisplayName(const base::FilePath& content_uri) {
+  std::u16string display_name;
+  if (!base::MaybeGetFileDisplayName(content_uri, &display_name)) {
+    display_name = content_uri.BaseName().AsUTF16Unsafe();
+  }
+  return display_name;
+}
+#endif
+
 }  // namespace
 
 struct FileSelectHelper::ActiveDirectoryEnumeration {
-  explicit ActiveDirectoryEnumeration(const base::FilePath& path)
-      : path_(path) {}
+  explicit ActiveDirectoryEnumeration(const std::u16string& display_name)
+      : display_name_(display_name) {}
 
   std::unique_ptr<net::DirectoryLister> lister_;
-  const base::FilePath path_;
+  const std::u16string display_name_;
   std::vector<blink::mojom::NativeFileInfoPtr> results_;
 };
 
@@ -178,9 +190,9 @@ void FileSelectHelper::FileSelected(const ui::SelectedFileInfo& file,
     return;
   }
 
-  const base::FilePath& path = file.local_path;
   if (dialog_type_ == ui::SelectFileDialog::SELECT_UPLOAD_FOLDER) {
-    StartNewEnumeration(path);
+    StartNewEnumeration(file.local_path,
+                        base::FilePath(file.display_name).AsUTF16Unsafe());
     return;
   }
 
@@ -219,9 +231,10 @@ void FileSelectHelper::FileSelectionCanceled() {
   RunFileChooserEnd();
 }
 
-void FileSelectHelper::StartNewEnumeration(const base::FilePath& path) {
+void FileSelectHelper::StartNewEnumeration(const base::FilePath& path,
+                                           const std::u16string& display_name) {
   base_dir_ = path;
-  auto entry = std::make_unique<ActiveDirectoryEnumeration>(path);
+  auto entry = std::make_unique<ActiveDirectoryEnumeration>(display_name);
   entry->lister_ = base::WrapUnique(new net::DirectoryLister(
       path, net::DirectoryLister::NO_SORT_RECURSIVE, this));
   entry->lister_->Start();
@@ -245,7 +258,7 @@ void FileSelectHelper::OnListFile(
 }
 
 std::unique_ptr<ui::DialogModel> FileSelectHelper::CreateConfirmationDialog(
-    const base::FilePath& path,
+    const std::u16string& display_name,
     std::vector<FileChooserFileInfoPtr> selected_files,
     base::OnceCallback<void(std::vector<blink::mojom::FileChooserFileInfoPtr>)>
         callback) {
@@ -261,7 +274,7 @@ std::unique_ptr<ui::DialogModel> FileSelectHelper::CreateConfirmationDialog(
       .SetTitle(l10n_util::GetPluralStringFUTF16(IDS_CONFIRM_FILE_UPLOAD_TITLE,
                                                  selected_files.size()))
       .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringFUTF16(
-          IDS_CONFIRM_FILE_UPLOAD_TEXT, path.BaseName().LossyDisplayName())))
+          IDS_CONFIRM_FILE_UPLOAD_TEXT, display_name)))
       .AddOkButton(
           base::BindOnce(std::move(ok_callback), std::move(selected_files)),
           ui::DialogModel::Button::Params().SetLabel(
@@ -301,7 +314,7 @@ void FileSelectHelper::OnListDone(int error) {
 
   if (dialog_type_ == ui::SelectFileDialog::SELECT_UPLOAD_FOLDER) {
     auto model = CreateConfirmationDialog(
-        entry->path_, std::move(chooser_files),
+        entry->display_name_, std::move(chooser_files),
         base::BindOnce(&FileSelectHelper::PerformContentAnalysisIfNeeded,
                        this));
     chrome::ShowTabModal(std::move(model), web_contents_);
@@ -802,7 +815,15 @@ void FileSelectHelper::EnumerateDirectoryImpl(
   // to the caller, until the last callback is received from the enumeration
   // code. At that point, we must call EnumerateDirectoryEnd().
   AddRef();
-  StartNewEnumeration(path);
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsContentUri()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()}, base::BindOnce(&GetDisplayName, path),
+        base::BindOnce(&FileSelectHelper::StartNewEnumeration, this, path));
+    return;
+  }
+#endif
+  StartNewEnumeration(path, path.BaseName().AsUTF16Unsafe());
 }
 
 // This method is called when we receive the last callback from the enumeration

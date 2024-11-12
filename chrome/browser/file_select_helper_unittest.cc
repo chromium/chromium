@@ -114,7 +114,7 @@ class FileSelectHelperTest : public testing::Test {
         blink::mojom::NativeFileInfo::New(file2, u"file2", base_subdirs)));
 
     auto model = file_select_helper->CreateConfirmationDialog(
-        dir, std::move(selected_files),
+        u"dir", std::move(selected_files),
         base::BindLambdaForTesting(
             [&](std::vector<blink::mojom::FileChooserFileInfoPtr>
                     selected_files) {
