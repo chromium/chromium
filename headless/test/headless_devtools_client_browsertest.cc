@@ -141,8 +141,8 @@ class HeadlessCrashObserverTest : public HeadlessDevTooledBrowserTest {
   void OnTargetCrashed(const base::Value::Dict&) { FinishAsynchronousTest(); }
 
   // Make sure we don't fail because the renderer crashed!
-  void RenderProcessExited(base::TerminationStatus status,
-                           int exit_code) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
 #if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
     // TODO(crbug.com/40577245): Make ASan not interfere and expect a crash.
     // ASan's normal error exit code is 1, which base categorizes as the process

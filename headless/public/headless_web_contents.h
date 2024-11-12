@@ -26,37 +26,6 @@ class HEADLESS_EXPORT HeadlessWebContents {
 
   virtual ~HeadlessWebContents() {}
 
-  class HEADLESS_EXPORT Observer {
-   public:
-    Observer(const Observer&) = delete;
-    Observer& operator=(const Observer&) = delete;
-
-    // All the following notifications will be called on browser main thread.
-
-    // Indicates that this HeadlessWebContents instance is now ready to be
-    // inspected.
-    // TODO(altimin): Support this event for pages that aren't created by us.
-    virtual void DevToolsTargetReady() {}
-    // This method is invoked when the process of the observed RenderProcessHost
-    // exits (either normally or with a crash). To determine if the process
-    // closed normally or crashed, examine the |status| parameter.
-    //
-    // If |status| is TERMINATION_STATUS_LAUNCH_FAILED then |exit_code| will
-    // contain a platform specific launch failure error code. Otherwise, it will
-    // contain the exit code for the process.
-    virtual void RenderProcessExited(base::TerminationStatus status,
-                                     int exit_code) {}
-
-   protected:
-    Observer() {}
-    virtual ~Observer() {}
-  };
-
-  // Add or remove an observer to receive events from this WebContents.
-  // |observer| must outlive this class or be removed prior to being destroyed.
-  virtual void AddObserver(Observer* observer) = 0;
-  virtual void RemoveObserver(Observer* observer) = 0;
-
   // Close this page. |HeadlessWebContents| object will be destroyed.
   virtual void Close() = 0;
 

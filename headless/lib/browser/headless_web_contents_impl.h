@@ -32,10 +32,7 @@ namespace headless {
 class HeadlessBrowserImpl;
 
 // Exported for tests.
-class HEADLESS_EXPORT HeadlessWebContentsImpl
-    : public HeadlessWebContents,
-      public content::RenderProcessHostObserver,
-      public content::WebContentsObserver {
+class HEADLESS_EXPORT HeadlessWebContentsImpl : public HeadlessWebContents {
  public:
   HeadlessWebContentsImpl(const HeadlessWebContentsImpl&) = delete;
   HeadlessWebContentsImpl& operator=(const HeadlessWebContentsImpl&) = delete;
@@ -52,19 +49,6 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
   static std::unique_ptr<HeadlessWebContentsImpl> CreateForChildContents(
       HeadlessWebContentsImpl* parent,
       std::unique_ptr<content::WebContents> child_contents);
-
-  // HeadlessWebContents implementation:
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
-
-  // content::RenderProcessHostObserver implementation:
-  void RenderProcessExited(
-      content::RenderProcessHost* host,
-      const content::ChildProcessTerminationInfo& info) override;
-  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
-
-  // content::WebContentsObserver implementation:
-  void RenderViewReady() override;
 
   content::WebContents* web_contents() const;
   bool OpenURL(const GURL& url);
@@ -116,19 +100,12 @@ class HEADLESS_EXPORT HeadlessWebContentsImpl
       viz::BeginFrameArgs::kStartingFrameNumber;
   bool begin_frame_control_enabled_ = false;
 
-  // TODO(alexclarke): With OOPIF there may be more than one renderer, we need
-  // to fix this. See crbug.com/715924
-  raw_ptr<content::RenderProcessHost> render_process_host_;  // Not owned.
-
   class Delegate;
   std::unique_ptr<Delegate> web_contents_delegate_;
   std::unique_ptr<HeadlessWindowTreeHost> window_tree_host_;
   int window_id_ = 0;
   std::string window_state_;
   std::unique_ptr<content::WebContents> const web_contents_;
-  bool devtools_target_ready_notification_sent_ = false;
-
-  base::ObserverList<HeadlessWebContents::Observer>::Unchecked observers_;
 
   class PendingFrame;
   base::WeakPtr<PendingFrame> pending_frame_;

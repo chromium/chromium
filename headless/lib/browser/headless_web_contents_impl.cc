@@ -15,7 +15,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -27,7 +26,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -41,7 +39,6 @@
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_browser_main_parts.h"
-#include "headless/lib/browser/protocol/headless_handler.h"
 #include "headless/public/switches.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -382,17 +379,6 @@ HeadlessWebContentsImpl::CreateForChildContents(
   child->begin_frame_control_enabled_ = parent->begin_frame_control_enabled_;
   child->InitializeWindow(child->web_contents_->GetContainerBounds());
 
-  // There may already be frames and we may have missed the RenderFrameCreated
-  // callback so make sure they also have our services.
-  // We want to iterate all frame trees because RenderFrameCreated gets called
-  // for any RenderFrame created. base::Unretained is safe here because
-  // ForEachRenderFrameHost is synchronous.
-  child->web_contents_->ForEachRenderFrameHost(
-      [&child](content::RenderFrameHost* render_frame_host) {
-        if (render_frame_host->IsRenderFrameLive())
-          child->RenderFrameCreated(render_frame_host);
-      });
-
   return child;
 }
 
@@ -412,9 +398,7 @@ void HeadlessWebContentsImpl::SetBounds(const gfx::Rect& bounds) {
 
 HeadlessWebContentsImpl::HeadlessWebContentsImpl(
     std::unique_ptr<content::WebContents> web_contents)
-    : content::WebContentsObserver(web_contents.get()),
-      render_process_host_(web_contents->GetPrimaryMainFrame()->GetProcess()),
-      web_contents_delegate_(new HeadlessWebContentsImpl::Delegate(this)),
+    : web_contents_delegate_(new HeadlessWebContentsImpl::Delegate(this)),
       web_contents_(std::move(web_contents)) {
 #if BUILDFLAG(ENABLE_PRINTING)
   HeadlessPrintManager::CreateForWebContents(web_contents_.get());
@@ -433,28 +417,13 @@ HeadlessWebContentsImpl::HeadlessWebContentsImpl(
   }
 
   web_contents_->SetDelegate(web_contents_delegate_.get());
-  render_process_host_->AddObserver(this);
 }
 
 HeadlessWebContentsImpl::~HeadlessWebContentsImpl() {
-  if (render_process_host_)
-    render_process_host_->RemoveObserver(this);
   // Defer destruction of WindowTreeHost, as it does sync mojo calls
   // in the destructor of ui::Compositor.
   base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, std::move(window_tree_host_));
-}
-
-void HeadlessWebContentsImpl::RenderViewReady() {
-  DCHECK(web_contents()->GetPrimaryMainFrame()->IsRenderFrameLive());
-
-  if (devtools_target_ready_notification_sent_)
-    return;
-
-  for (auto& observer : observers_)
-    observer.DevToolsTargetReady();
-
-  devtools_target_ready_notification_sent_ = true;
 }
 
 bool HeadlessWebContentsImpl::OpenURL(const GURL& url) {
@@ -475,29 +444,6 @@ bool HeadlessWebContentsImpl::OpenURL(const GURL& url) {
 void HeadlessWebContentsImpl::Close() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   browser_context()->DestroyWebContents(this);
-}
-
-void HeadlessWebContentsImpl::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void HeadlessWebContentsImpl::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
-void HeadlessWebContentsImpl::RenderProcessExited(
-    content::RenderProcessHost* host,
-    const content::ChildProcessTerminationInfo& info) {
-  DCHECK_EQ(render_process_host_, host);
-  for (auto& observer : observers_)
-    observer.RenderProcessExited(info.status, info.exit_code);
-}
-
-void HeadlessWebContentsImpl::RenderProcessHostDestroyed(
-    content::RenderProcessHost* host) {
-  DCHECK_EQ(render_process_host_, host);
-  render_process_host_->RemoveObserver(this);
-  render_process_host_ = nullptr;
 }
 
 content::WebContents* HeadlessWebContentsImpl::web_contents() const {

@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserRendererCommandPrefixTest, Prefix) {
 #endif  // BUILDFLAG(IS_POSIX)
 
 class CrashReporterTest : public HeadlessBrowserTest,
-                          public HeadlessWebContents::Observer {
+                          public content::WebContentsObserver {
  public:
   CrashReporterTest() {}
   ~CrashReporterTest() override = default;
@@ -486,10 +486,14 @@ class CrashReporterTest : public HeadlessBrowserTest,
     base::DeleteFile(crash_dumps_dir_);
   }
 
-  // HeadlessWebContents::Observer implementation:
-  void DevToolsTargetReady() override {
-    devtools_client_.AttachToWebContents(
-        HeadlessWebContentsImpl::From(web_contents_)->web_contents());
+  // content::WebContentsObserver implementation:
+  void RenderViewReady() override {
+    if (had_render_view_ready_) {
+      return;
+    }
+    had_render_view_ready_ = true;
+
+    devtools_client_.AttachToWebContents(web_contents_);
 
     devtools_client_.AddEventHandler(
         "Inspector.targetCrashed",
@@ -500,10 +504,8 @@ class CrashReporterTest : public HeadlessBrowserTest,
   void OnTargetCrashed(const base::Value::Dict&) { FinishAsynchronousTest(); }
 
  protected:
-  raw_ptr<HeadlessBrowserContext, AcrossTasksDanglingUntriaged>
-      browser_context_ = nullptr;
-  raw_ptr<HeadlessWebContents, AcrossTasksDanglingUntriaged> web_contents_ =
-      nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  bool had_render_view_ready_ = false;
   SimpleDevToolsProtocolClient devtools_client_;
   base::FilePath crash_dumps_dir_;
 };
@@ -518,13 +520,18 @@ IN_PROC_BROWSER_TEST_F(CrashReporterTest, GenerateMinidump) {
   //
   // The case where crash reporting is disabled is covered by
   // HeadlessCrashObserverTest.
-  browser_context_ = browser()->CreateBrowserContextBuilder().Build();
+  raw_ptr<HeadlessBrowserContext> browser_context =
+      browser()->CreateBrowserContextBuilder().Build();
 
-  web_contents_ = browser_context_->CreateWebContentsBuilder()
-                      .SetInitialURL(GURL(blink::kChromeUICrashURL))
-                      .Build();
+  raw_ptr<HeadlessWebContents> headless_web_contents =
+      browser_context->CreateWebContentsBuilder()
+          .SetInitialURL(GURL(blink::kChromeUICrashURL))
+          .Build();
 
-  web_contents_->AddObserver(this);
+  web_contents_ =
+      HeadlessWebContentsImpl::From(headless_web_contents)->web_contents();
+
+  Observe(web_contents_);
   RunAsynchronousTest();
 
   // Check that one minidump got created.
@@ -538,12 +545,19 @@ IN_PROC_BROWSER_TEST_F(CrashReporterTest, GenerateMinidump) {
     EXPECT_EQ(reports.size(), 1u);
   }
 
-  web_contents_->RemoveObserver(this);
-  web_contents_->Close();
   web_contents_ = nullptr;
-
-  browser_context_->Close();
-  browser_context_ = nullptr;
+  Observe(nullptr);
+  {
+    HeadlessWebContents& wc = *headless_web_contents;
+    // Keep raw_ptr<> happy, as WC is about to die.
+    headless_web_contents = nullptr;
+    wc.Close();
+  }
+  {
+    HeadlessBrowserContext& bc = *browser_context;
+    browser_context = nullptr;
+    bc.Close();
+  }
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
 
