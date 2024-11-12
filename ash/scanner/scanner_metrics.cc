@@ -4,15 +4,26 @@
 
 #include "ash/scanner/scanner_metrics.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 
 namespace ash {
 
 constexpr char kScannerFeatureUserStateHistogramName[] =
     "Ash.ScannerFeature.UserState";
 
+constexpr std::string_view kOnDeviceTextDetection =
+    "Ash.ScannerFeature.Timer.OnDeviceTextDetection";
+
 void RecordScannerFeatureUserState(ScannerFeatureUserState state) {
   base::UmaHistogramEnumeration(kScannerFeatureUserStateHistogramName, state);
+}
+
+void RecordOnDeviceOcrTimerCompleted(base::TimeTicks ocr_attempt_start_time) {
+  base::UmaHistogramMediumTimes(
+      kOnDeviceTextDetection, base::TimeTicks::Now() - ocr_attempt_start_time);
 }
 
 }  // namespace ash

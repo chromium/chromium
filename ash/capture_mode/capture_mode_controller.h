@@ -544,8 +544,11 @@ class ASH_EXPORT CaptureModeController
   // invalidated every time the selected region or session changes. If the
   // selected region or session has changed since the request was made, then the
   // detected text result is discarded and no buttons are shown.
+  // `ocr_attempt_start_time` is used to record the metric for the the latency
+  // of the on device text detection.
   void OnTextDetectionComplete(
       base::WeakPtr<BaseCaptureModeSession> image_search_token,
+      base::TimeTicks ocr_attempt_start_time,
       std::string detected_text);
 
   // Called back when the copy text button is clicked. This will copy `text` to

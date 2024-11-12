@@ -1933,9 +1933,9 @@ void CaptureModeController::OnImageCapturedForSearch(
   const SkBitmap bitmap = gfx::JPEGCodec::Decode(*jpeg_bytes);
   if (ShouldPerformTextDetection(capture_type)) {
     delegate_->DetectTextInImage(
-        bitmap,
-        base::BindOnce(&CaptureModeController::OnTextDetectionComplete,
-                       weak_ptr_factory_.GetWeakPtr(), image_search_token));
+        bitmap, base::BindOnce(&CaptureModeController::OnTextDetectionComplete,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               image_search_token, base::TimeTicks::Now()));
   }
 
   if (ShouldFetchScannerActions(capture_type)) {
@@ -1970,7 +1970,9 @@ void CaptureModeController::OnImageCapturedForSearch(
 
 void CaptureModeController::OnTextDetectionComplete(
     base::WeakPtr<BaseCaptureModeSession> image_search_token,
+    base::TimeTicks ocr_attempt_start_time,
     std::string detected_text) {
+  RecordOnDeviceOcrTimerCompleted(ocr_attempt_start_time);
   if (!image_search_token || detected_text.empty()) {
     return;
   }

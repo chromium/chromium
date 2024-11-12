@@ -8323,6 +8323,8 @@ chromium-metrics-reviews@google.com.
         summary="when new Google Sheet action is executed"/>
     <variant name="FetchActionsForImage"
         summary="when a image is sent to fetch actions via scanner server"/>
+    <variant name="OnDeviceTextDetection"
+        summary="when OCR is attempted for a screenshot on-device"/>
     <variant name="PopulateNewCalendarEventAction"
         summary="when new calendar action is sent to server to be populated"/>
     <variant name="PopulateNewContactAction"

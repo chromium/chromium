@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "ash/ash_export.h"
+#include "base/time/time.h"
 
 namespace ash {
 
@@ -88,6 +89,9 @@ enum class ScannerFeatureUserState {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:ScannerFeatureUserState)
 
 ASH_EXPORT void RecordScannerFeatureUserState(ScannerFeatureUserState state);
+
+ASH_EXPORT void RecordOnDeviceOcrTimerCompleted(
+    base::TimeTicks ocr_attempt_start_time);
 
 }  // namespace ash
 

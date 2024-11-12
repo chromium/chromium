@@ -1320,7 +1320,9 @@ TEST_F(SunfishTest, RecordSearchResultsPanelEntryType) {
 
 class ScannerTest : public AshTestBase {
  public:
-  ScannerTest() = default;
+  ScannerTest()
+      : AshTestBase(
+            base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
   ScannerTest(const ScannerTest&) = delete;
   ScannerTest& operator=(const ScannerTest&) = delete;
   ~ScannerTest() override = default;
@@ -1964,6 +1966,29 @@ TEST_F(ScannerTest, NoCopyTextButtonIfSelectedRegionChangesByFineTuneNoop) {
       controller->capture_mode_session());
   EXPECT_THAT(session_test_api.GetActionButtons(),
               Not(Contains(ActionButtonTypeIs(ActionButtonType::kCopyText))));
+}
+
+// Records the time taken for the on device OCR.
+TEST_F(ScannerTest, OnSelectCaptureRegionRecordTextDetectionTimer) {
+  base::HistogramTester histogram_tester;
+
+  auto* controller = CaptureModeController::Get();
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kImage);
+  base::test::TestFuture<OnTextDetectionComplete> detect_text_future;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  EXPECT_CALL(*test_delegate, DetectTextInImage)
+      .WillOnce(WithArg<1>(InvokeFuture(detect_text_future)));
+
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(0, 0, 50, 200),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+
+  ASSERT_TRUE(detect_text_future.Wait());
+  task_environment()->FastForwardBy(base::Milliseconds(500));
+  detect_text_future.Take().Run("detected text");
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.ScannerFeature.Timer.OnDeviceTextDetection", 500, 1);
 }
 
 // Tests that the smart actions button is shown in default capture mode if text
