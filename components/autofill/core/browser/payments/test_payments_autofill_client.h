@@ -37,7 +37,6 @@ class AutofillDriver;
 #endif  // !BUILDFLAG(IS_IOS)
 class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
-class MerchantPromoCodeManager;
 class TouchToFillDelegate;
 class VirtualCardEnrollmentManager;
 
@@ -109,7 +108,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   MockIbanManager* GetIbanManager() override;
   MockIbanAccessManager* GetIbanAccessManager() override;
   void ShowMandatoryReauthOptInConfirmation() override;
-  MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
+  MockMerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
   AutofillOfferManager* GetAutofillOfferManager() override;
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
@@ -179,8 +178,6 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
     return risk_based_authenticator_ &&
            risk_based_authenticator_->authenticate_invoked();
   }
-
-  MockMerchantPromoCodeManager* GetMockMerchantPromoCodeManager();
 
   void set_autofill_offer_manager(
       std::unique_ptr<AutofillOfferManager> autofill_offer_manager) {

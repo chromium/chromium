@@ -3128,7 +3128,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
           HasQueriedFormId(), HasQueriedFieldId(), dummy_autocomplete_string,
           SuggestionType::kAutocompleteEntry, std::optional<FieldType>()));
-  EXPECT_CALL(*client().GetMockAutocompleteHistoryManager(),
+  EXPECT_CALL(*client().GetAutocompleteHistoryManager(),
               OnSingleFieldSuggestionSelected(suggestion));
 
   external_delegate().DidAcceptSuggestion(
@@ -3157,7 +3157,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
                                  SuggestionType::kMerchantPromoCodeEntry,
                                  std::optional(MERCHANT_PROMO_CODE)));
   EXPECT_CALL(
-      *client().GetPaymentsAutofillClient()->GetMockMerchantPromoCodeManager(),
+      *client().GetPaymentsAutofillClient()->GetMerchantPromoCodeManager(),
       OnSingleFieldSuggestionSelected(suggestion));
 
   external_delegate().DidAcceptSuggestion(
@@ -3260,7 +3260,7 @@ class AutofillExternalDelegate_RemoveSuggestionTest
     AutofillExternalDelegateUnitTest::SetUp();
     test_api(manager()).set_single_field_fill_router(
         std::make_unique<MockSingleFieldFillRouter>(
-            client().GetMockAutocompleteHistoryManager(), nullptr, nullptr));
+            client().GetAutocompleteHistoryManager(), nullptr, nullptr));
   }
 
   MockSingleFieldFillRouter& single_field_fill_router() {

@@ -136,7 +136,7 @@ class TestAutofillClientTemplate : public T {
     return mock_autofill_ai_delegate_.get();
   }
 
-  AutocompleteHistoryManager* GetAutocompleteHistoryManager() override {
+  MockAutocompleteHistoryManager* GetAutocompleteHistoryManager() override {
     return &mock_autocomplete_history_manager_;
   }
 
@@ -454,10 +454,6 @@ class TestAutofillClientTemplate : public T {
   void set_format_for_large_keyboard_accessory(
       bool format_for_large_keyboard_accessory) {
     format_for_large_keyboard_accessory_ = format_for_large_keyboard_accessory;
-  }
-
-  MockAutocompleteHistoryManager* GetMockAutocompleteHistoryManager() {
-    return &mock_autocomplete_history_manager_;
   }
 
   void set_channel_for_testing(const version_info::Channel channel) {
