@@ -34,11 +34,8 @@ BASE_EXPORT std::optional<std::string> TranslateOpenFlagsToJavaMode(
 int OpenContentUri(const FilePath& content_uri, uint32_t open_flags);
 
 // Returns true if file exists and results are populated, else returns false.
-// Java code requires a Content-URI to look up file info such as is-dir, size,
-// and last-mod, so code that needs to support Content-URI should use
-// base::GetFileInfo(FilePath) which calls to this function rather than
-// File::GetInfo() which cannot call this.
-bool ContentUriGetFileInfo(const FilePath& content_uri, File::Info* results);
+bool ContentUriGetFileInfo(const FilePath& content_uri,
+                           FileEnumerator::FileInfo* results);
 
 // Returns list of files in `content_uri` directory.
 std::vector<FileEnumerator::FileInfo> ListContentUriDirectory(

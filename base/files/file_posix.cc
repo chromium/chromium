@@ -161,6 +161,17 @@ File::Error CallFcntlFlock(PlatformFile file,
 }
 #endif  // BUILDFLAG(IS_NACL)
 
+#if BUILDFLAG(IS_ANDROID)
+bool GetContentUriInfo(const base::FilePath& path, File::Info* info) {
+  FileEnumerator::FileInfo file_info;
+  bool result = internal::ContentUriGetFileInfo(path, &file_info);
+  if (result) {
+    info->FromStat(file_info.stat());
+  }
+  return result;
+}
+#endif
+
 }  // namespace
 
 void File::Info::FromStat(const stat_wrapper_t& stat_info) {
@@ -461,7 +472,7 @@ bool File::GetInfo(Info* info) const {
     // For other Content-URIS, if fstat() succeeded with a non-zero size, then
     // use the result, otherwise try via the Java APIs.
     return (success && info->size > 0 && !internal::IsDocumentUri(path_)) ||
-           internal::ContentUriGetFileInfo(path_, info);
+           GetContentUriInfo(path_, info);
   }
 #endif
   return success;
@@ -720,7 +731,7 @@ int File::Stat(const FilePath& path, stat_wrapper_t* sb) {
     File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
     Info info;
     if ((file.IsValid() && file.GetInfo(&info)) ||
-        internal::ContentUriGetFileInfo(path, &info)) {
+        GetContentUriInfo(path, &info)) {
       memset(sb, 0, sizeof(*sb));
       sb->st_mode = info.is_directory ? S_IFDIR : S_IFREG;
       sb->st_size = info.size;

@@ -70,22 +70,23 @@ int OpenContentUri(const FilePath& content_uri, uint32_t open_flags) {
   return Java_ContentUriUtils_openContentUri(env, content_uri.value(), *mode);
 }
 
-bool ContentUriGetFileInfo(const FilePath& content_uri, File::Info* results) {
+bool ContentUriGetFileInfo(const FilePath& content_uri,
+                           FileEnumerator::FileInfo* info) {
   JNIEnv* env = android::AttachCurrentThread();
-  std::vector<FileEnumerator::FileInfo> result;
+  std::vector<FileEnumerator::FileInfo> list;
   Java_ContentUriUtils_getFileInfo(env, content_uri.value(),
-                                   reinterpret_cast<jlong>(&result));
-  // Java will call back sync to AddFileInfoToVector(&result).
-  if (result.empty()) {
+                                   reinterpret_cast<jlong>(&list));
+  // Java will call back sync to AddFileInfoToVector(&list).
+  if (list.empty()) {
     return false;
   }
   // Android can return -1 for unknown size, which
   // we can't deal with, so we will consider that the file wasn't found.
-  if (result[0].GetSize() < 0) {
+  if (list[0].GetSize() < 0) {
     LOG(ERROR) << "Unknown file length for " << content_uri;
     return false;
   }
-  results->FromStat(result[0].stat());
+  *info = std::move(list[0]);
   return true;
 }
 

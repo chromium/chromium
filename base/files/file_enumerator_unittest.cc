@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -547,6 +548,11 @@ TEST(FileEnumerator, GetInfoRecursive) {
       for (TestFile& file : files) {
         if (info.GetName() == file.path.BaseName()) {
           CheckFileAgainstInfo(info, file);
+#if BUILDFLAG(IS_ANDROID)
+          std::string expected =
+              temp_dir.GetPath().BaseName().Append(file.path.DirName()).value();
+          EXPECT_EQ(base::JoinString(info.subdirs(), "/"), expected);
+#endif
           found = true;
           break;
         }
