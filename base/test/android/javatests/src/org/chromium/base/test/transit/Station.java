@@ -261,9 +261,42 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
             Trigger trigger) {
         assertHasFacilities(facilitiesToExit);
         registerFacility(facilityToEnter);
-        FacilitySwap swap = new FacilitySwap(facilitiesToExit, facilityToEnter, options, trigger);
+        FacilitySwap swap =
+                new FacilitySwap(facilitiesToExit, List.of(facilityToEnter), options, trigger);
         swap.transitionSync();
         return facilityToEnter;
+    }
+
+    /**
+     * Starts a transition out of 1+ {@link Facility}s and into 1+ {@link Facility}s.
+     *
+     * <p>Runs the transition |trigger| and blocks until all |facilitiesToExit| are considered
+     * FINISHED (exit Conditions are fulfilled) and all |facilitiesToEnter| are considered ACTIVE
+     * (enter Conditions are fulfilled).
+     *
+     * @param facilitiesToExit the {@link Facility}s to exit.
+     * @param facilitiesToEnter the {@link Facility}s to enter.
+     * @param trigger the trigger to start the transition (e.g. clicking a view).
+     */
+    public void swapFacilitiesSync(
+            List<Facility<?>> facilitiesToExit,
+            List<Facility<?>> facilitiesToEnter,
+            Trigger trigger) {
+        swapFacilitiesSync(facilitiesToExit, facilitiesToEnter, TransitionOptions.DEFAULT, trigger);
+    }
+
+    /** Version of {@link #swapFacilitiesSync(List, List, Trigger)} with extra TransitionOptions. */
+    public void swapFacilitiesSync(
+            List<Facility<?>> facilitiesToExit,
+            List<Facility<?>> facilitiesToEnter,
+            TransitionOptions options,
+            Trigger trigger) {
+        assertHasFacilities(facilitiesToExit);
+        for (Facility<?> facility : facilitiesToEnter) {
+            registerFacility(facility);
+        }
+        FacilitySwap swap = new FacilitySwap(facilitiesToExit, facilitiesToEnter, options, trigger);
+        swap.transitionSync();
     }
 
     /**
