@@ -71,7 +71,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
@@ -549,11 +548,11 @@ public class SelectableTabListEditorTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void testUndoToolbarGroup() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         prepareBlankTab(2, false);
-        List<Tab> tabs = getTabsInCurrentTabModel();
+        prepareBlankTabGroup(2, false);
+        List<Tab> tabs = getTabsInCurrentTabGroupModelFilter();
         TabUiTestHelper.enterTabSwitcher(cta);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -573,14 +572,14 @@ public class SelectableTabListEditorTest {
 
         mRobot.actionRobot
                 .clickItemAtAdapterPosition(0)
-                .clickItemAtAdapterPosition(1)
+                .clickItemAtAdapterPosition(2)
                 .clickToolbarActionView(R.id.tab_list_editor_group_menu_item);
 
         mRobot.resultRobot.verifyTabListEditorIsHidden();
-        TabUiTestHelper.verifyTabSwitcherCardCount(cta, 1);
+        TabUiTestHelper.verifyTabSwitcherCardCount(cta, 2);
 
         CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
-        TabUiTestHelper.verifyTabSwitcherCardCount(cta, 2);
+        TabUiTestHelper.verifyTabSwitcherCardCount(cta, 3);
     }
 
     @Test
