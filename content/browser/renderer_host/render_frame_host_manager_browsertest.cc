@@ -6415,10 +6415,10 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_EQ(b3, a1->child_at(1)->current_frame_host());
   ASSERT_EQ(0u, b3->child_count());
 
-  EXPECT_FALSE(a1->must_be_replaced());
-  EXPECT_TRUE(b2->must_be_replaced());
-  EXPECT_TRUE(b3->must_be_replaced());
-  EXPECT_FALSE(c5->must_be_replaced());
+  EXPECT_FALSE(a1->must_be_replaced_for_crash());
+  EXPECT_TRUE(b2->must_be_replaced_for_crash());
+  EXPECT_TRUE(b3->must_be_replaced_for_crash());
+  EXPECT_FALSE(c5->must_be_replaced_for_crash());
 
   EXPECT_EQ(2u, proxy_count(a1));
   EXPECT_EQ(2u, proxy_count(b2));
@@ -6444,8 +6444,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // B3 hasn't been replaced.
   EXPECT_EQ(b3, a1->child_at(1)->current_frame_host());
   RenderFrameHostImpl* b6 = a1->child_at(0)->current_frame_host();
-  EXPECT_TRUE(b3->must_be_replaced());
-  EXPECT_FALSE(b6->must_be_replaced());
+  EXPECT_TRUE(b3->must_be_replaced_for_crash());
+  EXPECT_FALSE(b6->must_be_replaced_for_crash());
 
   EXPECT_EQ(a_site_instance, a1->GetSiteInstance());
   EXPECT_EQ(b_site_instance, b6->GetSiteInstance());
