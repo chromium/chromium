@@ -67,7 +67,7 @@ void FrameContentAsText(wtf_size_t max_chars,
     if (output.length() >= max_chars - frame_separator_length)
       return;
 
-    output.Append(kFrameSeparator, frame_separator_length);
+    output.Append(base::span(kFrameSeparator));
     FrameContentAsText(max_chars, cur_local_child, output);
     if (output.length() >= max_chars)
       return;  // Filled up the buffer.

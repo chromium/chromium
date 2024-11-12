@@ -1860,7 +1860,7 @@ String HTMLTokenizer::BufferedCharacters() const {
   characters.ReserveCapacity(NumberOfBufferedCharacters());
   characters.Append('<');
   characters.Append('/');
-  characters.Append(temporary_buffer_.data(), temporary_buffer_.size());
+  characters.Append(temporary_buffer_);
   return characters.ToString();
 }
 

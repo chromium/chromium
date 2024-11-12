@@ -226,7 +226,7 @@ void StringBuilder::CreateBuffer16(unsigned added_size) {
   is_8bit_ = false;
   length_ = 0;
   if (!buffer8.empty()) {
-    Append(buffer8.data(), length);
+    Append(base::span(buffer8).first(length));
     return;
   }
   Append(string_);
@@ -257,23 +257,6 @@ void StringBuilder::Append(const UChar* characters, unsigned length) {
   // check for latin1 and avoid converting to 16bit if possible.
   if (length == 1) {
     Append(*characters);
-    return;
-  }
-
-  EnsureBuffer16(length);
-  buffer16_.Append(characters, length);
-  length_ += length;
-}
-
-void StringBuilder::Append(const LChar* characters, unsigned length) {
-  if (!length)
-    return;
-  DCHECK(characters);
-
-  if (is_8bit_) {
-    EnsureBuffer8(length);
-    buffer8_.Append(characters, length);
-    length_ += length;
     return;
   }
 
@@ -351,8 +334,7 @@ void StringBuilder::AppendFormat(const char* format, ...) {
     va_end(args);
   }
 
-  DCHECK_LT(static_cast<wtf_size_t>(length), buffer.size());
-  Append(reinterpret_cast<const LChar*>(buffer.data()), length);
+  Append(base::as_byte_span(buffer).first(static_cast<wtf_size_t>(length)));
 }
 
 void StringBuilder::erase(unsigned index) {

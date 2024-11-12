@@ -59,11 +59,9 @@ class WTF_EXPORT StringBuilder {
 
   // This is deprecated. Use a base::span overload.
   void Append(const UChar*, unsigned length);
-  // This is deprecated. Use a base::span overload.
-  void Append(const LChar*, unsigned length);
 
   ALWAYS_INLINE void Append(const char* characters, unsigned length) {
-    Append(reinterpret_cast<const LChar*>(characters), length);
+    Append(base::span(reinterpret_cast<const LChar*>(characters), length));
   }
 
   void Append(const StringBuilder& other) {

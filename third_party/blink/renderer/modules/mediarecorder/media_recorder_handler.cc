@@ -762,7 +762,7 @@ String MediaRecorderHandler::ActualMimeType() {
       DCHECK(type_.empty());
       mime_type.Append("audio/webm");
     } else {
-      mime_type.Append(type_.Characters8(), type_.length());
+      mime_type.Append(type_.Span8());
     }
     mime_type.Append(";codecs=");
   } else {
@@ -773,7 +773,7 @@ String MediaRecorderHandler::ActualMimeType() {
         if (passthrough_enabled_) {
           mime_type.Append("video/webm");
         } else {
-          mime_type.Append(type_.Characters8(), type_.length());
+          mime_type.Append(type_.Span8());
         }
         mime_type.Append(";codecs=");
         break;
@@ -784,7 +784,7 @@ String MediaRecorderHandler::ActualMimeType() {
 #endif
         if (!passthrough_enabled_ &&
             EqualIgnoringASCIICase(type_, "video/mp4")) {
-          mime_type.Append(type_.Characters8(), type_.length());
+          mime_type.Append(type_.Span8());
         } else {
           mime_type.Append("video/x-matroska");
         }
