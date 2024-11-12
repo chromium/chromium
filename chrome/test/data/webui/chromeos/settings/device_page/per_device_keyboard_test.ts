@@ -7,7 +7,6 @@ import 'chrome://os-settings/os_settings.js';
 import {CrLinkRowElement, DevicePageBrowserProxyImpl, fakeKeyboards, fakeKeyboards2, PerDeviceSubsectionHeaderElement, Router, routes, SettingsPerDeviceKeyboardElement, SettingsSliderElement} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -18,8 +17,6 @@ import {clearBody} from '../utils.js';
 import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
 
 suite('<settings-per-device-keyboard>', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
   let perDeviceKeyboardPage: SettingsPerDeviceKeyboardElement;
   let devicePageBrowserProxy: TestDevicePageBrowserProxy;
 
@@ -119,10 +116,7 @@ suite('<settings-per-device-keyboard>', () => {
     pressAndReleaseKeyOn(
         perDeviceKeyboardPage.shadowRoot!.querySelector('#delaySlider')!
             .shadowRoot!.querySelector('cr-slider')!,
-        37, [],
-        // In the revamp, slider values and labels are reversed from low to
-        // high.
-        isRevampWayfindingEnabled ? 'ArrowRight' : 'ArrowLeft');
+        37, [], 'ArrowRight');
     pressAndReleaseKeyOn(
         perDeviceKeyboardPage.shadowRoot!.querySelector('#repeatRateSlider')!
             .shadowRoot!.querySelector('cr-slider')!,

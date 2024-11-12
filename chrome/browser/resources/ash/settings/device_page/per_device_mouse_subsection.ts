@@ -31,7 +31,6 @@ import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/pol
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import type {Route} from '../router.js';
@@ -159,13 +158,6 @@ export class SettingsPerDeviceMouseSubsectionElement extends
         readOnly: true,
       },
 
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
-        },
-      },
-
       mouse: {
         type: Object,
       },
@@ -284,7 +276,6 @@ export class SettingsPerDeviceMouseSubsectionElement extends
       getInputDeviceSettingsProvider();
   private mouseIndex: number;
   private isLastDevice: boolean;
-  private isRevampWayfindingEnabled_: boolean;
   private customizationRestriction: CustomizationRestriction;
   private currentMouseChanged: boolean;
 
@@ -417,13 +408,6 @@ export class SettingsPerDeviceMouseSubsectionElement extends
         routes.CUSTOMIZE_MOUSE_BUTTONS,
         /* dynamicParams= */ url, /* removeSearch= */ true);
     this.currentMouseChanged = true;
-  }
-
-  private getMouseAccelerationDescription(): string {
-    if (this.isRevampWayfindingEnabled_) {
-      return this.i18n('mouseAccelerationDescription');
-    }
-    return '';
   }
 
   private isCompanionAppInstalled(): boolean {

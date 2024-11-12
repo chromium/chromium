@@ -24,8 +24,6 @@ import DisplayUnitInfo = chrome.system.display.DisplayUnitInfo;
 const kDisplayIdPrefix = '123456789';
 
 suite('<settings-display>', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
   let displayPage: SettingsDisplayElement;
   let fakeSystemDisplay: FakeSystemDisplay;
   let browserProxy: any;
@@ -421,8 +419,7 @@ suite('<settings-display>', () => {
       // Mock user toggling mirror mode setting.
       const mirrorDisplayControl =
           displayPage.shadowRoot!.querySelector<HTMLElement>(
-              isRevampWayfindingEnabled ? '#mirrorDisplayToggle' :
-                                          '#displayMirrorCheckbox');
+              '#mirrorDisplayToggle');
       assertTrue(!!mirrorDisplayControl);
       mirrorDisplayControl.click();
 
@@ -436,33 +433,29 @@ suite('<settings-display>', () => {
           displaySettingsProvider.getDisplayMirrorModeStatusHistogram().get(
               /*mirror_mode_status=*/ true));
 
-      // When revamp wayfinding is enabled, clicking on the row should toggle
-      // mirror mode, too.
-      if (isRevampWayfindingEnabled) {
-        const mirrorDisplayRow =
-            displayPage.shadowRoot!.querySelector<HTMLElement>(
-                '#mirrorDisplayToggleButton');
-        assertTrue(!!mirrorDisplayRow);
-        mirrorDisplayRow.click();
+      // Clicking on the row should toggle mirror mode, too.
+      const mirrorDisplayRow =
+          displayPage.shadowRoot!.querySelector<HTMLElement>(
+              '#mirrorDisplayToggleButton');
+      assertTrue(!!mirrorDisplayRow);
+      mirrorDisplayRow.click();
 
-        // Verify histogram count for mirror mode setting.
-        assertEquals(
-            2,
-            displayHistogram.get(
-                displaySettingsProviderMojom.DisplaySettingsType.kMirrorMode));
-        assertEquals(
-            1,
-            displaySettingsProvider.getDisplayMirrorModeStatusHistogram().get(
-                /*mirror_mode_status=*/ false));
-      }
+      // Verify histogram count for mirror mode setting.
+      assertEquals(
+          2,
+          displayHistogram.get(
+              displaySettingsProviderMojom.DisplaySettingsType.kMirrorMode));
+      assertEquals(
+          1,
+          displaySettingsProvider.getDisplayMirrorModeStatusHistogram().get(
+              /*mirror_mode_status=*/ false));
     });
 
     test('mirror mode with keyboard', () => {
       // Mock user toggling mirror mode setting with keyboard.
       const mirrorDisplayControl =
           displayPage.shadowRoot!.querySelector<HTMLElement>(
-              isRevampWayfindingEnabled ? '#mirrorDisplayToggle' :
-                                          '#displayMirrorCheckbox');
+              '#mirrorDisplayToggle');
       assertTrue(!!mirrorDisplayControl);
 
       mirrorDisplayControl.focus();
@@ -689,9 +682,7 @@ suite('<settings-display>', () => {
 
           // Mirror the displays.
           const mirrorDisplayControl = strictQuery(
-              isRevampWayfindingEnabled ? '#mirrorDisplayToggle' :
-                                          '#displayMirrorCheckbox',
-              displayPage.shadowRoot, HTMLElement);
+              '#mirrorDisplayToggle', displayPage.shadowRoot, HTMLElement);
           assertTrue(!!mirrorDisplayControl);
           mirrorDisplayControl.click();
           flush();
@@ -774,8 +765,7 @@ suite('<settings-display>', () => {
     assertTrue(displayPage.shouldShowArrangementSection());
 
     const deepLinkElement = displayPage.shadowRoot!.querySelector<HTMLElement>(
-        isRevampWayfindingEnabled ? '#mirrorDisplayToggle' :
-                                    '#displayMirrorCheckbox');
+        '#mirrorDisplayToggle');
     assertTrue(!!deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
@@ -939,9 +929,7 @@ suite('<settings-display>', () => {
     assertFalse(displayPage.isMirrored(displayPage.displays));
     // Mirror the displays.
     const mirrorDisplayControl = strictQuery(
-        isRevampWayfindingEnabled ? '#mirrorDisplayToggle' :
-                                    '#displayMirrorCheckbox',
-        displayPage.shadowRoot, HTMLElement);
+        '#mirrorDisplayToggle', displayPage.shadowRoot, HTMLElement);
     assertTrue(!!mirrorDisplayControl);
     mirrorDisplayControl.click();
     flush();

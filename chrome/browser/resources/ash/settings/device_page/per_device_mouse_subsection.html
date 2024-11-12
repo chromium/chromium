@@ -57,7 +57,7 @@
         class="hr"
         pref="{{accelerationPref}}"
         label="[[getCursorAccelerationString()]]"
-        sub-label="[[getMouseAccelerationDescription()]]"
+        sub-label="$i18n{mouseAccelerationDescription}"
         aria-describedby="mouseName"
         deep-link-focus-id$="[[Setting.kMouseAcceleration]]">
     </settings-toggle-button>
@@ -88,7 +88,7 @@
             localized-string="$i18n{mouseReverseScrollLabel}"
             link-url="$i18n{naturalScrollLearnMoreLink}">
         </localized-link>
-        <div class="secondary" hidden="[[!isRevampWayfindingEnabled_]]">
+        <div class="secondary">
           $i18n{mouseReverseScrollDescription}
         </div>
       </div>

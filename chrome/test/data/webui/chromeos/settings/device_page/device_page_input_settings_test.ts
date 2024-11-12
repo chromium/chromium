@@ -4,8 +4,7 @@
 
 /**
  * @fileoverview
- * Browser tests for Input settings on the Device page, specific to when the
- * OsSettingsRevampWayfinding feature is enabled.
+ * Browser tests for Input settings on the Device page.
  */
 
 import 'chrome://os-settings/os_settings.js';

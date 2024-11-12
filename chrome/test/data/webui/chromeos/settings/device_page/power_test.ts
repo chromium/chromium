@@ -19,8 +19,6 @@ import {getFakePrefs} from './device_page_test_util.js';
 import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
 
 suite('<settings-power>', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
   let powerSubpage: SettingsPowerElement;
   let browserProxy: TestDevicePageBrowserProxy;
 
@@ -406,14 +404,12 @@ suite('<settings-power>', () => {
       });
     });
 
-    if (isRevampWayfindingEnabled) {
-      test('Power idle heading is not visible', () => {
-        const powerIdleLabel =
-            powerSubpage.shadowRoot!.querySelector<HTMLElement>(
-                '#powerIdleLabel');
-        assertFalse(isVisible(powerIdleLabel));
-      });
-    }
+    test('Power idle heading is not visible', () => {
+      const powerIdleLabel =
+          powerSubpage.shadowRoot!.querySelector<HTMLElement>(
+              '#powerIdleLabel');
+      assertFalse(isVisible(powerIdleLabel));
+    });
   });
 
   suite('When battery status is not present', () => {

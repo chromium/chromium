@@ -95,33 +95,18 @@
     <template is="dom-if"
         if="[[showMirror(unifiedDesktopMode_, displays)]]" restamp>
       <!-- Mirror display toggle button -->
-      <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-        <div id="mirrorDisplayToggleButton" class="settings-box"
-            on-click="onMirroredClick_" actionable-row>
-          <div id="mirrorDisplayToggleLabel" class="start">
-            [[getDisplayMirrorText_(displays)]]
-          </div>
-          <cr-toggle id="mirrorDisplayToggle"
-              checked="[[isMirrored(displays)]]"
-              on-change="onMirroredClick_"
-              aria-label="[[getDisplayMirrorText_(displays)]]"
-              deep-link-focus-id$="[[Setting.kDisplayMirroring]]">
-          </cr-toggle>
+      <div id="mirrorDisplayToggleButton" class="settings-box"
+          on-click="onMirroredClick_" actionable-row>
+        <div id="mirrorDisplayToggleLabel" class="start">
+          [[getDisplayMirrorText_(displays)]]
         </div>
-      </template>
-
-      <!-- Mirror display checkbox -->
-      <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
-        <div class="secondary self-start">
-          <cr-checkbox id="displayMirrorCheckbox"
-              checked="[[isMirrored(displays)]]"
-              on-change="onMirroredClick_"
-              aria-label="[[getDisplayMirrorText_(displays)]]"
-              deep-link-focus-id$="[[Setting.kDisplayMirroring]]">
-            <div class="text-area">[[getDisplayMirrorText_(displays)]]</div>
-          </cr-checkbox>
-        </div>
-      </template>
+        <cr-toggle id="mirrorDisplayToggle"
+            checked="[[isMirrored(displays)]]"
+            on-change="onMirroredClick_"
+            aria-label="[[getDisplayMirrorText_(displays)]]"
+            deep-link-focus-id$="[[Setting.kDisplayMirroring]]">
+        </cr-toggle>
+      </div>
     </template>
 
   </div>

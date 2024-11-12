@@ -38,7 +38,7 @@
         <settings-toggle-button id="enableTapToClick"
             pref="{{enableTapToClickPref}}"
             label="$i18n{touchpadTapToClickEnabledLabel}"
-            sub-label="[[getTouchpadTapToClickDescription()]]"
+            sub-label="$i18n{touchpadTapToClickDescription}"
             aria-describedby="touchpadName"
             deep-link-focus-id$="[[Setting.kTouchpadTapToClick]]">
         </settings-toggle-button>
@@ -62,7 +62,7 @@
             class="hr"
             pref="{{enableTapDraggingPref}}"
             label="$i18n{tapDraggingLabel}"
-            sub-label="[[getTouchpadTapDraggingDescription()]]"
+            sub-label="$i18n{tapDraggingDescription}"
             aria-describedby="touchpadName"
             deep-link-focus-id$="[[Setting.kTouchpadTapDragging]]">
         </settings-toggle-button>
@@ -70,7 +70,7 @@
             class="hr"
             pref="{{accelerationPref}}"
             label="$i18n{touchpadAccelerationLabel}"
-            sub-label="[[getTouchpadAccelerationDescription()]]"
+            sub-label="$i18n{touchpadAccelerationDescription}"
             aria-describedby="touchpadName"
             deep-link-focus-id$="[[Setting.kTouchpadAcceleration]]">
         </settings-toggle-button>
@@ -141,7 +141,7 @@
                 localized-string="$i18n{touchpadScrollLabel}"
                 link-url="$i18n{naturalScrollLearnMoreLink}">
             </localized-link>
-            <div class="secondary" hidden="[[!isRevampWayfindingEnabled_]]">
+            <div class="secondary">
               $i18n{touchpadScrollDescription}
             </div>
           </div>
