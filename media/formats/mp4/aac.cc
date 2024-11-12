@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp4/aac.h"
 
 #include <stddef.h>
@@ -125,7 +120,7 @@ bool AAC::Parse(base::span<const uint8_t> data, MediaLog* media_log) {
   }
 
   if (frequency_ == 0) {
-    if (frequency_index_ >= kADTSFrequencyTableSize) {
+    if (frequency_index_ >= kADTSFrequencyTable.size()) {
       MEDIA_LOG(ERROR, media_log)
           << "Sampling Frequency Index(0x" << std::hex
           << static_cast<int>(frequency_index_)
@@ -137,7 +132,7 @@ bool AAC::Parse(base::span<const uint8_t> data, MediaLog* media_log) {
   }
 
   if (extension_frequency_ == 0 && extension_frequency_index != 0xff) {
-    if (extension_frequency_index >= kADTSFrequencyTableSize) {
+    if (extension_frequency_index >= kADTSFrequencyTable.size()) {
       MEDIA_LOG(ERROR, media_log)
           << "Extension Sampling Frequency Index(0x" << std::hex
           << static_cast<int>(extension_frequency_index)
@@ -152,7 +147,7 @@ bool AAC::Parse(base::span<const uint8_t> data, MediaLog* media_log) {
   if (ps_present && channel_config_ == 1) {
     channel_layout_ = CHANNEL_LAYOUT_STEREO;
   } else {
-    if (channel_config_ >= kADTSChannelLayoutTableSize) {
+    if (channel_config_ >= kADTSChannelLayoutTable.size()) {
       MEDIA_LOG(ERROR, media_log)
           << "Channel Configuration(" << static_cast<int>(channel_config_)
           << ") is not supported. Please see ISO 14496-3:2009 Table 1.19 "

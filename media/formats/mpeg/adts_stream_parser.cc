@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mpeg/adts_stream_parser.h"
 
 #include <stddef.h>
@@ -74,8 +69,8 @@ int ADTSStreamParser::ParseFrameHeader(const uint8_t* data,
 
   const int bytes_read = reader.bits_read() / 8;
   if (sync != 0xfff || layer != 0 || frame_length < bytes_read ||
-      sample_rate_index >= kADTSFrequencyTableSize ||
-      channel_layout_index >= kADTSChannelLayoutTableSize) {
+      sample_rate_index >= kADTSFrequencyTable.size() ||
+      channel_layout_index >= kADTSChannelLayoutTable.size()) {
     if (media_log()) {
       LIMITED_MEDIA_LOG(DEBUG, media_log(), adts_parse_error_limit_, 5)
           << "Invalid header data :" << std::hex << " sync 0x" << sync
