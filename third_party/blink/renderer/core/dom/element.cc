@@ -3670,6 +3670,13 @@ bool Element::SkipStyleRecalcForContainer(
     return false;
   }
 
+  // ::scroll-marker-group boxes are created outside their originating element's
+  // box and cannot be skipped if the originating element is a size container
+  // because the pseudo element and its box need to be created before layout.
+  if (style.HasPseudoElementStyle(kPseudoIdScrollMarkerGroup)) {
+    return false;
+  }
+
   // Store the child_change so that we can continue interleaved style layout
   // from where we left off.
   EnsureElementRareData().EnsureContainerQueryData().SkipStyleRecalc(
@@ -3850,8 +3857,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     UpdateBackdropPseudoElement(child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdScrollPrevButton, child_change,
                         child_recalc_context);
-    UpdatePseudoElement(kPseudoIdScrollMarkerGroupBefore, child_change,
-                        child_recalc_context);
+    UpdateScrollMarkerGroupPseudoElement(kPseudoIdScrollMarkerGroupBefore,
+                                         child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdMarker, child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdScrollMarker, child_change,
                         child_recalc_context);
@@ -3891,8 +3898,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
       }
     }
 
-    UpdatePseudoElement(kPseudoIdScrollMarkerGroupAfter, child_change,
-                        child_recalc_context);
+    UpdateScrollMarkerGroupPseudoElement(kPseudoIdScrollMarkerGroupAfter,
+                                         child_change, child_recalc_context);
     UpdatePseudoElement(kPseudoIdScrollNextButton, child_change,
                         child_recalc_context);
 
@@ -8179,6 +8186,31 @@ void Element::UpdateColumnPseudoElements(const StyleRecalcChange change,
       column->RecalcStyle(change, context);
     }
   }
+}
+
+PseudoElement* Element::UpdateScrollMarkerGroupPseudoElement(
+    PseudoId pseudo_id,
+    const StyleRecalcChange change,
+    const StyleRecalcContext& style_recalc_context) {
+  DCHECK(pseudo_id == kPseudoIdScrollMarkerGroupBefore ||
+         pseudo_id == kPseudoIdScrollMarkerGroupAfter);
+  StyleRecalcContext scroll_marker_group_context(style_recalc_context);
+  if (style_recalc_context.container &&
+      style_recalc_context.container == this) {
+    // TODO(crbug.com/378584781): Needs specification.
+    //
+    // The ::scroll-marker-group box is a sibling of its originating element,
+    // which means that it's laid out before or after its originating element.
+    // That means the ::scroll-marker-group is not contained by its parent and
+    // size container queries will break down. This behavior is not specified,
+    // but we currently make the grandparent the first size container query
+    // candidate to avoid crashing. Note that the originating element can still
+    // be a query container for style() queries, for instance.
+    scroll_marker_group_context.container =
+        ContainerQueryEvaluator::ParentContainerCandidateElement(
+            *style_recalc_context.container);
+  }
+  return UpdatePseudoElement(pseudo_id, change, scroll_marker_group_context);
 }
 
 PseudoElement* Element::UpdatePseudoElement(
