@@ -24,7 +24,7 @@ bool ShouldLogUrl(const GURL& web_ui_url) {
 namespace webui {
 
 const char kWebUICreatedForUrl[] = "WebUI.CreatedForUrl";
-const char kWebUIShownUrl[] = "WebUI.ShownURL";
+const char kWebUIShownUrl[] = "WebUI.ShownUrl";
 
 bool LogWebUICreated(const GURL& web_ui_url) {
   if (!ShouldLogUrl(web_ui_url)) {
