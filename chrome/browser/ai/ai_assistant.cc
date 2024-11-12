@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_manager_keyed_service.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
 #include "chrome/browser/ai/ai_utils.h"
@@ -161,11 +162,15 @@ AIAssistant::AIAssistant(
     mojo::PendingRemote<blink::mojom::AIAssistant> pending_remote,
     AIContextBoundObjectSet& context_bound_object_set,
     const std::optional<const Context>& context)
-    : session_(std::move(session)),
+    : AIContextBoundObject(context_bound_object_set),
+      session_(std::move(session)),
       browser_context_(browser_context),
       context_bound_object_set_(context_bound_object_set),
       pending_remote_(std::move(pending_remote)),
       receiver_(this, pending_remote_.InitWithNewPipeAndPassReceiver()) {
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &AIContextBoundObject::RemoveFromSet, base::Unretained(this)));
+
   if (context.has_value()) {
     // If the context is provided, it will be used in this session.
     context_ = std::make_unique<Context>(context.value());
@@ -199,10 +204,6 @@ void AIAssistant::SetInitialPrompts(
       base::BindOnce(&AIAssistant::InitializeContextWithInitialPrompts,
                      weak_ptr_factory_.GetWeakPtr(), request,
                      std::move(callback)));
-}
-
-void AIAssistant::SetDeletionCallback(base::OnceClosure deletion_callback) {
-  receiver_.set_disconnect_handler(std::move(deletion_callback));
 }
 
 void AIAssistant::InitializeContextWithInitialPrompts(

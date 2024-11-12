@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_utils.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
@@ -13,23 +14,24 @@
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 AIWriter::AIWriter(
+    AIContextBoundObjectSet& context_bound_object_set,
     std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
         session,
     blink::mojom::AIWriterCreateOptionsPtr options,
     mojo::PendingReceiver<blink::mojom::AIWriter> receiver)
-    : session_(std::move(session)),
+    : AIContextBoundObject(context_bound_object_set),
+      session_(std::move(session)),
       options_(std::move(options)),
-      receiver_(this, std::move(receiver)) {}
+      receiver_(this, std::move(receiver)) {
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &AIContextBoundObject::RemoveFromSet, base::Unretained(this)));
+}
 
 AIWriter::~AIWriter() {
   for (auto& responder : responder_set_) {
     responder->OnError(
         blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
   }
-}
-
-void AIWriter::SetDeletionCallback(base::OnceClosure deletion_callback) {
-  receiver_.set_disconnect_handler(std::move(deletion_callback));
 }
 
 void AIWriter::Write(const std::string& input,

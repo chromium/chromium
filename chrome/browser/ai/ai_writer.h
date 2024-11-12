@@ -21,6 +21,7 @@
 class AIWriter : public AIContextBoundObject, public blink::mojom::AIWriter {
  public:
   AIWriter(
+      AIContextBoundObjectSet& context_bound_object_set,
       std::unique_ptr<
           optimization_guide::OptimizationGuideModelExecutor::Session> session,
       blink::mojom::AIWriterCreateOptionsPtr options,
@@ -29,9 +30,6 @@ class AIWriter : public AIContextBoundObject, public blink::mojom::AIWriter {
   AIWriter& operator=(const AIWriter&) = delete;
 
   ~AIWriter() override;
-
-  // `AIContextBoundObject` implementation.
-  void SetDeletionCallback(base::OnceClosure deletion_callback) override;
 
   // `blink::mojom::AIWriter` implementation.
   void Write(const std::string& input,

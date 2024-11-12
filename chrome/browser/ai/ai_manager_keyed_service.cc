@@ -153,7 +153,10 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
       base::SupportsUserData& context_user_data,
       CreateOptionsPtrType options,
       mojo::PendingRemote<ClientRemoteInterface> client)
-      : CreateOnDeviceSessionTask(browser_context, feature),
+      : CreateOnDeviceSessionTask(
+            *AIContextBoundObjectSet::GetFromContext(context_user_data),
+            browser_context,
+            feature),
         owning_user_data_(context_user_data),
         options_(std::move(options)),
         client_remote_(std::move(client)) {
@@ -174,9 +177,11 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
       return;
     }
     mojo::PendingRemote<ContextBoundObjectReceiverInterface> pending_remote;
-    AIContextBoundObjectSet::GetFromContext(owning_user_data_.get())
-        ->AddContextBoundObject(std::make_unique<ContextBoundObjectType>(
-            std::move(session), std::move(options_),
+    AIContextBoundObjectSet* context_bound_object_set =
+        AIContextBoundObjectSet::GetFromContext(owning_user_data_.get());
+    context_bound_object_set->AddContextBoundObject(
+        std::make_unique<ContextBoundObjectType>(
+            *context_bound_object_set, std::move(session), std::move(options_),
             pending_remote.InitWithNewPipeAndPassReceiver()));
     client_remote_->OnResult(std::move(pending_remote));
   }
@@ -200,15 +205,12 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
 // `ReceiverContext` any more.
 class AIManagerReceiverRemover : public AIContextBoundObject {
  public:
-  explicit AIManagerReceiverRemover(base::OnceClosure remove_callback)
-      : remove_callback_(std::move(remove_callback)) {}
+  explicit AIManagerReceiverRemover(
+      AIContextBoundObjectSet& context_bound_object_set,
+      base::OnceClosure remove_callback)
+      : AIContextBoundObject(context_bound_object_set),
+        remove_callback_(std::move(remove_callback)) {}
   ~AIManagerReceiverRemover() override { std::move(remove_callback_).Run(); }
-
-  // `AIContextBoundObject` implementation.
-  // Unlike the other implementation of `AIContextBoundObject`, the remover is
-  // not a mojo interface implementation and the only case it should run the
-  // deletion callback is when the object itself is deleted.
-  void SetDeletionCallback(base::OnceClosure deletion_callback) override {}
 
  private:
   base::OnceClosure remove_callback_;
@@ -233,6 +235,7 @@ void AIManagerKeyedService::AddReceiver(
       AIContextBoundObjectSet::GetFromContext(context_user_data);
   context_bound_object_set->AddContextBoundObject(
       std::make_unique<AIManagerReceiverRemover>(
+          *context_bound_object_set,
           base::BindOnce(&AIManagerKeyedService::RemoveReceiver,
                          weak_factory_.GetWeakPtr(), receiver_id)));
 }
@@ -252,7 +255,7 @@ AIManagerKeyedService::CreateAssistantInternal(
     base::SupportsUserData* context_user_data) {
   CHECK(browser_context_);
   auto task = std::make_unique<CreateAssistantOnDeviceSessionTask>(
-      browser_context_.get(), sampling_params,
+      context_bound_object_set, browser_context_.get(), sampling_params,
       base::BindOnce(
           [](base::WeakPtr<content::BrowserContext> browser_context,
              AIContextBoundObjectSet& context_bound_object_set,
@@ -339,8 +342,9 @@ void AIManagerKeyedService::CreateAssistant(
 
   // When creating a new assistant, the `context` will not be set since it
   // should start fresh.
-  auto task = CreateAssistantInternal(sampling_params, *context_bound_object_set,
-                                      std::move(create_assistant_callback));
+  auto task =
+      CreateAssistantInternal(sampling_params, *context_bound_object_set,
+                              std::move(create_assistant_callback));
   if (task->IsPending()) {
     // Put `task` to AIContextBoundObjectSet to continue observing the model
     // availability.

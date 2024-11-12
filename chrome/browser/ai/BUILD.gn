@@ -37,6 +37,7 @@ source_set("ai") {
 source_set("impl") {
   sources = [
     "ai_assistant.cc",
+    "ai_context_bound_object.cc",
     "ai_context_bound_object_set.cc",
     "ai_create_on_device_session_task.cc",
     "ai_data_keyed_service.cc",

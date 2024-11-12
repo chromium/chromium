@@ -102,9 +102,6 @@ class AIAssistant : public AIContextBoundObject,
 
   ~AIAssistant() override;
 
-  // `AIContextBoundObject` implementation.
-  void SetDeletionCallback(base::OnceClosure deletion_callback) override;
-
   // `blink::mojom::AIAssistant` implementation.
   void Prompt(const std::string& input,
               mojo::PendingRemote<blink::mojom::ModelStreamingResponder>

@@ -34,10 +34,10 @@ class AIContextBoundObjectSet : public base::SupportsUserData::Data {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
- protected:
   // Remove the `AIContextBoundObject` from the set.
-  virtual void RemoveContextBoundObject(AIContextBoundObject* object);
+  void RemoveContextBoundObject(AIContextBoundObject* object);
 
+ protected:
   base::flat_set<std::unique_ptr<AIContextBoundObject>,
                  base::UniquePtrComparator>
       context_bound_object_set_;

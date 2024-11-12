@@ -5,6 +5,7 @@
 #include "chrome/browser/ai/ai_create_on_device_session_task.h"
 
 #include "base/containers/fixed_flat_set.h"
+#include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_manager_keyed_service.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -32,9 +33,12 @@ static constexpr auto kWaitableReasons =
 }  // namespace
 
 CreateOnDeviceSessionTask::CreateOnDeviceSessionTask(
+    AIContextBoundObjectSet& context_bound_object_set,
     content::BrowserContext* browser_context,
     optimization_guide::ModelBasedCapabilityKey feature)
-    : browser_context_(browser_context), feature_(feature) {}
+    : AIContextBoundObject(context_bound_object_set),
+      browser_context_(browser_context),
+      feature_(feature) {}
 
 CreateOnDeviceSessionTask::~CreateOnDeviceSessionTask() {
   OptimizationGuideKeyedService* service = GetOptimizationGuideService();
@@ -46,13 +50,11 @@ CreateOnDeviceSessionTask::~CreateOnDeviceSessionTask() {
 void CreateOnDeviceSessionTask::Finish(
     std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
         session) {
-  CHECK(state_ != State::kCancelled && state_ != State::kFinished);
   SetState(State::kFinished);
   OnFinish(std::move(session));
 }
 
 void CreateOnDeviceSessionTask::Start() {
-  CHECK(state_ == State::kNotStarted);
   OptimizationGuideKeyedService* service = GetOptimizationGuideService();
   if (!service) {
     Finish(nullptr);
@@ -76,9 +78,7 @@ void CreateOnDeviceSessionTask::Start() {
 
 void CreateOnDeviceSessionTask::Cancel() {
   SetState(State::kCancelled);
-  if (deletion_callback_) {
-    std::move(deletion_callback_).Run();
-  }
+  RemoveFromSet();
 }
 
 void CreateOnDeviceSessionTask::OnDeviceModelAvailabilityChanged(
@@ -89,14 +89,7 @@ void CreateOnDeviceSessionTask::OnDeviceModelAvailabilityChanged(
     return;
   }
   Finish(StartSession());
-  if (deletion_callback_) {
-    std::move(deletion_callback_).Run();
-  }
-}
-
-void CreateOnDeviceSessionTask::SetDeletionCallback(
-    base::OnceClosure deletion_callback) {
-  deletion_callback_ = std::move(deletion_callback);
+  RemoveFromSet();
 }
 
 std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
@@ -155,6 +148,7 @@ void CreateOnDeviceSessionTask::SetState(State state) {
 }
 
 CreateAssistantOnDeviceSessionTask::CreateAssistantOnDeviceSessionTask(
+    AIContextBoundObjectSet& context_bound_object_set,
     content::BrowserContext* browser_context,
     const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
     base::OnceCallback<
@@ -162,6 +156,7 @@ CreateAssistantOnDeviceSessionTask::CreateAssistantOnDeviceSessionTask(
              optimization_guide::OptimizationGuideModelExecutor::Session>)>
         completion_callback)
     : CreateOnDeviceSessionTask(
+          context_bound_object_set,
           browser_context,
           optimization_guide::ModelBasedCapabilityKey::kPromptApi),
       completion_callback_(std::move(completion_callback)) {

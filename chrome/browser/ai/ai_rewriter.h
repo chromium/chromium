@@ -23,6 +23,7 @@ class AIRewriter : public AIContextBoundObject,
                    public blink::mojom::AIRewriter {
  public:
   AIRewriter(
+      AIContextBoundObjectSet& context_bound_object_set,
       std::unique_ptr<
           optimization_guide::OptimizationGuideModelExecutor::Session> session,
       blink::mojom::AIRewriterCreateOptionsPtr options,
@@ -31,9 +32,6 @@ class AIRewriter : public AIContextBoundObject,
   AIRewriter& operator=(const AIRewriter&) = delete;
 
   ~AIRewriter() override;
-
-  // `AIContextBoundObject` implementation.
-  void SetDeletionCallback(base::OnceClosure deletion_callback) override;
 
   // `blink::mojom::AIRewriter` implementation.
   void Rewrite(const std::string& input,

@@ -17,6 +17,7 @@ class CreateOnDeviceSessionTask
       public optimization_guide::OnDeviceModelAvailabilityObserver {
  public:
   CreateOnDeviceSessionTask(
+      AIContextBoundObjectSet& context_bound_object_set,
       content::BrowserContext* browser_context,
       optimization_guide::ModelBasedCapabilityKey feature);
   ~CreateOnDeviceSessionTask() override;
@@ -67,13 +68,11 @@ class CreateOnDeviceSessionTask
     // The task is cancelled before finishing.
     kCancelled,
   };
+
   friend base::StateTransitions<State>;
   friend std::ostream& operator<<(std::ostream& os, State state);
 
   void SetState(State state);
-
-  // `AIContextBoundObject` implementation.
-  void SetDeletionCallback(base::OnceClosure deletion_callback) override;
 
   // optimization_guide::OnDeviceModelAvailabilityObserver
   void OnDeviceModelAvailabilityChanged(
@@ -92,13 +91,13 @@ class CreateOnDeviceSessionTask
   const raw_ptr<content::BrowserContext> browser_context_;
   const optimization_guide::ModelBasedCapabilityKey feature_;
   State state_ = CreateOnDeviceSessionTask::State::kNotStarted;
-  base::OnceClosure deletion_callback_;
 };
 
 // Implementation of the `CreateOnDeviceSessionTask` base class for AIAssistant.
 class CreateAssistantOnDeviceSessionTask : public CreateOnDeviceSessionTask {
  public:
   CreateAssistantOnDeviceSessionTask(
+      AIContextBoundObjectSet& context_bound_object_set,
       content::BrowserContext* browser_context,
       const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
       base::OnceCallback<
