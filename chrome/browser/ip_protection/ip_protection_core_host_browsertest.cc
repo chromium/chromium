@@ -118,6 +118,9 @@ class IpProtectionCoreHostInterceptor
   void TryGetAuthTokens(uint32_t batch_size,
                         ip_protection::mojom::ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override {
+    // TODO(crbug.com/376827614): remove this logging once flakiness is fixed.
+    LOG(WARNING) << "IpProtectionCoreHostInterceptor::TryGetAuthTokens(" << this
+                 << ")";
     if (should_intercept_) {
       std::vector<BlindSignedAuthToken> tokens;
       for (uint32_t i = 0; i < batch_size; i++) {
@@ -268,6 +271,9 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
                          std::optional<base::Time>>
       future;
   auto* ipp_control = getter->last_remote_for_testing();
+  // TODO(crbug.com/376827614): remove this logging once flakiness is fixed.
+  LOG(WARNING)
+      << "First ipp_control->VerifyIpProtectionCoreHostForTesting call";
   ipp_control->VerifyIpProtectionCoreHostForTesting(future.GetCallback());
   const std::optional<BlindSignedAuthToken>& result =
       future.Get<std::optional<BlindSignedAuthToken>>();
@@ -291,6 +297,9 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
   future.Clear();
   auto* incognito_ipp_control = getter->last_remote_for_testing();
   ASSERT_NE(incognito_ipp_control, ipp_control);
+  LOG(WARNING)
+      << "Second incognito_ipp_control->VerifyIpProtectionCoreHostForTesting "
+         "call";
   incognito_ipp_control->VerifyIpProtectionCoreHostForTesting(
       future.GetCallback());
   const std::optional<BlindSignedAuthToken>& incognito_result =
@@ -301,6 +310,8 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
 
   // Ensure that we can still get tokens from the main profile.
   future.Clear();
+  LOG(WARNING)
+      << "Third ipp_control->VerifyIpProtectionCoreHostForTesting call";
   ipp_control->VerifyIpProtectionCoreHostForTesting(future.GetCallback());
   const std::optional<BlindSignedAuthToken>& second_attempt_result =
       future.Get<std::optional<BlindSignedAuthToken>>();
