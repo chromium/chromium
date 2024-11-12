@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -294,6 +295,24 @@ bool IsValidDNSConstraint(std::string_view possible_dns_constraint) {
          possible_dns_constraint.length() <= 255;
 }
 
+bool MaskFromIPAndPrefixLength(const net::IPAddress& ip,
+                               size_t prefix_length,
+                               net::IPAddress* mask) {
+  if (ip.IsIPv4()) {
+    if (!net::IPAddress::CreateIPv4Mask(mask, prefix_length)) {
+      return false;
+    }
+  } else if (ip.IsIPv6()) {
+    if (!net::IPAddress::CreateIPv6Mask(mask, prefix_length)) {
+      return false;
+    }
+  } else {
+    // Somehow got an IP address that isn't ipv4 or ipv6?
+    return false;
+  }
+  return true;
+}
+
 // Parses the |possible_cidr_constraint|, populating |parsed_cidr| and |mask|,
 // and then return true.
 //
@@ -307,19 +326,7 @@ bool ParseCIDRConstraint(std::string_view possible_cidr_constraint,
                            &prefix_length)) {
     return false;
   }
-  if (parsed_cidr->IsIPv4()) {
-    if (!net::IPAddress::CreateIPv4Mask(mask, prefix_length)) {
-      return false;
-    }
-  } else if (parsed_cidr->IsIPv6()) {
-    if (!net::IPAddress::CreateIPv6Mask(mask, prefix_length)) {
-      return false;
-    }
-  } else {
-    // Somehow got an IP address that isn't ipv4 or ipv6?
-    return false;
-  }
-  return true;
+  return MaskFromIPAndPrefixLength(*parsed_cidr, prefix_length, mask);
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
@@ -348,15 +355,15 @@ bool MaybeAddCertWithConstraints(
   }
   for (const auto& cidr_constraint :
        cert_info.cert_metadata.constraints().cidrs()) {
-    net::IPAddress parsed_cidr;
+    net::IPAddress ip(base::as_byte_span(cidr_constraint.ip()));
     net::IPAddress mask;
-    if (ParseCIDRConstraint(cidr_constraint, &parsed_cidr, &mask)) {
-      cert_with_constraints_mojo->permitted_cidrs.push_back(
-          cert_verifier::mojom::CIDR::New(/*ip=*/parsed_cidr,
-                                          /*mask=*/mask));
-    } else {
+    if (!MaskFromIPAndPrefixLength(ip, cidr_constraint.prefix_length(),
+                                   &mask)) {
       return false;
     }
+    cert_with_constraints_mojo->permitted_cidrs.push_back(
+        cert_verifier::mojom::CIDR::New(/*ip=*/ip,
+                                        /*mask=*/mask));
   }
 
   cert_list->push_back(std::move(cert_with_constraints_mojo));

@@ -13,6 +13,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
@@ -35,6 +36,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/ip_address.h"
 #include "net/cert/x509_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
@@ -600,7 +602,14 @@ void CertificateViewerDialogHandler::HandleGetCertificateMetadata(
       constraints.Append(base::Value(dns_constraint));
     }
     for (auto& cidr_constraint : cert_metadata_->constraints().cidrs()) {
-      constraints.Append(base::Value(cidr_constraint));
+      net::IPAddress ip(base::as_byte_span(cidr_constraint.ip()));
+      if (!ip.IsValid()) {
+        continue;
+      }
+      std::string cidr_string = ip.ToString();
+      cidr_string += "/";
+      cidr_string += base::NumberToString(cidr_constraint.prefix_length());
+      constraints.Append(base::Value(std::move(cidr_string)));
     }
     dict.Set("constraints", std::move(constraints));
   }
