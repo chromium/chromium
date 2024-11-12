@@ -325,14 +325,14 @@ WebGLTexture* XRWebGLLayer::GetCameraTexture() {
   }
 
   // We don't have a WebGL texture, and we cannot create it - return null:
-  if (!camera_image_texture_id_) {
+  if (!camera_image_shared_image_texture_) {
     return nullptr;
   }
 
   // We don't have a WebGL texture, but we can create it, so create, store and
   // return it:
   camera_image_texture_ = MakeGarbageCollected<WebGLUnownedTexture>(
-      webgl_context_, camera_image_texture_id_, GL_TEXTURE_2D);
+      webgl_context_, camera_image_shared_image_texture_->id(), GL_TEXTURE_2D);
 
   return camera_image_texture_.Get();
 }
@@ -361,41 +361,50 @@ void XRWebGLLayer::OnFrameStart() {
     if (camera_image_data.shared_image) {
       DVLOG(3) << __func__ << ": camera_image_data.shared_image->mailbox()"
                << camera_image_data.shared_image->mailbox().ToDebugString();
-      camera_image_texture_id_ = GetBufferTextureId(
-          camera_image_data.shared_image, camera_image_data.sync_token);
-      DVLOG(3) << __func__
-               << ": camera_image_texture_id_=" << camera_image_texture_id_;
-      BindCameraBufferTexture(camera_image_data.shared_image);
+      CreateAndBindCameraBufferTexture(camera_image_data.shared_image,
+                                       camera_image_data.sync_token);
     }
   }
 }
 
-uint32_t XRWebGLLayer::GetBufferTextureId(
+void XRWebGLLayer::CreateAndBindCameraBufferTexture(
     const scoped_refptr<gpu::ClientSharedImage>& buffer_shared_image,
     const gpu::SyncToken& buffer_sync_token) {
   gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
-  gl->WaitSyncTokenCHROMIUM(buffer_sync_token.GetConstData());
+
   DVLOG(3) << __func__
            << ": buffer_sync_token=" << buffer_sync_token.ToDebugString();
-  GLuint texture_id = gl->CreateAndTexStorage2DSharedImageCHROMIUM(
-      buffer_shared_image->mailbox().name);
-  DVLOG(3) << __func__ << ": texture_id=" << texture_id;
-  return texture_id;
-}
-
-void XRWebGLLayer::BindCameraBufferTexture(
-    const scoped_refptr<gpu::ClientSharedImage>& buffer_shared_image) {
-  gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
-
+  camera_image_shared_image_texture_ = buffer_shared_image->CreateGLTexture(gl);
+  DVLOG(3) << __func__ << ": camera_image_shared_image_texture_->id()="
+           << camera_image_shared_image_texture_->id();
   if (buffer_shared_image) {
     uint32_t texture_target = buffer_shared_image->GetTextureTarget();
-    gl->BindTexture(texture_target, camera_image_texture_id_);
-    gl->BeginSharedImageAccessDirectCHROMIUM(
-        camera_image_texture_id_, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+    camera_image_texture_scoped_access_ =
+        camera_image_shared_image_texture_->BeginAccess(buffer_sync_token,
+                                                        /*readonly=*/true);
+    gl->BindTexture(texture_target,
+                    camera_image_texture_scoped_access_->texture_id());
   }
 }
 
 void XRWebGLLayer::OnFrameEnd() {
+  // The session might have ended in the middle of the frame. Only perform the
+  // main work of OnFrameEnd if it's still valid. Otherwise, simply ensure the
+  // shared image access is properly ended.
+  if (session()->ended()) {
+    if (is_direct_draw_frame) {
+      drawing_buffer_->DoneWithSharedBuffer();
+      is_direct_draw_frame = false;
+    }
+
+    if (camera_image_texture_scoped_access_) {
+      gpu::SharedImageTexture::ScopedAccess::EndAccess(
+          std::move(camera_image_texture_scoped_access_));
+      camera_image_shared_image_texture_.reset();
+    }
+    return;
+  }
+
   if (framebuffer_) {
     framebuffer_->MarkOpaqueBufferComplete(false);
     if (is_direct_draw_frame) {
@@ -431,29 +440,29 @@ void XRWebGLLayer::OnFrameEnd() {
       // Need to stop accessing the camera image texture before calling
       // `SubmitWebGLLayer` so that we stop using it before the sync token
       // that `SubmitWebGLLayer` will generate.
-      if (camera_image_texture_id_) {
+      if (camera_image_shared_image_texture_) {
         const XRLayerSharedImages& layer_shared_images = GetSharedImages();
         // We shouldn't ever have a camera texture if the holder wasn't present:
         CHECK(layer_shared_images.camera_image_data.shared_image);
 
         DVLOG(3) << __func__
-                 << ": deleting camera image texture, camera_image_texture_id_="
-                 << camera_image_texture_id_;
-        gpu::gles2::GLES2Interface* gl = drawing_buffer_->ContextGL();
+                 << ": deleting camera image texture, "
+                    "camera_image_shared_image_texture_->id()="
+                 << camera_image_shared_image_texture_->id();
 
-        gl->EndSharedImageAccessDirectCHROMIUM(camera_image_texture_id_);
-        gl->DeleteTextures(1, &camera_image_texture_id_);
+        gpu::SharedImageTexture::ScopedAccess::EndAccess(
+            std::move(camera_image_texture_scoped_access_));
+        camera_image_shared_image_texture_.reset();
 
         // Notify our WebGLUnownedTexture (created from
-        // camera_image_texture_id_) that we have deleted it. Also, release the
-        // reference since we no longer need it (note that it could still be
-        // kept alive by the JS application, but should be a defunct object).
+        // camera_image_shared_image_texture_) that we have deleted it. Also,
+        // release the reference since we no longer need it (note that it could
+        // still be kept alive by the JS application, but should be a defunct
+        // object).
         if (camera_image_texture_) {
           camera_image_texture_->OnGLDeleteTextures();
           camera_image_texture_ = nullptr;
         }
-
-        camera_image_texture_id_ = 0;
       }
 
       // Always call submit, but notify if the contents were changed or not.

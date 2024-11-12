@@ -2048,10 +2048,7 @@ void XRSession::OnFrame(
     callback_collection_->ExecuteCallbacks(this, timestamp, presentation_frame);
     page_animation_frame_timer_.StopTimer();
 
-    // The session might have ended in the middle of the frame. Only call
-    // OnFrameEnd if it's still valid.
-    if (!ended_)
-      frame_base_layer->OnFrameEnd();
+    frame_base_layer->OnFrameEnd();
 
     // Ensure the XRFrame cannot be used outside the callbacks.
     presentation_frame->Deactivate();

@@ -85,12 +85,9 @@ class XRWebGLLayer final : public XRLayer {
   void Trace(Visitor*) const override;
 
  private:
-  uint32_t GetBufferTextureId(
+  void CreateAndBindCameraBufferTexture(
       const scoped_refptr<gpu::ClientSharedImage>& buffer_shared_image,
       const gpu::SyncToken& buffer_sync_token);
-
-  void BindCameraBufferTexture(
-      const scoped_refptr<gpu::ClientSharedImage>& buffer_shared_image);
 
   Member<XRViewport> left_viewport_;
   Member<XRViewport> right_viewport_;
@@ -106,7 +103,10 @@ class XRWebGLLayer final : public XRLayer {
 
   uint32_t clean_frame_count = 0;
 
-  uint32_t camera_image_texture_id_;
+  std::unique_ptr<gpu::SharedImageTexture> camera_image_shared_image_texture_;
+  std::unique_ptr<gpu::SharedImageTexture::ScopedAccess>
+      camera_image_texture_scoped_access_;
+
   // WebGL texture that points to the |camera_image_texture_|. Must be notified
   // via a call to |WebGLUnownedTexture::OnGLDeleteTextures()| when
   // |camera_image_texture_id_| is deleted.
