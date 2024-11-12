@@ -42,9 +42,16 @@ if (is_linux || is_chromeos) {
 
       # The copied test fonts are inputs to generate_fontconfig_caches, so must
       # be listed in deps, not data_deps (https://crbug.com/919422).
-      deps = [ "//third_party/test_fonts" ]
+      deps = [
+        ":fonts_conf",
+        "//third_party/test_fonts",
+      ]
       args = []
-      outputs = [ "$root_out_dir/fontconfig_caches/fb5c91b2895aa445d23aebf7f9e2189c-le64.cache-9" ]
+      inputs = [ "$root_out_dir/etc/fonts/fonts.conf" ]
+      outputs = [
+        "$root_out_dir/fontconfig_caches/fb5c91b2895aa445d23aebf7f9e2189c-le64.cache-9",
+        "$root_out_dir/fontconfig_caches/CACHEDIR.TAG",
+      ]
     }
   }
 }
