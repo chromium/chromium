@@ -182,7 +182,7 @@ BASE_FEATURE(kExtendIntentAnrTimeout,
 // Controls whether to extend the executing service ANR timeout time.
 BASE_FEATURE(kExtendServiceAnrTimeout,
              "ArcExtendServiceAnrTimeout",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to allow Android apps to access external storage devices
 // like USB flash drives and SD cards.
