@@ -43,6 +43,10 @@ export function getHtml(this: ProductViewerAppElement) {
           <td>${this.product_.currentPrice}</td>
         </tr>
         <tr>
+          <td>Price Range: </td>
+          <td>${this.product_.priceSummary}</td>
+        </tr>
+        <tr>
           <td>Product Categories: </td>
           <td>${this.product_.categoryLabels.join(', \n')}</td>
         </tr>
