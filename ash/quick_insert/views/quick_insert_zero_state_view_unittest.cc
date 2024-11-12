@@ -12,7 +12,6 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/quick_insert/mock_quick_insert_asset_fetcher.h"
 #include "ash/quick_insert/model/quick_insert_caps_lock_position.h"
 #include "ash/quick_insert/quick_insert_category.h"
@@ -215,7 +214,6 @@ TEST_F(QuickInsertZeroStateViewTest, ShowsSuggestedResults) {
 
 TEST_F(QuickInsertZeroStateViewTest,
        ShowsSuggestedLocalFileResultsInRowFormat) {
-  base::test::ScopedFeatureList feature_list(features::kPickerGrid);
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
       .WillOnce(
@@ -257,7 +255,6 @@ TEST_F(QuickInsertZeroStateViewTest,
 }
 
 TEST_F(QuickInsertZeroStateViewTest, ShowsMoreItemsButtonForLocalFiles) {
-  base::test::ScopedFeatureList feature_list(features::kPickerGrid);
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetZeroStateSuggestedResults(_))
       .WillOnce(

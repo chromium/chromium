@@ -2449,26 +2449,8 @@ BASE_FEATURE(kPhoneHubShortQuickActionPodsTitles,
              "PhoneHubShortQuickActionPodsTitles",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Always show the feature tour for Picker for debugging purposes.
-BASE_FEATURE(kPickerAlwaysShowFeatureTour,
-             "PickerAlwaysShowFeatureTour",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables filtering of link suggestions.
-BASE_FEATURE(kPickerFilterLinks,
-             "PickerFilterLinks",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables GIF search in Picker.
 BASE_FEATURE(kPickerGifs, "PickerGifs", base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Uses grid view for recent local files.
-BASE_FEATURE(kPickerGrid, "PickerGrid", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Show more recent files beyond 30 days.
-BASE_FEATURE(kPickerRecentFiles,
-             "PickerRecentFiles",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPipDoubleTapToResize,
              "PipDoubleTapToResize",

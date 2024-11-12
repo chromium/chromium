@@ -824,10 +824,8 @@ void QuickInsertView::AddMainContainerView(QuickInsertLayoutType layout_type) {
       std::make_unique<QuickInsertSearchResultsView>(
           this, kQuickInsertViewWidth, delegate_->GetAssetFetcher(),
           &submenu_controller_, &preview_controller_));
-  if (base::FeatureList::IsEnabled(ash::features::kPickerGrid)) {
-    category_results_view_->SetLocalFileResultStyle(
-        QuickInsertSearchResultsView::LocalFileResultStyle::kGrid);
-  }
+  category_results_view_->SetLocalFileResultStyle(
+      QuickInsertSearchResultsView::LocalFileResultStyle::kGrid);
   search_results_view_ = main_container_view_->AddPage(
       std::make_unique<QuickInsertSearchResultsView>(
           this, kQuickInsertViewWidth, delegate_->GetAssetFetcher(),

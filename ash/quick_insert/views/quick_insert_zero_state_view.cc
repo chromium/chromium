@@ -227,9 +227,7 @@ void QuickInsertZeroStateView::AddResultToSection(
     QuickInsertSectionView* section) {
   QuickInsertItemView* view = section->AddResult(
       result, preview_controller_,
-      base::FeatureList::IsEnabled(ash::features::kPickerGrid)
-          ? QuickInsertSectionView::LocalFileResultStyle::kRow
-          : QuickInsertSectionView::LocalFileResultStyle::kList,
+      QuickInsertSectionView::LocalFileResultStyle::kRow,
       base::BindRepeating(&QuickInsertZeroStateView::OnResultSelected,
                           weak_ptr_factory_.GetWeakPtr(), result));
 

@@ -7,7 +7,6 @@
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
 #include "ash/clipboard/test_support/mock_clipboard_history_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/quick_insert/mock_quick_insert_client.h"
 #include "ash/quick_insert/model/quick_insert_model.h"
 #include "ash/test/ash_test_base.h"
@@ -231,55 +230,7 @@ TEST_F(QuickInsertSuggestionsControllerTest,
 }
 
 TEST_F(QuickInsertSuggestionsControllerTest,
-       GetSuggestionsRequestsAndReturnsOneSuggestionPerCategory) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(ash::features::kPickerGrid);
-  NiceMock<MockQuickInsertClient> client;
-  EXPECT_CALL(client, GetSuggestedLinkResults(_, _))
-      .WillOnce(RunOnceCallback<1>(std::vector<QuickInsertSearchResult>{
-          QuickInsertBrowsingHistoryResult(GURL("a.com"), u"a",
-                                           /*icon=*/{}),
-          QuickInsertBrowsingHistoryResult(GURL("b.com"), u"b",
-                                           /*icon=*/{}),
-      }));
-  EXPECT_CALL(client, GetRecentDriveFileResults(5, _))
-      .WillOnce(RunOnceCallback<1>(std::vector<QuickInsertSearchResult>{
-          QuickInsertDriveFileResult(/*id=*/{}, u"a", GURL("a.com"),
-                                     /*file_path=*/{}),
-          QuickInsertDriveFileResult(/*id=*/{}, u"b", GURL("b.com"),
-                                     /*file_path=*/{}),
-      }));
-  EXPECT_CALL(client, GetRecentLocalFileResults(1, _, _))
-      .WillOnce(RunOnceCallback<2>(std::vector<QuickInsertSearchResult>{
-          QuickInsertLocalFileResult(u"a", /*file_path=*/{}),
-          QuickInsertLocalFileResult(u"b", /*file_path=*/{}),
-      }));
-  QuickInsertSuggestionsController controller;
-  input_method::FakeImeKeyboard keyboard;
-  QuickInsertModel model(/*prefs=*/nullptr, /*focused_client=*/nullptr,
-                         &keyboard, QuickInsertModel::EditorStatus::kEnabled,
-                         QuickInsertModel::LobsterStatus::kEnabled);
-
-  base::MockCallback<QuickInsertSuggestionsController::SuggestionsCallback>
-      callback;
-  EXPECT_CALL(callback, Run).Times(AnyNumber());
-  EXPECT_CALL(
-      callback,
-      Run(ElementsAre(VariantWith<QuickInsertBrowsingHistoryResult>(_))))
-      .Times(1);
-  EXPECT_CALL(callback,
-              Run(ElementsAre(VariantWith<QuickInsertDriveFileResult>(_))))
-      .Times(1);
-  EXPECT_CALL(callback,
-              Run(ElementsAre(VariantWith<QuickInsertLocalFileResult>(_))))
-      .Times(1);
-
-  controller.GetSuggestions(client, model, callback.Get());
-}
-
-TEST_F(QuickInsertSuggestionsControllerTest,
        GetSuggestionsRequestsAndReturnsSuggestionsPerCategory) {
-  base::test::ScopedFeatureList feature_list(ash::features::kPickerGrid);
   NiceMock<MockQuickInsertClient> client;
   EXPECT_CALL(client, GetSuggestedLinkResults(_, _))
       .WillOnce(RunOnceCallback<1>(std::vector<QuickInsertSearchResult>{

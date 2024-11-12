@@ -5951,22 +5951,8 @@ const char kAshModifierSplitName[] = "Modifier split feature";
 const char kAshModifierSplitDescription[] =
     "Enable new modifier split feature on ChromeOS.";
 
-const char kAshPickerName[] = "Picker feature";
-const char kAshPickerDescription[] = "Enable new Picker feature on ChromeOS.";
-
-const char kAshPickerAlwaysShowFeatureTourName[] = "Picker feature tour";
-const char kAshPickerAlwaysShowFeatureTourDescription[] =
-    "Always show the feature tour for debugging.";
-
-const char kAshPickerCloudName[] = "Picker cloud search";
-const char kAshPickerCloudDescription[] =
-    "Enable cloud-based search for the Picker feature on ChromeOS.";
-
 const char kAshPickerGifsName[] = "Picker GIFs search";
 const char kAshPickerGifsDescription[] = "Enable GIf search for Picker.";
-
-const char kAshPickerGridName[] = "Picker grid UI";
-const char kAshPickerGridDescription[] = "Enable the grid UI for Picker.";
 
 const char kAshSplitKeyboardRefactorName[] = "Split keyboard refactor";
 const char kAshSplitKeyboardRefactorDescription[] =

@@ -466,32 +466,9 @@
     "expiry_milestone": 140
   },
   {
-    "name": "ash-picker-always-show-feature-tour",
-    "owners": [ "shend@chromium.org", "e14s-eng@google.com" ],
-    "expiry_milestone": 131
-  },
-  {
-    "name": "ash-picker-cloud",
-    "owners": [
-      "shend@chromium.org",
-      "e14s-eng@google.com"
-    ],
-    "expiry_milestone": 130
-  },
-  {
-    "name": "ash-picker-feature-key",
-    "owners": [ "shend@chromium.org", "e14s-eng@google.com" ],
-    "expiry_milestone": 131
-  },
-  {
     "name": "ash-picker-gifs",
     "owners": [ "shend@chromium.org", "e14s-eng@google.com" ],
     "expiry_milestone": 133
-  },
-  {
-    "name": "ash-picker-grid",
-    "owners": [ "shend@chromium.org", "e14s-eng@google.com" ],
-    "expiry_milestone": 131
   },
   {
     "name": "ash-snap-groups",

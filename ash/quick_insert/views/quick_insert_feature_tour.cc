@@ -162,9 +162,7 @@ bool QuickInsertFeatureTour::MaybeShowForFirstUse(
   auto* pref = prefs->FindPreference(kFeatureTourCompletedPref);
   // Don't show if `pref` is null (this happens in unit tests that don't call
   // `RegisterProfilePrefs`).
-  if (!base::FeatureList::IsEnabled(
-          ash::features::kPickerAlwaysShowFeatureTour) &&
-      (pref == nullptr || pref->GetValue()->GetBool())) {
+  if (pref == nullptr || pref->GetValue()->GetBool()) {
     return false;
   }
 

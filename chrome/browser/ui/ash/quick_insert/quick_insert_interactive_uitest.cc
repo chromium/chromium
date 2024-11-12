@@ -113,9 +113,6 @@ class QuickInsertInteractiveUiTest : public InteractiveAshTest {
   };
 
   QuickInsertInteractiveUiTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kPickerGrid},
-        /*disabled_features=*/{});
     ash::QuickInsertController::DisableFeatureTourForTesting();
   }
 
@@ -162,9 +159,6 @@ class QuickInsertInteractiveUiTest : public InteractiveAshTest {
           return false;
         }));
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Searches for 'thumbs up', checks the top emoji result is '👍', and inserts it

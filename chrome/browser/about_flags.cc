@@ -10804,18 +10804,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPompanoDescritpion, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kPompano)},
 
-    {"ash-picker-always-show-feature-tour",
-     flag_descriptions::kAshPickerAlwaysShowFeatureTourName,
-     flag_descriptions::kAshPickerAlwaysShowFeatureTourDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPickerAlwaysShowFeatureTour)},
-
     {"ash-picker-gifs", flag_descriptions::kAshPickerGifsName,
      flag_descriptions::kAshPickerGifsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPickerGifs)},
-
-    {"ash-picker-grid", flag_descriptions::kAshPickerGridName,
-     flag_descriptions::kAshPickerGridDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPickerGrid)},
 
     {"ash-modifier-split", flag_descriptions::kAshModifierSplitName,
      flag_descriptions::kAshModifierSplitDescription, kOsCrOS,

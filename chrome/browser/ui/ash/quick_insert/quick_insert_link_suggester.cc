@@ -70,15 +70,13 @@ void QuickInsertLinkSuggester::OnGetBrowsingHistory(
     SuggestedLinksCallback callback,
     history::QueryResults results) {
   std::vector<history::URLResult> filtered_results;
-  base::ranges::copy_if(
-      results, std::back_inserter(filtered_results),
-      [](const history::URLResult result) {
-        if (base::FeatureList::IsEnabled(ash::features::kPickerFilterLinks) &&
-            IsLinkLikelyPersonalized(result.url())) {
-          return false;
-        }
-        return result.url().SchemeIsHTTPOrHTTPS();
-      });
+  base::ranges::copy_if(results, std::back_inserter(filtered_results),
+                        [](const history::URLResult result) {
+                          if (IsLinkLikelyPersonalized(result.url())) {
+                            return false;
+                          }
+                          return result.url().SchemeIsHTTPOrHTTPS();
+                        });
 
   if (favicon_service_) {
     favicon_query_trackers_ =

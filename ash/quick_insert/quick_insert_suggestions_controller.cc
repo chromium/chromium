@@ -4,7 +4,6 @@
 
 #include "ash/quick_insert/quick_insert_suggestions_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/quick_insert/model/quick_insert_mode_type.h"
 #include "ash/quick_insert/model/quick_insert_model.h"
 #include "ash/quick_insert/quick_insert_category.h"
@@ -94,15 +93,11 @@ void QuickInsertSuggestionsController::GetSuggestions(
     switch (category) {
       case QuickInsertCategory::kLinks:
         client.GetSuggestedLinkResults(
-            /*max_results=*/base::FeatureList::IsEnabled(
-                ash::features::kPickerFilterLinks)
-                ? 10
-                : 1,
+            /*max_results=*/10,
             base::BindRepeating(&GetMostRecentResults, 1).Then(callback));
         break;
       case QuickInsertCategory::kLocalFiles: {
-        const size_t max_results =
-            base::FeatureList::IsEnabled(ash::features::kPickerGrid) ? 3 : 1;
+        const size_t max_results = 3;
         client.GetRecentLocalFileResults(
             max_results, kMaxLocalFileSuggestionRecencyDelta,
             base::BindRepeating(&GetMostRecentResults, max_results)
@@ -136,11 +131,7 @@ void QuickInsertSuggestionsController::GetSuggestionsForCategory(
     case QuickInsertCategory::kLinks:
       // TODO: b/366237507 - Request only kMaxRecentLinks results once
       // HistoryService supports filtering.
-      client.GetSuggestedLinkResults(
-          base::FeatureList::IsEnabled(ash::features::kPickerFilterLinks)
-              ? kMaxRecentLinks * 3
-              : kMaxRecentLinks,
-          std::move(callback));
+      client.GetSuggestedLinkResults(kMaxRecentLinks * 3, std::move(callback));
       return;
     case QuickInsertCategory::kEmojisGifs:
     case QuickInsertCategory::kEmojis:
@@ -149,12 +140,9 @@ void QuickInsertSuggestionsController::GetSuggestionsForCategory(
       client.GetRecentDriveFileResults(kMaxRecentFiles, std::move(callback));
       return;
     case QuickInsertCategory::kLocalFiles:
-      client.GetRecentLocalFileResults(
-          kMaxRecentFiles,
-          base::FeatureList::IsEnabled(ash::features::kPickerRecentFiles)
-              ? kMaxLocalFileCategoryRecencyDelta
-              : kMaxLocalFileSuggestionRecencyDelta,
-          std::move(callback));
+      client.GetRecentLocalFileResults(kMaxRecentFiles,
+                                       kMaxLocalFileCategoryRecencyDelta,
+                                       std::move(callback));
       return;
     case QuickInsertCategory::kDatesTimes:
       std::move(callback).Run(QuickInsertSuggestedDateResults());

@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/quick_insert/quick_insert_controller.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -596,7 +595,6 @@ TEST_F(QuickInsertClientImplTest,
 
 TEST_F(QuickInsertClientImplTest,
        GetSuggestedLinkResultsFiltersOutPersonalizedLinks) {
-  base::test::ScopedFeatureList features(ash::features::kPickerFilterLinks);
   ash::QuickInsertController controller;
   QuickInsertClientImpl client(&controller, user_manager());
   const base::Time now = base::Time::Now();
