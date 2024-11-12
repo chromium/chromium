@@ -170,6 +170,7 @@ def validateJavaScriptAllowed(source_dir, out_dir, is_ios):
       # TODO(crbug.com/40280699) : Migrate to TypeScript.
       'chrome/test/data/webui/media_internals',
       'content/browser/resources/media',
+      'content/browser/resources/service_worker',
 
       # TODO(b/274059668): Migrate OOBE to TypeScript.
       'chrome/browser/resources/chromeos/login',
