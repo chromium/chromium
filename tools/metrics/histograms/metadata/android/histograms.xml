@@ -205,6 +205,7 @@ chromium-metrics-reviews@google.com.
 <variants name="SearchActivityIntentOriginVariants">
   <variant name="" summary="overall"/>
   <variant name=".CustomTab" summary="Chrome Custom Tab"/>
+  <variant name=".Hub" summary="Hub search feature"/>
   <variant name=".Launcher" summary="Launcher / Jump-start Omnibox"/>
   <variant name=".SearchWidget" summary="(old) Search widget"/>
   <variant name=".ShortcutsWidget" summary="(new) Shortcuts widget"/>

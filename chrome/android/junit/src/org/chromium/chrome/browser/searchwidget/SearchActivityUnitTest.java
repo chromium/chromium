@@ -589,7 +589,8 @@ public class SearchActivityUnitTest {
                 Set.of(
                         IntentOrigin.SEARCH_WIDGET,
                         IntentOrigin.QUICK_ACTION_SEARCH_WIDGET,
-                        IntentOrigin.CUSTOM_TAB);
+                        IntentOrigin.CUSTOM_TAB,
+                        IntentOrigin.HUB);
         int[] searchTypes = new int[] {SearchType.TEXT, SearchType.VOICE, SearchType.LENS};
 
         for (int origin = 0; origin < 10; origin++) {
