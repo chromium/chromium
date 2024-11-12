@@ -2317,6 +2317,7 @@ crbug.com/27659 external/wpt/css/css-ruby/ruby-box-generation-004.html [ Failure
 crbug.com/27659 external/wpt/css/css-ruby/ruby-box-generation-005.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-box-model-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-float-handling-001.html [ Failure ]
+crbug.com/40771893 external/wpt/css/css-ruby/ruby-intra-level-whitespace-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-intra-level-whitespace-003.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-intrinsic-isize-001.html [ Failure ]
 crbug.com/27659 external/wpt/css/css-ruby/ruby-intrinsic-isize-002.html [ Failure ]

@@ -185,7 +185,8 @@ class CORE_EXPORT LineBreaker {
                    const InlineItem&,
                    ShapingLineBreaker& breaker,
                    LineInfo*);
-  bool BreakTextAtPreviousBreakOpportunity(InlineItemResult* item_result);
+  bool BreakTextAtPreviousBreakOpportunity(InlineItemResults& results,
+                                           wtf_size_t item_result_index);
   bool HandleTextForFastMinContent(InlineItemResult*,
                                    const InlineItem&,
                                    const ShapeResult&,
@@ -207,6 +208,7 @@ class CORE_EXPORT LineBreaker {
   void SplitTrailingBidiPreservedSpace(LineInfo*);
   LayoutUnit TrailingCollapsibleSpaceWidth(LineInfo*);
   void ComputeTrailingCollapsibleSpace(LineInfo*);
+  bool ComputeTrailingCollapsibleSpaceHelper(LineInfo&);
   void RewindTrailingOpenTags(LineInfo*);
 
   void HandleControlItem(const InlineItem&, LineInfo*);
@@ -231,11 +233,13 @@ class CORE_EXPORT LineBreaker {
       const HeapVector<LineInfo, 1>& annotation_line_list) const;
   // `mode`: Must be kMaxContent or kContent.
   // `limit`: Must be non-negative or kIndefiniteSize, which means no auto-wrap.
-  LineInfo CreateSubLineInfo(InlineItemTextIndex start,
-                             wtf_size_t end_item_index,
-                             LineBreakerMode mode,
-                             LayoutUnit limit,
-                             WhitespaceState initial_whitespace_state);
+  LineInfo CreateSubLineInfo(
+      InlineItemTextIndex start,
+      wtf_size_t end_item_index,
+      LineBreakerMode mode,
+      LayoutUnit limit,
+      WhitespaceState initial_whitespace_state,
+      bool disable_trailing_whitespace_collapsing = false);
   InlineItemResult* AddRubyColumnResult(
       const InlineItem& item,
       const LineInfo& base_line_info,
@@ -327,6 +331,7 @@ class CORE_EXPORT LineBreaker {
 
   // |WhitespaceState| of the current end. When a line is broken, this indicates
   // the state of trailing whitespaces.
+  // This field is not used for sub-LineBreakers.
   WhitespaceState trailing_whitespace_ = WhitespaceState::kUnknown;
   // The state just after starting BreakLine(). This can be overridden by
   // SetInputRange().
@@ -377,6 +382,8 @@ class CORE_EXPORT LineBreaker {
 
   bool disable_score_line_break_ = false;
   bool disable_bisect_line_break_ = false;
+
+  bool disable_trailing_whitespace_collapsing_ = false;
 
   // True when the line should be non-empty if |IsLastLine|..
   bool force_non_empty_if_last_line_ = false;
@@ -438,8 +445,25 @@ class CORE_EXPORT LineBreaker {
     STACK_ALLOCATED();
 
    public:
-    InlineItemResult* item_result;
-    const ShapeResultView* collapsed_shape_result;
+    InlineItemResults* item_results = nullptr;
+    wtf_size_t item_result_index = WTF::kNotFound;
+    const ShapeResultView* collapsed_shape_result = nullptr;
+    // Ancestors of `item_result`. ancestor_ruby_columns[0] is the parent of
+    // `item_result`, and ancestor_ruby_columns[n+1] is the parent of
+    // ancestor_ruby_columns[n]. This list is empty if `item_result` is not
+    // in a ruby column.
+    //
+    // It's difficult to trace InlineItemResults below because it's a part of
+    // LineInfo, and LineInfo is stack-allocated or a part of
+    // InlineItemResultRubyColumn. Storing raw pointers should be safe because
+    // the InlineItemResults are owned by a LineInfo tree and they are not
+    // movable.
+    GC_PLUGIN_IGNORE("See the above comment")
+    Vector<std::pair<InlineItemResults*, wtf_size_t>> ancestor_ruby_columns;
+
+    InlineItemResult& ItemResult() const {
+      return (*item_results)[item_result_index];
+    }
   };
   std::optional<TrailingCollapsibleSpace> trailing_collapsible_space_;
 
