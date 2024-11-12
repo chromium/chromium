@@ -6,7 +6,7 @@ import '../../module_header.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {I18nMixinLit} from '../../../i18n_setup.js';
+import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
@@ -59,7 +59,15 @@ export class MicrosoftAuthModuleElement extends MicrosoftAuthModuleElementBase {
   }
 
   protected onDisableButtonClick_() {
-    // TODO(crbug.com/377377089): Handle button click.
+    const disableEvent = new CustomEvent('disable-module', {
+      composed: true,
+      detail: {
+        message: loadTimeData.getStringF(
+            'disableModuleToastMessage',
+            loadTimeData.getString('modulesMicrosoftAuthName')),
+      },
+    });
+    this.dispatchEvent(disableEvent);
   }
 
   protected onDismissButtonClick_() {
