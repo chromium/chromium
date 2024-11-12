@@ -35,17 +35,25 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Add Child (Not supported in MVP)"/>
 </enum>
 
+<!-- LINT.IfChange(QuickStartAttestationCertificateFetchFailureReason) -->
+
 <enum name="QuickStartAttestationCertificateFetchFailureReason">
   <int value="0" label="Unknown error"/>
   <int value="1" label="Bad request"/>
   <int value="2" label="Device does not support attestation"/>
 </enum>
 
+<!-- LINT.ThenChange(//chromeos/ash/components/quick_start/quick_start_metrics.h:QuickStartAttestationCertificateFetchFailureReason) -->
+
+<!-- LINT.IfChange(QuickStartAuthenticationMethod) -->
+
 <enum name="QuickStartAuthenticationMethod">
   <int value="0" label="PIN"/>
   <int value="1" label="QR Code"/>
   <int value="2" label="Automatic Resume After Update"/>
 </enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/quick_start/quick_start_metrics.h:QuickStartAuthenticationMethod) -->
 
 <enum name="QuickStartEntryPoint">
   <int value="0" label="Welcome Screen"/>
@@ -54,6 +62,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Gaia Screen"/>
   <int value="4" label="Automatically Resume After Update (added m132)"/>
 </enum>
+
+<!-- LINT.IfChange(QuickStartFastPairAdvertisingErrorCode) -->
 
 <enum name="QuickStartFastPairAdvertisingErrorCode">
   <int value="0" label="Error: Unsupported platform"/>
@@ -67,6 +77,10 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Invalid advertisement error code"/>
 </enum>
 
+<!-- LINT.ThenChange(//chromeos/ash/components/quick_start/quick_start_metrics.h:QuickStartFastPairAdvertisingErrorCode) -->
+
+<!-- LINT.IfChange(QuickStartGaiaAuthenticationResult) -->
+
 <enum name="QuickStartGaiaAuthenticationResult">
   <int value="0" label="Unknown error"/>
   <int value="1" label="Success"/>
@@ -75,6 +89,10 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Addition challenges on source"/>
   <int value="5" label="Additional challenges on target"/>
 </enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/quick_start/quick_start_metrics.h:QuickStartGaiaAuthenticationResult) -->
+
+<!-- LINT.IfChange(QuickStartGaiaTransferResultFailureReason) -->
 
 <enum name="QuickStartGaiaTransferResultFailureReason">
   <int value="0" label="No account on phone"/>
@@ -87,6 +105,10 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Error receiving FIDO assertion"/>
   <int value="8" label="Obfuscated Gaia ID missing"/>
 </enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/quick_start/quick_start_metrics.h:QuickStartGaiaTransferResultFailureReason) -->
+
+<!-- LINT.IfChange(QuickStartHandshakeResultErrorCode) -->
 
 <enum name="QuickStartHandshakeResultErrorCode">
   <int value="0" label="Error: Could not read response"/>
@@ -101,11 +123,19 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Error: Invalid error code"/>
 </enum>
 
+<!-- LINT.ThenChange(//chromeos/ash/components/quick_start/quick_start_metrics.h:QuickStartHandshakeResultErrorCode) -->
+
+<!-- LINT.IfChange(QuickStartMessageReceivedErrorCode) -->
+
 <enum name="QuickStartMessageReceivedErrorCode">
   <int value="0" label="Timed out"/>
   <int value="1" label="Deserialization failure"/>
   <int value="2" label="Unknown error"/>
 </enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/quick_start/quick_start_metrics.h:QuickStartMessageReceivedErrorCode) -->
+
+<!-- LINT.IfChange(QuickStartMessageType) -->
 
 <enum name="QuickStartMessageType">
   <int value="0" label="Wi-Fi Credentials"/>
@@ -118,6 +148,10 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Bootstrap State Complete"/>
 </enum>
 
+<!-- LINT.ThenChange(//chromeos/ash/components/quick_start/quick_start_metrics.h:QuickStartMessageType) -->
+
+<!-- LINT.IfChange(QuickStartNearbyConnectionsAdvertisingErrorCode) -->
+
 <enum name="QuickStartNearbyConnectionsAdvertisingErrorCode">
   <int value="0" label="Error occurred without any more information"/>
   <int value="1" label="Out of order API call"/>
@@ -129,6 +163,8 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Connection timed out"/>
   <int value="8" label="Another unexpected error occurred"/>
 </enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/quick_start/quick_start_metrics.h:QuickStartNearbyConnectionsAdvertisingErrorCode) -->
 
 <enum name="QuickStartScreenName">
   <int value="0" label="Other"/>
@@ -157,6 +193,8 @@ chromium-metrics-reviews@google.com.
   <int value="21" label="QS Screen: Fallback URL"/>
 </enum>
 
+<!-- LINT.IfChange(QuickStartWifiTransferResultFailureReason) -->
+
 <enum name="QuickStartWifiTransferResultFailureReason">
   <int value="0" label="Connection dropped while attempting transfer"/>
   <int value="1" label="Empty response bytes"/>
@@ -171,6 +209,10 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Wi-Fi hide status not found"/>
 </enum>
 
+<!-- LINT.ThenChange(//chromeos/ash/components/quick_start/quick_start_metrics.h:QuickStartWifiTransferResultFailureReason) -->
+
+<!-- LINT.IfChange(ScreenClosedReason) -->
+
 <enum name="ScreenClosedReason">
   <int value="0" label="Advanced in flow"/>
   <int value="1" label="User cancelled"/>
@@ -178,6 +220,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Setup Complete"/>
   <int value="4" label="Error"/>
 </enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/quick_start/quick_start_metrics.h:ScreenClosedReason) -->
 
 </enums>
 
