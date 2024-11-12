@@ -34,13 +34,15 @@ ProfileInvalidationProvider::GetInvalidationServiceOrListener(
     const std::string& project_id) {
   DCHECK(invalidation_service_or_listener_factory_);
 
-  if (!sender_id_to_invalidation_service_or_listener_.contains(project_id)) {
-    sender_id_to_invalidation_service_or_listener_[project_id] =
-        invalidation_service_or_listener_factory_.Run(
-            project_id, "ProfileInvalidationProvider");
+  auto& service_or_listener =
+      sender_id_to_invalidation_service_or_listener_[project_id];
+
+  if (!std::visit([](auto&& ptr) { return !!ptr; }, service_or_listener)) {
+    service_or_listener = invalidation_service_or_listener_factory_.Run(
+        project_id, /*log_prefix=*/"ProfileInvalidationProvider");
   }
-  return invalidation::UniquePointerVariantToPointer(
-      sender_id_to_invalidation_service_or_listener_[project_id]);
+
+  return invalidation::UniquePointerVariantToPointer(service_or_listener);
 }
 
 void ProfileInvalidationProvider::Shutdown() {
