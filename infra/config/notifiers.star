@@ -331,7 +331,7 @@ luci.notifier(
 luci.notifier(
     name = "chrome-fake-vaapi-test",
     on_occurrence = ["SUCCESS", "FAILURE", "INFRA_FAILURE"],
-    failed_step_regexp = "video_decode_accelerator_tests_fake_vaapi*",
+    failed_step_regexp = "video_decode_accelerator_tests_fake_vaapi.*",
     notify_emails = [
         "bchoobineh@google.com",
     ],
