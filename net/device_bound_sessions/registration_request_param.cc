@@ -30,7 +30,8 @@ RegistrationRequestParam RegistrationRequestParam::Create(
 }
 
 // static
-RegistrationRequestParam RegistrationRequestParam::Create(Session& session) {
+RegistrationRequestParam RegistrationRequestParam::Create(
+    const Session& session) {
   return RegistrationRequestParam(session.refresh_url(), session.id().value(),
                                   session.cached_challenge(), std::nullopt);
 }

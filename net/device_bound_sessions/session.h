@@ -32,6 +32,13 @@ class Session;
 class NET_EXPORT Session {
  public:
   using Id = base::StrongAlias<class IdTag, std::string>;
+  using KeyIdOrError =
+      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>;
+
+  Session(const Session& other) = delete;
+  Session& operator=(const Session& other) = delete;
+  Session(Session&& other) noexcept = delete;
+  Session& operator=(Session&& other) noexcept = delete;
 
   ~Session();
 
@@ -44,16 +51,11 @@ class NET_EXPORT Session {
   // session. This method can be called when a session is first bound with
   // a brand new key. It can also be called when restoring a session after
   // browser restart.
-  void set_unexportable_key_id(
-      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-          key_id_or_error) {
+  void set_unexportable_key_id(KeyIdOrError key_id_or_error) {
     key_id_or_error_ = std::move(key_id_or_error);
   }
 
-  const unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>&
-  unexportable_key_id() const {
-    return key_id_or_error_;
-  }
+  const KeyIdOrError& unexportable_key_id() const { return key_id_or_error_; }
 
   // this bool could also be an enum for UMA, eventually devtools, etc.
   bool ShouldDeferRequest(URLRequest* request) const;
@@ -89,10 +91,6 @@ class NET_EXPORT Session {
           std::vector<CookieCraving> cookie_cravings,
           bool should_defer_when_expired,
           base::Time expiry_date);
-  Session(const Session& other) = delete;
-  Session& operator=(const Session& other) = delete;
-  Session(Session&& other) = delete;
-  Session& operator=(Session&& other) = delete;
 
   // The unique server-issued identifier of the session.
   const Id id_;
@@ -123,9 +121,8 @@ class NET_EXPORT Session {
   // and can be done lazily. The "wrapped" key and the restore process are
   // transparent to this class. Once restored, the key can be set using
   // `set_unexportable_key_id`
-  unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-      key_id_or_error_ =
-          base::unexpected(unexportable_keys::ServiceError::kKeyNotReady);
+  KeyIdOrError key_id_or_error_ =
+      base::unexpected(unexportable_keys::ServiceError::kKeyNotReady);
   // Precached challenge, if any. Should not be persisted.
   std::optional<std::string> cached_challenge_;
 };

@@ -30,7 +30,7 @@ class NET_EXPORT RegistrationRequestParam {
 
   static RegistrationRequestParam Create(
       RegistrationFetcherParam&& fetcher_param);
-  static RegistrationRequestParam Create(Session& session);
+  static RegistrationRequestParam Create(const Session& session);
 
   const GURL& registration_endpoint() const { return registration_endpoint_; }
   const std::optional<std::string>& session_identifier() const {

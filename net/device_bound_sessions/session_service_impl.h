@@ -6,6 +6,7 @@
 #define NET_DEVICE_BOUND_SESSIONS_SESSION_SERVICE_IMPL_H_
 
 #include <map>
+#include <memory>
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
@@ -73,10 +74,25 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       OnAccessCallback on_access_callback,
       std::optional<RegistrationFetcher::RegistrationCompleteParams> params);
 
+  void StartSessionRefresh(
+      const Session& session,
+      const IsolationInfo& isolation_info,
+      // TODO(crbug.com/353764893): Replace this callback placeholder.
+      OnAccessCallback on_access_callback);
+  void AddSession(const SchemefulSite& site, std::unique_ptr<Session> session);
+  void ClearSession(const SchemefulSite& site, const Session::Id& id);
+
   // Get all the unexpired sessions for a given site. This also removes
   // expired sessions for the site and extends the TTL of used sessions.
   std::pair<SessionsMap::iterator, SessionsMap::iterator> GetSessionsForSite(
       const SchemefulSite& site);
+
+  // Remove a session from the session map. It also clears the session from
+  // `session_store_` and any BFCache entries.
+  // Return the iterator to the next session in the map.
+  [[nodiscard]] SessionsMap::iterator ClearSessionInternal(
+      const SchemefulSite& site,
+      SessionsMap::iterator it);
 
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   raw_ptr<const URLRequestContext> context_;

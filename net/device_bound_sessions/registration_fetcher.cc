@@ -295,8 +295,9 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
           ParseSessionInstructionJson(data_received_);
       if (params) {
         RunCallbackAndDeleteSelf(
-            RegistrationFetcher::RegistrationCompleteParams(
-                std::move(*params), key_id_, request_->url()));
+            std::make_optional<RegistrationFetcher::RegistrationCompleteParams>(
+                std::move(*params), key_id_, request_->url(),
+                std::move(session_identifier_)));
         return;
       }
     }
@@ -331,6 +332,25 @@ std::optional<RegistrationFetcher::RegistrationCompleteParams> (
     *g_mock_fetcher)() = nullptr;
 
 }  // namespace
+
+RegistrationFetcher::RegistrationCompleteParams::RegistrationCompleteParams(
+    SessionParams params,
+    unexportable_keys::UnexportableKeyId key_id,
+    const GURL& url,
+    std::optional<std::string> referral_session_identifier)
+    : params(std::move(params)),
+      key_id(std::move(key_id)),
+      url(url),
+      referral_session_identifier(std::move(referral_session_identifier)) {}
+
+RegistrationFetcher::RegistrationCompleteParams::RegistrationCompleteParams(
+    RegistrationFetcher::RegistrationCompleteParams&& other) noexcept = default;
+RegistrationFetcher::RegistrationCompleteParams&
+RegistrationFetcher::RegistrationCompleteParams::operator=(
+    RegistrationFetcher::RegistrationCompleteParams&& other) noexcept = default;
+
+RegistrationFetcher::RegistrationCompleteParams::~RegistrationCompleteParams() =
+    default;
 
 // static
 void RegistrationFetcher::StartCreateTokenAndFetch(

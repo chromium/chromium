@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/schemeful_site.h"
+#include "net/device_bound_sessions/registration_request_param.h"
 #include "net/device_bound_sessions/session_store.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -72,30 +73,30 @@ void SessionServiceImpl::OnRegistrationComplete(
   }
 
   auto session = Session::CreateIfValid(std::move(params->params), params->url);
-  if (session) {
-    SchemefulSite site(url::Origin::Create(params->url));
-    NotifySessionAccess(on_access_callback, site, *session);
-    session->set_unexportable_key_id(std::move(params->key_id));
-    if (session_store_) {
-      session_store_->SaveSession(site, *session);
-    }
-    // TODO(crbug.com/353774923): Enforce unique session ids per site.
-    unpartitioned_sessions_.insert(std::make_pair(site, std::move(session)));
+  if (!session) {
+    return;
   }
+  session->set_unexportable_key_id(std::move(params->key_id));
+
+  const SchemefulSite site(url::Origin::Create(params->url));
+  NotifySessionAccess(on_access_callback, site, *session);
+
+  // Clear the existing session which initiated the registration.
+  if (params->referral_session_identifier) {
+    ClearSession(site,
+                 Session::Id(std::move(*params->referral_session_identifier)));
+  }
+  AddSession(site, std::move(session));
 }
 
 std::pair<SessionServiceImpl::SessionsMap::iterator,
           SessionServiceImpl::SessionsMap::iterator>
 SessionServiceImpl::GetSessionsForSite(const SchemefulSite& site) {
-  auto now = base::Time::Now();
+  const auto now = base::Time::Now();
   auto [begin, end] = unpartitioned_sessions_.equal_range(site);
   for (auto it = begin; it != end;) {
     if (now >= it->second->expiry_date()) {
-      if (session_store_) {
-        session_store_->DeleteSession(site, it->second->id());
-      }
-      it = unpartitioned_sessions_.erase(it);
-      // TODO(crbug.com/353774923): Clear BFCache entries for this session.
+      it = ClearSessionInternal(site, it);
     } else {
       it->second->RecordAccess();
       it++;
@@ -164,6 +165,56 @@ Session* SessionServiceImpl::GetSessionForTesting(
   }
 
   return nullptr;
+}
+
+void SessionServiceImpl::AddSession(const SchemefulSite& site,
+                                    std::unique_ptr<Session> session) {
+  if (session_store_) {
+    session_store_->SaveSession(site, *session);
+  }
+  // TODO(crbug.com/353774923): Enforce unique session ids per site.
+  unpartitioned_sessions_.emplace(site, std::move(session));
+}
+
+void SessionServiceImpl::ClearSession(const SchemefulSite& site,
+                                      const Session::Id& id) {
+  auto range = unpartitioned_sessions_.equal_range(site);
+  for (auto it = range.first; it != range.second; ++it) {
+    if (it->second->id() == id) {
+      it = ClearSessionInternal(site, it);
+      return;
+    }
+  }
+}
+
+SessionServiceImpl::SessionsMap::iterator
+SessionServiceImpl::ClearSessionInternal(
+    const SchemefulSite& site,
+    SessionServiceImpl::SessionsMap::iterator it) {
+  if (session_store_) {
+    session_store_->DeleteSession(site, it->second->id());
+  }
+
+  // TODO(crbug.com/353774923): Clear BFCache entries for this session.
+  return unpartitioned_sessions_.erase(it);
+}
+
+void SessionServiceImpl::StartSessionRefresh(
+    const Session& session,
+    const IsolationInfo& isolation_info,
+    OnAccessCallback on_access_callback) {
+  const Session::KeyIdOrError& key_id = session.unexportable_key_id();
+  if (!key_id.has_value()) {
+    return;
+  }
+
+  auto request_params = RegistrationRequestParam::Create(session);
+  RegistrationFetcher::StartFetchWithExistingKey(
+      std::move(request_params), key_service_.get(), context_.get(),
+      isolation_info,
+      base::BindOnce(&SessionServiceImpl::OnRegistrationComplete,
+                     weak_factory_.GetWeakPtr(), std::move(on_access_callback)),
+      *key_id);
 }
 
 }  // namespace net::device_bound_sessions

@@ -57,8 +57,8 @@ std::optional<RegistrationFetcher::RegistrationCompleteParams> TestFetcher() {
   SessionParams session_params(g_session_id, kUrlString, std::move(scope),
                                std::move(cookie_credentials));
   unexportable_keys::UnexportableKeyId key_id;
-  return RegistrationFetcher::RegistrationCompleteParams(
-      std::move(session_params), std::move(key_id), kTestUrl);
+  return std::make_optional<RegistrationFetcher::RegistrationCompleteParams>(
+      std::move(session_params), std::move(key_id), kTestUrl, std::nullopt);
 }
 
 class ScopedTestFetcher {

@@ -5,6 +5,9 @@
 #ifndef NET_DEVICE_BOUND_SESSIONS_REGISTRATION_FETCHER_H_
 #define NET_DEVICE_BOUND_SESSIONS_REGISTRATION_FETCHER_H_
 
+#include <optional>
+#include <string>
+
 #include "base/functional/callback_forward.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/isolation_info.h"
@@ -33,10 +36,24 @@ class RegistrationRequestParam;
 // instructions.
 class NET_EXPORT RegistrationFetcher {
  public:
-  struct RegistrationCompleteParams {
+  struct NET_EXPORT RegistrationCompleteParams {
+    RegistrationCompleteParams(
+        SessionParams params,
+        unexportable_keys::UnexportableKeyId key_id,
+        const GURL& url,
+        std::optional<std::string> referral_session_identifier);
+    RegistrationCompleteParams(RegistrationCompleteParams&& other) noexcept;
+    RegistrationCompleteParams& operator=(
+        RegistrationCompleteParams&& other) noexcept;
+
+    ~RegistrationCompleteParams();
+
     SessionParams params;
     unexportable_keys::UnexportableKeyId key_id;
     GURL url;
+    // The session identifier which initiated the registration request.
+    // It is `std::nullopt` for first time registration.
+    std::optional<std::string> referral_session_identifier;
   };
 
   using RegistrationCompleteCallback =
