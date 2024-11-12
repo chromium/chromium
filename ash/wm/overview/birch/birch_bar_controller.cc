@@ -262,7 +262,7 @@ void BirchBarController::OnCoralGroupUpdated(const base::Token& group_id) {
   }
 
   for (auto bar_view : bar_views_) {
-    bar_view->UpdateChip(iter->get());
+    bar_view->UpdateChipTitle(iter->get());
   }
 }
 

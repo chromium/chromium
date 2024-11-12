@@ -307,16 +307,53 @@ void BirchChipButton::ReloadIcon() {
                                  weak_factory_.GetWeakPtr()));
 }
 
-void BirchChipButton::Init(BirchItem* item) {
-  item_ = item;
-
+void BirchChipButton::UpdateTitle() {
   title_->SetText(item_->title());
   subtitle_->SetText(item_->subtitle());
 
+  if (item_->GetType() != BirchItemType::kCoral) {
+    return;
+  }
+
+  // Coral chip gets the real title from the group.
+  auto* coral_provider = BirchCoralProvider::Get();
+  const std::optional<std::string>& group_title =
+      coral_provider
+          ? coral_provider
+                ->GetGroupById(static_cast<BirchCoralItem*>(item_)->group_id())
+                ->title
+          : std::string();
+  if (group_title) {
+    // If the title is not empty, reset the `title_` with the real title.
+    if (!group_title->empty()) {
+      title_->SetText(base::UTF8ToUTF16(*group_title));
+    }
+    // Show title and delete the loading animation.
+    title_->SetVisible(true);
+    if (title_loading_animated_image_) {
+      title_loading_animated_image_->Stop();
+      titles_container_->RemoveChildViewT(
+          std::exchange(title_loading_animated_image_, nullptr));
+    }
+  } else {
+    // If the title is null, show the animation to wait for title loading.
+    title_->SetVisible(false);
+
+    BuildTitleLoadingAnimation();
+    title_loading_animated_image_->Play(
+        birch_animation_utils::GetLottiePlaybackConfig(
+            *title_loading_animated_image_->animated_image()->skottie(),
+            IDR_CORAL_LOADING_TITLE_ANIMATION));
+  }
+}
+
+void BirchChipButton::Init(BirchItem* item) {
+  item_ = item;
+  UpdateTitle();
   SetCallback(
       base::BindRepeating(&BirchItem::PerformAction, base::Unretained(item_)));
 
-  const auto addon_type = item_->GetAddonType();
+  const BirchAddonType addon_type = item_->GetAddonType();
   // Add add-ons according to the add-on type.
   switch (addon_type) {
     case BirchAddonType::kButton: {
@@ -338,37 +375,6 @@ void BirchChipButton::Init(BirchItem* item) {
       button->SetTooltipText(
           l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_ADDON_SELECTOR_HIDDEN));
       SetAddon(std::move(button));
-      // Coral chip gets the real title from the group.
-      auto* coral_provider = BirchCoralProvider::Get();
-      const std::optional<std::string>& group_title =
-          coral_provider
-              ? coral_provider
-                    ->GetGroupById(
-                        static_cast<BirchCoralItem*>(item_)->group_id())
-                    ->title
-              : "";
-      if (group_title) {
-        // If the title is not empty, reset the `title_` with the real title.
-        if (!group_title->empty()) {
-          title_->SetText(base::UTF8ToUTF16(*group_title));
-        }
-        // Show title and delete the loading animation.
-        title_->SetVisible(true);
-        if (!!title_loading_animated_image_) {
-          title_loading_animated_image_->Stop();
-          titles_container_->RemoveChildViewT(
-              std::exchange(title_loading_animated_image_, nullptr));
-        }
-      } else {
-        // If the title is null, show the animation to wait for title loading.
-        title_->SetVisible(false);
-
-        BuildTitleLoadingAnimation();
-        title_loading_animated_image_->Play(
-            birch_animation_utils::GetLottiePlaybackConfig(
-                *title_loading_animated_image_->animated_image()->skottie(),
-                IDR_CORAL_LOADING_TITLE_ANIMATION));
-      }
       break;
     }
     case BirchAddonType::kWeatherTempLabelC:

@@ -54,6 +54,10 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
   // update the `CoralGroupedIconImage`.
   void ReloadIcon();
 
+  // Called during `Init()` and for a coral chip, when the title gets updated.
+  // Handles the title loading animation for a coral chip.
+  void UpdateTitle();
+
   // BirchChipButtonBase:
   void Init(BirchItem* item) override;
   const BirchItem* GetItem() const override;

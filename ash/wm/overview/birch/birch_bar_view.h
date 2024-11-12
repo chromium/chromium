@@ -120,6 +120,10 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   // Re-initializes the chip corresponding to the given `item`.
   void UpdateChip(BirchItem* item);
 
+  // Used by a coral chip since their title is dynamic and has a title loading
+  // animation.
+  void UpdateChipTitle(BirchItem* item);
+
   // Gets the maximum height of the bar with full chips.
   int GetMaximumHeight() const;
 
