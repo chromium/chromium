@@ -2260,23 +2260,6 @@ targets.mixin(
     generate_pyl_entry = False,
     args = [
         "--xcode-build-version",
-        "16b40",
-    ],
-    swarming = targets.swarming(
-        named_caches = [
-            swarming.cache(
-                name = "xcode_ios_16b40",
-                path = "Xcode.app",
-            ),
-        ],
-    ),
-)
-
-targets.mixin(
-    name = "xcode_16_2_beta",
-    generate_pyl_entry = False,
-    args = [
-        "--xcode-build-version",
         "16b5100e",
     ],
     swarming = targets.swarming(
