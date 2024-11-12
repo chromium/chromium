@@ -1004,18 +1004,6 @@ class DeviceSyncServiceTest : public ::testing::Test {
                   kStatusUnavailableBecauseDeviceSyncIsNotInitialized,
               CallGetBetterTogetherMetadataStatus());
 
-    if (features::ShouldUseV1DeviceSync()) {
-      // SetSoftwareFeatureState() should return a struct with the special
-      // kErrorNotInitialized error code.
-      CallSetSoftwareFeatureState(
-          test_devices()[0].public_key,
-          multidevice::SoftwareFeature::kBetterTogetherHost, true /* enabled */,
-          true /* is_exclusive */);
-      auto last_set_response = GetLastSetSoftwareFeatureStateResponseAndReset();
-      EXPECT_EQ(mojom::NetworkRequestResult::kServiceNotYetInitialized,
-                *last_set_response);
-    }
-
     if (features::ShouldUseV2DeviceSync()) {
       // SetFeatureStatus() should return a struct with the special
       // kErrorNotInitialized error code.
@@ -1025,17 +1013,6 @@ class DeviceSyncServiceTest : public ::testing::Test {
       EXPECT_EQ(1u, set_feature_status_results_.size());
       EXPECT_EQ(mojom::NetworkRequestResult::kServiceNotYetInitialized,
                 set_feature_status_results_[0]);
-    }
-
-    if (features::ShouldUseV1DeviceSync()) {
-      // FindEligibleDevices() should return a struct with the special
-      // kErrorNotInitialized error code.
-      CallFindEligibleDevices(
-          multidevice::SoftwareFeature::kBetterTogetherHost);
-      auto last_find_response = GetLastFindEligibleDevicesResponseAndReset();
-      EXPECT_EQ(mojom::NetworkRequestResult::kServiceNotYetInitialized,
-                last_find_response->first);
-      EXPECT_FALSE(last_find_response->second /* response */);
     }
 
     if (features::ShouldUseV2DeviceSync()) {
@@ -1179,12 +1156,6 @@ class DeviceSyncServiceTest : public ::testing::Test {
   void CallSetFeatureStatus(const std::string& device_instance_id,
                             multidevice::SoftwareFeature software_feature,
                             FeatureStatusChange status_change) {
-    if (features::ShouldUseV1DeviceSync()) {
-      CallSetFeatureStatusV1andV2DeviceSync(device_instance_id,
-                                            software_feature, status_change);
-      return;
-    }
-
     CallSetFeatureStatusV2DeviceSyncOnly(device_instance_id, software_feature,
                                          status_change);
   }
@@ -1695,18 +1666,12 @@ TEST_F(DeviceSyncServiceTest, EnrollAgainAfterInitialization) {
 }
 
 TEST_F(DeviceSyncServiceTest, GetGroupPrivateKeyStatus) {
-  if (!features::ShouldUseV2DeviceSync())
-    return;
-
   InitializeServiceSuccessfully();
   EXPECT_EQ(GroupPrivateKeyStatus::kWaitingForGroupPrivateKey,
             CallGetGroupPrivateKeyStatus());
 }
 
 TEST_F(DeviceSyncServiceTest, GetBetterTogetherMetadataStatus) {
-  if (!features::ShouldUseV2DeviceSync())
-    return;
-
   InitializeServiceSuccessfully();
   EXPECT_EQ(BetterTogetherMetadataStatus::kWaitingToProcessDeviceMetadata,
             CallGetBetterTogetherMetadataStatus());
@@ -1923,17 +1888,9 @@ TEST_F(DeviceSyncServiceTest, SetSoftwareFeatureState_Error) {
 }
 
 TEST_F(DeviceSyncServiceTest, SetFeatureStatus_Success) {
-  if (!features::ShouldUseV2DeviceSync())
-    return;
-
   InitializeServiceSuccessfully();
 
-  if (features::ShouldUseV1DeviceSync()) {
-    EXPECT_EQ(
-        0u, fake_software_feature_manager()->set_feature_status_calls().size());
-  } else {
-    EXPECT_EQ(0u, fake_feature_status_setter()->requests().size());
-  }
+  EXPECT_EQ(0u, fake_feature_status_setter()->requests().size());
 
   multidevice::RemoteDevice device_for_test = test_devices()[0];
 
@@ -1942,57 +1899,29 @@ TEST_F(DeviceSyncServiceTest, SetFeatureStatus_Success) {
                        multidevice::SoftwareFeature::kBetterTogetherHost,
                        FeatureStatusChange::kEnableExclusively);
 
-  if (features::ShouldUseV1DeviceSync()) {
-    EXPECT_EQ(
-        1u, fake_software_feature_manager()->set_feature_status_calls().size());
-    EXPECT_EQ(device_for_test.instance_id, fake_software_feature_manager()
-                                               ->set_feature_status_calls()[0]
-                                               ->device_id);
-    EXPECT_EQ(multidevice::SoftwareFeature::kBetterTogetherHost,
-              fake_software_feature_manager()
-                  ->set_feature_status_calls()[0]
-                  ->feature);
-    EXPECT_EQ(FeatureStatusChange::kEnableExclusively,
-              fake_software_feature_manager()
-                  ->set_feature_status_calls()[0]
-                  ->status_change);
-    EXPECT_TRUE(fake_software_feature_manager()
-                    ->set_feature_status_calls()[0]
-                    ->success_callback);
-    EXPECT_TRUE(fake_software_feature_manager()
-                    ->set_feature_status_calls()[0]
-                    ->error_callback);
-  } else {
-    EXPECT_EQ(1u, fake_feature_status_setter()->requests().size());
-    EXPECT_EQ(device_for_test.instance_id,
-              fake_feature_status_setter()->requests()[0].device_id);
-    EXPECT_EQ(multidevice::SoftwareFeature::kBetterTogetherHost,
-              fake_feature_status_setter()->requests()[0].feature);
-    EXPECT_EQ(FeatureStatusChange::kEnableExclusively,
-              fake_feature_status_setter()->requests()[0].status_change);
-    EXPECT_TRUE(fake_feature_status_setter()->requests()[0].success_callback);
-    EXPECT_TRUE(fake_feature_status_setter()->requests()[0].error_callback);
-  }
+  EXPECT_EQ(1u, fake_feature_status_setter()->requests().size());
+  EXPECT_EQ(device_for_test.instance_id,
+            fake_feature_status_setter()->requests()[0].device_id);
+  EXPECT_EQ(multidevice::SoftwareFeature::kBetterTogetherHost,
+            fake_feature_status_setter()->requests()[0].feature);
+  EXPECT_EQ(FeatureStatusChange::kEnableExclusively,
+            fake_feature_status_setter()->requests()[0].status_change);
+  EXPECT_TRUE(fake_feature_status_setter()->requests()[0].success_callback);
+  EXPECT_TRUE(fake_feature_status_setter()->requests()[0].error_callback);
 
   // The DeviceSyncImpl::SetFeatureStatus() callback has not yet been invoked.
   EXPECT_TRUE(set_feature_status_results().empty());
 
   // Now, invoke the success callback.
-  if (features::ShouldUseV1DeviceSync()) {
-    std::move(fake_software_feature_manager()
-                  ->set_feature_status_calls()[0]
-                  ->success_callback)
-        .Run();
-  } else {
-    std::move(fake_feature_status_setter()->requests()[0].success_callback)
-        .Run();
-  }
+  std::move(fake_feature_status_setter()->requests()[0].success_callback).Run();
 
   // The DeviceSyncImpl::SetFeatureStatus() callback still has not yet been
-  // invoked since a device sync has not confirmed the feature state change yet.
+  // invoked since a device sync has not confirmed the feature state change
+  // yet.
   EXPECT_TRUE(set_feature_status_results().empty());
 
-  // Simulate a sync which includes the device with the correct "enabled" state.
+  // Simulate a sync which includes the device with the correct "enabled"
+  // state.
   device_for_test
       .software_features[multidevice::SoftwareFeature::kBetterTogetherHost] =
       multidevice::SoftwareFeatureState::kEnabled;
@@ -2006,9 +1935,6 @@ TEST_F(DeviceSyncServiceTest, SetFeatureStatus_Success) {
 
 TEST_F(DeviceSyncServiceTest,
        SetFeatureStatus_RequestSucceedsButDoesNotTakeEffect) {
-  if (!features::ShouldUseV2DeviceSync())
-    return;
-
   InitializeServiceSuccessfully();
 
   // Expected device feature states after SetFeatureStatus() calls:
@@ -2051,27 +1977,15 @@ TEST_F(DeviceSyncServiceTest,
                        multidevice::SoftwareFeature::kMessagesForWebHost,
                        FeatureStatusChange::kDisable);
 
-  if (features::ShouldUseV1DeviceSync()) {
-    EXPECT_EQ(
-        5u, fake_software_feature_manager()->set_feature_status_calls().size());
-  } else {
-    EXPECT_EQ(5u, fake_feature_status_setter()->requests().size());
-  }
+  EXPECT_EQ(5u, fake_feature_status_setter()->requests().size());
 
   // The DeviceSyncImpl::SetFeatureStatus() callbacks have not yet been invoked.
   EXPECT_TRUE(set_feature_status_results().empty());
 
   // Now, invoke the success callbacks.
   for (size_t i = 0; i < 5u; ++i) {
-    if (features::ShouldUseV1DeviceSync()) {
-      std::move(fake_software_feature_manager()
-                    ->set_feature_status_calls()[i]
-                    ->success_callback)
-          .Run();
-    } else {
-      std::move(fake_feature_status_setter()->requests()[i].success_callback)
-          .Run();
-    }
+    std::move(fake_feature_status_setter()->requests()[i].success_callback)
+        .Run();
   }
 
   // The DeviceSyncImpl::SetFeatureStatus() callbacks still have not been
@@ -2121,9 +2035,6 @@ TEST_F(DeviceSyncServiceTest,
 }
 
 TEST_F(DeviceSyncServiceTest, SetFeatureStatus_Error) {
-  if (!features::ShouldUseV2DeviceSync())
-    return;
-
   InitializeServiceSuccessfully();
 
   multidevice::RemoteDevice device_for_test = test_devices()[0];
@@ -2137,15 +2048,8 @@ TEST_F(DeviceSyncServiceTest, SetFeatureStatus_Error) {
   EXPECT_TRUE(set_feature_status_results().empty());
 
   // Now, invoke the error callback.
-  if (features::ShouldUseV1DeviceSync()) {
-    std::move(fake_software_feature_manager()
-                  ->set_feature_status_calls()[0]
-                  ->error_callback)
-        .Run(NetworkRequestError::kBadRequest);
-  } else {
-    std::move(fake_feature_status_setter()->requests()[0].error_callback)
-        .Run(NetworkRequestError::kBadRequest);
-  }
+  std::move(fake_feature_status_setter()->requests()[0].error_callback)
+      .Run(NetworkRequestError::kBadRequest);
 
   // The DeviceSyncImpl::SetFeatureStatus() callback is invoked with the same
   // error code.
@@ -2212,9 +2116,6 @@ TEST_F(DeviceSyncServiceTest, FindEligibleDevices) {
 }
 
 TEST_F(DeviceSyncServiceTest, NotifyDevices_Success) {
-  if (!features::ShouldUseV2DeviceSync())
-    return;
-
   InitializeServiceSuccessfully();
 
   EXPECT_EQ(0u, fake_device_notifier()->requests().size());
@@ -2247,9 +2148,6 @@ TEST_F(DeviceSyncServiceTest, NotifyDevices_Success) {
 }
 
 TEST_F(DeviceSyncServiceTest, NotifyDevices_Error) {
-  if (!features::ShouldUseV2DeviceSync())
-    return;
-
   InitializeServiceSuccessfully();
 
   CallNotifyDevices(
