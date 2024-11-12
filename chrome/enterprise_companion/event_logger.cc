@@ -96,13 +96,73 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "Chrome itself."
         })");
 
+class EventUploader {
+ public:
+  explicit EventUploader(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      : url_loader_factory_(url_loader_factory) {}
+
+  void DoPostRequest(const GURL& url,
+                     const std::string& request_body,
+                     HttpRequestCallback callback) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    std::unique_ptr<network::ResourceRequest> resource_request =
+        std::make_unique<network::ResourceRequest>();
+    resource_request->url = url;
+    resource_request->request_initiator = url::Origin::Create(url);
+    resource_request->site_for_cookies = net::SiteForCookies::FromUrl(url);
+    resource_request->method = net::HttpRequestHeaders::kPostMethod;
+
+    std::unique_ptr<network::SimpleURLLoader> url_loader =
+        network::SimpleURLLoader::Create(std::move(resource_request),
+                                         kTrafficAnnotation);
+    url_loader->SetAllowHttpErrorResults(true);
+    url_loader->AttachStringForUpload(request_body);
+    url_loader->DownloadToString(
+        url_loader_factory_.get(),
+        base::BindOnce(&EventUploader::OnLogResponseReceived,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(url_loader),
+                       std::move(callback)),
+        1024 * 1024 /* 1 MiB */);
+  }
+
+  virtual ~EventUploader() {
+    VLOG(1) << __func__;
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  }
+
+ private:
+  void OnLogResponseReceived(
+      std::unique_ptr<network::SimpleURLLoader> url_loader,
+      HttpRequestCallback callback,
+      std::optional<std::string> response_body) const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (url_loader->NetError() != net::OK) {
+      LOG(ERROR) << "Logging request failed "
+                 << net::ErrorToString(url_loader->NetError());
+    }
+
+    network::mojom::URLResponseHeadPtr response_head =
+        url_loader->TakeResponseInfo();
+    std::optional<int> http_status;
+    if (response_head && response_head.get()->headers) {
+      http_status = response_head.get()->headers->response_code();
+    }
+    std::move(callback).Run(http_status, response_body);
+  }
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  base::WeakPtrFactory<EventUploader> weak_ptr_factory_{this};
+};
+
 class EventLoggerDelegate : public EventTelemetryLogger::Delegate {
  public:
   explicit EventLoggerDelegate(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      : net_thread_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-        url_loader_factory_(url_loader_factory) {}
-
+      : uploader_(base::SequenceBound<EventUploader>(
+            base::SequencedTaskRunner::GetCurrentDefault(),
+            url_loader_factory)) {}
   ~EventLoggerDelegate() override = default;
 
   // Overrides of EventLogger:Delegate.
@@ -115,11 +175,10 @@ class EventLoggerDelegate : public EventTelemetryLogger::Delegate {
 
   void DoPostRequest(const std::string& request_body,
                      HttpRequestCallback callback) override {
-    net_thread_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&EventLoggerDelegate::SendLogRequest,
-                                  weak_ptr_factory_.GetWeakPtr(), request_body,
-                                  base::BindPostTaskToCurrentDefault(
-                                      std::move(callback))));
+    uploader_.AsyncCall(&EventUploader::DoPostRequest)
+        .WithArgs(GetGlobalConstants()->EnterpriseCompanionEventLoggingURL(),
+                  request_body,
+                  base::BindPostTaskToCurrentDefault(std::move(callback)));
   }
 
   int GetLogIdentifier() const override {
@@ -140,54 +199,7 @@ class EventLoggerDelegate : public EventTelemetryLogger::Delegate {
   }
 
  private:
-  void SendLogRequest(const std::string& request_body,
-                      HttpRequestCallback callback) const {
-    CHECK(net_thread_runner_->BelongsToCurrentThread());
-    const GURL event_logging_url =
-        GetGlobalConstants()->EnterpriseCompanionEventLoggingURL();
-
-    std::unique_ptr<network::ResourceRequest> resource_request =
-        std::make_unique<network::ResourceRequest>();
-    resource_request->url = event_logging_url;
-    resource_request->request_initiator =
-        url::Origin::Create(event_logging_url);
-    resource_request->site_for_cookies =
-        net::SiteForCookies::FromUrl(event_logging_url);
-    resource_request->method = net::HttpRequestHeaders::kPostMethod;
-
-    std::unique_ptr<network::SimpleURLLoader> url_loader =
-        network::SimpleURLLoader::Create(std::move(resource_request),
-                                         kTrafficAnnotation);
-    url_loader->SetAllowHttpErrorResults(true);
-    url_loader->AttachStringForUpload(request_body);
-    url_loader->DownloadToString(
-        url_loader_factory_.get(),
-        base::BindOnce(&EventLoggerDelegate::OnLogResponseReceived,
-                       std::move(url_loader),
-                       base::BindPostTaskToCurrentDefault(std::move(callback))),
-        1024 * 1024 /* 1 MiB */);
-  }
-
-  static void OnLogResponseReceived(
-      std::unique_ptr<network::SimpleURLLoader> url_loader,
-      HttpRequestCallback callback,
-      std::optional<std::string> response_body) {
-    if (url_loader->NetError() != net::OK) {
-      LOG(ERROR) << "Logging request failed "
-                 << net::ErrorToString(url_loader->NetError());
-    }
-
-    network::mojom::URLResponseHeadPtr response_head =
-        url_loader->TakeResponseInfo();
-    std::optional<int> http_status;
-    if (response_head && response_head.get()->headers) {
-      http_status = response_head.get()->headers->response_code();
-    }
-    std::move(callback).Run(http_status, response_body);
-  }
-
-  scoped_refptr<base::SingleThreadTaskRunner> net_thread_runner_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  base::SequenceBound<EventUploader> uploader_;
   base::WeakPtrFactory<EventLoggerDelegate> weak_ptr_factory_{this};
 };
 
