@@ -45,9 +45,8 @@ CustomTabSessionImpl::~CustomTabSessionImpl() {
   auto* tab_strip_model = browser_->tab_strip_model();
   DCHECK(tab_strip_model);
   tab_strip_model->RemoveObserver(this);
-  int index = tab_strip_model->GetIndexOfWebContents(
-      tab_strip_model->GetActiveWebContents());
-  tab_strip_model->DetachAndDeleteWebContentsAt(index);
+  tab_strip_model->DetachAndDeleteWebContentsAt(
+      tab_strip_model->active_index());
 }
 
 void CustomTabSessionImpl::OnOpenInChromeClicked() {
