@@ -316,17 +316,19 @@ enum {
       "Accessibility.Performance.WinAPIs." #enum_value)
 
 // Macro to record performance metrics for Windows Accessibility APIs.
-#define WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(enum_value)      \
-  absl::Cleanup record_metric = [node = GetDelegate()->node(),       \
-                                 timer = base::ElapsedTimer()] {     \
-    base::UmaHistogramMicrosecondsTimes(                             \
-        node && !node->IsView()                                      \
-            ? std::string_view("Accessibility.Performance.WinAPIs2." \
-                               "WebContents." #enum_value)           \
-            : std::string_view("Accessibility.Performance.WinAPIs2." \
-                               "View." #enum_value),                 \
-        timer.Elapsed());                                            \
-  }
+#define WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(enum_value)          \
+  DCHECK(GetDelegate());                                                 \
+  absl::Cleanup record_metric =                                          \
+      [node = (GetDelegate() ? GetDelegate()->node() : nullptr),         \
+       timer = base::ElapsedTimer()] {                                   \
+        base::UmaHistogramMicrosecondsTimes(                             \
+            node && !node->IsView()                                      \
+                ? std::string_view("Accessibility.Performance.WinAPIs2." \
+                                   "WebContents." #enum_value)           \
+                : std::string_view("Accessibility.Performance.WinAPIs2." \
+                                   "View." #enum_value),                 \
+            timer.Elapsed());                                            \
+      }
 
 //
 // Macros to use at the top of any AXPlatformNodeWin (or derived class) method
