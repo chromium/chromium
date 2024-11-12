@@ -9248,6 +9248,109 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 }
 
+// Test that WebContentsObserver::DidStopLoading is not invoked when the page
+// gets loaded while prerendering but is invoked on prerender activation.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       DidStopLoadingInvokedOnActivation) {
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/simple_page.html");
+
+  web_contents_impl()->set_minimum_delay_between_loading_updates_for_testing(
+      base::Milliseconds(0));
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Initialize a MockWebContentsObserver and ensure that DidStopLoading is
+  // not invoked while prerendering.
+  testing::NiceMock<MockWebContentsObserver> observer(shell()->web_contents());
+  EXPECT_CALL(observer, DidStopLoading()).Times(0);
+
+  // Start a prerender.
+  FrameTreeNodeId prerender_host_id = AddPrerender(prerendering_url);
+  ASSERT_TRUE(prerender_host_id);
+
+  // Verify and clear all expectations on the mock observer before setting new
+  // ones.
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Activate the prerendered page. This should result in invoking
+  // DidStopLoading.
+  EXPECT_CALL(observer, DidStopLoading()).Times(1);
+  test::PrerenderHostObserver host_observer(*web_contents(), prerender_host_id);
+  NavigatePrimaryPage(prerendering_url);
+  EXPECT_TRUE(host_observer.was_activated());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url);
+}
+
+// Test that WebContentsObserver::DidStopLoading is invoked when the page gets
+// loaded after activation.
+//
+// This is a regression test for https://crbug.com/40256454. Previously,
+// DidStopLoading was invoked regardless of the current loading state on
+// activation, which was obviously wrong. This test makes sure that
+// DidStopLoading is invoked after the page actually gets loaded.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       DidStopLoadingInvokedAfterActivation) {
+  // Use ControllableHttpResponse to control the timing to serve for delaying
+  // page loading.
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "/simple_page.html");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL initial_url = embedded_test_server()->GetURL("/empty.html");
+  const GURL prerendering_url =
+      embedded_test_server()->GetURL("/simple_page.html");
+
+  web_contents_impl()->set_minimum_delay_between_loading_updates_for_testing(
+      base::Milliseconds(0));
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Initialize a MockWebContentsObserver and ensure that DidStopLoading is
+  // not invoked while prerendering.
+  testing::NiceMock<MockWebContentsObserver> observer(shell()->web_contents());
+  EXPECT_CALL(observer, DidStopLoading()).Times(0);
+
+  // Start a prerender.
+  AddPrerenderAsync(prerendering_url);
+
+  // Send only a header. This prevents the prerendered page from being fully
+  // loaded.
+  const char kHttpResponseHeader[] =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/html; charset=utf-8\r\n"
+      "\r\n";
+  response.WaitForRequest();
+  response.Send(kHttpResponseHeader);
+
+  // Activate the prerendered page. The response for the prerendered page is not
+  // finalized yet, so this should not invoke DidStopLoading.
+  EXPECT_CALL(observer, DidStopLoading()).Times(0);
+  test::PrerenderHostObserver host_observer(*web_contents(), prerendering_url);
+  prerender_helper()->NavigatePrimaryPageAsync(prerendering_url);
+  host_observer.WaitForActivation();
+  EXPECT_TRUE(host_observer.was_activated());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url);
+
+  // Verify and clear all expectations on the mock observer before setting new
+  // ones. The activated page is not loaded yet, so DidStopLoading should not be
+  // invoked yet.
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Finalize the response for the activated page. This should result in
+  // invoking DidStopLoading.
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, DidStopLoading()).WillOnce(testing::Invoke([&]() {
+    run_loop.Quit();
+  }));
+  response.Send("0\r\n");
+  response.Send("\r\n");
+  response.Done();
+  run_loop.Run();
+}
+
 // Test the dispatch order of various load events on prerender activation.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, OrderingOfDifferentLoadEvents) {
   const GURL kInitialUrl = GetUrl("/empty.html");

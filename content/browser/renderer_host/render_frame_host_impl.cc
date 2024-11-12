@@ -5611,8 +5611,9 @@ void RenderFrameHostImpl::DidCommitPageActivation(
   // If any load events occurred pre-activation and were deferred until
   // activation, dispatch them now. This must happen before DidStopLoading() is
   // called because observers expect them to occur before that.
-  if (is_prerender_page_activation)
+  if (is_prerender_page_activation) {
     GetPage().MaybeDispatchLoadEventsOnPrerenderActivation();
+  }
 
   // Try to dispatch DidStopLoading event (note that
   // RenderFrameHostImpl::DidStopLoading implementation won't dispatch the event
@@ -5620,7 +5621,21 @@ void RenderFrameHostImpl::DidCommitPageActivation(
   // dispatched pre-activation because the back-forward cache page is already
   // loaded, whereas, for initial prerendering navigation, prerendered page
   // might still be loading.
-  DidStopLoading();
+  if (is_prerender_page_activation) {
+    // Regardless of the actual loading state of the prerendered page, the state
+    // should be overwritten with LoadingState::LOADING_UI_REQUESTED in
+    // SetNavigationRequest().
+    CHECK_EQ(loading_state_, LoadingState::LOADING_UI_REQUESTED);
+
+    // Dispatch DidStopLoading only when the page is fully loaded during
+    // prerendering. Otherwise, DidStopLoading will be dispatched later.
+    if (document_associated_data_
+            ->pending_did_stop_loading_for_prerendering()) {
+      DidStopLoading();
+    }
+  } else {
+    DidStopLoading();
+  }
 
   if (is_prerender_page_activation) {
     // Record metric to check navigation time with prerender activation.
@@ -8951,6 +8966,14 @@ void RenderFrameHostImpl::DidStopLoading() {
   // refactored in Blink. See crbug.com/466089
   if (!is_loading()) {
     return;
+  }
+
+  // During prerendering, DidStopLoading is dispatched to
+  // PrerenderHost::DidStopLoading, not WebContentsObserver::DidStopLoading. To
+  // dispatch the event to WebContentsObserver on activation later, set the flag
+  // here.
+  if (lifecycle_state() == LifecycleStateImpl::kPrerendering) {
+    document_associated_data_->set_pending_did_stop_loading_for_prerendering();
   }
 
   was_discarded_ = false;

@@ -2073,8 +2073,12 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   content::test::PrerenderHostObserver prerender_observer(
       *GetActiveWebContents(), expected_prerender_url);
 
-  // 4. Activate the prerendered page.
-  NavigateToPrerenderedResult(expected_prerender_url);
+  // 4. Activate the prerendered page. Don't wait for completion of page load,
+  // as it will not be completed until the remaining response is dispatched on
+  // the step 6.
+  NavigateToPrerenderedResult(
+      expected_prerender_url,
+      content::TestNavigationObserver::WaitEvent::kNavigationFinished);
 
   prerender_observer.WaitForActivation();
 
