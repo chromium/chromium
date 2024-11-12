@@ -53,6 +53,7 @@ external/wpt/resource-timing/*
 external/wpt/scheduler/*
 external/wpt/selection/*
 external/wpt/signed-exchange/*
+external/wpt/upgrade-insecure-requests/*
 external/wpt/wasm/*
 external/wpt/web-locks/*
 external/wpt/webauthn/*
