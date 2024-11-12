@@ -206,6 +206,12 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 #endif  // defined(OFFICIAL_BUILD) && !defined(NDEBUG)
 
 #if defined(OFFICIAL_BUILD) && !DCHECK_IS_ON()
+
+// Official non-DCHECK builds do not preserve CHECK() logging (including
+// evaluation of logging arguments). This generates more compact code which is
+// good for both speed and binary size.
+#define CHECK_WILL_STREAM() false
+
 // Note that this uses IMMEDIATE_CRASH_ALWAYS_INLINE to force-inline in debug
 // mode as well. See LoggingTest.CheckCausesDistinctBreakpoints.
 [[noreturn]] NOMERGE IMMEDIATE_CRASH_ALWAYS_INLINE void CheckFailure() {
@@ -236,14 +242,13 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
           LOGGING_CHECK_FUNCTION_IMPL(                                  \
               logging::CheckError::Check(#cond, __VA_ARGS__), cond))
 
-#define CHECK_WILL_STREAM() false
-
 // Strip the conditional string from official builds.
 #define PCHECK(condition) \
   LOGGING_CHECK_FUNCTION_IMPL(::logging::CheckError::PCheck(), condition)
 
 #else
 
+// Generate logging versions of CHECKs to help diagnosing failures.
 #define CHECK_WILL_STREAM() true
 
 #define CHECK(condition, ...)                                              \
