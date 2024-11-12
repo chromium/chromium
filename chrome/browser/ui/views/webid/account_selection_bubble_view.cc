@@ -708,7 +708,8 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
         added_use_other_account_separator = true;
         auto separator = std::make_unique<views::Separator>();
         separator->SetBorder(views::CreateEmptyBorder(
-            gfx::Insets::TLBR(0, 0, kTopBottomPadding + kVerticalSpacing, 0)));
+            gfx::Insets::TLBR(kVerticalSpacing + kTopBottomPadding, 0,
+                              kTopBottomPadding + kVerticalSpacing, 0)));
         accounts_content->AddChildView(std::move(separator));
       }
       accounts_content->AddChildView(CreateUseOtherAccountButton(
