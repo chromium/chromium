@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifetime.ApplicationLifetime;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceIphController;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -637,6 +638,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         super.onFinishNativeInitialization();
         assert mLayoutManager != null;
 
+        UmaSessionStats.registerSyntheticFieldTrial(
+                "AndroidNavigationMode",
+                UiUtils.isGestureNavigationMode(mActivity.getWindow())
+                        ? "GestureNav"
+                        : "ThreeButton");
         mHistoryNavigationCoordinator =
                 HistoryNavigationCoordinator.create(
                         mWindowAndroid,
