@@ -60,7 +60,7 @@ export function getHtml(this: TracingScenariosConfigElement) {
         @checked-changed="${this.privacyFilterDidChange_}">
       <div class="label">
         Remove untyped and sensitive data like URLs from local scenarios (needs
-        restart to take apply).
+        restart to take effect).
       </div>
     </cr-checkbox>
   </div>
