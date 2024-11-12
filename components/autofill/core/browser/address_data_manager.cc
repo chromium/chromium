@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -369,17 +368,6 @@ void AddressDataManager::RecordUseOf(const AutofillProfile& profile) {
   AutofillProfile updated_profile = *adm_profile;
   updated_profile.RecordAndLogUse();
   UpdateProfile(updated_profile);
-
-  if (base::FeatureList::IsEnabled(features::kAutofillTrackMultipleUseDates)) {
-    size_t uses = 1;
-    while (uses < updated_profile.usage_history_size() &&
-           updated_profile.use_date(uses + 1)) {
-      uses++;
-    }
-    base::UmaHistogramExactLinear("Autofill.NumberOfLastUsedDatesAfterFilling",
-                                  uses,
-                                  updated_profile.usage_history_size() + 1);
-  }
 }
 
 AddressCountryCode AddressDataManager::GetDefaultCountryCodeForNewAddress()

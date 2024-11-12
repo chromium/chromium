@@ -257,11 +257,7 @@ AutofillProfile CreateStarterProfile(
 AutofillProfile::AutofillProfile(const std::string& guid,
                                  RecordType record_type,
                                  AddressCountryCode country_code)
-    : AutofillDataModel(/*usage_history_size=*/
-                        base::FeatureList::IsEnabled(
-                            features::kAutofillTrackMultipleUseDates)
-                            ? 3
-                            : 1),
+    : AutofillDataModel(/*usage_history_size=*/3),
       guid_(guid),
       phone_number_(this),
       address_(country_code),

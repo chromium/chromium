@@ -12,7 +12,6 @@
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -968,8 +967,6 @@ TEST_F(AddressDataManagerTest,
 }
 
 TEST_F(AddressDataManagerTest, RecordUseOf) {
-  base::test::ScopedFeatureList feature{
-      features::kAutofillTrackMultipleUseDates};
   AdvanceClock(kArbitraryTime - base::Time::Now());
   AutofillProfile profile = test::GetFullProfile();
   ASSERT_EQ(profile.use_count(), 1u);
@@ -978,10 +975,7 @@ TEST_F(AddressDataManagerTest, RecordUseOf) {
   AddProfileToAddressDataManager(profile);
 
   AdvanceClock(kSomeLaterTime - base::Time::Now());
-  base::HistogramTester histogram_tester;
   address_data_manager().RecordUseOf(profile);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.NumberOfLastUsedDatesAfterFilling", 2, 1);
   WaitForOnAddressDataChanged();
 
   const AutofillProfile* adm_profile =

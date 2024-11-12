@@ -3844,20 +3844,6 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
-<histogram name="Autofill.NumberOfLastUsedDatesAfterFilling" units="Uses"
-    expires_after="2025-05-04">
-  <owner>fleimgruber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    After filling an address and updating its last use date, emits the total
-    number of last used dates that the profile has stored. This is relevant when
-    AutofillTrackMultipleUseDates is enabled, since the feature enables tracking
-    the last three use dates of the profile. The metrics provides insights into
-    the number of profiles that were already used multiple times after the
-    feature got introduced.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.NumberOfProfilesConsideredForDedupe" units="profiles"
     expires_after="2025-04-13">
   <owner>battre@chromium.org</owner>

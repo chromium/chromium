@@ -243,8 +243,6 @@ COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<std::string>
     kAutofillUKMExperimentalFieldsBucket4;
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillTrackMultipleUseDates);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillGreekRegexes);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillInferLabelFromDefaultSelectText);

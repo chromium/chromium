@@ -696,7 +696,6 @@ class ContactInfoSyncUtilTest
                                 features::kAutofillUseINAddressModel,
                                 features::kAutofillUseITAddressModel,
                                 features::kAutofillUseNLAddressModel,
-                                features::kAutofillTrackMultipleUseDates,
                                 features::kAutofillSupportPhoneticNameForJP},
                                {});
   }

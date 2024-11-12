@@ -264,8 +264,6 @@ TEST_P(AddressAutofillTableProfileTest, ProfileTokenQuality) {
 
 // Tests that last use dates are persisted, if present.
 TEST_P(AddressAutofillTableProfileTest, UseDates) {
-  base::test::ScopedFeatureList feature{
-      features::kAutofillTrackMultipleUseDates};
   AutofillProfile profile = CreateAutofillProfile();
   // Since the table stores time_ts, microseconds get lost in conversion.
   const base::Time initial_use_date =

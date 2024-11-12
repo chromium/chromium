@@ -24,8 +24,6 @@ namespace {
 TEST(AutofillDataModelTest, RecordUseDate) {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature{
-      features::kAutofillTrackMultipleUseDates};
 
   // Data model creation counts as a use.
   TestAutofillDataModel model(/*usage_history_size=*/3);
@@ -126,8 +124,6 @@ class UseDateMergeTest : public testing::TestWithParam<UseDateMergeTestCase> {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList feature_{
-      features::kAutofillTrackMultipleUseDates};
 };
 
 TEST_P(UseDateMergeTest, MergeUseDates) {

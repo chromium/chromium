@@ -691,14 +691,6 @@ const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket3{
 const base::FeatureParam<std::string> kAutofillUKMExperimentalFieldsBucket4{
     &kAutofillUKMExperimentalFields, "autofill_experimental_regex_bucket4", ""};
 
-// When enabled, `AutofillProfile` tracks the second and third last use date of
-// each profile (instead of just the last use date).
-// TODO(crbug.com/354706653): Remove when launched.
-COMPONENT_EXPORT(AUTOFILL)
-BASE_FEATURE(kAutofillTrackMultipleUseDates,
-             "AutofillTrackMultipleUseDates",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Greek regexes are used for parsing in branded builds.
 COMPONENT_EXPORT(AUTOFILL)
 BASE_FEATURE(kAutofillGreekRegexes,
