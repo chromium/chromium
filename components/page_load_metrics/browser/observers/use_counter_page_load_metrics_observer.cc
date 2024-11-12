@@ -661,6 +661,8 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
           {CSSSampleId::kQuotes, WebDXFeature::kQuotes},
           {CSSSampleId::kBaselineSource, WebDXFeature::kBaselineSource},
           {CSSSampleId::kClipPath, WebDXFeature::kClipPath},
+          {CSSSampleId::kBoxDecorationBreak, WebDXFeature::kBoxDecorationBreak},
+          {CSSSampleId::kPageOrientation, WebDXFeature::kPageOrientation},
       }};
 
   return *kMap;

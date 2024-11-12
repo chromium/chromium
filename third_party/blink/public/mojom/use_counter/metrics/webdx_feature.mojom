@@ -273,6 +273,8 @@ enum WebDXFeature {
   kClipPathGeometryBox = 215,
   kClipPath = 216,
   kActiveViewTransition = 217,
+  kBoxDecorationBreak = 218,
+  kPageOrientation = 219,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
