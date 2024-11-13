@@ -185,7 +185,7 @@ gfx::Point GetRightCenterInScreenCoordinates(const views::View* view) {
 // TabDragController::SetDragLoopDoneCallbackForTesting().
 //
 // If you need to wait for dragged tabs to be attached to another browser, use
-// BrowserRemovedWaiter instead.
+// BrowserChangeWaiter instead.
 class QuitDraggingObserver {
  public:
   explicit QuitDraggingObserver(TabStrip* tab_strip) {
@@ -207,7 +207,7 @@ class QuitDraggingObserver {
           LOG(ERROR) << "QuitDraggingObserver::Wait() is taking a long time. "
                         "If this test times out, please check the comment for "
                         "QuitDraggingObserver to see if it should be using "
-                        "BrowserRemovedWaiter instead.";
+                        "BrowserChangeWaiter instead.";
           LOG(ERROR) << "Note: you might be using QuitDraggingObserver via "
                         "DragTabAndNotify() or "
                         "DragToDetachGroupAndNotify().";
@@ -230,34 +230,67 @@ class QuitDraggingObserver {
   base::WeakPtrFactory<QuitDraggingObserver> weak_ptr_factory_{this};
 };
 
-// Wait for a browser to be removed, e.g. when the browser containing dragged
-// tabs is closed after attaching the tabs to another browser.
+// Wait for a browser be added or removed, e.g. when a new browser is created to
+// hold dragged tabs or when such a browser is closed after attaching to another
+// browser.
 //
-// This is similar to ui_test_utils::BrowserChangeObserver with
-// ChangeType::kRemoved, but with the option to run a closure when a browser is
-// removed. This is needed when using system-DnD-based tab dragging, as the
-// system DnD code will spawn a nested base::RunLoop, meaning we can't exit our
-// RunLoop before the drag ends. The closure that will be run on browser removal
-// must therefore ensure that the drag ends.
-class BrowserRemovedWaiter : public BrowserListObserver {
+// This is similar to ui_test_utils::BrowserChangeObserver, but with the option
+// to run a closure in response to a change. This is needed because we might
+// have nested `base::RunLoop`s:
+// - when using system-DnD-based tab dragging, the system DnD code will spawn a
+//   base::RunLoop. If we create a new RunLoop for a waiter before starting the
+//   drag, we can't exit the waiter's RunLoop before the drag ends.
+// - when using regular tab dragging, we have the same problem, but the nested
+//   RunLoop already exits when attaching, even if the mouse is not yet
+//   released.
+// Therefore, the closure that will be run when a browser is added/removed must
+// ensure the following:
+// - if using system-DnD-based tab dragging, that the system DnD session ends,
+//   by releasing the mouse or cancelling the DnD session;
+// - else, that the move loop ends, i.e. attaching to an existing browser or
+//   fully ending the tab drag.
+class BrowserChangeWaiter : public BrowserListObserver {
  public:
-  BrowserRemovedWaiter() { BrowserList::AddObserver(this); }
-  BrowserRemovedWaiter(const BrowserRemovedWaiter&) = delete;
-  BrowserRemovedWaiter& operator=(const BrowserRemovedWaiter&) = delete;
-  ~BrowserRemovedWaiter() override { BrowserList::RemoveObserver(this); }
+  enum class ChangeType {
+    kAdded,
+    kRemoved,
+  };
 
-  // The closure must ensure the drag ends (see comment above).
-  void Wait(base::OnceClosure on_browser_removed_closure) {
-    on_browser_removed_closure_ = std::move(on_browser_removed_closure);
+  explicit BrowserChangeWaiter(ChangeType type) : type_(type) {
+    BrowserList::AddObserver(this);
+  }
+  BrowserChangeWaiter(const BrowserChangeWaiter&) = delete;
+  BrowserChangeWaiter& operator=(const BrowserChangeWaiter&) = delete;
+  ~BrowserChangeWaiter() override { BrowserList::RemoveObserver(this); }
+
+  // The closure must ensure the system DnD session/move loop ends (see comment
+  // above).
+  void Wait(base::OnceClosure closure) {
+    closure_ = std::move(closure);
     run_loop_.Run();
   }
 
   // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override {
+    if (type_ == ChangeType::kAdded) {
+      Quit();
+    }
+  }
+
   void OnBrowserRemoved(Browser* browser) override {
-    if (on_browser_removed_closure_) {
-      // The browser is still closing and synchronously running the closure now
-      // can lead to reentrancy issues, so we instead PostTask() it. We also
-      // need to make sure we only quit the RunLoop after the closure has run.
+    if (type_ == ChangeType::kRemoved) {
+      Quit();
+    }
+  }
+
+ private:
+  void Quit() {
+    if (closure_) {
+      // For ChangeType::kRemoved, the browser is still closing and
+      // synchronously running the closure now can lead to reentrancy issues, so
+      // we instead PostTask() it. We also need to make sure we only quit the
+      // RunLoop after the closure has run.
+      // It won't hurt to use the same approach for ChangeType::kAdded.
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
@@ -265,14 +298,14 @@ class BrowserRemovedWaiter : public BrowserListObserver {
                 std::move(closure).Run();
                 std::move(quit_closure).Run();
               },
-              std::move(on_browser_removed_closure_), run_loop_.QuitClosure()));
+              std::move(closure_), run_loop_.QuitClosure()));
     } else {
       run_loop_.Quit();
     }
   }
 
- private:
-  base::OnceClosure on_browser_removed_closure_;
+  ChangeType type_;
+  base::OnceClosure closure_;
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
 
@@ -1794,23 +1827,24 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   // Wait for the browser containing the dragged tabs to be removed when
   // attaching to browser2.
-  test::BrowserRemovedWaiter().Wait(base::BindLambdaForTesting([=, this]() {
-    // Should now be attached to tab_strip2.
-    ASSERT_TRUE(tab_strip2->GetDragContext()->IsDragSessionActive());
-    ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
-    ASSERT_TRUE(TabDragController::IsActive());
-    EXPECT_FALSE(GetIsDragged(browser()));
-    EXPECT_TRUE(IsTabDraggingInfoCleared(tab_strip));
-    EXPECT_TRUE(IsTabDraggingInfoSet(tab_strip2));
+  test::BrowserChangeWaiter(test::BrowserChangeWaiter::ChangeType::kRemoved)
+      .Wait(base::BindLambdaForTesting([=, this]() {
+        // Should now be attached to tab_strip2.
+        ASSERT_TRUE(tab_strip2->GetDragContext()->IsDragSessionActive());
+        ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
+        ASSERT_TRUE(TabDragController::IsActive());
+        EXPECT_FALSE(GetIsDragged(browser()));
+        EXPECT_TRUE(IsTabDraggingInfoCleared(tab_strip));
+        EXPECT_TRUE(IsTabDraggingInfoSet(tab_strip2));
 
-    // Drag to the trailing end of the tabstrip to ensure we're in a
-    // predictable spot within the strip.
-    StopAnimating(tab_strip2);
-    ASSERT_TRUE(DragInputToCenter(tab_strip2->tab_at(1)));
+        // Drag to the trailing end of the tabstrip to ensure we're in a
+        // predictable spot within the strip.
+        StopAnimating(tab_strip2);
+        ASSERT_TRUE(DragInputToCenter(tab_strip2->tab_at(1)));
 
-    // Release mouse or touch, stopping the drag session.
-    ASSERT_TRUE(ReleaseInput());
-  }));
+        // Release mouse or touch, stopping the drag session.
+        ASSERT_TRUE(ReleaseInput());
+      }));
 
   ASSERT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
@@ -1871,18 +1905,19 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
       base::BindOnce(&DragToSeparateWindowStep2, this, tab_strip, tab_strip2),
       gfx::Vector2d(0, GetDetachY(tab_strip))));
 
-  test::BrowserRemovedWaiter().Wait(base::BindLambdaForTesting([=, this]() {
-    // Should now be attached to `tab_strip2`.
-    ASSERT_TRUE(tab_strip2->GetDragContext()->IsDragSessionActive());
-    ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
-    ASSERT_TRUE(TabDragController::IsActive());
-    EXPECT_FALSE(GetIsDragged(browser()));
-    EXPECT_TRUE(IsTabDraggingInfoCleared(tab_strip));
-    EXPECT_TRUE(IsTabDraggingInfoSet(tab_strip2));
+  test::BrowserChangeWaiter(test::BrowserChangeWaiter::ChangeType::kRemoved)
+      .Wait(base::BindLambdaForTesting([=, this]() {
+        // Should now be attached to `tab_strip2`.
+        ASSERT_TRUE(tab_strip2->GetDragContext()->IsDragSessionActive());
+        ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
+        ASSERT_TRUE(TabDragController::IsActive());
+        EXPECT_FALSE(GetIsDragged(browser()));
+        EXPECT_TRUE(IsTabDraggingInfoCleared(tab_strip));
+        EXPECT_TRUE(IsTabDraggingInfoSet(tab_strip2));
 
-    // Release mouse or touch, stopping the drag session.
-    ASSERT_TRUE(ReleaseInput());
-  }));
+        // Release mouse or touch, stopping the drag session.
+        ASSERT_TRUE(ReleaseInput());
+      }));
 
   ASSERT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
   ASSERT_FALSE(tab_strip->GetDragContext()->IsDragSessionActive());
@@ -2772,6 +2807,63 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_FALSE(browser2->window()->IsMaximized());
 }
 
+// Based on DragAllToSeparateWindow, which is flaky.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_DragAllToSeparateWindowThenDrop \
+  DISABLED_DragAllToSeparateWindowThenDrop
+#else
+#define MAYBE_DragAllToSeparateWindowThenDrop DragAllToSeparateWindowThenDrop
+#endif
+
+// Creates two browsers, selects all tabs in first, drags into second, then
+// drags out again and drops the new browser.
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
+                       MAYBE_DragAllToSeparateWindowThenDrop) {
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+
+  AddTabsAndResetBrowser(browser(), 1);
+
+  // Create another browser.
+  Browser* browser2 = CreateAnotherBrowserAndResize();
+  TabStrip* tab_strip2 = GetTabStripForBrowser(browser2);
+
+  browser()->tab_strip_model()->ToggleSelectionAt(0);
+
+  DragTabAndNotify(tab_strip, base::BindOnce(&DragAllToSeparateWindowStep2,
+                                             this, tab_strip, tab_strip2));
+
+  // Should now be attached to tab_strip2.
+  ASSERT_TRUE(tab_strip2->GetDragContext()->IsDragSessionActive());
+  ASSERT_TRUE(TabDragController::IsActive());
+  ASSERT_EQ(1u, browser_list()->size());
+
+  // Drag out of tab_strip2 again.
+  EXPECT_TRUE(DragInputToCenterAsync(tab_strip2,
+                                     /*offset=*/{0, GetDetachY(tab_strip2)}));
+
+  // A new browser should open to hold the dragged tabs.
+  Browser* new_browser;
+  TabStrip* new_tab_strip;
+  test::BrowserChangeWaiter(test::BrowserChangeWaiter::ChangeType::kAdded)
+      .Wait(
+          base::BindLambdaForTesting([=, &new_browser, &new_tab_strip, this]() {
+            new_browser = ui_test_utils::GetBrowserNotInSet({browser2});
+            new_tab_strip = GetTabStripForBrowser(new_browser);
+            ASSERT_FALSE(tab_strip2->GetDragContext()->IsDragSessionActive());
+            ASSERT_TRUE(new_tab_strip->GetDragContext()->IsDragSessionActive());
+            ASSERT_TRUE(TabDragController::IsActive());
+
+            // Release the mouse, stopping the drag session.
+            ASSERT_TRUE(ReleaseInput());
+          }));
+
+  ASSERT_FALSE(new_tab_strip->GetDragContext()->IsDragSessionActive());
+  ASSERT_FALSE(TabDragController::IsActive());
+  EXPECT_EQ("100", IDString(browser2->tab_strip_model()));
+  EXPECT_EQ("0 1", IDString(new_browser->tab_strip_model()));
+  EXPECT_FALSE(GetIsDragged(new_browser));
+}
+
 namespace {
 
 // Invoked from the nested run loop.
@@ -3244,8 +3336,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
       group_header,
       base::BindOnce(&DragToSeparateWindowStep2, this, tab_strip, tab_strip2),
       gfx::Vector2d(0, GetDetachY(tab_strip))));
-  test::BrowserRemovedWaiter().Wait(
-      base::BindLambdaForTesting([this]() { ASSERT_TRUE(ReleaseInput()); }));
+  test::BrowserChangeWaiter(test::BrowserChangeWaiter::ChangeType::kRemoved)
+      .Wait(base::BindLambdaForTesting(
+          [this]() { ASSERT_TRUE(ReleaseInput()); }));
 
   // Expect the group to be in browser2, but with a new tab_groups::TabGroupId
   // and not collapsed.
