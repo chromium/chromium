@@ -114,10 +114,6 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
   // swipes.
   void AcceptSelection();
 
-  // For metrics purposes only. Returns the total number of layers mirrored
-  // to preview the desk's windows.
-  size_t GetNumLayersMirrored() const;
-
   // views::Button:
   void Layout(PassKey) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;

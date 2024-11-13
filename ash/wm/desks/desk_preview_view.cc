@@ -159,15 +159,6 @@ std::optional<size_t> GetWindowZOrderForDeskAndRoot(const aura::Window* window,
   return std::nullopt;
 }
 
-// Returns the total number of layers that are descendants of `root`.
-size_t GetNumDescendants(ui::Layer* root) {
-  size_t num_descendants = root->children().size();
-  for (const auto& child : root->children()) {
-    num_descendants += GetNumDescendants(child);
-  }
-  return num_descendants;
-}
-
 // Recursively mirrors `source_layer` and its children and adds them as children
 // of `parent`, taking into account the given |layers_data|. If the layer data
 // of `source_layer` has `should_clear_transform` set to true, the transforms of
@@ -602,10 +593,6 @@ void DeskPreviewView::AcceptSelection() {
       mini_view_->owner_bar()->type() == DeskBarViewBase::Type::kDeskButton
           ? DesksSwitchSource::kDeskButtonMiniViewButton
           : DesksSwitchSource::kMiniViewButton);
-}
-
-size_t DeskPreviewView::GetNumLayersMirrored() const {
-  return GetNumDescendants(desk_mirrored_contents_layer_tree_owner_->root());
 }
 
 void DeskPreviewView::Layout(PassKey) {

@@ -1632,20 +1632,6 @@ void DeskBarViewBase::UpdateNewMiniViews(bool initializing_bar_view,
     ++mini_view_index;
   }
 
-  // Only record for `initializing_bar_view` since that's what impacts the
-  // presentation time and animation smoothness when entering overview.
-  if (initializing_bar_view && type_ == Type::kOverview) {
-    size_t total_layers_mirrored = 0;
-    for (const auto& mini_view : mini_views_) {
-      total_layers_mirrored +=
-          mini_view->desk_preview()->GetNumLayersMirrored();
-    }
-    // From local testing, 16 chrome browser windows (which metrics show is
-    // likely much more than what most users have) resulted in ~1000 layers.
-    base::UmaHistogramCounts1000("Ash.Overview.DeskBarNumLayersMirrored",
-                                 total_layers_mirrored);
-  }
-
   if (expanding_bar_view) {
     SwitchToExpandedState();
     return;

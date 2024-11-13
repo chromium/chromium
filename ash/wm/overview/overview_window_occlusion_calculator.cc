@@ -9,7 +9,6 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 
 namespace ash {
@@ -33,8 +32,6 @@ void OverviewWindowOcclusionCalculator::OnOverviewModeStarting() {
   }
   TRACE_EVENT0("ui",
                "OverviewWindowOcclusionCalculator::OnOverviewModeWillStart");
-  base::ScopedUmaHistogramTimer timer(
-      "Ash.Overview.WindowOcclusionCalculator.EnterLatency");
   calculator_.emplace();
   // Compute initial occlusion state of all desk's windows before occlusion
   // calculations are paused at the end of this method. Without this, the
@@ -78,8 +75,6 @@ void OverviewWindowOcclusionCalculator::OnOverviewModeEnding(
   if (calculator_) {
     TRACE_EVENT0("ui",
                  "OverviewWindowOcclusionCalculator::OnOverviewModeEnding");
-    base::ScopedUmaHistogramTimer timer(
-        "Ash.Overview.WindowOcclusionCalculator.ExitLatency");
     calculator_->RemoveObserver(this);
     calculator_.reset();
   }

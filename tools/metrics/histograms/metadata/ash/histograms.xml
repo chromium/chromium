@@ -6842,21 +6842,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Overview.DeskBarNumLayersMirrored" units="units"
-    expires_after="2025-04-20">
-  <owner>esum@google.com</owner>
-  <owner>cros-sw-perf@google.com</owner>
-  <summary>
-    Records the number of ui/compositor layers that were mirrored when rendering
-    the desk bar as part of overview mode. More specifically, these are the
-    layers mirrored to create the &quot;mini views&quot; of each desk within the
-    desk bar. Recorded once per overview mode session in which the desk bar was
-    present; if the mirrored layers are rebuilt after the first rendering, this
-    is not counted. Not recorded for overview mode sessions without the desk
-    bar.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Overview.DeskBarVisibility" enum="DeskBarVisibility"
     expires_after="2025-04-13">
   <owner>esum@google.com</owner>
@@ -7084,32 +7069,6 @@ chromium-metrics-reviews@google.com.
     Recorded when a drag from overview (not from the top or shelf) is completed,
     and when an overview item is closed by vertically swiping or flinging (even
     if you fling without dragging).
-  </summary>
-</histogram>
-
-<histogram name="Ash.Overview.WindowOcclusionCalculator.EnterLatency"
-    units="ms" expires_after="2025-04-13">
-  <owner>esum@google.com</owner>
-  <owner>chromeos-wm@google.com</owner>
-  <summary>
-    Records the amount of time window occlusion calculations take when entering
-    overview mode. The window occlusion calculations are used to optimize the
-    desk bar that appears as part of overview mode. Recorded every time overview
-    mode is opened and the DeskBarWindowOcclusionOptimizationEnabled experiment
-    flag is enabled.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Overview.WindowOcclusionCalculator.ExitLatency" units="ms"
-    expires_after="2025-04-13">
-  <owner>esum@google.com</owner>
-  <owner>chromeos-wm@google.com</owner>
-  <summary>
-    Records the amount of time window occlusion calculations take when exiting
-    overview mode. The window occlusion calculations are used to optimize the
-    desk bar that appears as part of overview mode. Recorded every time overview
-    mode is closed and the DeskBarWindowOcclusionOptimizationEnabled experiment
-    flag is enabled.
   </summary>
 </histogram>
 
