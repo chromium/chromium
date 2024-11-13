@@ -3515,6 +3515,37 @@ TEST_F(StyleCascadeTest, MarkHasReferenceShorthand) {
   EXPECT_TRUE(cascade.State().StyleBuilder().HasVariableReference());
 }
 
+TEST_F(StyleCascadeTest, HasNoEnv) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("margin:1px");
+  cascade.Add("width:1px");
+  cascade.Add("--x:1px");
+  cascade.Apply();
+
+  EXPECT_FALSE(cascade.State().StyleBuilder().HasEnv());
+}
+
+TEST_F(StyleCascadeTest, MarkHasEnvLonghand) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("width:env(unknown)");
+  cascade.Apply();
+  EXPECT_TRUE(cascade.State().StyleBuilder().HasEnv());
+}
+
+TEST_F(StyleCascadeTest, MarkHasEnvShorthand) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("padding:env(unknown)");
+  cascade.Apply();
+  EXPECT_TRUE(cascade.State().StyleBuilder().HasEnv());
+}
+
+TEST_F(StyleCascadeTest, MarkHasEnvCustomProperty) {
+  TestCascade cascade(GetDocument());
+  cascade.Add("--x:env(unknown)");
+  cascade.Apply();
+  EXPECT_TRUE(cascade.State().StyleBuilder().HasEnv());
+}
+
 TEST_F(StyleCascadeTest, Reset) {
   TestCascade cascade(GetDocument());
 

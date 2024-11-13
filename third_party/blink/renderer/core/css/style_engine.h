@@ -574,6 +574,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void PropertyRegistryChanged();
 
   void EnvironmentVariableChanged();
+  void InvalidateEnvDependentStylesIfNeeded();
 
   void MarkAllElementsForStyleRecalc(const StyleChangeReasonForTracing& reason);
   void MarkViewportStyleDirty();
@@ -1028,6 +1029,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   // See enum ViewportUnitFlag.
   unsigned viewport_unit_dirty_flags_{0};
+
+  // True if some data backing env() has changed.
+  bool is_env_dirty_{false};
 
   VisionDeficiency vision_deficiency_{VisionDeficiency::kNoVisionDeficiency};
   Member<ReferenceFilterOperation> vision_deficiency_filter_;

@@ -1594,6 +1594,7 @@ bool StyleCascade::ResolveEnvInto(CSSParserTokenStream& stream,
                                   CascadeResolver& resolver,
                                   const CSSParserContext& context,
                                   TokenSequence& out) {
+  state_.StyleBuilder().SetHasEnv();
   AtomicString variable_name = ConsumeVariableName(stream);
   DCHECK(stream.AtEnd() || (stream.Peek().GetType() == kCommaToken) ||
          (stream.Peek().GetType() == kNumberToken));

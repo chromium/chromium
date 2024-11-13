@@ -2416,6 +2416,7 @@ void Document::UpdateStyleAndLayoutTreeForThisDocument() {
   style_engine.UpdateCounterStyles();
   style_engine.InvalidatePositionTryStyles();
   style_engine.InvalidateViewportUnitStylesIfNeeded();
+  style_engine.InvalidateEnvDependentStylesIfNeeded();
   InvalidateStyleAndLayoutForFontUpdates();
   UpdateStyleInvalidationIfNeeded();
   UpdateStyle();
