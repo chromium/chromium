@@ -34,15 +34,38 @@ external/wpt/css/css-syntax/*
 external/wpt/css/css-transitions/*
 external/wpt/css/css-viewport/*
 external/wpt/css/fetching/*
-external/wpt/FileAPI/*
 external/wpt/css/fill-stroke/*
 external/wpt/css/geometry/*
 external/wpt/css/reference/*
+external/wpt/delegated-ink/*
+external/wpt/deprecation-reporting/*
+external/wpt/device-memory/*
+external/wpt/device-posture/*
 external/wpt/digital-credentials/*
+external/wpt/document-picture-in-picture/*
+external/wpt/domparsing/*
+external/wpt/domxpath/*
 external/wpt/ecmascript/*
 external/wpt/encoding/*
+external/wpt/entries-api/*
+external/wpt/eyedropper/*
+external/wpt/feature-policy/*
+external/wpt/file-system-access/*
+external/wpt/FileAPI/*
+external/wpt/focus/*
 external/wpt/font-access/*
 external/wpt/fullscreen/*
+external/wpt/gamepad/*
+external/wpt/generic-sensor/*
+external/wpt/geolocation*
+external/wpt/hr-time/*
+external/wpt/html-media-capture/*
+external/wpt/https-upgrades/*
+external/wpt/imagebitmap-renderingcontext/*
+external/wpt/input-device-capabilities/*
+external/wpt/installedapp/*
+external/wpt/intervention-reporting/*
+external/wpt/jpegxl/*
 external/wpt/js*
 external/wpt/keyboard*
 external/wpt/lifecycle/*
@@ -90,7 +113,9 @@ external/wpt/xhr/*
 
 virtual/cookie-deprecation-label/*
 virtual/disable-raster-inducing-scroll/*
+virtual/document-picture-in-picture-user-activation/*
 virtual/float16array-enabled/external/wpt/xhr/*
+virtual/fsa-incognito/external/wpt/file-system-access/*
 virtual/gpu/external/wpt/*
 virtual/keepalive-in-browser-migration/external/wpt/xhr/*
 virtual/longtask-from-loaf/external/wpt/*
@@ -102,6 +127,7 @@ virtual/produce-compile-hints/external/wpt/loading/*
 virtual/single-renderer-process/external/wpt/*
 virtual/split-http-cache/external/wpt/signed-exchange/*
 virtual/third-party-storage-partitioning/external/wpt/web-locks/*
+virtual/threaded/external/wpt/feature-policy/*
 virtual/threaded/external/wpt/scheduler/*
 virtual/webauthn-remote-desktop-client-override/*
 
