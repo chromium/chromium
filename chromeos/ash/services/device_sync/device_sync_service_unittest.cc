@@ -550,33 +550,6 @@ class FakeRemoteDeviceProviderFactory
   raw_ptr<FakeRemoteDeviceProvider, DanglingUntriaged> instance_ = nullptr;
 };
 
-class FakeSoftwareFeatureManagerFactory
-    : public SoftwareFeatureManagerImpl::Factory {
- public:
-  FakeSoftwareFeatureManagerFactory() = default;
-  ~FakeSoftwareFeatureManagerFactory() override = default;
-
-  FakeSoftwareFeatureManager* instance() { return instance_; }
-
-  // SoftwareFeatureManagerImpl::Factory:
-  std::unique_ptr<SoftwareFeatureManager> CreateInstance(
-      CryptAuthClientFactory* cryptauth_client_factory,
-      CryptAuthFeatureStatusSetter* feature_status_setter) override {
-    EXPECT_TRUE(features::ShouldUseV1DeviceSync());
-
-    // Only one instance is expected to be created per test.
-    EXPECT_FALSE(instance_);
-
-    auto instance = std::make_unique<FakeSoftwareFeatureManager>();
-    instance_ = instance.get();
-
-    return instance;
-  }
-
- private:
-  raw_ptr<FakeSoftwareFeatureManager, DanglingUntriaged> instance_ = nullptr;
-};
-
 }  // namespace
 
 // TODO(jamescook): Rename to DeviceSyncImplTest because it's actually testing
@@ -934,10 +907,6 @@ class DeviceSyncServiceTest : public ::testing::Test {
     return fake_cryptauth_v2_device_manager_factory_->instance();
   }
 
-  FakeSoftwareFeatureManager* fake_software_feature_manager() {
-    return fake_software_feature_manager_factory_->instance();
-  }
-
   FakeCryptAuthFeatureStatusSetter* fake_feature_status_setter() {
     if (fake_feature_status_setter_factory_->instances().empty())
       return nullptr;
@@ -1118,76 +1087,11 @@ class DeviceSyncServiceTest : public ::testing::Test {
     return last_synced_devices_result_;
   }
 
-  void CallSetSoftwareFeatureState(
-      const std::string& public_key,
-      multidevice::SoftwareFeature software_feature,
-      bool enabled,
-      bool is_exclusive) {
-    base::RunLoop run_loop;
-    FakeSoftwareFeatureManager* manager = fake_software_feature_manager();
-
-    // If the manager has not yet been created, the service has not been
-    // initialized. SetSoftwareFeatureState() is expected to respond
-    // synchronously with an error.
-    if (!manager) {
-      device_sync_->SetSoftwareFeatureState(
-          public_key, software_feature, enabled, is_exclusive,
-          base::BindOnce(&DeviceSyncServiceTest::
-                             OnSetSoftwareFeatureStateCompletedSynchronously,
-                         base::Unretained(this), run_loop.QuitClosure()));
-      run_loop.Run();
-      return;
-    }
-
-    // If the manager has been created, the service responds asynchronously.
-    FakeSoftwareFeatureManagerDelegate delegate(run_loop.QuitClosure());
-    fake_software_feature_manager_factory_->instance()->set_delegate(&delegate);
-
-    device_sync_->SetSoftwareFeatureState(
-        public_key, software_feature, enabled, is_exclusive,
-        base::BindOnce(
-            &DeviceSyncServiceTest::OnSetSoftwareFeatureStateCompleted,
-            base::Unretained(this)));
-    run_loop.Run();
-
-    fake_software_feature_manager_factory_->instance()->set_delegate(nullptr);
-  }
-
   void CallSetFeatureStatus(const std::string& device_instance_id,
                             multidevice::SoftwareFeature software_feature,
                             FeatureStatusChange status_change) {
     CallSetFeatureStatusV2DeviceSyncOnly(device_instance_id, software_feature,
                                          status_change);
-  }
-
-  void CallFindEligibleDevices(multidevice::SoftwareFeature software_feature) {
-    base::RunLoop run_loop;
-    FakeSoftwareFeatureManager* manager = fake_software_feature_manager();
-
-    // If the manager has not yet been created, the service has not been
-    // initialized. FindEligibleDevices() is expected to respond synchronously
-    // with an error.
-    if (!manager) {
-      device_sync_->FindEligibleDevices(
-          software_feature,
-          base::BindOnce(&DeviceSyncServiceTest::
-                             OnFindEligibleDevicesCompletedSynchronously,
-                         base::Unretained(this), run_loop.QuitClosure()));
-      run_loop.Run();
-      return;
-    }
-
-    // If the manager has been created, the service responds asynchronously.
-    FakeSoftwareFeatureManagerDelegate delegate(run_loop.QuitClosure());
-    fake_software_feature_manager_factory_->instance()->set_delegate(&delegate);
-
-    device_sync_->FindEligibleDevices(
-        software_feature,
-        base::BindOnce(&DeviceSyncServiceTest::OnFindEligibleDevicesCompleted,
-                       base::Unretained(this)));
-    run_loop.Run();
-
-    fake_software_feature_manager_factory_->instance()->set_delegate(nullptr);
   }
 
   void CallNotifyDevices(const std::vector<std::string>& device_instance_ids,
@@ -1232,39 +1136,6 @@ class DeviceSyncServiceTest : public ::testing::Test {
   }
 
  private:
-  void CallSetFeatureStatusV1andV2DeviceSync(
-      const std::string& device_instance_id,
-      multidevice::SoftwareFeature software_feature,
-      FeatureStatusChange status_change) {
-    base::RunLoop run_loop;
-    FakeSoftwareFeatureManager* manager = fake_software_feature_manager();
-
-    // If the manager has not yet been created, the service has not been
-    // initialized. SetFeatureStatus() is expected to respond synchronously with
-    // an error.
-    if (!manager) {
-      device_sync_->SetFeatureStatus(
-          device_instance_id, software_feature, status_change,
-          base::BindOnce(
-              &DeviceSyncServiceTest::OnSetFeatureStatusCompletedSynchronously,
-              base::Unretained(this), run_loop.QuitClosure()));
-      run_loop.Run();
-      return;
-    }
-
-    // If the manager has been created, the service responds asynchronously.
-    FakeSoftwareFeatureManagerDelegate delegate(run_loop.QuitClosure());
-    fake_software_feature_manager_factory_->instance()->set_delegate(&delegate);
-
-    device_sync_->SetFeatureStatus(
-        device_instance_id, software_feature, status_change,
-        base::BindOnce(&DeviceSyncServiceTest::OnSetFeatureStatusCompleted,
-                       base::Unretained(this)));
-    run_loop.Run();
-
-    fake_software_feature_manager_factory_->instance()->set_delegate(nullptr);
-  }
-
   void CallSetFeatureStatusV2DeviceSyncOnly(
       const std::string& device_instance_id,
       multidevice::SoftwareFeature software_feature,
@@ -1425,8 +1296,6 @@ class DeviceSyncServiceTest : public ::testing::Test {
       fake_device_notifier_factory_;
   std::unique_ptr<FakeCryptAuthFeatureStatusSetterFactory>
       fake_feature_status_setter_factory_;
-  std::unique_ptr<FakeSoftwareFeatureManagerFactory>
-      fake_software_feature_manager_factory_;
   std::unique_ptr<FakeCryptAuthDeviceRegistryFactory>
       fake_cryptauth_device_registry_factory_;
   std::unique_ptr<FakeCryptAuthV2DeviceManagerFactory>
@@ -1726,167 +1595,6 @@ TEST_F(DeviceSyncServiceTest, SyncedDeviceUpdates) {
   EXPECT_EQ(updated_device_list, CallGetSyncedDevices());
 }
 
-TEST_F(DeviceSyncServiceTest, SetSoftwareFeatureState_Success) {
-  if (!features::ShouldUseV1DeviceSync())
-    return;
-
-  InitializeServiceSuccessfully();
-
-  const auto& set_software_calls =
-      fake_software_feature_manager()->set_software_feature_state_calls();
-  EXPECT_EQ(0u, set_software_calls.size());
-
-  // Set the kBetterTogetherHost field to "supported".
-  multidevice::RemoteDevice device_for_test = test_devices()[0];
-  device_for_test
-      .software_features[multidevice::SoftwareFeature::kBetterTogetherHost] =
-      multidevice::SoftwareFeatureState::kSupported;
-  EXPECT_TRUE(CallForceSyncNow());
-  SimulateSync(true /* success */, {device_for_test});
-
-  // Enable kBetterTogetherHost for the device.
-  CallSetSoftwareFeatureState(device_for_test.public_key,
-                              multidevice::SoftwareFeature::kBetterTogetherHost,
-                              true /* enabled */, true /* is_exclusive */);
-  EXPECT_EQ(1u, set_software_calls.size());
-  EXPECT_EQ(multidevice::SoftwareFeature::kBetterTogetherHost,
-            set_software_calls[0]->software_feature);
-  EXPECT_TRUE(set_software_calls[0]->enabled);
-  EXPECT_TRUE(set_software_calls[0]->is_exclusive);
-
-  // The callback has not yet been invoked.
-  EXPECT_FALSE(GetLastSetSoftwareFeatureStateResponseAndReset());
-
-  // Now, invoke the success callback.
-  std::move(set_software_calls[0]->success_callback).Run();
-
-  // The callback still has not yet been invoked, since a device sync has not
-  // confirmed the feature state change yet.
-  EXPECT_FALSE(GetLastSetSoftwareFeatureStateResponseAndReset());
-
-  // Simulate a sync which includes the device with the correct "enabled" state.
-  device_for_test
-      .software_features[multidevice::SoftwareFeature::kBetterTogetherHost] =
-      multidevice::SoftwareFeatureState::kEnabled;
-  base::RunLoop().RunUntilIdle();
-  SimulateSync(true /* success */, {device_for_test});
-  base::RunLoop().RunUntilIdle();
-
-  auto last_response = GetLastSetSoftwareFeatureStateResponseAndReset();
-  EXPECT_TRUE(last_response);
-  EXPECT_EQ(mojom::NetworkRequestResult::kSuccess, *last_response);
-
-  histogram_tester().ExpectBucketCount<bool>(
-      "MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result", false, 0);
-  histogram_tester().ExpectBucketCount<bool>(
-      "MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result", true, 1);
-  histogram_tester().ExpectTotalCount(
-      "MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result."
-      "FailureReason",
-      0);
-}
-
-TEST_F(DeviceSyncServiceTest,
-       SetSoftwareFeatureState_RequestSucceedsButDoesNotTakeEffect) {
-  if (!features::ShouldUseV1DeviceSync())
-    return;
-
-  InitializeServiceSuccessfully();
-
-  const auto& set_software_calls =
-      fake_software_feature_manager()->set_software_feature_state_calls();
-  EXPECT_EQ(0u, set_software_calls.size());
-
-  // Set the kBetterTogetherHost field to "supported".
-  multidevice::RemoteDevice device_for_test = test_devices()[0];
-  device_for_test
-      .software_features[multidevice::SoftwareFeature::kBetterTogetherHost] =
-      multidevice::SoftwareFeatureState::kSupported;
-  EXPECT_TRUE(CallForceSyncNow());
-  SimulateSync(true /* success */, {device_for_test});
-
-  // Enable kBetterTogetherHost for the device.
-  CallSetSoftwareFeatureState(device_for_test.public_key,
-                              multidevice::SoftwareFeature::kBetterTogetherHost,
-                              true /* enabled */, true /* is_exclusive */);
-  EXPECT_EQ(1u, set_software_calls.size());
-  EXPECT_EQ(multidevice::SoftwareFeature::kBetterTogetherHost,
-            set_software_calls[0]->software_feature);
-  EXPECT_TRUE(set_software_calls[0]->enabled);
-  EXPECT_TRUE(set_software_calls[0]->is_exclusive);
-
-  // The callback has not yet been invoked.
-  EXPECT_FALSE(GetLastSetSoftwareFeatureStateResponseAndReset());
-
-  // Fire the timer, simulating that the updated device metadata did not arrive
-  // in time.
-  mock_timer()->Fire();
-  base::RunLoop().RunUntilIdle();
-
-  auto last_response = GetLastSetSoftwareFeatureStateResponseAndReset();
-  EXPECT_TRUE(last_response);
-  EXPECT_EQ(mojom::NetworkRequestResult::kRequestSucceededButUnexpectedResult,
-            *last_response);
-
-  histogram_tester().ExpectBucketCount<bool>(
-      "MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result", false, 1);
-  histogram_tester().ExpectTotalCount(
-      "MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result."
-      "FailureReason",
-      1);
-  histogram_tester().ExpectBucketCount<bool>(
-      "MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result", true, 0);
-}
-
-TEST_F(DeviceSyncServiceTest, SetSoftwareFeatureState_Error) {
-  if (!features::ShouldUseV1DeviceSync())
-    return;
-
-  InitializeServiceSuccessfully();
-
-  const auto& set_software_calls =
-      fake_software_feature_manager()->set_software_feature_state_calls();
-  EXPECT_EQ(0u, set_software_calls.size());
-
-  // Set the kBetterTogetherHost field to "supported".
-  multidevice::RemoteDevice device_for_test = test_devices()[0];
-  device_for_test
-      .software_features[multidevice::SoftwareFeature::kBetterTogetherHost] =
-      multidevice::SoftwareFeatureState::kSupported;
-  EXPECT_TRUE(CallForceSyncNow());
-  SimulateSync(true /* success */, {device_for_test});
-
-  // Enable kBetterTogetherHost for the device.
-  CallSetSoftwareFeatureState(device_for_test.public_key,
-                              multidevice::SoftwareFeature::kBetterTogetherHost,
-                              true /* enabled */, true /* is_exclusive */);
-  ASSERT_EQ(1u, set_software_calls.size());
-  EXPECT_EQ(multidevice::SoftwareFeature::kBetterTogetherHost,
-            set_software_calls[0]->software_feature);
-  EXPECT_TRUE(set_software_calls[0]->enabled);
-  EXPECT_TRUE(set_software_calls[0]->is_exclusive);
-
-  // The callback has not yet been invoked.
-  EXPECT_FALSE(GetLastSetSoftwareFeatureStateResponseAndReset());
-
-  // Now, invoke the error callback.
-  std::move(set_software_calls[0]->error_callback)
-      .Run(NetworkRequestError::kOffline);
-  base::RunLoop().RunUntilIdle();
-  auto last_response = GetLastSetSoftwareFeatureStateResponseAndReset();
-  EXPECT_TRUE(last_response);
-  EXPECT_EQ(mojom::NetworkRequestResult::kOffline, *last_response);
-
-  histogram_tester().ExpectBucketCount<bool>(
-      "MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result", false, 1);
-  histogram_tester().ExpectTotalCount(
-      "MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result."
-      "FailureReason",
-      1);
-  histogram_tester().ExpectBucketCount<bool>(
-      "MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result", true, 0);
-}
-
 TEST_F(DeviceSyncServiceTest, SetFeatureStatus_Success) {
   InitializeServiceSuccessfully();
 
@@ -2056,63 +1764,6 @@ TEST_F(DeviceSyncServiceTest, SetFeatureStatus_Error) {
   ASSERT_EQ(1u, set_feature_status_results().size());
   EXPECT_EQ(mojom::NetworkRequestResult::kBadRequest,
             set_feature_status_results()[0]);
-}
-
-TEST_F(DeviceSyncServiceTest, FindEligibleDevices) {
-  if (!features::ShouldUseV1DeviceSync())
-    return;
-
-  InitializeServiceSuccessfully();
-
-  const auto& find_eligible_calls =
-      fake_software_feature_manager()->find_eligible_multidevice_host_calls();
-  EXPECT_EQ(0u, find_eligible_calls.size());
-
-  // Find devices which are kBetterTogetherHost.
-  CallFindEligibleDevices(multidevice::SoftwareFeature::kBetterTogetherHost);
-  EXPECT_EQ(1u, find_eligible_calls.size());
-  EXPECT_EQ(multidevice::SoftwareFeature::kBetterTogetherHost,
-            find_eligible_calls[0]->software_feature);
-
-  // The callback has not yet been invoked.
-  EXPECT_FALSE(GetLastFindEligibleDevicesResponseAndReset());
-
-  // Now, invoke the success callback, simultating that device 0 is eligible and
-  // devices 1-4 are not.
-  std::move(find_eligible_calls[0]->success_callback)
-      .Run(std::vector<cryptauth::ExternalDeviceInfo>(
-               test_device_infos().begin(), test_device_infos().begin()),
-           std::vector<cryptauth::IneligibleDevice>(
-               test_ineligible_devices().begin() + 1,
-               test_ineligible_devices().end()));
-  base::RunLoop().RunUntilIdle();
-  auto last_response = GetLastFindEligibleDevicesResponseAndReset();
-  EXPECT_TRUE(last_response);
-  EXPECT_EQ(mojom::NetworkRequestResult::kSuccess, last_response->first);
-  EXPECT_EQ(last_response->second->eligible_devices,
-            multidevice::RemoteDeviceList(test_devices().begin(),
-                                          test_devices().begin()));
-  EXPECT_EQ(last_response->second->ineligible_devices,
-            multidevice::RemoteDeviceList(test_devices().begin() + 1,
-                                          test_devices().end()));
-
-  // Find devices which are BETTER_TOGETHER_HOSTs again.
-  CallFindEligibleDevices(multidevice::SoftwareFeature::kBetterTogetherHost);
-  EXPECT_EQ(2u, find_eligible_calls.size());
-  EXPECT_EQ(multidevice::SoftwareFeature::kBetterTogetherHost,
-            find_eligible_calls[1]->software_feature);
-
-  // The callback has not yet been invoked.
-  EXPECT_FALSE(GetLastFindEligibleDevicesResponseAndReset());
-
-  // Now, invoke the error callback.
-  std::move(find_eligible_calls[1]->error_callback)
-      .Run(NetworkRequestError::kOffline);
-  base::RunLoop().RunUntilIdle();
-  last_response = GetLastFindEligibleDevicesResponseAndReset();
-  EXPECT_TRUE(last_response);
-  EXPECT_EQ(mojom::NetworkRequestResult::kOffline, last_response->first);
-  EXPECT_FALSE(last_response->second /* response */);
 }
 
 TEST_F(DeviceSyncServiceTest, NotifyDevices_Success) {
