@@ -419,8 +419,6 @@ void ArcSessionImpl::DoStartMiniInstance(size_t num_cores_disabled) {
   StartParams params;
   params.native_bridge_experiment =
       base::FeatureList::IsEnabled(arc::kNativeBridgeToggleFeature);
-  params.arc_file_picker_experiment =
-      base::FeatureList::IsEnabled(arc::kFilePickerExperimentFeature);
   // Enable Custom Tabs only on Dev and Canary.
   const bool is_custom_tab_enabled =
       base::FeatureList::IsEnabled(arc::kCustomTabsExperimentFeature) &&
