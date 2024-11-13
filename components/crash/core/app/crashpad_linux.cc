@@ -184,26 +184,27 @@ bool PlatformCrashpadInitialization(
     url = std::string();
 #endif
 
-    CrashReporterClient::ProductInfo product_info;
-    crash_reporter_client->GetProductInfo(&product_info);
+    std::string product_name, product_version, channel;
+    crash_reporter_client->GetProductNameAndVersion(&product_name,
+                                                    &product_version, &channel);
 
     std::map<std::string, std::string> annotations;
-    annotations["prod"] = product_info.product_name;
-    annotations["ver"] = product_info.version;
+    annotations["prod"] = product_name;
+    annotations["ver"] = product_version;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     // Empty means stable.
     const bool allow_empty_channel = true;
-    if (product_info.channel == "extended") {
+    if (channel == "extended") {
       // Extended stable reports as stable (empty string) with an extra bool.
-      product_info.channel.clear();
+      channel.clear();
       annotations["extended_stable_channel"] = "true";
     }
 #else
     const bool allow_empty_channel = false;
 #endif
-    if (allow_empty_channel || !product_info.channel.empty()) {
-      annotations["channel"] = product_info.channel;
+    if (allow_empty_channel || !channel.empty()) {
+      annotations["channel"] = channel;
     }
 
     annotations["plat"] = std::string("Linux");
