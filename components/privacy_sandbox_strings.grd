@@ -481,6 +481,25 @@
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LAST_TEXT" desc="" translateable="false">
         You can make changes in ad privacy settings
       </message>
+      <!--Ad Topics ROW Notice-->
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_BULLET_2_V2" desc="" translateable="false">
+        Sites and their advertising partners can use your activity, such as how you spend your time on sites you visit, to personalize ads on other sites. For example, if you visit a site to find recipes for dinner, the site might decide that you're interested in cooking. Later, another site may show you a related ad for a grocery delivery service suggested by the first site.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_2_V2" desc="" translateable="false">
+        A site you visit can ask for this information — either your ad topics or ads suggested by sites you've visited.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_HEADING_3" desc="" translateable="false">
+        How sites use your data
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5_V2" desc="" translateable="false">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK1">&lt;a href="#" id="$1" aria-description="$2" on-click="$3"&gt;</ph>Learn more about how Google protects your data in our Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5_V2_NO_LINK" desc="" translateable="false">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more about how Google protects your data in our Privacy Policy.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LAST_TEXT" desc="" translateable="false">
+        You can make changes in ad privacy settings
+      </message>
       <!--Privacy Guide - Ad Topics-->
       <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_HEADING" desc="Header text on the Ad Topics card of the Privacy Guide.">
         Review your ad topics setting
