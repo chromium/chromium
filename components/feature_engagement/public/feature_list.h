@@ -22,18 +22,17 @@ using FeatureVector = std::vector<const base::Feature*>;
 // by the end user.
 extern const char kIPHDemoModeFeatureChoiceParam[];
 
-namespace {
-
 // Defines a const flags_ui::FeatureEntry::FeatureParam for the given
 // base::Feature. The constant name will be on the form
 // kFooFeature --> kFooFeatureVariation. The |feature_name| argument must
 // match the base::Feature::name member of the |base_feature|.
 // This is intended to be used with VARIATION_ENTRY below to be able to insert
 // it into an array of flags_ui::FeatureEntry::FeatureVariation.
-#define DEFINE_VARIATION_PARAM(base_feature, feature_name)                     \
-  using validate_##base_feature##_t = decltype(&base_feature);                 \
-  constexpr flags_ui::FeatureEntry::FeatureParam base_feature##Variation[] = { \
-      {kIPHDemoModeFeatureChoiceParam, feature_name}}
+#define DEFINE_VARIATION_PARAM(base_feature, feature_name)     \
+  using validate_##base_feature##_t = decltype(&base_feature); \
+  inline constexpr flags_ui::FeatureEntry::FeatureParam        \
+      base_feature##Variation[] = {                            \
+          {kIPHDemoModeFeatureChoiceParam, feature_name}}
 
 // Defines a single flags_ui::FeatureEntry::FeatureVariation entry, fully
 // enclosed. This is intended to be used with the declaration of
@@ -499,12 +498,10 @@ DEFINE_VARIATION_PARAM(kIPHiOSPaymentPromoDesktopFeature,
                        "IPH_iOSPaymentPromoDesktop");
 #endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-}  // namespace
-
 // Defines the array of which features should be listed in the chrome://flags
 // UI to be able to select them alone for demo-mode. The features listed here
 // are possible to enable on their own in demo mode.
-constexpr flags_ui::FeatureEntry::FeatureVariation
+inline constexpr flags_ui::FeatureEntry::FeatureVariation
     kIPHDemoModeChoiceVariations[] = {
 #if BUILDFLAG(IS_ANDROID)
         VARIATION_ENTRY(
