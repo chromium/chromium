@@ -10,7 +10,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
@@ -40,14 +39,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
-import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
@@ -87,14 +84,12 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.policy.AbstractAppRestrictionsProvider;
 import org.chromium.components.search_engines.TemplateUrl;
-import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeImpl;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
+import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.common.ContentUrlConstants;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,9 +114,6 @@ public class FirstRunIntegrationTest {
 
     @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
     @Mock public FirstRunAppRestrictionInfo mMockAppRestrictionInfo;
-    @Mock private AccountManagerFacade mAccountManagerFacade;
-
-    private Promise<List<CoreAccountInfo>> mAccountsPromise;
 
     private final Set<Class> mSupportedActivities =
             CollectionUtil.newHashSet(
@@ -130,6 +122,12 @@ public class FirstRunIntegrationTest {
                     ChromeTabbedActivity.class,
                     CustomTabActivity.class);
     private final Map<Class, ActivityMonitor> mMonitorMap = new HashMap<>();
+    // The following is only used for tests which call {@code blockOnFlowIsKnown}. Otherwise, the
+    // real implementation
+    // of {@code AccountManagerFacade} is used with a {@code FakeAccountManagerDelegate}.
+    private final FakeAccountManagerFacade mFakeAccountManagerFacade =
+            new FakeAccountManagerFacade();
+
     private Instrumentation mInstrumentation;
     private Context mContext;
 
@@ -323,19 +321,9 @@ public class FirstRunIntegrationTest {
         return mTestObserver.getScopedObserverData(freActivity);
     }
 
-    private void blockOnFlowIsKnown() {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Assert.assertNull("mAccountsPromise is already initialized!", mAccountsPromise);
-                    mAccountsPromise = new Promise<>();
-                });
-        Mockito.when(mAccountManagerFacade.getCoreAccountInfos()).thenReturn(mAccountsPromise);
-        AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
-    }
-
-    private void unblockOnFlowIsKnown() {
-        Mockito.verify(mAccountManagerFacade, atLeastOnce()).getCoreAccountInfos();
-        ThreadUtils.runOnUiThreadBlocking(() -> mAccountsPromise.fulfill(Collections.emptyList()));
+    private FakeAccountManagerFacade.UpdateBlocker blockOnFlowIsKnown() {
+        AccountManagerFacadeProvider.setInstanceForTests(mFakeAccountManagerFacade);
+        return mFakeAccountManagerFacade.blockGetCoreAccountInfos(/* populateCache= */ false);
     }
 
     @Test
@@ -781,7 +769,7 @@ public class FirstRunIntegrationTest {
 
         // Inspired by https://crbug.com/1207683 where a notification was dropped because native
         // initialized before the first fragment was attached to the activity.
-        blockOnFlowIsKnown();
+        var blocker = blockOnFlowIsKnown();
 
         launchViewIntent(TEST_URL);
         FirstRunActivity firstRunActivity = waitForFirstRunActivity();
@@ -789,7 +777,7 @@ public class FirstRunIntegrationTest {
                 () -> firstRunActivity.getNativeInitializationPromise().isFulfilled(),
                 "native never initialized.");
 
-        unblockOnFlowIsKnown();
+        blocker.close();
         clickThroughFirstRun(firstRunActivity, testCase);
         verifyUrlEquals(TEST_URL, waitAndGetUriFromChromeActivity(ChromeTabbedActivity.class));
     }
@@ -800,7 +788,7 @@ public class FirstRunIntegrationTest {
         // ChildAccountStatusSupplier uses AppRestrictions to quickly detect non-supervised cases,
         // so pretend there are AppRestrictions set by FamilyLink.
         setHasAppRestrictionForMock();
-        blockOnFlowIsKnown();
+        var ignored = blockOnFlowIsKnown();
         initializePreferences(new FirstRunPagesTestCase());
 
         FirstRunActivity firstRunActivity = launchFirstRunActivity();
@@ -849,7 +837,7 @@ public class FirstRunIntegrationTest {
         FirstRunPagesTestCase testCase = new FirstRunPagesTestCase();
         initializePreferences(testCase);
         skipTosDialogViaPolicy();
-        blockOnFlowIsKnown();
+        var blocker = blockOnFlowIsKnown();
 
         launchCustomTabs(TEST_URL);
         FirstRunActivity firstRunActivity = waitForFirstRunActivity();
@@ -857,7 +845,7 @@ public class FirstRunIntegrationTest {
                 () -> firstRunActivity.getNativeInitializationPromise().isFulfilled(),
                 "native never initialized.");
 
-        unblockOnFlowIsKnown();
+        blocker.close();
         clickThroughFirstRun(firstRunActivity, testCase);
         verifyUrlEquals(TEST_URL, waitAndGetUriFromChromeActivity(CustomTabActivity.class));
     }

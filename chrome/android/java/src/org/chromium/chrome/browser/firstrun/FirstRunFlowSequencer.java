@@ -208,6 +208,7 @@ public abstract class FirstRunFlowSequencer {
      * @param freProperties Resulting FRE properties bundle.
      */
     public void updateFirstRunProperties(Bundle freProperties) {
+        assert freProperties != null;
         boolean isHistorySyncEnabled =
                 ChromeFeatureList.isEnabled(
                         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);

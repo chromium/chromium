@@ -319,11 +319,16 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="NFC"/>
 </enum>
 
+<!-- LINT.IfChange(LoadPoint) -->
+
 <enum name="LoadPoint">
   <int value="0" label="Native initializition"/>
   <int value="1" label="Policy load"/>
   <int value="2" label="Child account status load"/>
+  <int value="3" label="Load accounts from the device"/>
 </enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninMediator.java:LoadPoint) -->
 
 <enum name="MobileDefaultBrowserState">
   <int value="0" label="No default"/>
