@@ -4860,10 +4860,6 @@
       implied_by: ["WebGPUExperimentalFeatures"],
     },
     {
-      name: "WebGPUTextureViewUsage",
-      status: "stable",
-    },
-    {
       name: "WebHID",
       status: {"Android": "", "default": "stable"},
     },
