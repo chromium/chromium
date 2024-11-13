@@ -13,6 +13,7 @@
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "base/containers/adapters.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_suggestions_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "components/account_id/account_id.h"
+#include "components/crash/core/common/crash_key.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
 
@@ -289,7 +291,30 @@ void HoldingSpaceKeyedService::SetSuggestions(
       // resolving the suggested file's URL. Because `*existing_item` is
       // uninitialized, its removal does not incur visual changes.
       item = holding_space_model_.TakeItem((*existing_item)->id());
-      item_ids_to_remove.erase(item->id());
+      if (item) {
+        item_ids_to_remove.erase(item->id());
+      } else {
+        // TODO(crbug.com/365747236): Remove once root cause is found/fixed.
+        static crash_reporter::CrashKeyString<64> key("HSKS::SetSuggestions");
+        std::stringstream data;
+        data << "type: " << static_cast<int>((*existing_item)->type());
+        data << ", existing_count: "
+             << base::ranges::count_if(
+                    existing_suggestions, [&](const HoldingSpaceItem* item) {
+                      return item->type() == type &&
+                             item->file().file_path == file_path;
+                    });
+        data << ", new_count: "
+             << base::ranges::count_if(
+                    suggestions,
+                    [&](const std::pair<HoldingSpaceItem::Type, base::FilePath>&
+                            suggestion) {
+                      return suggestion.first == type &&
+                             suggestion.second == file_path;
+                    });
+        crash_reporter::ScopedCrashKeyString scoped(&key, data.str());
+        base::debug::DumpWithoutCrashing();
+      }
     } else {
       item = CreateItemOfType(
           type, file_path,
