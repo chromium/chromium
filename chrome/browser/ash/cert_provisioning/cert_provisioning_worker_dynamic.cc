@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -167,13 +168,11 @@ bool IsStateTransitionAllowed(CertProvisioningWorkerState prev_state,
     case CertProvisioningWorkerState::kFailed:
     case CertProvisioningWorkerState::kCanceled:
       // These are final state, so they should already be handled above.
-      CHECK(false);
-      return false;
+      NOTREACHED();
     case CertProvisioningWorkerState::kStartCsrResponseReceived:
     case CertProvisioningWorkerState::kFinishCsrResponseReceived:
       // Not used in "dynamic" flow.
-      CHECK(false);
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -325,8 +324,7 @@ void CertProvisioningWorkerDynamic::DoStep() {
     case CertProvisioningWorkerState::kStartCsrResponseReceived:
     case CertProvisioningWorkerState::kFinishCsrResponseReceived:
       // Not used in "dynamic" flow.
-      CHECK(false);
-      return;
+      NOTREACHED();
   }
   NOTREACHED() << " " << static_cast<uint>(state_);
 }
@@ -1193,7 +1191,7 @@ void CertProvisioningWorkerDynamic::HandleSerialization() {
     case CertProvisioningWorkerState::kStartCsrResponseReceived:
     case CertProvisioningWorkerState::kFinishCsrResponseReceived:
       // Not used in "dynamic" flow.
-      CHECK(false);
+      NOTREACHED();
   }
 }
 

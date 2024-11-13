@@ -321,7 +321,7 @@ void KioskBrowserWindowHandler::CloseBrowserAndSetTimer(Browser* browser) {
 }
 
 void KioskBrowserWindowHandler::OnCloseBrowserTimeout() {
-  CHECK(false) << "Failed to close unexpected browser window.";
+  NOTREACHED() << "Failed to close unexpected browser window.";
 }
 
 }  // namespace chromeos

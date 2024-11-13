@@ -21,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -124,10 +125,10 @@ class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
     // VideoAcceleratorFactoryService. If this behavior ever changes,
     // VideoAcceleratorFactoryService will need to be adapted because methods
     // such as CreateDecodeAccelerator() assume that the
-    // VideoAcceleratorFactoryService never dies. Thus the CHECK(false) here:
+    // VideoAcceleratorFactoryService never dies. Thus the NOTREACHED() here:
     // violating this assumption without appropriate changes would be a security
     // problem.
-    CHECK(false);
+    NOTREACHED();
   }
 
   void CreateDecodeAccelerator(

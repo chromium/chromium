@@ -1129,8 +1129,7 @@ void AuthenticatorRequestDialogController::StartPlatformAuthenticatorFlow() {
   if (transport_availability_.request_type == FidoRequestType::kGetAssertion) {
     switch (transport_availability_.has_platform_authenticator_credential) {
       case device::FidoRequestHandlerBase::RecognizedCredential::kUnknown:
-        CHECK(false);
-        break;
+        NOTREACHED();
       case device::FidoRequestHandlerBase::RecognizedCredential::
           kNoRecognizedCredential:
         // Never try the platform authenticator if the request is known in

@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager_factory.h"
@@ -292,7 +293,7 @@ void ChromeHelpAppUIDelegate::OpenSettings(
       return;
   }
 
-  CHECK(false) << "Invalid settings component value provided";
+  NOTREACHED() << "Invalid settings component value provided";
 }
 
 }  // namespace ash

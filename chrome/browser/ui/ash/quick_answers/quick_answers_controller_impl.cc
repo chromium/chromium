@@ -9,6 +9,7 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_state_ash.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
@@ -349,8 +350,7 @@ void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
 
   switch (maybe_consent_status.value()) {
     case quick_answers::prefs::ConsentStatus::kRejected:
-      CHECK(false) << "No request should be made if kRejected.";
-      return;
+      NOTREACHED() << "No request should be made if kRejected.";
     case quick_answers::prefs::ConsentStatus::kUnknown:
       MaybeShowUserConsent(
           request.preprocessed_output.intent_info.intent_type,
@@ -374,7 +374,7 @@ void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
       return;
   }
 
-  CHECK(false) << "Invalid ConsentStatus enum value provided.";
+  NOTREACHED() << "Invalid ConsentStatus enum value provided.";
 }
 
 quick_answers::QuickAnswersDelegate*

@@ -6,6 +6,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/crash_client.h"
 #include "chrome/enterprise_companion/enterprise_companion.h"
@@ -36,8 +37,7 @@ int TestCrashpadEmbedderMain(int argc, const char* const* argv) {
 
   enterprise_companion::InitializeCrashReporting(
       command_line->GetSwitchValuePath(kCrashDatabaseSwitch));
-  CHECK(false) << "Intentional crash for testing";
-  return 0;
+  NOTREACHED() << "Intentional crash for testing";
 }
 
 }  // namespace

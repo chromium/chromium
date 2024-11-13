@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/time/default_clock.h"
@@ -214,7 +215,7 @@ void TestingBrowserProcess::FlushLocalStateAndReply(base::OnceClosure reply) {
   // This could be implemented the same way as in BrowserProcessImpl but it's
   // not currently expected to be used by TestingBrowserProcess users so we
   // don't bother.
-  CHECK(false);
+  NOTREACHED();
 }
 
 void TestingBrowserProcess::EndSession() {
@@ -549,7 +550,7 @@ void TestingBrowserProcess::set_additional_os_crypt_async_provider_for_test(
     size_t precedence,
     std::unique_ptr<os_crypt_async::KeyProvider> provider) {
   // Not implemented.
-  CHECK(false);
+  NOTREACHED();
 }
 
 BuildState* TestingBrowserProcess::GetBuildState() {

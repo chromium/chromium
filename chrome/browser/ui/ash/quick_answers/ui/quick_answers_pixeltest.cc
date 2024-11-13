@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/i18n/base_i18n_switches.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -91,7 +92,7 @@ std::optional<std::string> MaybeGetDesignParamValue(
       return "MagicBoost";
   }
 
-  CHECK(false) << "Invalid design enum class value specified";
+  NOTREACHED() << "Invalid design enum class value specified";
 }
 
 std::optional<std::string> MaybeInternalParamValue(

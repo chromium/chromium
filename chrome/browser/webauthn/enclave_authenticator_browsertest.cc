@@ -985,8 +985,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
                base::RepeatingClosure _)
                 -> std::unique_ptr<
                     trusted_vault::TrustedVaultConnection::Request> {
-              CHECK(false) << "account state unexpectedly requested";
-              return nullptr;
+              NOTREACHED() << "account state unexpectedly requested";
             });
     CHECK(!request_delegate_);
     delegate_observer_->SetPendingTrustedVaultConnection(std::move(connection));

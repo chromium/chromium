@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/accounts_policy_manager.h"
 
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -299,7 +300,7 @@ void AccountsPolicyManager::EnsurePrimaryAccountAllowedForProfile(
     LOG(WARNING) << "Unexpected state: User is signed in, signin is not "
                     "allowed, sign out is not allowed. Do nothing.";
 #else
-    CHECK(false) << "Deleting profiles is not supported.";
+    NOTREACHED() << "Deleting profiles is not supported.";
 #endif  // defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_CHROMEOS)
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

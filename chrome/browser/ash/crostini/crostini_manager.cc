@@ -1450,9 +1450,8 @@ void CrostiniManager::InstallTermina(CrostiniResultCallback callback) {
           LOG(ERROR) << "Installing Termina failed: cancelled";
           res = CrostiniResult::INSTALL_TERMINA_CANCELLED;
         } else {
-          CHECK(false)
+          NOTREACHED()
               << "Got unexpected value of TerminaInstaller::InstallResult";
-          res = CrostiniResult::LOAD_COMPONENT_FAILED;
         }
         std::move(callback).Run(res);
       },

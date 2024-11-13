@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "dbus/mock_bus.h"
@@ -129,7 +130,7 @@ class DbusMemoryPressureEvaluatorLinuxTest : public testing::Test {
 
       std::move(*response_callback).Run(response.get());
     } else {
-      CHECK(false) << method_call->GetMember();
+      NOTREACHED() << method_call->GetMember();
     }
   }
 

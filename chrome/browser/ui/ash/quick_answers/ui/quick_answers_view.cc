@@ -10,6 +10,7 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -125,7 +126,7 @@ const gfx::Insets GetMainViewInsets(Design design) {
       return gfx::Insets::TLBR(12, 16, 16, 16);
   }
 
-  CHECK(false) << "Invalid design enum value provided";
+  NOTREACHED() << "Invalid design enum value provided";
 }
 
 const gfx::Insets GetIconInsets(Design design) {
@@ -138,7 +139,7 @@ const gfx::Insets GetIconInsets(Design design) {
       return gfx::Insets::TLBR(2, 0, 0, 0);
   }
 
-  CHECK(false) << "Invalid design enum value provided";
+  NOTREACHED() << "Invalid design enum value provided";
 }
 
 const gfx::Insets GetButtonsViewInsets(Design design) {
@@ -152,7 +153,7 @@ const gfx::Insets GetButtonsViewInsets(Design design) {
       return GetMainViewInsets(design);
   }
 
-  CHECK(false) << "Invalid design enum value provided";
+  NOTREACHED() << "Invalid design enum value provided";
 }
 
 const gfx::VectorIcon& GetVectorIcon(std::optional<Intent> intent) {
@@ -169,7 +170,7 @@ const gfx::VectorIcon& GetVectorIcon(std::optional<Intent> intent) {
       return omnibox::kAnswerCalculatorIcon;
   }
 
-  CHECK(false) << "Invalid intent enum value specified";
+  NOTREACHED() << "Invalid intent enum value specified";
 }
 
 ui::ImageModel GetIcon(Design design, std::optional<Intent> intent) {
@@ -186,7 +187,7 @@ ui::ImageModel GetIcon(Design design, std::optional<Intent> intent) {
                                             kIconSizeDip);
   }
 
-  CHECK(false) << "Invalid design enum value specified";
+  NOTREACHED() << "Invalid design enum value specified";
 }
 
 void SetResultTo(ResultView* result_view, DefinitionResult* definition_result) {
@@ -259,7 +260,7 @@ std::u16string GetIntentName(std::optional<Intent> intent) {
           IDS_QUICK_ANSWERS_RESULT_HEADER_INTENT_UNIT_CONVERSION);
   }
 
-  CHECK(false) << "Invalid intent enum value specified";
+  NOTREACHED() << "Invalid intent enum value specified";
 }
 
 // TODO(b/340629098): A temporary solution until buttons view is merged into

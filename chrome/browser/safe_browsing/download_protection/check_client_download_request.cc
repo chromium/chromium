@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -105,7 +106,7 @@ void MaybeOverrideScanResult(DownloadCheckResultReason reason,
   }
 
   // This function should always run |callback| and return before reaching this.
-  CHECK(false);
+  NOTREACHED();
 }
 
 void LogNoticeSeenMetrics(PrefService* prefs) {

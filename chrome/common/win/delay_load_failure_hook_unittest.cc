@@ -31,7 +31,7 @@ TEST(ChromeDelayLoadHookTest, HooksAreSetAtLinkTime) {
 // This test verifies DelayLoadFailureHook crashes for a failure.
 TEST(ChromeDelayLoadHookTest, DllLoadFailureCrashes) {
   DelayLoadInfo dli = {.szDll = "test.dll"};
-  EXPECT_CHECK_DEATH({ __pfnDliFailureHook2(dliFailLoadLib, &dli); });
+  EXPECT_NOTREACHED_DEATH({ __pfnDliFailureHook2(dliFailLoadLib, &dli); });
 }
 
 // This test verifies that if a DLL is failing to load because of lack of

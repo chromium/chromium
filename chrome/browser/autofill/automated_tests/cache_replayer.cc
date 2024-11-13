@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -588,10 +589,9 @@ AutofillServerBehaviorType ParseAutofillServerBehaviorType() {
                                               "OnlyLocalHeuristics")) {
     return AutofillServerBehaviorType::kOnlyLocalHeuristics;
   } else {
-    CHECK(false) << "Unrecognized command line value give for `"
+    NOTREACHED() << "Unrecognized command line value give for `"
                  << kAutofillServerBehaviorParam << "` argument: `"
                  << autofill_server_option << "`";
-    return AutofillServerBehaviorType::kSavedCache;
   }
 }
 

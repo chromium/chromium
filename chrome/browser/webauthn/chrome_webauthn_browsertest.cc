@@ -17,6 +17,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -1020,9 +1021,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnConditionalUITest,
   // Make a Conditional UI request. The authenticator should not be dispatched
   // to before the user clicks the "Sign in with another device…" button.
   virtual_device_factory_->mutable_state()->simulate_press_callback =
-      base::BindLambdaForTesting([](device::VirtualFidoDevice* device) {
-        CHECK(false) << "Virtual device should not have been dispatched to";
-        return false;
+      base::BindLambdaForTesting([](device::VirtualFidoDevice* device) -> bool {
+        NOTREACHED() << "Virtual device should not have been dispatched to";
       });
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1259,7 +1259,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
                 break;
 
               default:
-                CHECK(false);
+                NOTREACHED();
             }
 
             contact_step_number_++;

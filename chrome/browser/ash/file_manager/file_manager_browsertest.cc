@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/immediate_crash.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -159,10 +160,8 @@ class LoggedInUserFilesAppBrowserTest : public FilesAppBrowserTest {
   ash::DeviceStateMixin::State DeviceStateFor(DeviceMode device_mode) {
     switch (device_mode) {
       case kDeviceModeNotSet:
-        CHECK(false) << "device_mode option must be set for "
+        NOTREACHED() << "device_mode option must be set for "
                         "LoggedInUserFilesAppBrowserTest";
-        // TODO(crbug.com/40122554): `base::ImmediateCrash` is necessary.
-        base::ImmediateCrash();
       case kConsumerOwned:
         return ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED;
       case kEnrolled:

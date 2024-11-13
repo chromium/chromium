@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
+#include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 
 namespace crosier {
@@ -86,8 +87,7 @@ void ReadBuffer(const base::ScopedFD& sock, void* buf, int byte_size) {
     CHECK_GE(bytes_read, 0);
     if (bytes_read == 0) {
       // The connection is lost before finishing read. Not supported.
-      CHECK(false) << "Connection lost";
-      break;
+      NOTREACHED() << "Connection lost";
     }
 
     p += bytes_read;

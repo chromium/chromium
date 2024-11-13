@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "ui/gfx/font_list.h"
 
@@ -53,7 +54,7 @@ const gfx::FontList& GetFirstLineFontList(Design design) {
       return *cros_headline_1;
   }
 
-  CHECK(false) << "Invalid design enum value provided";
+  NOTREACHED() << "Invalid design enum value provided";
 }
 
 int GetFirstLineHeight(Design design) {
@@ -66,7 +67,7 @@ int GetFirstLineHeight(Design design) {
       return 22;
   }
 
-  CHECK(false) << "Invalid design enum value provided";
+  NOTREACHED() << "Invalid design enum value provided";
 }
 
 const gfx::FontList& GetSecondLineFontList(Design design) {
@@ -78,7 +79,7 @@ const gfx::FontList& GetSecondLineFontList(Design design) {
       return GetCrosAnnotation1FontList();
   }
 
-  CHECK(false) << "Invalid design enum value provided";
+  NOTREACHED() << "Invalid design enum value provided";
 }
 
 int GetSecondLineHeight(Design design) {
@@ -90,7 +91,7 @@ int GetSecondLineHeight(Design design) {
       return GetCrosAnnotation1LineHeight();
   }
 
-  CHECK(false) << "Invalid design enum value provided";
+  NOTREACHED() << "Invalid design enum value provided";
 }
 
 }  // namespace quick_answers

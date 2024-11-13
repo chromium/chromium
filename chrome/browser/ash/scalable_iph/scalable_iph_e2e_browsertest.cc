@@ -9,6 +9,7 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_browser_test_base.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -74,9 +75,7 @@ const base::Feature* GetFeature(const std::string_view& feature_name) {
     }
   }
 
-  CHECK(false) << feature_name << " was not found.";
-
-  return nullptr;
+  NOTREACHED() << feature_name << " was not found.";
 }
 
 base::FieldTrialParams GetFieldTrialParams(

@@ -12,6 +12,7 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
@@ -64,7 +65,7 @@ void ShowOSSettings(Profile* profile, OSSettingsType type) {
       return;
   }
 
-  CHECK(false) << "Invalid os settings type provided";
+  NOTREACHED() << "Invalid os settings type provided";
 }
 
 // Open the specified URL in a new tab with the specified profile
@@ -84,7 +85,7 @@ quick_answers::Design GetDesign(QuickAnswersState::FeatureType feature_type) {
       return quick_answers::Design::kMagicBoost;
   }
 
-  CHECK(false) << "Invalid feature type enum value provided";
+  NOTREACHED() << "Invalid feature type enum value provided";
 }
 
 }  // namespace
@@ -339,7 +340,7 @@ void QuickAnswersUiController::OnSettingsButtonPressed() {
       return;
   }
 
-  CHECK(false) << "Invalid feature type enum value specified";
+  NOTREACHED() << "Invalid feature type enum value specified";
 }
 
 void QuickAnswersUiController::OnReportQueryButtonPressed() {

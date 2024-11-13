@@ -1005,10 +1005,8 @@ ash::LoggedInUserMixin::LogInType LogInTypeFor(
     TestAccountType test_account_type) {
   switch (test_account_type) {
     case kTestAccountTypeNotSet:
-      CHECK(false) << "test_account_type option must be set for "
+      NOTREACHED() << "test_account_type option must be set for "
                       "LoggedInUserFilesAppBrowserTest";
-      // TODO(crbug.com/40122554): `base::ImmediateCrash` is necessary.
-      base::ImmediateCrash();
     case kEnterprise:
     case kGoogler:
       return ash::LoggedInUserMixin::LogInType::kManaged;
@@ -1023,10 +1021,8 @@ ash::LoggedInUserMixin::LogInType LogInTypeFor(
 std::optional<AccountId> AccountIdFor(TestAccountType test_account_type) {
   switch (test_account_type) {
     case kTestAccountTypeNotSet:
-      CHECK(false) << "test_account_type option must be set for "
+      NOTREACHED() << "test_account_type option must be set for "
                       "LoggedInUserFilesAppBrowserTest";
-      // `base::ImmediateCrash` is necessary for https://crbug.com/1061742.
-      base::ImmediateCrash();
     case kGoogler:
       return AccountId::FromUserEmailGaiaId(
           "user@google.com", FakeGaiaMixin::kEnterpriseUser1GaiaId);
