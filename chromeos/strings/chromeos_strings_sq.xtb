@@ -306,6 +306,7 @@
 <translation id="2308243864813041101">Hiq kabllon USB të pajisjes "<ph name="DEVICE_NAME" />" për të vazhduar procesin e përditësimit</translation>
 <translation id="2320295602967756579">Aktivizo temën e ndriçuar</translation>
 <translation id="2323506179655536734">KAPËRCYER</translation>
+<translation id="2323755382216917952">Ky përditësim kërkon që të rinisësh kompjuterin për të përfunduar instalimin. Mund të duhen disa minuta për përfundimin e këtij përditësimi. Mos e hiq nga priza dhe mos e fik kompjuterin gjatë përditësimit të firmuerit.</translation>
 <translation id="2324354238778375592">Pluskuese</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">E shkëlqyer (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -448,6 +449,7 @@
 <translation id="3178532070248519384">avantgardë</translation>
 <translation id="3182676044300231689">Fut një kërkesë si p.sh. "bëje me më shumë vetëbesim"</translation>
 <translation id="3188257591659621405">Skedarët e mi</translation>
+<translation id="3188931456353313123">Ky përditësim ofrohet nga prodhuesi i pajisjes dhe nuk është verifikuar nga Google.</translation>
 <translation id="319101249942218879">Imazhi i avatarit u ndryshua</translation>
 <translation id="3192947282887913208">Skedarët audio</translation>
 <translation id="3199982728237701504">Furnizuesi i dokumentit (dy anë)</translation>
@@ -505,6 +507,7 @@
 <translation id="3488065109653206955">I aktivizuar pjesërisht</translation>
 <translation id="3492882532495507361">Një zyrë (<ph name="OFFICE_STYLE" />) me tone: <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Të dhënat maten nga Chromebook. Kjo mund të jetë ndryshe nga të dhënat e ofruesit.</translation>
+<translation id="349570724365779960">School Tools është lidhur për studentët</translation>
 <translation id="3502426834823382181">shiko të gjitha aplikacionet</translation>
 <translation id="3510890413042482857">Dërgo <ph name="BEGIN_LINK1" />të dhënat e gjurmimit të performancës<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Përditësim: ChromeOS</translation>
@@ -753,6 +756,7 @@
 <translation id="473775607612524610">Përditësoje</translation>
 <translation id="4744944742468440486">Informacion në lidhje me zgjedhjen tënde</translation>
 <translation id="4771607256327216405">ndriço tastierën</translation>
+<translation id="4771923071974529837">nesër</translation>
 <translation id="4773299976671772492">Ndaloi</translation>
 <translation id="4778082030331381943">ametist</translation>
 <translation id="4782311465517282004">Merr përkufizime, përkthime ose konvertime të njësive kur klikon me të djathtin ose prek e mban shtypur tekstin</translation>
@@ -816,6 +820,7 @@
 <translation id="500920857929044050">Ndalo testin</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Ngjyra e temës</translation>
+<translation id="5037240652947866174">sot</translation>
 <translation id="5038292761217083259">tastiera me shumë ngjyra</translation>
 <translation id="5039804452771397117">Lejo</translation>
 <translation id="5049856988445523908">Karta SIM e kyçur (<ph name="LOCK_TYPE" />)</translation>
@@ -1359,6 +1364,7 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="7544853251252956727">Përziej</translation>
 <translation id="7550715992156305117">Rutinat diagnostikuese</translation>
 <translation id="7551123448725492271">Pajisja është një pajisje audio.</translation>
+<translation id="7553913964854052228">School Tools po përdor mikrofonin tënd</translation>
 <translation id="7559239713112547082">Shiko paraprakisht pamjen e ekranit</translation>
 <translation id="7561454561030345039">Ky veprim menaxhohet nga administratori yt</translation>
 <translation id="7561759921596375678">Aktivizo volumin</translation>

@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">Sembunyikan transkrip</translation>
 <translation id="160633243685262989">Pratinjau Gambar</translation>
 <translation id="1611649489706141841">maju</translation>
+<translation id="1615144046047995187">Tidak dapat mendownload. Coba lagi atau mulai ulang Chromebook Anda.</translation>
 <translation id="1615335640928990664">Penggunaan data sejak <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Gunakan tema</translation>
 <translation id="1621067168122174824">Jalankan pengujian Pengisian Daya</translation>
@@ -585,6 +586,7 @@
 <translation id="3885327323343477505">Ubah screensaver</translation>
 <translation id="3889914174935857450">Reset tanggal</translation>
 <translation id="3897092660631435901">Menu</translation>
+<translation id="3902271751020176019">Bahasa transkripsi</translation>
 <translation id="391412459402535266">Tidak dapat menguji perangkat. Beralih ke mode laptop untuk menguji.</translation>
 <translation id="3916998944874125962">ambil screenshot</translation>
 <translation id="3923184630988645767">Penggunaan data</translation>
@@ -937,6 +939,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Anda telah logout</translation>
 <translation id="5620281292257375798">Khusus internal</translation>
+<translation id="5628106863521633649">Bahasa yang tersedia</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstrak</translation>
 <translation id="5655283760733841251">Tingkatkan kecerahan keyboard</translation>
@@ -1261,6 +1264,7 @@
 <translation id="710028965487274708">Gagal - Otorisasi Gagal</translation>
 <translation id="7101959270679078188">Buka kunci <ph name="DEVICE_NAME" /> untuk melanjutkan proses update</translation>
 <translation id="7103252855940681301">Perangkat <ph name="INDEX" /> dari <ph name="COUNT" /> bernama <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Bahasa yang dipilih</translation>
 <translation id="7107255225945990211">Pilih ilustrasi eksklusif <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">masuk</translation>
 <translation id="7117228822971127758">Coba lagi nanti</translation>

@@ -1412,6 +1412,7 @@
 <translation id="353816159217417898">Хаалт (салсан)</translation>
 <translation id="3542628208405253498">Картын зураг</translation>
 <translation id="3542768452570884558">Холбоосыг шинэ цонхонд нээх</translation>
+<translation id="3543935938072367282">Автоматаар бөглөж илүү хурдан тооцоо хийгээрэй</translation>
 <translation id="3547442767634383572">Ажлын профайлын тойм</translation>
 <translation id="3547746132308051926">20 x 24 инч</translation>
 <translation id="3550325450190222557">ХОУ-аар автоматаар бөглөхтэй холбоотой санал хүсэлт илгээнэ үү.</translation>
@@ -1580,6 +1581,7 @@
 <translation id="3801297763951514916">Та ихэвчлэн зочилдог</translation>
 <translation id="380329542618494757">Нэр</translation>
 <translation id="3803801106042434208">Эдгээр хайлтын систем нь танай бүс нутагт эрэлттэй байна</translation>
+<translation id="380666903981445943">Chrome-д хийх худалдан авалтад зориулж төлбөрийн хэрэгслийг автоматаар бөглөхийн тулд Google Бүртгэлдээ хадгална уу</translation>
 <translation id="3807366285948165054">X тэнхлэгийн дагуу зураг шилжүүлэх</translation>
 <translation id="3807709094043295184">Сонгодог рок, хуучны хөгжмүүд</translation>
 <translation id="3807873520724684969">Аюултай когтентыг хориглосон.</translation>
@@ -1736,6 +1738,7 @@
 <translation id="4102567721634170493">Орон нутгийн мэдээ</translation>
 <translation id="4103249731201008433">Төхөөрөмжийн сериал дугаар буруу байна</translation>
 <translation id="4103592298805904008">Цаасан хайрцаг (дан)</translation>
+<translation id="4104702906064390950">IBAN-н мэдээллийг хадгалж байна</translation>
 <translation id="4106887816571530227">Оруулсан контентыг зөвшөөрдөггүй</translation>
 <translation id="4110652170750985508">Төлбөрөө хянах</translation>
 <translation id="4111546256784973544">Пейнтбол</translation>
@@ -3052,6 +3055,7 @@
 <translation id="6499038740797743453">Нууц үгийг шинэчлэх үү?</translation>
 <translation id="6502510275417601303">Шинэ төлбөрийн тохиргооны талаарх сэрэмжлүүлгийг хаасан</translation>
 <translation id="6502991525169604759">Таны өөрчлөлтгүйгээр</translation>
+<translation id="6505072878288254563">Орчуулж байна</translation>
 <translation id="6506959208958864820">Дугтуй</translation>
 <translation id="6507117483253822672">Веб дээр хаана ч байсан өөртөө итгэлтэйгээр бичээрэй</translation>
 <translation id="6508722015517270189">Chrome-г дахин эхлүүлэх</translation>

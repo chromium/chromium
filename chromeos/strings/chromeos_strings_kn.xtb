@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="160633243685262989">ಚಿತ್ರವನ್ನು ಪೂರ್ವವೀಕ್ಷಿಸಿ</translation>
 <translation id="1611649489706141841">ಮುಂದೆ</translation>
+<translation id="1615144046047995187">ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಿಮ್ಮ Chromebook ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ರಿಂದ ಡೇಟಾ ಬಳಕೆ</translation>
 <translation id="1618566998877964907">ಥೀಮ್ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="1621067168122174824">ಚಾರ್ಜ್‌ ಪರೀಕ್ಷೆಯನ್ನು ರನ್‌ ಮಾಡಿ</translation>
@@ -360,6 +361,7 @@
 <translation id="2589921777872778654">ಮೆನುವನ್ನು ಎಡಿಟ್ ಮಾಡಿ ಮತ್ತು ಅಳಿಸಿ</translation>
 <translation id="2597774443162333062">ಡೀಬಗ್ ಮಾಡಲು ಫೈಲ್‌ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. 1 ಪುಟವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}one{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. {NUMBER_OF_PAGES} ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}other{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. {NUMBER_OF_PAGES} ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}}</translation>
+<translation id="261322795497077164">ಸ್ಪೀಕರ್‌ ಗುರುತಿಸುವಿಕೆ</translation>
 <translation id="2617397783536231890">ಹತ್ತಿ</translation>
 <translation id="2618015542787108131">ಮರಳುದಿಣ್ಣೆ</translation>
 <translation id="2619761439309613843">ಪ್ರತಿದಿನವು ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
@@ -440,6 +442,7 @@
 <translation id="3140130301071865159">ಹಿಮಪಾತ</translation>
 <translation id="3146655726035122603">ವಿಶೇಷವಾಗಿ <ph name="PRODUCT_NAME" /> ಗೆ ಆಗಿದೆ</translation>
 <translation id="315116470104423982">ಮೊಬೈಲ್ ಡೇಟಾ</translation>
+<translation id="3153094818810437149">ನೀವು ಇದನ್ನು ನಂತರ ರೆಕಾರ್ಡರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಬದಲಾಯಿಸಬಹುದು</translation>
 <translation id="3156511682997763015">10 ಸೆಕೆಂಡ್‌ಗಳು ಫಾರ್ವರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="3156846309055100599">ಪುಟ <ph name="PAGE_NUMBER" /> ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="315738237743207937">ವೈ-ಫೈ ಪ್ರಾರಂಭ ಪೋರ್ಟಲ್ ಪತ್ತೆಹಚ್ಚಲಾಗಿದೆ</translation>
@@ -562,6 +565,7 @@
 <translation id="3785643128701396311">ಪಿಕ್ಸೆಲ್ ಕಲೆ</translation>
 <translation id="3799381533888781854">OFF - ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ.</translation>
 <translation id="380097101658023925">rgb ಕಂಟ್ರೋಲ್‌ಗಳು</translation>
+<translation id="380493988330050229">ಈ ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್‌ ಭಾಷೆಗೆ ಸಾರಾಂಶವನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="38114475217616659">ಎಲ್ಲಾ ಇತಿಹಾಸ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="3820172043799983114">ಅಮಾನ್ಯ ಪಿನ್.</translation>
 <translation id="382043424867370667">ಸೂರ್ಯಾಸ್ತದ ವಾಲ್‌ಪೇಪರ್</translation>
@@ -585,6 +589,7 @@
 <translation id="3885327323343477505">ಸ್ಕ್ರೀನ್‌ಸೇವರ್ ಬದಲಾಯಿಸಿ</translation>
 <translation id="3889914174935857450">ದಿನಾಂಕವನ್ನು ರೀಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="3897092660631435901">ಮೆನು</translation>
+<translation id="3902271751020176019">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಷನ್ ಭಾಷೆ</translation>
 <translation id="391412459402535266">ಸಾಧನವನ್ನು ಪರೀಕ್ಷಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪರೀಕ್ಷಿಸಲು ಲ್ಯಾಪ್‌ಟಾಪ್ ಮೋಡ್‌ಗೆ ಬದಲಿಸಿ.</translation>
 <translation id="3916998944874125962">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="3923184630988645767">ಡೇಟಾ ಬಳಕೆ</translation>
@@ -733,6 +738,7 @@
 <translation id="458794348635939462">ಎಲ್ಲಾ ಹೋಸ್ಟ್‌ಗಳನ್ನು ಪರಿಹರಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="4593212453765072419">ಪ್ರಾಕ್ಸಿ ದೃಢೀಕರಣ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="4594021849294327751">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್ ಅನ್ನು ರಚಿಸಿ</translation>
+<translation id="4594541568452132351">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್‌ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಮಾಡೆಲ್‌ ಅನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಿ</translation>
 <translation id="4607282946861182308">ಇದರ ಚಿತ್ರಗಳನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಬೇರೆ ಪ್ರಾಂಪ್ಟ್ ಬಳಸಿ ನೋಡಿ.</translation>
 <translation id="4609350030397390689">ಕೀಬೋರ್ಡ್ ಹೊಳಪನ್ನು ಕಡಿಮೆ ಮಾಡಿ</translation>
 <translation id="4623061655523261501">ರೆಕಾರ್ಡಿಂಗ್ ಹೆಸರುಗಳನ್ನು ಯಶಸ್ವಿಯಾಗಿ ರಚಿಸಲಾಗಿದೆ</translation>
@@ -937,6 +943,7 @@
 <translation id="5606865426897221650">ಟ್ಯಾಬ್</translation>
 <translation id="5613201299517339763">ನೀವು ಸೈನ್‌ ಔಟ್‌ ಮಾಡಿದ್ದೀರಿ</translation>
 <translation id="5620281292257375798">ಆಂತರಿಕ ಮಾತ್ರ</translation>
+<translation id="5628106863521633649">ಲಭ್ಯವಿರುವ ಭಾಷೆಗಳು</translation>
 <translation id="5630438231335788050">ಬೌಹೌಸ್</translation>
 <translation id="5631759159893697722">ಸಾರಾಂಶ</translation>
 <translation id="5655283760733841251">ಕೀ ಬೋರ್ಡ್ ಪ್ರಖರತೆ ಹೆಚ್ಚಿಸಿ</translation>
@@ -1097,6 +1104,7 @@
 <translation id="6359919876285606596">ಈ ಕ್ರಿಯೆಯು ಶಾಶ್ವತವಾಗಿದೆ ಮತ್ತು ರದ್ದುಪಡಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="6368342879959028556">ನೀವು "AI ಜೊತೆಗೆ ರಚಿಸಿ" ಎಂಬುದನ್ನು ಆಯ್ಕೆ ಮಾಡಿದಾಗ, ಕಸ್ಟಮ್‌ ಪ್ರಾಂಪ್ಟ್‌ ಅನ್ನು ಬರೆಯಿರಿ. ಅಥವಾ ನೀವು ಥೀಮ್‌ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಲು "AI ವಾಲ್‌ಪೇಪರ್‌ಗಳನ್ನು" ಆಯ್ಕೆ ಮಾಡಬಹುದು ಮತ್ತು ನಂತರ ನಿಮ್ಮ AI ವಾಲ್‌ಪೇಪರ್ ಅನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸಲು ಅಂಡರ್‌ಲೈನ್‌ ಮಾಡಿದ ಪದಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಬಹುದು.</translation>
 <translation id="636850387210749493">ಎಂಟರ್‌ಪ್ರೈಸ್ ದಾಖಲಾತಿ</translation>
+<translation id="6369221585240879141">ಈ ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್‌ ಭಾಷೆಗೆ ರೆಕಾರ್ಡ್‌ ಮಾಡಿದ ಹೆಸರುಗಳನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="6373461326814131011">ಕೊಳ</translation>
 <translation id="6379086450106841622">ಟಚ್‌ಸ್ಕ್ರೀನ್</translation>
 <translation id="6381741036071372448">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
@@ -1261,6 +1269,7 @@
 <translation id="710028965487274708">ವಿಫಲವಾಗಿದೆ - ದೃಢೀಕರಣ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="7101959270679078188">ಅಪ್‌ಡೇಟ್ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಮುಂದುವರಿಸಲು <ph name="DEVICE_NAME" /> ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> ರಲ್ಲಿ <ph name="INDEX" />ನೇ ಸಾಧನವನ್ನು <ph name="NAME" /> ಎಂದು ಹೆಸರಿಸಲಾಗಿದೆ.</translation>
+<translation id="7103793063702494489">ಆಯ್ಕೆ ಮಾಡಲಾದ ಭಾಷೆ</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> ಗಾಗಿ ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್ ಆಗಿ ಇರುವ ಆರ್ಟ್‌ವರ್ಕ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="7108668606237948702">ನಮೂದಿಸಿ</translation>
 <translation id="7117228822971127758">ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
@@ -1270,6 +1279,7 @@
 <translation id="7130438335435247835">ಆ್ಯಕ್ಸೆಸ್ ಪಾಯಿಂಟ್ ಹೆಸರು (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{ಸರ್ವರ್ ಹೆಸರು}one{ಸರ್ವರ್‌ಗಳ ಹೆಸರು}other{ಸರ್ವರ್‌ಗಳ ಹೆಸರು}}</translation>
 <translation id="7135814714616751706">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
+<translation id="7138614237884624401">ಸರಳೀಕೃತ ಪಠ್ಯ</translation>
 <translation id="7141470099673912333">ಕಂಟೆಂಟ್‌ ವರ್ಗಾವಣೆ</translation>
 <translation id="7143207342074048698">ಕನೆಕ್ಟ್...</translation>
 <translation id="7144878232160441200">ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
@@ -1691,6 +1701,7 @@
 <translation id="9100765901046053179">ಸುಧಾರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> ಗಾಗಿ ಟಿಕೆಟ್ ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="9106415115617144481">ಪುಟ <ph name="PAGE_NUMBER" /> ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
+<translation id="9108856746036501072">ಧ್ವನಿಯನ್ನು ಹೊಂದಿರುವ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳಿಗಾಗಿ ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್‌ಗಳನ್ನು ರೆಕಾರ್ಡರ್‌ ರಚಿಸಬಹುದು. ಮುಂದಿನ ಹಂತದಲ್ಲಿ, ನೀವು ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್‌ ಭಾಷೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ ಮತ್ತು ಮಾಡೆಲ್‌ ಅನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಬೇಕಾಗುತ್ತದೆ (100MB ವರೆಗೆ).</translation>
 <translation id="9111102763498581341">ಅನ್‌ಲಾಕ್</translation>
 <translation id="9122492456897874028">ಕಂಟೆಂಟ್‌ ಅನ್ನು ಸಾರಾಂಶಗೊಳಿಸಿ, ವ್ಯಾಖ್ಯಾನಗಳನ್ನು ಪಡೆಯಿರಿ ಮತ್ತು ಇತ್ಯಾದಿ</translation>
 <translation id="9122602430962285795">ಮರುಕನೆಕ್ಟ್ ಮಾಡಲು ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>

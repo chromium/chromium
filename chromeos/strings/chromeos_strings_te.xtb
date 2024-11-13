@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">టైప్ చేసిన మాటల ఫైల్‌ను దాచండి</translation>
 <translation id="160633243685262989">ఇమేజ్ ప్రివ్యూను చూడండి</translation>
 <translation id="1611649489706141841">ముందుకు</translation>
+<translation id="1615144046047995187">డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు. మళ్లీ ట్రై చేయండి లేదా మీ Chromebookను రీస్టార్ట్ చేయండి.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> నుండి డేటా వినియోగం</translation>
 <translation id="1618566998877964907">ఒక థీమ్‌ను ఉపయోగించండి</translation>
 <translation id="1621067168122174824">ఛార్జ్ పరీక్షను రన్ చేయండి</translation>
@@ -588,6 +589,7 @@
 <translation id="3885327323343477505">స్క్రీన్ సేవర్‌ను మార్చండి</translation>
 <translation id="3889914174935857450">తేదీని రీసెట్ చేయండి</translation>
 <translation id="3897092660631435901">మెనూ</translation>
+<translation id="3902271751020176019">మాటల టైపింగ్ భాష</translation>
 <translation id="391412459402535266">పరికరాన్ని పరీక్షించడం సాధ్యపడదు. పరీక్షించడానికి ల్యాప్‌టాప్ మోడ్‌కి మారండి.</translation>
 <translation id="3916998944874125962">స్క్రీన్‌షాట్‌ను తీస్తుంది</translation>
 <translation id="3923184630988645767">డేటా వినియోగం</translation>
@@ -941,6 +943,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">మీరు సైన్ అవుట్ అయ్యారు</translation>
 <translation id="5620281292257375798">అంతర్గతం మాత్రమే</translation>
+<translation id="5628106863521633649">అందుబాటులో ఉన్న భాషలు</translation>
 <translation id="5630438231335788050">బౌహాస్</translation>
 <translation id="5631759159893697722">సంక్షేపం</translation>
 <translation id="5655283760733841251">కీబోర్డ్ బ్రైట్‌నెస్‌ను పెంచండి</translation>
@@ -1266,6 +1269,7 @@
 <translation id="710028965487274708">విఫలమైంది - ప్రామాణీకరణ విఫలమైంది</translation>
 <translation id="7101959270679078188">అప్‌డేట్ ప్రాసెస్‌ను కొనసాగించడానికి <ph name="DEVICE_NAME" />‌ను అన్‌లాక్ చేయండి</translation>
 <translation id="7103252855940681301"><ph name="COUNT" />లో <ph name="INDEX" /> పరికరాలు <ph name="NAME" /> అనే పేరుతో ఉన్నాయి.</translation>
+<translation id="7103793063702494489">ఎంచుకున్న భాష</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> ప్రత్యేక పోస్టర్ ఇమేజ్‌ను ఎంచుకోండి</translation>
 <translation id="7108668606237948702">ఎంటర్</translation>
 <translation id="7117228822971127758">దయచేసి తర్వాత మళ్లీ ట్రై చేయండి</translation>

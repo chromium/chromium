@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">ລຶບອອກ</translation>
 <translation id="1191518099344003522">APN ເປີດການນຳໃຊ້ຢູ່.</translation>
 <translation id="1195447618553298278">ຄວາມຜິດພາດທີ່ບໍ່ຮູ້ຈັກ.</translation>
+<translation id="1196264380943975940">ສະຫຼຸບບໍ່ໄດ້. ລອງຖອດຂໍ້ຄວາມຈາກສຽງໃຫ້ຍາວຂຶ້ນ.</translation>
 <translation id="1196959502276349371">ເວີຊັນ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ຫຼິ້ນ/ຢຸດຊົ່ວຄາວ</translation>
 <translation id="1201402288615127009">ຕໍ່ໄປ</translation>
@@ -361,6 +362,7 @@
 <translation id="2589921777872778654">ເມນູແກ້ໄຂ ແລະ ລຶບ</translation>
 <translation id="2597774443162333062">ໄຟລ໌ຈະຖືກສົ່ງຫາ Google ສຳລັບການດີບັກ</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ 1 ໜ້າແລ້ວ}other{ສຳເລັດການສະແກນແລ້ວ. ສະແກນ {NUMBER_OF_PAGES} ໜ້າແລ້ວ}}</translation>
+<translation id="261322795497077164">ການລະບຸຜູ້ເວົ້າ</translation>
 <translation id="2617397783536231890">ຝ້າຍ</translation>
 <translation id="2618015542787108131">ເນີນຊາຍ</translation>
 <translation id="2619761439309613843">ການໂຫຼດຂໍ້ມູນໃໝ່ປະຈຳວັນ</translation>
@@ -441,6 +443,7 @@
 <translation id="3140130301071865159">ຫິມະ</translation>
 <translation id="3146655726035122603">ພິເສດສຳລັບ <ph name="PRODUCT_NAME" /> ໂດຍສະເພາະ</translation>
 <translation id="315116470104423982">ຂໍ້​ມູນ​ມື​ຖື</translation>
+<translation id="3153094818810437149">ທ່ານສາມາດປ່ຽນແປງໃນພາຍຫຼັງໄດ້ໃນການຕັ້ງຄ່າຕົວບັນທຶກ</translation>
 <translation id="3156511682997763015">ເລື່ອນໄປໜ້າ 10 ວິນາທີ</translation>
 <translation id="3156846309055100599">ກຳລັງສະແກນໜ້າ <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">ກວດພົບຊ່ອງທາງເຂົ້າຮັກສາໄວ້</translation>
@@ -563,6 +566,7 @@
 <translation id="3785643128701396311">ສິນລະປະພິກເຊວ</translation>
 <translation id="3799381533888781854">ປິດ - ການຕັ້ງຄ່ານີ້ໄດ້ຮັບການຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
 <translation id="380097101658023925">ການຄວບຄຸມ RGB</translation>
+<translation id="380493988330050229">ບໍ່ສາມາດສ້າງສະຫຼຸບສຳລັບພາສາຂອງການຖອດຂໍ້ຄວາມຈາກສຽງນີ້ໄດ້</translation>
 <translation id="38114475217616659">ລຶບລ້າງປະຫວັດທັງໝົດ</translation>
 <translation id="3820172043799983114">PIN ບໍ່ຖືກຕ້ອງ.</translation>
 <translation id="382043424867370667">ຮູບພື້ນຫຼັງຕາເວັນຕົກ</translation>
@@ -735,6 +739,7 @@
 <translation id="458794348635939462">ແກ້ໄຂບັນຫາໂຮສທັງໝົດບໍ່ສຳເລັດ</translation>
 <translation id="4593212453765072419">ຈຳເປັນຕ້ອງພິສູດຢືນຢັນພຣັອກຊີ</translation>
 <translation id="4594021849294327751">ສ້າງການຖອດຂໍ້ຄວາມຈາກສຽງ</translation>
+<translation id="4594541568452132351">ເລືອກພາສາຂອງການຖອດຖ່າຍຂໍ້ຄວາມ ແລະ ດາວໂຫຼດໂມເດວ</translation>
 <translation id="4607282946861182308">ບໍ່ສາມາດສ້າງຮູບຈາກຂໍ້ຄວາມນີ້ໄດ້. ກະລຸນາລອງໃຊ້ຂໍ້ຄວາມອື່ນ.</translation>
 <translation id="4609350030397390689">ແປ້ນພິມຫຼຸດຄວາມສະຫວ່າງ</translation>
 <translation id="4623061655523261501">ສ້າງຊື່ການບັນທຶກສຳເລັດແລ້ວ</translation>
@@ -750,6 +755,7 @@
 <translation id="4665014895760275686">ຜູ້​ຜະ​ລິດ</translation>
 <translation id="467510802200863975">ລະຫັດຜ່ານບໍ່ກົງກັນ</translation>
 <translation id="467715984478005772">ສົງໄສວ່າເປັນ Firewall</translation>
+<translation id="4678534708181186163">ສະຫຼຸບບໍ່ໄດ້. ລອງຖອດຂໍ້ຄວາມຈາກສຽງໃຫ້ສັ້ນລົງ.</translation>
 <translation id="4683762547447150570">ແຕະປຸ່ມເພື່ອໂຟກັສການກຳນົດປຸ່ມ</translation>
 <translation id="4691278870498629773">ຢຸດພິມ, ບໍ່ມີຖາດເຈ້ຍ</translation>
 <translation id="469379815867856270">ຄວາມແຮງສັນຍານ</translation>
@@ -852,6 +858,7 @@
 <translation id="5168185087976003268">ສະຖານະແບັດເຕີຣີ</translation>
 <translation id="5170568018924773124">ສະ​ແດງ​ຢູ່​ໃນ​ໂຟລ​ເດີ</translation>
 <translation id="517075088756846356">ຖອດປລັກ ແລ້ວສຽບປລັກສາຍໄຟ <ph name="DEVICE_NAME" /> ຄືນໃໝ່ເພື່ອສືບຕໍ່ຂັ້ນຕອນການອັບເດດ</translation>
+<translation id="5178021559562393163">ສ້າງຊື່ບໍ່ໄດ້. ລອງຖອດຂໍ້ຄວາມຈາກສຽງໃຫ້ສັ້ນລົງ.</translation>
 <translation id="5180108905184566358">ຕົ້ນບາວບັບ</translation>
 <translation id="5180712487038406644">ຊັດເຈນ</translation>
 <translation id="5190187232518914472">ຫວນຄືນຄວາມຊົງຈຳທີ່ທ່ານມັກ. ເພື່ອເພີ່ມ ຫຼື ແກ້ໄຂອະລະບໍ້າ, ກະລຸນາໄປທີ່ <ph name="LINK_BEGIN" />Google ຮູບພາບ<ph name="LINK_END" />.</translation>
@@ -886,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ລະບຸຕົວຕົນ</translation>
 <translation id="5317780077021120954">ບັນທຶກ</translation>
+<translation id="5318310531701770497">ສ້າງຊື່ບໍ່ໄດ້. ລອງຖອດຂໍ້ຄວາມຈາກສຽງໃຫ້ຍາວຂຶ້ນ.</translation>
 <translation id="5318334351163689047">ຂໍ TCP ບໍ່ສຳເລັດ</translation>
 <translation id="53196409393069519">ເປີດໃຊ້ການຖອດຖ່າຍຂໍ້ຄວາມບໍ?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -1100,6 +1108,7 @@
 <translation id="6359919876285606596">ການດຳເນີນການນີ້ມີຜົນຖາວອນ ແລະ ບໍ່ສາມາດຍົກເລີກໄດ້</translation>
 <translation id="6368342879959028556">ເມື່ອທ່ານເລືອກ “ສ້າງດ້ວຍ AI”, ໃຫ້ຂຽນ prompt ທີ່ກຳນົດເອງ. ຫຼື ທ່ານສາມາດເລືອກ “ຮູບພື້ນຫຼັງ AI” ເພື່ອເລືອກຮູບແບບສີສັນ ແລ້ວເລືອກຄຳທີ່ຂີດກ້ອງໄວ້ເພື່ອປັບແຕ່ງຮູບພື້ນຫຼັງ AI ຂອງທ່ານໃຫ້ເປັນແບບສ່ວນຕົວ.</translation>
 <translation id="636850387210749493">ການລົງທະບຽນວິສາຫະກິດ</translation>
+<translation id="6369221585240879141">ບໍ່ສາມາດສ້າງຊື່ການບັນທຶກສຳລັບພາສາຂອງການຖອດຂໍ້ຄວາມຈາກສຽງນີ້ໄດ້</translation>
 <translation id="6373461326814131011">ໜອງປາ</translation>
 <translation id="6379086450106841622">ໜ້າຈໍສຳຜັດ</translation>
 <translation id="6381741036071372448">ທົດສອບແປ້ນພິມຂອງທ່ານ</translation>
@@ -1275,6 +1284,7 @@
 <translation id="7130438335435247835">ຊື່ຈຸດການເຂົ້າເຖິງ (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Name server}other{Name servers}}</translation>
 <translation id="7135814714616751706">ຊອກຫາທາງລັດ</translation>
+<translation id="7138614237884624401">ຂໍ້ຄວາມແບບງ່າຍ</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="7144878232160441200">ລອງໃໝ່ອີກ</translation>
@@ -1696,6 +1706,7 @@
 <translation id="9100765901046053179">ການ​ຕັ້ງຄ່າຂັ້ນສູງ</translation>
 <translation id="910415269708673980">ໂຫຼດຂໍ້ມູນປີ້ສຳລັບ <ph name="PRINCIPAL_NAME" /> ໃໝ່</translation>
 <translation id="9106415115617144481">ກຳລັງສະແກນໜ້າ <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">ຕົວບັນທຶກສາມາດສ້າງການຖອດຖ່າຍຂໍ້ຄວາມສຳລັບການບັນທຶກທີ່ມີສຽງເວົ້າໄດ້. ໃນຂັ້ນຕອນຕໍ່ໄປ, ທ່ານຕ້ອງເລືອກພາສາຂອງການຖອດຖ່າຍຂໍ້ຄວາມ ແລະ ດາວໂຫຼດໂມເດວ (ສູງສຸດ 100MB).</translation>
 <translation id="9111102763498581341">ປົດລັອກ</translation>
 <translation id="9122492456897874028">ສະຫຼຸບເນື້ອຫາ, ຮັບຄຳນິຍາມ ແລະ ອື່ນໆ</translation>
 <translation id="9122602430962285795">ເພື່ອເຊື່ອມຕໍ່ຄືນໃໝ່, ໃຫ້ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>

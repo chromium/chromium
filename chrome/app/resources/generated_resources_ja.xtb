@@ -318,6 +318,7 @@
 <translation id="1206832039833782423">セキュリティ コードはカードの裏面に記載されています</translation>
 <translation id="1208339823324516598">{GROUP_COUNT,plural, =1{グループを削除}other{グループを削除}}</translation>
 <translation id="1208392090861059168">現在のスケジュールは <ph name="SUNRISE" />～<ph name="SUNSET" /> に設定されています。日の入りと日の出のスケジュールを自動的に更新するには、<ph name="BEGIN_LINK" />システムの位置情報へのアクセスをオンにしてください<ph name="END_LINK" />。</translation>
+<translation id="1210376751550516429">オーディオ出力デバイスを選択</translation>
 <translation id="1210678701920254279">プリンタを表示または追加して、アクティブな印刷ジョブを確認する</translation>
 <translation id="1211769675100312947">ユーザーが選択したショートカットが表示されます</translation>
 <translation id="1213254615020057352">使用状況データや診断データを送信します。診断データやデバイスとアプリの使用状況データを Google に自動送信して、お子様向けの Android 機能の向上にご協力ください。この情報を使ってお子様個人が特定されることはありません。この情報は、システムとアプリの安定性の向上やその他の機能の改善に役立てられます。また、Google のアプリやパートナー（Android デベロッパーなど）も、集計データとしてこの情報を活用します。この設定は所有者によって管理されています。このデバイスの診断データや使用状況データを Google に送信するよう所有者が設定している可能性があります。お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。</translation>
@@ -402,6 +403,7 @@
 <translation id="1264083566674525434">サイトの権限を編集する</translation>
 <translation id="1264337193001759725">ネットワークの UI ログを表示するには、<ph name="DEVICE_LOG_LINK" /> をご確認ください</translation>
 <translation id="1264956950255940376">左目を細める</translation>
+<translation id="1265094893042958831">このページの候補を生成しています…</translation>
 <translation id="1265279736024499987">Google アカウントでログインしているすべての ChromeOS Flex デバイス間で、アプリや設定が同期されます。ブラウザの同期オプションについては、<ph name="LINK_BEGIN" />Chrome の設定<ph name="LINK_END" />をご覧ください。</translation>
 <translation id="126710816202626562">翻訳言語:</translation>
 <translation id="1267649802567297774">生成画像 <ph name="INDEX" />/<ph name="SUBJECT" />、スタイル: <ph name="STYLE" />、ムード: <ph name="MOOD" />。</translation>
@@ -4388,6 +4390,7 @@
 <translation id="4047345532928475040">なし</translation>
 <translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">ホームに移動</translation>
+<translation id="4048295959689903187">オーディオ出力を選択</translation>
 <translation id="4048384495227695211">フォルダで <ph name="FILE_NAME" /> を表示</translation>
 <translation id="404894744863342743">ダウンロードしたファイルを使用した後は削除して、このデバイスを使用する他のユーザーがパスワードを確認できないようにします。</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{使用できない連絡先が # 件あります。これらのユーザーとニアバイシェアを利用するには、該当するユーザーの Google アカウントに関連付けられているメールアドレスを連絡先に追加してください。}other{使用できない連絡先が # 件あります。これらのユーザーとニアバイシェアを利用するには、該当するユーザーの Google アカウントに関連付けられているメールアドレスを連絡先に追加してください。}}</translation>
@@ -5291,6 +5294,7 @@
 <translation id="4730492586225682674">ロック画面でタッチペンによる最新メモを表示</translation>
 <translation id="4730888769809690665"><ph name="SITE" /> で通知を許可されています</translation>
 <translation id="4731306954230393087">保存したあなたに関する情報の使用を許可する</translation>
+<translation id="4732799736617504962">接続されているマイクはノイズ キャンセルのみをサポートしています</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />%（左）</translation>
 <translation id="4733793249294335256">保存先</translation>
 <translation id="473546211690256853">このアカウントは <ph name="DOMAIN" /> によって管理されています。</translation>
@@ -5363,6 +5367,7 @@
 <translation id="4789348252524569426">音声ファイルをインストールできません。デバイスを更新する必要があります。デバイスを再起動してもう一度お試しください。</translation>
 <translation id="4789550509729954245">付近に共有を行っているデバイスがある場合に通知を表示します</translation>
 <translation id="4791037424585594169">（UDP）</translation>
+<translation id="4791200512372376561">候補はありません。「このページを要約」など好きな表現で質問してみてください。</translation>
 <translation id="4791793693640849493">アカウントに項目を保存</translation>
 <translation id="4792290259143007505">TrackPoint アクセラレーションを有効にする</translation>
 <translation id="4792711294155034829">問題の報告(&amp;R)...</translation>
@@ -6043,6 +6048,7 @@
 <translation id="5276357196618041410">ログインしてからでないと設定を保存できません</translation>
 <translation id="5277127016695466621">サイドパネルを表示</translation>
 <translation id="5278823018825269962">ステータス ID</translation>
+<translation id="5279214046729249716">はい、別に保持します</translation>
 <translation id="5279600392753459966">すべてブロックする</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> の認証情報を更新してください</translation>
 <translation id="5280335021886535443">このバブルをフォーカスするには |<ph name="ACCELERATOR" />| を押します。</translation>

@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1191518099344003522">APN jest włączony.</translation>
 <translation id="1195447618553298278">Nieznany błąd.</translation>
+<translation id="1196264380943975940">Nie można utworzyć podsumowania. Użyj dłuższej transkrypcji.</translation>
 <translation id="1196959502276349371">Wersja <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Odtwórz/wstrzymaj</translation>
 <translation id="1201402288615127009">Dalej</translation>
@@ -361,6 +362,7 @@
 <translation id="2589921777872778654">Menu edytowania i usuwania</translation>
 <translation id="2597774443162333062">Pliki zostaną wysłane do Google w celu debugowania</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Gotowe. Zeskanowano 1 stronę.}few{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}many{Gotowe. Zeskanowano {NUMBER_OF_PAGES} stron.}other{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}}</translation>
+<translation id="261322795497077164">Identyfikacja mówiącej osoby</translation>
 <translation id="2617397783536231890">bawełny</translation>
 <translation id="2618015542787108131">wydmy</translation>
 <translation id="2619761439309613843">Codziennie nowa</translation>
@@ -441,6 +443,7 @@
 <translation id="3140130301071865159">śnieg</translation>
 <translation id="3146655726035122603">Tylko na urządzeniu <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Mobilna transmisja danych</translation>
+<translation id="3153094818810437149">Możesz to później zmienić w ustawieniach Dyktafonu</translation>
 <translation id="3156511682997763015">Przewiń do przodu o 10 sekund</translation>
 <translation id="3156846309055100599">Skanuję stronę <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Wykryto portal przechwytujący</translation>
@@ -563,6 +566,7 @@
 <translation id="3785643128701396311">pixel art</translation>
 <translation id="3799381533888781854">WYŁĄCZONO – tym ustawieniem zarządza Twój administrator.</translation>
 <translation id="380097101658023925">elementy sterujące RGB</translation>
+<translation id="380493988330050229">Nie udało się utworzyć podsumowania dla tego języka transkrypcji</translation>
 <translation id="38114475217616659">Wyczyść całą historię</translation>
 <translation id="3820172043799983114">Nieprawidłowy kod PIN.</translation>
 <translation id="382043424867370667">Tapeta Zachód słońca</translation>
@@ -735,6 +739,7 @@
 <translation id="458794348635939462">Nie udało się znaleźć wszystkich hostów</translation>
 <translation id="4593212453765072419">Wymagane uwierzytelnienie na serwerze proxy</translation>
 <translation id="4594021849294327751">Utwórz transkrypcję</translation>
+<translation id="4594541568452132351">Wybierz język transkrypcji i pobierz model</translation>
 <translation id="4607282946861182308">Nie udało się utworzyć obrazów. Użyj innego promptu.</translation>
 <translation id="4609350030397390689">Zmniejsz jasność klawiatury</translation>
 <translation id="4623061655523261501">Nazwy nagrań zostały wygenerowane</translation>
@@ -750,6 +755,7 @@
 <translation id="4665014895760275686">Producent</translation>
 <translation id="467510802200863975">Hasła nie są zgodne</translation>
 <translation id="467715984478005772">przypuszczalnie zapora sieciowa</translation>
+<translation id="4678534708181186163">Nie można utworzyć podsumowania. Użyj krótszej transkrypcji.</translation>
 <translation id="4683762547447150570">Kliknij przycisk, aby zaznaczyć przypisanie klawisza</translation>
 <translation id="4691278870498629773">Zatrzymano – brak zasobnika</translation>
 <translation id="469379815867856270">Siła sygnału</translation>
@@ -852,6 +858,7 @@
 <translation id="5168185087976003268">Kondycja baterii</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="517075088756846356">Aby kontynuować proces aktualizacji, odłącz i ponownie podłącz kabel zasilający urządzenia <ph name="DEVICE_NAME" /></translation>
+<translation id="5178021559562393163">Nie można utworzyć nazw. Użyj krótszej transkrypcji.</translation>
 <translation id="5180108905184566358">baobaby</translation>
 <translation id="5180712487038406644">Ekspresyjny</translation>
 <translation id="5190187232518914472">Przeżyj to jeszcze raz. Aby dodawać lub edytować albumy, otwórz <ph name="LINK_BEGIN" />Zdjęcia Google<ph name="LINK_END" />.</translation>
@@ -886,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Tożsamość</translation>
 <translation id="5317780077021120954">Zapisz</translation>
+<translation id="5318310531701770497">Nie można utworzyć nazw. Użyj dłuższej transkrypcji.</translation>
 <translation id="5318334351163689047">Nieudane żądania TCP</translation>
 <translation id="53196409393069519">Włączyć transkrypcję?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -1100,6 +1108,7 @@
 <translation id="6359919876285606596">To działanie jest trwałe i nie można go cofnąć</translation>
 <translation id="6368342879959028556">Gdy wybierzesz „Utwórz przy pomocy AI”, wpisz niestandardowy prompt. Możesz też kliknąć „Tapety AI”, a potem wybrać motyw i podkreślone słowa, aby spersonalizować tapetę AI.</translation>
 <translation id="636850387210749493">Rejestracja w firmie</translation>
+<translation id="6369221585240879141">Nie można utworzyć nazw nagrań dla tego języka transkrypcji</translation>
 <translation id="6373461326814131011">staw</translation>
 <translation id="6379086450106841622">Ekran dotykowy</translation>
 <translation id="6381741036071372448">Sprawdź klawiaturę</translation>
@@ -1274,6 +1283,7 @@
 <translation id="7130438335435247835">Nazwa punktu dostępu (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serwer nazw}few{Serwery nazw}many{Serwery nazw}other{Serwery nazw}}</translation>
 <translation id="7135814714616751706">Szukaj skrótów</translation>
+<translation id="7138614237884624401">Uproszczony tekst</translation>
 <translation id="7141470099673912333">Przenoszenie treści</translation>
 <translation id="7143207342074048698">Łączenie</translation>
 <translation id="7144878232160441200">Spróbuj jeszcze raz</translation>
@@ -1693,6 +1703,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="9100765901046053179">Ustawienia zaawansowane</translation>
 <translation id="910415269708673980">Odśwież zgłoszenie przypisane do konta <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Skanowanie strony <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">Dyktafon może tworzyć transkrypcje nagrań z mową. W następnym kroku musisz wybrać język transkrypcji i pobrać model (do 100 MB).</translation>
 <translation id="9111102763498581341">Odblokuj</translation>
 <translation id="9122492456897874028">Streszczaj treści, poznawaj definicje i wykonuj inne działania</translation>
 <translation id="9122602430962285795">Aby połączyć się ponownie, otwórz Ustawienia</translation>

@@ -319,6 +319,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1206832039833782423">O código de segurança está no verso do cartão</translation>
 <translation id="1208339823324516598">{GROUP_COUNT,plural, =1{Excluir grupo}one{Excluir grupo}other{Excluir grupos}}</translation>
 <translation id="1208392090861059168">A programação atual está definida de <ph name="SUNRISE" /> a <ph name="SUNSET" />. Para atualizar automaticamente as programações de pôr e nascer do sol, <ph name="BEGIN_LINK" />ative o acesso do sistema à localização<ph name="END_LINK" />.</translation>
+<translation id="1210376751550516429">Escolha um dispositivo de saída de áudio</translation>
 <translation id="1210678701920254279">Verificar ou adicionar impressoras e conferir trabalhos de impressão ativos</translation>
 <translation id="1211769675100312947">Atalhos selecionados por você</translation>
 <translation id="1213254615020057352">Envie dados de uso e diagnóstico. Ajude a melhorar a experiência da criança com o Android enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles não serão usados para identificar a criança e ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e nossos parceiros, como os desenvolvedores Android. Essa configuração é aplicada pelo proprietário, que pode optar por enviar dados de uso e diagnóstico deste dispositivo para o Google. Se a configuração "Atividade na Web e de apps adicional" estiver ativada para a criança, esses dados poderão ser salvos na Conta do Google dela.</translation>
@@ -403,6 +404,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1264083566674525434">Editar permissões do site</translation>
 <translation id="1264337193001759725">Os registros de interface de rede podem ser vistos em: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1264956950255940376">Apertar o olho esquerdo</translation>
+<translation id="1265094893042958831">Gerando sugestões para esta página…</translation>
 <translation id="1265279736024499987">Seus apps e configurações serão sincronizados em todos os dispositivos ChromeOS Flex conectados à sua Conta do Google. Para acessar as opções de sincronização do navegador, acesse as <ph name="LINK_BEGIN" />configurações do Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Idioma de tradução:</translation>
 <translation id="1267649802567297774">Imagem <ph name="INDEX" /> de <ph name="SUBJECT" /> gerada no estilo <ph name="STYLE" /> com o clima <ph name="MOOD" />.</translation>
@@ -4411,6 +4413,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4047345532928475040">N/A</translation>
 <translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Ir para página inicial</translation>
+<translation id="4048295959689903187">Selecione a saída de áudio</translation>
 <translation id="4048384495227695211">Mostrar <ph name="FILE_NAME" /> na pasta</translation>
 <translation id="404894744863342743">Depois que você terminar de usar o arquivo baixado, ele poderá ser excluído para que outras pessoas que usam este dispositivo não saibam suas senhas.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# contato não está disponível. Para usar o "Compartilhar por proximidade" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}one{# contato não está disponível. Para usar o "Compartilhar por proximidade" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}other{# contatos não estão disponíveis. Para usar o "Compartilhar por proximidade" com esses contatos, adicione os endereços de e-mail associados à Conta do Google deles.}}</translation>
@@ -5316,6 +5319,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4730492586225682674">Anotação mais recente da stylus na tela de bloqueio</translation>
 <translation id="4730888769809690665">Notificações permitidas para <ph name="SITE" /></translation>
 <translation id="4731306954230393087">Pode usar as informações salvas sobre você</translation>
+<translation id="4732799736617504962">O microfone conectado só é compatível com o cancelamento de ruído</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (esquerdo)</translation>
 <translation id="4733793249294335256">Local</translation>
 <translation id="473546211690256853">Esta conta é gerenciada por <ph name="DOMAIN" /></translation>
@@ -5388,6 +5392,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4789348252524569426">Não foi possível instalar arquivos de fala. Seu dispositivo precisa ser atualizado. Reinicie o dispositivo e tente novamente.</translation>
 <translation id="4789550509729954245">Mostrar notificação quando dispositivos estiverem compartilhando itens por perto</translation>
 <translation id="4791037424585594169">(UDP)</translation>
+<translation id="4791200512372376561">Nenhuma sugestão disponível. Tente pedir algo como "resuma esta página" ou faça sua própria pergunta.</translation>
 <translation id="4791793693640849493">Salvar itens na conta</translation>
 <translation id="4792290259143007505">Ativar aceleração do TrackPoint</translation>
 <translation id="4792711294155034829">&amp;Informar um problema...</translation>
@@ -5428,6 +5433,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 favorito excluído}one{{COUNT} favorito excluído}other{{COUNT} favoritos excluídos}}</translation>
 <translation id="481689174647911539">Este arquivo pode ser um vírus ou malware.<ph name="LINE_BREAK" />Você pode enviar para a Navegação segura do Google para verificar se ele não é seguro. As verificações geralmente levam alguns segundos.</translation>
 <translation id="4816900689218414104">Criar uma chave de acesso em um smartphone ou tablet</translation>
+<translation id="481917177323309377">Guias que você não usa há <ph name="COUNT" /> dias ou mais</translation>
 <translation id="4819323978093861656">{0,plural, =0{Fechando agora.}=1{Fechando em 1 segundo}one{Fechando em # segundo}other{Fechando em # segundos}}</translation>
 <translation id="4819607494758673676">Notificações do Google Assistente</translation>
 <translation id="4819818293886748542">Receber um link "Ferramenta de suporte"</translation>
@@ -6070,6 +6076,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5276357196618041410">Não é possível salvar a configuração sem fazer login primeiro</translation>
 <translation id="5277127016695466621">Mostrar painel lateral</translation>
 <translation id="5278823018825269962">ID de status</translation>
+<translation id="5279214046729249716">Sim, manter separados</translation>
 <translation id="5279600392753459966">Bloquear todas</translation>
 <translation id="5280064835262749532">Atualizar credenciais para <ph name="SHARE_PATH" /></translation>
 <translation id="5280335021886535443">Pressione <ph name="ACCELERATOR" /> para focar no balão.</translation>

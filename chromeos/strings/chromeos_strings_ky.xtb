@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">Транскрипцияны жашыруу</translation>
 <translation id="160633243685262989">Сүрөттү алдын ала көрүү</translation>
 <translation id="1611649489706141841">багыттоо</translation>
+<translation id="1615144046047995187">Жүктөлүп алынбай жатат. Кайталап көрүңүз же Chromebook түзмөгүңүздү өчүрүп күйгүзүңүз.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> бери колдонулган трафик</translation>
 <translation id="1618566998877964907">Теманы колдонуу</translation>
 <translation id="1621067168122174824">Кубатталышын сыноо</translation>
@@ -360,6 +361,7 @@
 <translation id="2589921777872778654">Менюну түзөтүү жана өчүрүү</translation>
 <translation id="2597774443162333062">Файлдар мүчүлүштүктөрдү оңдоо үчүн Google'га жөнөтүлөт</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Скандалып бүттү. 1 бет скандалды}other{Скандалып бүттү. {NUMBER_OF_PAGES} бет скандалды}}</translation>
+<translation id="261322795497077164">Динамиктин идентификациясы</translation>
 <translation id="2617397783536231890">пахта</translation>
 <translation id="2618015542787108131">кум дөбө</translation>
 <translation id="2619761439309613843">Күн сайын жаңыртуу</translation>
@@ -440,6 +442,7 @@
 <translation id="3140130301071865159">кар</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> үчүн жеткиликтүү</translation>
 <translation id="315116470104423982">Мобилдик Интернет</translation>
+<translation id="3153094818810437149">Муну Диктофондун параметрлеринен кийинчерээк өзгөртсөңүз болот</translation>
 <translation id="3156511682997763015">10 секунд алдыга түрүү</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-бет скандалууда...</translation>
 <translation id="315738237743207937">Кирүү бети аныкталды</translation>
@@ -562,6 +565,7 @@
 <translation id="3785643128701396311">пикселдүү сүрөт</translation>
 <translation id="3799381533888781854">ӨЧҮК - Бул параметрлерди администраторуңуз тескейт.</translation>
 <translation id="380097101658023925">rgb башкаруу элементтери</translation>
+<translation id="380493988330050229">Бул транскрипция тили үчүн кыскача маалыматты түзүүгө болбойт</translation>
 <translation id="38114475217616659">Баарын өчүрүп салуу</translation>
 <translation id="3820172043799983114">PIN код жараксыз.</translation>
 <translation id="382043424867370667">Күндүн батышы тушкагазы</translation>
@@ -585,6 +589,7 @@
 <translation id="3885327323343477505">Көшөгөнү өзгөртүү</translation>
 <translation id="3889914174935857450">Дайын-даректерди баштапкы абалга келтирүү</translation>
 <translation id="3897092660631435901">Меню</translation>
+<translation id="3902271751020176019">Транскрипциянын тили</translation>
 <translation id="391412459402535266">Түзмөктү сыноого болбойт. Сынап көрүү үчүн ноутбук режимине которулуңуз.</translation>
 <translation id="3916998944874125962">скриншот тартып алуу</translation>
 <translation id="3923184630988645767">Маалыматтардын өткөрүлүшү</translation>
@@ -733,6 +738,7 @@
 <translation id="458794348635939462">Бардык башкы түйүндөр чечилген жок</translation>
 <translation id="4593212453765072419">Проксиде аныктыгын текшерүү талап кылынат</translation>
 <translation id="4594021849294327751">Транскрипт түзүү</translation>
+<translation id="4594541568452132351">Транскрипция тилин тандап, үлгүнү жүктөп алыңыз</translation>
 <translation id="4607282946861182308">Анын сүрөттөрү түзүлбөй жатат. Башка сурамды колдонуп көрүңүз.</translation>
 <translation id="4609350030397390689">Баскычтоптун жарыктыгын азайтуу</translation>
 <translation id="4623061655523261501">Жаздыруу аттары ийгиликтүү түзүлдү</translation>
@@ -937,6 +943,7 @@
 <translation id="5606865426897221650">Өтмөк</translation>
 <translation id="5613201299517339763">Чыгып кеттиңиз</translation>
 <translation id="5620281292257375798">Ички колдонуу үчүн</translation>
+<translation id="5628106863521633649">Жеткиликтүү тилдер</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">аннотация</translation>
 <translation id="5655283760733841251">Баскычтоптун жарыктыгын көбөйтүү</translation>
@@ -1097,6 +1104,7 @@
 <translation id="6359919876285606596">Бул аракетти артка кайтарууга болбойт</translation>
 <translation id="6368342879959028556">"ЖИ менен түзүү" дегенди тандаганда жеке сурамды жазыңыз. Же тема тандоо үчүн "ЖИ тушкагаздары" дегенди тандап, ЖИ тушкагазын жекелештирүү үчүн асты сызылган сөздөрдү тандай аласыз.</translation>
 <translation id="636850387210749493">Корпоративдик каттоо</translation>
+<translation id="6369221585240879141">Бул транскрипция тили үчүн ысымдарды түзүүгө болбойт</translation>
 <translation id="6373461326814131011">көлмө</translation>
 <translation id="6379086450106841622">Сенсордук экран</translation>
 <translation id="6381741036071372448">Баскычтопту колдонуп көрүңүз</translation>
@@ -1261,6 +1269,7 @@
 <translation id="710028965487274708">Ишке ашкан жок – Уруксат берилген жок</translation>
 <translation id="7101959270679078188">Жаңыртуу процессин улантуу үчүн <ph name="DEVICE_NAME" /> түзмөгүнүн кулпусун ачыңыз</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> түзмөктүн ичинен <ph name="NAME" /> деп аталган <ph name="INDEX" />-түзмөк.</translation>
+<translation id="7103793063702494489">Тандалган тил</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> өзгөчө сүрөттөрүн тандаңыз</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7117228822971127758">Бир аздан кийин кайталап көрүңүз</translation>
@@ -1270,6 +1279,7 @@
 <translation id="7130438335435247835">Байланыш түйүнүнүн аталышы (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ысым сервери}other{Ысым серверлери}}</translation>
 <translation id="7135814714616751706">Ыкчам баскычтарды издөө</translation>
+<translation id="7138614237884624401">Жөнөкөйлөштүрүлгөн текст</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Туташууда</translation>
 <translation id="7144878232160441200">Дагы аракет кылып көрүү</translation>
@@ -1691,6 +1701,7 @@
 <translation id="9100765901046053179">Өркүндөтүлгөн жөндөөлөр</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үчүн билетти жаңыртыңыз</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет скандалууда</translation>
+<translation id="9108856746036501072">Диктофон жаздыруулардын транскрипцияларын түзө алат. Кийинки кадамда транскрипция тилин тандап, үлгүнү жүктөп алышыңыз керек (100 МБ чейин).</translation>
 <translation id="9111102763498581341">Кулпуну ачуу</translation>
 <translation id="9122492456897874028">Контенттин корутундусун түзүү, аныктамаларды алуу жана башкалар</translation>
 <translation id="9122602430962285795">Кайра туташуу үчүн Параметрлерге өтүңүз</translation>

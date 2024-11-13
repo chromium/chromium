@@ -306,6 +306,7 @@
 <translation id="2308243864813041101">Güncelleme işlemine devam etmek için <ph name="DEVICE_NAME" /> USB kablosunu çıkarın</translation>
 <translation id="2320295602967756579">Açık temayı etkinleştir</translation>
 <translation id="2323506179655536734">ATLANDI</translation>
+<translation id="2323755382216917952">Bu güncelleme için bilgisayarınızı yeniden başlatarak yüklemeyi tamamlamanız gerekir. Bu işlemin tamamlanması birkaç dakika sürebilir. Donanım yazılımı güncellenirken bilgisayarınızı fişten çıkarmayın ya da kapatmayın.</translation>
 <translation id="2324354238778375592">Kayan</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Mükemmel (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -448,6 +449,7 @@
 <translation id="3178532070248519384">avangart</translation>
 <translation id="3182676044300231689">"Daha özgüvenli hale getir" gibi bir istem girin</translation>
 <translation id="3188257591659621405">Dosyalarım</translation>
+<translation id="3188931456353313123">Bu güncelleme, cihaz üreticisi tarafından sağlanmış olup Google tarafından doğrulanmamıştır.</translation>
 <translation id="319101249942218879">Avatar resmi değiştirildi</translation>
 <translation id="3192947282887913208">Ses Dosyaları</translation>
 <translation id="3199982728237701504">Doküman Besleyici (İki taraflı)</translation>
@@ -505,6 +507,7 @@
 <translation id="3488065109653206955">Kısmen etkinleştirildi</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> tonda <ph name="OFFICE_STYLE" /> ofis</translation>
 <translation id="3493187369049186498">Veriler, Chromebook'unuz tarafından ölçülür. Bu değer, sağlayıcı verilerinden farklı olabilir.</translation>
+<translation id="349570724365779960">School Tools, öğrencilere bağlı</translation>
 <translation id="3502426834823382181">tüm uygulamaları göster</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Performans izleme verilerini<ph name="END_LINK1" /> gönder</translation>
 <translation id="3517001332549868749">ChromeOS güncellemesi</translation>
@@ -753,6 +756,7 @@
 <translation id="473775607612524610">Güncelle</translation>
 <translation id="4744944742468440486">Seçiminizle ilgili bilgi</translation>
 <translation id="4771607256327216405">klavye parlaklığını artır</translation>
+<translation id="4771923071974529837">yarın</translation>
 <translation id="4773299976671772492">Durduruldu</translation>
 <translation id="4778082030331381943">ametist</translation>
 <translation id="4782311465517282004">Metni sağ tıkladığınızda veya dokunup basılı tuttuğunuzda tanımını veya çevirisini görün ya da birim dönüştürmesi alın</translation>
@@ -816,6 +820,7 @@
 <translation id="500920857929044050">Testi durdur</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Tema rengi</translation>
+<translation id="5037240652947866174">bugün</translation>
 <translation id="5038292761217083259">çok renkli klavye</translation>
 <translation id="5039804452771397117">İzin ver</translation>
 <translation id="5049856988445523908">SIM Kilitlendi (<ph name="LOCK_TYPE" />)</translation>

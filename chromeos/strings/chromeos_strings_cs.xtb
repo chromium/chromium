@@ -306,6 +306,7 @@
 <translation id="2308243864813041101">Pokud chcete v procesu aktualizace pokračovat, odpojte od zařízení <ph name="DEVICE_NAME" /> kabel USB</translation>
 <translation id="2320295602967756579">Aktivovat světlý motiv</translation>
 <translation id="2323506179655536734">PŘESKOČENO</translation>
+<translation id="2323755382216917952">K dokončení instalace této aktualizace je potřeba restartovat počítač. Dokončení této aktualizace může trvat několik minut. Během aktualizace firmwaru neodpojujte ani nevypínejte počítač.</translation>
 <translation id="2324354238778375592">Plovoucí</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Vynikající (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -448,6 +449,7 @@
 <translation id="3178532070248519384">avantgarda</translation>
 <translation id="3182676044300231689">Zadejte pokyn, například „uprav text, aby zněl jistěji“</translation>
 <translation id="3188257591659621405">Moje soubory</translation>
+<translation id="3188931456353313123">Tuto aktualizaci poskytuje výrobce zařízení a nebyla ověřena společností Google.</translation>
 <translation id="319101249942218879">Obrázek avatara se změnil</translation>
 <translation id="3192947282887913208">Zvukové soubory</translation>
 <translation id="3199982728237701504">Podavač dokumentů (oboustranných)</translation>
@@ -505,6 +507,7 @@
 <translation id="3488065109653206955">Částečně aktivováno</translation>
 <translation id="3492882532495507361">Kancelář ve stylu <ph name="OFFICE_STYLE" /> s tóny v barvě <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Data měří Chromebook. Údaje se od údajů poskytovatele mohou lišit.</translation>
+<translation id="349570724365779960">Nástroje School Tools jsou propojené se studenty</translation>
 <translation id="3502426834823382181">zobrazit všechny aplikace</translation>
 <translation id="3510890413042482857">Odesílat <ph name="BEGIN_LINK1" />údaje sledování výkonu<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Aktualizace ChromeOS</translation>
@@ -753,6 +756,7 @@
 <translation id="473775607612524610">Aktualizovat</translation>
 <translation id="4744944742468440486">Informace související s vaším výběrem</translation>
 <translation id="4771607256327216405">zvýšení jasu klávesnice</translation>
+<translation id="4771923071974529837">zítra</translation>
 <translation id="4773299976671772492">Zastaveno</translation>
 <translation id="4778082030331381943">ametyst</translation>
 <translation id="4782311465517282004">Když podržíte text nebo na něj kliknete pravým tlačítkem, mohou se zobrazit definice, překlad nebo převod jednotek</translation>
@@ -816,6 +820,7 @@
 <translation id="500920857929044050">Zastavit test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Barva motivu</translation>
+<translation id="5037240652947866174">dnes</translation>
 <translation id="5038292761217083259">vícebarevná klávesnice</translation>
 <translation id="5039804452771397117">Povolit</translation>
 <translation id="5049856988445523908">Zamknutá SIM karta (<ph name="LOCK_TYPE" />)</translation>

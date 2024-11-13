@@ -306,6 +306,7 @@
 <translation id="2308243864813041101">প্রসেস আপডেট করা চালিয়ে যেতে <ph name="DEVICE_NAME" />-এর USB কেবেল আনপ্লাগ করুন</translation>
 <translation id="2320295602967756579">হালকা থিম চালু করুন</translation>
 <translation id="2323506179655536734">এড়ানো হয়েছে</translation>
+<translation id="2323755382216917952">এই আপডেটের জন্য, ইনস্টলেশন সম্পূর্ণ করতে আপনার কম্পিউটার রিস্টার্ট করতে হবে। এই আপডেট সম্পূর্ণ হতে কয়েক মিনিট সময় লাগতে পারে। ফার্মওয়্যার আপডেট করার সময়, আপনার কম্পিউটার আনপ্লাগ বা বন্ধ করবেন না।</translation>
 <translation id="2324354238778375592">ফ্লোট</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">গড় (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -359,6 +360,7 @@
 <translation id="2589921777872778654">এডিট ও মুছে দেওয়ার মেনু</translation>
 <translation id="2597774443162333062">ডিবাগিংয়ের জন্য, ফাইল Google-এ পাঠানো হবে</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{স্ক্যান করা হয়েছে। ১টি পৃষ্ঠা স্ক্যান করা হয়েছে}one{স্ক্যান করা হয়েছে। {NUMBER_OF_PAGES}টি পৃষ্ঠা স্ক্যান করা হয়েছে}other{স্ক্যান করা হয়েছে। {NUMBER_OF_PAGES}টি পৃষ্ঠা স্ক্যান করা হয়েছে}}</translation>
+<translation id="261322795497077164">স্পিকার শনাক্তকরণ</translation>
 <translation id="2617397783536231890">কটন</translation>
 <translation id="2618015542787108131">বালিয়াড়ি</translation>
 <translation id="2619761439309613843">প্রতিদিন রিফ্রেশ করা হবে</translation>
@@ -439,6 +441,7 @@
 <translation id="3140130301071865159">তুষার</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" />-এর জন্য এক্সক্লুসিভ</translation>
 <translation id="315116470104423982">মোবাইল ডেটা</translation>
+<translation id="3153094818810437149">আপনি 'Recorder' সেটিংস থেকে এটি পরে পরিবর্তন করতে পারবেন</translation>
 <translation id="3156511682997763015">১০ সেকেন্ড ফরওয়ার্ড করুন</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> নম্বর পৃষ্ঠা স্ক্যান করা হচ্ছে...</translation>
 <translation id="315738237743207937">অন্তরীণ পোর্টাল শনাক্ত করা হয়েছে</translation>
@@ -448,6 +451,7 @@
 <translation id="3178532070248519384">আভান্ট-গার্ডে</translation>
 <translation id="3182676044300231689">"এটি পরিবর্তন করে উন্নত করুন"-এর মতো কোনও প্রম্পট লিখুন</translation>
 <translation id="3188257591659621405">আমার ফাইল</translation>
+<translation id="3188931456353313123">এই আপডেটটি দিয়েছে ডিভাইস প্রস্তুতকারী এবং তা Google-এর মাধ্যমে যাচাই করা হয়নি।</translation>
 <translation id="319101249942218879">অবতারের ছবি পরিবর্তন করা হয়েছে</translation>
 <translation id="3192947282887913208">অডিও ফাইল</translation>
 <translation id="3199982728237701504">ডকুমেন্ট ফিডার (দুই পিঠের)</translation>
@@ -505,6 +509,7 @@
 <translation id="3488065109653206955">আংশিকভাবে সক্রিয়</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> টোন সহ <ph name="OFFICE_STYLE" /> অফিস</translation>
 <translation id="3493187369049186498">ডেটা আপনার Chromebook-এর মাধ্যমে পরিমাপ করা হয়। এটি পরিষেবা প্রদানকারীর ডেটা থেকে আলাদা হতে পারে।</translation>
+<translation id="349570724365779960">'স্কুল' টুল স্টুডেন্টদের সাথে কানেক্ট করা আছে</translation>
 <translation id="3502426834823382181">সব অ্যাপ দেখুন</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />পারফর্ম্যান্স ট্রেস ডেটা<ph name="END_LINK1" /> পাঠান</translation>
 <translation id="3517001332549868749">ChromeOS-এর আপডেট</translation>
@@ -559,6 +564,7 @@
 <translation id="3785643128701396311">পিক্সেল আর্ট</translation>
 <translation id="3799381533888781854">বন্ধ আছে - এই সেটিং আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করেন।</translation>
 <translation id="380097101658023925">RGB কন্ট্রোল</translation>
+<translation id="380493988330050229">এই ট্রান্সক্রিপ্টের ভাষার জন্য সারসংক্ষেপ তৈরি করা যাচ্ছে না</translation>
 <translation id="38114475217616659">সব ইতিহাস মুছে ফেলুন</translation>
 <translation id="3820172043799983114">ভুল পিন।</translation>
 <translation id="382043424867370667">সানসেট ওয়ালপেপার</translation>
@@ -730,6 +736,7 @@
 <translation id="458794348635939462">সব হোস্ট নেম যাচাই করা ব্যর্থ হয়েছে</translation>
 <translation id="4593212453765072419">প্রক্সি প্রমাণীকরণের প্রয়োজন</translation>
 <translation id="4594021849294327751">ট্রানস্ক্রিপ্ট তৈরি করুন</translation>
+<translation id="4594541568452132351">ট্রান্সক্রিপশনের ভাষা বেছে নিন ও মডেল ডাউনলোড করুন</translation>
 <translation id="4607282946861182308">এটির ছবি তৈরি করা যাচ্ছে না। অন্য প্রম্পট ব্যবহার করে দেখুন।</translation>
 <translation id="4609350030397390689">কীবোর্ড উজ্জ্বলতা কমান</translation>
 <translation id="4623061655523261501">রেকর্ডিংয়ের নাম জেনারেট করা হয়েছে</translation>
@@ -753,6 +760,7 @@
 <translation id="473775607612524610">আপডেট করুন</translation>
 <translation id="4744944742468440486">আপনার বেছে নেওয়া কন্টেন্টের ব্যাপারে তথ্য</translation>
 <translation id="4771607256327216405">কীবোর্ড আরও উজ্জ্বল</translation>
+<translation id="4771923071974529837">আগামীকাল</translation>
 <translation id="4773299976671772492">থামানো হয়েছে</translation>
 <translation id="4778082030331381943">অ্যামেথিস্ট</translation>
 <translation id="4782311465517282004">আপনি ডানদিকের বোতামে ক্লিক করলে বা টেক্সট প্রেস করে ধরে থাকলে, সংজ্ঞা, অনুবাদ বা ইউনিট কনভার্সন পাবেন</translation>
@@ -816,6 +824,7 @@
 <translation id="500920857929044050">টেস্ট বন্ধ করুন</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">থিমের রঙ</translation>
+<translation id="5037240652947866174">আজ</translation>
 <translation id="5038292761217083259">কীবোর্ড মাল্টিকালার</translation>
 <translation id="5039804452771397117">অনুমতি দিন</translation>
 <translation id="5049856988445523908">সিম লক করা হয়েছে (<ph name="LOCK_TYPE" />)</translation>
@@ -1092,6 +1101,7 @@
 <translation id="6359919876285606596">এই অ্যাকশন স্থায়ী এবং আগের অবস্থায় ফিরিয়ে আনা যাবে না</translation>
 <translation id="6368342879959028556">“AI-এর সাহায্যে তৈরি করো” বিকল্প বেছে নিয়ে কাস্টম প্রম্পট লিখুন। অথবা থিম বেছে নিতে আপনি “AI ওয়ালপেপার” বাছুন এবং তারপর আপনার AI ওয়ালপেপার পছন্দমতো করে তুলতে নিচে দাগ দেওয়া শব্দ বেছে নিন।</translation>
 <translation id="636850387210749493">এন্টারপ্রাইজ নথিভুক্তিকরণ</translation>
+<translation id="6369221585240879141">এই ট্রান্সক্রিপ্টের ভাষার জন্য রেকর্ডিংয়ের নাম তৈরি করা যাচ্ছে না</translation>
 <translation id="6373461326814131011">পুকুর</translation>
 <translation id="6379086450106841622">টাচস্ক্রিন</translation>
 <translation id="6381741036071372448">কীবোর্ড যাচাই করুন</translation>
@@ -1265,6 +1275,7 @@
 <translation id="7130438335435247835">অ্যাক্সেস পয়েন্ট নাম (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{নেম-সার্ভার}one{নেম সার্ভার}other{নেম সার্ভার}}</translation>
 <translation id="7135814714616751706">শর্টকাট সার্চ করুন</translation>
+<translation id="7138614237884624401">সরল করা টেক্সট</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">সংযুক্ত হচ্ছে</translation>
 <translation id="7144878232160441200">আবার চেষ্টা করুন</translation>
@@ -1686,6 +1697,7 @@
 <translation id="9100765901046053179">উন্নত সেটিংস</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-এর টিকিট রিফ্রেশ করুন</translation>
 <translation id="9106415115617144481">স্ক্যান করা পৃষ্ঠা <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">Recorder রেকর্ডিংয়ের জন্য স্পিচের সাথে ট্রান্সক্রিপশন তৈরি করতে পারে। পরবর্তী ধাপে, আপনাকে ট্রান্সক্রিপশনের ভাষা বেছে নিতে ও মডেল ডাউনলোড করতে হবে (১০০এমবি পর্যন্ত)।</translation>
 <translation id="9111102763498581341">আনলক</translation>
 <translation id="9122492456897874028">কন্টেন্টের সারসংক্ষেপ লিখুন, সংজ্ঞা দেখুন এবং আরও অনেক কাজে সাহায্য পান</translation>
 <translation id="9122602430962285795">আবার কানেক্ট করতে, সেটিংস বিকল্পে যান</translation>

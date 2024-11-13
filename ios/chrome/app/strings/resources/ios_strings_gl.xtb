@@ -472,6 +472,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3119874402040566234">Pecharase a túa sesión e eliminaranse os datos de navegación</translation>
 <translation id="3130863904455712965">Historial e moito máis</translation>
 <translation id="313283613037595347">Crear nova pestana do modo de incógnito.</translation>
+<translation id="3138611310073113613">Descartar selección</translation>
 <translation id="3143515551205905069">Cancelar sincronización</translation>
 <translation id="314837624430314508">Mantente ao día das noticias máis recentes, das actualizacións no seguimento de prezos e moito máis.</translation>
 <translation id="3157387275655328056">Engadir á lista de lectura</translation>
@@ -639,6 +640,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3997522473364371632">A persoa que administra a túa conta desactivou o uso compartido de contrasinais.</translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4004204301268239848">Os contrasinais gárdanse na túa Conta de Google para que poidas usalos en calquera dispositivo.</translation>
+<translation id="4011489366247192265">Do</translation>
 <translation id="4018440314314549819">Autocompleta os contrasinais gardados</translation>
 <translation id="4021447724486050609">Actualizar o navegador</translation>
 <translation id="4021931095789478915">Engadir ${url} á lista de lectura</translation>
@@ -936,6 +938,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5414763847370083940">Recibirás unha alerta se baixa o prezo en calquera sitio.</translation>
 <translation id="5415289094036440596">Os contrasinais non se poden compartir</translation>
 <translation id="5416455648658732408">Mover ao grupo de pestanas</translation>
+<translation id="542659109038405424">Ao</translation>
 <translation id="5429624150850059322">Cando regreses, as pestanas desenfocaranse ata que as toques para continuar</translation>
 <translation id="5431239785743546285">Páxinas que liches</translation>
 <translation id="5431252637281434233">Pecharase a túa sesión</translation>
@@ -1036,7 +1039,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5817176759448082654">Revisión de contrasinais</translation>
 <translation id="5819208479324046259">Xestionado por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sincronizando…</translation>
-<translation id="5832166137082209907">Ocultar despois de 10 minutos</translation>
 <translation id="5844284118433003733">Cando tes a sesión iniciada, estes datos asócianse á túa Conta de Google para protexerte nos servizos de Google (por exemplo, aumentando a protección en Gmail despois dun incidente de seguranza).</translation>
 <translation id="5854790677617711513">Con máis de 30 días</translation>
 <translation id="5857770089550859117">Introduce a frase de acceso para iniciar a sincronización.</translation>

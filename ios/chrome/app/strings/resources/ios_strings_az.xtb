@@ -472,6 +472,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3119874402040566234">Çıxacaqsınız və baxış datası silinəcək</translation>
 <translation id="3130863904455712965">Tarixçə və digərləri</translation>
 <translation id="313283613037595347">Yeni Anonim tab yaradın.</translation>
+<translation id="3138611310073113613">Seçimdən imtina edin</translation>
 <translation id="3143515551205905069">Sinxronizasiyanı ləğv edin</translation>
 <translation id="314837624430314508">Son xəbərlər, qiymət izləmə yenilikləri və s. ilə bağlı məlumatlı qalın.</translation>
 <translation id="3157387275655328056">Oxu Siyahısına əlavə edin</translation>
@@ -639,6 +640,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3997522473364371632">Administrator parol paylaşımını deaktiv edib.</translation>
 <translation id="4002066346123236978">Başlıq</translation>
 <translation id="4004204301268239848">Parollar Google Hesabınızda yadda saxlanılıb. Onları istənilən cihazda istifadə edə bilərsiniz.</translation>
+<translation id="4011489366247192265">Bu dildən:</translation>
 <translation id="4018440314314549819">Saxlanılan parolları avtomatik doldurun</translation>
 <translation id="4021447724486050609">Brauzeri güncəlləyin</translation>
 <translation id="4021931095789478915">Oxu siyahısına ${url} əlavə edin</translation>
@@ -936,6 +938,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="5414763847370083940">Hər hansı saytda qiymət düşərsə, bildiriş alacaqsınız.</translation>
 <translation id="5415289094036440596">Giriş açarlarını paylaşmaq olmaz</translation>
 <translation id="5416455648658732408">Tab qrupuna köçürün</translation>
+<translation id="542659109038405424">Bu dilə:</translation>
 <translation id="5429624150850059322">Geri qayıtdığınız zaman davam etmək üçün toxunana qədər tablar bulanıq olur</translation>
 <translation id="5431239785743546285">Oxuduğunuz səhifələr</translation>
 <translation id="5431252637281434233">Çıxacaqsınız</translation>
@@ -1036,7 +1039,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5817176759448082654">Parol Yoxlanışı</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> tərəfindən idarə edilir. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Sinxronlaşdırılır…</translation>
-<translation id="5832166137082209907">10 dəqiqədən sonra gizlədin</translation>
 <translation id="5844284118433003733">Daxil olduqda sizi Google xidmətlərində qorumaq üçün bu data Google Hesabı ilə əlaqələndirilir. Məsələn, təhlükəsizlik insidentindən sonra Gmail-də qoruma artırılır.</translation>
 <translation id="5854790677617711513">30 gündən çox</translation>
 <translation id="5857770089550859117">Sinxronizasiyanı başlamaq üçün parol söz tələb olunur.</translation>

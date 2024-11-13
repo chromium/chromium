@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">I-hide ang transcript</translation>
 <translation id="160633243685262989">Larawan ng Preview</translation>
 <translation id="1611649489706141841">susunod</translation>
+<translation id="1615144046047995187">Hindi ma-download. Subukan ulit o i-restart ang iyong Chromebook.</translation>
 <translation id="1615335640928990664">Paggamit ng data simula noong <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Gumamit ng tema</translation>
 <translation id="1621067168122174824">Patakbuhin ang pagsusuri sa Pag-charge</translation>
@@ -585,6 +586,7 @@
 <translation id="3885327323343477505">Palitan ang screen saver</translation>
 <translation id="3889914174935857450">Petsa ng pag-reset</translation>
 <translation id="3897092660631435901">Menu</translation>
+<translation id="3902271751020176019">Wika ng transcription</translation>
 <translation id="391412459402535266">Hindi masuri ang device. Lumipat sa laptop mode para suriin.</translation>
 <translation id="3916998944874125962">kumuha ng screenshot</translation>
 <translation id="3923184630988645767">Paggamit ng data</translation>
@@ -937,6 +939,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Na-sign out ka</translation>
 <translation id="5620281292257375798">Internal lang</translation>
+<translation id="5628106863521633649">Mga available na wika</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">abstract</translation>
 <translation id="5655283760733841251">Taasan ang liwanag ng keyboard</translation>
@@ -1261,6 +1264,7 @@
 <translation id="710028965487274708">Nabigo - Hindi Nabigyan ng Pahintulot</translation>
 <translation id="7101959270679078188">I-unlock ang <ph name="DEVICE_NAME" /> para ituloy ang proseso ng pag-update</translation>
 <translation id="7103252855940681301">Device <ph name="INDEX" /> sa <ph name="COUNT" /> na nagngangalang <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Napiling wika</translation>
 <translation id="7107255225945990211">Pumili ng artwork na eksklusibo sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7117228822971127758">Pakisubukang muli sa ibang pagkakataon</translation>

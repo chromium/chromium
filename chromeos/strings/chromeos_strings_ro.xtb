@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">Ascunde transcrierea</translation>
 <translation id="160633243685262989">Previzualizează imaginea</translation>
 <translation id="1611649489706141841">înainte</translation>
+<translation id="1615144046047995187">Nu se poate descărca. Încearcă din nou sau repornește Chromebookul.</translation>
 <translation id="1615335640928990664">Utilizarea datelor începând de <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Folosește o temă</translation>
 <translation id="1621067168122174824">Rulează testul Încărcare</translation>
@@ -360,6 +361,7 @@
 <translation id="2589921777872778654">Meniul Editează și șterge</translation>
 <translation id="2597774443162333062">Fișierele vor fi trimise la Google pentru remedierea erorilor</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Scanare finalizată. S-a scanat o pagină.}few{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} pagini.}other{Scanare finalizată. S-au scanat {NUMBER_OF_PAGES} de pagini.}}</translation>
+<translation id="261322795497077164">Identificarea vorbitorilor</translation>
 <translation id="2617397783536231890">bumbac</translation>
 <translation id="2618015542787108131">dună de nisip</translation>
 <translation id="2619761439309613843">Actualizare zilnică</translation>
@@ -440,6 +442,7 @@
 <translation id="3140130301071865159">zăpadă</translation>
 <translation id="3146655726035122603">Exclusiv pentru <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Date mobile</translation>
+<translation id="3153094818810437149">Poți modifica opțiunea mai târziu în setările Recorder</translation>
 <translation id="3156511682997763015">Derulează înainte cu 10 secunde</translation>
 <translation id="3156846309055100599">Se scanează pagina <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">S-a detectat un portal captiv</translation>
@@ -562,6 +565,7 @@
 <translation id="3785643128701396311">grafică pixelată</translation>
 <translation id="3799381533888781854">DEZACTIVATĂ – Această setare este gestionată de administrator.</translation>
 <translation id="380097101658023925">comenzi pentru rgb</translation>
+<translation id="380493988330050229">Nu se poate crea un rezumat pentru această limbă a transcrierii</translation>
 <translation id="38114475217616659">Șterge tot istoricul</translation>
 <translation id="3820172043799983114">PIN nevalid.</translation>
 <translation id="382043424867370667">Imagine de fundal cu apus</translation>
@@ -585,6 +589,7 @@
 <translation id="3885327323343477505">Schimbă screensaverul</translation>
 <translation id="3889914174935857450">Resetează data</translation>
 <translation id="3897092660631435901">Meniu</translation>
+<translation id="3902271751020176019">Limba pentru transcriere</translation>
 <translation id="391412459402535266">Nu se poate testa dispozitivul. Treci la modul laptop pentru a testa.</translation>
 <translation id="3916998944874125962">fă o captură de ecran</translation>
 <translation id="3923184630988645767">Utilizarea datelor</translation>
@@ -733,6 +738,7 @@
 <translation id="458794348635939462">Nu s-au putut rezolva toate gazdele</translation>
 <translation id="4593212453765072419">Este necesară autentificarea la serverul proxy</translation>
 <translation id="4594021849294327751">Creează o transcriere</translation>
+<translation id="4594541568452132351">Selectează limba pentru transcriere și descarcă modelul</translation>
 <translation id="4607282946861182308">Nu se pot crea imagini pe baza acestei solicitări. Încearcă alta.</translation>
 <translation id="4609350030397390689">Reducerea luminozității tastaturii</translation>
 <translation id="4623061655523261501">Numele înregistrărilor au fost generate</translation>
@@ -937,6 +943,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Te-ai deconectat</translation>
 <translation id="5620281292257375798">Numai intern</translation>
+<translation id="5628106863521633649">Limbi disponibile</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">rezumat</translation>
 <translation id="5655283760733841251">Creșterea luminozității tastaturii</translation>
@@ -1097,6 +1104,7 @@
 <translation id="6359919876285606596">Această acțiune este definitivă și nu poate fi anulată</translation>
 <translation id="6368342879959028556">Când selectezi Creează cu AI, scrie un mesaj personalizat. Sau poți selecta „Imagini de fundal AI” pentru a alege o temă, apoi selectează cuvintele subliniate pentru a personaliza imaginea de fundal AI.</translation>
 <translation id="636850387210749493">Înscriere pentru întreprindere</translation>
+<translation id="6369221585240879141">Nu se pot crea nume de înregistrări pentru această limbă a transcrierii</translation>
 <translation id="6373461326814131011">iaz</translation>
 <translation id="6379086450106841622">Ecran tactil</translation>
 <translation id="6381741036071372448">Testează tastatura</translation>
@@ -1261,6 +1269,7 @@
 <translation id="710028965487274708">Nu a reușit – Autorizarea nu a reușit</translation>
 <translation id="7101959270679078188">Deblochează <ph name="DEVICE_NAME" /> pentru a continua procesul de actualizare</translation>
 <translation id="7103252855940681301">Dispozitivul <ph name="INDEX" /> din <ph name="COUNT" /> numit <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Limba selectată</translation>
 <translation id="7107255225945990211">Alege grafica exclusivă pentru <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7117228822971127758">Încearcă din nou mai târziu</translation>
@@ -1270,6 +1279,7 @@
 <translation id="7130438335435247835">Numele punctului de acces (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server de nume}few{Servere de nume}other{Servere de nume}}</translation>
 <translation id="7135814714616751706">Caută comenzi rapide</translation>
+<translation id="7138614237884624401">Text simplificat</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Se conectează</translation>
 <translation id="7144878232160441200">Reîncearcă</translation>
@@ -1691,6 +1701,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="9100765901046053179">Setări avansate</translation>
 <translation id="910415269708673980">Actualizează tichetul pentru <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Se scanează pagina <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">Recorder poate să creeze transcrieri pentru înregistrări cu vorbire. În pasul următor, trebuie să selectezi limba transcrierii și să descarci modelul (până la 100 MB).</translation>
 <translation id="9111102763498581341">Deblochează</translation>
 <translation id="9122492456897874028">Rezumă conținut, primește definiții și multe altele</translation>
 <translation id="9122602430962285795">Accesează Setări pentru reconectare</translation>

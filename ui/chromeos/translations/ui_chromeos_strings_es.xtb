@@ -422,6 +422,7 @@
 <translation id="4387004326333427325">Certificado de autenticación rechazado de forma remota</translation>
 <translation id="4394214039309501350">Enlace externo</translation>
 <translation id="4394980935660306080">Esta semana</translation>
+<translation id="4397435965699247285">OneDrive no está disponible sin conexión</translation>
 <translation id="4398096759193130964">Restaura los elementos o arrástralos a una carpeta nueva fuera de la papelera</translation>
 <translation id="4401287888955153199">Extraer todo</translation>
 <translation id="4410695710508688828">No se ha podido realizar la operación de extracción. <ph name="ERROR_MESSAGE" /></translation>
@@ -582,7 +583,6 @@
 <translation id="5447680084201416734">No hay espacio suficiente.</translation>
 <translation id="5449551289610225147">La contraseña no es válida</translation>
 <translation id="5459064203055649751">Ya hay un archivo llamado "<ph name="FILENAME" />". ¿Quieres reemplazarlo por el que estás moviendo?</translation>
-<translation id="5462378611565326489">OneDrive no está disponible sin conexión.</translation>
 <translation id="5463231940765244860">Introducir</translation>
 <translation id="5469868506864199649">Italiano</translation>
 <translation id="5473333559083690127">Volver a introducir el nuevo PIN</translation>

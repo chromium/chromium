@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">Skrivanje prepisa</translation>
 <translation id="160633243685262989">Predogled slike</translation>
 <translation id="1611649489706141841">naprej</translation>
+<translation id="1615144046047995187">Ni mogoče prenesti. Poskusite znova ali znova zaženite Chromebook.</translation>
 <translation id="1615335640928990664">Prenesena količina podatkov od tega dne: <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Uporaba teme</translation>
 <translation id="1621067168122174824">Zaženi preizkus napolnjenosti</translation>
@@ -360,6 +361,7 @@
 <translation id="2589921777872778654">Meni za urejanje in brisanje</translation>
 <translation id="2597774443162333062">Datoteke bodo poslane Googlu zaradi odpravljanja napak.</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Optično branje je dokončano. Optično prebrana je bila 1 stran.}one{Optično branje je dokončano. Optično prebrana je bila {NUMBER_OF_PAGES} stran.}two{Optično branje je dokončano. Optično prebrani sta bili {NUMBER_OF_PAGES} strani.}few{Optično branje je dokončano. Optično prebrane so bile {NUMBER_OF_PAGES} strani.}other{Optično branje je dokončano. Optično prebranih je bilo {NUMBER_OF_PAGES} strani.}}</translation>
+<translation id="261322795497077164">Prepoznavanje govorcev</translation>
 <translation id="2617397783536231890">bombaž</translation>
 <translation id="2618015542787108131">peščena sipina</translation>
 <translation id="2619761439309613843">Dnevno osveževanje</translation>
@@ -440,6 +442,7 @@
 <translation id="3140130301071865159">sneg</translation>
 <translation id="3146655726035122603">Na voljo samo v napravi <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Prenos podatkov v mobilnih omrežjih</translation>
+<translation id="3153094818810437149">To lahko spremenite pozneje v nastavitvah snemalnika</translation>
 <translation id="3156511682997763015">Preskok naprej za 10 sekund</translation>
 <translation id="3156846309055100599">Optično branje <ph name="PAGE_NUMBER" />. strani ...</translation>
 <translation id="315738237743207937">Zaznan je bil prestrezni portal</translation>
@@ -562,6 +565,7 @@
 <translation id="3785643128701396311">umetniška dela iz slikovnih pik</translation>
 <translation id="3799381533888781854">IZKLOPLJENO – To nastavitev upravlja skrbnik.</translation>
 <translation id="380097101658023925">Kontrolniki za RGB</translation>
+<translation id="380493988330050229">Povzetka za ta jezik prepisa ni mogoče ustvariti</translation>
 <translation id="38114475217616659">Izbriši celotno zgodovino</translation>
 <translation id="3820172043799983114">Neveljavna koda PIN.</translation>
 <translation id="382043424867370667">Ozadje s sončnim zahodom</translation>
@@ -585,6 +589,7 @@
 <translation id="3885327323343477505">Spremeni ohranjevalnik zaslona</translation>
 <translation id="3889914174935857450">Ponastavi datum</translation>
 <translation id="3897092660631435901">Meni</translation>
+<translation id="3902271751020176019">Jezik prepisa</translation>
 <translation id="391412459402535266">Naprave ni mogoče preizkusiti. Če želite preizkusiti, preklopite v način prenosnika.</translation>
 <translation id="3916998944874125962">ustvarjanje posnetka zaslona</translation>
 <translation id="3923184630988645767">Prenesena količina podatkov</translation>
@@ -733,6 +738,7 @@
 <translation id="458794348635939462">Ni bilo mogoče razrešiti vseh gostiteljev</translation>
 <translation id="4593212453765072419">Zahtevano je preverjanje pristnosti prek strežnika proxy</translation>
 <translation id="4594021849294327751">Ustvari prepis</translation>
+<translation id="4594541568452132351">Izberite jezik prepisa in prenesite model</translation>
 <translation id="4607282946861182308">Slik tega ni mogoče ustvariti. Poskusite uporabiti drug poziv.</translation>
 <translation id="4609350030397390689">Zmanjšanje svetlosti osvetlitve tipkovnice</translation>
 <translation id="4623061655523261501">Imena posnetkov so bila uspešno ustvarjena</translation>
@@ -937,6 +943,7 @@
 <translation id="5606865426897221650">Tabulatorka</translation>
 <translation id="5613201299517339763">Odjavljeni ste</translation>
 <translation id="5620281292257375798">Samo za interno rabo</translation>
+<translation id="5628106863521633649">Razpoložljivi jeziki</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">izvleček</translation>
 <translation id="5655283760733841251">Povečanje svetlosti osvetlitve tipkovnice</translation>
@@ -1097,6 +1104,7 @@
 <translation id="6359919876285606596">To dejanje je dokončno in ga ni mogoče razveljaviti</translation>
 <translation id="6368342879959028556">Ko izberete »Ustvarjanje z umetno inteligenco«, vnesite poziv po meri. Lahko pa izberete »UI zaslonsko ozadje«, če želite izbrati temo, nato pa izberite podčrtane besede, če želite osebno prilagoditi UI zaslonsko ozadje.</translation>
 <translation id="636850387210749493">Prijava v podjetje</translation>
+<translation id="6369221585240879141">Za ta jezik prepisa ni mogoče ustvariti imen posnetkov</translation>
 <translation id="6373461326814131011">ribnik</translation>
 <translation id="6379086450106841622">Zaslon na dotik</translation>
 <translation id="6381741036071372448">Preizkusite tipkovnico</translation>
@@ -1261,6 +1269,7 @@
 <translation id="710028965487274708">Ni uspelo – Pooblastitev ni uspela.</translation>
 <translation id="7101959270679078188">Če želite nadaljevati postopek posodobitve, odklenite napravo <ph name="DEVICE_NAME" /></translation>
 <translation id="7103252855940681301">Naprava <ph name="INDEX" /> od <ph name="COUNT" /> z imenom <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Izbrani jezik</translation>
 <translation id="7107255225945990211">Izberite ekskluzivna umetniška dela za <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">vnos</translation>
 <translation id="7117228822971127758">Poskusite znova pozneje</translation>
@@ -1270,6 +1279,7 @@
 <translation id="7130438335435247835">Ime dostopne točke (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Imenski strežnik}one{Imenski strežniki}two{Imenski strežniki}few{Imenski strežniki}other{Imenski strežniki}}</translation>
 <translation id="7135814714616751706">Iskanje bližnjic</translation>
+<translation id="7138614237884624401">Poenostavljeno besedilo</translation>
 <translation id="7141470099673912333">Prenos vsebine</translation>
 <translation id="7143207342074048698">Povezovanje</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>
@@ -1691,6 +1701,7 @@
 <translation id="9100765901046053179">Dodatne nastavitve</translation>
 <translation id="910415269708673980">Osvežite kartonček za <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Optično branje <ph name="PAGE_NUMBER" />. strani</translation>
+<translation id="9108856746036501072">Snemalnik lahko ustvari prepise za posnetke z govorom. V naslednjem koraku morate izbrati jezik prepisa in prenesti model (do 100 MB).</translation>
 <translation id="9111102763498581341">Odkleni</translation>
 <translation id="9122492456897874028">Povzemanje vsebine, prejemanje definicij in drugo</translation>
 <translation id="9122602430962285795">Če želite znova vzpostaviti povezavo, odprite nastavitve.</translation>

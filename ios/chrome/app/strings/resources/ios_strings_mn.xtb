@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Кодыг скан хийсэн</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} таб}other{{count} таб}}</translation>
 <translation id="1084365883616172403">Facebook дээр постолж дууслаа.</translation>
+<translation id="1085677983426914530"><ph name="FILENAME" />-г нээж чадсангүй</translation>
 <translation id="1096992026380844478">Таны синк хийх тохиргоог сүүлийн нөөцлөлтөд тань тулгуурлан сэргээнэ. <ph name="BEGIN_LINK" />Юу синк хийж болохоо хараарай<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />-ийг үргэлж орчуулах</translation>
 <translation id="1108938384783527433">Түүхийг синк хийх</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Үгүй ээ, баярлалаа</translation>
 <translation id="2320166752086256636">Компьютерийн гарыг нуух</translation>
 <translation id="2321086116217818302">Нууц үгийг бэлтгэж байна…</translation>
+<translation id="2323697864063408084">Түгжээтэй дэлгэц дээрээ мэдэгдлийг баннер байдлаар авч, чухал зүйлээсээ хэзээ ч бүү хоцроорой</translation>
 <translation id="2326302612031521902">Нэгж сонгогч</translation>
 <translation id="2330607597130465898">Хамгаалалтгүй</translation>
 <translation id="233375395665273385">Устгаад, гарах</translation>
@@ -384,6 +386,7 @@
 <translation id="2671423594960767771">Бүлгийг хуваалцах</translation>
 <translation id="2673508731173059946">Хуулсан холбоосонд зочлох</translation>
 <translation id="2687403674020088961">Бүх күүкиг блоклох (зөвлөдөггүй)</translation>
+<translation id="2688535388040882469">Баннер</translation>
 <translation id="2690858294534178585">Камерыг ашиглаж байна</translation>
 <translation id="2691653761409724435">Офлайн үед боломжгүй</translation>
 <translation id="2696180352517415858">Та Google Бүртгэлээсээ гарахгүй. Таныг нэвтэрсэн үед <ph name="BEGIN_LINK" />бусад төрлийн үйл ажиллагааг<ph name="END_LINK" /> Google Бүртгэлд тань хадгалж магадгүй. Та тэдгээрийг хүссэн үедээ устгах боломжтой.
@@ -636,6 +639,7 @@
 <translation id="3986739045730058129">Таб руу очих</translation>
 <translation id="3992684624889376114">Энэ хуудасны тухай</translation>
 <translation id="3994422733891749358">Та хүлээн авахыг хүсэж буй мэдэгдлүүдээ сонгоно уу</translation>
+<translation id="3994522032746736727"><ph name="EMAIL" />-р нэвтрэх</translation>
 <translation id="3995521777587992544"><ph name="EMAIL" /> хуудас ачаалах явцын заалтыг ачаалсан.</translation>
 <translation id="3997522473364371632">Танай администратор нууц үг хуваалцахыг идэвхгүй болгосон.</translation>
 <translation id="4002066346123236978">Гарчиг</translation>
@@ -843,6 +847,7 @@
 <translation id="4936354130727646074">Хэзээ ч бүү зөө</translation>
 <translation id="4937410517508563815">Нууц үгнүүдийг бүртгэлд хадгалах</translation>
 <translation id="4938338714234463591">Энэ нь танд вебсайтууд дээрх тодорхой онцлогуудыг дуу хоолойгоороо ашиглах боломжийг олгоно.</translation>
+<translation id="4938716880833771969">Таны мэдэгдлийг чимээгүй хүргэж байна</translation>
 <translation id="4941089862236492464">Уучлаарай, таны зүйлийг хуваалцах үед асуудал гарлаа.</translation>
 <translation id="4944543191714094452">Хуудаснаас олох…</translation>
 <translation id="4945756290001680296">Нууц үгний тохиргооны хэсэгт хандах</translation>
@@ -1039,7 +1044,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5817176759448082654">Нууц үгний хяналт</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> удирддаг. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Синк хийж байна…</translation>
-<translation id="5832166137082209907">10 минутын дараа нуух</translation>
 <translation id="5844284118433003733">Таныг нэвтэрсэн үед аюулгүй байдалтай холбоотой тохиолдлын дараа Gmail-д хамгаалалтыг нэмэх зэргээр таныг Google-н үйлчилгээнүүдэд хамгаалахын тулд энэ өгөгдлийг Google Бүртгэлтэй тань холбодог.</translation>
 <translation id="5854790677617711513">30 өдрөөс илүү</translation>
 <translation id="5857770089550859117">Синкийг эхлүүлэхийн тулд нэвтрэх үг оруулах шаардлагатай.</translation>
@@ -1610,6 +1614,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8319076807703933069">Шинэ хайлт</translation>
 <translation id="8343993175958086504">Зүйлсээ хуулбарлаж, дурын төхөөрөмж дээр ашиглана уу.</translation>
 <translation id="8349305172487531364">Хайлтын жагсаалтын цонх</translation>
+<translation id="8364563001733875155">ПИН-ээ өөрчлөхийн тулд эхлээд төхөөрөмж дээрээ нууц код тохируулна уу.</translation>
 <translation id="8366466717204352506">Шалгалтыг хэзээ ч явуулаагүй</translation>
 <translation id="8368001212524806591">Үнэ хянах</translation>
 <translation id="8370406443343902172">Тохиргоо руу очих...</translation>

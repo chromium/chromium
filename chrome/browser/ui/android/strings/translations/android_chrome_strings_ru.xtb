@@ -262,6 +262,7 @@
 <translation id="2247789808226901522">Срок действия карты истек</translation>
 <translation id="2248941474044011069">Ваши пароли шифруются на устройстве и только потом сохраняются в Google Менеджере паролей.</translation>
 <translation id="2249635629516220541">Управление данными, которые используют сайты для показа рекламы</translation>
+<translation id="2253927598983295051">Выберите, какие данные вы хотите передать приложению "<ph name="APP_NAME" />"</translation>
 <translation id="2259659629660284697">Экспорт паролей…</translation>
 <translation id="2276696007612801991">Чтобы проверить пароли, войдите в свой аккаунт Google.</translation>
 <translation id="2278052315791335171">Это не приведет к удалению вашего аккаунта на сайте <ph name="SITE" />.</translation>
@@ -321,6 +322,7 @@
 <translation id="2527779675047087889">Скрыть содержимое буфера обмена</translation>
 <translation id="2532336938189706096">Веб-версия</translation>
 <translation id="2534155362429831547">Удалено записей: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="253498598929009420">Сайту будет доступно содержимое вашего экрана.</translation>
 <translation id="2536728043171574184">Офлайн-копия страницы</translation>
 <translation id="2546283357679194313">Файлы сookie и данные сайтов</translation>
 <translation id="2547843573592965873">Блокировка профиля защищает ваши данные в автомобиле, включая пароли, транзакции и другие сведения, сохраненные в аккаунте Google.</translation>
@@ -1038,6 +1040,7 @@
 <translation id="5885378508678660271">Уведомления <ph name="SEPARATOR" /> Chrome отозвал разрешения у этого опасного сайта</translation>
 <translation id="5895834791314695851">Возможно, пароли скоро перестанут работать на этом устройстве. Чтобы сохранить доступ к ним, обновите сервисы Google Play. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Пустой список ключей доступа был закрыт</translation>
+<translation id="5907542076239273525">Закладка добавлена в папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5919204609460789179">Обновите <ph name="PRODUCT_NAME" />, чтобы начать синхронизацию</translation>
 <translation id="5938820472109305350">Добавить интерес "<ph name="INTEREST" />"</translation>

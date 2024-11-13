@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">Átirat elrejtése</translation>
 <translation id="160633243685262989">Előnézeti kép</translation>
 <translation id="1611649489706141841">következő</translation>
+<translation id="1615144046047995187">Nem sikerült a letöltés. Próbálja újra, vagy indítsa újra a Chromebookot.</translation>
 <translation id="1615335640928990664">Adathasználat <ph name="FRIENDLY_DATE" /> óta</translation>
 <translation id="1618566998877964907">Téma használata</translation>
 <translation id="1621067168122174824">Töltési teszt futtatása</translation>
@@ -306,6 +307,7 @@
 <translation id="2308243864813041101">A frissítési folyamat folytatásához húzza ki a(z) <ph name="DEVICE_NAME" /> USB-kábelét</translation>
 <translation id="2320295602967756579">Világos téma bekapcsolása</translation>
 <translation id="2323506179655536734">KIHAGYVA</translation>
+<translation id="2323755382216917952">A frissítés telepítésének befejezéséhez újra kell indítania a számítógépét. A frissítés eltarthat néhány percig. A firmware frissítése közben ne húzza ki és ne állítsa le a számítógépet.</translation>
 <translation id="2324354238778375592">Lebegő</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Kiváló (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -448,6 +450,7 @@
 <translation id="3178532070248519384">avantgárd</translation>
 <translation id="3182676044300231689">Írjon be egy utasítást, például „legyen a szöveg magabiztosabb”.</translation>
 <translation id="3188257591659621405">Saját fájlok</translation>
+<translation id="3188931456353313123">Ezt a frissítést az eszköz gyártója biztosítja, és a Google nem ellenőrizte.</translation>
 <translation id="319101249942218879">Avatarkép módosítva</translation>
 <translation id="3192947282887913208">Audiofájlok</translation>
 <translation id="3199982728237701504">Dokumentumadagoló (kétoldalas)</translation>
@@ -505,6 +508,7 @@
 <translation id="3488065109653206955">Részben aktiválva</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_STYLE" /> iroda <ph name="OFFICE_COLOR" /> tónusokkal</translation>
 <translation id="3493187369049186498">Az adatforgalmat a Chromebook méri. Az általa mért forgalom eltérhet a szolgáltató által mérttől.</translation>
+<translation id="349570724365779960">A School Tools össze van kapcsolva a tanulókkal</translation>
 <translation id="3502426834823382181">összes app megtekintése</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Teljesítménykövetési adatok<ph name="END_LINK1" /> elküldése</translation>
 <translation id="3517001332549868749">ChromeOS-frissítés</translation>
@@ -582,6 +586,7 @@
 <translation id="3885327323343477505">Képernyőkímélő módosítása</translation>
 <translation id="3889914174935857450">Számláló nullázásának napja</translation>
 <translation id="3897092660631435901">Menü</translation>
+<translation id="3902271751020176019">Átírás nyelve</translation>
 <translation id="391412459402535266">Az eszköz tesztelése nem sikerült. Váltson laptop módra a teszteléshez.</translation>
 <translation id="3916998944874125962">képernyőkép készítése</translation>
 <translation id="3923184630988645767">Adathasználat</translation>
@@ -753,6 +758,7 @@
 <translation id="473775607612524610">Frissítés</translation>
 <translation id="4744944742468440486">A kiválasztott elemhez kapcsolódó információ</translation>
 <translation id="4771607256327216405">billentyűzet világosítása</translation>
+<translation id="4771923071974529837">holnap</translation>
 <translation id="4773299976671772492">Leállítva</translation>
 <translation id="4778082030331381943">ametiszt</translation>
 <translation id="4782311465517282004">A szövegre jobb egérgombbal kattintva, illetve a szöveget lenyomva tartva hozzáférhet a definíciókhoz, a fordításokhoz és az átváltott mértékegységekhez.</translation>
@@ -816,6 +822,7 @@
 <translation id="500920857929044050">Teszt leállítása</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Témaszín</translation>
+<translation id="5037240652947866174">ma</translation>
 <translation id="5038292761217083259">többszínű billentyűzet</translation>
 <translation id="5039804452771397117">Engedélyezés</translation>
 <translation id="5049856988445523908">SIM zárolva (<ph name="LOCK_TYPE" />)</translation>
@@ -932,6 +939,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">A rendszer kijelentkeztette Önt</translation>
 <translation id="5620281292257375798">Csak belső</translation>
+<translation id="5628106863521633649">Rendelkezésre álló nyelvek</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">absztrakt</translation>
 <translation id="5655283760733841251">Billentyűzet fényerejének növelése</translation>
@@ -1256,6 +1264,7 @@
 <translation id="710028965487274708">Sikertelen – Sikertelen hitelesítés</translation>
 <translation id="7101959270679078188">Oldja fel a következő eszköz zárolását a frissítési folyamat folytatásához: <ph name="DEVICE_NAME" /></translation>
 <translation id="7103252855940681301"><ph name="COUNT" />/<ph name="INDEX" />. eszköz, <ph name="NAME" /> néven.</translation>
+<translation id="7103793063702494489">Kiválasztott nyelv</translation>
 <translation id="7107255225945990211">Válasszon <ph name="PRODUCT_NAME" /> exkluzív animációt</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7117228822971127758">Próbálja újra később</translation>

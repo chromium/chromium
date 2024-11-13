@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Скенирали сте кôд</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} картица}one{{count} картица}few{{count} картице}other{{count} картица}}</translation>
 <translation id="1084365883616172403">Facebook пост је довршен.</translation>
+<translation id="1085677983426914530">Отварање фајла <ph name="FILENAME" /> није успело</translation>
 <translation id="1096992026380844478">Подешавања синхронизације ће се вратити на основу последње резервне копије. <ph name="BEGIN_LINK" />Погледајте шта можете да синхронизујете<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Увек преводи <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Синхронизација историје</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Не, хвала</translation>
 <translation id="2320166752086256636">Сакриј тастатуру</translation>
 <translation id="2321086116217818302">Припремају се лозинке...</translation>
+<translation id="2323697864063408084">Добијајте обавештења на закључаном екрану и као банере да не бисте пропустили оно што вам је важно</translation>
 <translation id="2326302612031521902">Бирач јединица</translation>
 <translation id="2330607597130465898">Без заштите</translation>
 <translation id="233375395665273385">Избриши и одјави ме</translation>
@@ -384,6 +386,7 @@
 <translation id="2671423594960767771">Дели групу</translation>
 <translation id="2673508731173059946">Посети копирани линк</translation>
 <translation id="2687403674020088961">Блокирај све колачиће (не препоручује се)</translation>
+<translation id="2688535388040882469">Банери</translation>
 <translation id="2690858294534178585">Камера се користи</translation>
 <translation id="2691653761409724435">Није доступно офлајн</translation>
 <translation id="2696180352517415858">Нећемо вас одјавити са Google налога. <ph name="BEGIN_LINK" />Други облици активности<ph name="END_LINK" /> могу да се сачувају на Google налогу када сте пријављени. Можете да их избришете у било ком тренутку.
@@ -636,6 +639,7 @@
 <translation id="3986739045730058129">Иди на картицу</translation>
 <translation id="3992684624889376114">О овој страници</translation>
 <translation id="3994422733891749358">Одаберите која обавештења желите да примате</translation>
+<translation id="3994522032746736727">Пријави ме као <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Трака напретка учитавања страница, учитано је <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Администратор је онемогућио дељење лозинки.</translation>
 <translation id="4002066346123236978">Наслов</translation>
@@ -777,6 +781,7 @@
 <translation id="4645575059429386691">Овим управља твој родитељ</translation>
 <translation id="4647758699119474035">Пријављени сте као <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Грешка у вези са Google налогом. Отвори мени налога.</translation>
 <translation id="4650125387981512669">Настави као <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Сакриј после 1 минута}one{Сакриј после {count} минута}few{Сакриј после {count} минута}other{Сакриј после {count} минута}}</translation>
 <translation id="4652817563047461855">Уверите се да су лозинке безбедне, сазнајте да ли су угрожене и потражите савет о томе како да се заштитите онлајн. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Сачувај</translation>
 <translation id="4668929960204016307">,</translation>
@@ -843,6 +848,7 @@
 <translation id="4936354130727646074">Никад не премештај</translation>
 <translation id="4937410517508563815">Сачувајте лозинке на налогу</translation>
 <translation id="4938338714234463591">То ће вам омогућити да користите глас са одређеним функцијама на веб-сајтовима.</translation>
+<translation id="4938716880833771969">Обавештења се шаљу тихо</translation>
 <translation id="4941089862236492464">Жао нам је, дошло је до проблема при дељењу ставке.</translation>
 <translation id="4944543191714094452">Пронађи на страници…</translation>
 <translation id="4945756290001680296">Приступите подешавањима лозинки</translation>
@@ -1039,7 +1045,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5817176759448082654">Провера лозинки</translation>
 <translation id="5819208479324046259">Овим управља <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Синхронизује се…</translation>
-<translation id="5832166137082209907">Сакриј после 10 минута</translation>
 <translation id="5844284118433003733">Кад сте пријављени, ови подаци су повезани са вашим Google налогом да бисмо вас заштитили у свим Google услугама, на пример, повећањем заштите у Gmail-у после безбедносног инцидента.</translation>
 <translation id="5854790677617711513">Старије од 30 дана</translation>
 <translation id="5857770089550859117">За почетак синхронизације потребна је приступна фраза.</translation>
@@ -1610,6 +1615,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8319076807703933069">Нова претрага</translation>
 <translation id="8343993175958086504">Правите резервне копије садржаја и користите га на било ком уређају.</translation>
 <translation id="8349305172487531364">Трака са обележивачима</translation>
+<translation id="8364563001733875155">Да бисте променили PIN, прво подесите шифру на уређају.</translation>
 <translation id="8366466717204352506">Провера никада није рађена</translation>
 <translation id="8368001212524806591">Прати цену</translation>
 <translation id="8370406443343902172">Иди у подешавања…</translation>

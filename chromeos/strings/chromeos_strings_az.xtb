@@ -306,6 +306,7 @@
 <translation id="2308243864813041101">Güncəllənmə prosesinə davam etmək üçün <ph name="DEVICE_NAME" /> USB kabelini ayırın</translation>
 <translation id="2320295602967756579">İşıqlı temanı aktiv edin</translation>
 <translation id="2323506179655536734">ÖTÜRÜLÜB</translation>
+<translation id="2323755382216917952">Bu güncəllənmə quraşdırmanı tamamlamaq üçün kompüteri yenidən başlatmağınızı tələb edir. Bu güncəllənmənin tamamlanması bir neçə dəqiqə çəkə bilər. Mikroproqram təminatı güncəllənərkən kompüteri elektrik şəbəkəsindən ayırmayın və ya söndürməyin.</translation>
 <translation id="2324354238778375592">Üzən</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Əla (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -448,6 +449,7 @@
 <translation id="3178532070248519384">avanqard</translation>
 <translation id="3182676044300231689">"Daha özgüvənli et" kimi bir əmr daxil edin</translation>
 <translation id="3188257591659621405">Fayllarım</translation>
+<translation id="3188931456353313123">Bu güncəllənmə cihaz istehsalçısı tərəfindən təmin edilib və Google tərəfindən doğrulanmayıb.</translation>
 <translation id="319101249942218879">Avatar şəkli dəyişib</translation>
 <translation id="3192947282887913208">Audio Fayllar</translation>
 <translation id="3199982728237701504">Sənəd Bəsləyici (İki tərəfli)</translation>
@@ -505,6 +507,7 @@
 <translation id="3488065109653206955">Qismən aktivləşdirilib</translation>
 <translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> tonlarda <ph name="OFFICE_STYLE" /> ofis</translation>
 <translation id="3493187369049186498">Data Chromebook tərəfindən hesablanır. Bu, provayder datasından fərqli ola bilər.</translation>
+<translation id="349570724365779960">Məktəb Alətləri tələbələrlə əlaqələndirilib</translation>
 <translation id="3502426834823382181">bütün tətbiqlərə baxın</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Performans izləmə datasını<ph name="END_LINK1" /> göndərin</translation>
 <translation id="3517001332549868749">ChromeOS güncəlləməsi</translation>
@@ -753,6 +756,7 @@
 <translation id="473775607612524610">Güncəlləşdirin</translation>
 <translation id="4744944742468440486">Seçiminizlə əlaqəli məlumat</translation>
 <translation id="4771607256327216405">klaviaturanın parlaqlaşdırılması</translation>
+<translation id="4771923071974529837">sabah</translation>
 <translation id="4773299976671772492">Durmuş</translation>
 <translation id="4778082030331381943">ametist</translation>
 <translation id="4782311465517282004">Mətnə sağ düymə ilə toxunduqda və ya toxunub saxladıqda izahlar, tərcümələr və ya vahid çevirmələrini əldə edin</translation>
@@ -816,6 +820,7 @@
 <translation id="500920857929044050">Testi dayandırın</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Tema rəngi</translation>
+<translation id="5037240652947866174">bu gün</translation>
 <translation id="5038292761217083259">çoxrəngli klaviatura</translation>
 <translation id="5039804452771397117">İcazə verin</translation>
 <translation id="5049856988445523908">SIM Kilidlənib (<ph name="LOCK_TYPE" />)</translation>

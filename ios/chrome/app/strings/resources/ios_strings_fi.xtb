@@ -472,6 +472,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3119874402040566234">Sinut kirjataan ulos ja selausdata poistetaan</translation>
 <translation id="3130863904455712965">Historia ja muita</translation>
 <translation id="313283613037595347">Luo uusi incognito-välilehti.</translation>
+<translation id="3138611310073113613">Hylkää valinta</translation>
 <translation id="3143515551205905069">Peru synkronointi</translation>
 <translation id="314837624430314508">Pysy ajan tasalla esimerkiksi uutisista ja hintaseurannan päivityksistä.</translation>
 <translation id="3157387275655328056">Lisää lukulistalle</translation>
@@ -639,6 +640,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3997522473364371632">Järjestelmänvalvoja on poistanut salasanan jakamisen käytöstä.</translation>
 <translation id="4002066346123236978">Nimi</translation>
 <translation id="4004204301268239848">Salasanat tallennetaan Google-tilillesi, jotta voit käyttää niitä kaikilla laitteilla.</translation>
+<translation id="4011489366247192265">Kielestä</translation>
 <translation id="4018440314314549819">Täytä tallennetut salasanat automaattisesti</translation>
 <translation id="4021447724486050609">Päivitä selain</translation>
 <translation id="4021931095789478915">Lisää ${url} lukulistalle</translation>
@@ -936,6 +938,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="5414763847370083940">Saat ilmoituksen, jos hinta laskee jollakin sivustolla.</translation>
 <translation id="5415289094036440596">Avainkoodeja ei voi jakaa</translation>
 <translation id="5416455648658732408">Siirrä välilehtiryhmään</translation>
+<translation id="542659109038405424">Kieleen</translation>
 <translation id="5429624150850059322">Kun palaat, välilehdet ovat sumennettuja, kunnes jatkat napauttamalla</translation>
 <translation id="5431239785743546285">Luetut sivut</translation>
 <translation id="5431252637281434233">Sinut kirjataan ulos</translation>
@@ -1036,7 +1039,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5817176759448082654">Salasanan tarkistus</translation>
 <translation id="5819208479324046259">Ylläpitäjä on <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Synkronoidaan…</translation>
-<translation id="5832166137082209907">Piilota 10 minuutin kuluttua</translation>
 <translation id="5844284118433003733">Kun olet kirjautuneena sisään, tämä data linkitetään Google-tiliisi turvallisuudestasi huolehtimiseksi Googlen palveluissa, esimerkiksi tietoturvan lisäämiseksi Gmailissa tietoturvaongelman jälkeen.</translation>
 <translation id="5854790677617711513">Yli 30 päivää vanhat</translation>
 <translation id="5857770089550859117">Synkronointi edellyttää tunnuslausetta.</translation>

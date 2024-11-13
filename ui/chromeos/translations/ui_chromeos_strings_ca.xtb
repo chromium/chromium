@@ -44,7 +44,7 @@
 <translation id="134645005685694099">El dispositiu no té prou espai d'emmagatzematge per mantenir la sincronització de fitxers activada. Els fitxers nous ja no se sincronitzaran automàticament.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">El fitxer o directori no es pot fer servir.</translation>
-<translation id="1363028406613469049">Pista</translation>
+<translation id="1363028406613469049">Fes un seguiment</translation>
 <translation id="1378727793141957596">Us donem la benvinguda a Google Drive.</translation>
 <translation id="1379911846207762492">Pots fer que els fitxers estiguin disponibles sense connexió per accedir-hi quan no tinguis Internet.</translation>
 <translation id="1383876407941801731">Cerca</translation>
@@ -582,7 +582,6 @@
 <translation id="5447680084201416734">No hi ha prou espai d'emmagatzematge.</translation>
 <translation id="5449551289610225147">Contrasenya no vàlida</translation>
 <translation id="5459064203055649751">Ja existeix un fitxer anomenat <ph name="FILENAME" />. Vols substituir-lo pel que estàs movent?</translation>
-<translation id="5462378611565326489">OneDrive no està disponible sense connexió.</translation>
 <translation id="5463231940765244860">Introdueix</translation>
 <translation id="5469868506864199649">Italià</translation>
 <translation id="5473333559083690127">Torna a introduir el PIN nou</translation>

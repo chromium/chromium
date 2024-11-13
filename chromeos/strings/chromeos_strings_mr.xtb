@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">ट्रान्स्क्रिप्ट लपवा</translation>
 <translation id="160633243685262989">इमेजचे पूर्वावलोकन करा</translation>
 <translation id="1611649489706141841">फॉरवर्ड करा</translation>
+<translation id="1615144046047995187">डाउनलोड करू शकत नाही. पुन्हा प्रयत्न करा किंवा तुमचे Chromebook रीस्टार्ट करा.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> पासूनचा डेटा वापर</translation>
 <translation id="1618566998877964907">थीम वापरा</translation>
 <translation id="1621067168122174824">चार्ज चाचणी रन करा</translation>
@@ -360,6 +361,7 @@
 <translation id="2589921777872778654">मेनू संपादित करा आणि हटवा</translation>
 <translation id="2597774443162333062">फाइल डीबग करण्यासाठी Google कडे पाठवल्या जातील</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{स्कॅन करणे पूर्ण झाले. एक पेज स्कॅन केले}other{स्कॅन करणे पूर्ण झाले. {NUMBER_OF_PAGES} पेज स्कॅन केली}}</translation>
+<translation id="261322795497077164">स्पीकरची ओळख</translation>
 <translation id="2617397783536231890">कॉटन</translation>
 <translation id="2618015542787108131">वाळूची टेकडी</translation>
 <translation id="2619761439309613843">दैनिक रिफ्रेश</translation>
@@ -440,6 +442,7 @@
 <translation id="3140130301071865159">हिम</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> साठी खास</translation>
 <translation id="315116470104423982">मोबाइल डेटा</translation>
+<translation id="3153094818810437149">तुम्ही हे नंतर Recorder सेटिंग्जमध्ये बदलू शकता</translation>
 <translation id="3156511682997763015">१० सेकंद फॉरवर्ड करा</translation>
 <translation id="3156846309055100599">पेज <ph name="PAGE_NUMBER" /> स्कॅन करत आहे...</translation>
 <translation id="315738237743207937">कॅप्टिव्ह पोर्टल डिटेक्ट केले</translation>
@@ -562,6 +565,7 @@
 <translation id="3785643128701396311">पिक्सेल आर्ट</translation>
 <translation id="3799381533888781854">बंद आहे - हे सेटिंग तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केले जाते.</translation>
 <translation id="380097101658023925">RGB नियंत्रणे</translation>
+<translation id="380493988330050229">या ट्रान्स्क्रिप्ट भाषेसाठी सारांश तयार करू शकत नाही</translation>
 <translation id="38114475217616659">सर्व इतिहास साफ करा</translation>
 <translation id="3820172043799983114">चुकीचे पिन.</translation>
 <translation id="382043424867370667">सनसेट वॉलपेपर</translation>
@@ -585,6 +589,7 @@
 <translation id="3885327323343477505">स्क्रीन सेव्हर बदला</translation>
 <translation id="3889914174935857450">तारीख रीसेट करा</translation>
 <translation id="3897092660631435901">मेनू</translation>
+<translation id="3902271751020176019">ट्रान्सक्रिप्शनची भाषा</translation>
 <translation id="391412459402535266">डिव्हाइसची चाचणी करू शकत नाही. चाचणी करण्यासाठी लॅपटॉप मोडवर स्विच करा.</translation>
 <translation id="3916998944874125962">स्क्रीनशॉट घ्या</translation>
 <translation id="3923184630988645767">डेटा वापर</translation>
@@ -733,6 +738,7 @@
 <translation id="458794348635939462">सर्व होस्टचे निराकरण करता आले नाही</translation>
 <translation id="4593212453765072419">प्रॉक्सी प्रमाणीकरण आवश्यक</translation>
 <translation id="4594021849294327751">ट्रान्स्क्रिप्ट तयार करा</translation>
+<translation id="4594541568452132351">ट्रान्स्क्रिप्शनची भाषा निवडा आणि मॉडेल डाउनलोड करा</translation>
 <translation id="4607282946861182308">याच्या इमेज तयार करू शकत नाही. दुसरा प्रॉम्प्ट वापरून पहा.</translation>
 <translation id="4609350030397390689">कीबोर्डचा ब्राइटनेस कमी करा</translation>
 <translation id="4623061655523261501">रेकॉर्डिंगची नावे यशस्वीरीत्या जनरेट केली आहेत</translation>
@@ -937,6 +943,7 @@
 <translation id="5606865426897221650">टॅब</translation>
 <translation id="5613201299517339763">तुम्हाला साइन आउट केले गेले आहे</translation>
 <translation id="5620281292257375798">फक्त अंतर्गत</translation>
+<translation id="5628106863521633649">उपलब्ध भाषा</translation>
 <translation id="5630438231335788050">बावहाउस</translation>
 <translation id="5631759159893697722">अमूर्त</translation>
 <translation id="5655283760733841251">कीबोर्डचा ब्राइटनेस वाढवा</translation>
@@ -1097,6 +1104,7 @@
 <translation id="6359919876285606596">ही कृती कायमस्वरूपी असते आणि ती पहिल्यासारखी केली जाऊ शकत नाही</translation>
 <translation id="6368342879959028556">तुम्ही “AI वापरून तयार करा” निवडल्यावर, कस्टम प्रॉम्प्ट लिहा. किंवा तुम्ही थीम निवडण्यासाठी “AI वॉलपेपर” निवडू शकता आणि त्यानंतर तुमचा AI वॉलपेपर पर्सनलाइझ करण्याकरिता अधोरेखित केलेले शब्द निवडू शकता.</translation>
 <translation id="636850387210749493">Enterprise नावनोंदणी</translation>
+<translation id="6369221585240879141">या ट्रान्स्क्रिप्ट भाषेसाठी रेकॉर्डिंगची नावे तयार करू शकत नाही</translation>
 <translation id="6373461326814131011">तळे</translation>
 <translation id="6379086450106841622">टचस्क्रीन</translation>
 <translation id="6381741036071372448">तुमच्या कीबोर्डची चाचणी करा</translation>
@@ -1261,6 +1269,7 @@
 <translation id="710028965487274708">अयशस्वी झाले - ऑथोरायझेशन करता आले नाही</translation>
 <translation id="7101959270679078188">अपडेट करण्याची प्रक्रिया पुढे सुरू ठेवण्यासाठी, <ph name="DEVICE_NAME" /> अनलॉक करा</translation>
 <translation id="7103252855940681301"><ph name="NAME" /> नावाची <ph name="COUNT" /> पैकी <ph name="INDEX" /> डिव्हाइस.</translation>
+<translation id="7103793063702494489">निवडलेली भाषा</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> विशिष्ट आर्टवर्क निवडा</translation>
 <translation id="7108668606237948702">प्रविष्‍ट करा</translation>
 <translation id="7117228822971127758">कृपया नंतर पुन्हा प्रयत्न करा</translation>
@@ -1270,6 +1279,7 @@
 <translation id="7130438335435247835">अ‍ॅक्सेस पॉइंट नाव (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{नेम सर्व्हर}other{नेम सर्व्हर}}</translation>
 <translation id="7135814714616751706">शॉर्टकट शोधा</translation>
+<translation id="7138614237884624401">सुलभ केलेला मजकूर</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">कनेक्ट करत आहे</translation>
 <translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
@@ -1691,6 +1701,7 @@
 <translation id="9100765901046053179">प्रगत सेटिंग्ज</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> चे तिकीट रिफ्रेश करा</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> स्कॅन करत आहे</translation>
+<translation id="9108856746036501072">बोलण्याचा समावेश असलेल्या रेकॉर्डिंगसाठी Recorder हे ट्रान्स्क्रिप्शन तयार करू शकते. पुढील पायरीमध्ये, तुम्हाला ट्रान्स्क्रिप्शनची भाषा निवडावी लागेल आणि मॉडेल डाउनलोड करावे लागेल (कमाल १००MB).</translation>
 <translation id="9111102763498581341">अनलॉक करा</translation>
 <translation id="9122492456897874028">आशयाचा सारांश, व्याख्या आणि आणखी बरेच काही मिळवा</translation>
 <translation id="9122602430962285795">पुन्हा कनेक्ट करण्यासाठी सेटिंग्ज वर जा</translation>

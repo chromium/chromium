@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">Transkript ausblenden</translation>
 <translation id="160633243685262989">Bild in der Vorschau anzeigen</translation>
 <translation id="1611649489706141841">Weiter</translation>
+<translation id="1615144046047995187">Download nicht möglich. Versuche es noch einmal oder starte dein Chromebook neu.</translation>
 <translation id="1615335640928990664">Datennutzung seit <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Design verwenden</translation>
 <translation id="1621067168122174824">Ladetest ausführen</translation>
@@ -585,6 +586,7 @@
 <translation id="3885327323343477505">Bildschirmschoner ändern</translation>
 <translation id="3889914174935857450">Datum für die Zurücksetzung</translation>
 <translation id="3897092660631435901">Menü</translation>
+<translation id="3902271751020176019">Sprache des Transkripts</translation>
 <translation id="391412459402535266">Gerät kann nicht getestet werden. Wechsle zum Testen in den Laptop-Modus.</translation>
 <translation id="3916998944874125962">Screenshot aufnehmen</translation>
 <translation id="3923184630988645767">Datennutzung</translation>
@@ -937,6 +939,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Du wurdest abgemeldet</translation>
 <translation id="5620281292257375798">Nur zur internen Nutzung</translation>
+<translation id="5628106863521633649">Verfügbare Sprachen</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">Zusammenfassung</translation>
 <translation id="5655283760733841251">Tastaturhelligkeit erhöhen</translation>
@@ -1261,6 +1264,7 @@
 <translation id="710028965487274708">Fehler – Autorisierung fehlgeschlagen</translation>
 <translation id="7101959270679078188">Entsperre zum Fortsetzen des Updates das Gerät „<ph name="DEVICE_NAME" />“</translation>
 <translation id="7103252855940681301">Der Name des Geräts <ph name="INDEX" /> von <ph name="COUNT" /> lautet „<ph name="NAME" />“.</translation>
+<translation id="7103793063702494489">Ausgewählte Sprache</translation>
 <translation id="7107255225945990211">Exklusives Kunstwerk für <ph name="PRODUCT_NAME" /> auswählen</translation>
 <translation id="7108668606237948702">Eingabe</translation>
 <translation id="7117228822971127758">Bitte versuche es später noch einmal</translation>

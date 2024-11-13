@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Código digitalizado</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} separador}other{{count} separadores}}</translation>
 <translation id="1084365883616172403">Publicação no Facebook concluída.</translation>
+<translation id="1085677983426914530">Não foi possível abrir o ficheiro <ph name="FILENAME" /></translation>
 <translation id="1096992026380844478">As definições de sincronização vão ser restauradas com base na última cópia de segurança. <ph name="BEGIN_LINK" />Veja o que pode sincronizar<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Traduzir sempre <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Sincronização do histórico</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Não</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
 <translation id="2321086116217818302">A preparar palavras-passe…</translation>
+<translation id="2323697864063408084">Receba notificações no ecrã de bloqueio e como faixas para nunca perder o que é importante para si</translation>
 <translation id="2326302612031521902">Seletor de unidades</translation>
 <translation id="2330607597130465898">Sem proteção</translation>
 <translation id="233375395665273385">Eliminar e terminar sessão</translation>
@@ -384,6 +386,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2671423594960767771">Partilhar grupo</translation>
 <translation id="2673508731173059946">Aceder ao link copiado</translation>
 <translation id="2687403674020088961">Bloquear todos os cookies (não recomendado).</translation>
+<translation id="2688535388040882469">Faixas</translation>
 <translation id="2690858294534178585">A câmara está a ser utilizada</translation>
 <translation id="2691653761409724435">Não disponível offline</translation>
 <translation id="2696180352517415858">A sessão na sua Conta Google não é terminada. Podem ser guardadas <ph name="BEGIN_LINK" />outras formas de atividade<ph name="END_LINK" /> na sua Conta Google quando tem sessão iniciada. Pode eliminá-las em qualquer altura.
@@ -636,6 +639,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3986739045730058129">Aceder ao separador</translation>
 <translation id="3992684624889376114">Acerca desta página</translation>
 <translation id="3994422733891749358">Escolha as notificações que quer receber</translation>
+<translation id="3994522032746736727">Iniciar sessão como <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Barra de progresso do carregamento de página, <ph name="EMAIL" /> carregado(s).</translation>
 <translation id="3997522473364371632">A partilha de palavras-passe foi desativada pelo seu administrador.</translation>
 <translation id="4002066346123236978">Título</translation>
@@ -843,6 +847,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="4936354130727646074">Nunca mover</translation>
 <translation id="4937410517508563815">Guarde palavras-passe na conta</translation>
 <translation id="4938338714234463591">Isto permite-lhe usar a sua voz com determinadas funcionalidades em Websites.</translation>
+<translation id="4938716880833771969">As suas notificações estão a ser entregues de forma silenciosa</translation>
 <translation id="4941089862236492464">Lamentamos, mas ocorreu um erro ao partilhar o seu item.</translation>
 <translation id="4944543191714094452">Localizar na página…</translation>
 <translation id="4945756290001680296">Aceder às definições de palavras-passe</translation>
@@ -1039,7 +1044,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5817176759448082654">Verificação de Palavra-passe</translation>
 <translation id="5819208479324046259">Gerido por <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">A sincronizar…</translation>
-<translation id="5832166137082209907">Ocultar após 10 minutos</translation>
 <translation id="5844284118433003733">Quando tem sessão iniciada, estes dados são associados à sua Conta Google para obter proteção nos serviços Google, por exemplo, para aumentar a proteção no Gmail após um incidente de segurança.</translation>
 <translation id="5854790677617711513">Com mais de 30 dias</translation>
 <translation id="5857770089550859117">A frase de acesso é necessária para iniciar a sincronização.</translation>
@@ -1610,6 +1614,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8319076807703933069">Nova pesquisa</translation>
 <translation id="8343993175958086504">Faça uma cópia de segurança dos seus itens e use-os em qualquer dispositivo.</translation>
 <translation id="8349305172487531364">Barra de marcadores</translation>
+<translation id="8364563001733875155">Para alterar o PIN, configure primeiro um código secreto no dispositivo.</translation>
 <translation id="8366466717204352506">Verificação nunca executada</translation>
 <translation id="8368001212524806591">Monitorizar preço</translation>
 <translation id="8370406443343902172">Aceder às Definições…</translation>

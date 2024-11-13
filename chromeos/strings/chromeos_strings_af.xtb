@@ -306,6 +306,7 @@
 <translation id="2308243864813041101">Prop die <ph name="DEVICE_NAME" /> se USB-kabel uit om met die opdateringproses voort te gaan</translation>
 <translation id="2320295602967756579">Aktiveer ligtema</translation>
 <translation id="2323506179655536734">OORGESLAAN</translation>
+<translation id="2323755382216917952">Hierdie opdatering vereis dat jy jou rekenaar herbegin om installasie te voltooi. Hierdie opdatering kan ’n paar minute neem om te voltooi. Moenie jou rekenaar uitprop of afskakel terwyl die fermware opdateer nie.</translation>
 <translation id="2324354238778375592">Sweef</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Uitstekend (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -448,6 +449,7 @@
 <translation id="3178532070248519384">avant-garde</translation>
 <translation id="3182676044300231689">Voer porteks soos “maak dit meer selfversekerd” in</translation>
 <translation id="3188257591659621405">My lêers</translation>
+<translation id="3188931456353313123">Hierdie opdatering word deur die toestelvervaardiger verskaf en is nie deur Google geverifieer nie.</translation>
 <translation id="319101249942218879">Avatar-prent het verander</translation>
 <translation id="3192947282887913208">Oudiolêers</translation>
 <translation id="3199982728237701504">Dokumentvoerder (twee kante)</translation>
@@ -505,6 +507,7 @@
 <translation id="3488065109653206955">Deels geaktiveer</translation>
 <translation id="3492882532495507361">’n <ph name="OFFICE_STYLE" /> kantoor met <ph name="OFFICE_COLOR" /> skakerings</translation>
 <translation id="3493187369049186498">Data word deur jou Chromebook gemeet. Dit kan van verskafferdata verskil.</translation>
+<translation id="349570724365779960">School Tools is aan studente gekoppel</translation>
 <translation id="3502426834823382181">bekyk alle apps</translation>
 <translation id="3510890413042482857">Stuur <ph name="BEGIN_LINK1" />werkverrigtingnasporingdata<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS-opdatering</translation>
@@ -753,6 +756,7 @@
 <translation id="473775607612524610">Dateer op</translation>
 <translation id="4744944742468440486">Inligting wat met jou keuse verband hou</translation>
 <translation id="4771607256327216405">sleutelbord verhelder</translation>
+<translation id="4771923071974529837">môre</translation>
 <translation id="4773299976671772492">Gestop</translation>
 <translation id="4778082030331381943">ametis</translation>
 <translation id="4782311465517282004">Kry definisies, vertalings of eenheidomskakelings wanneer jy regsklik of teks raak en hou</translation>
@@ -816,6 +820,7 @@
 <translation id="500920857929044050">Stop toets</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Temakleur</translation>
+<translation id="5037240652947866174">vandag</translation>
 <translation id="5038292761217083259">sleutelbord veelkleurig</translation>
 <translation id="5039804452771397117">Laat toe</translation>
 <translation id="5049856988445523908">SIM is gesluit (<ph name="LOCK_TYPE" />)</translation>

@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Код скандалды</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} өтмөк}other{{count} өтмөк}}</translation>
 <translation id="1084365883616172403">Facebook'ка жайгаштырылды.</translation>
+<translation id="1085677983426914530"><ph name="FILENAME" /> ачылган жок</translation>
 <translation id="1096992026380844478">Шайкештирүү параметрлери акыркы жолу сакталган камдык көчүрмөнүн негизинде калыбына келтирилет. <ph name="BEGIN_LINK" />Эмнелерди шайкештире аларыңызды көрүңүз<ph name="END_LINK" />.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> тилин ар дайым которуу</translation>
 <translation id="1108938384783527433">Таржымалды шайкештирүү</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Жок, рахмат</translation>
 <translation id="2320166752086256636">Баскычтопту жашыруу</translation>
 <translation id="2321086116217818302">Сырсөздөр даярдалууда…</translation>
+<translation id="2323697864063408084">Сиз үчүн маанилүү болгон нерселерди өткөрүп жибербеш үчүн билдирмелерди кулпуланган экраныңызда көрнөк-жарнак катары алыңыз</translation>
 <translation id="2326302612031521902">Бирдик тандагыч</translation>
 <translation id="2330607597130465898">Коопсуздук корголгон жок</translation>
 <translation id="233375395665273385">Өчүрүү жана аккаунттан чыгуу</translation>
@@ -384,6 +386,7 @@
 <translation id="2671423594960767771">Топту бөлүшүү</translation>
 <translation id="2673508731173059946">Көчүрүлгөн шилтеме менен өтүңүз</translation>
 <translation id="2687403674020088961">Бардык cookie файлдарды бөгөттөө (сунушталбайт)</translation>
+<translation id="2688535388040882469">Көрнөк-жарнактар</translation>
 <translation id="2690858294534178585">Камера колдонулууда</translation>
 <translation id="2691653761409724435">Оффлайнда жеткиликтүү эмес</translation>
 <translation id="2696180352517415858">Google аккаунтуңуздан чыгарылбайсыз. Аккаунтуңузга кирип турсаңыз, <ph name="BEGIN_LINK" />башка аракеттер<ph name="END_LINK" /> Google аккаунтуңузга сакталышы мүмкүн. Аларды каалаган убакта жок кылсаңыз болот.
@@ -636,6 +639,7 @@
 <translation id="3986739045730058129">Өтмөккө өтүү</translation>
 <translation id="3992684624889376114">Бул бет жөнүндө</translation>
 <translation id="3994422733891749358">Алгыңыз келген билдирмелерди тандаңыз</translation>
+<translation id="3994522032746736727"><ph name="EMAIL" /> аккаунту менен кириңиз</translation>
 <translation id="3995521777587992544">Барактын жүктөлүшүн көрсөтүүчү тилке, <ph name="EMAIL" /> жүктөлдү.</translation>
 <translation id="3997522473364371632">Сырсөздү бөлүшүү функциясын администраторуңуз өчүрүп койгон.</translation>
 <translation id="4002066346123236978">Аталышы</translation>
@@ -843,6 +847,7 @@
 <translation id="4936354130727646074">Эч качан жылдырылбасын</translation>
 <translation id="4937410517508563815">Cырсөздөрдү аккаунтта сактаңыз</translation>
 <translation id="4938338714234463591">Бул вебсайттарда үнүңүздү белгилүү функциялар менен колдонуу мүмкүнчүлүгүн берет.</translation>
+<translation id="4938716880833771969">Билдирмелериңиз үнсүз жеткирилүүдө</translation>
 <translation id="4941089862236492464">Кечиресиз, бул нерсени бөлүшүп жатканда көйгөй келип чыкты.</translation>
 <translation id="4944543191714094452">Барактан табуу…</translation>
 <translation id="4945756290001680296">Сырсөздүн параметрлерине кирүү</translation>
@@ -1039,7 +1044,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="5817176759448082654">Сырсөздөрдү текшерүү</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> тарабынан башкарылат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">Шайкештирилүүдө…</translation>
-<translation id="5832166137082209907">10 мүнөттөн кийин жашыруу</translation>
 <translation id="5844284118433003733">Кирип турганыңызда, сизди Google кызматтарында коргоо үчүн бул дайындар Google аккаунтуңузга байланыштырылат. Мисалы, коопсуздук тутумундагы бузулуулардан кийин Gmail'де коргоону жогорулатуу.</translation>
 <translation id="5854790677617711513">30 күндөн мурунку</translation>
 <translation id="5857770089550859117">Шайкештирип баштоо үчүн жашыруун сөз айкашы керек.</translation>
@@ -1610,6 +1614,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8319076807703933069">Жаңы издөө</translation>
 <translation id="8343993175958086504">Маалыматтын камдык көчүрмөсүн сактап, башка түзмөктө колдоно аласыз.</translation>
 <translation id="8349305172487531364">Кыстармалар тилкеси</translation>
+<translation id="8364563001733875155">PIN-кодуңузду өзгөртүү үчүн алгач түзмөгүңүздө өткөрүүчү кодду тууралап алыңыз.</translation>
 <translation id="8366466717204352506">Эч качан текшерилбейт</translation>
 <translation id="8368001212524806591">Баага көз салуу</translation>
 <translation id="8370406443343902172">Параметрлерге өтүү...</translation>

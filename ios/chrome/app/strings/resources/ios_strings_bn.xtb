@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">কোড স্ক্যান করা হয়েছে</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count}টি ট্যাব}one{{count}টি ট্যাব}other{{count}টি ট্যাব}}</translation>
 <translation id="1084365883616172403">Facebook পোষ্ট সম্পূর্ণ হয়েছে৷</translation>
+<translation id="1085677983426914530"><ph name="FILENAME" /> খোলা যায়নি</translation>
 <translation id="1096992026380844478">আপনার শেষ ব্যাক-আপের উপর ভিত্তি করে সিঙ্ক সেটিংস ফিরিয়ে আনা হবে। <ph name="BEGIN_LINK" />আপনি কী সিঙ্ক করতে পারবেন তা দেখুন<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">সর্বদা অনুবাদ করুন <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">ইতিহাস সিঙ্ক করুন</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">না, ধন্যবাদ</translation>
 <translation id="2320166752086256636">কীবোর্ড লুকান</translation>
 <translation id="2321086116217818302">পাসওয়ার্ড তৈরি করা হচ্ছে…</translation>
+<translation id="2323697864063408084">আপনার লক স্ক্রিনে এবং ব্যানার হিসেবে বিজ্ঞপ্তি পান যাতে গুরুত্বপূর্ণ জিনিস কখনই মিস না করেন</translation>
 <translation id="2326302612031521902">ইউনিট বাছাইকারী</translation>
 <translation id="2330607597130465898">কোনও সুরক্ষা নেই</translation>
 <translation id="233375395665273385">মুছুন ও সাইন-আউট করুন</translation>
@@ -384,6 +386,7 @@
 <translation id="2671423594960767771">গ্রুপ শেয়ার করুন</translation>
 <translation id="2673508731173059946">কপি করা লিঙ্কে যান</translation>
 <translation id="2687403674020088961">সব কুকি ব্লক করুন (সাজেস্ট করা হচ্ছে না)</translation>
+<translation id="2688535388040882469">ব্যানার</translation>
 <translation id="2690858294534178585">ক্যামেরা ব্যবহার করা হচ্ছে</translation>
 <translation id="2691653761409724435">অফলাইনে উপলব্ধ নেই</translation>
 <translation id="2696180352517415858">Google অ্যাকাউন্ট থেকে আপনি সাইন-আউট হয়ে যাবেন না। আপনি সাইন-ইন করে থাকলে <ph name="BEGIN_LINK" />অন্যান্য অ্যাক্টিভিটি<ph name="END_LINK" /> আপনার Google অ্যাকাউন্টে সেভ হয়ে যেতে পারে। আপনি যেকোনও সময় এগুলি মুছে দিতে পারবেন।
@@ -472,6 +475,7 @@
 <translation id="3119874402040566234">আপনি সাইন-আউট হয়ে যাবেন এবং ব্রাউজ করা ডেটা মুছে দেওয়া হবে</translation>
 <translation id="3130863904455712965">ইতিহাস ও আরও অনেক কিছু</translation>
 <translation id="313283613037595347">নতুন ছদ্মবেশী ট্যাব তৈরি করুন।</translation>
+<translation id="3138611310073113613">বেছে নেওয়া ফাইল বাতিল করুন</translation>
 <translation id="3143515551205905069">সিঙ্ক বাতিল করুন</translation>
 <translation id="314837624430314508">লেটেস্ট খবর, প্রাইস ট্র্যাকিং আপডেট করুন এবং আরও অনেক কিছু বিষয়ে আপ-টু-ডেট থাকুন।</translation>
 <translation id="3157387275655328056">পড়ার তালিকায় যোগ করুন</translation>
@@ -635,10 +639,12 @@
 <translation id="3986739045730058129">ট্যাবে যান</translation>
 <translation id="3992684624889376114">এই পৃষ্ঠা সম্পর্কে</translation>
 <translation id="3994422733891749358">আপনি কী বিজ্ঞপ্তি পেতে চান তা বেছে নিন</translation>
+<translation id="3994522032746736727"><ph name="EMAIL" /> হিসেবে সাইন-ইন করুন</translation>
 <translation id="3995521777587992544">পৃষ্ঠা লোড করার প্রগ্রেস বার, <ph name="EMAIL" /> লোড করা হয়েছে।</translation>
 <translation id="3997522473364371632">আপনার অ্যাডমিনিস্ট্রেটর পাসওয়ার্ড শেয়ার করার সুবিধা বন্ধ করেছেন।</translation>
 <translation id="4002066346123236978">শিরোনাম</translation>
 <translation id="4004204301268239848">আপনার Google অ্যাকাউন্টে পাসওয়ার্ড সেভ করা থাকে যাতে আপনি যেকোনও ডিভাইসে সেগুলি ব্যবহার করতে পারেন।</translation>
+<translation id="4011489366247192265">থেকে</translation>
 <translation id="4018440314314549819">সেভ করা পাসওয়ার্ড অটোফিল করুন</translation>
 <translation id="4021447724486050609">আপনার ব্রাউজার আপডেট করুন</translation>
 <translation id="4021931095789478915">পড়ার তালিকাতে ${url} যোগ করুন</translation>
@@ -841,6 +847,7 @@
 <translation id="4936354130727646074">কখনও সরাবেন না</translation>
 <translation id="4937410517508563815">অ্যাকাউন্টে পাসওয়ার্ড সেভ করুন</translation>
 <translation id="4938338714234463591">এটি আপনাকে ওয়েবসাইটে নির্দিষ্ট ফিচারের সাথে নিজের আওয়াজ ব্যবহার করার অনুমতি দেয়।</translation>
+<translation id="4938716880833771969">আপনার বিজ্ঞপ্তি নিঃশব্দে ডেলিভার করা হচ্ছে</translation>
 <translation id="4941089862236492464">দুঃখিত, আপনার জিনিস শেয়ার করার সময় একটা সমস্যা ছিল।</translation>
 <translation id="4944543191714094452">পৃষ্ঠাতে খুঁজুন…</translation>
 <translation id="4945756290001680296">পাসওয়ার্ড সেটিংস অ্যাক্সেস করুন</translation>
@@ -936,6 +943,7 @@
 <translation id="5414763847370083940">কোনও সাইটে দাম কমলে সেই সম্পর্কে আপনি বিজ্ঞপ্তি পাবেন।</translation>
 <translation id="5415289094036440596">পাসকী শেয়ার করা যাবে না</translation>
 <translation id="5416455648658732408">ট্যাব গ্রুপে সরান</translation>
+<translation id="542659109038405424">প্রাপক</translation>
 <translation id="5429624150850059322">আপনি ফিরে আসার পর, চালিয়ে যাওয়ার জন্য ট্যাপ না করা পর্যন্ত খোলা ট্যাব ঝাপসা করা থাকবে</translation>
 <translation id="5431239785743546285">আপনি যেসব পৃষ্ঠা পড়েছেন</translation>
 <translation id="5431252637281434233">আপনি সাইন-আউট হয়ে যাবেন</translation>
@@ -1037,7 +1045,6 @@
 <translation id="5817176759448082654">পাসওয়ার্ড চেক-আপ</translation>
 <translation id="5819208479324046259"><ph name="MANAGER" /> এটি ম্যানেজ করে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">সিঙ্ক হচ্ছে…</translation>
-<translation id="5832166137082209907">১০ মিনিট পরে লুকান</translation>
 <translation id="5844284118433003733">আপনি সাইন-ইন করলে, এই ডেটা আপনাকে Google পরিষেবা জু়ড়ে সুরক্ষিত রাখতে Google অ্যাকাউন্টে লিঙ্ক করা হয়, যেমন কোনও সুরক্ষা সম্পর্কিত ঘটনার পর Gmail-এ নিরাপত্তা বাড়ানো।</translation>
 <translation id="5854790677617711513">৩০ দিনের বেশি পুরনো</translation>
 <translation id="5857770089550859117">সিঙ্ক শুরু করতে পাসফ্রেজ প্রয়োজন।</translation>
@@ -1608,6 +1615,7 @@
 <translation id="8319076807703933069">নতুন ট্যাবে সার্চ করুন</translation>
 <translation id="8343993175958086504">আপনার ডেটার ব্যাক-আপ নিন এবং যেকোনও ডিভাইসে তা ব্যবহার করুন।</translation>
 <translation id="8349305172487531364">বুকমার্কস বার</translation>
+<translation id="8364563001733875155">আপনার পিন পরিবর্তন করতে, প্রথমে নিজের ডিভাইসে পাসকোড সেট-আপ করুন।</translation>
 <translation id="8366466717204352506">কখনও চেক করা হয়নি</translation>
 <translation id="8368001212524806591">দাম ট্র্যাক করুন</translation>
 <translation id="8370406443343902172">সেটিংসে যান...</translation>

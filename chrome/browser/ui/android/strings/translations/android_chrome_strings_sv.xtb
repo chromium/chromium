@@ -262,6 +262,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2247789808226901522">Kortet har gått ut</translation>
 <translation id="2248941474044011069">Dina lösenord krypteras på enheten innan de sparas i Google Lösenordshantering</translation>
 <translation id="2249635629516220541">Anpassa informationen som används av webbplatser för att visa annonser</translation>
+<translation id="2253927598983295051">Välj vad du vill dela med <ph name="APP_NAME" /></translation>
 <translation id="2259659629660284697">Exportera lösenord …</translation>
 <translation id="2276696007612801991">Logga in på ditt Google-konto om du vill kontrollera lösenorden</translation>
 <translation id="2278052315791335171">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="SITE" /> raderas</translation>
@@ -321,6 +322,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2527779675047087889">Dölj innehållet i Urklipp</translation>
 <translation id="2532336938189706096">Webbvy</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> objekt har tagits bort</translation>
+<translation id="253498598929009420">Innehållet på skärmen blir synligt för webbplatsen</translation>
 <translation id="2536728043171574184">En offlinekopia av sidan visas</translation>
 <translation id="2546283357679194313">Cookies och webbplatsdata</translation>
 <translation id="2547843573592965873">Profillåset skyddar dina uppgifter i bilen, till exempel lösenord och betalningar som sparats i Google-kontot.</translation>
@@ -595,6 +597,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3819183753496523827">Du är offline. Kontrollera internetanslutningen och försök igen.</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">Lens är inte tillgängligt i det här kontot.</translation>
+<translation id="38258275871320156">Endast tillgängligt för små fönster</translation>
 <translation id="3830886834687455630">Uppdatera Google Play-tjänster för att kontrollera dina lösenord</translation>
 <translation id="3843603704176567761">Lösenorden kan snart sluta att fungera på den här enheten. Uppdatera Google Play-tjänsterna om du vill fortsätta att använda dina lösenord.</translation>
 <translation id="3845098929839618392">Öppna i inkognitoflik
@@ -800,6 +803,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4769632191812288342">Du har standardskydd</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> har raderats</translation>
 <translation id="4778653490315793244">Det finns inget att visa än</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> är din standardsökmotor</translation>
 <translation id="4787736314074622408">Vill du radera <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Läs mer om hur du skyddas i Chrome</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>

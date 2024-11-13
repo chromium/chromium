@@ -945,7 +945,7 @@
 <translation id="2674170444375937751">Удалить эти страницы из истории посещений?</translation>
 <translation id="2674524144218093528">Малярные и отделочные работы</translation>
 <translation id="2674804415323431591">Скрыть подсказки</translation>
-<translation id="2677748264148917807">Закрыть</translation>
+<translation id="2677748264148917807">Выйти</translation>
 <translation id="2683195745483370038">Другие результаты</translation>
 <translation id="2686919536310834199">Оставить отзыв о генераторе текстов</translation>
 <translation id="2687555958734450033">Оптимальный вариант</translation>
@@ -1410,6 +1410,7 @@
 <translation id="353816159217417898">Экранная форма (с разбивкой на страницы)</translation>
 <translation id="3542628208405253498">Изображение карты</translation>
 <translation id="3542768452570884558">Открыть ссылку в новом окне</translation>
+<translation id="3543935938072367282">Оплачивайте покупки быстрее с помощью автозаполнения</translation>
 <translation id="3547442767634383572">Общие сведения о рабочем профиле.</translation>
 <translation id="3547746132308051926">20 x 24 дюйма</translation>
 <translation id="3550325450190222557">Оставьте отзыв, относящийся к функции автозаполнения с помощью ИИ.</translation>
@@ -1578,6 +1579,7 @@
 <translation id="3801297763951514916">Часто посещаете</translation>
 <translation id="380329542618494757">Имя</translation>
 <translation id="3803801106042434208">Эти поисковые системы популярны в вашем регионе.</translation>
+<translation id="380666903981445943">Добавьте способ оплаты в аккаунт Google. При покупке через Chrome данные будут заполнятся автоматически.</translation>
 <translation id="3807366285948165054">Смещение изображения по оси X</translation>
 <translation id="3807709094043295184">Классический рок и ретромузыка</translation>
 <translation id="3807873520724684969">Заблокирован опасный контент</translation>
@@ -1734,6 +1736,7 @@
 <translation id="4102567721634170493">Местные новости</translation>
 <translation id="4103249731201008433">Серийный номер устройства недействителен</translation>
 <translation id="4103592298805904008">Картон (однослойный)</translation>
+<translation id="4104702906064390950">Идет сохранение кода IBAN</translation>
 <translation id="4106887816571530227">Доступ к встроенному контенту запрещен</translation>
 <translation id="4110652170750985508">Просмотр платежа</translation>
 <translation id="4111546256784973544">Пейнтбол</translation>
@@ -3051,6 +3054,7 @@
 <translation id="6499038740797743453">Сбросить пароль?</translation>
 <translation id="6502510275417601303">Оповещение о новых платежных настройках закрыто</translation>
 <translation id="6502991525169604759">Без ваших изменений</translation>
+<translation id="6505072878288254563">Выполняется перевод…</translation>
 <translation id="6506959208958864820">Конверт</translation>
 <translation id="6507117483253822672">Уверенно создавайте тексты на любом сайте</translation>
 <translation id="6508722015517270189">Перезапустите Google Chrome.</translation>

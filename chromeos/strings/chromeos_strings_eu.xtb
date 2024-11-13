@@ -306,6 +306,7 @@
 <translation id="2308243864813041101">Eguneratzen jarraitzeko, deskonektatu <ph name="DEVICE_NAME" /> gailuaren USB kablea</translation>
 <translation id="2320295602967756579">Gaitu gai iluna</translation>
 <translation id="2323506179655536734">SALTATUTA</translation>
+<translation id="2323755382216917952">Eguneratzea instalatzen amaitzeko, ordenagailua berrabiarazi behar duzu. Agian minutu batzuk beharko dira eguneratzea amaitzeko. Firmwarea eguneratu bitartean, ez deskonektatu ezta itzali ordenagailua.</translation>
 <translation id="2324354238778375592">Leiho gainerakorra</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Bikaina (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -448,6 +449,7 @@
 <translation id="3178532070248519384">abangoardia</translation>
 <translation id="3182676044300231689">Idatzi eskaera-mezu bat; adibidez, "eman tonu ziurrago bat"</translation>
 <translation id="3188257591659621405">Nire fitxategiak</translation>
+<translation id="3188931456353313123">Eguneratze hau gailuaren fabrikatzaileak hornitu du, eta Google-k ez du egiaztatu.</translation>
 <translation id="319101249942218879">Aldatu da abatarra</translation>
 <translation id="3192947282887913208">Audio-fitxategiak</translation>
 <translation id="3199982728237701504">Dokumentu-elikatzailea (bi aldekoa)</translation>
@@ -505,6 +507,7 @@
 <translation id="3488065109653206955">Partzialki aktibatuta</translation>
 <translation id="3492882532495507361">Bulego <ph name="OFFICE_STYLE" /> bat, tonu <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Chromebook-ak neurtzen ditu datuak. Baliteke informazio hori bat ez etortzea hornitzaileak egindako datuen neurketarekin.</translation>
+<translation id="349570724365779960">School Tools ikasleekin konektatuta dago</translation>
 <translation id="3502426834823382181">ikusi aplikazio guztiak</translation>
 <translation id="3510890413042482857">Bidali <ph name="BEGIN_LINK1" />errendimenduaren jarraipena egiteko datuak<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS-ren eguneratzea</translation>
@@ -753,6 +756,7 @@
 <translation id="473775607612524610">Eguneratu</translation>
 <translation id="4744944742468440486">Zure hautapenarekin erlazionatutako informazioa</translation>
 <translation id="4771607256327216405">teklatua argitu</translation>
+<translation id="4771923071974529837">bihar</translation>
 <translation id="4773299976671772492">Gelditu egin da</translation>
 <translation id="4778082030331381943">ametista</translation>
 <translation id="4782311465517282004">Eskuratu definizioak, itzulpenak edo unitate-bihurketak testua eskuineko botoiarekin sakatzean edo sakatuta edukitzean</translation>
@@ -816,6 +820,7 @@
 <translation id="500920857929044050">Gelditu proba</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Gaiaren kolorea</translation>
+<translation id="5037240652947866174">gaur</translation>
 <translation id="5038292761217083259">koloretako teklatua</translation>
 <translation id="5039804452771397117">Baimendu</translation>
 <translation id="5049856988445523908">SIMa blokeatuta dago (<ph name="LOCK_TYPE" />)</translation>

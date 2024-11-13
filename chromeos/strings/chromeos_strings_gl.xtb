@@ -306,6 +306,7 @@
 <translation id="2308243864813041101">Desconecta o cable USB do dispositivo (<ph name="DEVICE_NAME" />) para seguir co proceso de actualización</translation>
 <translation id="2320295602967756579">Activar tema claro</translation>
 <translation id="2323506179655536734">PROBA OMITIDA</translation>
+<translation id="2323755382216917952">Para completar a instalación desta actualización, é necesario que reinicies o ordenador. O proceso pode tardar uns minutos en finalizar. Mentres se actualiza o firmware, non desenchufes nin apagues o ordenador.</translation>
 <translation id="2324354238778375592">Flotante</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -448,6 +449,7 @@
 <translation id="3178532070248519384">vangardista</translation>
 <translation id="3182676044300231689">Escribe unha solicitude como "dio con máis confianza"</translation>
 <translation id="3188257591659621405">Os meus ficheiros</translation>
+<translation id="3188931456353313123">O fabricante do dispositivo forneceu esta actualización, pero Google non a verificou.</translation>
 <translation id="319101249942218879">Modificouse a imaxe do avatar</translation>
 <translation id="3192947282887913208">Ficheiros de audio</translation>
 <translation id="3199982728237701504">Alimentador de documentos (a dúas caras)</translation>
@@ -505,6 +507,7 @@
 <translation id="3488065109653206955">Activado parcialmente</translation>
 <translation id="3492882532495507361">Despacho de estilo <ph name="OFFICE_STYLE" /> con tons <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">A medición dos datos provén do teu Chromebook. É posible que non coincidan cos datos do provedor.</translation>
+<translation id="349570724365779960">School Tools está conectado aos estudantes</translation>
 <translation id="3502426834823382181">mostra todas as aplicacións</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />datos de seguimento de rendemento<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualiz. Chrome OS</translation>
@@ -753,6 +756,7 @@
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4744944742468440486">Información relacionada coa túa selección</translation>
 <translation id="4771607256327216405">iluminación do teclado</translation>
+<translation id="4771923071974529837">mañá</translation>
 <translation id="4773299976671772492">Detido</translation>
 <translation id="4778082030331381943">ametista</translation>
 <translation id="4782311465517282004">Obtén definicións, traducións ou conversións de unidades cando fagas clic co botón dereito sobre un texto ou o manteñas premido</translation>
@@ -816,6 +820,7 @@
 <translation id="500920857929044050">Deter proba</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Cor do tema</translation>
+<translation id="5037240652947866174">hoxe</translation>
 <translation id="5038292761217083259">teclado multicolor</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5049856988445523908">SIM bloqueada (<ph name="LOCK_TYPE" />)</translation>

@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">S'ha escanejat el codi</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} pestanya}other{{count} pestanyes}}</translation>
 <translation id="1084365883616172403">S'ha completat la publicació a Facebook.</translation>
+<translation id="1085677983426914530">No s'ha pogut obrir <ph name="FILENAME" /></translation>
 <translation id="1096992026380844478">La configuració de sincronització es restaurarà a partir de la darrera còpia de seguretat. <ph name="BEGIN_LINK" />Consulta què pots sincronitzar<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Tradueix sempre el text en <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Sincronització de l'historial</translation>
@@ -83,7 +84,7 @@
 <translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1358214951266274152">Ves a l'enllaç que has copiat</translation>
 <translation id="1360432990279830238">Vols tancar la sessió i desactivar la sincronització?</translation>
-<translation id="1363028406613469049">Pista</translation>
+<translation id="1363028406613469049">Fes un seguiment</translation>
 <translation id="1364367057792633742">Pestanya nova</translation>
 <translation id="1365106417372288489">L'iPhone s'ha restaurat recentment, i és possible que el navegador predeterminat hagi canviat.</translation>
 <translation id="1366297852155605523">Compartit amb mi</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">No, gràcies</translation>
 <translation id="2320166752086256636">Amaga el teclat</translation>
 <translation id="2321086116217818302">S'estan preparant les contrasenyes…</translation>
+<translation id="2323697864063408084">Rep notificacions a la pantalla de bloqueig i com a bàners per no perdre't mai el que t'interessa</translation>
 <translation id="2326302612031521902">Selector d'unitats</translation>
 <translation id="2330607597130465898">Sense protecció</translation>
 <translation id="233375395665273385">Suprimeix i tanca la sessió</translation>
@@ -384,6 +386,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="2671423594960767771">Comparteix el grup</translation>
 <translation id="2673508731173059946">Ves a l'enllaç copiat</translation>
 <translation id="2687403674020088961">Bloqueja totes les galetes (opció no recomanada)</translation>
+<translation id="2688535388040882469">Bàners</translation>
 <translation id="2690858294534178585">La càmera s'està utilitzant</translation>
 <translation id="2691653761409724435">No disponible sense connexió</translation>
 <translation id="2696180352517415858">No se't tancarà la sessió del Compte de Google. És possible que es desin <ph name="BEGIN_LINK" />altres tipus d'activitats<ph name="END_LINK" /> al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.
@@ -636,6 +639,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3986739045730058129">Ves a la pestanya</translation>
 <translation id="3992684624889376114">Sobre aquesta pàgina</translation>
 <translation id="3994422733891749358">Tria les notificacions que vols rebre</translation>
+<translation id="3994522032746736727">Inicia la sessió com a <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Barra de progrés de càrrega de la pàgina; s'ha carregat un <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">El teu administrador ha desactivat la compartició de contrasenyes.</translation>
 <translation id="4002066346123236978">Títol</translation>
@@ -843,6 +847,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4936354130727646074">No moguis mai</translation>
 <translation id="4937410517508563815">Desa les contrasenyes al compte</translation>
 <translation id="4938338714234463591">Això et permetrà fer servir la veu amb determinades funcions als llocs web.</translation>
+<translation id="4938716880833771969">Les notificacions s'estan enviant de manera silenciosa</translation>
 <translation id="4941089862236492464">Hi ha hagut un problema en compartir el vostre element.</translation>
 <translation id="4944543191714094452">Cerca a la pàgina…</translation>
 <translation id="4945756290001680296">Accedeix a la configuració de la contrasenya</translation>
@@ -1039,7 +1044,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5817176759448082654">Comprovació de contrasenya</translation>
 <translation id="5819208479324046259">Gestionat per <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="5829649908290113115">S'està sincronitzant…</translation>
-<translation id="5832166137082209907">Amaga al cap de 10 minuts</translation>
 <translation id="5844284118433003733">Si tens la sessió iniciada, aquestes dades s'enllacen al teu Compte de Google per protegir-te als serveis de Google; per exemple, augmentant la protecció a Gmail després d'un incident de seguretat.</translation>
 <translation id="5854790677617711513">Anterior a 30 dies</translation>
 <translation id="5857770089550859117">Cal una frase de contrasenya per iniciar la sincronització.</translation>
@@ -1610,6 +1614,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8319076807703933069">Cerca nova</translation>
 <translation id="8343993175958086504">Fes una còpia de seguretat de les teves dades i utilitza-les en qualsevol dispositiu.</translation>
 <translation id="8349305172487531364">Barra d'adreces d'interès</translation>
+<translation id="8364563001733875155">Per canviar el PIN, configura primer una contrasenya al dispositiu.</translation>
 <translation id="8366466717204352506">No s'ha fet mai la comprovació</translation>
 <translation id="8368001212524806591">Fes un seguiment del preu</translation>
 <translation id="8370406443343902172">Ves a Configuració...</translation>

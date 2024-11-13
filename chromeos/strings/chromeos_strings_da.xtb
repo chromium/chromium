@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">Skul transskription</translation>
 <translation id="160633243685262989">Forhåndsvisning</translation>
 <translation id="1611649489706141841">videresend</translation>
+<translation id="1615144046047995187">Download er ikke muligt. Prøv igen, eller genstart din Chromebook.</translation>
 <translation id="1615335640928990664">Dataforbrug siden <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Brug et tema</translation>
 <translation id="1621067168122174824">Kør opladningstest</translation>
@@ -306,6 +307,7 @@
 <translation id="2308243864813041101">Tag USB-kablet ud af din <ph name="DEVICE_NAME" /> for at fortsætte opdateringsprocessen</translation>
 <translation id="2320295602967756579">Aktivér Lyst tema</translation>
 <translation id="2323506179655536734">SPRUNGET OVER</translation>
+<translation id="2323755382216917952">Denne opdatering kræver, at du genstarter din computer for at gennemføre installationen. Denne opdatering kan tage et par minutter. Du må ikke frakoble eller slukke din computer, mens firmwaren opdaterer.</translation>
 <translation id="2324354238778375592">Svæv</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2346474577291266260">Meget godt (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -448,6 +450,7 @@
 <translation id="3178532070248519384">avantgarde</translation>
 <translation id="3182676044300231689">Angiv en prompt, f.eks. "gør det mere overbevisende"</translation>
 <translation id="3188257591659621405">Mine filer</translation>
+<translation id="3188931456353313123">Denne opdatering leveres af producenten af enheden og er ikke verificeret af Google.</translation>
 <translation id="319101249942218879">Avatarbilledet er ændret</translation>
 <translation id="3192947282887913208">Lydfiler</translation>
 <translation id="3199982728237701504">Dokumentindføring (to sider)</translation>
@@ -505,6 +508,7 @@
 <translation id="3488065109653206955">Delvist aktiveret</translation>
 <translation id="3492882532495507361">Et <ph name="OFFICE_STYLE" /> kontor med <ph name="OFFICE_COLOR" /> toner</translation>
 <translation id="3493187369049186498">Data måles af din Chromebook. Disse data kan være forskellige fra udbyderdataene.</translation>
+<translation id="349570724365779960">Skoleværktøjer er tilknyttet eleverne</translation>
 <translation id="3502426834823382181">se alle apps</translation>
 <translation id="3510890413042482857">Send <ph name="BEGIN_LINK1" />data om ydeevne<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS-opdatering</translation>
@@ -582,6 +586,7 @@
 <translation id="3885327323343477505">Skift pauseskærm</translation>
 <translation id="3889914174935857450">Nulstil dato</translation>
 <translation id="3897092660631435901">Menu</translation>
+<translation id="3902271751020176019">Transskriptionssprog</translation>
 <translation id="391412459402535266">Enheden kan ikke testes. Skift til computertilstand for at teste den.</translation>
 <translation id="3916998944874125962">tag et screenshot</translation>
 <translation id="3923184630988645767">Dataforbrug</translation>
@@ -753,6 +758,7 @@
 <translation id="473775607612524610">Opdater</translation>
 <translation id="4744944742468440486">Oplysninger relateret til det, du har markeret</translation>
 <translation id="4771607256327216405">skru op for tastaturlys</translation>
+<translation id="4771923071974529837">i morgen</translation>
 <translation id="4773299976671772492">Stoppet</translation>
 <translation id="4778082030331381943">ametyst</translation>
 <translation id="4782311465517282004">Få definitioner, oversættelser eller enhedsomregninger, når du højreklikker på eller holder tekst nede</translation>
@@ -816,6 +822,7 @@
 <translation id="500920857929044050">Stop test</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Temafarve</translation>
+<translation id="5037240652947866174">i dag</translation>
 <translation id="5038292761217083259">flerfarvet tastatur</translation>
 <translation id="5039804452771397117">Tillad</translation>
 <translation id="5049856988445523908">SIM-kortet er låst (<ph name="LOCK_TYPE" />)</translation>
@@ -932,6 +939,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Du er logget ud</translation>
 <translation id="5620281292257375798">Kun internt</translation>
+<translation id="5628106863521633649">Tilgængelige sprog</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">abstrakt</translation>
 <translation id="5655283760733841251">Øg tastaturets lysstyrke</translation>
@@ -1256,6 +1264,7 @@
 <translation id="710028965487274708">Handlingen mislykkedes – Godkendelse mislykkedes</translation>
 <translation id="7101959270679078188">Lås <ph name="DEVICE_NAME" /> op for at fortsætte opdateringsprocessen</translation>
 <translation id="7103252855940681301">Enhed <ph name="INDEX" /> af <ph name="COUNT" /> med navnet <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Valgt sprog</translation>
 <translation id="7107255225945990211">Vælg kunst, der kun er tilgængelig på <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7117228822971127758">Prøv igen senere</translation>
