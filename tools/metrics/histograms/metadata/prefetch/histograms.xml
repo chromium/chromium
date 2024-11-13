@@ -206,12 +206,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.AfterClick.RedirectChainSize" units="count"
-    expires_after="2024-09-01">
+    expires_after="2025-05-07">
   <owner>kouhei@chromium.org</owner>
+  <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
     The redirect chain size of a served prefetch. This histogram is recorded
     only for prefetches that are served for a navigation.
+
+    Warning: this histogram was expired from 2024-09-01 to 2024-11-07; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -380,13 +384,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrefetchProxy.Prefetch.Mainframe.BodyLength" units="bytes"
-    expires_after="2024-09-01">
+    expires_after="2025-05-07">
   <owner>kouhei@chromium.org</owner>
+  <owner>kenoss@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
   <summary>
     Records the response body length as cached in memory encountered when
     prefetching a mainframe HTML resource. Recorded for non-network error
     prefetches only.
+
+    Warning: this histogram was expired from 2024-09-01 to 2024-11-07; data may
+    be missing.
   </summary>
 </histogram>
 
