@@ -13,6 +13,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/test_extensions_browser_client.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -30,18 +31,18 @@ class MessageTrackerTestObserver : public MessageTracker::TestObserver {
     MessageTracker::SetObserverForTest(nullptr);
   }
 
-  void WaitForTrackingStale() { on_tracking_stale_runloop.Run(); }
+  void WaitForMessageHung() { on_message_hung_runloop.Run(); }
 
  private:
-  void OnTrackingStale(const base::UnguessableToken& message_id) override {
+  void OnStageTimeoutRan(const base::UnguessableToken& message_id) override {
     if (observed_message_id_ == message_id) {
-      on_tracking_stale_runloop.Quit();
+      on_message_hung_runloop.Quit();
     }
   }
 
  private:
   base::UnguessableToken observed_message_id_;
-  base::RunLoop on_tracking_stale_runloop;
+  base::RunLoop on_message_hung_runloop;
 };
 
 }  // namespace
@@ -66,213 +67,113 @@ class MessageTrackerUnitTest : public ExtensionsTest {
   base::HistogramTester histogram_tester_;
 };
 
-// Tests that the tracker correctly records and keeps track of an
-// extension message as it progresses through its delivery stages.
-TEST_F(MessageTrackerUnitTest, NotifyStartTrackingMessageDelivery) {
-  base::UnguessableToken message_id = base::UnguessableToken::Create();
-  message_tracker()->NotifyStartTrackingMessageDelivery(
-      message_id, MessageTracker::MessageDeliveryStage::kUnknown,
-      MessageTracker::MessageDestinationType::kServiceWorker);
-
-  message_tracker()->NotifyUpdateMessageDelivery(
-      message_id,
-      MessageTracker::MessageDeliveryStage::kOpenChannelRequestReceived);
-
-  // Tracker continues to track messages as they move through each messaging
-  // stage.
-  EXPECT_EQ(message_tracker()->GetNumberOfTrackedMessagesForTest(), 1u);
-}
-
-class MessageTrackerMultiBackgroundDestinationUnitTest
-    : public MessageTrackerUnitTest,
-      public testing::WithParamInterface<
-          MessageTracker::MessageDestinationType> {};
-
 // Tests that the tracker correctly records and reports metrics when an
-// extension message finishes its delivery and stops being tracked.
-TEST_P(MessageTrackerMultiBackgroundDestinationUnitTest,
-       NotifyStopTrackingMessageDelivery_ForDestinationType) {
+// extension message succeeds in its message stage.
+TEST_F(MessageTrackerUnitTest, NotifyMessage) {
   base::UnguessableToken message_id = base::UnguessableToken::Create();
   MessageTrackerTestObserver observer(message_id);
-  message_tracker()->SetMessageStaleTimeoutForTest(base::Seconds(1));
-  MessageTracker::MessageDestinationType destination_background_type =
-      GetParam();
-  message_tracker()->NotifyStartTrackingMessageDelivery(
-      message_id, MessageTracker::MessageDeliveryStage::kUnknown,
-      destination_background_type);
-  message_tracker()->NotifyStopTrackingMessageDelivery(message_id);
+  message_tracker()->StartTrackingMessagingStage(
+      message_id, "Extensions.MessagePipeline.OpenChannelStatus",
+      mojom::ChannelType::kSendMessage);
 
-  {
-    SCOPED_TRACE(
-        "waiting for stale check to run after stopping new message tracking");
-    observer.WaitForTrackingStale();
-  }
+  message_tracker()->StopTrackingMessagingStage(
+      message_id, MessageTracker::OpenChannelMessagePipelineResult::kOpened);
 
-  // Tracker stops tracking messages when they complete the process.
-  EXPECT_EQ(message_tracker()->GetNumberOfTrackedMessagesForTest(), 0u);
-
-  switch (destination_background_type) {
-    case MessageTracker::MessageDestinationType::kUnknown:
-      histogram_tester().ExpectBucketCount(
-          "Extensions.MessagePipeline.MessageCompleted.Unknown",
-          /*sample=*/true, /*expected_count=*/1);
-      histogram_tester().ExpectTotalCount(
-          "Extensions.MessagePipeline.MessageCompletedTime.Unknown",
-          /*expected_count=*/1);
-      histogram_tester().ExpectTotalCount(
-          "Extensions.MessagePipeline.MessageStaleAtStage.Unknown",
-          /*expected_count=*/0);
-      break;
-    case MessageTracker::MessageDestinationType::kNonServiceWorker:
-      histogram_tester().ExpectBucketCount(
-          "Extensions.MessagePipeline.MessageCompleted.NonServiceWorker",
-          /*sample=*/true, /*expected_count=*/1);
-      histogram_tester().ExpectTotalCount(
-          "Extensions.MessagePipeline.MessageCompletedTime.NonServiceWorker",
-          /*expected_count=*/1);
-      histogram_tester().ExpectTotalCount(
-          "Extensions.MessagePipeline.MessageStaleAtStage.NonServiceWorker",
-          /*expected_count=*/0);
-      break;
-    case MessageTracker::MessageDestinationType::kServiceWorker:
-      histogram_tester().ExpectBucketCount(
-          "Extensions.MessagePipeline.MessageCompleted.ServiceWorker",
-          /*sample=*/true, /*expected_count=*/1);
-      histogram_tester().ExpectTotalCount(
-          "Extensions.MessagePipeline.MessageCompletedTime.ServiceWorker",
-          /*expected_count=*/1);
-      histogram_tester().ExpectTotalCount(
-          "Extensions.MessagePipeline.MessageStaleAtStage.ServiceWorker",
-          /*expected_count=*/0);
-      break;
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    BackgroundDestination,
-    MessageTrackerMultiBackgroundDestinationUnitTest,
-    testing::Values(MessageTracker::MessageDestinationType::kNonServiceWorker,
-                    MessageTracker::MessageDestinationType::kServiceWorker));
-
-// Tests that the tracker correctly records and reports metrics when an
-// extension message becomes stale.
-TEST_F(MessageTrackerUnitTest, NotifyStaleMessage) {
-  base::UnguessableToken message_id = base::UnguessableToken::Create();
-  MessageTrackerTestObserver observer(message_id);
-  message_tracker()->SetMessageStaleTimeoutForTest(base::Microseconds(1));
-  message_tracker()->NotifyStartTrackingMessageDelivery(
-      message_id, MessageTracker::MessageDeliveryStage::kUnknown,
-      MessageTracker::MessageDestinationType::kServiceWorker);
-
-  {
-    SCOPED_TRACE(
-        "waiting for stale check to run after starting new message tracking");
-    observer.WaitForTrackingStale();
-  }
-
-  histogram_tester().ExpectBucketCount(
-      "Extensions.MessagePipeline.MessageCompleted.ServiceWorker",
-      /*sample=*/false,
+  histogram_tester().ExpectTotalCount(
+      "Extensions.MessagePipeline.OpenChannelStatus.SendMessageChannel",
       /*expected_count=*/1);
   histogram_tester().ExpectBucketCount(
-      "Extensions.MessagePipeline.MessageStaleAtStage.ServiceWorker",
-      MessageTracker::MessageDeliveryStage::kUnknown, /*expected_count=*/1);
+      "Extensions.MessagePipeline.OpenChannelStatus.SendMessageChannel",
+      MessageTracker::OpenChannelMessagePipelineResult::kOpened,
+      /*expected_count=*/1);
 }
 
 // Tests that the tracker correctly records and reports metrics when an
-// extension message stale check occurs *after* an update call occurs which
-// means the message is not stale.
-TEST_F(MessageTrackerUnitTest, NotifyStaleMessageAfterUpdateToNewStage) {
+// extension message remains too long in its stage and becomes "hung".
+TEST_F(MessageTrackerUnitTest, NotifyHungMessage) {
   base::UnguessableToken message_id = base::UnguessableToken::Create();
   MessageTrackerTestObserver observer(message_id);
-  message_tracker()->SetMessageStaleTimeoutForTest(base::Seconds(1));
-  message_tracker()->NotifyStartTrackingMessageDelivery(
-      message_id, MessageTracker::MessageDeliveryStage::kUnknown,
-      MessageTracker::MessageDestinationType::kServiceWorker);
-  message_tracker()->NotifyUpdateMessageDelivery(
-      message_id,
-      MessageTracker::MessageDeliveryStage::kOpenChannelRequestReceived);
+  message_tracker()->SetStageHungTimeoutForTest(base::Microseconds(1));
+  message_tracker()->StartTrackingMessagingStage(
+      message_id, "Extensions.MessagePipeline.OpenChannelStatus",
+      mojom::ChannelType::kSendMessage);
 
-  // This will wait for the stale check created by
+  {
+    SCOPED_TRACE(
+        "waiting for timeout check to run after starting new message tracking");
+    observer.WaitForMessageHung();
+  }
+
+  histogram_tester().ExpectTotalCount(
+      "Extensions.MessagePipeline.OpenChannelStatus.SendMessageChannel",
+      /*expected_count=*/1);
+  histogram_tester().ExpectBucketCount(
+      "Extensions.MessagePipeline.OpenChannelStatus.SendMessageChannel",
+      MessageTracker::OpenChannelMessagePipelineResult::kHung,
+      /*expected_count=*/1);
+}
+
+// Tests that the tracker emits success metrics when an extension message hung
+// check occurs *after* a message has successfully completed its messaging
+// stage.
+TEST_F(MessageTrackerUnitTest, NotifyOpenedMessageIfStoppedBeforeHung) {
+  base::UnguessableToken message_id = base::UnguessableToken::Create();
+  MessageTrackerTestObserver observer(message_id);
+  message_tracker()->SetStageHungTimeoutForTest(base::Seconds(1));
+  message_tracker()->StartTrackingMessagingStage(
+      message_id, "Extensions.MessagePipeline.OpenChannelStatus",
+      mojom::ChannelType::kSendMessage);
+  message_tracker()->StopTrackingMessagingStage(
+      message_id, MessageTracker::OpenChannelMessagePipelineResult::kOpened);
+
+  // This will wait for the hung check created by
   // NotifyStartTrackingMessageDelivery(), then proceed.
   {
     SCOPED_TRACE(
-        "waiting for stale check to run after starting and updating new "
+        "waiting for hung check to run after starting and updating new "
         "message tracking");
-    observer.WaitForTrackingStale();
+    observer.WaitForMessageHung();
   }
 
-  // This will prevent the stale check that runs from
-  // NotifyUpdateMessageDelivery() to prevent emitting stale metrics.
-  message_tracker()->NotifyStopTrackingMessageDelivery(message_id);
-
-  histogram_tester().ExpectBucketCount(
-      "Extensions.MessagePipeline.MessageCompleted.ServiceWorker",
-      /*sample=*/true, /*expected_count=*/1);
   histogram_tester().ExpectTotalCount(
-      "Extensions.MessagePipeline.MessageCompletedTime.ServiceWorker",
+      "Extensions.MessagePipeline.OpenChannelStatus.SendMessageChannel",
       /*expected_count=*/1);
-  histogram_tester().ExpectTotalCount(
-      "Extensions.MessagePipeline.MessageStaleAtStage.ServiceWorker",
-      /*expected_count=*/0);
+  histogram_tester().ExpectBucketCount(
+      "Extensions.MessagePipeline.OpenChannelStatus.SendMessageChannel",
+      MessageTracker::OpenChannelMessagePipelineResult::kOpened,
+      /*expected_count=*/1);
 }
 
-// Tests that the tracker correctly records and reports metrics when an
-// extension message stale check occurs *before* an update call occurs which
-// means the message is stale.
-TEST_F(MessageTrackerUnitTest, NotifyStaleMessageBeforeUpdateToNewStage) {
+// Tests that the tracker emits failure metrics when an extension message hung
+// check occurs *before* a message has successfully completed its messaging
+// stage.
+TEST_F(MessageTrackerUnitTest, NotifyHungMessageIfStoppedAfterHung) {
   base::UnguessableToken message_id = base::UnguessableToken::Create();
   MessageTrackerTestObserver observer(message_id);
-  message_tracker()->SetMessageStaleTimeoutForTest(base::Microseconds(1));
-  message_tracker()->NotifyStartTrackingMessageDelivery(
-      message_id, MessageTracker::MessageDeliveryStage::kUnknown,
-      MessageTracker::MessageDestinationType::kServiceWorker);
+  message_tracker()->SetStageHungTimeoutForTest(base::Seconds(1));
+  message_tracker()->StartTrackingMessagingStage(
+      message_id, "Extensions.MessagePipeline.OpenChannelStatus",
+      mojom::ChannelType::kSendMessage);
 
+  // This will wait for the hung check created by
+  // NotifyStartTrackingMessageDelivery(), then proceed.
   {
     SCOPED_TRACE(
-        "waiting for stale check to run after starting new message tracking");
-    observer.WaitForTrackingStale();
+        "waiting for timeout check to run after starting and updating new "
+        "message tracking");
+    observer.WaitForMessageHung();
   }
 
-  message_tracker()->NotifyUpdateMessageDelivery(
-      message_id,
-      MessageTracker::MessageDeliveryStage::kOpenChannelRequestReceived);
+  message_tracker()->StopTrackingMessagingStage(
+      message_id, MessageTracker::OpenChannelMessagePipelineResult::kOpened);
 
-  histogram_tester().ExpectBucketCount(
-      "Extensions.MessagePipeline.MessageCompleted.ServiceWorker",
-      /*sample=*/false,
+  histogram_tester().ExpectTotalCount(
+      "Extensions.MessagePipeline.OpenChannelStatus.SendMessageChannel",
       /*expected_count=*/1);
   histogram_tester().ExpectBucketCount(
-      "Extensions.MessagePipeline.MessageStaleAtStage.ServiceWorker",
-      MessageTracker::MessageDeliveryStage::kUnknown, /*expected_count=*/1);
-}
-
-// Tests that the tracker correctly records and reports metrics when an
-// extension message becomes stale *before* a late subsequent stop tracking call
-// occurs.
-TEST_F(MessageTrackerUnitTest, NotifyStaleMessageWithLateStop) {
-  base::UnguessableToken message_id = base::UnguessableToken::Create();
-  MessageTrackerTestObserver observer(message_id);
-  message_tracker()->SetMessageStaleTimeoutForTest(base::Microseconds(1));
-  message_tracker()->NotifyStartTrackingMessageDelivery(
-      message_id, MessageTracker::MessageDeliveryStage::kUnknown,
-      MessageTracker::MessageDestinationType::kServiceWorker);
-
-  {
-    SCOPED_TRACE(
-        "waiting for stale check to run after starting new message tracking");
-    observer.WaitForTrackingStale();
-  }
-
-  message_tracker()->NotifyStopTrackingMessageDelivery(message_id);
-
-  histogram_tester().ExpectBucketCount(
-      "Extensions.MessagePipeline.MessageCompleted.ServiceWorker",
-      /*sample=*/false,
+      "Extensions.MessagePipeline.OpenChannelStatus.SendMessageChannel",
+      MessageTracker::OpenChannelMessagePipelineResult::kHung,
       /*expected_count=*/1);
-  histogram_tester().ExpectBucketCount(
-      "Extensions.MessagePipeline.MessageStaleAtStage.ServiceWorker",
-      MessageTracker::MessageDeliveryStage::kUnknown, /*expected_count=*/1);
 }
 
 }  // namespace extensions

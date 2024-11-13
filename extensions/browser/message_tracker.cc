@@ -11,30 +11,20 @@
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 
 namespace extensions {
 
 namespace {
 
 MessageTracker::TestObserver* g_test_observer = nullptr;
-
-std::string GetBackgroundStringForBackgroundType(
-    MessageTracker::MessageDestinationType& type) {
-  switch (type) {
-    case MessageTracker::MessageDestinationType::kUnknown:
-      return "Unknown";
-    case MessageTracker::MessageDestinationType::kNonServiceWorker:
-      return "NonServiceWorker";
-    case MessageTracker::MessageDestinationType::kServiceWorker:
-      return "ServiceWorker";
-  }
-}
 
 class MessageTrackerFactory : public BrowserContextKeyedServiceFactory {
  public:
@@ -77,35 +67,29 @@ MessageTrackerFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<MessageTracker>(context);
 }
 
+const char* GetChannelTypeMetricSuffix(const mojom::ChannelType channel_type) {
+  switch (channel_type) {
+    case mojom::ChannelType::kSendMessage:
+      return "SendMessageChannel";
+    case mojom::ChannelType::kConnect:
+      return "ConnectChannel";
+    case mojom::ChannelType::kNative:
+      return "NativeChannel";
+    case mojom::ChannelType::kSendRequest:
+      return "SendRequestChannel";
+  }
+}
+
 }  // namespace
 
-MessageTracker::TrackedMessage::TrackedMessage(
-    const MessageDeliveryStage status,
-    const MessageDestinationType destination_background_type)
-    : stage_(status),
-      destination_background_type_(destination_background_type) {
-  start_time_ = base::Time::Now();
-}
-
-void MessageTracker::TrackedMessage::ResetTimeout() {
-  start_time_ = base::Time::Now();
-}
-
-MessageTracker::MessageDeliveryStage& MessageTracker::TrackedMessage::stage() {
-  return stage_;
-}
-
-MessageTracker::MessageDestinationType&
-MessageTracker::TrackedMessage::destination_background_type() {
-  return destination_background_type_;
-}
+MessageTracker::TrackedStage::TrackedStage(std::string metric_name,
+                                           mojom::ChannelType channel_type)
+    : metric_name_(std::move(metric_name)), channel_type_(channel_type) {}
 
 MessageTracker::MessageTracker(content::BrowserContext* context)
     : context_(context) {}
 
-MessageTracker::~MessageTracker() {
-  tracked_messages_.clear();
-}
+MessageTracker::~MessageTracker() = default;
 
 // static
 MessageTracker* MessageTracker::Get(content::BrowserContext* browser_context) {
@@ -119,70 +103,40 @@ BrowserContextKeyedServiceFactory* MessageTracker::GetFactory() {
   return g_factory.get();
 }
 
-void MessageTracker::NotifyStartTrackingMessageDelivery(
-    const base::UnguessableToken& message_id,
-    const MessageDeliveryStage stage,
-    const MessageDestinationType destination_background_type) {
-  CHECK(!base::Contains(tracked_messages_, message_id));
-  tracked_messages_.emplace(message_id,
-                            TrackedMessage(stage, destination_background_type));
+void MessageTracker::StartTrackingMessagingStage(
+    const base::UnguessableToken& tracking_id,
+    std::string base_metric_name,
+    mojom::ChannelType channel_type) {
+  CHECK(!base::Contains(tracked_stages_, tracking_id));
+  tracked_stages_.emplace(
+      tracking_id, TrackedStage(std::move(base_metric_name), channel_type));
 
   // Eventually emits metrics on whether the message sat in this stage past the
   // timeout.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&MessageTracker::NotifyStaleMessage,
-                     weak_factory_.GetWeakPtr(), message_id, stage),
-      /*delay=*/message_stale_timeout_);
+      base::BindOnce(&MessageTracker::OnMessageTimeoutElapsed,
+                     weak_factory_.GetWeakPtr(), tracking_id),
+      /*delay=*/stage_timeout_);
 }
 
-void MessageTracker::NotifyUpdateMessageDelivery(
+void MessageTracker::StopTrackingMessagingStage(
     const base::UnguessableToken& message_id,
-    const MessageDeliveryStage new_stage) {
-  TrackedMessage* tracked_message = GetTrackedMessage(message_id);
-
-  // A message might've become stale and then later we try updating its stage,
-  // but we've removed its tracking due to stale.
-  if (!tracked_message) {
+    OpenChannelMessagePipelineResult result) {
+  TrackedStage* tracked_stage = GetTrackedStage(message_id);
+  // A message might've been delayed too long and already cleared or two paths
+  // might try to stop tracking for `message_id` and one of them finished first.
+  if (!tracked_stage) {
     return;
   }
 
-  tracked_message->ResetTimeout();
-  // A message should only move "forward" in the messaging stages.
-  CHECK(new_stage > tracked_message->stage());
-  tracked_message->stage() = new_stage;
+  const std::string metric_name = base::StringPrintf(
+      "%s.%s", tracked_stage->metric_name(),
+      GetChannelTypeMetricSuffix(tracked_stage->channel_type()));
 
-  // Eventually emits metrics on whether the message sat in this stage past the
-  // timeout.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&MessageTracker::NotifyStaleMessage,
-                     weak_factory_.GetWeakPtr(), message_id, new_stage),
-      /*delay=*/message_stale_timeout_);
-}
+  base::UmaHistogramEnumeration(metric_name, result);
 
-void MessageTracker::NotifyStopTrackingMessageDelivery(
-    const base::UnguessableToken& message_id) {
-  TrackedMessage* tracked_message = GetTrackedMessage(message_id);
-  // A message might've become stale and then later we try to stop tracking it
-  // or two paths might try to stop tracking and one of them finished first.
-  if (!tracked_message) {
-    return;
-  }
-
-  std::string background_suffix = GetBackgroundStringForBackgroundType(
-      tracked_message->destination_background_type());
-  base::UmaHistogramBoolean(
-      base::StrCat({"Extensions.MessagePipeline.MessageCompleted", ".",
-                    background_suffix}),
-      true);
-  base::UmaHistogramCustomTimes(
-      base::StrCat({"Extensions.MessagePipeline.MessageCompletedTime", ".",
-                    background_suffix}),
-      base::Time::Now() - tracked_message->start_time(), base::Microseconds(1),
-      base::Seconds(30), /*buckets=*/50);
-
-  tracked_messages_.erase(message_id);
+  tracked_stages_.erase(message_id);
 }
 
 MessageTracker::TestObserver::TestObserver() = default;
@@ -194,52 +148,40 @@ void MessageTracker::SetObserverForTest(
   g_test_observer = observer;
 }
 
-MessageTracker::TrackedMessage* MessageTracker::GetTrackedMessage(
+MessageTracker::TrackedStage* MessageTracker::GetTrackedStage(
     const base::UnguessableToken& message_id) {
-  auto it = tracked_messages_.find(message_id);
-  return it == tracked_messages_.end() ? nullptr : &it->second;
+  auto it = tracked_stages_.find(message_id);
+  return it == tracked_stages_.end() ? nullptr : &it->second;
 }
 
-void MessageTracker::NotifyStaleMessage(
-    const base::UnguessableToken message_id,
-    const MessageDeliveryStage previous_stage) {
+void MessageTracker::OnMessageTimeoutElapsed(
+    const base::UnguessableToken& message_id) {
   // Ensure the test observer is notified before we exit the method, but
   // after we do any work related to handling the registration.
   base::ScopedClosureRunner notify_test_observer(base::BindOnce(
       [](const base::UnguessableToken& message_id) {
         if (g_test_observer) {
-          g_test_observer->OnTrackingStale(message_id);
+          g_test_observer->OnStageTimeoutRan(message_id);
         }
       },
       message_id));
 
-  TrackedMessage* tracked_message = GetTrackedMessage(message_id);
+  TrackedStage* tracked_stage = GetTrackedStage(message_id);
 
   // The message is no longer being tracked (e.g. completed process
   // successfully).
-  if (!tracked_message) {
+  if (!tracked_stage) {
     return;
   }
 
-  // Message moved onto the next stage so return early. Another
-  // NotifyStaleMessage() will check the new status.
-  if (tracked_message->stage() != previous_stage) {
-    return;
-  }
+  const std::string metric_name = base::StringPrintf(
+      "%s.%s", tracked_stage->metric_name(),
+      GetChannelTypeMetricSuffix(tracked_stage->channel_type()));
 
-  // Message is stale so emit fail metrics and cleanup from tracking.
-  std::string background_suffix = GetBackgroundStringForBackgroundType(
-      tracked_message->destination_background_type());
-  base::UmaHistogramBoolean(
-      base::StrCat({"Extensions.MessagePipeline.MessageCompleted", ".",
-                    background_suffix}),
-      false);
-  base::UmaHistogramEnumeration(
-      base::StrCat({"Extensions.MessagePipeline.MessageStaleAtStage", ".",
-                    background_suffix}),
-      tracked_message->stage());
-
-  tracked_messages_.erase(message_id);
+  // Message is delayed too long so emit fail metrics and cleanup from tracking.
+  base::UmaHistogramEnumeration(metric_name,
+                                OpenChannelMessagePipelineResult::kHung);
+  tracked_stages_.erase(message_id);
 }
 
 }  // namespace extensions

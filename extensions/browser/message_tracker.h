@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 
 namespace base {
 class UnguessableToken;
@@ -23,36 +24,30 @@ class BrowserContext;
 
 namespace extensions {
 
-// Tracks an extension message from the browser process as it is sent to a
-// background context and emits a metric if the message stays in one stage of
-// the message process for too long and becomes "stale".
+// Tracks an extension message from the browser process as it's sent to a
+// background context and emits metrics on whether it succeeds or fails.
 class MessageTracker : public KeyedService {
  public:
-  // Although this enum isn't directly used as a histogram value, it is used to
-  // name histograms. If the values change in any way, then the usages should be
-  // updated in this class and histograms.xml.
-  enum class MessageDestinationType {
-    // The message destination is not currently at the current point in the
-    // messaging processing.
+  enum class OpenChannelMessagePipelineResult {
     kUnknown = 0,
-    // Extension contexts that are not a service worker (persistent background
-    // pages, event pages, content scripts, popup scripts, etc).
-    kNonServiceWorker = 1,
-    // An extension's background service worker context (script).
-    kServiceWorker = 2,
-
+    kOpened = 1,
+    kHung = 2,
+    kNoReceivers = 3,
+    kMaxValue = kNoReceivers,
   };
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class MessageDeliveryStage {
-    kUnknown = 0,
-    // Browser received request from renderer to open a channel prior to sending
-    // message.
-    kOpenChannelRequestReceived = 1,
-    // TODO(crbug.com/371011217): Add new values as each stage of the messaging
-    // process is tracked.
-    kMaxValue = kOpenChannelRequestReceived,
+  class TestObserver {
+   public:
+    TestObserver();
+
+    TestObserver(const TestObserver&) = delete;
+    TestObserver& operator=(const TestObserver&) = delete;
+
+    virtual ~TestObserver();
+
+    // Notifies the observer when the hung detection for a message ran (but
+    // doesn't guarantee the the message was hung).
+    virtual void OnStageTimeoutRan(const base::UnguessableToken& message_id) {}
   };
 
   explicit MessageTracker(content::BrowserContext* context);
@@ -65,91 +60,59 @@ class MessageTracker : public KeyedService {
   // Returns the KeyedServiceFactory for the MessageTracker.
   static BrowserContextKeyedServiceFactory* GetFactory();
 
-  class TrackedMessage {
+  class TrackedStage {
    public:
-    explicit TrackedMessage(
-        const MessageDeliveryStage stage,
-        const MessageDestinationType destination_background_type);
-    ~TrackedMessage() = default;
+    TrackedStage(std::string metric_name, mojom::ChannelType channel_type);
+    ~TrackedStage() = default;
 
-    void ResetTimeout();
-    MessageDeliveryStage& stage();
-    MessageDestinationType& destination_background_type();
-    const base::Time& start_time() { return start_time_; }
+    const std::string& metric_name() const { return metric_name_; }
+    const mojom::ChannelType& channel_type() const { return channel_type_; }
 
    private:
-    MessageDeliveryStage stage_ = MessageDeliveryStage::kUnknown;
-    MessageDestinationType destination_background_type_ =
-        MessageDestinationType::kNonServiceWorker;
-    base::Time start_time_;
+    const std::string metric_name_;
+    const mojom::ChannelType channel_type_;
   };
 
   // Notifies the tracker that a message is being sent to a background context.
-  // The message is tracked until it is delivered or becomes stale.
-  // `message_id` is a unique identifier for the message.
-  // `stage` is the initial stage of the message delivery process.
-  // `destination_background_type` indicates the type of background context
-  // the message is being sent to.
-  void NotifyStartTrackingMessageDelivery(
-      const base::UnguessableToken& message_id,
-      const MessageDeliveryStage stage,
-      const MessageDestinationType destination_background_type_);
+  // This starts a timer for `tracking_id` that will emit failure metrics if
+  // `StopTrackingMessagingStage()` is not called before within
+  // `stage_timeout_`.
+  void StartTrackingMessagingStage(const base::UnguessableToken& tracking_id,
+                                   std::string metric_name,
+                                   mojom::ChannelType channel_type);
 
-  // Notifies the tracker that a message has moved to the next stage in the
-  // messaging process. The message is tracked until it is delivered or becomes
-  // stale. This emits metrics that the message passed the previous stage
-  // successfully.
-  void NotifyUpdateMessageDelivery(const base::UnguessableToken& message_id,
-                                   const MessageDeliveryStage new_stage);
-
-  // Notifies the tracker that a message has completed the messaging process and
-  // should not longer be tracked until it is delivered or becomes stale. This
-  // emits metrics that the message passed its current (final) stage
-  // successfully.
-  void NotifyStopTrackingMessageDelivery(
-      const base::UnguessableToken& message_id);
-
-  class TestObserver {
-   public:
-    TestObserver();
-
-    TestObserver(const TestObserver&) = delete;
-    TestObserver& operator=(const TestObserver&) = delete;
-
-    virtual ~TestObserver();
-
-    // Notifies the observer when a message has been detected as stale.
-    virtual void OnTrackingStale(const base::UnguessableToken& message_id) {}
-  };
+  // Notifies the tracker that a message has successfully completed the
+  // messaging stage and should not longer be tracked. This emits success
+  // metrics.
+  void StopTrackingMessagingStage(const base::UnguessableToken& message_id,
+                                  OpenChannelMessagePipelineResult result);
 
   static void SetObserverForTest(TestObserver* observer);
 
-  void SetMessageStaleTimeoutForTest(base::TimeDelta stale_timeout) {
-    message_stale_timeout_ = stale_timeout;
+  void SetStageHungTimeoutForTest(base::TimeDelta hung_timeout) {
+    stage_timeout_ = hung_timeout;
   }
 
-  size_t GetNumberOfTrackedMessagesForTest() {
-    return tracked_messages_.size();
+  size_t GetNumberOfTrackedStagesForTest() const {
+    return tracked_stages_.size();
   }
 
  private:
-  TrackedMessage* GetTrackedMessage(const base::UnguessableToken& message_id);
+  TrackedStage* GetTrackedStage(const base::UnguessableToken& message_id);
 
-  // When run the tracked message with `message_id` is considered stale and
-  // metrics are emitted
-  void NotifyStaleMessage(const base::UnguessableToken message_id,
-                          const MessageDeliveryStage stage);
+  // When run, the tracked message with `message_id` is considered hung and
+  // metrics are emitted.
+  void OnMessageTimeoutElapsed(const base::UnguessableToken& message_id);
 
-  std::map<base::UnguessableToken, TrackedMessage> tracked_messages_;
+  // The main container for the messaging metrics data.
+  std::map<base::UnguessableToken, TrackedStage> tracked_stages_;
 
   raw_ptr<content::BrowserContext> context_;
 
   // Since we can't wait forever for a message to not arrive, 30 seconds was
-  // chosen arbitrarily as an upper bound for how long until a message is
-  // considered to (probably) never progress to the next stage in the messaging
-  // process. The class handles if a message does, after this timeout, proceed
-  // to the next stage.
-  base::TimeDelta message_stale_timeout_ = base::Seconds(30);
+  // chosen as an upper bound for how long until a stage is considered to
+  // (probably) never progress to the next stage in the messaging process.
+  base::TimeDelta stage_timeout_ = base::Seconds(30);
 
   base::WeakPtrFactory<MessageTracker> weak_factory_{this};
 };
