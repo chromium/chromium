@@ -195,7 +195,7 @@ public class KeyboardShortcuts {
             case KeyEvent.KEYCODE_F3:
             case SHIFT | KeyEvent.KEYCODE_F3:
                 return KeyboardShortcutsSemanticMeaning.FIND_IN_PAGE;
-            case CTRL | SHIFT | KeyEvent.KEYCODE_B:
+            case CTRL | SHIFT | KeyEvent.KEYCODE_O:
                 return KeyboardShortcutsSemanticMeaning.OPEN_BOOKMARKS;
             case KeyEvent.KEYCODE_BOOKMARK:
             case CTRL | KeyEvent.KEYCODE_D:
@@ -383,7 +383,7 @@ public class KeyboardShortcuts {
                 context,
                 chromeFeatureShortcutGroup,
                 R.string.keyboard_shortcut_bookmark_manager,
-                KeyEvent.KEYCODE_B,
+                KeyEvent.KEYCODE_O,
                 ctrlShift);
         addShortcut(
                 context,
