@@ -130,17 +130,31 @@ void OverviewSessionMetricsRecorder::OnOverviewModeEndingAnimationComplete(
 }
 
 bool OverviewSessionMetricsRecorder::IsDeskBarOpen() const {
-  CHECK(session_);
-  return session_->GetGridWithRootWindow(Shell::GetPrimaryRootWindow())
-      ->desks_bar_view();
+  return IsTrueForAnyOverviewGrid(base::BindRepeating(
+      [](const OverviewGrid& grid) { return !!grid.desks_bar_view(); }));
 }
 
 bool OverviewSessionMetricsRecorder::IsRenderingDeskBarWithMiniViews() const {
-  return IsDeskBarOpen() &&
-         !session_->GetGridWithRootWindow(Shell::GetPrimaryRootWindow())
-              ->desks_bar_view()
-              ->mini_views()
-              .empty();
+  return IsTrueForAnyOverviewGrid(
+      base::BindRepeating([](const OverviewGrid& grid) {
+        return grid.desks_bar_view() &&
+               !grid.desks_bar_view()->mini_views().empty();
+      }));
+}
+
+bool OverviewSessionMetricsRecorder::IsTrueForAnyOverviewGrid(
+    const base::RepeatingCallback<bool(const OverviewGrid& grid)>& predicate)
+    const {
+  CHECK(session_);
+  // Note an overview grid for the primary root window may not exist in some
+  // corner cases (see http://crbug.com/378501600).
+  for (const auto& root_window : Shell::GetAllRootWindows()) {
+    auto* const overview_grid = session_->GetGridWithRootWindow(root_window);
+    if (overview_grid && predicate.Run(*overview_grid)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace ash
