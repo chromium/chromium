@@ -378,6 +378,7 @@ bool PlusAddressServiceImpl::IsRefreshingSupported(const url::Origin& origin) {
 void PlusAddressServiceImpl::ConfirmPlusAddress(
     const url::Origin& origin,
     const PlusAddress& plus_address,
+    bool is_manual_fallback,
     PlusAddressRequestCallback on_completed) {
   if (!IsEnabled()) {
     std::move(on_completed)
@@ -403,7 +404,7 @@ void PlusAddressServiceImpl::ConfirmPlusAddress(
                      base::Unretained(this))
           .Then(base::BindOnce(
               &PlusAddressServiceImpl::MaybeTriggerUserPerceptionSurvey,
-              base::Unretained(this), plus_address))
+              base::Unretained(this), plus_address, is_manual_fallback))
           .Then(std::move(on_completed)));
 }
 
@@ -418,6 +419,7 @@ const PlusProfileOrError& PlusAddressServiceImpl::HandleCreateOrConfirmResponse(
 const PlusProfileOrError&
 PlusAddressServiceImpl::MaybeTriggerUserPerceptionSurvey(
     const PlusAddress& requested_address,
+    bool is_manual_fallback,
     const PlusProfileOrError& maybe_profile) {
   // If `maybe_profile` contains a confirmed plus profile, it might different
   // from the requested plus address. This can happen if the user tries to
@@ -425,10 +427,14 @@ PlusAddressServiceImpl::MaybeTriggerUserPerceptionSurvey(
   // affiliated plus address. In this case, the HaTS survey should not be
   // triggered because no new plus address was created.
   if (maybe_profile.has_value() && maybe_profile->is_confirmed &&
-      requested_address == maybe_profile->plus_address &&
-      GetPlusProfiles().size() > 2) {
-    TriggerUserPerceptionSurvey(
-        hats::SurveyType::kCreatedMultiplePlusAddresses);
+      requested_address == maybe_profile->plus_address) {
+    if (is_manual_fallback) {
+      TriggerUserPerceptionSurvey(
+          hats::SurveyType::kCreatedPlusAddressViaManualFallback);
+    } else if (GetPlusProfiles().size() > 2) {
+      TriggerUserPerceptionSurvey(
+          hats::SurveyType::kCreatedMultiplePlusAddresses);
+    }
   }
   return maybe_profile;
 }
@@ -703,6 +709,7 @@ void PlusAddressServiceImpl::OnAcceptedInlineSuggestion(
     const url::Origin& primary_main_frame_origin,
     base::span<const Suggestion> current_suggestions,
     size_t current_suggestion_index,
+    bool is_manual_fallback,
     UpdateSuggestionsCallback update_suggestions_callback,
     HideSuggestionsCallback hide_suggestions_callback,
     PlusAddressCallback fill_field_callback,
@@ -729,6 +736,7 @@ void PlusAddressServiceImpl::OnAcceptedInlineSuggestion(
 
   ConfirmPlusAddress(
       primary_main_frame_origin, std::move(requested_plus_address),
+      is_manual_fallback,
       base::BindOnce(&PlusAddressServiceImpl::OnConfirmInlineCreation,
                      base::Unretained(this),
                      std::move(hide_suggestions_callback),

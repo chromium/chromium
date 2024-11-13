@@ -337,12 +337,14 @@ AutofillAiDelegate* ChromeAutofillClient::GetAutofillAiDelegate() {
 
 void ChromeAutofillClient::OfferPlusAddressCreation(
     const url::Origin& main_frame_origin,
+    bool is_manual_fallback,
     PlusAddressCallback callback) {
   // The controller is owned by `web_contents()` (via `WebContentsUserData`).
   plus_addresses::PlusAddressCreationController* controller =
       plus_addresses::PlusAddressCreationController::GetOrCreate(
           web_contents());
-  controller->OfferCreation(main_frame_origin, std::move(callback));
+  controller->OfferCreation(main_frame_origin, is_manual_fallback,
+                            std::move(callback));
 }
 
 void ChromeAutofillClient::ShowPlusAddressError(

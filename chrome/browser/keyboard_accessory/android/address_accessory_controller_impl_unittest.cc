@@ -105,7 +105,7 @@ class MockAutofillClient : public TestContentAutofillClient {
   using autofill::TestContentAutofillClient::TestContentAutofillClient;
   MOCK_METHOD(void,
               OfferPlusAddressCreation,
-              (const url::Origin&, PlusAddressCallback),
+              (const url::Origin&, bool, PlusAddressCallback),
               (override));
   MOCK_METHOD(url::Origin,
               GetLastCommittedPrimaryMainFrameOrigin,
@@ -503,11 +503,12 @@ TEST_F(AddressAccessoryControllerTest, TriggersPlusAddressCreationBottomSheet) {
       .WillOnce(Return(field_id));
   EXPECT_CALL(mock_manual_filling_controller_, Hide);
   const std::string plus_address = "example@gmail.com";
-  EXPECT_CALL(autofill_client(), OfferPlusAddressCreation)
-      .WillOnce(
-          [&plus_address](const url::Origin&, PlusAddressCallback callback) {
-            std::move(callback).Run(plus_address);
-          });
+  EXPECT_CALL(autofill_client(),
+              OfferPlusAddressCreation(_, /*is_manual_fallback=*/false, _))
+      .WillOnce([&plus_address](const url::Origin&, bool,
+                                PlusAddressCallback callback) {
+        std::move(callback).Run(plus_address);
+      });
   EXPECT_CALL(main_frame_autofill_driver(),
               ApplyFieldAction(mojom::FieldActionType::kReplaceAll,
                                mojom::ActionPersistence::kFill, field_id,

@@ -173,6 +173,7 @@ void AddressAccessoryControllerImpl::OnOptionSelected(
               ContentAutofillClient::FromWebContents(&GetWebContents())) {
         client->OfferPlusAddressCreation(
             client->GetLastCommittedPrimaryMainFrameOrigin(),
+            /*is_manual_fallback=*/false,
             base::BindOnce(
                 &AddressAccessoryControllerImpl::OnPlusAddressCreated,
                 weak_ptr_factory_.GetWeakPtr(),

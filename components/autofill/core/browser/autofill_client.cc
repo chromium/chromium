@@ -88,6 +88,7 @@ AutofillAiDelegate* AutofillClient::GetAutofillAiDelegate() {
 
 void AutofillClient::OfferPlusAddressCreation(
     const url::Origin& main_frame_origin,
+    bool is_manual_fallback,
     PlusAddressCallback callback) {}
 
 void AutofillClient::ShowPlusAddressError(

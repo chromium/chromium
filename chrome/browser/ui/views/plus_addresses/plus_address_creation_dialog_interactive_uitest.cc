@@ -237,7 +237,8 @@ class PlusAddressCreationDialogInteractiveTest : public InteractiveBrowserTest {
       PlusAddressCreationController* controller =
           PlusAddressCreationController::GetOrCreate(
               browser()->tab_strip_model()->GetActiveWebContents());
-      controller->OfferCreation(facet, future_.GetCallback());
+      controller->OfferCreation(facet, /*is_manual_fallback=*/false,
+                                future_.GetCallback());
       ASSERT_FALSE(future_.IsReady());
     });
   }
@@ -498,7 +499,8 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationDialogInteractiveTest, DoubleInit) {
             PlusAddressCreationController* controller =
                 PlusAddressCreationController::GetOrCreate(
                     browser()->tab_strip_model()->GetActiveWebContents());
-            controller->OfferCreation(facet, double_init_future.GetCallback());
+            controller->OfferCreation(facet, /*is_manual_fallback=*/false,
+                                      double_init_future.GetCallback());
           }),
           WaitForViewProperty(
               PlusAddressCreationView::kPlusAddressConfirmButtonElementId,

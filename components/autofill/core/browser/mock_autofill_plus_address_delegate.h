@@ -74,6 +74,7 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
               (const url::Origin&,
                base::span<const Suggestion>,
                size_t,
+               bool,
                UpdateSuggestionsCallback,
                HideSuggestionsCallback,
                PlusAddressCallback,

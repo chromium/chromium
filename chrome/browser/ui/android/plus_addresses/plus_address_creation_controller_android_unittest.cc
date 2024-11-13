@@ -138,7 +138,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, AcceptCreation) {
   base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
   FastForwardBy(kDuration);
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
@@ -185,7 +185,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
   base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
   FastForwardBy(kDuration);
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
@@ -212,7 +212,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeAccept) {
   base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
   FastForwardBy(kDuration);
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
@@ -258,7 +258,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeCancel) {
   base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
   FastForwardBy(kDuration);
   controller->OnCanceled();
   EXPECT_FALSE(future.IsReady());
@@ -292,7 +292,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, RefreshPlusAddress) {
   base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
   controller->OnRefreshClicked();
   EXPECT_EQ(user_action_tester.GetActionCount("PlusAddresses.Refreshed"), 1);
   FastForwardBy(kDuration);
@@ -328,7 +328,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnConfirmedError) {
   base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
 
   plus_address_service().set_should_fail_to_confirm(true);
   FastForwardBy(kDuration);
@@ -378,7 +378,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnReservedError) {
 
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
   FastForwardBy(kDuration);
   controller->OnCanceled();
 
@@ -418,7 +418,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
   EXPECT_FALSE(controller->get_plus_profile_for_testing().has_value());
   // Offering creation calls Reserve() and sets the profile.
   controller->OfferCreation(url::Origin::Create(GURL("https://foo.example")),
-                            base::DoNothing());
+                            /*is_manual_fallback=*/false, base::DoNothing());
   // Destroying the modal clears the profile
   EXPECT_TRUE(controller->get_plus_profile_for_testing().has_value());
   controller->OnDialogDestroyed();
@@ -439,7 +439,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ModalCanceled) {
   base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
   FastForwardBy(kDuration);
   controller->OnCanceled();
   EXPECT_FALSE(future.IsReady());
@@ -482,7 +482,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
   base::test::TestFuture<const std::string&> autofill_future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://kirubelwashere.example")),
-      autofill_future.GetCallback());
+      /*is_manual_fallback=*/false, autofill_future.GetCallback());
   ASSERT_FALSE(autofill_future.IsReady());
 
   // Confirmation should fill the field, but not call ConfirmPlusAddress.
@@ -540,7 +540,7 @@ TEST_F(PlusAddressCreationControllerAndroidDisabledTest, ConfirmedNullService) {
 
   base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(url::Origin::Create(GURL("https://test.example")),
-                            future.GetCallback());
+                            /*is_manual_fallback=*/false, future.GetCallback());
   EXPECT_CHECK_DEATH(controller->OnConfirmed());
   EXPECT_FALSE(future.IsReady());
 }

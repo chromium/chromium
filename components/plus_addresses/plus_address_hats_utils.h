@@ -27,6 +27,9 @@ enum class SurveyType {
   kDeclinedFirstTimeCreate = 2,
   // The user has created their 3rd, 4th, ... plus address.
   kCreatedMultiplePlusAddresses = 3,
+  // The user has created a plus address by triggering the popup via the Chrome
+  // context menu.
+  kCreatedPlusAddressViaManualFallback = 4,
 };
 
 std::map<std::string, std::string> GetPlusAddressHatsData(

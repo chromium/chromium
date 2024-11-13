@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest, OfferUi) {
   base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.com")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
   controller->OnConfirmed();
@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
   base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.com")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
 
@@ -106,13 +106,13 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
   base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.com")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
 
   // Then, offer creation a second time, without first dismissing the UI.
   base::test::TestFuture<const std::string&> second_future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.com")),
-      second_future.GetCallback());
+      /*is_manual_fallback=*/false, second_future.GetCallback());
 
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
@@ -131,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest, Cancel) {
   base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.com")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
   // Then, cancel, and ensure that `future.GetCallback()` is not run.
   EXPECT_FALSE(future.IsReady());
   controller->OnCanceled();
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
   base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.com")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
   // Then, cancel, destroy, and ensure that `future.GetCallback()` is not run.
   controller->OnCanceled();
   controller->OnDialogDestroyed();
@@ -160,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
   base::test::TestFuture<const std::string&> second_future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.com")),
-      second_future.GetCallback());
+      /*is_manual_fallback=*/false, second_future.GetCallback());
   controller->OnConfirmed();
   EXPECT_TRUE(second_future.IsReady());
   EXPECT_EQ(second_future.Get(), plus_addresses::test::kFakePlusAddress);
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(PlusAddressCreationViewAndroidBrowserTest,
   // First, offer creation.
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.com")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
   // Next, close the web contents. The view and controller will be destroyed.

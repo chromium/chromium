@@ -227,7 +227,7 @@ class MockAutofillClient : public autofill::TestContentAutofillClient {
   using autofill::TestContentAutofillClient::TestContentAutofillClient;
   MOCK_METHOD(void,
               OfferPlusAddressCreation,
-              (const url::Origin&, autofill::PlusAddressCallback),
+              (const url::Origin&, bool, autofill::PlusAddressCallback),
               (override));
 };
 
@@ -1868,8 +1868,9 @@ TEST_F(PasswordAccessoryControllerTest,
       /*is_field_eligible_for_manual_generation=*/false);
 
   const std::string plus_address = "example@gmail.com";
-  EXPECT_CALL(autofill_client(), OfferPlusAddressCreation)
-      .WillOnce([&plus_address](const url::Origin&,
+  EXPECT_CALL(autofill_client(),
+              OfferPlusAddressCreation(_, /*is_manual_fallback=*/false, _))
+      .WillOnce([&plus_address](const url::Origin&, bool,
                                 autofill::PlusAddressCallback callback) {
         std::move(callback).Run(plus_address);
       });

@@ -266,7 +266,7 @@ class MockAutofillClient : public TestAutofillClient {
               (override));
   MOCK_METHOD(void,
               OfferPlusAddressCreation,
-              (const url::Origin&, PlusAddressCallback),
+              (const url::Origin&, bool, PlusAddressCallback),
               (override));
   MOCK_METHOD(void,
               ShowPlusAddressAffiliationError,
@@ -2212,8 +2212,9 @@ class AutofillExternalDelegatePlusAddressUnitTest
   const std::vector<Suggestion>& suggestions() const { return suggestions_; }
 
   void ShowPlusAddressInlineSuggestion(
-      std::optional<std::u16string> plus_address) {
-    IssueOnQuery();
+      std::optional<std::u16string> plus_address,
+      AutofillSuggestionTriggerSource trigger_source = kDefaultTriggerSource) {
+    IssueOnQuery(trigger_source);
 
     suggestions_.emplace_back(/*main_text=*/u"Create plus address",
                               SuggestionType::kCreateNewPlusAddressInline);
@@ -2288,14 +2289,12 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 
   IssueOnQuery();
 
-  base::HistogramTester histogram_tester;
   EXPECT_CALL(client(), ShowAutofillSuggestions(
                             PopupOpenArgsAre(SuggestionVectorIdsAre(
                                 SuggestionType::kCreateNewPlusAddress)),
                             _));
   std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(/*main_text=*/u"",
-                           SuggestionType::kCreateNewPlusAddress);
+  suggestions.emplace_back(SuggestionType::kCreateNewPlusAddress);
   OnSuggestionsReturned(queried_field().global_id(), suggestions);
 
   EXPECT_CALL(driver(), RendererShouldClearPreviewedForm());
@@ -2310,8 +2309,65 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
 
   // Mock out the plus address creation logic to ensure it is deterministic and
   // independent of the client implementations in //chrome or //ios.
-  EXPECT_CALL(client(), OfferPlusAddressCreation)
-      .WillOnce([&](const url::Origin& origin, PlusAddressCallback callback) {
+  EXPECT_CALL(client(),
+              OfferPlusAddressCreation(_, /*is_manual_fallback=*/false, _))
+      .WillOnce([&](const url::Origin& origin, bool is_manual_fallback,
+                    PlusAddressCallback callback) {
+        std::move(callback).Run(
+            base::UTF16ToUTF8(kMockPlusAddressForCreationCallback));
+      });
+  // `kMockPlusAddressForCreationCallback` is returned in the callback from the
+  // mocked `OfferPlusAddressCreation()`. Ensure it is filled (vs, say, the
+  // empty text of the suggestion).
+  EXPECT_CALL(manager(),
+              FillOrPreviewField(mojom::ActionPersistence::kFill,
+                                 mojom::FieldActionType::kReplaceAll,
+                                 HasQueriedFormId(), HasQueriedFieldId(),
+                                 kMockPlusAddressForCreationCallback,
+                                 SuggestionType::kCreateNewPlusAddress,
+                                 std::optional(EMAIL_ADDRESS)));
+  external_delegate().DidAcceptSuggestion(suggestions[0],
+                                          SuggestionPosition{.row = 0});
+}
+
+// Tests the scenario when the Autofill is triggered manually from the Chrome
+// context menu. Mock out the new plus address creation flow, and ensure that
+// its completion results in the field being filled with the resulting plus
+// address.
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+       PlusAddressSuggestionsAreTriggeredManually) {
+  const std::u16string kMockPlusAddressForCreationCallback =
+      u"test+1234@test.example";
+
+  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
+
+  EXPECT_CALL(
+      client(),
+      ShowAutofillSuggestions(
+          PopupOpenArgsAre(
+              SuggestionVectorIdsAre(SuggestionType::kCreateNewPlusAddress),
+              AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
+          _));
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(SuggestionType::kCreateNewPlusAddress);
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+
+  EXPECT_CALL(driver(), RendererShouldClearPreviewedForm());
+  external_delegate().DidSelectSuggestion(suggestions[0]);
+  EXPECT_CALL(client(), HideAutofillSuggestions(
+                            SuggestionHidingReason::kAcceptSuggestion));
+  EXPECT_CALL(plus_address_delegate(),
+              RecordAutofillSuggestionEvent(
+                  MockAutofillPlusAddressDelegate::SuggestionEvent::
+                      kCreateNewPlusAddressChosen));
+  EXPECT_CALL(plus_address_delegate(), DidFillPlusAddress).Times(0);
+
+  // Mock out the plus address creation logic to ensure it is deterministic and
+  // independent of the client implementations in //chrome or //ios.
+  EXPECT_CALL(client(),
+              OfferPlusAddressCreation(_, /*is_manual_fallback=*/true, _))
+      .WillOnce([&](const url::Origin& origin, bool is_manual_fallback,
+                    PlusAddressCallback callback) {
         std::move(callback).Run(
             base::UTF16ToUTF8(kMockPlusAddressForCreationCallback));
       });
@@ -2562,11 +2618,12 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest, PlusAddressInlineAccepted) {
     EXPECT_CALL(plus_address_delegate(),
                 OnAcceptedInlineSuggestion(
                     _, base::span<const Suggestion>(suggestions()),
-                    /*current_suggestion_index=*/0, _, _, _, _, _, _))
+                    /*current_suggestion_index=*/0,
+                    /*is_manual_fallback=*/false, _, _, _, _, _, _))
         .WillOnce(
             [&](const url::Origin& primary_main_frame_origin,
                 base::span<const Suggestion> current_suggestions,
-                size_t current_suggestion_index,
+                size_t current_suggestion_index, bool is_manual_fallback,
                 UpdateSuggestionsCallback update_suggestions_callback,
                 HideSuggestionsCallback hide_suggestions_callback,
                 PlusAddressCallback fill_field_callback,
@@ -2626,8 +2683,9 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
   EXPECT_CALL(plus_address_delegate(),
               OnAcceptedInlineSuggestion(
                   _, base::span<const Suggestion>(suggestions()),
-                  /*current_suggestion_index=*/0, _, _, _, _, _, _))
-      .WillOnce(MoveArg<6>(&show_affiliation_error_callback));
+                  /*current_suggestion_index=*/0, /*is_manual_fallback=*/false,
+                  _, _, _, _, _, _))
+      .WillOnce(MoveArg<7>(&show_affiliation_error_callback));
   // Simulate accepting the dialog.
   EXPECT_CALL(client(), ShowPlusAddressAffiliationError(
                             affiliated_domain, affiliated_plus_address, _))
@@ -2659,8 +2717,9 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
   EXPECT_CALL(plus_address_delegate(),
               OnAcceptedInlineSuggestion(
                   _, base::span<const Suggestion>(suggestions()),
-                  /*current_suggestion_index=*/0, _, _, _, _, _, _))
-      .WillOnce(MoveArg<7>(&show_error_callback));
+                  /*current_suggestion_index=*/0, /*is_manual_fallback=*/false,
+                  _, _, _, _, _, _))
+      .WillOnce(MoveArg<8>(&show_error_callback));
   EXPECT_CALL(
       client(),
       ShowPlusAddressError(
@@ -2684,8 +2743,38 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
   EXPECT_CALL(plus_address_delegate(),
               OnAcceptedInlineSuggestion(
                   _, base::span<const Suggestion>(suggestions()),
-                  /*current_suggestion_index=*/0, _, _, _, _, _, _))
-      .WillOnce(MoveArg<8>(&reshow_suggestions));
+                  /*current_suggestion_index=*/0, /*is_manual_fallback=*/false,
+                  _, _, _, _, _, _))
+      .WillOnce(MoveArg<9>(&reshow_suggestions));
+  EXPECT_CALL(
+      driver(),
+      RendererShouldTriggerSuggestions(
+          queried_field().global_id(),
+          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses));
+
+  external_delegate().DidAcceptSuggestion(suggestions()[0],
+                                          SuggestionPosition{.row = 0});
+  ASSERT_TRUE(reshow_suggestions);
+  std::move(reshow_suggestions).Run();
+}
+
+// Tests that `OnAcceptedInlineSuggestion` gets passed a closure that, when run,
+// triggers reshowing the plus address suggestions. `OnAcceptedInlineSuggestion`
+// is correctly notified when the Autofill was triggered via the Chrome context
+// manu entry.
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+       PlusAddressInlineAcceptedViaManualFallbackReshowSuggestions) {
+  ShowPlusAddressInlineSuggestion(
+      u"test+plus@test.example",
+      AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
+
+  base::OnceClosure reshow_suggestions;
+  EXPECT_CALL(
+      plus_address_delegate(),
+      OnAcceptedInlineSuggestion(_, base::span<const Suggestion>(suggestions()),
+                                 /*current_suggestion_index=*/0,
+                                 /*is_manual_fallback=*/true, _, _, _, _, _, _))
+      .WillOnce(MoveArg<9>(&reshow_suggestions));
   EXPECT_CALL(
       driver(),
       RendererShouldTriggerSuggestions(

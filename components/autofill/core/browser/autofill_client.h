@@ -282,6 +282,7 @@ class AutofillClient {
   // Orchestrates UI for enterprise plus address creation; no-op
   // except on supported platforms.
   virtual void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
+                                        bool is_manual_fallback,
                                         PlusAddressCallback callback);
 
   enum class PlusAddressErrorDialogType {

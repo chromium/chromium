@@ -167,7 +167,9 @@ PlusAddressCreationControllerAndroid::~PlusAddressCreationControllerAndroid() =
     default;
 void PlusAddressCreationControllerAndroid::OfferCreation(
     const url::Origin& main_frame_origin,
+    bool is_manual_fallback,
     PlusAddressCallback callback) {
+  // TODO: crbug.com/348139343 - Pass `is_manual_fallback` parameter further.
   if (view_) {
     return;
   }
@@ -246,6 +248,7 @@ void PlusAddressCreationControllerAndroid::OnConfirmed() {
     // `relevant_origin_` from another device.
     plus_address_service->ConfirmPlusAddress(
         relevant_origin_, plus_profile_->plus_address,
+        /*is_manual_fallback=*/false,
         base::BindOnce(
             &PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed,
             GetWeakPtr()));

@@ -876,6 +876,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       }
       manager_->client().OfferPlusAddressCreation(
           manager_->client().GetLastCommittedPrimaryMainFrameOrigin(),
+          trigger_source_ ==
+              AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses,
           CreatePlusAddressCallback(SuggestionType::kCreateNewPlusAddress));
       break;
     }
@@ -1804,6 +1806,8 @@ void AutofillExternalDelegate::DidAcceptCreateNewPlusAddressInlineSuggestion(
   delegate->OnAcceptedInlineSuggestion(
       manager_->client().GetLastCommittedPrimaryMainFrameOrigin(), suggestions,
       /*current_suggestion_index=*/it - suggestions.begin(),
+      /*is_manual_fallback=*/trigger_source_ ==
+          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses,
       CreateUpdateSuggestionsCallback(), CreateHideSuggestionsCallback(),
       CreatePlusAddressCallback(SuggestionType::kCreateNewPlusAddressInline),
       std::move(show_affiliation_error), std::move(show_error),

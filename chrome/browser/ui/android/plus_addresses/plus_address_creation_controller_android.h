@@ -35,6 +35,7 @@ class PlusAddressCreationControllerAndroid
 
   // PlusAddressCreationController implementation:
   void OfferCreation(const url::Origin& main_frame_origin,
+                     bool is_manual_fallback,
                      PlusAddressCallback callback) override;
   void TryAgainToReservePlusAddress() override;
   void OnRefreshClicked() override;

@@ -143,7 +143,7 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
 
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
   ASSERT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(kDuration);
@@ -186,7 +186,7 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
 
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
   ASSERT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(kDuration);
@@ -234,7 +234,7 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
 
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
   ASSERT_FALSE(future.IsReady());
 
   plus_address_service().set_should_fail_to_confirm(true);
@@ -283,7 +283,7 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, DirectCallback) {
 
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
   ASSERT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(kDuration);
@@ -320,7 +320,7 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, OnConfirmedError) {
 
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
   ASSERT_FALSE(future.IsReady());
 
   plus_address_service().set_should_fail_to_confirm(true);
@@ -364,7 +364,7 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
 
   controller->OfferCreation(
       url::Origin::Create(GURL("https://timofeywashere.example")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
   ASSERT_FALSE(future.IsReady());
 
   plus_address_service().set_should_fail_to_confirm(true);
@@ -407,7 +407,7 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, OnReservedError) {
 
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
   ASSERT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(kDuration);
@@ -445,7 +445,7 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
 
   controller->OfferCreation(
       url::Origin::Create(GURL("https://timofeywashere.example")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
   ASSERT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(kDuration);
@@ -491,7 +491,7 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
 
   controller->OfferCreation(
       url::Origin::Create(GURL("https://kirubelwashere.example")),
-      autofill_future.GetCallback());
+      /*is_manual_fallback=*/false, autofill_future.GetCallback());
   ASSERT_FALSE(autofill_future.IsReady());
 
   task_environment()->FastForwardBy(kDuration);
@@ -526,7 +526,7 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest,
   EXPECT_FALSE(controller->get_plus_profile_for_testing().has_value());
   // Offering creation calls Reserve() and sets the profile.
   controller->OfferCreation(url::Origin::Create(GURL("https://foo.example")),
-                            base::DoNothing());
+                            /*is_manual_fallback=*/false, base::DoNothing());
   EXPECT_TRUE(controller->get_plus_profile_for_testing().has_value());
   // Destroying the dialog clears the profile.
   controller->OnDialogDestroyed();
@@ -546,7 +546,7 @@ TEST_F(PlusAddressCreationControllerDesktopEnabledTest, ModalCanceled) {
   base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
 
   task_environment()->FastForwardBy(kDuration);
   controller->OnCanceled();
@@ -592,7 +592,7 @@ TEST_F(PlusAddressCreationControllerDesktopDisabledTest, NullService) {
   base::test::TestFuture<const std::string&> future;
   controller->OfferCreation(
       url::Origin::Create(GURL("https://mattwashere.example")),
-      future.GetCallback());
+      /*is_manual_fallback=*/false, future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 }
 

@@ -82,6 +82,7 @@ PlusAddressCreationControllerDesktop::GetPlusAddressSettingService() {
 
 void PlusAddressCreationControllerDesktop::OfferCreation(
     const url::Origin& main_frame_origin,
+    bool is_manual_fallback,
     PlusAddressCallback callback) {
   if (dialog_delegate_) {
     return;
@@ -97,6 +98,7 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
   }
 
   relevant_origin_ = main_frame_origin;
+  is_manual_fallback_ = is_manual_fallback;
   callback_ = std::move(callback);
 
   const bool should_show_notice = ShouldShowNotice();
@@ -145,7 +147,7 @@ void PlusAddressCreationControllerDesktop::OnConfirmed() {
     // Note: this call may fail if this modal is confirmed on the same
     // `relevant_origin_` from another device.
     plus_address_service->ConfirmPlusAddress(
-        relevant_origin_, plus_profile_->plus_address,
+        relevant_origin_, plus_profile_->plus_address, is_manual_fallback_,
         base::BindOnce(
             &PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed,
             GetWeakPtr()));
