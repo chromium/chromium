@@ -46,9 +46,13 @@ void ExecuteModelWithLogging(
           [](ModelExecutionCallbackWithLogging<ModelExecutionProto> callback,
              std::unique_ptr<ModelExecutionProto> model_execution_proto,
              OptimizationGuideModelExecutionResult result,
-             std::unique_ptr<ModelQualityLogEntry> /*unused*/) {
+             std::unique_ptr<ModelQualityLogEntry> log_entry) {
             CHECK(model_execution_proto);
             // Fill in the model_execution_proto.
+            if (result.execution_info) {
+              *model_execution_proto->mutable_model_execution_info() =
+                  *result.execution_info;
+            }
             if (result.response.has_value()) {
               using ResponseProto = std::remove_reference<
                   decltype(*model_execution_proto->mutable_response())>::type;
@@ -58,10 +62,16 @@ void ExecuteModelWithLogging(
               if (response) {
                 *model_execution_proto->mutable_response() = *response;
               }
+            } else {
+              model_execution_proto->mutable_model_execution_info()
+                  ->set_model_execution_error_enum(
+                      static_cast<uint32_t>(result.response.error().error()));
             }
-            CHECK(result.execution_info);
-            *model_execution_proto->mutable_model_execution_info() =
-                *result.execution_info;
+            // Drop the ModelQualityLogEntry from the result. This will be
+            // removed entirely as part of bug 372535824. Instead, the caller
+            // is responsible for creating a new ModelQualityLogEntry and
+            // storing the ModelExecutionProto in it.
+            ModelQualityLogEntry::Drop(std::move(log_entry));
             std::move(callback).Run(std::move(result),
                                     std::move(model_execution_proto));
           },
@@ -98,15 +108,17 @@ void ExecuteModelSessionWithLogging(
                  callback,
              const std::unique_ptr<ModelExecutionProto>& model_execution_proto,
              OptimizationGuideModelStreamingExecutionResult result) {
-            if (!result.execution_info) {
+            if (result.response.has_value() && !result.response->is_complete) {
               // This is not the final response, don't long anything yet.
               callback.Run(std::move(result), nullptr);
               return;
             }
             // Fill in the model_execution_proto.
             CHECK(model_execution_proto);
-            *model_execution_proto->mutable_model_execution_info() =
-                *result.execution_info;
+            if (result.execution_info) {
+              *model_execution_proto->mutable_model_execution_info() =
+                  *result.execution_info;
+            }
             if (result.response.has_value()) {
               using ResponseProto = std::remove_reference<
                   decltype(*model_execution_proto->mutable_response())>::type;
@@ -116,7 +128,16 @@ void ExecuteModelSessionWithLogging(
               if (response) {
                 *model_execution_proto->mutable_response() = *response;
               }
+            } else {
+              model_execution_proto->mutable_model_execution_info()
+                  ->set_model_execution_error_enum(
+                      static_cast<uint32_t>(result.response.error().error()));
             }
+            // Drop the ModelQualityLogEntry from the result. This will be
+            // removed entirely as part of bug 372535824. Instead, the caller
+            // is responsible for creating a new ModelQualityLogEntry and
+            // storing the ModelExecutionProto in it.
+            ModelQualityLogEntry::Drop(std::move(result.log_entry));
             // Copy the model_execution_proto so we can pass in the ownership to
             // the callback.
             auto model_execution_proto_copy =

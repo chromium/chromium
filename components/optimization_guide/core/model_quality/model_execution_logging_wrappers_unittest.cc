@@ -8,8 +8,10 @@
 
 #include "base/test/bind.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -53,7 +55,8 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging) {
             std::move(callback).Run(
                 OptimizationGuideModelExecutionResult(
                     AnyWrapProto(response),
-                    std::make_unique<proto::ModelExecutionInfo>(model_execution_info)),
+                    std::make_unique<proto::ModelExecutionInfo>(
+                        model_execution_info)),
                 /*log_entry=*/nullptr);
           }));
   proto::TabOrganizationRequest request;
@@ -73,6 +76,50 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging) {
                         EqualsProto(response));
             EXPECT_THAT(model_execution_proto->model_execution_info(),
                         EqualsProto(model_execution_info));
+          });
+  ExecuteModelWithLogging(model_executor(),
+                          ModelBasedCapabilityKey::kTabOrganization, request,
+                          std::nullopt, std::move(callback));
+}
+
+TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging_Error) {
+  EXPECT_CALL(*model_executor(),
+              ExecuteModel(ModelBasedCapabilityKey::kTabOrganization, _, _,
+                           An<OptimizationGuideModelExecutionResultCallback>()))
+      .WillOnce(testing::Invoke(
+          [](ModelBasedCapabilityKey feature,
+             const google::protobuf::MessageLite& request_metadata,
+             const std::optional<base::TimeDelta>& execution_timeout,
+             OptimizationGuideModelExecutionResultCallback callback) {
+            std::move(callback).Run(
+                OptimizationGuideModelExecutionResult(
+                    base::unexpected(
+                        OptimizationGuideModelExecutionError::
+                            FromModelExecutionError(
+                                OptimizationGuideModelExecutionError::
+                                    ModelExecutionError::kDisabled)),
+                    // Errors that don't end up making a request to the model
+                    // won't have a ModelExecutionInfo.
+                    nullptr),
+                /*log_entry=*/nullptr);
+          }));
+  proto::TabOrganizationRequest request;
+  auto* tabs = request.mutable_tabs();
+  auto* tab = tabs->Add();
+  tab->set_title("tab");
+  tab->set_tab_id(1);
+  ModelExecutionCallbackWithLogging<proto::TabOrganizationLoggingData>
+      callback = base::BindLambdaForTesting(
+          [&request](OptimizationGuideModelExecutionResult result,
+                     std::unique_ptr<proto::TabOrganizationLoggingData>
+                         model_execution_proto) {
+            ASSERT_TRUE(model_execution_proto);
+            EXPECT_THAT(model_execution_proto->request(), EqualsProto(request));
+            EXPECT_EQ(
+                model_execution_proto->model_execution_info()
+                    .model_execution_error_enum(),
+                static_cast<uint32_t>(OptimizationGuideModelExecutionError::
+                                          ModelExecutionError::kDisabled));
           });
   ExecuteModelWithLogging(model_executor(),
                           ModelBasedCapabilityKey::kTabOrganization, request,
@@ -117,6 +164,48 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelSessionWithLogging) {
                         EqualsProto(response));
             EXPECT_THAT(model_execution_proto->model_execution_info(),
                         EqualsProto(model_execution_info));
+          });
+  ExecuteModelSessionWithLogging(&session, request, std::move(callback));
+}
+
+TEST_F(ModelExecutionLoggingWrappersTest,
+       ExecuteModelSessionWithLogging_Error) {
+  testing::NiceMock<MockSession> session;
+
+  EXPECT_CALL(
+      session,
+      ExecuteModel(
+          _, An<OptimizationGuideModelExecutionResultStreamingCallback>()))
+      .WillOnce(testing::Invoke(
+          [](const google::protobuf::MessageLite& request_metadata,
+             OptimizationGuideModelExecutionResultStreamingCallback callback) {
+            std::move(callback).Run(
+                OptimizationGuideModelStreamingExecutionResult(
+                    base::unexpected(
+                        OptimizationGuideModelExecutionError::
+                            FromModelExecutionError(
+                                OptimizationGuideModelExecutionError::
+                                    ModelExecutionError::kDisabled)),
+                    /*provided_by_on_device=*/true,
+                    /*log_entry=*/nullptr,
+                    // Errors that don't end up making a request to the model
+                    // won't have a ModelExecutionInfo.
+                    nullptr));
+          }));
+  proto::ComposeRequest request;
+  request.mutable_page_metadata()->set_page_url("url");
+  ModelExecutionSessionCallbackWithLogging<proto::ComposeLoggingData> callback =
+      base::BindLambdaForTesting(
+          [&request](OptimizationGuideModelStreamingExecutionResult result,
+                     std::unique_ptr<proto::ComposeLoggingData>
+                         model_execution_proto) {
+            ASSERT_TRUE(model_execution_proto);
+            EXPECT_THAT(model_execution_proto->request(), EqualsProto(request));
+            EXPECT_EQ(
+                model_execution_proto->model_execution_info()
+                    .model_execution_error_enum(),
+                static_cast<uint32_t>(OptimizationGuideModelExecutionError::
+                                          ModelExecutionError::kDisabled));
           });
   ExecuteModelSessionWithLogging(&session, request, std::move(callback));
 }

@@ -181,6 +181,8 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
     client_ = ChromeComposeClient::FromWebContents(web_contents());
     client_->SetModelExecutorForTest(&model_executor_);
+    client_->SetModelQualityLogsUploaderServiceForTest(
+        GetOptimizationGuide().GetModelQualityLogsUploaderService());
     client_->SetInnerTextProviderForTest(&model_inner_text_);
     client_->SetSkipShowDialogForTest(true);
     client_->SetSessionIdForTest(base::Token(kSessionIdHigh, kSessionIdLow));

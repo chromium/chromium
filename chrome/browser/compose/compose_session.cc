@@ -47,6 +47,8 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
+#include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -237,6 +239,7 @@ class ComposeState {
 ComposeSession::ComposeSession(
     content::WebContents* web_contents,
     optimization_guide::OptimizationGuideModelExecutor* executor,
+    optimization_guide::ModelQualityLogsUploaderService* model_quality_uploader,
     base::Token session_id,
     InnerTextProvider* inner_text,
     autofill::FieldGlobalId node_id,
@@ -244,6 +247,7 @@ ComposeSession::ComposeSession(
     Observer* observer,
     ComposeCallback callback)
     : executor_(executor),
+      model_quality_uploader_(model_quality_uploader),
       handler_receiver_(this),
       web_contents_(web_contents),
       observer_(observer),
@@ -539,11 +543,13 @@ void ComposeSession::RequestWithSession(
   // execution in case request fails.
   compose::LogComposeRequestReason(request_reason);
 
-  session_->ExecuteModel(
-      request, base::BindRepeating(&ComposeSession::ModelExecutionCallback,
-                                   weak_ptr_factory_.GetWeakPtr(),
-                                   std::move(request_timer), request_id_,
-                                   request_reason, is_input_edited));
+  optimization_guide::ModelExecutionSessionCallbackWithLogging callback =
+      base::BindRepeating(&ComposeSession::ModelExecutionCallback,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          std::move(request_timer), request_id_, request_reason,
+                          is_input_edited);
+  optimization_guide::ExecuteModelSessionWithLogging(session_.get(), request,
+                                                     callback);
 }
 
 void ComposeSession::ComposeRequestTimeout(int id) {
@@ -567,8 +573,18 @@ void ComposeSession::ModelExecutionCallback(
     int request_id,
     compose::ComposeRequestReason request_reason,
     bool was_input_edited,
-    optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
+    optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
+    std::unique_ptr<optimization_guide::proto::ComposeLoggingData>
+        logging_data) {
   base::TimeDelta request_delta = request_timer.Elapsed();
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry;
+  if (logging_data) {
+    // There is data to log, meaning this is a complete response.
+    log_entry = std::make_unique<optimization_guide::ModelQualityLogEntry>(
+        model_quality_uploader_->GetWeakPtr());
+    log_entry->log_ai_data_request()->mutable_compose()->MergeFrom(
+        *logging_data);
+  }
 
   compose::EvalLocation eval_location = GetEvalLocation(result);
 
@@ -584,7 +600,7 @@ void ComposeSession::ModelExecutionCallback(
       request_timeouts_.erase(request_id);
     }
   } else {
-    SetQualityLogEntryUponError(std::move(result.log_entry), request_delta,
+    SetQualityLogEntryUponError(std::move(log_entry), request_delta,
                                 was_input_edited);
 
     compose::LogComposeRequestReason(eval_location, request_reason);
@@ -596,7 +612,7 @@ void ComposeSession::ModelExecutionCallback(
 
   // A new request has been issued, ignore this one.
   if (request_id != request_id_) {
-    SetQualityLogEntryUponError(std::move(result.log_entry), request_delta,
+    SetQualityLogEntryUponError(std::move(log_entry), request_delta,
                                 was_input_edited);
     compose::LogComposeRequestReason(eval_location, request_reason);
     return;
@@ -608,7 +624,7 @@ void ComposeSession::ModelExecutionCallback(
   }
 
   ModelExecutionComplete(request_delta, request_reason, was_input_edited,
-                         std::move(result));
+                         std::move(result), std::move(log_entry));
 }
 
 void ComposeSession::ModelExecutionProgress(
@@ -637,7 +653,8 @@ void ComposeSession::ModelExecutionComplete(
     base::TimeDelta request_delta,
     compose::ComposeRequestReason request_reason,
     bool was_input_edited,
-    optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
+    optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   // Handle 'complete' results.
   active_mojo_state_->has_pending_request = false;
   compose::EvalLocation eval_location = GetEvalLocation(result);
@@ -670,7 +687,7 @@ void ComposeSession::ModelExecutionComplete(
     } else {
       ProcessError(eval_location, status, request_reason);
     }
-    SetQualityLogEntryUponError(std::move(result.log_entry), request_delta,
+    SetQualityLogEntryUponError(std::move(log_entry), request_delta,
                                 was_input_edited);
     return;
   }
@@ -684,22 +701,21 @@ void ComposeSession::ModelExecutionComplete(
                                        /* is_ok */ false);
     ProcessError(eval_location, compose::mojom::ComposeStatus::kNoResponse,
                  request_reason);
-    SetQualityLogEntryUponError(std::move(result.log_entry), request_delta,
+    SetQualityLogEntryUponError(std::move(log_entry), request_delta,
                                 was_input_edited);
     return;
   }
 
-  if (result.log_entry) {
-    result.log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+  if (log_entry) {
+    log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_was_generated_via_edit(was_input_edited);
-    result.log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+    log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_started_with_proactive_nudge(
             session_events_.started_with_proactive_nudge);
-    result.log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+    log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
         ->set_request_latency_ms(request_delta.InMilliseconds());
     optimization_guide::proto::Int128* token =
-        result.log_entry
-            ->quality_data<optimization_guide::ComposeFeatureTypeMap>()
+        log_entry->quality_data<optimization_guide::ComposeFeatureTypeMap>()
             ->mutable_session_id();
 
     token->set_high(session_id_.high());
@@ -718,7 +734,7 @@ void ComposeSession::ModelExecutionComplete(
   // Create a new ComposeState with the dialog's current mojo state and the log
   // entry just received with the response.
   std::unique_ptr<ComposeState> new_response_state =
-      std::make_unique<ComposeState>(std::move(result.log_entry),
+      std::make_unique<ComposeState>(std::move(log_entry),
                                      active_mojo_state_.Clone());
   // Update the new state's mojo state to reflect the new response.
   auto ui_response = compose::mojom::ComposeResponse::New();

@@ -20,6 +20,7 @@
 #include "chrome/common/compose/compose.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_metrics.h"
+#include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -86,15 +87,16 @@ class ComposeSession
         compose::ComposeSessionCloseReason close_reason,
         const compose::ComposeSessionEvents& events) = 0;
   };
-  ComposeSession(
-      content::WebContents* web_contents,
-      optimization_guide::OptimizationGuideModelExecutor* executor,
-      base::Token session_id,
-      InnerTextProvider* inner_text,
-      autofill::FieldGlobalId node_id,
-      bool is_page_language_supported,
-      Observer* observer,
-      ComposeCallback callback = base::NullCallback());
+  ComposeSession(content::WebContents* web_contents,
+                 optimization_guide::OptimizationGuideModelExecutor* executor,
+                 optimization_guide::ModelQualityLogsUploaderService*
+                     model_quality_uploader,
+                 base::Token session_id,
+                 InnerTextProvider* inner_text,
+                 autofill::FieldGlobalId node_id,
+                 bool is_page_language_supported,
+                 Observer* observer,
+                 ComposeCallback callback = base::NullCallback());
   ~ComposeSession() override;
 
   // Binds this to a Compose webui.
@@ -241,15 +243,16 @@ class ComposeSession
       int request_id,
       compose::ComposeRequestReason request_reason,
       bool was_input_edited,
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult
-          result);
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
+      std::unique_ptr<optimization_guide::proto::ComposeLoggingData>
+          logging_data);
   void ModelExecutionProgress(optimization_guide::StreamingResponse result);
   void ModelExecutionComplete(
       base::TimeDelta request_delta,
       compose::ComposeRequestReason request_reason,
       bool was_input_edited,
-      optimization_guide::OptimizationGuideModelStreamingExecutionResult
-          result);
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
   void AddNewResponseToHistory(std::unique_ptr<ComposeState> new_state);
   void EraseForwardStatesInHistory();
 
@@ -307,6 +310,10 @@ class ComposeSession
 
   // Outlives `this`.
   raw_ptr<optimization_guide::OptimizationGuideModelExecutor> executor_;
+
+  // Outlives `this`.
+  raw_ptr<optimization_guide::ModelQualityLogsUploaderService>
+      model_quality_uploader_;
 
   mojo::Receiver<compose::mojom::ComposeSessionUntrustedPageHandler>
       handler_receiver_;
