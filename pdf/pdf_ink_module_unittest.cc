@@ -233,6 +233,11 @@ class FakeClient : public PdfInkModuleClient {
               (int page_index, InkStrokeId id, bool active),
               (override));
 
+  MOCK_METHOD(void,
+              DiscardStroke,
+              (int page_index, InkStrokeId id),
+              (override));
+
   void UpdateThumbnail(int page_index) override {
     updated_thumbnail_page_indices_.push_back(page_index);
   }
@@ -1639,8 +1644,15 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBetweenDraws) {
               ElementsAre(Pair(
                   0, ElementsAreArray(kInitial4StrokeMatchersSpan.first(2u)))));
 
+  constexpr int kPageIndex = 0;
+  EXPECT_CALL(client(), DiscardStroke(kPageIndex, InkStrokeId(2)));
+  EXPECT_CALL(client(), DiscardStroke(kPageIndex, InkStrokeId(3)));
+
   ApplyStrokeWithMouseAtPoints(
       kMouseDownPoint3, base::span_from_ref(kMouseMovePoint3), kMouseUpPoint3);
+  VerifyAndClearExpectations();
+
+  EXPECT_CALL(client(), DiscardStroke(_, _)).Times(0);
 
   // The 2 strokes that were undone have been discarded, and the newly drawn
   // stroke takes their place.
@@ -1675,6 +1687,11 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoBetweenDraws) {
   EXPECT_THAT(StrokeInputPositions(),
               ElementsAre(Pair(0, ElementsAreArray(kNext3StrokeMatchersSpan))));
   EXPECT_TRUE(VisibleStrokeInputPositions().empty());
+  VerifyAndClearExpectations();
+
+  EXPECT_CALL(client(), DiscardStroke(kPageIndex, InkStrokeId(0)));
+  EXPECT_CALL(client(), DiscardStroke(kPageIndex, InkStrokeId(1)));
+  EXPECT_CALL(client(), DiscardStroke(kPageIndex, InkStrokeId(2)));
 
   ApplyStrokeWithMouseAtPoints(
       kMouseDownPoint2, base::span_from_ref(kMouseMovePoint2), kMouseUpPoint2);

@@ -2777,21 +2777,27 @@ TEST_F(PdfViewWebPluginInkTest, UpdateThumbnailWithNoStrokes) {
   plugin_->ink_module_client_for_testing()->UpdateThumbnail(/*page_index=*/0);
 }
 
-TEST_F(PdfViewWebPluginInkTest, AddAndUpdateStroke) {
+TEST_F(PdfViewWebPluginInkTest, AddUpdateDiscardStroke) {
   const PdfInkBrush kBrush(PdfInkBrush::Type::kPen, SK_ColorRED, /*size=*/4.0f);
   constexpr InkStrokeId kStrokeId(1);
   constexpr int kPageIndex = 0;
 
   EXPECT_CALL(*engine_ptr_, ApplyStroke(kPageIndex, kStrokeId, _));
-  EXPECT_CALL(*engine_ptr_, UpdateStrokeActive(kPageIndex, kStrokeId, false));
 
   const ink::Stroke kStroke(kBrush.ink_brush());
   plugin_->ink_module_client_for_testing()->StrokeAdded(kPageIndex, kStrokeId,
                                                         kStroke);
 
+  EXPECT_CALL(*engine_ptr_, UpdateStrokeActive(kPageIndex, kStrokeId, false));
+
   plugin_->ink_module_client_for_testing()->UpdateStrokeActive(
       kPageIndex, kStrokeId,
       /*active=*/false);
+
+  EXPECT_CALL(*engine_ptr_, DiscardStroke(kPageIndex, kStrokeId));
+
+  plugin_->ink_module_client_for_testing()->DiscardStroke(kPageIndex,
+                                                          kStrokeId);
 }
 
 TEST_F(PdfViewWebPluginInkTest, VisiblePageIndexFromPoint) {

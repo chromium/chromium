@@ -2152,7 +2152,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
             1);
 
   // Perform equivalent of a "redo", to cause stroke to become active again.
-  // This causes the streok to be included in saved PDF data again.
+  // This causes the stroke to be included in saved PDF data again.
   engine->UpdateStrokeActive(kPageIndex, kStrokeId2, /*active=*/true);
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedStroke2FilePath);
   saved_pdf_data = engine->GetSaveData();
@@ -2162,6 +2162,83 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
   EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
                                          kInkAnnotationIdentifierKeyV2),
             2);
+}
+
+TEST_P(PDFiumEngineInkDrawTest, StrokeDiscardStroke) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  int page_count = FPDF_GetPageCount(engine->doc());
+  ASSERT_EQ(page_count, 1);
+
+  // Original document drawn on has no stroke data.
+  EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
+                                         kInkAnnotationIdentifierKeyV2),
+            0);
+
+  std::vector<uint8_t> saved_pdf_data = engine->GetSaveData();
+  ASSERT_FALSE(saved_pdf_data.empty());
+  constexpr int kPageIndex = 0;
+  constexpr gfx::Size kPageSizeInPoints(200, 200);
+  const base::FilePath kBlankPngFilePath(FILE_PATH_LITERAL("blank.png"));
+  CheckPdfRendering(saved_pdf_data, kPageIndex, kPageSizeInPoints,
+                    kBlankPngFilePath);
+
+  // Draw a stroke.
+  auto brush = std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen,
+                                             SK_ColorRED, /*size=*/4.0f);
+  constexpr auto kInputs0 = std::to_array<PdfInkInputData>({
+      {{5.0f, 5.0f}, base::Seconds(0.0f)},
+      {{50.0f, 5.0f}, base::Seconds(0.1f)},
+  });
+  std::optional<ink::StrokeInputBatch> batch = CreateInkInputBatch(kInputs0);
+  ASSERT_TRUE(batch.has_value());
+  ink::Stroke stroke0(brush->ink_brush(), batch.value());
+  constexpr InkStrokeId kStrokeId(0);
+  engine->ApplyStroke(kPageIndex, kStrokeId, stroke0);
+
+  PDFiumPage& page = GetPDFiumPageForTest(*engine, kPageIndex);
+
+  // Verify the visibility of strokes for in-memory PDF.
+  const base::FilePath kAppliedStroke1FilePath(
+      GetInkTestDataFilePath("applied_stroke1.png"));
+  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedStroke1FilePath);
+
+  // Perform the equivalent of an "undo", to cause the stroke to be inactive.
+  engine->UpdateStrokeActive(kPageIndex, kStrokeId, /*active=*/false);
+
+  // The document should not have any stroke data.
+  saved_pdf_data = engine->GetSaveData();
+  ASSERT_FALSE(saved_pdf_data.empty());
+  CheckPdfRendering(saved_pdf_data, kPageIndex, kPageSizeInPoints,
+                    kBlankPngFilePath);
+  EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
+                                         kInkAnnotationIdentifierKeyV2),
+            0);
+  EXPECT_EQ(FPDFPage_CountObjects(page.GetPage()), 1);
+
+  // Discard the stroke.
+  engine->DiscardStroke(kPageIndex, kStrokeId);
+
+  EXPECT_EQ(FPDFPage_CountObjects(page.GetPage()), 0);
+
+  // Draw a new stroke, reusing the same InkStrokeId. This can occur after an
+  // undo action.
+  constexpr auto kInputs1 = std::to_array<PdfInkInputData>({
+      {{75.0f, 5.0f}, base::Seconds(0.0f)},
+      {{75.0f, 60.0f}, base::Seconds(0.1f)},
+  });
+  batch = CreateInkInputBatch(kInputs1);
+  ASSERT_TRUE(batch.has_value());
+  ink::Stroke stroke1(brush->ink_brush(), batch.value());
+  engine->ApplyStroke(kPageIndex, kStrokeId, stroke1);
+
+  // Verify the visibility of strokes for in-memory PDF.
+  const base::FilePath kAppliedStroke3FilePath(
+      GetInkTestDataFilePath("applied_stroke3.png"));
+  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedStroke3FilePath);
+  EXPECT_EQ(FPDFPage_CountObjects(page.GetPage()), 1);
 }
 
 TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndUpdateShapeActive) {

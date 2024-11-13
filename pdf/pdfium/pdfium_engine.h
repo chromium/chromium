@@ -386,6 +386,11 @@ class PDFiumEngine : public DocumentLoader::Client, public IFSDK_PAUSE {
   // another call makes them active again.  Virtual to support testing.
   virtual void UpdateStrokeActive(int page_index, InkStrokeId id, bool active);
 
+  // Removes an existing stroke identified by `id`. The caller must pass the
+  // same consistent and valid `page_index/`id` pair as was provided to
+  // `ApplyStroke()`. Virtual to support testing.
+  virtual void DiscardStroke(int page_index, InkStrokeId id);
+
   // Loads "V2" Ink paths from a page in the PDF identified by `page_index`. The
   // `page_index` must be in bounds.
   //
