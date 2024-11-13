@@ -191,9 +191,6 @@ crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan relea
 
 
 
-# Flaky timeout on Android
-crbug.com/353650054 [ android-14 android-pixel-6 angle-opengles arm graphite-enabled no-clang-coverage passthrough renderer-skia-gl target-cpu-64 ] ContextLost_WorkerWebGLRAFAfterGPUCrash [ Failure ]
-crbug.com/353650054 [ android-pie android-shield-android-tv angle-disabled graphite-disabled no-clang-coverage no-passthrough nvidia nvidia_lt_535.183.01 renderer-skia-gl target-cpu-32 ] ContextLost_WorkerWebGLRAFAfterGPUCrash [ Failure ]
 
 # Flaky failure on Mac AMD ASAN - 3 GPU process crashes instead of 4
 crbug.com/354748640 [ mac amd asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
