@@ -13,7 +13,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -28,7 +27,6 @@
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/interaction_sequence.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kShowPromoResultReceived);
@@ -209,29 +207,14 @@ InteractiveFeaturePromoTestApi::StepBuilder
 InteractiveFeaturePromoTestApi::CheckPromoIsActive(
     const base::Feature& iph_feature,
     bool active) {
-  return std::move(
-      WithElement(
-          kBrowserViewElementId,
-          [&iph_feature, active](ui::InteractionSequence* seq,
-                                 ui::TrackedElement* browser_el) {
-            bool actual = false;
-            if (seq->IsCurrentStepInAnyContextForTesting()) {
-              for (const auto browser : *BrowserList::GetInstance()) {
-                if (browser->window()->IsFeaturePromoActive(iph_feature)) {
-                  actual = true;
-                }
-              }
-            } else {
-              actual = AsView<BrowserView>(browser_el)
-                           ->IsFeaturePromoActive(iph_feature);
-            }
-            if (actual != active) {
-              seq->FailForTesting();
-            }
-          })
-          .SetDescription(base::StringPrintf("CheckPromoIsActive(%s, %s)",
-                                             iph_feature.name,
-                                             active ? "true" : "false")));
+  return std::move(CheckView(
+                       kBrowserViewElementId,
+                       [&iph_feature](BrowserView* browser_view) {
+                         return browser_view->IsFeaturePromoActive(iph_feature);
+                       },
+                       active)
+                       .SetDescription(base::StringPrintf(
+                           "CheckPromoIsActive(%s)", iph_feature.name)));
 }
 
 InteractiveFeaturePromoTestApi::MultiStep
