@@ -527,14 +527,6 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       result.has_argument_leftmost_compound_matches->push_back(context.element);
       [[fallthrough]];
     case CSSSelector::kDescendant:
-      if (next_context.selector->GetPseudoType() == CSSSelector::kPseudoScope) {
-        if (next_context.selector->IsLastInComplexSelector()) {
-          if (!context.style_scope && context.scope &&
-              context.scope->IsDocumentFragment()) {
-            return kSelectorMatches;
-          }
-        }
-      }
       for (next_context.element = ParentElement(next_context);
            next_context.element;
            next_context.element = ParentElement(next_context)) {
