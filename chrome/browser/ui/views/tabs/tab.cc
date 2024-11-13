@@ -278,6 +278,12 @@ Tab::Tab(TabSlotController* controller)
   SetProperty(views::kElementIdentifierKey, kTabElementId);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTab);
+
+  root_name_changed_subscription_ =
+      GetViewAccessibility().AddStringAttributeChangedCallback(
+          ax::mojom::StringAttribute::kName,
+          base::BindRepeating(&Tab::OnAXNameChanged,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 Tab::~Tab() {
@@ -714,6 +720,13 @@ void Tab::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   } else {
     // Under some conditions, |GetAccessibleTabName| returns an empty string.
     node_data->SetNameExplicitlyEmpty();
+  }
+}
+
+void Tab::OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                          const std::optional<std::string>& name) {
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
   }
 }
 

@@ -24,6 +24,10 @@ namespace ui {
 class WebDialogDelegate;
 }
 
+namespace views {
+class WidgetDelegate;
+}
+
 class ConstrainedWebDialogUI;
 
 class ConstrainedWebDialogUIConfig
@@ -123,5 +127,10 @@ ConstrainedWebDialogDelegate* ShowConstrainedWebDialogWithAutoResize(
     content::WebContents* overshadowed,
     const gfx::Size& min_size,
     const gfx::Size& max_size);
+
+views::WidgetDelegate* GetConstrainedWebDialogForAccessibilityTesting(
+    content::BrowserContext* browser_context,
+    std::unique_ptr<ui::WebDialogDelegate> delegate,
+    content::WebContents* overshadowed);
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CONSTRAINED_WEB_DIALOG_UI_H_

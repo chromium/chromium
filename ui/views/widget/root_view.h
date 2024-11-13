@@ -129,8 +129,9 @@ class VIEWS_EXPORT RootView : public View,
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
   void SetMouseAndGestureHandler(View* new_handler) override;
   void SetMouseHandler(View* new_mouse_handler) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void UpdateParentLayer() override;
+
+  void UpdateAccessibleName();
 
   const views::View* gesture_handler_for_testing() const {
     return gesture_handler_;
@@ -275,6 +276,8 @@ class VIEWS_EXPORT RootView : public View,
   // live region update.
   raw_ptr<AnnounceTextView, AcrossTasksDanglingUntriaged> announce_view_ =
       nullptr;
+
+  base::WeakPtrFactory<RootView> weak_factory_{this};
 };
 
 }  // namespace internal

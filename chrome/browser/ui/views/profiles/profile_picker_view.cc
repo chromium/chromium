@@ -1001,6 +1001,11 @@ void ProfilePickerView::BuildLayout() {
   auto web_view = std::make_unique<views::WebView>();
   web_view->set_allow_accelerators(true);
   web_view_ = AddChildView(std::move(web_view));
+
+  web_contents_attached_subscription_ =
+      web_view_->AddWebContentsAttachedCallback(base::BindRepeating(
+          &ProfilePickerView::UpdateAccessibleNameForRootView,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ProfilePickerView::ShowScreenFinished(
@@ -1082,6 +1087,22 @@ ProfilePickerFlowController* ProfilePickerView::GetProfilePickerFlowController()
 ClearHostClosure ProfilePickerView::GetClearClosure() {
   return ClearHostClosure(base::BindOnce(&ProfilePickerView::Clear,
                                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// static
+void ProfilePicker::NotifyAccountSelected(const std::string& gaia_id) {
+  if (!g_profile_picker_view) {
+    return;
+  }
+  g_profile_picker_view->NotifyAccountSelected(gaia_id);
+}
+#endif
+
+void ProfilePickerView::UpdateAccessibleNameForRootView(views::WebView*) {
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
+  }
 }
 
 void ProfilePickerView::ShowForceSigninErrorDialog(

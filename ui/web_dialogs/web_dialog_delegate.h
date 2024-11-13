@@ -56,13 +56,21 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // Returns the title of the dialog. If you can, prefer to use set_title()
   // rather than overriding GetDialogTitle().
   virtual std::u16string GetDialogTitle() const;
-  void set_dialog_title(std::u16string title) { title_ = title; }
+  void set_dialog_title(std::u16string title) {
+    title_ = title;
+    if (title_changed_callback_) {
+      title_changed_callback_.Run();
+    }
+  }
 
   // Returns the title to be read with screen readers. If you can, prefer to use
   // set_accessible_title() rather than overriding GetAccessibleDialogTitle().
   virtual std::u16string GetAccessibleDialogTitle() const;
   void set_accessible_dialog_title(std::u16string accessible_title) {
     accessible_title_ = accessible_title;
+    if (accessible_title_changed_callback_) {
+      accessible_title_changed_callback_.Run();
+    }
   }
 
   // Returns the dialog's name identifier. Used to identify this dialog for
@@ -277,6 +285,10 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
 
   // Whether to use dialog frame view for non client frame view.
   virtual FrameKind GetWebDialogFrameKind() const;
+  void SetTitleChangedCallback(base::RepeatingCallback<void()> callback);
+  void SetAccessibleTitleChangedCallback(
+      base::RepeatingCallback<void()> callback);
+
   void set_dialog_frame_kind(FrameKind frame_kind) { frame_kind_ = frame_kind; }
 
  private:
@@ -307,6 +319,9 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   ui::ElementIdentifier web_view_element_id_;
 
   OnDialogClosedCallback closed_callback_;
+
+  base::RepeatingCallback<void()> title_changed_callback_;
+  base::RepeatingCallback<void()> accessible_title_changed_callback_;
 
   std::vector<std::unique_ptr<content::WebUIMessageHandler>>
       added_message_handlers_;

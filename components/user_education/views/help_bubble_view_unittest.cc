@@ -28,6 +28,7 @@
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -486,6 +487,18 @@ TEST_F(HelpBubbleViewsTest, MoveAnchorWidget) {
   gfx::Rect expected = old_bubble_bounds;
   expected.Offset(kOffset);
   EXPECT_EQ(expected, help_bubble_->GetBoundsInScreen());
+}
+
+TEST_F(HelpBubbleViewsTest, RootViewAccessibleName) {
+  ui::AXNodeData root_view_data;
+  help_bubble_->bubble_view()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&root_view_data);
+  EXPECT_EQ(
+      root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      help_bubble_->bubble_view()->GetAccessibleWindowTitle());
 }
 
 }  // namespace user_education

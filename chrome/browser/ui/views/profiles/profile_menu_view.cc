@@ -610,6 +610,10 @@ void ProfileMenuView::BuildIdentity() {
                 : profile_attributes->GetAvatarIcon(kIdentityImageSize)),
         ui::ImageModel(), menu_title_, menu_subtitle_, management_label);
   }
+
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
+  }
 }
 
 void ProfileMenuView::BuildGuestIdentity() {
@@ -629,6 +633,10 @@ void ProfileMenuView::BuildGuestIdentity() {
       /*edit_button=*/std::nullopt, profiles::GetGuestAvatar(),
       ui::ImageModel(), menu_title_, menu_subtitle_, management_label,
       &kGuestMenuArtIcon);
+
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
+  }
 }
 
 void ProfileMenuView::BuildAutofillButtons() {

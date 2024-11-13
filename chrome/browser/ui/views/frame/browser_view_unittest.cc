@@ -615,6 +615,16 @@ TEST_F(BrowserViewTest, AccessibleProperties) {
 
   browser_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kClient);
+
+  ui::AXNodeData root_view_data;
+  browser_view()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&root_view_data);
+  EXPECT_EQ(
+      root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      browser_view()->GetAccessibleWindowTitle());
 }
 
 //  Macs do not have fullscreen policy.

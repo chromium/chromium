@@ -158,6 +158,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
  private:
   friend class CaptionBubbleControllerViewsTest;
   friend class CaptionBubbleModel;
+  FRIEND_TEST_ALL_PREFIXES(CaptionBubbleControllerViewsTest,
+                           AccessibleProperties);
 
   void BackToTabButtonPressed();
   void CloseButtonPressed();

@@ -23,6 +23,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -187,6 +188,18 @@ TEST_F(HelpBubbleViewAshTest, BackgroundColor) {
 TEST_F(HelpBubbleViewAshTest, CanActivate) {
   const auto* const help_bubble_view = CreateHelpBubbleView();
   EXPECT_TRUE(help_bubble_view->CanActivate());
+}
+
+TEST_F(HelpBubbleViewAshTest, RootViewAccessibleName) {
+  auto* const help_bubble_view = CreateHelpBubbleView();
+  ui::AXNodeData root_view_data;
+  help_bubble_view->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&root_view_data);
+  EXPECT_EQ(
+      root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      help_bubble_view->GetAccessibleWindowTitle());
 }
 
 // Verifies that help bubbles do not handle events within their shadows.

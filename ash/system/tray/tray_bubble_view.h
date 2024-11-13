@@ -318,6 +318,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   };
 
   void UpdateAccessibleIgnoredState();
+  void OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                       const std::optional<std::string>& name);
 
   InitParams params_;
   raw_ptr<views::BoxLayout, DanglingUntriaged> layout_;
@@ -338,6 +340,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   std::unique_ptr<EventHandler> reroute_event_handler_;
 
   std::unique_ptr<SystemShadow> shadow_;
+
+  base::CallbackListSubscription name_changed_subscription_;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, TrayBubbleView, views::BubbleDialogDelegateView)

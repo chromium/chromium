@@ -278,6 +278,15 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // the picker view, whereas `Hide()` would close any picker view.
   ClearHostClosure GetClearClosure();
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Called when the user selects an account on the Lacros-specific account
+  // selection screen. Only called for existing profiles, not as part of profile
+  // creation.
+  void NotifyAccountSelected(const std::string& gaia_id);
+#endif
+
+  void UpdateAccessibleNameForRootView(views::WebView*);
+
   // Create the feature promo that manages the IPH logic that can be displayed
   // through the Profile Picker.
   void InitializeFeaturePromo(Profile* system_profile);
@@ -331,6 +340,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // Manages IPH promos displayed through the Profile Picker.
   std::unique_ptr<ProfilePickerFeaturePromoController> feature_promo_;
+
+  base::CallbackListSubscription web_contents_attached_subscription_;
 
   base::WeakPtrFactory<ProfilePickerView> weak_ptr_factory_{this};
 };

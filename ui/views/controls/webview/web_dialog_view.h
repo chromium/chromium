@@ -191,6 +191,8 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
 
   void NotifyDialogWillClose();
 
+  void UpdateAccessibleNameForRootView();
+
   // This view is a delegate to the HTML content since it needs to get notified
   // about when the dialog is closing. For all other actions (besides dialog
   // closing) we delegate to the creator of this view, which we keep track of
@@ -226,6 +228,8 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 
   bool disable_url_load_for_test_ = false;
+
+  base::WeakPtrFactory<WebDialogView> weak_ptr_factory_{this};
 };
 
 }  // namespace views

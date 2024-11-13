@@ -124,6 +124,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
 
@@ -634,8 +635,22 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, ShowPicker) {
   // Check that non-default accessible title is provided both before the page
   // loads and after it loads.
   views::WidgetDelegate* delegate = widget()->widget_delegate();
+
+  ui::AXNodeData root_view_data;
+  widget()->GetRootView()->GetViewAccessibility().GetAccessibleNodeData(
+      &root_view_data);
+  EXPECT_EQ(
+      root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      delegate->GetAccessibleWindowTitle());
   EXPECT_NE(delegate->GetWindowTitle(), delegate->GetAccessibleWindowTitle());
   WaitForLoadStop(GURL("chrome://profile-picker"));
+
+  root_view_data = ui::AXNodeData();
+  widget()->GetRootView()->GetViewAccessibility().GetAccessibleNodeData(
+      &root_view_data);
+  EXPECT_EQ(
+      root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      delegate->GetAccessibleWindowTitle());
   EXPECT_NE(delegate->GetWindowTitle(), delegate->GetAccessibleWindowTitle());
 }
 

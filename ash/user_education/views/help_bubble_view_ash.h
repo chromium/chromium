@@ -96,6 +96,7 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
  private:
   FRIEND_TEST_ALL_PREFIXES(HelpBubbleViewTimeoutTest,
                            RespectsProvidedTimeoutAfterActivate);
+  FRIEND_TEST_ALL_PREFIXES(HelpBubbleViewAshTest, RootViewAccessibleName);
   friend class HelpBubbleViewsTest;
 
   void MaybeStartAutoCloseTimer();

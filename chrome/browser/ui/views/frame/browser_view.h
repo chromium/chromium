@@ -133,7 +133,8 @@ class BrowserView : public BrowserWindow,
                     public ExclusiveAccessBubbleViewsContext,
                     public extensions::ExtensionKeybindingRegistry::Delegate,
                     public ImmersiveModeController::Observer,
-                    public webapps::AppBannerManager::Observer {
+                    public webapps::AppBannerManager::Observer,
+                    public views::FocusChangeListener {
   METADATA_HEADER(BrowserView, views::ClientView)
 
  public:
@@ -712,6 +713,7 @@ class BrowserView : public BrowserWindow,
 
   // content::WebContentsObserver:
   void DidFirstVisuallyNonEmptyPaint() override;
+  void TitleWasSet(content::NavigationEntry* entry) override;
 
   // views::ClientView:
   views::CloseRequestResult OnWindowCloseRequested() override;
@@ -766,6 +768,10 @@ class BrowserView : public BrowserWindow,
   void OnInstallableWebAppStatusUpdated(
       webapps::InstallableWebAppCheckResult result,
       const std::optional<webapps::WebAppBannerData>& data) override;
+
+  // views::FocusChangeListener
+  void OnWillChangeFocus(View* focused_before, View* focused_now) override;
+  void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
   // Creates an accessible tab label for screen readers that includes the tab
   // status for the given tab index. This takes the form of
@@ -1070,6 +1076,8 @@ class BrowserView : public BrowserWindow,
 
   void PaintAsActiveChanged();
   void FrameColorsChanged();
+
+  void UpdateAccessibleNameForRootView();
 
   // |allowed_without_policy| represents whether or not the browser is allowed
   // to enter fullscreen, irrespective of policy. This is is necessary to

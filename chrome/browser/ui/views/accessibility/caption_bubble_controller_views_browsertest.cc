@@ -1082,6 +1082,16 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, AccessibleProperties) {
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             l10n_util::GetStringUTF16(IDS_LIVE_CAPTION_BUBBLE_TITLE));
 
+  ui::AXNodeData root_view_data;
+  GetBubble()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&root_view_data);
+  EXPECT_EQ(
+      root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      GetBubble()->GetAccessibleWindowTitle());
+
   GetBubble()->SetTitleTextForTesting(u"Sample Accessible Name");
 
   data = ui::AXNodeData();
@@ -1090,6 +1100,19 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, AccessibleProperties) {
             u"Sample Accessible Name");
   EXPECT_EQ(GetBubble()->GetViewAccessibility().GetCachedName(),
             u"Sample Accessible Name");
+
+  root_view_data = ui::AXNodeData();
+  GetBubble()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&root_view_data);
+  EXPECT_EQ(
+      root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      u"Sample Accessible Name");
+  EXPECT_EQ(
+      root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      GetBubble()->GetAccessibleWindowTitle());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, NonAsciiCharacter) {

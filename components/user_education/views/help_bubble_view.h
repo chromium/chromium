@@ -104,6 +104,7 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
  private:
   FRIEND_TEST_ALL_PREFIXES(HelpBubbleViewTimeoutTest,
                            RespectsProvidedTimeoutAfterActivate);
+  FRIEND_TEST_ALL_PREFIXES(HelpBubbleViewsTest, RootViewAccessibleName);
   friend class HelpBubbleViewsTest;
   friend class HelpBubbleEventRelay;
 

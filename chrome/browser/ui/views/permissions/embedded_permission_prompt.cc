@@ -313,6 +313,10 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
     prompt_view->UpdateAnchor(content_scrim_widget_.get());
     prompt_view->Show();
   }
+
+  if (prompt_view->GetWidget()) {
+    prompt_view->GetWidget()->UpdateAccessibleNameForRootView();
+  }
 }
 
 EmbeddedPermissionPrompt::TabSwitchingBehavior

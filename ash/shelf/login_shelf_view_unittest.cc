@@ -1329,6 +1329,15 @@ TEST_F(LoginShelfViewWithShutdownConfirmationTest,
   EXPECT_EQ(data.role, ax::mojom::Role::kDialog);
   EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
             l10n_util::GetStringUTF16(IDS_ASH_SHUTDOWN_CONFIRMATION_TITLE));
+
+  ui::AXNodeData root_view_data;
+  confirmation_bubble->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&root_view_data);
+  EXPECT_EQ(
+      root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      confirmation_bubble->GetAccessibleWindowTitle());
 }
 
 class LoginShelfViewWithKioskLicenseTest : public LoginShelfViewTest {

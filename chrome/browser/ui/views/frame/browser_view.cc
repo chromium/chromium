@@ -1081,6 +1081,10 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   browser_->GetFeatures().InitPostBrowserViewConstruction(this);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kClient);
+
+  if (GetFocusManager()) {
+    GetFocusManager()->AddFocusChangeListener(this);
+  }
 }
 
 void BrowserView::ToggleCompactModeUI() {
@@ -2860,6 +2864,10 @@ void BrowserView::DidFirstVisuallyNonEmptyPaint() {
   NotifyWidgetSizeConstraintsChanged();
 }
 
+void BrowserView::TitleWasSet(content::NavigationEntry* entry) {
+  UpdateAccessibleNameForRootView();
+}
+
 void BrowserView::TouchModeChanged() {
   MaybeInitializeWebUITabStrip();
   MaybeShowWebUITabStripIPH();
@@ -3568,6 +3576,8 @@ void BrowserView::OnTabStripModelChanged(
 #endif
     web_contents_close_handler_->TabInserted();
   }
+
+  UpdateAccessibleNameForRootView();
 }
 
 void BrowserView::TabStripEmpty() {
@@ -5564,6 +5574,13 @@ void BrowserView::OnInstallableWebAppStatusUpdated(
   UpdatePageActionIcon(PageActionIconType::kPwaInstall);
 }
 
+void BrowserView::OnWillChangeFocus(View* focused_before, View* focused_now) {
+  UpdateAccessibleNameForRootView();
+}
+void BrowserView::OnDidChangeFocus(View* focused_before, View* focused_now) {
+  UpdateAccessibleNameForRootView();
+}
+
 WebAppFrameToolbarView* BrowserView::web_app_frame_toolbar() {
   return web_app_frame_toolbar_;
 }
@@ -5587,6 +5604,12 @@ void BrowserView::FrameColorsChanged() {
         BrowserFrameActiveState::kUseCurrent);
     web_app_window_title_->SetBackgroundColor(frame_color);
     web_app_window_title_->SetEnabledColor(caption_color);
+  }
+}
+
+void BrowserView::UpdateAccessibleNameForRootView() {
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
   }
 }
 

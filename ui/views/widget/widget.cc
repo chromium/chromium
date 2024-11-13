@@ -559,6 +559,7 @@ void Widget::Init(InitParams params) {
     parent_->OnChildAdded(this);
   }
 
+  UpdateAccessibleNameForRootView();
   native_theme_observation_.Observe(GetNativeTheme());
   native_widget_initialized_ = true;
   native_widget_->OnWidgetInitDone();
@@ -1262,6 +1263,7 @@ void Widget::UpdateWindowTitle() {
   }
 
   non_client_view_->UpdateWindowTitle();
+  UpdateAccessibleNameForRootView();
 }
 
 void Widget::UpdateWindowIcon() {
@@ -2170,6 +2172,12 @@ void Widget::SetAllowScreenshots(bool allow) {
 
 bool Widget::AreScreenshotsAllowed() {
   return native_widget_ ? native_widget_->AreScreenshotsAllowed() : true;
+}
+
+void Widget::UpdateAccessibleNameForRootView() {
+  if (root_view_) {
+    root_view_->UpdateAccessibleName();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

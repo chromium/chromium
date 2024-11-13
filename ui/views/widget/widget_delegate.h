@@ -32,6 +32,9 @@ class DialogDelegate;
 class NonClientFrameView;
 class View;
 
+using TitleChangedCallback = base::RepeatingCallback<void()>;
+using AccessibleTitleChangedCallback = base::RepeatingCallback<void()>;
+
 // Handles events on Widgets in context-specific ways.
 class VIEWS_EXPORT WidgetDelegate {
  public:
@@ -411,6 +414,10 @@ class VIEWS_EXPORT WidgetDelegate {
                                        bool forward,
                                        bool enable_wrapping);
 
+  void SetTitleChangedCallback(TitleChangedCallback callback);
+  void SetAccessibleTitleChangedCallback(
+      AccessibleTitleChangedCallback callback);
+
   bool owned_by_widget() const { return owned_by_widget_; }
 
   void set_internal_name(std::string name) { params_.internal_name = name; }
@@ -477,6 +484,9 @@ class VIEWS_EXPORT WidgetDelegate {
 
   ClientViewFactory client_view_factory_;
   OverlayViewFactory overlay_view_factory_;
+
+  TitleChangedCallback title_changed_callback_;
+  AccessibleTitleChangedCallback accessible_title_changed_callback_;
 
   base::WeakPtrFactory<WidgetDelegate> weak_ptr_factory_{this};
 };

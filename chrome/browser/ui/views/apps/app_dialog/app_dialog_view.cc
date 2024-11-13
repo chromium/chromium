@@ -81,6 +81,9 @@ void AppDialogView::SetTitleText(const std::u16string& text) {
 void AppDialogView::SetSubtitleText(const std::u16string& text) {
   CHECK(subtitle_);
   subtitle_->SetText(text);
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
+  }
 }
 
 std::u16string AppDialogView::GetAccessibleWindowTitle() const {

@@ -96,6 +96,13 @@ WebDialogView::WebDialogView(content::BrowserContext* context,
   web_view_->SetProperty(
       views::kElementIdentifierKey,
       delegate_ ? delegate_->web_view_element_id() : ui::ElementIdentifier());
+
+  delegate_->SetTitleChangedCallback(
+      base::BindRepeating(&WebDialogView::UpdateAccessibleNameForRootView,
+                          weak_ptr_factory_.GetWeakPtr()));
+  delegate_->SetAccessibleTitleChangedCallback(
+      base::BindRepeating(&WebDialogView::UpdateAccessibleNameForRootView,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 WebDialogView::~WebDialogView() = default;
@@ -505,6 +512,12 @@ void WebDialogView::InitDialog() {
 void WebDialogView::NotifyDialogWillClose() {
   if (delegate_)
     delegate_->OnDialogWillClose();
+}
+
+void WebDialogView::UpdateAccessibleNameForRootView() {
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
+  }
 }
 
 BEGIN_METADATA(WebDialogView)

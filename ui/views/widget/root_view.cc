@@ -311,7 +311,15 @@ RootView::RootView(Widget* widget)
     if (ax::mojom::Role::kUnknown == GetViewAccessibility().GetCachedRole()) {
       GetViewAccessibility().SetRole(
           widget_delegate->GetAccessibleWindowRole());
+
+      UpdateAccessibleName();
     }
+
+    widget_delegate->SetTitleChangedCallback(base::BindRepeating(
+        &RootView::UpdateAccessibleName, weak_factory_.GetWeakPtr()));
+
+    widget_delegate->SetAccessibleTitleChangedCallback(base::BindRepeating(
+        &RootView::UpdateAccessibleName, weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -702,43 +710,23 @@ void RootView::SetMouseHandler(View* new_mouse_handler) {
   drag_info_.Reset();
 }
 
-void RootView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-
-  DCHECK(GetWidget());
-  auto* widget_delegate = GetWidget()->widget_delegate();
-  // On linux, we could now get to a situation where when we are first
-  // constructing the RootView we try to call GetViewAccessibility.SetRole() and
-  // since the VirtualAccessibility object is not yet created, we will try to
-  // create one first. This can lead to a crash because on Linux we end up
-  // querying GetAccessibleNodeData on the view when we are creating the
-  // VirtualAccessibility object, and so we will end up here and if we don't
-  // exit early we will try to set the name on an object with no role (we are in
-  // the middle of setting it) and so it will crash. This check will prevent us
-  // from crashing in that scenario, and will have no other effects since at
-  // every other point in time we will have a valid role since its set on the
-  // constructor.
-  if (!widget_delegate || node_data->role == ax::mojom::Role::kUnknown) {
-    return;
-  }
-
-  if (node_data->GetStringAttribute(ax::mojom::StringAttribute::kName)
-          .empty() &&
-      static_cast<ax::mojom::NameFrom>(
-          node_data->GetIntAttribute(ax::mojom::IntAttribute::kNameFrom)) !=
-          ax::mojom::NameFrom::kAttributeExplicitlyEmpty) {
-    std::u16string name = widget_delegate->GetAccessibleWindowTitle();
-    if (name.empty()) {
-      node_data->SetNameExplicitlyEmpty();
-    } else {
-      node_data->SetNameChecked(name);
-    }
+void RootView::UpdateParentLayer() {
+  if (layer()) {
+    ReparentLayer(widget_->GetLayer());
   }
 }
 
-void RootView::UpdateParentLayer() {
-  if (layer())
-    ReparentLayer(widget_->GetLayer());
+void RootView::UpdateAccessibleName() {
+  auto* widget_delegate = GetWidget()->widget_delegate();
+  if (widget_delegate) {
+    std::u16string name = widget_delegate->GetAccessibleWindowTitle();
+    if (name.empty()) {
+      GetViewAccessibility().SetName(
+          std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    } else {
+      GetViewAccessibility().SetName(name);
+    }
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

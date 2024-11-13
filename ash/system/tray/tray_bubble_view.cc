@@ -399,6 +399,12 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   GetViewAccessibility().SetRole(ax::mojom::Role::kWindow);
   UpdateAccessibleName();
   UpdateAccessibleIgnoredState();
+
+  name_changed_subscription_ =
+      GetViewAccessibility().AddStringAttributeChangedCallback(
+          ax::mojom::StringAttribute::kName,
+          base::BindRepeating(&TrayBubbleView::OnAXNameChanged,
+                              base::Unretained(this)));
 }
 
 TrayBubbleView::~TrayBubbleView() {
@@ -766,6 +772,13 @@ void TrayBubbleView::SetBubbleBorderInsets(gfx::Insets insets) {
 
 void TrayBubbleView::UpdateAccessibleIgnoredState() {
   GetViewAccessibility().SetIsIgnored(!delegate_ || !CanActivate());
+}
+
+void TrayBubbleView::OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                                     const std::optional<std::string>& name) {
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
+  }
 }
 
 BEGIN_METADATA(TrayBubbleView)

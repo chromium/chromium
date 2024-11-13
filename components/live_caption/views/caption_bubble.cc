@@ -1771,6 +1771,9 @@ void CaptionBubble::SetTargetLanguageForTesting(std::string language_code) {
 
 void CaptionBubble::OnTitleTextChanged() {
   UpdateAccessibleName();
+  if (views::Widget* widget = GetWidget()) {
+    widget->UpdateAccessibleNameForRootView();
+  }
 }
 
 void CaptionBubble::UpdateAccessibleName() {

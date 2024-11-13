@@ -1080,4 +1080,29 @@ TEST_F(RootViewTest, AccessibleProperties) {
   EXPECT_EQ(data.role, ax::mojom::Role::kWindow);
 }
 
+TEST_F(RootViewTest, AccessibleName) {
+  RootViewTestState state(this);
+  internal::RootView* root_view = state.GetRootView();
+
+  ui::AXNodeData data;
+  root_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            state.widget()->widget_delegate()->GetAccessibleWindowTitle());
+
+  state.widget()->widget_delegate()->SetTitle(u"Sample Title");
+
+  data = ui::AXNodeData();
+  root_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            state.widget()->widget_delegate()->GetAccessibleWindowTitle());
+
+  state.widget()->widget_delegate()->SetAccessibleTitle(
+      u"Sample Accessible Title");
+
+  data = ui::AXNodeData();
+  root_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            state.widget()->widget_delegate()->GetAccessibleWindowTitle());
+}
+
 }  // namespace views::test

@@ -108,6 +108,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/widget_activation_waiter.h"
@@ -244,6 +245,30 @@ class ProfileMenuViewExtensionsTest
     SetTargetBrowser(browser());
   }
 };
+
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, RootViewAccessibleName) {
+  ASSERT_NO_FATAL_FAILURE(OpenProfileMenu());
+
+  // The theme change destroys the avatar button. Make sure the profile chooser
+  // widget doesn't try to reference a stale observer during its shutdown.
+  test::ThemeServiceChangedWaiter waiter(
+      ThemeServiceFactory::GetForProfile(profile()));
+  InstallExtension(test_data_dir_.AppendASCII("theme"), 1);
+  waiter.WaitForThemeChanged();
+
+  auto* coordinator = ProfileMenuCoordinator::FromBrowser(browser());
+  EXPECT_TRUE(coordinator->IsShowing());
+
+  ui::AXNodeData root_view_data;
+  profile_menu_view()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&root_view_data);
+  EXPECT_EQ(
+      root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      profile_menu_view()->GetAccessibleWindowTitle());
+}
 
 // Make sure nothing bad happens when the browser theme changes while the
 // ProfileMenuView is visible. Regression test for crbug.com/737470

@@ -779,6 +779,7 @@ void HelpBubbleView::OnWidgetActivationChanged(views::Widget* widget,
     if (active) {
       ++activate_count_;
       auto_close_timer_.Stop();
+      widget->UpdateAccessibleNameForRootView();
     } else {
       MaybeStartAutoCloseTimer();
     }

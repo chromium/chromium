@@ -396,6 +396,16 @@ IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, AccessibleName) {
             l10n_util::GetStringFUTF16(IDS_ACCESSIBLE_FIND_IN_PAGE_COUNT,
                                        base::FormatNumber(active_match_ordinal),
                                        base::FormatNumber(number_of_matches)));
+
+  ui::AXNodeData root_view_data;
+  GetFindBarHost()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&root_view_data);
+  EXPECT_EQ(
+      root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      GetFindBarHost()->GetAccessibleWindowTitle());
 }
 
 IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, ButtonsDoNotAlterFocus) {

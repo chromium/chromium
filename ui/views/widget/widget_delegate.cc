@@ -195,6 +195,15 @@ bool WidgetDelegate::RotatePaneFocusFromView(View* focused_view,
   }
 }
 
+void WidgetDelegate::SetTitleChangedCallback(TitleChangedCallback callback) {
+  title_changed_callback_ = std::move(callback);
+}
+
+void WidgetDelegate::SetAccessibleTitleChangedCallback(
+    AccessibleTitleChangedCallback callback) {
+  accessible_title_changed_callback_ = std::move(callback);
+}
+
 bool WidgetDelegate::ShouldShowCloseButton() const {
   return params_.show_close_button;
 }
@@ -380,6 +389,10 @@ void WidgetDelegate::SetAccessibleWindowRole(ax::mojom::Role role) {
 
 void WidgetDelegate::SetAccessibleTitle(std::u16string title) {
   params_.accessible_title = std::move(title);
+
+  if (accessible_title_changed_callback_) {
+    accessible_title_changed_callback_.Run();
+  }
 }
 
 void WidgetDelegate::SetCanFullscreen(bool can_fullscreen) {
@@ -465,6 +478,10 @@ void WidgetDelegate::SetTitle(const std::u16string& title) {
   params_.title = title;
   if (GetWidget())
     GetWidget()->UpdateWindowTitle();
+
+  if (title_changed_callback_) {
+    title_changed_callback_.Run();
+  }
 }
 
 void WidgetDelegate::SetTitle(int title_message_id) {

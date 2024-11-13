@@ -103,6 +103,9 @@ class Tab : public gfx::AnimationDelegate,
   TabSlotView::ViewType GetTabSlotViewType() const override;
   TabSizeInfo GetTabSizeInfo() const override;
 
+  void OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                       const std::optional<std::string>& name);
+
   TabSlotController* controller() const { return controller_; }
 
   // Used to set/check whether this Tab is being animated closed.
@@ -291,6 +294,10 @@ class Tab : public gfx::AnimationDelegate,
   std::optional<performance_manager::freezing::FreezingVote> freezing_vote_;
 
   base::CallbackListSubscription paint_as_active_subscription_;
+
+  base::CallbackListSubscription root_name_changed_subscription_;
+
+  base::WeakPtrFactory<Tab> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_H_

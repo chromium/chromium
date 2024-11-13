@@ -237,6 +237,10 @@ FindBarController* FindBarHost::GetFindBarController() const {
 
 void FindBarHost::SetFindBarController(FindBarController* find_bar_controller) {
   find_bar_controller_ = find_bar_controller;
+
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
+  }
 }
 
 void FindBarHost::Show(bool animate) {
@@ -390,6 +394,9 @@ bool FindBarHost::HasGlobalFindPasteboard() const {
 }
 
 void FindBarHost::UpdateFindBarForChangedWebContents() {
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
+  }
 }
 
 const FindBarTesting* FindBarHost::GetFindBarTesting() const {
