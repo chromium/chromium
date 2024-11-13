@@ -133,17 +133,6 @@ BASE_FEATURE(kSpectreVariant2Mitigation,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// Enabling the kNetworkServiceSandbox feature automatically enables Spectre
-// variant 2 mitigations in the network service. This can lead to performance
-// regressions, so enabling this feature will turn off the Spectre Variant 2
-// mitigations.
-//
-// On ChromeOS Ash, this overrides the system-wide kSpectreVariant2Mitigation
-// feature above.
-BASE_FEATURE(kForceDisableSpectreVariant2MitigationInNetworkService,
-             "kForceDisableSpectreVariant2MitigationInNetworkService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Increase the renderer sandbox memory limit. As of 2023, there are no limits
 // on macOS, and a 1TiB limit on Windows. There are reports of users bumping
 // into the limit. This increases the limit by 2x compared to the default

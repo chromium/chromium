@@ -14560,9 +14560,6 @@
                         "NetworkServiceFileAllowlist",
                         "NetworkServiceSandbox",
                         "NetworkServiceSyscallFilter"
-                    ],
-                    "disable_features": [
-                        "kForceDisableSpectreVariant2MitigationInNetworkService"
                     ]
                 }
             ]

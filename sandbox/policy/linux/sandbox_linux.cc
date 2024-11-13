@@ -342,18 +342,12 @@ bool SandboxLinux::StartSeccompBPF(sandbox::mojom::Sandbox sandbox_type,
           ? SandboxBPF::SeccompLevel::MULTI_THREADED
           : SandboxBPF::SeccompLevel::SINGLE_THREADED;
 
-  bool force_disable_spectre_variant2_mitigation =
-      base::FeatureList::IsEnabled(
-          features::kForceDisableSpectreVariant2MitigationInNetworkService) &&
-      sandbox_type == sandbox::mojom::Sandbox::kNetwork;
-
   // If the kernel supports the sandbox, and if the command line says we
   // should enable it, enable it or die.
   std::unique_ptr<BPFBasePolicy> policy =
       SandboxSeccompBPF::PolicyForSandboxType(sandbox_type, options);
   SandboxSeccompBPF::StartSandboxWithExternalPolicy(
-      std::move(policy), OpenProc(proc_fd_), seccomp_level,
-      force_disable_spectre_variant2_mitigation);
+      std::move(policy), OpenProc(proc_fd_), seccomp_level);
   SandboxSeccompBPF::RunSandboxSanityChecks(sandbox_type, options);
   seccomp_bpf_started_ = true;
   LogSandboxStarted("seccomp-bpf");
