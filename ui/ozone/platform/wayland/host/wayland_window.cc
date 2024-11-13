@@ -182,8 +182,6 @@ void WaylandWindow::OnEnteredOutputScaleChanged() {
   UpdateWindowScale(/*update_bounds=*/true);
 }
 
-void WaylandWindow::PropagateBufferScale(float new_scale) {}
-
 WaylandZAuraSurface* WaylandWindow::GetZAuraSurface() {
   return root_surface_ ? root_surface_->zaura_surface() : nullptr;
 }
@@ -826,8 +824,8 @@ void WaylandWindow::HandleToplevelConfigureWithOrigin(
     int32_t width,
     int32_t height,
     const WindowStates& window_states) {
-  NOTREACHED()
-      << "Only shell toplevels must receive HandleAuraToplevelConfigure calls.";
+  NOTREACHED() << "Only shell toplevels must receive "
+                  "HandleToplevelConfigureWithOrigin calls.";
 }
 
 void WaylandWindow::HandlePopupConfigure(const gfx::Rect& bounds_dip) {

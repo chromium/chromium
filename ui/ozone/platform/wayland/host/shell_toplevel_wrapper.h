@@ -58,9 +58,6 @@ class ShellToplevelWrapper {
   // Initializes the ShellToplevel.
   virtual bool Initialize() = 0;
 
-  // Returns true if `aura_toplevel_` version is equal or newer than `version`.
-  virtual bool IsSupportedOnAuraToplevel(uint32_t version) const = 0;
-
   // Sets a native window to maximized state.
   virtual void SetMaximized() = 0;
 
@@ -116,46 +113,6 @@ class ShellToplevelWrapper {
 
   // Request that the window be made a system modal.
   virtual void SetSystemModal(bool modal) = 0;
-
-  // Sets/usets a native window to float state. This places it on top of other
-  // windows.
-  virtual void SetFloatToLocation(
-      WaylandFloatStartLocation float_start_location) = 0;
-  virtual void UnSetFloat() = 0;
-
-  // Sets the z order of the window.
-  virtual void SetZOrder(ZOrderLevel z_order) = 0;
-
-  // Activation brings a window to the foreground. Deactivation makes a window
-  // non-foregrounded.
-  virtual bool SupportsActivation() = 0;
-  virtual void Activate() = 0;
-  virtual void Deactivate() = 0;
-
-  // Sets the scale factor for the next commit. Scale factor persists until a
-  // new one is set.
-  virtual void SetScaleFactor(float scale_factor) = 0;
-
-  // Snaps the window in the direction of `snap_direction`. `snap_ratio`
-  // indicates the width of the work area to snap to in landscape mode, or
-  // height in portrait mode.
-  virtual void CommitSnap(WaylandWindowSnapDirection snap_direction,
-                          float snap_ratio) = 0;
-
-  // Signals the underneath platform to shows a preview for the given window
-  // snap direction. `allow_haptic_feedback` indicates if it should send haptic
-  // feedback.
-  virtual void ShowSnapPreview(WaylandWindowSnapDirection snap_direction,
-                               bool allow_haptic_feedback) = 0;
-
-  // Sets the persistable window property.
-  virtual void SetPersistable(bool persistable) const = 0;
-
-  // Sets the shape of the toplevel window. If `shape_rects` is null this will
-  // unset the window shape.
-  virtual void SetShape(std::unique_ptr<ShapeRects> shape_rects) = 0;
-
-  virtual void AckRotateFocus(uint32_t serial, uint32_t handled) = 0;
 
   virtual void SetIcon(const gfx::ImageSkia& icon) = 0;
 

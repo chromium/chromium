@@ -96,7 +96,6 @@ class WaylandToplevelWindow : public WaylandWindow,
                    const base::TimeDelta show_delay,
                    const base::TimeDelta hide_delay) override;
   void HideTooltip() override;
-  void PropagateBufferScale(float new_scale) override;
   base::WeakPtr<WaylandWindow> AsWeakPtr() override;
 
   // WmDragHandler:
@@ -117,7 +116,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   void Minimize() override;
   void Restore() override;
   void Activate() override;
-  void Deactivate() override;
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
   void SizeConstraintsChanged() override;
@@ -125,8 +123,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   // `SetUpShellIntegration()`.
   void SetZOrderLevel(ZOrderLevel order) override;
   ZOrderLevel GetZOrderLevel() const override;
-  void SetShape(std::unique_ptr<ShapeRects> native_shape,
-                const gfx::Transform& transform) override;
   std::string GetWindowUniqueId() const override;
   // SetUseNativeFrame and ShouldUseNativeFrame decide on
   // xdg-decoration mode for a window.
@@ -157,9 +153,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool SupportsPointerLock() override;
   void LockPointer(bool enabled) override;
   bool GetTabletMode() override;
-  void SetFloatToLocation(
-      WaylandFloatStartLocation float_start_location) override;
-  void UnSetFloat() override;
 
   // DeskExtension:
   int GetNumberOfDesks() const override;
@@ -281,9 +274,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   std::optional<std::vector<gfx::Rect>> opaque_region_px_;
   std::optional<std::vector<gfx::Rect>> input_region_px_;
 
-  // Information pertaining to a window's persistability.
-  bool persistable_ = true;
-
   // Current modal status.
   bool system_modal_ = false;
 
@@ -293,9 +283,6 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // The z order for the window.
   ZOrderLevel z_order_ = ZOrderLevel::kNormal;
-
-  // The last buffer scale sent to the wayland server.
-  std::optional<float> last_sent_buffer_scale_;
 
   raw_ptr<WorkspaceExtensionDelegate> workspace_extension_delegate_ = nullptr;
 

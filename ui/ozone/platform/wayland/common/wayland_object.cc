@@ -128,15 +128,6 @@ void delete_zaura_surface(zaura_surface* surface) {
   }
 }
 
-void delete_zaura_toplevel(zaura_toplevel* toplevel) {
-  if (wl::get_version_of_object(toplevel) >=
-      ZAURA_TOPLEVEL_RELEASE_SINCE_VERSION) {
-    zaura_toplevel_release(toplevel);
-  } else {
-    zaura_toplevel_destroy(toplevel);
-  }
-}
-
 }  // namespace
 
 bool CanBind(const std::string& interface,
@@ -245,8 +236,6 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_wm_base)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_shell, delete_zaura_shell)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_surface,
                                              delete_zaura_surface)
-IMPLEMENT_WAYLAND_OBJECT_TRAITS_WITH_DELETER(zaura_toplevel,
-                                             delete_zaura_toplevel)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_cursor_shapes_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_color_management_output_v1)

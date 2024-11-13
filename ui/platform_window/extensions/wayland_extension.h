@@ -19,11 +19,6 @@ enum class WaylandWindowSnapDirection {
   kSecondary,
 };
 
-enum class WaylandFloatStartLocation {
-  kBottomRight,
-  kBottomLeft,
-};
-
 class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
  public:
   // Waits for a Wayland roundtrip to ensure all side effects have been
@@ -94,12 +89,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandToplevelExtension {
 
   // Retrieve current layout state.
   virtual bool GetTabletMode() = 0;
-
-  // Signals the underneath platform to float the browser window on top other
-  // windows.
-  virtual void SetFloatToLocation(
-      WaylandFloatStartLocation float_start_location) = 0;
-  virtual void UnSetFloat() = 0;
 
  protected:
   virtual ~WaylandToplevelExtension();

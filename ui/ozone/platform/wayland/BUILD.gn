@@ -525,8 +525,6 @@ source_set("test_support") {
     "test/test_zaura_shell.h",
     "test/test_zaura_surface.cc",
     "test/test_zaura_surface.h",
-    "test/test_zaura_toplevel.cc",
-    "test/test_zaura_toplevel.h",
     "test/test_zcr_pointer_stylus.cc",
     "test/test_zcr_pointer_stylus.h",
     "test/test_zcr_stylus.cc",

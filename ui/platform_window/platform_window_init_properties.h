@@ -139,9 +139,6 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   // manager to match the desktop entry and group windows.
   std::string wayland_app_id;
 
-  // Specifies whether the associated window is persistable.
-  bool persistable = true;
-
   // Specifies the id of the target display the window will be created on.
   std::optional<int64_t> display_id;
 #endif

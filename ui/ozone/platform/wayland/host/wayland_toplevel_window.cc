@@ -159,10 +159,6 @@ void WaylandToplevelWindow::Hide() {
   }
   WaylandWindow::Hide();
 
-  // Request the compositor to cease any possible ongoing snapping
-  // preview/commit. Use any value for `snap_ratio` since it will not be used.
-  CommitSnap(WaylandWindowSnapDirection::kNone, /*snap_ratio=*/1.f);
-
   if (root_surface()) {
     root_surface()->ResetZAuraSurface();
 
@@ -258,7 +254,7 @@ void WaylandToplevelWindow::Minimize() {
     // zaura_shell::configure) for it.
     // In the former case we update the window state here synchronously,
     // while in the latter case update the window state in the handler of
-    // configure (HandleAuraToplevelConfigure) asynchronously.
+    // configure (HandleToplevelConfigureWithOrigin) asynchronously.
     // We also need to check if the surface is already configured in case of a
     // synchronous minimize because a minimized window cannot ack configure.
     // This can happen if a minimized window is restored by a session restore.
@@ -303,12 +299,8 @@ void WaylandToplevelWindow::Activate() {
   // compositor as well; for example, Mutter doesn't bring the window to the top
   // when it requests focus, but instead shows a system popup notification to
   // user.
-  //
-  // Exo provides activation through aura-shell, Mutter--through gtk-shell.
   auto* zaura_surface = GetZAuraSurface();
-  if (shell_toplevel_ && shell_toplevel_->SupportsActivation()) {
-    shell_toplevel_->Activate();
-  } else if (zaura_surface && zaura_surface->SupportsActivate()) {
+  if (zaura_surface && zaura_surface->SupportsActivate()) {
     zaura_surface->Activate();
   } else if (connection()->xdg_activation()) {
     if (auto token = base::nix::TakeXdgActivationToken()) {
@@ -330,14 +322,6 @@ void WaylandToplevelWindow::Activate() {
   connection()->Flush();
 
   WaylandWindow::Activate();
-}
-
-void WaylandToplevelWindow::Deactivate() {
-  if (shell_toplevel_ && shell_toplevel_->SupportsActivation()) {
-    shell_toplevel_->Deactivate();
-    connection()->Flush();
-  }
-  WaylandWindow::Deactivate();
 }
 
 void WaylandToplevelWindow::SetWindowIcons(const gfx::ImageSkia& window_icon,
@@ -363,25 +347,13 @@ void WaylandToplevelWindow::SizeConstraintsChanged() {
 }
 
 void WaylandToplevelWindow::SetZOrderLevel(ZOrderLevel order) {
-  if (shell_toplevel_)
-    shell_toplevel_->SetZOrder(order);
-
+  // TODO(crbug.com/374244479): Linux/Wayland doesn't support zorder level.
+  // Consider complete removal of that.
   z_order_ = order;
 }
 
 ZOrderLevel WaylandToplevelWindow::GetZOrderLevel() const {
   return z_order_;
-}
-
-void WaylandToplevelWindow::SetShape(std::unique_ptr<ShapeRects> native_shape,
-                                     const gfx::Transform& transform) {
-  if (shell_toplevel_) {
-    shell_toplevel_->SetShape(std::move(native_shape));
-    // The surface shape is double-buffered state maintained by the shell
-    // surface server-side and applied to the root surface. We must also commit
-    // the surface tree to ensure state is applied correctly.
-    root_surface()->Commit(false);
-  }
 }
 
 std::string WaylandToplevelWindow::GetWindowUniqueId() const {
@@ -442,14 +414,13 @@ void WaylandToplevelWindow::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
 }
 
 bool WaylandToplevelWindow::SupportsConfigureMinimizedState() const {
-  return shell_toplevel_ && shell_toplevel_->IsSupportedOnAuraToplevel(
-                                ZAURA_TOPLEVEL_STATE_MINIMIZED_SINCE_VERSION);
+  // TODO(crbug.com/374244479): remove this.
+  return false;
 }
 
 bool WaylandToplevelWindow::SupportsConfigurePinnedState() const {
-  return shell_toplevel_ &&
-         shell_toplevel_->IsSupportedOnAuraToplevel(
-             ZAURA_TOPLEVEL_STATE_TRUSTED_PINNED_SINCE_VERSION);
+  // TODO(crbug.com/374244479): remove this.
+  return false;
 }
 
 void WaylandToplevelWindow::UpdateWindowScale(bool update_bounds) {
@@ -659,9 +630,6 @@ bool WaylandToplevelWindow::OnInitialize(
   SetWorkspaceExtensionDelegate(properties.workspace_extension_delegate);
   SetDeskExtension(this, static_cast<DeskExtension*>(this));
 
-  // When we are initializing and we do not already have a `shell_toplevel_`,
-  // this will simply set `z_order_` and then set it as the window's initial z
-  // order in `SetUpShellIntegration()`.
   SetZOrderLevel(properties.z_order);
 
   if (!properties.workspace.empty()) {
@@ -671,7 +639,6 @@ bool WaylandToplevelWindow::OnInitialize(
   } else if (properties.visible_on_all_workspaces) {
     workspace_ = kVisibleOnAllWorkspaces;
   }
-  persistable_ = properties.persistable;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (properties.display_id.has_value()) {
     initial_display_id_ = *properties.display_id;
@@ -729,17 +696,6 @@ void WaylandToplevelWindow::AckConfigure(uint32_t serial) {
   // See crbug.com/1512046 for details.
   if (shell_toplevel()) {
     shell_toplevel()->AckConfigure(serial);
-  }
-}
-
-void WaylandToplevelWindow::PropagateBufferScale(float new_scale) {
-  if (!IsSurfaceConfigured())
-    return;
-
-  if (!last_sent_buffer_scale_ ||
-      last_sent_buffer_scale_.value() != new_scale) {
-    shell_toplevel()->SetScaleFactor(new_scale);
-    last_sent_buffer_scale_ = new_scale;
   }
 }
 
@@ -812,12 +768,6 @@ void WaylandToplevelWindow::StartWindowDraggingSessionIfNeeded(
 void WaylandToplevelWindow::ShowSnapPreview(
     WaylandWindowSnapDirection snap_direction,
     bool allow_haptic_feedback) {
-  if (shell_toplevel_ && shell_toplevel_->IsSupportedOnAuraToplevel(
-                             ZAURA_TOPLEVEL_INTENT_TO_SNAP_SINCE_VERSION)) {
-    shell_toplevel_->ShowSnapPreview(snap_direction, allow_haptic_feedback);
-    return;
-  }
-
   auto* zaura_surface = GetZAuraSurface();
   zaura_surface_snap_direction zaura_shell_snap_direction =
       ZAURA_SURFACE_SNAP_DIRECTION_NONE;
@@ -843,20 +793,6 @@ void WaylandToplevelWindow::ShowSnapPreview(
 void WaylandToplevelWindow::CommitSnap(
     WaylandWindowSnapDirection snap_direction,
     float snap_ratio) {
-  // If aura_toplevel does not support `WaylandWindowSnapDirection::kNone` let
-  // it fallthrough to `zaura_surface_unset_snap()`.
-  const bool use_shell_toplevel =
-      shell_toplevel_ &&
-      (shell_toplevel_->IsSupportedOnAuraToplevel(
-           ZAURA_TOPLEVEL_UNSET_SNAP_SINCE_VERSION) ||
-       (snap_direction != WaylandWindowSnapDirection::kNone &&
-        shell_toplevel_->IsSupportedOnAuraToplevel(
-            ZAURA_TOPLEVEL_SET_SNAP_PRIMARY_SINCE_VERSION)));
-  if (use_shell_toplevel) {
-    shell_toplevel_->CommitSnap(snap_direction, snap_ratio);
-    return;
-  }
-
   auto* zaura_surface = GetZAuraSurface();
   if (zaura_surface && zaura_surface->SupportsUnsetSnap()) {
     switch (snap_direction) {
@@ -960,7 +896,6 @@ void WaylandToplevelWindow::DumpState(std::ostream& out) const {
   WaylandWindow::DumpState(out);
   out << ", title=" << window_title_
       << ", is_active=" << ToBoolString(is_active_)
-      << ", persistable=" << ToBoolString(persistable_)
       << ", system_modal=" << ToBoolString(system_modal_);
 }
 
@@ -1126,25 +1061,11 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
       // If the server does not support the synchronized occlusion pathway,
       // enable the unsynchronized occlusion pathway and disable native
       // occlusion.
-      if (!shell_toplevel_->IsSupportedOnAuraToplevel(
-              ZAURA_TOPLEVEL_CONFIGURE_OCCLUSION_STATE_SINCE_VERSION)) {
-        zaura_surface->SetOcclusionTracking();
-        delegate()->DisableNativeWindowOcclusion();
-      }
+      zaura_surface->SetOcclusionTracking();
+      delegate()->DisableNativeWindowOcclusion();
     }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (shell_toplevel_->IsSupportedOnAuraToplevel(
-            ZAURA_TOPLEVEL_SET_PERSISTABLE_SINCE_VERSION)) {
-      shell_toplevel_->SetPersistable(persistable_);
-    }
-#endif
-
-    // We pass the value of `z_order_` to the `shell_toplevel_` here in order to
-    // set the initial z order of the window.
-    SetZOrderLevel(z_order_);
     SetInitialWorkspace();
-    UpdateSystemModal();
   }
 
   // We must not request a new GtkSurface if we already have one, else we get a
@@ -1207,17 +1128,6 @@ void WaylandToplevelWindow::UpdateWindowMask() {
 
 bool WaylandToplevelWindow::GetTabletMode() {
   return connection()->GetTabletMode();
-}
-
-void WaylandToplevelWindow::SetFloatToLocation(
-    WaylandFloatStartLocation float_start_location) {
-  CHECK(shell_toplevel_);
-  shell_toplevel_->SetFloatToLocation(float_start_location);
-}
-
-void WaylandToplevelWindow::UnSetFloat() {
-  CHECK(shell_toplevel_);
-  shell_toplevel_->UnSetFloat();
 }
 
 }  // namespace ui

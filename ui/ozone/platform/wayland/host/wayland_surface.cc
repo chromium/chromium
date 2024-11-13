@@ -358,8 +358,6 @@ void WaylandSurface::set_surface_buffer_scale(float scale) {
       wl_surface_set_buffer_scale(
           surface_.get(), static_cast<int32_t>(GetWaylandScale(state_)));
     }
-    if (root_window_)
-      root_window_->PropagateBufferScale(scale);
   }
 }
 
@@ -863,10 +861,6 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
     needs_commit = true;
   }
   DCHECK_GE(surface_scale_set_, 1);
-
-  // If this is not a subsurface, propagate the buffer scale.
-  if (root_window_ && root_window_->root_surface() == this)
-    root_window_->PropagateBufferScale(pending_state_.buffer_scale_float);
 
   gfx::RectF viewport_src_dip;
   wl_fixed_t src_to_set[4] = {wl_fixed_from_int(-1), wl_fixed_from_int(-1),

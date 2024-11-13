@@ -9,7 +9,6 @@
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_output.h"
 #include "ui/ozone/platform/wayland/test/test_zaura_surface.h"
-#include "ui/ozone/platform/wayland/test/test_zaura_toplevel.h"
 
 namespace wl {
 
@@ -33,26 +32,9 @@ void SurfaceSubmissionInPixelCoordinates(wl_client* client,
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void GetAuraToplevelForXdgToplevel(wl_client* client,
-                                   wl_resource* resource,
-                                   uint32_t id,
-                                   wl_resource* toplevel) {
-  wl_resource* zaura_toplevel_resource =
-      CreateResourceWithImpl<TestZAuraToplevel>(
-          client, &zaura_toplevel_interface, kZAuraShellVersion,
-          &kTestZAuraToplevelImpl, id);
-  auto* xdg_toplevel = GetUserDataAs<MockXdgTopLevel>(toplevel);
-  xdg_toplevel->set_zaura_toplevel(
-      GetUserDataAs<TestZAuraToplevel>(zaura_toplevel_resource));
-}
-
 const struct zaura_shell_interface kTestZAuraShellImpl = {
-    &GetAuraSurface,
-    nullptr,
-    &SurfaceSubmissionInPixelCoordinates,
-    &GetAuraToplevelForXdgToplevel,
-    nullptr,
-    &DestroyResource,
+    &GetAuraSurface, nullptr, &SurfaceSubmissionInPixelCoordinates,
+    nullptr,         nullptr, &DestroyResource,
 };
 
 }  // namespace

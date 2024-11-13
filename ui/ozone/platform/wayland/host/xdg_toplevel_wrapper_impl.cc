@@ -4,7 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/xdg_toplevel_wrapper_impl.h"
 
-#include <aura-shell-client-protocol.h>
 #include <xdg-decoration-unstable-v1-client-protocol.h>
 #include <xdg-toplevel-icon-v1-client-protocol.h>
 
@@ -30,7 +29,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_shm_buffer.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
-#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 #include "ui/ozone/platform/wayland/host/xdg_surface_wrapper_impl.h"
 
 namespace ui {
@@ -69,22 +67,6 @@ std::optional<wl::Serial> GetSerialForMoveResize(
                                                  wl::SerialType::kKeyPress});
 }
 
-zaura_toplevel_z_order_level ToZauraToplevelZOrderLevel(
-    ZOrderLevel z_order_level) {
-  switch (z_order_level) {
-    case ZOrderLevel::kNormal:
-      return ZAURA_TOPLEVEL_Z_ORDER_LEVEL_NORMAL;
-    case ZOrderLevel::kFloatingWindow:
-      return ZAURA_TOPLEVEL_Z_ORDER_LEVEL_FLOATING_WINDOW;
-    case ZOrderLevel::kFloatingUIElement:
-      return ZAURA_TOPLEVEL_Z_ORDER_LEVEL_FLOATING_UI_ELEMENT;
-    case ZOrderLevel::kSecuritySurface:
-      return ZAURA_TOPLEVEL_Z_ORDER_LEVEL_SECURITY_SURFACE;
-  }
-
-  NOTREACHED();
-}
-
 }  // namespace
 
 XDGToplevelWrapperImpl::XDGToplevelWrapperImpl(
@@ -115,16 +97,6 @@ bool XDGToplevelWrapperImpl::Initialize() {
   }
   connection_->window_manager()->NotifyWindowRoleAssigned(wayland_window_);
 
-  if (connection_->zaura_shell()) {
-    uint32_t version =
-        zaura_shell_get_version(connection_->zaura_shell()->wl_object());
-    if (version >=
-        ZAURA_SHELL_GET_AURA_TOPLEVEL_FOR_XDG_TOPLEVEL_SINCE_VERSION) {
-      aura_toplevel_.reset(zaura_shell_get_aura_toplevel_for_xdg_toplevel(
-          connection_->zaura_shell()->wl_object(), xdg_toplevel_.get()));
-    }
-  }
-
   static constexpr xdg_toplevel_listener kXdgToplevelListener = {
       .configure = &OnToplevelConfigure,
       .close = &OnToplevelClose,
@@ -138,11 +110,6 @@ bool XDGToplevelWrapperImpl::Initialize() {
   InitializeXdgDecoration();
 
   return true;
-}
-
-bool XDGToplevelWrapperImpl::IsSupportedOnAuraToplevel(uint32_t version) const {
-  return aura_toplevel_ &&
-         zaura_toplevel_get_version(aura_toplevel_.get()) >= version;
 }
 
 void XDGToplevelWrapperImpl::SetMaximized() {
@@ -357,150 +324,9 @@ XDGSurfaceWrapperImpl* XDGToplevelWrapperImpl::xdg_surface_wrapper() const {
 }
 
 void XDGToplevelWrapperImpl::SetSystemModal(bool modal) {
-  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
-                            ZAURA_TOPLEVEL_SET_SYSTEM_MODAL_SINCE_VERSION) {
-    if (modal) {
-      zaura_toplevel_set_system_modal(aura_toplevel_.get());
-    } else {
-      zaura_toplevel_unset_system_modal(aura_toplevel_.get());
-    }
-  }
-}
-
-void XDGToplevelWrapperImpl::SetZOrder(ZOrderLevel z_order) {
-  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
-                            ZAURA_TOPLEVEL_SET_Z_ORDER_SINCE_VERSION) {
-    zaura_toplevel_set_z_order(aura_toplevel_.get(),
-                               ToZauraToplevelZOrderLevel(z_order));
-  }
-}
-
-bool XDGToplevelWrapperImpl::SupportsActivation() {
-  static_assert(
-      ZAURA_TOPLEVEL_ACTIVATE_SINCE_VERSION ==
-          ZAURA_TOPLEVEL_DEACTIVATE_SINCE_VERSION,
-      "Support for activation and deactivation was added in the same version.");
-  return aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
-                               ZAURA_TOPLEVEL_ACTIVATE_SINCE_VERSION;
-}
-
-void XDGToplevelWrapperImpl::Activate() {
-  if (aura_toplevel_ && SupportsActivation()) {
-    zaura_toplevel_activate(aura_toplevel_.get());
-  }
-}
-
-void XDGToplevelWrapperImpl::Deactivate() {
-  if (aura_toplevel_ && SupportsActivation()) {
-    zaura_toplevel_deactivate(aura_toplevel_.get());
-  }
-}
-
-void XDGToplevelWrapperImpl::SetScaleFactor(float scale_factor) {
-  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
-                            ZAURA_TOPLEVEL_SET_SCALE_FACTOR_SINCE_VERSION) {
-    uint32_t value = base::bit_cast<uint32_t>(scale_factor);
-    zaura_toplevel_set_scale_factor(aura_toplevel_.get(), value);
-  }
-}
-
-void XDGToplevelWrapperImpl::SetFloatToLocation(
-    WaylandFloatStartLocation float_start_location) {
-  if (!aura_toplevel_) {
-    return;
-  }
-
-  uint32_t version = zaura_toplevel_get_version(aura_toplevel_.get());
-  if (version >= ZAURA_TOPLEVEL_SET_FLOAT_TO_LOCATION_SINCE_VERSION) {
-    uint32_t value = base::bit_cast<uint32_t>(float_start_location);
-    zaura_toplevel_set_float_to_location(aura_toplevel_.get(), value);
-  } else if (version >= ZAURA_TOPLEVEL_SET_FLOAT_SINCE_VERSION) {
-    zaura_toplevel_set_float(aura_toplevel_.get());
-  }
-}
-
-void XDGToplevelWrapperImpl::UnSetFloat() {
-  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
-                            ZAURA_TOPLEVEL_UNSET_FLOAT_SINCE_VERSION) {
-    zaura_toplevel_unset_float(aura_toplevel_.get());
-  }
-}
-
-void XDGToplevelWrapperImpl::CommitSnap(
-    WaylandWindowSnapDirection snap_direction,
-    float snap_ratio) {
-  if (!aura_toplevel_) {
-    return;
-  }
-
-  if (zaura_toplevel_get_version(aura_toplevel_.get()) >=
-          ZAURA_TOPLEVEL_UNSET_SNAP_SINCE_VERSION &&
-      snap_direction == WaylandWindowSnapDirection::kNone) {
-    zaura_toplevel_unset_snap(aura_toplevel_.get());
-    return;
-  }
-
-  if (zaura_toplevel_get_version(aura_toplevel_.get()) >=
-      ZAURA_TOPLEVEL_SET_SNAP_PRIMARY_SINCE_VERSION) {
-    uint32_t value = base::bit_cast<uint32_t>(snap_ratio);
-    switch (snap_direction) {
-      case WaylandWindowSnapDirection::kPrimary:
-        zaura_toplevel_set_snap_primary(aura_toplevel_.get(), value);
-        return;
-      case WaylandWindowSnapDirection::kSecondary:
-        zaura_toplevel_set_snap_secondary(aura_toplevel_.get(), value);
-        return;
-      case WaylandWindowSnapDirection::kNone:
-        NOTREACHED() << "Toplevel does not support UnsetSnap yet";
-    }
-  }
-}
-
-void XDGToplevelWrapperImpl::SetPersistable(bool persistable) const {
-  auto persistable_enum = persistable
-                              ? ZAURA_TOPLEVEL_PERSISTABLE_PERSISTABLE
-                              : ZAURA_TOPLEVEL_PERSISTABLE_NOT_PERSISTABLE;
-
-  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
-                            ZAURA_TOPLEVEL_SET_PERSISTABLE_SINCE_VERSION) {
-    zaura_toplevel_set_persistable(aura_toplevel_.get(), persistable_enum);
-  }
-}
-
-void XDGToplevelWrapperImpl::SetShape(std::unique_ptr<ShapeRects> shape_rects) {
-  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
-                            ZAURA_TOPLEVEL_SET_SHAPE_SINCE_VERSION) {
-    zaura_toplevel_set_shape(
-        aura_toplevel_.get(),
-        shape_rects ? CreateAndAddRegion(*shape_rects).get() : nullptr);
-  }
-}
-
-void XDGToplevelWrapperImpl::ShowSnapPreview(
-    WaylandWindowSnapDirection snap_direction,
-    bool allow_haptic_feedback) {
-  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
-                            ZAURA_TOPLEVEL_INTENT_TO_SNAP_SINCE_VERSION) {
-    uint32_t zaura_shell_snap_direction = ZAURA_TOPLEVEL_SNAP_DIRECTION_NONE;
-    switch (snap_direction) {
-      case WaylandWindowSnapDirection::kPrimary:
-        zaura_shell_snap_direction = ZAURA_TOPLEVEL_SNAP_DIRECTION_PRIMARY;
-        break;
-      case WaylandWindowSnapDirection::kSecondary:
-        zaura_shell_snap_direction = ZAURA_TOPLEVEL_SNAP_DIRECTION_SECONDARY;
-        break;
-      case WaylandWindowSnapDirection::kNone:
-        break;
-    }
-    zaura_toplevel_intent_to_snap(aura_toplevel_.get(),
-                                  zaura_shell_snap_direction);
-    return;
-  }
-}
-
-void XDGToplevelWrapperImpl::AckRotateFocus(uint32_t serial, uint32_t handled) {
-  zaura_toplevel_ack_rotate_focus(aura_toplevel_.get(), serial, handled);
-  connection_->Flush();
+  // TODO(crbug.com/378465003): Linux/Wayland can set a window to be modal via
+  // xdg-dialog-v1 protocol. Consider support for that.
+  // See https://wayland.app/protocols/xdg-dialog-v1
 }
 
 void XDGToplevelWrapperImpl::SetIcon(const gfx::ImageSkia& icon) {

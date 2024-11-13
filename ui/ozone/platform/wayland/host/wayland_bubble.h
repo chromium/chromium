@@ -41,7 +41,6 @@ class WaylandBubble final : public WaylandWindow {
 
   // WaylandWindow overrides:
   void UpdateWindowScale(bool update_bounds) override;
-  void PropagateBufferScale(float new_scale) override {}
   void OnSequencePoint(int64_t seq) override;
   // TODO(crbug.com/329145822): this needs to apply the offset that is requested
   // by SetBoundsInDIP.

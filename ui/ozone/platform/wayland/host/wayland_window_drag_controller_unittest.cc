@@ -47,7 +47,6 @@
 #include "ui/ozone/platform/wayland/test/test_data_source.h"
 #include "ui/ozone/platform/wayland/test/test_output.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
-#include "ui/ozone/platform/wayland/test/test_zaura_toplevel.h"
 #include "ui/ozone/platform/wayland/test/wayland_drag_drop_test.h"
 #include "ui/ozone/platform/wayland/test/wayland_test.h"
 #include "ui/ozone/platform/wayland/test/wayland_window_drag_controller_test_api.h"
@@ -127,35 +126,6 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
 
   void SendDndMotionForWindowDrag(const gfx::Point& location) {
     WaylandDragDropTest::SendDndMotion(location);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Emulate the server side logic during move loop. The server
-    // server controls the bounds only when the window is detached.
-    if (drag_controller_state() !=
-        WaylandWindowDragController::State::kDetached) {
-      return;
-    }
-    // The window must exist. (should not be swallowed nor destroyed)
-    ASSERT_TRUE(window_);
-    auto& offset = TestApi(drag_controller()).drag_offset();
-    gfx::Point new_origin = (location - offset);
-    auto* dragged_window = TestApi(drag_controller()).dragged_window();
-    ASSERT_TRUE(dragged_window);
-    const uint32_t surface_id =
-        dragged_window->root_surface()->get_surface_id();
-    PostToServerAndWait(
-        [new_origin, surface_id](wl::TestWaylandServerThread* server) {
-          auto* surface = server->GetObject<wl::MockSurface>(surface_id);
-          ASSERT_TRUE(surface);
-          ASSERT_TRUE(surface->xdg_surface());
-          ASSERT_TRUE(surface->xdg_surface()->xdg_toplevel());
-
-          auto* aura_toplevel =
-              surface->xdg_surface()->xdg_toplevel()->zaura_toplevel();
-          ASSERT_TRUE(aura_toplevel);
-          zaura_toplevel_send_origin_change(aura_toplevel->resource(),
-                                            new_origin.x(), new_origin.y());
-        });
-#endif
   }
 
   void SendDndDropAndFinished() {

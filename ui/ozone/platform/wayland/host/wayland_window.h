@@ -100,10 +100,6 @@ class WaylandWindow : public PlatformWindow,
   // the currently entered output(s).
   void OnEnteredOutputScaleChanged();
 
-  // Propagates the buffer scale of the next commit to exo.
-  // TODO(crbug.com/374244479): remove this.
-  virtual void PropagateBufferScale(float new_scale);
-
   // Returns a WeakPtr to the implementation instance.
   virtual base::WeakPtr<WaylandWindow> AsWeakPtr() = 0;
 
