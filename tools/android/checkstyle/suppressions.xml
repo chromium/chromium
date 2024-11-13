@@ -23,4 +23,7 @@
   <suppress id="SystemExitCheck" files="src/(build|testing|third_party|tools|base/test)/"/>
   <!-- jni_generator tests fail some checks. -->
   <suppress checks=".*" files="base/android/jni_generator/.*"/>
+  <!-- The accessibility code uses "AX" throughout Chromium, allow in Java for
+       consistency with the native code. -->
+  <suppress checks="AbbreviationAsWord" files=".*Accessibility.*" />
 </suppressions>
