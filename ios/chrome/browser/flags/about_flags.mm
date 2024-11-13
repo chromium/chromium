@@ -1622,8 +1622,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"default-browser-banner-promo",
      flag_descriptions::kDefaultBrowserBannerPromoName,
      flag_descriptions::kDefaultBrowserBannerPromoDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         feature_engagement::kDefaultBrowserTriggerCriteriaExperiment)},
+     FEATURE_VALUE_TYPE(kDefaultBrowserBannerPromo)},
     {"default-browser-promo-trigger-criteria-experiment",
      flag_descriptions::kDefaultBrowserTriggerCriteriaExperimentName,
      flag_descriptions::kDefaultBrowserTriggerCriteriaExperimentDescription,
