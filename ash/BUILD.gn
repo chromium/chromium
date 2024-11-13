@@ -3478,6 +3478,7 @@ component("ash") {
     "//components/device_event_log",
     "//components/discardable_memory/service",
     "//components/drive",
+    "//components/endpoint_fetcher",
     "//components/favicon_base:favicon_base",
     "//components/fullscreen_control",
     "//components/global_media_controls",
