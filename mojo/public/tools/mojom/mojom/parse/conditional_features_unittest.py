@@ -372,5 +372,54 @@ class ConditionalFeaturesTest(unittest.TestCase):
                       conditional_features.RemoveDisabledDefinitions,
                       definition, ENABLED_FEATURES)
 
+  def testMultipleOrFeatures(self):
+    mojom_source = """
+      feature Foo {
+        const string name = "FooFeature";
+        [EnableIf=red|yellow]
+        const bool default_state = false;
+        [EnableIf=yellow|purple]
+        const bool default_state = true;
+      };
+    """
+    expected_source = """
+      feature Foo {
+        const string name = "FooFeature";
+        [EnableIf=red|yellow]
+        const bool default_state = false;
+      };
+    """
+    self.parseAndAssertEqual(mojom_source, expected_source)
+
+  def testMultipleAndFeatures(self):
+    mojom_source = """
+      feature Foo {
+        const string name = "FooFeature";
+        [EnableIf=red&blue]
+        const bool default_state = false;
+        [EnableIf=yellow&purple]
+        const bool default_state = true;
+      };
+    """
+    expected_source = """
+      feature Foo {
+        const string name = "FooFeature";
+        [EnableIf=red&blue]
+        const bool default_state = false;
+      };
+    """
+    self.parseAndAssertEqual(mojom_source, expected_source)
+
+  def testMixedAndOrInEnableIf(self):
+    source = """
+      enum Foo {
+        [EnableIf=red&blue|yellow]
+        kBarValue = 5,
+      };
+    """
+    # some other error, but some error!
+    self.assertRaises(parser.ParseError, parser.Parse, source, "myfile.mojom")
+
+
 if __name__ == '__main__':
   unittest.main()

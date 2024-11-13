@@ -512,11 +512,13 @@ interesting attributes supported today.
   matching `value` in the list of `enabled_features`, the definition will be
   disabled. This is useful for mojom definitions that only make sense on one
   platform. Note that the `EnableIf` attribute can only be set once per
-  definition and cannot be set at the same time as `EnableIfNot`. Also be aware
-  that only one condition can be tested, `EnableIf=value,xyz` introduces a new
-  `xyz` attribute. `xyz` is not part of the `EnableIf` condition that depends
-  only on the feature `value`. Complex conditions can be introduced via
-  enabled_features in `build.gn` files.
+  definition and cannot be set at the same time as `EnableIfNot`. Multiple
+  conditions can be tested using `|` (any, e.g. `EnableIf=is_win|is_linux`) and
+  `&` (all, e.g. `Enableif=is_official_build&is_win`). You cannot mix `&` and
+  `|` in one condition. More complex conditions can be introduced by defining
+  your own features via `enabled_features` in `build.gn` files. Also be aware
+  that a comma introduces a new attribute, so `EnableIf=value,xyz` means
+  `EnableIf=value` and applies the `xyz` attribute.
 
 * **`[EnableIfNot=value]`**:
   The `EnableIfNot` attribute is used to conditionally enable definitions when
@@ -524,7 +526,10 @@ interesting attributes supported today.
   matching `value` in the list of `enabled_features`, the definition will be
   disabled. This is useful for mojom definitions that only make sense on all but
   one platform. Note that the `EnableIfNot` attribute can only be set once per
-  definition and cannot be set at the same time as `EnableIf`.
+  definition and cannot be set at the same time as `EnableIf`. Multiple
+  conditions can be tested using `|` (any, e.g. `EnableIfNot=is_win|is_linux`)
+  and `&` (all, e.g. `EnableifNot=is_official_build&is_win`). You cannot mix `&`
+  and `|` in one condition.
 
 * **`[ServiceSandbox=value]`**:
   The `ServiceSandbox` attribute is used in Chromium to tag which sandbox a

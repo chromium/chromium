@@ -203,9 +203,27 @@ class Attribute(NodeBase):
 
 
 class AttributeList(NodeListBase):
-  """Represents a list attributes."""
+  """Represents a list of attributes."""
 
   _list_item_type = Attribute
+
+
+class AttributeValueOrList(NodeListBase):
+  """Represents a list of pipe delimited attribute values."""
+
+  def __str__(self):
+    return '|'.join(item.name for item in self)
+
+  _list_item_type = Name
+
+
+class AttributeValueAndList(NodeListBase):
+  """Represents a list of ampersand delimited attribute values."""
+
+  def __str__(self):
+    return '&'.join(item.name for item in self)
+
+  _list_item_type = Name
 
 
 class Const(Definition):
@@ -225,6 +243,11 @@ class Const(Definition):
            self.attribute_list == other.attribute_list and \
            self.typename == other.typename and \
            self.value == other.value
+
+  def __repr__(self):
+    return "Const(typename=%s, attribute_list=%s, value=%s)" % (
+        self.typename, self.attribute_list, self.value)
+
 
 
 class Enum(Definition):

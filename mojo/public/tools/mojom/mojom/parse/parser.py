@@ -174,6 +174,8 @@ class Parser:
 
   def p_attribute_2(self, p):
     """attribute : name EQUALS evaled_literal
+                 | name EQUALS nonempty_pipe_delimited_names
+                 | name EQUALS nonempty_amps_delimited_names
                  | name EQUALS name"""
     p[0] = ast.Attribute(p[1], p[3])
     self._set_lexstate(p, 1, 3)
@@ -194,6 +196,24 @@ class Parser:
       p[0] = False
     else:
       p[0] = eval(p[1].value)
+
+  def p_nonempty_pipe_delimited_names_1(self, p):
+    """nonempty_pipe_delimited_names : name"""
+    p[0] = ast.AttributeValueOrList(p[1])
+
+  def p_nonempty_pipe_delimited_names_2(self, p):
+    """nonempty_pipe_delimited_names : nonempty_pipe_delimited_names PIPE name"""
+    p[0] = p[1]
+    p[0].Append(p[3])
+
+  def p_nonempty_amps_delimited_names_1(self, p):
+    """nonempty_amps_delimited_names : name"""
+    p[0] = ast.AttributeValueAndList(p[1])
+
+  def p_nonempty_amps_delimited_names_2(self, p):
+    """nonempty_amps_delimited_names : nonempty_amps_delimited_names AMPERSAND name"""
+    p[0] = p[1]
+    p[0].Append(p[3])
 
   def p_struct_1(self, p):
     """struct : attribute_section STRUCT name LBRACE struct_body RBRACE SEMI"""

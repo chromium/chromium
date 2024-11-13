@@ -101,6 +101,8 @@ class Lexer:
       'RANGLE',  # < >
       'SEMI',  # ;
       'COMMA',
+      'PIPE',  # |
+      'AMPERSAND',  # &
       'DOT'  # , .
   )
 
@@ -190,6 +192,8 @@ class Lexer:
   t_COMMA = r','
   t_DOT = r'\.'
   t_SEMI = r';'
+  t_PIPE = r'\|'
+  t_AMPERSAND = r'&'
 
   t_STRING_LITERAL = string_literal
 
