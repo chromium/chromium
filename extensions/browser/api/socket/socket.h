@@ -108,7 +108,7 @@ class Socket : public ApiResource {
   // The |callback| will be called with |byte_count| or a negative number if an
   // error occurred.
   void Write(scoped_refptr<net::IOBuffer> io_buffer,
-             int byte_count,
+             size_t byte_count,
              net::CompletionOnceCallback callback);
 
   virtual void RecvFrom(int count, RecvFromCompletionCallback callback) = 0;
@@ -152,7 +152,7 @@ class Socket : public ApiResource {
                         net::CompletionOnceCallback callback) = 0;
 
   std::string hostname_;
-  bool is_connected_;
+  bool is_connected_ = false;
 
  private:
   friend class ApiResourceManager<Socket>;
@@ -160,14 +160,14 @@ class Socket : public ApiResource {
 
   struct WriteRequest {
     WriteRequest(scoped_refptr<net::IOBuffer> io_buffer,
-                 int byte_count,
+                 size_t byte_count,
                  net::CompletionOnceCallback callback);
     WriteRequest(WriteRequest&& other);
     ~WriteRequest();
     scoped_refptr<net::IOBuffer> io_buffer;
-    int byte_count;
+    size_t byte_count;
     net::CompletionOnceCallback callback;
-    int bytes_written;
+    size_t bytes_written = 0;
   };
 
   void OnWriteComplete(int result);
