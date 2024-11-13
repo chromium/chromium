@@ -244,7 +244,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 @property(nonatomic, strong) PriceCardMediator* priceCardMediator;
 // Mediator for remote Tabs.
 @property(nonatomic, strong) RecentTabsMediator* remoteTabsMediator;
-// TODO(crbug.com/346302283): Some tests depend on a
+// TODO(crbug.com/378677934): Some tests depend on a
 // RecentTabsTableViewController to have been loaded and kept in memory.
 // Investigate and remove this dependency.
 @property(nonatomic, strong)
@@ -922,7 +922,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     baseViewController.tabGroupsGridContainerViewController =
         _tabGroupsPanelCoordinator.gridContainerViewController;
 
-    // TODO(crbug.com/346302283): Some tests depend on a
+    // TODO(crbug.com/378677934): Some tests depend on a
     // RecentTabsTableViewController to have been loaded and kept in memory.
     // Investigate and remove this dependency.
     RecentTabsTableViewController* remoteTabsViewController =
