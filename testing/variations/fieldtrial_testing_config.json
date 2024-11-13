@@ -17305,6 +17305,26 @@
             ]
         }
     ],
+    "PlusAddressFullFormFill": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PlusAddressFullFormFill"
+                    ]
+                }
+            ]
+        }
+    ],
     "PlusAddressesExperiment": [
         {
             "platforms": [
