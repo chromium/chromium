@@ -58,18 +58,16 @@ ContextPointer& DictSetList(ContextPointer& ctx,
                             rust::Str key,
                             size_t reserve) {
   auto& dict = reinterpret_cast<base::Value&>(ctx).GetDict();
-  base::Value::List list;
-  list.reserve(reserve);
-  dict.Set(base::RustStrToStringView(key), std::move(list));
-  return reinterpret_cast<ContextPointer&>(
-      *dict.Find(base::RustStrToStringView(key)));
+  base::Value* value = dict.Set(base::RustStrToStringView(key),
+                                base::Value::List::with_capacity(reserve));
+  return reinterpret_cast<ContextPointer&>(*value);
 }
 
 ContextPointer& DictSetDict(ContextPointer& ctx, rust::Str key) {
   auto& dict = reinterpret_cast<base::Value&>(ctx).GetDict();
-  dict.Set(base::RustStrToStringView(key), base::Value(base::Value::Dict()));
-  return reinterpret_cast<ContextPointer&>(
-      *dict.Find(base::RustStrToStringView(key)));
+  base::Value* value =
+      dict.Set(base::RustStrToStringView(key), base::Value::Dict());
+  return reinterpret_cast<ContextPointer&>(*value);
 }
 
 void DictSetNone(ContextPointer& ctx, rust::Str key) {
