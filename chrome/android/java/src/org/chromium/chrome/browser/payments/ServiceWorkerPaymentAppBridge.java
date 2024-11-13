@@ -16,6 +16,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentEventResponseType;
@@ -49,11 +50,13 @@ public class ServiceWorkerPaymentAppBridge {
     /* package */ ServiceWorkerPaymentAppBridge() {}
 
     /**
-     * Checks whether there is a installed SW payment app.
+     * Checks whether there is a installed SW payment app in the profile.
      *
+     * @param profile The profile for which the installed SW payment app will be checked for.
      * @param callback The callback to return result.
      */
-    public static void hasServiceWorkerPaymentApps(HasServiceWorkerPaymentAppsCallback callback) {
+    public static void hasServiceWorkerPaymentApps(
+            Profile profile, HasServiceWorkerPaymentAppsCallback callback) {
         ThreadUtils.assertOnUiThread();
 
         if (!PaymentFeatureList.isEnabled(PaymentFeatureList.SERVICE_WORKER_PAYMENT_APPS)) {
@@ -67,7 +70,7 @@ public class ServiceWorkerPaymentAppBridge {
                     });
             return;
         }
-        ServiceWorkerPaymentAppBridgeJni.get().hasServiceWorkerPaymentApps(callback);
+        ServiceWorkerPaymentAppBridgeJni.get().hasServiceWorkerPaymentApps(profile, callback);
     }
 
     /**
@@ -165,7 +168,8 @@ public class ServiceWorkerPaymentAppBridge {
 
     @NativeMethods
     interface Natives {
-        void hasServiceWorkerPaymentApps(HasServiceWorkerPaymentAppsCallback callback);
+        void hasServiceWorkerPaymentApps(
+                @JniType("Profile*") Profile profile, HasServiceWorkerPaymentAppsCallback callback);
 
         void getServiceWorkerPaymentAppsInfo(GetServiceWorkerPaymentAppsInfoCallback callback);
 

@@ -470,6 +470,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
 
     private void refreshPaymentAppsPrefForServiceWorkerPaymentApps(Preference pref) {
         ServiceWorkerPaymentAppBridge.hasServiceWorkerPaymentApps(
+                getProfile(),
                 new ServiceWorkerPaymentAppBridge.HasServiceWorkerPaymentAppsCallback() {
                     @Override
                     public void onHasServiceWorkerPaymentAppsResponse(boolean hasPaymentApps) {

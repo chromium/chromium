@@ -98,14 +98,13 @@ void OnGetServiceWorkerPaymentAppsInfo(
 
 static void JNI_ServiceWorkerPaymentAppBridge_HasServiceWorkerPaymentApps(
     JNIEnv* env,
+    Profile* profile,
     const JavaParamRef<jobject>& jcallback) {
   // Checks whether there is a installed service worker payment app through
   // GetAllPaymentApps.
-  content::InstalledPaymentAppsFinder::GetInstance(
-      ProfileManager::GetActiveUserProfile())
-      ->GetAllPaymentApps(
-          base::BindOnce(&OnHasServiceWorkerPaymentAppsResponse,
-                         ScopedJavaGlobalRef<jobject>(env, jcallback)));
+  content::InstalledPaymentAppsFinder::GetInstance(profile)->GetAllPaymentApps(
+      base::BindOnce(&OnHasServiceWorkerPaymentAppsResponse,
+                     ScopedJavaGlobalRef<jobject>(env, jcallback)));
 }
 
 static void JNI_ServiceWorkerPaymentAppBridge_GetServiceWorkerPaymentAppsInfo(
