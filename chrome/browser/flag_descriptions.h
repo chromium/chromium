@@ -3340,9 +3340,6 @@ extern const char kArcArcOnDemandExperimentDescription[];
 extern const char kArcCustomTabsExperimentName[];
 extern const char kArcCustomTabsExperimentDescription[];
 
-extern const char kArcDocumentsProviderUnknownSizeName[];
-extern const char kArcDocumentsProviderUnknownSizeDescription[];
-
 extern const char kArcEnableAttestationName[];
 extern const char kArcEnableAttestationDescription[];
 

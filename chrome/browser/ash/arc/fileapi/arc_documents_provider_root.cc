@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
 #include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
@@ -17,7 +16,6 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/mime_util.h"
@@ -32,33 +30,6 @@ namespace {
 
 // Directory cache will be cleared this duration after it is built.
 constexpr base::TimeDelta kCacheExpiration = base::Seconds(60);
-
-void OnGetFileSizeFromOpenFile(
-    ArcDocumentsProviderRoot::GetFileInfoCallback callback,
-    base::File::Info info,
-    base::File::Error error,
-    int64_t size) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (error == base::File::FILE_OK) {
-    info.size = size;
-    std::move(callback).Run(error, info);
-  } else {
-    std::move(callback).Run(error, base::File::Info());
-  }
-}
-
-void OnResolveToContentUrl(
-    ArcDocumentsProviderRoot::GetFileInfoCallback callback,
-    ArcFileSystemOperationRunner* runner,
-    const base::File::Info& info,
-    const GURL& content_url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  GetFileSizeFromOpenFileOnUIThread(
-      content_url, runner,
-      base::BindOnce(&OnGetFileSizeFromOpenFile, std::move(callback), info));
-}
 
 }  // namespace
 
@@ -153,7 +124,7 @@ void ArcDocumentsProviderRoot::GetFileInfo(
   GetDocument(
       path, base::BindOnce(&ArcDocumentsProviderRoot::GetFileInfoFromDocument,
                            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                           path, fields));
+                           fields));
 }
 
 void ArcDocumentsProviderRoot::ReadDirectory(const base::FilePath& path,
@@ -357,7 +328,6 @@ void ArcDocumentsProviderRoot::OnGetRootSize(GetRootSizeCallback callback,
 
 void ArcDocumentsProviderRoot::GetFileInfoFromDocument(
     GetFileInfoCallback callback,
-    const base::FilePath& path,
     storage::FileSystemOperation::GetMetadataFieldSet fields,
     base::File::Error error,
     const mojom::DocumentPtr& document) {
@@ -385,17 +355,7 @@ void ArcDocumentsProviderRoot::GetFileInfoFromDocument(
             base::checked_cast<int64_t>(document->last_modified));
   }
 
-  if (base::FeatureList::IsEnabled(kDocumentsProviderUnknownSizeFeature) &&
-      (fields.Has(storage::FileSystemOperation::GetMetadataField::kSize)) &&
-      info.size == kUnknownFileSize && !is_directory) {
-    // We don't know the size from metadata and the size is requested, find it
-    // out by opening the file
-    ResolveToContentUrl(
-        path, base::BindOnce(&OnResolveToContentUrl, std::move(callback),
-                             runner_, info));
-  } else {
-    std::move(callback).Run(base::File::FILE_OK, info);
-  }
+  std::move(callback).Run(base::File::FILE_OK, info);
 }
 
 void ArcDocumentsProviderRoot::ReadDirectoryWithDocumentId(

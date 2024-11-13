@@ -288,11 +288,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "arc-documents-provider-unknown-size",
-    "owners": [ "alexbn@chromium.org" ],
-    "expiry_milestone": 98
-  },
-  {
     "name": "arc-enable-attestation",
     "owners": [ "batoon@google.com", "vraheja@google.com" ],
     "expiry_milestone": 135

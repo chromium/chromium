@@ -89,11 +89,6 @@ const base::FeatureParam<int> kDeferArcActivationHistoryThreshold{
     3,
 };
 
-// Controls whether to handle files with unknown size.
-BASE_FEATURE(kDocumentsProviderUnknownSizeFeature,
-             "ArcDocumentsProviderUnknownSize",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether attestation will be used on ARCVM.
 BASE_FEATURE(kEnableArcAttestation,
              "ArcAttestation",
