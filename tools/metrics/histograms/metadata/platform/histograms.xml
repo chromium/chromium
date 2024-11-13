@@ -1326,7 +1326,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.CpuUsage" units="%"
-    expires_after="2024-12-20">
+    expires_after="2025-10-20">
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
@@ -1384,7 +1384,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.MigrationStatus"
-    enum="MissiveMigrationStatus" expires_after="2024-12-24">
+    enum="MissiveMigrationStatus" expires_after="2025-10-24">
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
@@ -1449,7 +1449,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Missive.UnusualEnqueueTimestamp" enum="Boolean"
-    expires_after="2024-12-26">
+    expires_after="2025-10-26">
   <owner>lbaraz@chromium.org</owner>
   <owner>cros-reporting-team@google.com</owner>
   <summary>
