@@ -34,7 +34,7 @@ namespace {
 
 using blink::performance_scenarios::GetLoadingScenario;
 using blink::performance_scenarios::PerformanceScenarioObserverList;
-using blink::performance_scenarios::Scope;
+using blink::performance_scenarios::ScenarioScope;
 using ::testing::_;
 
 class MockPerformanceScenarioObserver : public PerformanceScenarioObserver {
@@ -69,13 +69,13 @@ class MockBlinkPerformanceScenarioObserver
  public:
   MOCK_METHOD(void,
               OnLoadingScenarioChanged,
-              (Scope scope,
+              (ScenarioScope scope,
                LoadingScenario old_scenario,
                LoadingScenario new_scenario),
               (override));
   MOCK_METHOD(void,
               OnInputScenarioChanged,
-              (Scope scope,
+              (ScenarioScope scope,
                InputScenario old_scenario,
                InputScenario new_scenario),
               (override));
@@ -155,13 +155,15 @@ INSTANTIATE_TEST_SUITE_P(All, PerformanceScenariosTest, ::testing::Bool());
 
 TEST_P(PerformanceScenariosTest, SetWithoutSharedMemory) {
   // Can't set up the blink scenario observer without mapped memory.
-  EXPECT_FALSE(PerformanceScenarioObserverList::GetForScope(Scope::kGlobal));
+  EXPECT_FALSE(
+      PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal));
 
   // When the global shared scenario memory isn't set up, setting a scenario
   // should silently do nothing. (Process scenario memory is scoped to the
   // ProcessNode so will always be mapped as needed.)
   SetGlobalLoadingScenario(LoadingScenario::kFocusedPageLoading);
-  EXPECT_EQ(GetLoadingScenario(Scope::kGlobal)->load(std::memory_order_relaxed),
+  EXPECT_EQ(GetLoadingScenario(ScenarioScope::kGlobal)
+                ->load(std::memory_order_relaxed),
             LoadingScenario::kNoPageLoading);
 }
 
@@ -180,10 +182,10 @@ TEST_P(PerformanceScenariosTest, SetWithSharedMemory) {
   });
 
   StrictMockBlinkPerformanceScenarioObserver mock_blink_observer;
-  EXPECT_CALL(
-      mock_blink_observer,
-      OnLoadingScenarioChanged(Scope::kGlobal, LoadingScenario::kNoPageLoading,
-                               LoadingScenario::kFocusedPageLoading))
+  EXPECT_CALL(mock_blink_observer,
+              OnLoadingScenarioChanged(ScenarioScope::kGlobal,
+                                       LoadingScenario::kNoPageLoading,
+                                       LoadingScenario::kFocusedPageLoading))
       .WillOnce(base::test::RunOnceClosure(task_environment()->QuitClosure()));
 
   // Create writable shared memory for the global state. This maps a read-only
@@ -191,12 +193,13 @@ TEST_P(PerformanceScenariosTest, SetWithSharedMemory) {
   // current (browser) process.
   ScopedGlobalScenarioMemory global_shared_memory;
   auto blink_observer_list =
-      PerformanceScenarioObserverList::GetForScope(Scope::kGlobal);
+      PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal);
   ASSERT_TRUE(blink_observer_list);
   blink_observer_list->AddObserver(&mock_blink_observer);
 
   SetGlobalLoadingScenario(LoadingScenario::kFocusedPageLoading);
-  EXPECT_EQ(GetLoadingScenario(Scope::kGlobal)->load(std::memory_order_relaxed),
+  EXPECT_EQ(GetLoadingScenario(ScenarioScope::kGlobal)
+                ->load(std::memory_order_relaxed),
             LoadingScenario::kFocusedPageLoading);
 
   // PerformanceScenarioObserverList is an ObserverListThreadSafe that posts
@@ -214,7 +217,7 @@ TEST_P(PerformanceScenariosTest, SetWithSharedMemory) {
   // SetLoadingScenarioForProcess posts to the PM thread. Wait until the message
   // is received before reading.
   RunInGraph([] {
-    EXPECT_EQ(GetLoadingScenario(Scope::kCurrentProcess)
+    EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
                   ->load(std::memory_order_relaxed),
               LoadingScenario::kNoPageLoading);
   });
@@ -227,8 +230,9 @@ TEST_P(PerformanceScenariosTest, SetWithSharedMemory) {
   // in the renderer process as the "current process" state. The state should
   // now become visible.
   blink::performance_scenarios::ScopedReadOnlyScenarioMemory
-      process_shared_memory(Scope::kCurrentProcess, std::move(process_region));
-  EXPECT_EQ(GetLoadingScenario(Scope::kCurrentProcess)
+      process_shared_memory(ScenarioScope::kCurrentProcess,
+                            std::move(process_region));
+  EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
                 ->load(std::memory_order_relaxed),
             LoadingScenario::kVisiblePageLoading);
 
@@ -250,17 +254,17 @@ TEST_P(PerformanceScenariosTest, SetFromPMSequence) {
   });
 
   StrictMockBlinkPerformanceScenarioObserver mock_blink_observer;
-  EXPECT_CALL(
-      mock_blink_observer,
-      OnLoadingScenarioChanged(Scope::kGlobal, LoadingScenario::kNoPageLoading,
-                               LoadingScenario::kFocusedPageLoading))
+  EXPECT_CALL(mock_blink_observer,
+              OnLoadingScenarioChanged(ScenarioScope::kGlobal,
+                                       LoadingScenario::kNoPageLoading,
+                                       LoadingScenario::kFocusedPageLoading))
       .WillOnce(base::test::RunOnceClosure(task_environment()->QuitClosure()));
 
   // Create writable shared memory for the global state. This maps a read-only
   // view of the memory in as well.
   ScopedGlobalScenarioMemory global_shared_memory;
   auto blink_observer_list =
-      PerformanceScenarioObserverList::GetForScope(Scope::kGlobal);
+      PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal);
   ASSERT_TRUE(blink_observer_list);
   blink_observer_list->AddObserver(&mock_blink_observer);
 
@@ -278,10 +282,11 @@ TEST_P(PerformanceScenariosTest, SetFromPMSequence) {
     SetGlobalLoadingScenario(LoadingScenario::kFocusedPageLoading);
   });
 
-  EXPECT_EQ(GetLoadingScenario(Scope::kCurrentProcess)
+  EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
                 ->load(std::memory_order_relaxed),
             LoadingScenario::kNoPageLoading);
-  EXPECT_EQ(GetLoadingScenario(Scope::kGlobal)->load(std::memory_order_relaxed),
+  EXPECT_EQ(GetLoadingScenario(ScenarioScope::kGlobal)
+                ->load(std::memory_order_relaxed),
             LoadingScenario::kFocusedPageLoading);
 
   // Ensure that the ProcessNode observer was notified in the browser process,
@@ -297,8 +302,9 @@ TEST_P(PerformanceScenariosTest, SetFromPMSequence) {
   // in the renderer process as the "current process" state. The state should
   // now become visible.
   blink::performance_scenarios::ScopedReadOnlyScenarioMemory
-      process_shared_memory(Scope::kCurrentProcess, std::move(process_region));
-  EXPECT_EQ(GetLoadingScenario(Scope::kCurrentProcess)
+      process_shared_memory(ScenarioScope::kCurrentProcess,
+                            std::move(process_region));
+  EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
                 ->load(std::memory_order_relaxed),
             LoadingScenario::kVisiblePageLoading);
 
@@ -320,7 +326,8 @@ TEST_P(PerformanceScenariosTest, SetWithoutObservers) {
 
   ScopedGlobalScenarioMemory global_shared_memory;
   blink::performance_scenarios::ScopedReadOnlyScenarioMemory
-      process_shared_memory(Scope::kCurrentProcess, main_process_region());
+      process_shared_memory(ScenarioScope::kCurrentProcess,
+                            main_process_region());
 
   SetGlobalLoadingScenario(LoadingScenario::kFocusedPageLoading);
   SetLoadingScenarioForProcess(LoadingScenario::kVisiblePageLoading, process());
@@ -328,10 +335,10 @@ TEST_P(PerformanceScenariosTest, SetWithoutObservers) {
   // SetLoadingScenarioForProcess posts to the PM thread. Wait until the message
   // is received before reading.
   RunInGraph([] {
-    EXPECT_EQ(
-        GetLoadingScenario(Scope::kGlobal)->load(std::memory_order_relaxed),
-        LoadingScenario::kFocusedPageLoading);
-    EXPECT_EQ(GetLoadingScenario(Scope::kCurrentProcess)
+    EXPECT_EQ(GetLoadingScenario(ScenarioScope::kGlobal)
+                  ->load(std::memory_order_relaxed),
+              LoadingScenario::kFocusedPageLoading);
+    EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
                   ->load(std::memory_order_relaxed),
               LoadingScenario::kVisiblePageLoading);
   });

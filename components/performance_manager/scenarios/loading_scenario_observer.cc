@@ -182,7 +182,7 @@ void LoadingScenarioObserver::OnPassedToGraph(Graph* graph) {
   CHECK(graph->GetAllProcessNodes().empty());
   CHECK(graph->GetAllFrameNodes().empty());
   CHECK_EQ(blink::performance_scenarios::GetLoadingScenario(
-               blink::performance_scenarios::Scope::kGlobal)
+               blink::performance_scenarios::ScenarioScope::kGlobal)
                ->load(std::memory_order_relaxed),
            LoadingScenario::kNoPageLoading);
   graph->AddFrameNodeObserver(this);

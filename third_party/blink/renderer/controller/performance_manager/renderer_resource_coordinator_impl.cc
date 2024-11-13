@@ -323,13 +323,13 @@ void RendererResourceCoordinatorImpl::DispatchOnV8ContextDestroyed(
 void RendererResourceCoordinatorImpl::OnSharedPerformanceScenarioRegions(
     base::ReadOnlySharedMemoryRegion global_region,
     base::ReadOnlySharedMemoryRegion process_region) {
-  using Scope = blink::performance_scenarios::Scope;
+  using blink::performance_scenarios::ScenarioScope;
   if (global_region.IsValid()) {
-    global_performance_scenario_memory_.emplace(Scope::kGlobal,
+    global_performance_scenario_memory_.emplace(ScenarioScope::kGlobal,
                                                 std::move(global_region));
   }
   if (process_region.IsValid()) {
-    process_performance_scenario_memory_.emplace(Scope::kCurrentProcess,
+    process_performance_scenario_memory_.emplace(ScenarioScope::kCurrentProcess,
                                                  std::move(process_region));
   }
 }

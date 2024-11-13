@@ -23,10 +23,10 @@ class BLINK_COMMON_EXPORT PerformanceScenarioObserver
     : public base::CheckedObserver {
  public:
   // Invoked whenever the given scenario changes for `scope`.
-  virtual void OnLoadingScenarioChanged(Scope scope,
+  virtual void OnLoadingScenarioChanged(ScenarioScope scope,
                                         LoadingScenario old_scenario,
                                         LoadingScenario new_scenario) {}
-  virtual void OnInputScenarioChanged(Scope scope,
+  virtual void OnInputScenarioChanged(ScenarioScope scope,
                                       InputScenario old_scenario,
                                       InputScenario new_scenario) {}
 };
@@ -44,7 +44,7 @@ class BLINK_COMMON_EXPORT PerformanceScenarioObserverList
   // Returns the object that notifies observers for `scope`, or nullptr if no
   // ScopedReadOnlyScenarioMemory exists for `scope`.
   static scoped_refptr<PerformanceScenarioObserverList> GetForScope(
-      Scope scope);
+      ScenarioScope scope);
 
   PerformanceScenarioObserverList(const PerformanceScenarioObserverList&) =
       delete;
@@ -71,17 +71,17 @@ class BLINK_COMMON_EXPORT PerformanceScenarioObserverList
   // Lets ScopedReadOnlyScenarioMemory create and destroy the notifier for
   // `scope`.
   static void CreateForScope(base::PassKey<ScopedReadOnlyScenarioMemory>,
-                             Scope scope);
+                             ScenarioScope scope);
   static void DestroyForScope(base::PassKey<ScopedReadOnlyScenarioMemory>,
-                              Scope scope);
+                              ScenarioScope scope);
 
  private:
   friend class base::RefCountedThreadSafe<PerformanceScenarioObserverList>;
 
-  explicit PerformanceScenarioObserverList(Scope scope);
+  explicit PerformanceScenarioObserverList(ScenarioScope scope);
   ~PerformanceScenarioObserverList();
 
-  const Scope scope_;
+  const ScenarioScope scope_;
 
   // The last scenario values that were notified.
   base::Lock loading_lock_;

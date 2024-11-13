@@ -24,7 +24,7 @@ namespace performance_manager {
 namespace {
 
 using blink::performance_scenarios::GetLoadingScenario;
-using blink::performance_scenarios::Scope;
+using blink::performance_scenarios::ScenarioScope;
 
 class LoadingScenarioObserverTest : public GraphTestHarness {
  public:
@@ -37,11 +37,12 @@ class LoadingScenarioObserverTest : public GraphTestHarness {
 };
 
 LoadingScenario GlobalLoadingScenario() {
-  return GetLoadingScenario(Scope::kGlobal)->load(std::memory_order_relaxed);
+  return GetLoadingScenario(ScenarioScope::kGlobal)
+      ->load(std::memory_order_relaxed);
 }
 
 LoadingScenario CurrentProcessLoadingScenario() {
-  return GetLoadingScenario(Scope::kCurrentProcess)
+  return GetLoadingScenario(ScenarioScope::kCurrentProcess)
       ->load(std::memory_order_relaxed);
 }
 
@@ -157,7 +158,8 @@ TEST_F(LoadingScenarioObserverTest, IsFocusedChangeWhileOtherPageLoading) {
   mock_graph.page->SetIsFocused(false);
   EXPECT_EQ(GlobalLoadingScenario(), LoadingScenario::kFocusedPageLoading);
   mock_graph.other_page->SetIsFocused(false);
-  EXPECT_EQ(GetLoadingScenario(Scope::kGlobal)->load(std::memory_order_relaxed),
+  EXPECT_EQ(GetLoadingScenario(ScenarioScope::kGlobal)
+                ->load(std::memory_order_relaxed),
             LoadingScenario::kVisiblePageLoading);
 }
 
@@ -347,7 +349,7 @@ TEST_F(LoadingScenarioObserverTest, PerProcessState) {
       GetSharedScenarioRegionForProcessNode(process1.get());
   ASSERT_TRUE(process_region.IsValid());
   blink::performance_scenarios::ScopedReadOnlyScenarioMemory
-      process_scenario_memory(Scope::kCurrentProcess,
+      process_scenario_memory(ScenarioScope::kCurrentProcess,
                               std::move(process_region));
 
   // Create a page with a frame backed by the "current" mock process.

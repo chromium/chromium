@@ -41,7 +41,7 @@ class ScopedGlobalScenarioMemory {
  private:
   // The browser process also maps in the global scenario memory read-only. The
   // //third_party/blink/public/common/performance/performance_scenarios.h query
-  // functions will read from this for Scope::kGlobal.
+  // functions will read from this for ScenarioScope::kGlobal.
   std::optional<blink::performance_scenarios::ScopedReadOnlyScenarioMemory>
       read_only_mapping_;
 };

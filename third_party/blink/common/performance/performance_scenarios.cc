@@ -21,15 +21,16 @@ namespace blink::performance_scenarios {
 namespace {
 
 // Global pointers to the shared memory mappings.
-scoped_refptr<RefCountedScenarioMapping>& MappingPtrForScope(Scope scope) {
+scoped_refptr<RefCountedScenarioMapping>& MappingPtrForScope(
+    ScenarioScope scope) {
   static base::NoDestructor<scoped_refptr<RefCountedScenarioMapping>>
       current_process_mapping;
   static base::NoDestructor<scoped_refptr<RefCountedScenarioMapping>>
       global_mapping;
   switch (scope) {
-    case Scope::kCurrentProcess:
+    case ScenarioScope::kCurrentProcess:
       return *current_process_mapping;
-    case Scope::kGlobal:
+    case ScenarioScope::kGlobal:
       return *global_mapping;
   }
   NOTREACHED();
@@ -52,7 +53,7 @@ const ScenarioState& GetScenarioStateFromMapping(
 // processes.
 
 ScopedReadOnlyScenarioMemory::ScopedReadOnlyScenarioMemory(
-    Scope scope,
+    ScenarioScope scope,
     base::ReadOnlySharedMemoryRegion region)
     : scope_(scope) {
   using SharedScenarioState = base::StructuredSharedMemory<ScenarioState>;
@@ -78,17 +79,17 @@ ScopedReadOnlyScenarioMemory::~ScopedReadOnlyScenarioMemory() {
 
 // static
 scoped_refptr<RefCountedScenarioMapping>
-ScopedReadOnlyScenarioMemory::GetMappingForTesting(Scope scope) {
+ScopedReadOnlyScenarioMemory::GetMappingForTesting(ScenarioScope scope) {
   return MappingPtrForScope(scope);
 }
 
-SharedAtomicRef<LoadingScenario> GetLoadingScenario(Scope scope) {
+SharedAtomicRef<LoadingScenario> GetLoadingScenario(ScenarioScope scope) {
   scoped_refptr<RefCountedScenarioMapping> mapping = MappingPtrForScope(scope);
   return SharedAtomicRef<LoadingScenario>(
       mapping, GetScenarioStateFromMapping(mapping.get()).loading);
 }
 
-SharedAtomicRef<InputScenario> GetInputScenario(Scope scope) {
+SharedAtomicRef<InputScenario> GetInputScenario(ScenarioScope scope) {
   scoped_refptr<RefCountedScenarioMapping> mapping = MappingPtrForScope(scope);
   return SharedAtomicRef<InputScenario>(
       mapping, GetScenarioStateFromMapping(mapping.get()).input);

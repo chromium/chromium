@@ -33,8 +33,8 @@ namespace blink {
 
 namespace {
 
+using blink::performance_scenarios::ScenarioScope;
 using blink::performance_scenarios::ScenarioState;
-using blink::performance_scenarios::Scope;
 using blink::performance_scenarios::ScopedReadOnlyScenarioMemory;
 using performance_manager::mojom::blink::IframeAttributionData;
 using performance_manager::mojom::blink::IframeAttributionDataPtr;
@@ -317,10 +317,10 @@ TEST_F(RendererResourceCoordinatorImplTest, NoScenarioRegion) {
       /*process_region=*/base::ReadOnlySharedMemoryRegion());
   mock_process_coordination_unit_->VerifyExpectations();
 
-  EXPECT_FALSE(
-      ScopedReadOnlyScenarioMemory::GetMappingForTesting(Scope::kGlobal));
   EXPECT_FALSE(ScopedReadOnlyScenarioMemory::GetMappingForTesting(
-      Scope::kCurrentProcess));
+      ScenarioScope::kGlobal));
+  EXPECT_FALSE(ScopedReadOnlyScenarioMemory::GetMappingForTesting(
+      ScenarioScope::kCurrentProcess));
 }
 
 TEST_F(RendererResourceCoordinatorImplTest, GlobalScenarioRegion) {
@@ -332,10 +332,10 @@ TEST_F(RendererResourceCoordinatorImplTest, GlobalScenarioRegion) {
       /*process_region=*/base::ReadOnlySharedMemoryRegion());
   mock_process_coordination_unit_->VerifyExpectations();
 
-  EXPECT_TRUE(
-      ScopedReadOnlyScenarioMemory::GetMappingForTesting(Scope::kGlobal));
+  EXPECT_TRUE(ScopedReadOnlyScenarioMemory::GetMappingForTesting(
+      ScenarioScope::kGlobal));
   EXPECT_FALSE(ScopedReadOnlyScenarioMemory::GetMappingForTesting(
-      Scope::kCurrentProcess));
+      ScenarioScope::kCurrentProcess));
 }
 
 TEST_F(RendererResourceCoordinatorImplTest, ProcessScenarioRegion) {
@@ -347,10 +347,10 @@ TEST_F(RendererResourceCoordinatorImplTest, ProcessScenarioRegion) {
       /*process_region=*/shared_memory->DuplicateReadOnlyRegion());
   mock_process_coordination_unit_->VerifyExpectations();
 
-  EXPECT_FALSE(
-      ScopedReadOnlyScenarioMemory::GetMappingForTesting(Scope::kGlobal));
+  EXPECT_FALSE(ScopedReadOnlyScenarioMemory::GetMappingForTesting(
+      ScenarioScope::kGlobal));
   EXPECT_TRUE(ScopedReadOnlyScenarioMemory::GetMappingForTesting(
-      Scope::kCurrentProcess));
+      ScenarioScope::kCurrentProcess));
 }
 
 }  // namespace blink

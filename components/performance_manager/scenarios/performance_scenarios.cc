@@ -30,7 +30,7 @@
 
 namespace performance_manager {
 
-using blink::performance_scenarios::Scope;
+using blink::performance_scenarios::ScenarioScope;
 
 // Shim to get observer lists from PerformanceScenarioNotifier.
 class PerformanceScenarioNotifierAccessor {
@@ -288,7 +288,7 @@ void SetGlobalScenarioValue(Scenario scenario) {
             // observer, which is redundant with this one.
             if (auto blink_observers = blink::performance_scenarios::
                     PerformanceScenarioObserverList::GetForScope(
-                        Scope::kGlobal)) {
+                        ScenarioScope::kGlobal)) {
               blink_observers->NotifyIfScenarioChanged();
             }
           },
@@ -303,7 +303,8 @@ ScopedGlobalScenarioMemory::ScopedGlobalScenarioMemory() {
   if (state_ptr) {
     state_ptr->EnsureTracingTracks();
     GlobalSharedStatePtr() = std::move(state_ptr);
-    read_only_mapping_.emplace(Scope::kGlobal, GetGlobalSharedScenarioRegion());
+    read_only_mapping_.emplace(ScenarioScope::kGlobal,
+                               GetGlobalSharedScenarioRegion());
   }
 }
 

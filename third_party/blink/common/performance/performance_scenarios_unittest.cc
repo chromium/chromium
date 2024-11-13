@@ -23,54 +23,57 @@ TEST(PerformanceScenariosTest, MappedScenarioState) {
 
   // Before the shared memory is mapped in, GetLoadingScenario should return
   // default values.
-  EXPECT_EQ(GetLoadingScenario(Scope::kCurrentProcess)
+  EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
                 ->load(std::memory_order_relaxed),
             LoadingScenario::kNoPageLoading);
-  EXPECT_EQ(GetLoadingScenario(Scope::kGlobal)->load(std::memory_order_relaxed),
+  EXPECT_EQ(GetLoadingScenario(ScenarioScope::kGlobal)
+                ->load(std::memory_order_relaxed),
             LoadingScenario::kNoPageLoading);
 
   {
     // Map the shared memory as the global state.
     ScopedReadOnlyScenarioMemory mapped_global_memory(
-        Scope::kGlobal, shared_memory->DuplicateReadOnlyRegion());
-    EXPECT_EQ(
-        GetLoadingScenario(Scope::kGlobal)->load(std::memory_order_relaxed),
-        LoadingScenario::kNoPageLoading);
+        ScenarioScope::kGlobal, shared_memory->DuplicateReadOnlyRegion());
+    EXPECT_EQ(GetLoadingScenario(ScenarioScope::kGlobal)
+                  ->load(std::memory_order_relaxed),
+              LoadingScenario::kNoPageLoading);
 
     // Updates should be visible in the global state only.
     shared_memory->WritableRef().loading.store(
         LoadingScenario::kFocusedPageLoading, std::memory_order_relaxed);
-    EXPECT_EQ(
-        GetLoadingScenario(Scope::kGlobal)->load(std::memory_order_relaxed),
-        LoadingScenario::kFocusedPageLoading);
-    EXPECT_EQ(GetLoadingScenario(Scope::kCurrentProcess)
+    EXPECT_EQ(GetLoadingScenario(ScenarioScope::kGlobal)
+                  ->load(std::memory_order_relaxed),
+              LoadingScenario::kFocusedPageLoading);
+    EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
                   ->load(std::memory_order_relaxed),
               LoadingScenario::kNoPageLoading);
 
     // Map the same shared memory as the per-process state.
     ScopedReadOnlyScenarioMemory mapped_current_memory(
-        Scope::kCurrentProcess, shared_memory->DuplicateReadOnlyRegion());
-    EXPECT_EQ(GetLoadingScenario(Scope::kCurrentProcess)
+        ScenarioScope::kCurrentProcess,
+        shared_memory->DuplicateReadOnlyRegion());
+    EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
                   ->load(std::memory_order_relaxed),
               LoadingScenario::kFocusedPageLoading);
 
     // Updates should be visible in both mappings.
     shared_memory->WritableRef().loading.store(
         LoadingScenario::kVisiblePageLoading, std::memory_order_relaxed);
-    EXPECT_EQ(
-        GetLoadingScenario(Scope::kGlobal)->load(std::memory_order_relaxed),
-        LoadingScenario::kVisiblePageLoading);
-    EXPECT_EQ(GetLoadingScenario(Scope::kCurrentProcess)
+    EXPECT_EQ(GetLoadingScenario(ScenarioScope::kGlobal)
+                  ->load(std::memory_order_relaxed),
+              LoadingScenario::kVisiblePageLoading);
+    EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
                   ->load(std::memory_order_relaxed),
               LoadingScenario::kVisiblePageLoading);
   }
 
   // After going out of scope, the memory is unmapped and GetLoadingScenario
   // should see default values again.
-  EXPECT_EQ(GetLoadingScenario(Scope::kCurrentProcess)
+  EXPECT_EQ(GetLoadingScenario(ScenarioScope::kCurrentProcess)
                 ->load(std::memory_order_relaxed),
             LoadingScenario::kNoPageLoading);
-  EXPECT_EQ(GetLoadingScenario(Scope::kGlobal)->load(std::memory_order_relaxed),
+  EXPECT_EQ(GetLoadingScenario(ScenarioScope::kGlobal)
+                ->load(std::memory_order_relaxed),
             LoadingScenario::kNoPageLoading);
 }
 

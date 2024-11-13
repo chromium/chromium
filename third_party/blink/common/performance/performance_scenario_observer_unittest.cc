@@ -28,13 +28,13 @@ class MockPerformanceScenarioObserver : public PerformanceScenarioObserver {
  public:
   MOCK_METHOD(void,
               OnLoadingScenarioChanged,
-              (Scope scope,
+              (ScenarioScope scope,
                LoadingScenario old_scenario,
                LoadingScenario new_scenario),
               (override));
   MOCK_METHOD(void,
               OnInputScenarioChanged,
-              (Scope scope,
+              (ScenarioScope scope,
                InputScenario old_scenario,
                InputScenario new_scenario),
               (override));
@@ -75,34 +75,40 @@ class PerformanceScenarioObserverTest : public ::testing::Test {
 };
 
 TEST_F(PerformanceScenarioObserverTest, GetForScope) {
+  EXPECT_FALSE(PerformanceScenarioObserverList::GetForScope(
+      ScenarioScope::kCurrentProcess));
   EXPECT_FALSE(
-      PerformanceScenarioObserverList::GetForScope(Scope::kCurrentProcess));
-  EXPECT_FALSE(PerformanceScenarioObserverList::GetForScope(Scope::kGlobal));
+      PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal));
 
   {
     ScopedReadOnlyScenarioMemory scoped_process_memory(
-        Scope::kCurrentProcess,
+        ScenarioScope::kCurrentProcess,
         process_shared_memory_->DuplicateReadOnlyRegion());
-    EXPECT_TRUE(
-        PerformanceScenarioObserverList::GetForScope(Scope::kCurrentProcess));
-    EXPECT_FALSE(PerformanceScenarioObserverList::GetForScope(Scope::kGlobal));
+    EXPECT_TRUE(PerformanceScenarioObserverList::GetForScope(
+        ScenarioScope::kCurrentProcess));
+    EXPECT_FALSE(
+        PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal));
 
     {
       ScopedReadOnlyScenarioMemory scoped_global_memory(
-          Scope::kGlobal, global_shared_memory_->DuplicateReadOnlyRegion());
+          ScenarioScope::kGlobal,
+          global_shared_memory_->DuplicateReadOnlyRegion());
+      EXPECT_TRUE(PerformanceScenarioObserverList::GetForScope(
+          ScenarioScope::kCurrentProcess));
       EXPECT_TRUE(
-          PerformanceScenarioObserverList::GetForScope(Scope::kCurrentProcess));
-      EXPECT_TRUE(PerformanceScenarioObserverList::GetForScope(Scope::kGlobal));
+          PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal));
     }
 
-    EXPECT_TRUE(
-        PerformanceScenarioObserverList::GetForScope(Scope::kCurrentProcess));
-    EXPECT_FALSE(PerformanceScenarioObserverList::GetForScope(Scope::kGlobal));
+    EXPECT_TRUE(PerformanceScenarioObserverList::GetForScope(
+        ScenarioScope::kCurrentProcess));
+    EXPECT_FALSE(
+        PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal));
   }
 
+  EXPECT_FALSE(PerformanceScenarioObserverList::GetForScope(
+      ScenarioScope::kCurrentProcess));
   EXPECT_FALSE(
-      PerformanceScenarioObserverList::GetForScope(Scope::kCurrentProcess));
-  EXPECT_FALSE(PerformanceScenarioObserverList::GetForScope(Scope::kGlobal));
+      PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal));
 }
 
 TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
@@ -113,32 +119,34 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
       LoadingScenario::kFocusedPageLoading, std::memory_order_relaxed);
 
   ScopedReadOnlyScenarioMemory scoped_process_memory(
-      Scope::kCurrentProcess,
+      ScenarioScope::kCurrentProcess,
       process_shared_memory_->DuplicateReadOnlyRegion());
   ScopedReadOnlyScenarioMemory scoped_global_memory(
-      Scope::kGlobal, global_shared_memory_->DuplicateReadOnlyRegion());
+      ScenarioScope::kGlobal, global_shared_memory_->DuplicateReadOnlyRegion());
 
   StrictMockPerformanceScenarioObserver mock_observer;
   base::ScopedMultiSourceObservation<PerformanceScenarioObserverList,
                                      PerformanceScenarioObserver>
       scoped_observation(&mock_observer);
   scoped_observation.AddObservation(
-      PerformanceScenarioObserverList::GetForScope(Scope::kCurrentProcess)
+      PerformanceScenarioObserverList::GetForScope(
+          ScenarioScope::kCurrentProcess)
           .get());
   scoped_observation.AddObservation(
-      PerformanceScenarioObserverList::GetForScope(Scope::kGlobal).get());
+      PerformanceScenarioObserverList::GetForScope(ScenarioScope::kGlobal)
+          .get());
 
   // Toggle process loading scenario, then global loading scenario.
   auto quit_closure = QuitAfterExpectations(2);
   EXPECT_CALL(mock_observer,
-              OnLoadingScenarioChanged(Scope::kCurrentProcess,
+              OnLoadingScenarioChanged(ScenarioScope::kCurrentProcess,
                                        LoadingScenario::kFocusedPageLoading,
                                        LoadingScenario::kBackgroundPageLoading))
       .WillOnce(base::test::RunClosure(quit_closure));
-  EXPECT_CALL(
-      mock_observer,
-      OnLoadingScenarioChanged(Scope::kGlobal, LoadingScenario::kNoPageLoading,
-                               LoadingScenario::kVisiblePageLoading))
+  EXPECT_CALL(mock_observer,
+              OnLoadingScenarioChanged(ScenarioScope::kGlobal,
+                                       LoadingScenario::kNoPageLoading,
+                                       LoadingScenario::kVisiblePageLoading))
       .WillOnce(base::test::RunClosure(quit_closure));
 
   process_shared_memory_->WritableRef().loading.store(
@@ -151,7 +159,7 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
 
   // Toggle process scenario again without changing global scenario.
   EXPECT_CALL(mock_observer,
-              OnLoadingScenarioChanged(Scope::kCurrentProcess,
+              OnLoadingScenarioChanged(ScenarioScope::kCurrentProcess,
                                        LoadingScenario::kBackgroundPageLoading,
                                        LoadingScenario::kFocusedPageLoading))
       .WillOnce(base::test::RunClosure(QuitAfterExpectations(1)));
@@ -164,13 +172,14 @@ TEST_F(PerformanceScenarioObserverTest, NotifyOnChange) {
 
   // Stop observing the process scenario, then toggle both scenarios again.
   EXPECT_CALL(mock_observer,
-              OnLoadingScenarioChanged(Scope::kGlobal,
+              OnLoadingScenarioChanged(ScenarioScope::kGlobal,
                                        LoadingScenario::kVisiblePageLoading,
                                        LoadingScenario::kNoPageLoading))
       .WillOnce(base::test::RunClosure(QuitAfterExpectations(1)));
 
   scoped_observation.RemoveObservation(
-      PerformanceScenarioObserverList::GetForScope(Scope::kCurrentProcess)
+      PerformanceScenarioObserverList::GetForScope(
+          ScenarioScope::kCurrentProcess)
           .get());
   process_shared_memory_->WritableRef().loading.store(
       LoadingScenario::kBackgroundPageLoading, std::memory_order_relaxed);

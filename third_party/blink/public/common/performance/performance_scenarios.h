@@ -48,7 +48,7 @@ enum class InputScenario {
 };
 
 // The scope that a scenario covers.
-enum class Scope {
+enum class ScenarioScope {
   // The scenario covers only pages hosted in the current process.
   kCurrentProcess,
   // The scenario covers the whole browser.
@@ -114,7 +114,7 @@ class BLINK_COMMON_EXPORT ScopedReadOnlyScenarioMemory {
  public:
   // Maps `region` into the current process, as a read-only view of the memory
   // holding the scenario state for `scope`.
-  ScopedReadOnlyScenarioMemory(Scope scope,
+  ScopedReadOnlyScenarioMemory(ScenarioScope scope,
                                base::ReadOnlySharedMemoryRegion region);
   ~ScopedReadOnlyScenarioMemory();
 
@@ -124,10 +124,10 @@ class BLINK_COMMON_EXPORT ScopedReadOnlyScenarioMemory {
 
   // Returns a pointer to the mapping registered for `scope`, if any.
   static scoped_refptr<RefCountedScenarioMapping> GetMappingForTesting(
-      Scope scope);
+      ScenarioScope scope);
 
  private:
-  Scope scope_;
+  ScenarioScope scope_;
 };
 
 // Functions to query performance scenarios.
@@ -140,26 +140,26 @@ class BLINK_COMMON_EXPORT ScopedReadOnlyScenarioMemory {
 // Usage:
 //
 //   // Test whether any foreground page is loading.
-//   LoadingScenario scenario = GetLoadingScenario(Scope::kGlobal)->load(
-//                                  std::memory_order_relaxed);
+//   LoadingScenario scenario = GetLoadingScenario(ScenarioScope::kGlobal)
+//                                 ->load(std::memory_order_relaxed);
 //   if (scenario == LoadingScenario::kFocusedPageLoading ||
 //       scenario == LoadingScenario::kVisiblePageLoading) {
 //     ... delay less-important work until scenario changes ...
 //   }
 //
 //   // Test whether the current process is in the critical path for user input.
-//   if (GetInputScenario(Scope::kCurrentProcess)->load(
+//   if (GetInputScenario(ScenarioScope::kCurrentProcess)->load(
 //           std::memory_order_relaxed) != InputScenario::kNoInput) {
 //     ... current process should prioritize input responsiveness ...
 //   }
 
 // Returns a reference to the loading scenario for `scope`.
 BLINK_COMMON_EXPORT SharedAtomicRef<LoadingScenario> GetLoadingScenario(
-    Scope scope);
+    ScenarioScope scope);
 
 // Returns a reference to the input scenario for `scope`.
 BLINK_COMMON_EXPORT SharedAtomicRef<InputScenario> GetInputScenario(
-    Scope scope);
+    ScenarioScope scope);
 
 }  // namespace blink::performance_scenarios
 

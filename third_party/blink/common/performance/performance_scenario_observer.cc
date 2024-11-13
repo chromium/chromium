@@ -50,14 +50,14 @@ class LockedObserverListPtr {
       GUARDED_BY(lock_);
 };
 
-LockedObserverListPtr& GetLockedObserverListPtrForScope(Scope scope) {
+LockedObserverListPtr& GetLockedObserverListPtrForScope(ScenarioScope scope) {
   static base::NoDestructor<LockedObserverListPtr>
       current_process_observer_list;
   static base::NoDestructor<LockedObserverListPtr> global_observer_list;
   switch (scope) {
-    case Scope::kCurrentProcess:
+    case ScenarioScope::kCurrentProcess:
       return *current_process_observer_list;
-    case Scope::kGlobal:
+    case ScenarioScope::kGlobal:
       return *global_observer_list;
   }
   NOTREACHED();
@@ -67,7 +67,7 @@ LockedObserverListPtr& GetLockedObserverListPtrForScope(Scope scope) {
 
 // static
 scoped_refptr<PerformanceScenarioObserverList>
-PerformanceScenarioObserverList::GetForScope(Scope scope) {
+PerformanceScenarioObserverList::GetForScope(ScenarioScope scope) {
   return GetLockedObserverListPtrForScope(scope).Get();
 }
 
@@ -109,10 +109,11 @@ void PerformanceScenarioObserverList::NotifyIfScenarioChanged(
 
 // static
 void PerformanceScenarioObserverList::NotifyAllScopes(base::Location location) {
-  if (auto current_process_observers = GetForScope(Scope::kCurrentProcess)) {
+  if (auto current_process_observers =
+          GetForScope(ScenarioScope::kCurrentProcess)) {
     current_process_observers->NotifyIfScenarioChanged(location);
   }
-  if (auto global_observers = GetForScope(Scope::kGlobal)) {
+  if (auto global_observers = GetForScope(ScenarioScope::kGlobal)) {
     global_observers->NotifyIfScenarioChanged(location);
   }
 }
@@ -120,7 +121,7 @@ void PerformanceScenarioObserverList::NotifyAllScopes(base::Location location) {
 // static
 void PerformanceScenarioObserverList::CreateForScope(
     base::PassKey<ScopedReadOnlyScenarioMemory>,
-    Scope scope) {
+    ScenarioScope scope) {
   auto old_ptr = GetLockedObserverListPtrForScope(scope).Exchange(
       base::WrapRefCounted(new PerformanceScenarioObserverList(scope)));
   CHECK(!old_ptr);
@@ -129,14 +130,15 @@ void PerformanceScenarioObserverList::CreateForScope(
 // static
 void PerformanceScenarioObserverList::DestroyForScope(
     base::PassKey<ScopedReadOnlyScenarioMemory>,
-    Scope scope) {
+    ScenarioScope scope) {
   // Drop the main owning reference. Callers of GetForScope() might still have
   // references, but no new caller can obtain a reference.
   auto old_ptr = GetLockedObserverListPtrForScope(scope).Exchange(nullptr);
   CHECK(old_ptr);
 }
 
-PerformanceScenarioObserverList::PerformanceScenarioObserverList(Scope scope)
+PerformanceScenarioObserverList::PerformanceScenarioObserverList(
+    ScenarioScope scope)
     : scope_(scope),
       last_loading_scenario_(
           GetLoadingScenario(scope)->load(std::memory_order_relaxed)),
