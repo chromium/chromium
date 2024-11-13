@@ -486,7 +486,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Accelerators.ActivateDeskByIndex"
-    enum="ActivateDeskByIndex" expires_after="2024-12-24">
+    enum="ActivateDeskByIndex" expires_after="2025-04-27">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -7163,7 +7163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Peripheral.ConnectivityResults"
-    enum="PeripheralConnectivityResult" expires_after="2024-08-21">
+    enum="PeripheralConnectivityResult" expires_after="2025-04-27">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>jthies@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -7176,6 +7176,9 @@ chromium-metrics-reviews@google.com.
     includes invalid cable detection from the Chrome OS type-c daemon.
 
     Warning: this histogram was expired from 2022-12-31 to 2023-08-21; data may
+    be missing.
+
+    Warning: this histogram was expired from 2024-04-27 to 2024-11-12; data may
     be missing.
   </summary>
 </histogram>
@@ -8949,7 +8952,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ShortcutCustomization.AddAcceleratorSubactions"
-    enum="ShortcutCustomizationSubactions" expires_after="2024-12-24">
+    enum="ShortcutCustomizationSubactions" expires_after="2025-04-13">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -8988,7 +8991,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ShortcutCustomization.EditAcceleratorSubactions"
-    enum="ShortcutCustomizationSubactions" expires_after="2024-12-24">
+    enum="ShortcutCustomizationSubactions" expires_after="2025-04-13">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -8999,7 +9002,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.ShortcutCustomization.EditDialogCompletedActions"
     enum="ShortcutCustomizationEditDialogCompletedActions"
-    expires_after="2024-12-24">
+    expires_after="2025-04-13">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -9012,7 +9015,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ShortcutCustomization.MainCategoryNavigation"
-    enum="ShortcutCustomizationMainCategory" expires_after="2024-12-24">
+    enum="ShortcutCustomizationMainCategory" expires_after="2025-04-13">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
