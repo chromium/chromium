@@ -38,6 +38,23 @@ enum class SpareRendererDispatchResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:SpareRendererDispatchResult)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(NoSpareRendererReason)
+enum class NoSpareRendererReason {
+  kNotYetCreated = 0,
+  kTakenByPreviousNavigation,
+  kTimeout,
+  kNotEnabled,
+  kProcessLimit,
+  kMemoryPressure,
+  kProcessExited,
+  kProcessHostDestroyed,
+  kMaxValue = kProcessHostDestroyed
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:NoSpareRendererReason)
+
 class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
     : public SpareRenderProcessHostManager,
       public RenderProcessHostObserver {
@@ -148,6 +165,10 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
 
   base::OneShotTimer deferred_warmup_timer_;
   base::OneShotTimer deferred_destroy_timer_;
+
+  // The reason for there being no spare render process present.
+  NoSpareRendererReason no_spare_renderer_reason_ =
+      NoSpareRendererReason::kNotYetCreated;
 };
 
 }  // namespace content

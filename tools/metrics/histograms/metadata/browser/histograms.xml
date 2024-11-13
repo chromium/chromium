@@ -1217,6 +1217,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowserRenderProcessHost.NoSparePresentReason"
+    enum="NoSpareRendererReason" expires_after="2025-03-09">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the reason for there being no spare renderer present during
+    navigation. The UMA is recorded when kNoSparePresent is recorded in the UMA
+    BrowserRenderProcessHost.SpareProcessMaybeTakeAction.
+  </summary>
+</histogram>
+
 <histogram name="BrowserRenderProcessHost.ProcessPerSiteMainFrameLimit"
     units="frames" expires_after="M135">
   <owner>dtapuska@chromium.org</owner>
