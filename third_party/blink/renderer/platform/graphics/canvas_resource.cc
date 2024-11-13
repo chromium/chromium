@@ -234,15 +234,16 @@ bool CanvasResource::PrepareAcceleratedTransferableResourceFromClientSI(
 
 SkImageInfo CanvasResource::CreateSkImageInfo() const {
   return SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
-                           info_);
+                           GetSkColorType(), GetSkAlphaType(),
+                           GetSkColorSpace());
 }
 
 viz::SharedImageFormat CanvasResource::GetSharedImageFormat() const {
-  return viz::SkColorTypeToSinglePlaneSharedImageFormat(info_.colorType());
+  return viz::SkColorTypeToSinglePlaneSharedImageFormat(GetSkColorType());
 }
 
 gfx::ColorSpace CanvasResource::GetColorSpace() const {
-  SkColorSpace* color_space = info_.colorSpace();
+  SkColorSpace* color_space = GetSkColorSpace().get();
   return color_space ? gfx::ColorSpace(*color_space)
                      : gfx::ColorSpace::CreateSRGB();
 }
