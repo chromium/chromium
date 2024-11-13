@@ -304,8 +304,6 @@ bool P2PSocketTcpBase::HandleWriteResult(int result) {
   DCHECK(write_buffer_.buffer.get());
 
   if (result < 0) {
-    ReportSocketError(result, "WebRTC.ICE.TcpSocketWriteErrorCode");
-
     LOG(ERROR) << "Error when sending data in TCP socket: " << result;
     OnError();
     return false;

@@ -1120,15 +1120,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.ICE.TcpSocketWriteErrorCode" enum="SocketErrorCode"
-    expires_after="M77">
-  <owner>zhihuang@chromium.org</owner>
-  <summary>
-    Counters on different types of TCP socket error code. Collected when we hit
-    the error code when writing.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.P2P.UDP.BatchingNumberOfReceivedPackets"
     units="packets/batching" expires_after="2024-03-31">
   <owner>handellm@google.com</owner>
