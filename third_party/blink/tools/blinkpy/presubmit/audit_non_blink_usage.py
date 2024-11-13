@@ -404,10 +404,17 @@ _CONFIG = [
     {
         'paths': [
             'third_party/blink/common/performance/performance_scenarios.cc',
+            'third_party/blink/common/performance/performance_scenario_observer.cc',
+            'third_party/blink/public/common/performance/performance_scenario_observer.h',
         ],
         'allowed': [
             # Used in both browser and renderer process so can't use Oilpan.
             'base::NoDestructor',
+            'base::RefCountedThreadSafe',
+            # ObserverListThreadSafe isn't generally allowed because it doesn't
+            # work with WTF::ThreadSafeRefCounted, so must be allowed here.
+            'base::ObserverListThreadSafe',
+            'base::RemoveObserverPolicy',
         ],
     },
     {

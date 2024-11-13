@@ -24,10 +24,13 @@
 #include "components/performance_manager/scenarios/performance_scenario_data.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "third_party/blink/public/common/performance/performance_scenario_observer.h"
 #include "third_party/blink/public/common/performance/performance_scenarios.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace performance_manager {
+
+using blink::performance_scenarios::Scope;
 
 // Shim to get observer lists from PerformanceScenarioNotifier.
 class PerformanceScenarioNotifierAccessor {
@@ -280,6 +283,14 @@ void SetGlobalScenarioValue(Scenario scenario) {
               observers->Notify(ScenarioTraits<Scenario>::kGlobalNotifyMethod,
                                 old_scenario, scenario);
             }
+            // Also notify kGlobal blink observers in the browser process.
+            // TODO(crbug.com/365586676): Remove the performance_manager kGlobal
+            // observer, which is redundant with this one.
+            if (auto blink_observers = blink::performance_scenarios::
+                    PerformanceScenarioObserverList::GetForScope(
+                        Scope::kGlobal)) {
+              blink_observers->NotifyIfScenarioChanged();
+            }
           },
           scenario, old_scenario));
 }
@@ -292,8 +303,7 @@ ScopedGlobalScenarioMemory::ScopedGlobalScenarioMemory() {
   if (state_ptr) {
     state_ptr->EnsureTracingTracks();
     GlobalSharedStatePtr() = std::move(state_ptr);
-    read_only_mapping_.emplace(blink::performance_scenarios::Scope::kGlobal,
-                               GetGlobalSharedScenarioRegion());
+    read_only_mapping_.emplace(Scope::kGlobal, GetGlobalSharedScenarioRegion());
   }
 }
 

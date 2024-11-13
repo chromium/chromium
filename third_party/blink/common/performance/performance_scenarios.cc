@@ -13,6 +13,8 @@
 #include "base/memory/structured_shared_memory.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/types/pass_key.h"
+#include "third_party/blink/public/common/performance/performance_scenario_observer.h"
 
 namespace blink::performance_scenarios {
 
@@ -61,9 +63,16 @@ ScopedReadOnlyScenarioMemory::ScopedReadOnlyScenarioMemory(
         base::MakeRefCounted<RefCountedScenarioMapping>(
             std::move(mapping.value()));
   }
+
+  // The ObserverList must be created after mapping the memory, because it reads
+  // the scenario state in its constructor.
+  PerformanceScenarioObserverList::CreateForScope(
+      base::PassKey<ScopedReadOnlyScenarioMemory>(), scope_);
 }
 
 ScopedReadOnlyScenarioMemory::~ScopedReadOnlyScenarioMemory() {
+  PerformanceScenarioObserverList::DestroyForScope(
+      base::PassKey<ScopedReadOnlyScenarioMemory>(), scope_);
   MappingPtrForScope(scope_).reset();
 }
 

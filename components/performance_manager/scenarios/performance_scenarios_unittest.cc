@@ -9,6 +9,7 @@
 
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/public/features.h"
@@ -23,6 +24,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/performance/performance_scenario_observer.h"
 #include "third_party/blink/public/common/performance/performance_scenarios.h"
 #include "url/gurl.h"
 
@@ -31,6 +33,7 @@ namespace performance_manager {
 namespace {
 
 using blink::performance_scenarios::GetLoadingScenario;
+using blink::performance_scenarios::PerformanceScenarioObserverList;
 using blink::performance_scenarios::Scope;
 using ::testing::_;
 
@@ -53,6 +56,33 @@ class MockPerformanceScenarioObserver : public PerformanceScenarioObserver {
               (const ProcessNode*, InputScenario, InputScenario),
               (override));
 };
+
+using StrictMockPerformanceScenarioObserver =
+    ::testing::StrictMock<MockPerformanceScenarioObserver>;
+
+// Since the browser process also maps in a read-only view of the global
+// scenario state for querying outside performance_manager, the blink observer
+// is also notified.
+class MockBlinkPerformanceScenarioObserver
+    : public blink::performance_scenarios::PerformanceScenarioObserver {
+ public:
+ public:
+  MOCK_METHOD(void,
+              OnLoadingScenarioChanged,
+              (Scope scope,
+               LoadingScenario old_scenario,
+               LoadingScenario new_scenario),
+              (override));
+  MOCK_METHOD(void,
+              OnInputScenarioChanged,
+              (Scope scope,
+               InputScenario old_scenario,
+               InputScenario new_scenario),
+              (override));
+};
+
+using StrictMockBlinkPerformanceScenarioObserver =
+    ::testing::StrictMock<MockBlinkPerformanceScenarioObserver>;
 
 class PerformanceScenariosTest : public PerformanceManagerTestHarness,
                                  public ::testing::WithParamInterface<bool> {
@@ -115,7 +145,7 @@ class PerformanceScenariosTest : public PerformanceManagerTestHarness,
   }
 
  protected:
-  ::testing::StrictMock<MockPerformanceScenarioObserver> mock_observer_;
+  StrictMockPerformanceScenarioObserver mock_observer_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -124,6 +154,9 @@ class PerformanceScenariosTest : public PerformanceManagerTestHarness,
 INSTANTIATE_TEST_SUITE_P(All, PerformanceScenariosTest, ::testing::Bool());
 
 TEST_P(PerformanceScenariosTest, SetWithoutSharedMemory) {
+  // Can't set up the blink scenario observer without mapped memory.
+  EXPECT_FALSE(PerformanceScenarioObserverList::GetForScope(Scope::kGlobal));
+
   // When the global shared scenario memory isn't set up, setting a scenario
   // should silently do nothing. (Process scenario memory is scoped to the
   // ProcessNode so will always be mapped as needed.)
@@ -146,13 +179,30 @@ TEST_P(PerformanceScenariosTest, SetWithSharedMemory) {
                     LoadingScenario::kVisiblePageLoading));
   });
 
+  StrictMockBlinkPerformanceScenarioObserver mock_blink_observer;
+  EXPECT_CALL(
+      mock_blink_observer,
+      OnLoadingScenarioChanged(Scope::kGlobal, LoadingScenario::kNoPageLoading,
+                               LoadingScenario::kFocusedPageLoading))
+      .WillOnce(base::test::RunOnceClosure(task_environment()->QuitClosure()));
+
   // Create writable shared memory for the global state. This maps a read-only
   // view of the memory in as well so changes immediately become visible to the
   // current (browser) process.
   ScopedGlobalScenarioMemory global_shared_memory;
+  auto blink_observer_list =
+      PerformanceScenarioObserverList::GetForScope(Scope::kGlobal);
+  ASSERT_TRUE(blink_observer_list);
+  blink_observer_list->AddObserver(&mock_blink_observer);
+
   SetGlobalLoadingScenario(LoadingScenario::kFocusedPageLoading);
   EXPECT_EQ(GetLoadingScenario(Scope::kGlobal)->load(std::memory_order_relaxed),
             LoadingScenario::kFocusedPageLoading);
+
+  // PerformanceScenarioObserverList is an ObserverListThreadSafe that posts
+  // a message to notify. Need to wait for the message.
+  task_environment()->RunUntilQuit();
+  ::testing::Mock::VerifyAndClearExpectations(&mock_blink_observer);
 
   // Create writable shared memory for a render process state. Since this is
   // called in the browser process and the state is for a different process, it
@@ -181,6 +231,8 @@ TEST_P(PerformanceScenariosTest, SetWithSharedMemory) {
   EXPECT_EQ(GetLoadingScenario(Scope::kCurrentProcess)
                 ->load(std::memory_order_relaxed),
             LoadingScenario::kVisiblePageLoading);
+
+  blink_observer_list->RemoveObserver(&mock_blink_observer);
 }
 
 TEST_P(PerformanceScenariosTest, SetFromPMSequence) {
@@ -197,9 +249,20 @@ TEST_P(PerformanceScenariosTest, SetFromPMSequence) {
                     LoadingScenario::kVisiblePageLoading));
   });
 
+  StrictMockBlinkPerformanceScenarioObserver mock_blink_observer;
+  EXPECT_CALL(
+      mock_blink_observer,
+      OnLoadingScenarioChanged(Scope::kGlobal, LoadingScenario::kNoPageLoading,
+                               LoadingScenario::kFocusedPageLoading))
+      .WillOnce(base::test::RunOnceClosure(task_environment()->QuitClosure()));
+
   // Create writable shared memory for the global state. This maps a read-only
   // view of the memory in as well.
   ScopedGlobalScenarioMemory global_shared_memory;
+  auto blink_observer_list =
+      PerformanceScenarioObserverList::GetForScope(Scope::kGlobal);
+  ASSERT_TRUE(blink_observer_list);
+  blink_observer_list->AddObserver(&mock_blink_observer);
 
   // Create writable shared memory for a render process state. Since this is
   // called in the browser process and the state is for a different process, it
@@ -225,6 +288,11 @@ TEST_P(PerformanceScenariosTest, SetFromPMSequence) {
   // even though the child hasn't mapped in the memory yet.
   ::testing::Mock::VerifyAndClearExpectations(&mock_observer_);
 
+  // PerformanceScenarioObserverList is an ObserverListThreadSafe that posts
+  // a message to notify. Need to wait for the message.
+  task_environment()->RunUntilQuit();
+  ::testing::Mock::VerifyAndClearExpectations(&mock_blink_observer);
+
   // Map in the read-only view of `process_region`. Normally this would be done
   // in the renderer process as the "current process" state. The state should
   // now become visible.
@@ -233,6 +301,8 @@ TEST_P(PerformanceScenariosTest, SetFromPMSequence) {
   EXPECT_EQ(GetLoadingScenario(Scope::kCurrentProcess)
                 ->load(std::memory_order_relaxed),
             LoadingScenario::kVisiblePageLoading);
+
+  blink_observer_list->RemoveObserver(&mock_blink_observer);
 }
 
 TEST_P(PerformanceScenariosTest, SetWithoutObservers) {
