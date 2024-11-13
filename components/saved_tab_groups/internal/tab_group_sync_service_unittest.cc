@@ -569,6 +569,7 @@ TEST_F(TabGroupSyncServiceTest, AddTab) {
 
 // Tests that addubg a tab to a shared group.
 TEST_F(TabGroupSyncServiceTest, AddTabToSharedGroup) {
+  feature_list_.InitWithFeatures({tab_groups::kEnableTabTitleSanitization}, {});
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
   ASSERT_EQ(group->saved_tabs().size(), 1u);
@@ -1162,6 +1163,7 @@ TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {
 }
 
 TEST_F(TabGroupSyncServiceTest, UpdateTabTitleForSharedTabGroup) {
+  feature_list_.InitWithFeatures({tab_groups::kEnableTabTitleSanitization}, {});
   tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_, "colab");
   // The new group replaces the originating one asynchronously.
   WaitForPostedTasks();
@@ -1180,6 +1182,7 @@ TEST_F(TabGroupSyncServiceTest, UpdateTabTitleForSharedTabGroup) {
 }
 
 TEST_F(TabGroupSyncServiceTest, TabPendingSanitizationAfterMakeTabGroupShared) {
+  feature_list_.InitWithFeatures({tab_groups::kEnableTabTitleSanitization}, {});
   tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
                                        GURL("https://foo.com"), u"title");
   auto tab =

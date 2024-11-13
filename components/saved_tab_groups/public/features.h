@@ -31,6 +31,8 @@ BASE_DECLARE_FEATURE(kUseAlternateHistorySyncIllustration);
 
 BASE_DECLARE_FEATURE(kForceRemoveClosedTabGroupsOnStartup);
 
+BASE_DECLARE_FEATURE(kEnableTabTitleSanitization);
+
 extern bool IsTabGroupsSaveV2Enabled();
 
 extern bool IsTabGroupsSaveUIUpdateEnabled();
@@ -46,6 +48,8 @@ extern bool RestrictDownloadOnSyncedTabs();
 extern bool DeferMediaLoadInBackgroundTab();
 
 extern bool ShouldForceRemoveClosedTabGroupsOnStartup();
+
+extern bool IsTabTitleSanitizationEnabled();
 
 }  // namespace tab_groups
 

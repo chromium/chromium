@@ -50,6 +50,21 @@ bool IsSanitizationRequired(const SavedTabGroup& tab_group, const GURL url) {
   return tab_group.is_shared_tab_group() && url.SchemeIsHTTPOrHTTPS();
 }
 
+void UpdateTabSanitizationStatus(const SavedTabGroup& group,
+                                 SavedTabGroupTab* tab) {
+  bool is_sanitization_required = IsSanitizationRequired(group, tab->url());
+  if (is_sanitization_required) {
+    if (IsTabTitleSanitizationEnabled()) {
+      tab->SetIsPendingSanitization(true);
+      return;
+    } else {
+      // TODO(crbug.com/374221675): uncomment the following line.
+      // tab->SetTitle(GetTitleFromUrlForDisplay(tab->url()));
+    }
+  }
+  tab->SetIsPendingSanitization(false);
+}
+
 void OnCanApplyOptimizationCompleted(
     TabGroupSyncService::UrlRestrictionCallback callback,
     optimization_guide::OptimizationGuideDecision decision,
@@ -321,7 +336,7 @@ void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
                            /*saved_tab_guid=*/std::nullopt, tab_id);
   new_tab.SetCreatorCacheGuid(
       sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge());
-  new_tab.SetIsPendingSanitization(IsSanitizationRequired(*group, url));
+  UpdateTabSanitizationStatus(*group, &new_tab);
 
   UpdateAttributions(group_id);
   model_->UpdateLastUserInteractionTimeLocally(group_id);
@@ -351,12 +366,11 @@ void TabGroupSyncServiceImpl::NavigateTab(const LocalTabGroupID& group_id,
 
   // Use the builder to create the updated tab.
   bool will_update_url = url.SchemeIsHTTPOrHTTPS() && url != tab->url();
-  bool is_pending_sanitization = IsSanitizationRequired(*group, url);
 
   SavedTabGroupTab updated_tab(*tab);
   updated_tab.SetURL(url);
   updated_tab.SetTitle(title);
-  updated_tab.SetIsPendingSanitization(is_pending_sanitization);
+  UpdateTabSanitizationStatus(*group, &updated_tab);
 
   model_->UpdateLastUserInteractionTimeLocally(group_id);
   model_->UpdateTabInGroup(group->saved_guid(), std::move(updated_tab),
@@ -480,8 +494,7 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
   SavedTabGroup shared_group =
       saved_group->CloneAsSharedTabGroup(std::string(collaboration_id));
   for (auto& tab : shared_group.saved_tabs()) {
-    tab.SetIsPendingSanitization(
-        IsSanitizationRequired(shared_group, tab.url()));
+    UpdateTabSanitizationStatus(shared_group, &tab);
   }
 
   // Make a copy before moving the group.

@@ -81,6 +81,11 @@ BASE_FEATURE(kForceRemoveClosedTabGroupsOnStartup,
              "ForceRemoveClosedTabGroupsOnStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables sanitization of the tab title.
+BASE_FEATURE(kEnableTabTitleSanitization,
+             "EnableTabTitleSanitization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsTabGroupsSaveV2Enabled() {
   return base::FeatureList::IsEnabled(kTabGroupsSaveV2);
 }
@@ -111,6 +116,10 @@ bool DeferMediaLoadInBackgroundTab() {
 
 bool ShouldForceRemoveClosedTabGroupsOnStartup() {
   return base::FeatureList::IsEnabled(kForceRemoveClosedTabGroupsOnStartup);
+}
+
+bool IsTabTitleSanitizationEnabled() {
+  return base::FeatureList::IsEnabled(kEnableTabTitleSanitization);
 }
 
 }  // namespace tab_groups
