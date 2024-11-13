@@ -195,6 +195,11 @@ void SamplingMetricsProvider::EmitMetrics() {
         standalone_pwas_in_active_use = true;
       }
 
+#if BUILDFLAG(IS_CHROMEOS)
+      // TODO(crbug.com/378020140): Clean up once the root cause is
+      // identified.
+      browser->EnsureActiveTab();
+#endif
       MaybeEmitUkmMetricsForTab(browser->GetActiveTabInterface(),
                                 emitted_ukm_ids);
     }
