@@ -575,9 +575,16 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveViewsTest,
 // Forcibly closing a browser HWND with a popup should not cause a crash.
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DestroyHWNDDoesNotCrash) {
   OpenPopupViaAPI(false);
-  auto test_util = ExtensionActionTestHelper::Create(browser());
-  const gfx::NativeView popup_view = test_util->GetPopupNativeView();
+
+  ExtensionsToolbarContainer* extensions_container =
+      browser()->GetBrowserView().toolbar()->extensions_container();
+  ASSERT_TRUE(extensions_container);
+  ToolbarActionViewController* popup_owner =
+      extensions_container->popup_owner_for_testing();
+  ASSERT_TRUE(popup_owner);
+  const gfx::NativeView popup_view = popup_owner->GetPopupNativeView();
   EXPECT_NE(gfx::NativeView(), popup_view);
+
   const HWND popup_hwnd = views::HWNDForNativeView(popup_view);
   EXPECT_EQ(TRUE, ::IsWindow(popup_hwnd));
   const HWND browser_hwnd =
