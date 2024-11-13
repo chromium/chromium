@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 
 #include <string_view>
@@ -326,11 +321,12 @@ TEST(HTTPParsersTest, ParseHTTPRefresh) {
 }
 
 TEST(HTTPParsersTest, ParseMultipartHeadersResult) {
-  struct {
+  struct MultipartHeaderTestData {
     const std::string_view data;
     const bool result;
     const size_t end;
-  } tests[] = {
+  };
+  const auto tests = std::to_array<MultipartHeaderTestData>({
       {"This is junk", false, 0},
       {"Foo: bar\nBaz:\n\nAfter:\n", true, 15},
       {"Foo: bar\nBaz:\n", false, 0},
@@ -339,14 +335,14 @@ TEST(HTTPParsersTest, ParseMultipartHeadersResult) {
       {"Foo: bar\nBaz:\r\n\r\nAfter:\n\n", true, 17},
       {"Foo: bar\r\nBaz:\n", false, 0},
       {"\r\n", true, 2},
-  };
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  });
+  for (const auto& test : tests) {
     ResourceResponse response;
     wtf_size_t end = 0;
-    bool result = ParseMultipartHeadersFromBody(
-        base::as_byte_span(tests[i].data), &response, &end);
-    EXPECT_EQ(tests[i].result, result);
-    EXPECT_EQ(tests[i].end, end);
+    bool result = ParseMultipartHeadersFromBody(base::as_byte_span(test.data),
+                                                &response, &end);
+    EXPECT_EQ(test.result, result);
+    EXPECT_EQ(test.end, end);
   }
 }
 
