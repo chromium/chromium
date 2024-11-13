@@ -152,6 +152,21 @@ class HeadlessShell(DesktopProduct):
 class ChromeiOS(Product):
     name = 'chrome_ios'
 
+    def get_version(self):
+        # TODO(crbug.com/374199289): The build directory must be plumbed to
+        # `run_cwt_chromedriver_wrapper.py --build-dir` to find the version in
+        # an `Info.plist` file, but the directory isn't known to the `wpt run`
+        # code [0] because "build directory" is a Chromium-specific concept.
+        # For now, explicitly find the version in this Chromium-side wrapper,
+        # which overrides [0].
+        #
+        # [0]: https://github.com/web-platform-tests/wpt/blob/b6027ab/tools/wpt/browser.py#L1558
+        return self._host.executive.run_command([
+            self.webdriver_binary,
+            f'--build-dir={self._port.build_path()}',
+            '--version',
+        ]).strip()
+
     @property
     def processes(self) -> int:
         return 1
@@ -165,10 +180,12 @@ class ChromeiOS(Product):
     def additional_webdriver_args(self):
         # Set up xcode log output dir.
         output_dir = self._host.filesystem.join(
-            self._port.artifacts_directory(), "xcode-output")
+            self._port.artifacts_directory(), 'xcode-output')
         return [
-            '--out-dir=' + output_dir, '--os=' + IOS_VERSION,
-            '--device=' + IOS_DEVICE
+            f'--out-dir={output_dir}',
+            f'--os={IOS_VERSION}',
+            f'--device={IOS_DEVICE}',
+            f'--build-dir={self._port.build_path()}',
         ]
 
 
