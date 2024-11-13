@@ -121,7 +121,10 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -167,7 +170,6 @@ namespace {
 constexpr char kOriginTrialPublicKeyForTesting[] =
     "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=";
 
-#if !BUILDFLAG(IS_ANDROID)
 // Observer that listens for messages from chrome.test.sendMessage to allow them
 // to be used to trigger browser initiated naviagations from the javascript for
 // testing purposes.
@@ -186,6 +188,11 @@ class NavigateTabMessageHandler {
     std::optional<base::Value> command = base::JSONReader::Read(message);
     if (command && command->is_dict()) {  // Check the message decoded from JSON
       base::Value::Dict* data = command->GetDict().FindDict("navigate");
+      // TODO(crbug.com/371324825): Enable processing tabId and the tests
+      // replying on this on desktop android.
+#if BUILDFLAG(IS_ANDROID)
+      ASSERT_FALSE(data);
+#else
       if (data) {
         int tab_id = data->FindInt("tabId").value();
         GURL url = GURL(*data->FindString("url"));
@@ -199,6 +206,7 @@ class NavigateTabMessageHandler {
         content::NavigationController::LoadURLParams params(url);
         contents->GetController().LoadURLWithParams(params);
       }
+#endif
     }
     navigate_listener_.Reset();
   }
@@ -207,6 +215,7 @@ class NavigateTabMessageHandler {
   ExtensionTestMessageListener navigate_listener_;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 // Sends an XHR request to the provided host, port, and path, and responds when
 // the request was sent.
 const char kPerformXhrJs[] =
@@ -353,11 +362,8 @@ class ExtensionWebRequestApiTest : public ExtensionApiTestBase {
   void SetUpOnMainThread() override {
     ExtensionApiTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-#if !BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/371324825): Enable NavigateTabMessageHandler on Android
-    // build.
-    navigationHandler_ = std::make_unique<NavigateTabMessageHandler>(profile());
-#endif
+    navigation_handler_ =
+        std::make_unique<NavigateTabMessageHandler>(profile());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -405,12 +411,46 @@ class ExtensionWebRequestApiTest : public ExtensionApiTestBase {
     test_dirs_.push_back(std::move(dir));
   }
 
+  // TODO(crbug.com/378572861): Add android support for
+  // ui_test_utils::NavigateToURL and move the following two UI functions over.
+
+  void NavigateToURL(const GURL& url) {
+#if BUILDFLAG(IS_ANDROID)
+    ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+#else
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+#endif
+  }
+
+  void OpenUrlInNewTab(const GURL& url) {
+#if BUILDFLAG(IS_ANDROID)
+    TabModel* tab_model =
+        TabModelList::GetTabModelForWebContents(web_contents());
+    ASSERT_EQ(1, tab_model->GetTabCount());
+    ASSERT_EQ(web_contents(), GetActiveWebContents());
+
+    // Create a new tab.
+    std::unique_ptr<content::WebContents> contents =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(profile()));
+    content::WebContents* second_web_contents = contents.release();
+    tab_model->CreateTab(TabAndroid::FromWebContents(web_contents()),
+                         second_web_contents, /*select=*/true);
+    NavigateToURL(url);
+    ASSERT_EQ(2, tab_model->GetTabCount());
+    ASSERT_NE(web_contents(), second_web_contents);
+    ASSERT_EQ(second_web_contents, GetActiveWebContents());
+#else
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+#endif
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   std::vector<TestExtensionDir> test_dirs_;
-#if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<NavigateTabMessageHandler> navigationHandler_;
-#endif
+  std::unique_ptr<NavigateTabMessageHandler> navigation_handler_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
@@ -440,6 +480,83 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   InstallWebRequestExtension("extension2");
   profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
   EXPECT_FALSE(has_connection_error);
+}
+
+// Tests registering webRequest events in multiple contexts in the same
+// extension (which will thus be in the same process). Regression test for
+// https://crbug.com/1297276.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+                       ListenersInMultipleContexts) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load an extension that has a page with two iframes. Each iframe registers
+  // a listener for the same event.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "ext",
+           "manifest_version": 3,
+           "version": "1",
+           "permissions": ["webRequest"],
+           "host_permissions": ["http://example.com/*"]
+         })";
+  static constexpr char kParentHtml[] =
+      R"(<!doctype html>
+         <html>
+           Hello world
+           <iframe src="iframe.html" name="iframe1"></iframe>
+           <iframe src="iframe.html" name="iframe2"></iframe>
+         </html>)";
+  static constexpr char kIframeHtml[] =
+      R"(<!doctype html>
+         <html>
+           Iframe
+           <script src="iframe.js"></script>
+         </html>)";
+  static constexpr char kIframeJs[] =
+      R"(const frameName = window.name;
+         chrome.webRequest.onBeforeRequest.addListener(
+             (details) => {
+               chrome.test.sendMessage(frameName + ' event');
+             },
+             {urls: ['http://example.com/*'], types: ['main_frame']});
+         chrome.test.sendMessage(frameName + ' ready');)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("parent.html"), kParentHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("iframe.html"), kIframeHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("iframe.js"), kIframeJs);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  auto* router = WebRequestEventRouter::Get(profile());
+  ASSERT_TRUE(router);
+
+  static constexpr char kEventName[] = "webRequest.onBeforeRequest";
+  EXPECT_EQ(0u, router->GetListenerCountForTesting(profile(), kEventName));
+
+  // Load the extension page and wait for it to register its listeners.
+  {
+    ExtensionTestMessageListener listener1("iframe1 ready");
+    ExtensionTestMessageListener listener2("iframe2 ready");
+    NavigateToURL(extension->GetResourceURL("parent.html"));
+    ASSERT_TRUE(listener1.WaitUntilSatisfied());
+    ASSERT_TRUE(listener2.WaitUntilSatisfied());
+  }
+
+  // Two different listeners should be registered.
+  EXPECT_EQ(2u, router->GetListenerCountForTesting(profile(), kEventName));
+
+  // Trigger an event. Both listeners should fire.
+  {
+    ExtensionTestMessageListener listener1("iframe1 event");
+    ExtensionTestMessageListener listener2("iframe2 event");
+    OpenUrlInNewTab(
+        embedded_test_server()->GetURL("example.com", "/title1.html"));
+    EXPECT_TRUE(listener1.WaitUntilSatisfied());
+    EXPECT_TRUE(listener2.WaitUntilSatisfied());
+  }
 }
 
 // TODO(crbug.com/371324825): Enable more tests for Android build.
@@ -543,7 +660,8 @@ class DevToolsFrontendInWebRequestApiTest : public ExtensionApiTest {
         base::BindRepeating(&DevToolsFrontendInWebRequestApiTest::OnIntercept,
                             base::Unretained(this), port));
 
-    navigationHandler_ = std::make_unique<NavigateTabMessageHandler>(profile());
+    navigation_handler_ =
+        std::make_unique<NavigateTabMessageHandler>(profile());
   }
 
   void TearDownOnMainThread() override {
@@ -610,7 +728,7 @@ class DevToolsFrontendInWebRequestApiTest : public ExtensionApiTest {
   base::test::ScopedFeatureList feature_list_;
   base::FilePath test_root_dir_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
-  std::unique_ptr<NavigateTabMessageHandler> navigationHandler_;
+  std::unique_ptr<NavigateTabMessageHandler> navigation_handler_;
 };
 
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
@@ -4327,87 +4445,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                            ->tab_strip_model()
                            ->GetActiveWebContents()
                            ->GetLastCommittedURL());
-}
-
-// Tests registering webRequest events in multiple contexts in the same
-// extension (which will thus be in the same process). Regression test for
-// https://crbug.com/1297276.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
-                       ListenersInMultipleContexts) {
-  ASSERT_TRUE(StartEmbeddedTestServer());
-
-  // Load an extension that has a page with two iframes. Each iframe registers
-  // a listener for the same event.
-  static constexpr char kManifest[] =
-      R"({
-           "name": "ext",
-           "manifest_version": 3,
-           "version": "1",
-           "permissions": ["webRequest"],
-           "host_permissions": ["http://example.com/*"]
-         })";
-  static constexpr char kParentHtml[] =
-      R"(<!doctype html>
-         <html>
-           Hello world
-           <iframe src="iframe.html" name="iframe1"></iframe>
-           <iframe src="iframe.html" name="iframe2"></iframe>
-         </html>)";
-  static constexpr char kIframeHtml[] =
-      R"(<!doctype html>
-         <html>
-           Iframe
-           <script src="iframe.js"></script>
-         </html>)";
-  static constexpr char kIframeJs[] =
-      R"(const frameName = window.name;
-         chrome.webRequest.onBeforeRequest.addListener(
-             (details) => {
-               chrome.test.sendMessage(frameName + ' event');
-             },
-             {urls: ['http://example.com/*'], types: ['main_frame']});
-         chrome.test.sendMessage(frameName + ' ready');)";
-
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(kManifest);
-  test_dir.WriteFile(FILE_PATH_LITERAL("parent.html"), kParentHtml);
-  test_dir.WriteFile(FILE_PATH_LITERAL("iframe.html"), kIframeHtml);
-  test_dir.WriteFile(FILE_PATH_LITERAL("iframe.js"), kIframeJs);
-
-  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-
-  auto* router = WebRequestEventRouter::Get(profile());
-  ASSERT_TRUE(router);
-
-  static constexpr char kEventName[] = "webRequest.onBeforeRequest";
-  EXPECT_EQ(0u, router->GetListenerCountForTesting(profile(), kEventName));
-
-  // Load the extension page and wait for it to register its listeners.
-  {
-    ExtensionTestMessageListener listener1("iframe1 ready");
-    ExtensionTestMessageListener listener2("iframe2 ready");
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), extension->GetResourceURL("parent.html")));
-    ASSERT_TRUE(listener1.WaitUntilSatisfied());
-    ASSERT_TRUE(listener2.WaitUntilSatisfied());
-  }
-
-  // Two different listeners should be registered.
-  EXPECT_EQ(2u, router->GetListenerCountForTesting(profile(), kEventName));
-
-  // Trigger an event. Both listeners should fire.
-  {
-    ExtensionTestMessageListener listener1("iframe1 event");
-    ExtensionTestMessageListener listener2("iframe2 event");
-    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(),
-        embedded_test_server()->GetURL("example.com", "/title1.html"),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    EXPECT_TRUE(listener1.WaitUntilSatisfied());
-    EXPECT_TRUE(listener2.WaitUntilSatisfied());
-  }
 }
 
 struct SWBTestParams {

@@ -82,6 +82,30 @@ class ExtensionPlatformApiTest : public ExtensionPlatformBrowserTest {
   // dir.
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
+  // Start the test server, and store details of its state. Those details
+  // will be available to JavaScript tests using chrome.test.getConfig().
+  bool StartEmbeddedTestServer();
+
+  // Initialize the test server and store details of its state. Those details
+  // will be available to JavaScript tests using chrome.test.getConfig().
+  //
+  // Starting the test server is done in two steps; first the server socket is
+  // created and starts listening, followed by the start of an IO thread on
+  // which the test server will accept connectons.
+  //
+  // In general you can start the test server using StartEmbeddedTestServer()
+  // which handles both steps. When you need to register request handlers that
+  // need the server's base URL (either directly or through GetURL()), you will
+  // have to initialize the test server via this method first, get the URL and
+  // register the handler, and finally start accepting connections on the test
+  // server via EmbeddedTestServerAcceptConnections().
+  bool InitializeEmbeddedTestServer();
+
+  // Start accepting connections on the test server. Initialize the test server
+  // before calling this method via InitializeEmbeddedTestServer(), or use
+  // StartEmbeddedTestServer() instead.
+  void EmbeddedTestServerAcceptConnections();
+
   const base::FilePath& shared_test_data_dir() const {
     return shared_test_data_dir_;
   }
@@ -91,6 +115,20 @@ class ExtensionPlatformApiTest : public ExtensionPlatformBrowserTest {
 
   base::Value::Dict* GetTestConfig() { return test_config_.get(); }
 
+  // Creates a new secure test server that can be used in place of the default
+  // HTTP embedded_test_server defined in BrowserTestBase. The new test server
+  // can then be retrieved using the same embedded_test_server() method used
+  // to get the BrowserTestBase HTTP server.
+  void UseHttpsTestServer();
+
+  // This will return either the https test server or the
+  // default one specified in BrowserTestBase, depending on if an https test
+  // server was created by calling UseHttpsTestServer().
+  net::EmbeddedTestServer* embedded_test_server() {
+    return https_test_server_ ? https_test_server_.get()
+                              : BrowserTestBase::embedded_test_server();
+  }
+
  private:
   // Hold details of the test, set in C++, which can be accessed by
   // javascript using chrome.test.getConfig().
@@ -98,6 +136,11 @@ class ExtensionPlatformApiTest : public ExtensionPlatformBrowserTest {
 
   // Test data directory shared with //extensions.
   base::FilePath shared_test_data_dir_;
+
+  // Secure test server, isn't created by default. Needs to be
+  // created using UseHttpsTestServer() and then called with
+  // embedded_test_server().
+  std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
 };
 
 }  // namespace extensions

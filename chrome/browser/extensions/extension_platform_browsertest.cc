@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_paths.h"
 
 namespace extensions {
@@ -26,6 +27,13 @@ void ExtensionPlatformBrowserTest::SetUpOnMainThread() {
   RegisterPathProvider();
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir_);
   test_data_dir_ = test_data_dir_.AppendASCII("extensions");
+
+  web_contents_ = GetActiveWebContents()->GetWeakPtr();
+}
+
+void ExtensionPlatformBrowserTest::TearDown() {
+  web_contents_.reset();
+  PlatformBrowserTest::TearDown();
 }
 
 const Extension* ExtensionPlatformBrowserTest::LoadExtension(
@@ -57,8 +65,16 @@ const Extension* ExtensionPlatformBrowserTest::LoadExtension(
   return extension.get();
 }
 
+content::WebContents* ExtensionPlatformBrowserTest::GetActiveWebContents() {
+  return chrome_test_utils::GetActiveWebContents(this);
+}
+
 Profile* ExtensionPlatformBrowserTest::profile() {
   return chrome_test_utils::GetProfile(this);
+}
+
+content::WebContents* ExtensionPlatformBrowserTest::web_contents() {
+  return web_contents_.get();
 }
 
 }  // namespace extensions

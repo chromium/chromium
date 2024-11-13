@@ -33,6 +33,7 @@ namespace {
 
 const char kTestCustomArg[] = "customArg";
 const char kTestDataDirectory[] = "testDataDirectory";
+const char kEmbeddedTestServerPort[] = "testServer.port";
 
 }  // namespace
 
@@ -53,6 +54,13 @@ void ExtensionPlatformApiTest::SetUpOnMainThread() {
   test_config_ = std::make_unique<base::Value::Dict>();
   test_config_->Set(kTestDataDirectory,
                     net::FilePathToFileURL(test_data_dir_).spec());
+
+  if (embedded_test_server()->Started()) {
+    // InitializeEmbeddedTestServer was called before |test_config_| was set.
+    // Set the missing port key.
+    test_config_->SetByDottedPath(kEmbeddedTestServerPort,
+                                  embedded_test_server()->port());
+  }
 
   TestGetConfigFunction::set_test_config_state(test_config_.get());
 }
@@ -155,6 +163,46 @@ void ExtensionPlatformApiTest::SetUpCommandLine(
   // tests to take more time to complete. Disable backgrounding so that the
   // tests don't time out.
   command_line->AppendSwitch(::switches::kDisableRendererBackgrounding);
+}
+
+bool ExtensionPlatformApiTest::StartEmbeddedTestServer() {
+  if (!InitializeEmbeddedTestServer()) {
+    return false;
+  }
+
+  EmbeddedTestServerAcceptConnections();
+  return true;
+}
+
+bool ExtensionPlatformApiTest::InitializeEmbeddedTestServer() {
+  if (!embedded_test_server()->InitializeAndListen()) {
+    return false;
+  }
+
+  // Build a dictionary of values that tests can use to build URLs that
+  // access the test server and local file system.  Tests can see these values
+  // using the extension API function chrome.test.getConfig().
+  if (test_config_) {
+    test_config_->SetByDottedPath(kEmbeddedTestServerPort,
+                                  embedded_test_server()->port());
+  }
+  // else SetUpOnMainThread has not been called yet. Possibly because the
+  // caller needs a valid port in an overridden SetUpCommandLine method.
+
+  return true;
+}
+
+void ExtensionPlatformApiTest::EmbeddedTestServerAcceptConnections() {
+  embedded_test_server()->StartAcceptingConnections();
+}
+
+void ExtensionPlatformApiTest::UseHttpsTestServer() {
+  https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_test_server_.get()->AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+  https_test_server_.get()->SetSSLConfig(
+      net::EmbeddedTestServer::CERT_TEST_NAMES);
 }
 
 }  // namespace extensions

@@ -6,10 +6,15 @@
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_PLATFORM_BROWSERTEST_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "extensions/common/extension_id.h"
 
 class Profile;
+
+namespace content {
+class WebContents;
+}
 
 namespace extensions {
 class Extension;
@@ -83,13 +88,24 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
 
   // content::BrowserTestBase:
   void SetUpOnMainThread() override;
+  void TearDown() override;
 
   const Extension* LoadExtension(const base::FilePath& path);
   const Extension* LoadExtension(const base::FilePath& path,
                                  const LoadOptions& options);
 
+  // Returns the WebContents of the currently active tab.
+  // Note that when the test first launches, this will be the same as the
+  // default tab's web_contents(). However, if the test creates new tabs and
+  // switches the active tab, this will return the WebContents of the new active
+  // tab.
+  content::WebContents* GetActiveWebContents();
+
   // Lower case to match the style of InProcessBrowserTest.
   Profile* profile();
+
+  // WebContents* of the default tab or nullptr if the default tab is destroyed.
+  content::WebContents* web_contents();
 
   const ExtensionId& last_loaded_extension_id() {
     return last_loaded_extension_id_;
@@ -101,6 +117,9 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   const ContextType context_type_;
 
  private:
+  // WebContents* of the default tab or nullptr if the default tab is destroyed.
+  base::WeakPtr<content::WebContents> web_contents_;
+
   ExtensionId last_loaded_extension_id_;
 };
 
