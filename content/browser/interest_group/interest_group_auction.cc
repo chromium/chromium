@@ -219,16 +219,6 @@ const blink::InterestGroup::Ad* FindMatchingAd(
     return nullptr;
   }
 
-  if (bid_role != auction_worklet::mojom::BidRole::kUnenforcedKAnon) {
-    const std::string kanon_key =
-        is_component_ad
-            ? blink::HashedKAnonKeyForAdComponentBid(ad_descriptor)
-            : blink::HashedKAnonKeyForAdBid(interest_group, ad_descriptor);
-    if (!IsKAnon(kanon_keys, kanon_key)) {
-      return nullptr;
-    }
-  }
-
   const blink::InterestGroup::Ad* maybe_matching_ad = nullptr;
   for (const auto& ad : ads) {
     if (ad.render_url() != ad_descriptor.url) {
@@ -265,14 +255,23 @@ const blink::InterestGroup::Ad* FindMatchingAd(
     }
   }
 
-  if (maybe_matching_ad && !is_component_ad &&
-      bid_role != auction_worklet::mojom::BidRole::kUnenforcedKAnon &&
-      selected_buyer_and_seller_reporting_id.has_value()) {
-    const std::string kanon_key = blink::HashedKAnonKeyForAdNameReporting(
-        interest_group, *maybe_matching_ad,
-        *selected_buyer_and_seller_reporting_id);
+  if (maybe_matching_ad &&
+      bid_role != auction_worklet::mojom::BidRole::kUnenforcedKAnon) {
+    const std::string kanon_key =
+        is_component_ad
+            ? blink::HashedKAnonKeyForAdComponentBid(ad_descriptor)
+            : blink::HashedKAnonKeyForAdBid(interest_group, ad_descriptor);
     if (!IsKAnon(kanon_keys, kanon_key)) {
       return nullptr;
+    }
+    if (!is_component_ad &&
+        selected_buyer_and_seller_reporting_id.has_value()) {
+      const std::string reporting_key = blink::HashedKAnonKeyForAdNameReporting(
+          interest_group, *maybe_matching_ad,
+          *selected_buyer_and_seller_reporting_id);
+      if (!IsKAnon(kanon_keys, reporting_key)) {
+        return nullptr;
+      }
     }
   }
 
