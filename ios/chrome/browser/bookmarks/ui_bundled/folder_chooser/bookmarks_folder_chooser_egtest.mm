@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -95,12 +96,12 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
             KindOfTest::kSignedOut];
 }
 - (void)testCreateNewLocalOrSyncableFolderDefaultDestinationLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCreateNewLocalOrSyncableFolderDefaultDestination:KindOfTest::
                                                                       kLocal];
 }
 - (void)testCreateNewLocalOrSyncableFolderDefaultDestinationAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCreateNewLocalOrSyncableFolderDefaultDestination:KindOfTest::
                                                                       kAccount];
 }
@@ -148,11 +149,11 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testCreateNewFolderWhileMovingBookmarks:KindOfTest::kSignedOut];
 }
 - (void)testCreateNewFolderWhileMovingBookmarksLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCreateNewFolderWhileMovingBookmarks:KindOfTest::kLocal];
 }
 - (void)testCreateNewFolderWhileMovingBookmarksAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCreateNewFolderWhileMovingBookmarks:KindOfTest::kAccount];
 }
 - (void)util_testCreateNewFolderWhileMovingBookmarks:(KindOfTest)kindOfTest {
@@ -265,12 +266,12 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testCantDeleteFolderBeingEdited:KindOfTest::kSignedOut];
 }
 - (void)testCantDeleteFolderBeingEditedLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCantDeleteFolderBeingEdited:KindOfTest::kLocal];
 }
 // TODO(crbug.com/326425036): New folder can’t be renamed in account model.
 - (void)DISABLED_testCantDeleteFolderBeingEditedAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCantDeleteFolderBeingEdited:KindOfTest::kAccount];
 }
 - (void)util_testCantDeleteFolderBeingEdited:(KindOfTest)kindOfTest {
@@ -301,13 +302,13 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
 }
 
 - (void)testNavigateAwayFromFolderBeingEditedLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testNavigateAwayFromFolderBeingEdited:KindOfTest::kLocal];
 }
 
 // TODO(crbug.com/337774320) Test is flaky on ios-fieldtrial-rel.
 - (void)DISABLED_testNavigateAwayFromFolderBeingEditedAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testNavigateAwayFromFolderBeingEdited:KindOfTest::kAccount];
 }
 
@@ -353,11 +354,11 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testDeleteSingleFolderNode:KindOfTest::kSignedOut];
 }
 - (void)testDeleteSingleFolderNodeLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testDeleteSingleFolderNode:KindOfTest::kLocal];
 }
 - (void)testDeleteSingleFolderNodeAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testDeleteSingleFolderNode:KindOfTest::kAccount];
 }
 - (void)util_testDeleteSingleFolderNode:(KindOfTest)kindOfTest {
@@ -403,11 +404,11 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testSwipeDownToDismissFromEditFolder:KindOfTest::kSignedOut];
 }
 - (void)testSwipeDownToDismissFromEditFolderLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testSwipeDownToDismissFromEditFolder:KindOfTest::kLocal];
 }
 - (void)testSwipeDownToDismissFromEditFolderAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testSwipeDownToDismissFromEditFolder:KindOfTest::kAccount];
 }
 - (void)util_testSwipeDownToDismissFromEditFolder:(KindOfTest)kindOfTest {
@@ -450,11 +451,11 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testWhenCurrentFolderDeletedInBackground:KindOfTest::kSignedOut];
 }
 - (void)testWhenCurrentFolderDeletedInBackgroundLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testWhenCurrentFolderDeletedInBackground:KindOfTest::kLocal];
 }
 - (void)testWhenCurrentFolderDeletedInBackgroundAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testWhenCurrentFolderDeletedInBackground:KindOfTest::kAccount];
 }
 - (void)util_testWhenCurrentFolderDeletedInBackground:(KindOfTest)kindOfTest {
@@ -502,11 +503,11 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testLongPressOnSingleFolder:KindOfTest::kSignedOut];
 }
 - (void)testLongPressOnSingleFolderLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testLongPressOnSingleFolder:KindOfTest::kLocal];
 }
 - (void)testLongPressOnSingleFolderAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testLongPressOnSingleFolder:KindOfTest::kAccount];
 }
 - (void)util_testLongPressOnSingleFolder:(KindOfTest)kindOfTest {
@@ -547,12 +548,12 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testEditFunctionalityOnSingleFolder:KindOfTest::kSignedOut];
 }
 - (void)testEditFunctionalityOnSingleFolderLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testEditFunctionalityOnSingleFolder:KindOfTest::kLocal];
 }
 // TODO(crbug.com/326425036): Figure out why Chrome crash with this test.
 - (void)DISABLED_testEditFunctionalityOnSingleFolderAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testEditFunctionalityOnSingleFolder:KindOfTest::kAccount];
 }
 - (void)util_testEditFunctionalityOnSingleFolder:(KindOfTest)kindOfTest {
@@ -710,24 +711,24 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
                               toModel:KindOfTest::kSignedOut];
 }
 - (void)testMoveAndUndoLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testMoveAndUndoFromModel:KindOfTest::kLocal
                               toModel:KindOfTest::kLocal];
 }
 - (void)testMoveAndUndoAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testMoveAndUndoFromModel:KindOfTest::kAccount
                               toModel:KindOfTest::kAccount];
 }
 // TODO(crbug.com/326425036): Moving the bookmarks fails in test but not when
 // reproduced manually.
 - (void)DISABLED_testMoveAndUndoLocalToAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testMoveAndUndoFromModel:KindOfTest::kLocal
                               toModel:KindOfTest::kAccount];
 }
 - (void)testMoveAndUndoAccountToLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testMoveAndUndoFromModel:KindOfTest::kAccount
                               toModel:KindOfTest::kLocal];
 }
@@ -811,22 +812,22 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
                                                 toModel:KindOfTest::kSignedOut];
 }
 - (void)testMoveFunctionalityOnSingleFolderLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testMoveFunctionalityOnSingleFolderFromModel:KindOfTest::kLocal
                                                   toModel:KindOfTest::kLocal];
 }
 - (void)testMoveFunctionalityOnSingleFolderAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testMoveFunctionalityOnSingleFolderFromModel:KindOfTest::kAccount
                                                   toModel:KindOfTest::kAccount];
 }
 - (void)testMoveFunctionalityOnSingleFolderLocalToAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testMoveFunctionalityOnSingleFolderFromModel:KindOfTest::kLocal
                                                   toModel:KindOfTest::kAccount];
 }
 - (void)testMoveFunctionalityOnSingleFolderAccountToLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testMoveFunctionalityOnSingleFolderFromModel:KindOfTest::kAccount
                                                   toModel:KindOfTest::kLocal];
 }
@@ -942,11 +943,11 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testMoveFunctionalityOnMultipleFolder:KindOfTest::kSignedOut];
 }
 - (void)testMoveFunctionalityOnMultipleFolderLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testMoveFunctionalityOnMultipleFolder:KindOfTest::kLocal];
 }
 - (void)testMoveFunctionalityOnMultipleFolderAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testMoveFunctionalityOnMultipleFolder:KindOfTest::kAccount];
 }
 - (void)util_testMoveFunctionalityOnMultipleFolder:(KindOfTest)kindOfTest {
@@ -1031,11 +1032,11 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testContextBarForSingleFolderSelection:KindOfTest::kSignedOut];
 }
 - (void)testContextBarForSingleFolderSelectionLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testContextBarForSingleFolderSelection:KindOfTest::kLocal];
 }
 - (void)testContextBarForSingleFolderSelectionAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testContextBarForSingleFolderSelection:KindOfTest::kAccount];
 }
 - (void)util_testContextBarForSingleFolderSelection:(KindOfTest)kindOfTest {
@@ -1080,11 +1081,11 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testContextMenuForMultipleFolderSelection:KindOfTest::kSignedOut];
 }
 - (void)testContextMenuForMultipleFolderSelectionLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testContextMenuForMultipleFolderSelection:KindOfTest::kLocal];
 }
 - (void)testContextMenuForMultipleFolderSelectionAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testContextMenuForMultipleFolderSelection:KindOfTest::kAccount];
 }
 - (void)util_testContextMenuForMultipleFolderSelection:(KindOfTest)kindOfTest {
@@ -1130,13 +1131,13 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testStickyDefaultFolder:KindOfTest::kSignedOut];
 }
 - (void)testStickyDefaultFolderLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [BookmarkEarlGrey setLastUsedBookmarkFolderToMobileBookmarksInStorageType:
                         BookmarkStorageType::kLocalOrSyncable];
   [self util_testStickyDefaultFolder:KindOfTest::kLocal];
 }
 - (void)testStickyDefaultFolderAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testStickyDefaultFolder:KindOfTest::kAccount];
 }
 - (void)util_testStickyDefaultFolder:(KindOfTest)kindOfTest {
@@ -1249,14 +1250,14 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testNewFolderNameCommittedOnNavigatingAway:KindOfTest::kSignedOut];
 }
 - (void)testNewFolderNameCommittedOnNavigatingAwayLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testNewFolderNameCommittedOnNavigatingAway:KindOfTest::kLocal];
 }
 
 // TODO(crbug.com/342589920): Test failing on ios-fieldtrial-rel or when there
 // is no field trial config.
 - (void)DISABLED_testNewFolderNameCommittedOnNavigatingAwayAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testNewFolderNameCommittedOnNavigatingAway:KindOfTest::kAccount];
 }
 - (void)util_testNewFolderNameCommittedOnNavigatingAway:(KindOfTest)kindOfTest {
@@ -1338,12 +1339,12 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testCreateNewFolderWithContextBar:KindOfTest::kSignedOut];
 }
 - (void)testCreateNewFolderWithContextBarLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCreateNewFolderWithContextBar:KindOfTest::kLocal];
 }
 // TODO(crbug.com/326425036): New folder can’t be renamed in account model.
 - (void)DISABLE_testCreateNewFolderWithContextBarAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCreateNewFolderWithContextBar:KindOfTest::kAccount];
 }
 - (void)util_testCreateNewFolderWithContextBar:(KindOfTest)kindOfTest {
@@ -1382,13 +1383,13 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testAddBookmarkInNewFolder:KindOfTest::kSignedOut];
 }
 - (void)testAddBookmarkInNewFolderLocal {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [BookmarkEarlGrey setLastUsedBookmarkFolderToMobileBookmarksInStorageType:
                         BookmarkStorageType::kLocalOrSyncable];
   [self util_testAddBookmarkInNewFolder:KindOfTest::kLocal];
 }
 - (void)testAddBookmarkInNewFolderAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testAddBookmarkInNewFolder:KindOfTest::kAccount];
 }
 - (void)util_testAddBookmarkInNewFolder:(KindOfTest)kindOfTest {
@@ -1474,7 +1475,7 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
 // Checks that Chrome does not crash when the user sign-out while in an account
 // bookmark folder.
 - (void)testSignOutInRecursiveBookmarkAccount {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [BookmarkEarlGrey setupStandardBookmarksInStorage:kindOfTestToStorageType(
                                                         KindOfTest::kAccount)];
   [BookmarkEarlGreyUI openBookmarks];
