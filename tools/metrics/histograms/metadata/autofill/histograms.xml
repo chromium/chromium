@@ -2459,6 +2459,7 @@ AutofillSaveCreditCardPromptDestination.
     <variant name="CreditCard"/>
     <variant name="PostalAddress"/>
     <variant name="StandaloneCvc"/>
+    <variant name="Unknown"/>
   </token>
 </histogram>
 

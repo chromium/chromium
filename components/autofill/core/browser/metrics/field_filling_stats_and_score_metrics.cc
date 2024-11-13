@@ -28,8 +28,17 @@ void LogFieldFillingStatsWithHistogramPrefix(
     FormTypeNameForLogging form_type,
     const std::string& histogram_prefix,
     const FormGroupFillingStats& filling_stats) {
-  // Do not acquire metrics if autofill was not used in this form group.
-  if (filling_stats.TotalFilled() == 0) {
+  // Do not acquire metrics for classified forms/fields if autofill was not used
+  // in this form group.
+  if (form_type != FormTypeNameForLogging::kUnknownFormType &&
+      filling_stats.TotalFilled() == 0) {
+    return;
+  }
+
+  // For the unclassified fields case, only log if there was manually filling
+  // involved.
+  if (form_type == FormTypeNameForLogging::kUnknownFormType &&
+      filling_stats.TotalManuallyFilled() == 0) {
     return;
   }
 
@@ -336,6 +345,8 @@ void LogFieldFillingStatsAndScore(const FormStructure& form) {
   autofill_metrics::FormGroupFillingStats postal_address_field_stats;
   autofill_metrics::FormGroupFillingStats cc_field_stats;
   autofill_metrics::FormGroupFillingStats ac_unrecognized_address_field_stats;
+  autofill_metrics::FormGroupFillingStats unclassified_fields_field_stats;
+
   // Same as above, but keyed by `FillingMethod`.
   base::flat_map<FillingMethod, autofill_metrics::FormGroupFillingStats>
       address_field_stats_by_filling_method;
@@ -352,6 +363,8 @@ void LogFieldFillingStatsAndScore(const FormStructure& form) {
     const bool is_credit_card_form_field =
         form_type_of_field == FormType::kCreditCardForm;
     if (!is_address_form_field && !is_credit_card_form_field) {
+      FieldFillingStatus field_stats = GetFieldFillingStatus(*field);
+      unclassified_fields_field_stats.AddFieldFillingStatus(field_stats);
       continue;
     }
     if (is_address_form_field &&
@@ -398,7 +411,8 @@ void LogFieldFillingStatsAndScore(const FormStructure& form) {
   LogCompactFieldFillingStats(
       "Autofill.AutocompleteUnrecognized.FieldFillingStats2",
       ac_unrecognized_address_field_stats);
-
+  LogFieldFillingStats(FormTypeNameForLogging::kUnknownFormType,
+                       unclassified_fields_field_stats);
   LogFormFillingScore(FormType::kAddressForm, address_field_stats);
   LogFormFillingScore(FormType::kCreditCardForm, cc_field_stats);
 
