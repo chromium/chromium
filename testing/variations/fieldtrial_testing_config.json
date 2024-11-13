@@ -24157,12 +24157,11 @@
             ]
         }
     ],
-    "UseBrowserCalculatedOrigins": [
+    "UseBrowserCalculatedOrigin": [
         {
             "platforms": [
                 "android",
                 "android_webview",
-                "chromeos",
                 "linux",
                 "mac",
                 "windows"
@@ -24171,7 +24170,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "UseBrowserCalculatedOrigins"
+                        "UseBrowserCalculatedOrigin"
                     ]
                 }
             ]
