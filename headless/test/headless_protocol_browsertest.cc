@@ -227,12 +227,16 @@ void HeadlessProtocolBrowserTest::FinishTest() {
   FinishAsynchronousTest();
 }
 
-#define HEADLESS_PROTOCOL_TEST(TEST_NAME, SCRIPT_NAME)             \
-  IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTest, TEST_NAME) { \
-    test_folder_ = "/protocol/";                                   \
-    script_name_ = SCRIPT_NAME;                                    \
-    RunTest();                                                     \
+#define HEADLESS_PROTOCOL_TEST_CLASS(CLASS_NAME, TEST_NAME, SCRIPT_NAME) \
+  IN_PROC_BROWSER_TEST_F(CLASS_NAME, TEST_NAME) {                        \
+    test_folder_ = "/protocol/";                                         \
+    script_name_ = SCRIPT_NAME;                                          \
+    RunTest();                                                           \
   }
+
+#define HEADLESS_PROTOCOL_TEST(TEST_NAME, SCRIPT_NAME)                 \
+  HEADLESS_PROTOCOL_TEST_CLASS(HeadlessProtocolBrowserTest, TEST_NAME, \
+                               SCRIPT_NAME)
 
 // Headless-specific tests
 HEADLESS_PROTOCOL_TEST(VirtualTimeBasics, "emulation/virtual-time-basics.js")
@@ -404,15 +408,9 @@ class HeadlessProtocolBrowserTestWithProxy
   net::EmbeddedTestServer proxy_server_;
 };
 
-#define HEADLESS_PROTOCOL_TEST_WITH_PROXY(TEST_NAME, SCRIPT_NAME)           \
-  IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTestWithProxy, TEST_NAME) { \
-    test_folder_ = "/protocol/";                                            \
-    script_name_ = SCRIPT_NAME;                                             \
-    RunTest();                                                              \
-  }
-
-HEADLESS_PROTOCOL_TEST_WITH_PROXY(BrowserSetProxyConfig,
-                                  "sanity/browser-set-proxy-config.js")
+HEADLESS_PROTOCOL_TEST_CLASS(HeadlessProtocolBrowserTestWithProxy,
+                             BrowserSetProxyConfig,
+                             "sanity/browser-set-proxy-config.js")
 
 class HeadlessAllowedVideoCodecsTest
     : public HeadlessDevTooledBrowserTest,
@@ -473,14 +471,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 HEADLESS_DEVTOOLED_TEST_P(HeadlessAllowedVideoCodecsTest);
 
-#define HEADLESS_PROTOCOL_TEST_WITHOUT_SITE_ISOLATION(TEST_NAME, SCRIPT_NAME) \
-  IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTestWithoutSiteIsolation,     \
-                         TEST_NAME) {                                         \
-    test_folder_ = "/protocol/";                                              \
-    script_name_ = SCRIPT_NAME;                                               \
-    RunTest();                                                                \
-  }
-
 class HeadlessProtocolBrowserTestWithoutSiteIsolation
     : public HeadlessProtocolBrowserTest {
  public:
@@ -490,7 +480,8 @@ class HeadlessProtocolBrowserTestWithoutSiteIsolation
   bool RequiresSitePerProcess() override { return false; }
 };
 
-HEADLESS_PROTOCOL_TEST_WITHOUT_SITE_ISOLATION(
+HEADLESS_PROTOCOL_TEST_CLASS(
+    HeadlessProtocolBrowserTestWithoutSiteIsolation,
     VirtualTimeLocalStorageDetachedFrame,
     "emulation/virtual-time-local-storage-detached-frame.js")
 
@@ -534,16 +525,9 @@ class HeadlessProtocolBrowserTestWithExposeGC
   }
 };
 
-#define HEADLESS_PROTOCOL_TEST_WITH_EXPOSE_GC(TEST_NAME, SCRIPT_NAME)          \
-  IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTestWithExposeGC, TEST_NAME) { \
-    test_folder_ = "/protocol/";                                               \
-    script_name_ = SCRIPT_NAME;                                                \
-    RunTest();                                                                 \
-  }
-
-HEADLESS_PROTOCOL_TEST_WITH_EXPOSE_GC(
-    GetDOMCountersForLeakDetection,
-    "sanity/get-dom-counters-for-leak-detection.js")
+HEADLESS_PROTOCOL_TEST_CLASS(HeadlessProtocolBrowserTestWithExposeGC,
+                             GetDOMCountersForLeakDetection,
+                             "sanity/get-dom-counters-for-leak-detection.js")
 
 #define HEADLESS_PROTOCOL_TEST_WITH_COMMAND_LINE_EXTRAS(              \
     TEST_NAME, SCRIPT_NAME, COMMAND_LINE_EXTRAS)                      \
