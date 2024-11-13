@@ -58,6 +58,8 @@ class SodaInstallerImpl : public SodaInstaller,
   void OnSodaLanguagePackInstalled(speech::LanguageCode language_code);
 
  private:
+  void DeleteSodaFiles();
+
   void UpdateAndNotifyOnSodaProgress(speech::LanguageCode language_code);
 
   std::map<speech::LanguageCode, update_client::CrxUpdateItem>

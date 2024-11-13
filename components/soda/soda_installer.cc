@@ -89,21 +89,16 @@ void SodaInstaller::Init(PrefService* profile_prefs,
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::Time deletion_time =
+      global_prefs->GetTime(prefs::kSodaScheduledDeletionTime);
+  // Register SODA if a feature is actively using SODA or used it recently. The
+  // deletion time will be set if a feature using SODA was disabled.
   if (IsAnyFeatureUsingSodaEnabled(profile_prefs) ||
-      base::FeatureList::IsEnabled(media::kOnDeviceWebSpeech)) {
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (IsAnyFeatureUsingSodaEnabled(profile_prefs)) {
-#endif
+      (!deletion_time.is_null() && deletion_time > base::Time::Now())) {
     soda_installer_initialized_ = true;
-    // Set the SODA uninstaller time to NULL time so that it doesn't get
-    // uninstalled when features are using it.
-    global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
     SodaInstaller::GetInstance()->InstallSoda(global_prefs);
     InitLanguages(profile_prefs, global_prefs);
   } else {
-    base::Time deletion_time =
-        global_prefs->GetTime(prefs::kSodaScheduledDeletionTime);
     if (!deletion_time.is_null() && deletion_time <= base::Time::Now()) {
       UninstallSoda(global_prefs);
       soda_installer_initialized_ = false;

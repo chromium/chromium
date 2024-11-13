@@ -15,8 +15,11 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/soda_component_installer.h"
 #include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
@@ -121,9 +124,13 @@ std::vector<std::string> SodaInstallerImpl::GetAvailableLanguages() const {
 }
 
 void SodaInstallerImpl::UninstallSoda(PrefService* global_prefs) {
+  base::ThreadPool::PostTask(FROM_HERE,
+                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                              base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+                             base::BindOnce(&SodaInstallerImpl::DeleteSodaFiles,
+                                            weak_factory_.GetWeakPtr()));
+
   SodaInstaller::UnregisterLanguages(global_prefs);
-  base::DeletePathRecursively(speech::GetSodaDirectory());
-  base::DeletePathRecursively(speech::GetSodaLanguagePacksDirectory());
   global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
 
   soda_binary_installed_ = false;
@@ -226,6 +233,11 @@ void SodaInstallerImpl::OnSodaLanguagePackInstalled(
       base::Time::Now() - language_pack_install_start_time_[language_code]);
   base::UmaHistogramBoolean(
       GetInstallationResultMetricForLanguagePack(language_code), true);
+}
+
+void SodaInstallerImpl::DeleteSodaFiles() {
+  base::DeletePathRecursively(speech::GetSodaDirectory());
+  base::DeletePathRecursively(speech::GetSodaLanguagePacksDirectory());
 }
 
 void SodaInstallerImpl::UpdateAndNotifyOnSodaProgress(
