@@ -414,6 +414,9 @@ def _ParseArgs(argv):
   parser.add_argument('--use-build-server',
                       action='store_true',
                       help='Always use the build server.')
+  parser.add_argument('--experimental-build-server',
+                      action='store_true',
+                      help='Use experimental build server features.')
   parser.add_argument('--lint-jar-path',
                       required=True,
                       help='Path to the lint jar.')
@@ -518,10 +521,12 @@ def main():
   # the purpose of creating the cache in the first place. Forward the command
   # after the depfile has been written as siso requires it.
   if (not args.create_cache and not args.skip_build_server
-      and server_utils.MaybeRunCommand(name=args.target_name,
-                                       argv=sys.argv,
-                                       stamp_file=args.stamp,
-                                       force=args.use_build_server)):
+      and server_utils.MaybeRunCommand(
+          name=args.target_name,
+          argv=sys.argv,
+          stamp_file=args.stamp,
+          force=args.use_build_server,
+          experimental=args.experimental_build_server)):
     return
 
   _RunLint(args.custom_lint_jar_path,

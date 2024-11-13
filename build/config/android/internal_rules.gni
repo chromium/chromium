@@ -1150,6 +1150,9 @@ if (enable_java_templates) {
         args += [ "--skip-build-server" ]
       } else if (android_static_analysis == "build_server") {
         args += [ "--use-build-server" ]
+        if (experimental_build_server) {
+          args += [ "--experimental-build-server" ]
+        }
       }
 
       if (defined(invoker.lint_suppressions_file)) {
@@ -1938,6 +1941,9 @@ if (enable_java_templates) {
       }
       if (android_static_analysis == "build_server") {
         args += [ "--use-build-server" ]
+        if (experimental_build_server) {
+          args += [ "--experimental-build-server" ]
+        }
       }
       if (invoker.include_android_sdk) {
         args += [ "--sdk-classpath-jars=@FileArg($_rebased_build_config:android:sdk_jars)" ]
@@ -3258,6 +3264,9 @@ if (enable_java_templates) {
         args += [ "--skip-build-server" ]
       } else if (android_static_analysis == "build_server") {
         args += [ "--use-build-server" ]
+        if (experimental_build_server) {
+          args += [ "--experimental-build-server" ]
+        }
       }
 
       foreach(e, _processor_args) {
