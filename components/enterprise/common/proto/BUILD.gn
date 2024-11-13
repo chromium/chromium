@@ -5,6 +5,13 @@
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+fuzzable_proto_library("browser_events_proto") {
+  proto_in_dir = "//"
+  sources = [ "synced/browser_events.proto" ]
+
+  deps = [ "//components/safe_browsing/core/common/proto:csd_proto" ]
+}
+
 fuzzable_proto_library("connectors_proto") {
   proto_in_dir = "//"
   sources = [ "connectors.proto" ]
