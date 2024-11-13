@@ -215,6 +215,11 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   // The media position info as last reported to us by MediaSessionImpl.
   std::optional<media_session::MediaPosition> media_position_;
 
+  // True if the last media_session::MediaPosition we received in
+  // |MediaSessionPositionChanged()| was sent to |window_|. Used to track
+  // whether we should send it again.
+  bool window_received_media_position_ = false;
+
   // Coordinates of the video element in WebContents coordinates.
   gfx::Rect source_bounds_;
 

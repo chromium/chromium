@@ -20,6 +20,10 @@
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 
+namespace views {
+class Label;
+}  // namespace views
+
 namespace viz {
 class FrameSinkId;
 }  // namespace viz
@@ -170,6 +174,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   SimpleOverlayWindowImageButton* previous_slide_controls_view_for_testing()
       const;
   global_media_controls::MediaProgressView* progress_view_for_testing() const;
+  views::Label* timestamp_for_testing() const;
   CloseImageButton* close_button_for_testing() const;
   OverlayWindowMinimizeButton* minimize_button_for_testing() const;
   OverlayWindowBackToTabButton* back_to_tab_button_for_testing() const;
@@ -287,6 +292,9 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   void SeekForProgressBarInteraction(double seek_progress);
   void OnProgressViewUpdateCurrentTime(base::TimeDelta current_time);
 
+  void UpdateTimestampLabel(base::TimeDelta current_time,
+                            base::TimeDelta duration);
+
   // Not owned; |controller_| owns |this|.
   raw_ptr<content::VideoPictureInPictureWindowController> controller_;
 
@@ -356,6 +364,7 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
       nullptr;
   raw_ptr<SimpleOverlayWindowImageButton> next_slide_controls_view_ = nullptr;
   raw_ptr<global_media_controls::MediaProgressView> progress_view_ = nullptr;
+  raw_ptr<views::Label> timestamp_ = nullptr;
   raw_ptr<AutoPipSettingOverlayView> overlay_view_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS)

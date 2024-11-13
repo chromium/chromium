@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/global_media_controls/media_view_utils.h"
+#include "components/global_media_controls/public/format_duration.h"
 
 #include "base/time/time.h"
-#include "ui/views/test/views_test_base.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace global_media_controls {
 
-using MediaViewUtilsUnitTest = testing::Test;
+using FormatDurationTest = testing::Test;
 
-TEST_F(MediaViewUtilsUnitTest, FormatDurationWithHours) {
+TEST_F(FormatDurationTest, FormatDurationWithHours) {
   auto long_duration = base::Seconds(5698721);
   EXPECT_EQ(u"1,582:58:41", GetFormattedDuration(long_duration));
 
@@ -19,7 +19,7 @@ TEST_F(MediaViewUtilsUnitTest, FormatDurationWithHours) {
   EXPECT_EQ(u"1:00:00", GetFormattedDuration(with_zero_duration));
 }
 
-TEST_F(MediaViewUtilsUnitTest, FormatDurationWithoutHours) {
+TEST_F(FormatDurationTest, FormatDurationWithoutHours) {
   auto long_duration = base::Seconds(3538);
   EXPECT_EQ(u"58:58", GetFormattedDuration(long_duration));
 

@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/ui/views/overlay/toggle_microphone_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "components/global_media_controls/public/format_duration.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -50,6 +52,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/resize_utils.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/non_client_view.h"
 
@@ -844,6 +847,7 @@ void VideoOverlayWindowViews::SetUpViews() {
   std::unique_ptr<ToggleCameraButton> toggle_camera_button;
   std::unique_ptr<HangUpButton> hang_up_button;
   std::unique_ptr<global_media_controls::MediaProgressView> progress_view;
+  std::unique_ptr<views::Label> timestamp;
 
   if (Use2024UI()) {
     play_pause_controls_view->SetSize(
@@ -918,6 +922,12 @@ void VideoOverlayWindowViews::SetUpViews() {
         base::BindRepeating(
             &VideoOverlayWindowViews::OnProgressViewUpdateCurrentTime,
             base::Unretained(this)));
+    timestamp = std::make_unique<views::Label>(std::u16string(),
+                                               views::style::CONTEXT_LABEL,
+                                               views::style::STYLE_BODY_4);
+    timestamp->SetEnabledColorId(ui::kColorSysOnSurfaceSubtle);
+    timestamp->SetBackgroundColor(SK_ColorTRANSPARENT);
+    timestamp->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   } else {
     back_to_tab_label_button =
         std::make_unique<BackToTabLabelButton>(base::BindRepeating(
@@ -1060,6 +1070,10 @@ void VideoOverlayWindowViews::SetUpViews() {
     progress_view->SetPaintToLayer(ui::LAYER_TEXTURED);
     progress_view->layer()->SetFillsBoundsOpaquely(false);
     progress_view->layer()->SetName("ProgressView");
+
+    timestamp->SetPaintToLayer(ui::LAYER_TEXTURED);
+    timestamp->layer()->SetFillsBoundsOpaquely(false);
+    timestamp->layer()->SetName("Timestamp");
   } else {
     // views::View that holds the skip-ad label button.
     // -------------------------
@@ -1127,6 +1141,8 @@ void VideoOverlayWindowViews::SetUpViews() {
   if (Use2024UI()) {
     progress_view_ =
         controls_container_view->AddChildView(std::move(progress_view));
+
+    timestamp_ = controls_container_view->AddChildView(std::move(timestamp));
   }
 
   next_track_controls_view_ = controls_container_view->AddChildView(
@@ -1247,6 +1263,9 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
     constexpr int kControlHorizontalMargin = 8;
     constexpr int kBottomControlsHorizontalMargin = 8;
     constexpr int kBottomControlsVerticalMargin = 4;
+    constexpr int kTimestampHorizontalMargin = 16;
+    constexpr int kTimestampVerticalMargin = 10;
+    constexpr int kTimestampHeight = 16;
 
     gfx::Rect bounds = GetBounds();
     bounds.set_origin({0, 0});
@@ -1300,6 +1319,14 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
     progress_view_->SetSize(
         {bounds.width() - (2 * kPreviousNextTrackWidthPlusHorizontalMargins),
          kProgressBarHeight});
+
+    timestamp_->SetPosition(
+        {bottom_controls_bounds.x() + kTimestampHorizontalMargin,
+         bottom_controls_bounds.y() + bottom_controls_bounds.height() -
+             kTimestampVerticalMargin - kTimestampHeight});
+    timestamp_->SetSize(
+        {bottom_controls_bounds.width() - (2 * kTimestampHorizontalMargin),
+         kTimestampHeight});
 
     // The play/pause button should not be visible while dragging the progress
     // bar.
@@ -1643,6 +1670,7 @@ void VideoOverlayWindowViews::SetMediaPosition(
   }
   position_ = position;
   progress_view_->UpdateProgress(position);
+  UpdateTimestampLabel(position_.GetPosition(), position_.duration());
 }
 
 void VideoOverlayWindowViews::SetSurfaceId(const viz::SurfaceId& surface_id) {
@@ -1892,6 +1920,10 @@ VideoOverlayWindowViews::progress_view_for_testing() const {
   return progress_view_;
 }
 
+views::Label* VideoOverlayWindowViews::timestamp_for_testing() const {
+  return timestamp_;
+}
+
 CloseImageButton* VideoOverlayWindowViews::close_button_for_testing() const {
   return close_controls_view_;
 }
@@ -1980,5 +2012,12 @@ void VideoOverlayWindowViews::SeekForProgressBarInteraction(
 
 void VideoOverlayWindowViews::OnProgressViewUpdateCurrentTime(
     base::TimeDelta current_time) {
-  // TODO(crbug.com/360357715): Update current time view once it exists.
+  UpdateTimestampLabel(current_time, position_.duration());
+}
+
+void VideoOverlayWindowViews::UpdateTimestampLabel(base::TimeDelta current_time,
+                                                   base::TimeDelta duration) {
+  timestamp_->SetText(base::StrCat(
+      {global_media_controls::GetFormattedDuration(current_time), u" / ",
+       global_media_controls::GetFormattedDuration(duration)}));
 }

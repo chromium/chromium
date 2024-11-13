@@ -454,11 +454,20 @@ void VideoPictureInPictureWindowControllerImpl::MediaSessionActionsChanged(
 
 void VideoPictureInPictureWindowControllerImpl::MediaSessionPositionChanged(
     const std::optional<media_session::MediaPosition>& media_position) {
+  // If we've already sent this position to |window|, then no need to update
+  // again.
+  if (media_position == media_position_ && window_received_media_position_) {
+    return;
+  }
+
   media_position_ = media_position;
   UpdatePlaybackState();
 
   if (window_ && media_position.has_value()) {
     window_->SetMediaPosition(*media_position);
+    window_received_media_position_ = true;
+  } else {
+    window_received_media_position_ = false;
   }
 }
 
