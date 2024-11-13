@@ -177,8 +177,7 @@ struct MathWrapper {
 // solution, but it beats rewriting these over and over again.
 #define BASE_NUMERIC_ARITHMETIC_VARIADIC(CLASS, CL_ABBR, OP_NAME)       \
   template <typename L, typename R, typename... Args>                   \
-  constexpr auto CL_ABBR##OP_NAME(const L lhs, const R rhs,             \
-                                  const Args... args) {                 \
+  constexpr auto CL_ABBR##OP_NAME(L lhs, R rhs, Args... args) {         \
     return CL_ABBR##MathOp<CLASS##OP_NAME##Op, L, R, Args...>(lhs, rhs, \
                                                               args...); \
   }
@@ -189,7 +188,7 @@ struct MathWrapper {
     requires(kIs##CLASS##Op<L, R>)                                             \
   constexpr CLASS##Numeric<                                                    \
       typename MathWrapper<CLASS##OP_NAME##Op, L, R>::type>                    \
-  operator OP(const L lhs, const R rhs) {                                      \
+  operator OP(L lhs, R rhs) {                                                  \
     return decltype(lhs OP rhs)::template MathOp<CLASS##OP_NAME##Op>(lhs,      \
                                                                      rhs);     \
   }                                                                            \
@@ -197,8 +196,7 @@ struct MathWrapper {
   template <typename L>                                                        \
     requires std::is_arithmetic_v<L>                                           \
   template <typename R>                                                        \
-  constexpr CLASS##Numeric<L>& CLASS##Numeric<L>::operator CMP_OP(             \
-      const R rhs) {                                                           \
+  constexpr CLASS##Numeric<L>& CLASS##Numeric<L>::operator CMP_OP(R rhs) {     \
     return MathOp<CLASS##OP_NAME##Op>(rhs);                                    \
   }                                                                            \
   /* Variadic arithmetic functions that return CLASS##Numeric. */              \

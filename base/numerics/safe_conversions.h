@@ -82,11 +82,11 @@ template <typename Dst, typename Src>
            std::numeric_limits<Dst>::lowest() < std::numeric_limits<Dst>::max())
 constexpr bool IsValueInRangeForNumericType(Src value) {
   using SrcType = typename internal::UnderlyingType<Src>::type;
+  const auto underlying_value = static_cast<SrcType>(value);
   return internal::IsValueInRangeFastOp<Dst, SrcType>::is_supported
              ? internal::IsValueInRangeFastOp<Dst, SrcType>::Do(
-                   static_cast<SrcType>(value))
-             : internal::DstRangeRelationToSrcRange<Dst>(
-                   static_cast<SrcType>(value))
+                   underlying_value)
+             : internal::DstRangeRelationToSrcRange<Dst>(underlying_value)
                    .IsValid();
 }
 
@@ -201,15 +201,16 @@ template <typename Dst,
           typename Src>
 constexpr Dst saturated_cast(Src value) {
   using SrcType = typename UnderlyingType<Src>::type;
+  const auto underlying_value = static_cast<SrcType>(value);
   return !std::is_constant_evaluated() &&
                  SaturateFastOp<Dst, SrcType>::is_supported &&
                  std::is_same_v<SaturationHandler<Dst>,
                                 SaturationDefaultLimits<Dst>>
-             ? SaturateFastOp<Dst, SrcType>::Do(static_cast<SrcType>(value))
+             ? SaturateFastOp<Dst, SrcType>::Do(underlying_value)
              : saturated_cast_impl<Dst, SaturationHandler, SrcType>(
-                   static_cast<SrcType>(value),
+                   underlying_value,
                    DstRangeRelationToSrcRange<Dst, SaturationHandler, SrcType>(
-                       static_cast<SrcType>(value)));
+                       underlying_value));
 }
 
 // strict_cast<> is analogous to static_cast<> for numeric types, except that

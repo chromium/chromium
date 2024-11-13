@@ -49,7 +49,7 @@ namespace internal {
 using std::numeric_limits;
 
 // This is a helper function for finding the maximum value in Src that can be
-// wholy represented as the destination floating-point type.
+// wholly represented as the destination floating-point type.
 template <typename Dst,
           typename Src,
           typename DstLimits = std::numeric_limits<Dst>,

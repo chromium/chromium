@@ -88,7 +88,7 @@ class ClampedNumeric {
 
   template <typename U>
   constexpr ClampedNumeric<typename MathWrapper<ClampedMaxOp, T, U>::type> Max(
-      const U rhs) const {
+      U rhs) const {
     using result_type = typename MathWrapper<ClampedMaxOp, T, U>::type;
     return ClampedNumeric<result_type>(
         ClampedMaxOp<T, U>::Do(value_, Wrapper<U>::value(rhs)));
@@ -96,7 +96,7 @@ class ClampedNumeric {
 
   template <typename U>
   constexpr ClampedNumeric<typename MathWrapper<ClampedMinOp, T, U>::type> Min(
-      const U rhs) const {
+      U rhs) const {
     using result_type = typename MathWrapper<ClampedMinOp, T, U>::type;
     return ClampedNumeric<result_type>(
         ClampedMinOp<T, U>::Do(value_, Wrapper<U>::value(rhs)));
@@ -136,7 +136,7 @@ class ClampedNumeric {
   // These perform the actual math operations on the ClampedNumerics.
   // Binary arithmetic operations.
   template <template <typename, typename> class M, typename L, typename R>
-  static constexpr ClampedNumeric MathOp(const L lhs, const R rhs) {
+  static constexpr ClampedNumeric MathOp(L lhs, R rhs) {
     using Math = typename MathWrapper<M, L, R>::math;
     return ClampedNumeric<T>(
         Math::template Do<T>(Wrapper<L>::value(lhs), Wrapper<R>::value(rhs)));
@@ -144,7 +144,7 @@ class ClampedNumeric {
 
   // Assignment arithmetic operations.
   template <template <typename, typename> class M, typename R>
-  constexpr ClampedNumeric& MathOp(const R rhs) {
+  constexpr ClampedNumeric& MathOp(R rhs) {
     using Math = typename MathWrapper<M, T, R>::math;
     *this =
         ClampedNumeric<T>(Math::template Do<T>(value_, Wrapper<R>::value(rhs)));
@@ -185,15 +185,15 @@ ClampedNumeric(T) -> ClampedNumeric<T>;
 // arithmetic or ClampedNumericType.
 template <typename T>
 constexpr ClampedNumeric<typename UnderlyingType<T>::type> MakeClampedNum(
-    const T value) {
+    T value) {
   return value;
 }
 
 // These implement the variadic wrapper for the math operations.
 template <template <typename, typename> class M, typename L, typename R>
 constexpr ClampedNumeric<typename MathWrapper<M, L, R>::type> ClampMathOp(
-    const L lhs,
-    const R rhs) {
+    L lhs,
+    R rhs) {
   using Math = typename MathWrapper<M, L, R>::math;
   return ClampedNumeric<typename Math::result_type>::template MathOp<M>(lhs,
                                                                         rhs);
@@ -204,7 +204,7 @@ template <template <typename, typename> class M,
           typename L,
           typename R,
           typename... Args>
-constexpr auto ClampMathOp(const L lhs, const R rhs, const Args... args) {
+constexpr auto ClampMathOp(L lhs, R rhs, Args... args) {
   return ClampMathOp<M>(ClampMathOp<M>(lhs, rhs), args...);
 }
 

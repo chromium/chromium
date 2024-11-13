@@ -276,7 +276,7 @@ struct DstRangeRelationToSrcRangeImpl<
   static constexpr RangeCheck Check(Src value) {
     using DstLimits = NarrowingRange<Dst, Src, Bounds>;
     return RangeCheck(
-        DstLimits::lowest() == Dst(0) || value >= DstLimits::lowest(),
+        DstLimits::lowest() == Dst{0} || value >= DstLimits::lowest(),
         value <= DstLimits::max());
   }
 };
@@ -293,7 +293,7 @@ struct DstRangeRelationToSrcRangeImpl<
   static constexpr RangeCheck Check(Src value) {
     using DstLimits = NarrowingRange<Dst, Src, Bounds>;
     using Promotion = decltype(Src() + Dst());
-    return RangeCheck(DstLimits::lowest() <= Dst(0) ||
+    return RangeCheck(DstLimits::lowest() <= Dst{0} ||
                           static_cast<Promotion>(value) >=
                               static_cast<Promotion>(DstLimits::lowest()),
                       static_cast<Promotion>(value) <=
@@ -315,13 +315,13 @@ struct DstRangeRelationToSrcRangeImpl<
     using SrcLimits = std::numeric_limits<Src>;
     using DstLimits = NarrowingRange<Dst, Src, Bounds>;
     using Promotion = decltype(Src() + Dst());
-    bool ge_zero = false;
+    bool ge_zero;
     // Converting floating-point to integer will discard fractional part, so
     // values in (-1.0, -0.0) will truncate to 0 and fit in Dst.
     if constexpr (std::is_floating_point_v<Src>) {
-      ge_zero = value > Src(-1);
+      ge_zero = value > Src{-1};
     } else {
-      ge_zero = value >= Src(0);
+      ge_zero = value >= Src{0};
     }
     return RangeCheck(
         ge_zero && (DstLimits::lowest() == 0 ||
@@ -583,108 +583,84 @@ constexpr auto as_unsigned(Src value) {
 }
 
 template <typename L, typename R>
-constexpr bool IsLessImpl(const L lhs,
-                          const R rhs,
-                          const RangeCheck l_range,
-                          const RangeCheck r_range) {
-  return l_range.IsUnderflow() || r_range.IsOverflow() ||
-         (l_range == r_range && static_cast<decltype(lhs + rhs)>(lhs) <
-                                    static_cast<decltype(lhs + rhs)>(rhs));
-}
-
-template <typename L, typename R>
   requires std::is_arithmetic_v<L> && std::is_arithmetic_v<R>
 struct IsLess {
-  static constexpr bool Test(const L lhs, const R rhs) {
-    return IsLessImpl(lhs, rhs, DstRangeRelationToSrcRange<R>(lhs),
-                      DstRangeRelationToSrcRange<L>(rhs));
+  using SumT = decltype(std::declval<L>() + std::declval<R>());
+  static constexpr bool Test(L lhs, R rhs) {
+    const RangeCheck l_range = DstRangeRelationToSrcRange<R>(lhs);
+    const RangeCheck r_range = DstRangeRelationToSrcRange<L>(rhs);
+    return l_range.IsUnderflow() || r_range.IsOverflow() ||
+           (l_range == r_range &&
+            static_cast<SumT>(lhs) < static_cast<SumT>(rhs));
   }
 };
-
-template <typename L, typename R>
-constexpr bool IsLessOrEqualImpl(const L lhs,
-                                 const R rhs,
-                                 const RangeCheck l_range,
-                                 const RangeCheck r_range) {
-  return l_range.IsUnderflow() || r_range.IsOverflow() ||
-         (l_range == r_range && static_cast<decltype(lhs + rhs)>(lhs) <=
-                                    static_cast<decltype(lhs + rhs)>(rhs));
-}
 
 template <typename L, typename R>
   requires std::is_arithmetic_v<L> && std::is_arithmetic_v<R>
 struct IsLessOrEqual {
-  static constexpr bool Test(const L lhs, const R rhs) {
-    return IsLessOrEqualImpl(lhs, rhs, DstRangeRelationToSrcRange<R>(lhs),
-                             DstRangeRelationToSrcRange<L>(rhs));
+  using SumT = decltype(std::declval<L>() + std::declval<R>());
+  static constexpr bool Test(L lhs, R rhs) {
+    const RangeCheck l_range = DstRangeRelationToSrcRange<R>(lhs);
+    const RangeCheck r_range = DstRangeRelationToSrcRange<L>(rhs);
+    return l_range.IsUnderflow() || r_range.IsOverflow() ||
+           (l_range == r_range &&
+            static_cast<SumT>(lhs) <= static_cast<SumT>(rhs));
   }
 };
-
-template <typename L, typename R>
-constexpr bool IsGreaterImpl(const L lhs,
-                             const R rhs,
-                             const RangeCheck l_range,
-                             const RangeCheck r_range) {
-  return l_range.IsOverflow() || r_range.IsUnderflow() ||
-         (l_range == r_range && static_cast<decltype(lhs + rhs)>(lhs) >
-                                    static_cast<decltype(lhs + rhs)>(rhs));
-}
 
 template <typename L, typename R>
   requires std::is_arithmetic_v<L> && std::is_arithmetic_v<R>
 struct IsGreater {
-  static constexpr bool Test(const L lhs, const R rhs) {
-    return IsGreaterImpl(lhs, rhs, DstRangeRelationToSrcRange<R>(lhs),
-                         DstRangeRelationToSrcRange<L>(rhs));
+  using SumT = decltype(std::declval<L>() + std::declval<R>());
+  static constexpr bool Test(L lhs, R rhs) {
+    const RangeCheck l_range = DstRangeRelationToSrcRange<R>(lhs);
+    const RangeCheck r_range = DstRangeRelationToSrcRange<L>(rhs);
+    return l_range.IsOverflow() || r_range.IsUnderflow() ||
+           (l_range == r_range &&
+            static_cast<SumT>(lhs) > static_cast<SumT>(rhs));
   }
 };
 
 template <typename L, typename R>
-constexpr bool IsGreaterOrEqualImpl(const L lhs,
-                                    const R rhs,
-                                    const RangeCheck l_range,
-                                    const RangeCheck r_range) {
-  return l_range.IsOverflow() || r_range.IsUnderflow() ||
-         (l_range == r_range && static_cast<decltype(lhs + rhs)>(lhs) >=
-                                    static_cast<decltype(lhs + rhs)>(rhs));
-}
-
-template <typename L, typename R>
   requires std::is_arithmetic_v<L> && std::is_arithmetic_v<R>
 struct IsGreaterOrEqual {
-  static constexpr bool Test(const L lhs, const R rhs) {
-    return IsGreaterOrEqualImpl(lhs, rhs, DstRangeRelationToSrcRange<R>(lhs),
-                                DstRangeRelationToSrcRange<L>(rhs));
+  using SumT = decltype(std::declval<L>() + std::declval<R>());
+  static constexpr bool Test(L lhs, R rhs) {
+    const RangeCheck l_range = DstRangeRelationToSrcRange<R>(lhs);
+    const RangeCheck r_range = DstRangeRelationToSrcRange<L>(rhs);
+    return l_range.IsOverflow() || r_range.IsUnderflow() ||
+           (l_range == r_range &&
+            static_cast<SumT>(lhs) >= static_cast<SumT>(rhs));
   }
 };
 
 template <typename L, typename R>
   requires std::is_arithmetic_v<L> && std::is_arithmetic_v<R>
 struct IsEqual {
-  static constexpr bool Test(const L lhs, const R rhs) {
+  using SumT = decltype(std::declval<L>() + std::declval<R>());
+  static constexpr bool Test(L lhs, R rhs) {
     return DstRangeRelationToSrcRange<R>(lhs) ==
                DstRangeRelationToSrcRange<L>(rhs) &&
-           static_cast<decltype(lhs + rhs)>(lhs) ==
-               static_cast<decltype(lhs + rhs)>(rhs);
+           static_cast<SumT>(lhs) == static_cast<SumT>(rhs);
   }
 };
 
 template <typename L, typename R>
   requires std::is_arithmetic_v<L> && std::is_arithmetic_v<R>
 struct IsNotEqual {
-  static constexpr bool Test(const L lhs, const R rhs) {
+  using SumT = decltype(std::declval<L>() + std::declval<R>());
+  static constexpr bool Test(L lhs, R rhs) {
     return DstRangeRelationToSrcRange<R>(lhs) !=
                DstRangeRelationToSrcRange<L>(rhs) ||
-           static_cast<decltype(lhs + rhs)>(lhs) !=
-               static_cast<decltype(lhs + rhs)>(rhs);
+           static_cast<SumT>(lhs) != static_cast<SumT>(rhs);
   }
 };
 
 // These perform the actual math operations on the CheckedNumerics.
 // Binary arithmetic operations.
-template <template <typename, typename> class C, typename L, typename R>
+template <template <typename, typename> typename C, typename L, typename R>
   requires std::is_arithmetic_v<L> && std::is_arithmetic_v<R>
-constexpr bool SafeCompare(const L lhs, const R rhs) {
+constexpr bool SafeCompare(L lhs, R rhs) {
   using BigType = BigEnoughPromotion<L, R>;
   return kIsBigEnoughPromotionContained<L, R>
              // Force to a larger type for speed if both are contained.
