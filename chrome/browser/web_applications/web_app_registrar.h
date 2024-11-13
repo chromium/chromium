@@ -74,8 +74,15 @@ using InstallableAppCount =
 using NonSyncingAppCount = base::StrongAlias<class NonSyncingAppCountTag, int>;
 
 // Enabling this will force all apps that are exclusively preinstalled and open
-// in a browser tab to have the default link capturing setting be 'off'. This is
-// a safety switch in case something goes wrong with link capturing launch.
+// in a browser tab to have the default navigation capturing setting be 'on'.
+// This is needed for use-cases where a preinstalled app needs to capture
+// navigations by default even though other apps do not.
+BASE_DECLARE_FEATURE(kPreinstalledBrowserTabWebAppsCaptureOnDefault);
+
+// Enabling this will force all apps that are exclusively preinstalled and open
+// in a browser tab to have the default navigation capturing setting be 'off'.
+// This is a safety switch in case something goes wrong with navigation
+// capturing launch.
 BASE_DECLARE_FEATURE(kPreinstalledBrowserTabWebAppsForcedDefaultCaptureOff);
 
 // A registry model. This is a read-only container, which owns WebApp objects.
