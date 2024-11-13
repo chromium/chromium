@@ -847,7 +847,7 @@ Browser* ReparentWebContentsIntoAppBrowser(
   }
   WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(contents);
   // This function assumes `contents` is from a browser tab.
-  CHECK(!tab_helper->is_in_app_window());
+  DCHECK(!tab_helper->is_in_app_window());
 
   auto launch_url = contents->GetLastCommittedURL();
   UpdateLaunchStats(contents, app_id, launch_url);
