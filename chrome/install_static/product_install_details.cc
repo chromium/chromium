@@ -12,6 +12,7 @@
 #include <windows.h>
 
 #include <algorithm>
+#include <iterator>
 
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/install_details.h"
@@ -74,9 +75,10 @@ bool PathIsInProgramFiles(const std::wstring& path) {
   *value = L'\0';
   for (const wchar_t* variable : kProgramFilesVariables) {
     *value = L'\0';
-    DWORD ret = ::GetEnvironmentVariableW(variable, value, _countof(value));
-    if (ret && ret < _countof(value) && IsPathParentOf(value, ret, path))
+    DWORD ret = ::GetEnvironmentVariableW(variable, value, std::size(value));
+    if (ret && ret < std::size(value) && IsPathParentOf(value, ret, path)) {
       return true;
+    }
   }
 
   return false;
@@ -86,7 +88,7 @@ std::wstring GetInstallSuffix(const std::wstring& exe_path) {
   // Search backwards from the end of the path for "\Application", using a
   // manual search for the sake of case-insensitivity.
   static constexpr wchar_t kInstallBinaryDir[] = L"\\Application";
-  constexpr size_t kInstallBinaryDirLength = _countof(kInstallBinaryDir) - 1;
+  constexpr size_t kInstallBinaryDirLength = std::size(kInstallBinaryDir) - 1;
   if (exe_path.size() < kProductPathNameLength + kInstallBinaryDirLength)
     return std::wstring();
   std::wstring::const_reverse_iterator scan =
