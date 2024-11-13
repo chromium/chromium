@@ -29,6 +29,7 @@
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/command_buffer/service/task_graph.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "media/gpu/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -252,12 +253,14 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
     kWaitForTasksStarted = 1,
     kWaitForTasksFinished = 2,
   };
-  void FlushGpuTasks(SyncMode sync_mode);
+  void FlushGpuTasks(SyncMode sync_mode,
+                     const gpu::SyncToken& release = gpu::SyncToken());
   // When flushing the final task to destroy |impl_on_gpu_| we need to pass in a
   // copy of that pointer for any tasks that were already enqueued and will run
   // before the destructor.
   void FlushGpuTasksWithImpl(SyncMode sync_mode,
-                             SkiaOutputSurfaceImplOnGpu* impl_on_gpu);
+                             SkiaOutputSurfaceImplOnGpu* impl_on_gpu,
+                             const gpu::SyncToken& release);
   GrBackendFormat GetGrBackendFormatForTexture(
       SharedImageFormat si_format,
       int plane_index,
@@ -405,6 +408,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   // it's safe to use base::Unretained for posting tasks during life time of
   // SkiaOutputSurfaceImpl.
   std::unique_ptr<SkiaOutputSurfaceImplOnGpu> impl_on_gpu_;
+
+  gpu::ScopedSyncPointClientState sync_point_client_state_;
 
   gpu::GrContextType gr_context_type_ = gpu::GrContextType::kGL;
   sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe_;

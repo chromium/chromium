@@ -60,7 +60,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
-#include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
@@ -215,15 +214,6 @@ void SkiaOutputSurfaceImplOnGpu::PromiseImageAccessHelper::EndAccess() {
 
 namespace {
 
-scoped_refptr<gpu::SyncPointClientState> CreateSyncPointClientState(
-    SkiaOutputSurfaceDependency* deps,
-    gpu::CommandBufferId command_buffer_id,
-    gpu::SequenceId sequence_id) {
-  return deps->GetSyncPointManager()->CreateSyncPointClientState(
-      gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE, command_buffer_id,
-      sequence_id);
-}
-
 std::unique_ptr<gpu::SharedImageFactory> CreateSharedImageFactory(
     SkiaOutputSurfaceDependency* deps,
     gpu::MemoryTracker* memory_tracker) {
@@ -258,7 +248,6 @@ SkiaOutputSurfaceImplOnGpu::ReleaseCurrent::~ReleaseCurrent() {
 std::unique_ptr<SkiaOutputSurfaceImplOnGpu> SkiaOutputSurfaceImplOnGpu::Create(
     SkiaOutputSurfaceDependency* deps,
     const RendererSettings& renderer_settings,
-    const gpu::SequenceId sequence_id,
     gpu::DisplayCompositorMemoryAndTaskControllerOnGpu* shared_gpu_deps,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
     BufferPresentedCallback buffer_presented_callback,
@@ -285,8 +274,8 @@ std::unique_ptr<SkiaOutputSurfaceImplOnGpu> SkiaOutputSurfaceImplOnGpu::Create(
 
   auto impl_on_gpu = std::make_unique<SkiaOutputSurfaceImplOnGpu>(
       base::PassKey<SkiaOutputSurfaceImplOnGpu>(), deps,
-      context_state->feature_info(), renderer_settings, sequence_id,
-      shared_gpu_deps, std::move(did_swap_buffer_complete_callback),
+      context_state->feature_info(), renderer_settings, shared_gpu_deps,
+      std::move(did_swap_buffer_complete_callback),
       std::move(buffer_presented_callback), std::move(context_lost_callback),
       std::move(schedule_gpu_task),
       std::move(add_child_window_to_browser_callback),
@@ -303,7 +292,6 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
     SkiaOutputSurfaceDependency* deps,
     scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
     const RendererSettings& renderer_settings,
-    const gpu::SequenceId sequence_id,
     gpu::DisplayCompositorMemoryAndTaskControllerOnGpu* shared_gpu_deps,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
     BufferPresentedCallback buffer_presented_callback,
@@ -314,10 +302,6 @@ SkiaOutputSurfaceImplOnGpu::SkiaOutputSurfaceImplOnGpu(
     : dependency_(std::move(deps)),
       shared_gpu_deps_(shared_gpu_deps),
       feature_info_(std::move(feature_info)),
-      sync_point_client_state_(
-          CreateSyncPointClientState(dependency_,
-                                     shared_gpu_deps_->command_buffer_id(),
-                                     sequence_id)),
       shared_image_factory_(
           CreateSharedImageFactory(dependency_,
                                    shared_gpu_deps_->memory_tracker())),
@@ -418,8 +402,6 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
     }
 #endif
   }
-
-  sync_point_client_state_->Destroy();
 
   // Release all ongoing AsyncReadResults.
   ReleaseAsyncReadResultHelpers();
@@ -2274,10 +2256,6 @@ bool SkiaOutputSurfaceImplOnGpu::MakeCurrent(bool need_framebuffer) {
 
   context_state_->set_need_context_state_reset(true);
   return true;
-}
-
-void SkiaOutputSurfaceImplOnGpu::ReleaseFenceSync(uint64_t sync_fence_release) {
-  sync_point_client_state_->ReleaseFenceSync(sync_fence_release);
 }
 
 void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
