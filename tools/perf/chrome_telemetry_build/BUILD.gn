@@ -139,6 +139,17 @@ if (is_android) {
     ]
   }
 
+  if (android_64bit_target_cpu) {
+    group("telemetry_chrome_test_android_trichrome_chrome_64_32_bundle") {
+      testonly = true
+
+      data_deps = [
+        ":telemetry_chrome_test",
+        "//chrome/android:trichrome_chrome${_bitness_if_needed}_bundle",
+      ]
+    }
+  }
+
   if (enable_chrome_android_internal) {
     import("//clank/telemetry_browser_types.gni")
 
