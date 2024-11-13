@@ -915,7 +915,6 @@ fyi_mac_builder(
                     "print-reftest",
                     "--exit-after-n-crashes-or-timeouts=10000",
                     "--exit-after-n-failures=10000",
-                    "--no-retry-failures",
                 ],
                 experiment_percentage = 100,
             ),
@@ -976,7 +975,6 @@ ci.builder(
                     "print-reftest",
                     "--exit-after-n-crashes-or-timeouts=10000",
                     "--exit-after-n-failures=10000",
-                    "--no-retry-failures",
                 ],
                 experiment_percentage = 100,
                 swarming = targets.swarming(
@@ -2771,7 +2769,6 @@ ci.builder(
                     "print-reftest",
                     "--exit-after-n-crashes-or-timeouts=10000",
                     "--exit-after-n-failures=10000",
-                    "--no-retry-failures",
                 ],
                 experiment_percentage = 100,
             ),
