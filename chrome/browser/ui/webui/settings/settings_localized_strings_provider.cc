@@ -1407,11 +1407,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       plus_addresses::features::kPlusAddressManagementUrl.Get());
 
   html_source->AddBoolean(
-      "requireValidLocalCards",
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillRequireValidLocalCardsInSettings));
-
-  html_source->AddBoolean(
       "autofillPredictionImprovementsEnabled",
       autofill_ai::IsAutofillAiSupported(profile->GetPrefs()));
 

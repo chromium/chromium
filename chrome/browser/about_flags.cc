@@ -10519,13 +10519,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(switches::kBatchUploadDesktop)},
 #endif
 
-    {"autofill-require-valid-local-cards-in-settings",
-     flag_descriptions::kAutofillRequireValidLocalCardsInSettingsName,
-     flag_descriptions::kAutofillRequireValidLocalCardsInSettingsDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillRequireValidLocalCardsInSettings)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"flex-firmware-update", flag_descriptions::kFlexFirmwareUpdateName,
      flag_descriptions::kFlexFirmwareUpdateDescription, kOsCrOS,

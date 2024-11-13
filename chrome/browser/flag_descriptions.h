@@ -428,9 +428,6 @@ extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
 extern const char kAutofillRemovePaymentsButterDropdownName[];
 extern const char kAutofillRemovePaymentsButterDropdownDescription[];
 
-extern const char kAutofillRequireValidLocalCardsInSettingsName[];
-extern const char kAutofillRequireValidLocalCardsInSettingsDescription[];
-
 extern const char kAutofillSharedStorageServerCardDataName[];
 extern const char kAutofillSharedStorageServerCardDataDescription[];
 

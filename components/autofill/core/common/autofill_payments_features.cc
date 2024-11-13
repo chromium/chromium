@@ -246,12 +246,6 @@ BASE_FEATURE(kAutofillRemovePaymentsButterDropdown,
              "AutofillRemovePaymentsButterDropdown",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the add/edit local card dialog in chrome://settings on Desktop
-// requires that the card number be valid before saving is allowed.
-BASE_FEATURE(kAutofillRequireValidLocalCardsInSettings,
-             "AutofillRequireValidLocalCardsInSettings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_IOS)
 // When enabled, manual fill view will be shown directly from form focusing
 // events, if a virtual card has been retrieved previously.

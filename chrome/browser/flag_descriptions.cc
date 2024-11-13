@@ -755,13 +755,6 @@ const char kAutofillRemovePaymentsButterDropdownDescription[] =
     "suggestion will not be displayed, and Autofill will work as if it had "
     "been selected.";
 
-const char kAutofillRequireValidLocalCardsInSettingsName[] =
-    "Require local card numbers to be valid when adding or editing via "
-    "chrome://settings";
-const char kAutofillRequireValidLocalCardsInSettingsDescription[] =
-    "When enabled, the chrome://settings dialog for adding or editing local "
-    "cards will enforce that the card number is valid.";
-
 const char kAutofillSharedStorageServerCardDataName[] =
     "Enable storing autofill server card data in the shared storage database";
 const char kAutofillSharedStorageServerCardDataDescription[] =

@@ -180,66 +180,50 @@ suite('PaymentsSectionCardDialogs', function() {
         });
   });
 
-  [true, false].forEach((requireValidLocalCardsEnabled) => {
-    const testSuffix = requireValidLocalCardsEnabled ?
-        'requireValidLocalCards' :
-        'doNotRequireValidLocalCards';
-    test(`verifySaveNewCreditCard_${testSuffix}`, async function() {
-      loadTimeData.overrideValues({
-        cvcStorageAvailable: true,
-        requireValidLocalCards: requireValidLocalCardsEnabled,
-      });
-
-      const creditCard = createEmptyCreditCardEntry();
-      const creditCardDialog = createCreditCardDialogWithPrefs(
-          creditCard, {payment_cvc_storage: {value: true}});
-      await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
-
-      // Not expired, but still can't be saved, because there's no
-      // name or card number.
-      const expiredError =
-          creditCardDialog.shadowRoot!.querySelector<HTMLElement>(
-              '#expiredError');
-      assertEquals('hidden', getComputedStyle(expiredError!).visibility);
-
-      const saveButton =
-          creditCardDialog.shadowRoot!.querySelector<CrButtonElement>(
-              '#saveButton');
-      assertTrue(saveButton!.disabled);
-
-      if (requireValidLocalCardsEnabled) {
-        // Add a card number to enable saving.
-        creditCardDialog.set('rawCardNumber_', '4444333322221111');
-      } else {
-        // Add a card name to enable saving.
-        creditCardDialog.set('name_', 'Jane Doe');
-      }
-      flush();
-
-      assertEquals('hidden', getComputedStyle(expiredError!).visibility);
-      assertFalse(saveButton!.disabled);
-
-      const cvcInput =
-          creditCardDialog.shadowRoot!.querySelector<HTMLInputElement>(
-              '#cvcInput');
-      assertTrue(!!cvcInput);
-      assertTrue(isVisible(cvcInput));
-      cvcInput.value = '123';
-
-      const savedPromise = eventToPromise('save-credit-card', creditCardDialog);
-      saveButton!.click();
-      const event = await savedPromise;
-
-      assertEquals(creditCard.guid, event.detail.guid);
-      assertEquals(creditCard.cvc, event.detail.cvc);
+  test('verifySaveNewCreditCard', async function() {
+    loadTimeData.overrideValues({
+      cvcStorageAvailable: true,
     });
+
+    const creditCard = createEmptyCreditCardEntry();
+    const creditCardDialog = createCreditCardDialogWithPrefs(
+        creditCard, {payment_cvc_storage: {value: true}});
+    await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
+
+    // Not expired, but still can't be saved, because there's no card number.
+    const expiredError =
+        creditCardDialog.shadowRoot!.querySelector<HTMLElement>(
+            '#expiredError');
+    assertEquals('hidden', getComputedStyle(expiredError!).visibility);
+
+    const saveButton =
+        creditCardDialog.shadowRoot!.querySelector<CrButtonElement>(
+            '#saveButton');
+    assertTrue(saveButton!.disabled);
+
+    // Add a card number to enable saving.
+    creditCardDialog.set('rawCardNumber_', '4444333322221111');
+    flush();
+
+    assertEquals('hidden', getComputedStyle(expiredError!).visibility);
+    assertFalse(saveButton!.disabled);
+
+    const cvcInput =
+        creditCardDialog.shadowRoot!.querySelector<HTMLInputElement>(
+            '#cvcInput');
+    assertTrue(!!cvcInput);
+    assertTrue(isVisible(cvcInput));
+    cvcInput.value = '123';
+
+    const savedPromise = eventToPromise('save-credit-card', creditCardDialog);
+    saveButton!.click();
+    const event = await savedPromise;
+
+    assertEquals(creditCard.guid, event.detail.guid);
+    assertEquals(creditCard.cvc, event.detail.cvc);
   });
 
   test('verifyOnlyValidCardNumbersAllowed_ValidCases', async function() {
-    loadTimeData.overrideValues({
-      requireValidLocalCards: true,
-    });
-
     const creditCard = createCreditCardEntry();
     const creditCardDialog = createCreditCardDialog(creditCard);
 
@@ -301,10 +285,6 @@ suite('PaymentsSectionCardDialogs', function() {
   test(
       'verifyOnlyValidCardNumbersAllowed_InvalidCasesWithNoError',
       async function() {
-        loadTimeData.overrideValues({
-          requireValidLocalCards: true,
-        });
-
         const creditCard = createCreditCardEntry();
         const creditCardDialog = createCreditCardDialog(creditCard);
 
@@ -363,10 +343,6 @@ suite('PaymentsSectionCardDialogs', function() {
       });
 
   test('verifyOnlyValidCardNumbersAllowed_InvalidCases', async function() {
-    loadTimeData.overrideValues({
-      requireValidLocalCards: true,
-    });
-
     const creditCard = createCreditCardEntry();
     const creditCardDialog = createCreditCardDialog(creditCard);
 
