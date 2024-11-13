@@ -685,25 +685,11 @@ SEQUENCE_CHECKER(_sequenceChecker);
 // Called when the first scene becomes active.
 - (void)appState:(AppState*)appState
     firstSceneHasInitializedUI:(SceneState*)sceneState {
-  DCHECK(self.appState.initStage > AppInitStage::kSafeMode);
-
-  if (self.appState.initStage <= AppInitStage::kNormalUI) {
-    return;
-  }
-
-  // TODO(crbug.com/40769058): Pass the scene to this method to make sure that
-  // the chosen scene is initialized.
   [self startUpAfterFirstWindowCreated];
 }
 
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(AppInitStage)previousInitStage {
-  // TODO(crbug.com/40769058): Remove this once the bug fixed.
-  if (previousInitStage == AppInitStage::kNormalUI &&
-      appState.firstSceneHasInitializedUI) {
-    [self startUpAfterFirstWindowCreated];
-  }
-
   switch (appState.initStage) {
     case AppInitStage::kStart:
       [appState queueTransitionToNextInitStage];
