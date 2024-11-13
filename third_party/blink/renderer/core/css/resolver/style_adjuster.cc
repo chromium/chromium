@@ -1074,8 +1074,10 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     AdjustStyleForFirstLetter(builder);
     AdjustStyleForMarker(builder, parent_style, &state.GetElement());
 
-    AdjustStyleForDisplay(builder, layout_parent_style, element,
-                          element ? &element->GetDocument() : nullptr);
+    if (builder.StyleType() != kPseudoIdScrollMarker) {
+      AdjustStyleForDisplay(builder, layout_parent_style, element,
+                            element ? &element->GetDocument() : nullptr);
+    }
 
     // If this is a child of a LayoutCustom, we need the name of the parent
     // layout function for invalidation purposes.
