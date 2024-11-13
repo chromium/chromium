@@ -365,14 +365,13 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
       return;
     }
 
+    const auto output_index = static_cast<size_t>(canonical_button_index);
     if (input_buttons_bit_mask & button_bit_mask->second) {
-      EXPECT_TRUE(output_buttons[canonical_button_index].pressed);
-      EXPECT_NEAR(output_buttons[canonical_button_index].value, 1.0f,
-                  kErrorTolerance);
+      EXPECT_TRUE(output_buttons[output_index].pressed);
+      EXPECT_NEAR(output_buttons[output_index].value, 1.0f, kErrorTolerance);
     } else {
-      EXPECT_FALSE(output_buttons[canonical_button_index].pressed);
-      EXPECT_NEAR(output_buttons[canonical_button_index].value, 0.0f,
-                  kErrorTolerance);
+      EXPECT_FALSE(output_buttons[output_index].pressed);
+      EXPECT_NEAR(output_buttons[output_index].value, 0.0f, kErrorTolerance);
     }
   }
 
