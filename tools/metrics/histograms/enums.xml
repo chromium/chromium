@@ -16160,6 +16160,7 @@ from previous Chrome versions.
   <int value="-1647433421" label="use-passthrough-command-decoder"/>
   <int value="-1647250046" label="LauncherPlayStoreSearch:enabled"/>
   <int value="-1646653199" label="WallpaperGooglePhotosIntegration:enabled"/>
+  <int value="-1646338362" label="LensOverlayTranslateLanguages:enabled"/>
   <int value="-1646196271" label="WebRtcStatsReportIdl:disabled"/>
   <int value="-1646016597" label="IsolatePrerenders:disabled"/>
   <int value="-1645071473" label="ChromeColors:disabled"/>
@@ -25263,6 +25264,7 @@ from previous Chrome versions.
   <int value="1998924792" label="MlUrlSearchBlending:enabled"/>
   <int value="1999619901" label="SparklesForESB:disabled"/>
   <int value="2000091128" label="enable-touch-hover"/>
+  <int value="2000141119" label="LensOverlayTranslateLanguages:disabled"/>
   <int value="2000291475"
       label="AutofillEnableInfoBarAccountIndicationFooterForSyncUsers:enabled"/>
   <int value="2000903602" label="MantaService:disabled"/>

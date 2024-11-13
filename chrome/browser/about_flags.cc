@@ -11910,6 +11910,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(extensions_features::kAllowLegacyMV2Extensions)},
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"enable-lens-overlay-translate-languages",
+     flag_descriptions::kLensOverlayTranslateLanguagesName,
+     flag_descriptions::kLensOverlayTranslateLanguagesDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensOverlayTranslateLanguages)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

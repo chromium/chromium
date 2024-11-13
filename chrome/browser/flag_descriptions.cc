@@ -2472,6 +2472,11 @@ const char kLensOverlayTranslateButtonName[] = "Lens overlay translate button";
 const char kLensOverlayTranslateButtonDescription[] =
     "Enables translate button via the Lens overlay.";
 
+const char kLensOverlayTranslateLanguagesName[] =
+    "More Lens overlay translate languages";
+const char kLensOverlayTranslateLanguagesDescription[] =
+    "Enables more translate languages in the Lens Overlay.";
+
 const char kLensOverlayLatencyOptimizationsName[] =
     "Lens overlay latency optimizations";
 const char kLensOverlayLatencyOptimizationsDescription[] =
