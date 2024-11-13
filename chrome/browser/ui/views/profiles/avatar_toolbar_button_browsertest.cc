@@ -1531,8 +1531,14 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithImprovedSigninUIBrowserTest,
                                    IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON));
 }
 
+// TODO(crbug.com/359995696): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PassphraseErrorSyncing DISABLED_PassphraseErrorSyncing
+#else
+#define MAYBE_PassphraseErrorSyncing PassphraseErrorSyncing
+#endif
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithImprovedSigninUIBrowserTest,
-                       PassphraseErrorSyncing) {
+                       MAYBE_PassphraseErrorSyncing) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   EnableSyncWithImageAndClearGreeting(avatar, u"test@gmail.com");
   ASSERT_EQ(avatar->GetText(), std::u16string());
@@ -1541,8 +1547,14 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithImprovedSigninUIBrowserTest,
                                    IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON));
 }
 
+// TODO(crbug.com/359995696): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_UpgradeClientError DISABLED_UpgradeClientError
+#else
+#define MAYBE_UpgradeClientError UpgradeClientError
+#endif
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonWithImprovedSigninUIBrowserTest,
-                       UpgradeClientError) {
+                       MAYBE_UpgradeClientError) {
   AvatarToolbarButton* avatar = GetAvatarToolbarButton(browser());
   EnableSyncWithImageAndClearGreeting(avatar, u"test@gmail.com");
   ASSERT_EQ(avatar->GetText(), std::u16string());

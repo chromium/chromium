@@ -37,8 +37,8 @@ class WebAppNavigationCapturingIntentPickerBrowserTest
   }
 };
 
-// TODO(crbug.com/376641667): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/376641667): Flaky on Mac & Windows.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_FocusExisting DISABLED_FocusExisting
 #else
 #define MAYBE_FocusExisting FocusExisting

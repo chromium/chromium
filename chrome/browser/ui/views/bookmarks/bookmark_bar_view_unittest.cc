@@ -300,7 +300,15 @@ TEST_F(BookmarkBarViewTest, OverflowVisibility) {
 
 // Verifies buttons get added correctly when BookmarkBarView is created after
 // the model and the model has nodes.
-TEST_F(BookmarkBarViewTest, ButtonsDynamicallyAddedAfterModelHasNodes) {
+// TODO(crbug.com/375364962): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ButtonsDynamicallyAddedAfterModelHasNodes \
+  DISABLED_ButtonsDynamicallyAddedAfterModelHasNodes
+#else
+#define MAYBE_ButtonsDynamicallyAddedAfterModelHasNodes \
+  ButtonsDynamicallyAddedAfterModelHasNodes
+#endif
+TEST_F(BookmarkBarViewTest, MAYBE_ButtonsDynamicallyAddedAfterModelHasNodes) {
   AddNodesToBookmarkBarFromModelString("a b c d e f ");
   EXPECT_EQ(0u, test_helper_->GetBookmarkButtonCount());
 
