@@ -504,7 +504,7 @@ TEST_F(AddressAccessoryControllerTest, TriggersPlusAddressCreationBottomSheet) {
   EXPECT_CALL(mock_manual_filling_controller_, Hide);
   const std::string plus_address = "example@gmail.com";
   EXPECT_CALL(autofill_client(),
-              OfferPlusAddressCreation(_, /*is_manual_fallback=*/false, _))
+              OfferPlusAddressCreation(_, /*is_manual_fallback=*/true, _))
       .WillOnce([&plus_address](const url::Origin&, bool,
                                 PlusAddressCallback callback) {
         std::move(callback).Run(plus_address);

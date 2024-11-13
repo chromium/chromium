@@ -81,6 +81,7 @@ class PlusAddressCreationControllerAndroid
 
   std::unique_ptr<PlusAddressCreationViewAndroid> view_;
   url::Origin relevant_origin_;
+  bool is_manual_fallback_ = false;
   PlusAddressCallback callback_;
   bool suppress_ui_for_testing_ = false;
   // This is set by OnPlusAddressReserved and cleared when it's confirmed or

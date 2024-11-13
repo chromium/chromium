@@ -458,7 +458,7 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
               &GetWebContents())) {
         client->OfferPlusAddressCreation(
             client->GetLastCommittedPrimaryMainFrameOrigin(),
-            /*is_manual_fallback=*/false,
+            /*is_manual_fallback=*/true,
             base::BindOnce(
                 &PasswordAccessoryControllerImpl::OnPlusAddressCreated,
                 weak_ptr_factory_.GetWeakPtr()));

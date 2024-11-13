@@ -169,7 +169,6 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
     const url::Origin& main_frame_origin,
     bool is_manual_fallback,
     PlusAddressCallback callback) {
-  // TODO: crbug.com/348139343 - Pass `is_manual_fallback` parameter further.
   if (view_) {
     return;
   }
@@ -189,6 +188,7 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
   }
 
   callback_ = std::move(callback);
+  is_manual_fallback_ = is_manual_fallback;
   relevant_origin_ = main_frame_origin;
   const bool should_show_notice = ShouldShowNotice();
   metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalShown,
@@ -247,8 +247,7 @@ void PlusAddressCreationControllerAndroid::OnConfirmed() {
     // Note: this call may fail if this modal is confirmed on the same
     // `relevant_origin_` from another device.
     plus_address_service->ConfirmPlusAddress(
-        relevant_origin_, plus_profile_->plus_address,
-        /*is_manual_fallback=*/false,
+        relevant_origin_, plus_profile_->plus_address, is_manual_fallback_,
         base::BindOnce(
             &PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed,
             GetWeakPtr()));
