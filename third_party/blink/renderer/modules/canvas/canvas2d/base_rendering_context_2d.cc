@@ -3954,9 +3954,9 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
 
   // Create a WebGPU texture backed by the resource's SharedImage.
   scoped_refptr<WebGPUMailboxTexture> texture =
-      WebGPUMailboxTexture::FromExistingMailbox(
+      WebGPUMailboxTexture::FromExistingSharedImage(
           blink_device->GetDawnControlClient(), blink_device->GetHandle(), desc,
-          client_si->mailbox(),
+          client_si,
           // Ensure that WebGPU waits for the 2D canvas service-side operations
           // on this resource to complete.
           canvas_access_sync_token);

@@ -197,9 +197,9 @@ GPUTexture* XRGPUMailboxSwapChain::ProduceTexture() {
   CHECK(shared_images.content_image_data.shared_image);
 
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
-      WebGPUMailboxTexture::FromExistingMailbox(
+      WebGPUMailboxTexture::FromExistingSharedImage(
           device()->GetDawnControlClient(), device()->GetHandle(), descriptor_,
-          shared_images.content_image_data.shared_image->mailbox(),
+          shared_images.content_image_data.shared_image,
           shared_images.content_image_data.sync_token);
 
   return MakeGarbageCollected<GPUTexture>(
