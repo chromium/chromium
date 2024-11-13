@@ -69,7 +69,6 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       ui::ScrollGranularity granularity) override;
   void StartLoadingForAsyncNavigationApiCommit() override {}
   void DidBlockNavigation(const KURL& blocked_url,
-                          const KURL& initiator_url,
                           mojom::NavigationBlockedReason reason) override;
   void DidChangeLoadProgress(double load_progress) override;
   void DidFinishLoad(const KURL& validated_url) override;

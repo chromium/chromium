@@ -656,13 +656,11 @@ class CONTENT_EXPORT WebContentsDelegate {
   // Called when a suspicious navigation of the main frame has been blocked.
   // Allows the delegate to provide some UI to let the user know about the
   // blocked navigation and give them the option to recover from it.
-  // |blocked_url| is the blocked navigation target, |initiator_url| is the URL
-  // of the frame initiating the navigation, |reason| specifies why the
-  // navigation was blocked.
+  // |blocked_url| is the blocked navigation target, and |reason| specifies why
+  // the navigation was blocked.
   virtual void OnDidBlockNavigation(
       WebContents* web_contents,
       const GURL& blocked_url,
-      const GURL& initiator_url,
       blink::mojom::NavigationBlockedReason reason) {}
 
   // Reports that passive mixed content was found at the specified url.

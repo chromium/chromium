@@ -7712,20 +7712,17 @@ RenderFrameHostImpl::GetLastResponseHead() {
 
 void RenderFrameHostImpl::DidBlockNavigation(
     const GURL& blocked_url,
-    const GURL& initiator_url,
     blink::mojom::NavigationBlockedReason reason) {
   // Do not allow renderers to show off-limits URLs in the blocked dialog.
   GURL validated_blocked_url = blocked_url;
-  GURL validated_initiator_url = initiator_url;
   RenderProcessHost* process = GetProcess();
   process->FilterURL(/*empty_allowed=*/false, &validated_blocked_url);
-  process->FilterURL(/*empty_allowed=*/false, &validated_initiator_url);
 
   // Cross-origin navigations are not allowed in prerendering so we can not
   // reach here while prerendering.
   DCHECK_NE(lifecycle_state(), LifecycleStateImpl::kPrerendering);
-  delegate_->OnDidBlockNavigation(validated_blocked_url,
-                                  validated_initiator_url, reason);
+  delegate_->OnDidBlockNavigation(validated_blocked_url, GetLastCommittedURL(),
+                                  reason);
 }
 
 void RenderFrameHostImpl::DidChangeLoadProgress(double load_progress) {

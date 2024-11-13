@@ -110,7 +110,6 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   void OnDidBlockNavigation(
       content::WebContents* web_contents,
       const GURL& blocked_url,
-      const GURL& initiator_url,
       blink::mojom::NavigationBlockedReason reason) override;
   int GetTopControlsHeight() override;
   int GetTopControlsMinHeight() override;

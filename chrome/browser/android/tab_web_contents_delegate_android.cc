@@ -386,7 +386,6 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
 void TabWebContentsDelegateAndroid::OnDidBlockNavigation(
     content::WebContents* web_contents,
     const GURL& blocked_url,
-    const GURL& initiator_url,
     blink::mojom::NavigationBlockedReason reason) {
   ShowFramebustBlockMessageInternal(web_contents, blocked_url);
 }

@@ -379,10 +379,9 @@ interface LocalFrameHost {
   // allow the commit to proceed.
   StartLoadingForAsyncNavigationApiCommit();
 
-  // Indicates an attempt by the associated frame to navigate from the
-  // |initiator_url| to the |blocked_url|, but the navigation was
-  // blocked because of |reason|.
-  DidBlockNavigation(url.mojom.Url blocked_url, url.mojom.Url initiator_url,
+  // Indicates an attempt by the associated frame to navigate to |blocked_url|,
+  // but the navigation was blocked because of |reason|.
+  DidBlockNavigation(url.mojom.Url blocked_url,
                        blink.mojom.NavigationBlockedReason reason);
 
   // Sent when the renderer changed the progress of a load.

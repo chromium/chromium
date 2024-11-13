@@ -2379,7 +2379,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       ui::ScrollGranularity granularity) override;
   void DidBlockNavigation(
       const GURL& blocked_url,
-      const GURL& initiator_url,
       blink::mojom::NavigationBlockedReason reason) override;
   void DidChangeLoadProgress(double load_progress) override;
   void DidFinishLoad(const GURL& validated_url) override;

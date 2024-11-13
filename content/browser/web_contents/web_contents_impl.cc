@@ -8112,7 +8112,7 @@ void WebContentsImpl::OnDidBlockNavigation(
                           dict.Add("reason", reason);
                         });
   if (delegate_) {
-    delegate_->OnDidBlockNavigation(this, blocked_url, initiator_url, reason);
+    delegate_->OnDidBlockNavigation(this, blocked_url, reason);
   }
 }
 

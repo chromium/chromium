@@ -93,7 +93,6 @@ void FakeLocalFrameHost::BubbleLogicalScrollInParentFrame(
 
 void FakeLocalFrameHost::DidBlockNavigation(
     const KURL& blocked_url,
-    const KURL& initiator_url,
     mojom::NavigationBlockedReason reason) {}
 
 void FakeLocalFrameHost::DidChangeLoadProgress(double load_progress) {}

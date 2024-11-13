@@ -1784,7 +1784,6 @@ bool Browser::ShouldAllowRunningInsecureContent(
 void Browser::OnDidBlockNavigation(
     content::WebContents* web_contents,
     const GURL& blocked_url,
-    const GURL& initiator_url,
     blink::mojom::NavigationBlockedReason reason) {
   if (reason ==
       blink::mojom::NavigationBlockedReason::kRedirectWithNoUserGesture) {

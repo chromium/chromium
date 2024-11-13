@@ -374,7 +374,6 @@ bool WebContentsDelegateAndroid::IsFullscreenForTabOrPending(
 
 void WebContentsDelegateAndroid::OnDidBlockNavigation(
     content::WebContents* web_contents,
-    const GURL& initiator_url,
     const GURL& blocked_url,
     blink::mojom::NavigationBlockedReason reason) {}
 

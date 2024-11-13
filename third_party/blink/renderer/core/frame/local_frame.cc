@@ -2103,9 +2103,8 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
         // If there is no user activation, fail.
         if (!HasTransientUserActivation(this)) {
           GetLocalFrameHostRemote().DidBlockNavigation(
-              destination_url, GetDocument()->Url(),
-              mojom::blink::NavigationBlockedReason::
-                  kRedirectWithNoUserGestureSandbox);
+              destination_url, mojom::blink::NavigationBlockedReason::
+                                   kRedirectWithNoUserGestureSandbox);
           PrintNavigationErrorMessage(
               target_frame,
               "The frame attempting navigation of the top-level window is "
@@ -2202,7 +2201,7 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
         "user gesture. See "
         "https://www.chromestatus.com/feature/5851021045661696.");
     GetLocalFrameHostRemote().DidBlockNavigation(
-        destination_url, GetDocument()->Url(),
+        destination_url,
         mojom::blink::NavigationBlockedReason::kRedirectWithNoUserGesture);
 
   } else {

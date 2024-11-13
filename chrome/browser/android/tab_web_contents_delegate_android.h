@@ -93,7 +93,6 @@ class TabWebContentsDelegateAndroid
   void OnDidBlockNavigation(
       content::WebContents* web_contents,
       const GURL& blocked_url,
-      const GURL& initiator_url,
       blink::mojom::NavigationBlockedReason reason) override;
   void UpdateUserGestureCarryoverInfo(
       content::WebContents* web_contents) override;
