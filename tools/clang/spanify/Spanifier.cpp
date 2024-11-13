@@ -1151,9 +1151,7 @@ class Spanifier {
       std::vector<std::pair<std::string, std::string>>& sig_pairs)
       : match_finder_(finder),
         potential_nodes_(output_helper),
-        fct_sig_nodes_(sig_nodes, sig_pairs) {}
-
-  void addMatchers() {
+        fct_sig_nodes_(sig_nodes, sig_pairs) {
     std::vector<std::string> paths_to_exclude_lines;
     paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
                                   kSpanifyManualPathsToIgnore.begin(),
@@ -1163,7 +1161,9 @@ class Spanifier {
                                   kSeparateRepositoryPaths.end());
     paths_to_exclude_ =
         std::make_unique<raw_ptr_plugin::FilterFile>(paths_to_exclude_lines);
+  }
 
+  void addMatchers() {
     auto exclusions = anyOf(
         isExpansionInSystemHeader(), raw_ptr_plugin::isInExternCContext(),
         raw_ptr_plugin::isInThirdPartyLocation(),

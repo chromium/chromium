@@ -24,7 +24,7 @@
 // - Excluding paths _starting_ with "gen/" or containing "/gen/"
 //   (i.e. hopefully just the paths under out/.../gen/... directory)
 //   via the isInGeneratedLocation AST matcher in RewriteRawPtrFields.cpp.
-inline constexpr auto kSpanifyManualPathsToIgnore = std::array{
+inline constexpr std::array kSpanifyManualPathsToIgnore = {
     // DEPS basically prohibits includes from base/.
     "base/allocator/partition_alloc",
 

@@ -21,7 +21,7 @@
 //      grep -v third_party | \
 //      grep -v '^$' | \
 //      sort | uniq > ~/scratch/git-paths
-inline constexpr auto kSeparateRepositoryPaths = std::array{
+inline constexpr std::array kSeparateRepositoryPaths = {
     "chrome/app/theme/default_100_percent/google_chrome/",
     "chrome/app/theme/default_200_percent/google_chrome/",
     "chrome/app/theme/google_chrome/",
