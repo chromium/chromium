@@ -117,6 +117,7 @@ CanvasHibernationHandler::~CanvasHibernationHandler() {
   DCheckInvariant();
   if (IsHibernating()) {
     HibernatedCanvasMemoryDumpProvider::GetInstance().Unregister(this);
+    ReportHibernationEvent(HibernationEvent::kHibernationEndedWithTeardown);
   }
 }
 

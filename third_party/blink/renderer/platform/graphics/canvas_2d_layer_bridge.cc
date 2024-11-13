@@ -63,13 +63,7 @@ gpu::ContextSupport* GetContextSupport() {
 Canvas2DLayerBridge::Canvas2DLayerBridge(CanvasResourceHost& resource_host)
     : hibernation_handler_(resource_host), resource_host_(resource_host) {}
 
-Canvas2DLayerBridge::~Canvas2DLayerBridge() {
-  if (hibernation_handler_.IsHibernating()) {
-    CanvasHibernationHandler::ReportHibernationEvent(
-        CanvasHibernationHandler::HibernationEvent::
-            kHibernationEndedWithTeardown);
-  }
-}
+Canvas2DLayerBridge::~Canvas2DLayerBridge() = default;
 
 // static
 void Canvas2DLayerBridge::HibernateOrLogFailure(
