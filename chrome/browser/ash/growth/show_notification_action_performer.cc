@@ -145,6 +145,10 @@ HandleNotificationClickAndCloseDelegate::
 void HandleNotificationClickAndCloseDelegate::Click(
     const std::optional<int>& button_index,
     const std::optional<std::u16string>& reply) {
+  if (button_index) {
+    button_clicked_ = true;
+  }
+
   if (click_callback_.is_null()) {
     return;
   }
@@ -152,6 +156,13 @@ void HandleNotificationClickAndCloseDelegate::Click(
 }
 
 void HandleNotificationClickAndCloseDelegate::Close(bool by_user) {
+  // Click any button in the notification will also trigger `Close()`.
+  // Return here because we only want to log the close metric with explicit
+  // close actions, such as clicking the close button.
+  if (button_clicked_) {
+    return;
+  }
+
   if (close_callback_.is_null()) {
     return;
   }

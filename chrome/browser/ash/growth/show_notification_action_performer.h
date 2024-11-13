@@ -43,6 +43,9 @@ class HandleNotificationClickAndCloseDelegate
   ~HandleNotificationClickAndCloseDelegate() override;
 
  private:
+  // True if any button in the notification has been clicked.
+  bool button_clicked_ = false;
+
   ButtonClickCallback click_callback_;
   CloseCallback close_callback_;
 };
