@@ -58,7 +58,7 @@ export function getHtml(this: DiceWebSigninInterceptAppElement) {
   `}
 
   <div id="body">
-    <div id="title">${this.interceptionParameters_.bodyTitle}</div>
+    <h1 id="title">${this.interceptionParameters_.bodyTitle}</h1>
     <div id="contents">${this.interceptionParameters_.bodyText}</div>
     ${this.interceptionParameters_.showManagedDisclaimer ? html`
       <div id="managedDisclaimer">
