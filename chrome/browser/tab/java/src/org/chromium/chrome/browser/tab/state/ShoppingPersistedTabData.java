@@ -110,9 +110,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             sOptimizationGuideBridge = OptimizationGuideBridgeFactory.getForProfile(profile);
             if (sOptimizationGuideBridge != null) {
                 sOptimizationGuideBridge.registerOptimizationTypes(
-                        Arrays.asList(
-                                HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR,
-                                HintsProto.OptimizationType.PRICE_TRACKING));
+                        Arrays.asList(HintsProto.OptimizationType.PRICE_TRACKING));
             }
         }
     }

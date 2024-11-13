@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
-import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.url.GURL;
 
@@ -77,12 +76,6 @@ public class ShoppingPersistedTabDataServiceTest {
         doReturn(mOptimizationGuideBridgeMock)
                 .when(mOptimizationGuideBridgeFactoryJniMock)
                 .getForProfile(mProfileMock);
-
-        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeMock,
-                OptimizationType.SHOPPING_PAGE_PREDICTOR,
-                OptimizationGuideDecision.TRUE,
-                null);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     PersistedTabDataConfiguration.setUseTestConfig(true);
