@@ -22,10 +22,8 @@ class FormStructure;
 class IbanManager;
 class MerchantPromoCodeManager;
 
-// Owned by BrowserAutofillManager, and is one per frame. Routes single field
-// form filling requests to direct them to Autocomplete, merchant promo codes or
-// IBAN.
-// TODO: crbug.com/374086145 - Make per-tab.
+// Owned by AutofillClient. Routes single field form filling requests to direct
+// them to Autocomplete, merchant promo codes or IBAN.
 class SingleFieldFillRouter {
  public:
   // Some single-field fillers return suggestions asynchronously. This callback
