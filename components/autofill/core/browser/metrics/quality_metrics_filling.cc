@@ -162,6 +162,15 @@ void LogDataUtilization(const FormStructure& form) {
       base::UmaHistogramSparse(
           "Autofill.DataUtilization.ByPossibleType",
           GetFieldTypeAutofillDataUtilization(type, sample));
+      // Emit "HadPrediction" and "NoPrediction" variants.
+      const bool kHadPrediction =
+          field->Type().GetStorableType() > FieldType::EMPTY_TYPE;
+      const std::string_view kPredictionVariant =
+          kHadPrediction ? kHadPredictionVariant : kNoPredictionVariant;
+      base::UmaHistogramSparse(
+          base::StrCat({"Autofill.DataUtilization.", kPredictionVariant,
+                        ".ByPossibleType"}),
+          GetFieldTypeAutofillDataUtilization(type, sample));
     }
   }
 }
