@@ -39,6 +39,7 @@ const char kInspector[] = "Inspector";
 const char kKeyframesRuleChange[] = "@keyframes rule change";
 const char kLanguage[] = "Language";
 const char kLinkColorChange[] = "LinkColorChange";
+const char kNodeInserted[] = "Node was inserted into tree";
 const char kPictureSourceChanged[] = "PictureSourceChange";
 const char kPlatformColorChange[] = "PlatformColorChange";
 const char kPluginChanged[] = "Plugin Changed";
