@@ -7558,6 +7558,7 @@ static_library("browser") {
     ]
     public_deps += [
       "//chrome/browser/extensions/api",
+      "//chrome/browser/extensions/api:api_registration",
       "//chrome/browser/extensions/keyed_services:keyed_service_factories",
       "//extensions/browser",
     ]
@@ -7832,6 +7833,8 @@ static_library("browser") {
       "extensions/desktop_android/desktop_android_runtime_api_delegate.cc",
       "extensions/desktop_android/desktop_android_runtime_api_delegate.h",
     ]
+
+    deps += [ "//chrome/browser/extensions" ]
   }
 
   if (enable_library_cdms) {

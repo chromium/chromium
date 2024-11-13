@@ -87,6 +87,7 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest {
   };
 
   // content::BrowserTestBase:
+  void SetUp() override;
   void SetUpOnMainThread() override;
   void TearDown() override;
 

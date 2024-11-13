@@ -14,19 +14,15 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper_factory.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_handler.h"
 #include "chrome/browser/extensions/api/notifications/notifications_api.h"
-#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/notifier_state_tracker.h"
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/test/test_api.h"
@@ -36,6 +32,7 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/view_type.mojom.h"
@@ -47,6 +44,18 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#include "chrome/browser/extensions/extension_platform_apitest.h"
+#else
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/interactive_test_utils.h"
+#endif  // BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 using extensions::AppWindow;
 using extensions::AppWindowRegistry;
@@ -64,7 +73,13 @@ enum class WindowState {
   NORMAL
 };
 
-class NotificationsApiTest : public extensions::ExtensionApiTest {
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+using NotificationsApiTestBase = extensions::ExtensionPlatformApiTest;
+#else
+using NotificationsApiTestBase = extensions::ExtensionApiTest;
+#endif
+
+class NotificationsApiTest : public NotificationsApiTestBase {
  public:
   NotificationsApiTest() = default;
   ~NotificationsApiTest() override = default;
@@ -84,6 +99,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
     return extension;
   }
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   const Extension* LoadAppWithWindowState(
       const std::string& test_name, WindowState window_state) {
     const char* window_state_string = nullptr;
@@ -120,6 +136,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
 
     return nullptr;
   }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
   ExtensionNotificationDisplayHelper* GetDisplayHelper() {
     return ExtensionNotificationDisplayHelperFactory::GetForProfile(profile());
@@ -131,7 +148,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
 
  protected:
   void SetUpOnMainThread() override {
-    extensions::ExtensionApiTest::SetUpOnMainThread();
+    NotificationsApiTestBase::SetUpOnMainThread();
 
     DCHECK(profile());
     display_service_tester_ =
@@ -140,7 +157,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
 
   void TearDownOnMainThread() override {
     display_service_tester_.reset();
-    extensions::ExtensionApiTest::TearDownOnMainThread();
+    NotificationsApiTestBase::TearDownOnMainThread();
   }
 
   // Returns the notification that's being displayed for |extension|, or nullptr
@@ -163,6 +180,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
     return GetDisplayHelper()->GetByNotificationId(delegate_id)->id();
   }
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   void LaunchPlatformApp(const Extension* extension) {
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()
@@ -170,6 +188,7 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
             extension->id(), apps::LaunchContainer::kLaunchContainerNone,
             WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest));
   }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 };
@@ -180,10 +199,6 @@ using NotificationsApiTestWithServiceWorker = NotificationsApiTest;
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker, TestBasicUsage) {
-  ASSERT_TRUE(RunExtensionTest("notifications/api/basic_usage")) << message_;
-}
-
 // Flaky on TSan, see crbug.com/1304777.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_TestEvents DISABLED_TestEvents
@@ -193,6 +208,13 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker, TestBasicUsage) {
 IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker,
                        MAYBE_TestEvents) {
   ASSERT_TRUE(RunExtensionTest("notifications/api/events")) << message_;
+}
+
+// TODO(crbug.com/371431032): Fix the tests below on Android.
+#if !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+
+IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker, TestBasicUsage) {
+  ASSERT_TRUE(RunExtensionTest("notifications/api/basic_usage")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(NotificationsApiTestWithServiceWorker, TestCSP) {
@@ -522,3 +544,5 @@ IN_PROC_BROWSER_TEST_F(NotificationsApiTest, TestSmallImage) {
   EXPECT_FALSE(notification->small_image().IsEmpty());
   EXPECT_TRUE(notification->small_image_needs_additional_masking());
 }
+
+#endif  // !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)

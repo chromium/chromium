@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "chrome/browser/extensions/platform_test_extension_loader.h"
+#include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -14,12 +15,24 @@
 #include "extensions/common/extension_paths.h"
 
 namespace extensions {
+namespace {
+
+void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
+  NotificationDisplayServiceTester::EnsureFactoryBuilt();
+}
+
+}  // namespace
 
 ExtensionPlatformBrowserTest::ExtensionPlatformBrowserTest(
     ContextType context_type)
     : context_type_(context_type) {}
 
 ExtensionPlatformBrowserTest::~ExtensionPlatformBrowserTest() = default;
+
+void ExtensionPlatformBrowserTest::SetUp() {
+  EnsureBrowserContextKeyedServiceFactoriesBuilt();
+  PlatformBrowserTest::SetUp();
+}
 
 void ExtensionPlatformBrowserTest::SetUpOnMainThread() {
   PlatformBrowserTest::SetUpOnMainThread();

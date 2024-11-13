@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/chrome_extensions_browser_api_provider.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_host_delegate.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_web_contents_observer.h"
@@ -57,6 +58,7 @@ DesktopAndroidExtensionsBrowserClient::DesktopAndroidExtensionsBrowserClient()
       kiosk_delegate_(std::make_unique<DesktopAndroidKioskDelegate>()),
       api_client_(std::make_unique<ExtensionsAPIClient>()) {
   AddAPIProvider(std::make_unique<CoreExtensionsBrowserAPIProvider>());
+  AddAPIProvider(std::make_unique<ChromeExtensionsBrowserAPIProvider>());
 }
 
 DesktopAndroidExtensionsBrowserClient::
