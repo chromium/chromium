@@ -44,25 +44,21 @@ struct PositionOfSignBit {
 // Determines if a numeric value is negative without throwing compiler
 // warnings on: unsigned(value) < 0.
 template <typename T>
-  requires(std::is_arithmetic_v<T> && std::is_signed_v<T>)
+  requires(std::is_arithmetic_v<T>)
 constexpr bool IsValueNegative(T value) {
-  return value < 0;
-}
-
-template <typename T>
-  requires(std::is_arithmetic_v<T> && std::is_unsigned_v<T>)
-constexpr bool IsValueNegative(T) {
-  return false;
+  if constexpr (std::is_signed_v<T>) {
+    return value < 0;
+  } else {
+    return false;
+  }
 }
 
 // This performs a fast negation, returning a signed value. It works on unsigned
 // arguments, but probably doesn't do what you want for any unsigned value
 // larger than max / 2 + 1 (i.e. signed min cast to unsigned).
 template <typename T>
-constexpr typename std::make_signed<T>::type ConditionalNegate(
-    T x,
-    bool is_negative) {
-  static_assert(std::is_integral_v<T>, "Type must be integral");
+  requires std::is_integral_v<T>
+constexpr auto ConditionalNegate(T x, bool is_negative) {
   using SignedT = typename std::make_signed<T>::type;
   using UnsignedT = typename std::make_unsigned<T>::type;
   return static_cast<SignedT>((static_cast<UnsignedT>(x) ^
@@ -72,8 +68,8 @@ constexpr typename std::make_signed<T>::type ConditionalNegate(
 
 // This performs a safe, absolute value via unsigned overflow.
 template <typename T>
-constexpr typename std::make_unsigned<T>::type SafeUnsignedAbs(T value) {
-  static_assert(std::is_integral_v<T>, "Type must be integral");
+  requires std::is_integral_v<T>
+constexpr auto SafeUnsignedAbs(T value) {
   using UnsignedT = typename std::make_unsigned<T>::type;
   return IsValueNegative(value)
              ? static_cast<UnsignedT>(0u - static_cast<UnsignedT>(value))
@@ -222,7 +218,7 @@ class RangeCheck {
 template <typename Dst, typename Src, template <typename> class Bounds>
 struct NarrowingRange {
   using SrcLimits = std::numeric_limits<Src>;
-  using DstLimits = typename std::numeric_limits<Dst>;
+  using DstLimits = std::numeric_limits<Dst>;
 
   // Computes the mask required to make an accurate comparison between types.
   static const int kShift =
@@ -232,24 +228,21 @@ struct NarrowingRange {
           : 0;
 
   template <typename T>
-    requires(std::integral<T>)
+    requires(std::same_as<T, Dst> &&
+             ((std::integral<T> && kShift < DstLimits::digits) ||
+              (std::floating_point<T> && kShift == 0)))
   // Masks out the integer bits that are beyond the precision of the
   // intermediate type used for comparison.
   static constexpr T Adjust(T value) {
-    static_assert(std::is_same_v<T, Dst>, "");
-    static_assert(kShift < DstLimits::digits, "");
-    using UnsignedDst = typename std::make_unsigned_t<T>;
-    return static_cast<T>(ConditionalNegate(
-        SafeUnsignedAbs(value) & ~((UnsignedDst{1} << kShift) - UnsignedDst{1}),
-        IsValueNegative(value)));
-  }
-
-  template <typename T>
-    requires(std::floating_point<T>)
-  static constexpr T Adjust(T value) {
-    static_assert(std::is_same_v<T, Dst>, "");
-    static_assert(kShift == 0, "");
-    return value;
+    if constexpr (std::integral<T>) {
+      using UnsignedDst = typename std::make_unsigned_t<T>;
+      return static_cast<T>(
+          ConditionalNegate(SafeUnsignedAbs(value) &
+                                ~((UnsignedDst{1} << kShift) - UnsignedDst{1}),
+                            IsValueNegative(value)));
+    } else {
+      return value;
+    }
   }
 
   static constexpr Dst max() { return Adjust(Bounds<Dst>::max()); }
@@ -390,10 +383,9 @@ struct IsTypeInRangeForNumericType {
 template <typename Dst,
           template <typename> class Bounds = std::numeric_limits,
           typename Src>
+  requires(std::is_arithmetic_v<Src> && std::is_arithmetic_v<Dst> &&
+           Bounds<Dst>::lowest() < Bounds<Dst>::max())
 constexpr RangeCheck DstRangeRelationToSrcRange(Src value) {
-  static_assert(std::is_arithmetic_v<Src>, "Argument must be numeric.");
-  static_assert(std::is_arithmetic_v<Dst>, "Result must be numeric.");
-  static_assert(Bounds<Dst>::lowest() < Bounds<Dst>::max(), "");
   return DstRangeRelationToSrcRangeImpl<Dst, Src, Bounds>::Check(value);
 }
 
@@ -576,12 +568,15 @@ struct ArithmeticOrUnderlyingEnum<T> {
 
 // The following are helper templates used in the CheckedNumeric class.
 template <typename T>
+  requires std::is_arithmetic_v<T>
 class CheckedNumeric;
 
 template <typename T>
+  requires std::is_arithmetic_v<T>
 class ClampedNumeric;
 
 template <typename T>
+  requires std::is_arithmetic_v<T>
 class StrictNumeric;
 
 // Used to treat CheckedNumeric and arithmetic underlying types the same.
@@ -648,25 +643,23 @@ struct IsStrictOp {
 // as_signed<> returns the supplied integral value (or integral castable
 // Numeric template) cast as a signed integral of equivalent precision.
 // I.e. it's mostly an alias for: static_cast<std::make_signed<T>::type>(t)
-template <typename Src>
-constexpr typename std::make_signed<
-    typename base::internal::UnderlyingType<Src>::type>::type
-as_signed(const Src value) {
-  static_assert(std::is_integral_v<decltype(as_signed(value))>,
-                "Argument must be a signed or unsigned integer type.");
-  return static_cast<decltype(as_signed(value))>(value);
+template <typename Src,
+          typename Dst = typename std::make_signed<
+              typename base::internal::UnderlyingType<Src>::type>::type>
+  requires std::integral<Dst>
+constexpr auto as_signed(Src value) {
+  return static_cast<Dst>(value);
 }
 
 // as_unsigned<> returns the supplied integral value (or integral castable
 // Numeric template) cast as an unsigned integral of equivalent precision.
 // I.e. it's mostly an alias for: static_cast<std::make_unsigned<T>::type>(t)
-template <typename Src>
-constexpr typename std::make_unsigned<
-    typename base::internal::UnderlyingType<Src>::type>::type
-as_unsigned(const Src value) {
-  static_assert(std::is_integral_v<decltype(as_unsigned(value))>,
-                "Argument must be a signed or unsigned integer type.");
-  return static_cast<decltype(as_unsigned(value))>(value);
+template <typename Src,
+          typename Dst = typename std::make_unsigned<
+              typename base::internal::UnderlyingType<Src>::type>::type>
+  requires std::integral<Dst>
+constexpr auto as_unsigned(Src value) {
+  return static_cast<Dst>(value);
 }
 
 template <typename L, typename R>
@@ -680,9 +673,8 @@ constexpr bool IsLessImpl(const L lhs,
 }
 
 template <typename L, typename R>
+  requires std::is_arithmetic_v<L> && std::is_arithmetic_v<R>
 struct IsLess {
-  static_assert(std::is_arithmetic_v<L> && std::is_arithmetic_v<R>,
-                "Types must be numeric.");
   static constexpr bool Test(const L lhs, const R rhs) {
     return IsLessImpl(lhs, rhs, DstRangeRelationToSrcRange<R>(lhs),
                       DstRangeRelationToSrcRange<L>(rhs));
@@ -700,9 +692,8 @@ constexpr bool IsLessOrEqualImpl(const L lhs,
 }
 
 template <typename L, typename R>
+  requires std::is_arithmetic_v<L> && std::is_arithmetic_v<R>
 struct IsLessOrEqual {
-  static_assert(std::is_arithmetic_v<L> && std::is_arithmetic_v<R>,
-                "Types must be numeric.");
   static constexpr bool Test(const L lhs, const R rhs) {
     return IsLessOrEqualImpl(lhs, rhs, DstRangeRelationToSrcRange<R>(lhs),
                              DstRangeRelationToSrcRange<L>(rhs));
@@ -720,9 +711,8 @@ constexpr bool IsGreaterImpl(const L lhs,
 }
 
 template <typename L, typename R>
+  requires std::is_arithmetic_v<L> && std::is_arithmetic_v<R>
 struct IsGreater {
-  static_assert(std::is_arithmetic_v<L> && std::is_arithmetic_v<R>,
-                "Types must be numeric.");
   static constexpr bool Test(const L lhs, const R rhs) {
     return IsGreaterImpl(lhs, rhs, DstRangeRelationToSrcRange<R>(lhs),
                          DstRangeRelationToSrcRange<L>(rhs));
@@ -740,9 +730,8 @@ constexpr bool IsGreaterOrEqualImpl(const L lhs,
 }
 
 template <typename L, typename R>
+  requires std::is_arithmetic_v<L> && std::is_arithmetic_v<R>
 struct IsGreaterOrEqual {
-  static_assert(std::is_arithmetic_v<L> && std::is_arithmetic_v<R>,
-                "Types must be numeric.");
   static constexpr bool Test(const L lhs, const R rhs) {
     return IsGreaterOrEqualImpl(lhs, rhs, DstRangeRelationToSrcRange<R>(lhs),
                                 DstRangeRelationToSrcRange<L>(rhs));
@@ -750,9 +739,8 @@ struct IsGreaterOrEqual {
 };
 
 template <typename L, typename R>
+  requires std::is_arithmetic_v<L> && std::is_arithmetic_v<R>
 struct IsEqual {
-  static_assert(std::is_arithmetic_v<L> && std::is_arithmetic_v<R>,
-                "Types must be numeric.");
   static constexpr bool Test(const L lhs, const R rhs) {
     return DstRangeRelationToSrcRange<R>(lhs) ==
                DstRangeRelationToSrcRange<L>(rhs) &&
@@ -762,9 +750,8 @@ struct IsEqual {
 };
 
 template <typename L, typename R>
+  requires std::is_arithmetic_v<L> && std::is_arithmetic_v<R>
 struct IsNotEqual {
-  static_assert(std::is_arithmetic_v<L> && std::is_arithmetic_v<R>,
-                "Types must be numeric.");
   static constexpr bool Test(const L lhs, const R rhs) {
     return DstRangeRelationToSrcRange<R>(lhs) !=
                DstRangeRelationToSrcRange<L>(rhs) ||
@@ -776,16 +763,14 @@ struct IsNotEqual {
 // These perform the actual math operations on the CheckedNumerics.
 // Binary arithmetic operations.
 template <template <typename, typename> class C, typename L, typename R>
+  requires std::is_arithmetic_v<L> && std::is_arithmetic_v<R>
 constexpr bool SafeCompare(const L lhs, const R rhs) {
-  static_assert(std::is_arithmetic_v<L> && std::is_arithmetic_v<R>,
-                "Types must be numeric.");
   using Promotion = BigEnoughPromotion<L, R>;
   using BigType = typename Promotion::type;
   return Promotion::is_contained
              // Force to a larger type for speed if both are contained.
-             ? C<BigType, BigType>::Test(
-                   static_cast<BigType>(static_cast<L>(lhs)),
-                   static_cast<BigType>(static_cast<R>(rhs)))
+             ? C<BigType, BigType>::Test(static_cast<BigType>(lhs),
+                                         static_cast<BigType>(rhs))
              // Let the template functions figure it out for mixed types.
              : C<L, R>::Test(lhs, rhs);
 }

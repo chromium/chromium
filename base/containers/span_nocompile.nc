@@ -246,8 +246,8 @@ void NotSizeTSize() {
   // we get assertion failures below where we expect.
   enum Length1 { kSize1 = -1 };
   enum Length2 { kSize2 = -1 };
-  auto s1 = make_span(vector.data(), kSize1);  // expected-error@*:* {{The source type is out of range for the destination type}}
-  span s2(vector.data(), kSize2);              // expected-error@*:* {{The source type is out of range for the destination type}}
+  auto s1 = make_span(vector.data(), kSize1);  // expected-error@*:* {{no matching function for call to 'strict_cast'}}
+  span s2(vector.data(), kSize2);              // expected-error@*:* {{no matching function for call to 'strict_cast'}}
 }
 
 void BadConstConversionsWithStdSpan() {

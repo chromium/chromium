@@ -161,10 +161,14 @@ constexpr T AbsWrapper(T value) {
   return value < 0 ? -value : value;
 }
 
-template <template <typename, typename> class M, typename L, typename R>
+template <template <typename, typename> class M,
+          typename L,
+          typename R,
+          typename Math = M<typename UnderlyingType<L>::type,
+                            typename UnderlyingType<R>::type>>
+  requires requires { typename Math::result_type; }
 struct MathWrapper {
-  using math =
-      M<typename UnderlyingType<L>::type, typename UnderlyingType<R>::type>;
+  using math = Math;
   using type = typename math::result_type;
 };
 
@@ -181,8 +185,8 @@ struct MathWrapper {
 
 #define BASE_NUMERIC_ARITHMETIC_OPERATORS(CLASS, CL_ABBR, OP_NAME, OP, CMP_OP) \
   /* Binary arithmetic operator for all CLASS##Numeric operations. */          \
-  template <typename L, typename R,                                            \
-            typename = std::enable_if_t<Is##CLASS##Op<L, R>::value>>           \
+  template <typename L, typename R>                                            \
+    requires(Is##CLASS##Op<L, R>::value)                                       \
   constexpr CLASS##Numeric<                                                    \
       typename MathWrapper<CLASS##OP_NAME##Op, L, R>::type>                    \
   operator OP(const L lhs, const R rhs) {                                      \
@@ -191,6 +195,7 @@ struct MathWrapper {
   }                                                                            \
   /* Assignment arithmetic operator implementation from CLASS##Numeric. */     \
   template <typename L>                                                        \
+    requires std::is_arithmetic_v<L>                                           \
   template <typename R>                                                        \
   constexpr CLASS##Numeric<L>& CLASS##Numeric<L>::operator CMP_OP(             \
       const R rhs) {                                                           \

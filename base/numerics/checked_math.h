@@ -17,14 +17,9 @@ namespace base {
 namespace internal {
 
 template <typename T>
+  requires std::is_arithmetic_v<T>
 class CheckedNumeric {
-  static_assert(std::is_arithmetic_v<T>,
-                "CheckedNumeric<T>: T must be a numeric type.");
-
  public:
-  template <typename Src>
-  friend class CheckedNumeric;
-
   using type = T;
 
   constexpr CheckedNumeric() = default;
@@ -33,12 +28,6 @@ class CheckedNumeric {
   template <typename Src>
   constexpr CheckedNumeric(const CheckedNumeric<Src>& rhs)
       : state_(rhs.state_.value(), rhs.IsValid()) {}
-
-  // Strictly speaking, this is not necessary, but declaring this allows class
-  // template argument deduction to be used so that it is possible to simply
-  // write `CheckedNumeric(777)` instead of `CheckedNumeric<int>(777)`.
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr CheckedNumeric(T value) : state_(value) {}
 
   // This is not an explicit constructor because we implicitly upgrade regular
   // numerics to CheckedNumerics to make them easier to use.
@@ -239,6 +228,10 @@ class CheckedNumeric {
   }
 
  private:
+  template <typename U>
+    requires std::is_arithmetic_v<U>
+  friend class CheckedNumeric;
+
   CheckedNumericState<T> state_;
 
   CheckedNumeric FastRuntimeNegate() const {
@@ -277,6 +270,9 @@ class CheckedNumeric {
     }
   };
 };
+
+template <typename T>
+CheckedNumeric(T) -> CheckedNumeric<T>;
 
 // Convenience functions to avoid the ugly template disambiguator syntax.
 template <typename Dst, typename Src>

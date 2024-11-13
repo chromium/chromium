@@ -15,10 +15,8 @@ namespace base {
 namespace internal {
 
 template <typename T>
+  requires std::is_arithmetic_v<T>
 class ClampedNumeric {
-  static_assert(std::is_arithmetic_v<T>,
-                "ClampedNumeric<T>: T must be a numeric type.");
-
  public:
   using type = T;
 
@@ -29,22 +27,12 @@ class ClampedNumeric {
   constexpr ClampedNumeric(const ClampedNumeric<Src>& rhs)
       : value_(saturated_cast<T>(rhs.value_)) {}
 
-  template <typename Src>
-  friend class ClampedNumeric;
-
-  // Strictly speaking, this is not necessary, but declaring this allows class
-  // template argument deduction to be used so that it is possible to simply
-  // write `ClampedNumeric(777)` instead of `ClampedNumeric<int>(777)`.
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr ClampedNumeric(T value) : value_(value) {}
-
   // This is not an explicit constructor because we implicitly upgrade regular
   // numerics to ClampedNumerics to make them easier to use.
   template <typename Src>
+    requires(UnderlyingType<Src>::is_numeric)
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr ClampedNumeric(Src value) : value_(saturated_cast<T>(value)) {
-    static_assert(UnderlyingType<Src>::is_numeric, "Argument must be numeric.");
-  }
+  constexpr ClampedNumeric(Src value) : value_(saturated_cast<T>(value)) {}
 
   // This is not an explicit constructor because we want a seamless conversion
   // from StrictNumeric types.
@@ -175,6 +163,10 @@ class ClampedNumeric {
   constexpr T RawValue() const { return value_; }
 
  private:
+  template <typename U>
+    requires std::is_arithmetic_v<U>
+  friend class ClampedNumeric;
+
   T value_;
 
   // These wrappers allow us to handle state the same way for both
@@ -186,6 +178,9 @@ class ClampedNumeric {
     }
   };
 };
+
+template <typename T>
+ClampedNumeric(T) -> ClampedNumeric<T>;
 
 // Convenience wrapper to return a new ClampedNumeric from the provided
 // arithmetic or ClampedNumericType.

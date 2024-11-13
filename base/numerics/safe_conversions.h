@@ -78,6 +78,8 @@ struct IsValueInRangeFastOp<Dst, Src> {
 // Convenience function that returns true if the supplied value is in range
 // for the destination type.
 template <typename Dst, typename Src>
+  requires(UnderlyingType<Src>::is_numeric && std::is_arithmetic_v<Dst> &&
+           std::numeric_limits<Dst>::lowest() < std::numeric_limits<Dst>::max())
 constexpr bool IsValueInRangeForNumericType(Src value) {
   using SrcType = typename internal::UnderlyingType<Src>::type;
   return internal::IsValueInRangeFastOp<Dst, SrcType>::is_supported
@@ -94,6 +96,8 @@ constexpr bool IsValueInRangeForNumericType(Src value) {
 template <typename Dst,
           class CheckHandler = internal::CheckOnFailure,
           typename Src>
+  requires(UnderlyingType<Src>::is_numeric && std::is_arithmetic_v<Dst> &&
+           std::numeric_limits<Dst>::lowest() < std::numeric_limits<Dst>::max())
 constexpr Dst checked_cast(Src value) {
   // This throws a compile-time error on evaluating the constexpr if it can be
   // determined at compile-time as failing, otherwise it will CHECK at runtime.
@@ -210,23 +214,20 @@ constexpr Dst saturated_cast(Src value) {
 // strict_cast<> is analogous to static_cast<> for numeric types, except that
 // it will cause a compile failure if the destination type is not large enough
 // to contain any value in the source type. It performs no runtime checking.
-template <typename Dst, typename Src>
+template <typename Dst,
+          typename Src,
+          typename SrcType = typename UnderlyingType<Src>::type>
+  requires(
+      UnderlyingType<Src>::is_numeric && std::is_arithmetic_v<Dst> &&
+      // If you got here from a compiler error, it's because you tried to assign
+      // from a source type to a destination type that has insufficient range.
+      // The solution may be to change the destination type you're assigning to,
+      // and use one large enough to represent the source.
+      // Alternatively, you may be better served with the checked_cast<> or
+      // saturated_cast<> template functions for your particular use case.
+      StaticDstRangeRelationToSrcRange<Dst, SrcType>::value ==
+          NUMERIC_RANGE_CONTAINED)
 constexpr Dst strict_cast(Src value) {
-  using SrcType = typename UnderlyingType<Src>::type;
-  static_assert(UnderlyingType<Src>::is_numeric, "Argument must be numeric.");
-  static_assert(std::is_arithmetic_v<Dst>, "Result must be numeric.");
-
-  // If you got here from a compiler error, it's because you tried to assign
-  // from a source type to a destination type that has insufficient range.
-  // The solution may be to change the destination type you're assigning to,
-  // and use one large enough to represent the source.
-  // Alternatively, you may be better served with the checked_cast<> or
-  // saturated_cast<> template functions for your particular use case.
-  static_assert(StaticDstRangeRelationToSrcRange<Dst, SrcType>::value ==
-                    NUMERIC_RANGE_CONTAINED,
-                "The source type is out of range for the destination type. "
-                "Please see strict_cast<> comments for more information.");
-
   return static_cast<Dst>(static_cast<SrcType>(value));
 }
 
@@ -256,6 +257,7 @@ struct IsNumericRangeContained<Dst, Src> {
 // runtime checking of any of the associated mathematical operations. Use
 // CheckedNumeric for runtime range checks of the actual value being assigned.
 template <typename T>
+  requires std::is_arithmetic_v<T>
 class StrictNumeric {
  public:
   using type = T;
@@ -266,12 +268,6 @@ class StrictNumeric {
   template <typename Src>
   constexpr StrictNumeric(const StrictNumeric<Src>& rhs)
       : value_(strict_cast<T>(rhs.value_)) {}
-
-  // Strictly speaking, this is not necessary, but declaring this allows class
-  // template argument deduction to be used so that it is possible to simply
-  // write `StrictNumeric(777)` instead of `StrictNumeric<int>(777)`.
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr StrictNumeric(T value) : value_(value) {}
 
   // This is not an explicit constructor because we implicitly upgrade regular
   // numerics to StrictNumerics to make them easier to use.
@@ -298,11 +294,15 @@ class StrictNumeric {
   }
 
  private:
-  template <typename>
+  template <typename U>
+    requires std::is_arithmetic_v<U>
   friend class StrictNumeric;
 
   T value_;
 };
+
+template <typename T>
+StrictNumeric(T) -> StrictNumeric<T>;
 
 // Convenience wrapper returns a StrictNumeric from the provided arithmetic
 // type.

@@ -70,14 +70,12 @@ template <typename T, typename U>
 struct ClampedAddOp<T, U> {
   using result_type = typename MaxExponentPromotion<T, U>::type;
   template <typename V = result_type>
+    requires(std::same_as<V, result_type> ||
+             IsTypeInRangeForNumericType<U, V>::value)
   static constexpr V Do(T x, U y) {
     if (!IsConstantEvaluated() && ClampedAddFastOp<T, U>::is_supported)
       return ClampedAddFastOp<T, U>::template Do<V>(x, y);
 
-    static_assert(std::is_same_v<V, result_type> ||
-                      IsTypeInRangeForNumericType<U, V>::value,
-                  "The saturation result cannot be determined from the "
-                  "provided types.");
     const V saturated = CommonMaxOrMin<V>(IsValueNegative(y));
     V result = {};
     if (CheckedAddOp<T, U>::Do(x, y, &result)) [[likely]] {
@@ -95,14 +93,12 @@ template <typename T, typename U>
 struct ClampedSubOp<T, U> {
   using result_type = typename MaxExponentPromotion<T, U>::type;
   template <typename V = result_type>
+    requires(std::same_as<V, result_type> ||
+             IsTypeInRangeForNumericType<U, V>::value)
   static constexpr V Do(T x, U y) {
     if (!IsConstantEvaluated() && ClampedSubFastOp<T, U>::is_supported)
       return ClampedSubFastOp<T, U>::template Do<V>(x, y);
 
-    static_assert(std::is_same_v<V, result_type> ||
-                      IsTypeInRangeForNumericType<U, V>::value,
-                  "The saturation result cannot be determined from the "
-                  "provided types.");
     const V saturated = CommonMaxOrMin<V>(!IsValueNegative(y));
     V result = {};
     if (CheckedSubOp<T, U>::Do(x, y, &result)) [[likely]] {
@@ -176,12 +172,11 @@ struct ClampedLshOp {};
 // Left shift. Non-zero values saturate in the direction of the sign. A zero
 // shifted by any value always results in zero.
 template <typename T, typename U>
-  requires(std::integral<T> && std::integral<U>)
+  requires(std::integral<T> && std::unsigned_integral<U>)
 struct ClampedLshOp<T, U> {
   using result_type = T;
   template <typename V = result_type>
   static constexpr V Do(T x, U shift) {
-    static_assert(!std::is_signed_v<U>, "Shift value must be unsigned.");
     if (shift < std::numeric_limits<T>::digits) [[likely]] {
       // Shift as unsigned to avoid undefined behavior.
       V result = static_cast<V>(as_unsigned(x) << shift);
@@ -199,12 +194,11 @@ struct ClampedRshOp {};
 
 // Right shift. Negative values saturate to -1. Positive or 0 saturates to 0.
 template <typename T, typename U>
-  requires(std::integral<T> && std::integral<U>)
+  requires(std::integral<T> && std::unsigned_integral<U>)
 struct ClampedRshOp<T, U> {
   using result_type = T;
   template <typename V = result_type>
   static constexpr V Do(T x, U shift) {
-    static_assert(!std::is_signed_v<U>, "Shift value must be unsigned.");
     // Signed right shift is odd, because it saturates to -1 or 0.
     const V saturated = as_unsigned(V(0)) - IsValueNegative(x);
     if (shift < IntegerBitsPlusSign<T>::value) [[likely]] {
