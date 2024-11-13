@@ -102,11 +102,6 @@ void OmniboxPopupViewWebUI::OnDragCanceled() {}
 void OmniboxPopupViewWebUI::GetPopupAccessibleNodeData(
     ui::AXNodeData* node_data) {}
 
-void OmniboxPopupViewWebUI::AddPopupAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  // TODO(crbug.com/40062053): Not implemented for WebUI omnibox popup yet.
-}
-
 std::u16string OmniboxPopupViewWebUI::GetAccessibleButtonTextForResult(
     size_t line) {
   return u"";

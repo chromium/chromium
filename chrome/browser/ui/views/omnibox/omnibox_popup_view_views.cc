@@ -211,6 +211,7 @@ OmniboxPopupViewViews::OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
   UpdateAccessibleStates();
+  UpdateAccessibleControlIds();
   UpdateAccessibleActiveDescendantForInvokingView();
 }
 
@@ -222,6 +223,7 @@ OmniboxPopupViewViews::~OmniboxPopupViewViews() {
   }
   CHECK(!IsInObserverList());
   model()->set_popup_view(nullptr);
+  UpdateAccessibleControlIds();
 }
 
 gfx::Image OmniboxPopupViewViews::GetMatchIcon(
@@ -294,6 +296,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
       popup_->RemoveObserver(this);
       popup_.reset();
       UpdateAccessibleStates();
+      UpdateAccessibleControlIds();
       // The active descendant should be cleared when the popup closes.
       UpdateAccessibleActiveDescendantForInvokingView();
       FireAXEventsForNewActiveDescendant(nullptr);
@@ -387,6 +390,7 @@ void OmniboxPopupViewViews::UpdatePopupAppearance() {
 
     // Popup is now expanded and first item will be selected.
     UpdateAccessibleStates();
+    UpdateAccessibleControlIds();
     UpdateAccessibleActiveDescendantForInvokingView();
     OmniboxResultView* result_view = result_view_at(0);
     if (result_view) {
@@ -429,18 +433,6 @@ void OmniboxPopupViewViews::OnDragCanceled() {
 void OmniboxPopupViewViews::GetPopupAccessibleNodeData(
     ui::AXNodeData* node_data) {
   return GetViewAccessibility().GetAccessibleNodeData(node_data);
-}
-
-void OmniboxPopupViewViews::AddPopupAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  // Establish a "CONTROLS" relationship between the omnibox and the
-  // the popup. This allows a screen reader to understand the relationship
-  // between the omnibox and the list of suggestions, and determine which
-  // suggestion is currently selected, even though focus remains here on
-  // the omnibox.
-  int32_t popup_view_id = GetViewAccessibility().GetUniqueId();
-  node_data->AddIntListAttribute(ax::mojom::IntListAttribute::kControlsIds,
-                                 {popup_view_id});
 }
 
 std::u16string OmniboxPopupViewViews::GetAccessibleButtonTextForResult(
@@ -676,6 +668,24 @@ void OmniboxPopupViewViews::UpdateAccessibleStates() const {
   } else {
     GetViewAccessibility().SetIsCollapsed();
     GetViewAccessibility().SetIsInvisible(true);
+  }
+}
+
+void OmniboxPopupViewViews::UpdateAccessibleControlIds() {
+  if (!omnibox_view_) {
+    return;
+  }
+
+  // Establish a "CONTROLS" relationship between the omnibox and the
+  // the popup. This allows a screen reader to understand the relationship
+  // between the omnibox and the list of suggestions, and determine which
+  // suggestion is currently selected, even though focus remains here on
+  // the omnibox.
+  if (IsOpen()) {
+    int32_t popup_view_id = GetViewAccessibility().GetUniqueId();
+    omnibox_view_->GetViewAccessibility().SetControlIds({popup_view_id});
+  } else {
+    omnibox_view_->GetViewAccessibility().RemoveControlIds();
   }
 }
 

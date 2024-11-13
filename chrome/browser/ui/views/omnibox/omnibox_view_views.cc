@@ -1275,11 +1275,6 @@ bool OmniboxViewViews::SkipDefaultKeyEventProcessing(
 
 void OmniboxViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Textfield::GetAccessibleNodeData(node_data);
-
-  if (model()->PopupIsOpen()) {
-    popup_view_->AddPopupAccessibleNodeData(node_data);
-  }
-
   std::u16string::size_type entry_start;
   std::u16string::size_type entry_end;
   // Selection information is saved separately when focus is moved off the

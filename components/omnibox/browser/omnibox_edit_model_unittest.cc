@@ -70,7 +70,6 @@ class TestOmniboxPopupView : public OmniboxPopupView {
   void OnMatchIconUpdated(size_t match_index) override {}
   void OnDragCanceled() override {}
   void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) override {}
-  void AddPopupAccessibleNodeData(ui::AXNodeData* node_data) override {}
   std::u16string GetAccessibleButtonTextForResult(size_t line) override {
     return u"";
   }

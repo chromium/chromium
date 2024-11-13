@@ -892,3 +892,35 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   EXPECT_FALSE(ax_node_data_omnibox.HasIntAttribute(
       ax::mojom::IntAttribute::kActivedescendantId));
 }
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, AccessibleControlIds) {
+  ui::AXNodeData ax_node_data_omnibox, data;
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &ax_node_data_omnibox);
+  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(ax_node_data_omnibox.HasIntListAttribute(
+      ax::mojom::IntListAttribute::kControlsIds));
+
+  CreatePopupForTestQuery();
+
+  // Check accessibility when popup is open.
+  ax_node_data_omnibox = ui::AXNodeData();
+  edit_model()->StartAutocomplete(false, false);
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &ax_node_data_omnibox);
+  EXPECT_TRUE(popup_view()->IsOpen());
+  EXPECT_TRUE(ax_node_data_omnibox.HasIntListAttribute(
+      ax::mojom::IntListAttribute::kControlsIds));
+  EXPECT_THAT(ax_node_data_omnibox.GetIntListAttribute(
+                  ax::mojom::IntListAttribute::kControlsIds)[0],
+              popup_view()->GetViewAccessibility().GetUniqueId());
+
+  // Check accessibility when popup is closed.
+  ax_node_data_omnibox = ui::AXNodeData();
+  controller()->autocomplete_controller()->Stop(true);
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &ax_node_data_omnibox);
+  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(ax_node_data_omnibox.HasIntListAttribute(
+      ax::mojom::IntListAttribute::kControlsIds));
+}

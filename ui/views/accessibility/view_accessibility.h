@@ -170,6 +170,10 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void ClearTextOffsets();
 
+  void SetControlIds(const std::vector<int32_t>& ids);
+
+  void RemoveControlIds();
+
   void SetClipsChildren(bool clips_children);
 
   void SetClassName(const std::string& class_name);

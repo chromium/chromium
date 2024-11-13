@@ -370,6 +370,14 @@ void ViewAccessibility::ClearTextOffsets() {
                             std::nullopt);
 }
 
+void ViewAccessibility::SetControlIds(const std::vector<int32_t>& ids) {
+  data_.AddIntListAttribute(ax::mojom::IntListAttribute::kControlsIds, ids);
+}
+
+void ViewAccessibility::RemoveControlIds() {
+  data_.RemoveIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
+}
+
 void ViewAccessibility::SetClipsChildren(bool clips_children) {
   data_.AddBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren,
                          clips_children);

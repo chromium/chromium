@@ -67,7 +67,6 @@ class OmniboxPopupViewViews : public views::View,
   void OnMatchIconUpdated(size_t match_index) override;
   void OnDragCanceled() override;
   void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void AddPopupAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::u16string GetAccessibleButtonTextForResult(size_t line) override;
   void SetSuggestionGroupVisibility(size_t match_index,
                                     bool suggestion_group_hidden) override;
@@ -115,6 +114,8 @@ class OmniboxPopupViewViews : public views::View,
 
  private:
   void UpdateAccessibleStates() const;
+
+  void UpdateAccessibleControlIds();
 
   void UpdateAccessibleActiveDescendantForInvokingView();
 
