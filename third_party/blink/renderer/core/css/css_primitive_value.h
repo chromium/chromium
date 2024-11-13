@@ -334,7 +334,18 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     return unit == UnitType::kHertz || unit == UnitType::kKilohertz;
   }
   bool IsCalculated() const { return IsMathFunctionValue(); }
-  bool IsCalculatedPercentageWithLength() const;
+
+  // Whether we are able to resolve to a single value (possibly with a unit)
+  // before layout time; i.e. when parsing or calculating style. Things that
+  // must wait until layout include all sorts of size-dependent calculations,
+  // e.g. calc(100% + 10px) (will be reduced to a length in pixels, but only
+  // once we know how wide/tall 100% is), calc(sign(1em - 1px)) (-1, 0 or 1
+  // depending on the font size) and so on. Note that pure percentages
+  // (e.g. calc(80%)) are specifically allowed; a percentage value counts as
+  // a single value with the unit “%”. All values that are _not_ calc()
+  // will also by definition return true here.
+  bool IsResolvableBeforeLayout() const;
+
   static bool IsResolution(UnitType type) {
     return type >= UnitType::kDotsPerPixel &&
            type <= UnitType::kDotsPerCentimeter;
@@ -427,6 +438,8 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   // These getters can be called only when |this| is a numeric literal or a math
   // expression can be resolved into a single numeric value *without any type
   // conversion* (e.g., between px and em). Otherwise, it hits a DCHECK.
+  // In particular, you cannot call this if IsResolvableBeforeLayout()
+  // returns false.
   double GetDoubleValue() const;
 
   // Returns Double Value including infinity, -infinity, and NaN.

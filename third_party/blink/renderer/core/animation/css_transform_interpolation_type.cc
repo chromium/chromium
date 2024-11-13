@@ -107,9 +107,8 @@ InterpolationValue CSSTransformInterpolationType::MaybeConvertValue(
         DCHECK(primitive_value ||
                (transform_function.FunctionType() == CSSValueID::kPerspective &&
                 argument->IsIdentifierValue()));
-        if (!primitive_value ||
-            (!primitive_value->IsLength() &&
-             !primitive_value->IsCalculatedPercentageWithLength())) {
+        if (!primitive_value || (!primitive_value->IsLength() &&
+                                 primitive_value->IsResolvableBeforeLayout())) {
           continue;
         }
         primitive_value->AccumulateLengthUnitTypes(types);

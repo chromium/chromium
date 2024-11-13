@@ -651,7 +651,7 @@ void CSSGradientValue::AddStops(
         stops[i].offset =
             stop.offset_->ComputePercentage(conversion_data) / 100;
       } else if (stop.offset_->IsLength() ||
-                 stop.offset_->IsCalculatedPercentageWithLength()) {
+                 !stop.offset_->IsResolvableBeforeLayout()) {
         float length;
         if (stop.offset_->IsLength()) {
           length = stop.offset_->ComputeLength<float>(conversion_data);
@@ -842,7 +842,7 @@ static float PositionFromValue(const CSSValue* value,
                         100.f * edge_distance;
   }
 
-  if (primitive_value->IsCalculatedPercentageWithLength()) {
+  if (!primitive_value->IsResolvableBeforeLayout()) {
     return origin + sign * To<CSSMathFunctionValue>(primitive_value)
                                ->ToCalcValue(conversion_data)
                                ->Evaluate(edge_distance);

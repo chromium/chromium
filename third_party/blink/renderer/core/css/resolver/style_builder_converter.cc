@@ -3139,7 +3139,7 @@ static const CSSValue& ComputeRegisteredPropertyValue(
     }
 
     if (primitive_value->IsLength() || primitive_value->IsPercentage() ||
-        primitive_value->IsCalculatedPercentageWithLength()) {
+        !primitive_value->IsResolvableBeforeLayout()) {
       // Instead of the actual zoom, use 1 to avoid potential rounding errors
       Length length = primitive_value->ConvertToLength(
           css_to_length_conversion_data.Unzoomed());

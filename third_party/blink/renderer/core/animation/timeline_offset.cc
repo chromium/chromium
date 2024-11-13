@@ -156,7 +156,7 @@ std::optional<TimelineOffset> TimelineOffset::Create(
         DynamicTo<CSSPrimitiveValue>(offset->ToCSSValue());
 
     if (!css_value || (!css_value->IsPx() && !css_value->IsPercentage() &&
-                       !css_value->IsCalculatedPercentageWithLength())) {
+                       css_value->IsResolvableBeforeLayout())) {
       exception_state.ThrowTypeError(
           "CSSNumericValue must be a length or percentage for animation "
           "range.");
@@ -168,7 +168,7 @@ std::optional<TimelineOffset> TimelineOffset::Create(
     } else if (css_value->IsPercentage()) {
       parsed_offset = Length::Percent(css_value->GetDoubleValue());
     } else {
-      DCHECK(css_value->IsCalculatedPercentageWithLength());
+      DCHECK(!css_value->IsResolvableBeforeLayout());
       parsed_offset = TimelineOffset::ResolveLength(element, css_value);
       style_dependent_offset_str = css_value->CssText();
     }

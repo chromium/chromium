@@ -124,14 +124,14 @@ CSSPrimitiveValue::UnitCategory CSSPrimitiveValue::UnitTypeToUnitCategory(
   }
 }
 
-bool CSSPrimitiveValue::IsCalculatedPercentageWithLength() const {
+bool CSSPrimitiveValue::IsResolvableBeforeLayout() const {
   // TODO(crbug.com/979895): Move this function to |CSSMathFunctionValue|.
   if (!IsCalculated()) {
-    return false;
+    return true;
   }
   CalculationResultCategory category =
       To<CSSMathFunctionValue>(this)->Category();
-  return category == kCalcLengthFunction || category == kCalcIntrinsicSize;
+  return category != kCalcLengthFunction && category != kCalcIntrinsicSize;
 }
 
 bool CSSPrimitiveValue::IsResolution() const {
@@ -407,9 +407,9 @@ double CSSPrimitiveValue::ComputePercentage(
 
 double CSSPrimitiveValue::ComputeValueInCanonicalUnit(
     const CSSLengthResolver& length_resolver) const {
-  // Don't use it for mix of length and percentage, as it would compute 10px +
-  // 10% to 20.
-  DCHECK(!IsCalculatedPercentageWithLength());
+  // Don't use it for mix of length and percentage or similar,
+  // as it would compute 10px + 10% to 20.
+  DCHECK(IsResolvableBeforeLayout());
   return IsCalculated()
              ? To<CSSMathFunctionValue>(this)->ComputeValueInCanonicalUnit(
                    length_resolver)

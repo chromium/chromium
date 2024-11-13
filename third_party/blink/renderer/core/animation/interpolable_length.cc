@@ -62,8 +62,9 @@ InterpolableLength* InterpolableLength::MaybeConvertCSSValue(
     return nullptr;
 
   if (!primitive_value->IsLength() && !primitive_value->IsPercentage() &&
-      !primitive_value->IsCalculatedPercentageWithLength())
+      primitive_value->IsResolvableBeforeLayout()) {
     return nullptr;
+  }
 
   CSSLengthArray length_array;
   if (primitive_value->AccumulateLengthArray(length_array))

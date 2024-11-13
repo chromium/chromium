@@ -2810,9 +2810,8 @@ static CSSValue* ConsumeRadialGradient(CSSParserTokenStream& stream,
   if (!vertical_size && horizontal_size && horizontal_size->IsPercentage()) {
     return nullptr;
   }
-  if ((horizontal_size &&
-       horizontal_size->IsCalculatedPercentageWithLength()) ||
-      (vertical_size && vertical_size->IsCalculatedPercentageWithLength())) {
+  if ((horizontal_size && !horizontal_size->IsResolvableBeforeLayout()) ||
+      (vertical_size && !vertical_size->IsResolvableBeforeLayout())) {
     return nullptr;
   }
 

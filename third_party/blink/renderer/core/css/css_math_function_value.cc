@@ -139,9 +139,9 @@ double CSSMathFunctionValue::ComputePercentage(
 
 double CSSMathFunctionValue::ComputeValueInCanonicalUnit(
     const CSSLengthResolver& length_resolver) const {
-  // Don't use it for mix of length and percentage, as it would compute 10px +
-  // 10% to 20.
-  DCHECK(!IsCalculatedPercentageWithLength());
+  // Don't use it for mix of length and percentage or similar,
+  // as it would compute 10px + 10% to 20.
+  DCHECK(IsResolvableBeforeLayout());
   std::optional<double> optional_value =
       expression_->ComputeValueInCanonicalUnit(length_resolver);
   DCHECK(optional_value.has_value());
@@ -206,7 +206,7 @@ double CSSMathFunctionValue::ClampToPermittedRange(double value) const {
 }
 
 CSSPrimitiveValue::BoolStatus CSSMathFunctionValue::IsZero() const {
-  if (IsCalculatedPercentageWithLength()) {
+  if (!IsResolvableBeforeLayout()) {
     return BoolStatus::kUnresolvable;
   }
   if (expression_->ResolvedUnitType() == UnitType::kUnknown) {
@@ -216,7 +216,7 @@ CSSPrimitiveValue::BoolStatus CSSMathFunctionValue::IsZero() const {
 }
 
 CSSPrimitiveValue::BoolStatus CSSMathFunctionValue::IsOne() const {
-  if (IsCalculatedPercentageWithLength()) {
+  if (!IsResolvableBeforeLayout()) {
     return BoolStatus::kUnresolvable;
   }
   if (expression_->ResolvedUnitType() == UnitType::kUnknown) {
@@ -226,7 +226,7 @@ CSSPrimitiveValue::BoolStatus CSSMathFunctionValue::IsOne() const {
 }
 
 CSSPrimitiveValue::BoolStatus CSSMathFunctionValue::IsHundred() const {
-  if (IsCalculatedPercentageWithLength()) {
+  if (!IsResolvableBeforeLayout()) {
     return BoolStatus::kUnresolvable;
   }
   if (expression_->ResolvedUnitType() == UnitType::kUnknown) {
@@ -236,7 +236,7 @@ CSSPrimitiveValue::BoolStatus CSSMathFunctionValue::IsHundred() const {
 }
 
 CSSPrimitiveValue::BoolStatus CSSMathFunctionValue::IsNegative() const {
-  if (IsCalculatedPercentageWithLength()) {
+  if (!IsResolvableBeforeLayout()) {
     return BoolStatus::kUnresolvable;
   }
   if (expression_->ResolvedUnitType() == UnitType::kUnknown) {

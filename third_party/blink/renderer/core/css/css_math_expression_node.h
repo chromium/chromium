@@ -66,9 +66,14 @@ enum CalculationResultCategory {
   kCalcNumber,
   kCalcLength,
   kCalcPercent,
-  // kCalcLengthFunction is used for calculated lengths that can't be resolved
-  // at style time.  This includes mixes of length and percent, and also
-  // anchor queries and intrinsic size keywords in calc-size().
+  // kCalcLengthFunction is used for expressions that can't be resolved
+  // before layout time, as they depend on calculated lengths.
+  // This includes mixes of length and percent (or other fractional units,
+  // such as vw), and also anchor queries and intrinsic size keywords
+  // in calc-size(). Note that even pure numerical, non-length values
+  // can fall into this category, due to functions like sign()
+  // (e.g. sign(1vw - 1px) returns a numerical value, but depends on
+  // a length that cannot be resolved until layout).
   kCalcLengthFunction,
   // kCalcIntrinsicSize is a special case of kCalcLengthFunction that is
   // forbidden within most expression contexts.
