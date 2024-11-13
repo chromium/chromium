@@ -36,6 +36,8 @@ constexpr char kMigrationStoppedSuffix[] = "Stopped";
 constexpr char kMigrationStateErrorContextSuffix[] = "StateErrorContext";
 constexpr char kMigrationWrongStateSuffix[] = "WrongState";
 constexpr char kMigrationFailedSuffix[] = "Failed";
+constexpr char kMigrationSuccessDurationSuffix[] = "SuccessDuration";
+constexpr char kMigrationFailureDurationSuffix[] = "FailureDuration";
 constexpr char kMigrationWriteAccessErrorSuffix[] = "WriteAccessError";
 constexpr char kMigrationUploadErrorSuffix[] = "UploadError";
 constexpr char kMigrationDialogActionSuffix[] = "DialogAction";
@@ -49,6 +51,13 @@ constexpr char kOneDriveProvider[] = "OneDrive";
 constexpr char kDownloadTrigger[] = "Download";
 constexpr char kScreenCaptureTrigger[] = "ScreenCapture";
 constexpr char kMigrationTrigger[] = "Migration";
+
+// Min, max, and bucket count for time based histograms.
+constexpr base::TimeDelta kMin = base::Milliseconds(1);
+constexpr base::TimeDelta kMax = base::Hours(36);
+// Number of buckets calculated to have a bucket size of 5 minutes:
+// (kMax in h * 60 min/h) / 5 min/bucket = 36 * 60 / 5 = 432 buckets
+constexpr int kBuckets = 432;
 
 // Converts `provider` to a string representation used to form a metric name.
 std::string GetUMACloudProvider(CloudProvider provider) {
@@ -164,11 +173,19 @@ void SkyVaultMigrationWrongStateHistogram(CloudProvider provider,
       state);
 }
 
-void SkyVaultMigrationFailedHistogram(CloudProvider provider, bool value) {
+void SkyVaultMigrationDoneHistograms(CloudProvider provider,
+                                     bool success,
+                                     base::TimeDelta duration) {
   base::UmaHistogramBoolean(
       GetHistogramName(kMigrationFailedSuffix, UploadTrigger::kMigration,
                        provider),
-      value);
+      !success);
+
+  const std::string suffix = success ? kMigrationSuccessDurationSuffix
+                                     : kMigrationFailureDurationSuffix;
+  base::UmaHistogramCustomTimes(
+      GetHistogramName(suffix, UploadTrigger::kMigration, provider), duration,
+      kMin, kMax, kBuckets);
 }
 
 void SkyVaultMigrationWriteAccessErrorHistogram(bool value) {

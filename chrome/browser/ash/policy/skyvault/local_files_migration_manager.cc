@@ -226,8 +226,9 @@ void LocalFilesMigrationManager::Initialize() {
       LOG(WARNING) << "Migration disabled: resetting the state and retry count";
       SetState(State::kUninitialized);
       current_retry_count_ = 0;
-      Profile::FromBrowserContext(context_)->GetPrefs()->SetInteger(
-          prefs::kSkyVaultMigrationRetryCount, current_retry_count_);
+      pref_service->SetInteger(prefs::kSkyVaultMigrationRetryCount,
+                               current_retry_count_);
+      pref_service->SetTime(prefs::kSkyVaultMigrationStartTime, base::Time());
       SkyVaultMigrationResetHistogram(true);
     }
     return;
@@ -524,6 +525,14 @@ void LocalFilesMigrationManager::StartMigration(
     return;
   }
 
+  PrefService* pref_service = Profile::FromBrowserContext(context_)->GetPrefs();
+  const base::Time start_time =
+      pref_service->GetTime(prefs::kSkyVaultMigrationStartTime);
+  if (start_time.is_null()) {
+    pref_service->SetTime(prefs::kSkyVaultMigrationStartTime,
+                          base::Time::Now());
+  }
+
   upload_root_ = GenerateUploadRootName();
   coordinator_->Run(cloud_provider_, std::move(files), upload_root_,
                     base::BindOnce(&LocalFilesMigrationManager::OnMigrationDone,
@@ -541,13 +550,17 @@ void LocalFilesMigrationManager::OnMigrationDone(
     return;
   }
 
+  const base::Time start_time =
+      Profile::FromBrowserContext(context_)->GetPrefs()->GetTime(
+          prefs::kSkyVaultMigrationStartTime);
+  const base::TimeDelta duration = base::Time::Now() - start_time;
+
   if (errors.empty()) {
     NotifySuccess();
     notification_manager_->ShowMigrationCompletedNotification(cloud_provider_,
                                                               upload_root_path);
     VLOG(1) << "Local files migration done";
-    SkyVaultMigrationFailedHistogram(cloud_provider_, false);
-
+    SkyVaultMigrationDoneHistograms(cloud_provider_, true, duration);
     SetState(State::kCleanup);
     CleanupLocalFiles();
     return;
@@ -558,7 +571,7 @@ void LocalFilesMigrationManager::OnMigrationDone(
       prefs::kSkyVaultMigrationRetryCount, current_retry_count_);
 
   if (failed) {
-    SkyVaultMigrationFailedHistogram(cloud_provider_, true);
+    SkyVaultMigrationDoneHistograms(cloud_provider_, false, duration);
     SetState(State::kFailure);
     LOG(ERROR) << "Local files migration failed.";
     ProcessErrors(std::move(errors), error_log_path);
@@ -661,8 +674,10 @@ void LocalFilesMigrationManager::MaybeStopMigration(
   }
   SetState(State::kUninitialized);
   current_retry_count_ = 0;
-  Profile::FromBrowserContext(context_)->GetPrefs()->SetInteger(
-      prefs::kSkyVaultMigrationRetryCount, current_retry_count_);
+  PrefService* pref_service = Profile::FromBrowserContext(context_)->GetPrefs();
+  pref_service->SetInteger(prefs::kSkyVaultMigrationRetryCount,
+                           current_retry_count_);
+  pref_service->SetTime(prefs::kSkyVaultMigrationStartTime, base::Time());
   NotifyReset();
 }
 

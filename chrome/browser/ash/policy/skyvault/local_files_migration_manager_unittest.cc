@@ -232,6 +232,8 @@ TEST_F(LocalFilesMigrationManagerTest, HandlesMigrationFailures) {
 
   histogram_tester_.ExpectBucketCount(
       "Enterprise.SkyVault.Migration.GoogleDrive.Failed", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.SkyVault.Migration.GoogleDrive.FailureDuration", 1);
 }
 
 TEST_F(LocalFilesMigrationManagerTest, RetriesIfAllowed) {
@@ -313,6 +315,8 @@ TEST_F(LocalFilesMigrationManagerTest, DoesNotRetryWhenFatal) {
 
   histogram_tester_.ExpectBucketCount(
       "Enterprise.SkyVault.Migration.GoogleDrive.Failed", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Enterprise.SkyVault.Migration.GoogleDrive.FailureDuration", 1);
 }
 
 TEST_F(LocalFilesMigrationManagerTest, HandlesWriteAccessError) {

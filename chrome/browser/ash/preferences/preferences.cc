@@ -680,6 +680,8 @@ void Preferences::RegisterProfilePrefs(
       ::prefs::kSkyVaultMigrationState,
       static_cast<int>(policy::local_user_files::State::kUninitialized));
   registry->RegisterIntegerPref(::prefs::kSkyVaultMigrationRetryCount, 0);
+  registry->RegisterTimePref(::prefs::kSkyVaultMigrationStartTime,
+                             base::Time());
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {

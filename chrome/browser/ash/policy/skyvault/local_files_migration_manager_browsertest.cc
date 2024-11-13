@@ -62,6 +62,8 @@ constexpr base::TimeDelta kMaxDelta = base::Seconds(1);
 
 constexpr char kMigrationEnabledUMASuffix[] = "Enabled";
 constexpr char kMigrationMisconfiguredUMASuffix[] = "Misconfigured";
+constexpr char kMigrationFailedUMASuffix[] = "Failed";
+constexpr char kMigrationSuccessDurationUMASuffix[] = "SuccessDuration";
 
 constexpr char kTestFile[] = "test_file.txt";
 
@@ -282,6 +284,11 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
           : "OneDrive";
   histogram_tester_.ExpectBucketCount(
       GetUMAName(MigrationDestination(), kMigrationEnabledUMASuffix), true, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetUMAName(MigrationDestination(), kMigrationFailedUMASuffix), false, 1);
+  histogram_tester_.ExpectTotalCount(
+      GetUMAName(MigrationDestination(), kMigrationSuccessDurationUMASuffix),
+      1);
 }
 
 IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,

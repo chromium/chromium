@@ -2018,6 +2018,10 @@ inline constexpr char kSkyVaultMigrationState[] = "skyvault.migration_state";
 // The number of times SkyVault migration was retried after some upload errors.
 inline constexpr char kSkyVaultMigrationRetryCount[] =
     "skyvault.migration_retry_count";
+
+// The time at which the SkyVault local files upload started.
+inline constexpr char kSkyVaultMigrationStartTime[] =
+    "skyvault.migration_start_time";
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // *************** LOCAL STATE ***************
