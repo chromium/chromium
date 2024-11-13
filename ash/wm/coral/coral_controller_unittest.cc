@@ -4,6 +4,7 @@
 
 #include "ash/wm/coral/coral_controller.h"
 
+#include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_item_remover.h"
 #include "ash/birch/birch_model.h"
 #include "ash/birch/test_birch_client.h"
@@ -98,6 +99,18 @@ TEST_F(CoralControllerTest, ClickChipWithMaxDesks) {
   LeftClickOn(coral_button->addon_view());
   EXPECT_TRUE(
       Shell::Get()->toast_manager()->IsToastShown("coral_max_desks_toast"));
+}
+
+// Tests that there is no crash if we get a async title update after exiting
+// overview. Regression test for http://crbug.com/378894754.
+TEST_F(CoralControllerTest, NoCrashOnTitleUpdate) {
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kTests);
+  overview_controller->EndOverview(OverviewEndAction::kTests);
+
+  // Simulate an async title update after overview has ended. There should be no
+  // crash.
+  BirchCoralProvider::Get()->TitleUpdated(base::Token(), std::string());
 }
 
 // Tests that a window that launches onto a coral desk maintains its visible on

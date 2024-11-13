@@ -389,6 +389,11 @@ void BirchCoralProvider::OnTabItemRemoved(TabClusterUIItem* tab_item) {
 
 void BirchCoralProvider::TitleUpdated(const base::Token& id,
                                       const std::string& title) {
+  // `response_` may be cleared upon exiting overview.
+  if (!response_) {
+    return;
+  }
+
   for (coral::mojom::GroupPtr& group : response_->groups()) {
     if (group->id == id) {
       group->title = title;
