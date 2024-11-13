@@ -19,6 +19,7 @@
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/simple_thread.h"
@@ -116,7 +117,8 @@ class SnapshotDeltaThread : public SimpleThread {
         break;
       }
       case SPARSE_HISTOGRAM:
-        subtle::NoBarrier_AtomicIncrement(&real_bucket_counts_[sample], 1);
+        subtle::NoBarrier_AtomicIncrement(
+            &real_bucket_counts_[checked_cast<size_t>(sample)], 1);
         break;
       case LINEAR_HISTOGRAM:
       case BOOLEAN_HISTOGRAM:
@@ -141,7 +143,8 @@ class SnapshotDeltaThread : public SimpleThread {
       // This is to ensure SnapshotDelta() is fully thread-safe, not just
       // "eventually consistent".
       ASSERT_GE(count, 0);
-      subtle::NoBarrier_AtomicIncrement(&snapshots_bucket_counts_[min], count);
+      subtle::NoBarrier_AtomicIncrement(
+          &snapshots_bucket_counts_[checked_cast<size_t>(min)], count);
     }
   }
 
