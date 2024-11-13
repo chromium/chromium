@@ -225,6 +225,10 @@ constexpr char kMockHost[] = "mock.host";
 constexpr char kTopFrameOriginForFetchRequest[] = "https://abc.com";
 constexpr char kFrameOriginForFetchRequest[] = "https://xyz.com";
 constexpr char kSecFetchStorageAccess[] = "Sec-Fetch-Storage-Access";
+constexpr char kStorageAccessStatusHistogram[] =
+    "API.StorageAccessHeader.StorageAccessStatusOutcome";
+constexpr char kSecFetchStorageAccessHistogram[] =
+    "API.StorageAccessHeader.SecFetchStorageAccessOutcome";
 
 #if BUILDFLAG(ENABLE_REPORTING)
 const base::FilePath::CharType kFilename[] =
@@ -10503,9 +10507,12 @@ TEST_F(StorageAccessHeaderNetworkContextOriginTrialTest,
               testing::ElementsAre(testing::Not(
                   testing::Contains(testing::Key(kSecFetchStorageAccess)))));
   histogram_tester.ExpectUniqueSample(
-      "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome", /*sample=*/
-      net::cookie_util::SecFetchStorageAccessValueOutcome::
-          kOmittedFeatureDisabled,
+      kStorageAccessStatusHistogram, /*sample=*/
+      net::cookie_util::StorageAccessStatusOutcome::kOmittedFeatureDisabled,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      kSecFetchStorageAccessHistogram, /*sample=*/
+      net::cookie_util::SecFetchStorageAccessOutcome::kOmittedStatusMissing,
       /*expected_bucket_count=*/1);
 }
 
@@ -10955,6 +10962,68 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
                         Contains(Pair(kSecFetchStorageAccess, "active")))));
 }
 
+// This test makes a request to an endpoint that responds with a (well-formed)
+// `Activate-Storage-Access: retry; ...` header. That response header should not
+// be honored, however, because the request's credentials mode was `kOmit` (so
+// there is no point to re-sending the request, as nothing would change compared
+// to the first request).
+TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
+       Retry_OmitCredentials) {
+  set_retry_response_sequence({ResponseKind::kOk});
+  StartTestServerWithRequestHeaderMonitorAndRetryHandler();
+
+  const GURL request_url =
+      test_server_.GetURL("a.test", kStorageAccessRetryPath);
+  const GURL top_level_url = test_server_.GetURL("b.test", "/");
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  if (is_origin_trial_test()) {
+    SeedStorageAccessHeaderOriginTrialToken(request_url, top_level_url,
+                                            network_context.get());
+  }
+
+  ASSERT_TRUE(
+      SetCookieHelper(network_context.get(), request_url, "3PCookie", "1"));
+
+  network_context->cookie_manager()->BlockThirdPartyCookies(true);
+  SetContentSettings(
+      network_context->cookie_manager(), ContentSettingsType::STORAGE_ACCESS,
+      {
+          {
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  request_url),
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  top_level_url),
+              CONTENT_SETTING_ALLOW,
+          },
+      });
+
+  ResourceRequest request;
+  request.url = request_url;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = true;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther,
+      url::Origin::Create(top_level_url), url::Origin::Create(request.url),
+      request.site_for_cookies);
+  std::unique_ptr<TestURLLoaderClient> client =
+      FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
+                   mojom::kBrowserProcessId, std::move(params));
+
+  client->RunUntilComplete();
+
+  // The request wasn't retried, no cookies were sent, and no
+  // `Sec-Fetch-Storage-Access` header was sent on the request.
+  EXPECT_THAT(cookie_headers(), ElementsAre("None"));
+  EXPECT_THAT(most_recent_request_headers(),
+              ElementsAre(Not(Contains(Key(kSecFetchStorageAccess)))));
+}
+
 TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, Load) {
   StartTestServerWithRequestHeaderMonitorAndRetryHandler();
 
@@ -10988,6 +11057,62 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, Load) {
 
   ResourceRequest request;
   request.url = request_url;
+  auto params = mojom::URLLoaderFactoryParams::New();
+  params->is_trusted = true;
+  params->process_id = mojom::kBrowserProcessId;
+  params->is_orb_enabled = false;
+  params->isolation_info = net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther,
+      url::Origin::Create(top_level_url), url::Origin::Create(request.url),
+      request.site_for_cookies);
+  std::unique_ptr<TestURLLoaderClient> client =
+      FetchRequest(request, network_context.get(), mojom::kURLLoadOptionNone,
+                   mojom::kBrowserProcessId, std::move(params));
+
+  client->RunUntilComplete();
+
+  // Cookies were blocked on the request, since the server did not request them.
+  EXPECT_THAT(cookie_headers(), ElementsAre("None"));
+  // But the server *is* able to request that the response is loaded with
+  // storage access.
+  EXPECT_TRUE(client->response_head()->load_with_storage_access);
+}
+
+TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
+       Load_CredentialsOmit) {
+  StartTestServerWithRequestHeaderMonitorAndRetryHandler();
+
+  const GURL top_level_url = test_server_.GetURL("a.test", "/");
+  const GURL request_url = test_server_.GetURL(
+      "b.test", "/set-header?Activate-Storage-Access: load");
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  if (is_origin_trial_test()) {
+    SeedStorageAccessHeaderOriginTrialToken(request_url, top_level_url,
+                                            network_context.get());
+  }
+
+  ASSERT_TRUE(
+      SetCookieHelper(network_context.get(), request_url, "3PCookie", "1"));
+
+  network_context->cookie_manager()->BlockThirdPartyCookies(true);
+  SetContentSettings(
+      network_context->cookie_manager(), ContentSettingsType::STORAGE_ACCESS,
+      {
+          {
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  request_url),
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  top_level_url),
+              CONTENT_SETTING_ALLOW,
+          },
+      });
+
+  ResourceRequest request;
+  request.url = request_url;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
   auto params = mojom::URLLoaderFactoryParams::New();
   params->is_trusted = true;
   params->process_id = mojom::kBrowserProcessId;
@@ -11105,8 +11230,12 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
   EXPECT_THAT(most_recent_request_headers(),
               ElementsAre(Not(Contains(Key(kSecFetchStorageAccess)))));
   histogram_tester.ExpectUniqueSample(
-      "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome", /*sample=*/
-      net::cookie_util::SecFetchStorageAccessValueOutcome::kOmittedSameSite,
+      kStorageAccessStatusHistogram, /*sample=*/
+      net::cookie_util::StorageAccessStatusOutcome::kOmittedSameSite,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      kSecFetchStorageAccessHistogram, /*sample=*/
+      net::cookie_util::SecFetchStorageAccessOutcome::kOmittedStatusMissing,
       /*expected_bucket_count=*/1);
 }
 
@@ -11143,8 +11272,12 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
               ElementsAre(Not(Contains(Key(kSecFetchStorageAccess)))));
 
   histogram_tester.ExpectUniqueSample(
-      "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome", /*sample=*/
-      net::cookie_util::SecFetchStorageAccessValueOutcome::
+      kStorageAccessStatusHistogram, /*sample=*/
+      net::cookie_util::StorageAccessStatusOutcome::kValueActive,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      kSecFetchStorageAccessHistogram, /*sample=*/
+      net::cookie_util::SecFetchStorageAccessOutcome::
           kOmittedRequestOmitsCredentials,
       /*expected_bucket_count=*/1);
 }
@@ -11179,9 +11312,13 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, RequestHeader_None) {
   EXPECT_THAT(most_recent_request_headers(),
               ElementsAre(Contains(Pair(kSecFetchStorageAccess, "none"))));
   histogram_tester.ExpectUniqueSample(
-      "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome",
+      kStorageAccessStatusHistogram,
       /*sample=*/
-      net::cookie_util::SecFetchStorageAccessValueOutcome::kValueNone,
+      net::cookie_util::StorageAccessStatusOutcome::kValueNone,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      kSecFetchStorageAccessHistogram, /*sample=*/
+      net::cookie_util::SecFetchStorageAccessOutcome::kValueNone,
       /*expected_bucket_count=*/1);
 }
 
@@ -11228,9 +11365,13 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
                   Pair(net::HttpRequestHeaders::kOrigin, "https://c.test"),
               })));
   histogram_tester.ExpectUniqueSample(
-      "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome",
+      kStorageAccessStatusHistogram,
       /*sample=*/
-      net::cookie_util::SecFetchStorageAccessValueOutcome::kValueInactive,
+      net::cookie_util::StorageAccessStatusOutcome::kValueInactive,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      kSecFetchStorageAccessHistogram, /*sample=*/
+      net::cookie_util::SecFetchStorageAccessOutcome::kValueInactive,
       /*expected_bucket_count=*/1);
 }
 
@@ -11276,9 +11417,13 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
   EXPECT_THAT(most_recent_request_headers(),
               ElementsAre(Contains(Pair(kSecFetchStorageAccess, "active"))));
   histogram_tester.ExpectUniqueSample(
-      "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome",
+      kStorageAccessStatusHistogram,
       /*sample=*/
-      net::cookie_util::SecFetchStorageAccessValueOutcome::kValueActive,
+      net::cookie_util::StorageAccessStatusOutcome::kValueActive,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      kSecFetchStorageAccessHistogram, /*sample=*/
+      net::cookie_util::SecFetchStorageAccessOutcome::kValueActive,
       /*expected_bucket_count=*/1);
 }
 
@@ -11338,14 +11483,22 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest, RetryAfterInactive) {
   EXPECT_THAT(cookie_headers(), ElementsAre("None", "3PCookie=1"));
 
   histogram_tester.ExpectBucketCount(
-      "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome",
+      kStorageAccessStatusHistogram,
       /*sample=*/
-      net::cookie_util::SecFetchStorageAccessValueOutcome::kValueInactive,
+      net::cookie_util::StorageAccessStatusOutcome::kValueInactive,
       /*expected_count=*/1);
   histogram_tester.ExpectBucketCount(
-      "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome",
+      kStorageAccessStatusHistogram,
       /*sample=*/
-      net::cookie_util::SecFetchStorageAccessValueOutcome::kValueActive,
+      net::cookie_util::StorageAccessStatusOutcome::kValueActive,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kSecFetchStorageAccessHistogram, /*sample=*/
+      net::cookie_util::SecFetchStorageAccessOutcome::kValueInactive,
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      kSecFetchStorageAccessHistogram, /*sample=*/
+      net::cookie_util::SecFetchStorageAccessOutcome::kValueActive,
       /*expected_count=*/1);
 }
 

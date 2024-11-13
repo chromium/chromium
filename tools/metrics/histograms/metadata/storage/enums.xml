@@ -315,19 +315,13 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Rejected due to invalid origin"/>
 </enum>
 
-<!-- LINT.IfChange(SecFetchStorageAccessValueOutcome) -->
-
-<enum name="SecFetchStorageAccessValueOutcome">
-  <int value="0" label="Ommitted: feature disabled"/>
-  <int value="1" label="Omitted: same site request"/>
-  <int value="2" label="Omitted: request omits credentials"/>
-  <int value="3" label="Omitted: privacy mode enabled"/>
-  <int value="4" label="Value: none"/>
-  <int value="5" label="Value: inactive"/>
-  <int value="6" label="Value: active"/>
+<enum name="SecFetchStorageAccessOutcome">
+  <int value="0" label="Omitted: storage access status missing"/>
+  <int value="1" label="Omitted: request credentials mode is not 'include'"/>
+  <int value="2" label="Value: none"/>
+  <int value="3" label="Value: inactive"/>
+  <int value="4" label="Value: active"/>
 </enum>
-
-<!-- LINT.ThenChange(//net/cookies/cookie_util.h:SecFetchStorageAccessValueOutcome) -->
 
 <enum name="SharedStorageHeaderObserverPermissionsPolicyDoubleCheckStatus">
   <int value="0" label="SubresourceSourceNoRFH">
@@ -606,6 +600,18 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Storage access allowed due to CORS opt in"/>
   <int value="9" label="Storage access allowed by top-level 3PCD setting"/>
 </enum>
+
+<!-- LINT.IfChange(StorageAccessStatusOutcome) -->
+
+<enum name="StorageAccessStatusOutcome">
+  <int value="0" label="Omitted: feature disabled"/>
+  <int value="1" label="Omitted: same-site request"/>
+  <int value="2" label="Value: none"/>
+  <int value="3" label="Value: inactive"/>
+  <int value="4" label="Value: active"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/cookies/cookie_util.h:StorageAccessStatusOutcome) -->
 
 <enum name="StorageBucketDurabilityParameter">
   <int value="0" label="Not provided"/>

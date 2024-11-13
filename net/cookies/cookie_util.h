@@ -75,34 +75,46 @@ enum class StorageAccessStatus {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// The values of this enum correspond to possible reasons a request's
+// StorageAccessStatus may be absent (nullopt), as well as the possible values
+// when it is non-nullopt.
+//
+// LINT.IfChange(StorageAccessStatusOutcome)
+enum class StorageAccessStatusOutcome {
+  // The feature is disabled.
+  kOmittedFeatureDisabled = 0,
+  // The request is same-site.
+  kOmittedSameSite = 1,
+  // The storage access status is `none`.
+  kValueNone = 2,
+  // The storage access status is `inactive`.
+  kValueInactive = 3,
+  // The storage access status is `active`.
+  kValueActive = 4,
+  kMaxValue = kValueActive
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:StorageAccessStatusOutcome)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // The values of this enum correspond to possible reasons the
 // `Sec-Fetch-Storage-Access` header may be omitted from a request, as well as
 // the possible values of the header when it is included.
-//
-// LINT.IfChange(SecFetchStorageAccessValueOutcome)
-enum class SecFetchStorageAccessValueOutcome {
-  // Applies when the `Sec-Fetch-Storage-Access` header is disabled.
-  kOmittedFeatureDisabled = 0,
-  // Applies when the request is same-site.
-  kOmittedSameSite = 1,
-  // Applies when credentials are omitted on the request, or if the request does
-  // not have a cookie store.
-  kOmittedRequestOmitsCredentials = 2,
-  // Applies when the request's `privacy_mode` is either `PRIVACY_MODE_ENABLED`
-  // or `PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS`
-  kOmittedByPrivacyMode = 3,
-  // Applies when the `Sec-Fetch-Storage-Access` header is included on a
-  // request and has the value `none`.
-  kValueNone = 4,
-  // Applies when the `Sec-Fetch-Storage-Access` header is included on a
-  // request and has the value `inactive`.
-  kValueInactive = 5,
-  // Applies when the `Sec-Fetch-Storage-Access` header is included on a
-  // request and has the value `active`.
-  kValueActive = 6,
+enum class SecFetchStorageAccessOutcome {
+  // The request's storage access status is nullopt.
+  kOmittedStatusMissing = 0,
+  // The request's credentials mode is not "include".
+  kOmittedRequestOmitsCredentials = 1,
+  // The `Sec-Fetch-Storage-Access` header is included and has the value `none`.
+  kValueNone = 2,
+  // The `Sec-Fetch-Storage-Access` header is included and has the value
+  // `inactive`.
+  kValueInactive = 3,
+  // The `Sec-Fetch-Storage-Access` header is included and has the value
+  // `active`.
+  kValueActive = 4,
   kMaxValue = kValueActive
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:SecFetchStorageAccessValueOutcome)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

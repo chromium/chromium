@@ -861,7 +861,8 @@ void URLLoader::ConfigureRequest(
 
   SetFetchMetadataHeaders(url_request_.get(), request_mode_,
                           has_user_activation_, request_destination_, nullptr,
-                          *factory_params_, *origin_access_list_);
+                          *factory_params_, *origin_access_list_,
+                          request_credentials_mode_);
 
   url_request_->set_first_party_url_policy(first_party_url_policy);
 
@@ -1620,7 +1621,7 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   SetFetchMetadataHeaders(url_request_.get(), request_mode_,
                           has_user_activation_, request_destination_,
                           &redirect_info.new_url, *factory_params_,
-                          *origin_access_list_);
+                          *origin_access_list_, request_credentials_mode_);
 
   DCHECK_EQ(emitted_devtools_raw_request_, emitted_devtools_raw_response_);
   response->emitted_extra_info = emitted_devtools_raw_request_;

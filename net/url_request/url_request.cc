@@ -146,10 +146,10 @@ NetLogWithSource CreateNetLogWithSource(
 
 // TODO(https://crbug.com/366284840): remove this, once the "retry" header is
 // handled in URLLoader.
-net::cookie_util::SecFetchStorageAccessValueOutcome
+net::cookie_util::StorageAccessStatusOutcome
 ConvertSecFetchStorageAccessHeaderValueToOutcome(
     net::cookie_util::StorageAccessStatus storage_access_status) {
-  using enum net::cookie_util::SecFetchStorageAccessValueOutcome;
+  using enum net::cookie_util::StorageAccessStatusOutcome;
   switch (storage_access_status) {
     case net::cookie_util::StorageAccessStatus::kInactive:
       return kValueInactive;
@@ -1096,6 +1096,9 @@ void URLRequest::RetryWithStorageAccess() {
   CHECK_EQ(static_cast<int>(storage_access_status().value()),
            static_cast<int>(cookie_util::StorageAccessStatus::kActive));
   extra_request_headers_.SetHeader("Sec-Fetch-Storage-Access", "active");
+  base::UmaHistogramEnumeration(
+      "API.StorageAccessHeader.SecFetchStorageAccessOutcome",
+      cookie_util::SecFetchStorageAccessOutcome::kValueActive);
 
   if (!final_upload_progress_.position() && upload_data_stream_) {
     final_upload_progress_ = upload_data_stream_->GetUploadProgress();
@@ -1380,22 +1383,15 @@ URLRequest::CalculateStorageAccessStatus(
   std::optional<net::cookie_util::StorageAccessStatus> storage_access_status =
       network_delegate()->GetStorageAccessStatus(*this, redirect_info);
 
-  auto get_storage_access_value_outcome_if_omitted = [&]()
-      -> std::optional<net::cookie_util::SecFetchStorageAccessValueOutcome> {
+  auto get_storage_access_value_outcome_if_omitted =
+      [&]() -> std::optional<net::cookie_util::StorageAccessStatusOutcome> {
     if (!network_delegate()->IsStorageAccessHeaderEnabled(
             base::OptionalToPtr(isolation_info().top_frame_origin()), url())) {
-      return net::cookie_util::SecFetchStorageAccessValueOutcome::
+      return net::cookie_util::StorageAccessStatusOutcome::
           kOmittedFeatureDisabled;
     }
-    // Avoid attaching the header in cases where credentials are not included in
-    // the request.
-    if (!allow_credentials_) {
-      return net::cookie_util::SecFetchStorageAccessValueOutcome::
-          kOmittedRequestOmitsCredentials;
-    }
     if (!storage_access_status) {
-      return net::cookie_util::SecFetchStorageAccessValueOutcome::
-          kOmittedSameSite;
+      return net::cookie_util::StorageAccessStatusOutcome::kOmittedSameSite;
     }
     return std::nullopt;
   };
@@ -1411,7 +1407,7 @@ URLRequest::CalculateStorageAccessStatus(
   }
 
   base::UmaHistogramEnumeration(
-      "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome",
+      "API.StorageAccessHeader.StorageAccessStatusOutcome",
       storage_access_value_outcome.value());
 
   return storage_access_status;
