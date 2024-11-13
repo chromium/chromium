@@ -8954,6 +8954,15 @@
        {}
       ]
      ],
+     "crashtests": {
+      "firefox-bug-1930221.html": [
+       "52e3d7fb8abbd7a9a94f13dfbb78d4e2946f951f",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "end-of-time-001-crash.html": [
       "bd38d93161414ed9b19750805b313972b40703af",
       [
@@ -159004,7 +159013,7 @@
        ]
       ],
       "mask-mode-luminance-with-mask-size.html": [
-       "c618981585a123c1899d3218b352dbff9908b064",
+       "8979857e13ada288152cb5d3d701ed4e68cd716f",
        [
         null,
         [
@@ -159013,7 +159022,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             5000
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "mask-mode-to-mask-type-svg.html": [
@@ -374243,7 +374268,7 @@
       []
      ],
      "forced-colors-mode-backplate-04-ref.html": [
-      "ddf54c6b8f756d17db74dd264c56cca8dc8a866c",
+      "848e02440ca819cced2486cd585a087188a150f2",
       []
      ],
      "forced-colors-mode-backplate-05-ref.html": [
@@ -374352,15 +374377,15 @@
      []
     ],
     "forced-colors-mode-36-ref.html": [
-     "838b10da953c32ef9088c19b6a061e9070210aff",
+     "afa1623bef6cb629a108ca923b9a6fa017d96e65",
      []
     ],
     "forced-colors-mode-37-ref.html": [
-     "a2cc4b7efee30d714f976b7250b7ad8cab6c9238",
+     "b652247391fcac356b8289221948c15ff4a668db",
      []
     ],
     "forced-colors-mode-38-ref.html": [
-     "e72a73fcef72f1d7943fab1871b8715c4809f2da",
+     "b2c9b74aac4efdfe16dcec39000ebd4dbc00ceef",
      []
     ],
     "forced-colors-mode-39-ref.html": [
@@ -374368,7 +374393,7 @@
      []
     ],
     "forced-colors-mode-42-ref.html": [
-     "7133c893cea0a1bbd24dace91a5bf7bf342ade44",
+     "f0245e63ab66a309e1c4bb75fa856af3ed754478",
      []
     ],
     "forced-colors-mode-43-ref.html": [
@@ -374376,7 +374401,7 @@
      []
     ],
     "forced-colors-mode-44-ref.html": [
-     "46398de8829733e8c476298689eb1326dff15a36",
+     "1da46dd4fa1b9885458e262db9215c48140a8bae",
      []
     ],
     "forced-colors-mode-45-ref.html": [
@@ -400399,10 +400424,6 @@
     ],
     "feature-policy-permissions-query.html": [
      "bd152e973e8fd520460a325d47beab8c25f45d31",
-     []
-    ],
-    "permissions-query-feature-policy-attribute.https.sub-expected.txt": [
-     "7a2d98fbee84fcb2d087df591e131bac54e50291",
      []
     ],
     "resources": {
@@ -447774,6 +447795,13 @@
     ],
     "clipboard-item.https.html": [
      "41f6ab95b81b7bcbcba1221d40d0357a9ca31c0d",
+     [
+      null,
+      {}
+     ]
+    ],
+    "data-transfer-file-list-change-reference-updates.html": [
+     "58493ec9d5f92976f299ed14c6bc2da65f121fab",
      [
       null,
       {}
@@ -603171,7 +603199,7 @@
         ]
        ],
        "flex.html": [
-        "7f159fc232b967a7ac851258511878e221616346",
+        "22f23d16019fe8c5ab9efee6ddddf33bd70ff1b9",
         [
          null,
          {}
@@ -628747,6 +628775,15 @@
       [
        "long-animation-frame/tentative/loaf-window-only.worker.html",
        {}
+      ]
+     ],
+     "performance-bind.html": [
+      "6846a6850152d262bbbc5a39e18d00fb4c292c21",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
       ]
      ]
     }
@@ -710366,195 +710403,6 @@
        }
       ]
      ],
-     "compute-arraybufferview-with-bigger-arraybuffer.https.any.js": [
-      "c150992ca64f8e5896f79c9021cec1c148821743",
-      [
-       "webnn/conformance_tests/compute-arraybufferview-with-bigger-arraybuffer.https.any.html?cpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN MLContext.compute() for ArrayBufferView created from bigger ArrayBuffer"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ]
-        ]
-       }
-      ],
-      [
-       "webnn/conformance_tests/compute-arraybufferview-with-bigger-arraybuffer.https.any.html?gpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN MLContext.compute() for ArrayBufferView created from bigger ArrayBuffer"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ]
-        ]
-       }
-      ],
-      [
-       "webnn/conformance_tests/compute-arraybufferview-with-bigger-arraybuffer.https.any.html?npu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN MLContext.compute() for ArrayBufferView created from bigger ArrayBuffer"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ]
-        ]
-       }
-      ],
-      [
-       "webnn/conformance_tests/compute-arraybufferview-with-bigger-arraybuffer.https.any.worker.html?cpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN MLContext.compute() for ArrayBufferView created from bigger ArrayBuffer"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ]
-        ]
-       }
-      ],
-      [
-       "webnn/conformance_tests/compute-arraybufferview-with-bigger-arraybuffer.https.any.worker.html?gpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN MLContext.compute() for ArrayBufferView created from bigger ArrayBuffer"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ]
-        ]
-       }
-      ],
-      [
-       "webnn/conformance_tests/compute-arraybufferview-with-bigger-arraybuffer.https.any.worker.html?npu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test WebNN MLContext.compute() for ArrayBufferView created from bigger ArrayBuffer"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ]
-        ]
-       }
-      ]
-     ],
      "concat.https.any.js": [
       "92bf7d0ba8b3fc619e1727aea61285721ab74d81",
       [
@@ -720410,225 +720258,6 @@
        }
       ]
      ],
-     "parallel-compute.https.any.js": [
-      "a1c20f1ff30d621bb3f5c46048f6f53ceff12317",
-      [
-       "webnn/conformance_tests/parallel-compute.https.any.html?cpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test parallel WebNN API compute operations"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "webnn/conformance_tests/parallel-compute.https.any.html?gpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test parallel WebNN API compute operations"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "webnn/conformance_tests/parallel-compute.https.any.html?npu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test parallel WebNN API compute operations"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "webnn/conformance_tests/parallel-compute.https.any.worker.html?cpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test parallel WebNN API compute operations"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "webnn/conformance_tests/parallel-compute.https.any.worker.html?gpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test parallel WebNN API compute operations"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ],
-      [
-       "webnn/conformance_tests/parallel-compute.https.any.worker.html?npu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "test parallel WebNN API compute operations"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
      "parallel-dispatch.https.any.js": [
       "4051645771fa0c70531bff2fe4cd7132a20c5d26",
       [
@@ -730419,195 +730048,6 @@
        }
       ]
      ],
-     "compute-multiple-arraybufferviews-sharing-same-arraybuffer.https.any.js": [
-      "097a8f84d8b00095e8ace4de5065ac8345b4c243",
-      [
-       "webnn/validation_tests/compute-multiple-arraybufferviews-sharing-same-arraybuffer.https.any.html?cpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "ensure WebNN MLContext.compute() rejecting detached buffers"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils_validation.js"
-         ]
-        ]
-       }
-      ],
-      [
-       "webnn/validation_tests/compute-multiple-arraybufferviews-sharing-same-arraybuffer.https.any.html?gpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "ensure WebNN MLContext.compute() rejecting detached buffers"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils_validation.js"
-         ]
-        ]
-       }
-      ],
-      [
-       "webnn/validation_tests/compute-multiple-arraybufferviews-sharing-same-arraybuffer.https.any.html?npu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "ensure WebNN MLContext.compute() rejecting detached buffers"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils_validation.js"
-         ]
-        ]
-       }
-      ],
-      [
-       "webnn/validation_tests/compute-multiple-arraybufferviews-sharing-same-arraybuffer.https.any.worker.html?cpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "ensure WebNN MLContext.compute() rejecting detached buffers"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils_validation.js"
-         ]
-        ]
-       }
-      ],
-      [
-       "webnn/validation_tests/compute-multiple-arraybufferviews-sharing-same-arraybuffer.https.any.worker.html?gpu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "ensure WebNN MLContext.compute() rejecting detached buffers"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils_validation.js"
-         ]
-        ]
-       }
-      ],
-      [
-       "webnn/validation_tests/compute-multiple-arraybufferviews-sharing-same-arraybuffer.https.any.worker.html?npu",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "ensure WebNN MLContext.compute() rejecting detached buffers"
-         ],
-         [
-          "global",
-          "window,dedicatedworker"
-         ],
-         [
-          "variant",
-          "?cpu"
-         ],
-         [
-          "variant",
-          "?gpu"
-         ],
-         [
-          "variant",
-          "?npu"
-         ],
-         [
-          "script",
-          "../resources/utils_validation.js"
-         ]
-        ]
-       }
-      ]
-     ],
      "concat.https.any.js": [
       "6ccac4e7e8b5a311adc0b47cd85844bd2f7bae34",
       [
@@ -730798,7 +730238,7 @@
       ]
      ],
      "constant-changed-buffer.https.any.js": [
-      "40f3a0ccaef2c2888d2d773cf1825a49197697a8",
+      "b3c8e56046a1413a4269b23351ef6320df07964d",
       [
        "webnn/validation_tests/constant-changed-buffer.https.any.html?cpu",
        {
@@ -732121,7 +731561,7 @@
       ]
      ],
      "destroyContext.https.any.js": [
-      "abed6b09bde43c10e33214129a0df5681d3739c2",
+      "ba11362564d5dd0f000129d6de35797a08dc2b0a",
       [
        "webnn/validation_tests/destroyContext.https.any.html?cpu",
        {
@@ -732316,7 +731756,7 @@
       ]
      ],
      "destroyGraph.https.any.js": [
-      "4d883e9f3c3eaf5e28e6936980a8c399d0b537c6",
+      "b77b2ad4e6e1d60ec68bfff772000271a9126b52",
       [
        "webnn/validation_tests/destroyGraph.https.any.html?cpu",
        {
@@ -737047,7 +736487,7 @@
       ]
      ],
      "pooling-and-reduction-keep-dims.https.any.js": [
-      "969c5c61a498e14df5b45ebe3166f105708a73f4",
+      "f2264e468d4228e9e52e0396fdf274f146009ec2",
       [
        "webnn/validation_tests/pooling-and-reduction-keep-dims.https.any.html?cpu",
        {
