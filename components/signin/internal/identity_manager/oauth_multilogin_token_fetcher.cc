@@ -62,7 +62,7 @@ OAuthMultiloginTokenFetcher::~OAuthMultiloginTokenFetcher() = default;
 
 void OAuthMultiloginTokenFetcher::StartFetchingToken(
     const CoreAccountId& account_id) {
-  DCHECK(!account_id.empty());
+  CHECK(!account_id.empty());
   // Add a request to `token_requests_` before calling `token_service_` to
   // ensure that a request cannot complete before it's added to
   // `token_requests_`.
@@ -97,22 +97,16 @@ void OAuthMultiloginTokenFetcher::TokenRequestSucceeded(
     OAuthMultiloginTokenResponse response) {
   CHECK(!response.oauth_token().empty());
   auto [_, inserted] =
-      access_tokens_.insert({account_id, response.oauth_token()});
-  DCHECK(inserted);  // If this fires, we have a duplicate account.
+      token_responses_.insert({account_id, std::move(response)});
+  CHECK(inserted);  // If this fires, we have a duplicate account.
 
-  if (access_tokens_.size() != account_ids_.size()) {
+  if (token_responses_.size() != account_ids_.size()) {
     return;
   }
 
   // We've received access tokens for all accounts, return the result.
-  std::vector<AccountIdTokenPair> account_token_pairs;
-  for (const auto& id : account_ids_) {
-    const auto it = access_tokens_.find(id);
-    DCHECK(!it->second.empty());
-    account_token_pairs.emplace_back(id, it->second);
-  }
   RecordGetAccessTokenFinished(GoogleServiceAuthError::AuthErrorNone());
-  std::move(success_callback_).Run(account_token_pairs);
+  std::move(success_callback_).Run(std::move(token_responses_));
   // Do not add anything below this line, as `this` may be deleted.
 }
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -13,13 +14,18 @@
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
+#include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 #include "components/signin/public/base/bound_session_oauth_multilogin_delegate.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_auth_fetcher.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/oauth_multilogin_result.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/test/test_cookie_manager.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -33,10 +39,13 @@ constexpr char kGaiaId[] = "gaia_id_1";
 constexpr char kGaiaId2[] = "gaia_id_2";
 constexpr char kAccessToken[] = "access_token_1";
 constexpr char kAccessToken2[] = "access_token_2";
+constexpr char kNoAssertion[] = "";
 
 const char kExternalCcResult[] = "youtube:OK";
 
 constexpr int kMaxFetcherRetries = 3;
+
+constexpr char kAuthorizationHeaderName[] = "Authorization";
 
 const char kMultiloginSuccessResponse[] =
     R"()]}'
@@ -152,6 +161,15 @@ void RunSetCookieCallbackWithSuccess(
   std::move(callback).Run(net::CookieAccessResult());
 }
 
+std::string CreateMultiBearerAuthorizationHeader(
+    const std::vector<gaia::MultiloginAccountAuthCredentials>& accounts) {
+  std::vector<std::string> token_id_pairs = base::ToVector(
+      accounts, [](const gaia::MultiloginAccountAuthCredentials& credentials) {
+        return base::StrCat({credentials.token, ":", credentials.gaia_id});
+      });
+  return base::StrCat({"MultiBearer ", base::JoinString(token_id_pairs, ",")});
+}
+
 class MockCookieManager
     : public ::testing::StrictMock<network::TestCookieManager> {
  public:
@@ -166,9 +184,25 @@ class MockTokenService : public FakeProfileOAuth2TokenService {
  public:
   explicit MockTokenService(PrefService* prefs)
       : FakeProfileOAuth2TokenService(prefs) {}
+  MockTokenService(PrefService* prefs,
+                   std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate)
+      : FakeProfileOAuth2TokenService(prefs, std::move(delegate)) {}
 
   MOCK_METHOD2(InvalidateTokenForMultilogin,
                void(const CoreAccountId& account_id, const std::string& token));
+};
+
+// This class enables using refresh tokens in Multilogin calls, which is the
+// default behaviour on Desktop platforms.
+class FakeProfileOAuth2TokenServiceDelegateDesktop
+    : public FakeProfileOAuth2TokenServiceDelegate {
+  std::string GetTokenForMultilogin(
+      const CoreAccountId& account_id) const override {
+    if (GetAuthError(account_id) == GoogleServiceAuthError::AuthErrorNone()) {
+      return GetRefreshToken(account_id);
+    }
+    return std::string();
+  }
 };
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
@@ -181,6 +215,11 @@ class MockBoundSessionOAuthMultiLoginDelegate
               (override));
   MOCK_METHOD(void, OnCookiesSet, (), (override));
 };
+
+std::string CreateMultiOAuthAuthorizationHeader(
+    const std::vector<gaia::MultiloginAccountAuthCredentials>& accounts) {
+  return base::StrCat({"MultiOAuth ", gaia::CreateMultiOAuthHeader(accounts)});
+}
 #endif
 }  // namespace
 
@@ -192,7 +231,8 @@ class OAuthMultiloginHelperTest
       : kAccountId(CoreAccountId::FromGaiaId(kGaiaId)),
         kAccountId2(CoreAccountId::FromGaiaId(kGaiaId2)),
         test_signin_client_(&pref_service_),
-        mock_token_service_(&pref_service_) {
+        mock_token_service_(
+            std::make_unique<MockTokenService>(&pref_service_)) {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     test_signin_client_.SetBoundSessionOauthMultiloginDelegateFactory(
         base::BindRepeating(&OAuthMultiloginHelperTest::
@@ -250,7 +290,17 @@ class OAuthMultiloginHelperTest
   }
 
   MockCookieManager* cookie_manager() { return &mock_cookie_manager_; }
-  MockTokenService* token_service() { return &mock_token_service_; }
+  MockTokenService* token_service() { return mock_token_service_.get(); }
+
+  void ReplaceTokenService(bool use_refresh_tokens_for_multilogin) {
+    if (use_refresh_tokens_for_multilogin) {
+      mock_token_service_ = std::make_unique<MockTokenService>(
+          &pref_service_,
+          std::make_unique<FakeProfileOAuth2TokenServiceDelegateDesktop>());
+    } else {
+      mock_token_service_ = std::make_unique<MockTokenService>(&pref_service_);
+    }
+  }
 
  protected:
   void OnOAuthMultiloginFinished(SetAccountsInCookieResult result) {
@@ -280,7 +330,7 @@ class OAuthMultiloginHelperTest
   TestingPrefServiceSimple pref_service_;
   MockCookieManager mock_cookie_manager_;
   TestSigninClient test_signin_client_;
-  MockTokenService mock_token_service_;
+  std::unique_ptr<MockTokenService> mock_token_service_;
   std::unique_ptr<OAuthMultiloginHelper> helper_;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   raw_ptr<MockBoundSessionOAuthMultiLoginDelegate> bound_session_delegate_ =
@@ -309,7 +359,57 @@ TEST_F(OAuthMultiloginHelperTest, Success) {
 
   // Multilogin call.
   EXPECT_FALSE(callback_called_);
-  EXPECT_TRUE(url_loader()->IsPending(multilogin_url()));
+  const network::ResourceRequest* multilogin_request = nullptr;
+  ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
+  EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
+            CreateMultiBearerAuthorizationHeader(
+                {gaia::MultiloginAccountAuthCredentials(kGaiaId, kAccessToken,
+                                                        kNoAssertion)}));
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
+  EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
+#endif
+  url_loader()->AddResponse(multilogin_url(), kMultiloginSuccessResponse);
+  EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
+  EXPECT_TRUE(callback_called_);
+  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
+}
+
+// Multilogin request for multiple accounts.
+TEST_F(OAuthMultiloginHelperTest, MultipleAccounts) {
+  token_service()->UpdateCredentials(kAccountId, "refresh_token");
+  token_service()->UpdateCredentials(kAccountId2, "refresh_token_2");
+  // The order of accounts must be respected.
+  CreateHelper({{kAccountId2, kGaiaId2}, {kAccountId, kGaiaId}});
+
+  // Configure mock cookie manager:
+  // - check that the cookie is the expected one
+  // - immediately invoke the callback
+  EXPECT_CALL(*cookie_manager(),
+              SetCanonicalCookie(
+                  CookieMatcher("SID", "SID_value", ".google.fr"),
+                  CookieSourceMatcher("google.fr"), testing::_, testing::_))
+      .WillOnce(::testing::Invoke(RunSetCookieCallbackWithSuccess));
+
+  // Issue access tokens.
+  OAuth2AccessTokenConsumer::TokenResponse success_response;
+  success_response.access_token = kAccessToken;
+  token_service()->IssueAllTokensForAccount(kAccountId, success_response);
+  OAuth2AccessTokenConsumer::TokenResponse success_response_2;
+  success_response_2.access_token = kAccessToken2;
+  token_service()->IssueAllTokensForAccount(kAccountId2, success_response_2);
+
+  // Multilogin call.
+  EXPECT_FALSE(callback_called_);
+  const network::ResourceRequest* multilogin_request = nullptr;
+  ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
+  EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
+            CreateMultiBearerAuthorizationHeader({
+                gaia::MultiloginAccountAuthCredentials(kGaiaId2, kAccessToken2,
+                                                       kNoAssertion),
+                gaia::MultiloginAccountAuthCredentials(kGaiaId, kAccessToken,
+                                                       kNoAssertion),
+            }));
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
   EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
@@ -578,6 +678,44 @@ TEST_F(OAuthMultiloginHelperTest, InvalidTokenErrorMaxRetries) {
 }
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+// TODO(crbug.com/372648645): test returning a challenge once supported.
+TEST_F(OAuthMultiloginHelperTest, BoundTokenSuccessNoChallenge) {
+  ReplaceTokenService(/*use_refresh_tokens_for_multilogin=*/true);
+  std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
+  token_service()->UpdateCredentials(
+      kAccountId, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      kFakeWrappedBindingKey);
+  CreateHelper({{kAccountId, kGaiaId}});
+
+  // Configure mock cookie manager:
+  // - check that the cookie is the expected one
+  // - immediately invoke the callback
+  EXPECT_CALL(*cookie_manager(),
+              SetCanonicalCookie(
+                  CookieMatcher("SID", "SID_value", ".google.fr"),
+                  CookieSourceMatcher("google.fr"), testing::_, testing::_))
+      .WillOnce(::testing::Invoke(RunSetCookieCallbackWithSuccess));
+
+  // Multilogin call.
+  EXPECT_FALSE(callback_called_);
+  const network::ResourceRequest* multilogin_request = nullptr;
+  ASSERT_TRUE(url_loader()->IsPending(multilogin_url(), &multilogin_request));
+  EXPECT_EQ(multilogin_request->headers.GetHeader(kAuthorizationHeaderName),
+            CreateMultiOAuthAuthorizationHeader({
+                gaia::MultiloginAccountAuthCredentials(
+                    kGaiaId, "refresh_token", "DBSC_CHALLENGE_IF_REQUIRED"),
+            }));
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  EXPECT_CALL(*bound_session_delegate(), BeforeSetCookies);
+  EXPECT_CALL(*bound_session_delegate(), OnCookiesSet);
+#endif
+  url_loader()->AddResponse(multilogin_url(), kMultiloginSuccessResponse);
+  EXPECT_FALSE(url_loader()->IsPending(multilogin_url()));
+  EXPECT_TRUE(callback_called_);
+  EXPECT_EQ(SetAccountsInCookieResult::kSuccess, result_);
+}
+
 TEST_F(OAuthMultiloginHelperTest, BoundSessionHelperCalled) {
   token_service()->UpdateCredentials(kAccountId, "refresh_token");
   CreateHelper({{kAccountId, kGaiaId}});

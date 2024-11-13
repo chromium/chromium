@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_fetcher.h"
+#include "components/signin/internal/identity_manager/oauth_multilogin_token_response.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
@@ -34,15 +35,21 @@ namespace {
 constexpr int kMaxFetcherRetries = 3;
 
 std::string FindTokenForAccount(
-    const std::vector<gaia::MultiloginAccountAuthCredentials>&
-        multilogin_accounts,
+    const std::vector<OAuthMultiloginHelper::AccountIdGaiaIdPair>& accounts,
+    const base::flat_map<CoreAccountId, OAuthMultiloginTokenResponse>& tokens,
     const std::string& gaia_id) {
-  for (const auto& account : multilogin_accounts) {
-    if (gaia_id == account.gaia_id) {
-      return account.token;
-    }
+  auto account_it = std::ranges::find_if(
+      accounts, [&gaia_id](const auto& account_id_gaia_id_pair) {
+        return account_id_gaia_id_pair.second == gaia_id;
+      });
+  if (account_it == accounts.end()) {
+    return std::string();
   }
-  return std::string();
+  auto token_it = tokens.find(account_it->first);
+  if (token_it == tokens.end()) {
+    return std::string();
+  }
+  return token_it->second.oauth_token();
 }
 
 CoreAccountId FindAccountIdForGaiaId(
@@ -99,42 +106,31 @@ OAuthMultiloginHelper::~OAuthMultiloginHelper() = default;
 
 void OAuthMultiloginHelper::StartFetchingTokens() {
   DCHECK(!token_fetcher_);
-  DCHECK(multilogin_accounts_.empty());
+  DCHECK(tokens_.empty());
   std::vector<CoreAccountId> account_ids;
   for (const auto& account : accounts_)
     account_ids.push_back(account.first);
 
   token_fetcher_ = std::make_unique<OAuthMultiloginTokenFetcher>(
       signin_client_, token_service_, account_ids,
-      base::BindOnce(&OAuthMultiloginHelper::OnAccessTokensSuccess,
+      base::BindOnce(&OAuthMultiloginHelper::OnMultiloginTokensSuccess,
                      base::Unretained(this)),
-      base::BindOnce(&OAuthMultiloginHelper::OnAccessTokensFailure,
+      base::BindOnce(&OAuthMultiloginHelper::OnMultiloginTokensFailure,
                      base::Unretained(this)));
 }
 
-void OAuthMultiloginHelper::OnAccessTokensSuccess(
-    const std::vector<OAuthMultiloginTokenFetcher::AccountIdTokenPair>&
-        account_token_pairs) {
-  DCHECK(multilogin_accounts_.empty());
-  for (size_t index = 0; index < accounts_.size(); index++) {
-    // OAuthMultiloginTokenFetcher should return the tokens in the same order
-    // as the account_ids that was passed to it.
-    DCHECK_EQ(accounts_[index].first, account_token_pairs[index].account_id);
-    // TODO(crbug.com/372648645): attach `token_binding_assertion` for accounts
-    // authenticating with bound refresh tokens.
-    multilogin_accounts_.emplace_back(
-        accounts_[index].second, account_token_pairs[index].token,
-        /*token_binding_assertion=*/std::string());
-  }
-  DCHECK_EQ(multilogin_accounts_.size(), accounts_.size());
+void OAuthMultiloginHelper::OnMultiloginTokensSuccess(
+    base::flat_map<CoreAccountId, OAuthMultiloginTokenResponse> tokens) {
+  CHECK(tokens_.empty());
+  CHECK_EQ(tokens.size(), accounts_.size());
+  tokens_ = std::move(tokens);
   token_fetcher_.reset();
-
   signin_client_->DelayNetworkCall(
       base::BindOnce(&OAuthMultiloginHelper::StartFetchingMultiLogin,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void OAuthMultiloginHelper::OnAccessTokensFailure(
+void OAuthMultiloginHelper::OnMultiloginTokensFailure(
     const GoogleServiceAuthError& error) {
   token_fetcher_.reset();
   std::move(callback_).Run(error.IsTransientError()
@@ -144,10 +140,25 @@ void OAuthMultiloginHelper::OnAccessTokensFailure(
 }
 
 void OAuthMultiloginHelper::StartFetchingMultiLogin() {
-  DCHECK_EQ(multilogin_accounts_.size(), accounts_.size());
+  CHECK_EQ(tokens_.size(), accounts_.size());
+  std::vector<gaia::MultiloginAccountAuthCredentials> multilogin_credentials;
+  // Accounts must be listed in the same order as in `accounts_`.
+  for (const auto& account : accounts_) {
+    auto token_it = tokens_.find(account.first);
+    CHECK(token_it != tokens_.end());
+    std::string token_binding_assertion;
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    token_binding_assertion = token_it->second.token_binding_assertion();
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
+    multilogin_credentials.emplace_back(account.second,
+                                        token_it->second.oauth_token(),
+                                        std::move(token_binding_assertion));
+  }
+
   gaia_auth_fetcher_ = partition_delegate_->CreateGaiaAuthFetcherForPartition(
       this, gaia_source_);
-  gaia_auth_fetcher_->StartOAuthMultilogin(mode_, multilogin_accounts_,
+  gaia_auth_fetcher_->StartOAuthMultilogin(mode_, multilogin_credentials,
                                            external_cc_result_);
 }
 
@@ -175,7 +186,7 @@ void OAuthMultiloginHelper::OnOAuthMultiloginFinished(
   if (result.status() == OAuthMultiloginResponseStatus::kInvalidTokens) {
     for (const std::string& failed_gaia_id : result.failed_gaia_ids()) {
       std::string failed_token =
-          FindTokenForAccount(multilogin_accounts_, failed_gaia_id);
+          FindTokenForAccount(accounts_, tokens_, failed_gaia_id);
       if (failed_token.empty()) {
         LOG(ERROR)
             << "Unexpected failed token for account not present in request: "
@@ -192,7 +203,7 @@ void OAuthMultiloginHelper::OnOAuthMultiloginFinished(
       result.status() == OAuthMultiloginResponseStatus::kRetry;
 
   if (is_transient_error && ++fetcher_retries_ < kMaxFetcherRetries) {
-    multilogin_accounts_.clear();
+    tokens_.clear();
     StartFetchingTokens();
     return;
   }

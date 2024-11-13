@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -31,19 +32,8 @@ class OAuthMultiloginTokenResponse;
 // It is safe to delete this object from within the callbacks.
 class OAuthMultiloginTokenFetcher {
  public:
-  struct AccountIdTokenPair {
-    CoreAccountId account_id;
-    std::string token;
-
-    AccountIdTokenPair(const CoreAccountId& account_id,
-                       const std::string& token)
-        : account_id(account_id), token(token) {}
-
-    friend bool operator==(const AccountIdTokenPair&,
-                           const AccountIdTokenPair&) = default;
-  };
-  using SuccessCallback =
-      base::OnceCallback<void(const std::vector<AccountIdTokenPair>&)>;
+  using SuccessCallback = base::OnceCallback<void(
+      base::flat_map<CoreAccountId, OAuthMultiloginTokenResponse>)>;
   using FailureCallback =
       base::OnceCallback<void(const GoogleServiceAuthError&)>;
 
@@ -78,7 +68,7 @@ class OAuthMultiloginTokenFetcher {
   FailureCallback failure_callback_;
 
   std::vector<std::unique_ptr<OAuthMultiloginTokenRequest>> token_requests_;
-  std::map<CoreAccountId, std::string> access_tokens_;
+  base::flat_map<CoreAccountId, OAuthMultiloginTokenResponse> token_responses_;
   std::set<CoreAccountId> retried_requests_;  // Requests are retried once.
 
   base::WeakPtrFactory<OAuthMultiloginTokenFetcher> weak_ptr_factory_{this};
