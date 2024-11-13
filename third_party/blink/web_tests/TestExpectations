@@ -8535,3 +8535,7 @@ crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 crbug.com/378566920 [ Debug Linux ] external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html* [ Failure Pass ]
 crbug.com/378566920 [ Debug Mac14 ] external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html* [ Failure Pass ]
 crbug.com/378566925 [ Win ] external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-allow-storage-access.sub.https.window.html [ Failure Pass ]
+
+# Gardener 2024-11-13
+crbug.com/40919443 [ Win ] external/wpt/pointerevents/pointerevent_pointer_boundary_events_after_removing_last_over_element.html [ Failure Pass ]
+crbug.com/378566925 [ Win ] external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-no-storage-access.sub.https.window.html [ Failure Pass ]
