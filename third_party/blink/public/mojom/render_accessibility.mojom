@@ -17,14 +17,21 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
 struct HitTestResponse {
+  // If the hit object is inside a child accessibility tree that has been
+  // stitched in on the browser side, the ID of that child tree. (See
+  // ax.mojom.Action.kStitchChildTree for more information.) Otherwise, should
+  // be set to |ax.mojom.AXTreeID.unknown|.
+  ax.mojom.AXTreeID stitched_child_tree_id;
+
   // The frame token of the frame that got hit. If this is not equal to the
   // frame that the original hit test was called on, the client should do
   // another hit test on this frame.
   blink.mojom.FrameToken hit_frame_token;
 
   // The coordinates that should be used for the hit test on the child frame
-  // indicated by |hit_frame_token|, accounting for the viewport. This is only
-  // needed if |hit_frame_token| is not the same as the current frame's token.
+  // indicated by |hit_frame_token| or |stitched_child_tree_id|, accounting for
+  // the viewport. This is only needed if |hit_frame_token| is not the same as
+  // the current frame's token, or there exists a |stitched_child_tree_id|.
   gfx.mojom.Point hit_frame_transformed_point;
 
   // The AXID of the accessibility node that got hit.
@@ -98,6 +105,10 @@ interface RenderAccessibility {
   //
   // Either way, the response contains the routing ID of the hit frame,
   // and the transformed point if the hit frame is a child frame.
+  //
+  // If the hit object has a child tree that has been stitched in on the browser
+  // side, the child tree ID for that tree is also returned, (see
+  // ax.mojom.Action.kStitchChildTreefor more information).
   HitTest(gfx.mojom.Point point,
           ax.mojom.Event event_to_fire,
           int32 request_id)

@@ -237,7 +237,47 @@ void RenderAccessibilityImpl::HitTest(
   // If the result was in the same frame, return the result.
   ui::AXNodeData data;
   ax_object.Serialize(&data, ax_context_->GetAXMode());
-  if (!data.HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
+  std::optional<ui::AXTreeID> child_tree_id = data.GetChildTreeID();
+  gfx::Point transformed_point = point;
+  if (child_tree_id) {
+    // The result may be in a child frame. Reply so that the.
+    // The client can do a hit test on the child frame recursively.
+    // If it's a remote frame or a stitched child tree, also transform the point
+    // into the child frame's coordinate system. (See
+    // ax::mojom::Action::kStitchedChildTree for more information on the latter
+    // case.)
+    blink::WebFrame* child_frame =
+        blink::WebFrame::FromFrameOwnerElement(ax_object.GetNode());
+
+    if (!child_frame || child_frame->IsWebRemoteFrame()) {
+      // Remote frames and stitched child trees don't have access to the
+      // information from the visual viewport regarding the visual viewport
+      // offset, so we adjust the coordinates before sending them to the remote
+      // renderer.
+      gfx::Rect rect = ax_object.GetBoundsInFrameCoordinates();
+      // The following transformation of the input point is naive, but works
+      // fairly well. It will fail with CSS transforms that rotate or shear.
+      // https://crbug.com/981959.
+      WebView* web_view = render_frame_->GetWebView();
+      gfx::PointF viewport_offset = web_view->VisualViewportOffset();
+      transformed_point +=
+          gfx::Vector2d(viewport_offset.x(), viewport_offset.y()) -
+          rect.OffsetFromOrigin();
+    }
+
+    if (child_frame) {
+      std::move(callback).Run(blink::mojom::HitTestResponse::New(
+          ui::AXTreeIDUnknown(), child_frame->GetFrameToken(),
+          transformed_point, ax_object.AxID()));
+      return;
+    }
+
+    // The tree is not coming from Web content. It has been stitched in on the
+    // browser side from other sources, e.g. OCR results. Fall through so that
+    // we would respond with the hosting node and the browser will handle the
+    // hit test in the stitched child tree.
+
+  } else {
     // Optionally fire an event, if requested to. This is a good fit for
     // features like touch exploration on Android, Chrome OS, and
     // possibly other platforms - if the user explore a particular point,
@@ -254,40 +294,13 @@ void RenderAccessibilityImpl::HitTest(
           ax_object.AxID(), event_to_fire, ax::mojom::EventFrom::kAction,
           ax::mojom::Action::kHitTest, intents, request_id));
     }
+  }
 
     // Reply with the result.
     const auto& frame_token = render_frame_->GetWebFrame()->GetFrameToken();
     std::move(callback).Run(blink::mojom::HitTestResponse::New(
-        frame_token, point, ax_object.AxID()));
-    return;
-  }
-
-  // The result was in a child frame. Reply so that the
-  // client can do a hit test on the child frame recursively.
-  // If it's a remote frame, transform the point into the child frame's
-  // coordinate system.
-  gfx::Point transformed_point = point;
-  blink::WebFrame* child_frame =
-      blink::WebFrame::FromFrameOwnerElement(ax_object.GetNode());
-  DCHECK(child_frame);
-
-  if (child_frame->IsWebRemoteFrame()) {
-    // Remote frames don't have access to the information from the visual
-    // viewport regarding the visual viewport offset, so we adjust the
-    // coordinates before sending them to the remote renderer.
-    gfx::Rect rect = ax_object.GetBoundsInFrameCoordinates();
-    // The following transformation of the input point is naive, but works
-    // fairly well. It will fail with CSS transforms that rotate or shear.
-    // https://crbug.com/981959.
-    WebView* web_view = render_frame_->GetWebView();
-    gfx::PointF viewport_offset = web_view->VisualViewportOffset();
-    transformed_point +=
-        gfx::Vector2d(viewport_offset.x(), viewport_offset.y()) -
-        rect.OffsetFromOrigin();
-  }
-
-  std::move(callback).Run(blink::mojom::HitTestResponse::New(
-      child_frame->GetFrameToken(), transformed_point, ax_object.AxID()));
+        child_tree_id.value_or(ui::AXTreeIDUnknown()), frame_token,
+        transformed_point, ax_object.AxID()));
 }
 
 void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {

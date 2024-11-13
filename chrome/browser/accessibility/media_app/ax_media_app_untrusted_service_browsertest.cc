@@ -41,6 +41,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -48,6 +49,7 @@
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 #include "ui/display/display_switches.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -64,7 +66,6 @@ namespace {
 constexpr float kTestPageGap = 2.0f;
 constexpr float kTestPageWidth = 3.0f;
 constexpr float kTestPageHeight = 8.0f;
-// The test device pixel ratio.
 constexpr float kTestDisplayPixelRatio = 1.5f;
 
 // Use letters to generate fake IDs for fake page metadata. If more than
@@ -1945,6 +1946,50 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest, SetSelection) {
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, tree_data.sel_focus_affinity);
 }
 
+IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest, HitTest) {
+  service_->DisableStatusNodesForTesting();
+  service_->DisablePostamblePageForTesting();
+  EnableSelectToSpeakForTesting();
+  // The static text node on the second page.
+  constexpr ui::AXNodeID kHitNodeID = -3;
+  constexpr int kRequestID = 2;
+  constexpr size_t kTestNumPages = 3u;
+  std::vector<PageMetadataPtr> fake_metadata =
+      CreateFakePageMetadata(kTestNumPages);
+  service_->PageMetadataUpdated(ClonePageMetadataPtrs(fake_metadata));
+  WaitForOcringPages(kTestNumPages);
+
+  ASSERT_TRUE(service_->GetPagesForTesting().contains("PageB"));
+  // View the second page by scrolling to it.
+  service_->ViewportUpdated(
+      gfx::RectF(/*x=*/0.0f, /*y=*/kTestPageHeight + kTestPageGap,
+                 kTestPageWidth, kTestPageHeight),
+      /*scale_factor=*/1.0f);
+
+  ui::AXActionData action_data;
+  action_data.action = ax::mojom::Action::kHitTest;
+  action_data.target_point = gfx::Point(3, 1);
+  action_data.hit_test_event_to_fire = ax::mojom::Event::kHover;
+  action_data.request_id = kRequestID;
+  service_->PerformAction(action_data);
+
+  ASSERT_NE(nullptr, service_->LastHitTestNodeForTesting());
+  ASSERT_NE(nullptr, service_->LastHitTestNodeForTesting()->tree());
+  EXPECT_EQ(service_->GetPagesForTesting().at("PageB")->GetTreeID(),
+            service_->LastHitTestNodeForTesting()->tree()->GetAXTreeID());
+  EXPECT_EQ(kHitNodeID, service_->LastHitTestNodeForTesting()->id());
+
+  EXPECT_EQ(ax::mojom::Event::kHover,
+            service_->LastHitTestEventForTesting().event_type);
+  EXPECT_EQ(ax::mojom::EventFrom::kAction,
+            service_->LastHitTestEventForTesting().event_from);
+  EXPECT_EQ(ax::mojom::Action::kHitTest,
+            service_->LastHitTestEventForTesting().event_from_action);
+  EXPECT_EQ(kRequestID,
+            service_->LastHitTestEventForTesting().action_request_id);
+  EXPECT_EQ(kHitNodeID, service_->LastHitTestEventForTesting().id);
+}
+
 IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest, PageBatching) {
   service_->DisableStatusNodesForTesting();
   service_->DisablePostamblePageForTesting();
@@ -2187,7 +2232,9 @@ IN_PROC_BROWSER_TEST_F(AXMediaAppUntrustedServiceTest,
   constexpr size_t kTestNumPages = 1u;
   constexpr float kViewportWidth = 100.0f;
   constexpr float kViewportHeight = 200.0f;
-  // MediaApp sometimes also sends negative viewport origins.
+  // Note that MediaApp sends negative viewport origins if the document's origin
+  // is inside the viewport, i.e. there is some empty space between the
+  // viewport's origin and the document's origin.
   constexpr float kViewportXOffset = -10.0f;
   constexpr float kViewportYOffset = -5.0f;
   constexpr float kViewportScale = 1.2f;

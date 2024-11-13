@@ -33,6 +33,7 @@
 #include "ui/accessibility/ax_action_handler_base.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_mode_observer.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -162,6 +163,8 @@ class AXMediaAppUntrustedService
       page_serializers_;
   std::unique_ptr<std::vector<ui::AXTreeUpdate>>
       pending_serialized_updates_for_testing_;
+  raw_ptr<ui::AXNode> last_hit_test_node_for_testing_;
+  ui::AXEvent last_hit_test_event_for_testing_;
   scoped_refptr<screen_ai::OpticalCharacterRecognizer> ocr_;
 
  private:
@@ -194,6 +197,8 @@ class AXMediaAppUntrustedService
   void StitchDocumentTree();
   bool HasRendererTerminatedDueToBadPageId(const std::string& method_name,
                                            const std::string& page_id);
+  ui::AXNode* HitTest(const gfx::Point& document_point,
+                      ui::AXNode& starting_node) const;
   std::unique_ptr<gfx::Transform> MakeTransformFromOffsetAndScale() const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

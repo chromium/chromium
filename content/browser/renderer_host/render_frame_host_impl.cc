@@ -282,6 +282,7 @@
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_location_and_scroll_updates.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
@@ -3505,7 +3506,7 @@ void RenderFrameHostImpl::AccessibilityHitTest(
   if (IsInactiveAndDisallowActivation(DisallowActivationReasonId::kAXHitTest) ||
       !render_accessibility_) {
     if (opt_callback)
-      std::move(opt_callback).Run(nullptr, 0);
+      std::move(opt_callback).Run(nullptr, ui::kInvalidAXNodeID);
     return;
   }
 
@@ -12927,29 +12928,53 @@ void RenderFrameHostImpl::AccessibilityHitTestCallback(
     blink::mojom::HitTestResponsePtr hit_test_response) {
   if (!hit_test_response) {
     if (opt_callback)
-      std::move(opt_callback).Run(nullptr, 0);
+      std::move(opt_callback).Run(nullptr, ui::kInvalidAXNodeID);
     return;
   }
 
-  auto frame_or_proxy = LookupRenderFrameHostOrProxy(
+  RenderFrameHostOrProxy frame_or_proxy = LookupRenderFrameHostOrProxy(
       GetProcess()->GetID(), hit_test_response->hit_frame_token);
   RenderFrameHostImpl* hit_frame = frame_or_proxy.GetCurrentFrameHost();
 
   if (!hit_frame || hit_frame->IsInactiveAndDisallowActivation(
                         DisallowActivationReasonId::kAXHitTestCallback)) {
     if (opt_callback)
-      std::move(opt_callback).Run(nullptr, 0);
+      std::move(opt_callback).Run(nullptr, ui::kInvalidAXNodeID);
     return;
   }
 
-  // If the hit node's routing ID is the same frame, we're done. If a
-  // callback was provided, call it with the information about the hit node.
+  // If the hit node's routing ID is the same frame, and there is no stitched
+  // child tree on the browser side, we're done. If a callback was provided,
+  // call it with the information about the hit node.
   if (hit_frame->GetFrameToken() == frame_token_) {
     if (opt_callback) {
       std::move(opt_callback)
           .Run(hit_frame->browser_accessibility_manager(),
                hit_test_response->hit_node_id);
     }
+    if (hit_test_response->stitched_child_tree_id.type() ==
+        ax::mojom::AXTreeIDType::kUnknown) {
+      return;
+    }
+
+    // Ask the stitched child tree's action handler to handle the action
+    // instead. (See ax::mojom::Action::kStitchChildTree for more information on
+    // stitched child trees.)
+    auto* handler_registry = ui::AXActionHandlerRegistry::GetInstance();
+    DCHECK(handler_registry);
+    AXActionHandlerBase* action_handler = handler_registry->GetActionHandler(
+        hit_test_response->stitched_child_tree_id);
+    if (!action_handler) {
+      return;
+    }
+
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kHitTest;
+    action_data.hit_test_event_to_fire = event_to_fire;
+    action_data.request_id = request_id;
+    action_data.target_point = hit_test_response->hit_frame_transformed_point;
+    action_data.target_tree_id = hit_test_response->stitched_child_tree_id;
+    action_handler->PerformAction(action_data);
     return;
   }
 

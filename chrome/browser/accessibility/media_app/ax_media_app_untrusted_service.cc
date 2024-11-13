@@ -38,7 +38,6 @@
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_id_forward.h"
@@ -52,6 +51,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/strings/grit/auto_image_annotation_strings.h"
@@ -60,7 +60,6 @@
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/aura/env.h"
-#include "ui/gfx/geometry/point.h"
 #endif  // defined(USE_AURA)
 
 namespace ash {
@@ -459,9 +458,49 @@ void AXMediaAppUntrustedService::PerformAction(
     case ax::mojom::Action::kCustomAction:
       NOTIMPLEMENTED();
       return;
-    case ax::mojom::Action::kHitTest:
-      // TODO(nektar): Implement for Select-to-Speak to work.
+    case ax::mojom::Action::kHitTest: {
+      if (!document_) {
+        return;
+      }
+      DCHECK(document_->GetRoot());
+      ui::AXTreeID hit_tree_id = ui::AXTreeIDUnknown();
+      ui::AXNodeID hit_node_id = ui::kInvalidAXNodeID;
+      gfx::Point viewport_point = action_data.target_point;
+      gfx::Point document_point = viewport_point;
+      if (const ui::AXNode* document_root = document_->GetRoot();
+          document_root && document_root->data().relative_bounds.transform) {
+        document_point =
+            document_root->data()
+                .relative_bounds.transform->InverseMapPoint(viewport_point)
+                .value_or(viewport_point);
+      }
+      ui::AXNode* hit_node = HitTest(document_point, *document_->GetRoot());
+      if (hit_node) {
+        DCHECK(hit_node->tree());
+        hit_tree_id = hit_node->tree()->GetAXTreeID();
+        hit_node_id = hit_node->id();
+        last_hit_test_node_for_testing_ = hit_node;
+      }
+
+      ui::AXEvent event_to_fire(hit_node_id,
+                                action_data.hit_test_event_to_fire);
+      if (event_to_fire.event_type == ax::mojom::Event::kNone) {
+        event_to_fire.event_type = ax::mojom::Event::kHitTestResult;
+      }
+      event_to_fire.event_from = ax::mojom::EventFrom::kAction;
+      event_to_fire.event_from_action = action_data.action;
+      event_to_fire.action_request_id = action_data.request_id;
+      last_hit_test_event_for_testing_ = event_to_fire;
+#if defined(USE_AURA)
+      auto* event_router = extensions::AutomationEventRouter::GetInstance();
+      DCHECK(event_router);
+      const gfx::Point& mouse_location =
+          aura::Env::GetInstance()->last_mouse_location();
+      event_router->DispatchAccessibilityEvents(hit_tree_id, {}, mouse_location,
+                                                {event_to_fire});
+#endif  // defined(USE_AURA)
       return;
+    }
     case ax::mojom::Action::kReplaceSelectedText:
     case ax::mojom::Action::kNone:
     case ax::mojom::Action::kGetTextLocation:
@@ -1372,6 +1411,78 @@ bool AXMediaAppUntrustedService::HasRendererTerminatedDueToBadPageId(
     return true;
   }
   return false;
+}
+
+ui::AXNode* AXMediaAppUntrustedService::HitTest(
+    const gfx::Point& document_point,
+    ui::AXNode& starting_node) const {
+  // It's possible that this point overlaps more than one child of this object.
+  // If so, as a heuristic we prefer if the point overlaps a descendant of one
+  // of the two children and not the other. As an example, suppose you have two
+  // paragraphs containing several text runs. The text runs don't overlap, but
+  // the bounds of the paragraph containers somehow do. Without this heuristic,
+  // we'd greedily only consider one of the paragraph containers.
+
+  // The best result found that's a child of this object.
+  ui::AXNode* child_result = nullptr;
+  // The best result that's an indirect descendant like grandchild, etc.
+  ui::AXNode* descendant_result = nullptr;
+
+  for (auto iter = starting_node.UnignoredChildrenCrossingTreeBoundaryBegin();
+       iter != starting_node.UnignoredChildrenCrossingTreeBoundaryEnd();
+       ++iter) {
+    ui::AXNode& child_node = *iter;
+    if (child_node.GetRole() == ax::mojom::Role::kColumn) {
+      // Table columns are required only on Mac and hold no data. Currently, PDF
+      // OCR does not produce them, but this code is here defensively in case we
+      // support tables in the future.
+      continue;
+    }
+    DCHECK(child_node.tree());
+    // Passing an empty `RectF` for the node bounds will initialize it
+    // automatically to `child.data().relative_bounds.bounds`.
+    gfx::RectF child_node_bounds = child_node.tree()->RelativeToTreeBounds(
+        &child_node, /*node_bounds=*/gfx::RectF());
+    if (child_node.data().HasChildTreeID()) {
+      // Unfortunately, we made a design decision to include each page's offset
+      // on its root rather than on the parent tree's hosting node, so we now
+      // need to transfer this information upwards.
+      if (const ui::AXNode* page_root =
+              child_node.GetFirstUnignoredChildCrossingTreeBoundary();
+          page_root) {
+        child_node_bounds = page_root->data().relative_bounds.bounds;
+      }
+    }
+
+    gfx::Point relative_point = document_point;
+    if (starting_node.data().HasChildTreeID()) {
+      // Crossing tree boundaries means that we have entered a page, so we
+      // have to update our hit point to page coordinates.
+      relative_point.Offset(-viewport_box_.x(), -viewport_box_.y());
+      relative_point.Offset(child_node_bounds.x(), child_node_bounds.y());
+    }
+    if (child_node_bounds.Contains(relative_point.x(), relative_point.y())) {
+      ui::AXNode* result = HitTest(relative_point, child_node);
+      if (result == &child_node && !child_result) {
+        child_result = result;
+      }
+      if (result != &child_node && !descendant_result) {
+        descendant_result = result;
+      }
+    }
+
+    if (child_result && descendant_result) {
+      break;
+    }
+  }
+
+  if (descendant_result) {
+    return descendant_result;
+  }
+  if (child_result) {
+    return child_result;
+  }
+  return &starting_node;
 }
 
 std::unique_ptr<gfx::Transform>

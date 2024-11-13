@@ -5859,15 +5859,19 @@ bool AXObject::ContainerLiveRegionBusy() const {
 }
 
 AXObject* AXObject::ElementAccessibilityHitTest(const gfx::Point& point) const {
-  // Check if the validation message contains the point.
   PhysicalOffset physical_point(point);
+  if (child_tree_id_ &&
+      GetBoundsInFrameCoordinates().Contains(physical_point)) {
+    // The children of this object are hidden by a stitched child tree, so
+    // return early.
+    return const_cast<AXObject*>(this);
+  }
   for (const auto& child : ChildrenIncludingIgnored()) {
     if (child->IsValidationMessage() &&
         child->GetBoundsInFrameCoordinates().Contains(physical_point)) {
       return child->ElementAccessibilityHitTest(point);
     }
   }
-
   return const_cast<AXObject*>(this);
 }
 

@@ -13,6 +13,7 @@
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "ui/accessibility/ax_event.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
 
@@ -69,8 +70,16 @@ class TestAXMediaAppUntrustedService : public AXMediaAppUntrustedService {
     return *pending_serialized_updates_for_testing_;
   }
 
-  // Whether to allow tests to manually allow the OcrNextDirtyPageIfAny() method
-  // to be called to better control the order of execution.
+  const ui::AXNode* LastHitTestNodeForTesting() const {
+    return last_hit_test_node_for_testing_;
+  }
+
+  const ui::AXEvent& LastHitTestEventForTesting() const {
+    return last_hit_test_event_for_testing_;
+  }
+
+  // Whether to allow tests to manually allow the OcrNextDirtyPageIfAny()
+  // method to be called to better control the order of execution.
   void SetDelayCallingOcrNextDirtyPage(bool enabled) {
     delay_calling_ocr_next_dirty_page_ = enabled;
   }
