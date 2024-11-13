@@ -5,8 +5,6 @@
 #import "ios/chrome/browser/ui/authentication/signin/instant_signin/instant_signin_mediator.h"
 
 #import "base/memory/raw_ptr.h"
-#import "components/sync/service/sync_service.h"
-#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
@@ -17,7 +15,6 @@ using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
 @implementation InstantSigninMediator {
-  raw_ptr<syncer::SyncService> _syncService;
   AuthenticationFlow* _authenticationFlow;
   AccessPoint _accessPoint;
   // Completion block to call once AuthenticationFlow is done while being
@@ -25,12 +22,9 @@ using signin_metrics::PromoAction;
   ProceduralBlock _interruptionCompletion;
 }
 
-- (instancetype)initWithSyncService:(syncer::SyncService*)syncService
-                        accessPoint:(signin_metrics::AccessPoint)accessPoint {
+- (instancetype)initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint {
   self = [super init];
   if (self) {
-    CHECK(syncService);
-    _syncService = syncService;
     _accessPoint = accessPoint;
   }
   return self;
@@ -53,7 +47,6 @@ using signin_metrics::PromoAction;
 - (void)disconnect {
   CHECK(!_authenticationFlow);
   CHECK(!_interruptionCompletion);
-  _syncService = nullptr;
 }
 
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action

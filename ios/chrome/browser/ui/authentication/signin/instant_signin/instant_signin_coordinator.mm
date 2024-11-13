@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_coordinator.h"
@@ -74,11 +73,8 @@
   [super start];
   signin_metrics::LogSignInStarted(self.accessPoint);
   ProfileIOS* profile = self.browser->GetProfile();
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForProfile(profile);
   _mediator =
-      [[InstantSigninMediator alloc] initWithSyncService:syncService
-                                             accessPoint:self.accessPoint];
+      [[InstantSigninMediator alloc] initWithAccessPoint:self.accessPoint];
   _mediator.delegate = self;
 
   if (_identity) {
