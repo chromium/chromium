@@ -11,8 +11,6 @@
 
 :host {
   --menu-item-margin: 12px;
-  background-color: var(--color-new-tab-page-module-background);
-  border-radius: var(--ntp-module-item-border-radius);
   display: flex;
   flex-direction: column;
   margin: 8px;

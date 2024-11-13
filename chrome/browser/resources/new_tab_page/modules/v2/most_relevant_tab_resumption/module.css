@@ -9,11 +9,6 @@
  * #include=cr-shared-style-lit
  * #css_wrapper_metadata_end */
 
-:host {
-  background-color: var(--color-new-tab-page-module-background);
-  border-radius: var(--ntp-module-border-radius);
-}
-
 @media (forced-colors: active) {
   /* Set outline since background isn't visible in hcm */
   a {
