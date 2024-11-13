@@ -1634,13 +1634,11 @@ AppNavigationResult MaybeHandleAppNavigation(const NavigateParams& params) {
   if (client_mode == LaunchHandler::ClientMode::kFocusExisting) {
     CHECK(client_mode_and_browser->browser);
     CHECK(client_mode_and_browser->tab_index.has_value());
-    CHECK_NE(*client_mode_and_browser->tab_index, -1);
     content::WebContents* contents =
         client_mode_and_browser->browser->tab_strip_model()->GetWebContentsAt(
             *client_mode_and_browser->tab_index);
     CHECK(contents);
-    FocusAppContainer(client_mode_and_browser->browser,
-                      *client_mode_and_browser->tab_index);
+    contents->Focus();
 
     // Abort the navigation by returning a `nullptr`. Because this means
     // `OnWebAppNavigationAfterWebContentsCreation` won't be called, enqueue
@@ -1766,22 +1764,6 @@ void OnWebAppNavigationAfterWebContentsCreation(
                   base::ToString(params.navigated_or_inserted_contents));
   provider->navigation_capturing_log().StoreNavigationCapturedDebugData(
       base::Value(std::move(debug_value)));
-}
-
-void FocusAppContainer(Browser* browser, int tab_index) {
-  CHECK(browser);
-  // ActivateTabAt() does not work for PWA windows, so activation is mimicked by
-  // bringing the app window to the foreground by focussing it.
-  if (WebAppBrowserController::IsWebApp(browser)) {
-    content::WebContents* const app_contents =
-        browser->tab_strip_model()->GetWebContentsAt(tab_index);
-    CHECK(app_contents);
-    app_contents->Focus();
-  } else {
-    // This will CHECK-fail if tab_index does not correspond to a valid tab
-    // inside `browser`.
-    browser->tab_strip_model()->ActivateTabAt(tab_index);
-  }
 }
 
 }  // namespace web_app

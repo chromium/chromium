@@ -323,11 +323,6 @@ void OnWebAppNavigationAfterWebContentsCreation(
     const NavigateParams& params,
     base::WeakPtr<content::NavigationHandle> navigation_handle);
 
-// Focus the app container depending on whether the `browser` is an app window
-// or if it is a normal tabbed browser. `browser` shouldn't be a nullptr, and
-// the `tab_index` should be a valid index for a tab inside `browser`.
-void FocusAppContainer(Browser* browser, int tab_index);
-
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_UTILS_H_
