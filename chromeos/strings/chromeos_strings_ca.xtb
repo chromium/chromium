@@ -361,6 +361,7 @@
 <translation id="2589921777872778654">Menús Edita i Suprimeix</translation>
 <translation id="2597774443162333062">Els fitxers s'enviaran a Google per depurar-los</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{S'ha completat l'escaneig. S'ha escanejat una pàgina}other{S'ha completat l'escaneig. S'han escanejat {NUMBER_OF_PAGES} pàgines.}}</translation>
+<translation id="261322795497077164">Identificació dels interlocutors</translation>
 <translation id="2617397783536231890">cotó</translation>
 <translation id="2618015542787108131">una duna de sorra</translation>
 <translation id="2619761439309613843">Actualització diària</translation>
@@ -409,6 +410,7 @@
 <translation id="2888298276507578975">Introdueix una indicació, com ara "escriu una nota d'agraïment"</translation>
 <translation id="2890557891229184386">una illa tropical</translation>
 <translation id="2895772081848316509">fosca</translation>
+<translation id="2915996080311180594">Reinicia més tard</translation>
 <translation id="2926057806159140518">Introdueix el nom d'usuari i la contrasenya o bé escaneja el codi QR</translation>
 <translation id="2940811910881150316">No es pot provar el dispositiu. Torna a obrir la tapa per fer la prova.</translation>
 <translation id="2941112035454246133">Baixa</translation>
@@ -441,6 +443,7 @@
 <translation id="3140130301071865159">neu</translation>
 <translation id="3146655726035122603">Exclusiu de <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Dades mòbils</translation>
+<translation id="3153094818810437149">Pots canviar-ho més endavant a la configuració de la gravadora</translation>
 <translation id="3156511682997763015">Avança 10 segons</translation>
 <translation id="3156846309055100599">S'està escanejant la pàgina <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">S'ha detectat un portal captiu</translation>
@@ -467,6 +470,7 @@
 <translation id="3275729367986477355">Imatge d'avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edita el fitxer}other{Edita els fitxers}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3286538390144397061">Reinicia ara</translation>
 <translation id="3291996639387199448">Direcció de la clau</translation>
 <translation id="3294437725009624529">Convidat</translation>
 <translation id="3303855915957856445">No s'ha trobat cap resultat de la cerca</translation>
@@ -563,6 +567,7 @@
 <translation id="3785643128701396311">pixel art</translation>
 <translation id="3799381533888781854">DESACTIVAT. El teu administrador gestiona aquesta opció de configuració.</translation>
 <translation id="380097101658023925">controls RGB</translation>
+<translation id="380493988330050229">No es pot crear un resum per a aquest idioma de transcripció</translation>
 <translation id="38114475217616659">Esborra tot l'historial</translation>
 <translation id="3820172043799983114">El PIN no és vàlid.</translation>
 <translation id="382043424867370667">Fons de pantalla Posta de sol</translation>
@@ -735,6 +740,7 @@
 <translation id="458794348635939462">No s'han pogut resoldre tots els amfitrions</translation>
 <translation id="4593212453765072419">Cal l'autenticació del servidor intermediari</translation>
 <translation id="4594021849294327751">Crea una transcripció</translation>
+<translation id="4594541568452132351">Selecciona l'idioma de transcripció i baixa el model</translation>
 <translation id="4607282946861182308">No es poden crear imatges d'això. Prova-ho amb una altra línia d'ordres.</translation>
 <translation id="4609350030397390689">Disminueix la brillantor del teclat</translation>
 <translation id="4623061655523261501">S'han generat correctament noms per a les gravacions</translation>
@@ -1100,6 +1106,7 @@
 <translation id="6359919876285606596">Aquesta acció és permanent i no es pot desfer</translation>
 <translation id="6368342879959028556">Quan seleccionis Crea amb IA, escriu una indicació personalitzada. També pots seleccionar fons de pantalla IA per triar un tema i, a continuació, seleccionar les paraules subratllades per personalitzar el fons de pantalla IA.</translation>
 <translation id="636850387210749493">Inscripció empresarial</translation>
+<translation id="6369221585240879141">No es poden crear noms de gravació per a aquest idioma de transcripció</translation>
 <translation id="6373461326814131011">estany</translation>
 <translation id="6379086450106841622">Pantalla tàctil</translation>
 <translation id="6381741036071372448">Prova el teclat</translation>
@@ -1274,6 +1281,7 @@
 <translation id="7130438335435247835">Nom del punt d'accés Wi-Fi (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de noms}other{Servidors de noms}}</translation>
 <translation id="7135814714616751706">Cerca dreceres</translation>
+<translation id="7138614237884624401">Text simplificat</translation>
 <translation id="7141470099673912333">Transferència de contingut</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
@@ -1695,6 +1703,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="9100765901046053179">Configuració avançada</translation>
 <translation id="910415269708673980">Actualitza el tiquet de: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">S'està cercant la pàgina <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">La gravadora pot crear transcripcions per a gravacions amb veu. Al pas següent, has de seleccionar l'idioma de transcripció i baixar el model (fins a 100 MB).</translation>
 <translation id="9111102763498581341">Desbloqueja</translation>
 <translation id="9122492456897874028">Resumeix el contingut, obtén definicions i més</translation>
 <translation id="9122602430962285795">Per tornar-te a connectar, ves a Configuració</translation>

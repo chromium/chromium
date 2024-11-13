@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">已掃描編碼</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} 個分頁}other{{count} 個分頁}}</translation>
 <translation id="1084365883616172403">已在 Facebook 上發佈。</translation>
+<translation id="1085677983426914530">無法開啟「<ph name="FILENAME" />」</translation>
 <translation id="1096992026380844478">系統會根據上次的備份還原同步處理設定。<ph name="BEGIN_LINK" />查看你可同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">永遠翻譯<ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">同步處理記錄</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">不用了，謝謝</translation>
 <translation id="2320166752086256636">隱藏鍵盤</translation>
 <translation id="2321086116217818302">正在準備密碼…</translation>
+<translation id="2323697864063408084">在上鎖畫面以橫額形式接收通知，以免錯過重要訊息。</translation>
 <translation id="2326302612031521902">單位選取器</translation>
 <translation id="2330607597130465898">沒有保護</translation>
 <translation id="233375395665273385">刪除並登出</translation>
@@ -384,6 +386,7 @@
 <translation id="2671423594960767771">分享群組項目</translation>
 <translation id="2673508731173059946">前往已複製的連結</translation>
 <translation id="2687403674020088961">封鎖所有 Cookie (不建議)</translation>
+<translation id="2688535388040882469">橫額</translation>
 <translation id="2690858294534178585">正在使用相機</translation>
 <translation id="2691653761409724435">無法離線查看</translation>
 <translation id="2696180352517415858">您不會因此登出 Google 帳戶。在您登入後，<ph name="BEGIN_LINK" />其他形式的活動<ph name="END_LINK" />可能會儲存至您的 Google 帳戶。您可以隨時刪除這些資料。
@@ -636,6 +639,7 @@
 <translation id="3986739045730058129">前往該分頁</translation>
 <translation id="3992684624889376114">關於本頁</translation>
 <translation id="3994422733891749358">選擇要接收的通知</translation>
+<translation id="3994522032746736727">使用 <ph name="EMAIL" /> 登入</translation>
 <translation id="3995521777587992544">網頁載入進度列，已經載入咗 <ph name="EMAIL" />。</translation>
 <translation id="3997522473364371632">管理員已停用分享密碼功能。</translation>
 <translation id="4002066346123236978">標題</translation>
@@ -843,6 +847,7 @@
 <translation id="4936354130727646074">永不移動</translation>
 <translation id="4937410517508563815">將密碼儲存至帳戶</translation>
 <translation id="4938338714234463591">這會讓您在網站上透過語音使用特定功能。</translation>
+<translation id="4938716880833771969">系統會以靜音方式傳送通知</translation>
 <translation id="4941089862236492464">抱歉，分享項目時發生問題。</translation>
 <translation id="4944543191714094452">從網頁中尋找…</translation>
 <translation id="4945756290001680296">存取密碼設定</translation>
@@ -1609,6 +1614,7 @@
 <translation id="8319076807703933069">新搜尋</translation>
 <translation id="8343993175958086504">備份資料即可在任何裝置上使用。</translation>
 <translation id="8349305172487531364">書籤列</translation>
+<translation id="8364563001733875155">如要更改 PIN，請先在裝置上設定密碼。</translation>
 <translation id="8366466717204352506">從未檢查過</translation>
 <translation id="8368001212524806591">追蹤價格</translation>
 <translation id="8370406443343902172">前往「設定」…</translation>

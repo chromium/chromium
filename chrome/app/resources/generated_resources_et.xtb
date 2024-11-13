@@ -1985,7 +1985,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="235028206512346451">Kui lähete oma seadmest eemale, lukustub ekraanikuva automaatselt. Kui olete oma seadme ees, jääb ekraanikuva kauemaks avatuks. Kui te ekraanilukku ei kasuta, lülitub seade lukustumise asemel unerežiimi.</translation>
 <translation id="2351923523007389195">Lubatud – <ph name="PERMISSION_DETAILS" />. Lülitage sisse <ph name="LINK_BEGIN" />süsteemi juurdepääs asukohale<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
-<translation id="2352810082280059586">Lukustuskuva märkmed salvestatakse automaatselt rakendusse <ph name="LOCK_SCREEN_APP_NAME" />. Teie kõige viimane märge jääb lukustuskuvale.</translation>
 <translation id="2353168619378866466">Ava grupp</translation>
 <translation id="2353297238722298836">Kaamera ja mikrofon on lubatud</translation>
 <translation id="2353910600995338714">Eksportimine õnnestus</translation>
@@ -4163,7 +4162,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="3887022758415973389">Kuva seadmete loend</translation>
 <translation id="3887764720741098847">Salvestatud teave</translation>
 <translation id="3888501106166145415">Seotud WiFi-võrgud</translation>
-<translation id="3888550877729210209">Märkmete tegemine rakendusega <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">WiFi sünkroonimise kasutamiseks lülitage sisse Chrome'i sünkroonimine</translation>
 <translation id="389313931326656921">Lüliti määramine toimingule „Järgmine“</translation>
 <translation id="3893268973182382220">Seda paneeli ei saa praegu laadida</translation>
@@ -11485,7 +11483,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="9133568201369135151">Diagnostikaandmete kogumine on lõpetatud. Andmete hulka kuulub osa teie isiklikest andmetest.</translation>
 <translation id="9133985615769429248">Kui jagate seda seadet teistega, saate kasutada ekraanilukku, et salvestatud parooli kasutades oma isik kinnitada</translation>
 <translation id="9134066738478820307">Saidid võivad identifikaatorite alusel kaitstud sisu esitada</translation>
-<translation id="913411432238655354">Rakenduste taastamine käivitamisel</translation>
 <translation id="9135777878366959474">Sisestage Google'i paroolihalduri tähtnumbriline PIN-kood</translation>
 <translation id="9137013805542155359">Kuva originaal</translation>
 <translation id="9137157311132182254">Eelistatud otsingumootor</translation>

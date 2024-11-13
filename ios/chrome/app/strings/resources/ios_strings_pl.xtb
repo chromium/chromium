@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Kod został zeskanowany</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} karta}few{{count} karty}many{{count} kart}other{{count} karty}}</translation>
 <translation id="1084365883616172403">Post na Facebooku dodany.</translation>
+<translation id="1085677983426914530">Nie udało się otworzyć pliku <ph name="FILENAME" /></translation>
 <translation id="1096992026380844478">Ustawienia synchronizacji zostaną przywrócone na podstawie ostatniej kopii zapasowej. <ph name="BEGIN_LINK" />Zobacz, co możesz synchronizować<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Zawsze tłumacz z języka: <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Synchronizacja historii</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Nie, dziękuję</translation>
 <translation id="2320166752086256636">Ukryj klawiaturę</translation>
 <translation id="2321086116217818302">Przygotowuję hasła…</translation>
+<translation id="2323697864063408084">Otrzymuj powiadomienia na ekranie blokady i w postaci banerów, aby nie przegapić ważnych informacji</translation>
 <translation id="2326302612031521902">Selektor jednostek</translation>
 <translation id="2330607597130465898">Brak ochrony</translation>
 <translation id="233375395665273385">Usuń i wyloguj się</translation>
@@ -384,6 +386,7 @@ Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności zwią
 <translation id="2671423594960767771">Udostępnij grupę</translation>
 <translation id="2673508731173059946">Otwórz skopiowany link</translation>
 <translation id="2687403674020088961">Blokuj wszystkie pliki cookie (niezalecane)</translation>
+<translation id="2688535388040882469">Banery</translation>
 <translation id="2690858294534178585">Aparat jest w użyciu</translation>
 <translation id="2691653761409724435">Niedostępne offline</translation>
 <translation id="2696180352517415858">Usunięcie historii nie spowoduje wylogowania Cię z konta Google. Gdy jesteś zalogowany(-a), na Twoim koncie Google mogą być zapisywane <ph name="BEGIN_LINK" />inne formy aktywności<ph name="END_LINK" />. W każdej chwili możesz je usunąć.
@@ -636,6 +639,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3986739045730058129">Przejdź do karty</translation>
 <translation id="3992684624889376114">Informacje o tej stronie</translation>
 <translation id="3994422733891749358">Wybierz powiadomienia, które chcesz otrzymywać</translation>
+<translation id="3994522032746736727">Zaloguj się jako <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Pasek postępu wczytywania strony, załadowano <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Administrator wyłączył udostępnianie hasła.</translation>
 <translation id="4002066346123236978">Tytuł</translation>
@@ -843,6 +847,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4936354130727646074">Nigdy nie przenoś</translation>
 <translation id="4937410517508563815">Zapisuj hasła na koncie</translation>
 <translation id="4938338714234463591">Pozwoli Ci to obsługiwać głosowo niektóre funkcje witryn.</translation>
+<translation id="4938716880833771969">Powiadomienia są dostarczane dyskretnie</translation>
 <translation id="4941089862236492464">Niestety, wystąpił problem z udostępnieniem tej rzeczy.</translation>
 <translation id="4944543191714094452">Znajdź na stronie…</translation>
 <translation id="4945756290001680296">Otwórz ustawienia haseł</translation>
@@ -1609,6 +1614,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8319076807703933069">Nowe wyszukiwanie</translation>
 <translation id="8343993175958086504">Twórz kopie zapasowe swoich danych i używaj ich na dowolnym urządzeniu.</translation>
 <translation id="8349305172487531364">Pasek zakładek</translation>
+<translation id="8364563001733875155">Aby zmienić kod PIN, najpierw ustaw kod dostępu na urządzeniu.</translation>
 <translation id="8366466717204352506">Jeszcze nie sprawdzano</translation>
 <translation id="8368001212524806591">Monitorowanie cen</translation>
 <translation id="8370406443343902172">Otwórz Ustawienia…</translation>

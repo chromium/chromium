@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Код зіскановано</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} вкладка}one{{count} вкладка}few{{count} вкладки}many{{count} вкладок}other{{count} вкладки}}</translation>
 <translation id="1084365883616172403">Опубліковано у Facebook</translation>
+<translation id="1085677983426914530">Не вдалося відкрити файл <ph name="FILENAME" /></translation>
 <translation id="1096992026380844478">Налаштування синхронізації буде відновлено на основі даних останньої резервної копії. <ph name="BEGIN_LINK" />Дізнайтесь, які дані можна синхронізувати.<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Завжди перекладати з такої мови: <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Синхронізація історії</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Ні, дякую</translation>
 <translation id="2320166752086256636">Сховати клавіатуру</translation>
 <translation id="2321086116217818302">Готуються паролі…</translation>
+<translation id="2323697864063408084">Отримуйте сповіщення на заблокованому екрані й у вигляді банерів, щоб не пропустити важливі новини</translation>
 <translation id="2326302612031521902">Засіб вибору одиниць</translation>
 <translation id="2330607597130465898">Захист вимкнено</translation>
 <translation id="233375395665273385">Видалити й вийти</translation>
@@ -384,6 +386,7 @@
 <translation id="2671423594960767771">Поділитися групою</translation>
 <translation id="2673508731173059946">Перейти за скопійованим посиланням</translation>
 <translation id="2687403674020088961">Блокувати всі файли cookie (не рекомендовано)</translation>
+<translation id="2688535388040882469">Банери</translation>
 <translation id="2690858294534178585">Камера використовується</translation>
 <translation id="2691653761409724435">Недоступно в режимі офлайн</translation>
 <translation id="2696180352517415858">Ви не вийдете з облікового запису Google. Коли ви входите в обліковий запис Google, у ньому можуть зберігатися <ph name="BEGIN_LINK" />дані про інші дії<ph name="END_LINK" />. Ви можете будь-коли видалити їх.
@@ -636,6 +639,7 @@
 <translation id="3986739045730058129">Перейти на вкладку</translation>
 <translation id="3992684624889376114">Про цю сторінку</translation>
 <translation id="3994422733891749358">Виберіть, які сповіщення ви хочете отримувати</translation>
+<translation id="3994522032746736727">Увійти як <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Індикатор перебігу завантаження сторінки. Завантажено <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Адміністратор вимкнув надсилання паролів.</translation>
 <translation id="4002066346123236978">Назва</translation>
@@ -843,6 +847,7 @@
 <translation id="4936354130727646074">Ніколи не переміщувати</translation>
 <translation id="4937410517508563815">Зберегти паролі в обліковому записі</translation>
 <translation id="4938338714234463591">Так ви зможете застосовувати голосові команди для певних функцій на веб-сайтах.</translation>
+<translation id="4938716880833771969">Сповіщення надсилаються без звуку</translation>
 <translation id="4941089862236492464">Під час спроби поділитися елементом виникла проблема.</translation>
 <translation id="4944543191714094452">Знайти на сторінці…</translation>
 <translation id="4945756290001680296">Доступ до налаштувань паролів</translation>
@@ -1609,6 +1614,7 @@
 <translation id="8319076807703933069">Новий пошук</translation>
 <translation id="8343993175958086504">Створюйте резервні копії даних і використовуйте їх на будь-якому пристрої.</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
+<translation id="8364563001733875155">Щоб змінити PIN-код, спершу налаштуйте код доступу на своєму пристрої.</translation>
 <translation id="8366466717204352506">Паролі ніколи не перевірялися</translation>
 <translation id="8368001212524806591">Відстеження цін</translation>
 <translation id="8370406443343902172">Перейти до налаштувань…</translation>

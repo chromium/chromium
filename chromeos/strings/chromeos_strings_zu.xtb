@@ -360,6 +360,7 @@
 <translation id="2589921777872778654">Hlela uphinde usule imenyu</translation>
 <translation id="2597774443162333062">Amafayela azothunyelwa ku-Google ukuze kulungiswe amaphutha</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Ukuskena kuqedile. Ikhasi eli-1 liskeniwe}one{Ukuskena kuqedile. Amakhasi angu-{NUMBER_OF_PAGES} askeniwe}other{Ukuskena kuqedile. Amakhasi angu-{NUMBER_OF_PAGES} askeniwe}}</translation>
+<translation id="261322795497077164">Ukuhlonza isikhulumi</translation>
 <translation id="2617397783536231890">ukotini</translation>
 <translation id="2618015542787108131">indunduma yesihlabathi</translation>
 <translation id="2619761439309613843">Ukuvuselela kwansuku zonke</translation>
@@ -408,6 +409,7 @@
 <translation id="2888298276507578975">Faka ukwaziswa njengokuthi "bhala inothi lokubonga"</translation>
 <translation id="2890557891229184386">isiqhingi esishisayo</translation>
 <translation id="2895772081848316509">okumnyama</translation>
+<translation id="2915996080311180594">Qala Kabusha Ngemuva Kwesikhathi</translation>
 <translation id="2926057806159140518">Faka igama lomsebenzisi nephasiwedi yakho noma uskene ikhodi yakho ye-QR</translation>
 <translation id="2940811910881150316">Ayikwazi ukuhlola idivayisi. Vula kabusha isivalo ukuze uhlole.</translation>
 <translation id="2941112035454246133">Phansi</translation>
@@ -440,6 +442,7 @@
 <translation id="3140130301071865159">iqhwa</translation>
 <translation id="3146655726035122603">Okukhethekile ku-<ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Idatha yeselula</translation>
+<translation id="3153094818810437149">Ungashintsha lokhu kamuva emasethingini Erekhoda</translation>
 <translation id="3156511682997763015">Dlulisela phambili imizuzwana engu-10</translation>
 <translation id="3156846309055100599">Iskena ikhasi <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Iphothali yabathunjiweyo itholiwe</translation>
@@ -466,6 +469,7 @@
 <translation id="3275729367986477355">Umfanekiso wesithombe</translation>
 <translation id="3283504360622356314">{0,plural, =1{Hlela ifayela}one{Hlela amafayela}other{Hlela amafayela}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
+<translation id="3286538390144397061">Qala kabusha manje</translation>
 <translation id="3291996639387199448">Isikhombisi-ndlela esiwukhiye</translation>
 <translation id="3294437725009624529">Isivakashi</translation>
 <translation id="3303855915957856445">Ayikho imiphumela yosesho etholakele</translation>
@@ -562,6 +566,7 @@
 <translation id="3785643128701396311">ubuciko be-pixel</translation>
 <translation id="3799381533888781854">KUVALIWE - Leli sethingi liphethwe ngumlawuli wakho.</translation>
 <translation id="380097101658023925">Izilawuli ze-rgb</translation>
+<translation id="380493988330050229">Ayikwazi ukusungula isifinyezo salolu limi lokuloba</translation>
 <translation id="38114475217616659">Sula wonke umlando</translation>
 <translation id="3820172043799983114">Iphinikhodi engavumelekile</translation>
 <translation id="382043424867370667">Isigciniskrini sokushona kwelanga</translation>
@@ -733,6 +738,7 @@
 <translation id="458794348635939462">Yehlulekile ukulungisa bonke abasingathi</translation>
 <translation id="4593212453765072419">Kudingeka ukuqinisekisa kommeleli</translation>
 <translation id="4594021849294327751">Sungula okulotshiweyo</translation>
+<translation id="4594541568452132351">Khetha ulimi lokuloba bese udawuniloda imodeli</translation>
 <translation id="4607282946861182308">Ayikwazi ukusungula imifanekiso yalokhu. Zama omunye umyalelo.</translation>
 <translation id="4609350030397390689">Ukugqama kwekhibhodi kuphansi</translation>
 <translation id="4623061655523261501">Amagama okurekhoda akhiqizwe ngokuphumelelayo</translation>
@@ -1097,6 +1103,7 @@
 <translation id="6359919876285606596">Lesi senzo singunaphakade futhi asikwazi ukuhlehliswa</translation>
 <translation id="6368342879959028556">Lapho ukhetha okuthi “Sungula nge-AI,” bhala umyalelo womuntu ngamunye. Noma ungakhetha okuthi "Iphepha langemuva le-AI" ukuze ukhethe itimu bese ukhetha amagama adwetshelwe ukuze uqondanise nomuntu siqu iphepha langemuva le-AI lakho.</translation>
 <translation id="636850387210749493">Ukubhalisa kwebhizinisi</translation>
+<translation id="6369221585240879141">Ayikwazi ukusungula amagama arekhodiwe ngalolu limi lokuloba</translation>
 <translation id="6373461326814131011">i-pond</translation>
 <translation id="6379086450106841622">Isikrini esithintwayo</translation>
 <translation id="6381741036071372448">Hlola ikhibhodi yakho</translation>
@@ -1270,6 +1277,7 @@
 <translation id="7130438335435247835">Igama lephoyinti lokufinyelela (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Igama leseva}one{Igama lamaseva}other{Igama lamaseva}}</translation>
 <translation id="7135814714616751706">Sesha izinqamuleli</translation>
+<translation id="7138614237884624401">Umbhalo owenziwe lula</translation>
 <translation id="7141470099673912333">Ukudlulisela Okuqukethwe</translation>
 <translation id="7143207342074048698">Iyaxhuma</translation>
 <translation id="7144878232160441200">Zama futhi</translation>
@@ -1691,6 +1699,7 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="9100765901046053179">Izilungiselelo ezithuthukisiwe</translation>
 <translation id="910415269708673980">Vuselela ithikithi le-<ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Iskena ikhasi <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">Irekhoda ingasungula okubhaliwe kwamarekhodi anezwi. Esinyathelweni esilandelayo, udinga ukukhetha ulimi lokuloba bese udawuniloda imodeli (kufika ku-100MB).</translation>
 <translation id="9111102763498581341">Vula</translation>
 <translation id="9122492456897874028">Finyeza okuqukethwe, thola izincazelo, nokuningi</translation>
 <translation id="9122602430962285795">Ukuze uxhume kabusha, iya Kumasethingi</translation>

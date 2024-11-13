@@ -1647,7 +1647,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="212962875239908767">Kontemplativní olejomalba zachycující intelektuála ponořeného do myšlenek uprostřed žluté louky.</translation>
 <translation id="2130235198799290727">Z rozšíření</translation>
 <translation id="2131077480075264">Aplikaci <ph name="APP_NAME" /> nelze nainstalovat, protože není povolena rozhraním <ph name="IMPORT_NAME" /></translation>
-<translation id="2131548114076786395">Pokud chcete sdílet skupiny karet, připojovat se k nim a spolupracovat na nich, otevřete svou totožnost</translation>
+<translation id="2131548114076786395">Pokud chcete sdílet skupiny karet, připojovat se k nim a spolupracovat na nich, ověřte svou totožnost</translation>
 <translation id="2131863825246488194">Buďte na internetu víc v bezpečí</translation>
 <translation id="2133775869826239001">Vyberte další funkce, které chcete nastavit</translation>
 <translation id="2133857665503360653">Zkusit znovu otevřít soubor <ph name="FILE_NAME" /></translation>
@@ -1978,7 +1978,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="235028206512346451">Pokud se vzdálíte od zařízení, obrazovka se automaticky uzamkne. Dokud budete před zařízením, zůstane obrazovka odemknutá déle. Pokud nepoužíváte zámek obrazovky, zařízení se neuzamkne, ale přejde do režimu spánku.</translation>
 <translation id="2351923523007389195">Povoleno – <ph name="PERMISSION_DETAILS" />. Zapněte <ph name="LINK_BEGIN" />systémový přístup k poloze<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
-<translation id="2352810082280059586">Poznámky na obrazovce uzamčení se automaticky ukládají do aplikace <ph name="LOCK_SCREEN_APP_NAME" />. Poslední poznámka na obrazovce uzamčení zůstane.</translation>
 <translation id="2353168619378866466">Otevřít skupinu</translation>
 <translation id="2353297238722298836">Kamera a mikrofon jsou povoleny</translation>
 <translation id="2353910600995338714">Export byl úspěšný</translation>
@@ -4153,7 +4152,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="3887022758415973389">Zobrazit seznam zařízení</translation>
 <translation id="3887764720741098847">Uložené informace</translation>
 <translation id="3888501106166145415">Přidružené sítě Wi-Fi</translation>
-<translation id="3888550877729210209">Pořizování poznámek pomocí aplikace <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Chcete-li použít Synchronizaci Wi-Fi, zapněte Synchronizaci Chromu</translation>
 <translation id="389313931326656921">Přiřazení přepínače pro akci Další</translation>
 <translation id="3893268973182382220">Tento panel momentálně nejde načíst</translation>
@@ -5670,7 +5668,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4998430619171209993">Zapnuto</translation>
 <translation id="4999804342505941663">Zapnout režim Nerušit</translation>
 <translation id="5001526427543320409">Soubory cookie třetích stran</translation>
-<translation id="5003070249435823986">Pomocí gesta přejděte do režimu posouvání a poté pohněte hlavou ve směru, kterým chcete posouvat. Až režim posouvání budete chtít ukončit, proveďte heslo znovu.</translation>
+<translation id="5003070249435823986">Pomocí gesta přejděte do režimu posouvání a poté pohněte hlavou ve směru, kterým chcete posouvat. Až režim posouvání budete chtít ukončit, proveďte gesto znovu.</translation>
 <translation id="5003993274120026347">Další věta</translation>
 <translation id="5005498671520578047">Kopírování hesla</translation>
 <translation id="5006218871145547804">ADB aplikací Android pro Crostini</translation>
@@ -9684,7 +9682,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7914399737746719723">Aplikace byla nainstalována</translation>
 <translation id="7915457674565721553">Chcete-li nastavit rodičovskou kontrolu, připojte se k internetu</translation>
 <translation id="7916364730877325865">Vaše organizace nedovoluje zapnutí synchronizace s tímto účtem</translation>
-<translation id="791698251820376781">Vaše organizace vám nepovoluje přihlásit se</translation>
+<translation id="791698251820376781">Vaše organizace přihlášení nepovoluje</translation>
 <translation id="7918257978052780342">Zaregistrovat</translation>
 <translation id="7919123827536834358">Tyto jazyky překládat automaticky</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
@@ -11443,7 +11441,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9123287046453017203">Zařízení není aktualizováno</translation>
 <translation id="9124084978667228083">{MEMBERS,plural, =1{1 web ve skupině vlastníka <ph name="RWS_OWNER" />}few{{MEMBERS} weby ve skupině vlastníka <ph name="RWS_OWNER" />}many{{MEMBERS} webu ve skupině vlastníka <ph name="RWS_OWNER" />}other{{MEMBERS} webů ve skupině vlastníka <ph name="RWS_OWNER" />}}</translation>
 <translation id="9125910124977405374">Odstranit jazyk <ph name="LANGUAGE_NAME" /> z automaticky překládaných jazyků</translation>
-<translation id="9125912770834459638">Vaše organizace vám nepovoluje přihlásit se</translation>
+<translation id="9125912770834459638">Vaše organizace přihlášení nepovoluje</translation>
 <translation id="9126149354162942022">Barva kurzoru</translation>
 <translation id="9128317794749765148">Instalaci nebylo možné dokončit</translation>
 <translation id="9128335130883257666">Otevřít stránku nastavení <ph name="INPUT_METHOD_NAME" /></translation>
@@ -11458,7 +11456,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9133568201369135151">Shromažďování diagnostických dat je dokončeno. Tato data zahrnují některé vaše osobní údaje.</translation>
 <translation id="9133985615769429248">Pokud toto zařízení sdílíte s dalšími lidmi, můžete při každém použití uloženého hesla nechat ověřit svou totožnost pomocí zámku obrazovky</translation>
 <translation id="9134066738478820307">Weby mohou k přehrávání chráněného obsahu používat identifikátory</translation>
-<translation id="913411432238655354">Při spuštění obnovit aplikace</translation>
 <translation id="9135777878366959474">Zadejte alfanumerický PIN pro Správce hesel Google</translation>
 <translation id="9137013805542155359">Zobrazit originál</translation>
 <translation id="9137157311132182254">Preferovaný vyhledávač</translation>

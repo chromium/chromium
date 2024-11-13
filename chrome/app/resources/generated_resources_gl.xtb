@@ -1975,7 +1975,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="235028206512346451">Se te apartas do dispositivo, a pantalla bloquearase de maneira automática. Mentres esteas diante do dispositivo, a pantalla manterase activa máis tempo. Se non usas pantalla de bloqueo, o teu dispositivo poñerase en suspensión en vez de bloquearse.</translation>
 <translation id="2351923523007389195">Permiso concedido: <ph name="PERMISSION_DETAILS" />. Activa o <ph name="LINK_BEGIN" />acceso á localización do sistema<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
-<translation id="2352810082280059586">As notas da pantalla de bloqueo gárdanse automaticamente na aplicación <ph name="LOCK_SCREEN_APP_NAME" />. A túa nota máis recente permanecerá na pantalla de bloqueo.</translation>
 <translation id="2353168619378866466">Abrir grupo</translation>
 <translation id="2353297238722298836">Permítense a cámara e o micrófono</translation>
 <translation id="2353910600995338714">Completouse a exportación</translation>
@@ -4155,7 +4154,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="3887022758415973389">Mostrar lista de dispositivos</translation>
 <translation id="3887764720741098847">Información gardada</translation>
 <translation id="3888501106166145415">Redes wifi asociadas</translation>
-<translation id="3888550877729210209">Tomar notas con <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Activar Sincronización de Chrome para usar a función Sincronización wifi</translation>
 <translation id="389313931326656921">Asignarlle a un interruptor a acción Seguinte</translation>
 <translation id="3893268973182382220">Non se pode cargar o panel neste momento</translation>
@@ -11457,7 +11455,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9133568201369135151">Completouse a recompilación de datos de diagnóstico. Entre eles inclúese algunha da túa información persoal.</translation>
 <translation id="9133985615769429248">Se compartes este dispositivo con outras persoas, podes usar o bloqueo de pantalla para verificar a túa identidade cando uses un contrasinal gardado</translation>
 <translation id="9134066738478820307">Permitir que os sitios usen identificadores para reproducir contido protexido</translation>
-<translation id="913411432238655354">Restaurar aplicacións ao inicio</translation>
 <translation id="9135777878366959474">Indicar o teu PIN alfanumérico para o xestor de contrasinais de Google</translation>
 <translation id="9137013805542155359">Mostrar orixinal</translation>
 <translation id="9137157311132182254">Motor de busca preferido</translation>

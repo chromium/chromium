@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1191518099344003522">APN er aktivert.</translation>
 <translation id="1195447618553298278">Ukjent feil.</translation>
+<translation id="1196264380943975940">Kan ikke oppsummere. Prøv en lengre transkripsjon.</translation>
 <translation id="1196959502276349371">Versjon <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Spill av / sett på pause</translation>
 <translation id="1201402288615127009">Neste</translation>
@@ -409,6 +410,7 @@
 <translation id="2888298276507578975">Skriv inn en forespørsel som «Skriv en takkemelding»</translation>
 <translation id="2890557891229184386">tropisk øy</translation>
 <translation id="2895772081848316509">mørk</translation>
+<translation id="2915996080311180594">Start på nytt senere</translation>
 <translation id="2926057806159140518">Oppgi brukernavn og passord, eller skann QR-koden din</translation>
 <translation id="2940811910881150316">Kan ikke teste enheten. Åpne lokket igjen for å teste.</translation>
 <translation id="2941112035454246133">Lav</translation>
@@ -468,6 +470,7 @@
 <translation id="3275729367986477355">Brukerbilde</translation>
 <translation id="3283504360622356314">{0,plural, =1{Rediger filen}other{Rediger filene}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3286538390144397061">Start på nytt nå</translation>
 <translation id="3291996639387199448">Nøkkelretning</translation>
 <translation id="3294437725009624529">Gjest</translation>
 <translation id="3303855915957856445">Søket ga ingen treff</translation>
@@ -752,6 +755,7 @@
 <translation id="4665014895760275686">Produsent</translation>
 <translation id="467510802200863975">Passordene er ikke like</translation>
 <translation id="467715984478005772">Mistanke om brannmur</translation>
+<translation id="4678534708181186163">Kan ikke oppsummere. Prøv en kortere transkripsjon.</translation>
 <translation id="4683762547447150570">Trykk på knappen for å fokusere på tastetilordningen</translation>
 <translation id="4691278870498629773">Stoppet – en skuff mangler</translation>
 <translation id="469379815867856270">Signalstyrke</translation>
@@ -854,6 +858,7 @@
 <translation id="5168185087976003268">Batterihelse</translation>
 <translation id="5170568018924773124">Vis i mappen</translation>
 <translation id="517075088756846356">Koble <ph name="DEVICE_NAME" />-strømkabelen fra og koble den til igjen for å fortsette oppdateringsprosessen</translation>
+<translation id="5178021559562393163">Kan ikke opprette navn. Prøv en kortere transkripsjon.</translation>
 <translation id="5180108905184566358">baobabtrær</translation>
 <translation id="5180712487038406644">Uttrykksfull</translation>
 <translation id="5190187232518914472">Gjenopplev favorittøyeblikkene dine. For å legge til eller redigere album, gå til <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
@@ -888,6 +893,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identitet</translation>
 <translation id="5317780077021120954">Lagre</translation>
+<translation id="5318310531701770497">Kan ikke opprette navn. Prøv en lengre transkripsjon.</translation>
 <translation id="5318334351163689047">Mislykkede TCP-forespørsler</translation>
 <translation id="53196409393069519">Vil du slå på transkripsjon?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

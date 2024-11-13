@@ -1988,7 +1988,6 @@
 <translation id="235028206512346451">אם מתרחקים מהמכשיר, המסך ננעל באופן אוטומטי. כשנמצאים מול המכשיר, המסך לא נכנס למצב שינה למשך יותר זמן. אם לא משתמשים במסך נעילה, המכשיר נכנס למצב שינה במקום להינעל.</translation>
 <translation id="2351923523007389195">יש הרשאה – <ph name="PERMISSION_DETAILS" />. צריך להפעיל את ה<ph name="LINK_BEGIN" />גישה למיקום המערכת<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">‏&lt; MB‏ 1</translation>
-<translation id="2352810082280059586">הערות שנכתבות כשמסך הנעילה פועל נשמרות באופן אוטומטי ב-<ph name="LOCK_SCREEN_APP_NAME" />. ההערה האחרונה שכתבת תמשיך להופיע במסך הנעילה.</translation>
 <translation id="2353168619378866466">פתיחת קבוצה</translation>
 <translation id="2353297238722298836">ניתן להשתמש בדף זה במצלמה ובמיקרופון</translation>
 <translation id="2353910600995338714">הייצוא הסתיים בהצלחה</translation>
@@ -4165,7 +4164,6 @@
 <translation id="3887022758415973389">הצגה של רשימת המכשירים</translation>
 <translation id="3887764720741098847">מידע שנשמר</translation>
 <translation id="3888501106166145415">‏רשתות ה-Wi-Fi המשויכות</translation>
-<translation id="3888550877729210209">כתיבת הערות בעזרת <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">‏צריך להפעיל סנכרון Chrome כדי להשתמש בסנכרון Wi-Fi</translation>
 <translation id="389313931326656921">הקצאת מתג לפעולה "הבא"</translation>
 <translation id="3893268973182382220">אי אפשר לטעון את החלונית כרגע</translation>
@@ -11480,7 +11478,6 @@
 <translation id="9133568201369135151">איסוף נתוני האבחון הסתיים. חלק מהפרטים האישיים שלך כלולים בנתונים האלה.</translation>
 <translation id="9133985615769429248">אם המכשיר הזה משותף עם אחרים, יש לך אפשרות להשתמש בנעילת המסך כדי לאמת את זהותך בכל שימוש בסיסמה שמורה</translation>
 <translation id="9134066738478820307">אתרים מורשים להשתמש במזהים כדי להפעיל תוכן מוגן</translation>
-<translation id="913411432238655354">שחזור האפליקציות במהלך ההפעלה</translation>
 <translation id="9135777878366959474">‏צריך להזין את קוד האימות האלפאנומרי של מנהל הסיסמאות של Google</translation>
 <translation id="9137013805542155359">הצגת מקור</translation>
 <translation id="9137157311132182254">מנוע חיפוש מועדף</translation>

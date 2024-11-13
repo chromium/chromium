@@ -318,6 +318,7 @@
 <translation id="1206832039833782423">安全碼位於卡片背面</translation>
 <translation id="1208339823324516598">{GROUP_COUNT,plural, =1{刪除群組}other{刪除群組}}</translation>
 <translation id="1208392090861059168">目前設定的時間表為<ph name="SUNRISE" /> 到<ph name="SUNSET" />。如要自動更新日落和日出時間表，請<ph name="BEGIN_LINK" />開啟系統位置存取權<ph name="END_LINK" /></translation>
+<translation id="1210376751550516429">選擇音訊輸出裝置</translation>
 <translation id="1210678701920254279">查看或新增印表機，並查看進行中的列印工作</translation>
 <translation id="1211769675100312947">自訂專屬捷徑</translation>
 <translation id="1213254615020057352">傳送使用狀況與診斷資料。讓系統自動將診斷資料、裝置和應用程式的使用資料傳送給 Google，協助改善貴子女的 Android 使用體驗。這些資料將有助於改善系統和應用程式的穩定性與其他功能，並不會用於識別貴子女的身分。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善自己的產品和服務。這項設定是由裝置擁有者強制執行。擁有者可選擇將這部裝置的診斷資料與使用資料傳送給 Google。如果貴子女的「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在他們的 Google 帳戶中。</translation>
@@ -402,6 +403,7 @@
 <translation id="1264083566674525434">編輯網站權限</translation>
 <translation id="1264337193001759725">如要查看網路 UI 記錄，請參閱 <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1264956950255940376">瞇左眼</translation>
+<translation id="1265094893042958831">正在生成與本頁相關的建議…</translation>
 <translation id="1265279736024499987">使用 Google 帳戶登入後，所有 ChromeOS Flex 裝置上的應用程式和設定都會保持同步。如要查看瀏覽器同步處理選項，請前往 <ph name="LINK_BEGIN" />Chrome 設定<ph name="LINK_END" />。</translation>
 <translation id="126710816202626562">翻譯語言：</translation>
 <translation id="1267649802567297774">AI 生成的<ph name="SUBJECT" />圖片 <ph name="INDEX" />，風格為 <ph name="STYLE" />，情境為<ph name="MOOD" />。</translation>
@@ -1976,7 +1978,6 @@
 <translation id="235028206512346451">如果你不在裝置前方，系統會自動鎖定螢幕；當你回到裝置前方時，系統就會解除鎖定螢幕。假如未設定螢幕鎖定，則裝置會進入休眠狀態，而不是鎖定螢幕。</translation>
 <translation id="2351923523007389195">已允許 – <ph name="PERMISSION_DETAILS" />。開啟<ph name="LINK_BEGIN" />系統位置資訊存取權<ph name="LINK_END" />。</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
-<translation id="2352810082280059586">螢幕鎖定記事內容會自動儲存到「<ph name="LOCK_SCREEN_APP_NAME" />」。你最近的記事仍會保留在鎖定畫面上。</translation>
 <translation id="2353168619378866466">開啟群組</translation>
 <translation id="2353297238722298836">可使用攝影機和麥克風</translation>
 <translation id="2353910600995338714">匯出成功</translation>
@@ -4150,7 +4151,6 @@
 <translation id="3887022758415973389">顯示裝置清單</translation>
 <translation id="3887764720741098847">儲存的資訊</translation>
 <translation id="3888501106166145415">關聯的 Wi-Fi 網路</translation>
-<translation id="3888550877729210209">使用「<ph name="LOCK_SCREEN_APP_NAME" />」寫筆記</translation>
 <translation id="3890064827463908288">開啟 Chrome 同步功能以使用 Wi-Fi 同步功能</translation>
 <translation id="389313931326656921">指派代表「下一個」的外接切換裝置</translation>
 <translation id="3893268973182382220">目前無法載入這個面板</translation>
@@ -4391,6 +4391,7 @@
 <translation id="4047345532928475040">不適用</translation>
 <translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">前往主畫面</translation>
+<translation id="4048295959689903187">選取音訊輸出裝置</translation>
 <translation id="4048384495227695211">在資料夾中顯示 <ph name="FILE_NAME" /></translation>
 <translation id="404894744863342743">下載的檔案使用完畢之後，請務必刪除，避免這部裝置的其他使用者知道你的密碼。</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{無法與 # 位聯絡人建立連線。如要使用鄰近分享功能分享內容，請將與對方 Google 帳戶相關聯的電子郵件地址加入聯絡人資料。}other{無法與 # 位聯絡人建立連線。如要使用鄰近分享功能分享內容，請將與對方 Google 帳戶相關聯的電子郵件地址加入聯絡人資料。}}</translation>
@@ -5296,6 +5297,7 @@
 <translation id="4730492586225682674">在螢幕鎖定狀態下顯示以觸控筆記錄的最新筆記</translation>
 <translation id="4730888769809690665">你已允許 <ph name="SITE" /> 傳送通知</translation>
 <translation id="4731306954230393087">這些網站可使用與你相關的既有資訊</translation>
+<translation id="4732799736617504962">連接的麥克風僅支援降噪功能</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (左側)</translation>
 <translation id="4733793249294335256">位置</translation>
 <translation id="473546211690256853">這個帳戶是由 <ph name="DOMAIN" /> 負責管理。</translation>
@@ -5368,6 +5370,7 @@
 <translation id="4789348252524569426">無法安裝語音檔案，必須更新裝置。請重新啟動裝置，然後再試一次。</translation>
 <translation id="4789550509729954245">鄰近裝置分享內容時顯示通知</translation>
 <translation id="4791037424585594169">(UDP)</translation>
+<translation id="4791200512372376561">沒有可用的建議。你可以說「請提供這個頁面的重點摘要」，或是提出自己的問題。</translation>
 <translation id="4791793693640849493">儲存項目至帳戶</translation>
 <translation id="4792290259143007505">啟用 TrackPoint 加速功能</translation>
 <translation id="4792711294155034829">回報問題(&amp;R)...</translation>
@@ -6049,6 +6052,7 @@
 <translation id="5276357196618041410">請先登入才能儲存設定</translation>
 <translation id="5277127016695466621">顯示側邊面板</translation>
 <translation id="5278823018825269962">狀態 ID</translation>
+<translation id="5279214046729249716">是，請保留</translation>
 <translation id="5279600392753459966">全部封鎖</translation>
 <translation id="5280064835262749532">更新 <ph name="SHARE_PATH" /> 的憑證</translation>
 <translation id="5280335021886535443">按下 |<ph name="ACCELERATOR" />| 即可聚焦這個泡泡。</translation>
@@ -11449,7 +11453,6 @@
 <translation id="9133568201369135151">診斷資料收集完成。這項資料包含你的部分個人資訊。</translation>
 <translation id="9133985615769429248">如果你與其他人共用這部裝置，可以使用螢幕鎖定功能，讓系統在你使用已儲存的密碼時驗證身分</translation>
 <translation id="9134066738478820307">網站可以使用 ID 來播放受保護的內容</translation>
-<translation id="913411432238655354">在啟動時還原應用程式</translation>
 <translation id="9135777878366959474">輸入 Google 密碼管理工具的英數字元 PIN 碼</translation>
 <translation id="9137013805542155359">顯示原文</translation>
 <translation id="9137157311132182254">偏好的搜尋引擎</translation>

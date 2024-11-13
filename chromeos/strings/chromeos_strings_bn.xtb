@@ -409,6 +409,7 @@
 <translation id="2888298276507578975">"ধন্যবাদ দেওয়ার নোট লিখুন"-এর মতো প্রম্পট লিখুন</translation>
 <translation id="2890557891229184386">ট্রপিকাল আইল্যান্ড</translation>
 <translation id="2895772081848316509">ডার্ক</translation>
+<translation id="2915996080311180594">পরে একবার রিস্টার্ট করে নিন</translation>
 <translation id="2926057806159140518">আপনার ব্যবহারকারীর নাম এবং পাসওয়ার্ড লিখুন বা আপনার QR কোড স্ক্যান করুন</translation>
 <translation id="2940811910881150316">ডিভাইসটি পরীক্ষা করা সম্ভব হচ্ছে না। পরীক্ষার জন্য ডিভাইসের লিডটি আবার খুলুন।</translation>
 <translation id="2941112035454246133">নিম্ন</translation>
@@ -468,6 +469,7 @@
 <translation id="3275729367986477355">অবতারের ছবি</translation>
 <translation id="3283504360622356314">{0,plural, =1{ফাইলটি এডিট করুন}one{ফাইলগুলি এডিট করুন}other{ফাইলগুলি এডিট করুন}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
+<translation id="3286538390144397061">এখন পুর্নসূচনা করবেন</translation>
 <translation id="3291996639387199448">মূল দিকনির্দেশ</translation>
 <translation id="3294437725009624529">অতিথি</translation>
 <translation id="3303855915957856445">কোনো সার্চ ফলাফল পাওয়া যায়নি</translation>

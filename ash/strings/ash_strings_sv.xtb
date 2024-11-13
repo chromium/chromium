@@ -10,7 +10,7 @@
 <translation id="1032891413405719768">Batteriet håller på att ta slut i e-pennan</translation>
 <translation id="1036073649888683237">Öppna inställningarna om du vill hantera aviseringar</translation>
 <translation id="1036348656032585052">Inaktivera</translation>
-<translation id="1036672894875463507">Jag är Google-assistenten och jag kan hjälpa dig under hela dagen.
+<translation id="1036672894875463507">Jag är Google Assistent och jag kan hjälpa dig under hela dagen.
 Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> har lagts till</translation>
 <translation id="1038106730571050514">Visa förslag</translation>
@@ -445,7 +445,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="254900897760075745">Kopiera markerat innehåll till Urklipp</translation>
 <translation id="2549711466868162843">Bättre ljus</translation>
 <translation id="2549985041256363841">Börja spela in</translation>
-<translation id="255671100581129685">Google-assistenten är inte tillgänglig i en offentlig session.</translation>
+<translation id="255671100581129685">Google Assistent är inte tillgänglig i en offentlig session.</translation>
 <translation id="256712445991462162">den dockade skärmförstoraren</translation>
 <translation id="2573588302192866788">Det gick inte att ansluta <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Multiinloggning har inaktiverats</translation>
@@ -1103,7 +1103,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="4776584068981882959">Det gick fortfarande inte att verifiera lösenordet. Försök igen.</translation>
 <translation id="4776917500594043016">Lösenord för <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4777825441726637019">Play Butik</translation>
-<translation id="4778095205580009397">Google-assistenten är inte tillgänglig i en demosession.</translation>
+<translation id="4778095205580009397">Google Assistent är inte tillgänglig i en demosession.</translation>
 <translation id="4789348252524569426">Det gick inte att installera ljudfiler. Enheten måste uppdateras. Starta om enheten och försök igen.</translation>
 <translation id="478959186716341421">Castar</translation>
 <translation id="4798403412327076414">Nästa gång du loggar in ser du fönstren och apparna som tidigare var öppna</translation>
@@ -1388,7 +1388,7 @@ Inga enheter är anslutna.</translation>
 <translation id="5677928146339483299">Blockerat</translation>
 <translation id="5678564054339031017">Visa nästa vecka</translation>
 <translation id="5679050765726761783">En nätadapter med låg effekt upptäcktes</translation>
-<translation id="5682642926269496722">Google-assistenten är inte tillgänglig för det här användarkontot.</translation>
+<translation id="5682642926269496722">Google Assistent är inte tillgänglig för det här användarkontot.</translation>
 <translation id="5682844616152977671"><ph name="RELATIVE_DATE" /> <ph name="TIME" /></translation>
 <translation id="5689233503102158537">alt + backsteg</translation>
 <translation id="5689633613396158040">Med Nattljus blir det behagligare för ögonen att titta på skärmen eller läsa i svag belysning Tryck om du vill ändra vilken tid Nattljus aktiveras eller inaktivera det helt.</translation>
@@ -1527,7 +1527,7 @@ Inga enheter är anslutna.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6119972796024789243">Färgkorrigering</translation>
 <translation id="6121838516699723042">Bekräfta nedladdning <ph name="FILENAME" /></translation>
-<translation id="612734058257491180">Google-assistenten är inte tillgänglig i en gästsession.</translation>
+<translation id="612734058257491180">Google Assistent är inte tillgänglig i en gästsession.</translation>
 <translation id="6127395413317891856">Du är offline. Kontrollera anslutningen och försök igen.</translation>
 <translation id="6129953537138746214">Blanksteg</translation>
 <translation id="6137566720514957455">Öppna dialogrutan för borttagning av <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2367,7 +2367,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="9050012935252397793">Bluetooth är inte tillgängligt</translation>
 <translation id="906458777597946297">Maximera fönstret</translation>
 <translation id="9065203028668620118">Redigera</translation>
-<translation id="9070640332319875144">Inställningar för Google-assistenten</translation>
+<translation id="9070640332319875144">Inställningar för Google Assistent</translation>
 <translation id="9071966355747967534"><ph name="FEATURE_NAME" /> är inte tillgänglig</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> tills batteriet är tomt.</translation>
 <translation id="9074432941673450836">Använd appar för att göra allt du behöver på din <ph name="PRODUCT_NAME" />. Du hittar dina appar i Appstartaren. Du kan även trycka på tangenten för Appstartaren (ovanför den vänstra Skift-tangenten) på tangentbordet.</translation>

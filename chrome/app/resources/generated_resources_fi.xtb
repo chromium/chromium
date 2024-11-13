@@ -1988,7 +1988,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="235028206512346451">Jos poistut laitteen läheltä, näyttö lukittuu automaattisesti. Kun pysyt laitteen edessä, näyttö pysyy päällä pidempään. Jos et käytä lukitusnäyttöä, laite siirtyy virransäästötilaan lukittumisen sijaan.</translation>
 <translation id="2351923523007389195">Sallittu – <ph name="PERMISSION_DETAILS" />. Ota käyttöön <ph name="LINK_BEGIN" />järjestelmän sijainnin käyttö<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 Mt</translation>
-<translation id="2352810082280059586">Lukitusnäytön ilmoitukset tallennetaan automaattisesti sovellukseen <ph name="LOCK_SCREEN_APP_NAME" />. Viimeisin ilmoitus pysyy lukitusnäytöllä.</translation>
 <translation id="2353168619378866466">Avaa ryhmä</translation>
 <translation id="2353297238722298836">Kamera ja mikrofoni sallittu</translation>
 <translation id="2353910600995338714">Siirto onnistui</translation>
@@ -4165,7 +4164,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="3887022758415973389">Näytä laiteluettelo</translation>
 <translation id="3887764720741098847">Tallennetut tiedot</translation>
 <translation id="3888501106166145415">Yhdistetyt Wi-Fi-verkot</translation>
-<translation id="3888550877729210209">Muistiinpanojen kirjoittaminen sovelluksella <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Laita Chromen synkronointi päälle, jotta voit käyttää Wi-Fin synkronointia</translation>
 <translation id="389313931326656921">Määritä kytkin: Seuraava</translation>
 <translation id="3893268973182382220">Paneelin lataus ei juuri nyt onnistu</translation>
@@ -11469,7 +11467,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="9133568201369135151">Diagnostiikkadatan kerääminen on valmis. Osa henkilökohtaisista tiedoistasi sisältyy tähän dataan.</translation>
 <translation id="9133985615769429248">Jos muutkin käyttävät tätä laitetta, vahvistaa henkilöllisyytesi näytön lukituksen avaustavalla, kun käytät tallennettua salasanaa</translation>
 <translation id="9134066738478820307">Sivustot voivat käyttää tunnisteita suojatun sisällön toistamiseen</translation>
-<translation id="913411432238655354">Palauta sovellukset käynnistettäessä</translation>
 <translation id="9135777878366959474">Lisää aakkosnumeerinen Google Salasanojen PIN-koodi</translation>
 <translation id="9137013805542155359">Näytä alkuperäinen</translation>
 <translation id="9137157311132182254">Ensisijainen hakukone</translation>

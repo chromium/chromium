@@ -1973,7 +1973,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="235028206512346451">Si te alejas de tu dispositivo, la pantalla se bloqueará automáticamente. Cuando estés frente a tu dispositivo, la pantalla quedará activada por más tiempo. Si no tienes una pantalla de bloqueo, tu dispositivo se suspenderá en lugar de bloquearse.</translation>
 <translation id="2351923523007389195">Permiso habilitado: <ph name="PERMISSION_DETAILS" />. Activa el <ph name="LINK_BEGIN" />acceso a la ubicación del sistema<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">Menos de 1 MB</translation>
-<translation id="2352810082280059586">Las notas de la pantalla bloqueada se guardan automáticamente en <ph name="LOCK_SCREEN_APP_NAME" />. La nota más reciente permanecerá en la pantalla bloqueada.</translation>
 <translation id="2353168619378866466">Abrir grupo</translation>
 <translation id="2353297238722298836">Cámara y micrófono permitidos</translation>
 <translation id="2353910600995338714">Exportación correcta</translation>
@@ -4150,7 +4149,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="3887022758415973389">Mostrar la lista de dispositivos</translation>
 <translation id="3887764720741098847">Información guardada</translation>
 <translation id="3888501106166145415">Redes Wi-Fi asociadas</translation>
-<translation id="3888550877729210209">Tomar notas con <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Activa la Sincronización de Chrome para usar la Sincronización Wi-Fi</translation>
 <translation id="389313931326656921">Asignar interruptor a "Siguiente"</translation>
 <translation id="3893268973182382220">No se puede cargar este panel ahora mismo</translation>
@@ -11457,7 +11455,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9133568201369135151">Se completó la recopilación de datos de diagnóstico. Parte de tu información personal se incluye en estos datos.</translation>
 <translation id="9133985615769429248">Si compartes este dispositivo con otras personas, puedes usar tu bloqueo de pantalla para verificar tu identidad cada vez que uses una contraseña guardada</translation>
 <translation id="9134066738478820307">Permitir que los sitios utilicen identificadores para reproducir contenido protegido</translation>
-<translation id="913411432238655354">Restablecer apps en el inicio</translation>
 <translation id="9135777878366959474">Ingresa tu PIN alfanumérico del Administrador de contraseñas de Google</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9137157311132182254">Motor de búsqueda preferido</translation>

@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">إخفاء نص التسجيل</translation>
 <translation id="160633243685262989">معاينة الصورة</translation>
 <translation id="1611649489706141841">للأمام</translation>
+<translation id="1615144046047995187">‏يتعذّر التنزيل. يُرجى إعادة المحاولة أو إعادة تشغيل جهاز Chromebook.</translation>
 <translation id="1615335640928990664">عرض معدل استخدام البيانات منذ تاريخ <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">استخدام مظهر</translation>
 <translation id="1621067168122174824">تشغيل اختبار فحص البطارية</translation>
@@ -408,6 +409,7 @@
 <translation id="2888298276507578975">أدخِل طلبًا، مثل "كتابة رسالة شكر"</translation>
 <translation id="2890557891229184386">جزيرة استوائية</translation>
 <translation id="2895772081848316509">داكنة</translation>
+<translation id="2915996080311180594">إعادة التشغيل لاحقًا</translation>
 <translation id="2926057806159140518">أدخِل اسم المستخدم وكلمة المرور أو امسَح رمز الاستجابة السريعة ضوئيًا.</translation>
 <translation id="2940811910881150316">يتعذّر اختبار لوحة المفاتيح الخاصة بالجهاز. أعِد فتح غطاء الجهاز لاختبار لوحة المفاتيح.</translation>
 <translation id="2941112035454246133">منخفضة</translation>
@@ -466,6 +468,7 @@
 <translation id="3275729367986477355">الأفاتار</translation>
 <translation id="3283504360622356314">{0,plural, =1{تعديل الملف}zero{تعديل الملفات}two{تعديل الملفَين}few{تعديل الملفات}many{تعديل الملفات}other{تعديل الملفات}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> غيغاهرتز</translation>
+<translation id="3286538390144397061">إعادة التشغيل الآن</translation>
 <translation id="3291996639387199448">اتجاه المفتاح</translation>
 <translation id="3294437725009624529">ضيف</translation>
 <translation id="3303855915957856445">لم يتم العثور على أي نتائج بحث</translation>
@@ -585,6 +588,7 @@
 <translation id="3885327323343477505">تغيير شاشة الاستراحة</translation>
 <translation id="3889914174935857450">إعادة ضبط التاريخ</translation>
 <translation id="3897092660631435901">قائمة</translation>
+<translation id="3902271751020176019">لغة تحويل الصوت إلى نص</translation>
 <translation id="391412459402535266">يتعذّر اختبار لوحة المفاتيح الخاصة بالجهاز. يُرجى الانتقال إلى وضع "الكمبيوتر المحمول" لتتمكّن من إجراء الاختبار.</translation>
 <translation id="3916998944874125962">أخذ لقطة شاشة</translation>
 <translation id="3923184630988645767">استخدام البيانات</translation>
@@ -937,6 +941,7 @@
 <translation id="5606865426897221650">‏مفتاح Tab</translation>
 <translation id="5613201299517339763">لقد سجّلت الخروج</translation>
 <translation id="5620281292257375798">داخلي فقط</translation>
+<translation id="5628106863521633649">اللغات المتاحة</translation>
 <translation id="5630438231335788050">فن الباوهاوس</translation>
 <translation id="5631759159893697722">نبذة مختصرة</translation>
 <translation id="5655283760733841251">زيادة سطوع لوحة المفاتيح</translation>
@@ -1261,6 +1266,7 @@
 <translation id="710028965487274708">تعذَّر التفويض: تعذَّر إتمام عملية التفويض.</translation>
 <translation id="7101959270679078188">يجب فتح قفل "<ph name="DEVICE_NAME" />" لمواصلة عملية التحديث</translation>
 <translation id="7103252855940681301">الجهاز <ph name="INDEX" /> من إجمالي <ph name="COUNT" /> اسمه <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">اللغة المحددّة</translation>
 <translation id="7107255225945990211">اختيار عمل فني حصري مِن <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">إدخال</translation>
 <translation id="7117228822971127758">يُرجى إعادة المحاولة لاحقًا</translation>

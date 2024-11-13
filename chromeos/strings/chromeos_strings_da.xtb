@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">Skul transskription</translation>
 <translation id="160633243685262989">Forhåndsvisning</translation>
 <translation id="1611649489706141841">videresend</translation>
+<translation id="1615144046047995187">Download er ikke muligt. Prøv igen, eller genstart din Chromebook.</translation>
 <translation id="1615335640928990664">Dataforbrug siden <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Brug et tema</translation>
 <translation id="1621067168122174824">Kør opladningstest</translation>
@@ -408,6 +409,7 @@
 <translation id="2888298276507578975">Angiv en prompt, f.eks. "Skriv et takkekort"</translation>
 <translation id="2890557891229184386">en tropisk ø</translation>
 <translation id="2895772081848316509">mørkt</translation>
+<translation id="2915996080311180594">Genstart senere</translation>
 <translation id="2926057806159140518">Angiv dit brugernavn og din adgangskode, eller scan din QR-kode</translation>
 <translation id="2940811910881150316">Enheden kan ikke testes. Åbn skærmen igen for at teste den.</translation>
 <translation id="2941112035454246133">Lav</translation>
@@ -466,6 +468,7 @@
 <translation id="3275729367986477355">Billede til avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Rediger fil}one{Rediger fil}other{Rediger filer}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3286538390144397061">Genstart nu</translation>
 <translation id="3291996639387199448">Nøgleretning</translation>
 <translation id="3294437725009624529">Gæst</translation>
 <translation id="3303855915957856445">Der blev ikke fundet nogen søgeresultater</translation>
@@ -585,6 +588,7 @@
 <translation id="3885327323343477505">Skift pauseskærm</translation>
 <translation id="3889914174935857450">Nulstil dato</translation>
 <translation id="3897092660631435901">Menu</translation>
+<translation id="3902271751020176019">Transskriptionssprog</translation>
 <translation id="391412459402535266">Enheden kan ikke testes. Skift til computertilstand for at teste den.</translation>
 <translation id="3916998944874125962">tag et screenshot</translation>
 <translation id="3923184630988645767">Dataforbrug</translation>
@@ -937,6 +941,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Du er logget ud</translation>
 <translation id="5620281292257375798">Kun internt</translation>
+<translation id="5628106863521633649">Tilgængelige sprog</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">abstrakt</translation>
 <translation id="5655283760733841251">Øg tastaturets lysstyrke</translation>
@@ -1261,6 +1266,7 @@
 <translation id="710028965487274708">Handlingen mislykkedes – Godkendelse mislykkedes</translation>
 <translation id="7101959270679078188">Lås <ph name="DEVICE_NAME" /> op for at fortsætte opdateringsprocessen</translation>
 <translation id="7103252855940681301">Enhed <ph name="INDEX" /> af <ph name="COUNT" /> med navnet <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Valgt sprog</translation>
 <translation id="7107255225945990211">Vælg kunst, der kun er tilgængelig på <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7117228822971127758">Prøv igen senere</translation>

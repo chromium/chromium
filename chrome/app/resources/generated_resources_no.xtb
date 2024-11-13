@@ -1986,7 +1986,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="235028206512346451">Hvis du beveger deg bort fra enheten, låses skjermen automatisk. Når du er foran enheten, holder skjermen seg ulåst lenger. Hvis du ikke bruker en låseskjerm, går enheten over i hvilemodus i stedet for å bli låst.</translation>
 <translation id="2351923523007389195">Tillatt – <ph name="PERMISSION_DETAILS" />. Slå på <ph name="LINK_BEGIN" />posisjonstilgang for systemet<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
-<translation id="2352810082280059586">Notater på låseskjermen lagres automatisk i <ph name="LOCK_SCREEN_APP_NAME" />. Det nyeste notatet ditt forblir på låseskjermen.</translation>
 <translation id="2353168619378866466">Åpne gruppen</translation>
 <translation id="2353297238722298836">Kameraet og mikrofonen er tillatt</translation>
 <translation id="2353910600995338714">Eksporten er utført</translation>
@@ -4164,7 +4163,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="3887022758415973389">Vis enhetslisten</translation>
 <translation id="3887764720741098847">Lagret informasjon</translation>
 <translation id="3888501106166145415">Tilknyttede wifi-nettverk</translation>
-<translation id="3888550877729210209">Tar notater med <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Slå på Chrome-synkronisering for å bruke wifi-synkronisering</translation>
 <translation id="389313931326656921">Tilordne bryter for «Neste»</translation>
 <translation id="3893268973182382220">Kan ikke laste inn dette panelet akkurat nå</translation>
@@ -5426,6 +5424,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4816336393325437908">{COUNT,plural, =1{1 bokmerke er slettet}other{{COUNT} bokmerker er slettet}}</translation>
 <translation id="481689174647911539">Denne filen kan være et virus eller skadelig programvare.<ph name="LINE_BREAK" />Du kan sende den til Google Safe Browsing for å sjekke om den er utrygg. Skanninger tar vanligvis noen sekunder.</translation>
 <translation id="4816900689218414104">Opprett en passnøkkel på en telefon eller et nettbrett</translation>
+<translation id="481917177323309377">Faner du ikke har brukt på <ph name="COUNT" /> dager eller mer</translation>
 <translation id="4819323978093861656">{0,plural, =0{Lukkes nå.}=1{Lukkes om 1 sekund.}other{Lukkes om # sekunder.}}</translation>
 <translation id="4819607494758673676">Google Assistent-varsler</translation>
 <translation id="4819818293886748542">Få en link til støtteverktøyet</translation>
@@ -11477,7 +11476,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9133568201369135151">Innsamlingen av diagnostikkdata er fullført. Dataene inneholder noen av personopplysningene dine.</translation>
 <translation id="9133985615769429248">Hvis du deler denne enheten med andre, kan du bruke skjermlåsen til å bekrefte at det er deg, når du bruker lagrede passord</translation>
 <translation id="9134066738478820307">Nettsteder kan bruke identifikatorer til å spille av beskyttet innhold</translation>
-<translation id="913411432238655354">Gjenopprett apper ved oppstart</translation>
 <translation id="9135777878366959474">Skriv inn den alfanumeriske PIN-koden for Google Passordlagring</translation>
 <translation id="9137013805542155359">Vis original</translation>
 <translation id="9137157311132182254">Foretrukket søkemotor</translation>

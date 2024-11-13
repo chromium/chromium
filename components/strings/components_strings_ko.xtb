@@ -3409,6 +3409,7 @@
 <translation id="7156870133441232244">서버를 TLS 1.2 이상으로 업그레이드해야 합니다.</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{<ph name="FEATURE_NAME" /> 기능을 사용하여 이 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}other{<ph name="FEATURE_NAME" /> 기능을 사용하여 이러한 파일을 전송하려면 기기에서 여유 공간(<ph name="DISK_SPACE_SIZE" />)을 확보하세요.}}</translation>
 <translation id="7160999678034985039">작업을 저장하고 준비가 되면 업데이트를 시작하세요.</translation>
+<translation id="7162277662076933695">스마트 카드 리더</translation>
 <translation id="7163295244162773898">{0,plural, =1{기밀 파일을 복사하시겠습니까?}other{기밀 파일을 복사하시겠습니까?}}</translation>
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />"은(는) 이 플랫폼에서 지원되는 제한이 아닙니다.</translation>
 <translation id="717330890047184534">GAIA ID:</translation>

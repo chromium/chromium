@@ -318,6 +318,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1206832039833782423">Kode keamanan ada di bagian belakang kartu</translation>
 <translation id="1208339823324516598">{GROUP_COUNT,plural, =1{Hapus grup}other{Hapus grup}}</translation>
 <translation id="1208392090861059168">Jadwal saat ini disetel ke <ph name="SUNRISE" /> — <ph name="SUNSET" />. Untuk otomatis memperbarui jadwal matahari terbenam dan matahari terbit, <ph name="BEGIN_LINK" />aktifkan akses lokasi sistem<ph name="END_LINK" /></translation>
+<translation id="1210376751550516429">Pilih perangkat output audio</translation>
 <translation id="1210678701920254279">Menampilkan atau menambahkan printer dan melihat tugas pencetakan yang aktif</translation>
 <translation id="1211769675100312947">Pintasan dikelola oleh Anda</translation>
 <translation id="1213254615020057352">Kirimkan data penggunaan dan diagnostik. Bantu tingkatkan pengalaman penggunaan Android oleh anak Anda dengan mengirimkan data diagnostik, perangkat, dan penggunaan aplikasi ke Google secara otomatis. Data ini tidak akan digunakan untuk mengidentifikasi anak Anda dan akan membantu meningkatkan performa sistem, stabilitas aplikasi, dan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. Setelan ini diterapkan oleh pemilik. Pemilik dapat memilih untuk mengirimkan data diagnostik dan penggunaan perangkat ini ke Google. Jika setelan Aktivitas Web &amp; Aplikasi tambahan diaktifkan untuk anak Anda, data ini dapat disimpan ke Akun Google miliknya.</translation>
@@ -402,6 +403,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1264083566674525434">Edit izin situs</translation>
 <translation id="1264337193001759725">Untuk menampilkan log UI jaringan, buka: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1264956950255940376">Menyipitkan mata kiri</translation>
+<translation id="1265094893042958831">Membuat saran untuk halaman ini…</translation>
 <translation id="1265279736024499987">Aplikasi dan setelan Anda akan disinkronkan di semua perangkat ChromeOS Flex tempat Anda login dengan Akun Google Anda. Untuk opsi sinkronisasi browser, buka <ph name="LINK_BEGIN" />setelan Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Bahasa terjemahan:</translation>
 <translation id="1267649802567297774">Gambar <ph name="SUBJECT" /> yang dihasilkan <ph name="INDEX" />, dalam gaya <ph name="STYLE" />, dengan mood <ph name="MOOD" />.</translation>
@@ -1989,7 +1991,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="235028206512346451">Jika Anda beranjak dari perangkat, layar akan otomatis dikunci. Jika Anda di depan perangkat, layar akan tetap aktif lebih lama. Jika Anda tidak menggunakan layar kunci, perangkat akan masuk mode tidur dan tidak dikunci.</translation>
 <translation id="2351923523007389195">Diizinkan – <ph name="PERMISSION_DETAILS" />. Aktifkan <ph name="LINK_BEGIN" />akses lokasi sistem<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
-<translation id="2352810082280059586">Catatan layar kunci disimpan otomatis ke <ph name="LOCK_SCREEN_APP_NAME" />. Catatan terbaru akan tetap berada di layar kunci.</translation>
 <translation id="2353168619378866466">Buka Grup</translation>
 <translation id="2353297238722298836">Kamera dan mikrofon diizinkan</translation>
 <translation id="2353910600995338714">Ekspor berhasil</translation>
@@ -4166,7 +4167,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="3887022758415973389">Tampilkan daftar perangkat</translation>
 <translation id="3887764720741098847">Informasi tersimpan</translation>
 <translation id="3888501106166145415">Jaringan Wi-Fi terkait</translation>
-<translation id="3888550877729210209">Mencatat dengan <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Aktifkan Sinkronisasi Chrome untuk menggunakan Wi-Fi Sync</translation>
 <translation id="389313931326656921">Tetapkan tombol akses untuk “Berikutnya”</translation>
 <translation id="3893268973182382220">Tidak dapat memuat panel ini sekarang</translation>
@@ -4408,6 +4408,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4047345532928475040">T/A</translation>
 <translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Kembali ke beranda</translation>
+<translation id="4048295959689903187">Pilih Output Audio</translation>
 <translation id="4048384495227695211">Tampilkan <ph name="FILE_NAME" /> dalam Folder</translation>
 <translation id="404894744863342743">Setelah selesai menggunakan file yang didownload, hapus agar orang lain yang menggunakan perangkat ini tidak dapat melihat sandi Anda.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontak tidak tersedia. Untuk menggunakan fitur Berbagi Langsung dengan kontak tersebut, tambahkan alamat email yang terkait dengan Akun Google mereka ke kontak Anda.}other{# kontak tidak tersedia. Untuk menggunakan fitur Berbagi Langsung dengan kontak tersebut, tambahkan alamat email yang terkait dengan Akun Google mereka ke kontak Anda.}}</translation>
@@ -5313,6 +5314,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4730492586225682674">Catatan terakhir stilus di layar kunci</translation>
 <translation id="4730888769809690665">Notifikasi diizinkan untuk <ph name="SITE" /></translation>
 <translation id="4731306954230393087">Diizinkan untuk menggunakan info tentang Anda yang telah disimpan situs</translation>
+<translation id="4732799736617504962">Mikrofon yang terhubung hanya dapat mendukung peredam bising</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (Kiri)</translation>
 <translation id="4733793249294335256">Lokasi</translation>
 <translation id="473546211690256853">Akun ini dikelola oleh <ph name="DOMAIN" /></translation>
@@ -5385,6 +5387,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4789348252524569426">Tidak dapat menginstal file ucapan. Perangkat perlu diupdate. Mulai ulang perangkat lalu coba lagi.</translation>
 <translation id="4789550509729954245">Tampilkan notifikasi saat perangkat sedang berbagi di sekitar</translation>
 <translation id="4791037424585594169">(UDP)</translation>
+<translation id="4791200512372376561">Saran tidak tersedia. Coba ajukan permintaan seperti “ringkas halaman ini” atau pertanyaan Anda sendiri.</translation>
 <translation id="4791793693640849493">Simpan item di akun</translation>
 <translation id="4792290259143007505">Aktifkan akselerasi TrackPoint</translation>
 <translation id="4792711294155034829">Lapo&amp;rkan Masalah...</translation>
@@ -6067,6 +6070,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5276357196618041410">Tidak dapat menyimpan konfigurasi tanpa login terlebih dahulu</translation>
 <translation id="5277127016695466621">Tampilkan panel samping</translation>
 <translation id="5278823018825269962">ID Status</translation>
+<translation id="5279214046729249716">Ya, pisahkan</translation>
 <translation id="5279600392753459966">Blokir semua</translation>
 <translation id="5280064835262749532">Perbarui kredensial untuk <ph name="SHARE_PATH" /></translation>
 <translation id="5280335021886535443">Tekan |<ph name="ACCELERATOR" />| untuk memfokuskan balon ini.</translation>
@@ -11472,7 +11476,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="9133568201369135151">Pengumpulan data diagnostik selesai. Beberapa informasi pribadi Anda disertakan dalam data ini.</translation>
 <translation id="9133985615769429248">Jika Anda berbagi perangkat ini dengan orang lain, Anda dapat menggunakan kunci layar untuk memverifikasi diri Anda setiap kali Anda menggunakan sandi tersimpan</translation>
 <translation id="9134066738478820307">Situs dapat menggunakan ID untuk memutar konten yang dilindungi</translation>
-<translation id="913411432238655354">Pulihkan aplikasi saat browser dimulai</translation>
 <translation id="9135777878366959474">Masukkan PIN alfanumerik Anda untuk Pengelola Sandi Google</translation>
 <translation id="9137013805542155359">Perlihatkan halaman asli</translation>
 <translation id="9137157311132182254">Mesin telusur pilihan</translation>

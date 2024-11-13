@@ -1978,7 +1978,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="235028206512346451">Qurilmangizdan uzoqlashsangiz, ekrani avtomatik bloklanadi. Qurilmangiz oldida boʻlganingizda doim ekran yoniq turadi. Ekran qulfidan foydalnmasangiz, qurilmangiz qulflanmasdan uyquga ketadi.</translation>
 <translation id="2351923523007389195">Ruxsat berildi: <ph name="PERMISSION_DETAILS" /> <ph name="LINK_BEGIN" />Tizim darajasidagi joylashuvga ruxsat<ph name="LINK_END" /> bering.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
-<translation id="2352810082280059586">Ekran qulfi qaydlari <ph name="LOCK_SCREEN_APP_NAME" /> ilovasiga avtomatik saqlanadi. Oxirgi qaydlar qulflangan ekranda ko‘rsatiladi.</translation>
 <translation id="2353168619378866466">Guruhni ochish</translation>
 <translation id="2353297238722298836">Kamera va mikrofondan foydalanish mumkin</translation>
 <translation id="2353910600995338714">Eksport qilindi</translation>
@@ -4153,7 +4152,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="3887022758415973389">Qurilmalar roʻyxatini chiqarish</translation>
 <translation id="3887764720741098847">Saqlangan axborotlar</translation>
 <translation id="3888501106166145415">Aloqador Wi-Fi tarmoqlari</translation>
-<translation id="3888550877729210209">Qaydlar <ph name="LOCK_SCREEN_APP_NAME" /> dasturida yoziladi</translation>
 <translation id="3890064827463908288">Wi-Fi Sync ishlatish uchun Chrome Sync funksiyasini yoqing</translation>
 <translation id="389313931326656921">“Keyingi” uchun kalitni tayinlash</translation>
 <translation id="3893268973182382220">Bu panel yuklanmadi</translation>
@@ -11456,7 +11454,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="9133568201369135151">Diagnostika maʼlumotlarini toʻplash yakunlandi. Ayrim shaxsiy maʼlumotlaringiz bularga qoʻshilgan.</translation>
 <translation id="9133985615769429248">Bu qurilmani boshqalar bilan birga ishlatsangiz, saqlangan parollaringizdan foydalanishda ekran qulfidan foydalanishingiz mumkin</translation>
 <translation id="9134066738478820307">Himoyalangan kontentni ijro etish uchun saytlar identifikatorlardan foydalanishi mumkin</translation>
-<translation id="913411432238655354">Tizim ishga tushganda ilovalar tiklansin</translation>
 <translation id="9135777878366959474">Google Parollar menejeri uchun harf va raqamli PIN kodni kiriting</translation>
 <translation id="9137013805542155359">Asl tilda ko‘rsatish</translation>
 <translation id="9137157311132182254">Birlamchi qidiruv tizimi</translation>

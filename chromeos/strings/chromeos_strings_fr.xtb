@@ -408,6 +408,7 @@
 <translation id="2888298276507578975">Saisissez une requête telle que "rédiger une note de remerciement"</translation>
 <translation id="2890557891229184386">île tropicale</translation>
 <translation id="2895772081848316509">sombre</translation>
+<translation id="2915996080311180594">Redémarrer plus tard</translation>
 <translation id="2926057806159140518">Saisissez votre nom d'utilisateur et votre mot de passe ou scannez votre code QR</translation>
 <translation id="2940811910881150316">Impossible de tester l'appareil. Rouvrez l'écran pour tester.</translation>
 <translation id="2941112035454246133">Faible</translation>
@@ -466,6 +467,7 @@
 <translation id="3275729367986477355">Image d'avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Modifier le fichier}one{Modifier le fichier}other{Modifier les fichiers}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3286538390144397061">Redémarrer maintenant</translation>
 <translation id="3291996639387199448">Direction de la clé</translation>
 <translation id="3294437725009624529">Invité</translation>
 <translation id="3303855915957856445">Aucun résultat de recherche n'a été trouvé.</translation>
@@ -1155,7 +1157,7 @@
 <translation id="6595046262780525922">Activer la transcription et télécharger le modèle de transcription ?</translation>
 <translation id="6596816719288285829">Adresse IP</translation>
 <translation id="6599673642868607614">Merci pour vos commentaires. Ils nous aideront à améliorer l'expérience Chromebook et seront examinés par notre équipe. Étant donné le nombre élevé de rapports que nous recevons, nous ne sommes pas en mesure d'y répondre.</translation>
-<translation id="660846213831377756">Boutons de la souris</translation>
+<translation id="660846213831377756">Touches pour la souris</translation>
 <translation id="6618744767048954150">En cours</translation>
 <translation id="6620487321149975369">Les tâches d'impression seront incluses dans l'historique, sauf si vous les supprimez manuellement</translation>
 <translation id="6624819909909965616">Impossible d'importer un fichier de plus de 10 Mo</translation>

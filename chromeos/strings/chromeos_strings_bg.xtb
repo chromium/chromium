@@ -408,6 +408,7 @@
 <translation id="2888298276507578975">Въведете подкана, като например „напиши благодарствена бележка“</translation>
 <translation id="2890557891229184386">тропически остров</translation>
 <translation id="2895772081848316509">тъмни/тъмно</translation>
+<translation id="2915996080311180594">Рестартиране по-късно</translation>
 <translation id="2926057806159140518">Въведете потребителското име и паролата си или сканирайте QR кода си</translation>
 <translation id="2940811910881150316">Устройството не може да бъде тествано. За целта отворете капака.</translation>
 <translation id="2941112035454246133">Нисък</translation>
@@ -466,6 +467,7 @@
 <translation id="3275729367986477355">Изображение на аватара</translation>
 <translation id="3283504360622356314">{0,plural, =1{Редактиране на файла}other{Редактиране на файловете}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГХц</translation>
+<translation id="3286538390144397061">Рестартиране сега</translation>
 <translation id="3291996639387199448">Посока на ключа</translation>
 <translation id="3294437725009624529">Гост</translation>
 <translation id="3303855915957856445">Няма намерени резултати от търсенето</translation>

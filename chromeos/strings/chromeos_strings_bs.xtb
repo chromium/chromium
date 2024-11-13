@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="1191518099344003522">APN je omogućen.</translation>
 <translation id="1195447618553298278">Nepoznata greška.</translation>
+<translation id="1196264380943975940">Sažimanje nije uspjelo. Pokušajte s duljim prijepisom.</translation>
 <translation id="1196959502276349371">Verzija <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Pokretanje/pauziranje</translation>
 <translation id="1201402288615127009">Naprijed</translation>
@@ -138,6 +139,7 @@
 <translation id="1604959087182679653">Sakrivanje transkripta</translation>
 <translation id="160633243685262989">Slika pregleda</translation>
 <translation id="1611649489706141841">prosljeđivanje</translation>
+<translation id="1615144046047995187">Nije moguće preuzeti. Pokušajte ponovo ili ponovo pokrenite Chromebook.</translation>
 <translation id="1615335640928990664">Prijenos podataka od datuma <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Koristite temu</translation>
 <translation id="1621067168122174824">Pokreni test punjenja</translation>
@@ -409,6 +411,7 @@
 <translation id="2888298276507578975">Unesite upit poput "napiši zahvalnicu za pomoć"</translation>
 <translation id="2890557891229184386">tropsko ostrvo</translation>
 <translation id="2895772081848316509">tamno</translation>
+<translation id="2915996080311180594">Ponovo pokreni kasnije</translation>
 <translation id="2926057806159140518">Unesite korisničko ime i lozinku ili skenirajte QR kôd</translation>
 <translation id="2940811910881150316">Nije moguće testirati uređaj. Ponovo otvorite poklopac da testirate.</translation>
 <translation id="2941112035454246133">Niska</translation>
@@ -468,6 +471,7 @@
 <translation id="3275729367986477355">Slika avatara</translation>
 <translation id="3283504360622356314">{0,plural, =1{Uredi fajl}one{Uredi fajlove}few{Uredi fajlove}other{Uredi fajlove}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3286538390144397061">Ponovo pokreni sada</translation>
 <translation id="3291996639387199448">Smjer ključa</translation>
 <translation id="3294437725009624529">Gost</translation>
 <translation id="3303855915957856445">Nije pronađen nijedan rezultat pretraživanja</translation>
@@ -588,6 +592,7 @@
 <translation id="3885327323343477505">Promjena čuvara ekrana</translation>
 <translation id="3889914174935857450">Datum poništavanja</translation>
 <translation id="3897092660631435901">Meni</translation>
+<translation id="3902271751020176019">Jezik transkripcije</translation>
 <translation id="391412459402535266">Nije moguće testirati uređaj. Prebacite se na način rada laptopa da testirate.</translation>
 <translation id="3916998944874125962">snimanje snimka ekrana</translation>
 <translation id="3923184630988645767">Prijenos podataka</translation>
@@ -752,6 +757,7 @@
 <translation id="4665014895760275686">Proizvođač</translation>
 <translation id="467510802200863975">Lozinke se ne podudaraju</translation>
 <translation id="467715984478005772">Sumnja na zaštitni zid</translation>
+<translation id="4678534708181186163">Sažimanje nije uspjelo. Pokušajte s kraćim prijepisom.</translation>
 <translation id="4683762547447150570">Fokusiranje dodjele tipke dodirom dugmeta</translation>
 <translation id="4691278870498629773">Zaustavljeno – nedostaje ladica za papir</translation>
 <translation id="469379815867856270">Jačina signala</translation>
@@ -854,6 +860,7 @@
 <translation id="5168185087976003268">Stanje baterije</translation>
 <translation id="5170568018924773124">Prikaži u folderu</translation>
 <translation id="517075088756846356">Iskopčajte kabl za napajanje uređaja <ph name="DEVICE_NAME" /> i ponovo ga priključite da nastavite postupak ažuriranja</translation>
+<translation id="5178021559562393163">Nije moguće izraditi nazive. Pokušajte s kraćim prijepisom.</translation>
 <translation id="5180108905184566358">stabla baobaba</translation>
 <translation id="5180712487038406644">Izražajno</translation>
 <translation id="5190187232518914472">Ponovo doživite omiljene uspomene. Da dodate ili uredite albume, idite u <ph name="LINK_BEGIN" />Google Fotografije<ph name="LINK_END" />.</translation>
@@ -888,6 +895,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Identitet</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
+<translation id="5318310531701770497">Nije moguće izraditi nazive. Pokušajte s duljim prijepisom.</translation>
 <translation id="5318334351163689047">Greške TCP zahtjeva</translation>
 <translation id="53196409393069519">Uključiti transkripciju?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -941,6 +949,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Odjavljeni ste</translation>
 <translation id="5620281292257375798">Samo interno</translation>
+<translation id="5628106863521633649">Dostupni jezici</translation>
 <translation id="5630438231335788050">bauhaus</translation>
 <translation id="5631759159893697722">sažetak</translation>
 <translation id="5655283760733841251">Pojačavanje osvjetljenja tastature</translation>
@@ -1266,6 +1275,7 @@
 <translation id="710028965487274708">Nije uspjelo – autorizacija nije uspjela</translation>
 <translation id="7101959270679078188">Otključajte uređaj <ph name="DEVICE_NAME" /> da nastavite postupak ažuriranja</translation>
 <translation id="7103252855940681301">Uređaj <ph name="INDEX" /> od <ph name="COUNT" /> pod nazivom <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Odabrani jezik</translation>
 <translation id="7107255225945990211">Odaberite ekskluzivnu ilustraciju koju nudi <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7117228822971127758">Pokušajte ponovo kasnije</translation>

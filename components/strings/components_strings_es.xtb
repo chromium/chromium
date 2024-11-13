@@ -1411,6 +1411,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="353816159217417898">Pantalla (paginada)</translation>
 <translation id="3542628208405253498">Imagen de la tarjeta</translation>
 <translation id="3542768452570884558">Abrir enlace en una ventana nueva</translation>
+<translation id="3543935938072367282">Paga más rápido con Autocompletar</translation>
 <translation id="3547442767634383572">La vista general del perfil de trabajo</translation>
 <translation id="3547746132308051926">20x24 pulgadas</translation>
 <translation id="3550325450190222557">Envía comentarios sobre Autocompletar con IA.</translation>
@@ -1579,6 +1580,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3801297763951514916">Lo visitas a menudo</translation>
 <translation id="380329542618494757">Nombre</translation>
 <translation id="3803801106042434208">Estos buscadores son populares en tu zona</translation>
+<translation id="380666903981445943">Guarda un método de pago en tu cuenta de Google para autocompletarlo en las compras que hagas en Chrome</translation>
 <translation id="3807366285948165054">Desplazamiento de la imagen en el eje X</translation>
 <translation id="3807709094043295184">Rock clásico y éxitos antiguos</translation>
 <translation id="3807873520724684969">Contenido dañino bloqueado.</translation>
@@ -1735,6 +1737,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4102567721634170493">Noticias locales</translation>
 <translation id="4103249731201008433">El número de serie del dispositivo no es válido.</translation>
 <translation id="4103592298805904008">Cartón (una capa)</translation>
+<translation id="4104702906064390950">Guardando información del IBAN</translation>
 <translation id="4106887816571530227">Contenido insertado no permitido</translation>
 <translation id="4110652170750985508">Revisa tu pago</translation>
 <translation id="4111546256784973544">Paintball</translation>
@@ -3052,6 +3055,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6499038740797743453">¿Quieres cambiar la contraseña?</translation>
 <translation id="6502510275417601303">Alerta sobre nueva configuración de pago cerrada</translation>
 <translation id="6502991525169604759">Sin tus cambios</translation>
+<translation id="6505072878288254563">Traduciendo</translation>
 <translation id="6506959208958864820">Sobre</translation>
 <translation id="6507117483253822672">Escribe con más confianza en cualquier lugar de la Web</translation>
 <translation id="6508722015517270189">Reinicia Chrome</translation>
@@ -3405,6 +3409,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7156870133441232244">El servidor debe actualizarse a TLS 1.2 o a una versión posterior.</translation>
 <translation id="715996170234243096">{NUM_FILES,plural, =1{Para enviar este archivo usando <ph name="FEATURE_NAME" />, libera espacio (<ph name="DISK_SPACE_SIZE" />) en tu dispositivo}other{Para enviar estos archivos usando <ph name="FEATURE_NAME" />, libera espacio (<ph name="DISK_SPACE_SIZE" />) en tu dispositivo}}</translation>
 <translation id="7160999678034985039">Guarda tu trabajo e inicia la actualización cuando tengas todo listo.</translation>
+<translation id="7162277662076933695">Lector de tarjetas inteligentes</translation>
 <translation id="7163295244162773898">{0,plural, =1{¿Copiar archivo confidencial?}other{¿Copiar archivos confidenciales?}}</translation>
 <translation id="7168625890036931112">La restricción "<ph name="DATA_CONTROLS_RESTRICTION" />" no se admite en esta plataforma</translation>
 <translation id="717330890047184534">ID de GAIA:</translation>

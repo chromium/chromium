@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">隱藏轉錄稿</translation>
 <translation id="160633243685262989">預覽圖片</translation>
 <translation id="1611649489706141841">往前</translation>
+<translation id="1615144046047995187">無法下載，請再試一次或重新啟動 Chromebook。</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />至今的數據用量</translation>
 <translation id="1618566998877964907">使用主題</translation>
 <translation id="1621067168122174824">執行充電測試</translation>
@@ -408,6 +409,7 @@
 <translation id="2888298276507578975">輸入提示，例如「撰寫感謝函」</translation>
 <translation id="2890557891229184386">熱帶島嶼</translation>
 <translation id="2895772081848316509">黑暗</translation>
+<translation id="2915996080311180594">稍後再重新啟動</translation>
 <translation id="2926057806159140518">輸入使用者名稱和密碼或掃描 QR 圖碼</translation>
 <translation id="2940811910881150316">無法測試裝置。請重新打開機蓋即進行測試。</translation>
 <translation id="2941112035454246133">低</translation>
@@ -466,6 +468,7 @@
 <translation id="3275729367986477355">顯示圖片</translation>
 <translation id="3283504360622356314">{0,plural, =1{編輯檔案}other{編輯檔案}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3286538390144397061">立即重新啟動</translation>
 <translation id="3291996639387199448">金鑰方向</translation>
 <translation id="3294437725009624529">訪客</translation>
 <translation id="3303855915957856445">找不到相符的搜尋結果</translation>
@@ -585,6 +588,7 @@
 <translation id="3885327323343477505">變更螢幕保護程式</translation>
 <translation id="3889914174935857450">重設日期</translation>
 <translation id="3897092660631435901">選單</translation>
+<translation id="3902271751020176019">語音轉錄語言</translation>
 <translation id="391412459402535266">無法測試裝置。請切換成筆電模式進行測試。</translation>
 <translation id="3916998944874125962">拍攝螢幕截圖</translation>
 <translation id="3923184630988645767">數據用量</translation>
@@ -937,6 +941,7 @@
 <translation id="5606865426897221650">Tab 鍵</translation>
 <translation id="5613201299517339763">你已登出</translation>
 <translation id="5620281292257375798">僅供內部使用</translation>
+<translation id="5628106863521633649">可用的語言</translation>
 <translation id="5630438231335788050">包浩斯</translation>
 <translation id="5631759159893697722">摘要</translation>
 <translation id="5655283760733841251">鍵盤亮度調高</translation>
@@ -1261,6 +1266,7 @@
 <translation id="710028965487274708">失敗 - 授權失敗</translation>
 <translation id="7101959270679078188">請解鎖「<ph name="DEVICE_NAME" />」以繼續進行更新程序</translation>
 <translation id="7103252855940681301">裝置 <ph name="INDEX" /> (共 <ph name="COUNT" /> 個)，名稱為<ph name="NAME" />。</translation>
+<translation id="7103793063702494489">選取的語言</translation>
 <translation id="7107255225945990211">請選擇 <ph name="PRODUCT_NAME" /> 專屬圖片</translation>
 <translation id="7108668606237948702">輸入</translation>
 <translation id="7117228822971127758">請稍後再試</translation>

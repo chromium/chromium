@@ -360,6 +360,7 @@
 <translation id="2589921777872778654">Өзгерту және жою мәзірі</translation>
 <translation id="2597774443162333062">Қатесін түзету үшін файлдар Google-ға жіберіледі.</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Сканерлеу аяқталды. 1 бет сканерленді}other{Сканерлеу аяқталды. {NUMBER_OF_PAGES} бет сканерленді.}}</translation>
+<translation id="261322795497077164">Сөйлеушіні анықтау</translation>
 <translation id="2617397783536231890">мақта</translation>
 <translation id="2618015542787108131">дөң</translation>
 <translation id="2619761439309613843">Күн сайын жаңарту</translation>
@@ -408,6 +409,7 @@
 <translation id="2888298276507578975">"Алғыс хат жаз" сияқты нұсқау енгізіңіз</translation>
 <translation id="2890557891229184386">тропикалық арал</translation>
 <translation id="2895772081848316509">қараңғы</translation>
+<translation id="2915996080311180594">Кейін қайта қосу</translation>
 <translation id="2926057806159140518">Пайдаланушы аты мен құпия сөзді енгізіңіз немесе QR кодын сканерлеңіз.</translation>
 <translation id="2940811910881150316">Құрылғыны сынау мүмкін емес. Сынау үшін қақпақты қайта ашыңыз.</translation>
 <translation id="2941112035454246133">Төмен</translation>
@@ -440,6 +442,7 @@
 <translation id="3140130301071865159">қар</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" /> үшін эксклюзивті</translation>
 <translation id="315116470104423982">Мобильді деректер</translation>
+<translation id="3153094818810437149">Мұны кейінірек диктофон параметрлерінде өзгерте аласыз.</translation>
 <translation id="3156511682997763015">10 секунд алға айналдыру</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-бет сканерленуде…</translation>
 <translation id="315738237743207937">Адаптивті портал анықталды.</translation>
@@ -466,6 +469,7 @@
 <translation id="3275729367986477355">Аватар суреті</translation>
 <translation id="3283504360622356314">{0,plural, =1{Файлды өзгерту}other{Файлдарды өзгерту}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> ГГц</translation>
+<translation id="3286538390144397061">Қазір қайта іске қосу</translation>
 <translation id="3291996639387199448">Кілт бағыты</translation>
 <translation id="3294437725009624529">Қонақ</translation>
 <translation id="3303855915957856445">Іздеу нәтижелері табылмады</translation>
@@ -562,6 +566,7 @@
 <translation id="3785643128701396311">пиксельмен жасалған өнер туындысы</translation>
 <translation id="3799381533888781854">ӨШІРУЛІ – бұл параметрді әкімшіңіз басқарады.</translation>
 <translation id="380097101658023925">rgb басқару элементтері</translation>
+<translation id="380493988330050229">Бұл транскрипция тілінің қорытындысын жасау мүмкін емес.</translation>
 <translation id="38114475217616659">Тарихты толығымен тазалау</translation>
 <translation id="3820172043799983114">PIN коды жарамсыз.</translation>
 <translation id="382043424867370667">Күннің батуы бейнеленген тұсқағаз</translation>
@@ -733,6 +738,7 @@
 <translation id="458794348635939462">Барлық хост атаулары түрлендірілмеді.</translation>
 <translation id="4593212453765072419">Прокси растауы талап етіледі.</translation>
 <translation id="4594021849294327751">Транскрипция жасау</translation>
+<translation id="4594541568452132351">Транскрипция тілін таңдаңыз және үлгіні жүктеп алыңыз</translation>
 <translation id="4607282946861182308">Мұндай сурет жасау мүмкін емес. Басқа нұсқау жазып көріңіз.</translation>
 <translation id="4609350030397390689">Пернетақта жарықтығын азайту</translation>
 <translation id="4623061655523261501">Жазба атаулары сәтті жасалды</translation>
@@ -1097,6 +1103,7 @@
 <translation id="6359919876285606596">Бұл әрекетті қайтару мүмкін емес.</translation>
 <translation id="6368342879959028556">"AI көмегімен жасау" тармағын таңдағанда, арнаулы сұрауды жазыңыз. Болмаса тақырыпты таңдау үшін "AI тұсқағаздары" опциясын таңдап, содан кейін AI тұсқағазын жекелендіру мақсатында асты сызылған сөздерді таңдауға болады.</translation>
 <translation id="636850387210749493">Кәсіпорынды тіркеу</translation>
+<translation id="6369221585240879141">Бұл транскрипция тілі үшін жазба аттарын жасау мүмкін емес.</translation>
 <translation id="6373461326814131011">тоған</translation>
 <translation id="6379086450106841622">Сенсорлық экран</translation>
 <translation id="6381741036071372448">Пернетақтаны тексеру</translation>
@@ -1270,6 +1277,7 @@
 <translation id="7130438335435247835">Кіру нүктесінің атауы (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер атауы}other{Сервер атаулары}}</translation>
 <translation id="7135814714616751706">Таңбашаларды іздеу</translation>
+<translation id="7138614237884624401">Жеңілдетілген мәтін</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Қосылып жатыр</translation>
 <translation id="7144878232160441200">Қайталау</translation>
@@ -1691,6 +1699,7 @@
 <translation id="9100765901046053179">Кеңейтілген параметрлер</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> үшін билетті жаңарту</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-бет сканерленуде</translation>
+<translation id="9108856746036501072">Диктофон сөйлесім жазбаларының транскрипцияларын жасай алады. Келесі қадамда транскрипция тілін таңдап, үлгіні (100 МБ-қа дейін) жүктеп алуыңыз қажет.</translation>
 <translation id="9111102763498581341">Құлпын ашу</translation>
 <translation id="9122492456897874028">Мазмұнды қорытындылаңыз, анықтамалар алыңыз және т.б.</translation>
 <translation id="9122602430962285795">Қайта қосылу үшін "Параметрлер" бетіне өтіңіз.</translation>

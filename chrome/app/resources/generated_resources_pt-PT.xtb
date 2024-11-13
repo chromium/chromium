@@ -1981,7 +1981,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="235028206512346451">Quando se afasta do seu dispositivo, o ecrã é automaticamente bloqueado. Quando está à frente do dispositivo, o ecrã mantém-se ativado durante mais tempo. Se não estiver a usar um ecrã de bloqueio, o seu dispositivo fica suspenso em vez de bloqueado.</translation>
 <translation id="2351923523007389195">Permitida: <ph name="PERMISSION_DETAILS" />. Ative o <ph name="LINK_BEGIN" />acesso à localização do sistema<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt;1 MB</translation>
-<translation id="2352810082280059586">As notas do ecrã de bloqueio são automaticamente guardadas na aplicação <ph name="LOCK_SCREEN_APP_NAME" />. A nota mais recente permanece no ecrã de bloqueio.</translation>
 <translation id="2353168619378866466">Abrir grupo</translation>
 <translation id="2353297238722298836">Câmara e microfone permitidos</translation>
 <translation id="2353910600995338714">Exportação com êxito</translation>
@@ -4160,7 +4159,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="3887022758415973389">Mostrar lista de dispositivos</translation>
 <translation id="3887764720741098847">Informações guardadas</translation>
 <translation id="3888501106166145415">Redes Wi-Fi associadas</translation>
-<translation id="3888550877729210209">Tirar notas com a aplicação <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Ative a Sincronização do Chrome para utilizar o Sync Wi-Fi</translation>
 <translation id="389313931326656921">Atribua um interruptor para "Seguinte"</translation>
 <translation id="3893268973182382220">Não é possível carregar este painel neste momento</translation>
@@ -11484,7 +11482,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9133568201369135151">A recolha de dados de diagnóstico está concluída. Algumas das suas informações pessoais estão incluídas nestes dados.</translation>
 <translation id="9133985615769429248">Se partilhar este dispositivo com outras pessoas, pode usar o bloqueio de ecrã para validar a sua identidade sempre que usar uma palavra-passe guardada</translation>
 <translation id="9134066738478820307">Os sites podem utilizar identificadores para reproduzir conteúdo protegido</translation>
-<translation id="913411432238655354">Restaurar as apps no arranque</translation>
 <translation id="9135777878366959474">Introduza o PIN alfanumérico do Gestor de Palavras-passe da Google</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9137157311132182254">Motor de pesquisa preferido</translation>

@@ -492,6 +492,7 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd en v
 
       Opmerking: Voor gedetailleerdere voorbeelden ga je naar The Chromium Projects (https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett).</translation>
 <translation id="1354280967938151061">ARC uitzetten</translation>
+<translation id="1354349503792572661">Dwingt af dat Native Client (NaCl) mag worden uitgevoerd op <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="1354424209129232709">Maximum:</translation>
 <translation id="1355050231181289439"> Dit beleid bepaalt of de toewijzing van verbeterde sneltoetsen voor internationale toetsenborden aanstaat.
       Deze functie zorgt ervoor dat sneltoetsen consistent werken met internationale toetsenbordindelingen en beëindigde verouderde sneltoetsen.
@@ -4719,6 +4720,7 @@ Als je dit beleid toepast, kunnen sites tegelijkertijd navigeren en nieuwe venst
 Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd navigeren en nieuwe vensters/tabbladen openen.</translation>
 <translation id="4572577129745420844">Gebruikers niet toestaan Kerberos-accounts toe te voegen</translation>
 <translation id="457430673056611745">Configuratiebeleid voor de <ph name="PRODUCT_NAME" /> Enterprise Connector OnPrint</translation>
+<translation id="4575789820705765299">Staat het gebruik van de Translator API toe</translation>
 <translation id="4576760454200781316">Als de functie <ph name="PRODUCT_NAME" /> aanstaat, worden JavaScript-timers op achtergrondtabbladen op agressieve wijze gethrottled en samengevoegd, zodat ze niet vaker dan één keer per minuut worden uitgevoerd nadat een pagina 5 minuten of langer op de achtergrond heeft gestaan.
 
           Deze functie voldoet aan de internetstandaarden, maar kan ervoor zorgen dat bepaalde websites niet goed functioneren omdat bepaalde acties tot maximaal een minuut kunnen worden vertraagd. Als deze functie aanstaat, heeft dit wel aanzienlijke CPU- en batterijbesparingen tot gevolg. Bekijk https://bit.ly/30b1XR4 voor meer informatie.
@@ -7747,6 +7749,8 @@ Als je dit beleid instelt op True, wordt WebSQL in contexten van derden opnieuw 
 
       Als het beleid is ingesteld op False of niet is ingesteld, staat <ph name="PLUGIN_VM_NAME" /> niet aan voor de gebruiker.
       Als het beleid is ingesteld op True, staat <ph name="PLUGIN_VM_NAME" /> aan voor de gebruiker, op voorwaarde dat de andere instellingen dit ook toestaan. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> en <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> moeten zijn ingesteld op True en <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> of <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> moet zijn ingesteld voordat <ph name="PLUGIN_VM_NAME" /> kan worden ingesteld.</translation>
+<translation id="6741318452269220158">Als je het beleid instelt op Waar, kan Native Client worden uitgevoerd, ook als het standaardgedrag is dat Native Client is uitgezet.
+Als je het beleid instelt op Onwaar of niet instelt, wordt het standaardgedrag gebruikt.</translation>
 <translation id="6749641778238480311">Toestaan dat subApps API's worden aangeroepen zonder eerder gebruikersgebaar of zonder gebruikersbevestiging te vereisen.</translation>
 <translation id="6750902920405577210">Lijst met telemetriegegevens die moeten worden gerapporteerd bij wijzigingen in signaalsterkte.
 
@@ -9780,6 +9784,17 @@ Meer informatie over verouderde technologieën vind je op https://chromestatus.c
           Als dit beleid niet is ingesteld, heeft dit geen invloed op het gedrag van de specifiekere beleidsregels.</translation>
 <translation id="8350643689940867542">Rapportage van beleidsgegevens uitzetten</translation>
 <translation id="835283681355955417">Informatie over randapparaten rapporteren</translation>
+<translation id="8354001669131263433">Vanaf M132 wordt dit beleid verwijderd, samen met de voorafgaande videospecifieke API's voor volledig scherm.
+
+Als je het beleid instelt op <ph name="ENABLED_VALUE_NAME" />, kunnen de specifieke API's voor volledig scherm voor video met voorvoegsels (bijv. Video.webkitEnterFullscreen()) worden gebruikt via JavaScript.
+
+Als je het beleid instelt op <ph name="DISABLED_VALUE_NAME" />, kunnen de specifieke API's voor volledig scherm voor video met voorvoegsels niet worden gebruikt in JavaScript. Alleen de standaard-API's voor volledig scherm blijven over (bijvoorbeeld Element.requestFullscreen()).
+
+Als je het beleid instelt op <ph name="RUNTIME_ENABLED_VALUE_NAME" />, zorg je ervoor dat de functievlag waarvoor de runtime PrefixedFullscreenVideo is aangezet, bepaalt of de specifieke API's voor volledig scherm voor video met voorvoegsels beschikbaar zijn voor websites.
+
+Als je het beleid niet instelt, is het gedrag standaard ingesteld op <ph name="RUNTIME_ENABLED_VALUE_NAME" />.
+
+Opmerking: Dit beleid is een tijdelijke oplossing om de overstap te maken van API's voor volledig scherm met webkit-voorvoegsels. M131 is de laatste release met dit beleid.</translation>
 <translation id="8356953698979920095">Als je het beleid instelt op een van deze waarden, wordt er een standaardkleur voor de achtergrondverlichting van het toetsenbord van een apparaat ingesteld op het moment dat een gebruiker inlogt.</translation>
 <translation id="8357681633047935212">Beperk de duur van een gebruikerssessie</translation>
 <translation id="8357989008292691856">Toelatingslijst met gebruikers die mogen inloggen</translation>

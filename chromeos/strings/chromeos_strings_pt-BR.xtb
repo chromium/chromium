@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1191518099344003522">O APN está ativado.</translation>
 <translation id="1195447618553298278">Erro desconhecido.</translation>
+<translation id="1196264380943975940">Não é possível resumir. Tente em uma transcrição mais longa.</translation>
 <translation id="1196959502276349371">Versão <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Iniciar/pausar</translation>
 <translation id="1201402288615127009">Próxima</translation>
@@ -409,6 +410,7 @@
 <translation id="2888298276507578975">Insira um comando como "escreva uma mensagem de agradecimento"</translation>
 <translation id="2890557891229184386">ilha tropical</translation>
 <translation id="2895772081848316509">escuros</translation>
+<translation id="2915996080311180594">Reiniciar mais tarde</translation>
 <translation id="2926057806159140518">Insira seu nome de usuário e sua senha ou leia o QR code</translation>
 <translation id="2940811910881150316">Não foi possível testar o dispositivo. Abra a tampa novamente para testar.</translation>
 <translation id="2941112035454246133">Baixa</translation>
@@ -467,6 +469,7 @@
 <translation id="3275729367986477355">Imagem do avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editar arquivo}one{Editar arquivo}other{Editar arquivos}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="3291996639387199448">Direção da chave</translation>
 <translation id="3294437725009624529">Visitante</translation>
 <translation id="3303855915957856445">Nenhum resultado de pesquisa encontrado</translation>
@@ -750,6 +753,7 @@
 <translation id="4665014895760275686">Fabricante</translation>
 <translation id="467510802200863975">As senhas não são iguais</translation>
 <translation id="467715984478005772">Firewall suspeito</translation>
+<translation id="4678534708181186163">Não é possível resumir. Tente em uma transcrição mais curta.</translation>
 <translation id="4683762547447150570">Toque no botão para focar na atribuição de tecla</translation>
 <translation id="4691278870498629773">Parado (bandeja ausente)</translation>
 <translation id="469379815867856270">Intensidade do sinal</translation>
@@ -852,6 +856,7 @@
 <translation id="5168185087976003268">Integridade da bateria</translation>
 <translation id="5170568018924773124">Mostrar na pasta</translation>
 <translation id="517075088756846356">Desconecte e reconecte o cabo de alimentação do <ph name="DEVICE_NAME" /> para continuar o processo de atualização</translation>
+<translation id="5178021559562393163">Não é possível criar nomes. Tente em uma transcrição mais curta.</translation>
 <translation id="5180108905184566358">baobás</translation>
 <translation id="5180712487038406644">Expressiva</translation>
 <translation id="5190187232518914472">Reviva suas lembranças favoritas. Para adicionar ou editar álbuns, acesse o <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
@@ -886,6 +891,7 @@
 <translation id="5304899856529773394">EvDO</translation>
 <translation id="5315873049536339193">Identidade</translation>
 <translation id="5317780077021120954">Salvar</translation>
+<translation id="5318310531701770497">Não é possível criar nomes. Tente em uma transcrição mais longa.</translation>
 <translation id="5318334351163689047">Falhas de solicitação TCP</translation>
 <translation id="53196409393069519">Ativar transcrição?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

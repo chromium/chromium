@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">Сийрүүлгийг нуух</translation>
 <translation id="160633243685262989">Зургийг урьдчилан үзэх</translation>
 <translation id="1611649489706141841">цааш</translation>
+<translation id="1615144046047995187">Татах боломжгүй байна. Дахин оролдож эсвэл Chromebook-ээ дахин эхлүүлнэ үү.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />-с хойших дата ашиглалт</translation>
 <translation id="1618566998877964907">Загвар ашиглах</translation>
 <translation id="1621067168122174824">Цэнэглэх туршилтыг ажиллуулах</translation>
@@ -360,6 +361,7 @@
 <translation id="2589921777872778654">Цэсийг засах, устгах</translation>
 <translation id="2597774443162333062">Файлыг дебаг хийхээр Google-д илгээж байна</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Скан хийж дууссан. 1 хуудсыг скан хийсэн}other{Скан хийж дууссан. {NUMBER_OF_PAGES} хуудсыг скан хийсэн}}</translation>
+<translation id="261322795497077164">Яригчийн хувийн мэдээлэл</translation>
 <translation id="2617397783536231890">хөвөн</translation>
 <translation id="2618015542787108131">элсэн манхан</translation>
 <translation id="2619761439309613843">Өдөр тутам сэргээх</translation>
@@ -408,6 +410,7 @@
 <translation id="2888298276507578975">"Tалархлын захидал бич" зэрэг заавар оруулна уу</translation>
 <translation id="2890557891229184386">халуун орны арал</translation>
 <translation id="2895772081848316509">бараан</translation>
+<translation id="2915996080311180594">Дараа дахин эхлүүлэх</translation>
 <translation id="2926057806159140518">Хэрэглэгчийн нэр болон нууц үгээ оруулах эсвэл QR кодыг скан хийнэ үү</translation>
 <translation id="2940811910881150316">Төхөөрөмжийг турших боломжгүй байна. Туршихын тулд тагийг дахин нээнэ үү.</translation>
 <translation id="2941112035454246133">Бага</translation>
@@ -440,6 +443,7 @@
 <translation id="3140130301071865159">цас</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" />-д онцгой</translation>
 <translation id="315116470104423982">Гар утасны дата</translation>
+<translation id="3153094818810437149">Та үүнийг дараа нь Дуу хураагуурын тохиргоонд өөрчлөх боломжтой</translation>
 <translation id="3156511682997763015">10 секунд урагшлуулах</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна...</translation>
 <translation id="315738237743207937">Дамжих портал илэрсэн</translation>
@@ -466,6 +470,7 @@
 <translation id="3275729367986477355">Аватар зураг</translation>
 <translation id="3283504360622356314">{0,plural, =1{Файлыг засах}other{Файлуудыг засах}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />Гц</translation>
+<translation id="3286538390144397061">Одоо дахин эхлүүлнэ үү</translation>
 <translation id="3291996639387199448">Түлхүүрийн чиглэл</translation>
 <translation id="3294437725009624529">Зочин</translation>
 <translation id="3303855915957856445">Хайлтын илэрц олдсонгүй</translation>
@@ -562,6 +567,7 @@
 <translation id="3785643128701396311">пиксел урлаг</translation>
 <translation id="3799381533888781854">УНТРААЛТТАЙ - Энэ тохиргоог танай администратор удирддаг.</translation>
 <translation id="380097101658023925">rgb тохиргоо</translation>
+<translation id="380493988330050229">Энэ сийрүүлгийн хэлээр хураангуй үүсгэх боломжгүй</translation>
 <translation id="38114475217616659">Бүх түүхийг арилгах</translation>
 <translation id="3820172043799983114">ПИН буруу байна.</translation>
 <translation id="382043424867370667">Нар жаргахыг харуулсан дэлгэцийн зураг</translation>
@@ -585,6 +591,7 @@
 <translation id="3885327323343477505">Дэлгэц амраагчийг өөрчлөх</translation>
 <translation id="3889914174935857450">Огноог шинэчлэх</translation>
 <translation id="3897092660631435901">Цэс</translation>
+<translation id="3902271751020176019">Сийрүүлгийн хэл</translation>
 <translation id="391412459402535266">Төхөөрөмжийг турших боломжгүй байна. Туршихын тулд зөөврийн компьютерын горим руу сэлгэнэ үү</translation>
 <translation id="3916998944874125962">дэлгэцийн зураг авах</translation>
 <translation id="3923184630988645767">Дата ашиглалт</translation>
@@ -733,6 +740,7 @@
 <translation id="458794348635939462">Бүх хостыг шийдвэрлэж чадсангүй</translation>
 <translation id="4593212453765072419">Проксиг баталгаажуулах шаардлагатай</translation>
 <translation id="4594021849294327751">Сийрүүлэг үүсгэх</translation>
+<translation id="4594541568452132351">Сийрүүлгийн хэлийг сонгож, загварыг татна уу</translation>
 <translation id="4607282946861182308">Үүний зургийг үүсгэх боломжгүй. Өөр заавар оролдож үзнэ үү.</translation>
 <translation id="4609350030397390689">Гарны гэрэлтүүлгийг багасгах</translation>
 <translation id="4623061655523261501">Бичлэгийн нэрсийг амжилттай үүсгэлээ</translation>
@@ -937,6 +945,7 @@
 <translation id="5606865426897221650">Tab</translation>
 <translation id="5613201299517339763">Таныг гаргалаа</translation>
 <translation id="5620281292257375798">Зөвхөн дотоодод</translation>
+<translation id="5628106863521633649">Боломжтой хэлнүүд</translation>
 <translation id="5630438231335788050">баухаус</translation>
 <translation id="5631759159893697722">хураангуй</translation>
 <translation id="5655283760733841251">Гарны гэрэлтүүлгийг нэмэгдүүлэх</translation>
@@ -1097,6 +1106,7 @@
 <translation id="6359919876285606596">Энэ үйлдэл бүрмөсөн бөгөөд буцаах боломжгүй</translation>
 <translation id="6368342879959028556">Та “ХОУ-аар үүсгэх”-ийг сонгохдоо захиалгат заавар бичнэ үү. Эсвэл та загвар сонгохын тулд “ХОУ-аар үүсгэсэн дэлгэцийн зураг” гэснийг сонгож, дараа нь ХОУ-аар үүсгэсэн дэлгэцийн зургаа хувийн болгохын тулд доогуур нь зурсан үгнүүдийг сонгож болно.</translation>
 <translation id="636850387210749493">Байгууллагын бүртгэл</translation>
+<translation id="6369221585240879141">Энэ сийрүүлгийн хэлээр бичлэгийн нэр үүсгэх боломжгүй</translation>
 <translation id="6373461326814131011">цөөрөм</translation>
 <translation id="6379086450106841622">Мэдрэмтгий дэлгэц</translation>
 <translation id="6381741036071372448">Гараа шалгана уу</translation>
@@ -1261,6 +1271,7 @@
 <translation id="710028965487274708">Амжилтгүй боллоо - Баталгаажуулалт амжилтгүй боллоо</translation>
 <translation id="7101959270679078188">Шинэчлэх явцыг үргэлжлүүлэхийн тулд <ph name="DEVICE_NAME" />-н түгжээг тайлна уу</translation>
 <translation id="7103252855940681301"><ph name="NAME" /> гэсэн нэртэй <ph name="COUNT" />-н <ph name="INDEX" />-р төхөөрөмж.</translation>
+<translation id="7103793063702494489">Сонгосон хэл</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" />-н онцгой постерыг сонгоно уу</translation>
 <translation id="7108668606237948702">оруулах</translation>
 <translation id="7117228822971127758">Дараа дахин оролдоно уу</translation>
@@ -1270,6 +1281,7 @@
 <translation id="7130438335435247835">Хандах цэгийн нэрс (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Нэрийн сервер}other{Нэрийн серверүүд}}</translation>
 <translation id="7135814714616751706">Товчлолууд хайх</translation>
+<translation id="7138614237884624401">Хялбарчилсан текст</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Холбож байна</translation>
 <translation id="7144878232160441200">Дахин оролдох</translation>
@@ -1691,6 +1703,7 @@
 <translation id="9100765901046053179">Сайжруулсан тохиргоонууд</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-н тасалбарыг дахин шинэчлэх</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна</translation>
+<translation id="9108856746036501072">Дуу хураагуур яриатай бичлэгт сийрүүлэг үүсгэх боломжтой. Дараагийн алхамд та сийрүүлгийн хэлийг сонгож, загварыг (100 МБ хүртэлх) татах шаардлагатай.</translation>
 <translation id="9111102763498581341">Нээх</translation>
 <translation id="9122492456897874028">Контентыг хураангуйлж, тодорхойлолт авч мөн илүү ихийг хийгээрэй</translation>
 <translation id="9122602430962285795">Дахин холбогдохын тулд Тохиргоо руу очно уу</translation>

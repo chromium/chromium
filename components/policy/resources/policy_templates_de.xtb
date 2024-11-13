@@ -493,6 +493,7 @@ Die separate Richtlinie „<ph name="HTTP_ALLOWLIST_POLICY_NAME" />“ kann verw
 
       Hinweis: Ausführliche Beispiele findest du in den Chromium-Projekten unter https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett.</translation>
 <translation id="1354280967938151061">ARC deaktivieren</translation>
+<translation id="1354349503792572661">Erzwingt die Ausführung von Native Client (NaCl) unter <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="1354424209129232709">Maximum:</translation>
 <translation id="1355050231181289439"> Mit dieser Richtlinie wird festgelegt, ob die verbesserte Zuordnung internationaler Tastenkürzel aktiviert werden soll.
       Diese Funktion sorgt dafür, dass Tastenkürzel bei internationalen Tastaturlayouts konsistent verwendet und alte Tastenkürzel verworfen werden.
@@ -4724,6 +4725,7 @@ Wenn sowohl diese Richtlinie als auch die Richtlinie „PostQuantumKeyAgreementE
       Wenn diese Richtlinie deaktiviert oder nicht festgelegt ist, dürfen Websites neue Fenster oder Tabs nicht gleichzeitig mit der Navigation öffnen.</translation>
 <translation id="4572577129745420844">Nicht zulassen, dass Nutzer Kerberos-Konten hinzufügen</translation>
 <translation id="457430673056611745">Konfigurationsrichtlinie für den <ph name="PRODUCT_NAME" /> Enterprise Connector „OnPrint“</translation>
+<translation id="4575789820705765299">Ermöglicht die Verwendung der Translator API</translation>
 <translation id="4576760454200781316">Wenn die Funktion <ph name="PRODUCT_NAME" /> aktiviert ist, sorgt sie dafür, dass JavaScript-Timer auf Tabs im Hintergrund aktiv gedrosselt und zusammengeschlossen werden. Sie können nicht öfter als einmal pro Minute ausgeführt werden, nachdem eine Seite für 5 Minuten oder mehr in den Hintergrund verschoben wurde.
 
           Diese Funktion ist mit Webstandards kompatibel, kann jedoch einige Websites beeinträchtigen, da bestimmte Aktionen möglicherweise bis zu einer Minute verspätet erfolgen. Allerdings schont diese Funktion CPU und Akku erheblich, wenn sie aktiviert ist. Weitere Informationen findest du unter https://bit.ly/30b1XR4.
@@ -7771,6 +7773,8 @@ Ist diese Richtlinie auf „true“ gesetzt, wird WebSQL im Zusammenhang mit Dri
 
       Wenn diese Richtlinie auf "false" gesetzt oder nicht konfiguriert ist, ist <ph name="PLUGIN_VM_NAME" /> für den Nutzer nicht aktiviert.
       Ist die Richtlinie auf "true" gesetzt, ist <ph name="PLUGIN_VM_NAME" /> für den Nutzer aktiviert, solange andere Einstellungen dies ebenfalls zulassen. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> und <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> müssen "true" sein und entweder <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> oder <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> müssen für <ph name="PLUGIN_VM_NAME" /> aktiviert sein.</translation>
+<translation id="6741318452269220158">Wenn die Richtlinie auf „True“ gesetzt ist, kann Native Client weiterhin ausgeführt werden, auch wenn diese Technologie in der Standardeinstellung deaktiviert ist.
+Ist die Richtlinie auf „False“ gesetzt oder nicht konfiguriert, wird das Standardverhalten verwendet.</translation>
 <translation id="6749641778238480311">Zulassen, dass SubApps-APIs ohne vorherige Nutzergeste bzw. ohne Bestätigung durch den Nutzer aufgerufen werden können.</translation>
 <translation id="6750902920405577210">Liste der Telemetriedaten, die bei Änderungen der Signalstärke gesendet werden sollen.
 
@@ -9787,6 +9791,17 @@ Weitere Informationen zu Legacy-Technologien findest du unter https://chromestat
           Ist sie nicht konfiguriert, bleibt das Verhalten der spezifischeren Richtlinien unverändert.</translation>
 <translation id="8350643689940867542">Erfassen von Richtliniendaten deaktivieren</translation>
 <translation id="835283681355955417">Details zu Peripheriegeräten melden</translation>
+<translation id="8354001669131263433">Ab M132 wird diese Richtlinie zusammen mit den speziell für Videos mit Präfix vorgesehenen Vollbild-APIs entfernt.
+
+Wenn die Richtlinie auf „<ph name="ENABLED_VALUE_NAME" />“ gesetzt ist, können die speziell für Videos mit Präfix vorgesehenen Vollbild-APIs (z. B. „Video.webkitEnterFullscreen()“) aus JavaScript verwendet werden.
+
+Wenn die Richtlinie auf „<ph name="DISABLED_VALUE_NAME" />“ gesetzt ist, können die speziell für Videos mit Präfix vorgesehenen Vollbild-APIs nicht in JavaScript verwendet werden, sodass nur die standardmäßigen Vollbild-APIs (z. B. „Element.requestFullscreen()“) übrig bleiben.
+
+Ist die Richtlinie auf „<ph name="RUNTIME_ENABLED_VALUE_NAME" />“ gesetzt, kann das laufzeitfähige Funktions-Flag „PrefixedFullscreenVideo“ ermitteln, ob die speziell für Videos mit Präfix vorgesehenen Vollbild-APIs Websites zur Verfügung stehen.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird standardmäßig „<ph name="RUNTIME_ENABLED_VALUE_NAME" />“ verwendet.
+
+Hinweis: Diese Richtlinie ist eine vorübergehende Lösung, um die Umstellung von Vollbild-APIs mit webkit-Präfix zu erleichtern. M131 ist die letzte Version, für die diese Richtlinie gilt.</translation>
 <translation id="8356953698979920095">Wenn die Richtlinie auf die Werte festgelegt ist, wird die Farbe für die Hintergrundbeleuchtung einer Gerätetastatur bei der Nutzeranmeldung standardmäßig festgelegt.</translation>
 <translation id="8357681633047935212">Dauer einer Nutzersitzung beschränken</translation>
 <translation id="8357989008292691856">Zulassungsliste für Nutzer, die sich anmelden dürfen</translation>

@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">আঁতৰাওক</translation>
 <translation id="1191518099344003522">এপিএন সক্ষম কৰা হৈছে।</translation>
 <translation id="1195447618553298278">অজ্ঞাত আসোঁৱাহ।</translation>
+<translation id="1196264380943975940">সাৰাংশ প্ৰস্তুত কৰিব নোৱাৰি। এটা দীঘল ট্ৰেন্সক্ৰিপ্ট ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="1196959502276349371">সংস্কৰণ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">প্লে’/পজ কৰক</translation>
 <translation id="1201402288615127009">পৰৱৰ্তী</translation>
@@ -361,6 +362,7 @@
 <translation id="2589921777872778654">মেনু সম্পাদনা কৰক আৰু মচক</translation>
 <translation id="2597774443162333062">ডিবাগ কৰাৰ বাবে ফাইলসমূহ Googleলৈ পঠিওৱা হ’ব</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{স্কেনিং সম্পূৰ্ণ হৈছে। ১ খন পৃষ্ঠা স্কেন কৰা হৈছে}one{স্কেনিং সম্পূৰ্ণ হৈছে। {NUMBER_OF_PAGES} খন পৃষ্ঠা স্কেন কৰা হৈছে}other{স্কেনিং সম্পূৰ্ণ হৈছে। {NUMBER_OF_PAGES} খন পৃষ্ঠা স্কেন কৰা হৈছে}}</translation>
+<translation id="261322795497077164">স্পীকাৰৰ চিনাক্তকৰণ</translation>
 <translation id="2617397783536231890">কপাহ</translation>
 <translation id="2618015542787108131">বালিৰ স্তূপ</translation>
 <translation id="2619761439309613843">দৈনিক নতুন ৱালপেপাৰ</translation>
@@ -409,6 +411,7 @@
 <translation id="2888298276507578975">"ধন্যবাদসূচক টোকা লিখক"ৰ দৰে প্ৰ’ম্পট্‌ দিয়ক</translation>
 <translation id="2890557891229184386">গ্ৰীষ্মমণ্ডলীয় দ্বীপ</translation>
 <translation id="2895772081848316509">গাঢ়</translation>
+<translation id="2915996080311180594">পাছত ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="2926057806159140518">আপোনাৰ ব্যৱহাৰকাৰীৰ নাম আৰু পাছৱৰ্ড দিয়ক অথবা আপোনাৰ কিউ আৰ ক’ড স্কেন কৰক</translation>
 <translation id="2940811910881150316">ডিভাইচটো পৰীক্ষা কৰিব নোৱাৰি। পৰীক্ষা কৰিবলৈ ঢাকনীখন পুনৰ খোলক।</translation>
 <translation id="2941112035454246133">কম</translation>
@@ -441,6 +444,7 @@
 <translation id="3140130301071865159">বৰফ</translation>
 <translation id="3146655726035122603"><ph name="PRODUCT_NAME" />ত বিশেষভাৱে উপলব্ধ</translation>
 <translation id="315116470104423982">ম’বাইল ডেটা</translation>
+<translation id="3153094818810437149">আপুনি পাছত Recorderৰ ছেটিঙলৈ গৈ এইটো সলনি কৰিব পাৰে</translation>
 <translation id="3156511682997763015">১০ ছেকেণ্ড ফৰৱাৰ্ড কৰক</translation>
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> নম্বৰৰ পৃষ্ঠাখন স্কেন কৰি থকা হৈছে…</translation>
 <translation id="315738237743207937">কেপ্টিভ প’ৰ্টেল চিনাক্ত কৰা হৈছে</translation>
@@ -467,6 +471,7 @@
 <translation id="3275729367986477355">অৱতাৰৰ প্ৰতিচ্ছবি</translation>
 <translation id="3283504360622356314">{0,plural, =1{ফাইল সম্পাদনা কৰক}one{ফাইলসমূহ সম্পাদনা কৰক}other{ফাইলসমূহ সম্পাদনা কৰক}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> গিগাহাৰ্টজ</translation>
+<translation id="3286538390144397061">এতিয়াই ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="3291996639387199448">চাবিৰ নির্দেশনা</translation>
 <translation id="3294437725009624529">অতিথি</translation>
 <translation id="3303855915957856445">সন্ধানৰ কোনো ফলাফল পোৱা নগ'ল</translation>
@@ -563,6 +568,7 @@
 <translation id="3785643128701396311">পিক্সেল আৰ্ট</translation>
 <translation id="3799381533888781854">অফ আছে - এই ছেটিংটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="380097101658023925">rgb নিয়ন্ত্ৰণসমূহ</translation>
+<translation id="380493988330050229">এই ট্ৰেন্সক্ৰিপ্টৰ ভাষাটোৰ বাবে সাৰাংশ সৃষ্টি কৰিব নোৱাৰি</translation>
 <translation id="38114475217616659">সকলো ইতিহাস মচক</translation>
 <translation id="3820172043799983114">অমান্য পিন।</translation>
 <translation id="382043424867370667">সূৰ্যাস্তৰ ৱালপেপাৰ</translation>
@@ -735,6 +741,7 @@
 <translation id="458794348635939462">হ’ষ্ট সম্পৰ্কীয় সকলো সমস্যা সমাধান কৰাত বিফল হ'ল</translation>
 <translation id="4593212453765072419">প্ৰ’ক্সী বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণৰ আৱশ্যক</translation>
 <translation id="4594021849294327751">ট্ৰেন্সক্ৰিপ্ট সৃষ্টি কৰক</translation>
+<translation id="4594541568452132351">ট্ৰেন্সক্ৰিপশ্বনৰ ভাষা আৰু ডাউনল’ডৰ মডেল বাছনি কৰক</translation>
 <translation id="4607282946861182308">ইয়াৰ প্ৰতিচ্ছবি সৃষ্টি কৰিব নোৱাৰি। আন এটা প্ৰম্প্‌ট ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="4609350030397390689">কীব’ৰ্ডৰ উজ্জ্বলতা ডাউন</translation>
 <translation id="4623061655523261501">ৰেকৰ্ডিঙৰ নাম সফলভাৱে সৃষ্টি কৰা হৈছে</translation>
@@ -750,6 +757,7 @@
 <translation id="4665014895760275686">উৎপাদনকাৰী</translation>
 <translation id="467510802200863975">পাছৱৰ্ডসমূহ মিলা নাই</translation>
 <translation id="467715984478005772">ফায়াৰৱালৰ সন্দেহ কৰা হৈছে</translation>
+<translation id="4678534708181186163">সাৰাংশ প্ৰস্তুত কৰিব নোৱাৰি। এটা চুটি ট্ৰেন্সক্ৰিপ্ট ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="4683762547447150570">কী আবণ্টন কৰাত ফ’কাছ কৰিবলৈ বুটামটোত টিপক</translation>
 <translation id="4691278870498629773">বন্ধ হৈছে - ট্ৰে’ উপলব্ধ নহয়</translation>
 <translation id="469379815867856270">ছিগনেলৰ ক্ষমতা</translation>
@@ -852,6 +860,7 @@
 <translation id="5168185087976003268">বেটাৰীৰ অৱস্থা</translation>
 <translation id="5170568018924773124">ফ’ল্ডাৰত দেখুৱাওক</translation>
 <translation id="517075088756846356">আপডে’ট প্ৰক্ৰিয়াটো অব্যাহত ৰাখিবলৈ <ph name="DEVICE_NAME" />ৰ পাৱাৰ কে’বলডাল আনপ্লাগ কৰি পুনৰ প্লাগ কৰক</translation>
+<translation id="5178021559562393163">নাম সৃষ্টি কৰিব নোৱাৰি। এটা চুটি ট্ৰেন্সক্ৰিপ্ট ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="5180108905184566358">বাওবাব গছ</translation>
 <translation id="5180712487038406644">অভিব্যক্তিপূৰ্ণ</translation>
 <translation id="5190187232518914472">আপোনাৰ প্ৰিয় স্মৃতি ৰোমন্থন কৰক। এলবাম যোগ দিবলৈ অথবা সম্পাদনা কৰিবলৈ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />লৈ যাওক।</translation>
@@ -886,6 +895,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">পৰিচয়</translation>
 <translation id="5317780077021120954">ছেভ কৰক</translation>
+<translation id="5318310531701770497">নাম সৃষ্টি কৰিব নোৱাৰি। এটা দীঘল ট্ৰেন্সক্ৰিপ্ট ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="5318334351163689047">বিফল TCP অনুৰোধসমূহ</translation>
 <translation id="53196409393069519">ট্ৰান্সক্ৰিপশ্বন অন কৰিবনে?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -1100,6 +1110,7 @@
 <translation id="6359919876285606596">এই কাৰ্যটো স্থায়ী আৰু ইয়াক আনডু কৰিব নোৱাৰি</translation>
 <translation id="6368342879959028556">আপুনি “AIৰ জৰিয়তে সৃষ্টি কৰক” বাছনি কৰিলে এটা কাষ্টম প্ৰম্পট্‌ লিখক। বা আপুনি এটা থীম বাছনি কৰিবলৈ “AI ৱালপেপাৰ” বাছনি কৰিব পাৰে আৰু তাৰ পাছত আপোনাৰ AI ৱালপেপাৰ ব্যক্তিগতকৰণ কৰিবলৈ আণ্ডাৰলাইন কৰা শব্দবোৰ বাছনি কৰিব পাৰে।</translation>
 <translation id="636850387210749493">এন্টাৰপ্ৰাইজৰ পঞ্জীয়ন</translation>
+<translation id="6369221585240879141">এই ট্ৰেন্সক্ৰিপ্টৰ ভাষাটোৰ বাবে ৰেকৰ্ডিঙৰ নাম সৃষ্টি কৰিব নোৱাৰি</translation>
 <translation id="6373461326814131011">পুখুৰী</translation>
 <translation id="6379086450106841622">টাচ্‌স্ক্ৰীন</translation>
 <translation id="6381741036071372448">আপোনাৰ কীব’ৰ্ডখন পৰীক্ষা কৰক</translation>
@@ -1274,6 +1285,7 @@
 <translation id="7130438335435247835">এক্সেছ পইণ্টৰ নাম (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{নে'ম ছার্ভাৰ}one{নে'ম ছার্ভাৰ}other{নে'ম ছার্ভাৰ}}</translation>
 <translation id="7135814714616751706">সন্ধানৰ শ্বৰ্টকাট</translation>
+<translation id="7138614237884624401">সৰলীকৃত পাঠ</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">সংযোগ হৈছে</translation>
 <translation id="7144878232160441200">পুনৰ চেষ্টা কৰক</translation>
@@ -1695,6 +1707,7 @@
 <translation id="9100765901046053179">উন্নত ছেটিংসমূহ</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />ৰ টিকেট ৰিফ্ৰেশ্ব কৰক</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> নম্বৰ পৃষ্ঠাখন স্কেন কৰি থকা হৈছে</translation>
+<translation id="9108856746036501072">Recorderএ কথনৰ সৈতে ৰেকৰ্ডিঙৰ বাবে ট্ৰেন্সক্ৰিপশ্বন সৃষ্টি কৰিব পাৰে। পৰৱৰ্তী পদক্ষেপত, আপুনি ট্ৰেন্সক্ৰিপশ্বনৰ ভাষাটো সলনি কৰিব লাগিব আৰু মডেলটো (১০০এমবি) ডাউনল’ড কৰিব লাগিব।</translation>
 <translation id="9111102763498581341">আনলক</translation>
 <translation id="9122492456897874028">সমলৰ সাৰাংশ প্ৰস্তুত কৰক, সংজ্ঞা লাভ কৰক আৰু অধিক কাৰ্য কৰক</translation>
 <translation id="9122602430962285795">পুনৰ সংযোগ কৰিবলৈ, ছেটিঙলৈ যাওক</translation>

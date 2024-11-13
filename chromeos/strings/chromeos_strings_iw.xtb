@@ -408,6 +408,7 @@
 <translation id="2888298276507578975">אפשר להזין הנחיה כמו "אני רוצה לכתוב מכתב תודה"</translation>
 <translation id="2890557891229184386">אי טרופי</translation>
 <translation id="2895772081848316509">כהה</translation>
+<translation id="2915996080311180594">הפעלה מחדש מאוחר יותר</translation>
 <translation id="2926057806159140518">‏צריך להזין את שם המשתמש והסיסמה או לסרוק את קוד ה-QR</translation>
 <translation id="2940811910881150316">לא ניתן לבדוק את המכשיר. צריך לפתוח את המכסה כדי לבצע את הבדיקה.</translation>
 <translation id="2941112035454246133">נמוכה</translation>
@@ -466,6 +467,7 @@
 <translation id="3275729367986477355">תמונת הדמות</translation>
 <translation id="3283504360622356314">{0,plural, =1{עריכת הקובץ}one{עריכת הקבצים}two{עריכת הקבצים}other{עריכת הקבצים}}</translation>
 <translation id="3286515922899063534">GHz <ph name="CURRENT" /></translation>
+<translation id="3286538390144397061">הפעל מחדש כעת</translation>
 <translation id="3291996639387199448">כיוון המפתח</translation>
 <translation id="3294437725009624529">אורח</translation>
 <translation id="3303855915957856445">לא נמצאו תוצאות חיפוש</translation>

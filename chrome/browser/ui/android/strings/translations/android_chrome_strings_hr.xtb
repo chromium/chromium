@@ -802,6 +802,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4769632191812288342">Imate standardnu zaštitu</translation>
 <translation id="4775646243557794597"><ph name="TIME_PERIOD" /> izbrisan</translation>
 <translation id="4778653490315793244">Još nema ničega</translation>
+<translation id="4782929588435725897"><ph name="SEARCH_ENGINE" /> je vaša zadana tražilica</translation>
 <translation id="4787736314074622408">Želite li izbrisati <ph name="ITEM_TITLE" />?</translation>
 <translation id="4793679854893018356">Saznajte kako vas Chrome štiti</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>

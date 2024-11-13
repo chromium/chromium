@@ -781,6 +781,7 @@
 <translation id="4645575059429386691">Овим управља твој родитељ</translation>
 <translation id="4647758699119474035">Пријављени сте као <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Грешка у вези са Google налогом. Отвори мени налога.</translation>
 <translation id="4650125387981512669">Настави као <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
+<translation id="4651927776207937667">{count,plural, =1{Сакриј после 1 минута}one{Сакриј после {count} минута}few{Сакриј после {count} минута}other{Сакриј после {count} минута}}</translation>
 <translation id="4652817563047461855">Уверите се да су лозинке безбедне, сазнајте да ли су угрожене и потражите савет о томе како да се заштитите онлајн. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Сачувај</translation>
 <translation id="4668929960204016307">,</translation>

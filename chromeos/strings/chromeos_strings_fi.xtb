@@ -408,6 +408,7 @@
 <translation id="2888298276507578975">Lisää kehote, esim. "kirjoita kiitosviesti"</translation>
 <translation id="2890557891229184386">trooppinen saari</translation>
 <translation id="2895772081848316509">tumma</translation>
+<translation id="2915996080311180594">Uudelleenkäynnistä myöhemmin</translation>
 <translation id="2926057806159140518">Lisää käyttäjätunnus ja salasana tai skannaa QR-koodi</translation>
 <translation id="2940811910881150316">Laitetta ei voi testata. Avaa kansi uudelleen testaamista varten.</translation>
 <translation id="2941112035454246133">Matala</translation>
@@ -466,6 +467,7 @@
 <translation id="3275729367986477355">Avatar-kuva</translation>
 <translation id="3283504360622356314">{0,plural, =1{Muokkaa tiedostoa}other{Muokkaa tiedostoja}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3286538390144397061">Käynnistä uudelleen</translation>
 <translation id="3291996639387199448">Avaimen suunta</translation>
 <translation id="3294437725009624529">Vierailja</translation>
 <translation id="3303855915957856445">Ei hakutuloksia</translation>

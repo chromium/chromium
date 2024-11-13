@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">ट्रांसक्रिप्ट छिपाएं</translation>
 <translation id="160633243685262989">इमेज की झलक देखें</translation>
 <translation id="1611649489706141841">आगे जाएं</translation>
+<translation id="1615144046047995187">इसे डाउनलोड नहीं किया जा सकता. फिर से कोशिश करें या अपना Chromebook रीस्टार्ट करें.</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> से लेकर अब तक इस्तेमाल किया गया डेटा</translation>
 <translation id="1618566998877964907">किसी थीम का इस्तेमाल करें</translation>
 <translation id="1621067168122174824">चार्ज टेस्ट चलाएं</translation>
@@ -408,6 +409,7 @@
 <translation id="2888298276507578975">"धन्यवाद देने के लिए नोट लिखो" जैसा कोई प्रॉम्प्ट डालें</translation>
 <translation id="2890557891229184386">ट्रॉपिकल आइलैंड</translation>
 <translation id="2895772081848316509">डार्क</translation>
+<translation id="2915996080311180594">बाद में रीस्टार्ट करें</translation>
 <translation id="2926057806159140518">अपना उपयोगकर्ता नाम और पासवर्ड डालें या अपना क्यूआर कोड स्कैन करें</translation>
 <translation id="2940811910881150316">डिवाइस की जांच नहीं की जा सकती. जांच करने के लिए लिड को फिर से खोलें.</translation>
 <translation id="2941112035454246133">कम</translation>
@@ -466,6 +468,7 @@
 <translation id="3275729367986477355">अवतार इमेज की सेटिंग पर जाएं</translation>
 <translation id="3283504360622356314">{0,plural, =1{फ़ाइल में बदलाव करें}one{फ़ाइल में बदलाव करें}other{फ़ाइलों में बदलाव करें}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />गीगाहर्ट्ज़</translation>
+<translation id="3286538390144397061">अभी फिर से प्रारंभ करें</translation>
 <translation id="3291996639387199448">कुंजी का डायरेक्शन</translation>
 <translation id="3294437725009624529">मेहमान</translation>
 <translation id="3303855915957856445">कोई खोज नतीजे नहीं मिले</translation>
@@ -585,6 +588,7 @@
 <translation id="3885327323343477505">स्क्रीन सेवर बदलें</translation>
 <translation id="3889914174935857450">तारीख रीसेट करें</translation>
 <translation id="3897092660631435901">मेन्यू</translation>
+<translation id="3902271751020176019">बोले जा रहे शब्दों को टेक्स्ट में बदलने की सुविधा के लिए उपलब्ध भाषा</translation>
 <translation id="391412459402535266">डिवाइस की जांच नहीं की जा सकती. जांच करने के लिए, लैपटॉप मोड पर स्विच करें.</translation>
 <translation id="3916998944874125962">स्क्रीनशॉट लें</translation>
 <translation id="3923184630988645767">डेटा खर्च</translation>
@@ -937,6 +941,7 @@
 <translation id="5606865426897221650">टैब</translation>
 <translation id="5613201299517339763">आपको साइन आउट कर दिया गया है</translation>
 <translation id="5620281292257375798">सिर्फ़ अंदरूनी</translation>
+<translation id="5628106863521633649">उपलब्ध भाषाएं</translation>
 <translation id="5630438231335788050">बाओहाउस</translation>
 <translation id="5631759159893697722">संक्षेप</translation>
 <translation id="5655283760733841251">कीबोर्ड की रोशनी बढ़ाने वाला बटन</translation>
@@ -1262,6 +1267,7 @@
 <translation id="710028965487274708">नहीं मिल सकी - अनुमति नहीं मिल सकी</translation>
 <translation id="7101959270679078188">अपडेट की प्रोसेस जारी रखने के लिए, <ph name="DEVICE_NAME" /> को अनलॉक करें</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> में से <ph name="INDEX" /> डिवाइस, जिसका नाम <ph name="NAME" /> है.</translation>
+<translation id="7103793063702494489">चुनी गई भाषा</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> के लिए खास आर्टवर्क चुनें</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7117228822971127758">कृपया बाद में फिर से कोशिश करें</translation>
@@ -1364,6 +1370,7 @@
 <translation id="7544853251252956727">शफ़ल करें</translation>
 <translation id="7550715992156305117">डाइग्नोस्टिक्स रूटीन</translation>
 <translation id="7551123448725492271">डिवाइस एक ऑडियो डिवाइस है.</translation>
+<translation id="7553913964854052228">स्कूल टूल, आपके माइक्रोफ़ोन का इस्तेमाल कर रहा है</translation>
 <translation id="7559239713112547082">स्क्रीनशॉट की झलक देखें</translation>
 <translation id="7561454561030345039">इस कार्रवाई को आपका एडमिन मैनेज करता है</translation>
 <translation id="7561759921596375678">आवाज़ चालू करें</translation>

@@ -362,6 +362,7 @@
 <translation id="2589921777872778654">เมนูแก้ไขและลบ</translation>
 <translation id="2597774443162333062">ระบบจะส่งไฟล์ไปยัง Google เพื่อแก้ไขข้อบกพร่อง</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{การสแกนเสร็จสมบูรณ์ สแกนแล้ว 1 หน้า}other{การสแกนเสร็จสมบูรณ์ สแกนแล้ว {NUMBER_OF_PAGES} หน้า}}</translation>
+<translation id="261322795497077164">การระบุผู้พูด</translation>
 <translation id="2617397783536231890">ฝ้าย</translation>
 <translation id="2618015542787108131">เนินทราย</translation>
 <translation id="2619761439309613843">รีเฟรชทุกวัน</translation>
@@ -410,6 +411,7 @@
 <translation id="2888298276507578975">ป้อนพรอมต์ เช่น "เขียนโน้ตขอบคุณ"</translation>
 <translation id="2890557891229184386">เกาะเขตร้อน</translation>
 <translation id="2895772081848316509">มืด</translation>
+<translation id="2915996080311180594">รีสตาร์ทภายหลัง</translation>
 <translation id="2926057806159140518">ป้อนชื่อผู้ใช้และรหัสผ่าน หรือสแกนคิวอาร์โค้ด</translation>
 <translation id="2940811910881150316">ทดสอบอุปกรณ์ไม่ได้ เปิดฝาหน้าจออีกครั้งเพื่อทดสอบ</translation>
 <translation id="2941112035454246133">ต่ำ</translation>
@@ -442,6 +444,7 @@
 <translation id="3140130301071865159">หิมะ</translation>
 <translation id="3146655726035122603">พิเศษสำหรับ <ph name="PRODUCT_NAME" /> โดยเฉพาะ</translation>
 <translation id="315116470104423982">เน็ตมือถือ</translation>
+<translation id="3153094818810437149">คุณเปลี่ยนแปลงข้อมูลนี้ภายหลังได้ในการตั้งค่าโปรแกรมอัดเสียง</translation>
 <translation id="3156511682997763015">กรอไปข้างหน้า 10 วินาที</translation>
 <translation id="3156846309055100599">กำลังสแกนหน้า <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">ตรวจพบแคพทีฟพอร์ทัล</translation>
@@ -468,6 +471,7 @@
 <translation id="3275729367986477355">รูปโปรไฟล์</translation>
 <translation id="3283504360622356314">{0,plural, =1{แก้ไขไฟล์}other{แก้ไขไฟล์}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3286538390144397061">รีสตาร์ทเดี๋ยวนี้</translation>
 <translation id="3291996639387199448">ทิศทางของคีย์</translation>
 <translation id="3294437725009624529">ผู้มาเยือน</translation>
 <translation id="3303855915957856445">ไม่พบผลการค้นหา</translation>
@@ -537,6 +541,7 @@
 <translation id="3606583719724308068">เวลาในการตอบสนองไปยังเว็บไซต์ HTTPS สูง</translation>
 <translation id="361575905210396100">ขอขอบคุณสำหรับความคิดเห็นของคุณ</translation>
 <translation id="3621072146987826699">ช้าง</translation>
+<translation id="3628462041319107639">กำลังดาวน์โหลดโมเดลการถอดเสียงเป็นคำ…</translation>
 <translation id="3632040286124154621">คำแนะนำถูกใจ</translation>
 <translation id="3632579075709132555">เปิด/ปิดหน้าจอความเป็นส่วนตัว</translation>
 <translation id="3639873154908477486">ชื่อ (A ถึง Z)</translation>
@@ -564,10 +569,12 @@
 <translation id="3785643128701396311">พิกเซลอาร์ต</translation>
 <translation id="3799381533888781854">ปิด - การตั้งค่านี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="380097101658023925">การควบคุม RGB</translation>
+<translation id="380493988330050229">สร้างสรุปสำหรับภาษาของข้อความถอดเสียงนี้ไม่ได้</translation>
 <translation id="38114475217616659">ล้างประวัติทั้งหมด</translation>
 <translation id="3820172043799983114">PIN ไม่ถูกต้อง</translation>
 <translation id="382043424867370667">วอลเปเปอร์พระอาทิตย์ตก</translation>
 <translation id="3824259034819781947">แนบไฟล์</translation>
+<translation id="383586991013681190">เลือกภาษาในการถอดเสียงเป็นคำและดาวน์โหลดในการตั้งค่า</translation>
 <translation id="3836587210832263413">โปรดเปิดเฉพาะส่วนขยายที่คุณเชื่อถือเท่านั้น</translation>
 <translation id="3838338534323494292">รหัสผ่านใหม่</translation>
 <translation id="3845880861638660475">กดแป้น <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> เพื่อปิดกล่องโต้ตอบ</translation>
@@ -711,6 +718,7 @@
 <translation id="4474142134969976028">ไม่มีผลลัพธ์ที่ตรงกัน</translation>
 <translation id="4479639480957787382">อีเทอร์เน็ต</translation>
 <translation id="4483049906298469269">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายที่ไม่ใช่ค่าเริ่มต้นไม่สำเร็จ</translation>
+<translation id="4483498983731992167">สร้างข้อความถอดเสียงไม่ได้</translation>
 <translation id="4486524074141928967">ระบบจะนำคุณออกจากระบบในเวลา <ph name="TIME" /></translation>
 <translation id="4500722292849917410">แป้นพิมพ์ลัดไม่พร้อมใช้งาน กดแป้นพิมพ์ลัดใหม่โดยใช้แป้นกดร่วม (Ctrl, Alt, Shift หรือ<ph name="META_KEY" />)</translation>
 <translation id="4500966230243561393">สีของอินเทอร์เฟซ</translation>
@@ -736,6 +744,7 @@
 <translation id="458794348635939462">แก้ไขทุกโฮสต์ไม่สำเร็จ</translation>
 <translation id="4593212453765072419">จำเป็นต้องมีการตรวจสอบสิทธิ์พร็อกซี</translation>
 <translation id="4594021849294327751">สร้างข้อความถอดเสียง</translation>
+<translation id="4594541568452132351">เลือกภาษาในการถอดเสียงเป็นคำและดาวน์โหลดโมเดล</translation>
 <translation id="4607282946861182308">สร้างรูปภาพจากพรอมต์นี้ไม่ได้ โปรดลองใช้พรอมต์อื่น</translation>
 <translation id="4609350030397390689">ลดความสว่างของแป้นพิมพ์</translation>
 <translation id="4623061655523261501">สร้างชื่อการบันทึกเรียบร้อยแล้ว</translation>
@@ -841,6 +850,7 @@
 <translation id="5099354524039520280">ขึ้น</translation>
 <translation id="5107243100836678918">แป้นพิมพ์ลัดที่ไม่มีแป้น<ph name="META_KEY" />อาจขัดแย้งกับแป้นพิมพ์ลัดของบางแอป กดแป้นพิมพ์ลัดนี้อีกครั้งเพื่อใช้ต่อไป หรือกดแป้นพิมพ์ลัดใหม่โดยใช้แป้น<ph name="KEY" /> <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">คล้ายกัน:</translation>
+<translation id="5121677070210013200">ดาวน์โหลดโมเดลการถอดเสียงเป็นคำไม่ได้ โปรดลองอีกครั้งหรือรีสตาร์ท Chromebook</translation>
 <translation id="5130848777448318809">ม้าแคระ</translation>
 <translation id="5137451382116112100">เต็ม</translation>
 <translation id="5140788690559353412">เมื่อคุณสูญเสียสิทธิ์เข้าถึงบัญชีโรงเรียน คุณจะไม่สามารถเข้าถึงอีเมลและไฟล์ใน Google ไดรฟ์ที่เชื่อมโยง เช่น Gmail, เอกสาร, สไลด์ และอื่นๆ ได้อีกต่อไป</translation>
@@ -1104,6 +1114,7 @@
 <translation id="6359919876285606596">การดำเนินการนี้มีผลถาวรและเลิกทำไม่ได้</translation>
 <translation id="6368342879959028556">เมื่อเลือก "สร้างด้วย AI" ให้เขียนพรอมต์ที่กำหนดเอง หรือเลือก "วอลเปเปอร์ AI" เพื่อเลือกธีมแล้วเลือกคำที่ขีดเส้นใต้เพื่อปรับเปลี่ยนวอลเปเปอร์ AI ในแบบของคุณ</translation>
 <translation id="636850387210749493">การลงทะเบียนองค์กร</translation>
+<translation id="6369221585240879141">สร้างชื่อการบันทึกสําหรับภาษาของข้อความถอดเสียงนี้ไม่ได้</translation>
 <translation id="6373461326814131011">หนองน้ำ</translation>
 <translation id="6379086450106841622">หน้าจอสัมผัส</translation>
 <translation id="6381741036071372448">ทดสอบแป้นพิมพ์</translation>
@@ -1255,6 +1266,7 @@
 <translation id="7040729769968826896">อนุญาตการระบุผู้พูด</translation>
 <translation id="7041549558901442110">อุปกรณ์ไม่ได้เชื่อมต่ออยู่</translation>
 <translation id="7046522406494308071">รีเซ็ตแป้นพิมพ์ลัดทั้งหมดเป็นค่าเริ่มต้นใช่ไหม</translation>
+<translation id="7049916119678019302">ดาวน์โหลดโมเดลการถอดเสียงเป็นคำในการตั้งค่า</translation>
 <translation id="7058278511608979688">สิ้นสุดและบันทึก</translation>
 <translation id="7059230779847288458">กำลังชาร์จ อีก <ph name="TIME_VALUE" />จะเต็ม</translation>
 <translation id="7066538517128343186">คีย์ <ph name="KEY" /></translation>
@@ -1278,6 +1290,7 @@
 <translation id="7130438335435247835">จุดเข้าใช้งาน (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{เนมเซิร์ฟเวอร์}other{เนมเซิร์ฟเวอร์}}</translation>
 <translation id="7135814714616751706">ค้นหาทางลัด</translation>
+<translation id="7138614237884624401">ข้อความอย่างง่าย</translation>
 <translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
@@ -1699,6 +1712,7 @@
 <translation id="9100765901046053179">การตั้งค่าขั้นสูง</translation>
 <translation id="910415269708673980">รีเฟรชตั๋วสำหรับ <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">กำลังสแกนหน้า <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">โปรแกรมอัดเสียงสามารถสร้างการถอดเสียงเป็นคำสำหรับการบันทึกที่มีเสียงพูดได้ ในขั้นตอนถัดไป คุณจะต้องเลือกภาษาในการถอดเสียงเป็นคำและดาวน์โหลดโมเดล (ไม่เกิน 100 MB)</translation>
 <translation id="9111102763498581341">ปลดล็อก</translation>
 <translation id="9122492456897874028">สรุปเนื้อหา รับคำจำกัดความ และอื่นๆ</translation>
 <translation id="9122602430962285795">ไปที่การตั้งค่าเพื่อเชื่อมต่ออีกครั้ง</translation>

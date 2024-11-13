@@ -409,6 +409,7 @@
 <translation id="2888298276507578975">Skriv en prompt, till exempel ”skriv ett tackmeddelande”</translation>
 <translation id="2890557891229184386">en tropisk ö</translation>
 <translation id="2895772081848316509">mörk</translation>
+<translation id="2915996080311180594">Starta om senare</translation>
 <translation id="2926057806159140518">Ange användarnamn och lösenord eller läs av QR-koden</translation>
 <translation id="2940811910881150316">Det gick inte att testa enheten. Öppna locket igen för att testa.</translation>
 <translation id="2941112035454246133">Låg</translation>
@@ -467,6 +468,7 @@
 <translation id="3275729367986477355">Avatarbild</translation>
 <translation id="3283504360622356314">{0,plural, =1{Redigera fil}other{Redigera filer}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3286538390144397061">Starta om nu</translation>
 <translation id="3291996639387199448">Nyckelriktning</translation>
 <translation id="3294437725009624529">Gäst</translation>
 <translation id="3303855915957856445">Inga sökresultat hittades</translation>

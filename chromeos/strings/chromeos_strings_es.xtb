@@ -361,6 +361,7 @@
 <translation id="2589921777872778654">Menús Editar y Eliminar</translation>
 <translation id="2597774443162333062">Los archivos se enviarán a Google para depurarlos</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Escaneo completado. 1 página escaneada}other{Escaneo completado. {NUMBER_OF_PAGES} páginas escaneadas}}</translation>
+<translation id="261322795497077164">Identificación de quién habla</translation>
 <translation id="2617397783536231890">algodón</translation>
 <translation id="2618015542787108131">duna</translation>
 <translation id="2619761439309613843">Actualiz. diaria</translation>
@@ -409,6 +410,7 @@
 <translation id="2888298276507578975">Introduce una petición como "escribe una nota de agradecimiento"</translation>
 <translation id="2890557891229184386">isla tropical</translation>
 <translation id="2895772081848316509">de color oscuro</translation>
+<translation id="2915996080311180594">Reiniciar más tarde</translation>
 <translation id="2926057806159140518">Escribe tu nombre de usuario y tu contraseña o escanea tu código QR</translation>
 <translation id="2940811910881150316">No se puede probar el dispositivo. Vuelve a abrir la tapa para hacer la prueba.</translation>
 <translation id="2941112035454246133">Baja</translation>
@@ -441,6 +443,7 @@
 <translation id="3140130301071865159">nieve</translation>
 <translation id="3146655726035122603">Exclusivo de <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Redes móviles</translation>
+<translation id="3153094818810437149">Puedes cambiar esta opción más adelante en los ajustes de Grabadora</translation>
 <translation id="3156511682997763015">Avanzar 10 segundos</translation>
 <translation id="3156846309055100599">Escaneando página <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Portal cautivo detectado</translation>
@@ -467,6 +470,7 @@
 <translation id="3275729367986477355">Imagen del avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editar archivo}other{Editar archivos}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3286538390144397061">Reiniciar ahora</translation>
 <translation id="3291996639387199448">Dirección de la clave</translation>
 <translation id="3294437725009624529">Invitado</translation>
 <translation id="3303855915957856445">No se han encontrado resultados de búsqueda</translation>
@@ -536,6 +540,7 @@
 <translation id="3606583719724308068">Latencia alta a sitios web HTTPS</translation>
 <translation id="361575905210396100">Gracias por tus comentarios</translation>
 <translation id="3621072146987826699">elefantes</translation>
+<translation id="3628462041319107639">Descargando modelo de transcripción…</translation>
 <translation id="3632040286124154621">Sugerencia buena</translation>
 <translation id="3632579075709132555">Activar o desactivar Pantalla de privacidad</translation>
 <translation id="3639873154908477486">Nombre (de la A a la Z)</translation>
@@ -563,10 +568,12 @@
 <translation id="3785643128701396311">pixel art</translation>
 <translation id="3799381533888781854">DESACTIVADO: este ajuste lo gestiona tu administrador.</translation>
 <translation id="380097101658023925">controles RGB</translation>
+<translation id="380493988330050229">No se puede crear un resumen en este idioma de transcripción</translation>
 <translation id="38114475217616659">Borrar todo el historial</translation>
 <translation id="3820172043799983114">PIN no válido.</translation>
 <translation id="382043424867370667">Fondo de pantalla del atardecer</translation>
 <translation id="3824259034819781947">Adjuntar archivos</translation>
+<translation id="383586991013681190">Selecciona el idioma de transcripción y descarga en Configuración</translation>
 <translation id="3836587210832263413">Activa únicamente extensiones que sean de confianza</translation>
 <translation id="3838338534323494292">Contraseña nueva</translation>
 <translation id="3845880861638660475">Pulsa <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Esc<ph name="ESC_SHORTCUT_END" /> para cerrar el cuadro de diálogo.</translation>
@@ -710,6 +717,7 @@
 <translation id="4474142134969976028">No hay resultados que coincidan</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Se ha producido un error al hacer ping en la puerta de enlace de red no predeterminada</translation>
+<translation id="4483498983731992167">No se puede crear la transcripción</translation>
 <translation id="4486524074141928967">Tu sesión se cerrará a las <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Combinación de teclas no disponible. Pulsa una nueva combinación de teclas usando una tecla modificadora (Ctrl, Alt, Mayús o <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Color de la interfaz</translation>
@@ -735,6 +743,7 @@
 <translation id="458794348635939462">No se han podido resolver todos los hosts</translation>
 <translation id="4593212453765072419">Se requiere autenticación de proxy</translation>
 <translation id="4594021849294327751">Crear transcripción</translation>
+<translation id="4594541568452132351">Seleccionar idioma de transcripción y descargar modelo</translation>
 <translation id="4607282946861182308">No se pueden crear imágenes de esto. Prueba con otra petición.</translation>
 <translation id="4609350030397390689">Reducir el brillo del teclado</translation>
 <translation id="4623061655523261501">Nombres de grabación generados correctamente</translation>
@@ -839,6 +848,7 @@
 <translation id="5099354524039520280">arriba</translation>
 <translation id="5107243100836678918">Si usas una combinación de teclas que no incluya la tecla <ph name="META_KEY" />, podría entrar en conflicto con una combinación de teclas de alguna aplicación. Pulsa de nuevo esta combinación de teclas para seguir usándola o pulsa una nueva combinación que incluya la tecla <ph name="KEY" />. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Similares:</translation>
+<translation id="5121677070210013200">No se puede descargar el modelo de transcripción. Vuelve a intentarlo o reinicia tu Chromebook.</translation>
 <translation id="5130848777448318809">ponis</translation>
 <translation id="5137451382116112100">Pantalla completa</translation>
 <translation id="5140788690559353412">Cuando pierdas el acceso a tu cuenta de centro educativo, dejarás de tener acceso al correo y a los archivos de Google Drive asociados, como Gmail, Documentos y Presentaciones, entre otros.</translation>
@@ -1100,6 +1110,7 @@
 <translation id="6359919876285606596">Esta acción es permanente y no se puede deshacer</translation>
 <translation id="6368342879959028556">Cuando selecciones Crear con IA, escribe una petición personalizada. También puedes seleccionar Fondos de pantalla creados con IA para elegir un tema y, a continuación, seleccionar las palabras subrayadas para personalizar tu fondo de pantalla creado con IA.</translation>
 <translation id="636850387210749493">Registro de empresa</translation>
+<translation id="6369221585240879141">No se pueden crear nombres de grabación para este idioma de transcripción</translation>
 <translation id="6373461326814131011">estanque</translation>
 <translation id="6379086450106841622">Pantalla táctil</translation>
 <translation id="6381741036071372448">Prueba tu teclado</translation>
@@ -1251,6 +1262,7 @@
 <translation id="7040729769968826896">Permitir la identificación de la persona que habla</translation>
 <translation id="7041549558901442110">El dispositivo no está conectado.</translation>
 <translation id="7046522406494308071">¿Restablecer los valores predeterminados de todas las combinaciones de teclas?</translation>
+<translation id="7049916119678019302">Descarga el modelo de transcripción en Configuración</translation>
 <translation id="7058278511608979688">Finalizar y guardar</translation>
 <translation id="7059230779847288458">Cargando (<ph name="TIME_VALUE" /> para completar la carga)</translation>
 <translation id="7066538517128343186">la tecla <ph name="KEY" /></translation>
@@ -1274,6 +1286,7 @@
 <translation id="7130438335435247835">Nombre de punto de acceso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nombres}other{Servidores de nombres}}</translation>
 <translation id="7135814714616751706">Buscar accesos directos</translation>
+<translation id="7138614237884624401">Texto simplificado</translation>
 <translation id="7141470099673912333">Transferencia de contenido</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Reintentar</translation>
@@ -1695,6 +1708,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="9100765901046053179">Configuración avanzada</translation>
 <translation id="910415269708673980">Actualiza el ticket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando página <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">Grabadora puede crear transcripciones de grabaciones con voz. En el siguiente paso, tendrás que seleccionar el idioma de transcripción y descargar el modelo (hasta 100 MB).</translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="9122492456897874028">Resume contenido, consulta definiciones y más</translation>
 <translation id="9122602430962285795">Para volver a conectarte la red, ve a Configuración</translation>

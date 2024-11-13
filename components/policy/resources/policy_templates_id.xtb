@@ -507,6 +507,7 @@ diupgrade ke HTTPS oleh fitur ini.</translation>
 
       Catatan: Untuk mengetahui contoh yang lebih mendetail, buka Project Chromium ( https://www.chromium.org/developers/design-documents/network-settings#TOC-Command-line-options-for-proxy-sett ).</translation>
 <translation id="1354280967938151061">Nonaktifkan ARC</translation>
+<translation id="1354349503792572661">Memaksa Native Client (NaCl) agar diizinkan berjalan di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="1354424209129232709">Maksimum:</translation>
 <translation id="1355050231181289439"> Kebijakan ini mengontrol apakah pemetaan pintasan keyboard internasional yang ditingkatkan aktif.
       Fitur ini memastikan pintasan keyboard berfungsi secara konsisten dengan tata letak keyboard internasional dan tidak menggunakan pintasan lama.
@@ -4932,6 +4933,7 @@ Jika kebijakan ini dan kebijakan PostQuantumKeyAgreementEnabled disetel, kebijak
       Jika kebijakan ini disetel ke nonaktif atau tidak disetel, situs tidak akan diizinkan untuk menavigasi dan membuka jendela/tab baru secara bersamaan.</translation>
 <translation id="4572577129745420844">Jangan izinkan pengguna menambahkan akun Kerberos</translation>
 <translation id="457430673056611745">Kebijakan konfigurasi untuk <ph name="PRODUCT_NAME" /> Enterprise Connector OnPrint</translation>
+<translation id="4575789820705765299">Mengizinkan penggunaan Translator API</translation>
 <translation id="4576760454200781316">Jika diaktifkan, fitur <ph name="PRODUCT_NAME" /> akan menyebabkan timer JavaScript di tab latar belakang di-throttle dan digabungkan secara agresif, berjalan tidak lebih dari satu kali per menit setelah halaman berada di latar belakang selama 5 menit atau lebih.
 
           Ini merupakan fitur kepatuhan standar web, tetapi mungkin merusak fungsi
@@ -8141,6 +8143,8 @@ Untuk <ph name="PRODUCT_OS_NAME" />, kebijakan ini selalu berlaku.</translation>
 
       Jika kebijakan ditetapkan ke salah (false) atau tidak ditetapkan, <ph name="PLUGIN_VM_NAME" /> tidak akan diaktifkan untuk pengguna tersebut.
       Jika ditetapkan ke benar (true), <ph name="PLUGIN_VM_NAME" /> akan diaktifkan untuk pengguna tersebut selama setelan lain mengizinkannya. <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> dan <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> harus ditetapkan ke benar (true), dan <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> atau <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" /> harus ditetapkan agar <ph name="PLUGIN_VM_NAME" /> dapat berjalan.</translation>
+<translation id="6741318452269220158">Jika kebijakan ini disetel ke Benar (True), Native Client akan tetap berjalan meskipun perilaku default Native Client adalah dinonaktifkan.
+Jika kebijakan ini disetel ke Salah (False) atau tidak disetel, perilaku default akan digunakan.</translation>
 <translation id="6749641778238480311">Mengizinkan subApps API dipanggil tanpa gestur pengguna sebelumnya atau memerlukan konfirmasi pengguna.</translation>
 <translation id="6750902920405577210">Daftar data telemetri yang akan dilaporkan saat peristiwa perubahan kekuatan sinyal terjadi.
 
@@ -10215,6 +10219,17 @@ Informasi selengkapnya tentang teknologi lama dapat ditemukan di https://chromes
           Jika kebijakan ini tidak ditetapkan, perilaku kebijakan yang lebih spesifik tetap tidak terpengaruh.</translation>
 <translation id="8350643689940867542">Nonaktifkan pelaporan data kebijakan</translation>
 <translation id="835283681355955417">Melaporkan detail periferal</translation>
+<translation id="8354001669131263433">Mulai M132, kebijakan ini akan dihapus, bersama dengan API layar penuh khusus video berawalan.
+
+Jika kebijakan ini disetel ke <ph name="ENABLED_VALUE_NAME" />, API layar penuh khusus video berawalan (mis. Video.webkitEnterFullscreen()) dapat digunakan dari JavaScript.
+
+Jika kebijakan ini disetel ke <ph name="DISABLED_VALUE_NAME" />, API layar penuh khusus video berawalan tidak akan digunakan dalam JavaScript, sehingga hanya API layar penuh standar yang tersisa (mis. Element.requestFullscreen()).
+
+Jika kebijakan ini disetel ke <ph name="RUNTIME_ENABLED_VALUE_NAME" />, tombol fitur yang diaktifkan runtime PrefixedFullscreenVideo dapat digunakan untuk menentukan apakah API layar penuh khusus video berawalan tersedia untuk situs web.
+
+Jika kebijakan ini tidak disetel, perilaku akan ditetapkan secara default ke <ph name="RUNTIME_ENABLED_VALUE_NAME" />.
+
+Catatan: kebijakan ini adalah solusi sementara untuk membantu transisi dari API layar penuh berawalan webkit. M131 adalah rilis terakhir yang akan memiliki kebijakan ini.</translation>
 <translation id="8356953698979920095">Jika kebijakan disetel ke nilai, warna default untuk lampu latar keyboard
 
 perangkat akan digunakan selama pengguna login.</translation>

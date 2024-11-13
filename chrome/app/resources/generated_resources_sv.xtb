@@ -705,7 +705,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1485015260175968628">Appen eller tillägget kan nu:</translation>
 <translation id="1485141095922496924">Version <ph name="PRODUCT_VERSION" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="1485197926103629489">Microsoft 365 kräver att filer lagras i OneDrive. Lokala filer flyttas och filer från andra platser kopieras. Filerna finns i Microsoft OneDrive-mappen i appen Filer.</translation>
-<translation id="1486012259353794050">När du ställer frågor ger Google-assistenten anpassade svar baserat på din skärm</translation>
+<translation id="1486012259353794050">När du ställer frågor ger Google Assistent anpassade svar baserat på din skärm</translation>
 <translation id="1486096554574027028">Sök efter lösenord</translation>
 <translation id="1486458761710757218">Justera automatiskt ljusstyrkan på bakgrundsbelysningen för tangentbordet</translation>
 <translation id="1486486872607808064">Skanna den här QR-koden med kameran på enheten där du vill skapa en nyckel för <ph name="APP_NAME" /></translation>
@@ -1989,7 +1989,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="235028206512346451">Om du går iväg från skärmen låses den automatiskt. Skärmen är upplåst längre om du befinner dig framför den. Om du inte har en låsskärm hamnar enheten i viloläge i stället för att låsas.</translation>
 <translation id="2351923523007389195">Tillåts – <ph name="PERMISSION_DETAILS" />. Aktivera <ph name="LINK_BEGIN" />systemets platsåtkomst<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
-<translation id="2352810082280059586">Anteckningar på låsskärmen sparas automatiskt i <ph name="LOCK_SCREEN_APP_NAME" />. Den senaste anteckningen visas på låsskärmen.</translation>
 <translation id="2353168619378866466">Öppna gruppen</translation>
 <translation id="2353297238722298836">Kamera och mikrofon är tillåtna</translation>
 <translation id="2353910600995338714">Exporten har slutförts</translation>
@@ -4166,7 +4165,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="3887022758415973389">Visa enhetslista</translation>
 <translation id="3887764720741098847">Sparade uppgifter</translation>
 <translation id="3888501106166145415">Kopplade wifi-nätverk</translation>
-<translation id="3888550877729210209">Anteckna med <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Aktivera Chrome Sync om du vill använda wifi-synkronisering</translation>
 <translation id="389313931326656921">Tilldela brytare för Nästa</translation>
 <translation id="3893268973182382220">Det går inte att läsa in panelen just nu</translation>
@@ -11474,7 +11472,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="9133568201369135151">Insamling av diagnostikdata har slutförts. En del av dina personliga uppgifter inkluderas i denna data.</translation>
 <translation id="9133985615769429248">Om du delar enheten med andra kan du använda skärmlåset för att verifiera din identitet när du använder ett sparat lösenord</translation>
 <translation id="9134066738478820307">Webbplatser får använda identifierare för att spela upp skyddat innehåll</translation>
-<translation id="913411432238655354">Återställ appar vid start</translation>
 <translation id="9135777878366959474">Ange din alfanumeriska pinkod för Google Lösenordshantering</translation>
 <translation id="9137013805542155359">Visa original</translation>
 <translation id="9137157311132182254">Prioriterad sökmotor</translation>

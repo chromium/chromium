@@ -1975,7 +1975,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="235028206512346451">Cihazınızdan uzaqlaşsanız, ekranınız avtomatik olaraq kilidlənəcək. Cihazınızın qarşısında olduğunuz zaman ekranınız daha uzun müddət açıq qalacaq. Kilid ekranından istifadə etmirsinizsə, cihazınız kilidlənmək əvəzinə yuxu rejiminə keçəcək.</translation>
 <translation id="2351923523007389195">İcazə verilib – <ph name="PERMISSION_DETAILS" />. <ph name="LINK_BEGIN" />Sistem məkan girişini<ph name="LINK_END" /> yandırın.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
-<translation id="2352810082280059586">Ekran kilidi qeydləri avtomatik olaraq <ph name="LOCK_SCREEN_APP_NAME" /> tətbiqində yadda saxlanılır. Ən son edilən qeydlər ekran kilidində qalacaq.</translation>
 <translation id="2353168619378866466">Qrupu açın</translation>
 <translation id="2353297238722298836">Kamera və mikrofona icazə verildi</translation>
 <translation id="2353910600995338714">Eksport uğurlu oldu</translation>
@@ -4152,7 +4151,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="3887022758415973389">Cihaz siyahısını göstərin</translation>
 <translation id="3887764720741098847">Yadda saxlanan məlumatlar</translation>
 <translation id="3888501106166145415">Əlaqəli Wi-Fi şəbəkələri</translation>
-<translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> ilə qeyd götürmə</translation>
 <translation id="3890064827463908288">Wi-Fi Sinxronlaşdırmasını istifadə etmək üçün Chrome Sinxronlaşdırmasını aktiv edin</translation>
 <translation id="389313931326656921">"Sonrakı" əməliyyatına keçirici təyin edin</translation>
 <translation id="3893268973182382220">Hazırda bu panel yüklənmir</translation>
@@ -11451,7 +11449,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="9133568201369135151">Diaqnostik data toplandı. Bu dataya bəzi şəxsi məlumatlar daxildir.</translation>
 <translation id="9133985615769429248">Bu cihazı başqaları ilə paylaşsanız, yadda saxlanmış paroldan istifadə etdiyiniz zaman kimliyinizi doğrulamaq üçün ekran kilidindən istifadə edə bilərsiniz</translation>
 <translation id="9134066738478820307">Saytlar qorunan məzmunu oxutmaq üçün identifikatorlardan istifadə edə bilər</translation>
-<translation id="913411432238655354">Başlanğıcda tətbiqləri bərpa edin</translation>
 <translation id="9135777878366959474">Google Parol Meneceri üçün hərf və rəqəmdən ibarət PIN daxil edin</translation>
 <translation id="9137013805542155359">Originalı göstərin</translation>
 <translation id="9137157311132182254">Defolt axtarış sistemi</translation>

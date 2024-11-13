@@ -1977,7 +1977,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="235028206512346451">Si vous vous éloignez de votre appareil, votre écran se verrouillera automatiquement. Lorsque vous serez face à votre écran, celui-ci restera activé plus longtemps. Si vous n'utilisez pas d'écran de verrouillage, votre appareil se mettra en veille au lieu de se verrouiller.</translation>
 <translation id="2351923523007389195">Accordée – <ph name="PERMISSION_DETAILS" />. Activez l'<ph name="LINK_BEGIN" />accès à la position du système<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 Mo</translation>
-<translation id="2352810082280059586">Les notes rédigées sur l'écran de verrouillage sont automatiquement enregistrées dans <ph name="LOCK_SCREEN_APP_NAME" />. Votre note la plus récente restera sur l'écran de verrouillage.</translation>
 <translation id="2353168619378866466">Ouvrir le groupe</translation>
 <translation id="2353297238722298836">Caméra et micro autorisés</translation>
 <translation id="2353910600995338714">Exportation réussie</translation>
@@ -4152,7 +4151,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="3887022758415973389">Afficher la liste des appareils</translation>
 <translation id="3887764720741098847">Informations enregistrées</translation>
 <translation id="3888501106166145415">Réseaux Wi-Fi associés</translation>
-<translation id="3888550877729210209">Prise de notes avec <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Activer la synchronisation Chrome pour utiliser Sync Wi-Fi</translation>
 <translation id="389313931326656921">Associer un contacteur à "Suivant"</translation>
 <translation id="3893268973182382220">Impossible de charger ce panneau pour le moment</translation>
@@ -11461,7 +11459,6 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="9133568201369135151">La collecte des données de diagnostic est terminée. Ces données contiennent certaines de vos informations personnelles.</translation>
 <translation id="9133985615769429248">Si vous partagez cet appareil, vous pouvez utiliser le verrouillage de l'écran pour confirmer votre identité chaque fois que vous utilisez un mot de passe enregistré</translation>
 <translation id="9134066738478820307">Les sites peuvent utiliser des ID pour lire du contenu protégé</translation>
-<translation id="913411432238655354">Restaurer les applis au démarrage</translation>
 <translation id="9135777878366959474">Saisir votre code alphanumérique pour le Gestionnaire de mots de passe de Google</translation>
 <translation id="9137013805542155359">Afficher l'original</translation>
 <translation id="9137157311132182254">Moteur de recherche préféré</translation>

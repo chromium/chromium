@@ -138,6 +138,7 @@
 <translation id="1604959087182679653">ट्रान्स्क्रिप्ट लुकाउनुहोस्</translation>
 <translation id="160633243685262989">फोटो प्रिभ्यू गर्नुहोस्</translation>
 <translation id="1611649489706141841">फर्वाड गर्नुहोस्</translation>
+<translation id="1615144046047995187">डाउनलोड गर्न सकिएन। फेरि प्रयास गर्नुहोस् वा आफ्नो Chromebook रिस्टार्ट गर्नुहोस्।</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> देखि प्रयोग गरिएको डेटा</translation>
 <translation id="1618566998877964907">कुनै थिम प्रयोग गर्नुहोस्</translation>
 <translation id="1621067168122174824">ब्याट्रीको चार्जसम्बन्धी परीक्षण गर्नुहोस्</translation>
@@ -409,6 +410,7 @@
 <translation id="2888298276507578975">"धन्यवाद नोट लेख" जस्तो प्रम्प्ट हाल्नुहोस्</translation>
 <translation id="2890557891229184386">उष्णप्रदेशीय टापु</translation>
 <translation id="2895772081848316509">अँध्यारो</translation>
+<translation id="2915996080311180594">पछि रिस्टार्ट गर्नुहोस्</translation>
 <translation id="2926057806159140518">आफ्नो युजरनेम र पासवर्ड हाल्नुहोस् वा आफ्नो QR कोड स्क्यान गर्नुहोस्</translation>
 <translation id="2940811910881150316">डिभाइसको परीक्षण गर्न सकिँदैन। परीक्षण गर्न लिड फेरि खोल्नुहोस्।</translation>
 <translation id="2941112035454246133">निम्न</translation>
@@ -468,6 +470,7 @@
 <translation id="3275729367986477355">अवतारको फोटो</translation>
 <translation id="3283504360622356314">{0,plural, =1{फाइल सम्पादन गर्नुहोस्}other{फाइलहरू सम्पादन गर्नुहोस्}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
+<translation id="3286538390144397061">अहिले फेरी सुरु गर्नुहोस्</translation>
 <translation id="3291996639387199448">मुख्य डिरेक्सन</translation>
 <translation id="3294437725009624529">पाहुना</translation>
 <translation id="3303855915957856445">खोजका परिणाम फेला परेनन्</translation>
@@ -588,6 +591,7 @@
 <translation id="3885327323343477505">स्क्रिन सेभर बदल्नुहोस्</translation>
 <translation id="3889914174935857450">मिति रिसेट गर्नुहोस्</translation>
 <translation id="3897092660631435901">मेनु</translation>
+<translation id="3902271751020176019">ट्रान्स्क्रिप्सनमा प्रयोग गरिने भाषा</translation>
 <translation id="391412459402535266">डिभाइसको परीक्षण गर्न सकिँदैन। परीक्षण गर्न ल्यापटप मोड प्रयोग गर्नुहोस्।</translation>
 <translation id="3916998944874125962">"स्क्रिनसट लिनुहोस्" जनाउने आइकन</translation>
 <translation id="3923184630988645767">डेटा प्रयोग</translation>
@@ -941,6 +945,7 @@
 <translation id="5606865426897221650">ट्याब</translation>
 <translation id="5613201299517339763">तपाईंलाई साइन आउट गरिएको छ</translation>
 <translation id="5620281292257375798">आन्तरिक प्रयोजनका लागि मात्र</translation>
+<translation id="5628106863521633649">उपलब्ध भाषाहरू</translation>
 <translation id="5630438231335788050">बाउहाउस</translation>
 <translation id="5631759159893697722">अमूर्त</translation>
 <translation id="5655283760733841251">किबोर्डको चमक बढाउने की</translation>
@@ -1266,6 +1271,7 @@
 <translation id="710028965487274708">विफल भयो - अनुमति दिइएको छैन</translation>
 <translation id="7101959270679078188">अपडेट गर्ने प्रक्रिया जारी राख्न <ph name="DEVICE_NAME" /> अनलक गर्नुहोस्</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> वटामध्ये <ph name="INDEX" /> औँ डिभाइस, डिभाइसको नाम: <ph name="NAME" />।</translation>
+<translation id="7103793063702494489">चयन गरिएको भाषा</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> को विशेष कलाकृति छनौट गर्नुहोस्</translation>
 <translation id="7108668606237948702">प्रविष्टि गर्नुहोस्</translation>
 <translation id="7117228822971127758">कृपया पछि फेरि प्रयास गर्नुहोस्</translation>

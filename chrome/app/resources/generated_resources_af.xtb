@@ -1989,7 +1989,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="235028206512346451">Jou skerm sal outomaties sluit wanneer jy van jou skerm af wegbeweeg. Jou skerm sal langer wakker bly wanneer jy voor jou toestel is. Jou skerm sal slaap pleks van sluit as jy nie ’n sluitskerm gebruik nie.</translation>
 <translation id="2351923523007389195">Toegelaat – <ph name="PERMISSION_DETAILS" />. Skakel <ph name="LINK_BEGIN" />stelselliggingtoegang<ph name="LINK_END" /> aan.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
-<translation id="2352810082280059586">Sluitskermnotas word outomaties in <ph name="LOCK_SCREEN_APP_NAME" /> gestoor. Jou mees onlangse nota sal op die sluitskerm bly.</translation>
 <translation id="2353168619378866466">Maak groep oop</translation>
 <translation id="2353297238722298836">Kamera en mikrofoon word toegelaat</translation>
 <translation id="2353910600995338714">Uitvoer suksesvol</translation>
@@ -4166,7 +4165,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="3887022758415973389">Wys toestellys</translation>
 <translation id="3887764720741098847">Gestoorde inligting</translation>
 <translation id="3888501106166145415">Met wi-fi-netwerke geassosieer</translation>
-<translation id="3888550877729210209">Maak tans notas met <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Skakel Chrome-sinkronisering aan om Wi-fi-sinkronisering te gebruik</translation>
 <translation id="389313931326656921">Wys skakelaar toe vir “Volgende”</translation>
 <translation id="3893268973182382220">Kan nie hierdie paneel op die oomblik laai nie</translation>
@@ -11472,7 +11470,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="9133568201369135151">Diagnostiese dataversameling is voltooi. Sommige van jou persoonlike inligting is by hierdie data ingesluit.</translation>
 <translation id="9133985615769429248">As jy hierdie toestel met ander mense deel, kan jy jou skermslot gebruik om te verifieer dis jy wanneer ook al jy ’n gestoorde wagwoord gebruik</translation>
 <translation id="9134066738478820307">Werwe kan identifiseerders gebruik om beskermde inhoud te speel</translation>
-<translation id="913411432238655354">Stel programme terug met afskop</translation>
 <translation id="9135777878366959474">Voer jou alfanumeriese PIN vir Google Wagwoordbestuurder in</translation>
 <translation id="9137013805542155359">Wys oorspronklike</translation>
 <translation id="9137157311132182254">Voorkeursoekenjin</translation>

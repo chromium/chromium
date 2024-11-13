@@ -1991,7 +1991,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="235028206512346451">If you move away from your device, your screen will lock automatically. When you're in front of your device, your screen will stay awake longer. If you aren't using a lock screen, your device will sleep instead of lock.</translation>
 <translation id="2351923523007389195">Allowed – <ph name="PERMISSION_DETAILS" />. Turn on <ph name="LINK_BEGIN" />system location access<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
-<translation id="2352810082280059586">Lock screen notes are automatically saved to <ph name="LOCK_SCREEN_APP_NAME" />. Your most recent note will remain on the lock screen.</translation>
 <translation id="2353168619378866466">Open group</translation>
 <translation id="2353297238722298836">Camera and microphone allowed</translation>
 <translation id="2353910600995338714">Export successful</translation>
@@ -4168,7 +4167,6 @@ This can include information about installed software, files, your browser and t
 <translation id="3887022758415973389">Show device list</translation>
 <translation id="3887764720741098847">Saved information</translation>
 <translation id="3888501106166145415">Associated Wi-Fi networks</translation>
-<translation id="3888550877729210209">Taking notes with <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Turn on Chrome Sync to use Wi-Fi Sync</translation>
 <translation id="389313931326656921">Assign switch for 'Next'</translation>
 <translation id="3893268973182382220">Can't load this panel right now</translation>
@@ -11479,7 +11477,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9133568201369135151">Diagnostic data collection is complete. Some of your personal information is included in this data.</translation>
 <translation id="9133985615769429248">If you share this device with others, you can use your screen lock to verify that it's you whenever you use a saved password</translation>
 <translation id="9134066738478820307">Sites can use identifiers to play protected content</translation>
-<translation id="913411432238655354">Restore apps on start-up</translation>
 <translation id="9135777878366959474">Enter your alphanumeric PIN for Google Password Manager</translation>
 <translation id="9137013805542155359">Show original</translation>
 <translation id="9137157311132182254">Preferred search engine</translation>

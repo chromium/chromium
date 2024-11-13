@@ -50,6 +50,7 @@
 <translation id="1181037720776840403">ਹਟਾਓ</translation>
 <translation id="1191518099344003522">APN ਚਾਲੂ ਹੈ।</translation>
 <translation id="1195447618553298278">ਅਗਿਆਤ ਗੜਬੜ।</translation>
+<translation id="1196264380943975940">ਸਾਰਾਂਸ਼ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਲੰਬੀ ਪ੍ਰਤੀਲਿਪੀ ਵਰਤ ਕੇ ਦੇਖੋ।</translation>
 <translation id="1196959502276349371">ਵਰਜਨ <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">ਚਲਾਓ/ਰੋਕੋ</translation>
 <translation id="1201402288615127009">ਅੱਗੇ</translation>
@@ -410,6 +411,7 @@
 <translation id="2888298276507578975">"ਧੰਨਵਾਦ ਨੋਟ ਲਿਖੋ" ਵਰਗਾ ਉਤਪ੍ਰੇਰਕ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="2890557891229184386">ਤਪਤ ਖੰਡੀ ਟਾਪੂ</translation>
 <translation id="2895772081848316509">ਡਾਰਕ</translation>
+<translation id="2915996080311180594">ਬਾਅਦ ਵਿੱਚ ਮੁੜ-ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="2926057806159140518">ਆਪਣਾ ਵਰਤੋਂਕਾਰ ਨਾਮ ਅਤੇ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ ਜਾਂ ਆਪਣਾ QR ਕੋਡ ਸਕੈਨ ਕਰੋ</translation>
 <translation id="2940811910881150316">ਡੀਵਾਈਸ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ। ਜਾਂਚ ਕਰਨ ਲਈ ਢੱਕਣ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹੋ।</translation>
 <translation id="2941112035454246133">ਘੱਟ</translation>
@@ -469,6 +471,7 @@
 <translation id="3275729367986477355">ਅਵਤਾਰ ਚਿੱਤਰ</translation>
 <translation id="3283504360622356314">{0,plural, =1{ਫ਼ਾਈਲ ਦਾ ਸੰਪਾਦਨ ਕਰੋ}one{ਫ਼ਾਈਲ ਦਾ ਸੰਪਾਦਨ ਕਰੋ}other{ਫ਼ਾਈਲਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰੋ}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
+<translation id="3286538390144397061">ਹੁਣ ਰੀਸਟਾਰਟ ਕਰੋ</translation>
 <translation id="3291996639387199448">ਕੁੰਜੀ ਨਿਰਦੇਸ਼</translation>
 <translation id="3294437725009624529">ਮਹਿਮਾਨ</translation>
 <translation id="3303855915957856445">ਕੋਈ ਖੋਜ ਨਤੀਜੇ ਨਹੀਂ ਮਿਲੇ</translation>
@@ -754,6 +757,7 @@
 <translation id="4665014895760275686">ਨਿਰਮਾਤਾ</translation>
 <translation id="467510802200863975">ਪਾਸਵਰਡ ਮੇਲ ਨਹੀਂ ਖਾਂਦੇ</translation>
 <translation id="467715984478005772">ਫ਼ਾਇਰਵਾਲ 'ਤੇ ਸ਼ੱਕ ਹੈ</translation>
+<translation id="4678534708181186163">ਸਾਰਾਂਸ਼ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਛੋਟੀ ਪ੍ਰਤੀਲਿਪੀ ਵਰਤ ਕੇ ਦੇਖੋ।</translation>
 <translation id="4683762547447150570">ਕੁੰਜੀ ਸੰਬੰਧੀ ਸਪੁਰਦਗੀ 'ਤੇ ਫੋਕਸ ਕਰਨ ਲਈ ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ</translation>
 <translation id="4691278870498629773">ਬੰਦ ਹੋ ਗਿਆ - ਟ੍ਰੇਅ ਮੌਜੂਦ ਨਹੀਂ ਹੈ</translation>
 <translation id="469379815867856270">ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ</translation>
@@ -856,6 +860,7 @@
 <translation id="5168185087976003268">ਬੈਟਰੀ ਦੀ ਸਥਿਤੀ</translation>
 <translation id="5170568018924773124">ਫੋਲਡਰ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="517075088756846356">ਅੱਪਡੇਟ ਦੀ ਪ੍ਰਕਿਰਿਆ ਜਾਰੀ ਰੱਖਣ ਲਈ <ph name="DEVICE_NAME" /> ਦੀ ਪਾਵਰ ਕੇਬਲ ਨੂੰ ਅਣਪਲੱਗ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਲਗਾਓ</translation>
+<translation id="5178021559562393163">ਨਾਮ ਨਹੀਂ ਬਣਾਏ ਜਾ ਸਕਦੇ। ਛੋਟੀ ਪ੍ਰਤੀਲਿਪੀ ਵਰਤ ਕੇ ਦੇਖੋ।</translation>
 <translation id="5180108905184566358">ਬਾਓਬਾਬ ਰੁੱਖ</translation>
 <translation id="5180712487038406644">ਭਾਵਪੂਰਨ</translation>
 <translation id="5190187232518914472">ਆਪਣੀਆਂ ਮਨਪਸੰਦ ਯਾਦਾਂ ਨੂੰ ਤਾਜ਼ਾ ਕਰੋ। ਐਲਬਮਾਂ ਸ਼ਾਮਲ ਜਾਂ ਉਹਨਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰਨ ਲਈ, <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> 'ਤੇ ਜਾਓ।</translation>
@@ -890,6 +895,7 @@
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">ਪਛਾਣ</translation>
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
+<translation id="5318310531701770497">ਨਾਮ ਨਹੀਂ ਬਣਾਏ ਜਾ ਸਕਦੇ। ਲੰਬੀ ਪ੍ਰਤੀਲਿਪੀ ਵਰਤ ਕੇ ਦੇਖੋ।</translation>
 <translation id="5318334351163689047">TCP ਬੇਨਤੀ ਦੀਆਂ ਅਸਫਲਤਾਵਾਂ</translation>
 <translation id="53196409393069519">ਕੀ ਪ੍ਰਤੀਲਿਪੀਕਰਨ ਨੂੰ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>

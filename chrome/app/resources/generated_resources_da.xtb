@@ -319,6 +319,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1206832039833782423">Din sikkerhedskode står på bagsiden af dit kort</translation>
 <translation id="1208339823324516598">{GROUP_COUNT,plural, =1{Slet gruppe}one{Slet gruppe}other{Slet grupper}}</translation>
 <translation id="1208392090861059168">Den aktuelle tidsplan er indstillet til <ph name="SUNRISE" />-<ph name="SUNSET" />. Hvis du vil opdatere tidsplanen for solnedgang og solopgang automatisk, skal du <ph name="BEGIN_LINK" />aktivere systemets lokationsadgang<ph name="END_LINK" />.</translation>
+<translation id="1210376751550516429">Vælg en lydoutputenhed</translation>
 <translation id="1210678701920254279">Se eller tilføj printere, og se aktive udskriftsjobs</translation>
 <translation id="1211769675100312947">Genveje udvælges af dig</translation>
 <translation id="1213254615020057352">Send brugs- og diagnosticeringsdata. Hjælp med at forbedre dit barns Android-oplevelse ved automatisk at sende diagnosticerings- og enhedsdata samt data om brug af apps til Google. Disse data bruges ikke til at identificere dit barn. De bruges kun til forbedring af bl.a. systemets og appens stabilitet. Visse aggregerede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Denne indstilling håndhæves af ejeren. Ejeren kan vælge at sende diagnosticerings- og brugsdata for denne enhed til Google. Hvis indstillingen for yderligere web- og appaktivitet er aktiveret for dit barn, gemmes disse data muligvis på barnets Google-konto.</translation>
@@ -403,6 +404,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1264083566674525434">Rediger websitetilladelser</translation>
 <translation id="1264337193001759725">Du kan se logs for netværksbrugerflader på <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="1264956950255940376">Knib det venstre øje sammen</translation>
+<translation id="1265094893042958831">Genererer forslag til denne side…</translation>
 <translation id="1265279736024499987">Dine apps og indstillinger synkroniseres på tværs af alle de ChromeOS Flex-enheder, hvor du er logget ind med din Google-konto. Du kan se muligheder for synkronisering af browseren i <ph name="LINK_BEGIN" />indstillingerne for Chrome<ph name="LINK_END" />.</translation>
 <translation id="126710816202626562">Sprog, der skal oversættes til:</translation>
 <translation id="1267649802567297774">Billede <ph name="INDEX" /> af <ph name="SUBJECT" /> i stilen <ph name="STYLE" /> med stemningen <ph name="MOOD" /> er genereret.</translation>
@@ -1990,7 +1992,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="235028206512346451">Hvis du bevæger dig væk fra din enhed, låser din skærm automatisk. Når du befinder dig foran din enhed, forbliver din skærm ulåst i længere tid. Hvis du ikke bruger en låseskærm, går din enhed i dvale i stedet for at låse.</translation>
 <translation id="2351923523007389195">Tilladt – <ph name="PERMISSION_DETAILS" />. Aktivér <ph name="LINK_BEGIN" />systemets lokationsadgang<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
-<translation id="2352810082280059586">Noter på låseskærmen gemmes automatisk i <ph name="LOCK_SCREEN_APP_NAME" />. Din seneste note forbliver på låseskærmen.</translation>
 <translation id="2353168619378866466">Åbn gruppe</translation>
 <translation id="2353297238722298836">Der er givet adgang til kameraet og mikrofonen</translation>
 <translation id="2353910600995338714">Eksporten er gennemført</translation>
@@ -4167,7 +4168,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="3887022758415973389">Vis liste over enheder</translation>
 <translation id="3887764720741098847">Gemte oplysninger</translation>
 <translation id="3888501106166145415">Tilknyttede Wi-Fi-netværk</translation>
-<translation id="3888550877729210209">Notetagning med <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Aktivér Chrome-synkronisering for at bruge Wi-Fi-synkronisering</translation>
 <translation id="389313931326656921">Tildel kontakt for handlingen "Næste"</translation>
 <translation id="3893268973182382220">Dette panel kan ikke indlæses lige nu</translation>
@@ -4409,6 +4409,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4047345532928475040">N/A</translation>
 <translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Gå til startsiden</translation>
+<translation id="4048295959689903187">Vælg lydudgang</translation>
 <translation id="4048384495227695211">Vis <ph name="FILE_NAME" /> i mappe</translation>
 <translation id="404894744863342743">Når du er færdig med at bruge den downloadede fil, skal du slette den, så andre brugere af denne enhed ikke kan se dine adgangskoder.</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# kontakt er ikke tilgængelig. Hvis du vil bruge Deling tæt på med denne kontakt, skal du føje den mailadresse, der er tilknyttet vedkommendes Google-konto, til dine kontakter.}one{# kontakt er ikke tilgængelig. Hvis du vil bruge Deling tæt på med denne kontakt, skal du føje den mailadresse, der er tilknyttet vedkommendes Google-konto, til dine kontakter.}other{# kontakter er ikke tilgængelige. Hvis du vil bruge Deling tæt på med disse kontakter, skal du føje de mailadresser, der er tilknyttet deres Google-konti, til dine kontakter.}}</translation>
@@ -5314,6 +5315,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4730492586225682674">Nyeste note med styluspen på låseskærmen</translation>
 <translation id="4730888769809690665">Notifikationer er tilladt for <ph name="SITE" /></translation>
 <translation id="4731306954230393087">Har tilladelse til at bruge oplysninger, de har gemt om dig</translation>
+<translation id="4732799736617504962">Den tilsluttede mikrofon kan kun understøtte støjreducering</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" /> % (venstre)</translation>
 <translation id="4733793249294335256">Placering</translation>
 <translation id="473546211690256853">Denne konto administreres af <ph name="DOMAIN" /></translation>
@@ -5386,6 +5388,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4789348252524569426">Talefilerne kan ikke installeres Din enhed skal opdateres. Genstart din enhed, og prøv igen.</translation>
 <translation id="4789550509729954245">Vis en notifikation, når enheder i nærheden deler indhold</translation>
 <translation id="4791037424585594169">(UDP)</translation>
+<translation id="4791200512372376561">Ingen tilgængelige forslag. Prøv at spørge om ting som f.eks. "opsummer denne side" eller stille dit eget spørgsmål.</translation>
 <translation id="4791793693640849493">Gem elementer på kontoen</translation>
 <translation id="4792290259143007505">Aktivér TrackPoint-acceleration</translation>
 <translation id="4792711294155034829">&amp;Rapporter et problem...</translation>
@@ -6068,6 +6071,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5276357196618041410">Konfigurationen først gemmes efter login</translation>
 <translation id="5277127016695466621">Vis sidepanel</translation>
 <translation id="5278823018825269962">Status-id</translation>
+<translation id="5279214046729249716">Ja, hold dem adskilt</translation>
 <translation id="5279600392753459966">Bloker alle</translation>
 <translation id="5280064835262749532">Opdater loginoplysninger for <ph name="SHARE_PATH" /></translation>
 <translation id="5280335021886535443">Tryk på |<ph name="ACCELERATOR" />| for at fokusere på denne boble.</translation>
@@ -11477,7 +11481,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="9133568201369135151">Indsamlingen af diagnosticeringsdata er gennemført. Nogle af dine personlige oplysninger medtages i disse data.</translation>
 <translation id="9133985615769429248">Hvis du deler denne enhed med andre, kan du bruge din skærmlås til at verificere din identitet, når du bruger en gemt adgangskode</translation>
 <translation id="9134066738478820307">Websites kan bruge id'er til at afspille beskyttet indhold</translation>
-<translation id="913411432238655354">Gendan apps ved opstart</translation>
 <translation id="9135777878366959474">Angiv din alfanumeriske pinkode til Google Adgangskodeadministrator</translation>
 <translation id="9137013805542155359">Vis oprindelig</translation>
 <translation id="9137157311132182254">Foretrukken søgemaskine</translation>

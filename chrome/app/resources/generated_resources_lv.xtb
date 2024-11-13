@@ -1978,7 +1978,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="235028206512346451">Ja vairs neskatīsieties uz savu ierīci, ekrāns tiks automātiski bloķēts. Kad skatīsieties uz savu ierīci, ekrāns ilgāk nepāries miega režīmā. Ja neizmantojat bloķēšanas ekrānu, jūsu ierīce netiks bloķēta, bet pāries miega režīmā.</translation>
 <translation id="2351923523007389195">Piekļuve atļauta — <ph name="PERMISSION_DETAILS" />. Ieslēdziet <ph name="LINK_BEGIN" />sistēmas piekļuvi atrašanās vietas datiem<ph name="LINK_END" />.</translation>
 <translation id="2352662711729498748">&lt;1 MB</translation>
-<translation id="2352810082280059586">Bloķēšanas ekrāna piezīmes tiek automātiski saglabātas lietotnē <ph name="LOCK_SCREEN_APP_NAME" />. Jūsu jaunākās piezīmes paliks bloķēšanas ekrānā.</translation>
 <translation id="2353168619378866466">Atvērt grupu</translation>
 <translation id="2353297238722298836">Kameras un mikrofona lietošana ir atļauta</translation>
 <translation id="2353910600995338714">Eksportēšana bija sekmīga.</translation>
@@ -4153,7 +4152,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="3887022758415973389">Rādīt ierīču sarakstu</translation>
 <translation id="3887764720741098847">Saglabātā informācija</translation>
 <translation id="3888501106166145415">Saistītie Wi-Fi tīkli</translation>
-<translation id="3888550877729210209">Piezīmju rakstīšana, izmantojot <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Lai izmantotu Wi-Fi sinhronizāciju, ieslēdziet Chrome sinhronizāciju</translation>
 <translation id="389313931326656921">Slēdža piešķiršanai darbībai “Nākamais”</translation>
 <translation id="3893268973182382220">Pašlaik šo paneli nevar ielādēt.</translation>
@@ -11461,7 +11459,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="9133568201369135151">Diagnostikas datu vākšana ir pabeigta. Šajos datos ir iekļauta noteikta jūsu personas informācija.</translation>
 <translation id="9133985615769429248">Ja šo ierīci izmanto arī citas personas, varat izmantot ekrāna bloķēšanu, lai apstiprinātu savu identitāti ikreiz, kad izmantojat saglabātu paroli.</translation>
 <translation id="9134066738478820307">Atļaut vietnēm izmantot identifikatorus, lai atskaņotu aizsargātu saturu</translation>
-<translation id="913411432238655354">Atjaunot lietotnes palaišanas laikā</translation>
 <translation id="9135777878366959474">Ievadiet burtciparu PIN, lai piekļūtu Google paroļu pārvaldniekam</translation>
 <translation id="9137013805542155359">Rādīt oriģinālo</translation>
 <translation id="9137157311132182254">Vēlamā meklētājprogramma</translation>

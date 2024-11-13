@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Codul a fost scanat</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} filă}few{{count} file}other{{count} de file}}</translation>
 <translation id="1084365883616172403">Postare pe Facebook finalizată.</translation>
+<translation id="1085677983426914530"><ph name="FILENAME" /> nu a putut fi deschis</translation>
 <translation id="1096992026380844478">Setările de sincronizare vor fi restabilite pe baza ultimului backup. <ph name="BEGIN_LINK" />Află ce poți sincroniza<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Tradu întotdeauna din <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Sincronizarea istoricului</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Nu, mulțumesc</translation>
 <translation id="2320166752086256636">Ascunde tastatura</translation>
 <translation id="2321086116217818302">Se pregătesc parolele…</translation>
+<translation id="2323697864063408084">Primește notificări pe ecranul de blocare și ca bannere, ca să nu ratezi niciodată ceea ce contează pentru tine</translation>
 <translation id="2326302612031521902">Selector de unități</translation>
 <translation id="2330607597130465898">Fără protecție</translation>
 <translation id="233375395665273385">Șterge și deconectează-te</translation>
@@ -384,6 +386,7 @@ Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare d
 <translation id="2671423594960767771">Trimite grupul</translation>
 <translation id="2673508731173059946">Accesează linkul copiat</translation>
 <translation id="2687403674020088961">Blochează toate cookie-urile (nu este recomandat)</translation>
+<translation id="2688535388040882469">Bannere</translation>
 <translation id="2690858294534178585">Camera foto este în uz</translation>
 <translation id="2691653761409724435">Indisponibil offline</translation>
 <translation id="2696180352517415858">Nu te vei deconecta de la Contul Google. <ph name="BEGIN_LINK" />Alte tipuri de activități<ph name="END_LINK" /> se pot salva în Contul Google dacă te-ai conectat. Le poți șterge oricând.
@@ -636,6 +639,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3986739045730058129">Accesează fila</translation>
 <translation id="3992684624889376114">Despre această pagină</translation>
 <translation id="3994422733891749358">Alege ce notificări vrei să primești</translation>
+<translation id="3994522032746736727">Conectează-te ca <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Bara de progres a încărcării paginii, <ph name="EMAIL" /> s-a încărcat.</translation>
 <translation id="3997522473364371632">Trimiterea parolei este dezactivată de administrator.</translation>
 <translation id="4002066346123236978">Titlu</translation>
@@ -843,6 +847,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4936354130727646074">Nu le muta niciodată</translation>
 <translation id="4937410517508563815">Salvează parolele în cont</translation>
 <translation id="4938338714234463591">Astfel, vei putea să folosești vocea cu anumite funcții de pe site-uri.</translation>
+<translation id="4938716880833771969">Notificările se trimit fără sunet</translation>
 <translation id="4941089862236492464">A apărut o problemă la trimiterea articolului.</translation>
 <translation id="4944543191714094452">Caută în pagină…</translation>
 <translation id="4945756290001680296">Accesează setările pentru parole</translation>
@@ -1609,6 +1614,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8319076807703933069">Căutare nouă</translation>
 <translation id="8343993175958086504">Fă backup datelor și folosește-le pe orice dispozitiv.</translation>
 <translation id="8349305172487531364">Bara de marcaje</translation>
+<translation id="8364563001733875155">Pentru a schimba PIN-ul, mai întâi setează un cod de acces pe dispozitiv.</translation>
 <translation id="8366466717204352506">Nu s-a făcut niciodată verificarea</translation>
 <translation id="8368001212524806591">Urmărește prețul</translation>
 <translation id="8370406443343902172">Accesează Setările...</translation>

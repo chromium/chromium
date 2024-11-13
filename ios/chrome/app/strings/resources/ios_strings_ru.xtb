@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Код отсканирован</translation>
 <translation id="1081932398873105675">{count,plural, =1{{count} вкладка}one{{count} вкладка}few{{count} вкладки}many{{count} вкладок}other{{count} вкладки}}</translation>
 <translation id="1084365883616172403">Опубликовано в Facebook.</translation>
+<translation id="1085677983426914530">Не удалось открыть файл "<ph name="FILENAME" />"</translation>
 <translation id="1096992026380844478">Ваши настройки синхронизации будут восстановлены на основе данных из последней резервной копии. Узнайте, <ph name="BEGIN_LINK" />какие данные можно синхронизировать<ph name="END_LINK" />.</translation>
 <translation id="1103523840287552314">Всегда переводить <ph name="LANGUAGE" /></translation>
 <translation id="1108938384783527433">Синхронизация истории</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Нет, спасибо</translation>
 <translation id="2320166752086256636">Скрыть клавиатуру</translation>
 <translation id="2321086116217818302">Подготовка паролей…</translation>
+<translation id="2323697864063408084">Получайте уведомления на заблокированном экране в виде баннеров, чтобы не пропускать важное.</translation>
 <translation id="2326302612031521902">Список выбора единиц измерения</translation>
 <translation id="2330607597130465898">Защита отключена</translation>
 <translation id="233375395665273385">Удалить и выйти</translation>
@@ -384,6 +386,7 @@
 <translation id="2671423594960767771">Открыть доступ</translation>
 <translation id="2673508731173059946">Открыть скопированную ссылку</translation>
 <translation id="2687403674020088961">Блокировать все файлы cookie (не рекомендуется)</translation>
+<translation id="2688535388040882469">Баннеры</translation>
 <translation id="2690858294534178585">Камера уже используется</translation>
 <translation id="2691653761409724435">Недоступно в офлайн-режиме</translation>
 <translation id="2696180352517415858">Вы останетесь в аккаунте Google. Сведения о <ph name="BEGIN_LINK" />других действиях<ph name="END_LINK" /> могут сохраняться в аккаунте, если вы в него вошли. Эти данные можно удалить в любое время.
@@ -636,6 +639,7 @@
 <translation id="3986739045730058129">Перейти на вкладку</translation>
 <translation id="3992684624889376114">Об этой странице</translation>
 <translation id="3994422733891749358">Выберите уведомления, которые вы хотите получать</translation>
+<translation id="3994522032746736727">Войти как <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Индикатор загрузки страницы: выполнено <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Администратор запретил обмениваться паролями.</translation>
 <translation id="4002066346123236978">Название</translation>
@@ -843,6 +847,7 @@
 <translation id="4936354130727646074">Никогда</translation>
 <translation id="4937410517508563815">Сохраняйте пароли в аккаунте</translation>
 <translation id="4938338714234463591">Так вы сможете использовать голосовые команды для определенных функций на сайтах.</translation>
+<translation id="4938716880833771969">Уведомления приходят в беззвучном режиме</translation>
 <translation id="4941089862236492464">Не удалось опубликовать запись.</translation>
 <translation id="4944543191714094452">Найти на странице…</translation>
 <translation id="4945756290001680296">Доступ к настройкам паролей</translation>
@@ -1609,6 +1614,7 @@
 <translation id="8319076807703933069">Новый поиск</translation>
 <translation id="8343993175958086504">Создайте резервную копию данных и используйте их на любом устройстве.</translation>
 <translation id="8349305172487531364">Панель закладок</translation>
+<translation id="8364563001733875155">Чтобы изменить PIN-код, установите код доступа.</translation>
 <translation id="8366466717204352506">Пароли не проверялись.</translation>
 <translation id="8368001212524806591">Отслеживание цен</translation>
 <translation id="8370406443343902172">Открыть настройки</translation>

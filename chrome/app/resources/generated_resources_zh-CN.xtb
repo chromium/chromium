@@ -1969,7 +1969,6 @@
 <translation id="235028206512346451">如果您离开设备，设备屏幕就会自动锁定。当您位于设备前时，设备屏幕将会维持解锁状态更长时间。如果您没有设置屏幕锁定方式，您的设备将进入休眠状态，而不是锁定状态。</translation>
 <translation id="2351923523007389195">已允许 - <ph name="PERMISSION_DETAILS" />。请开启<ph name="LINK_BEGIN" />系统位置信息使用权<ph name="LINK_END" />。</translation>
 <translation id="2352662711729498748">&lt; 1MB</translation>
-<translation id="2352810082280059586">锁定屏幕记事会自动保存到 <ph name="LOCK_SCREEN_APP_NAME" /> 中。最近的记事将保留在锁定屏幕上。</translation>
 <translation id="2353168619378866466">打开分组</translation>
 <translation id="2353297238722298836">已允许使用摄像头和麦克风</translation>
 <translation id="2353910600995338714">已成功导出</translation>
@@ -4143,7 +4142,6 @@
 <translation id="3887022758415973389">显示设备列表</translation>
 <translation id="3887764720741098847">已保存的信息</translation>
 <translation id="3888501106166145415">关联的 Wi-Fi 网络</translation>
-<translation id="3888550877729210209">使用“<ph name="LOCK_SCREEN_APP_NAME" />”创建记事</translation>
 <translation id="3890064827463908288">您需要开启 Chrome 同步才能使用 Wi-Fi 同步功能</translation>
 <translation id="389313931326656921">为“下一项”操作分配开关</translation>
 <translation id="3893268973182382220">暂时无法加载此面板</translation>
@@ -11444,7 +11442,6 @@
 <translation id="9133568201369135151">诊断数据收集已完成。这些数据中包含您的部分个人信息。</translation>
 <translation id="9133985615769429248">如果您与他人共用此设备，那么您每次使用已保存的密码时，都可以使用屏幕锁定功能来验证您的身份</translation>
 <translation id="9134066738478820307">网站可以使用标识符来播放受保护内容</translation>
-<translation id="913411432238655354">在 Chrome 启动时恢复应用</translation>
 <translation id="9135777878366959474">请输入 Google 密码管理工具的字母数字 PIN 码</translation>
 <translation id="9137013805542155359">显示原始网页</translation>
 <translation id="9137157311132182254">首选搜索引擎</translation>

@@ -410,6 +410,7 @@
 <translation id="2888298276507578975">'감사 인사를 작성해 줘'와 같은 프롬프트를 입력해 보세요</translation>
 <translation id="2890557891229184386">열대 섬</translation>
 <translation id="2895772081848316509">어두운</translation>
+<translation id="2915996080311180594">나중에 다시 시작</translation>
 <translation id="2926057806159140518">사용자 이름과 비밀번호를 입력하거나 QR 코드를 스캔하세요.</translation>
 <translation id="2940811910881150316">기기를 테스트할 수 없습니다. 테스트하려면 덮개를 다시 엽니다.</translation>
 <translation id="2941112035454246133">낮음</translation>
@@ -469,6 +470,7 @@
 <translation id="3275729367986477355">아바타 이미지</translation>
 <translation id="3283504360622356314">{0,plural, =1{파일 수정}other{파일 수정}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
+<translation id="3286538390144397061">지금 다시 시작</translation>
 <translation id="3291996639387199448">키 방향</translation>
 <translation id="3294437725009624529">게스트</translation>
 <translation id="3303855915957856445">검색결과 없음</translation>
@@ -538,6 +540,7 @@
 <translation id="3606583719724308068">HTTPS 웹사이트 연결의 지연 시간이 깁니다.</translation>
 <translation id="361575905210396100">의견을 보내 주셔서 감사합니다</translation>
 <translation id="3621072146987826699">코끼리</translation>
+<translation id="3628462041319107639">스크립트 작성 모델 다운로드 중…</translation>
 <translation id="3632040286124154621">좋은 제안</translation>
 <translation id="3632579075709132555">개인 정보 보호 화면 전환</translation>
 <translation id="3639873154908477486">이름(알파벳순)</translation>
@@ -570,6 +573,7 @@
 <translation id="3820172043799983114">잘못된 PIN입니다.</translation>
 <translation id="382043424867370667">일몰 배경화면</translation>
 <translation id="3824259034819781947">파일 첨부</translation>
+<translation id="383586991013681190">설정에서 스크립트 작성 언어를 선택하고 다운로드하세요.</translation>
 <translation id="3836587210832263413">신뢰할 수 있는 확장 프로그램만 사용 설정하세요.</translation>
 <translation id="3838338534323494292">새 비밀번호</translation>
 <translation id="3845880861638660475"><ph name="ALT_SHORTCUT_START" />alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />esc<ph name="ESC_SHORTCUT_END" />를 눌러 대화상자를 닫습니다.</translation>
@@ -713,6 +717,7 @@
 <translation id="4474142134969976028">일치하는 결과가 없습니다.</translation>
 <translation id="4479639480957787382">이더넷</translation>
 <translation id="4483049906298469269">기본이 아닌 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
+<translation id="4483498983731992167">스크립트를 작성할 수 없음</translation>
 <translation id="4486524074141928967"><ph name="TIME" />에 로그아웃됩니다</translation>
 <translation id="4500722292849917410">단축키를 사용할 수 없습니다. 특수키(Ctrl, Alt, Shift 또는 <ph name="META_KEY" />)를 사용하여 새 단축키를 누르세요.</translation>
 <translation id="4500966230243561393">인터페이스 색상</translation>
@@ -843,6 +848,7 @@
 <translation id="5099354524039520280">위</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> 키가 없는 단축키가 일부 앱의 단축키와 충돌할 수 있습니다. 이 단축키를 계속 사용하려면 다시 누르거나, <ph name="KEY" /> 키를 사용하여 새 단축키를 누르세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">유의어:</translation>
+<translation id="5121677070210013200">스크립트 작성 모델을 다운로드할 수 없습니다. 다시 시도하거나 Chromebook을 다시 시작하세요.</translation>
 <translation id="5130848777448318809">조랑말</translation>
 <translation id="5137451382116112100">전체</translation>
 <translation id="5140788690559353412">학교 계정 액세스 권한을 상실하면 Gmail, Docs, Slides 등 연결된 이메일 및 Google Drive 파일에 더 이상 액세스할 수 없게 됩니다.</translation>
@@ -1256,6 +1262,7 @@
 <translation id="7040729769968826896">발화자 식별 허용</translation>
 <translation id="7041549558901442110">기기가 연결되어 있지 않습니다.</translation>
 <translation id="7046522406494308071">모든 단축키를 기본값으로 재설정하시겠습니까?</translation>
+<translation id="7049916119678019302">설정에서 스크립트 작성 모델을 다운로드하세요.</translation>
 <translation id="7058278511608979688">종료 및 저장</translation>
 <translation id="7059230779847288458">충전 중, 완료까지 <ph name="TIME_VALUE" /> 남음</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> 키</translation>

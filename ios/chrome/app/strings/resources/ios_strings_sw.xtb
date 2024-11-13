@@ -24,6 +24,7 @@
 <translation id="1076421457278169141">Msimbo umechanganuliwa</translation>
 <translation id="1081932398873105675">{count,plural, =1{Kichupo {count}}other{Vichupo {count}}}</translation>
 <translation id="1084365883616172403">Chapisho la Facebook limekamilika.</translation>
+<translation id="1085677983426914530">Imeshindwa kufungua <ph name="FILENAME" /></translation>
 <translation id="1096992026380844478">Mipangilio yako ya usawazishaji itarejeshwa kulingana na nakala uliyohifadhi mara ya mwisho. <ph name="BEGIN_LINK" />Angalia maudhui unayoweza kusawazisha<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Tafsiri <ph name="LANGUAGE" /> kila wakati</translation>
 <translation id="1108938384783527433">Usawazishaji wa historia</translation>
@@ -305,6 +306,7 @@
 <translation id="2316129865977710310">Hapana</translation>
 <translation id="2320166752086256636">Ficha kibodi</translation>
 <translation id="2321086116217818302">Inatayarisha manenosiri…</translation>
+<translation id="2323697864063408084">Pata arifa kwenye Skrini Iliyofungwa na kama Mabango ili usiwahi kupitwa na mambo yanayokuvutia</translation>
 <translation id="2326302612031521902">Kiteuzi cha vipimo</translation>
 <translation id="2330607597130465898">Hakuna ulinzi</translation>
 <translation id="233375395665273385">Futa na uondoke kwenye akaunti</translation>
@@ -384,6 +386,7 @@ Tovuti haziwezi kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="2671423594960767771">Shiriki kikundi</translation>
 <translation id="2673508731173059946">Fungua kiungo ulichonakili</translation>
 <translation id="2687403674020088961">Zuia vidakuzi vyote (haipendekezwi)</translation>
+<translation id="2688535388040882469">Mabango</translation>
 <translation id="2690858294534178585">Kamera inatumika</translation>
 <translation id="2691653761409724435">Haipatikani nje ya mtandao</translation>
 <translation id="2696180352517415858">Hutaondolewa kwenye Akaunti yako ya Google. Huenda <ph name="BEGIN_LINK" />aina nyingine za shughuli<ph name="END_LINK" /> zikahifadhiwa kwenye Akaunti yako ya Google unapokuwa umeingia katika akaunti. Unaweza kuzifuta wakati wowote.
@@ -636,6 +639,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="3986739045730058129">Nenda kwenye kichupo</translation>
 <translation id="3992684624889376114">Kuhusu ukurasa huu</translation>
 <translation id="3994422733891749358">Chagua arifa unazotaka kupokea</translation>
+<translation id="3994522032746736727">Ingia katika akaunti ukitumia <ph name="EMAIL" /></translation>
 <translation id="3995521777587992544">Upau wa shughuli ya upakiaji wa ukurasa, imepakia <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Msimamizi wako amezima kipengele cha kuruhusu kufikia nenosiri.</translation>
 <translation id="4002066346123236978">Kichwa</translation>
@@ -843,6 +847,7 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4936354130727646074">Usihamishe</translation>
 <translation id="4937410517508563815">Hifadhi manenosiri kwenye akaunti</translation>
 <translation id="4938338714234463591">Hatua hii itakuruhusu utumie sauti yako katika baadhi ya vipengele kwenye tovuti.</translation>
+<translation id="4938716880833771969">Arifa zako zinawasilishwa kwa utulivu</translation>
 <translation id="4941089862236492464">Samahani, kulikuwa na tatizo wakati wa kushiriki kipengee chako.</translation>
 <translation id="4944543191714094452">Pata katika Ukurasa…</translation>
 <translation id="4945756290001680296">Fikia mipangilio ya nenosiri</translation>
@@ -1609,6 +1614,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="8319076807703933069">Utafutaji Mpya</translation>
 <translation id="8343993175958086504">Hifadhi nakala ya maudhui yako ili uyatumie kwenye kifaa chochote.</translation>
 <translation id="8349305172487531364">Sehemu ya Alamisho</translation>
+<translation id="8364563001733875155">Ili ubadilishe PIN yako, weka kwanza namba ya siri kwenye kifaa chako.</translation>
 <translation id="8366466717204352506">Ukaguzi haukutekelezwa</translation>
 <translation id="8368001212524806591">Fuatilia bei</translation>
 <translation id="8370406443343902172">Nenda kwenye Mipangilio...</translation>
