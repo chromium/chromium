@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_recurrent_network_activation.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reverse_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_scatter_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_slice_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
@@ -173,9 +172,8 @@ enum class MLGraphOperatorUma {
   kTranspose = 88,
   kTriangular = 89,
   kWhere = 90,
-  kReverse = 91,
   kMinValue = kGraphBuilt,
-  kMaxValue = kReverse,
+  kMaxValue = kWhere,
 };
 
 using MLGraphOperatorUmaSet = base::EnumSet<MLGraphOperatorUma,
@@ -362,8 +360,6 @@ MLGraphOperatorUma GetUmaValueForOperation(
       return MLGraphOperatorUma::kResample2d;
     case blink_mojom::Operation::Tag::kReshape:
       return MLGraphOperatorUma::kReshape;
-    case blink_mojom::Operation::Tag::kReverse:
-      return MLGraphOperatorUma::kReverse;
     case blink_mojom::Operation::Tag::kScatterElements:
       return MLGraphOperatorUma::kScatterElements;
     case blink_mojom::Operation::Tag::kScatterNd:
@@ -2587,28 +2583,6 @@ MLOperand* MLGraphBuilder::resample2d(ScriptState* script_state,
       MLOperand::CreateOutput(this, std::move(output_descriptor), resample2d);
 
   resample2d->Connect({input}, {output});
-  return output;
-}
-
-MLOperand* MLGraphBuilder::reverse(MLOperand* input,
-                                   const MLReverseOptions* options,
-                                   ExceptionState& exception_state) {
-  THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
-  THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
-
-  Vector<uint32_t> axes = options->getAxesOr(CreateAllAxes(input->Rank()));
-  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
-      webnn::OperandDescriptor output_descriptor,
-      webnn::ValidateReverseAndInferOutput(ml_context_->GetProperties(),
-                                           input->Descriptor(), axes,
-                                           options->label().Utf8()));
-
-  auto* reverse =
-      MakeGarbageCollected<MLReverseOperator>(this, std::move(axes), options);
-  MLOperand* output =
-      MLOperand::CreateOutput(this, std::move(output_descriptor), reverse);
-
-  reverse->Connect({input}, {output});
   return output;
 }
 

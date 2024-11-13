@@ -50,7 +50,6 @@ class MLPadOptions;
 class MLPool2dOptions;
 class MLReduceOptions;
 class MLResample2dOptions;
-class MLReverseOptions;
 class MLScatterOptions;
 class MLSliceOptions;
 class MLSplitOptions;
@@ -424,10 +423,6 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLOperand* reshape(MLOperand* input,
                      const Vector<uint32_t>& new_shape,
                      const MLOperatorOptions* options,
-                     ExceptionState& exception_state);
-
-  MLOperand* reverse(MLOperand* input,
-                     const MLReverseOptions* options,
                      ExceptionState& exception_state);
 
   MLOperand* resample2d(ScriptState* script_state,

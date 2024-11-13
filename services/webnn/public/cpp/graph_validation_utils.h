@@ -516,15 +516,6 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
         base::span<const uint32_t> axes,
         std::string_view label);
 
-// Validate and infer output information of reverse operator defined in
-// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-reverse
-base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
-    WEBNN_PUBLIC_CPP)
-    ValidateReverseAndInferOutput(const ContextProperties& context_properties,
-                                  const OperandDescriptor& input,
-                                  base::span<const uint32_t> axes,
-                                  std::string_view label);
-
 // Validate and infer output information of gather operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gather
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(

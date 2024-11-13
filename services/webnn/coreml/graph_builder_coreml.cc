@@ -902,8 +902,6 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // corresponding BOOL type. See docs here:
        // https://apple.github.io/coremltools/source/coremltools.converters.mil.mil.ops.defs.html#coremltools.converters.mil.mil.ops.defs.iOS15.tensor_transformation.reshape
        /*reshape_input=*/kFloatsAndInt32,
-       // TODO(crbug.com/377349382): Implement Reverse.
-       /*reverse_input=*/{},
        /*scatter_elements_input=*/kFloatsAndInt32,
        /*scatter_elements_indices=*/{OperandDataType::kInt32},
        /*scatter_nd_input=*/kFloatsAndInt32,
@@ -1228,7 +1226,6 @@ GraphBuilderCoreml::BuildCoreMLModel() {
       case mojom::Operation::Tag::kLstmCell:
       case mojom::Operation::Tag::kPrelu:
       case mojom::Operation::Tag::kQuantizeLinear:
-      case mojom::Operation::Tag::kReverse:
         return NewNotSupportedError(NotSupportedOperatorError(*operation));
     }
   }

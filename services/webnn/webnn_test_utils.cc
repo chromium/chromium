@@ -387,17 +387,6 @@ void GraphInfoBuilder::BuildReshape(uint64_t input_operand_id,
       mojom::Operation::NewReshape(std::move(reshape)));
 }
 
-void GraphInfoBuilder::BuildReverse(uint64_t input_operand_id,
-                                    uint64_t output_operand_id,
-                                    std::vector<uint32_t> axes) {
-  auto reverse = mojom::Reverse::New();
-  reverse->input_operand_id = input_operand_id;
-  reverse->output_operand_id = output_operand_id;
-  reverse->axes = std::move(axes);
-  graph_info_->operations.push_back(
-      mojom::Operation::NewReverse(std::move(reverse)));
-}
-
 void GraphInfoBuilder::BuildScatterElements(uint64_t input_operand_id,
                                             uint64_t indices_operand_id,
                                             uint64_t updates_operand_id,
@@ -642,7 +631,6 @@ ContextProperties GetContextPropertiesForTesting() {
        /*relu_input=*/SupportedDataTypes::All(),
        /*resample2d_input=*/SupportedDataTypes::All(),
        /*reshape_input=*/SupportedDataTypes::All(),
-       /*reverse_input=*/SupportedDataTypes::All(),
        /*scatter_elements_input=*/SupportedDataTypes::All(),
        /*scatter_elements_indices=*/SupportedDataTypes::All(),
        /*scatter_nd_input=*/SupportedDataTypes::All(),
