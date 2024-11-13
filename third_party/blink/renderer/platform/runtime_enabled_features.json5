@@ -3333,17 +3333,6 @@
       name: "PrefersReducedData",
       status: "experimental",
     },
-    // This feature is deprecated and we are evangelizing affected sites.
-    // A deprecation trial is underway, starting in M125.
-    // See https://crbug.com/40352864 for current status
-    {
-      name: "PrefixedVideoFullscreen",
-      status: "test",
-      origin_trial_feature_name: "DeprecatePrefixedVideoFullscreen",
-      origin_trial_type: "deprecation",
-      origin_trial_allows_insecure: true,
-      origin_trial_allows_third_party: true,
-    },
     {
       // Used to allow chrome://flags to turn off prerendering. (Without using
       // the user-facing preloading settings page to turn off other

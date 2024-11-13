@@ -369,7 +369,7 @@ void HTMLVideoElement::OnPlay() {
     return;
   }
 
-  webkitEnterFullscreen();
+  EnterFullscreen();
 }
 
 void HTMLVideoElement::OnLoadStarted() {
@@ -474,26 +474,13 @@ void HTMLVideoElement::OnFirstFrame(base::TimeTicks frame_time,
   }
 }
 
-void HTMLVideoElement::webkitEnterFullscreen() {
+void HTMLVideoElement::EnterFullscreen() {
   if (!IsFullscreen()) {
     FullscreenOptions* options = FullscreenOptions::Create();
     options->setNavigationUI("hide");
     Fullscreen::RequestFullscreen(*this, options,
                                   FullscreenRequestType::kPrefixed);
   }
-}
-
-void HTMLVideoElement::webkitExitFullscreen() {
-  if (IsFullscreen())
-    Fullscreen::ExitFullscreen(GetDocument());
-}
-
-bool HTMLVideoElement::webkitSupportsFullscreen() {
-  return Fullscreen::FullscreenEnabled(GetDocument());
-}
-
-bool HTMLVideoElement::webkitDisplayingFullscreen() {
-  return IsFullscreen();
 }
 
 void HTMLVideoElement::DidEnterFullscreen() {

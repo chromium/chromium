@@ -71,10 +71,7 @@ class CORE_EXPORT HTMLVideoElement final
   gfx::Size videoVisibleSize() const;
 
   // Fullscreen
-  void webkitEnterFullscreen();
-  void webkitExitFullscreen();
-  bool webkitSupportsFullscreen();
-  bool webkitDisplayingFullscreen();
+  void EnterFullscreen();
   void DidEnterFullscreen();
   void DidExitFullscreen();
 

@@ -176,7 +176,7 @@ TEST_F(VideoAutoFullscreen, ExitFullscreenDoesNotPauseWithPlaysInline) {
   Video()->Play();
 
   MakeGarbageCollected<WaitForEvent>(Video(), event_type_names::kPlay);
-  Video()->webkitEnterFullscreen();
+  Video()->EnterFullscreen();
   test::RunPendingTasks();
   UpdateLifecyclePhases();
   ASSERT_TRUE(Video()->IsFullscreen());

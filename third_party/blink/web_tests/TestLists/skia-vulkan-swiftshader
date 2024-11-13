@@ -779,7 +779,6 @@ media/video-currentTime-before-have-metadata.html
 media/video-currentTime-delay.html
 media/video-move-to-new-document-srcobject.html
 media/video-pause-immediately.html
-media/video-prefixed-fullscreen.html
 media/video-src-change.html
 media/video-src-remove.html
 media/video-zoom.html
