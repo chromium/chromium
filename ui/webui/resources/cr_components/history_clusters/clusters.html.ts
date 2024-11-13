@@ -33,7 +33,6 @@ export function getHtml(this: HistoryClustersElement) {
   <img class="spinner-icon" src="chrome://resources/images/throbber_small.svg"
       ?hidden="${!this.showSpinner_}"></img>
 </div>
-</iron-scroll-threshold>
 ${this.showConfirmationDialog_ ? html`<cr-dialog consume-keydown-event
     @cancel="${this.onConfirmationDialogCancel_}">
       <div slot="title">${this.i18n('removeSelected')}</div>

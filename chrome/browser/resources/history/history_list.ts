@@ -5,7 +5,6 @@
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import './shared_style.css.js';
 import './history_item.js';
 
@@ -19,7 +18,6 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import type {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserServiceImpl} from './browser_service.js';
@@ -44,7 +42,6 @@ type HistoryCheckboxSelectEvent = CustomEvent<{
 export interface HistoryListElement {
   $: {
     'infinite-list': IronListElement,
-    'scroll-threshold': IronScrollThresholdElement,
     'dialog': CrLazyRenderElement<CrDialogElement>,
     'no-results': HTMLElement,
     'sharedMenu': CrLazyRenderElement<CrActionMenuElement>,
@@ -124,6 +121,8 @@ export class HistoryListElement extends HistoryListElementBase {
       loadTimeData.getBoolean('allowDeletingHistory');
   private actionMenuModel_: ActionMenuModel|null = null;
   private resultLoadingDisabled_: boolean = false;
+  private scrollListener_: EventListener = () => this.onScroll_();
+  private scrollTimeout_: number|null = null;
   isEmpty: boolean;
   searchedTerm: string = '';
   selectedItems: Set<number> = new Set();
@@ -199,7 +198,9 @@ export class HistoryListElement extends HistoryListElementBase {
   addNewResults(
       historyResults: HistoryEntry[], incremental: boolean, finished: boolean) {
     const results = historyResults.slice();
-    this.$['scroll-threshold'].clearTriggers();
+    if (this.scrollTimeout_) {
+      clearTimeout(this.scrollTimeout_);
+    }
 
     if (!incremental) {
       this.resultLoadingDisabled_ = false;
@@ -640,11 +641,36 @@ export class HistoryListElement extends HistoryListElementBase {
         !!this.searchedTerm && this.historyData_?.length > 0;
   }
 
-  private onScrollTargetChanged_() {
+  private onScrollTargetChanged_(
+      _newTarget: HTMLElement, oldTarget?: HTMLElement) {
     // It is possible (eg, when middle clicking the reload button) for all other
     // resize events to fire before the list is attached and can be measured.
     // Adding another resize here ensures it will get sized correctly.
     this.$['infinite-list'].notifyResize();
+
+    if (oldTarget) {
+      oldTarget.removeEventListener('scroll', this.scrollListener_);
+    }
+    if (this.scrollTarget) {
+      this.scrollTarget.addEventListener('scroll', this.scrollListener_);
+    }
+  }
+
+  private onScroll_() {
+    // Debounce by 200ms.
+    if (this.scrollTimeout_) {
+      clearTimeout(this.scrollTimeout_);
+    }
+    this.scrollTimeout_ = setTimeout(() => this.onScrollTimeout_(), 200);
+  }
+
+  private onScrollTimeout_() {
+    this.scrollTimeout_ = null;
+    const lowerScroll =
+        this.scrollTarget.offsetHeight - this.scrollTarget.scrollTop;
+    if (lowerScroll < 500) {
+      this.onScrollToBottom_();
+    }
   }
 
   private computeIsEmpty_() {

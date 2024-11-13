@@ -680,7 +680,6 @@ suite('HistoryListTest', function() {
     await finishSetup(TEST_HISTORY_RESULTS);
     await flushTasks();
     assertEquals(app.scrollTarget, element.$['infinite-list'].scrollTarget);
-    assertEquals(app.scrollTarget, element.$['scroll-threshold'].scrollTarget);
   });
 
   test('SetsScrollOffset', async () => {
