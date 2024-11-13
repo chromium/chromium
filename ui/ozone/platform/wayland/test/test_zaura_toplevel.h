@@ -45,14 +45,6 @@ class TestZAuraToplevel : public ServerObject {
     return ack_rotate_focus_callback_;
   }
 
-  void set_can_maximize(bool can_maximize) { can_maximize_ = can_maximize; }
-  bool can_maximize() const { return can_maximize_; }
-
-  void set_can_fullscreen(bool can_fullscreen) {
-    can_fullscreen_ = can_fullscreen;
-  }
-  bool can_fullscreen() const { return can_fullscreen_; }
-
   using SetUnsetFloatCallback =
       base::RepeatingCallback<void(bool floated, uint32_t start_location)>;
   void set_set_unset_float_callback(const SetUnsetFloatCallback cb) {
@@ -66,8 +58,6 @@ class TestZAuraToplevel : public ServerObject {
   std::optional<TestRegion> shape_;
   int top_inset_;
   AckRotateFocusCallback ack_rotate_focus_callback_;
-  bool can_maximize_ = false;
-  bool can_fullscreen_ = false;
   SetUnsetFloatCallback set_unset_float_callback_;
 };
 

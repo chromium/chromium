@@ -1121,9 +1121,6 @@ void WaylandToplevelWindow::SetSizeConstraints() {
   if (max_size_dip.has_value())
     shell_toplevel_->SetMaxSize(max_size_dip->width(), max_size_dip->height());
 
-  shell_toplevel_->SetCanMaximize(delegate()->CanMaximize());
-  shell_toplevel_->SetCanFullscreen(delegate()->CanFullscreen());
-
   connection()->Flush();
 }
 

@@ -61,17 +61,11 @@ class ShellToplevelWrapper {
   // Returns true if `aura_toplevel_` version is equal or newer than `version`.
   virtual bool IsSupportedOnAuraToplevel(uint32_t version) const = 0;
 
-  // Sets whether the window can be maximized.
-  virtual void SetCanMaximize(bool can_maximize) = 0;
-
   // Sets a native window to maximized state.
   virtual void SetMaximized() = 0;
 
   // Unsets a native window from maximized state.
   virtual void UnSetMaximized() = 0;
-
-  // Sets whether the window can enter fullscreen.
-  virtual void SetCanFullscreen(bool can_fullscreen) = 0;
 
   // Sets a native window to fullscreen state. If the `wayland_output` is a
   // `nullptr`, the current output will be used, otherwise the requested one.

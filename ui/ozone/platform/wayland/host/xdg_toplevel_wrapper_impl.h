@@ -29,10 +29,8 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   // ShellToplevelWrapper overrides:
   bool Initialize() override;
   bool IsSupportedOnAuraToplevel(uint32_t version) const override;
-  void SetCanMaximize(bool can_maximize) override;
   void SetMaximized() override;
   void UnSetMaximized() override;
-  void SetCanFullscreen(bool can_fullscreen) override;
   void SetFullscreen(WaylandOutput* wayland_output) override;
   void UnSetFullscreen() override;
   void SetMinimized() override;

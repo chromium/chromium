@@ -145,19 +145,6 @@ bool XDGToplevelWrapperImpl::IsSupportedOnAuraToplevel(uint32_t version) const {
          zaura_toplevel_get_version(aura_toplevel_.get()) >= version;
 }
 
-void XDGToplevelWrapperImpl::SetCanMaximize(bool can_maximize) {
-  if (!aura_toplevel_ || zaura_toplevel_get_version(aura_toplevel_.get()) <
-                             ZAURA_TOPLEVEL_SET_CAN_MAXIMIZE_SINCE_VERSION) {
-    return;
-  }
-
-  if (can_maximize) {
-    zaura_toplevel_set_can_maximize(aura_toplevel_.get());
-  } else {
-    zaura_toplevel_unset_can_maximize(aura_toplevel_.get());
-  }
-}
-
 void XDGToplevelWrapperImpl::SetMaximized() {
   DCHECK(xdg_toplevel_);
   xdg_toplevel_set_maximized(xdg_toplevel_.get());
@@ -166,19 +153,6 @@ void XDGToplevelWrapperImpl::SetMaximized() {
 void XDGToplevelWrapperImpl::UnSetMaximized() {
   DCHECK(xdg_toplevel_);
   xdg_toplevel_unset_maximized(xdg_toplevel_.get());
-}
-
-void XDGToplevelWrapperImpl::SetCanFullscreen(bool can_fullscreen) {
-  if (!aura_toplevel_ || zaura_toplevel_get_version(aura_toplevel_.get()) <
-                             ZAURA_TOPLEVEL_SET_CAN_FULLSCREEN_SINCE_VERSION) {
-    return;
-  }
-
-  if (can_fullscreen) {
-    zaura_toplevel_set_can_fullscreen(aura_toplevel_.get());
-  } else {
-    zaura_toplevel_unset_can_fullscreen(aura_toplevel_.get());
-  }
 }
 
 void XDGToplevelWrapperImpl::SetFullscreen(WaylandOutput* wayland_output) {

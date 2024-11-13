@@ -149,22 +149,6 @@ void AckRotateFocus(wl_client* client,
   }
 }
 
-void SetCanMaximize(wl_client* client, wl_resource* resource) {
-  GetUserDataAs<TestZAuraToplevel>(resource)->set_can_maximize(true);
-}
-
-void UnsetCanMaximize(wl_client* client, wl_resource* resource) {
-  GetUserDataAs<TestZAuraToplevel>(resource)->set_can_maximize(false);
-}
-
-void SetCanFullscreen(wl_client* client, wl_resource* resource) {
-  GetUserDataAs<TestZAuraToplevel>(resource)->set_can_fullscreen(true);
-}
-
-void UnsetCanFullscreen(wl_client* client, wl_resource* resource) {
-  GetUserDataAs<TestZAuraToplevel>(resource)->set_can_fullscreen(false);
-}
-
 void SetFloatToLocation(struct wl_client* client,
                         struct wl_resource* resource,
                         uint32_t float_start_location) {
@@ -211,10 +195,10 @@ const struct zaura_toplevel_interface kTestZAuraToplevelImpl = {
     &SetShape,
     &SetTopInset,
     &AckRotateFocus,
-    &SetCanMaximize,
-    &UnsetCanMaximize,
-    &SetCanFullscreen,
-    &UnsetCanFullscreen,
+    nullptr,
+    nullptr,
+    nullptr,
+    nullptr,
     &SetFloatToLocation,
 };
 
