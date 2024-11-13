@@ -8554,6 +8554,9 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   // Call the undo operation.
   ASSERT_TRUE(undo_callback);
   std::move(undo_callback).Run();
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.FillAddressSuggestionUndone"),
+            1);
 }
 
 // Tests that when an address suggestion with an email override is filled, a

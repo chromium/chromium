@@ -32394,6 +32394,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PlusAddresses.FillAddressSuggestionUndone">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    User undoes the filling of an address suggestion using a plus address email
+    override and rolls back to the original email address.
+  </description>
+</action>
+
 <action name="PlusAddresses.FillStandaloneSuggestionAccepted">
   <owner>vizcay@google.com</owner>
   <owner>jkeitel@google.com</owner>

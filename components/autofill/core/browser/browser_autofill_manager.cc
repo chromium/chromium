@@ -2895,6 +2895,8 @@ void BrowserAutofillManager::OnEmailOverrideUndone(
     const FormGlobalId& form_id,
     const FieldGlobalId& field_id,
     const FormFieldData& field_after_last_autofill) {
+  base::RecordAction(
+      base::UserMetricsAction("PlusAddresses.FillAddressSuggestionUndone"));
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   if (!GetCachedFormAndField(form_id, field_id, &form_structure,
