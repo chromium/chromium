@@ -93,6 +93,8 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void Did(const probe::InvokeCallback& probe_data) {
     PopScriptEntryPoint(&probe_data.script_state, &probe_data);
   }
+  void Will(const probe::UserEntryPoint&);
+  void Did(const probe::UserEntryPoint&);
   void Will(const probe::InvokeEventHandler&);
   void Did(const probe::InvokeEventHandler&);
   void WillRunJavaScriptDialog();
@@ -121,6 +123,10 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
       ScriptState* script_state,
       const probe::ProbeBase* probe,
       base::TimeTicks end_time = base::TimeTicks());
+  ScriptTimingInfo* PopScriptEntryPointInternal(
+      ExecutionContext* context,
+      base::TimeTicks end_time,
+      const PendingScriptInfo& script_info);
 
   bool PushScriptEntryPoint(ScriptState*);
 
@@ -135,6 +141,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void ApplyTaskDuration(base::TimeDelta task_duration);
 
   std::optional<PendingScriptInfo> pending_script_info_;
+  HashMap<size_t, PendingScriptInfo> user_entry_points_;
   Client& client_;
 
   enum class State {

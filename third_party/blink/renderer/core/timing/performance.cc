@@ -48,6 +48,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
@@ -1465,6 +1466,61 @@ void Performance::Trace(Visitor* visitor) const {
   visitor->Trace(resource_timing_buffer_full_timer_);
   visitor->Trace(background_tracing_helper_);
   EventTarget::Trace(visitor);
+}
+
+namespace {
+class UserEntryPoint : public ScriptFunction {
+ public:
+  UserEntryPoint(V8Function* callback,
+                 ScriptValue this_arg,
+                 const HeapVector<ScriptValue>& args)
+      : callback_(callback), this_arg_(this_arg), bound_args_(args) {}
+  void CallRaw(
+      ScriptState* script_state,
+      const v8::FunctionCallbackInfo<v8::Value>& callback_info) override {
+    static size_t call_index = 0;
+    v8::Isolate* isolate = script_state->GetIsolate();
+    probe::UserEntryPoint probe_scope(ExecutionContext::From(script_state),
+                                      callback_->CallbackObject(),
+                                      ++call_index);
+
+    int length = callback_info.Length();
+    HeapVector<ScriptValue> args(bound_args_);
+    args.reserve(length + bound_args_.size());
+    for (int i = 0; i < length; ++i) {
+      args.push_back(ScriptValue(isolate, callback_info[i]));
+    }
+
+    callback_info.GetReturnValue().Set(
+        callback_
+            ->Invoke(
+                bindings::V8ValueOrScriptWrappableAdapter(this_arg_.V8Value()),
+                args)
+            .FromMaybe(ScriptValue())
+            .V8Value());
+  }
+
+  void Trace(Visitor* visitor) const override {
+    ScriptFunction::Trace(visitor);
+    visitor->Trace(callback_);
+    visitor->Trace(this_arg_);
+    visitor->Trace(bound_args_);
+  }
+
+ private:
+  Member<V8Function> callback_;
+  ScriptValue this_arg_;
+  HeapVector<ScriptValue> bound_args_;
+};
+
+}  // namespace
+
+V8Function* Performance::bind(V8Function* inner_function,
+                              const ScriptValue this_arg,
+                              const HeapVector<ScriptValue>& bound_args) {
+  return V8Function::Create(
+      MakeGarbageCollected<UserEntryPoint>(inner_function, this_arg, bound_args)
+          ->ToV8Function(inner_function->CallbackRelevantScriptState()));
 }
 
 void Performance::SetClocksForTesting(const base::Clock* clock,

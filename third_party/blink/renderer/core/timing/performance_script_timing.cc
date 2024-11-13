@@ -115,6 +115,8 @@ AtomicString PerformanceScriptTiming::invoker() const {
                          : "catch");
       return builder.ToAtomicString();
     }
+    case ScriptTimingInfo::InvokerType::kUserEntryPoint:
+      return AtomicString(info_->GetSourceLocation().function_name);
   }
 }
 DOMHighResTimeStamp PerformanceScriptTiming::executionStart() const {
@@ -159,6 +161,8 @@ V8ScriptInvokerType PerformanceScriptTiming::invokerType() const {
       return V8ScriptInvokerType(V8ScriptInvokerType::Enum::kResolvePromise);
     case ScriptTimingInfo::InvokerType::kPromiseReject:
       return V8ScriptInvokerType(V8ScriptInvokerType::Enum::kRejectPromise);
+    case ScriptTimingInfo::InvokerType::kUserEntryPoint:
+      return V8ScriptInvokerType(V8ScriptInvokerType::Enum::kUserEntryPoint);
   }
   NOTREACHED();
 }

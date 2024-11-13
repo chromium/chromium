@@ -4486,6 +4486,10 @@
       public: true,
     },
     {
+      name: "UserDefinedEntryPointTiming",
+      status: "experimental",
+    },
+    {
       // Makes navigation APIs to use focus node for caret navigation instead
       // of selection start.
       // https://crbug.com/40658856
