@@ -94,30 +94,10 @@ tast_disabled_tests_from_chrome_all = [
   "crostini.AppFirefoxWindowOperations.switch_tablet_bookworm_clamshell_stable@volteer",
 
   # b/376898784
-  "a11y.LiveCaption.fieldtrial_testing_config_on",
+  "a11y.LiveCaption.fieldtrial_testing_config_on"
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
-
-# Entries only for the public builders (chromeos-XXX-rel)
-if (is_chrome_branded) {
-  tast_disabled_tests_from_chrome_all += [
-    # b/377802615: "runtime variable XXX is missing" error
-    "bruschetta.AppVscodeWindowOperations.minimize",
-    "crostini.AppAudacityWindowOperations.switch_tablet_bookworm_clamshell_stable",
-    "crostini.AppEmacsWindowOperations.minimize_bookworm_clamshell_stable",
-    "crostini.AppEmacsWindowOperations.switch_tablet_bookworm_clamshell_stable",
-    "crostini.AppFirefox.bookworm_clamshell_stable",
-    "crostini.AppFirefoxWindowOperations.maximize_bookworm_clamshell_stable",
-    "crostini.AppFirefoxWindowOperations.minimize_bookworm_clamshell_stable",
-    "crostini.AppFirefoxWindowOperations.switch_tablet_bookworm_clamshell_stable",
-    "crostini.AppGeditFilesharing.bookworm_clamshell_stable",
-    "crostini.AppVscodeWindowOperations.switch_tablet_bookworm_clamshell_stable",
-    "shimlessrma.SelectComponentsNoneNextCancel.critical",
-    "shimlessrma.WelcomeCancel.critical",
-    "shimlessrma.WelcomeNextCancel.critical",
-  ]
-}
 
 if (is_cfi) {
   # b/350872890: pending investigation and fixes for is_cfi builders on betty.
