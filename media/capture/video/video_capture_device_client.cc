@@ -1003,8 +1003,6 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
 void VideoCaptureDeviceClient::OnError(VideoCaptureError error,
                                        const base::Location& from_here,
                                        const std::string& reason) {
-  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
-
   const std::string log_message = base::StringPrintf(
       "error@ %s, %s, OS message: %s", from_here.ToString().c_str(),
       reason.c_str(),
@@ -1023,8 +1021,6 @@ void VideoCaptureDeviceClient::OnFrameDropped(
 }
 
 void VideoCaptureDeviceClient::OnLog(const std::string& message) {
-  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
-
   receiver_->OnLog(message);
 }
 
@@ -1035,8 +1031,6 @@ double VideoCaptureDeviceClient::GetBufferPoolUtilization() const {
 }
 
 void VideoCaptureDeviceClient::OnStarted() {
-  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
-
   receiver_->OnStarted();
 }
 
