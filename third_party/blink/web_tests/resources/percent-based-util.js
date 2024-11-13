@@ -6,15 +6,9 @@
 // if percent based scrolling is enabled. See kScrollPercentPerLineOrChar.
 const SCROLL_PERCENT_PER_LINE_OR_CHAR = 0.05;
 
-// Returns true if the feature flag is on and the platform is supported
+// The feature is deprecated. The code removal is tracked in crbug.com/359747082
 function isPercentBasedScrollingEnabled() {
-  return (
-    internals.runtimeFlags.percentBasedScrollingEnabled
-    && (
-      navigator.userAgent.includes("Linux")
-      || navigator.userAgent.includes("Windows")
-    )
-  );
+  return false;
 }
 
 // Calculates expected scrollX/scrollY for a given container or window and

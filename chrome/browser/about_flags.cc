@@ -8289,11 +8289,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ui::kMirrorBackForwardGesturesInRTL)},
 #endif
 
-    {"windows-scrolling-personality",
-     flag_descriptions::kWindowsScrollingPersonalityName,
-     flag_descriptions::kWindowsScrollingPersonalityDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kWindowsScrollingPersonality)},
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
     {"elastic-overscroll", flag_descriptions::kElasticOverscrollName,
      flag_descriptions::kElasticOverscrollDescription, kOsWin | kOsAndroid,

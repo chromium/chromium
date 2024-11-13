@@ -29,10 +29,6 @@
     "args": ["--enable-features=BlinkHeapConcurrentMarking"]
   },
   {
-    "name": "enable-percent-based-scrolling",
-    "args": ["--enable-features=PercentBasedScrolling"]
-  },
-  {
     "name": "force-renderer-accessibility",
     "args": ["--force-renderer-accessibility"]
   },

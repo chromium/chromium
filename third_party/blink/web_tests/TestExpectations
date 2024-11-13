@@ -4686,37 +4686,7 @@ crbug.com/1025274 http/tests/security/mixedContent/insecure-audio-video-in-main-
 # Sheriff 2020-02-19
 crbug.com/1053903 external/wpt/webxr/events_referenceSpace_reset_inline.https.html [ Failure Pass Timeout ]
 
-### Subset of scrolling tests that are failing when percent-based scrolling feature is enabled
-
-# fast/events/wheel
-crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-ctrl.html [ Failure Pass Timeout ]
-crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheel-in-scrollbar.html [ Failure ]
-crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheelevent-ctrl.html [ Failure Timeout ]
-crbug.com/1456442 virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/wheel-latched-scroll-node-removed.html [ Failure Pass Timeout ]
-
 crbug.com/365615740 fast/events/wheel/mouse-wheel-scroll-latching.html [ Failure Pass Timeout ]
-
-# fast/scrolling
-crbug.com/1330011 [ Release Win ] virtual/main-threaded-percent-based-scrolling/fast/scrolling/overflow-scrollability.html [ Failure Pass ]
-crbug.com/1204176 virtual/main-threaded-percent-based-scrolling/fast/scrolling/wheel-and-touch-scroll-use-count.html [ Failure ]
-crbug.com/1204176 [ Release Win ] virtual/main-threaded-percent-based-scrolling/fast/scrolling/fractional-scroll-offset-document.html [ Failure ]
-crbug.com/1204176 [ Release Win ] virtual/main-threaded-percent-based-scrolling/fast/scrolling/wheel-scroll-latching-on-scrollbar.html [ Failure Pass ]
-crbug.com/1204176 fast/scrolling/percent-based-scrolling/max-percent-delta-cross-origin-iframes.html [ Failure Pass Timeout ]
-crbug.com/1204176 [ Win ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/percent-based-scrolling/max-percent-delta-pinch-zoom.html [ Crash Failure Pass Timeout ]
-crbug.com/1204176 [ Win ] virtual/main-threaded-percent-based-scrolling/fast/scrolling/percent-based-scrolling/max-percent-delta-page-zoom.html [ Crash Failure Pass Timeout ]
-crbug.com/1204176 [ Win ] virtual/main-threaded-percent-based-scrolling/fast/scrolling/percent-based-scrolling/max-percent-delta-pinch-zoom.html [ Crash Failure Pass Timeout ]
-crbug.com/1204176 [ Win ] virtual/main-threaded-percent-based-scrolling/fast/scrolling/percent-based-scrolling/max-percent-delta.html [ Crash Failure Pass Timeout ]
-crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/overflow-scrollability.html [ Failure Timeout ]
-crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/wheel-and-touch-scroll-use-count.html [ Failure Timeout ]
-crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/fractional-scroll-offset-document.html [ Failure ]
-crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/wheel-scroll-latching-on-scrollbar.html [ Failure Pass ]
-crbug.com/1204176 virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/mouse-scrolling-over-standard-scrollbar.html [ Failure Pass ]
-crbug.com/1314323 [ Win ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/wheel-scrolling-over-custom-scrollbar.html [ Crash Failure Pass Timeout ]
-crbug.com/1459304 [ Linux ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/scrolling-container-moves-offscreen.html [ Failure Pass ]
-crbug.com/324441376 [ Linux ] virtual/compositor-threaded-percent-based-scrolling/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Failure Pass ]
-crbug.com/324441376 [ Linux ] virtual/main-threaded-percent-based-scrolling/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Failure Pass ]
-
-### END PERCENT BASED SCROLLING TEST FAILURES
 
 # Sheriff 2020-02-28
 crbug.com/1053861 http/tests/devtools/network/network-initiator-chain.js [ Failure Pass ]

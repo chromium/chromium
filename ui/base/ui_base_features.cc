@@ -158,21 +158,13 @@ BASE_FEATURE(kInputMethodSettingsUiUpdate,
 
 // Enables percent-based scrolling for mousewheel and keyboard initiated
 // scrolls and impulse curve animations.
-const enum base::FeatureState kWindowsScrollingPersonalityDefaultStatus =
-    base::FEATURE_DISABLED_BY_DEFAULT;
-static_assert(!BUILDFLAG(IS_MAC) ||
-                  (BUILDFLAG(IS_MAC) &&
-                   kWindowsScrollingPersonalityDefaultStatus ==
-                       base::FEATURE_DISABLED_BY_DEFAULT),
-              "Do not enable this on the Mac. The animation does not match the "
-              "system scroll animation curve to such an extent that it makes "
-              "Chromium stand out in a bad way.");
 BASE_FEATURE(kWindowsScrollingPersonality,
              "WindowsScrollingPersonality",
-             kWindowsScrollingPersonalityDefaultStatus);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
+// The feature is deprecated. The code removal is tracked in crbug.com/359747082
 bool IsPercentBasedScrollingEnabled() {
-  return base::FeatureList::IsEnabled(features::kWindowsScrollingPersonality);
+  return false;
 }
 
 // Uses a stylus-specific tap slop region parameter for gestures.  Stylus taps

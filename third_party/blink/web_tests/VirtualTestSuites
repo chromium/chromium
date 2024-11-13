@@ -560,26 +560,6 @@
     "expires": "never"
   },
   {
-    "prefix": "main-threaded-percent-based-scrolling",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["fast/events/wheel",
-              "fast/scrolling"],
-    "args": ["--enable-features=WindowsScrollingPersonality"],
-    "owners": ["gerchiko@microsoft.com", "yshalivskyy@microsoft.com"],
-    "expires": "Jun 1, 2025"
-  },
-  {
-    "prefix": "compositor-threaded-percent-based-scrolling",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["fast/events/wheel",
-              "fast/scrolling"],
-    "args": ["--enable-features=WindowsScrollingPersonality",
-             "--enable-threaded-compositing",
-             "--enable-prefer-compositing-to-lcd-text"],
-    "owners": ["gerchiko@microsoft.com", "yshalivskyy@microsoft.com"],
-    "expires": "Jun 1, 2025"
-  },
-  {
     "prefix": "hidpi",
     "owners": ["arakeri@microsoft.com"],
     "platforms": ["Linux", "Mac", "Win"],

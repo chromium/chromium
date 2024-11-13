@@ -3003,12 +3003,6 @@ const char kForcedColorsName[] = "Forced Colors";
 const char kForcedColorsDescription[] =
     "Enables forced colors mode for web content.";
 
-const char kWindowsScrollingPersonalityName[] = "Windows Scrolling Personality";
-const char kWindowsScrollingPersonalityDescription[] =
-    "If enabled, mousewheel and keyboard scrolls will scroll by a percentage "
-    "of the scroller size and the default scroll animation is replaced with "
-    "Impulse-style scroll animations.";
-
 const char kImprovedSemanticsActivityIndicatorsName[] =
     "Improved semantics activity indicators";
 const char kImprovedSemanticsActivityIndicatorsDescription[] =

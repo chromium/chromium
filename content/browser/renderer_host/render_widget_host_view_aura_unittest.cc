@@ -725,9 +725,6 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     view->TextInputStateChanged(state_with_type_text);
   }
 
-  void RunTimerBasedWheelEventPhaseInfoTest(
-      bool percent_based_scrolling_enabled);
-
   BrowserTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<aura::test::AuraTestHelper> aura_test_helper_;
@@ -1756,22 +1753,6 @@ TEST_F(RenderWidgetHostViewAuraTest,
 }
 
 TEST_F(RenderWidgetHostViewAuraTest, TimerBasedWheelEventPhaseInfo) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kWindowsScrollingPersonality);
-  RunTimerBasedWheelEventPhaseInfoTest(false);
-}
-
-TEST_F(RenderWidgetHostViewAuraTest,
-       TimerBasedWheelEventPhaseInfoWithPercentBasedScrolling) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kWindowsScrollingPersonality);
-  RunTimerBasedWheelEventPhaseInfoTest(true);
-}
-
-void RenderWidgetHostViewAuraTest::RunTimerBasedWheelEventPhaseInfoTest(
-    bool percent_based_scrolling_enabled) {
   InitViewForFrame(nullptr);
   view_->Show();
   sink_->ClearMessages();
@@ -1804,11 +1785,7 @@ void RenderWidgetHostViewAuraTest::RunTimerBasedWheelEventPhaseInfoTest(
   EXPECT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
             gesture_event->GetType());
   EXPECT_EQ(0U, gesture_event->data.scroll_update.delta_x);
-  EXPECT_EQ(percent_based_scrolling_enabled
-                ? 5 * ui::kScrollPercentPerLineOrChar /
-                      ui::MouseWheelEvent::kWheelDelta
-                : 5U,
-            gesture_event->data.scroll_update.delta_y);
+  EXPECT_EQ(gesture_event->data.scroll_update.delta_y, 5U);
   events[1]->ToEvent()->CallCallback(
       blink::mojom::InputEventResultState::kConsumed);
 
