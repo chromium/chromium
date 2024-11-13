@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_RENDERERS_VIDEO_FRAME_YUV_MAILBOXES_HOLDER_H_
-#define MEDIA_RENDERERS_VIDEO_FRAME_YUV_MAILBOXES_HOLDER_H_
+#ifndef MEDIA_RENDERERS_VIDEO_FRAME_SHARED_IMAGE_CACHE_H_
+#define MEDIA_RENDERERS_VIDEO_FRAME_SHARED_IMAGE_CACHE_H_
 
 #include "media/base/media_export.h"
 #include "media/base/video_frame.h"
@@ -18,10 +18,10 @@ class RasterContextProvider;
 
 namespace media {
 
-class MEDIA_EXPORT VideoFrameYUVMailboxesHolder {
+class MEDIA_EXPORT VideoFrameSharedImageCache {
  public:
-  VideoFrameYUVMailboxesHolder();
-  ~VideoFrameYUVMailboxesHolder();
+  VideoFrameSharedImageCache();
+  ~VideoFrameSharedImageCache();
 
   void ReleaseCachedData();
 
@@ -41,4 +41,4 @@ class MEDIA_EXPORT VideoFrameYUVMailboxesHolder {
 
 }  // namespace media
 
-#endif  // MEDIA_RENDERERS_VIDEO_FRAME_YUV_MAILBOXES_HOLDER_H_
+#endif  // MEDIA_RENDERERS_VIDEO_FRAME_SHARED_IMAGE_CACHE_H_

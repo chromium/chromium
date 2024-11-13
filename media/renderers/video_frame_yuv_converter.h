@@ -18,7 +18,7 @@ class RasterContextProvider;
 namespace media {
 
 class VideoFrame;
-class VideoFrameYUVMailboxesHolder;
+class VideoFrameSharedImageCache;
 
 // Converts YUV video frames to RGB format and stores the results in the
 // provided shared image. The caller of functions in this class maintains
@@ -37,8 +37,8 @@ class MEDIA_EXPORT VideoFrameYUVConverter {
   static bool IsVideoFrameFormatSupported(const VideoFrame& video_frame);
 
   // For pure software pixel upload path with video frame that does not have
-  // textures. Gets the shared image in `holder_` and uploads YUV data to GPU if
-  // `video_frame` is mappable.
+  // textures. Gets the shared image from `shared_image_cache_` and uploads YUV
+  // data to GPU if `video_frame` is mappable.
   void ConvertYUVVideoFrame(const VideoFrame* video_frame,
                             viz::RasterContextProvider* raster_context_provider,
                             const gpu::MailboxHolder& dest_mailbox_holder,
@@ -46,7 +46,7 @@ class MEDIA_EXPORT VideoFrameYUVConverter {
   void ReleaseCachedData();
 
  private:
-  std::unique_ptr<VideoFrameYUVMailboxesHolder> holder_;
+  std::unique_ptr<VideoFrameSharedImageCache> shared_image_cache_;
 };
 }  // namespace media
 

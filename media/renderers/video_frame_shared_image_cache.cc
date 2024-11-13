@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/renderers/video_frame_yuv_mailboxes_holder.h"
+#include "media/renderers/video_frame_shared_image_cache.h"
 
-#include <GLES3/gl3.h>
-
-#include "base/logging.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
-#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -48,13 +44,13 @@ viz::SharedImageFormat VideoPixelFormatToSharedImageFormat(
 
 }  // namespace
 
-VideoFrameYUVMailboxesHolder::VideoFrameYUVMailboxesHolder() = default;
+VideoFrameSharedImageCache::VideoFrameSharedImageCache() = default;
 
-VideoFrameYUVMailboxesHolder::~VideoFrameYUVMailboxesHolder() {
+VideoFrameSharedImageCache::~VideoFrameSharedImageCache() {
   ReleaseCachedData();
 }
 
-void VideoFrameYUVMailboxesHolder::ReleaseCachedData() {
+void VideoFrameSharedImageCache::ReleaseCachedData() {
   // Don't destroy shared image we don't own.
   if (!shared_image_) {
     return;
@@ -73,7 +69,7 @@ void VideoFrameYUVMailboxesHolder::ReleaseCachedData() {
 }
 
 const scoped_refptr<gpu::ClientSharedImage>&
-VideoFrameYUVMailboxesHolder::GetSharedImage(
+VideoFrameSharedImageCache::GetSharedImage(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider) {
   // If we have cached shared image but the provider or video has changed we

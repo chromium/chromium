@@ -9,15 +9,13 @@
 
 #include "media/renderers/video_frame_yuv_converter.h"
 
-#include <GLES3/gl3.h>
-
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
-#include "media/renderers/video_frame_yuv_mailboxes_holder.h"
+#include "media/renderers/video_frame_shared_image_cache.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/core/SkYUVAPixmaps.h"
@@ -47,8 +45,8 @@ void VideoFrameYUVConverter::ConvertYUVVideoFrame(
       << "|video_frame| must have an area > 0";
   DCHECK(raster_context_provider);
 
-  if (!holder_) {
-    holder_ = std::make_unique<VideoFrameYUVMailboxesHolder>();
+  if (!shared_image_cache_) {
+    shared_image_cache_ = std::make_unique<VideoFrameSharedImageCache>();
   }
 
   auto* ri = raster_context_provider->RasterInterface();
@@ -61,7 +59,7 @@ void VideoFrameYUVConverter::ConvertYUVVideoFrame(
   // For pure software pixel upload path with video frame that does not have
   // textures.
   const scoped_refptr<gpu::ClientSharedImage>& src_shared_image =
-      holder_->GetSharedImage(video_frame, raster_context_provider);
+      shared_image_cache_->GetSharedImage(video_frame, raster_context_provider);
   CHECK(src_shared_image);
   const viz::SharedImageFormat si_format = src_shared_image->format();
   constexpr SkAlphaType kPlaneAlphaType = kPremul_SkAlphaType;
@@ -102,7 +100,7 @@ void VideoFrameYUVConverter::ConvertYUVVideoFrame(
 }
 
 void VideoFrameYUVConverter::ReleaseCachedData() {
-  holder_.reset();
+  shared_image_cache_.reset();
 }
 
 }  // namespace media
