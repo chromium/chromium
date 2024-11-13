@@ -46,6 +46,18 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [self loadModel];
 }
 
+#pragma mark - TrackingPriceConsumer
+
+- (void)setEmailNotificationItem:(TableViewItem*)emailNotificationItem {
+  _emailNotificationItem = emailNotificationItem;
+  [self reconfigureCellsForItems:@[ _emailNotificationItem ]];
+}
+
+- (void)setMobileNotificationItem:(TableViewItem*)mobileNotificationItem {
+  _mobileNotificationItem = mobileNotificationItem;
+  [self reconfigureCellsForItems:@[ _mobileNotificationItem ]];
+}
+
 #pragma mark - SettingsControllerProtocol
 
 - (void)reportDismissalUserAction {

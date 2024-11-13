@@ -10,4 +10,4 @@ NSString* const kSettingsTrackingPriceMobileNotificationsCellId =
     @"kSettingsTrackingPriceMobileNotificationsCellId";
 
 NSString* const kSettingsTrackingPriceEmailNotificationsCellId =
-    @"kSettingsTrackingPriceMobileNotificationsCellId";
+    @"kSettingsTrackingPriceEmailNotificationsCellId";

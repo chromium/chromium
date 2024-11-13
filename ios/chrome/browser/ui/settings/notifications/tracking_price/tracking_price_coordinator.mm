@@ -70,6 +70,7 @@
 
 - (void)stop {
   [self dimissAlertCoordinator];
+  [self.mediator disconnect];
 }
 
 #pragma mark - TrackingPriceViewControllerPresentationDelegate

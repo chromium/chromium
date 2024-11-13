@@ -59,6 +59,7 @@ using chrome_test_util::SettingsTrackingPriceTableView;
 - (void)openTrackingPriceSettingsFromUpdatedSettingsView {
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuNotificationsButton()];
+
   id priceTrackingCell =
       grey_allOf(chrome_test_util::ContainsPartialText(l10n_util::GetNSString(
                      IDS_IOS_NOTIFICATIONS_OPT_IN_PRICE_TRACKING_TOGGLE_TITLE)),

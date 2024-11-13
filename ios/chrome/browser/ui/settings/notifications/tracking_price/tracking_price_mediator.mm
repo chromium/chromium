@@ -10,6 +10,7 @@
 #import "components/commerce/core/pref_names.h"
 #import "components/commerce/core/price_tracking_utils.h"
 #import "components/commerce/core/shopping_service.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
@@ -20,6 +21,9 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
@@ -37,7 +41,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeEmailNotifications,
 };
 
-@interface TrackingPriceMediator ()
+@interface TrackingPriceMediator () <BooleanObserver, PrefObserverDelegate> {
+  // Pref observer to track changes to prefs.
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+  // Registrar for pref changes notifications.
+  PrefChangeRegistrar _prefChangeRegistrar;
+  // A boolean associated with a pref that is used to observe its changes.
+  PrefBackedBoolean* _emailNotificationsEnabled;
+}
 
 // Header item.
 @property(nonatomic, strong)
@@ -75,9 +86,32 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _prefService = prefService;
     _shoppingService->FetchPriceEmailPref();
     _identity = _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+
+    _prefChangeRegistrar.Init(prefService);
+    _emailNotificationsEnabled = [[PrefBackedBoolean alloc]
+        initWithPrefService:_prefService
+                   prefName:commerce::kPriceEmailNotificationsEnabled];
+    [_emailNotificationsEnabled setObserver:self];
+    _prefObserverBridge.reset(new PrefObserverBridge(self));
+    // Register to observe any changes on Perf backed values displayed by the
+    // screen.
+    _prefObserverBridge->ObserveChangesForPreference(
+        prefs::kFeaturePushNotificationPermissions, &_prefChangeRegistrar);
   }
 
   return self;
+}
+
+- (void)disconnect {
+  // Remove pref changes registrations.
+  _prefChangeRegistrar.RemoveAll();
+
+  // Remove observer bridges.
+  _prefObserverBridge.reset();
+
+  [_emailNotificationsEnabled stop];
+  [_emailNotificationsEnabled setObserver:nil];
+  _emailNotificationsEnabled = nil;
 }
 
 #pragma mark - Properties
@@ -170,13 +204,32 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeEmailNotifications: {
       _prefService->SetBoolean(commerce::kPriceEmailNotificationsEnabled,
                                value);
-      self.emailNotificationItem.on = value;
+      [self booleanDidChange:_emailNotificationsEnabled];
       break;
     }
     default:
       // Not a switch.
       NOTREACHED();
   }
+}
+
+#pragma mark - BooleanObserver
+
+- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
+  if (observableBoolean == _emailNotificationsEnabled) {
+    self.emailNotificationItem.on = [_emailNotificationsEnabled value];
+    [self.consumer setEmailNotificationItem:self.emailNotificationItem];
+  }
+}
+
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  self.mobileNotificationItem.on = push_notification_settings::
+      GetMobileNotificationPermissionStatusForClient(
+          PushNotificationClientId::kCommerce,
+          base::SysNSStringToUTF8(_identity.gaiaID));
+  [self.consumer setMobileNotificationItem:self.mobileNotificationItem];
 }
 
 #pragma mark - Private
