@@ -152,7 +152,6 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
       : CanvasResourceProvider(kBitmap,
                                info,
                                filter_quality,
-                               /*is_origin_top_left=*/true,
                                /*context_provider_wrapper=*/nullptr,
                                std::move(resource_dispatcher),
                                resource_host) {}
@@ -285,7 +284,6 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       : CanvasResourceProvider(kSharedImage,
                                info,
                                filter_quality,
-                               /*is_origin_top_left=*/true,
                                std::move(context_provider_wrapper),
                                /*resource_dispatcher=*/nullptr,
                                resource_host),
@@ -648,9 +646,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     const auto props = GetSkSurfaceProps();
     if (is_accelerated_) {
       return SkSurfaces::WrapBackendTexture(
-          GetGrContext(), CreateGrTextureForResource(), GetGrSurfaceOrigin(),
-          0 /* msaa_sample_count */, GetSkImageInfo().colorType(),
-          GetSkImageInfo().refColorSpace(), &props);
+          GetGrContext(), CreateGrTextureForResource(),
+          kTopLeft_GrSurfaceOrigin, 0 /* msaa_sample_count */,
+          GetSkImageInfo().colorType(), GetSkImageInfo().refColorSpace(),
+          &props);
     }
 
     // For software raster path, we render into cpu memory managed internally
@@ -822,16 +821,17 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
       : CanvasResourceProvider(kPassThrough,
                                info,
                                filter_quality,
-                               is_origin_top_left,
                                std::move(context_provider_wrapper),
                                std::move(resource_dispatcher),
-                               resource_host) {}
+                               resource_host),
+        is_origin_top_left_(is_origin_top_left) {}
 
   ~CanvasResourceProviderPassThrough() override = default;
   bool IsValid() const final { return true; }
   bool IsAccelerated() const final { return true; }
   bool SupportsDirectCompositing() const override { return true; }
   bool SupportsSingleBuffering() const override { return true; }
+  bool IsOriginTopLeft() const override { return is_origin_top_left_; }
 
  private:
   scoped_refptr<CanvasResource> CreateResource() final {
@@ -853,6 +853,8 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
       return nullptr;
     return resource->Bitmap();
   }
+
+  const bool is_origin_top_left_;
 };
 
 // * Renders to back buffer of a shared image swap chain.
@@ -871,7 +873,6 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
       : CanvasResourceProvider(kSwapChain,
                                info,
                                filter_quality,
-                               /*is_origin_top_left=*/true,
                                std::move(context_provider_wrapper),
                                std::move(resource_dispatcher),
                                resource_host),
@@ -1414,7 +1415,6 @@ CanvasResourceProvider::CanvasResourceProvider(
     const ResourceProviderType& type,
     const SkImageInfo& info,
     cc::PaintFlags::FilterQuality filter_quality,
-    bool is_origin_top_left,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
     CanvasResourceHost* resource_host)
@@ -1423,7 +1423,6 @@ CanvasResourceProvider::CanvasResourceProvider(
       resource_dispatcher_(resource_dispatcher),
       info_(info),
       filter_quality_(filter_quality),
-      is_origin_top_left_(is_origin_top_left),
       resource_host_(resource_host),
       recorder_(std::make_unique<MemoryManagedPaintRecorder>(Size(), this)),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {

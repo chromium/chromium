@@ -474,7 +474,6 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
       : CanvasResourceProvider(CanvasResourceProvider::kSharedImage,
                                info,
                                cc::PaintFlags::FilterQuality::kLow,
-                               /*is_origin_top_left=*/false,
                                SharedGpuContext::ContextProviderWrapper(),
                                /*resource_dispatcher=*/nullptr,
                                resource_host),

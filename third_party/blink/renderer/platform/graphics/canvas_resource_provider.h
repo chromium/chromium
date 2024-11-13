@@ -181,7 +181,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
     filter_quality_ = quality;
   }
   gfx::Size Size() const;
-  bool IsOriginTopLeft() const { return is_origin_top_left_; }
+  virtual bool IsOriginTopLeft() const { return true; }
   virtual bool IsValid() const = 0;
   virtual bool IsAccelerated() const = 0;
   // Returns true if the resource can be used by the display compositor.
@@ -355,10 +355,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       const {
     return context_provider_wrapper_;
   }
-  GrSurfaceOrigin GetGrSurfaceOrigin() const {
-    return is_origin_top_left_ ? kTopLeft_GrSurfaceOrigin
-                               : kBottomLeft_GrSurfaceOrigin;
-  }
   cc::PaintFlags::FilterQuality FilterQuality() const {
     return filter_quality_;
   }
@@ -371,7 +367,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       const ResourceProviderType&,
       const SkImageInfo&,
       cc::PaintFlags::FilterQuality,
-      bool is_origin_top_left,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
       base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
@@ -451,7 +446,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // constructors do not exist.
   SkImageInfo info_;
   cc::PaintFlags::FilterQuality filter_quality_;
-  const bool is_origin_top_left_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   raw_ptr<CanvasResourceHost> resource_host_ = nullptr;
