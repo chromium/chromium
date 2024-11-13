@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './elements/viewer_error_dialog.js';
 // <if expr="enable_ink">
 import './elements/viewer_ink_host.js';
@@ -15,6 +16,7 @@ import './elements/viewer_pdf_sidenav.js';
 import './elements/viewer_properties_dialog.js';
 import './elements/viewer_toolbar.js';
 
+import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
@@ -145,6 +147,7 @@ export interface PdfViewerElement {
     scroller: HTMLElement,
     sizer: HTMLElement,
     toolbar: ViewerToolbarElement,
+    searchifyProgress: CrToastElement,
   };
 }
 
@@ -921,7 +924,14 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         this.hasSearchifyText_ = true;
         return;
       case 'showSearchifyInProgress':
-        // TODO(crbug.com/360803943): Trigger showing/hiding searchify progress.
+        // TODO(crbug.com/360803943): Add test.
+        if ((data as unknown as {
+              show: boolean,
+            }).show) {
+          this.$.searchifyProgress.show();
+        } else {
+          this.$.searchifyProgress.hide();
+        }
         return;
       case 'startedFindInPage':
         record(UserAction.FIND_IN_PAGE);

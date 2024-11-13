@@ -386,5 +386,8 @@
     <message name="IDS_PDF_OCR_POSTAMBLE_PAGE" is_accessibility_with_no_ui="true" desc="Notification that appears on a page on its own and which is used to inform the user that OCR is still in progress.">
       Extracting text in next few pages
     </message>
+    <message name="IDS_PDF_SEARCHIFY_IN_PROGRESS" desc="Notification that extracting text from PDF is in progress.">
+      Extracting text from PDF...
+    </message>
   </if>
 </grit-part>
