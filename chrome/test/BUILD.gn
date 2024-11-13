@@ -297,6 +297,8 @@ static_library("test_support") {
       "../browser/extensions/extension_platform_browsertest.h",
       "../browser/extensions/platform_test_extension_loader.cc",
       "../browser/extensions/platform_test_extension_loader.h",
+      "base/android/android_ui_test_utils.cc",
+      "base/android/android_ui_test_utils.h",
     ]
 
     public_deps += [

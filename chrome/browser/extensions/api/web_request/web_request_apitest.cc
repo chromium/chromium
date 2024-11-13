@@ -125,6 +125,7 @@
 #include "chrome/browser/extensions/extension_platform_apitest.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/test/base/android/android_ui_test_utils.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -411,9 +412,6 @@ class ExtensionWebRequestApiTest : public ExtensionApiTestBase {
     test_dirs_.push_back(std::move(dir));
   }
 
-  // TODO(crbug.com/378572861): Add android support for
-  // ui_test_utils::NavigateToURL and move the following two UI functions over.
-
   void NavigateToURL(const GURL& url) {
 #if BUILDFLAG(IS_ANDROID)
     ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
@@ -424,22 +422,7 @@ class ExtensionWebRequestApiTest : public ExtensionApiTestBase {
 
   void OpenUrlInNewTab(const GURL& url) {
 #if BUILDFLAG(IS_ANDROID)
-    TabModel* tab_model =
-        TabModelList::GetTabModelForWebContents(web_contents());
-    ASSERT_EQ(1, tab_model->GetTabCount());
-    ASSERT_EQ(web_contents(), GetActiveWebContents());
-
-    // Create a new tab.
-    std::unique_ptr<content::WebContents> contents =
-        content::WebContents::Create(
-            content::WebContents::CreateParams(profile()));
-    content::WebContents* second_web_contents = contents.release();
-    tab_model->CreateTab(TabAndroid::FromWebContents(web_contents()),
-                         second_web_contents, /*select=*/true);
-    NavigateToURL(url);
-    ASSERT_EQ(2, tab_model->GetTabCount());
-    ASSERT_NE(web_contents(), second_web_contents);
-    ASSERT_EQ(second_web_contents, GetActiveWebContents());
+    android_ui_test_utils::OpenUrlInNewTab(profile(), web_contents(), url);
 #else
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
