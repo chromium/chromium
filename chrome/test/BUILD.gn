@@ -10924,6 +10924,7 @@ if (!is_android && !is_chromeos_device) {
         "interaction/interaction_test_util_mouse_interactive_uitest.cc",
         "interaction/interactive_browser_test_interactive_uitest.cc",
         "interaction/webcontents_interaction_test_util_interactive_uitest.cc",
+        "user_education/interactive_feature_promo_test_interactive_uitest.cc",
       ]
       deps += [
         "//chrome/app/vector_icons:vector_icons",

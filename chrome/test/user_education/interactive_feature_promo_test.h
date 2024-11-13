@@ -100,9 +100,32 @@ class InteractiveFeaturePromoTestApi
 
   // Waits for the given Views promo bubble to be shown and verifies that the
   // correct IPH is active.
+  //
+  // If this step is done `InAnyContext()` it will verify that the promo appears
+  // in at least one browser.
+  //
+  // IMPORTANT USAGE NOTE: if the browser the promo is shown from (by calling
+  // `MaybeShowFeaturePromo()` or using the `MaybeShowPromo()` action in this
+  // test API) is different from the window in which it actually appears, you
+  // MUST use `InAnyContext()` with this step, as otherwise it assumes that both
+  // are in the current/specified context - i.e. the same browser window.
+  // Failing to do so will cause either the check for the bubble or the step
+  // that verifies the correct promo is showing to fail.
+  //
+  // NOTE: the current context is potentially undefined after this step if it
+  // is run `InAnyContext()`; do not follow this step with `InSameContext()` in
+  // that case.
   [[nodiscard]] MultiStep WaitForPromo(const base::Feature& iph_feature);
 
   // Checks that the promo `iph_feature` is active.
+  //
+  // If this step is done `InAnyContext()` it will verify that the promo is
+  // active in at least one browser (or if `active` is false, that it is not
+  // active in any browser.)
+  //
+  // NOTE: the current context is potentially undefined after this step if it
+  // is run `InAnyContext()`; do not follow this step with `InSameContext()` in
+  // that case.
   [[nodiscard]] StepBuilder CheckPromoIsActive(const base::Feature& iph_feature,
                                                bool active = true);
 
