@@ -121,13 +121,28 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
                MutationObserver&) override {
     for (const auto& record : records) {
       if (record->type() == "childList") {
-        for (unsigned i = 0; i < record->addedNodes()->length(); ++i) {
-          auto* descendant = record->addedNodes()->item(i);
-          if (descendant->IsTextNode() &&
-              descendant->textContent().ContainsOnlyWhitespaceOrEmpty()) {
+        auto* added_nodes = record->addedNodes();
+        for (unsigned i = 0; i < added_nodes->length(); ++i) {
+          auto* descendant = added_nodes->item(i);
+          if (!descendant ||
+              (descendant->IsTextNode() &&
+               descendant->textContent().ContainsOnlyWhitespaceOrEmpty())) {
             continue;
           }
-          AddWarningToElement(DynamicTo<HTMLElement>(descendant));
+          if (auto* descendant_element = DynamicTo<Element>(descendant)) {
+#if DCHECK_IS_ON()
+            if (!descendant_element->parentElement()) {
+              // If the descendant doesn't have a parent element, verify that
+              // the target is `HTMLSelectedContentElement`.
+              auto* target_element = DynamicTo<Element>(record->target());
+              DCHECK(target_element);
+              auto* target_html_element =
+                  DynamicTo<HTMLElement>(target_element);
+              DCHECK(IsA<HTMLSelectedContentElement>(*target_html_element));
+            }
+#endif
+            AddWarningToElement(descendant_element);
+          }
         }
       }
     }
@@ -144,35 +159,63 @@ class SelectDescendantsObserver : public MutationObserver::Delegate {
  private:
   void TraverseDescendants() {
     for (Element* current_element = ElementTraversal::FirstWithin(*select_);
-         current_element;) {
-      AddWarningToElement(DynamicTo<HTMLElement>(current_element));
-      current_element = ElementTraversal::Next(*current_element, select_);
+         current_element;
+         current_element = ElementTraversal::Next(*current_element, select_)) {
+      AddWarningToElement(current_element);
     }
   }
 
-  void AddWarningToElement(HTMLElement* html_element) {
-    if (!html_element || IsDescendantAllowed(html_element)) {
-      return;
+  void AddWarningToElement(Element* element) {
+    if (element && !IsDescendantAllowed(element)) {
+      // TODO(ansollan): Report an Issue to the DevTools' Issue Panel as well.
+      element->AddConsoleMessage(
+          mojom::blink::ConsoleMessageSource::kRecommendation,
+          mojom::blink::ConsoleMessageLevel::kError,
+          "A descendant of a <select> does not follow the content "
+          "model.");
     }
-    // TODO(ansollan): Report an Issue to the DevTools' Issue Panel as well.
-    html_element->AddConsoleMessage(
-        mojom::blink::ConsoleMessageSource::kRecommendation,
-        mojom::blink::ConsoleMessageLevel::kError,
-        "A descendant of a <select> does not follow the content "
-        "model.");
   }
 
-  bool IsDescendantAllowed(HTMLElement* element) {
-    // TODO(ansollan): This should be looking at the tree structure to decide if
-    // this is a valid descendant.
-    return IsA<HTMLOptionElement>(element) ||
-           IsA<HTMLOptGroupElement>(element) || IsA<HTMLHRElement>(element) ||
-           IsA<HTMLScriptElement>(element) ||
-           IsA<HTMLTemplateElement>(element) ||
-           IsA<HTMLNoScriptElement>(element) ||
-           IsA<HTMLButtonElement>(element) || IsA<HTMLDivElement>(element) ||
-           IsA<HTMLSpanElement>(element) ||
-           IsA<HTMLSelectedContentElement>(element);
+  bool IsDescendantAllowed(const Element* element) {
+    DCHECK(element);
+    auto* descendant_html_element = DynamicTo<HTMLElement>(*element);
+    if (!descendant_html_element) {
+      return false;
+    }
+    // Get the parent of the element.
+    Element* parent_element = element->parentElement();
+    if (!parent_element) {
+      // Assume descendant is being appended to a `HTMLSelectedContentElement`.
+      // TODO(ansollan): Add content model checks for <selectedcontent>
+      // descendants.
+      return !descendant_html_element->IsInteractiveContent();
+    }
+    auto* ancestor_html_element = DynamicTo<HTMLElement>(*parent_element);
+    if (!ancestor_html_element) {
+      return false;
+    }
+
+    if (IsA<HTMLSelectElement>(*ancestor_html_element)) {
+      return IsA<HTMLButtonElement>(*descendant_html_element) ||
+             IsA<HTMLOptionElement>(*descendant_html_element) ||
+             IsA<HTMLOptGroupElement>(*descendant_html_element) ||
+             IsA<HTMLHRElement>(*descendant_html_element) ||
+             IsA<HTMLDivElement>(*descendant_html_element) ||
+             IsA<HTMLNoScriptElement>(*descendant_html_element) ||
+             IsA<HTMLScriptElement>(*descendant_html_element) ||
+             IsA<HTMLTemplateElement>(*descendant_html_element);
+    }
+    // TODO(ansollan): Add content model checks for <option>, <optgroup>, <div>,
+    // <svg>, and phrasing content descendants.
+    if (IsA<HTMLOptGroupElement>(*ancestor_html_element) ||
+        IsA<HTMLOptionElement>(*ancestor_html_element) ||
+        IsA<HTMLDivElement>(*ancestor_html_element) ||
+        IsA<HTMLNoScriptElement>(*ancestor_html_element) ||
+        IsA<HTMLScriptElement>(*ancestor_html_element) ||
+        IsA<HTMLTemplateElement>(*ancestor_html_element)) {
+      return !descendant_html_element->IsInteractiveContent();
+    }
+    return false;
   }
 
   Member<HTMLSelectElement> select_;

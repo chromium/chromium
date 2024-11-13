@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:ansollan@microsoft.com">
+<link rel=help href="https://issues.chromium.org/issues/347890366">
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
+
+<!-- None of these <select>s should print a console message. -->
+
+<!-- Direct children of <select>: -->
+  <!-- <button> -->
+  <select>
+    <button>..</button>
+  </select>
+
+  <!-- <option> -->
+  <select>
+    <option>..</option>
+    <option>..</option>
+  </select>
+
+  <!-- <optgroup> -->
+  <select>
+    <optgroup>
+      <option>..</option>
+    </optgroup>
+  </select>
+
+  <!-- <hr /> and <optgroup> children -->
+  <select>
+    <option>..</option>
+    <hr />
+    <optgroup>
+      <option>..</option>
+    </optgroup>
+    <hr />
+  </select>
+
+  <!-- <div> -->
+  <select>
+    <div>
+    </div>
+  </select>
+
+  <!-- <noscript> -->
+  <select>
+    <noscript>
+    </noscript>
+  </select>
+
+  <!-- <script>-supporting elements -->
+  <select>
+    <template>
+    </template>
+    <script>
+    </script>
+  </select>
+
+<script>
+testRunner.dumpAsText();
+</script>
