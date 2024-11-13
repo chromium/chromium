@@ -113,8 +113,9 @@ base::span<CSSSelector> CSSSelectorParser::ParseSelector(
                            semicolon_aborts_nested_selector, style_sheet,
                            arena);
   stream.ConsumeWhitespace();
+  ResultFlags result_flags = 0;
   base::span<CSSSelector> result =
-      parser.ConsumeComplexSelectorList(stream, nesting_type);
+      parser.ConsumeComplexSelectorList(stream, nesting_type, result_flags);
   if (!stream.AtEnd()) {
     return {};
   }
@@ -139,8 +140,9 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeSelector(
                            semicolon_aborts_nested_selector, style_sheet,
                            arena);
   stream.ConsumeWhitespace();
-  base::span<CSSSelector> result =
-      parser.ConsumeComplexSelectorList(stream, observer, nesting_type);
+  ResultFlags result_flags = 0;
+  base::span<CSSSelector> result = parser.ConsumeComplexSelectorList(
+      stream, observer, nesting_type, result_flags);
   parser.RecordUsageAndDeprecations(result, has_visited_style);
   return result;
 }
@@ -160,8 +162,9 @@ base::span<CSSSelector> CSSSelectorParser::ParseScopeBoundary(
   DisallowPseudoElementsScope disallow_pseudo_elements(&parser);
 
   stream.ConsumeWhitespace();
+  ResultFlags result_flags = 0;
   base::span<CSSSelector> result =
-      parser.ConsumeComplexSelectorList(stream, nesting_type);
+      parser.ConsumeComplexSelectorList(stream, nesting_type, result_flags);
   if (result.empty() || !stream.AtEnd()) {
     return {};
   }
@@ -179,9 +182,10 @@ bool CSSSelectorParser::SupportsComplexSelector(
       context, /*parent_rule_for_nesting=*/nullptr, /*is_within_scope=*/false,
       /*semicolon_aborts_nested_selector=*/false, nullptr, arena);
   parser.SetInSupportsParsing();
-  base::span<CSSSelector> selectors =
-      parser.ConsumeComplexSelector(stream, CSSNestingType::kNone,
-                                    /*first_in_complex_selector_list=*/true);
+  ResultFlags result_flags = 0;
+  base::span<CSSSelector> selectors = parser.ConsumeComplexSelector(
+      stream, CSSNestingType::kNone,
+      /*first_in_complex_selector_list=*/true, result_flags);
   if (parser.failed_parsing_ || !stream.AtEnd() || selectors.empty()) {
     return false;
   }
@@ -206,17 +210,20 @@ CSSSelectorParser::CSSSelectorParser(const CSSParserContext* context,
 
 base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
     CSSParserTokenStream& stream,
-    CSSNestingType nesting_type) {
+    CSSNestingType nesting_type,
+    ResultFlags& result_flags) {
   ResetVectorAfterScope reset_vector(output_);
   if (ConsumeComplexSelector(stream, nesting_type,
-                             /*first_in_complex_selector_list=*/true)
+                             /*first_in_complex_selector_list=*/true,
+                             result_flags)
           .empty()) {
     return {};
   }
   while (!stream.AtEnd() && stream.Peek().GetType() == kCommaToken) {
     stream.ConsumeIncludingWhitespace();
     if (ConsumeComplexSelector(stream, nesting_type,
-                               /*first_in_complex_selector_list=*/false)
+                               /*first_in_complex_selector_list=*/false,
+                               result_flags)
             .empty()) {
       return {};
     }
@@ -238,7 +245,8 @@ static bool AtEndOfComplexSelector(CSSParserTokenStream& stream) {
 base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
     CSSParserTokenStream& stream,
     CSSParserObserver* observer,
-    CSSNestingType nesting_type) {
+    CSSNestingType nesting_type,
+    ResultFlags& result_flags) {
   ResetVectorAfterScope reset_vector(output_);
 
   bool first_in_complex_selector_list = true;
@@ -246,7 +254,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
     const wtf_size_t selector_offset_start = stream.LookAheadOffset();
 
     if (ConsumeComplexSelector(stream, nesting_type,
-                               first_in_complex_selector_list)
+                               first_in_complex_selector_list, result_flags)
             .empty() ||
         failed_parsing_ || !AtEndOfComplexSelector(stream)) {
       if (AbortsNestedSelectorParsing(kSemicolonToken,
@@ -285,11 +293,12 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
 }
 
 CSSSelectorList* CSSSelectorParser::ConsumeCompoundSelectorList(
-    CSSParserTokenStream& stream) {
+    CSSParserTokenStream& stream,
+    ResultFlags& result_flags) {
   ResetVectorAfterScope reset_vector(output_);
 
   base::span<CSSSelector> selector =
-      ConsumeCompoundSelector(stream, CSSNestingType::kNone);
+      ConsumeCompoundSelector(stream, CSSNestingType::kNone, result_flags);
   stream.ConsumeWhitespace();
   if (selector.empty()) {
     return nullptr;
@@ -297,7 +306,8 @@ CSSSelectorList* CSSSelectorParser::ConsumeCompoundSelectorList(
   MarkAsEntireComplexSelector(selector);
   while (!stream.AtEnd() && stream.Peek().GetType() == kCommaToken) {
     stream.ConsumeIncludingWhitespace();
-    selector = ConsumeCompoundSelector(stream, CSSNestingType::kNone);
+    selector =
+        ConsumeCompoundSelector(stream, CSSNestingType::kNone, result_flags);
     stream.ConsumeWhitespace();
     if (selector.empty()) {
       return nullptr;
@@ -313,14 +323,15 @@ CSSSelectorList* CSSSelectorParser::ConsumeCompoundSelectorList(
 }
 
 CSSSelectorList* CSSSelectorParser::ConsumeNestedSelectorList(
-    CSSParserTokenStream& stream) {
+    CSSParserTokenStream& stream,
+    ResultFlags& result_flags) {
   if (inside_compound_pseudo_) {
-    return ConsumeCompoundSelectorList(stream);
+    return ConsumeCompoundSelectorList(stream, result_flags);
   }
 
   ResetVectorAfterScope reset_vector(output_);
   base::span<CSSSelector> result =
-      ConsumeComplexSelectorList(stream, CSSNestingType::kNone);
+      ConsumeComplexSelectorList(stream, CSSNestingType::kNone, result_flags);
   if (result.empty()) {
     return {};
   } else {
@@ -331,13 +342,15 @@ CSSSelectorList* CSSSelectorParser::ConsumeNestedSelectorList(
 }
 
 CSSSelectorList* CSSSelectorParser::ConsumeForgivingNestedSelectorList(
-    CSSParserTokenStream& stream) {
+    CSSParserTokenStream& stream,
+    ResultFlags& result_flags) {
   if (inside_compound_pseudo_) {
-    return ConsumeForgivingCompoundSelectorList(stream);
+    return ConsumeForgivingCompoundSelectorList(stream, result_flags);
   }
   ResetVectorAfterScope reset_vector(output_);
   std::optional<base::span<CSSSelector>> forgiving_list =
-      ConsumeForgivingComplexSelectorList(stream, CSSNestingType::kNone);
+      ConsumeForgivingComplexSelectorList(stream, CSSNestingType::kNone,
+                                          result_flags);
   if (!forgiving_list.has_value()) {
     return nullptr;
   }
@@ -347,10 +360,11 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingNestedSelectorList(
 std::optional<base::span<CSSSelector>>
 CSSSelectorParser::ConsumeForgivingComplexSelectorList(
     CSSParserTokenStream& stream,
-    CSSNestingType nesting_type) {
+    CSSNestingType nesting_type,
+    ResultFlags& result_flags) {
   if (in_supports_parsing_) {
     base::span<CSSSelector> selectors =
-        ConsumeComplexSelectorList(stream, nesting_type);
+        ConsumeComplexSelectorList(stream, nesting_type, result_flags);
     if (selectors.empty()) {
       return std::nullopt;
     } else {
@@ -366,7 +380,7 @@ CSSSelectorParser::ConsumeForgivingComplexSelectorList(
     CSSParserTokenStream::State state = stream.Save();
     wtf_size_t subpos = output_.size();
     base::span<CSSSelector> selector = ConsumeComplexSelector(
-        stream, nesting_type, first_in_complex_selector_list);
+        stream, nesting_type, first_in_complex_selector_list, result_flags);
     if (selector.empty() || failed_parsing_ ||
         !AtEndOfComplexSelector(stream)) {
       output_.resize(subpos);  // Drop what we parsed so far.
@@ -455,9 +469,11 @@ void CSSSelectorParser::AddPlaceholderSelectorIfNeeded(
 }
 
 CSSSelectorList* CSSSelectorParser::ConsumeForgivingCompoundSelectorList(
-    CSSParserTokenStream& stream) {
+    CSSParserTokenStream& stream,
+    ResultFlags& result_flags) {
   if (in_supports_parsing_) {
-    CSSSelectorList* selector_list = ConsumeCompoundSelectorList(stream);
+    CSSSelectorList* selector_list =
+        ConsumeCompoundSelectorList(stream, result_flags);
     if (!selector_list || !selector_list->IsValid()) {
       return nullptr;
     }
@@ -469,7 +485,7 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingCompoundSelectorList(
     base::AutoReset<bool> reset_failure(&failed_parsing_, false);
     wtf_size_t subpos = output_.size();
     base::span<CSSSelector> selector =
-        ConsumeCompoundSelector(stream, CSSNestingType::kNone);
+        ConsumeCompoundSelector(stream, CSSNestingType::kNone, result_flags);
     stream.ConsumeWhitespace();
     if (selector.empty() || failed_parsing_ ||
         (!stream.AtEnd() && stream.Peek().GetType() != kCommaToken)) {
@@ -491,9 +507,11 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingCompoundSelectorList(
 }
 
 CSSSelectorList* CSSSelectorParser::ConsumeForgivingRelativeSelectorList(
-    CSSParserTokenStream& stream) {
+    CSSParserTokenStream& stream,
+    ResultFlags& result_flags) {
   if (in_supports_parsing_) {
-    CSSSelectorList* selector_list = ConsumeRelativeSelectorList(stream);
+    CSSSelectorList* selector_list =
+        ConsumeRelativeSelectorList(stream, result_flags);
     if (!selector_list || !selector_list->IsValid()) {
       return nullptr;
     }
@@ -505,7 +523,8 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingRelativeSelectorList(
     base::AutoReset<bool> reset_failure(&failed_parsing_, false);
     CSSParserTokenStream::BlockGuard guard(stream);
     wtf_size_t subpos = output_.size();
-    base::span<CSSSelector> selector = ConsumeRelativeSelector(stream);
+    base::span<CSSSelector> selector =
+        ConsumeRelativeSelector(stream, result_flags);
 
     if (selector.empty() || failed_parsing_ ||
         (!stream.AtEnd() && stream.Peek().GetType() != kCommaToken)) {
@@ -533,14 +552,15 @@ CSSSelectorList* CSSSelectorParser::ConsumeForgivingRelativeSelectorList(
 }
 
 CSSSelectorList* CSSSelectorParser::ConsumeRelativeSelectorList(
-    CSSParserTokenStream& stream) {
+    CSSParserTokenStream& stream,
+    ResultFlags& result_flags) {
   ResetVectorAfterScope reset_vector(output_);
-  if (ConsumeRelativeSelector(stream).empty()) {
+  if (ConsumeRelativeSelector(stream, result_flags).empty()) {
     return nullptr;
   }
   while (!stream.AtEnd() && stream.Peek().GetType() == kCommaToken) {
     stream.ConsumeIncludingWhitespace();
-    if (ConsumeRelativeSelector(stream).empty()) {
+    if (ConsumeRelativeSelector(stream, result_flags).empty()) {
       return nullptr;
     }
   }
@@ -599,7 +619,8 @@ unsigned ExtractCompoundFlags(const base::span<CSSSelector> compound_selector,
 }  // namespace
 
 base::span<CSSSelector> CSSSelectorParser::ConsumeRelativeSelector(
-    CSSParserTokenStream& stream) {
+    CSSParserTokenStream& stream,
+    ResultFlags& result_flags) {
   ResetVectorAfterScope reset_vector(output_);
 
   CSSSelector selector;
@@ -614,8 +635,9 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeRelativeSelector(
       ConvertRelationToRelative(ConsumeCombinator(stream));
   unsigned previous_compound_flags = 0;
 
-  if (!ConsumePartialComplexSelector(
-          stream, combinator, previous_compound_flags, CSSNestingType::kNone)) {
+  if (!ConsumePartialComplexSelector(stream, combinator,
+                                     previous_compound_flags,
+                                     CSSNestingType::kNone, result_flags)) {
     return {};
   }
 
@@ -714,7 +736,8 @@ static std::optional<CSSSelector> MaybeCreateImplicitDescendantAnchor(
 // E.g. given CSSNestingType::kNesting, “> .a” is parsed as “& > .a” ().
 base::span<CSSSelector> CSSSelectorParser::ConsumeNestedRelativeSelector(
     CSSParserTokenStream& stream,
-    CSSNestingType nesting_type) {
+    CSSNestingType nesting_type,
+    ResultFlags& result_flags) {
   DCHECK_NE(nesting_type, CSSNestingType::kNone);
 
   ResetVectorAfterScope reset_vector(output_);
@@ -726,7 +749,8 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeNestedRelativeSelector(
   CSSSelector::RelationType combinator = ConsumeCombinator(stream);
   unsigned previous_compound_flags = 0;
   if (!ConsumePartialComplexSelector(stream, combinator,
-                                     previous_compound_flags, nesting_type)) {
+                                     previous_compound_flags, nesting_type,
+                                     result_flags)) {
     return {};
   }
 
@@ -740,17 +764,18 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeNestedRelativeSelector(
 base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
     CSSParserTokenStream& stream,
     CSSNestingType nesting_type,
-    bool first_in_complex_selector_list) {
+    bool first_in_complex_selector_list,
+    ResultFlags& result_flags) {
   if (nesting_type != CSSNestingType::kNone && PeekIsCombinator(stream)) {
     // Nested selectors that start with a combinator are to be
     // interpreted as relative selectors (with the anchor being
     // the parent selector, i.e., &).
-    return ConsumeNestedRelativeSelector(stream, nesting_type);
+    return ConsumeNestedRelativeSelector(stream, nesting_type, result_flags);
   }
 
   ResetVectorAfterScope reset_vector(output_);
   base::span<CSSSelector> compound_selector =
-      ConsumeCompoundSelector(stream, nesting_type);
+      ConsumeCompoundSelector(stream, nesting_type, result_flags);
   if (compound_selector.empty()) {
     return {};
   }
@@ -760,14 +785,12 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
   std::reverse(compound_selector.begin(), compound_selector.end());
 
   if (CSSSelector::RelationType combinator = ConsumeCombinator(stream)) {
-    if (is_inside_has_argument_ &&
-        is_inside_logical_combination_in_has_argument_) {
-      found_complex_logical_combinations_in_has_argument_ = true;
-    }
+    result_flags |= kContainsComplexSelector;
     unsigned previous_compound_flags =
         ExtractCompoundFlags(compound_selector, context_->Mode());
     if (!ConsumePartialComplexSelector(stream, combinator,
-                                       previous_compound_flags, nesting_type)) {
+                                       previous_compound_flags, nesting_type,
+                                       result_flags)) {
       return {};
     }
   }
@@ -827,10 +850,11 @@ bool CSSSelectorParser::ConsumePartialComplexSelector(
     CSSParserTokenStream& stream,
     CSSSelector::RelationType& combinator,
     unsigned previous_compound_flags,
-    CSSNestingType nesting_type) {
+    CSSNestingType nesting_type,
+    ResultFlags& result_flags) {
   do {
     base::span<CSSSelector> compound_selector =
-        ConsumeCompoundSelector(stream, nesting_type);
+        ConsumeCompoundSelector(stream, nesting_type, result_flags);
     if (compound_selector.empty()) {
       // No more selectors. If we ended with some explicit combinator
       // (e.g. “a >” and then nothing), that's a parse error.
@@ -1085,7 +1109,8 @@ PseudoId CSSSelectorParser::ParsePseudoElement(const String& selector_string,
 
   ResetVectorAfterScope reset_vector(parser.output_);
   CSSParserTokenStream stream(selector_string);
-  if (!parser.ConsumePseudo(stream)) {
+  ResultFlags result_flags = 0;
+  if (!parser.ConsumePseudo(stream, result_flags)) {
     return kPseudoIdInvalid;
   }
 
@@ -1297,7 +1322,8 @@ static bool SelectorListRequiresScopeActivation(const CSSSelectorList& list) {
 
 base::span<CSSSelector> CSSSelectorParser::ConsumeCompoundSelector(
     CSSParserTokenStream& stream,
-    CSSNestingType nesting_type) {
+    CSSNestingType nesting_type,
+    ResultFlags& result_flags) {
   ResetVectorAfterScope reset_vector(output_);
   wtf_size_t start_pos = output_.size();
   base::AutoReset<CSSSelector::PseudoType> reset_restricting(
@@ -1332,7 +1358,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeCompoundSelector(
   }
 
   // Consume all the simple selectors that are not tag names.
-  while (ConsumeSimpleSelector(stream)) {
+  while (ConsumeSimpleSelector(stream, result_flags)) {
     const CSSSelector& simple_selector = output_.back();
     if (simple_selector.Match() == CSSSelector::kPseudoElement) {
       restricting_pseudo_element_ = simple_selector.GetPseudoType();
@@ -1417,7 +1443,8 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeCompoundSelector(
   return reset_vector.CommitAddedElements();
 }
 
-bool CSSSelectorParser::ConsumeSimpleSelector(CSSParserTokenStream& stream) {
+bool CSSSelectorParser::ConsumeSimpleSelector(CSSParserTokenStream& stream,
+                                              ResultFlags& result_flags) {
   const CSSParserToken& token = stream.Peek();
   bool ok;
   if (token.GetType() == kHashToken) {
@@ -1427,9 +1454,12 @@ bool CSSSelectorParser::ConsumeSimpleSelector(CSSParserTokenStream& stream) {
   } else if (token.GetType() == kLeftBracketToken) {
     ok = ConsumeAttribute(stream);
   } else if (token.GetType() == kColonToken) {
-    ok = ConsumePseudo(stream);
+    ok = ConsumePseudo(stream, result_flags);
+    if (ok) {
+      result_flags |= kContainsPseudo;
+    }
   } else if (token.GetType() == kDelimiterToken && token.Delimiter() == '&') {
-    ok = ConsumeNestingParent(stream);
+    ok = ConsumeNestingParent(stream, result_flags);
   } else {
     return false;
   }
@@ -1582,7 +1612,8 @@ bool CSSSelectorParser::ConsumeAttribute(CSSParserTokenStream& stream) {
   return true;
 }
 
-bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream) {
+bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
+                                      ResultFlags& result_flags) {
   DCHECK_EQ(stream.Peek().GetType(), kColonToken);
   stream.Consume();
 
@@ -1637,7 +1668,6 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream) {
     if (!IsPseudoClassValidWithinHasArgument(selector)) {
       return false;
     }
-    found_pseudo_in_has_argument_ = true;
   }
 
   if (token.GetType() == kIdentToken) {
@@ -1662,12 +1692,8 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream) {
     case CSSSelector::kPseudoIs: {
       DisallowPseudoElementsScope scope(this);
       base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
-      base::AutoReset<bool> is_inside_logical_combination_in_has_argument(
-          &is_inside_logical_combination_in_has_argument_,
-          is_inside_has_argument_);
-
       CSSSelectorList* selector_list =
-          ConsumeForgivingNestedSelectorList(stream);
+          ConsumeForgivingNestedSelectorList(stream, result_flags);
       if (!selector_list || !stream.AtEnd()) {
         return false;
       }
@@ -1678,12 +1704,8 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream) {
     case CSSSelector::kPseudoWhere: {
       DisallowPseudoElementsScope scope(this);
       base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
-      base::AutoReset<bool> is_inside_logical_combination_in_has_argument(
-          &is_inside_logical_combination_in_has_argument_,
-          is_inside_has_argument_);
-
       CSSSelectorList* selector_list =
-          ConsumeForgivingNestedSelectorList(stream);
+          ConsumeForgivingNestedSelectorList(stream, result_flags);
       if (!selector_list || !stream.AtEnd()) {
         return false;
       }
@@ -1704,7 +1726,8 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream) {
           ignore_default_namespace_ ||
               selector.GetPseudoType() == CSSSelector::kPseudoCue);
 
-      CSSSelectorList* selector_list = ConsumeCompoundSelectorList(stream);
+      CSSSelectorList* selector_list =
+          ConsumeCompoundSelectorList(stream, result_flags);
       if (!selector_list || !selector_list->IsValid() || !stream.AtEnd()) {
         return false;
       }
@@ -1728,37 +1751,31 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream) {
 
       base::AutoReset<bool> is_inside_has_argument(&is_inside_has_argument_,
                                                    true);
-      base::AutoReset<bool> found_pseudo_in_has_argument(
-          &found_pseudo_in_has_argument_, false);
-      base::AutoReset<bool> found_complex_logical_combinations_in_has_argument(
-          &found_complex_logical_combinations_in_has_argument_, false);
-
+      ResultFlags local_result_flags = 0;
       CSSSelectorList* selector_list;
-      selector_list = ConsumeRelativeSelectorList(stream);
+      selector_list = ConsumeRelativeSelectorList(stream, local_result_flags);
       if (!selector_list || !selector_list->IsValid() || !stream.AtEnd()) {
         return false;
       }
       selector.SetSelectorList(selector_list);
-      if (found_pseudo_in_has_argument_) {
+      if (local_result_flags & kContainsPseudo) {
         selector.SetContainsPseudoInsideHasPseudoClass();
       }
-      if (found_complex_logical_combinations_in_has_argument_) {
+      if (local_result_flags & kContainsComplexSelector) {
         selector.SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
       }
       if (found_host_in_compound_) {
         selector.SetHasArgumentMatchInShadowTree();
       }
       output_.push_back(std::move(selector));
+      result_flags |= local_result_flags;
       return true;
     }
     case CSSSelector::kPseudoNot: {
       DisallowPseudoElementsScope scope(this);
       base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
-      base::AutoReset<bool> is_inside_logical_combination_in_has_argument(
-          &is_inside_logical_combination_in_has_argument_,
-          is_inside_has_argument_);
-
-      CSSSelectorList* selector_list = ConsumeNestedSelectorList(stream);
+      CSSSelectorList* selector_list =
+          ConsumeNestedSelectorList(stream, result_flags);
       if (!selector_list || !selector_list->IsValid() || !stream.AtEnd()) {
         return false;
       }
@@ -1893,8 +1910,8 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream) {
 
       {
         ResetVectorAfterScope reset_vector(output_);
-        base::span<CSSSelector> inner_selector =
-            ConsumeCompoundSelector(stream, CSSNestingType::kNone);
+        base::span<CSSSelector> inner_selector = ConsumeCompoundSelector(
+            stream, CSSNestingType::kNone, result_flags);
         stream.ConsumeWhitespace();
         if (inner_selector.empty() || !stream.AtEnd()) {
           return false;
@@ -1974,7 +1991,8 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream) {
   return false;
 }
 
-bool CSSSelectorParser::ConsumeNestingParent(CSSParserTokenStream& stream) {
+bool CSSSelectorParser::ConsumeNestingParent(CSSParserTokenStream& stream,
+                                             ResultFlags& result_flags) {
   DCHECK_EQ(stream.Peek().GetType(), kDelimiterToken);
   DCHECK_EQ(stream.Peek().Delimiter(), '&');
   stream.Consume();
@@ -1982,18 +2000,16 @@ bool CSSSelectorParser::ConsumeNestingParent(CSSParserTokenStream& stream) {
   output_.push_back(
       CSSSelector(parent_rule_for_nesting_, /*is_implicit=*/false));
 
-  if (is_inside_has_argument_) {
-    // In case that a nesting parent selector is inside a :has() pseudo class,
-    // mark the :has() containing a pseudo selector and a complex selector
-    // so that the StyleEngine can invalidate the anchor element of the :has()
-    // for a pseudo state change (crbug.com/1517866) or a complex selector
-    // state change (crbug.com/350946979) in the parent selector.
-    // These ignore whether the nesting parent actually contains a pseudo or
-    // complex selector to avoid nesting parent lookup overhead and the
-    // complexity caused by reparenting style rules.
-    found_pseudo_in_has_argument_ = true;
-    found_complex_logical_combinations_in_has_argument_ = true;
-  }
+  // In case that a nesting parent selector is inside a :has() pseudo class,
+  // mark the :has() containing a pseudo selector and a complex selector
+  // so that the StyleEngine can invalidate the anchor element of the :has()
+  // for a pseudo state change (crbug.com/1517866) or a complex selector
+  // state change (crbug.com/350946979) in the parent selector.
+  // These ignore whether the nesting parent actually contains a pseudo or
+  // complex selector to avoid nesting parent lookup overhead and the
+  // complexity caused by reparenting style rules.
+  result_flags |= kContainsPseudo;
+  result_flags |= kContainsComplexSelector;
 
   return true;
 }
@@ -2205,8 +2221,9 @@ CSSSelectorList* CSSSelectorParser::ConsumeNthChildOfSelectors(
   stream.ConsumeWhitespace();
 
   ResetVectorAfterScope reset_vector(output_);
+  ResultFlags result_flags = 0;
   base::span<CSSSelector> selectors =
-      ConsumeComplexSelectorList(stream, CSSNestingType::kNone);
+      ConsumeComplexSelectorList(stream, CSSNestingType::kNone, result_flags);
   if (selectors.empty()) {
     return nullptr;
   }

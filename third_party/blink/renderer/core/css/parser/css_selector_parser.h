@@ -112,6 +112,15 @@ class CORE_EXPORT CSSSelectorParser {
       HeapVector<CSSSelector>&);
 
  private:
+  enum ResultFlag {
+    // True when a selector contains any pseudo-class or pseudo-element.
+    kContainsPseudo = 1 << 0,
+    // True when a selector contains (or is) a complex selector,
+    // i.e. contains combinators.
+    kContainsComplexSelector = 1 << 1,
+  };
+  using ResultFlags = unsigned;
+
   CSSSelectorParser(const CSSParserContext*,
                     const StyleRule* parent_rule_for_nesting,
                     bool is_within_scope,
@@ -135,34 +144,46 @@ class CORE_EXPORT CSSSelectorParser {
   // :scope instead of &.
   base::span<CSSSelector> ConsumeComplexSelectorList(
       CSSParserTokenStream& stream,
-      CSSNestingType);
+      CSSNestingType,
+      ResultFlags&);
   base::span<CSSSelector> ConsumeComplexSelectorList(
       CSSParserTokenStream& stream,
       CSSParserObserver* observer,
-      CSSNestingType);
-  CSSSelectorList* ConsumeCompoundSelectorList(CSSParserTokenStream&);
+      CSSNestingType,
+      ResultFlags&);
+  CSSSelectorList* ConsumeCompoundSelectorList(CSSParserTokenStream&,
+                                               ResultFlags&);
   // Consumes a complex selector list if inside_compound_pseudo_ is false,
   // otherwise consumes a compound selector list.
-  CSSSelectorList* ConsumeNestedSelectorList(CSSParserTokenStream&);
-  CSSSelectorList* ConsumeForgivingNestedSelectorList(CSSParserTokenStream&);
+  CSSSelectorList* ConsumeNestedSelectorList(CSSParserTokenStream&,
+                                             ResultFlags&);
+  CSSSelectorList* ConsumeForgivingNestedSelectorList(CSSParserTokenStream&,
+                                                      ResultFlags&);
   // https://drafts.csswg.org/selectors/#typedef-forgiving-selector-list
   std::optional<base::span<CSSSelector>> ConsumeForgivingComplexSelectorList(
       CSSParserTokenStream&,
-      CSSNestingType);
-  CSSSelectorList* ConsumeForgivingCompoundSelectorList(CSSParserTokenStream&);
+      CSSNestingType,
+      ResultFlags&);
+  CSSSelectorList* ConsumeForgivingCompoundSelectorList(CSSParserTokenStream&,
+                                                        ResultFlags&);
   // https://drafts.csswg.org/selectors/#typedef-relative-selector-list
-  CSSSelectorList* ConsumeForgivingRelativeSelectorList(CSSParserTokenStream&);
-  CSSSelectorList* ConsumeRelativeSelectorList(CSSParserTokenStream&);
+  CSSSelectorList* ConsumeForgivingRelativeSelectorList(CSSParserTokenStream&,
+                                                        ResultFlags&);
+  CSSSelectorList* ConsumeRelativeSelectorList(CSSParserTokenStream&,
+                                               ResultFlags&);
   void AddPlaceholderSelectorIfNeeded(CSSParserTokenStream& stream);
 
   base::span<CSSSelector> ConsumeNestedRelativeSelector(
       CSSParserTokenStream& stream,
-      CSSNestingType);
-  base::span<CSSSelector> ConsumeRelativeSelector(CSSParserTokenStream&);
+      CSSNestingType,
+      ResultFlags&);
+  base::span<CSSSelector> ConsumeRelativeSelector(CSSParserTokenStream&,
+                                                  ResultFlags&);
   base::span<CSSSelector> ConsumeComplexSelector(
       CSSParserTokenStream& stream,
       CSSNestingType,
-      bool first_in_complex_selector_list);
+      bool first_in_complex_selector_list,
+      ResultFlags&);
 
   // ConsumePartialComplexSelector() method provides the common logic of
   // consuming a complex selector and consuming a relative selector.
@@ -182,7 +203,8 @@ class CORE_EXPORT CSSSelectorParser {
       CSSParserTokenStream&,
       CSSSelector::RelationType& /* current combinator */,
       unsigned /* previous compound flags */,
-      CSSNestingType);
+      CSSNestingType,
+      ResultFlags&);
 
   bool ConsumeName(CSSParserTokenStream&,
                    AtomicString& name,
@@ -193,14 +215,15 @@ class CORE_EXPORT CSSSelectorParser {
   bool ConsumeId(CSSParserTokenStream&);
   bool ConsumeClass(CSSParserTokenStream&);
   bool ConsumeAttribute(CSSParserTokenStream&);
-  bool ConsumePseudo(CSSParserTokenStream&);
-  bool ConsumeNestingParent(CSSParserTokenStream& stream);
+  bool ConsumePseudo(CSSParserTokenStream&, ResultFlags&);
+  bool ConsumeNestingParent(CSSParserTokenStream& stream, ResultFlags&);
   // This doesn't include element names, since they're handled specially
-  bool ConsumeSimpleSelector(CSSParserTokenStream&);
+  bool ConsumeSimpleSelector(CSSParserTokenStream&, ResultFlags&);
 
   // Returns an empty stream on error.
   base::span<CSSSelector> ConsumeCompoundSelector(CSSParserTokenStream&,
-                                                  CSSNestingType);
+                                                  CSSNestingType,
+                                                  ResultFlags&);
 
   bool PeekIsCombinator(CSSParserTokenStream& stream);
   CSSSelector::RelationType ConsumeCombinator(CSSParserTokenStream&);
@@ -257,16 +280,7 @@ class CORE_EXPORT CSSSelectorParser {
   // the default namespace is '*' while this flag is true.
   bool ignore_default_namespace_ = false;
 
-  // The 'found_pseudo_in_has_argument_' flag is true when we found any pseudo
-  // in :has() argument while parsing.
-  bool found_pseudo_in_has_argument_ = false;
   bool is_inside_has_argument_ = false;
-
-  // The 'found_complex_logical_combinations_in_has_argument_' flag is true when
-  // we found any logical combinations (:is(), :where(), :not()) containing
-  // complex selector in :has() argument while parsing.
-  bool found_complex_logical_combinations_in_has_argument_ = false;
-  bool is_inside_logical_combination_in_has_argument_ = false;
   bool found_host_in_compound_ = false;
 
   bool in_supports_parsing_ = false;
