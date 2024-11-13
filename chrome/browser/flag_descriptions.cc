@@ -3463,6 +3463,12 @@ const char kDynamicSearchUpdateAnimationDescription[] =
     "animations are preempted. Shortened animation durations configurable "
     "(unit: milliseconds).";
 
+const char kSecurePaymentConfirmationBrowserBoundKeysName[] =
+    "Secure Payment Confirmation Browser Bound Key";
+const char kSecurePaymentConfirmationBrowserBoundKeysDescription[] =
+    "This flag enables an additional browser-bound signature in secure payment "
+    "confirmation in PaymentRequest and for WebAuthn payment credentials.";
+
 const char kSecurePaymentConfirmationDebugName[] =
     "Secure Payment Confirmation Debug Mode";
 const char kSecurePaymentConfirmationDebugDescription[] =

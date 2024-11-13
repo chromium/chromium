@@ -3796,6 +3796,9 @@
       base_feature: "none",
     },
     {
+      name: "SecurePaymentConfirmationBrowserBoundKeys",
+    },
+    {
       name: "SecurePaymentConfirmationDebug",
       base_feature: "none",
       public: true,

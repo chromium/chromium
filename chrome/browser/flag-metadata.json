@@ -3797,6 +3797,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-secure-payment-confirmation-browser-bound-key",
+    "owners": ["slobodan@chromium.org", "chrome-payments-team@google.com"],
+    "expiry_milestone": 160
+  },
+  {
     "name": "enable-segmentation-internals-survey",
     "owners": ["ssid@chromium.org", "chrome-segmentation-team@google.com" ],
     "expiry_milestone": 132

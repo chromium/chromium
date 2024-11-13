@@ -21411,6 +21411,8 @@ from previous Chrome versions.
       label="UsernameFirstFlowFallbackCrowdsourcing:enabled"/>
   <int value="461641589" label="WebAppWindowControlsOverlay:disabled"/>
   <int value="462453078" label="cast-streaming-force-enable-hardware-h264"/>
+  <int value="463521162"
+      label="SecurePaymentConfirmationBrowserBoundKeys:enabled"/>
   <int value="463582989" label="CompositorThreadedScrollbarScrolling:disabled"/>
   <int value="463664416" label="TabStripLayoutOptimization:disabled"/>
   <int value="464226051" label="CrOSComponent:enabled"/>
@@ -22804,6 +22806,8 @@ from previous Chrome versions.
   <int value="1039085120"
       label="AndroidNoSurfaceSyncForBrowserControls:disabled"/>
   <int value="1041376342" label="EnableTouchpadsInDiagnosticsApp:enabled"/>
+  <int value="1041839930"
+      label="SecurePaymentConfirmationBrowserBoundKeys:disabled"/>
   <int value="1042202617" label="RemoteCopyReceiver:enabled"/>
   <int value="1042684294" label="PrintPreviewCrosApp:enabled"/>
   <int value="1043291220" label="OverviewSwipeToClose:disabled"/>

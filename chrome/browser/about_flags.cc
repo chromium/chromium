@@ -6020,6 +6020,12 @@ const FeatureEntry kFeatureEntries[] = {
          blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons,
          kSecurePaymentConfirmationNetworkAndIssuerIconsOptions,
          "SecurePaymentConfirmationNetworkAndIssuerIcons")},
+    {"enable-secure-payment-confirmation-browser-bound-key",
+     flag_descriptions::kSecurePaymentConfirmationBrowserBoundKeysName,
+     flag_descriptions::kSecurePaymentConfirmationBrowserBoundKeysDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         blink::features::kSecurePaymentConfirmationBrowserBoundKeys)},
 #if BUILDFLAG(IS_ANDROID)
     {"show-ready-to-pay-debug-info",
      flag_descriptions::kShowReadyToPayDebugInfoName,

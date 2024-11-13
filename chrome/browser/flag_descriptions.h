@@ -1971,6 +1971,9 @@ extern const char kSplitTabStripDescription[];
 extern const char kDynamicSearchUpdateAnimationName[];
 extern const char kDynamicSearchUpdateAnimationDescription[];
 
+extern const char kSecurePaymentConfirmationBrowserBoundKeysName[];
+extern const char kSecurePaymentConfirmationBrowserBoundKeysDescription[];
+
 extern const char kSecurePaymentConfirmationDebugName[];
 extern const char kSecurePaymentConfirmationDebugDescription[];
 
