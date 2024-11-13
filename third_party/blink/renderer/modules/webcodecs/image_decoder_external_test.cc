@@ -977,6 +977,44 @@ TEST_F(ImageDecoderTest, DecodeYuv) {
   }
 }
 
+TEST_F(ImageDecoderTest, DecodeYuvCustomColorProfile) {
+  V8TestingScope v8_scope;
+  constexpr char kImageType[] = "image/jpeg";
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
+  auto* decoder = CreateDecoder(
+      &v8_scope, "images/resources/ycbcr-420-custom-color-profile.jpg",
+      kImageType);
+  ASSERT_TRUE(decoder);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  {
+    auto promise = decoder->decode(MakeOptions(0, true));
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+    auto* result = ToImageDecodeResult(&v8_scope, tester.Value());
+    EXPECT_TRUE(result->complete());
+
+    auto* frame = result->image();
+    EXPECT_EQ(frame->format(), "I420");
+
+    auto cs = frame->frame()->ColorSpace();
+    EXPECT_TRUE(cs.IsValid());
+    EXPECT_EQ(cs.GetPrimaryID(), gfx::ColorSpace::PrimaryID::CUSTOM);
+    EXPECT_EQ(cs.GetTransferID(), gfx::ColorSpace::TransferID::SRGB);
+    EXPECT_EQ(cs.GetMatrixID(), gfx::ColorSpace::MatrixID::SMPTE170M);
+    EXPECT_EQ(cs.GetRangeID(), gfx::ColorSpace::RangeID::FULL);
+
+    auto primaries = cs.GetPrimaryMatrix();
+    EXPECT_TRUE(primaries.isFinite());
+
+    constexpr SkM44 kIdentity;
+    EXPECT_NE(primaries, kIdentity);
+
+    EXPECT_FALSE(cs.IsTransferFunctionEqualTo({0}));
+  }
+}
+
 TEST_F(ImageDecoderTest, TransferBuffer) {
   V8TestingScope v8_scope;
   constexpr char kImageType[] = "image/gif";

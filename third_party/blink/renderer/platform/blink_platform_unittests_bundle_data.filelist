@@ -580,6 +580,7 @@
 ../../web_tests/images/resources/webpfuzz/webp-animated.webp
 ../../web_tests/images/resources/wrong-block-length.gif
 ../../web_tests/images/resources/wrong-frame-dimensions.ico
+../../web_tests/images/resources/ycbcr-420-custom-color-profile.jpg
 ../../web_tests/images/resources/ycbcr-420-fast-int-progressive.jpg
 ../../web_tests/images/resources/ycbcr-420-float-progressive.jpg
 ../../web_tests/images/resources/ycbcr-420-float.jpg
