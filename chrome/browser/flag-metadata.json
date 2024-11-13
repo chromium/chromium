@@ -8767,21 +8767,21 @@
   {
     "name":"tpc-phase-out-facilitated-testing",
     "owners": ["//chrome/browser/tpcd/experiment/OWNERS"],
-    "expiry_milestone": 133
+    "expiry_milestone": 137
   },
   {
     "name": "tpcd-heuristics-grants",
     "owners": [
       "//chrome/browser/tpcd/OWNERS"
     ],
-    "expiry_milestone": 133
+    "expiry_milestone": 137
   },
   {
     "name": "tpcd-metadata-grants",
     "owners": [
       "//chrome/browser/tpcd/OWNERS"
     ],
-    "expiry_milestone": 133
+    "expiry_milestone": 137
   },
   {
     "name": "track-by-default-mobile",
