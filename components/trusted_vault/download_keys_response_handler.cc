@@ -155,8 +155,7 @@ DownloadKeysResponseHandler::GetErrorFromHttpStatus(
       return TrustedVaultDownloadKeysStatus::kOtherError;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 DownloadKeysResponseHandler::DownloadKeysResponseHandler(

@@ -88,10 +88,11 @@ int GetMinimumFaviconForPrimaryIconSizeInPx() {
     CHECK_IS_TEST();
     return test::g_minimum_favicon_size_for_testing;
   } else {
-#if !BUILDFLAG(IS_ANDROID)
-    NOTREACHED_IN_MIGRATION();
-#endif
+#if BUILDFLAG(IS_ANDROID)
     return features::kMinimumFaviconSize;
+#else
+    NOTREACHED();
+#endif
   }
 }
 

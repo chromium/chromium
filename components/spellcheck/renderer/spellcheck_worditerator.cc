@@ -356,8 +356,7 @@ bool SpellcheckWordIterator::Initialize(
     // Since we're not passing in any text, the only reason this could fail
     // is if we fail to parse the rules. Since the rules are hardcoded,
     // that would be a bug in this class.
-    NOTREACHED_IN_MIGRATION() << "failed to open iterator (broken rules)";
-    return false;
+    NOTREACHED() << "failed to open iterator (broken rules)";
   }
   iterator_ = std::move(iterator);
 
@@ -423,8 +422,7 @@ SpellcheckWordIterator::WordIteratorStatus SpellcheckWordIterator::GetNextWord(
       // |iterator_| is RULE_BASED so the break status should never be
       // IS_LINE_OR_CHAR_BREAK.
       case base::i18n::BreakIterator::IS_LINE_OR_CHAR_BREAK: {
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       }
     }
   }

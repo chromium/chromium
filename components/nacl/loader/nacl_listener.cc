@@ -156,9 +156,7 @@ NaClListener::NaClListener()
 }
 
 NaClListener::~NaClListener() {
-  NOTREACHED_IN_MIGRATION();
-  shutdown_event_.Signal();
-  g_listener = NULL;
+  NOTREACHED();
 }
 
 bool NaClListener::Send(IPC::Message* msg) {

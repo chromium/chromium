@@ -269,8 +269,7 @@ AndroidFormEventLogger* AndroidAutofillManager::GetEventFormLogger(
     case FormType::kUnknownFormType:
       return nullptr;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace autofill

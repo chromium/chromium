@@ -178,7 +178,7 @@ help_bubble::mojom::HelpBubbleClient* HelpBubbleHandlerBase::GetClient() {
 }
 
 void HelpBubbleHandlerBase::ReportBadMessage(std::string_view error) {
-  NOTREACHED_IN_MIGRATION() << error;
+  NOTREACHED() << error;
 }
 
 std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
@@ -186,9 +186,7 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
     HelpBubbleParams params) {
   const auto it = element_data_.find(identifier);
   if (it == element_data_.end()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Identifier " << identifier << " was never registered.";
-    return nullptr;
+    NOTREACHED() << "Identifier " << identifier << " was never registered.";
   }
 
   auto& data = it->second;
@@ -244,9 +242,7 @@ void HelpBubbleHandlerBase::OnHelpBubbleClosing(
     ui::ElementIdentifier anchor_id) {
   const auto it = element_data_.find(anchor_id);
   if (it == element_data_.end()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Identifier " << anchor_id << " was never registered.";
-    return;
+    NOTREACHED() << "Identifier " << anchor_id << " was never registered.";
   }
   if (!it->second.closing)
     GetClient()->HideHelpBubble(anchor_id.GetName());

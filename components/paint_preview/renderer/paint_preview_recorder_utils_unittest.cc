@@ -277,8 +277,7 @@ class PaintPreviewRecorderUtilsSerializeAsSkPictureTest
       }
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return std::nullopt;
+    NOTREACHED();
   }
 
   PaintPreviewTracker tracker;

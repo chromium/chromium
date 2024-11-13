@@ -25,10 +25,10 @@ NullRenderer::NullRenderer(const RendererSettings* settings,
 NullRenderer::~NullRenderer() = default;
 
 void NullRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 void NullRenderer::BeginDrawingFrame() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool NullRenderer::CanPartialSwap() {

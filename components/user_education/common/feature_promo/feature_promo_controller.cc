@@ -777,7 +777,7 @@ void FeaturePromoControllerCommon::RecordPromoNotShown(
       failure_action_name.append("AlreadyQueued");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   base::RecordComputedAction(failure_action_name);
 }

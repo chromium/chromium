@@ -304,8 +304,7 @@ SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
              format == SinglePlaneFormat::kBGRA_1010102) {
     return GL_RGB10_A2_EXT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return GL_RGBA8_OES;
+  NOTREACHED();
 }
 
 // static

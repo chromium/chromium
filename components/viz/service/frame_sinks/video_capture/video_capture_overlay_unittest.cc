@@ -545,8 +545,7 @@ class VideoCaptureOverlayRenderTest
       }
 
       default:
-        NOTREACHED_IN_MIGRATION();
-        return false;
+        NOTREACHED();
     }
 
     // Determine the full path to the golden file to compare the results.

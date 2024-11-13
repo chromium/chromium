@@ -42,8 +42,7 @@ mojom::UserInteractionType UserInteractionTypeForMojom(
   }
   // mojom::UserInteractionType should have the same interaction types as
   // blink::UserInteractionType does.
-  NOTREACHED_IN_MIGRATION();
-  return mojom::UserInteractionType::kMinValue;
+  NOTREACHED();
 }
 
 bool IsFirstFCP(const mojom::PageLoadTimingPtr& last_timing,

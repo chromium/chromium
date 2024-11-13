@@ -230,7 +230,7 @@ void URLLoaderThrottle::ApplyRewrite(
       // "Policy" is interpreted elsewhere; it is a no-op for rewriting.
       return;
   }
-  NOTREACHED_IN_MIGRATION();  // Invalid enum value.
+  NOTREACHED();  // Invalid enum value.
 }
 
 void URLLoaderThrottle::ApplyAddHeaders(

@@ -318,10 +318,7 @@ class TestGpuCommandsCompletedFence : public ResourceFence {
 
   // ResourceFence implementation.
   bool HasPassed() override { return passed_; }
-  gfx::GpuFenceHandle GetGpuFenceHandle() override {
-    NOTREACHED_IN_MIGRATION();
-    return gfx::GpuFenceHandle();
-  }
+  gfx::GpuFenceHandle GetGpuFenceHandle() override { NOTREACHED(); }
 
   void Signal() {
     passed_ = true;

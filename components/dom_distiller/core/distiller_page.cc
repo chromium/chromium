@@ -44,7 +44,7 @@ std::string GetDistillerScriptWithOptions(
       dom_distiller::proto::json::DomDistillerOptions::WriteToValue(options);
   std::string options_json;
   if (!base::JSONWriter::Write(options_value, &options_json)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   size_t options_offset = script.find(kOptionsPlaceholder);
   DCHECK_NE(std::string::npos, options_offset);

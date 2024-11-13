@@ -228,8 +228,7 @@ BookmarksUuidDuplicates MatchBookmarksUuidDuplicates(
 
   switch (update.entity.specifics.bookmark().type()) {
     case sync_pb::BookmarkSpecifics::UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case sync_pb::BookmarkSpecifics::URL: {
       const bool matching_urls =
           update.entity.specifics.bookmark().url() ==
@@ -249,8 +248,7 @@ BookmarksUuidDuplicates MatchBookmarksUuidDuplicates(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return BookmarksUuidDuplicates();
+  NOTREACHED();
 }
 
 // Returns true the |next_update| is selected to keep and the |previous_update|

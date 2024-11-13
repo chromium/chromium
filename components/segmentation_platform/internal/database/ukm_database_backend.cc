@@ -80,7 +80,7 @@ std::string BindValuesToStatement(
         statement.BindString(i, UkmUrlTable::GetDatabaseUrlString(*value.url));
         break;
       case processing::ProcessedValue::Type::UNKNOWN:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   return debug_string.str();
@@ -91,8 +91,7 @@ float GetSingleFloatOutput(sql::Statement& statement) {
   switch (output_type) {
     case sql::ColumnType::kBlob:
     case sql::ColumnType::kText:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
     case sql::ColumnType::kFloat:
       return statement.ColumnDouble(0);
     case sql::ColumnType::kInteger:

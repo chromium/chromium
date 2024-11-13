@@ -327,7 +327,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
                            desc.to_target_transform);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -375,8 +375,7 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 

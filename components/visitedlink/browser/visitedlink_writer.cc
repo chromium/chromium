@@ -333,8 +333,7 @@ VisitedLinkWriter::Hash VisitedLinkWriter::TryToAddURL(const GURL& url) {
   // TODO(boliu): Move this check to HistoryService when IsOffTheRecord is
   // removed from BrowserContext.
   if (browser_context_ && browser_context_->IsOffTheRecord()) {
-    NOTREACHED_IN_MIGRATION();
-    return null_hash_;
+    NOTREACHED();
   }
 
   if (!url.is_valid())
@@ -490,8 +489,7 @@ VisitedLinkWriter::Hash VisitedLinkWriter::AddFingerprint(
   if (!hash_table_ || table_length_ == 0) {
     UMA_HISTOGRAM_ENUMERATION("History.VisitedLinks.TryToAddFingerprint",
                               AddFingerprint::kTableError);
-    NOTREACHED_IN_MIGRATION();  // Not initialized.
-    return null_hash_;
+    NOTREACHED();  // Not initialized.
   }
 
   Hash cur_hash = HashFingerprint(fingerprint);
@@ -524,8 +522,7 @@ VisitedLinkWriter::Hash VisitedLinkWriter::AddFingerprint(
       // logic, so stop here.
       UMA_HISTOGRAM_ENUMERATION("History.VisitedLinks.TryToAddFingerprint",
                                 AddFingerprint::kTableError);
-      NOTREACHED_IN_MIGRATION();
-      return null_hash_;
+      NOTREACHED();
     }
   }
 }
@@ -550,8 +547,7 @@ void VisitedLinkWriter::DeleteFingerprintsFromCurrentTable(
 bool VisitedLinkWriter::DeleteFingerprint(Fingerprint fingerprint,
                                           bool update_file) {
   if (!hash_table_ || table_length_ == 0) {
-    NOTREACHED_IN_MIGRATION();  // Not initialized.
-    return false;
+    NOTREACHED();  // Not initialized.
   }
   if (!IsVisited(fingerprint))
     return false;  // Not in the database to delete.

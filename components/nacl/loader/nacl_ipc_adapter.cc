@@ -159,8 +159,7 @@ static int64_t QuotaInterfaceFtruncateRequest(NaClDescQuotaInterface* ndqi,
                                               int64_t length) {
   // We can't implement SetLength on the plugin side due to sandbox limitations.
   // See crbug.com/156077.
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 static const struct NaClDescQuotaInterfaceVtbl kQuotaInterfaceVtbl = {
@@ -783,8 +782,9 @@ void NaClIPCAdapter::ClearToBeSent() {
 }
 
 void NaClIPCAdapter::ConnectChannelOnIOThread() {
-  if (!io_thread_data_.channel_->Connect())
-    NOTREACHED_IN_MIGRATION();
+  if (!io_thread_data_.channel_->Connect()) {
+    NOTREACHED();
+  }
 }
 
 void NaClIPCAdapter::CloseChannelOnIOThread() {

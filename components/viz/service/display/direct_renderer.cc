@@ -1282,8 +1282,7 @@ gfx::Rect DirectRenderer::GetDelegatedInkTrailDamageRect() {
 }
 
 gpu::Mailbox DirectRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
-  NOTREACHED_IN_MIGRATION();
-  return gpu::Mailbox();
+  NOTREACHED();
 }
 
 }  // namespace viz

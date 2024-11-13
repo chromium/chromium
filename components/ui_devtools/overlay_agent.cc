@@ -15,15 +15,13 @@ OverlayAgent::~OverlayAgent() = default;
 protocol::Response OverlayAgent::setInspectMode(
     const protocol::String& in_mode,
     protocol::Maybe<protocol::Overlay::HighlightConfig> in_highlightConfig) {
-  NOTREACHED_IN_MIGRATION();
-  return protocol::Response::Success();
+  NOTREACHED();
 }
 
 protocol::Response OverlayAgent::highlightNode(
     std::unique_ptr<protocol::Overlay::HighlightConfig> highlight_config,
     protocol::Maybe<int> node_id) {
-  NOTREACHED_IN_MIGRATION();
-  return protocol::Response::Success();
+  NOTREACHED();
 }
 
 protocol::Response OverlayAgent::hideHighlight() {

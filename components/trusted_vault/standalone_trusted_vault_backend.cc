@@ -181,8 +181,7 @@ GetDeviceRegistrationOutcomeForUMAFromResponse(
     case TrustedVaultRegistrationStatus::kOtherError:
       return TrustedVaultDeviceRegistrationOutcomeForUMA::kOtherError;
   }
-  NOTREACHED_IN_MIGRATION();
-  return TrustedVaultDeviceRegistrationOutcomeForUMA::kOtherError;
+  NOTREACHED();
 }
 
 // Version 0 may contain corrupted data: missing constant key if the client
@@ -314,8 +313,7 @@ StandaloneTrustedVaultBackend::GetDownloadKeysStatusForUMAFromResponse(
       return TrustedVaultDownloadKeysStatusForUMA::kOtherError;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return TrustedVaultDownloadKeysStatusForUMA::kOtherError;
+  NOTREACHED();
 }
 
 StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(

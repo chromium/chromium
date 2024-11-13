@@ -81,8 +81,7 @@ class CBOR_EXPORT Value {
           break;
       }
 
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
 
     using is_transparent = void;

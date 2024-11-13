@@ -1263,7 +1263,7 @@ DOT11_SSID WiFiServiceImpl::SSIDFromGUID(
             network_guid.c_str(),
             ssid.uSSIDLength);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return ssid;
 }

@@ -1730,10 +1730,9 @@ ContentOrder FeedStream::GetContentOrder(const StreamType& stream_type) const {
 ContentOrder FeedStream::GetContentOrderFromPrefs(
     const StreamType& stream_type) {
   if (!stream_type.IsWebFeed()) {
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "GetContentOrderFromPrefs is not supported for this stream_type "
         << stream_type;
-    return ContentOrder::kUnspecified;
   }
   return prefs::GetWebFeedContentOrder(*profile_prefs_);
 }

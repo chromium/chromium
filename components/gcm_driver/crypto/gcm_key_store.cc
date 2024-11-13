@@ -131,10 +131,7 @@ void GCMKeyStore::CreateKeysAfterInitialize(
   std::unique_ptr<crypto::ECPrivateKey> key(crypto::ECPrivateKey::Create());
 
   if (!key) {
-    NOTREACHED_IN_MIGRATION() << "Unable to initialize a P-256 key pair.";
-
-    std::move(callback).Run(nullptr /* key */, std::string() /* auth_secret */);
-    return;
+    NOTREACHED() << "Unable to initialize a P-256 key pair.";
   }
 
   // Create the authentication secret, which has to be a cryptographically

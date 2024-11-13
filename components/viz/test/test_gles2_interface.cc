@@ -184,8 +184,7 @@ void TestGLES2Interface::GetShaderPrecisionFormat(GLenum shadertype,
       *precision = 16;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

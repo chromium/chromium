@@ -486,8 +486,7 @@ SystemMediaControlsWin::GetSmtcPlaybackStatus(PlaybackStatus status) {
       return ABI::Windows::Media::MediaPlaybackStatus::
           MediaPlaybackStatus_Stopped;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ABI::Windows::Media::MediaPlaybackStatus::MediaPlaybackStatus_Stopped;
+  NOTREACHED();
 }
 
 HRESULT SystemMediaControlsWin::ButtonPressed(

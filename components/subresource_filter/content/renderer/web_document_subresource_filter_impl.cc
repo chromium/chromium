@@ -43,8 +43,7 @@ WebLoadPolicy ToWebLoadPolicy(LoadPolicy load_policy) {
     case LoadPolicy::WOULD_DISALLOW:
       return WebLoadPolicy::kWouldDisallow;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return WebLoadPolicy::kAllow;
+      NOTREACHED();
   }
 }
 

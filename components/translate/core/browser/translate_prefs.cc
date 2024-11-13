@@ -450,8 +450,7 @@ void TranslatePrefs::RearrangeLanguage(
       return;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   language_prefs_->SetUserSelectedLanguagesList(languages);

@@ -948,7 +948,7 @@ void NoStatePrefetchManager::ScheduleDeleteOldWebContents(
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NoStatePrefetchManager::AddToHistory(NoStatePrefetchContents* contents) {

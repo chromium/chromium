@@ -189,8 +189,7 @@ class FeaturePromoLifecycleTest : public testing::Test {
         name.append("Rotating");
         break;
       case PromoType::kUnspecified:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
     }
 
     EXPECT_EQ(shown_count,

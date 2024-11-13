@@ -292,8 +292,7 @@ class PaintPreviewCompositorBeginCompositeTest
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 

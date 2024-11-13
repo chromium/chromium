@@ -97,8 +97,7 @@ void MtabWatcherLinux::OnFilePathChanged(
   if (path != mtab_path_) {
     // This cannot happen unless FilePathWatcher is buggy. Just ignore this
     // notification and do nothing.
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   if (error) {
     LOG(ERROR) << "Error watching " << mtab_path_.value();

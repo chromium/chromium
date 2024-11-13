@@ -92,8 +92,7 @@ int GetPreRS5UniversalApiContractVersion() {
   }
   // The list above should account for all Windows versions prior to
   // RS5.
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 // Returns the UniversalApiContract version number, which is available for

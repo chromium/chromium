@@ -379,7 +379,7 @@ void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
       source_id = ukm::NoURLSourceId();
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // For prerendered page activations, we don't create a new PageLoadTracker,

@@ -500,8 +500,7 @@ void TranslateAgent::CheckTranslateStatus() {
     }
 
     if (!translate_callback_pending_) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
 
     // Check JavaScript performance counters for UMA reports.

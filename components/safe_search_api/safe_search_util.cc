@@ -108,8 +108,7 @@ void ForceYouTubeRestrict(const GURL& url,
   switch (mode) {
     case YOUTUBE_RESTRICT_OFF:
     case YOUTUBE_RESTRICT_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case YOUTUBE_RESTRICT_MODERATE:
       headers->SetHeader(kYouTubeRestrictHeaderName,

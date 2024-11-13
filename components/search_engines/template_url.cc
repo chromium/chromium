@@ -206,8 +206,7 @@ std::string YandexSearchPathFromDeviceFormFactor() {
     case ui::DEVICE_FORM_FACTOR_AUTOMOTIVE:
       return "search/pad/";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // Returns true if `enterprise_engine` is strictly better than `other_engine`,
@@ -349,8 +348,7 @@ std::string TemplateURLRef::GetURL() const {
     case INDEXED:
       return owner_->alternate_urls()[index_in_owner_];
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -369,8 +367,7 @@ std::string TemplateURLRef::GetPostParamsString() const {
     case IMAGE_TRANSLATE:
       return owner_->image_url_post_params();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -1395,13 +1392,14 @@ std::string TemplateURLRef::HandleReplacements(
             HandleReplacement(std::string(),
                               "chrome-android-search-resumption-module",
                               replacement, &url);
+            break;
 #elif BUILDFLAG(IS_IOS)
             HandleReplacement(std::string(), "chrome-ios-ntp", replacement,
                               &url);
-#else
-            NOTREACHED_IN_MIGRATION();
-#endif
             break;
+#else
+            NOTREACHED();
+#endif
           case RequestSource::SEARCHBOX:
           case RequestSource::CROS_APP_LIST:
 #if BUILDFLAG(IS_ANDROID)
@@ -1576,8 +1574,7 @@ std::string TemplateURLRef::HandleReplacements(
       }
 
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -1969,7 +1966,7 @@ void TemplateURL::EncodeSearchTerms(
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 GURL TemplateURL::GenerateSearchURL(const SearchTermsData& search_terms_data,

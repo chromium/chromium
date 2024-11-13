@@ -69,7 +69,7 @@ FakeDeviceInfoTracker::CountActiveDevicesByType() const {
 }
 
 void FakeDeviceInfoTracker::ForcePulseForTest() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool FakeDeviceInfoTracker::IsRecentLocalCacheGuid(

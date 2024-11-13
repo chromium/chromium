@@ -442,8 +442,7 @@ base::TimeTicks DisplayScheduler::DesiredBeginFrameDeadlineTime(
     case BeginFrameDeadlineMode::kNone:
       return base::TimeTicks::Max();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return base::TimeTicks();
+      NOTREACHED();
   }
 }
 

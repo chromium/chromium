@@ -80,8 +80,7 @@ bool SyncChangeIsNewWebsiteApproval(const std::string& name,
       return !old_value->GetIfBool().value_or(true);
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
   }
 }

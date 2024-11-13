@@ -55,8 +55,7 @@ bool Writer::EncodeCBOR(const Value& node,
 
     case Value::Type::INVALID_UTF8: {
       if (!allow_invalid_utf8) {
-        NOTREACHED_IN_MIGRATION() << constants::kUnsupportedMajorType;
-        return false;
+        NOTREACHED() << constants::kUnsupportedMajorType;
       }
       // Encode a CBOR string with invalid UTF-8 data. This may produce invalid
       // CBOR and is reachable in tests only. See
@@ -128,8 +127,7 @@ bool Writer::EncodeCBOR(const Value& node,
     }
 
     case Value::Type::TAG:
-      NOTREACHED_IN_MIGRATION() << constants::kUnsupportedMajorType;
-      return false;
+      NOTREACHED() << constants::kUnsupportedMajorType;
 
     // Represents a simple value.
     case Value::Type::SIMPLE_VALUE: {
@@ -225,8 +223,7 @@ void Writer::SetUint(uint64_t value) {
       shift = 7;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   for (; shift >= 0; shift--) {
     encoded_cbor_->push_back(0xFF & (value >> (shift * 8)));

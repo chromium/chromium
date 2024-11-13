@@ -73,8 +73,7 @@ bool ShouldProfileNonRendererProcessType(Mode mode, int process_type) {
       {}
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void StartProfilingClientOnIOThread(

@@ -303,7 +303,7 @@ void SharingService::OnDeviceRegistered(
       break;
     case SharingDeviceRegistrationResult::kDeviceNotRegistered:
       // Register device cannot return kDeviceNotRegistered.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

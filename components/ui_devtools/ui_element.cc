@@ -55,8 +55,7 @@ std::string UIElement::GetTypeName() const {
     case UIElementType::SURFACE:
       return "Surface";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 void UIElement::AddChild(UIElement* child, UIElement* before) {
@@ -118,8 +117,7 @@ void UIElement::ReorderChild(UIElement* child, int index) {
 
 template <class T>
 int UIElement::FindUIElementIdForBackendElement(T* element) const {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 std::vector<UIElement::ClassProperties>

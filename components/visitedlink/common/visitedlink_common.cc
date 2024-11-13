@@ -98,8 +98,7 @@ bool VisitedLinkCommon::IsVisited(Fingerprint fingerprint) const {
     if (cur_hash == first_hash) {
       // Wrapped around and didn't find an empty space, this means we're in an
       // infinite loop because AddFingerprint didn't do its job resizing.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
   }
 }

@@ -190,8 +190,7 @@ std::string GetProviderNameForHistograms(
     case ProviderType::kOtherProviderForTests:
       return "OtherProviderForTests";
     case ProviderType::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -219,8 +218,7 @@ int ContentSettingTypeToHistogramValue(ContentSettingsType content_setting) {
         << "Used for deprecated settings: " << static_cast<int>(found->first);
     return found->second;
   }
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 void RecordActiveExpiryEvent(content_settings::ProviderType provider_type,

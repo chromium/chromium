@@ -189,7 +189,7 @@ NoStatePrefetchContents::NoStatePrefetchContents(
       break;
     case ORIGIN_NONE:
     case ORIGIN_MAX:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   DCHECK(no_state_prefetch_manager);

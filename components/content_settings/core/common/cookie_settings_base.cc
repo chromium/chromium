@@ -379,9 +379,8 @@ CookieSettingsBase::GetCookieAccessSemanticsForDomain(
     case CONTENT_SETTING_BLOCK:
       return net::CookieAccessSemantics::NONLEGACY;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return net::CookieAccessSemantics::UNKNOWN;
 }
 
 bool CookieSettingsBase::ShouldConsiderMitigationsFor3pcd(

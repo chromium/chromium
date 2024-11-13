@@ -50,8 +50,7 @@ std::string GetHistogramSuffixForSafetyTipStatus(
     case security_state::SafetyTipStatus::kLookalikeIgnored:
       return "SafetyTip_LookalikeIgnored";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 }  // namespace

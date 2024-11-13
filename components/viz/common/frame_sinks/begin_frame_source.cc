@@ -192,8 +192,7 @@ bool BeginFrameSource::RequestCallbackOnGpuAvailable() {
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void BeginFrameSource::AsProtozeroInto(

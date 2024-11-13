@@ -524,8 +524,7 @@ scoped_refptr<media::VideoFrame> CreateHighbitVideoFrame(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
   scoped_refptr<media::VideoFrame> ret = media::VideoFrame::CreateFrame(
       format, video_frame->coded_size(), video_frame->visible_rect(),
@@ -2471,9 +2470,8 @@ class VideoRendererPixelHiLoColorSpaceTest
       case gfx::ColorSpace::MatrixID::GBR:
         return "_gbr_limited";
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
-    return "";
   }
 };
 

@@ -167,8 +167,7 @@ bool ParseFaviconPath(const std::string& path,
     case FaviconUrlFormat::kFavicon2:
       return ParseFaviconPathWithFavicon2Format(path, parsed);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace chrome

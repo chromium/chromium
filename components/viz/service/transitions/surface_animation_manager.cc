@@ -325,10 +325,10 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
 
   // The DCHECK below is for debugging in dev builds. This can happen in
   // production code because of a compromised renderer.
-  NOTREACHED_IN_MIGRATION();
-#endif
-
+  NOTREACHED();
+#else
   return true;
+#endif
 }
 
 // static

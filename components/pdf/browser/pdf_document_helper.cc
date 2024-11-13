@@ -221,14 +221,14 @@ void PDFDocumentHelper::GetPdfBytes(
 
 void PDFDocumentHelper::OnSelectionEvent(ui::SelectionEventType event) {
   // Should be handled by `TouchSelectionControllerClientAura`.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PDFDocumentHelper::OnDragUpdate(
     const ui::TouchSelectionDraggable::Type type,
     const gfx::PointF& position) {
   // Should be handled by `TouchSelectionControllerClientAura`.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::unique_ptr<ui::TouchHandleDrawable> PDFDocumentHelper::CreateDrawable() {

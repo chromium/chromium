@@ -65,8 +65,7 @@ ToMojoInvalidGaiaCredentialsReason(
       return cm::GoogleServiceAuthError::InvalidGaiaCredentialsReason::
           kCredentialsMissing;
     case GoogleServiceAuthError::InvalidGaiaCredentialsReason::NUM_REASONS:
-      NOTREACHED_IN_MIGRATION();
-      return cm::GoogleServiceAuthError::InvalidGaiaCredentialsReason::kUnknown;
+      NOTREACHED();
   }
 }
 
@@ -94,8 +93,7 @@ crosapi::mojom::GoogleServiceAuthError::State ToMojoGoogleServiceAuthErrorState(
     case GoogleServiceAuthError::State::CHALLENGE_RESPONSE_REQUIRED:
       return cm::GoogleServiceAuthError::State::kChallengeResponseRequired;
     case GoogleServiceAuthError::State::NUM_STATES:
-      NOTREACHED_IN_MIGRATION();
-      return cm::GoogleServiceAuthError::State::kNone;
+      NOTREACHED();
   }
 }
 
@@ -147,11 +145,7 @@ crosapi::mojom::AccountUpsertionResult::Status ToMojoAccountAdditionStatus(
       // entirely on the remote side when the receiver can't even be reached.
       // They do not have any Mojo equivalent since they are never passed over
       // the wire in the first place.
-      NOTREACHED_IN_MIGRATION()
-          << "These statuses should not be passed over the wire";
-      // Return something to make the compiler happy. This should never happen
-      // in production.
-      return cm::AccountUpsertionResult::Status::kUnexpectedResponse;
+      NOTREACHED() << "These statuses should not be passed over the wire";
   }
 }
 

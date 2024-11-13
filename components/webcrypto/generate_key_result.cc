@@ -46,8 +46,7 @@ void GenerateKeyResult::AssignKeyPair(const blink::WebCryptoKey& public_key,
 void GenerateKeyResult::Complete(blink::WebCryptoResult* out) const {
   switch (type_) {
     case TYPE_NULL:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case TYPE_SECRET_KEY:
       out->CompleteWithKey(secret_key());
       break;

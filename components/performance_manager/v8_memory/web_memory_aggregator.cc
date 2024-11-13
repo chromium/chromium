@@ -153,8 +153,7 @@ AttributionScope AttributionScopeFromWorkerType(
     case WorkerNode::WorkerType::kShared:
     case WorkerNode::WorkerType::kService:
       // TODO(crbug.com/40165276): Support service and shared workers.
-      NOTREACHED_IN_MIGRATION();
-      return AttributionScope::kDedicatedWorker;
+      NOTREACHED();
   }
 }
 
@@ -370,8 +369,7 @@ void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
       break;
 
     case NodeAggregationType::kCrossOriginAggregationPoint:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   // Now update the memory used in the chosen aggregation point.

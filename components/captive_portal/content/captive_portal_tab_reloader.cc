@@ -173,7 +173,7 @@ void CaptivePortalTabReloader::OnCaptivePortalResults(
       return;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -233,8 +233,7 @@ void CaptivePortalTabReloader::SetState(State new_state) {
       DCHECK_EQ(STATE_NONE, new_state);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   state_ = new_state;

@@ -1601,9 +1601,8 @@ void SkiaOutputSurfaceImplOnGpu::DestroyCopyOutputResourcesOnGpuThread(
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION()
-      << "The Callback returned by GetDeleteCallback() was called "
-      << "more than once.";
+  NOTREACHED() << "The Callback returned by GetDeleteCallback() was called "
+                  "more than once.";
 }
 
 void SkiaOutputSurfaceImplOnGpu::CopyOutput(

@@ -120,8 +120,7 @@ std::string ReasonToString(OfflinePageHeader::Reason reason) {
     case OfflinePageHeader::Reason::NONE:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace

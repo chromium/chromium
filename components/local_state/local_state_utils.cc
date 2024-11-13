@@ -42,10 +42,10 @@ base::Value::List GetPrefsMetadata(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       metadata.Append("extension_controlled");
       metadata.Append("extension_modifiable");
-#else
-      NOTREACHED_IN_MIGRATION();
-#endif
       break;
+#else
+      NOTREACHED();
+#endif
     case PrefValueStore::PrefStoreType::STANDALONE_BROWSER_STORE:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       metadata.Append("standalone_browser_controlled");

@@ -272,14 +272,12 @@ bool BookmarkCodec::DecodeNode(const base::Value::Dict& value,
   // If no |node| is specified, we'll create one and add it to the |parent|.
   // Therefore, in that case, |parent| must be non-NULL.
   if (!node && !parent) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   // It's not valid to have both a node and a specified parent.
   if (node && parent) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   std::string id_string;

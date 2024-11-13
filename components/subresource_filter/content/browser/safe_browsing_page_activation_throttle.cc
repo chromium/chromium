@@ -350,8 +350,7 @@ bool SafeBrowsingPageActivationThrottle::
     case ActivationScope::NO_SITES:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  //  namespace subresource_filter

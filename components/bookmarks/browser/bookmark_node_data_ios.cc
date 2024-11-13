@@ -10,17 +10,15 @@ namespace bookmarks {
 
 // static
 bool BookmarkNodeData::ClipboardContainsBookmarks() {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void BookmarkNodeData::WriteToClipboard(bool is_off_the_record) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool BookmarkNodeData::ReadFromClipboard(ui::ClipboardBuffer buffer) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace bookmarks

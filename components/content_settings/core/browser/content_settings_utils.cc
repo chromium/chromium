@@ -149,8 +149,7 @@ bool IsMorePermissive(ContentSetting a, ContentSetting b) {
     if (setting == a)
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 // Currently only mojom::SessionModel::DURABLE constraints need to be persistent

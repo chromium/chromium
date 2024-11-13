@@ -120,9 +120,7 @@ OptimizationGuideDecision MockOptGuideDecider::CanApplyOptimization(
     OptimizationType optimization_type,
     OptimizationMetadata* optimization_metadata) {
   // We don't use the synchronous API in the shopping service.
-  NOTREACHED_IN_MIGRATION();
-
-  return OptimizationGuideDecision::kUnknown;
+  NOTREACHED();
 }
 
 void MockOptGuideDecider::AddOnDemandShoppingResponse(

@@ -283,8 +283,7 @@ int SharedImageFormat::NumChannelsInPlane(int plane_index) const {
     case PlaneConfig::kY_UV_A:
       return plane_index == 1 ? 2 : 1;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 // For multiplanar formats.
@@ -298,8 +297,7 @@ int SharedImageFormat::MultiplanarBitDepth() const {
     case ChannelFormat::k16F:
       return 16;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 std::string SharedImageFormat::ToString() const {

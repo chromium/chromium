@@ -86,11 +86,8 @@ bool PageContentAnnotationValidationEnabledForType(AnnotationType type) {
       return cmd->HasSwitch(
           switches::kPageContentAnnotationsValidationContentVisibility);
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-
-  return false;
 }
 
 // Returns a set on inputs to run the validation on for the given |type|,

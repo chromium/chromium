@@ -264,7 +264,7 @@ void SkiaOutputDeviceVulkan::EndPaint() {
   if (!context_provider_->GetGrContext()->abandoned() &&
       !GrBackendRenderTargets::GetVkImageInfo(backend, &vk_image_info))
       [[unlikely]] {
-    NOTREACHED_IN_MIGRATION() << "Failed to get the image info.";
+    NOTREACHED() << "Failed to get the image info.";
   }
   DCHECK_EQ(vk_image_info.fImageLayout, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 #endif

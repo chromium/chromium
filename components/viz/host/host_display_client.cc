@@ -61,7 +61,7 @@ void HostDisplayClient::CreateLayeredWindowUpdater(
 }
 void HostDisplayClient::AddChildWindowToBrowser(
     gpu::SurfaceHandle child_window) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #endif
 

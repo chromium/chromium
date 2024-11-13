@@ -65,8 +65,7 @@ std::string UploadInfoStateAsString(UploadList::UploadInfo::State state) {
       return "uploaded";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 void UploadListToValue(UploadList* upload_list, base::Value::List* out_value) {

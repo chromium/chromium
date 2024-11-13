@@ -227,12 +227,12 @@ VulkanInProcessContextProvider::GetGrSecondaryCBDrawContext() {
 
 void VulkanInProcessContextProvider::EnqueueSecondaryCBSemaphores(
     std::vector<VkSemaphore> semaphores) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void VulkanInProcessContextProvider::EnqueueSecondaryCBPostSubmitTask(
     base::OnceClosure closure) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::optional<uint32_t> VulkanInProcessContextProvider::GetSyncCpuMemoryLimit()

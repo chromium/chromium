@@ -71,8 +71,7 @@ std::string ConfigStateToDebugString(ConfigState state) {
     case CONFIG_UNSET:
       return "config_unset";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace ProxyPrefs

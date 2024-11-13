@@ -518,9 +518,7 @@ void PrivacySandboxSettingsImpl::SetFledgeJoiningAllowed(
   // case where the eTLD+1 was not even a host, as GURL will have canonicalised
   // it to empty.
   if (effective_top_frame_etld_plus1.length() == 0) {
-    NOTREACHED_IN_MIGRATION()
-        << "Cannot control FLEDGE joining for empty eTLD+1";
-    return;
+    NOTREACHED() << "Cannot control FLEDGE joining for empty eTLD+1";
   }
 
   if (allowed) {

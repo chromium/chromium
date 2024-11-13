@@ -172,8 +172,7 @@ void RecordShoppingActionUKM(ukm::SourceId ukm_source_id,
       ukm_builder.SetPriceTracked(true);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   ukm_builder.Record(ukm::UkmRecorder::Get());
 }

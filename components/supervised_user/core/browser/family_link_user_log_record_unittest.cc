@@ -121,8 +121,7 @@ class FamilyLinkUserLogRecordTest : public ::testing::Test {
             supervised_user::FilteringBehavior::kBlock);
         break;
       case WebFilterType::kMixed:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     return std::make_unique<FamilyLinkUserLogRecord>(

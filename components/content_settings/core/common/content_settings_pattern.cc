@@ -312,8 +312,7 @@ bool ContentSettingsPattern::Builder::Validate(const PatternParts& parts) {
   if ((parts.is_scheme_wildcard && !parts.scheme.empty()) ||
       (parts.is_port_wildcard && !parts.port.empty()) ||
       (parts.is_path_wildcard && !parts.path.empty())) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   // file:// URL patterns have an empty host and port.
@@ -890,8 +889,7 @@ ContentSettingsPattern::Relation ContentSettingsPattern::CompareHost(
     return ContentSettingsPattern::DISJOINT_ORDER_POST;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ContentSettingsPattern::IDENTITY;
+  NOTREACHED();
 }
 
 // static

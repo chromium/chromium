@@ -774,8 +774,7 @@ const flat::UrlRule* FindMatchInFlatUrlPatternIndex(
       return nullptr;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace

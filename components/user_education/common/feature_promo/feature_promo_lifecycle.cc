@@ -119,9 +119,7 @@ FeaturePromoResult FeaturePromoLifecycle::CanShow() const {
           // For now, rotating promos can continue to show indefinitely.
           return FeaturePromoResult::Success();
         case PromoType::kUnspecified:
-          NOTREACHED_IN_MIGRATION();
-          result = FeaturePromoResult::kPermanentlyDismissed;
-          break;
+          NOTREACHED();
       }
 
       // Even if the promo could show, it may have exceeded its maximum show
@@ -169,8 +167,7 @@ bool FeaturePromoLifecycle::CanSnooze() const {
       // TODO(dfried): Should snooze promos be allowed in rotating promos?
       return true;
     case PromoType::kUnspecified:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -488,7 +485,7 @@ void FeaturePromoLifecycle::RecordShown() {
       break;
     }
     case PromoType::kUnspecified:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   base::RecordComputedAction(type_action_name);
 }

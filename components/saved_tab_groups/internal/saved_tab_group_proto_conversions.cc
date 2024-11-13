@@ -134,11 +134,10 @@ sync_pb::SavedTabGroup_SavedTabGroupColor TabGroupColorToSyncColor(
     case tab_groups::TabGroupColorId::kOrange:
       return sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_ORANGE;
     case tab_groups::TabGroupColorId::kNumEntries:
-      NOTREACHED_IN_MIGRATION() << "kNumEntries is not a supported color enum.";
-      return sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_GREY;
+      NOTREACHED() << "kNumEntries is not a supported color enum.";
   }
 
-  NOTREACHED_IN_MIGRATION() << "No known conversion for the supplied color.";
+  NOTREACHED() << "No known conversion for the supplied color.";
 }
 
 SavedTabGroup DataToSavedTabGroup(const proto::SavedTabGroupData& data) {

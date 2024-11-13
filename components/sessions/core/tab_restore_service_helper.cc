@@ -899,8 +899,7 @@ bool TabRestoreServiceHelper::ValidateEntry(const Entry& entry) {
     case tab_restore::Type::GROUP:
       return ValidateGroup(static_cast<const Group&>(entry));
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void TabRestoreServiceHelper::PopulateTab(Tab* tab,
@@ -1082,8 +1081,7 @@ bool TabRestoreServiceHelper::FilterEntry(const Entry& entry) {
     case tab_restore::Type::GROUP:
       return IsGroupInteresting(static_cast<const Group&>(entry));
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void TabRestoreServiceHelper::UpdateTabBrowserIDs(SessionID::id_type old_id,

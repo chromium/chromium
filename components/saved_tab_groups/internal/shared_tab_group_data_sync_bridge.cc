@@ -94,11 +94,10 @@ sync_pb::SharedTabGroup_Color TabGroupColorToSyncColor(
     case tab_groups::TabGroupColorId::kOrange:
       return sync_pb::SharedTabGroup::ORANGE;
     case tab_groups::TabGroupColorId::kNumEntries:
-      NOTREACHED_IN_MIGRATION() << "kNumEntries is not a supported color enum.";
-      return sync_pb::SharedTabGroup::GREY;
+      NOTREACHED() << "kNumEntries is not a supported color enum.";
   }
 
-  NOTREACHED_IN_MIGRATION() << "No known conversion for the supplied color.";
+  NOTREACHED() << "No known conversion for the supplied color.";
 }
 
 base::Time TimeFromWindowsEpochMicros(int64_t time_windows_epoch_micros) {

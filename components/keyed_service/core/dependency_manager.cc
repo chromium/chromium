@@ -105,7 +105,7 @@ void DependencyManager::RegisterPrefsForServices(
     user_prefs::PrefRegistrySyncable* pref_registry) {
   std::vector<raw_ptr<DependencyNode, VectorExperimental>> construction_order;
   if (!dependency_graph_.GetConstructionOrder(&construction_order)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   for (DependencyNode* dependency_node : construction_order) {
@@ -185,15 +185,16 @@ void DependencyManager::PerformInterlockedTwoPhaseShutdown(
 DependencyManager::OrderedFactories DependencyManager::GetConstructionOrder() {
   OrderedDependencyNodes construction_order;
   if (!dependency_graph_.GetConstructionOrder(&construction_order)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return OrderedFactoriesFromOrderedDependencyNodes(construction_order);
 }
 
 DependencyManager::OrderedFactories DependencyManager::GetDestructionOrder() {
   OrderedDependencyNodes destruction_order;
-  if (!dependency_graph_.GetDestructionOrder(&destruction_order))
-    NOTREACHED_IN_MIGRATION();
+  if (!dependency_graph_.GetDestructionOrder(&destruction_order)) {
+    NOTREACHED();
+  }
   return OrderedFactoriesFromOrderedDependencyNodes(destruction_order);
 }
 

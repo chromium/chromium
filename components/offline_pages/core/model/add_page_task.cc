@@ -31,8 +31,7 @@ AddPageResult ItemActionStatusToAddPageResult(ItemActionStatus status) {
     case ItemActionStatus::NOT_FOUND:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return AddPageResult::STORE_FAILURE;
+  NOTREACHED();
 }
 
 ItemActionStatus AddOfflinePageSync(const OfflinePageItem& item,

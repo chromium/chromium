@@ -177,16 +177,14 @@ bool ManagedBookmarksTracker::LoadBookmark(const base::Value::List& list,
   const base::Value::Dict* dict = list[index].GetIfDict();
   if (!dict) {
     // Should never happen after policy validation.
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   const std::string* name = dict->FindString(kName);
   const std::string* spec = dict->FindString(kUrl);
   const base::Value::List* children_list = dict->FindList(kChildren);
   if (!name || (!spec && !children_list)) {
     // Should never happen after policy validation.
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   *title = base::UTF8ToUTF16(*name);

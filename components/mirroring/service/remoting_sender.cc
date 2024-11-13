@@ -213,13 +213,11 @@ void RemotingSender::CancelInFlightData() {
 }
 
 int RemotingSender::GetNumberOfFramesInEncoder() const {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 base::TimeDelta RemotingSender::GetEncoderBacklogDuration() const {
-  NOTREACHED_IN_MIGRATION();
-  return base::TimeDelta();
+  NOTREACHED();
 }
 
 void RemotingSender::OnFrameCanceled(media::cast::FrameId frame_id) {

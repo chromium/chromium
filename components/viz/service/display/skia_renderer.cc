@@ -265,9 +265,7 @@ bool IsAAForcedOff(const DrawQuad* quad) {
       return PictureDrawQuad::MaterialCast(quad)->force_anti_aliasing_off;
     case DrawQuad::Material::kCompositorRenderPass:
       // We should not have compositor render passes here.
-      NOTREACHED_IN_MIGRATION();
-      return CompositorRenderPassDrawQuad::MaterialCast(quad)
-          ->force_anti_aliasing_off;
+      NOTREACHED();
     case DrawQuad::Material::kAggregatedRenderPass:
       return AggregatedRenderPassDrawQuad::MaterialCast(quad)
           ->force_anti_aliasing_off;
@@ -909,10 +907,7 @@ class SkiaRenderer::FrameResourceGpuCommandsCompletedFence
 
   // ResourceFence implementation.
   bool HasPassed() override { return passed_; }
-  gfx::GpuFenceHandle GetGpuFenceHandle() override {
-    NOTREACHED_IN_MIGRATION();
-    return gfx::GpuFenceHandle();
-  }
+  gfx::GpuFenceHandle GetGpuFenceHandle() override { NOTREACHED(); }
 
   void Signal() {
     passed_ = true;
@@ -1328,7 +1323,7 @@ void SkiaRenderer::DidReceiveReleasedOverlays(
 #else
   // Only macOS has the requirement of polling the OS compositor to check if the
   // overlay images have been released.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 
@@ -1537,9 +1532,7 @@ void SkiaRenderer::DrawQuadInternal(const DrawQuad* quad,
     case DrawQuad::Material::kCompositorRenderPass:
       // RenderPassDrawQuads should be converted to
       // AggregatedRenderPassDrawQuads at this point.
-      DrawUnsupportedQuad(quad, rpdq_params, params);
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case DrawQuad::Material::kSolidColor:
       DrawSolidColorQuad(SolidColorDrawQuad::MaterialCast(quad), rpdq_params,
                          params);
@@ -1551,13 +1544,9 @@ void SkiaRenderer::DrawQuadInternal(const DrawQuad* quad,
       DrawTileDrawQuad(TileDrawQuad::MaterialCast(quad), rpdq_params, params);
       break;
     case DrawQuad::Material::kSharedElement:
-      DrawUnsupportedQuad(quad, rpdq_params, params);
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case DrawQuad::Material::kInvalid:
-      DrawUnsupportedQuad(quad, rpdq_params, params);
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case DrawQuad::Material::kVideoHole:
       // VideoHoleDrawQuad should only be used by Cast, and should
       // have been replaced by cast-specific OverlayProcessor before
@@ -1570,9 +1559,7 @@ void SkiaRenderer::DrawQuadInternal(const DrawQuad* quad,
     default:
       // If we've reached here, it's a new quad type that needs a
       // dedicated implementation
-      DrawUnsupportedQuad(quad, rpdq_params, params);
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -4036,7 +4023,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
       } else if (bypass_mode == BypassMode::kDrawBypassQuad) {
         DrawQuadInternal(bypass->second, &rpdq_params, &params);
       } else {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     } else {
       DCHECK(src_quad_backing);

@@ -364,8 +364,7 @@ VisitedLinkWriter::Hash PartitionedVisitedLinkWriter::AddFingerprint(
   if (!hash_table_ || table_length_ == 0) {
     base::UmaHistogramEnumeration("History.VisitedLinks.TryToAddFingerprint",
                                   AddFingerprint::kTableError);
-    NOTREACHED_IN_MIGRATION();  // Not initialized.
-    return null_hash_;
+    NOTREACHED();  // Not initialized.
   }
 
   Hash cur_hash = HashFingerprint(fingerprint);
@@ -400,8 +399,7 @@ VisitedLinkWriter::Hash PartitionedVisitedLinkWriter::AddFingerprint(
       // logic, so stop here.
       base::UmaHistogramEnumeration("History.VisitedLinks.TryToAddFingerprint",
                                     AddFingerprint::kTableError);
-      NOTREACHED_IN_MIGRATION();
-      return null_hash_;
+      NOTREACHED();
     }
   }
 }
@@ -419,8 +417,7 @@ void PartitionedVisitedLinkWriter::DeleteFingerprintsFromCurrentTable(
 
 bool PartitionedVisitedLinkWriter::DeleteFingerprint(Fingerprint fingerprint) {
   if (!hash_table_ || table_length_ == 0) {
-    NOTREACHED_IN_MIGRATION();  // Not initialized.
-    return false;
+    NOTREACHED();  // Not initialized.
   }
   if (!IsVisited(fingerprint)) {
     return false;  // Not in the database to delete.
@@ -615,8 +612,7 @@ VisitedLinkWriter::Hash PartitionedVisitedLinkWriter::TryToAddVisitedLink(
   // TODO(boliu): Move this check to HistoryService when IsOffTheRecord is
   // removed from BrowserContext.
   if (browser_context_ && browser_context_->IsOffTheRecord()) {
-    NOTREACHED_IN_MIGRATION();
-    return null_hash_;
+    NOTREACHED();
   }
 
   // We don't want to add any invalid VisitedLinks to the hashtable.

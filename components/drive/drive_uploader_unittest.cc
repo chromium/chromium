@@ -327,8 +327,7 @@ class MockDriveServiceNoConnectionAtInitiate : public DummyDriveService {
                                   const base::FilePath& local_file_path,
                                   UploadRangeCallback callback,
                                   ProgressCallback progress_callback) override {
-    NOTREACHED_IN_MIGRATION();
-    return CancelCallbackOnce();
+    NOTREACHED();
   }
 
   CancelCallbackOnce MultipartUploadNewFile(

@@ -41,8 +41,7 @@ std::string NoStatePrefetchHistograms::GetHistogramPrefix(Origin origin) {
     case ORIGIN_SAME_ORIGIN_SPECULATION:
       return "sameoriginspeculation";
     case ORIGIN_MAX:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Dummy return value to make the compiler happy.

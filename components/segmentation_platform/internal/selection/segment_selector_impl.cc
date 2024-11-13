@@ -36,8 +36,7 @@ stats::SegmentationSelectionFailureReason GetFailureReason(
     case SegmentResultProvider::ResultState::kDefaultModelDatabaseScoreUsed:
     case SegmentResultProvider::ResultState::kDefaultModelExecutionScoreUsed:
     case SegmentResultProvider::ResultState::kServerModelExecutionScoreUsed:
-      NOTREACHED_IN_MIGRATION();
-      return stats::SegmentationSelectionFailureReason::kMaxValue;
+      NOTREACHED();
     case SegmentResultProvider::ResultState::kServerModelDatabaseScoreNotReady:
       return stats::SegmentationSelectionFailureReason::
           kServerModelDatabaseScoreNotReady;

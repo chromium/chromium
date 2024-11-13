@@ -116,8 +116,7 @@ void LoadablePluginPlaceholder::LoadPlugin() {
   if (!plugin())
     return;
   if (!allow_loading_) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   ReplacePlugin(CreatePlugin());

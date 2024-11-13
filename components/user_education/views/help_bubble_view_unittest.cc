@@ -423,8 +423,7 @@ TEST_F(HelpBubbleViewsTest, AnchorRectOverlapsEdge) {
       EXPECT_GT(help_bubble_bounds.x(), kNewAnchorBounds.right());
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Arrow should only be right-center or left-center.";
+      NOTREACHED() << "Arrow should only be right-center or left-center.";
   }
 }
 

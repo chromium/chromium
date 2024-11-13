@@ -42,7 +42,7 @@ std::optional<AccountId> LoadAccountId(const base::Value::Dict& dict) {
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown account type";
+      NOTREACHED() << "Unknown account type";
   }
   return std::nullopt;
 }

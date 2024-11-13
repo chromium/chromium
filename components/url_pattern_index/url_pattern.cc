@@ -193,8 +193,7 @@ bool DoesTextMatchLastSubpatternInternal(proto::AnchorType anchor_left,
            EndsWithFuzzy(text, subpattern);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // Matches the last |subpattern| against |text|. Special treatment is required

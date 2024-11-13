@@ -92,8 +92,7 @@ QuadList::Iterator QuadList::InsertCopyBeforeDrawQuad(Iterator at,
     case DrawQuad::Material::kAggregatedRenderPass:
     case DrawQuad::Material::kCompositorRenderPass:
     case DrawQuad::Material::kInvalid:
-      NOTREACHED_IN_MIGRATION();  // Invalid DrawQuad material.
-      return at;
+      NOTREACHED();  // Invalid DrawQuad material.
   }
 }
 

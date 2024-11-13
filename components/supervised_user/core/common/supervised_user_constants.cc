@@ -48,8 +48,7 @@ int GetHistogramValueForTransitionType(ui::PageTransition transition_type) {
   if (0 <= value && value <= kHistogramPageTransitionMaxKnownValue) {
     return value;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kHistogramPageTransitionFallbackValue;
+  NOTREACHED();
 }
 
 const char kAuthorizationHeader[] = "Bearer";

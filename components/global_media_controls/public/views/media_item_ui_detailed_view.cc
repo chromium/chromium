@@ -714,7 +714,7 @@ void MediaItemUIDetailedView::StartCastingButtonPressed() {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -100,10 +100,9 @@ class TestClusteringBackend : public ClusteringBackend {
         return AnnotatedVisitToClusterVisit(visit);
     }
 
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "TestClusteringBackend::GetVisitById() could not find visit_id: "
         << visit_id;
-    return {};
   }
 
   // Should be invoked before `GetClusters()` is invoked.

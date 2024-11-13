@@ -283,7 +283,7 @@ class PlusAddressCreationRequests
       client().ConfirmPlusAddress(origin, profile.plus_address,
                                   std::move(callback));
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
   std::string LatencyHistogram() { return LatencyHistogramFor(GetParam()); }

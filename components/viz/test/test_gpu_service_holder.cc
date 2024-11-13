@@ -298,7 +298,7 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
       LOG(FATAL) << "Failed to create and initialize Vulkan implementation.";
     }
 #else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #endif
   }
 

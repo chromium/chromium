@@ -257,7 +257,7 @@ RenderPassBuilder& RenderPassBuilder::SetQuadDamageRect(
     auto* texture_quad = static_cast<TextureDrawQuad*>(quad);
     texture_quad->damage_rect = damage_rect;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   pass_->has_per_quad_damage = true;

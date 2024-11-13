@@ -153,8 +153,7 @@ OutputSurfaceProviderImpl::CreateSoftwareOutputDeviceForPlatform(
   return std::make_unique<SoftwareOutputDeviceMac>(task_runner_);
 #elif BUILDFLAG(IS_ANDROID)
   // Android does not do software compositing, so we can't get here.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #elif BUILDFLAG(IS_OZONE)
   ui::SurfaceFactoryOzone* factory =
       ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
@@ -166,8 +165,7 @@ OutputSurfaceProviderImpl::CreateSoftwareOutputDeviceForPlatform(
   return std::make_unique<SoftwareOutputDeviceOzone>(
       std::move(platform_window_surface), std::move(surface_ozone));
 #else
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif
 }
 

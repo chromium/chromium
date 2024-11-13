@@ -99,14 +99,15 @@ bool FakeGCMDriverForInstanceID::HasTokenForAppId(
 #if BUILDFLAG(IS_ANDROID)
   // FCM registration tokens on Android should be handled by
   // FakeInstanceIDWithSubtype.
-  NOTREACHED_IN_MIGRATION();
-#endif  // BUILDFLAG(IS_ANDROID)
+  NOTREACHED();
+#else
   for (const auto& [key, stored_token] : tokens_) {
     if (token == stored_token && base::StartsWith(key, app_id)) {
       return true;
     }
   }
   return false;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void FakeGCMDriverForInstanceID::WaitForAppIdBeforeConnection(

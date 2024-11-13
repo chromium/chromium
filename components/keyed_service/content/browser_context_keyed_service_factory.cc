@@ -101,8 +101,7 @@ BrowserContextKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
 KeyedService* BrowserContextKeyedServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   // Stub to prevent converted sub-classes from needing to implement this form.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 std::unique_ptr<KeyedService>

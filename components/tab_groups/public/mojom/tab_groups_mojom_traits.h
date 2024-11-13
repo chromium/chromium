@@ -37,9 +37,7 @@ struct EnumTraits<tab_groups::mojom::Color, tab_groups::TabGroupColorId> {
       case TabGroupColorId::kOrange:
         return MojoTabGroupColorId::kOrange;
       case TabGroupColorId::kNumEntries:
-        NOTREACHED_IN_MIGRATION()
-            << "kNumEntries is not a supported color enum.";
-        return MojoTabGroupColorId::kGrey;
+        NOTREACHED() << "kNumEntries is not a supported color enum.";
     }
   }
 
@@ -73,8 +71,7 @@ struct EnumTraits<tab_groups::mojom::Color, tab_groups::TabGroupColorId> {
         *out = TabGroupColorId::kOrange;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 

@@ -73,7 +73,7 @@ UIElementWithMetaData::GetCustomPropertiesForMatchedStyle() const {
 void UIElementWithMetaData::GetVisible(bool* visible) const {
   // Visibility information should be directly retrieved from element's
   // metadata, no need for this function any more.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void UIElementWithMetaData::SetVisible(bool visible) {

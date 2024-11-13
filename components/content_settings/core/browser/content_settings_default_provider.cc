@@ -246,8 +246,7 @@ std::unique_ptr<RuleIterator> DefaultProvider::GetRuleIterator(
   base::AutoLock lock(lock_);
   const auto it = default_settings_.find(content_type);
   if (it == default_settings_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   return std::make_unique<DefaultRuleIterator>(it->second.Clone());
 }
@@ -266,8 +265,7 @@ std::unique_ptr<Rule> DefaultProvider::GetRule(
   base::AutoLock lock(lock_);
   const auto it = default_settings_.find(content_type);
   if (it == default_settings_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   if (it->second.is_none()) {
@@ -349,10 +347,9 @@ void DefaultProvider::OnPreferenceChanged(const std::string& name) {
   }
 
   if (content_type == ContentSettingsType::DEFAULT) {
-    NOTREACHED_IN_MIGRATION() << "A change of the preference " << name
-                              << " was observed, but the preference could not "
-                                 "be mapped to a content settings type.";
-    return;
+    NOTREACHED() << "A change of the preference " << name
+                 << " was observed, but the preference could not be mapped to "
+                    "a content settings type.";
   }
 
   {

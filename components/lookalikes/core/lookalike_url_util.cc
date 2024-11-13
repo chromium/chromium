@@ -611,8 +611,7 @@ char GetFirstDifferentChar(const std::string& str1, const std::string& str2) {
     i1++;
     i2++;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 // Brand names with length of 4 or less should not be checked in domains for
@@ -1512,11 +1511,10 @@ LookalikeActionType GetActionForMatchType(
                  : LookalikeActionType::kRecordMetrics;
 
     case LookalikeUrlMatchType::kNone:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return LookalikeActionType::kNone;
+  NOTREACHED();
 }
 
 GURL GetSuggestedURL(LookalikeUrlMatchType match_type,

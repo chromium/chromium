@@ -289,8 +289,7 @@ GroupColor ConvertGroupColorStringToGroupColor(const std::string& group_color) {
   } else if (group_color == tab_groups::kTabGroupColorUnknown) {
     return GroupColor::kGrey;
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return GroupColor::kGrey;
+    NOTREACHED();
   }
 }
 
@@ -1277,8 +1276,7 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::APP_NOT_SET:
       // This should never happen. `APP_NOT_SET` corresponds to empty `app_id`.
       // This method will early return when `app_id` is empty.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kBrowserAppWindow:
       if (app.app().browser_app_window().has_active_tab_index()) {
         app_launch_info->browser_extra_info.active_tab_index =
@@ -1472,8 +1470,7 @@ SyncTabGroupColor SyncTabColorFromTabGroupColorId(
     case TabGroupColor::kOrange:
       return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_ORANGE;
     case TabGroupColor::kNumEntries:
-      NOTREACHED_IN_MIGRATION() << "kNumEntries is not a supported color enum.";
-      return SyncTabGroupColor::WorkspaceDeskSpecifics_TabGroupColor_GREY;
+      NOTREACHED() << "kNumEntries is not a supported color enum.";
   };
 }
 
@@ -1740,9 +1737,7 @@ bool FillApp(const std::string& app_id,
       } else {
         // Chrome app running in Lacros should have
         // AppType::kStandaloneBrowserChromeApp and never reach here.
-        NOTREACHED_IN_MIGRATION();
-        // Ignore this app type.
-        return false;
+        NOTREACHED();
       }
 
       break;
@@ -2114,8 +2109,7 @@ std::string ConvertTabGroupColorIdToString(GroupColor color) {
     case GroupColor::kOrange:
       return tab_groups::kTabGroupColorOrange;
     case GroupColor::kNumEntries:
-      NOTREACHED_IN_MIGRATION() << "kNumEntries is not a supported color enum.";
-      return tab_groups::kTabGroupColorGrey;
+      NOTREACHED() << "kNumEntries is not a supported color enum.";
   }
 }
 

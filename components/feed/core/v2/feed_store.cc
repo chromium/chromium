@@ -197,8 +197,7 @@ std::string KeyForRecord(const feedstore::Record& record) {
     case feedstore::Record::DATA_NOT_SET:
       break;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid record case " << record.data_case();
-  return "";
+  NOTREACHED() << "Invalid record case " << record.data_case();
 }
 
 bool FilterByKey(const base::flat_set<std::string>& key_set,

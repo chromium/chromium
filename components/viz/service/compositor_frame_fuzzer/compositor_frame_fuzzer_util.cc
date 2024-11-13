@@ -229,7 +229,7 @@ CompositorRenderPassId FuzzedCompositorFrameBuilder::AddRenderPass(
         break;
       }
       case proto::DrawQuad::QUAD_NOT_SET: {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
   }

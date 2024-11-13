@@ -284,7 +284,7 @@ UserList UserManagerImpl::GetUnlockUsers() const {
     if (policy == MultiUserSignInPolicy::kUnrestricted && user->CanLock()) {
       unlock_users.push_back(user);
     } else if (policy == MultiUserSignInPolicy::kPrimaryOnly) {
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "Spotted primary-only multi-user policy for non-primary user";
     }
   }
@@ -382,7 +382,7 @@ void UserManagerImpl::UserLoggedIn(const AccountId& account_id,
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION() << "Unhandled usert type " << user_type;
+      NOTREACHED() << "Unhandled usert type " << user_type;
   }
 
   DCHECK(active_user_);
@@ -1401,8 +1401,7 @@ void UserManagerImpl::LoadDeviceLocalAccounts(
     auto type =
         delegate_->GetDeviceLocalAccountUserType(account_id.GetUserEmail());
     if (!type.has_value()) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     // Using `new` to access a non-public constructor.

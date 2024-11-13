@@ -1293,7 +1293,7 @@ void GpuServiceImpl::WakeUpGpuOnMainThread() {
 #if BUILDFLAG(IS_ANDROID)
     gpu_channel_manager_->WakeUpGpu();
 #else
-    NOTREACHED_IN_MIGRATION() << "WakeUpGpu() not supported on this platform.";
+    NOTREACHED() << "WakeUpGpu() not supported on this platform.";
 #endif
   }
 }
@@ -1383,7 +1383,7 @@ void GpuServiceImpl::OnBackgroundCleanupGpuMainThread() {
   DVLOG(1) << "GPU: Performing background cleanup";
   gpu_channel_manager_->OnBackgroundCleanup();
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 
@@ -1393,7 +1393,7 @@ void GpuServiceImpl::OnBackgroundCleanupCompositorGpuThread() {
   if (compositor_gpu_thread_)
     compositor_gpu_thread_->OnBackgroundCleanup();
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 
@@ -1492,7 +1492,7 @@ void GpuServiceImpl::ThrowJavaException() {
 #if BUILDFLAG(IS_ANDROID)
   ThrowUncaughtException();
 #else
-  NOTREACHED_IN_MIGRATION() << "Java exception not supported on this platform.";
+  NOTREACHED() << "Java exception not supported on this platform.";
 #endif
 }
 

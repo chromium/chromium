@@ -180,13 +180,13 @@ void AndroidAutofillClient::ShowAutofillSettings(
 void AndroidAutofillClient::ShowEditAddressProfileDialog(
     const autofill::AutofillProfile& profile,
     AddressProfileSavePromptCallback on_user_decision_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AndroidAutofillClient::ShowDeleteAddressProfileDialog(
     const autofill::AutofillProfile& profile,
     AddressProfileDeleteDialogCallback delete_dialog_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AndroidAutofillClient::ConfirmSaveAddressProfile(

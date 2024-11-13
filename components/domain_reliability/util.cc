@@ -121,8 +121,7 @@ std::string GetDomainReliabilityProtocol(
     case net::HttpConnectionInfoCoarse::kOTHER:
       return "";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 DomainReliabilityUploader::UploadResult GetUploadResultFromResponseDetails(

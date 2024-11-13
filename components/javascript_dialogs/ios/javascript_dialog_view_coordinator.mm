@@ -65,7 +65,7 @@
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   [baseViewController presentViewController:_alertController

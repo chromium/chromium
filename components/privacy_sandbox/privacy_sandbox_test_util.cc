@@ -309,7 +309,7 @@ void ApplyTestState(
       return;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

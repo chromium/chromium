@@ -291,8 +291,7 @@ bool FeatureEntry::IsValid() const {
       return true;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 const base::span<const FeatureEntry::FeatureVariation>
@@ -305,8 +304,7 @@ FeatureEntry::GetVariations() const {
     return platform_feature_name.feature_variations;
   }
 #endif
-  NOTREACHED_IN_MIGRATION();
-  return base::span<const FeatureEntry::FeatureVariation>();
+  NOTREACHED();
 }
 
 namespace testing {

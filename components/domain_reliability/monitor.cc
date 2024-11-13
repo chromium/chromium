@@ -159,7 +159,7 @@ void DomainReliabilityMonitor::ClearBrowsingData(
       context_manager_.RemoveContexts(origin_filter);
       break;
     case MAX_CLEAR_MODE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

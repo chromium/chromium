@@ -56,8 +56,7 @@ feedwire::FeedQuery::RequestReason GetRequestReason(
     case LoadType::kFeedCloseBackgroundRefresh:
       return feedwire::FeedQuery::APP_CLOSE_REFRESH;
     case LoadType::kLoadMore:
-      NOTREACHED_IN_MIGRATION();
-      return feedwire::FeedQuery::MANUAL_REFRESH;
+      NOTREACHED();
   }
 }
 
@@ -361,8 +360,7 @@ void LoadStreamTask::SendFeedQueryRequest() {
                            GetWeakPtr()));
         break;
       case LoadType::kLoadMore:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   } else {
     // Other requests use GWS.

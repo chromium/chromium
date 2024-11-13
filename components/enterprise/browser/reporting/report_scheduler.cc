@@ -205,8 +205,7 @@ bool ReportScheduler::SetupBrowserPolicyClientRegistration() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     client_id = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
 #else
-    NOTREACHED_IN_MIGRATION();
-    return true;
+    NOTREACHED();
 #endif
   }
   if (!dm_token.is_valid() || client_id.empty()) {
@@ -393,8 +392,7 @@ ReportType ReportScheduler::TriggerToReportType(
     ReportScheduler::ReportTrigger trigger) {
   switch (trigger) {
     case ReportScheduler::kTriggerNone:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case ReportScheduler::kTriggerTimer:
     case ReportScheduler::kTriggerManual:
       return full_report_type_;

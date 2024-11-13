@@ -784,7 +784,7 @@ void RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams(
   if (display_client_)
     display_client_->OnDisplayReceivedCALayerParams(ca_layer_params);
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 
@@ -801,7 +801,7 @@ void RootCompositorFrameSinkImpl::DisplayDidCompleteSwapWithSize(
   }
 #else  // !BUILDFLAG(IS_ANDROID) && !(BUILDFLAG(IS_LINUX) &&
        // BUILDFLAG(IS_OZONE_X11))
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 
@@ -812,7 +812,7 @@ void RootCompositorFrameSinkImpl::DisplayAddChildWindowToBrowser(
     display_client_->AddChildWindowToBrowser(child_window);
   }
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 

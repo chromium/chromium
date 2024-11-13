@@ -158,7 +158,6 @@ bool ContextMenuContentType::SupportsGroupInternal(int group) {
       return params_.form_control_type.has_value();
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }

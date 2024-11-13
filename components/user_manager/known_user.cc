@@ -410,8 +410,7 @@ AccountId KnownUser::GetAccountId(const std::string& user_email,
     case AccountType::UNKNOWN:
       return AccountId::FromUserEmail(sanitized_email);
   }
-  NOTREACHED_IN_MIGRATION();
-  return EmptyAccountId();
+  NOTREACHED();
 }
 
 AccountId KnownUser::GetAccountIdByCryptohomeId(
@@ -502,7 +501,7 @@ void KnownUser::SetDeviceId(const AccountId& account_id,
                             const std::string& device_id) {
   const std::string known_device_id = GetDeviceId(account_id);
   if (!known_device_id.empty() && device_id != known_device_id) {
-    NOTREACHED_IN_MIGRATION() << "Trying to change device ID for known user.";
+    NOTREACHED() << "Trying to change device ID for known user.";
   }
   SetStringPref(account_id, kDeviceId, device_id);
 }

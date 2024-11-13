@@ -96,8 +96,7 @@ std::string GetHttpMethodString(TrustedVaultRequest::HttpMethod http_method) {
     case TrustedVaultRequest::HttpMethod::kPatch:
       return "PATCH";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 TrustedVaultRequest::HttpStatus AccessTokenFetchingErrorToRequestHttpStatus(
@@ -111,8 +110,7 @@ TrustedVaultRequest::HttpStatus AccessTokenFetchingErrorToRequestHttpStatus(
       return TrustedVaultRequest::HttpStatus::
           kPrimaryAccountChangeAccessTokenFetchError;
   }
-  NOTREACHED_IN_MIGRATION();
-  return TrustedVaultRequest::HttpStatus::kTransientAccessTokenFetchError;
+  NOTREACHED();
 }
 
 }  // namespace

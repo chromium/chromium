@@ -62,7 +62,7 @@ void OnRendererDestroyed(const ProcessNode* process_node,
   } else if (content_types.Has(ProcessNode::ContentType::kSubframe)) {
     RecordProcessLifetime("Renderer.ProcessLifetime3.Subframe_NoAd", lifetime);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

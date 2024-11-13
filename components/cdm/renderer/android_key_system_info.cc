@@ -61,8 +61,7 @@ bool AndroidKeySystemInfo::IsSupportedInitDataType(
     case EmeInitDataType::UNKNOWN:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 EmeConfig::Rule AndroidKeySystemInfo::GetEncryptionSchemeConfigRule(

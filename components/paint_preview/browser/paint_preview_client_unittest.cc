@@ -234,8 +234,7 @@ TEST_P(PaintPreviewClientRenderViewHostTest, CaptureMainFrameMock) {
           } break;
 
           default:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
         }
 
         quit.Run();

@@ -94,8 +94,7 @@ std::string GetLogTypeString(LogType type) {
     case LOG_TYPE_UNKNOWN:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "Unknown";
+  NOTREACHED();
 }
 
 LogType GetLogTypeFromString(std::string_view desc) {
@@ -106,8 +105,7 @@ LogType GetLogTypeFromString(std::string_view desc) {
     if (desc_lc == log_desc_lc)
       return type;
   }
-  NOTREACHED_IN_MIGRATION() << "Unrecogized LogType: " << desc;
-  return LOG_TYPE_UNKNOWN;
+  NOTREACHED() << "Unrecogized LogType: " << desc;
 }
 
 std::string DateAndTimeWithMicroseconds(const base::Time& time) {

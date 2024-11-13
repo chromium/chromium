@@ -67,7 +67,7 @@ void CapturedAudioInput::CloseStream() {
 
 void CapturedAudioInput::SetOutputDeviceForAec(
     const std::string& output_device_id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CapturedAudioInput::StreamCreated(

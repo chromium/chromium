@@ -12,14 +12,14 @@ namespace account_manager {
 
 TEST(AccountManagerUtilDeathTest,
      ToMojoAccountUpsertionResultDiesForRemoteDisconnectedStatus) {
-  EXPECT_DCHECK_DEATH(
+  EXPECT_NOTREACHED_DEATH(
       ToMojoAccountUpsertionResult(AccountUpsertionResult::FromStatus(
           AccountUpsertionResult::Status::kMojoRemoteDisconnected)));
 }
 
 TEST(AccountManagerUtilDeathTest,
      ToMojoAccountUpsertionResultDiesForIncompatibleMojoVersionsStatus) {
-  EXPECT_DCHECK_DEATH(
+  EXPECT_NOTREACHED_DEATH(
       ToMojoAccountUpsertionResult(AccountUpsertionResult::FromStatus(
           AccountUpsertionResult::Status::kIncompatibleMojoVersions)));
 }

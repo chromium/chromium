@@ -48,8 +48,7 @@ supervised_user::FilteringBehavior GetBehaviorFromSafeSearchClassification(
     case safe_search_api::Classification::UNSAFE:
       return FilteringBehavior::kBlock;
   }
-  NOTREACHED_IN_MIGRATION();
-  return FilteringBehavior::kBlock;
+  NOTREACHED();
 }
 
 bool IsSameDomain(const GURL& url1, const GURL& url2) {
@@ -371,10 +370,9 @@ SupervisedUserURLFilter::GetHistogramValueForTopLevelFilteringBehavior(
           return SupervisedUserFilterTopLevelResult::kBlockNotInAllowlist;
       }
     case FilteringBehavior::kInvalid:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return SupervisedUserFilterTopLevelResult::kAllow;
+  NOTREACHED();
 }
 
 // static
@@ -401,7 +399,7 @@ int SupervisedUserURLFilter::GetHistogramValueForFilteringBehavior(
               FILTERING_BEHAVIOR_BLOCK_DEFAULT;
       }
     case FilteringBehavior::kInvalid:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return 0;
 }

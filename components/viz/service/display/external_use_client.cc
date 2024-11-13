@@ -28,7 +28,7 @@ sk_sp<SkColorSpace> ExternalUseClient::ImageContext::color_space() const {
 }
 
 void ExternalUseClient::ImageContext::OnContextLost() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ExternalUseClient::ImageContext::SetImage(

@@ -665,8 +665,7 @@ bool URLQueryElementMatcherCondition::IsMatch(
                                                 value_length_, value_) == 0;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 //
