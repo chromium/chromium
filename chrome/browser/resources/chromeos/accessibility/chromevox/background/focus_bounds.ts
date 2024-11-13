@@ -10,14 +10,16 @@
 import {constants} from '/common/constants.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
-export const FocusBounds = {
-  /** @return {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
-  get() {
-    return FocusBounds.current_;
-  },
+type ScreenRect = chrome.accessibilityPrivate.ScreenRect;
 
-  /** @param {!Array<!chrome.accessibilityPrivate.ScreenRect>} bounds */
-  set(bounds) {
+export class FocusBounds {
+  private static current_: ScreenRect[] = [];
+
+  static get(): ScreenRect[] {
+    return FocusBounds.current_;
+  }
+
+  static set(bounds: ScreenRect[]) {
     FocusBounds.current_ = bounds;
     chrome.accessibilityPrivate.setFocusRings(
         [{
@@ -27,10 +29,7 @@ export const FocusBounds = {
         }],
         chrome.accessibilityPrivate.AssistiveTechnologyType.CHROME_VOX,
     );
-  },
+  }
 };
-
-/** @private {!Array<!chrome.accessibilityPrivate.ScreenRect>} */
-FocusBounds.current_ = [];
 
 TestImportManager.exportForTesting(['FocusBounds', FocusBounds]);
