@@ -107,7 +107,11 @@ constexpr int kControlMargin = 16;
 // Minimum padding between the overlay view, if shown, and the window.
 constexpr gfx::Size kOverlayViewPadding(64, 46);
 
-constexpr gfx::Size kPreviousNextButtonSize(28, 28);
+// Size for action buttons in the 2024 UI.
+constexpr gfx::Size kActionButtonSize(28, 28);
+
+// The amount of time the seek buttons next to the play button seek.
+constexpr base::TimeDelta kSeekTime = base::Seconds(10);
 
 // Returns the quadrant the VideoOverlayWindowViews is primarily in on the
 // current work area.
@@ -790,6 +794,8 @@ bool VideoOverlayWindowViews::ControlsHitTestContainsPoint(
       GetCloseControlsBounds().Contains(point) ||
       GetMinimizeControlsBounds().Contains(point) ||
       GetPlayPauseControlsBounds().Contains(point) ||
+      GetReplay10SecondsButtonBounds().Contains(point) ||
+      GetForward10SecondsButtonBounds().Contains(point) ||
       GetNextTrackControlsBounds().Contains(point) ||
       GetPreviousTrackControlsBounds().Contains(point) ||
       GetToggleMicrophoneButtonBounds().Contains(point) ||
@@ -838,6 +844,8 @@ void VideoOverlayWindowViews::SetUpViews() {
   std::unique_ptr<OverlayWindowMinimizeButton> minimize_button;
   std::unique_ptr<OverlayWindowBackToTabButton> back_to_tab_button;
   std::unique_ptr<BackToTabLabelButton> back_to_tab_label_button;
+  std::unique_ptr<SimpleOverlayWindowImageButton> replay_10_seconds_button;
+  std::unique_ptr<SimpleOverlayWindowImageButton> forward_10_seconds_button;
   std::unique_ptr<SimpleOverlayWindowImageButton> previous_track_controls_view;
   std::unique_ptr<SimpleOverlayWindowImageButton> next_track_controls_view;
   std::unique_ptr<SimpleOverlayWindowImageButton> previous_slide_controls_view;
@@ -869,6 +877,25 @@ void VideoOverlayWindowViews::SetUpViews() {
                           kCloseWindowAndFocusOpener);
             },
             base::Unretained(this)));
+    replay_10_seconds_button = std::make_unique<SimpleOverlayWindowImageButton>(
+        base::BindRepeating(
+            [](VideoOverlayWindowViews* overlay) {
+              overlay->Replay10Seconds();
+            },
+            base::Unretained(this)),
+        vector_icons::kReplay10Icon,
+        l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_REPLAY_10_TEXT));
+    replay_10_seconds_button->SetSize(kActionButtonSize);
+    forward_10_seconds_button =
+        std::make_unique<SimpleOverlayWindowImageButton>(
+            base::BindRepeating(
+                [](VideoOverlayWindowViews* overlay) {
+                  overlay->Forward10Seconds();
+                },
+                base::Unretained(this)),
+            vector_icons::kForward10Icon,
+            l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_FORWARD_10_TEXT));
+    forward_10_seconds_button->SetSize(kActionButtonSize);
     previous_track_controls_view =
         std::make_unique<SimpleOverlayWindowImageButton>(
             base::BindRepeating(
@@ -883,7 +910,7 @@ void VideoOverlayWindowViews::SetUpViews() {
             vector_icons::kMediaPreviousTrackIcon,
             l10n_util::GetStringUTF16(
                 IDS_PICTURE_IN_PICTURE_PREVIOUS_TRACK_CONTROL_ACCESSIBLE_TEXT));
-    previous_track_controls_view->SetSize(kPreviousNextButtonSize);
+    previous_track_controls_view->SetSize(kActionButtonSize);
     next_track_controls_view = std::make_unique<SimpleOverlayWindowImageButton>(
         base::BindRepeating(
             [](VideoOverlayWindowViews* overlay) {
@@ -897,7 +924,7 @@ void VideoOverlayWindowViews::SetUpViews() {
         vector_icons::kMediaNextTrackIcon,
         l10n_util::GetStringUTF16(
             IDS_PICTURE_IN_PICTURE_NEXT_TRACK_CONTROL_ACCESSIBLE_TEXT));
-    next_track_controls_view->SetSize(kPreviousNextButtonSize);
+    next_track_controls_view->SetSize(kActionButtonSize);
     // `base::Unretained()` is okay here since we own the progress view.
     progress_view = std::make_unique<global_media_controls::MediaProgressView>(
         /*use_squiggly_line=*/false,
@@ -1067,6 +1094,14 @@ void VideoOverlayWindowViews::SetUpViews() {
   next_track_controls_view->layer()->SetName("NextTrackControlsView");
 
   if (Use2024UI()) {
+    replay_10_seconds_button->SetPaintToLayer(ui::LAYER_TEXTURED);
+    replay_10_seconds_button->layer()->SetFillsBoundsOpaquely(false);
+    replay_10_seconds_button->layer()->SetName("Replay10SecondsButton");
+
+    forward_10_seconds_button->SetPaintToLayer(ui::LAYER_TEXTURED);
+    forward_10_seconds_button->layer()->SetFillsBoundsOpaquely(false);
+    forward_10_seconds_button->layer()->SetName("Forward10SecondsButton");
+
     progress_view->SetPaintToLayer(ui::LAYER_TEXTURED);
     progress_view->layer()->SetFillsBoundsOpaquely(false);
     progress_view->layer()->SetName("ProgressView");
@@ -1139,6 +1174,11 @@ void VideoOverlayWindowViews::SetUpViews() {
       std::move(play_pause_controls_view));
 
   if (Use2024UI()) {
+    replay_10_seconds_button_ = controls_container_view->AddChildView(
+        std::move(replay_10_seconds_button));
+    forward_10_seconds_button_ = controls_container_view->AddChildView(
+        std::move(forward_10_seconds_button));
+
     progress_view_ =
         controls_container_view->AddChildView(std::move(progress_view));
 
@@ -1260,6 +1300,7 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
     constexpr int kTopControlsHeight = 34;
     constexpr int kBottomControlsHeight = 64;
     constexpr int kProgressBarHeight = 26;
+    constexpr int kPlayPauseButtonMargin = 16;
     constexpr int kControlHorizontalMargin = 8;
     constexpr int kBottomControlsHorizontalMargin = 8;
     constexpr int kBottomControlsVerticalMargin = 4;
@@ -1289,9 +1330,21 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
     back_to_tab_button_->SetPosition(GetBounds().size(), quadrant);
 
     // The play/pause buttons is at the center of the middle controls area.
-    play_pause_controls_view_->SetPosition(
-        {middle_controls_bounds.CenterPoint().x() - kPlaybackButtonSize / 2,
-         middle_controls_bounds.CenterPoint().y() - kPlaybackButtonSize / 2});
+    gfx::Point play_pause_controls_position(
+        middle_controls_bounds.CenterPoint().x() - kPlaybackButtonSize / 2,
+        middle_controls_bounds.CenterPoint().y() - kPlaybackButtonSize / 2);
+    play_pause_controls_view_->SetPosition(play_pause_controls_position);
+
+    replay_10_seconds_button_->SetPosition(
+        {play_pause_controls_position.x() - kPlayPauseButtonMargin -
+             kActionButtonSize.width(),
+         middle_controls_bounds.CenterPoint().y() -
+             kActionButtonSize.height() / 2});
+    forward_10_seconds_button_->SetPosition(
+        {play_pause_controls_position.x() + kPlaybackButtonSize +
+             kPlayPauseButtonMargin,
+         middle_controls_bounds.CenterPoint().y() -
+             kActionButtonSize.height() / 2});
 
     // The previous and next track buttons are placed on the top left/right
     // edges of the bottom controls area.
@@ -1302,7 +1355,7 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
     next_track_controls_view_->SetPosition(
         {bottom_controls_bounds.x() + bottom_controls_bounds.width() -
              (kBottomControlsHorizontalMargin + kControlHorizontalMargin +
-              kPreviousNextButtonSize.width()),
+              kActionButtonSize.width()),
          bottom_controls_bounds.y() + kBottomControlsVerticalMargin});
 
     // The progress bars should take up all the space that is left after the
@@ -1311,7 +1364,7 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
     // position of the progress view.
     constexpr int kPreviousNextTrackWidthPlusHorizontalMargins =
         kBottomControlsHorizontalMargin + (2 * kControlHorizontalMargin) +
-        kPreviousNextButtonSize.width();
+        kActionButtonSize.width();
     progress_view_->SetPosition(
         {bottom_controls_bounds.x() +
              kPreviousNextTrackWidthPlusHorizontalMargins,
@@ -1792,6 +1845,20 @@ gfx::Rect VideoOverlayWindowViews::GetPlayPauseControlsBounds() {
   return play_pause_controls_view_->GetMirroredBounds();
 }
 
+gfx::Rect VideoOverlayWindowViews::GetReplay10SecondsButtonBounds() {
+  if (!Use2024UI()) {
+    return gfx::Rect();
+  }
+  return replay_10_seconds_button_->GetMirroredBounds();
+}
+
+gfx::Rect VideoOverlayWindowViews::GetForward10SecondsButtonBounds() {
+  if (!Use2024UI()) {
+    return gfx::Rect();
+  }
+  return forward_10_seconds_button_->GetMirroredBounds();
+}
+
 gfx::Rect VideoOverlayWindowViews::GetNextTrackControlsBounds() {
   return next_track_controls_view_->GetMirroredBounds();
 }
@@ -1862,6 +1929,16 @@ void VideoOverlayWindowViews::TogglePlayPause() {
   play_pause_controls_view_->SetPlaybackState(is_active ? kPlaying : kPaused);
 }
 
+void VideoOverlayWindowViews::Replay10Seconds() {
+  controller_->SeekTo(
+      std::max(base::Seconds(0), position_.GetPosition() - kSeekTime));
+}
+
+void VideoOverlayWindowViews::Forward10Seconds() {
+  controller_->SeekTo(
+      std::min(position_.GetPosition() + kSeekTime, position_.duration()));
+}
+
 void VideoOverlayWindowViews::CloseAndPauseIfAvailable() {
   // Only pause the video if play/pause is available.
   const bool should_pause_video = !!show_play_pause_button_;
@@ -1874,6 +1951,16 @@ void VideoOverlayWindowViews::CloseAndPauseIfAvailable() {
 PlaybackImageButton*
 VideoOverlayWindowViews::play_pause_controls_view_for_testing() const {
   return play_pause_controls_view_;
+}
+
+SimpleOverlayWindowImageButton*
+VideoOverlayWindowViews::replay_10_seconds_button_for_testing() const {
+  return replay_10_seconds_button_;
+}
+
+SimpleOverlayWindowImageButton*
+VideoOverlayWindowViews::forward_10_seconds_button_for_testing() const {
+  return forward_10_seconds_button_;
 }
 
 SimpleOverlayWindowImageButton*

@@ -153,6 +153,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   gfx::Rect GetCloseControlsBounds();
   gfx::Rect GetMinimizeControlsBounds();
   gfx::Rect GetPlayPauseControlsBounds();
+  gfx::Rect GetReplay10SecondsButtonBounds();
+  gfx::Rect GetForward10SecondsButtonBounds();
   gfx::Rect GetNextTrackControlsBounds();
   gfx::Rect GetPreviousTrackControlsBounds();
   gfx::Rect GetToggleMicrophoneButtonBounds();
@@ -163,6 +165,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   gfx::Rect GetProgressViewBounds();
 
   PlaybackImageButton* play_pause_controls_view_for_testing() const;
+  SimpleOverlayWindowImageButton* replay_10_seconds_button_for_testing() const;
+  SimpleOverlayWindowImageButton* forward_10_seconds_button_for_testing() const;
   SimpleOverlayWindowImageButton* next_track_controls_view_for_testing() const;
   SimpleOverlayWindowImageButton* previous_track_controls_view_for_testing()
       const;
@@ -237,6 +241,10 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   // |play_pause_controls_view_| toggled state to reflect the current playing
   // state.
   void TogglePlayPause();
+
+  void Replay10Seconds();
+
+  void Forward10Seconds();
 
   // Closes this window and also pauses the underlying video if pausing is
   // available.
@@ -354,6 +362,8 @@ class VideoOverlayWindowViews : public content::VideoOverlayWindow,
   raw_ptr<SimpleOverlayWindowImageButton> previous_track_controls_view_ =
       nullptr;
   raw_ptr<PlaybackImageButton> play_pause_controls_view_ = nullptr;
+  raw_ptr<SimpleOverlayWindowImageButton> replay_10_seconds_button_ = nullptr;
+  raw_ptr<SimpleOverlayWindowImageButton> forward_10_seconds_button_ = nullptr;
   raw_ptr<SimpleOverlayWindowImageButton> next_track_controls_view_ = nullptr;
   raw_ptr<SkipAdLabelButton> skip_ad_controls_view_ = nullptr;
   raw_ptr<ResizeHandleButton> resize_handle_view_ = nullptr;
