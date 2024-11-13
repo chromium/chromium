@@ -72,7 +72,7 @@ TEST(PromiseAllTest, ResolveUndefined) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
-  HeapVector<ScriptPromise<IDLUndefined>> promises;
+  HeapVector<MemberScriptPromise<IDLUndefined>> promises;
   promises.push_back(ToResolvedUndefinedPromise(script_state));
   promises.push_back(ToResolvedUndefinedPromise(script_state));
 
@@ -97,7 +97,7 @@ TEST(PromiseAllTest, ResolveStrings) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
-  HeapVector<ScriptPromise<IDLString>> promises;
+  HeapVector<MemberScriptPromise<IDLString>> promises;
   promises.push_back(ToResolvedPromise<IDLString>(script_state, "first"));
   promises.push_back(ToResolvedPromise<IDLString>(script_state, "second"));
   promises.push_back(ToResolvedPromise<IDLString>(script_state, "third"));
@@ -126,7 +126,7 @@ TEST(PromiseAllTest, Reject) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
-  HeapVector<ScriptPromise<IDLUndefined>> promises;
+  HeapVector<MemberScriptPromise<IDLUndefined>> promises;
   promises.push_back(ToResolvedUndefinedPromise(script_state));
   promises.push_back(ScriptPromise<IDLUndefined>::Reject(
       script_state, V8String(scope.GetIsolate(), "world")));
@@ -155,7 +155,7 @@ TEST(PromiseAllTest, RejectTypeMismatch) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
 
-  HeapVector<ScriptPromise<Document>> promises;
+  HeapVector<MemberScriptPromise<Document>> promises;
   promises.push_back(ScriptPromise<Document>::FromV8Value(
       script_state,
       ToV8Traits<LocalDOMWindow>::ToV8(script_state, &scope.GetWindow())));

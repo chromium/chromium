@@ -672,7 +672,7 @@ class OperatorFromPromiseSubscribeDelegate final
       : promise_(promise) {}
 
   void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
-    promise_.React(
+    promise_.Unwrap().React(
         script_state,
         MakeGarbageCollected<ObservablePromiseResolverFunction>(
             subscriber,
@@ -719,7 +719,7 @@ class OperatorFromPromiseSubscribeDelegate final
     ResolveType type_;
   };
 
-  ScriptPromise<IDLAny> promise_;
+  MemberScriptPromise<IDLAny> promise_;
 };
 
 // This is the subscribe delegate for the `catch()` operator. It allows one to
@@ -1713,6 +1713,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
           execution_context, PassThroughException(script_state->GetIsolate()));
 
       // "If |nextRecord| is a throw completion:"
+      ScriptPromise<IDLAny> next_promise;
       if (try_catch.HasCaught()) {
         // Assert: |iteratorRecord|'s [[Done]] is true.
         CHECK(is_done_because_exception_was_thrown);
@@ -1723,12 +1724,12 @@ class OperatorFromAsyncIterableSubscribeDelegate final
             script_state_, try_catch.Exception(),
             ExceptionContext(v8::ExceptionContext::kOperation, "Observable",
                              "from"));
-        next_promise_ =
+        next_promise =
             ScriptPromise<IDLAny>::Reject(script_state, try_catch.Exception());
       } else {
         // "Otherwise, if |nextRecord| is normal completion, then set
         // |nextPromise| to a promise resolved with |nextRecord|'s [[Value]].
-        next_promise_ = ToResolvedPromise<IDLAny>(
+        next_promise = ToResolvedPromise<IDLAny>(
             script_state, iterator_.GetValue().ToLocalChecked());
       }
 
@@ -1736,7 +1737,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
       //
       // See continued documentation in
       // `AsyncIteratorNextResolverFunction::Call()`.
-      next_promise_.React(
+      next_promise.React(
           script_state,
           MakeGarbageCollected<AsyncIteratorNextResolverFunction>(
               this, subscriber,
@@ -1744,6 +1745,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
           MakeGarbageCollected<AsyncIteratorNextResolverFunction>(
               this, subscriber,
               AsyncIteratorNextResolverFunction::ResolveType::kReject));
+      next_promise_ = next_promise;
     }
 
     void ClearAbortAlgorithm() {
@@ -1811,7 +1813,7 @@ class OperatorFromAsyncIterableSubscribeDelegate final
     //
     // [1]:
     // https://wicg.github.io/observable/#observable-convert-to-an-observable.
-    ScriptPromise<IDLAny> next_promise_;
+    MemberScriptPromise<IDLAny> next_promise_;
   };
 
   class AsyncIteratorNextResolverFunction final

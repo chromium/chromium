@@ -93,7 +93,7 @@ class CORE_EXPORT AsyncIterationSourceBase
   // https://webidl.spec.whatwg.org/#dfn-default-asynchronous-iterator-object
   // its 'ongoing promise', which is a Promise or null,
   // its 'is finished', which is a boolean.
-  ScriptPromise<IDLAny> ongoing_promise_;
+  MemberScriptPromise<IDLAny> ongoing_promise_;
   bool is_finished_ = false;
 
   // The pending promise resolver. This is basically corresponding to

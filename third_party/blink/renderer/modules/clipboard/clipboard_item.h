@@ -26,7 +26,7 @@ class ClipboardItem final : public ScriptWrappable {
   // If `representations` is empty, writes error info to `exception_state` and
   // returns nullptr.
   static ClipboardItem* Create(
-      const HeapVector<std::pair<String, ScriptPromise<V8UnionBlobOrString>>>&
+      const Vector<std::pair<String, ScriptPromise<V8UnionBlobOrString>>>&
           representations,
       ExceptionState& exception_state);
 
@@ -36,7 +36,7 @@ class ClipboardItem final : public ScriptWrappable {
   // If an empty `ClipboardItem` is a valid use-case, use the constructor
   // directly, else use `Create` method.
   explicit ClipboardItem(
-      const HeapVector<std::pair<String, ScriptPromise<V8UnionBlobOrString>>>&
+      const Vector<std::pair<String, ScriptPromise<V8UnionBlobOrString>>>&
           representations);
 
   // Returns the MIME types contained in the `ClipboardItem`.
@@ -59,7 +59,7 @@ class ClipboardItem final : public ScriptWrappable {
   // Spec: https://w3c.github.io/clipboard-apis/#dom-clipboarditem-supports
   static bool supports(const String& type);
 
-  const HeapVector<std::pair<String, ScriptPromise<V8UnionBlobOrString>>>&
+  const HeapVector<std::pair<String, MemberScriptPromise<V8UnionBlobOrString>>>&
   GetRepresentations() const {
     return representations_;
   }
@@ -72,7 +72,7 @@ class ClipboardItem final : public ScriptWrappable {
 
  private:
   // Stores built-in and web custom MIME types.
-  HeapVector<std::pair<String, ScriptPromise<V8UnionBlobOrString>>>
+  HeapVector<std::pair<String, MemberScriptPromise<V8UnionBlobOrString>>>
       representations_;
 
   // The vector of custom MIME types that have a "web " prefix.

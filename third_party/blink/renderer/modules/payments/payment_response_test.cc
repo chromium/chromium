@@ -37,7 +37,7 @@ class MockPaymentStateResolver final
  public:
   MockPaymentStateResolver() {
     ON_CALL(*this, Complete(testing::_, testing::_, testing::_))
-        .WillByDefault(testing::ReturnPointee(&dummy_promise_));
+        .WillByDefault(testing::Return(dummy_promise_));
   }
 
   MockPaymentStateResolver(const MockPaymentStateResolver&) = delete;
@@ -60,7 +60,7 @@ class MockPaymentStateResolver final
   }
 
  private:
-  ScriptPromise<IDLUndefined> dummy_promise_;
+  MemberScriptPromise<IDLUndefined> dummy_promise_;
 };
 
 TEST(PaymentResponseTest, DataCopiedOver) {

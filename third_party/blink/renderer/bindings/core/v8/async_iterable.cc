@@ -127,28 +127,31 @@ AsyncIterationSourceBase::AsyncIterationSourceBase(ScriptState* script_state,
 v8::Local<v8::Promise> AsyncIterationSourceBase::Next(
     ScriptState* script_state,
     ExceptionState& exception_state) {
+  ScriptPromise<IDLAny> next_promise;
   if (!ongoing_promise_.IsEmpty()) {
     // step 10. If ongoingPromise is not null, then:
     // step 10.3. Perform PerformPromiseThen(ongoingPromise, onSettled,
     //     onSettled, afterOngoingPromiseCapability).
     // step 10.4. Set object's ongoing promise to
     //     afterOngoingPromiseCapability.[[Promise]].
-    ongoing_promise_ = ongoing_promise_.Then(
+    next_promise = ongoing_promise_.Unwrap().Then(
         script_state, on_settled_function_.Get(), on_settled_function_.Get());
   } else {
     // step 11. Otherwise:
     // step 11.1. Set object's ongoing promise to the result of running
     //     nextSteps.
-    ongoing_promise_ = RunNextSteps(script_state);
+    next_promise = RunNextSteps(script_state);
   }
+  ongoing_promise_ = next_promise;
   // step 12. Return object's ongoing promise.
-  return ongoing_promise_.V8Promise();
+  return next_promise.V8Promise();
 }
 
 v8::Local<v8::Promise> AsyncIterationSourceBase::Return(
     ScriptState* script_state,
     v8::Local<v8::Value> value,
     ExceptionState& exception_state) {
+  ScriptPromise<IDLAny> next_promise;
   ScriptPromise<IDLAny> return_steps_promise;
   if (!ongoing_promise_.IsEmpty()) {
     // step 10. If ongoingPromise is not null, then:
@@ -159,21 +162,23 @@ v8::Local<v8::Promise> AsyncIterationSourceBase::Return(
     //     onSettled, afterOngoingPromiseCapability).
     // step 11.4. Set object's ongoing promise to
     //     afterOngoingPromiseCapability.[[Promise]].
-    ongoing_promise_ =
-        ongoing_promise_.Then(script_state, on_settled, on_settled);
+    next_promise =
+        ongoing_promise_.Unwrap().Then(script_state, on_settled, on_settled);
   } else {
     // step 11. Otherwise:
     // step 11.1. Set object's ongoing promise to the result of
     //     running returnSteps.
-    ongoing_promise_ = RunReturnSteps(
+    next_promise = RunReturnSteps(
         script_state, ScriptValue(script_state->GetIsolate(), value));
   }
+  ongoing_promise_ = next_promise;
+
   // step 13. Let onFulfilled be CreateBuiltinFunction(fulfillSteps, << >>).
   auto* on_fulfilled = MakeGarbageCollected<RunReturnFulfillStepsCallable>(
       this, ScriptValue(script_state->GetIsolate(), value));
   // step 14. Perform PerformPromiseThen(object's ongoing promise, onFulfilled,
   //     undefined, returnPromiseCapability).
-  return_steps_promise = ongoing_promise_.Then(script_state, on_fulfilled);
+  return_steps_promise = next_promise.Then(script_state, on_fulfilled);
   // step 15. Return returnPromiseCapability.[[Promise]].
   return return_steps_promise.V8Promise();
 }

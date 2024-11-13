@@ -125,7 +125,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
                                     public AuctionHandleFunction {
    public:
     AuctionHandleFunctionImpl(AuctionHandle* auction_handle,
-                              ScriptPromise<IDLType> promise)
+                              const MemberScriptPromise<IDLType>& promise)
         : AuctionHandleFunction(auction_handle), promise_(promise) {
       ThenCallable<IDLType, Derived>::SetExceptionContext(
           ExceptionContext(v8::ExceptionContext::kOperation, "NavigatorAuction",
@@ -139,18 +139,18 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
     }
 
     void Attach(ScriptState* script_state, Rejected* rejected) final {
-      promise_.React(script_state, this, rejected);
+      promise_.Unwrap().React(script_state, this, rejected);
     }
 
    private:
-    ScriptPromise<IDLType> promise_;
+    MemberScriptPromise<IDLType> promise_;
   };
 
   class JsonResolved : public AuctionHandleFunctionImpl<IDLAny, JsonResolved> {
    public:
     // `field_name` is expected to point to a literal.
     JsonResolved(AuctionHandle* auction_handle,
-                 ScriptPromise<IDLAny>,
+                 const MemberScriptPromise<IDLAny>&,
                  mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
                  mojom::blink::AuctionAdConfigField field,
                  const String& seller_name,
@@ -172,7 +172,8 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
    public:
     PerBuyerSignalsResolved(
         AuctionHandle* auction_handle,
-        const ScriptPromise<IDLNullable<IDLRecord<IDLUSVString, IDLAny>>>&,
+        const MemberScriptPromise<
+            IDLNullable<IDLRecord<IDLUSVString, IDLAny>>>&,
         mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
         const String& seller_name);
 
@@ -194,7 +195,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
    public:
     BuyerTimeoutsResolved(
         AuctionHandle* auction_handle,
-        const ScriptPromise<
+        const MemberScriptPromise<
             IDLNullable<IDLRecord<IDLUSVString, IDLUnsignedLongLong>>>&,
         mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
         mojom::blink::AuctionAdConfigBuyerTimeoutField field,
@@ -216,7 +217,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
    public:
     BuyerCurrenciesResolved(
         AuctionHandle* auction_handle,
-        const ScriptPromise<
+        const MemberScriptPromise<
             IDLNullable<IDLRecord<IDLUSVString, IDLUSVString>>>&,
         mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
         const String& seller_name);
@@ -235,7 +236,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
    public:
     DirectFromSellerSignalsResolved(
         AuctionHandle* auction_handle,
-        const ScriptPromise<IDLNullable<IDLUSVString>>&,
+        const MemberScriptPromise<IDLNullable<IDLUSVString>>&,
         mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
         const String& seller_name,
         const scoped_refptr<const SecurityOrigin>& seller_origin,
@@ -259,7 +260,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
    public:
     DirectFromSellerSignalsHeaderAdSlotResolved(
         AuctionHandle* auction_handle,
-        const ScriptPromise<IDLNullable<IDLString>>&,
+        const MemberScriptPromise<IDLNullable<IDLString>>&,
         mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
         const String& seller_name);
 
@@ -277,7 +278,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
    public:
     DeprecatedRenderURLReplacementsResolved(
         AuctionHandle* auction_handle,
-        const ScriptPromise<
+        const MemberScriptPromise<
             IDLNullable<IDLRecord<IDLUSVString, IDLUSVString>>>&,
         mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
         const String& seller_name);
@@ -295,7 +296,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
                                          ServerResponseResolved> {
    public:
     ServerResponseResolved(AuctionHandle* auction_handle,
-                           const ScriptPromise<NotShared<DOMUint8Array>>&,
+                           const MemberScriptPromise<NotShared<DOMUint8Array>>&,
                            mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
                            const String& seller_name);
 
@@ -310,7 +311,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
       : public AuctionHandleFunctionImpl<IDLUndefined, AdditionalBidsResolved> {
    public:
     AdditionalBidsResolved(AuctionHandle* auction_handle,
-                           const ScriptPromise<IDLUndefined>&,
+                           const MemberScriptPromise<IDLUndefined>&,
                            mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
                            const String& seller_name);
 
@@ -326,7 +327,7 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
         public AuctionHandleFunction {
    public:
     ResolveToConfigResolved(AuctionHandle* auction_handle,
-                            const ScriptPromise<IDLBoolean>&);
+                            const MemberScriptPromise<IDLBoolean>&);
 
     void Trace(Visitor* visitor) const override {
       ThenCallable<IDLAny, ResolveToConfigResolved>::Trace(visitor);
@@ -335,19 +336,20 @@ class NavigatorAuction::AuctionHandle final : public AbortSignal::Algorithm {
     }
 
     void Attach(ScriptState* script_state, Rejected* rejected) final {
-      promise_.ReactNoTypeChecks(script_state, this, rejected);
+      promise_.Unwrap().ReactNoTypeChecks(script_state, this, rejected);
     }
 
     void React(ScriptState* script_state, ScriptValue);
 
    private:
-    ScriptPromise<IDLBoolean> promise_;
+    MemberScriptPromise<IDLBoolean> promise_;
   };
 
   class Rejected : public AuctionHandleFunctionImpl<IDLAny, Rejected> {
    public:
     explicit Rejected(AuctionHandle* auction_handle)
-        : AuctionHandleFunctionImpl(auction_handle, ScriptPromise<IDLAny>()) {}
+        : AuctionHandleFunctionImpl(auction_handle,
+                                    MemberScriptPromise<IDLAny>()) {}
 
     // Abort the auction if any input promise rejects
     void React(ScriptState*, ScriptValue) { auction_handle()->Abort(); }
@@ -1543,7 +1545,7 @@ ConvertJsonPromiseFromIdlToMojo(
     NavigatorAuction::AuctionHandle* auction_handle,
     mojom::blink::AuctionAdConfigAuctionId* auction_id,
     const AuctionAdConfig& input,
-    const ScriptPromise<IDLAny>& promise,
+    const MemberScriptPromise<IDLAny>& promise,
     mojom::blink::AuctionAdConfigField field,
     const char* field_name) {
   auction_handle->QueueAttachPromiseHandler(
@@ -2959,7 +2961,7 @@ ScriptPromise<IDLUndefined> JoinAdInterestGroupInternal(
 
 NavigatorAuction::AuctionHandle::JsonResolved::JsonResolved(
     AuctionHandle* auction_handle,
-    ScriptPromise<IDLAny> promise,
+    const MemberScriptPromise<IDLAny>& promise,
     mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
     mojom::blink::AuctionAdConfigField field,
     const String& seller_name,
@@ -3006,7 +3008,7 @@ void NavigatorAuction::AuctionHandle::JsonResolved::React(
 NavigatorAuction::AuctionHandle::PerBuyerSignalsResolved::
     PerBuyerSignalsResolved(
         AuctionHandle* auction_handle,
-        const ScriptPromise<IDLNullable<IDLRecord<IDLUSVString, IDLAny>>>&
+        const MemberScriptPromise<IDLNullable<IDLRecord<IDLUSVString, IDLAny>>>&
             promise,
         mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
         const String& seller_name)
@@ -3035,8 +3037,8 @@ void NavigatorAuction::AuctionHandle::PerBuyerSignalsResolved::React(
 NavigatorAuction::AuctionHandle::DeprecatedRenderURLReplacementsResolved::
     DeprecatedRenderURLReplacementsResolved(
         AuctionHandle* auction_handle,
-        const ScriptPromise<IDLNullable<IDLRecord<IDLUSVString, IDLUSVString>>>&
-            promise,
+        const MemberScriptPromise<
+            IDLNullable<IDLRecord<IDLUSVString, IDLUSVString>>>& promise,
         mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
         const String& seller_name)
     : AuctionHandleFunctionImpl(auction_handle, promise),
@@ -3071,7 +3073,7 @@ void NavigatorAuction::AuctionHandle::DeprecatedRenderURLReplacementsResolved::
 
 NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved::BuyerTimeoutsResolved(
     AuctionHandle* auction_handle,
-    const ScriptPromise<
+    const MemberScriptPromise<
         IDLNullable<IDLRecord<IDLUSVString, IDLUnsignedLongLong>>>& promise,
     mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
     mojom::blink::AuctionAdConfigBuyerTimeoutField field,
@@ -3102,8 +3104,8 @@ void NavigatorAuction::AuctionHandle::BuyerTimeoutsResolved::React(
 NavigatorAuction::AuctionHandle::BuyerCurrenciesResolved::
     BuyerCurrenciesResolved(
         AuctionHandle* auction_handle,
-        const ScriptPromise<IDLNullable<IDLRecord<IDLUSVString, IDLUSVString>>>&
-            promise,
+        const MemberScriptPromise<
+            IDLNullable<IDLRecord<IDLUSVString, IDLUSVString>>>& promise,
         mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
         const String& seller_name)
     : AuctionHandleFunctionImpl(auction_handle, promise),
@@ -3131,7 +3133,7 @@ void NavigatorAuction::AuctionHandle::BuyerCurrenciesResolved::React(
 NavigatorAuction::AuctionHandle::DirectFromSellerSignalsResolved::
     DirectFromSellerSignalsResolved(
         AuctionHandle* auction_handle,
-        const ScriptPromise<IDLNullable<IDLUSVString>>& promise,
+        const MemberScriptPromise<IDLNullable<IDLUSVString>>& promise,
         mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
         const String& seller_name,
         const scoped_refptr<const SecurityOrigin>& seller_origin,
@@ -3169,7 +3171,7 @@ void NavigatorAuction::AuctionHandle::DirectFromSellerSignalsResolved::React(
 NavigatorAuction::AuctionHandle::DirectFromSellerSignalsHeaderAdSlotResolved::
     DirectFromSellerSignalsHeaderAdSlotResolved(
         AuctionHandle* auction_handle,
-        const ScriptPromise<IDLNullable<IDLString>>& promise,
+        const MemberScriptPromise<IDLNullable<IDLString>>& promise,
         mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
         const String& seller_name)
     : AuctionHandleFunctionImpl(auction_handle, promise),
@@ -3191,7 +3193,7 @@ void NavigatorAuction::AuctionHandle::
 
 NavigatorAuction::AuctionHandle::ServerResponseResolved::ServerResponseResolved(
     AuctionHandle* auction_handle,
-    const ScriptPromise<NotShared<DOMUint8Array>>& promise,
+    const MemberScriptPromise<NotShared<DOMUint8Array>>& promise,
     mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
     const String& seller_name)
     : AuctionHandleFunctionImpl(auction_handle, promise),
@@ -3210,7 +3212,7 @@ void NavigatorAuction::AuctionHandle::ServerResponseResolved::React(
 
 NavigatorAuction::AuctionHandle::AdditionalBidsResolved::AdditionalBidsResolved(
     AuctionHandle* auction_handle,
-    const ScriptPromise<IDLUndefined>& promise,
+    const MemberScriptPromise<IDLUndefined>& promise,
     mojom::blink::AuctionAdConfigAuctionIdPtr auction_id,
     const String& seller_name)
     : AuctionHandleFunctionImpl(auction_handle, promise),
@@ -3227,7 +3229,7 @@ void NavigatorAuction::AuctionHandle::AdditionalBidsResolved::React(
 
 NavigatorAuction::AuctionHandle::ResolveToConfigResolved::
     ResolveToConfigResolved(AuctionHandle* auction_handle,
-                            const ScriptPromise<IDLBoolean>& promise)
+                            const MemberScriptPromise<IDLBoolean>& promise)
     : AuctionHandleFunction(auction_handle), promise_(promise) {
   ThenCallable<IDLAny, ResolveToConfigResolved>::SetExceptionContext(
       ExceptionContext(v8::ExceptionContext::kOperation, "NavigatorAuction",

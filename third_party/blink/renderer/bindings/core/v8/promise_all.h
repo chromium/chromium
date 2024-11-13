@@ -26,7 +26,7 @@ class CORE_EXPORT PromiseAll final
   // when all of the given promises have fulfilled, or any rejects.
   static ScriptPromise<ResolverType> Create(
       ScriptState* script_state,
-      const HeapVector<ScriptPromise<IDLType>>& promises) {
+      const HeapVector<MemberScriptPromise<IDLType>>& promises) {
     if (promises.empty()) {
       if constexpr (std::is_same_v<IDLUndefined, IDLType>) {
         return ToResolvedUndefinedPromise(script_state);
@@ -41,14 +41,15 @@ class CORE_EXPORT PromiseAll final
   }
 
   PromiseAll(ScriptState* script_state,
-             const HeapVector<ScriptPromise<IDLType>>& promises,
+             const HeapVector<MemberScriptPromise<IDLType>>& promises,
              ScriptPromiseResolver<ResolverType>* resolver)
       : number_of_pending_promises_(promises.size()),
         values_(promises.size()),
         resolver_(resolver) {
     for (wtf_size_t i = 0; i < number_of_pending_promises_; ++i) {
-      promises[i].React(script_state, MakeGarbageCollected<Resolve>(i, this),
-                        MakeGarbageCollected<Reject>(this));
+      promises[i].Unwrap().React(script_state,
+                                 MakeGarbageCollected<Resolve>(i, this),
+                                 MakeGarbageCollected<Reject>(this));
     }
   }
 

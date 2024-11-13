@@ -114,7 +114,7 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
   const Vector<int> sequence_;
   wtf_size_t index_ = 0;
 
-  const ScriptPromise<IDLUndefined> start_promise_;
+  const MemberScriptPromise<IDLUndefined> start_promise_;
   bool started_ = false;
   bool cancelled_ = false;
   ScriptValue cancel_reason_;

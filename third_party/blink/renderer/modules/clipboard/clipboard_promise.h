@@ -174,7 +174,7 @@ class MODULES_EXPORT ClipboardPromise final
       clipboard_item_data_;
   // The list of formats with their corresponding promises to the Blob data to
   // be written to the clipboard.
-  HeapVector<std::pair<String, ScriptPromise<V8UnionBlobOrString>>>
+  HeapVector<std::pair<String, MemberScriptPromise<V8UnionBlobOrString>>>
       clipboard_item_data_with_promises_;
   wtf_size_t clipboard_representation_index_ = 0;
   // List of custom format with "web " prefix.

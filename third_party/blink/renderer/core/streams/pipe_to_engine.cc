@@ -254,7 +254,7 @@ v8::Local<v8::Promise> PipeToEngine::AbortAlgorithmAction() {
   v8::Local<v8::Value> error = shutdown_error_.Get(script_state_->GetIsolate());
 
   // ii. Let actions be an empty ordered set.
-  HeapVector<ScriptPromise<IDLUndefined>> actions;
+  HeapVector<MemberScriptPromise<IDLUndefined>> actions;
 
   // This method runs later than the equivalent steps in the standard. This
   // means that it is safe to do the checks of the state of the destination

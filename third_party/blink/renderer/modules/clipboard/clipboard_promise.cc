@@ -354,7 +354,7 @@ void ClipboardPromise::ResolveRead() {
     return;
   }
   ScriptState::Scope scope(script_state);
-  HeapVector<std::pair<String, ScriptPromise<V8UnionBlobOrString>>> items;
+  Vector<std::pair<String, ScriptPromise<V8UnionBlobOrString>>> items;
   items.ReserveInitialCapacity(clipboard_item_data_.size());
 
   for (const auto& item : clipboard_item_data_) {
@@ -499,7 +499,7 @@ void ClipboardPromise::HandleWriteWithPermission(
     return;
   }
 
-  HeapVector<ScriptPromise<V8UnionBlobOrString>> promise_list;
+  HeapVector<MemberScriptPromise<V8UnionBlobOrString>> promise_list;
   promise_list.ReserveInitialCapacity(
       clipboard_item_data_with_promises_.size());
   write_clipboard_item_types_.ReserveInitialCapacity(

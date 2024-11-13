@@ -22,7 +22,7 @@ ScriptPromise<IDLUndefined> ReadableStreamGenericReader::closed(
     ScriptState*) const {
   // https://streams.spec.whatwg.org/#default-reader-closed
   // 1. Return this.[[closedPromise]].
-  return closed_promise_;
+  return closed_resolver_->Promise();
 }
 
 ScriptPromise<IDLUndefined> ReadableStreamGenericReader::cancel(
@@ -74,16 +74,15 @@ void ReadableStreamGenericReader::GenericRelease(
   if (stream->state_ != ReadableStream::kReadable) {
     reader->closed_resolver_ =
         MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
-    reader->closed_promise_ = reader->closed_resolver_->Promise();
   }
-  reader->closed_promise_.MarkAsSilent();
+  reader->closed_resolver_->Promise().MarkAsSilent();
   reader->closed_resolver_->Reject(v8::Exception::TypeError(V8String(
       isolate,
       "This readable stream reader has been released and cannot be used "
       "to monitor the stream's state")));
 
   // 6. Set reader.[[closedPromise]].[[PromiseIsHandled]] to true.
-  reader->closed_promise_.MarkAsHandled();
+  reader->closed_resolver_->Promise().MarkAsHandled();
 
   // 7. Perform ! stream.[[controller]].[[ReleaseSteps]]().
   stream->readable_stream_controller_->ReleaseSteps();
@@ -97,7 +96,6 @@ void ReadableStreamGenericReader::GenericRelease(
 
 void ReadableStreamGenericReader::Trace(Visitor* visitor) const {
   visitor->Trace(closed_resolver_);
-  visitor->Trace(closed_promise_);
   visitor->Trace(owner_readable_stream_);
   ScriptWrappable::Trace(visitor);
 }
@@ -131,7 +129,6 @@ void ReadableStreamGenericReader::GenericInitialize(
   stream->reader_ = reader;
   reader->closed_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
-  reader->closed_promise_ = reader->closed_resolver_->Promise();
 
   switch (stream->state_) {
     // 3. If stream.[[state]] is "readable",
@@ -152,11 +149,11 @@ void ReadableStreamGenericReader::GenericInitialize(
 
       // b. Set reader.[[closedPromise]] to a promise rejected with stream.
       //    [[storedError]].
-      reader->closed_promise_.MarkAsSilent();
+      reader->closed_resolver_->Promise().MarkAsSilent();
       reader->closed_resolver_->Reject(stream->GetStoredError(isolate));
 
       // c. Set reader.[[closedPromise]].[[PromiseIsHandled]] to true.
-      reader->closed_promise_.MarkAsHandled();
+      reader->closed_resolver_->Promise().MarkAsHandled();
       break;
   }
 }

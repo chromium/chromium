@@ -371,8 +371,9 @@ def blink_type_info(idl_type):
             type_name = "ScriptPromise<{}>".format(
                 native_value_tag(real_type.result_type))
         return TypeInfo(type_name,
-                        ref_fmt="{}&",
-                        const_ref_fmt="const {}&",
+                        member_fmt="Member{}",
+                        ref_fmt="Member{}&",
+                        const_ref_fmt="const Member{}&",
                         is_traceable=True)
 
     if real_type.is_union:

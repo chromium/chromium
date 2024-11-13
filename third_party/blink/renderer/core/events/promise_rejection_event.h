@@ -47,7 +47,7 @@ class CORE_EXPORT PromiseRejectionEvent final : public Event {
 
  private:
   const Member<DOMWrapperWorld> world_;
-  TraceWrapperV8Reference<v8::Promise> promise_;
+  MemberScriptPromise<IDLAny> promise_;
   TraceWrapperV8Reference<v8::Value> reason_;
 };
 
