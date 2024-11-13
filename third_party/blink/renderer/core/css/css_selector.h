@@ -220,19 +220,6 @@ class CORE_EXPORT CSSSelector {
     kRelativeDirectAdjacent,
     // leftmost ~ combinator of relative selector
     kRelativeIndirectAdjacent,
-
-    // The following applies to selectors within @scope
-    // (see CSSNestingType::kScope):
-    //
-    // The kScopeActivation relation is implicitly inserted parse-time before
-    // any compound selector which contains either :scope or the parent
-    // selector (&). When encountered during selector matching,
-    // kScopeActivation will try the to match the rest of the selector (i.e. the
-    // NextSimpleSelector from that point) using activation roots as the :scope
-    // element, trying the nearest activation root first.
-    //
-    // See also StyleScopeActivation.
-    kScopeActivation,
   };
 
   enum PseudoType {
@@ -385,8 +372,6 @@ class CORE_EXPORT CSSSelector {
     kPseudoSpatialNavigationFocus,
     kPseudoSpellingError,
     kPseudoTargetText,
-    // Always matches. See SetTrue().
-    kPseudoTrue,
     kPseudoVideoPersistent,
     kPseudoVideoPersistentAncestor,
 
@@ -431,12 +416,6 @@ class CORE_EXPORT CSSSelector {
   // since any selector which is nest-containing is also treated as
   // scope-containing during parsing.
   CSSNestingType GetNestingType() const;
-  // Set this CSSSelector as a :true pseudo-class. This can be useful if you
-  // need to insert a special RelationType into a selector's NextSimpleSelector,
-  // but lack any existing/suitable CSSSelector to attach that RelationType to.
-  //
-  // Note that :true is always implicit (see IsImplicit).
-  void SetTrue();
   // Sets this CSSSelector to a :where() class with the specified argument.
   void SetWhere(CSSSelectorList*);
   void UpdatePseudoPage(const AtomicString&, const Document*);
@@ -598,6 +577,11 @@ class CORE_EXPORT CSSSelector {
     bits_.set<IsCoveredByBucketingField>(value);
   }
 
+  bool IsScopeContaining() const { return bits_.get<IsScopeContainingField>(); }
+  void SetScopeContaining(bool value) {
+    bits_.set<IsScopeContainingField>(value);
+  }
+
   bool MatchesPseudoElement() const;
   bool IsAllowedInParentPseudo() const;
   bool IsTreeAbidingPseudoElement() const;
@@ -672,7 +656,15 @@ class CORE_EXPORT CSSSelector {
       IsCoveredByBucketingField::DefineNextValue<unsigned, 2>;
   using LegacyCaseInsensitiveMatchField =
       AttributeMatchField::DefineNextValue<bool, 1>;
-  // 4 free bits here.
+  // Set for any simple CSSSelector which contains either a :scope pseudo-class,
+  // or a '&' pseudo-class. The reason '&' is included in the definition
+  // of "scope-containing", is that '&' behaves like ':scope' whenever
+  // there is no parent rule to refer to.
+  //
+  // Selectors with this flag set trigger "scope activation" during
+  // selector matching, see SelectorChecker::MatchForScopeActivation.
+  using IsScopeContainingField = AttributeMatchField::DefineNextValue<bool, 1>;
+  // 3 free bits here.
   BitField bits_;
   // 32 padding bits here (on 64-bit platforms).
 
@@ -851,7 +843,8 @@ inline CSSSelector::CSSSelector()
             IsImplicitlyAddedField::encode(false) |
             IsCoveredByBucketingField::encode(false) |
             AttributeMatchField::encode(0) |
-            LegacyCaseInsensitiveMatchField::encode(false)),
+            LegacyCaseInsensitiveMatchField::encode(false) |
+            IsScopeContainingField::encode(false)),
       data_(DataUnion::kConstructEmptyValue) {}
 
 inline CSSSelector::CSSSelector(const QualifiedName& tag_q_name,
@@ -864,7 +857,8 @@ inline CSSSelector::CSSSelector(const QualifiedName& tag_q_name,
             IsImplicitlyAddedField::encode(tag_is_implicit) |
             IsCoveredByBucketingField::encode(false) |
             AttributeMatchField::encode(0) |
-            LegacyCaseInsensitiveMatchField::encode(false)),
+            LegacyCaseInsensitiveMatchField::encode(false) |
+            IsScopeContainingField::encode(false)),
       data_(tag_q_name) {}
 
 inline CSSSelector::CSSSelector(const StyleRule* parent_rule, bool is_implicit)
@@ -877,7 +871,8 @@ inline CSSSelector::CSSSelector(const StyleRule* parent_rule, bool is_implicit)
             IsImplicitlyAddedField::encode(is_implicit) |
             IsCoveredByBucketingField::encode(false) |
             AttributeMatchField::encode(0) |
-            LegacyCaseInsensitiveMatchField::encode(false)),
+            LegacyCaseInsensitiveMatchField::encode(false) |
+            IsScopeContainingField::encode(false)),
       data_(parent_rule) {}
 
 inline CSSSelector::CSSSelector(const AtomicString& pseudo_name,
@@ -893,7 +888,8 @@ inline CSSSelector::CSSSelector(const AtomicString& pseudo_name,
             IsImplicitlyAddedField::encode(is_implicit) |
             IsCoveredByBucketingField::encode(false) |
             AttributeMatchField::encode(0) |
-            LegacyCaseInsensitiveMatchField::encode(false)),
+            LegacyCaseInsensitiveMatchField::encode(false) |
+            IsScopeContainingField::encode(false)),
       data_(pseudo_name) {}
 
 inline CSSSelector::CSSSelector(const CSSSelector& o)

@@ -634,10 +634,9 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
     return;
   }
 
-  // The selector parser prepends a :true pseudo-class with
-  // relation=kScopeActivation to any compound that contains :scope
-  // or the parent pseudo-class (&).
-  if (component.Relation() == CSSSelector::kScopeActivation) {
+  // The ':scope' pseudo-class (bucketed as universal) may match the host
+  // when the selector is scoped (e.g. using '@scope') to that host.
+  if (component.IsScopeContaining()) {
     must_check_universal_bucket_for_shadow_host_ = true;
   }
 

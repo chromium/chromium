@@ -169,7 +169,6 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoGrammarError:
     case CSSSelector::kPseudoHas:
     case CSSSelector::kPseudoUnparsed:  // Never invalidates.
-    case CSSSelector::kPseudoTrue:
     case CSSSelector::kPseudoViewTransition:
     case CSSSelector::kPseudoViewTransitionGroup:
     case CSSSelector::kPseudoViewTransitionImagePair:
@@ -738,8 +737,7 @@ const CSSSelector* RuleInvalidationDataVisitor<VisitorType>::
     }
 
     if (!simple_selector->NextSimpleSelector() ||
-        (simple_selector->Relation() != CSSSelector::kSubSelector &&
-         simple_selector->Relation() != CSSSelector::kScopeActivation)) {
+        (simple_selector->Relation() != CSSSelector::kSubSelector)) {
       return simple_selector;
     }
   }
@@ -1441,8 +1439,7 @@ const CSSSelector* RuleInvalidationDataVisitor<VisitorType>::
       default:
         break;
     }
-    if (simple->Relation() != CSSSelector::kSubSelector &&
-        simple->Relation() != CSSSelector::kScopeActivation) {
+    if (simple->Relation() != CSSSelector::kSubSelector) {
       break;
     }
   }
@@ -1486,8 +1483,7 @@ const CSSSelector* RuleInvalidationDataVisitor<VisitorType>::
       compound_has_features_for_rule_set_invalidation = true;
     }
 
-    if (simple->Relation() != CSSSelector::kSubSelector &&
-        simple->Relation() != CSSSelector::kScopeActivation) {
+    if (simple->Relation() != CSSSelector::kSubSelector) {
       break;
     }
   }

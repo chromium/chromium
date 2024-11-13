@@ -306,24 +306,6 @@ class CORE_EXPORT SelectorChecker {
     }
     ~SubResult() {
       parent_.flags |= flags;
-      // Propagate proximity from nested selectors which refer to a parent
-      // rule with a kScopeActivation, e.g.:
-      //
-      //   @scope (div) {
-      //     :scope {
-      //       & { ... }
-      //     }
-      //   }
-      //
-      // The inner rule (&) has no kScopeActivation relation anywhere in the
-      // selector, because it's nested using CSSNestingType::kNesting,
-      // yet it refers to a selector which does contain a kScopeActivation.
-      // The resulting proximity value must be propagated.
-      //
-      // Note that regular :is() and similar pseudo-classes with inner selectors
-      // lists do not produce any (non-max) proximity values; it can only happen
-      // with the nesting selector (&).
-      parent_.proximity = std::min(parent_.proximity, proximity);
       PropagatePseudoAncestorIndex();
     }
     void PropagatePseudoAncestorIndex() {

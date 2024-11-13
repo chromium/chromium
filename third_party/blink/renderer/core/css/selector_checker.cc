@@ -301,6 +301,15 @@ bool SelectorChecker::Match(const SelectorCheckingContext& context,
   return MatchSelector(context, result) == kSelectorMatches;
 }
 
+namespace {
+
+bool NeedsScopeActivation(
+    const SelectorChecker::SelectorCheckingContext& context) {
+  return context.style_scope && context.selector->IsScopeContaining();
+}
+
+}  // namespace
+
 // Recursive check of selectors and combinators
 // It can return 4 different values:
 // * SelectorMatches          - the selector matches the element e
@@ -311,6 +320,11 @@ bool SelectorChecker::Match(const SelectorCheckingContext& context,
 SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
     const SelectorCheckingContext& context,
     MatchResult& result) const {
+  if (NeedsScopeActivation(context)) {
+    // This function invokes`MatchSelector` again, but with context.scope
+    // set to the appropriate scoping root.
+    return MatchForScopeActivation(context, result);
+  }
   SubResult sub_result(result);
   bool is_covered_by_bucketing =
       context.selector->IsCoveredByBucketing() &&
@@ -346,10 +360,6 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
   switch (context.selector->Relation()) {
     case CSSSelector::kSubSelector:
       return MatchForSubSelector(context, result);
-    case CSSSelector::kScopeActivation:
-      // The kScopeActivation relation type does not change the current element
-      // being matched: it behaves like a special kSubSelector in this context.
-      return MatchForScopeActivation(context, result);
     default: {
       if (NextSelectorExceedsScope(context)) {
         return kSelectorFailsCompletely;
@@ -452,43 +462,41 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForSubSelector(
 SelectorChecker::MatchStatus SelectorChecker::MatchForScopeActivation(
     const SelectorCheckingContext& context,
     MatchResult& result) const {
-  SelectorCheckingContext next_context = PrepareNextContextForRelation(context);
+  CHECK(context.style_scope);
+  SelectorCheckingContext next_context = context;
   next_context.is_sub_selector = true;
 
-  if (context.style_scope) {
-    const StyleScopeActivations& activations =
-        EnsureActivations(context, *context.style_scope);
-    if (ImpactsSubject(context)) {
-      // For e.g. @scope (:hover) { :scope { ...} },
-      // the StyleScopeActivations may have stored MatchFlags that we
-      // need to propagate. However, this is only needed if :scope
-      // appears in the subject position, since MatchFlags are only
-      // used for subject invalidation. Non-subject flags are set on
-      // Elements directly (e.g. SetChildrenOrSiblingsAffectedByHover)
-      result.flags |= activations.match_flags;
-    }
-    if (activations.vector.empty()) {
-      return kSelectorFailsCompletely;
-    }
-    // Activations are stored in decreasing order of proxmity (parent
-    // activations are added first in CalculateActivations, then any activation
-    // for this element). We want to the most proximate match, hence traverse
-    // activations in reverse order.
-    for (const StyleScopeActivation& activation :
-         base::Reversed(activations.vector)) {
-      next_context.match_visited = context.match_visited;
-      next_context.impact = context.impact;
-      next_context.style_scope = nullptr;
-      next_context.scope = activation.root;
-      if (MatchSelector(next_context, result) == kSelectorMatches) {
-        result.proximity = activation.proximity;
-        return kSelectorMatches;
-      }
-    }
-    return kSelectorFailsLocally;
+  const StyleScopeActivations& activations =
+      EnsureActivations(context, *context.style_scope);
+  if (ImpactsSubject(context)) {
+    // For e.g. @scope (:hover) { :scope { ...} },
+    // the StyleScopeActivations may have stored MatchFlags that we
+    // need to propagate. However, this is only needed if :scope
+    // appears in the subject position, since MatchFlags are only
+    // used for subject invalidation. Non-subject flags are set on
+    // Elements directly (e.g. SetChildrenOrSiblingsAffectedByHover)
+    result.flags |= activations.match_flags;
   }
-
-  return MatchSelector(next_context, result);
+  if (activations.vector.empty()) {
+    return kSelectorFailsCompletely;
+  }
+  // Activations are stored in decreasing order of proxmity (parent
+  // activations are added first in CalculateActivations, then any activation
+  // for this element). We want to the most proximate match, hence traverse
+  // activations in reverse order.
+  for (const StyleScopeActivation& activation :
+       base::Reversed(activations.vector)) {
+    next_context.match_visited = context.match_visited;
+    next_context.impact = context.impact;
+    next_context.style_scope = nullptr;
+    next_context.scope = activation.root;
+    CHECK(!NeedsScopeActivation(next_context));  // Keeps recursing otherwise.
+    if (MatchSelector(next_context, result) == kSelectorMatches) {
+      result.proximity = activation.proximity;
+      return kSelectorMatches;
+    }
+  }
+  return kSelectorFailsLocally;
 }
 
 SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
@@ -521,7 +529,8 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
     case CSSSelector::kDescendant:
       if (next_context.selector->GetPseudoType() == CSSSelector::kPseudoScope) {
         if (next_context.selector->IsLastInComplexSelector()) {
-          if (context.scope && context.scope->IsDocumentFragment()) {
+          if (!context.style_scope && context.scope &&
+              context.scope->IsDocumentFragment()) {
             return kSelectorMatches;
           }
         }
@@ -667,7 +676,6 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
         }
       }
     case CSSSelector::kSubSelector:
-    case CSSSelector::kScopeActivation:
       break;
   }
   NOTREACHED();
@@ -840,7 +848,6 @@ ALWAYS_INLINE bool SelectorChecker::CheckOne(
   // [3] https://drafts.csswg.org/selectors-4/#data-model
   if (context.scope && context.scope->OwnerShadowHost() == element &&
       (!selector.IsHostPseudoClass() && !selector.SelectorListOrParent() &&
-       selector.GetPseudoType() != CSSSelector::kPseudoTrue &&
        selector.GetPseudoType() != CSSSelector::kPseudoScope &&
        !context.treat_shadow_host_as_normal_scope &&
        selector.Match() != CSSSelector::kPseudoElement)) {
@@ -2301,8 +2308,6 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       // Only kept around for parsing; can never match anything
       // (because we don't know what it's supposed to mean).
       return false;
-    case CSSSelector::kPseudoTrue:
-      return true;
     case CSSSelector::kPseudoCurrent:
       if (context.previously_matched_pseudo_element != kPseudoIdSearchText) {
         return false;
@@ -2859,11 +2864,11 @@ const StyleScopeActivations& SelectorChecker::EnsureActivations(
   //
   // In the above selector, we first match a:visited, and set match_visited to
   // false since a link was encountered. Then we encounter a compound
-  // with :scope, which causes scopes to be activated (kScopeActivation). At
-  // this point we try to find the scoping limit (:visited), but it wouldn't
-  // match anything because match_visited is set to false, so the selector
-  // would incorrectly match. For this reason we need to evaluate the scoping
-  // root and limits with the original match_visited setting.
+  // with :scope, which causes scopes to be activated (NeedsScopeActivation
+  // ()). At this point we try to find the scoping limit (:visited), but it
+  // wouldn't match anything because match_visited is set to false, so the
+  // selector would incorrectly match. For this reason we need to evaluate the
+  // scoping root and limits with the original match_visited setting.
   bool match_visited = context.match_visited || context.had_match_visited;
   // We only use the cache when matching normal/non-visited rules. Otherwise
   // we'd need to double up the cache.

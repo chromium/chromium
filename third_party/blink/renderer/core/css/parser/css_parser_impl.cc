@@ -1207,32 +1207,18 @@ StyleRule* CSSParserImpl::CreateImplicitNestedRule(
   constexpr bool kNotImplicit =
       false;  // The rule is implicit, but the &/:scope is not.
 
-  HeapVector<CSSSelector, 2> selectors;
-
-  switch (nesting_type) {
-    case CSSNestingType::kNone:
-      NOTREACHED();
-    case CSSNestingType::kNesting:
-      // kPseudoParent
-      selectors.push_back(CSSSelector(parent_rule_for_nesting, kNotImplicit));
-      break;
-    case CSSNestingType::kScope: {
-      // See CSSSelector::RelationType::kScopeActivation.
-      CSSSelector selector;
-      selector.SetTrue();
-      selector.SetRelation(CSSSelector::kScopeActivation);
-      selectors.push_back(selector);
-      selectors.push_back(CSSSelector(AtomicString("scope"), kNotImplicit));
-      break;
-    }
-  }
-
-  CHECK(!selectors.empty());
-  selectors.back().SetLastInComplexSelector(true);
-  selectors.back().SetLastInSelectorList(true);
+  CHECK(nesting_type == CSSNestingType::kNesting ||
+        nesting_type == CSSNestingType::kScope);
+  CSSSelector selector =
+      (nesting_type == CSSNestingType::kNesting)
+          ? CSSSelector(parent_rule_for_nesting, kNotImplicit)
+          : CSSSelector(AtomicString("scope"), kNotImplicit);
+  selector.SetLastInComplexSelector(true);
+  selector.SetLastInSelectorList(true);
+  selector.SetScopeContaining(true);
 
   return StyleRule::Create(
-      base::span<CSSSelector>{selectors.data(), selectors.size()},
+      base::span<CSSSelector>(&selector, 1u),
       CreateCSSPropertyValueSet(parsed_properties_, context_->Mode(),
                                 context_->GetDocument()));
 }
@@ -1247,14 +1233,6 @@ namespace {
 HeapVector<CSSSelector> WhereScopeSelector() {
   HeapVector<CSSSelector> selectors;
 
-  // An internal :true pseuo-class with a kScopeActivation relation type
-  // must precede any compound which contains :scope.
-  // See CSSSelector::RelationType::kScopeActivation.
-  CSSSelector true_selector;
-  true_selector.SetTrue();
-  true_selector.SetRelation(CSSSelector::kScopeActivation);
-  selectors.push_back(true_selector);
-
   CSSSelector inner[1] = {
       CSSSelector(AtomicString("scope"), /* implicit */ false)};
   inner[0].SetLastInComplexSelector(true);
@@ -1264,6 +1242,7 @@ HeapVector<CSSSelector> WhereScopeSelector() {
 
   CSSSelector where;
   where.SetWhere(inner_list);
+  where.SetScopeContaining(true);
   selectors.push_back(where);
 
   selectors.back().SetLastInComplexSelector(true);

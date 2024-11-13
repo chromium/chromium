@@ -684,21 +684,13 @@ static CSSNestingType GetNestingTypeForSelectorList(
 static CSSSelector CreateImplicitAnchor(
     CSSNestingType nesting_type,
     const StyleRule* parent_rule_for_nesting) {
-  if (nesting_type == CSSNestingType::kNesting) {
-    return CSSSelector(parent_rule_for_nesting, /*is_implicit=*/true);
-  }
-  DCHECK_EQ(nesting_type, CSSNestingType::kScope);
-  return CSSSelector(AtomicString("scope"), /*is_implicit=*/true);
-}
-
-// Within @scope, each compound that contains either :scope or '&' is prepended
-// with an implicit :true + relation=kScopeActivation. This makes it possible
-// for SelectorChecker to (re)try the selector's NextSimpleSelector with
-// different :scope nodes.
-static CSSSelector CreateImplicitScopeActivation() {
-  CSSSelector selector;
-  selector.SetTrue();
-  selector.SetRelation(CSSSelector::kScopeActivation);
+  DCHECK(nesting_type == CSSNestingType::kNesting ||
+         nesting_type == CSSNestingType::kScope);
+  CSSSelector selector =
+      (nesting_type == CSSNestingType::kNesting)
+          ? CSSSelector(parent_rule_for_nesting, /*is_implicit=*/true)
+          : CSSSelector(AtomicString("scope"), /*is_implicit=*/true);
+  selector.SetScopeContaining(true);
   return selector;
 }
 
@@ -743,9 +735,7 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeNestedRelativeSelector(
   ResetVectorAfterScope reset_vector(output_);
   output_.push_back(
       CreateImplicitAnchor(nesting_type, parent_rule_for_nesting_));
-  if (nesting_type == CSSNestingType::kScope) {
-    output_.push_back(CreateImplicitScopeActivation());
-  }
+  result_flags |= kContainsScopeOrParent;
   CSSSelector::RelationType combinator = ConsumeCombinator(stream);
   unsigned previous_compound_flags = 0;
   if (!ConsumePartialComplexSelector(stream, combinator,
@@ -832,10 +822,8 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
             nesting_type, parent_rule_for_nesting_,
             reset_vector.AddedElements().data())) {
       output_.back().SetRelation(CSSSelector::kDescendant);
-      if (nesting_type != CSSNestingType::kNone && is_within_scope_) {
-        output_.push_back(CreateImplicitScopeActivation());
-      }
       output_.push_back(anchor.value());
+      result_flags |= kContainsScopeOrParent;
     }
 
     output_[last_index].SetLastInSelectorList(false);
@@ -1293,31 +1281,6 @@ bool IsPseudoClassValidWithinHasArgument(CSSSelector& selector) {
   }
 }
 
-// Checks if an implicit scope activation (see CreateImplicitScopeActivation())
-// must be prepended to a given compound selector.
-static bool SelectorListRequiresScopeActivation(const CSSSelectorList& list);
-
-static bool SimpleSelectorRequiresScopeActivation(const CSSSelector& selector) {
-  if (selector.SelectorList()) {
-    return SelectorListRequiresScopeActivation(*selector.SelectorList());
-  }
-  return selector.GetPseudoType() == CSSSelector::kPseudoScope ||
-         selector.GetPseudoType() == CSSSelector::kPseudoParent;
-}
-
-static bool SelectorListRequiresScopeActivation(const CSSSelectorList& list) {
-  for (const CSSSelector* selector = list.First(); selector;
-       selector = CSSSelectorList::Next(*selector)) {
-    for (const CSSSelector* simple = selector; simple;
-         simple = simple->NextSimpleSelector()) {
-      if (SimpleSelectorRequiresScopeActivation(*simple)) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 }  // namespace
 
 base::span<CSSSelector> CSSSelectorParser::ConsumeCompoundSelector(
@@ -1424,27 +1387,13 @@ base::span<CSSSelector> CSSSelectorParser::ConsumeCompoundSelector(
     selector.SetRelation(CSSSelector::kSubSelector);
   }
 
-  // See CSSSelector::RelationType::kScopeActivation.
-  bool insert_scope_activation = false;
-
-  if (is_within_scope_ && nesting_type != CSSNestingType::kNone) {
-    for (CSSSelector& selector : reset_vector.AddedElements()) {
-      if (SimpleSelectorRequiresScopeActivation(selector)) {
-        insert_scope_activation = true;
-      }
-    }
-  }
-
-  if (insert_scope_activation) {
-    output_.insert(start_pos, CreateImplicitScopeActivation());
-  }
-
   SplitCompoundAtImplicitShadowCrossingCombinator(reset_vector.AddedElements());
   return reset_vector.CommitAddedElements();
 }
 
 bool CSSSelectorParser::ConsumeSimpleSelector(CSSParserTokenStream& stream,
                                               ResultFlags& result_flags) {
+  ResultFlags local_result_flags = 0;
   const CSSParserToken& token = stream.Peek();
   bool ok;
   if (token.GetType() == kHashToken) {
@@ -1454,12 +1403,12 @@ bool CSSSelectorParser::ConsumeSimpleSelector(CSSParserTokenStream& stream,
   } else if (token.GetType() == kLeftBracketToken) {
     ok = ConsumeAttribute(stream);
   } else if (token.GetType() == kColonToken) {
-    ok = ConsumePseudo(stream, result_flags);
+    ok = ConsumePseudo(stream, local_result_flags);
     if (ok) {
-      result_flags |= kContainsPseudo;
+      local_result_flags |= kContainsPseudo;
     }
   } else if (token.GetType() == kDelimiterToken && token.Delimiter() == '&') {
-    ok = ConsumeNestingParent(stream, result_flags);
+    ok = ConsumeNestingParent(stream, local_result_flags);
   } else {
     return false;
   }
@@ -1473,6 +1422,10 @@ bool CSSSelectorParser::ConsumeSimpleSelector(CSSParserTokenStream& stream,
     failed_parsing_ = true;
     return false;
   }
+  if (local_result_flags & kContainsScopeOrParent) {
+    output_.back().SetScopeContaining(true);
+  }
+  result_flags |= local_result_flags;
   return true;
 }
 
@@ -1677,6 +1630,9 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenStream& stream,
     }
     if (selector.GetPseudoType() == CSSSelector::kPseudoHost) {
       found_host_in_compound_ = true;
+    }
+    if (selector.GetPseudoType() == CSSSelector::kPseudoScope) {
+      result_flags |= kContainsScopeOrParent;
     }
     output_.push_back(std::move(selector));
     return true;
@@ -2000,6 +1956,7 @@ bool CSSSelectorParser::ConsumeNestingParent(CSSParserTokenStream& stream,
   output_.push_back(
       CSSSelector(parent_rule_for_nesting_, /*is_implicit=*/false));
 
+  result_flags |= kContainsScopeOrParent;
   // In case that a nesting parent selector is inside a :has() pseudo class,
   // mark the :has() containing a pseudo selector and a complex selector
   // so that the StyleEngine can invalidate the anchor element of the :has()

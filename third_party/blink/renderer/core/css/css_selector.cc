@@ -111,7 +111,8 @@ CSSSelector::CSSSelector(MatchType match_type,
           AttributeMatchField::encode(static_cast<unsigned>(case_sensitivity)) |
           LegacyCaseInsensitiveMatchField::encode(
               !HTMLDocument::IsCaseSensitiveAttribute(attribute) &&
-              case_sensitivity != AttributeMatchType::kCaseSensitiveAlways)),
+              case_sensitivity != AttributeMatchType::kCaseSensitiveAlways) |
+          IsScopeContainingField::encode(false)),
       data_(attribute) {
   DCHECK_EQ(match_type, kAttributeSet);
 }
@@ -132,7 +133,8 @@ CSSSelector::CSSSelector(MatchType match_type,
           AttributeMatchField::encode(static_cast<unsigned>(case_sensitivity)) |
           LegacyCaseInsensitiveMatchField::encode(
               !HTMLDocument::IsCaseSensitiveAttribute(attribute) &&
-              case_sensitivity != AttributeMatchType::kCaseSensitiveAlways)),
+              case_sensitivity != AttributeMatchType::kCaseSensitiveAlways) |
+          IsScopeContainingField::encode(false)),
       data_(MakeGarbageCollected<RareData>(value)) {
   DCHECK(IsAttributeSelector());
   data_.rare_data_->attribute_ = attribute;
@@ -232,10 +234,6 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
             return kClassLikeSpecificity;
           }
         case kPseudoRelativeAnchor:
-          return 0;
-        case kPseudoTrue:
-          // The :true pseudo-class should never be web-exposed, and should
-          // therefore not affect specificity either.
           return 0;
         case kPseudoScope:
           if (IsImplicit()) {
@@ -497,7 +495,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoState:
     case kPseudoStateDeprecatedSyntax:
     case kPseudoTarget:
-    case kPseudoTrue:
     case kPseudoUnknown:
     case kPseudoUnparsed:
     case kPseudoUserInvalid:
@@ -1021,7 +1018,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoState:
     case kPseudoStateDeprecatedSyntax:
     case kPseudoTarget:
-    case kPseudoTrue:
     case kPseudoUnknown:
     case kPseudoUnparsed:
     case kPseudoUserInvalid:
@@ -1067,12 +1063,6 @@ CSSNestingType CSSSelector::GetNestingType() const {
     default:
       return CSSNestingType::kNone;
   }
-}
-
-void CSSSelector::SetTrue() {
-  SetMatch(kPseudoClass);
-  SetPseudoType(kPseudoTrue);
-  bits_.set<IsImplicitlyAddedField>(true);
 }
 
 void CSSSelector::SetWhere(CSSSelectorList* selector_list) {
@@ -1137,8 +1127,7 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
     if (GetPseudoType() == kPseudoUnparsed) {
       builder.Append(Value());
     } else if (GetPseudoType() != kPseudoStateDeprecatedSyntax &&
-               GetPseudoType() != kPseudoParent &&
-               GetPseudoType() != kPseudoTrue) {
+               GetPseudoType() != kPseudoParent) {
       builder.Append(':');
       builder.Append(SerializingValue());
     }
@@ -1347,8 +1336,7 @@ const CSSSelector* CSSSelector::SerializeCompound(
             builder)) {
       return nullptr;
     }
-    if (simple_selector->Relation() != kSubSelector &&
-        simple_selector->Relation() != kScopeActivation) {
+    if (simple_selector->Relation() != kSubSelector) {
       return simple_selector;
     }
   }
@@ -1368,16 +1356,9 @@ String CSSSelector::SelectorTextInternal() const {
 
     RelationType relation = compound->Relation();
     DCHECK_NE(relation, kSubSelector);
-    DCHECK_NE(relation, kScopeActivation);
 
     const CSSSelector* next_compound = compound->NextSimpleSelector();
     DCHECK(next_compound);
-
-    // Skip leading :true. This internal pseudo-class is not supposed to
-    // affect serialization.
-    if (next_compound->GetPseudoType() == kPseudoTrue) {
-      next_compound = next_compound->NextSimpleSelector();
-    }
 
     // If we are combining with an implicit :scope, it is as if we
     // used a relative combinator.
@@ -1401,8 +1382,6 @@ String CSSSelector::SelectorTextInternal() const {
         result = " ~ " + builder.ReleaseString() + result;
         break;
       case kSubSelector:
-      case kScopeActivation:
-        NOTREACHED();
       case kShadowPart:
       case kUAShadow:
       case kShadowSlot:
@@ -1831,7 +1810,6 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoSelectHasChildButton:
       return false;
 
-    case kPseudoTrue:
     case kPseudoUnparsed:
     case kPseudoUnknown:
       return false;

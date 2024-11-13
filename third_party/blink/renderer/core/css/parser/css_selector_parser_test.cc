@@ -1176,7 +1176,7 @@ static CSSSelectorList* ParseNested(String inner_rule,
   return list;
 }
 
-static std::optional<CSSSelector::PseudoType> GetImplicitlyAddedPseudo(
+static std::optional<CSSSelector> GetImplicitlyAddedSelector(
     String inner_rule,
     CSSNestingType nesting_type) {
   CSSSelectorList* list = ParseNested(inner_rule, nesting_type);
@@ -1191,18 +1191,23 @@ static std::optional<CSSSelector::PseudoType> GetImplicitlyAddedPseudo(
   }
   // The back of `selectors` now contains the leftmost simple CSSSelector.
 
-  // Ignore leading :true.
-  if (!selectors.empty() &&
-      selectors.back()->GetPseudoType() == CSSSelector::kPseudoTrue) {
-    selectors.pop_back();
-  }
-
   const CSSSelector* back = !selectors.empty() ? selectors.back() : nullptr;
   if (!back || back->Match() != CSSSelector::kPseudoClass ||
       !back->IsImplicit()) {
     return std::nullopt;
   }
-  return back->GetPseudoType();
+  return *back;
+}
+
+static std::optional<CSSSelector::PseudoType> GetImplicitlyAddedPseudo(
+    String inner_rule,
+    CSSNestingType nesting_type) {
+  std::optional<CSSSelector> implicit_selector =
+      GetImplicitlyAddedSelector(inner_rule, nesting_type);
+  if (!implicit_selector.has_value()) {
+    return std::nullopt;
+  }
+  return implicit_selector->GetPseudoType();
 }
 
 TEST(CSSSelectorParserTest, NestingTypeImpliedDescendant) {
@@ -1273,271 +1278,209 @@ TEST(CSSSelectorParserTest, NestingTypeImpliedDescendant) {
             GetImplicitlyAddedPseudo(":scope .foo", CSSNestingType::kNone));
 }
 
-static const CSSSelector* NthSimpleSelector(const CSSSelector& selector,
-                                            wtf_size_t index) {
-  wtf_size_t i = 0;
-  for (const CSSSelector* s = &selector; s; s = s->NextSimpleSelector()) {
-    if (i == index) {
-      return s;
+// See IsScopeContainingData.
+//
+// Creates a selector equivalent to to `selector_text`, except inserting
+// an empty :where() at each point indicated by `arrows`. The empty :where()
+// selectors are used by IsScopeContainingComparison as signals for when
+// IsScopeContaining==true is expected.
+static String CreateReferenceSelectorForScopeContaining(String selector_text,
+                                                        String arrows) {
+  CHECK_EQ(selector_text.length(), arrows.length());
+  StringBuilder builder;
+  for (wtf_size_t i = 0; i < selector_text.length(); ++i) {
+    if (arrows[i] == '^') {
+      builder.Append(":where()");
     }
-    ++i;
+    builder.Append(selector_text[i]);
   }
-  return nullptr;
+  return builder.ToString();
 }
 
-struct ScopeActivationData {
-  // The selector text, e.g. ".a .b > .c".
-  const char* inner_rule;
-  // The simple CSSSelector to "focus" the test on, specified by the Nth
-  // CSSSelector in the list of simple selectors.
-  wtf_size_t index;
-};
-
-// Each test verifies that the simple selector at the specified selector
-// index is ':true' and that it has relation=kPseudoActivation.
-ScopeActivationData scope_activation_data[] = {
-    // Comments indicate the expected order of simple selectors
-    // in the list of simple selectors.
-
-    // [:true, :scope]
-    {":scope", 0},
-
-    // [:true, :scope, :true, :scope]
-    {":scope :scope", 0},
-    {":scope :scope", 2},
-
-    // [.bar, .foo, :true, :scope]
-    {".foo > .bar", 2},
-
-    // [.bar, .foo, :true, :scope]
-    {"> .foo > .bar", 2},
-
-    // [:true, :scope, .foo]
-    {".foo > :scope", 0},
-
-    // [.bar, :true, :scope, .foo]
-    {".foo > :scope > .bar", 1},
-
-    // [.bar, :true, :scope, .foo]
-    {".foo :scope .bar", 1},
-
-    // [.bar, :true, .a, .b, .c, :scope, .foo]
-    {".foo > .a.b.c:scope > .bar", 1},
-
-    // [.bar, :true, .a, :where(...), .foo]
-    {".foo > .a:where(.b, :scope) > .bar", 1},
-
-    // [:true, :scope, :true, :scope, .foo]
-    {".foo > :scope > :scope", 0},
-    {".foo > :scope > :scope", 2},
-
-    // [:true, &, :true, :scope]
-    {".a :scope > &", 0},
-    {".a :scope > &", 2},
-
-    // [:true, &]
-    {"&", 0},
-
-    // [:true, &, :true, &, :true, &]
-    {"& & &", 0},
-    {"& & &", 2},
-    {"& & &", 4},
-};
-
-class ScopeActivationTest
-    : public ::testing::TestWithParam<ScopeActivationData> {};
-
-INSTANTIATE_TEST_SUITE_P(CSSSelectorParserTest,
-                         ScopeActivationTest,
-                         testing::ValuesIn(scope_activation_data));
-
-TEST_P(ScopeActivationTest, All) {
-  test::TaskEnvironment task_environment;
-  ScopeActivationData param = GetParam();
-  SCOPED_TRACE(param.inner_rule);
-
-  CSSSelectorList* list = ParseNested(param.inner_rule, CSSNestingType::kScope);
-  ASSERT_TRUE(list);
-  ASSERT_TRUE(list->First());
-  const CSSSelector* selector = NthSimpleSelector(*list->First(), param.index);
-  ASSERT_TRUE(selector);
-  SCOPED_TRACE(selector->SimpleSelectorTextForDebug().Utf8());
-  EXPECT_EQ(CSSSelector::kPseudoTrue, selector->GetPseudoType());
-  EXPECT_EQ(CSSSelector::kScopeActivation, selector->Relation());
-}
-
-// Returns the number of simple selectors that match `predicate`, including
-// selectors within nested selector lists (e.g. :is()).
-template <typename PredicateFunc>
-static wtf_size_t CountSimpleSelectors(const CSSSelectorList& list,
-                                       PredicateFunc predicate) {
-  wtf_size_t count = 0;
-  for (const CSSSelector* selector = list.First(); selector;
-       selector = CSSSelectorList::Next(*selector)) {
-    for (const CSSSelector* s = selector; s; s = s->NextSimpleSelector()) {
-      if (s->SelectorList()) {
-        count += CountSimpleSelectors(*s->SelectorList(), predicate);
-      }
-      if (predicate(*s)) {
-        ++count;
+static HeapVector<CSSSelector> FlattenSelector(const CSSSelector* selector) {
+  HeapVector<CSSSelector> result;
+  while (selector) {
+    result.push_back(*selector);
+    if (const CSSSelectorList* list = selector->SelectorList()) {
+      for (const CSSSelector* s = list->First(); s;
+           s = CSSSelectorList::Next(*s)) {
+        result.AppendVector(FlattenSelector(s));
       }
     }
+    selector = selector->NextSimpleSelector();
   }
-  return count;
+  return result;
 }
 
-template <typename PredicateFunc>
-static std::optional<wtf_size_t> CountSimpleSelectors(
-    String selector_text,
-    CSSNestingType nesting_type,
-    PredicateFunc predicate) {
-  CSSSelectorList* list = ParseNested(selector_text, nesting_type);
-  if (!list || !list->First()) {
-    return std::nullopt;
+static bool IsScopeContainingComparison(HeapVector<CSSSelector> actual,
+                                        HeapVector<CSSSelector> ref) {
+  actual.Reverse();
+  ref.Reverse();
+  // [actual,ref].back() now holds the first CSSSelector produced
+  // by FlattenSelector.
+
+  while (!actual.empty()) {
+    bool at_arrow = (ref.back().GetPseudoType() == CSSSelector::kPseudoWhere) &&
+                    !ref.back().SelectorList()->IsValid();
+    if (at_arrow) {
+      ref.pop_back();
+      CHECK(!ref.empty());
+    }
+    if (actual.back().IsScopeContaining() != at_arrow) {
+      DLOG(ERROR) << "Unexpected value for IsScopeContaining:" << " expected="
+                  << at_arrow << " actual=" << actual.back().IsScopeContaining()
+                  << " selector=" << actual.back().SimpleSelectorTextForDebug();
+      return false;
+    }
+    actual.pop_back();
+    ref.pop_back();
   }
-  return CountSimpleSelectors<PredicateFunc>(*list, predicate);
+
+  return ref.empty();
 }
 
-static std::optional<wtf_size_t> CountPseudoTrue(String selector_text,
-                                                 CSSNestingType nesting_type) {
-  return CountSimpleSelectors(
-      selector_text, nesting_type, [](const CSSSelector& selector) {
-        return selector.GetPseudoType() == CSSSelector::kPseudoTrue;
-      });
-}
-
-static std::optional<wtf_size_t> CountScopeActivations(
-    String selector_text,
-    CSSNestingType nesting_type) {
-  return CountSimpleSelectors(
-      selector_text, nesting_type, [](const CSSSelector& selector) {
-        return selector.Relation() == CSSSelector::kScopeActivation;
-      });
-}
-
-static std::optional<wtf_size_t> CountPseudoTrueWithScopeActivation(
-    String selector_text,
-    CSSNestingType nesting_type) {
-  return CountSimpleSelectors(
-      selector_text, nesting_type, [](const CSSSelector& selector) {
-        return selector.GetPseudoType() == CSSSelector::kPseudoTrue &&
-               selector.Relation() == CSSSelector::kScopeActivation;
-      });
-}
-
-TEST(CSSSelectorParserTest, CountMatchesSelfTest) {
-  test::TaskEnvironment task_environment;
-  auto is_focus = [](const CSSSelector& selector) {
-    return selector.GetPseudoType() == CSSSelector::kPseudoFocus;
-  };
-  auto is_hover = [](const CSSSelector& selector) {
-    return selector.GetPseudoType() == CSSSelector::kPseudoHover;
-  };
-  EXPECT_EQ(2u, CountSimpleSelectors(":focus > .a > :focus",
-                                     CSSNestingType::kNone, is_focus));
-  EXPECT_EQ(3u, CountSimpleSelectors(":focus > .a > :focus, .b, :focus",
-                                     CSSNestingType::kNone, is_focus));
-  EXPECT_EQ(0u,
-            CountSimpleSelectors(".a > .b", CSSNestingType::kNone, is_focus));
-  EXPECT_EQ(4u,
-            CountSimpleSelectors(":hover > :is(:hover, .a, :hover) > :hover",
-                                 CSSNestingType::kNone, is_hover));
-}
-
-struct ScopeActivationCountData {
+struct IsScopeContainingData {
   // The selector text, e.g. ".a .b > .c".
   const char* selector_text;
-  // The expected number of :true pseudo-classes with relation=kScopeActivation
-  // if the selector is parsed with CSSNestingType::kScope.
-  wtf_size_t pseudo_count;
+  // A string of the same length as `selector_text`, where each '^' indicates
+  // a simple selector which has the IsScopeContaining flag set.
+  const char* arrows;
 };
 
-ScopeActivationCountData scope_activation_count_data[] = {
-    // Implicit :scope with descendant combinator:
-    {".a", 1},
-    {".a .b", 1},
-    {".a .b > .c", 1},
-
-    // Implicit :scope for relative selectors:
-    {"> .a", 1},
-    {"> .a .b", 1},
-    {"> .a .b > .c", 1},
+IsScopeContainingData scope_containing_data[] = {
+    // No IsScopeContaining flags set:
+    {
+        ".a",
+        "  ",
+    },
+    {
+        "div > .a",
+        "        ",
+    },
+    {
+        "div > :is(.b, main) ~ .a",
+        "                        ",
+    },
 
     // Explicit :scope top-level:
-    {":scope", 1},
-    {".a :scope", 1},
-    {".a > :scope > .b", 1},
-    {":scope > :scope", 2},
-    {":scope > .a > :scope", 2},
+    {
+        ":scope",
+        "^     ",
+    },
+    {
+        ".a :scope",
+        "   ^     ",
+    },
+    {
+        ".a > :scope > .b",
+        "     ^          ",
+    },
+    {
+        ":scope > :scope",
+        "^        ^     ",
+    },
+    {
+        ":scope > .a > :scope",
+        "^             ^     ",
+    },
 
     // :scope in inner selector lists:
-    {".a > :is(.b, :scope, .c) .d", 1},
-    {".a > :not(.b, :scope, .c) .d", 1},
-    {".a > :is(.b, :scope, .c):scope .d", 1},
-    {".a > :is(.b, :scope, .c):scope .d:scope", 2},
-    {".a > :is(.b, :scope, :scope, .c):scope .d:scope", 2},
-    {".a > :has(> :scope):scope > .b", 1},
+    {
+        ".a > :is(.b, :scope, .c) .d",
+        "     ^       ^             ",
+    },
+    {
+        ".a > :not(.b, :scope, .c) .d",
+        "     ^        ^             ",
+    },
+    {
+        ".a > :is(.b, :scope, .c):scope .d",
+        "     ^       ^          ^        ",
+    },
+    {
+        ".a > :is(.b, :scope, .c):scope .d:scope",
+        "     ^       ^          ^        ^     ",
+    },
+    {
+        ".a > :is(.b, :scope, :scope, .c):scope .d:scope",
+        "     ^       ^       ^          ^        ^     ",
+    },
+    {
+        ".a > :has(> :scope):scope > .b",
+        "     ^      ^      ^          ",
+    },
 
     // As the previous section, but using '&' instead of :scope.
-    {".a > :is(.b, &, .c) .d", 1},
-    {".a > :not(.b, &, .c) .d", 1},
-    {".a > :is(.b, &, .c)& .d", 1},
-    {".a > :is(.b, &, .c)& .d&", 2},
-    {".a > :is(.b, &, &, .c)& .d&", 2},
-    {".a > :has(> &)& > .b", 1},
+    {
+        ".a > :is(.b, &, .c) .d",
+        "     ^       ^        ",
+    },
+    {
+        ".a > :not(.b, &, .c) .d",
+        "     ^        ^        ",
+    },
+    {
+        ".a > :is(.b, &, .c)& .d",
+        "     ^       ^     ^   ",
+    },
+    {
+        ".a > :is(.b, &, .c)& .d&",
+        "     ^       ^     ^   ^",
+    },
+    {
+        ".a > :is(.b, &, &, .c)& .d&",
+        "     ^       ^  ^     ^   ^",
+    },
+    {
+        ".a > :has(> &)& > .b",
+        "     ^      ^ ^     ",
+    },
 };
 
-class ScopeActivationCountTest
-    : public ::testing::TestWithParam<ScopeActivationCountData> {
+class IsScopeContainingTest
+    : public ::testing::TestWithParam<IsScopeContainingData> {
  private:
   test::TaskEnvironment task_environment_;
 };
 
-INSTANTIATE_TEST_SUITE_P(CSSSelectorParserTest,
-                         ScopeActivationCountTest,
-                         testing::ValuesIn(scope_activation_count_data));
+INSTANTIATE_TEST_SUITE_P(All,
+                         IsScopeContainingTest,
+                         testing::ValuesIn(scope_containing_data));
 
-TEST_P(ScopeActivationCountTest, Scope) {
-  ScopeActivationCountData param = GetParam();
+TEST_P(IsScopeContainingTest, RefTest) {
+  IsScopeContainingData param = GetParam();
+  SCOPED_TRACE(param.arrows);
   SCOPED_TRACE(param.selector_text);
+  SCOPED_TRACE("'^' indicates where IsScopeContaining==true was expected");
+  ASSERT_EQ(strlen(param.selector_text), strlen(param.arrows));
 
-  // We expect :true and kScopeActivation to only occur ever occur together.
-  EXPECT_EQ(param.pseudo_count,
-            CountPseudoTrue(param.selector_text, CSSNestingType::kScope));
-  EXPECT_EQ(param.pseudo_count,
-            CountScopeActivations(param.selector_text, CSSNestingType::kScope));
-  EXPECT_EQ(param.pseudo_count,
-            CountPseudoTrueWithScopeActivation(param.selector_text,
-                                               CSSNestingType::kScope));
+  String ref = CreateReferenceSelectorForScopeContaining(param.selector_text,
+                                                         param.arrows);
+  CSSSelectorList* actual_list =
+      ParseNested(param.selector_text, CSSNestingType::kNone);
+  CSSSelectorList* ref_list = ParseNested(ref, CSSNestingType::kNone);
+  ASSERT_TRUE(actual_list);
+  ASSERT_TRUE(actual_list->First());
+  ASSERT_TRUE(ref_list);
+  ASSERT_TRUE(ref_list->First());
+  EXPECT_TRUE(IsScopeContainingComparison(FlattenSelector(actual_list->First()),
+                                          FlattenSelector(ref_list->First())));
 }
 
-TEST_P(ScopeActivationCountTest, Nesting) {
-  ScopeActivationCountData param = GetParam();
-  SCOPED_TRACE(param.selector_text);
-
-  // We do not expect any inserted :true/kScopeActivation for kNesting.
-  EXPECT_EQ(0u, CountPseudoTrue(param.selector_text, CSSNestingType::kNesting));
-  EXPECT_EQ(
-      0u, CountScopeActivations(param.selector_text, CSSNestingType::kNesting));
-  EXPECT_EQ(0u, CountPseudoTrueWithScopeActivation(param.selector_text,
-                                                   CSSNestingType::kNesting));
-}
-
-TEST_P(ScopeActivationCountTest, None) {
-  ScopeActivationCountData param = GetParam();
-  SCOPED_TRACE(param.selector_text);
-
-  // We do not expect any inserted :true/kScopeActivation for kNone. Note that
-  // relative selectors do not parse for kNone.
-  EXPECT_EQ(
-      0u,
-      CountPseudoTrue(param.selector_text, CSSNestingType::kNone).value_or(0));
-  EXPECT_EQ(0u,
-            CountScopeActivations(param.selector_text, CSSNestingType::kNone)
-                .value_or(0));
-  EXPECT_EQ(0u, CountPseudoTrueWithScopeActivation(param.selector_text,
-                                                   CSSNestingType::kNone)
-                    .value_or(0));
+TEST(CSSSelectorParserTest, ImplicitSelectorIsScopeContaining) {
+  test::TaskEnvironment task_environment;
+  EXPECT_TRUE(GetImplicitlyAddedSelector("> .a", CSSNestingType::kNesting)
+                  .value_or(CSSSelector())
+                  .IsScopeContaining());
+  EXPECT_TRUE(GetImplicitlyAddedSelector(".a", CSSNestingType::kNesting)
+                  .value_or(CSSSelector())
+                  .IsScopeContaining());
+  EXPECT_TRUE(GetImplicitlyAddedSelector("> .a", CSSNestingType::kScope)
+                  .value_or(CSSSelector())
+                  .IsScopeContaining());
+  EXPECT_TRUE(GetImplicitlyAddedSelector(".a", CSSNestingType::kScope)
+                  .value_or(CSSSelector())
+                  .IsScopeContaining());
 }
 
 }  // namespace blink

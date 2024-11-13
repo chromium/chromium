@@ -167,7 +167,6 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
     // Only collect identifiers that match ancestors.
     switch (relation) {
       case CSSSelector::kSubSelector:
-      case CSSSelector::kScopeActivation:
         if (!skip_over_subselectors) {
           CollectDescendantSelectorIdentifierHashes(*current, style_scope,
                                                     hashes);

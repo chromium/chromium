@@ -281,47 +281,6 @@ TEST(CSSSelector, NonImplicitPseudoChild) {
   EXPECT_EQ(":scope > div", selector[0].SelectorText());
 }
 
-TEST(CSSSelector, PseudoTrueBefore) {
-  test::TaskEnvironment task_environment;
-  CSSSelector selector[2] = {
-      CSSSelector(),
-      CSSSelector(AtomicString("hover"), /* is_implicit */ false)};
-  selector[0].SetTrue();
-  selector[0].SetRelation(CSSSelector::kSubSelector);
-  selector[1].SetLastInComplexSelector(true);
-  EXPECT_EQ(":hover", selector[0].SelectorText());
-}
-
-TEST(CSSSelector, PseudoTrueAfter) {
-  test::TaskEnvironment task_environment;
-  CSSSelector selector[2] = {
-      CSSSelector(AtomicString("hover"), /* is_implicit */ false),
-      CSSSelector()};
-  selector[0].SetRelation(CSSSelector::kSubSelector);
-  selector[1].SetTrue();
-  selector[1].SetLastInComplexSelector(true);
-  EXPECT_EQ(":hover", selector[0].SelectorText());
-}
-
-TEST(CSSSelector, PseudoTrueChild) {
-  test::TaskEnvironment task_environment;
-  CSSSelector selector[2] = {CSSSelector(html_names::kDivTag,
-                                         /* is_implicit */ false),
-                             CSSSelector()};
-  selector[0].SetRelation(CSSSelector::kChild);
-  selector[1].SetTrue();
-  selector[1].SetLastInComplexSelector(true);
-  EXPECT_EQ("> div", selector[0].SelectorText());
-}
-
-TEST(CSSSelector, PseudoTrueSpecificity) {
-  test::TaskEnvironment task_environment;
-  CSSSelector selector;
-  selector.SetTrue();
-  selector.SetLastInComplexSelector(true);
-  EXPECT_EQ(0u, selector.Specificity());
-}
-
 TEST(CSSSelector, ImplicitScopeSpecificity) {
   test::TaskEnvironment task_environment;
   CSSSelector selector[2] = {

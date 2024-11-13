@@ -118,6 +118,9 @@ class CORE_EXPORT CSSSelectorParser {
     // True when a selector contains (or is) a complex selector,
     // i.e. contains combinators.
     kContainsComplexSelector = 1 << 1,
+    // True when a selector contains either :scope, or '&'. This includes
+    // any :scope or '&' selectors inserted implicitly for relative selectors.
+    kContainsScopeOrParent = 1 << 2,
   };
   using ResultFlags = unsigned;
 
