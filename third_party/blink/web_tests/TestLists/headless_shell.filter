@@ -96,19 +96,39 @@ external/wpt/quirks/*
 external/wpt/referrer-policy/*
 external/wpt/remote-playback/*
 external/wpt/resource-timing/*
+external/wpt/savedata/*
 external/wpt/scheduler/*
+external/wpt/screen-details/*
+external/wpt/secure-contexts/*
 external/wpt/selection/*
+external/wpt/serial/*
+external/wpt/server-timing/*
+external/wpt/shape-detection/*
 external/wpt/signed-exchange/*
+external/wpt/subresource-integrity/*
+external/wpt/timing-entrytypes-registry/*
+external/wpt/trust-tokens/*
 external/wpt/trusted-types/*
+external/wpt/ua-client-hints/*
 external/wpt/upgrade-insecure-requests/*
+external/wpt/vibration/*
+external/wpt/viewport/*
+external/wpt/virtual-keyboard/*
 external/wpt/wasm/*
 external/wpt/web-locks/*
+external/wpt/web-otp/*
+external/wpt/web-share/*
 external/wpt/webaudio/*
 external/wpt/webauthn/*
 external/wpt/WebCryptoAPI/*
+external/wpt/webgl/*
+external/wpt/webhid/*
 external/wpt/webidl/*
 external/wpt/webmessaging/*
+external/wpt/webmidi/*
 external/wpt/webstorage/*
+external/wpt/window-management/*
+external/wpt/x-frame-options/*
 external/wpt/xhr/*
 
 virtual/cookie-deprecation-label/*
@@ -126,9 +146,11 @@ virtual/prefetch*
 virtual/produce-compile-hints/external/wpt/loading/*
 virtual/single-renderer-process/external/wpt/*
 virtual/split-http-cache/external/wpt/signed-exchange/*
+virtual/third-party-storage-partitioning/external/wpt/secure-contexts/*
 virtual/third-party-storage-partitioning/external/wpt/web-locks/*
 virtual/threaded/external/wpt/feature-policy/*
 virtual/threaded/external/wpt/scheduler/*
+virtual/trust-tokens/external/wpt/trust-tokens/*
 virtual/webauthn-remote-desktop-client-override/*
 
 # These tests use the virtual authenticator API, which is only supported through webdriver.
