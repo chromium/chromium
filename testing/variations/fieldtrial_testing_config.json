@@ -9230,21 +9230,6 @@
             ]
         }
     ],
-    "EnableReportingFromUnmanagedDevices": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableReportingFromUnmanagedDevices"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableSessionSerializationOptimizations": [
         {
             "platforms": [
