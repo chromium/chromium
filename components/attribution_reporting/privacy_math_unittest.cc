@@ -16,6 +16,7 @@
 
 #include "base/numerics/checked_math.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -500,6 +501,27 @@ TEST(PrivacyMathTest, NumStatesForTriggerSpecs_UniqueSampling) {
     }
     EXPECT_EQ(static_cast<size_t>(*test_case.expected_num_states),
               seen_outputs.size());
+  }
+}
+
+TEST(PrivacyMathTest, NumStatesHistogramRecorded) {
+  for (const auto& test_case : kNumStateTestCases) {
+    base::HistogramTester histograms;
+    auto specs = SpecsFromWindowList(test_case.windows_per_type,
+                                     /*collapse_into_single_spec=*/true,
+                                     test_case.max_reports);
+    auto channel_capacity_response =
+        DoRandomizedResponse(specs, /*epsilon=*/14, SourceType::kNavigation,
+                             /*scopes_data=*/std::nullopt, PrivacyMathConfig());
+
+    if (test_case.expected_num_states.has_value()) {
+      histograms.ExpectUniqueSample(
+          "Conversions.NumTriggerStates",
+          *test_case.expected_num_states >= std::numeric_limits<int>::max()
+              ? std::numeric_limits<int>::max() - 1
+              : *test_case.expected_num_states,
+          1);
+    }
   }
 }
 

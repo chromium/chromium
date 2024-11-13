@@ -841,6 +841,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.NumTriggerStates" units="states"
+    expires_after="2025-04-30">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the number of possible trigger states in a source registration.
+    Records when generating the randomized response for a given source
+    registration.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.OsRegistrationItemsPerBatch" units="count"
     expires_after="2025-03-30">
   <owner>linnan@chromium.org</owner>

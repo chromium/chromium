@@ -17,9 +17,11 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
@@ -397,6 +399,8 @@ DoRandomizedResponseWithCache(
     const std::optional<AttributionScopesData>& scopes_data,
     const PrivacyMathConfig& config) {
   ASSIGN_OR_RETURN(const uint32_t num_states, GetNumStatesCached(specs, map));
+  base::UmaHistogramCounts100000("Conversions.NumTriggerStates",
+                                 base::ClampedNumeric(num_states));
 
   double rate = GetRandomizedResponseRate(num_states, epsilon);
   double channel_capacity = internal::ComputeChannelCapacity(num_states, rate);
