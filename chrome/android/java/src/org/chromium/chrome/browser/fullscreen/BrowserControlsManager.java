@@ -272,6 +272,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                             return;
                         }
 
+                        offsetTagsInfo.mBottomControlsHeight = mBottomControlsHeight;
                         offsetTagsInfo.mTopControlsHeight = mTopControlsHeight;
                         offsetTagsInfo.mTopControlsHairlineHeight =
                                 mControlContainer.getToolbarHairlineHeight();

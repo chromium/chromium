@@ -18,6 +18,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout.LayoutParams;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
@@ -136,6 +137,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                             mControlContainer.getView().setTranslationY(layerYOffset);
                         }
                     }
+
+                    // TODO(peilinwang) implement bciv for bottom toolbar.
+                    @Override
+                    public int updateOffsetTag(BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+                        return 0;
+                    }
                 };
         mProgressBarLayer =
                 new BottomControlsLayer() {
@@ -162,6 +169,12 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                     @Override
                     public void onBrowserControlsOffsetUpdate(int layerYOffset) {
                         mToolbarProgressBarContainer.setTranslationY(layerYOffset);
+                    }
+
+                    // TODO(peilinwang) implement bciv for bottom toolbar.
+                    @Override
+                    public int updateOffsetTag(BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+                        return 0;
                     }
                 };
 

@@ -35,6 +35,13 @@ cc::BrowserControlsOffsetTagsInfo FromJavaBrowserControlsOffsetTagsInfo(
     return tags_info;
   }
 
+  const base::android::JavaRef<jobject>& jbottom_controls_offset_tag =
+      Java_BrowserControlsOffsetTagsInfo_getBottomControlsOffsetTag(
+          env, jbrowser_controls_offset_tags_info);
+  viz::OffsetTag bottom_controls_offset_tag =
+      FromJavaOffsetTag(env, jbottom_controls_offset_tag);
+  tags_info.bottom_controls_offset_tag = bottom_controls_offset_tag;
+
   const base::android::JavaRef<jobject>& jcontent_offset_tag =
       Java_BrowserControlsOffsetTagsInfo_getContentOffsetTag(
           env, jbrowser_controls_offset_tags_info);
@@ -48,6 +55,14 @@ cc::BrowserControlsOffsetTagsInfo FromJavaBrowserControlsOffsetTagsInfo(
   viz::OffsetTag top_controls_offset_tag =
       FromJavaOffsetTag(env, jtop_controls_offset_tag);
   tags_info.top_controls_offset_tag = top_controls_offset_tag;
+
+  tags_info.bottom_controls_height =
+      Java_BrowserControlsOffsetTagsInfo_getBottomControlsHeight(
+          env, jbrowser_controls_offset_tags_info);
+
+  tags_info.bottom_controls_additional_height =
+      Java_BrowserControlsOffsetTagsInfo_getBottomControlsAdditionalHeight(
+          env, jbrowser_controls_offset_tags_info);
 
   tags_info.top_controls_height =
       Java_BrowserControlsOffsetTagsInfo_getTopControlsHeight(

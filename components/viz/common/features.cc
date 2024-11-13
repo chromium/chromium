@@ -34,6 +34,10 @@ BASE_FEATURE(kAndroidBrowserControlsInViz,
              "AndroidBrowserControlsInViz",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAndroidBcivBottomControls,
+             "AndroidBcivBottomControls",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAndroidBcivWithSimpleScheduler,
              "AndroidBcivWithSimpleScheduler",
              base::FEATURE_DISABLED_BY_DEFAULT);

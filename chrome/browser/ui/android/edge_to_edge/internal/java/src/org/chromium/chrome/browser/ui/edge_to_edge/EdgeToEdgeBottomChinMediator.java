@@ -12,6 +12,7 @@ import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.isBott
 
 import androidx.annotation.NonNull;
 
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
@@ -240,5 +241,11 @@ class EdgeToEdgeBottomChinMediator
     public void onBrowserControlsOffsetUpdate(int layerYOffset) {
         assert BottomControlsStacker.isDispatchingYOffset();
         mModel.set(Y_OFFSET, layerYOffset);
+    }
+
+    // TODO(peilinwang) implement bciv for chin.
+    @Override
+    public int updateOffsetTag(BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+        return 0;
     }
 }

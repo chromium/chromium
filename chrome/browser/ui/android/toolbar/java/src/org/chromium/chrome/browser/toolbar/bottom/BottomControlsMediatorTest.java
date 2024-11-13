@@ -64,6 +64,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class BottomControlsMediatorTest {
 
     private static final int DEFAULT_HEIGHT = 80;
+    private static final int DEFAULT_SHADOW_HEIGHT = 10;
     private static final int DEFAULT_INSET = 56;
     private static final Insets NAVIGATION_BAR_INSETS = Insets.of(0, 0, 0, 100);
     private static final Insets STATUS_BAR_INSETS = Insets.of(0, 100, 0, 0);
@@ -118,6 +119,7 @@ public class BottomControlsMediatorTest {
                         mFullscreenManager,
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
+                        DEFAULT_SHADOW_HEIGHT,
                         mOverlayPanelVisibilitySupplier,
                         mEdgeToEdgeControllerSupplier,
                         mReadAloudRestoringSupplier);
@@ -134,6 +136,7 @@ public class BottomControlsMediatorTest {
                         mFullscreenManager,
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
+                        DEFAULT_SHADOW_HEIGHT,
                         mOverlayPanelVisibilitySupplier,
                         new ObservableSupplierImpl<>(null),
                         mReadAloudRestoringSupplier);
@@ -186,6 +189,7 @@ public class BottomControlsMediatorTest {
                         mFullscreenManager,
                         mTabObscuringHandler,
                         DEFAULT_HEIGHT,
+                        DEFAULT_SHADOW_HEIGHT,
                         mOverlayPanelVisibilitySupplier,
                         new ObservableSupplierImpl<>(liveEdgeToEdgeController),
                         mReadAloudRestoringSupplier);
@@ -217,6 +221,7 @@ public class BottomControlsMediatorTest {
                 mFullscreenManager,
                 mTabObscuringHandler,
                 DEFAULT_HEIGHT,
+                DEFAULT_SHADOW_HEIGHT,
                 mOverlayPanelVisibilitySupplier,
                 new ObservableSupplierImpl<>(liveEdgeToEdgeController),
                 mReadAloudRestoringSupplier);

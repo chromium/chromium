@@ -127,9 +127,21 @@ void DelegatedFrameHostAndroid::SetIsFrameSinkIdOwner(bool is_owner) {
 
 void DelegatedFrameHostAndroid::RegisterOffsetTags(
     const cc::BrowserControlsOffsetTagsInfo& tags_info) {
-  const viz::OffsetTag top_controls_offset_tag =
+  const viz::OffsetTag& bottom_controls_offset_tag =
+      tags_info.bottom_controls_offset_tag;
+  const viz::OffsetTag& top_controls_offset_tag =
       tags_info.top_controls_offset_tag;
-  const viz::OffsetTag content_offset_tag = tags_info.content_offset_tag;
+  const viz::OffsetTag& content_offset_tag = tags_info.content_offset_tag;
+
+  if (!bottom_controls_offset_tag.IsEmpty()) {
+    int bottom_controls_height = tags_info.bottom_controls_height;
+    int bottom_controls_additional_height =
+        tags_info.bottom_controls_additional_height;
+    viz::OffsetTagConstraints bottom_controls_constraints(
+        0, 0, 0, bottom_controls_height + bottom_controls_additional_height);
+    content_layer_->RegisterOffsetTag(bottom_controls_offset_tag,
+                                      bottom_controls_constraints);
+  }
 
   // TOOD(peilinwang) Enforce that either both tags exist or are both empty
   // after the NoBrowserFramesWithAdditionalCaptures BCIV experiment ramps up.
@@ -154,15 +166,21 @@ void DelegatedFrameHostAndroid::RegisterOffsetTags(
 
 void DelegatedFrameHostAndroid::UnregisterOffsetTags(
     const cc::BrowserControlsOffsetTagsInfo& tags_info) {
-  const viz::OffsetTag top_controls_offset_tag =
+  const viz::OffsetTag& top_controls_offset_tag =
       tags_info.top_controls_offset_tag;
   if (!top_controls_offset_tag.IsEmpty()) {
     content_layer_->UnregisterOffsetTag(top_controls_offset_tag);
   }
 
-  const viz::OffsetTag content_offset_tag = tags_info.content_offset_tag;
+  const viz::OffsetTag& content_offset_tag = tags_info.content_offset_tag;
   if (!content_offset_tag.IsEmpty()) {
     content_layer_->UnregisterOffsetTag(content_offset_tag);
+  }
+
+  const viz::OffsetTag& bottom_controls_offset_tag =
+      tags_info.bottom_controls_offset_tag;
+  if (!bottom_controls_offset_tag.IsEmpty()) {
+    content_layer_->UnregisterOffsetTag(bottom_controls_offset_tag);
   }
 }
 
