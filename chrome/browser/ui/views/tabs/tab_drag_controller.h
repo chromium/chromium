@@ -227,9 +227,19 @@ class TabDragController : public views::WidgetObserver,
   void EndDrag(EndDragReason reason);
 
   // Set a callback to be called when the nested drag loop / system DnD session
-  // finishes. Note that the latter only ends when the mouse is released, i.e.
-  // the callback won't be invoked when attaching to another browser if the tab
-  // dragging session continues running.
+  // finishes.
+  //
+  // The details of when this callback is called are as follows:
+  // - If using a nested drag loop, it is called when dragging tabs into a
+  //   browser; or when dropping a window.
+  // - If using system DnD, it is called when releasing the mouse after having
+  //   dragged out of the window at any point in time during the drag session;
+  //   or when dragging tabs into a browser, if all tabs from the source
+  //   browser were part of the drag and therefore the source browser is closed.
+  //   Also, the callback must be set before the system DnD session starts.
+  //   As that session keeps running until the end of the tab dragging session,
+  //   this means that this method has no effect after entering the
+  //   kDraggingUsingSystemDragAndDrop state for the first time.
   void SetDragLoopDoneCallbackForTesting(base::OnceClosure callback);
 
   TabStripScrollSession* GetTabStripScrollSessionForTesting() {

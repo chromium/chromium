@@ -375,6 +375,7 @@ source_set("interactive_ui_tests_filters") {
     "//testing/buildbot/filters/linux.linux-rel-cft.interactive_ui_tests.filter",
     "//testing/buildbot/filters/mac.mac11-arm64-rel.interactive_ui_tests.filter",
     "//testing/buildbot/filters/mac.mac-rel-cft.interactive_ui_tests.filter",
+    "//testing/buildbot/filters/ozone-linux.interactive_ui_tests.filter",
     "//testing/buildbot/filters/ozone-linux.interactive_ui_tests_wayland.filter",
     "//testing/buildbot/filters/pixel_tests.filter",
     "//testing/buildbot/filters/win.win-rel-cft.interactive_ui_tests.filter",

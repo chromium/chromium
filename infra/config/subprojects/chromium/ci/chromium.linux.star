@@ -608,6 +608,9 @@ ci.thin_tester(
                 ),
             ),
             "interactive_ui_tests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests.filter",
+                ],
                 swarming = targets.swarming(
                     shards = 10,
                 ),
