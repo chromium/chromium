@@ -271,7 +271,6 @@ def add_results_options_group(parser: argparse.ArgumentParser,
     results_group.add_argument(
         '--build-directory',
         metavar='PATH',
-        default='out',
         help=('Full path to the directory where build files are generated. '
               'Likely similar to "out/some-dir-name/". If not specified, will '
               'look for a dir under out/ of the same name as the value passed '
