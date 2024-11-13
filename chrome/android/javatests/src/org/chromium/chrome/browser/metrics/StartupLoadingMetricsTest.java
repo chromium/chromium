@@ -253,8 +253,13 @@ public class StartupLoadingMetricsTest {
                 HistogramWatcher.newBuilder()
                         .expectNoRecords(MAIN_INTENT_TIME_TO_FIRST_DRAW_WARM_MS_HISTOGRAM)
                         .build();
+
         runAndWaitForPageLoadMetricsRecorded(
-                () -> mTabbedActivityTestRule.startMainActivityFromLauncher());
+                () -> {
+                    mTabbedActivityTestRule.startMainActivityFromLauncher();
+                    ChromeApplicationTestUtils.fireHomeScreenIntent(
+                            mTabbedActivityTestRule.getActivity());
+                });
         histogramWatcher.assertExpected();
 
         // Expect two records for two main intent warm starts.
@@ -282,6 +287,12 @@ public class StartupLoadingMetricsTest {
                         throw new RuntimeException(e);
                     }
                 });
+
+        // Go to home screen one more time since the metric is recorded during onPause()
+        runAndWaitForPageLoadMetricsRecorded(
+                () ->
+                        ChromeApplicationTestUtils.fireHomeScreenIntent(
+                                mTabbedActivityTestRule.getActivity()));
         histogramWatcher.assertExpected();
     }
 
