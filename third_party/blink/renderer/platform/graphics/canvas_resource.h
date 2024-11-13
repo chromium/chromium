@@ -237,7 +237,9 @@ class PLATFORM_EXPORT CanvasResource
       viz::TransferableResource* out_resource) {
     NOTREACHED();
   }
-  const SkColorInfo& GetSkColorInfo() const { return info_; }
+  SkColorType GetSkColorType() const { return info_.colorType(); }
+  SkAlphaType GetSkAlphaType() const { return info_.alphaType(); }
+  sk_sp<SkColorSpace> GetSkColorSpace() const { return info_.refColorSpace(); }
 
   CanvasResourceProvider* Provider() { return provider_.get(); }
   base::WeakPtr<CanvasResourceProvider> WeakProvider() { return provider_; }

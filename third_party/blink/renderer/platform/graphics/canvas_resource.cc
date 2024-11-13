@@ -332,10 +332,9 @@ scoped_refptr<StaticBitmapImage> CanvasResourceSharedBitmap::Bitmap() {
   // The release callback holds a reference to |this| to ensure that the
   // canvas resource that owns the shared memory stays alive at least until
   // the SkImage is destroyed.
-  auto sk_color_info = GetSkColorInfo();
-  SkImageInfo image_info = SkImageInfo::Make(
-      SkISize::Make(Size().width(), Size().height()), sk_color_info.colorType(),
-      sk_color_info.alphaType(), sk_color_info.refColorSpace());
+  SkImageInfo image_info =
+      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
+                        GetSkColorType(), GetSkAlphaType(), GetSkColorSpace());
   base::span<uint8_t> bytes(shared_mapping_);
   CHECK_GE(bytes.size(), image_info.computeByteSize(image_info.minRowBytes()));
   SkPixmap pixmap(image_info, bytes.data(), image_info.minRowBytes());
@@ -405,10 +404,9 @@ void CanvasResourceSharedBitmap::UploadSoftwareRenderingResults(
     return;
   }
 
-  auto sk_color_info = GetSkColorInfo();
-  SkImageInfo image_info = SkImageInfo::Make(
-      SkISize::Make(Size().width(), Size().height()), sk_color_info.colorType(),
-      sk_color_info.alphaType(), sk_color_info.refColorSpace());
+  SkImageInfo image_info =
+      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
+                        GetSkColorType(), GetSkAlphaType(), GetSkColorSpace());
   base::span<uint8_t> bytes(shared_mapping_);
   CHECK_GE(bytes.size(), image_info.computeByteSize(image_info.minRowBytes()));
   bool read_pixels_successful = image->readPixels(
@@ -461,8 +459,6 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
         shared_image_usage_flags | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
   }
 
-  SkAlphaType surface_alpha_type = GetSkColorInfo().alphaType();
-
   scoped_refptr<gpu::ClientSharedImage> client_shared_image;
   if (!is_accelerated_) {
     // Ideally we should add SHARED_IMAGE_USAGE_CPU_WRITE to the shared image
@@ -474,7 +470,7 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
 
     client_shared_image = shared_image_interface->CreateSharedImage(
         {GetSharedImageFormat(), Size(), GetColorSpace(),
-         kTopLeft_GrSurfaceOrigin, surface_alpha_type,
+         kTopLeft_GrSurfaceOrigin, GetSkAlphaType(),
          gpu::SharedImageUsageSet(shared_image_usage_flags),
          "CanvasResourceRasterGmb"},
         gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
@@ -484,7 +480,7 @@ CanvasResourceSharedImage::CanvasResourceSharedImage(
   } else {
     client_shared_image = shared_image_interface->CreateSharedImage(
         {GetSharedImageFormat(), Size(), GetColorSpace(),
-         kTopLeft_GrSurfaceOrigin, surface_alpha_type,
+         kTopLeft_GrSurfaceOrigin, GetSkAlphaType(),
          gpu::SharedImageUsageSet(shared_image_usage_flags),
          "CanvasResourceRaster"},
         gpu::kNullSurfaceHandle);
@@ -1023,10 +1019,9 @@ bool CanvasResourceSwapChain::IsValid() const {
 }
 
 scoped_refptr<StaticBitmapImage> CanvasResourceSwapChain::Bitmap() {
-  auto sk_color_info = GetSkColorInfo();
-  SkImageInfo image_info = SkImageInfo::Make(
-      SkISize::Make(Size().width(), Size().height()), sk_color_info.colorType(),
-      sk_color_info.alphaType(), sk_color_info.refColorSpace());
+  SkImageInfo image_info =
+      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
+                        GetSkColorType(), GetSkAlphaType(), GetSkColorSpace());
 
   // It's safe to share the back buffer texture id if we're on the same thread
   // since the |release_callback| ensures this resource will be alive.
