@@ -141,6 +141,15 @@ TEST_F(GpuControlListEntryTest, ChromeOSEntry) {
   EXPECT_TRUE(entry.Contains(kOsChromeOS, "10.6", gpu_info()));
 }
 
+TEST_F(GpuControlListEntryTest, GlTypeEntry) {
+  const Entry& entry = GetEntry(kGpuControlListEntryTest_GlTypeEntry);
+  GPUInfo gpu_info;
+  gpu_info.gl_version = "OpenGL ES 3.0 V@66.0 AU@ (CL@)";
+  EXPECT_FALSE(entry.Contains(kOsAndroid, "4.4.2", gpu_info));
+  gpu_info.gl_version = "3.0 NVIDIA-8.24.11 310.90.9b01";
+  EXPECT_TRUE(entry.Contains(kOsMacosx, "10.9", gpu_info));
+}
+
 TEST_F(GpuControlListEntryTest, GlVersionGLESEntry) {
   const Entry& entry = GetEntry(kGpuControlListEntryTest_GlVersionGLESEntry);
   GPUInfo gpu_info;

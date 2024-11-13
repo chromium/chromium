@@ -631,9 +631,10 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
                          intel_gpu_series_list, intel_gpu_generation,
                          data_file, data_helper_file)
   # group a bunch of less used conditions
-  if (gl_version != None or pixel_shader_version != None or in_process_gpu or
-      gl_reset_notification_strategy != None or direct_rendering_version != None
-      or gpu_count != None or hardware_overlay != None or test_group != 0 or
+  if (gl_type != '' or gl_version != None or pixel_shader_version != None or
+      in_process_gpu or gl_reset_notification_strategy != None or
+      direct_rendering_version != None or gpu_count != None or
+      hardware_overlay != None or test_group != 0 or
       subpixel_font_rendering != None):
     write_entry_more_data(entry_id, is_exception, exception_id, gl_type,
                           gl_version, pixel_shader_version, in_process_gpu,
