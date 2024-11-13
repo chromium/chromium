@@ -250,7 +250,7 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   static get observers() {
     return [
-      'updateDisplayLists_(activeFolderPath_.*, labels_.*, ' +
+      'updateDisplayLists_(activeFolderPath_.splices, labels_.*, ' +
           'activeSortIndex_, searchQuery_)',
     ];
   }
