@@ -697,22 +697,15 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
   bool is_multi_idp = idp_list.size() > 1u;
   AddAccounts(accounts, accounts_content, is_multi_idp);
   size_t num_account_rows = accounts.size();
-  bool added_use_other_account_separator = false;
+  std::optional<int> separator_size;
+  std::optional<int> use_other_account_button_size;
   for (const auto& idp_data : idp_list) {
     const content::IdentityProviderMetadata& idp_metadata =
         idp_data->idp_metadata;
     if (!idp_data->has_login_status_mismatch &&
         (idp_metadata.supports_add_account ||
          idp_metadata.has_filtered_out_account)) {
-      if (!added_use_other_account_separator) {
-        added_use_other_account_separator = true;
-        auto separator = std::make_unique<views::Separator>();
-        separator->SetBorder(views::CreateEmptyBorder(
-            gfx::Insets::TLBR(kVerticalSpacing + kTopBottomPadding, 0,
-                              kTopBottomPadding + kVerticalSpacing, 0)));
-        accounts_content->AddChildView(std::move(separator));
-      }
-      accounts_content->AddChildView(CreateUseOtherAccountButton(
+      auto use_other_account_button = CreateUseOtherAccountButton(
           idp_metadata,
           is_multi_idp ? l10n_util::GetStringFUTF16(
                              IDS_ACCOUNT_SELECTION_USE_OTHER_ACCOUNT_MULTI_IDP,
@@ -720,7 +713,21 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
                        : l10n_util::GetStringUTF16(
                              IDS_ACCOUNT_SELECTION_USE_OTHER_ACCOUNT),
           is_multi_idp ? kMultiIdpUseOtherAccountButtonIconMargin
-                       : kSingleIdpUseOtherAccountButtonIconMargin));
+                       : kSingleIdpUseOtherAccountButtonIconMargin);
+      if (!use_other_account_button_size) {
+        // Add a separator the first time that a use other account button is
+        // used.
+        auto separator = std::make_unique<views::Separator>();
+        separator->SetBorder(views::CreateEmptyBorder(
+            gfx::Insets::TLBR(kVerticalSpacing + kTopBottomPadding, 0,
+                              kTopBottomPadding + kVerticalSpacing, 0)));
+        separator_size = separator->GetPreferredSize().height();
+        accounts_content->AddChildView(std::move(separator));
+        // GetPreferredSize() can be expensive so only compute the first time.
+        use_other_account_button_size =
+            use_other_account_button->GetPreferredSize().height();
+      }
+      accounts_content->AddChildView(std::move(use_other_account_button));
     }
   }
 
@@ -736,9 +743,12 @@ void AccountSelectionBubbleView::AddSeparatorAndMultipleAccountChooser(
   if (num_account_rows > 0) {
     float num_visible_rows = is_multi_idp ? 3.5f : 2.5f;
     const int per_account_size =
-        accounts_content->GetPreferredSize().height() / num_account_rows;
-    account_scroll_view->ClipHeightTo(
-        0, static_cast<int>(per_account_size * num_visible_rows));
+        accounts_content->children()[0]->GetPreferredSize().height();
+    int clipped_size = static_cast<int>(per_account_size * num_visible_rows);
+    if (num_account_rows < num_visible_rows && use_other_account_button_size) {
+      clipped_size += *separator_size + *use_other_account_button_size;
+    }
+    account_scroll_view->ClipHeightTo(0, clipped_size);
     if (num_account_rows > num_visible_rows) {
       starts_with_scroller = true;
     } else {
