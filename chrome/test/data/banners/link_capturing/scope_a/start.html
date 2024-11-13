@@ -56,9 +56,10 @@
 
   // An event handler that modifies the target.href of a clicked element
   // to add debug information shown on the target page.
-  function addModifierToElement(id, event) {
+  function addModifierToTargetElementHref(event) {
     // Pass the ID as a query param, so we can show it on the destination
     // page.
+    let id = event.target.id;
     let param = '?' + id + '&' + getModifierString(event);
     event.target.href += param;
     console.log('link ' + id + ' clicked, dest ' + event.target.href);
@@ -88,10 +89,8 @@
     for (let link of links) {
       // TODO: (crbug.com/371019414) Remove redundant <a href> for links below.
       link.setAttribute('href', getDestinationForElementClass(link));
-      link.addEventListener("click",
-          (event) => { addModifierToElement(link.id, event) });
-      link.addEventListener("contextmenu",
-          (event) => { addModifierToElement(link.id, event) });
+      link.addEventListener("click", addModifierToTargetElementHref);
+      link.addEventListener("contextmenu", addModifierToTargetElementHref);
       // Note: Middle clicks are simulated via a Ctrl+Left or Meta+Left click
       // for testing purposes, so the auxclick event is not implemented.
     }
@@ -138,14 +137,14 @@
 <tr>
 <td>
 <!-- Links to same scope-->
-<a href="destination.html" target="_self"   rel="opener"   id="id-LINK-A_TO_A-SELF-OPENER" class="destinationA">target="_self" rel=opener</a><br>
-<a href="destination.html" target="_self"   rel="noopener" id="id-LINK-A_TO_A-SELF-NO_OPENER" class="destinationA">target="_self" rel=noopener</a><br>
-<a href="destination.html" target="iframe"  rel="opener"   id="id-LINK-A_TO_A-FRAME-OPENER" class="destinationA">target="iframe" rel=opener</a><br>
-<a href="destination.html" target="iframe"  rel="noopener" id="id-LINK-A_TO_A-FRAME-NO_OPENER" class="destinationA">target="iframe" rel=noopener</a><br>
-<a href="destination.html" target="_blank"  rel="opener"   id="id-LINK-A_TO_A-BLANK-OPENER" class="destinationA">target="_blank" rel=opener</a><br>
-<a href="destination.html" target="_blank"  rel="noopener" id="id-LINK-A_TO_A-BLANK-NO_OPENER" class="destinationA">target="_blank" rel=noopener</a><br>
-<a href="destination.html" target="noframe" rel="opener"   id="id-LINK-A_TO_A-NO_FRAME-OPENER" class="destinationA">target="noframe" rel=opener</a><br>
-<a href="destination.html" target="noframe" rel="noopener" id="id-LINK-A_TO_A-NO_FRAME-NO_OPENER" class="destinationA">target="noframe" rel=noopener</a><br>
+<a target="_self"   rel="opener"   id="id-LINK-A_TO_A-SELF-OPENER" class="destinationA">target="_self" rel=opener</a><br>
+<a target="_self"   rel="noopener" id="id-LINK-A_TO_A-SELF-NO_OPENER" class="destinationA">target="_self" rel=noopener</a><br>
+<a target="iframe"  rel="opener"   id="id-LINK-A_TO_A-FRAME-OPENER" class="destinationA">target="iframe" rel=opener</a><br>
+<a target="iframe"  rel="noopener" id="id-LINK-A_TO_A-FRAME-NO_OPENER" class="destinationA">target="iframe" rel=noopener</a><br>
+<a target="_blank"  rel="opener"   id="id-LINK-A_TO_A-BLANK-OPENER" class="destinationA">target="_blank" rel=opener</a><br>
+<a target="_blank"  rel="noopener" id="id-LINK-A_TO_A-BLANK-NO_OPENER" class="destinationA">target="_blank" rel=noopener</a><br>
+<a target="noframe" rel="opener"   id="id-LINK-A_TO_A-NO_FRAME-OPENER" class="destinationA">target="noframe" rel=opener</a><br>
+<a target="noframe" rel="noopener" id="id-LINK-A_TO_A-NO_FRAME-NO_OPENER" class="destinationA">target="noframe" rel=noopener</a><br>
 
 <!-- Form POST submissions. `action` is populated programmatically. -->
 <form method="post" class="destinationA" target="_blank" rel="opener"><input type="text" id="test" name="test_key"
@@ -166,14 +165,14 @@
 
 <td>
 <!-- Links to scope B (href is updated programmatically for all clicks, see load event above)-->
-<a href="../scope_b/destination.html" target="_self"   rel="opener"   id="id-LINK-A_TO_B-SELF-OPENER" class="destinationB">target="_self" rel=opener</a><br>
-<a href="../scope_b/destination.html" target="_self"   rel="noopener" id="id-LINK-A_TO_B-SELF-NO_OPENER" class="destinationB">target="_self" rel=noopener</a><br>
-<a href="../scope_b/destination.html" target="iframe"  rel="opener"   id="id-LINK-A_TO_B-FRAME-OPENER" class="destinationB">target="iframe" rel=opener</a><br>
-<a href="../scope_b/destination.html" target="iframe"  rel="noopener" id="id-LINK-A_TO_B-FRAME-NO_OPENER" class="destinationB">target="iframe" rel=noopener</a><br>
-<a href="../scope_b/destination.html" target="_blank"  rel="opener"   id="id-LINK-A_TO_B-BLANK-OPENER" class="destinationB">target="_blank" rel=opener</a><br>
-<a href="../scope_b/destination.html" target="_blank"  rel="noopener" id="id-LINK-A_TO_B-BLANK-NO_OPENER" class="destinationB">target="_blank" rel=noopener</a><br>
-<a href="../scope_b/destination.html" target="noframe" rel="opener"   id="id-LINK-A_TO_B-NO_FRAME-OPENER" class="destinationB">target="noframe" rel=opener</a><br>
-<a href="../scope_b/destination.html" target="noframe" rel="noopener" id="id-LINK-A_TO_B-NO_FRAME-NO_OPENER" class="destinationB">target="noframe" rel=noopener</a><br>
+<a target="_self"   rel="opener"   id="id-LINK-A_TO_B-SELF-OPENER" class="destinationB">target="_self" rel=opener</a><br>
+<a target="_self"   rel="noopener" id="id-LINK-A_TO_B-SELF-NO_OPENER" class="destinationB">target="_self" rel=noopener</a><br>
+<a target="iframe"  rel="opener"   id="id-LINK-A_TO_B-FRAME-OPENER" class="destinationB">target="iframe" rel=opener</a><br>
+<a target="iframe"  rel="noopener" id="id-LINK-A_TO_B-FRAME-NO_OPENER" class="destinationB">target="iframe" rel=noopener</a><br>
+<a target="_blank"  rel="opener"   id="id-LINK-A_TO_B-BLANK-OPENER" class="destinationB">target="_blank" rel=opener</a><br>
+<a target="_blank"  rel="noopener" id="id-LINK-A_TO_B-BLANK-NO_OPENER" class="destinationB">target="_blank" rel=noopener</a><br>
+<a target="noframe" rel="opener"   id="id-LINK-A_TO_B-NO_FRAME-OPENER" class="destinationB">target="noframe" rel=opener</a><br>
+<a target="noframe" rel="noopener" id="id-LINK-A_TO_B-NO_FRAME-NO_OPENER" class="destinationB">target="noframe" rel=noopener</a><br>
 
 <!-- Form POST submissions. `action` is populated programmatically. -->
 <form method="post" class="destinationB" target="_blank" rel="opener"><input type="text" id="test" name="test_key"
@@ -202,14 +201,14 @@ window.open(url, 'iframe' ,' 'noopener' )</button><br>
 
 <td>
 <!-- Links to scope X (href is updated programmatically, see load event above). -->
-<a href="../scope_x/destination.html" target="_self"   rel="opener"   id="id-LINK-A_TO_X-SELF-OPENER" class="destinationX">target="_self" rel=opener</a><br>
-<a href="../scope_x/destination.html" target="_self"   rel="noopener" id="id-LINK-A_TO_X-SELF-NO_OPENER" class="destinationX">target="_self" rel=noopener</a><br>
-<a href="../scope_x/destination.html" target="iframe"  rel="opener"   id="id-LINK-A_TO_X-FRAME-OPENER" class="destinationX">target="iframe" rel=opener</a><br>
-<a href="../scope_x/destination.html" target="iframe"  rel="noopener" id="id-LINK-A_TO_X-FRAME-NO_OPENER" class="destinationX">target="iframe" rel=noopener</a><br>
-<a href="../scope_x/destination.html" target="_blank"  rel="opener"   id="id-LINK-A_TO_X-BLANK-OPENER" class="destinationX">target="_blank" rel=opener</a><br>
-<a href="../scope_x/destination.html" target="_blank"  rel="noopener" id="id-LINK-A_TO_X-BLANK-NO_OPENER" class="destinationX">target="_blank" rel=noopener</a><br>
-<a href="../scope_x/destination.html" target="noframe" rel="opener"   id="id-LINK-A_TO_X-NO_FRAME-OPENER" class="destinationX">target="noframe" rel=opener</a><br>
-<a href="../scope_x/destination.html" target="noframe" rel="noopener" id="id-LINK-A_TO_X-NO_FRAME-NO_OPENER" class="destinationX">target="noframe" rel=noopener</a><br>
+<a target="_self"   rel="opener"   id="id-LINK-A_TO_X-SELF-OPENER" class="destinationX">target="_self" rel=opener</a><br>
+<a target="_self"   rel="noopener" id="id-LINK-A_TO_X-SELF-NO_OPENER" class="destinationX">target="_self" rel=noopener</a><br>
+<a target="iframe"  rel="opener"   id="id-LINK-A_TO_X-FRAME-OPENER" class="destinationX">target="iframe" rel=opener</a><br>
+<a target="iframe"  rel="noopener" id="id-LINK-A_TO_X-FRAME-NO_OPENER" class="destinationX">target="iframe" rel=noopener</a><br>
+<a target="_blank"  rel="opener"   id="id-LINK-A_TO_X-BLANK-OPENER" class="destinationX">target="_blank" rel=opener</a><br>
+<a target="_blank"  rel="noopener" id="id-LINK-A_TO_X-BLANK-NO_OPENER" class="destinationX">target="_blank" rel=noopener</a><br>
+<a target="noframe" rel="opener"   id="id-LINK-A_TO_X-NO_FRAME-OPENER" class="destinationX">target="noframe" rel=opener</a><br>
+<a target="noframe" rel="noopener" id="id-LINK-A_TO_X-NO_FRAME-NO_OPENER" class="destinationX">target="noframe" rel=noopener</a><br>
 
 <!-- Links to different scope non-installed site for form POST navigations-->
 <form method="post" class="destinationX" target="_blank" rel="opener"><input type="text" id="test" name="test_key"
