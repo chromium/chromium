@@ -3754,7 +3754,7 @@
 <translation id="3658871634334445293">Ускорение TrackPoint</translation>
 <translation id="3659929705630080526">Слишком часто вводился неправильный код доступа. Повторите попытку позже.</translation>
 <translation id="3660234220361471169">Недоверенный</translation>
-<translation id="3661106764436337772">Пишите быстрее и точнее</translation>
+<translation id="3661106764436337772">Упростите себе работу</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Обнаружен 1 существующий пароль}one{Обнаружен {NUM_PASSWORDS} существующий пароль}few{Обнаружено {NUM_PASSWORDS} существующих пароля}many{Обнаружено {NUM_PASSWORDS} существующих паролей}other{Обнаружено {NUM_PASSWORDS} существующих пароля}}</translation>
 <translation id="3662207097851752847">Подтвердите аккаунт Google на телефоне</translation>
 <translation id="3663417513679360795">Подробнее о том, как включить стандартную предзагрузку</translation>

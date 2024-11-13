@@ -122,7 +122,7 @@ Kui lahkute, kaotate kohe juurdepääsu vahelehegrupile „<ph name="TITLE_OF_GR
 <translation id="6082313992897617440">Kaotate kohe juurdepääsu vahelehegrupile <ph name="GROUP_NAME" /></translation>
 <translation id="6193448654517602979">Valige vahelehed</translation>
 <translation id="6228793724645064692">(hinnang poes)</translation>
-<translation id="6271513594716432922">Sule kõik passiivsed vahelehed</translation>
+<translation id="6271513594716432922">Sule kõik inaktiivsed vahelehed</translation>
 <translation id="6333260925957816943">Selle poe teave</translation>
 <translation id="6381032505162537930">Leiate oma vahelehegrupid siit</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Tühista <ph name="TABS_COUNT_ONE" /> valitud vahelehe grupeerimine}other{Tühista <ph name="TABS_COUNT_MANY" /> valitud vahelehe grupeerimine}}</translation>
