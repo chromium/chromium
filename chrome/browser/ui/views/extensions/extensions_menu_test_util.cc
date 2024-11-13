@@ -71,12 +71,12 @@ ExtensionsMenuTestUtil::ExtensionsMenuTestUtil(Browser* browser)
 }
 
 ExtensionsMenuTestUtil::~ExtensionsMenuTestUtil() {
-  if (!menu_view_) {
-    return;
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    extensions_container_->GetExtensionsMenuCoordinatorForTesting()->Hide();
+  } else {
+    menu_view_->GetWidget()->CloseNow();
   }
-
-  // Close the menu if when we own the menu view.
-  menu_view_->GetWidget()->CloseNow();
 }
 
 void ExtensionsMenuTestUtil::OnViewIsDeleting(views::View* observed_view) {
