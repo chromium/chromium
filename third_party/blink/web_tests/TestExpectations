@@ -2693,8 +2693,8 @@ crbug.com/364744930 external/wpt/css/css-color/parsing/color-valid-rgb.html [ Cr
 crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-computed.html [ Crash Pass ]
 
 # ====== New tests from wpt-importer added here ======
-[ Mac15 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?av1 [ Timeout ]
-[ Mac13 ] external/wpt/webcodecs/video-encoder-h264.https.any.worker.html?high [ Timeout ]
+crbug.com/378750930 [ Mac15 ] external/wpt/webcodecs/per-frame-qp-encoding.https.any.html?av1 [ Timeout ]
+crbug.com/378750930 [ Mac13 ] external/wpt/webcodecs/video-encoder-h264.https.any.worker.html?high [ Timeout ]
 crbug.com/378701431 [ Win11-arm64 ] external/wpt/acid/acid2/reftest.html [ Failure ]
 crbug.com/378701410 [ Mac14 ] external/wpt/webrtc/protocol/rtp-payloadtypes.html [ Timeout ]
 crbug.com/378701432 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-contain-video.html [ Failure ]
