@@ -298,7 +298,6 @@ after discussions on the right group.
       <annotation id="remoting_corp_session_authz_generate_host_token"/>
       <annotation id="remoting_corp_session_authz_verify_session_token"/>
       <annotation id="remoting_corp_session_reauthorize_host"/>
-      <annotation id="chromeos_picker_gif_media_fetcher"/>
       <annotation id="birch_calendar_provider"/>
       <annotation id="recovery_key_store_fetch"/>
       <annotation id="enterprise_logo_fetcher"/>
@@ -358,6 +357,7 @@ after discussions on the right group.
       <annotation id="chromeos_scanner"/>
       <annotation id="lens_overlay_languages"/>
       <annotation id="demo_login_controller_account_clean_up"/>
+      <annotation id="chromeos_quick_insert_gif_media_fetcher"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

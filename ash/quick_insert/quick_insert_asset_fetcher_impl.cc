@@ -65,16 +65,18 @@ void DownloadGifMediaToString(
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
-      net::DefineNetworkTrafficAnnotation("chromeos_picker_gif_media_fetcher",
-                                          R"(
+      net::DefineNetworkTrafficAnnotation(
+          "chromeos_quick_insert_gif_media_fetcher",
+          R"(
       semantics {
-        sender: "ChromeOS Picker"
+        sender: "ChromeOS Quick Insert"
         description:
-          "Fetches a GIF or GIF preview from tenor for the specified url. This "
-          "is used to show GIFs and GIF preview images in the ChromeOS picker, "
-          "which users can select to insert the GIF into supported textfields."
+          "Fetches a GIF or GIF preview from Tenor for the specified url. This "
+          "is used to show GIFs and GIF preview images in ChromeOS Quick "
+          "Insert, which users can select to insert the GIF into supported "
+          "textfields."
         trigger:
-          "Triggered when the user opens the ChromeOS picker."
+          "Triggered when the user opens ChromeOS Quick Insert."
         data:
           "A GIF ID to specify the GIF to fetch."
         destination: GOOGLE_OWNED_SERVICE
@@ -86,7 +88,7 @@ void DownloadGifMediaToString(
         user_data {
           type: NONE
         }
-        last_reviewed: "2024-02-16"
+        last_reviewed: "2024-10-15"
       }
       policy {
         cookies_allowed: NO
