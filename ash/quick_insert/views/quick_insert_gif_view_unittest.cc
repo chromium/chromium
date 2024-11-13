@@ -68,16 +68,6 @@ class GifAssetFetcher {
       preview_image_fetched_callback_;
 };
 
-TEST(QuickInsertGifViewTest, PreferredHeightPreservesAspectRatio) {
-  constexpr gfx::Size kOriginalGifDimensions(100, 200);
-  GifAssetFetcher asset_fetcher;
-  QuickInsertGifView gif_view(asset_fetcher.GetFramesFetcher(),
-                              asset_fetcher.GetPreviewImageFetcher(),
-                              kOriginalGifDimensions);
-
-  EXPECT_EQ(gif_view.GetHeightForWidth(50), 100);
-}
-
 TEST(QuickInsertGifViewTest, CorrectSizeBeforePreviewFetched) {
   GifAssetFetcher asset_fetcher;
   QuickInsertGifView gif_view(asset_fetcher.GetFramesFetcher(),

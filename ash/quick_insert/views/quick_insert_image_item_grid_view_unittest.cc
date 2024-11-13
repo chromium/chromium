@@ -10,6 +10,7 @@
 
 #include "ash/quick_insert/views/quick_insert_gif_view.h"
 #include "ash/quick_insert/views/quick_insert_image_item_view.h"
+#include "ash/test/view_drawn_waiter.h"
 #include "base/functional/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -95,28 +96,36 @@ TEST_F(QuickInsertImageItemGridViewTest, GifItemsWithVaryingHeight) {
                                                item4->parent())))));
 }
 
-// TODO: b/357146181 - Re-enable once Gifs are used again.
-TEST_F(QuickInsertImageItemGridViewTest,
-       DISABLED_GifItemsAreResizedToSameWidth) {
-  QuickInsertImageItemGridView item_grid(kDefaultGridWidth);
+TEST_F(QuickInsertImageItemGridViewTest, GifItemsAreResizedToSameWidth) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetSize(gfx::Size(90, 100));
+  QuickInsertImageItemGridView* item_grid = widget->SetContentsView(
+      std::make_unique<QuickInsertImageItemGridView>(90));
+  QuickInsertItemView* item1 =
+      item_grid->AddImageItem(CreateGifItem(gfx::Size(100, 100)));
+  QuickInsertItemView* item2 =
+      item_grid->AddImageItem(CreateGifItem(gfx::Size(80, 160)));
+  widget->Show();
+  ViewDrawnWaiter().Wait(item1);
 
-  const QuickInsertItemView* item1 =
-      item_grid.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
-  const QuickInsertItemView* item2 =
-      item_grid.AddImageItem(CreateGifItem(gfx::Size(80, 160)));
-
-  EXPECT_EQ(item1->GetPreferredSize().width(),
-            item2->GetPreferredSize().width());
+  ASSERT_GT(item1->width(), 0);
+  EXPECT_EQ(item1->width(), item2->width());
 }
 
 TEST_F(QuickInsertImageItemGridViewTest, PreservesAspectRatioOfGifItems) {
-  QuickInsertImageItemGridView item_grid(kDefaultGridWidth);
-
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  QuickInsertImageItemGridView* item_grid = widget->SetContentsView(
+      std::make_unique<QuickInsertImageItemGridView>(kDefaultGridWidth));
   constexpr gfx::Size kGifDimensions(100, 200);
-  const QuickInsertItemView* item =
-      item_grid.AddImageItem(CreateGifItem(kGifDimensions));
+  QuickInsertItemView* item =
+      item_grid->AddImageItem(CreateGifItem(kGifDimensions));
+  widget->Show();
+  ViewDrawnWaiter().Wait(item);
 
-  EXPECT_EQ(GetAspectRatio(item->GetPreferredSize()),
+  ASSERT_GT(item->width(), 0);
+  EXPECT_EQ(GetAspectRatio(item->GetLocalBounds().size()),
             GetAspectRatio(kGifDimensions));
 }
 
