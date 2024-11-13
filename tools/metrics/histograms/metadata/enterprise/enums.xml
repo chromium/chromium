@@ -2180,6 +2180,7 @@ chromium-metrics-reviews@google.com.
   <int value="1313" label="SharedWorkerBlobURLFixEnabled"/>
   <int value="1314" label="DeviceNativeClientForceAllowed"/>
   <int value="1315" label="GenAiLensOverlaySettings"/>
+  <int value="1316" label="PasswordManagerPasskeysEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

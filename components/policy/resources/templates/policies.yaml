@@ -1314,6 +1314,7 @@ policies:
   1313: SharedWorkerBlobURLFixEnabled
   1314: DeviceNativeClientForceAllowed
   1315: GenAiLensOverlaySettings
+  1316: PasswordManagerPasskeysEnabled
 
 atomic_groups:
   1: Homepage
