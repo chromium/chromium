@@ -334,7 +334,8 @@ FaceGazeTestBase = class extends E2ETestBase {
     await this.setPref(MouseController.PREF_SPD_RIGHT, config.speeds.right);
 
     if (config.repeatDelayMs !== undefined) {
-      faceGaze.gestureHandler_.repeatDelayMs_ = config.repeatDelayMs;
+      faceGaze.gestureHandler_.gestureTimer_.repeatDelayMs_ =
+          config.repeatDelayMs;
     }
 
     // If no min duration is set then by default, set the timer to recognize
@@ -420,9 +421,20 @@ FaceGazeTestBase = class extends E2ETestBase {
     }
   }
 
+  /**
+   * Gets the timestamp at which the given gesture was last recognized.
+   * @param {MediapipeFacialGesture} gesture
+   * @return {Date}
+   */
+  getGestureLastRecognized(gesture) {
+    return this.getFaceGaze()
+        .gestureHandler_.gestureTimer_.gestureLastRecognized_.get(gesture);
+  }
+
   /** Clears the timestamps at which gestures were last recognized. */
   clearGestureLastRecognizedTime() {
-    this.getFaceGaze().gestureHandler_.gestureLastRecognized_.clear();
+    this.getFaceGaze()
+        .gestureHandler_.gestureTimer_.gestureLastRecognized_.clear();
   }
 
   /**
@@ -432,6 +444,14 @@ FaceGazeTestBase = class extends E2ETestBase {
   sendAutomationMouseEvent(mockEvent) {
     this.getFaceGaze().mouseController_.onMouseMovedHandler_.handleEvent_(
         mockEvent);
+  }
+
+  /**
+   * Sets the gesture repeat delay in ms to given value.
+   * @param {number} delayMs
+   */
+  setGestureRepeatDelay(delayMs) {
+    this.getFaceGaze().gestureHandler_.gestureTimer_.repeatDelayMs_ = delayMs;
   }
 
   /** @param {!{x: number, y: number}} expected */

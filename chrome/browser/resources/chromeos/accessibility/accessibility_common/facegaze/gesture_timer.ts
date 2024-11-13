@@ -5,8 +5,10 @@
 import {FacialGesture} from './facial_gestures.js';
 
 export class GestureTimer {
+  private repeatDelayMs_ = GestureTimer.DEFAULT_REPEAT_DELAY_MS;
   private minDurationMs_ = GestureTimer.DEFAULT_MINIMUM_DURATION_MS;
   private gestureStart_: Map<FacialGesture, Date> = new Map();
+  private gestureLastRecognized_: Map<FacialGesture, Date> = new Map();
   private useGestureDuration_ = true;
 
   /**
@@ -19,14 +21,39 @@ export class GestureTimer {
     }
   }
 
+  /** Get the timestamp of the last time this gesture was recognized. */
+  getLastRecognized(gesture: FacialGesture): Date|undefined {
+    return this.gestureLastRecognized_.get(gesture);
+  }
+
+  /** Set the timestamp of the last time this gesture was recognized. */
+  setLastRecognized(gesture: FacialGesture, timestamp: Date): void {
+    this.gestureLastRecognized_.set(gesture, timestamp);
+  }
+
   /** Reset the timer for the given gesture. */
-  reset(gesture: FacialGesture): void {
+  resetTimer(gesture: FacialGesture): void {
     this.gestureStart_.delete(gesture);
   }
 
   /** Reset the timer for all gestures. */
   resetAll(): void {
     this.gestureStart_.clear();
+    this.gestureLastRecognized_.clear();
+  }
+
+  /**
+   * Return true if the minimum repeat delay has elapsed since the given gesture
+   * was last recognized.
+   */
+  isRepeatDelayValid(gesture: FacialGesture, timestamp: Date): boolean {
+    const lastRecognized = this.gestureLastRecognized_.get(gesture);
+    if (!lastRecognized) {
+      return true;
+    }
+
+    return timestamp.getTime() - lastRecognized.getTime() >=
+        this.repeatDelayMs_;
   }
 
   /**
@@ -55,6 +82,9 @@ export class GestureTimer {
 }
 
 export namespace GestureTimer {
+  /** Minimum repeat rate of a gesture. */
+  export const DEFAULT_REPEAT_DELAY_MS = 1000;
+
   /** Minimum time duration for a gesture to be recognized. */
   export const DEFAULT_MINIMUM_DURATION_MS = 150;
 }

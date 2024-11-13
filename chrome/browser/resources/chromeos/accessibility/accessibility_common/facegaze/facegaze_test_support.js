@@ -57,12 +57,12 @@ class FaceGazeTestSupport {
   }
 
   /**
-   * Sets the repeat delay on GestureHandler. This can be used to allow tests to
+   * Sets the repeat delay on GestureTimer. This can be used to allow tests to
    * trigger the same macro multiple times in a row without waiting.
    * @param {number} delay
    */
   setGestureRepeatDelayMs(delay) {
-    this.getGestureHandler_().repeatDelayMs_ = delay;
+    this.getGestureHandler_().gestureTimer_.repeatDelayMs_ = delay;
     this.notifyCcTests_();
   }
 

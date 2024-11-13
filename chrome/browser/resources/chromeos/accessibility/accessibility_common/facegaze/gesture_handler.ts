@@ -38,13 +38,9 @@ export class GestureHandler {
   private gesturesToKeyCombos_: Map<FacialGesture, KeyCombination> = new Map();
   private gestureToMacroName_: Map<FacialGesture, MacroName> = new Map();
   private gestureToConfidence_: Map<FacialGesture, number> = new Map();
-  // TODO (b:378511358): Use Date objects instead of numbers for clarity and
-  // consistency.
-  private gestureLastRecognized_: Map<FacialGesture, number> = new Map();
   private mouseController_: MouseController;
   private bubbleController_: BubbleController;
   private gestureTimer_: GestureTimer;
-  private repeatDelayMs_ = GestureHandler.DEFAULT_REPEAT_DELAY_MS;
   private prefsListener_: (prefs: any) => void;
   private toggleInfoListener_: (enabled: boolean) => void;
   // The most recently detected gestures. We track this to know when a gesture
@@ -83,7 +79,6 @@ export class GestureHandler {
         this.toggleInfoListener_);
     this.previousGestures_ = [];
     this.gestureTimer_.resetAll();
-    this.gestureLastRecognized_.clear();
     // Executing these macros clears their state, so that we aren't left in a
     // mouse down or key down state.
     this.macrosToCompleteLater_.forEach((entry) => {
@@ -199,14 +194,14 @@ export class GestureHandler {
 
   togglePaused(gesture: FacialGesture): void {
     const newPaused = !this.paused_;
-    const lastToggledTime = this.gestureLastRecognized_.get(gesture);
+    const lastToggledTime = this.gestureTimer_.getLastRecognized(gesture);
 
     // Run start/stop before assigning the new pause value and gesture last
     // recognized time, since start/stop will modify these values.
     newPaused ? this.stop() : this.start();
 
     if (lastToggledTime) {
-      this.gestureLastRecognized_.set(gesture, lastToggledTime);
+      this.gestureTimer_.setLastRecognized(gesture, lastToggledTime);
     }
 
     this.paused_ = newPaused;
@@ -251,16 +246,17 @@ export class GestureHandler {
         continue;
       }
 
-      if (this.gestureLastRecognized_.has(gesture) &&
-              currentTime.getTime() - this.gestureLastRecognized_.get(gesture)!
-                  < this.repeatDelayMs_ ||
-          this.macrosToCompleteLater_.has(gesture)) {
-        // Avoid responding to the same macro repeatedly in too short a time
-        // or if we are still waiting to complete them later (they shouldn't be
-        // repeated until completed).
+      if (!this.gestureTimer_.isRepeatDelayValid(gesture, currentTime)) {
         continue;
       }
-      this.gestureLastRecognized_.set(gesture, currentTime.getTime());
+
+      // Do not respond if we are still waiting to complete this macro later as
+      // it shouldn't be repeated until completed.
+      if (this.macrosToCompleteLater_.has(gesture)) {
+        continue;
+      }
+
+      this.gestureTimer_.setLastRecognized(gesture, currentTime);
       const name = this.gestureToMacroName_.get(gesture);
       if (name) {
         macroNames.set(name, gesture);
@@ -303,7 +299,7 @@ export class GestureHandler {
     previousGestures.forEach(previousGesture => {
       if (!gestures.includes(previousGesture)) {
         // Reset timer for gesture when it is stopped.
-        this.gestureTimer_.reset(previousGesture);
+        this.gestureTimer_.resetTimer(previousGesture);
 
         // The gesture has stopped being recognized. Run the second half of this
         // macro, and stop saving it.
@@ -436,9 +432,6 @@ export class GestureHandler {
 export namespace GestureHandler {
   /** The default confidence threshold for facial gestures. */
   export const DEFAULT_CONFIDENCE_THRESHOLD = 0.5;
-
-  /** Minimum repeat rate of a gesture. */
-  export const DEFAULT_REPEAT_DELAY_MS = 1000;
 
   export const GESTURE_TO_KEY_COMBO_PREF =
       'settings.a11y.face_gaze.gestures_to_key_combos';
