@@ -79,6 +79,11 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   // If no continue_url is given, continues to https://accounts.google.com.
   GURL LogOutURLWithContinueURL(const GURL& contine_url);
 
+  // Whether `gaia_url` points to the default Gaia URL or a custom one. Avoid
+  // using this method - it is intended for tweaking behavior for manual
+  // testing.
+  bool IsUsingDefaultGaiaOrigin() const;
+
  private:
   friend struct base::DefaultSingletonTraits<GaiaUrls>;
 

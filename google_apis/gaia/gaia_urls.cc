@@ -354,6 +354,11 @@ GURL GaiaUrls::LogOutURLWithContinueURL(const GURL& continue_url) {
   return service_logout_url_.Resolve(params);
 }
 
+bool GaiaUrls::IsUsingDefaultGaiaOrigin() const {
+  return gaia_origin().IsSameOriginWith(
+      url::Origin::Create(GURL(kDefaultGaiaUrl)));
+}
+
 void GaiaUrls::InitializeDefault() {
   SetDefaultURLIfInvalid(&google_url_, switches::kGoogleUrl, kDefaultGoogleUrl);
   SetDefaultOriginIfOpaqueOrInvalidScheme(&gaia_origin_, switches::kGaiaUrl,

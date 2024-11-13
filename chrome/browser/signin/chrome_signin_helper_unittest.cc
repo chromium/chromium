@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "build/buildflag.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -25,6 +26,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_switches.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "google_apis/gaia/gaia_urls_overrider_for_testing.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -147,18 +151,6 @@ class MockWebContentsDelegate : public content::WebContentsDelegate {
                    base::OnceCallback<void(content::NavigationHandle&)>));
 };
 
-}  // namespace
-
-using ::testing::_;
-
-class ChromeSigninHelperTest : public ChromeRenderViewHostTestHarness {
- protected:
-  ChromeSigninHelperTest() = default;
-  ~ChromeSigninHelperTest() override = default;
-};
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-
 class TestChromeRequestAdapter : public signin::ChromeRequestAdapter {
  public:
   explicit TestChromeRequestAdapter(const GURL& url)
@@ -188,6 +180,18 @@ class TestChromeRequestAdapter : public signin::ChromeRequestAdapter {
   net::HttpRequestHeaders modified_headers_;
   std::vector<std::string> headers_to_remove_;
 };
+
+}  // namespace
+
+using ::testing::_;
+
+class ChromeSigninHelperTest : public ChromeRenderViewHostTestHarness {
+ protected:
+  ChromeSigninHelperTest() = default;
+  ~ChromeSigninHelperTest() override = default;
+};
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Tests that Dice response headers are removed after being processed.
 TEST_F(ChromeSigninHelperTest, RemoveDiceSigninHeader) {
@@ -379,6 +383,68 @@ TEST_F(ChromeSigninHelperTest, MirrorGoIncognitoInactiveWebContents) {
   task_environment()->RunUntilIdle();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(ChromeSigninHelperTest, NonEligibleURL) {
+  // Non-eligible request, no header.
+  TestChromeRequestAdapter request(GURL("https://gmail.com"));
+  signin::FixAccountConsistencyRequestHeader(
+      &request, GURL(), /*is_off_the_record=*/false,
+      /*incognito_availability=*/0, signin::AccountConsistencyMethod::kMirror,
+      "gaia_id", /*is_child_account=*/signin::Tribool::kFalse,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      /*is_secondary_account_addition_allowed=*/true,
+#endif
+      CookieSettingsFactory::GetForProfile(profile()).get());
+  EXPECT_EQ(
+      request.modified_headers().GetHeader(signin::kChromeConnectedHeader),
+      std::nullopt);
+}
+
+TEST_F(ChromeSigninHelperTest, EligibleURL) {
+  // Google Docs is eligible for the Mirror header.
+  TestChromeRequestAdapter request(GURL("https://docs.google.com"));
+  signin::FixAccountConsistencyRequestHeader(
+      &request, GURL(), /*is_off_the_record=*/false,
+      /*incognito_availability=*/0, signin::AccountConsistencyMethod::kMirror,
+      "gaia_id", /*is_child_account=*/signin::Tribool::kFalse,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      /*is_secondary_account_addition_allowed=*/true,
+#endif
+      CookieSettingsFactory::GetForProfile(profile()).get());
+  std::string expected_header =
+      "source=Chrome,id=gaia_id,mode=0,enable_account_consistency=true,"
+      "supervised=false,consistency_enabled_by_default=false";
+  EXPECT_THAT(
+      request.modified_headers().GetHeader(signin::kChromeConnectedHeader),
+      testing::Optional(expected_header));
+}
+
+TEST_F(ChromeSigninHelperTest, NonDefaultGaiaOrigin) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kGaiaUrl, "http://example.com");
+  auto gaia_urls_override = std::make_unique<GaiaUrls>();
+  GaiaUrls::SetInstanceForTesting(gaia_urls_override.get());
+
+  TestChromeRequestAdapter request(GURL("https://docs.google.com"));
+  signin::FixAccountConsistencyRequestHeader(
+      &request, GURL(), /*is_off_the_record=*/false,
+      /*incognito_availability=*/0, signin::AccountConsistencyMethod::kMirror,
+      "gaia_id", /*is_child_account=*/signin::Tribool::kFalse,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      /*is_secondary_account_addition_allowed=*/true,
+#endif
+      CookieSettingsFactory::GetForProfile(profile()).get());
+  std::string expected_header =
+      "source=Chrome,gaia_origin=example.com,id=gaia_id,mode=0,"
+      "enable_account_consistency=true,"
+      "supervised=false,consistency_enabled_by_default=false";
+  EXPECT_THAT(
+      request.modified_headers().GetHeader(signin::kChromeConnectedHeader),
+      testing::Optional(expected_header));
+
+  GaiaUrls::SetInstanceForTesting(nullptr);
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(switches::kGaiaUrl);
+}
 #endif  // BUILDFLAG(ENABLE_MIRROR)
 
 TEST_F(ChromeSigninHelperTest,

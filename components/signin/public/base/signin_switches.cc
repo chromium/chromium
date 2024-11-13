@@ -223,3 +223,7 @@ BASE_FEATURE(kIgnoreMirrorHeadersInBackgoundTabs,
              "IgnoreMirrorHeadersInBackgoundTabs",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
+
+BASE_FEATURE(kNonDefaultGaiaOriginCheck,
+             "NonDefaultGaiaOriginCheck",
+             base::FEATURE_ENABLED_BY_DEFAULT);

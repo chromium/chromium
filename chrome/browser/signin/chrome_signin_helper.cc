@@ -562,7 +562,7 @@ void FixAccountConsistencyRequestHeader(
     ChromeRequestAdapter* request,
     const GURL& redirect_url,
     bool is_off_the_record,
-    int incognito_availibility,
+    int incognito_availability,
     AccountConsistencyMethod account_consistency,
     const std::string& gaia_id,
     signin::Tribool is_child_account,
@@ -583,7 +583,7 @@ void FixAccountConsistencyRequestHeader(
   // The Mirror header may be added on desktop platforms, for integration with
   // Google Drive.
   int profile_mode_mask = PROFILE_MODE_DEFAULT;
-  if (incognito_availibility ==
+  if (incognito_availability ==
           static_cast<int>(policy::IncognitoModeAvailability::kDisabled) ||
       IncognitoModePrefs::ArePlatformParentalControlsEnabled()) {
     profile_mode_mask |= PROFILE_MODE_INCOGNITO_DISABLED;
