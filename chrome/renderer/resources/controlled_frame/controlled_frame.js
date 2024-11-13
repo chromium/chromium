@@ -32,7 +32,8 @@ class ControlledFrameElement extends WebViewElement {
   }
 
   // Override add/removeContentScripts to accept a `callback` parameter
-  // so they can be used with Promises.
+  // so they can be used with Promises. The upgradeMethodsToPromises call
+  // below will replace these with Promise-based versions.
   addContentScripts(rules, callback) {
     var internal = privates(this).internal;
     return WebViewInternal.addContentScripts(

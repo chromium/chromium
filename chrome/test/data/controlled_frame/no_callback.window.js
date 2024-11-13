@@ -4,45 +4,51 @@
 
 // META script=resources/controlled_frame_helpers.js
 
-// Verifies that for executeScript, the callback form of the call is
-// not allowed. This is necessary since the WebView API natively supports
-// callbacks while Controlled Frame adapts that interface to be promises-based.
-// Specific Controlled Frame changes are in place to restrict those asynchronous
-// calls so the callback is not available.
+// Verifies that the callback form of API calls are not allowed. This is
+// necessary since the WebView API natively supports callbacks while Controlled
+// Frame adapts that interface to be promises-based.  Specific Controlled Frame
+// changes are in place to restrict those asynchronous calls so the callback is
+// not available.
 
 const kCallbackErr = "Callback form deprecated, see API doc for correct usage.";
 
-promise_test((test) => {
+function expectCallbackDeprecationError(f) {
   return new Promise((resolve, reject) => {
-    const frame = document.createElement('controlledframe');
-    if (!frame || !frame.request) {
-      reject('FAIL');
+    try {
+      f(() => reject('FAIL: Expected the callback to not be called.'));
+      reject('FAIL: Call did not throw an error as expected.');
       return;
-    }
-
-    function handleExecute() {
-      let actual_error_message;
-      try {
-        frame.executeScript(
-          {code: "document.body.style.backgroundColor = 'red';"},
-          () => { reject('FAIL: Expected the callback to not be called.'); });
-        reject('FAIL: Call did not throw an error as expected.');
-        return;
-      } catch (e) {
-        actual_error_message = e.message;
-        if (actual_error_message !== kCallbackErr) {
-          reject('FAIL: Unexpected error: ' + actual_error_message);
-          return;
-        }
-        resolve('SUCCESS');
+    } catch (e) {
+      const actualErrorMessage = e.message;
+      if (actualErrorMessage !== kCallbackErr) {
+        reject('FAIL: Unexpected error: ' + actualErrorMessage);
         return;
       }
-      reject('FAIL: Unexpected error');
+      resolve('SUCCESS');
+      return;
     }
+    reject('FAIL: Unexpected error');
+  });
+}
 
-    frame.src = 'data:text/html,<body>Guest</body>';
-    frame.addEventListener('loadabort', reject);
-    frame.addEventListener('loadstop', handleExecute);
-    document.body.appendChild(frame);
+promise_test(async (test) => {
+  const controlledFrame = await createControlledFrame('/simple.html');
+  await expectCallbackDeprecationError((callback) => {
+    controlledFrame.executeScript(
+        {code: "document.body.style.backgroundColor = 'red';"}, callback);
   });
 }, "Verify no callbacks are allowed for executeScript");
+
+promise_test(async (test) => {
+  const controlledFrame = await createControlledFrame('/simple.html');
+  await expectCallbackDeprecationError((callback) => {
+    controlledFrame.addContentScripts(
+        [{
+          name: 'test',
+          matches: ['https://*/*'],
+          js: {files: ['/resources/content_script.js']},
+          run_at: 'document_start',
+        }],
+        callback);
+  });
+}, 'Verify no callbacks are allowed for addContentScripts');
