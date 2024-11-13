@@ -132,7 +132,9 @@ ClipboardRestrictionServiceFactory::GetBrowserContextToUse(
   return context;
 }
 
-KeyedService* ClipboardRestrictionServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ClipboardRestrictionServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ClipboardRestrictionService(user_prefs::UserPrefs::Get(context));
+  return std::make_unique<ClipboardRestrictionService>(
+      user_prefs::UserPrefs::Get(context));
 }
