@@ -88,7 +88,9 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceForBrowserContext(
                               AreSigninAndSyncSetUpForSafeBrowsingTokenFetches,
                           SyncServiceFactory::GetForProfile(profile),
                           IdentityManagerFactory::GetForProfile(profile)),
-      profile->IsOffTheRecord(), g_browser_process->variations_service(),
+      profile->IsOffTheRecord(),
+      base::BindRepeating(
+          &RealTimeUrlLookupServiceFactory::GetVariationsService),
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
           profile),
       WebUIInfoSingleton::GetInstance());
@@ -106,6 +108,12 @@ RealTimeUrlLookupServiceFactory::GetURLLoaderFactory(
           g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
               profile));
   return network::SharedURLLoaderFactory::Create(std::move(url_loader_factory));
+}
+
+// static
+variations::VariationsService*
+RealTimeUrlLookupServiceFactory::GetVariationsService() {
+  return g_browser_process->variations_service();
 }
 
 void RealTimeUrlLookupServiceFactory::SetURLLoaderFactoryForTesting(

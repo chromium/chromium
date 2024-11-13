@@ -11,6 +11,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/keyed_service/ios",
   "+components/unified_consent",
+  "+components/variations",
   "+ios/components/cookie_util",
   "+ios/components/ui_util",
   "+ios/web/common",
