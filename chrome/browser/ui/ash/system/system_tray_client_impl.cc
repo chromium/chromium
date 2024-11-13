@@ -409,9 +409,7 @@ void SystemTrayClientImpl::ShowDateSettings() {
   base::RecordAction(base::UserMetricsAction("ShowDateOptions"));
   // Everybody can change the time zone (even though it is a device setting).
   ShowSettingsSubPageForActiveUser(
-      ash::features::IsOsSettingsRevampWayfindingEnabled()
-          ? chromeos::settings::mojom::kSystemPreferencesSectionPath
-          : chromeos::settings::mojom::kDateAndTimeSectionPath);
+      chromeos::settings::mojom::kSystemPreferencesSectionPath);
 }
 
 void SystemTrayClientImpl::ShowSetTimeDialog() {

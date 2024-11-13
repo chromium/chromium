@@ -459,10 +459,6 @@ IN_PROC_BROWSER_TEST_F(OSSettingsCrostiniTest, CrostiniPageCrostiniSubpage) {
   RunSettingsTest("crostini_page/crostini_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DateTimePage) {
-  RunSettingsTest("date_time_page/date_time_page_test.js");
-}
-
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DateTimePageTimezoneSelector) {
   RunSettingsTest("date_time_page/timezone_selector_test.js");
 }

@@ -20,7 +20,7 @@ enum Section {
   kCrostini = 8,
   // Note: Value 9 was for deprecated Plugin VM section - see
   // https://crbug.com/1074101. Do not reuse.
-  kDateAndTime = 10,
+  // Note: Value 10 was for deprecated kDateAndTime. Do not reuse.
   kPrivacyAndSecurity = 11,
   kLanguagesAndInput = 12,
   kFiles = 13,
@@ -291,7 +291,6 @@ const string kBruschettaManageSharedFoldersSubpagePath =
      "bruschetta/sharedPaths";
 
 // Date and Time section.
-const string kDateAndTimeSectionPath = "dateTime";
 const string kTimeZoneSubpagePath = "dateTime/timeZone";
 
 // Privacy and Security section.

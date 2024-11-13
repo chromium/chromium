@@ -13,7 +13,6 @@
 import '/strings.m.js';
 /** Top-level Advanced pages & About page */
 import './crostini_page/crostini_page.js';
-import './date_time_page/date_time_page.js';
 import './os_about_page/os_about_page.js';
 import './os_files_page/os_files_page.js';
 import './os_languages_page/os_languages_section.js';
@@ -172,7 +171,6 @@ export {CrostiniPortForwardingElement} from './crostini_page/crostini_port_forwa
 export {CrostiniSettingsCardElement} from './crostini_page/crostini_settings_card.js';
 export {CrostiniSharedUsbDevicesElement} from './crostini_page/crostini_shared_usb_devices.js';
 export {SettingsCrostiniSubpageElement} from './crostini_page/crostini_subpage.js';
-export {SettingsDateTimePageElement} from './date_time_page/date_time_page.js';
 export {DateTimeSettingsCardElement} from './date_time_page/date_time_settings_card.js';
 export {TimeZoneAutoDetectMethod} from './date_time_page/date_time_types.js';
 export {TimezoneSelectorElement} from './date_time_page/timezone_selector.js';

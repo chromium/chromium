@@ -794,10 +794,6 @@ const PATH_REDIRECT_PAIRS: Array<[string, string]> = [
     routesMojom.PEOPLE_SECTION_PATH,
   ],
   [
-    routesMojom.DATE_AND_TIME_SECTION_PATH,
-    routesMojom.SYSTEM_PREFERENCES_SECTION_PATH,
-  ],
-  [
     routesMojom.FILES_SECTION_PATH,
     routesMojom.SYSTEM_PREFERENCES_SECTION_PATH,
   ],

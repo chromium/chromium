@@ -232,10 +232,6 @@ suite('<os-settings-menu> menu item visibility', () => {
 
     // Advanced pages
     {
-      sectionName: 'kDateAndTime',
-      path: `/${routesMojom.DATE_AND_TIME_SECTION_PATH}`,
-    },
-    {
       sectionName: 'kLanguagesAndInput',
       path: `/${routesMojom.LANGUAGES_AND_INPUT_SECTION_PATH}`,
     },

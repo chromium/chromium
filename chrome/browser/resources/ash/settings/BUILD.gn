@@ -72,7 +72,6 @@ build_webui("build") {
     "crostini_page/crostini_settings_card.ts",
     "crostini_page/crostini_subpage.ts",
     "date_time_page/date_time_settings_card.ts",
-    "date_time_page/date_time_page.ts",
     "date_time_page/timezone_selector.ts",
     "date_time_page/timezone_subpage.ts",
     "device_page/audio.ts",
