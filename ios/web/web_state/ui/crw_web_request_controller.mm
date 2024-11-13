@@ -58,6 +58,10 @@ enum class BackForwardNavigationType {
 // Returns The WKNavigationDelegate handler class from delegate.
 @property(nonatomic, readonly) CRWWKNavigationHandler* navigationHandler;
 
+// The URL for the currently loading securitu scoped resource. Non-null only
+// between starting to load a security scoped file URL and the load completion.
+@property(nonatomic, strong) NSURL* securityScopedResourceURL;
+
 @end
 
 @implementation CRWWebRequestController
@@ -339,6 +343,12 @@ enum class BackForwardNavigationType {
                  context:(nullable const web::NavigationContextImpl*)context {
   DCHECK_EQ(web::WKNavigationState::FINISHED,
             self.navigationHandler.navigationState);
+
+  if (self.securityScopedResourceURL) {
+    [self.securityScopedResourceURL stopAccessingSecurityScopedResource];
+    self.securityScopedResourceURL = nil;
+  }
+
   // Placeholder and restore session URLs are implementation details so should
   // not notify WebStateObservers. If `context` is nullptr, don't skip
   // placeholder URLs because this may be the only opportunity to update
@@ -483,10 +493,10 @@ enum class BackForwardNavigationType {
       web::GetWebClient()->IsAppSpecificURL(virtualURL)) {
     // file:// URL navigations are allowed for app-specific URLs, which
     // already have elevated privileges.
+    self.securityScopedResourceURL = request.URL;
     [request.URL startAccessingSecurityScopedResource];
     navigation = [self.webView loadFileRequest:request
                        allowingReadAccessToURL:request.URL];
-    [request.URL stopAccessingSecurityScopedResource];
   } else {
     navigation = [self.webView loadRequest:request];
   }
@@ -624,6 +634,14 @@ enum class BackForwardNavigationType {
   return list.currentItem == item ||
          [list.forwardList indexOfObject:item] != NSNotFound ||
          [list.backList indexOfObject:item] != NSNotFound;
+}
+
+- (void)close {
+  if (self.securityScopedResourceURL) {
+    [self.securityScopedResourceURL stopAccessingSecurityScopedResource];
+    self.securityScopedResourceURL = nil;
+  }
+  [super close];
 }
 
 #pragma mark - Private properties
