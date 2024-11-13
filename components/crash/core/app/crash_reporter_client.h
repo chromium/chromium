@@ -34,6 +34,15 @@ CrashReporterClient* GetCrashReporterClient();
 // Interface that the embedder implements.
 class CrashReporterClient {
  public:
+  struct ProductInfo {
+    ProductInfo();
+    ~ProductInfo();
+
+    std::string product_name;
+    std::string version;
+    std::string channel;
+  };
+
   CrashReporterClient();
   virtual ~CrashReporterClient();
 
@@ -73,16 +82,6 @@ class CrashReporterClient {
 #endif
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-  // Returns a textual description of the product type and version to include
-  // in the crash report. Neither out parameter should be set to NULL.
-  // TODO(jperaza): Remove the 2-parameter overload of this method once all
-  // Linux-ish breakpad clients have transitioned to crashpad.
-  virtual void GetProductNameAndVersion(const char** product_name,
-                                        const char** version);
-  virtual void GetProductNameAndVersion(std::string* product_name,
-                                        std::string* version,
-                                        std::string* channel);
-
   virtual base::FilePath GetReporterLogFilename();
 
   // Custom crash minidump handler after the minidump is generated.
@@ -113,6 +112,10 @@ class CrashReporterClient {
 #else
   virtual bool GetCrashMetricsLocation(base::FilePath* metrics_dir);
 #endif
+
+  // Returns a textual description of the product info (product name, version,
+  // etc.) to include in the crash report.
+  virtual void GetProductInfo(ProductInfo* product_info);
 
   // Returns true if running in unattended mode (for automated testing).
   virtual bool IsRunningUnattended();

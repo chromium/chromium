@@ -38,22 +38,6 @@ void ShellCrashReporterClient::GetProductNameAndVersion(
 #endif
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-void ShellCrashReporterClient::GetProductNameAndVersion(
-    const char** product_name,
-    const char** version) {
-  *product_name = "content_shell";
-  *version = CONTENT_SHELL_VERSION;
-}
-
-void ShellCrashReporterClient::GetProductNameAndVersion(
-    std::string* product_name,
-    std::string* version,
-    std::string* channel) {
-  *product_name = "content_shell";
-  *version = CONTENT_SHELL_VERSION;
-  *channel = "";
-}
-
 base::FilePath ShellCrashReporterClient::GetReporterLogFilename() {
   return base::FilePath(FILE_PATH_LITERAL("uploads.log"));
 }
@@ -76,6 +60,11 @@ bool ShellCrashReporterClient::GetCrashDumpLocation(base::FilePath* crash_dir) {
   *crash_dir = std::move(crash_directory);
 #endif
   return true;
+}
+
+void ShellCrashReporterClient::GetProductInfo(ProductInfo* product_info) {
+  product_info->product_name = "content_shell";
+  product_info->version = CONTENT_SHELL_VERSION;
 }
 
 bool ShellCrashReporterClient::EnableBreakpadForProcess(

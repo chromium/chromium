@@ -41,6 +41,9 @@ CrashReporterClient* GetCrashReporterClient() {
 CrashReporterClient::CrashReporterClient() = default;
 CrashReporterClient::~CrashReporterClient() = default;
 
+CrashReporterClient::ProductInfo::ProductInfo() = default;
+CrashReporterClient::ProductInfo::~ProductInfo() = default;
+
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_ANDROID)
 void CrashReporterClient::SetCrashReporterClientIdFromGUID(
     const std::string& client_guid) {}
@@ -71,14 +74,6 @@ bool CrashReporterClient::GetShouldDumpLargerDumps() {
 #endif
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-void CrashReporterClient::GetProductNameAndVersion(const char** product_name,
-                                                   const char** version) {
-}
-
-void CrashReporterClient::GetProductNameAndVersion(std::string* product_name,
-                                                   std::string* version,
-                                                   std::string* channel) {}
-
 base::FilePath CrashReporterClient::GetReporterLogFilename() {
   return base::FilePath();
 }
@@ -104,6 +99,8 @@ bool CrashReporterClient::GetCrashMetricsLocation(base::FilePath* crash_dir) {
 #endif
   return false;
 }
+
+void CrashReporterClient::GetProductInfo(ProductInfo* product_info) {}
 
 bool CrashReporterClient::IsRunningUnattended() {
   return true;
