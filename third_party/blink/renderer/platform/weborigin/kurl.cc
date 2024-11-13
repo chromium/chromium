@@ -111,12 +111,10 @@ class KURLCharsetConverter final : public url::CharsetConverter {
   explicit KURLCharsetConverter(const WTF::TextEncoding* encoding)
       : encoding_(encoding) {}
 
-  void ConvertFromUTF16(const char16_t* input,
-                        int input_length,
+  void ConvertFromUTF16(std::u16string_view input,
                         url::CanonOutput* output) override {
     std::string encoded = encoding_->Encode(
-        String(base::span(input, static_cast<unsigned>(input_length))),
-        WTF::kURLEncodedEntitiesForUnencodables);
+        String(input), WTF::kURLEncodedEntitiesForUnencodables);
     output->Append(encoded);
   }
 

@@ -19,7 +19,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   url::ICUCharsetConverter converter(conv.converter());
   url::RawCanonOutput<1024> output;
 
-  converter.ConvertFromUTF16(reinterpret_cast<const char16_t*>(data),
-                             size / sizeof(const char16_t), &output);
+  converter.ConvertFromUTF16(
+      std::u16string_view(reinterpret_cast<const char16_t*>(data),
+                          size / sizeof(const char16_t)),
+      &output);
   return 0;
 }

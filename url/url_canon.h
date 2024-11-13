@@ -242,8 +242,7 @@ class COMPONENT_EXPORT(URL) CharsetConverter {
   // decimal, (such as "&#20320;") with escaping of the ampersand, number
   // sign, and semicolon (in the previous example it would be
   // "%26%2320320%3B"). This rule is based on what IE does in this situation.
-  virtual void ConvertFromUTF16(const char16_t* input,
-                                int input_len,
+  virtual void ConvertFromUTF16(std::u16string_view input,
                                 CanonOutput* output) = 0;
 };
 

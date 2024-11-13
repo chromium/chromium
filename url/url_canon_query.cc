@@ -71,7 +71,7 @@ void RunConverter(const char* spec,
   RawCanonOutputW<1024> utf16;
   ConvertUTF8ToUTF16(&spec[query.begin], static_cast<size_t>(query.len),
                      &utf16);
-  converter->ConvertFromUTF16(utf16.data(), utf16.length(), output);
+  converter->ConvertFromUTF16(utf16.view(), output);
 }
 
 // Runs the converter with the given UTF-16 input. We don't have to do
@@ -82,8 +82,7 @@ void RunConverter(const char16_t* spec,
                   CharsetConverter* converter,
                   CanonOutput* output) {
   DCHECK(query.is_valid());
-  converter->ConvertFromUTF16(&spec[query.begin],
-                              static_cast<size_t>(query.len), output);
+  converter->ConvertFromUTF16(query.as_string_view_on(spec), output);
 }
 
 template <typename CHAR, typename UCHAR>
