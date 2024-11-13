@@ -6,7 +6,8 @@
 
 var ControlledFrameImpl = require('controlledFrameImpl').ControlledFrameImpl;
 var forwardApiMethods = require('guestViewContainerElement').forwardApiMethods;
-var promiseWrap = require('guestViewContainerElement').promiseWrap;
+var upgradeMethodsToPromises =
+    require('guestViewContainerElement').upgradeMethodsToPromises;
 var ChromeWebViewImpl = require('chromeWebView').ChromeWebViewImpl;
 var CONTROLLED_FRAME_API_METHODS =
     require('controlledFrameApiMethods').CONTROLLED_FRAME_API_METHODS;
@@ -58,8 +59,9 @@ var originalGo = ControlledFrameElement.prototype.go;
 
 // Wrap callback methods in promise handlers. Note: This disables the callback
 // forms.
-promiseWrap(ControlledFrameElement, ControlledFrameImpl, WebViewInternal,
-            CONTROLLED_FRAME_PROMISE_API_METHODS);
+upgradeMethodsToPromises(
+    ControlledFrameElement, ControlledFrameImpl, WebViewInternal,
+    CONTROLLED_FRAME_PROMISE_API_METHODS);
 
 // Delete GuestView methods that should not be part of the Controlled Frame API.
 (function() {

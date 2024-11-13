@@ -122,35 +122,48 @@ function createMethodHandler(
   }
 };
 
+function promiseWrap(
+    handler, handlerArguments, callbackIndex, verifyEnvironment) {
+  const args = $Array.slice(handlerArguments);
+  if (args[callbackIndex] !== undefined) {
+    throw new Error('Callback form deprecated, see API doc ' +
+                    'for correct usage.');
+  }
+  return new $Promise.self((resolve, reject) => {
+    if (!verifyEnvironment(reject)) {
+      return;
+    }
+    const callback = function(result) {
+      if (bindingUtil.hasLastError()) {
+        reject(bindingUtil.getLastErrorMessage());
+        bindingUtil.clearLastError();
+        return;
+      }
+      resolve(result);
+    };
+    args[callbackIndex] = callback;
+    $Function.apply(handler, this, args);
+  });
+}
+
 function promisifyMethodHandler(
     containerElementType, containerType, internalApi, methodDetails, handler) {
   const methodType = getMethodType(containerElementType, containerType,
                                    internalApi, methodDetails.name);
-  return function(var_args) {
-    const args = $Array.slice(arguments);
-    if (args[methodDetails.callbackIndex] !== undefined) {
-      throw new Error('Callback form deprecated, see API doc ' +
-                      'for correct usage.');
-    }
-    return new $Promise.self((resolve, reject) => {
-      if (methodType === 'INTERNAL') {
-        if (!privates(this).internal.guest.getId()) {
-          reject('The embedded page has been destroyed.');
-          return;
-        }
+  function verifyEnvironment(reject) {
+    if (methodType === 'INTERNAL') {
+      if (!privates(this).internal.guest.getId()) {
+        reject('The embedded page has been destroyed.');
+        return false;
       }
-      const callback = function(result) {
-        if (bindingUtil.hasLastError()) {
-          reject(bindingUtil.getLastErrorMessage());
-          bindingUtil.clearLastError();
-          return;
-        }
-        resolve(result);
-      };
-      args[methodDetails.callbackIndex] = callback;
-      $Function.apply(handler, this, args);
-    });
+    }
+    return true;
   };
+  return function(var_args) {
+    return $Function.apply(promiseWrap, this,
+        [handler, arguments, methodDetails.callbackIndex, verifyEnvironment]);
+  };
+
 };
 
 // Forward public API methods from |containerElementType|'s prototype to their
@@ -181,7 +194,7 @@ function forwardApiMethods(
 // For APIs in |promiseMethodDetails|, the forwarded API will return a Promise
 // that resolves with the result of the API or rejects with the error that is
 // produced if the callback parameter is not defined.
-function promiseWrap(
+function upgradeMethodsToPromises(
     containerElementType, containerType, internalApi, promiseMethodDetails) {
   for (const methodDetails of promiseMethodDetails) {
     const handler = containerElementType.prototype[methodDetails.name];
@@ -207,3 +220,4 @@ exports.$set('GuestViewContainerElement', GuestViewContainerElement);
 exports.$set('registerElement', registerElement);
 exports.$set('forwardApiMethods', forwardApiMethods);
 exports.$set('promiseWrap', promiseWrap);
+exports.$set('upgradeMethodsToPromises', upgradeMethodsToPromises);
