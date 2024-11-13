@@ -492,6 +492,31 @@ class ExtensionsMenuMainPageViewInteractiveTest
                  WaitForShow(kExtensionsMenuMainPageElementId));
   }
 
+  // Verifies whether the context menu for `extension_id` opened from
+  // `context_menu_source` has `command_id` with `label_id`.
+  auto CheckExtensionContextMenuEntryLabel(
+      const extensions::ExtensionId& extension_id,
+      extensions::ExtensionContextMenuModel::ContextMenuSource
+          context_menu_source,
+      int command_id,
+      int label_id) {
+    return CheckResult(
+        [this, extension_id, context_menu_source,
+         command_id]() -> std::u16string {
+          auto* context_menu =
+              static_cast<extensions::ExtensionContextMenuModel*>(
+                  extensions_container()
+                      ->GetActionForId(extension_id)
+                      ->GetContextMenu(context_menu_source));
+          std::optional<size_t> command_index =
+              context_menu->GetIndexOfCommandId(command_id);
+          return command_index.has_value()
+                     ? context_menu->GetLabelAt(command_index.value())
+                     : std::u16string();
+        },
+        l10n_util::GetStringUTF16(label_id));
+  }
+
   // Returns the menu item view for `extension_id` in the menu's main page, if
   // existent.
   ExtensionMenuItemView* GetMenuItemViewFor(
@@ -538,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 
 // Tests clicking on the 'manage extensions' button opens chrome://extensions.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
-                       ManageExtensionsOpensExtensionsPage) {
+                       ManageExtensionsOpensExtensionsPpage) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
   LoadExtension(test_data_dir_.AppendASCII("simple_with_icon"));
 
@@ -627,4 +652,107 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
   // TODO(crbug.com/40684492): Add a test for command invocation once
   // triggering an action via command with extensions menu opened is
   // fixed.
+}
+
+// Test that an extension's context menu shows the correct label when the
+// extension is pinned.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
+                       PinnedExtensionShowsCorrectContextMenuPinOption) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
+  constexpr char kExtensionContextMenuButton[] =
+      "extension_context_menu_button";
+
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("simple_with_popup"));
+
+  RunTestSequence(
+      InstrumentTab(kTab), OpenExtensionsMenu(),
+      // Open the extension's context menu from the extensions menu.
+      CheckView(kExtensionMenuItemViewElementId,
+                [extension](ExtensionMenuItemView* menu_item) {
+                  return menu_item->view_controller()->GetId() ==
+                         extension->id();
+                }),
+      NameDescendantViewByType<HoverButton>(kExtensionMenuItemViewElementId,
+                                            kExtensionContextMenuButton,
+                                            /*index=*/1u),
+      PressButton(kExtensionContextMenuButton),
+
+      // Verify the toggle visibility entry has "pin to toolbar" label and
+      // select it.
+      CheckExtensionContextMenuEntryLabel(
+          extension->id(),
+          extensions::ExtensionContextMenuModel::ContextMenuSource::kMenuItem,
+          extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY,
+          IDS_EXTENSIONS_CONTEXT_MENU_PIN_TO_TOOLBAR),
+      SelectMenuItem(
+          extensions::ExtensionContextMenuModel::kToggleVisibilityMenuItem),
+
+      // Verify extension is pinned but not stored as the popped out action.
+      WaitForShow(kToolbarActionViewElementId)
+          .SetTransitionOnlyOnEvent(/*transition_only_on_event=*/true),
+      CheckResult(
+          [&]() { return extensions_container()->GetPoppedOutActionId(); },
+          std::nullopt),
+
+      // Verify the toggle visibility entry is "unpin from toolbar" label when
+      // context menu is opened from the toolbar action or the extensions menu.
+      CheckExtensionContextMenuEntryLabel(
+          extension->id(),
+          extensions::ExtensionContextMenuModel::ContextMenuSource::kMenuItem,
+          extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY,
+          IDS_EXTENSIONS_CONTEXT_MENU_UNPIN_FROM_TOOLBAR),
+      CheckExtensionContextMenuEntryLabel(
+          extension->id(),
+          extensions::ExtensionContextMenuModel::ContextMenuSource::
+              kToolbarAction,
+          extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY,
+          IDS_EXTENSIONS_CONTEXT_MENU_UNPIN_FROM_TOOLBAR)
+
+  );
+}
+
+// Test that an extension's context menu shows the correct label when the
+// extension is unpinned and popped out.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
+                       UnpinnedExtensionShowsCorrectContextMenuPinOption) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
+  constexpr char kExtensionMenuItemActionButton[] =
+      "extension_menu_item_action_button";
+
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("simple_with_popup"));
+
+  RunTestSequence(
+      InstrumentTab(kTab), OpenExtensionsMenu(),
+
+      // Trigger the extension's action by clicking on its menu entry.
+      CheckView(kExtensionMenuItemViewElementId,
+                [extension](ExtensionMenuItemView* menu_item) {
+                  return menu_item->view_controller()->GetId() ==
+                         extension->id();
+                }),
+      NameDescendantViewByType<ExtensionsMenuButton>(
+          kExtensionMenuItemViewElementId, kExtensionMenuItemActionButton),
+      PressButton(kExtensionMenuItemActionButton),
+
+      // Verify extension appears on the toolbar and is stored as the popped out
+      // action.
+      WaitForShow(kToolbarActionViewElementId)
+          .SetTransitionOnlyOnEvent(/*transition_only_on_event=*/true),
+      CheckResult(
+          [this]() { return extensions_container()->GetPoppedOutActionId(); },
+          extension->id()),
+
+      // Verify the toggle visibility entry when opened from the toolbar is to
+      // pin the extension, since the extension is not pinned (just popped out).
+      CheckExtensionContextMenuEntryLabel(
+          extension->id(),
+          extensions::ExtensionContextMenuModel::ContextMenuSource::kMenuItem,
+          extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY,
+          IDS_EXTENSIONS_CONTEXT_MENU_PIN_TO_TOOLBAR),
+
+      // TODO(crbug.com/378724154): Test crashes if popup is left opened at the
+      // end of the test. For now, close the popup so don't lose test coverage.
+      Do([&]() { extensions_container()->HideActivePopup(); }));
 }

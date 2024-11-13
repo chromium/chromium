@@ -31,6 +31,8 @@ class SidePanelService;
 class ExtensionContextMenuModel : public ui::SimpleMenuModel,
                                   public ui::SimpleMenuModel::Delegate {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleVisibilityMenuItem);
+
   enum MenuEntries {
     HOME_PAGE = 0,
     OPTIONS,

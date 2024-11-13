@@ -267,6 +267,9 @@ class UninstallDialogHelper : public ExtensionUninstallDialog::Delegate {
 
 }  // namespace
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ExtensionContextMenuModel,
+                                      kToggleVisibilityMenuItem);
+
 ExtensionContextMenuModel::ExtensionContextMenuModel(
     const Extension* extension,
     Browser* browser,
@@ -679,6 +682,8 @@ void ExtensionContextMenuModel::InitMenuWithFeature(
                            : IDS_EXTENSIONS_CONTEXT_MENU_PIN_TO_TOOLBAR;
       AddItemWithStringId(TOGGLE_VISIBILITY, message_id);
     }
+    SetElementIdentifierAt(GetIndexOfCommandId(TOGGLE_VISIBILITY).value(),
+                           kToggleVisibilityMenuItem);
   }
 
   if (has_options_page) {
