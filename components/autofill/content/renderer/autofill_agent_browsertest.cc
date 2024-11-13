@@ -1327,10 +1327,6 @@ class AutofillAgentTestCaret
     }
     task_environment_.FastForwardBy(pause_for);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillCaretExtraction};
 };
 
 INSTANTIATE_TEST_SUITE_P(AutofillAgentTest,

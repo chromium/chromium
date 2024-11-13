@@ -336,9 +336,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_ENABLE_EMAIL_HEURISTIC_ONLY_ADDRESS_FORMS,
                 "When enabled, Autofill supports forms consisting of only email fields."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_CARET_EXTRACTION,
-                "When enabled, autofill extracts the caret position on certain events."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_CONSIDER_PHONE_NUMBER_SEPARATORS_VALID_LABELS,
                 "Makes label inference accept strings made up of  '(', ')', and '-' as labels."),
         Flag.baseFeature(

@@ -35,13 +35,6 @@ BASE_FEATURE(kAutofillAddressUserPerceptionSurvey,
              "AutofillAddressUserPerceptionSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, Autofill is informed about the caret position while showing a
-// popup.
-// TODO(crbug.com/339156167): Remove when launched.
-BASE_FEATURE(kAutofillCaretExtraction,
-             "AutofillCaretExtraction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Same as `kAutofillAddressUserPerceptionSurvey` but for credit card forms.
 BASE_FEATURE(kAutofillCreditCardUserPerceptionSurvey,
              "AutofillCreditCardUserPerceptionSurvey",

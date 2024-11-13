@@ -286,9 +286,6 @@ bool JavaScriptOnlyReformattedValue(std::u16string old_value,
 }
 
 gfx::Rect GetCaretBounds(content::RenderFrame& frame) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillCaretExtraction)) {
-    return gfx::Rect();
-  }
   if (auto* frame_widget = frame.GetWebFrame()->LocalRoot()->FrameWidget()) {
     gfx::Rect anchor;
     gfx::Rect focus;
@@ -583,10 +580,6 @@ void AutofillAgent::FocusedElementChanged(
 }
 
 void AutofillAgent::ObserveCaret(WebElement element) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillCaretExtraction)) {
-    return;
-  }
-
   if (element && (element.IsContentEditable() ||
                   form_util::IsTextAreaElement(
                       element.DynamicTo<WebFormControlElement>()))) {

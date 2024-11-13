@@ -6031,7 +6031,6 @@
                         "proactive_nudge_show_probability": "0.02"
                     },
                     "enable_features": [
-                        "AutofillCaretExtraction",
                         "ComposeProactiveNudge",
                         "EnableComposeNudgeAtCursor"
                     ]
