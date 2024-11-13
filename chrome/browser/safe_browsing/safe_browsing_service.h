@@ -151,8 +151,8 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
 
   const scoped_refptr<SafeBrowsingUIManager>& ui_manager() const;
 
-  virtual const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager()
-      const;
+  const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager()
+      const override;
 
   ReferrerChainProvider* GetReferrerChainProviderFromBrowserContext(
       content::BrowserContext* browser_context) override;
@@ -308,6 +308,11 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
 
   // Creates services for |profile|, which may be normal or off the record.
   void CreateServicesForProfile(Profile* profile);
+
+  // Refreshes the state (calls RefreshState()) and potentially shows a toast
+  // about Enhanced Protection setting changes when its preference value
+  // updates.
+  void EnhancedProtectionPrefChange(Profile* profile);
 
   // Checks if any profile is currently using the safe browsing service, and
   // starts or stops the service accordingly.

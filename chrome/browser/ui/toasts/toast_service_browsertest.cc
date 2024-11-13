@@ -14,6 +14,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/plus_addresses/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
@@ -41,7 +42,8 @@ class ToastServiceBrowserTest : public InProcessBrowserTest {
         {toast_features::kToastFramework, commerce::kCompareConfirmationToast,
          commerce::kProductSpecifications,
          plus_addresses::features::kPlusAddressesEnabled,
-         plus_addresses::features::kPlusAddressFullFormFill},
+         plus_addresses::features::kPlusAddressFullFormFill,
+         safe_browsing::kEsbAsASyncedSetting},
         /*disabled_features*/ {});
     InProcessBrowserTest::SetUp();
   }
