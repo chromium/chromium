@@ -8,7 +8,4 @@ dictionary MLTensorDescriptor : MLOperandDescriptor {
   boolean importableToWebGPU = false;
   boolean readable = false;
   boolean writable = false;
-
-  // TODO(crbug.com/343638938): Remove this after the M132 branch cut.
-  MLTensorUsageFlags usage;
 };

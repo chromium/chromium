@@ -52,7 +52,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operator_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_recurrent_network_activation.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_descriptor.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_usage.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_triangular_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
@@ -1351,78 +1350,6 @@ TEST_F(MLGraphTest, CreateWebNNTensorTest) {
   ASSERT_THAT(ml_tensor, testing::NotNull());
   EXPECT_EQ(ml_tensor->dataType(), desc->dataType());
   EXPECT_EQ(ml_tensor->shape(), desc->shape());
-}
-
-// Test that callers specifying `MLTensorDescriptor.usage` in place of
-// the respective boolean fields will not break.
-//
-// TODO(crbug.com/343638938): Remove this test after the M132 branch cut.
-TEST_F(MLGraphTest, CreateTensorUsingDeprecatedMLTensorUsageTest) {
-  V8TestingScope scope;
-  // Bind fake WebNN Context in the service for testing.
-  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
-
-  auto* options = MLContextOptions::Create();
-  // Create WebNN Context with GPU device type.
-  options->setDeviceType(V8MLDeviceType::Enum::kGpu);
-  auto* script_state = scope.GetScriptState();
-
-  MLContext* ml_context = CreateContext(scope, options);
-
-  {
-    // Specify only a usage.
-    DummyExceptionStateForTesting exception_state;
-    auto* desc = MLTensorDescriptor::Create();
-    desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
-    desc->setShape({2, 2});
-    desc->setUsage(V8MLTensorUsage::Constant::kWrite |
-                   V8MLTensorUsage::Constant::kRead);
-
-    ScriptPromiseTester tensor_tester(
-        script_state,
-        ml_context->createTensor(script_state, desc, exception_state));
-    tensor_tester.WaitUntilSettled();
-    EXPECT_TRUE(tensor_tester.IsFulfilled());
-
-    MLTensor* ml_tensor = V8ToObject<MLTensor>(&scope, tensor_tester.Value());
-    ASSERT_THAT(ml_tensor, testing::NotNull());
-    EXPECT_FALSE(ml_tensor->importableToWebGPU());
-    EXPECT_TRUE(ml_tensor->readable());
-    EXPECT_TRUE(ml_tensor->writable());
-  }
-  {
-    // Specify a usage and boolean fields which are consistent.
-    DummyExceptionStateForTesting exception_state;
-    auto* desc = MLTensorDescriptor::Create();
-    desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
-    desc->setShape({2, 2});
-    desc->setUsage(V8MLTensorUsage::Constant::kRead);
-    desc->setReadable(true);
-
-    ScriptPromiseTester tensor_tester(
-        script_state,
-        ml_context->createTensor(script_state, desc, exception_state));
-    tensor_tester.WaitUntilSettled();
-    EXPECT_TRUE(tensor_tester.IsFulfilled());
-
-    MLTensor* ml_tensor = V8ToObject<MLTensor>(&scope, tensor_tester.Value());
-    ASSERT_THAT(ml_tensor, testing::NotNull());
-    EXPECT_FALSE(ml_tensor->importableToWebGPU());
-    EXPECT_TRUE(ml_tensor->readable());
-    EXPECT_FALSE(ml_tensor->writable());
-  }
-  {
-    // Specify a usage and boolean fields which are inconsistent.
-    DummyExceptionStateForTesting exception_state;
-    auto* desc = MLTensorDescriptor::Create();
-    desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
-    desc->setShape({2, 2});
-    desc->setUsage(V8MLTensorUsage::Constant::kRead);
-    desc->setWritable(true);
-
-    ml_context->createTensor(script_state, desc, exception_state);
-    EXPECT_TRUE(exception_state.HadException());
-  }
 }
 
 TEST_F(MLGraphTest, WriteWebNNTensorTest) {

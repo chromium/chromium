@@ -76,10 +76,6 @@ bool MLTensor::writable() const {
   return usage_.Has(webnn::MLTensorUsageFlags::kWrite);
 }
 
-uint32_t MLTensor::usage() const {
-  return static_cast<uint32_t>(usage_.ToEnumBitmask());
-}
-
 void MLTensor::destroy() {
   // Calling OnConnectionError() will disconnect and destroy the tensor in
   // the service. The remote tensor must remain unbound after calling

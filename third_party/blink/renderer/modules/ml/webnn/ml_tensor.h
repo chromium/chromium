@@ -14,7 +14,6 @@
 #include "services/webnn/public/mojom/webnn_tensor.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_tensor_usage.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -60,9 +59,6 @@ class MODULES_EXPORT MLTensor : public ScriptWrappable {
   bool importableToWebGPU() const;
   bool readable() const;
   bool writable() const;
-
-  // TODO(crbug.com/343638938): Remove this after the M132 branch cut.
-  uint32_t usage() const;
 
   void destroy();
 

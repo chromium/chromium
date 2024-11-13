@@ -998,25 +998,6 @@ ScriptPromise<MLTensor> MLContext::createTensor(
     usage.Put(webnn::MLTensorUsageFlags::kWrite);
   }
 
-  // TODO(crbug.com/343638938): Remove this after the M132 branch cut.
-  if (descriptor->hasUsage()) {
-    LogConsoleWarning(
-        script_state,
-        "WARNING: MLTensorUsage flags are deprecated. Set the boolean fields "
-        "of the MLTensorDescriptor dictionary instead.",
-        mojom::blink::ConsoleMessageSource::kDeprecation);
-
-    webnn::MLTensorUsage usage_specified_using_deprecated_api =
-        webnn::MLTensorUsage::FromEnumBitmask(descriptor->usage());
-
-    if (usage.empty()) {
-      usage = usage_specified_using_deprecated_api;
-    } else if (usage != usage_specified_using_deprecated_api) {
-      exception_state.ThrowTypeError("MLTensor usage flags are inconsistent.");
-      return ScriptPromise<MLTensor>();
-    }
-  }
-
   auto tensor_info =
       webnn::mojom::blink::TensorInfo::New(validated_descriptor, usage);
 
