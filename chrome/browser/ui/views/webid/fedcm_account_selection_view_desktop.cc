@@ -642,7 +642,7 @@ void FedCmAccountSelectionView::OnWidgetDestroying(views::Widget* widget) {
   OnDismiss(dismiss_reason);
 }
 
-bool FedCmAccountSelectionView::OnAccountSelected(
+void FedCmAccountSelectionView::OnAccountSelected(
     const Account& account,
     const content::IdentityProviderData& idp_data,
     const ui::Event& event) {
@@ -651,8 +651,7 @@ bool FedCmAccountSelectionView::OnAccountSelected(
 
   if (input_protector_->IsPossiblyUnintendedInteraction(event) ||
       account_selection_view_->IsOccluded()) {
-    // Reject this account selection by returning false.
-    return false;
+    return;
   }
 
   if (modal_account_chooser_state_) {
@@ -670,7 +669,7 @@ bool FedCmAccountSelectionView::OnAccountSelected(
       idp_data.disclosure_fields.empty()) {
     state_ = State::VERIFYING;
     ShowVerifyingSheet(account, idp_data);
-    return true;
+    return;
   }
 
   // At this point, the account is a non-returning user. If the dialog is modal,
@@ -678,7 +677,7 @@ bool FedCmAccountSelectionView::OnAccountSelected(
   if (GetDialogType() == DialogType::MODAL) {
     state_ = State::REQUEST_PERMISSION;
     account_selection_view_->ShowRequestPermissionDialog(account, idp_data);
-    return false;
+    return;
   }
 
   // At this point, the account is a non-returning user, the dialog is a bubble
@@ -687,7 +686,6 @@ bool FedCmAccountSelectionView::OnAccountSelected(
   state_ = State::SINGLE_ACCOUNT_PICKER;
   account_selection_view_->ShowSingleAccountConfirmDialog(
       account, /*show_back_button=*/true);
-  return false;
 }
 
 void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,

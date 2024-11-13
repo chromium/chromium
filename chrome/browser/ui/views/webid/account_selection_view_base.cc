@@ -387,7 +387,7 @@ BEGIN_METADATA(BrandIconImageView)
 END_METADATA
 
 AccountHoverButton::AccountHoverButton(
-    OnAccountSelectedCallback callback,
+    PressedCallback callback,
     std::unique_ptr<views::View> icon_view,
     const std::u16string& title,
     const std::u16string& subtitle,
@@ -407,8 +407,6 @@ AccountHoverButton::AccountHoverButton(
       callback_(std::move(callback)),
       brand_icon_image_view_(brand_icon_image_view),
       button_position_(button_position) {}
-
-AccountHoverButton::~AccountHoverButton() {}
 
 void AccountHoverButton::StateChanged(ButtonState old_state) {
   // If there is an IDP icon within the account button, the IDP icon was
@@ -462,16 +460,13 @@ void AccountHoverButton::OnPressed(const ui::Event& event) {
                                  button_position_,
                                  /*min=*/0,
                                  /*exclusive_max=*/10, /*buckets=*/11);
-  bool account_selection_accepted = false;
-  if (callback_) {
-    account_selection_accepted = callback_.Run(event);
-  }
-  // The callback may delete this object if it returns false, so be careful to
-  // not perform any work afterwards if `account_selection_accepted` is false.
-  if (account_selection_accepted && secondary_view()) {
+  if (secondary_view()) {
     has_spinner_ = true;
     static_cast<AccountHoverButtonSecondaryView*>(secondary_view())
         ->ReplaceWithSpinner();
+  }
+  if (callback_) {
+    callback_.Run(event);
   }
 }
 
