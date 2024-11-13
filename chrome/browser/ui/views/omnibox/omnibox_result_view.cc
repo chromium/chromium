@@ -221,6 +221,18 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
       std::make_unique<OmniboxMatchCellView>(this));
   suggestion_view_->iph_link_view()->SetCallback(base::BindRepeating(
       &OmniboxResultView::OpenIphLink, weak_factory_.GetWeakPtr()));
+
+  auto* const iph_link_focus_ring =
+      views::FocusRing::Get(suggestion_view_->iph_link_view());
+  iph_link_focus_ring->SetHasFocusPredicate(base::BindRepeating(
+      [](const OmniboxResultView* result_view, const View* view) {
+        return view->GetVisible() && result_view->GetMatchSelected() &&
+               result_view->popup_view_->GetSelection().state ==
+                   OmniboxPopupSelection::FOCUSED_IPH_LINK;
+      },
+      base::Unretained(this)));
+  iph_link_focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
+
   // Allocate space for the suggestion text only after accounting
   // for the space needed to render the inline action chip row.
   suggestion_view_->SetProperty(
@@ -487,6 +499,10 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
     selection_indicator_->SetVisible(selected &&
                                      popup_view_->GetSelection().state ==
                                          OmniboxPopupSelection::NORMAL);
+  }
+
+  if (suggestion_view_->iph_link_view()->GetVisible()) {
+    views::FocusRing::Get(suggestion_view_->iph_link_view())->SchedulePaint();
   }
 }
 

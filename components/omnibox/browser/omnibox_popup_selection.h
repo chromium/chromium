@@ -63,6 +63,11 @@ struct OmniboxPopupSelection {
     // button is focused. Pressing enter will attempt to remove this suggestion.
     FOCUSED_BUTTON_REMOVE_SUGGESTION,
 
+    // `NULL_RESULT_MESSAGE` IPH match types are not normally focusable, but
+    // their links still need to be tab-accessible, so this state is available
+    // when such a match has an IPH URL link.
+    FOCUSED_IPH_LINK,
+
     // Whenever new line state is added, accessibility label for current
     // selection should be revisited
     // (`OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection()`).
