@@ -89,6 +89,7 @@ found in the LICENSE file.
     <setup-pin-keyboard id="pinKeyboard"
         enable-submit="{{enableSubmit}}"
         is-confirm-step="{{isConfirmStep}}"
+        use-recovery-mode-api="[[isRecoveryMode]]"
         on-pin-submit="onPinSubmit"
         on-set-pin-done="onSetPinDone"
         auth-token="[[authToken]]"
@@ -104,7 +105,7 @@ found in the LICENSE file.
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="setupSkipButton" on-click="onSkipButton"
-        hidden="[[isRecoveryMode]]" for-step="start, confirm"
+        disabled="[[isRecoveryMode]]" for-step="start, confirm"
         text-key="[[getSkipButtonLabel(usingPinAsMainSignInFactor)]]">
     </oobe-text-button>
     <oobe-next-button inverse
