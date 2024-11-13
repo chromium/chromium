@@ -1313,7 +1313,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram
     name="ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.{ProbeErrorSourceStruct}"
-    enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2024-10-20">
+    enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2025-10-20">
   <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
