@@ -421,7 +421,7 @@ bool Message::ValidateParameters(
         case internal::ParamType::kDriverObject: {
           const uint32_t index = GetParamValueAt<uint32_t>(offset);
           if (index != internal::kInvalidDriverObjectIndex) {
-            if (is_object_claimed[index]) {
+            if (index >= is_object_claimed.size() || is_object_claimed[index]) {
               return false;
             }
             is_object_claimed[index] = true;
@@ -433,6 +433,13 @@ bool Message::ValidateParameters(
           const internal::DriverObjectArrayData array_data =
               GetParamValueAt<internal::DriverObjectArrayData>(offset);
           const size_t begin = array_data.first_object_index;
+          if (begin > is_object_claimed.size()) {
+            return false;
+          }
+          const size_t max_num_objects = is_object_claimed.size() - begin;
+          if (array_data.num_objects > max_num_objects) {
+            return false;
+          }
           for (size_t i = begin; i < begin + array_data.num_objects; ++i) {
             if (is_object_claimed[i]) {
               return false;
