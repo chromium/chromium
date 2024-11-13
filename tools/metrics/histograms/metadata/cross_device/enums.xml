@@ -531,12 +531,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Message Received"/>
 </enum>
 
+<!-- LINT.IfChange(MultiDeviceSetupDialogEntrypoint) -->
+
 <enum name="MultiDeviceSetupDialogEntrypoint">
   <int value="0" label="Opened from settings page"/>
   <int value="1" label="Opened from setup notification"/>
   <int value="2" label="Opened from Phone Hub bubble"/>
   <int value="3" label="Opened from Phone Hub bubble after nudge"/>
 </enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/phonehub/util/histogram_util.h:MultiDeviceSetupDialogEntrypoint) -->
 
 <enum name="MultiDeviceSetupNotification">
   <int value="0" label="New user, potential host exists"/>
@@ -546,10 +550,14 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Wi-Fi Sync Announcement"/>
 </enum>
 
+<!-- LINT.IfChange(MultideviceSetupNudgeInteraction) -->
+
 <enum name="MultideviceSetupNudgeInteraction">
   <int value="0" label="Click on nudge"/>
   <int value="1" label="Click on Phone Hub icon when nudge is visible"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/system/phonehub/phone_hub_metrics.h:MultiDeviceSetupNudgeInteraction) -->
 
 <enum name="MultiDeviceSetupOOBEUserChoice">
   <int value="0" label="MULTI_DEVICE_SETUP_OOBE_USER_CHOICE_ACCEPTED">

@@ -15,6 +15,8 @@ namespace ash::phonehub {
 
 // Keep in sync with the PhoneHubUiResult enum defined in
 // //tools/metrics/histograms/metadata/phonehub/enums.xml.
+//
+// LINT.IfChange(PhoneHubUiResult)
 enum class ConnectionFlowState {
   kSecureChannelNotConnected = 0,
   kSecureChannelConnected = 1,
@@ -23,6 +25,7 @@ enum class ConnectionFlowState {
   kUiConnected = 4,
   kMaxValue = kUiConnected,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubUiResult)
 
 // To record Phone Hub UI readiness state, i.e. secure channel connected,
 // cros_state message sent, PhoneSanpShot message receivced and Phone Hub UI
