@@ -46,6 +46,23 @@
 #include "ui/views/view_utils.h"
 #endif
 
+using LinkCapturingFeatureVersion = apps::test::LinkCapturingFeatureVersion;
+
+namespace {
+
+std::string GetLinkCapturingTestName(
+    const testing::TestParamInfo<
+        std::tuple<std::string, LinkCapturingFeatureVersion>>& info) {
+  std::string test_name;
+  test_name = std::get<std::string>(info.param);
+  test_name.append("_");
+  test_name.append(
+      apps::test::ToString(std::get<LinkCapturingFeatureVersion>(info.param)));
+  return test_name;
+}
+
+}  // namespace
+
 class IntentPickerBrowserTest : public web_app::WebAppNavigationBrowserTest {
  public:
   IntentPickerBrowserTest() = default;
@@ -115,17 +132,19 @@ class IntentPickerBrowserTest : public web_app::WebAppNavigationBrowserTest {
 // separately in intent_chip_button_browsertest.cc.
 class IntentPickerIconBrowserTest
     : public IntentPickerBrowserTest,
-      public ::testing::WithParamInterface<std::tuple<std::string, bool>> {
+      public ::testing::WithParamInterface<
+          std::tuple<std::string, LinkCapturingFeatureVersion>> {
  public:
   // TODO(crbug.com/40097608): Stop disabling Paint Holding.
   IntentPickerIconBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        apps::test::GetFeaturesToEnableLinkCapturingUX(
-            /*override_captures_by_default=*/IsLinkCapturingEnabled()),
+        apps::test::GetFeaturesToEnableLinkCapturingUX(LinkCapturingVersion()),
         {blink::features::kPaintHolding});
   }
 
-  bool IsLinkCapturingEnabled() { return std::get<bool>(GetParam()); }
+  LinkCapturingFeatureVersion LinkCapturingVersion() {
+    return std::get<LinkCapturingFeatureVersion>(GetParam());
+  }
 
   std::string rel() { return std::get<std::string>(GetParam()); }
 
@@ -133,7 +152,7 @@ class IntentPickerIconBrowserTest
 #if BUILDFLAG(IS_CHROMEOS)
     return false;
 #else
-    return IsLinkCapturingEnabled();
+    return LinkCapturingVersion() == LinkCapturingFeatureVersion::kV2DefaultOn;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
@@ -395,29 +414,31 @@ INSTANTIATE_TEST_SUITE_P(
     IntentPickerIconBrowserTest,
     testing::Combine(testing::Values("", "noopener", "noreferrer", "nofollow"),
 #if BUILDFLAG(IS_CHROMEOS)
-                     testing::Values(false)),
+                     testing::Values(LinkCapturingFeatureVersion::kV1DefaultOff)
 #else
-                     testing::Values(true, false)),
+                     testing::Values(LinkCapturingFeatureVersion::kV2DefaultOn,
+                                     LinkCapturingFeatureVersion::kV2DefaultOff)
 #endif  // BUILDFLAG(IS_CHROMEOS)
-    [](const testing::TestParamInfo<std::tuple<std::string, bool>>& info) {
-      std::string test_name;
-      test_name = std::get<std::string>(info.param);
-      test_name.append(std::get<bool>(info.param) ? "DefaultOn" : "DefaultOff");
-      return test_name;
-    });
+                         ),
+    GetLinkCapturingTestName);
 
 class IntentPickerIconBrowserBubbleTest
     : public IntentPickerBrowserTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<LinkCapturingFeatureVersion> {
  public:
   // TODO(crbug.com/40097608): Stop disabling Paint Holding.
   IntentPickerIconBrowserBubbleTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        apps::test::GetFeaturesToEnableLinkCapturingUX(
-            /*override_captures_by_default=*/GetParam()),
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()),
         {blink::features::kPaintHolding});
   }
-  bool LinkCapturingEnabledByDefault() const { return GetParam(); }
+  bool LinkCapturingEnabledByDefault() const {
+#if BUILDFLAG(IS_CHROMEOS)
+    return false;
+#else
+    return GetParam() == LinkCapturingFeatureVersion::kV2DefaultOn;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
 
   size_t GetItemContainerSize(IntentPickerBubbleView* bubble) {
     return bubble->GetViewByID(IntentPickerBubbleView::ViewId::kItemContainer)
@@ -525,16 +546,19 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserBubbleTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-INSTANTIATE_TEST_SUITE_P(,
-                         IntentPickerIconBrowserBubbleTest,
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    IntentPickerIconBrowserBubbleTest,
 #if BUILDFLAG(IS_CHROMEOS)
-                         testing::Values(false),
+    testing::Values(LinkCapturingFeatureVersion::kV1DefaultOff)
 #else
-                         testing::Values(true, false),
-#endif
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "DefaultOn" : "DefaultOff";
-                         });
+    testing::Values(LinkCapturingFeatureVersion::kV2DefaultOn,
+                    LinkCapturingFeatureVersion::kV2DefaultOff)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        ,
+    [](const testing::TestParamInfo<LinkCapturingFeatureVersion>& info) {
+      return apps::test::ToString(info.param);
+    });
 
 // This test only works when link capturing is set to default off for desktop
 // platforms, as prerendering navigations are aborted during link captured app
@@ -611,13 +635,13 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     IntentPickerIconPrerenderingBrowserTest,
     testing::Combine(testing::Values("", "noopener", "noreferrer", "nofollow"),
-                     testing::Values(false)),
-    [](const testing::TestParamInfo<std::tuple<std::string, bool>>& info) {
-      std::string test_name;
-      test_name = std::get<std::string>(info.param);
-      test_name.append("DefaultOff");
-      return test_name;
-    });
+#if BUILDFLAG(IS_CHROMEOS)
+                     testing::Values(LinkCapturingFeatureVersion::kV1DefaultOff)
+#else
+                     testing::Values(LinkCapturingFeatureVersion::kV2DefaultOff)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+                         ),
+    GetLinkCapturingTestName);
 
 class IntentPickerIconFencedFrameBrowserTest
     : public IntentPickerIconBrowserTest {
@@ -663,13 +687,10 @@ INSTANTIATE_TEST_SUITE_P(
     IntentPickerIconFencedFrameBrowserTest,
     testing::Combine(testing::Values("", "noopener", "noreferrer", "nofollow"),
 #if BUILDFLAG(IS_CHROMEOS)
-                     testing::Values(false)),
+                     testing::Values(LinkCapturingFeatureVersion::kV1DefaultOff)
 #else
-                     testing::Values(true, false)),
-#endif
-    [](const testing::TestParamInfo<std::tuple<std::string, bool>>& info) {
-      std::string test_name;
-      test_name = std::get<std::string>(info.param);
-      test_name.append(std::get<bool>(info.param) ? "DefaultOn" : "DefaultOff");
-      return test_name;
-    });
+                     testing::Values(LinkCapturingFeatureVersion::kV2DefaultOn,
+                                     LinkCapturingFeatureVersion::kV2DefaultOff)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+                         ),
+    GetLinkCapturingTestName);
