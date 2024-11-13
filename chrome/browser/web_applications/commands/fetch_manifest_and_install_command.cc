@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -689,6 +690,13 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
   DCHECK(app_lock_);
   const bool can_reparent_tab = app_lock_->install_finalizer().CanReparentTab(
       app_id, is_shortcut_created);
+
+  SCOPED_CRASH_KEY_NUMBER("PWA", "install_surface",
+                          static_cast<int>(install_surface_));
+  SCOPED_CRASH_KEY_STRING256(
+      "PWA", "install_url",
+      web_contents_->GetLastCommittedURL().possibly_invalid_spec());
+  SCOPED_CRASH_KEY_STRING64("PWA", "install_app_id", app_id);
 
   if (can_reparent_tab &&
       (web_app_info_->user_display_mode != mojom::UserDisplayMode::kBrowser) &&
