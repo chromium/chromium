@@ -75,6 +75,7 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
   _alertCoordinator = nil;
   [_prominenceAlertCoordinator stop];
   _prominenceAlertCoordinator = nil;
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - ProminenceNotificationSettingAlertCoordinatorDelegate
@@ -234,14 +235,23 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
 
 // Opens the iOS settings app to the app's Notification permissions.
 - (void)openSettings {
+  __weak __typeof(self) weakSelf = self;
+
   NSURL* url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
   if (@available(iOS 15.4, *)) {
     url = [NSURL URLWithString:UIApplicationOpenNotificationSettingsURLString];
   }
 
-  [[UIApplication sharedApplication] openURL:url
-                                     options:@{}
-                           completionHandler:nil];
+  [[UIApplication sharedApplication]
+                openURL:url
+                options:@{}
+      completionHandler:^(BOOL result) {
+        [[NSNotificationCenter defaultCenter]
+            addObserver:weakSelf
+               selector:@selector(onReturnFromSettings:)
+                   name:UIApplicationWillEnterForegroundNotification
+                 object:nil];
+      }];
   [self setResult:NotificationsOptInAlertResult::kOpenedSettings];
 }
 
@@ -275,6 +285,17 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
           base::UserMetricsAction(kNotificationsOptInAlertError));
       break;
   }
+}
+
+// Called when the user returns to Chrome from the settings page after opening
+// the settings page through the alert.
+- (void)onReturnFromSettings:(NSNotification*)notification {
+  if ([self.delegate
+          respondsToSelector:@selector
+          (notificationsOptInAlertCoordinatorReturnedFromSettings:)]) {
+    [self.delegate notificationsOptInAlertCoordinatorReturnedFromSettings:self];
+  }
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end
