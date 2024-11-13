@@ -110,13 +110,6 @@ void ConfigurableStorageDelegate::ShuffleReports(
   }
 }
 
-std::optional<double> ConfigurableStorageDelegate::GetRandomizedResponseRate(
-    const attribution_reporting::TriggerSpecs&,
-    attribution_reporting::EventLevelEpsilon) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return randomized_response_rate_;
-}
-
 AttributionResolverDelegate::GetRandomizedResponseResult
 ConfigurableStorageDelegate::GetRandomizedResponse(
     attribution_reporting::mojom::SourceType,

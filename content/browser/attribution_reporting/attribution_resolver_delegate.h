@@ -119,14 +119,6 @@ class CONTENT_EXPORT AttributionResolverDelegate {
   // ordering on their conversion metadata bits.
   virtual void ShuffleReports(std::vector<AttributionReport>& reports) = 0;
 
-  // Returns the rate used to determine whether to randomize the response to a
-  // source with the given trigger specs, as implemented by
-  // `GetRandomizedResponse()`. Must be in the range [0, 1] and remain constant
-  // for the lifetime of the delegate for calls with identical inputs.
-  virtual std::optional<double> GetRandomizedResponseRate(
-      const attribution_reporting::TriggerSpecs&,
-      attribution_reporting::EventLevelEpsilon) const = 0;
-
   using GetRandomizedResponseResult =
       base::expected<attribution_reporting::RandomizedResponseData,
                      attribution_reporting::RandomizedResponseError>;

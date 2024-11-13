@@ -1438,51 +1438,6 @@ TEST_F(AttributionStorageSqlTest,
   }
 }
 
-TEST_F(AttributionStorageSqlTest,
-       RandomizedResponseRateNotStored_RecalculatedWhenHandled) {
-  {
-    OpenDatabase();
-    storage()->StoreSource(SourceBuilder().Build());
-    CloseDatabase();
-  }
-
-  {
-    sql::Database raw_db;
-    ASSERT_TRUE(raw_db.Open(db_path()));
-
-    static constexpr char kGetSql[] =
-        "SELECT source_id,read_only_source_data FROM sources";
-    sql::Statement get_statement(raw_db.GetUniqueStatement(kGetSql));
-
-    static constexpr char kSetSql[] =
-        "UPDATE sources SET read_only_source_data=? WHERE source_id=?";
-    sql::Statement set_statement(raw_db.GetUniqueStatement(kSetSql));
-
-    while (get_statement.Step()) {
-      int64_t id = get_statement.ColumnInt64(0);
-
-      proto::AttributionReadOnlySourceData msg;
-      {
-        base::span<const uint8_t> blob = get_statement.ColumnBlob(1);
-        ASSERT_TRUE(msg.ParseFromArray(blob.data(), blob.size()));
-      }
-
-      msg.clear_randomized_response_rate();
-
-      set_statement.Reset(/*clear_bound_vars=*/true);
-      set_statement.BindBlob(0, msg.SerializeAsString());
-      set_statement.BindInt64(1, id);
-      ASSERT_TRUE(set_statement.Run());
-    }
-  }
-
-  OpenDatabase();
-
-  delegate()->set_randomized_response_rate(0.2);
-  EXPECT_THAT(storage()->GetActiveSources(),
-              ElementsAre(RandomizedResponseRateIs(0.2)));
-}
-
 TEST_F(AttributionStorageSqlTest, EpsilonNotStored_RecalculatedWhenHandled) {
   {
     OpenDatabase();

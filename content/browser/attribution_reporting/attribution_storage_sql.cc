@@ -462,17 +462,14 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       read_only_source_data_msg->aggregatable_debug_key_piece().high_bits(),
       read_only_source_data_msg->aggregatable_debug_key_piece().low_bits());
 
-  std::optional<double> randomized_response_rate =
-      read_only_source_data_msg->has_randomized_response_rate()
-          ? read_only_source_data_msg->randomized_response_rate()
-          : delegate_->GetRandomizedResponseRate(*trigger_specs,
-                                                 event_level_epsilon);
-  if (!randomized_response_rate.has_value()) {
+  if (!read_only_source_data_msg->has_randomized_response_rate()) {
     return base::unexpected(ReportCorruptionStatusSetAndIds(
         ReportCorruptionStatusSet{
             ReportCorruptionStatus::kSourceInvalidRandomizedResponseRate},
         source_id));
   }
+  double randomized_response_rate =
+      read_only_source_data_msg->randomized_response_rate();
 
   std::optional<StoredSource> stored_source = StoredSource::Create(
       CommonSourceInfo(*std::move(source_origin), *std::move(reporting_origin),
@@ -481,7 +478,7 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
       *std::move(trigger_specs), aggregatable_report_window_time, priority,
       *std::move(filter_data), debug_key, *std::move(aggregation_keys),
       *attribution_logic, *active_state, source_id,
-      remaining_aggregatable_attribution_budget, *randomized_response_rate,
+      remaining_aggregatable_attribution_budget, randomized_response_rate,
       trigger_data_matching, event_level_epsilon, aggregatable_debug_key_piece,
       remaining_aggregatable_debug_budget, *std::move(attribution_scopes_data),
       *std::move(aggregatable_named_budgets));
