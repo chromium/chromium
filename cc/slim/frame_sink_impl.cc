@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/not_fatal_until.h"
+#include "base/task/common/task_annotator.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
@@ -304,6 +305,7 @@ bool FrameSinkImpl::DoBeginFrame(const viz::BeginFrameArgs& begin_frame_args) {
         "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
         perfetto::Flow::Global(begin_frame_args.trace_id),
         [&](perfetto::EventContext ctx) {
+          base::TaskAnnotator::EmitTaskTimingDetails(ctx);
           auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
           auto* data = event->set_chrome_graphics_pipeline();
           data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
@@ -345,6 +347,7 @@ bool FrameSinkImpl::DoBeginFrame(const viz::BeginFrameArgs& begin_frame_args) {
           "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
           perfetto::Flow::Global(begin_frame_args.trace_id),
           [&](perfetto::EventContext ctx) {
+            base::TaskAnnotator::EmitTaskTimingDetails(ctx);
             auto* event =
                 ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
             auto* data = event->set_chrome_graphics_pipeline();
@@ -375,6 +378,7 @@ void FrameSinkImpl::SendDidNotProduceFrame(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(begin_frame_args.trace_id),
       [&](perfetto::EventContext ctx) {
+        base::TaskAnnotator::EmitTaskTimingDetails(ctx);
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::

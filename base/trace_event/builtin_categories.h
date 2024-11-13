@@ -74,6 +74,11 @@
   X("chromeos")                                                          \
   X("cma")                                                               \
   X("compositor")                                                        \
+  /* Config categories do not emit trace events, but are used */         \
+  /* to configure enabling additional information at runtime, */         \
+  /* which then is emitted in other trace events. */                     \
+  /* Controls details emitted by TaskAnnotator::EmitTaskTimingDetails */ \
+  X("config.scheduler.record_task_post_time")                            \
   X("content")                                                           \
   X("content_capture")                                                   \
   X("interactions")                                                      \

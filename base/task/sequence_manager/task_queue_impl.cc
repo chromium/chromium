@@ -446,8 +446,15 @@ void TaskQueueImpl::PostImmediateTaskImpl(PostedTask task,
     base::internal::CheckedAutoLock lock(any_thread_lock_);
     bool add_queue_time_to_tasks = sequence_manager_->GetAddQueueTimeToTasks();
     TimeTicks queue_time;
-    if (add_queue_time_to_tasks || delayed_fence_allowed_)
+    bool config_category_enabled = false;
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+    config_category_enabled =
+        TRACE_EVENT_CATEGORY_ENABLED("config.scheduler.record_task_post_time");
+#endif
+    if (config_category_enabled || add_queue_time_to_tasks ||
+        delayed_fence_allowed_) {
       queue_time = sequence_manager_->any_thread_clock()->NowTicks();
+    }
 
     // The sequence number must be incremented atomically with pushing onto the
     // incoming queue. Otherwise if there are several threads posting task we

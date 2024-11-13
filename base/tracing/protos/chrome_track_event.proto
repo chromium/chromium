@@ -2020,6 +2020,15 @@ message CurrentTask {
 
   // Timestamp in microseconds of the start of the task containing this slice.
   optional uint64 task_start_time_us = 2;
+
+  // t1 - t0, where t1 is the start timestamp of this slice and t0 is the
+  // timestamp of the time when the task containing this slice
+  // was queued.
+  optional uint64 task_queueing_time_us = 3;
+
+  // Timestamp in microseconds of the time when the task containing
+  // this slice was queued.
+  optional uint64 task_queued_time_us = 4;
 }
 
 message ChromeLatencyInfo2 {
