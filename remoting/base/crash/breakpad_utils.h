@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_BASE_BREAKPAD_UTILS_H_
-#define REMOTING_BASE_BREAKPAD_UTILS_H_
+#ifndef REMOTING_BASE_CRASH_BREAKPAD_UTILS_H_
+#define REMOTING_BASE_CRASH_BREAKPAD_UTILS_H_
 
 #include <atomic>
 #include <memory>
@@ -87,4 +87,4 @@ class BreakpadHelper {
 
 }  // namespace remoting
 
-#endif  // REMOTING_BASE_BREAKPAD_UTILS_H_
+#endif  // REMOTING_BASE_CRASH_BREAKPAD_UTILS_H_

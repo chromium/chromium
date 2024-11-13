@@ -430,7 +430,7 @@ shared_library("remoting_core") {
     "//net",
     "//remoting/base",
     "//remoting/base:authorization",
-    "//remoting/base:breakpad",
+    "//remoting/base/crash",
     "//remoting/host:host",
     "//remoting/host:host_main_headers",
     "//remoting/host:implementation",

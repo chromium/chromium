@@ -207,7 +207,7 @@ if (!is_chromeos_ash && enable_remoting_host) {
       "//mojo/core/embedder",
       "//net",
       "//remoting/base",
-      "//remoting/base:breakpad",
+      "//remoting/base/crash",
       "//remoting/host",
       "//remoting/host:resources",
       "//remoting/host:settings",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/base/breakpad.h"
+#include "remoting/base/crash/breakpad.h"
 
 #include <memory>
 #include <utility>
@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
-#include "remoting/base/breakpad_utils.h"
+#include "remoting/base/crash/breakpad_utils.h"
 #include "third_party/breakpad/breakpad/src/client/linux/handler/exception_handler.h"
 
 namespace remoting {

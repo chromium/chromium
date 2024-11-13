@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/base/breakpad.h"
+#include "remoting/base/crash/breakpad.h"
 
 #include <windows.h>
 
@@ -21,7 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/win/wrapped_window_proc.h"
-#include "remoting/base/breakpad_utils.h"
+#include "remoting/base/crash/breakpad_utils.h"
 #include "remoting/base/version.h"
 #include "third_party/breakpad/breakpad/src/client/windows/handler/exception_handler.h"
 

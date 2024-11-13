@@ -24,7 +24,7 @@
 #include "build/chromeos_buildflags.h"
 #include "mojo/core/embedder/embedder.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/base/breakpad.h"
+#include "remoting/base/crash/breakpad.h"
 #include "remoting/base/gaia_oauth_client.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/url_request_context_getter.h"

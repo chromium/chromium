@@ -246,37 +246,6 @@ source_set("authorization") {
   ]
 }
 
-source_set("breakpad") {
-  sources = [
-    "breakpad.h",
-    "breakpad_utils.cc",
-    "breakpad_utils.h",
-  ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  deps = [
-    ":remoting_base_version",
-    "//base",
-  ]
-
-  if (is_linux || is_chromeos) {
-    sources += [ "breakpad_linux.cc" ]
-    deps += [ "//third_party/breakpad:client" ]
-  } else if (is_mac) {
-    sources += [ "breakpad_mac.mm" ]
-  } else if (is_win) {
-    sources += [
-      "breakpad_server.cc",
-      "breakpad_win.cc",
-    ]
-    deps += [
-      ":logging",
-      "//third_party/breakpad:breakpad_handler",
-    ]
-  }
-}
-
 source_set("logging") {
   public = [ "logging.h" ]
 
@@ -364,8 +333,8 @@ static_library("test_support") {
   public_deps = [
     ":authorization",
     ":base",
-    ":breakpad",
     "//base",
+    "//remoting/base/crash",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/protobuf:protobuf_lite",

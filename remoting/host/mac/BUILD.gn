@@ -164,7 +164,7 @@ target("mac_app_bundle", "remoting_me2me_host") {
 
   deps = [
     ":permission_checking",
-    "//remoting/base:breakpad",
+    "//remoting/base/crash",
     "//remoting/host:entry_point",
     "//remoting/host/installer:credits",
     "//remoting/resources",

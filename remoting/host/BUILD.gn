@@ -753,7 +753,7 @@ static_library("common") {
       "//media",
       "//media/gpu:gpu",
       "//mojo/core/embedder:embedder",
-      "//remoting/base:breakpad",
+      "//remoting/base/crash",
       "//remoting/host/crash:crash_uploader",
       "//remoting/host/win",
       "//remoting/host/win:messages",
@@ -1246,7 +1246,7 @@ if (enable_me2me_host) {
       "//base:debugging_buildflags",
       "//mojo/core/embedder:embedder",
       "//remoting/base",
-      "//remoting/base:breakpad",
+      "//remoting/base/crash",
       "//remoting/host/base",
       "//remoting/host/setup:common",
     ]
