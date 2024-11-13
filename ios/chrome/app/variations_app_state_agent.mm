@@ -280,11 +280,8 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 // scene will be active on the foreground but the seed has not been fetched to
 // initialize Chrome.
 - (void)showExtendedLaunchScreen:(SceneState*)sceneState {
-  DCHECK(sceneState.window);
-  // Set up view controller.
-  UIViewController* controller = [[LaunchScreenViewController alloc] init];
-  [sceneState.window setRootViewController:controller];
-  [sceneState.window makeKeyAndVisible];
+  [sceneState setRootViewController:[[LaunchScreenViewController alloc] init]
+                  makeKeyAndVisible:YES];
 }
 
 @end
