@@ -26,15 +26,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_buffer_options.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
@@ -247,30 +243,22 @@ void AudioBuffer::copyFromChannel(NotShared<DOMFloat32Array> destination,
     return;
   }
 
-  DOMFloat32Array* channel_data = channels_[channel_number].Get();
-
-  size_t data_length = channel_data->length();
+  base::span<const float> src = channels_[channel_number].Get()->AsSpan();
+  base::span<float> dst = destination->AsSpan();
 
   // We don't need to copy anything if a) the buffer offset is past the end of
   // the AudioBuffer or b) the internal `Data()` of is a zero-length
   // `Float32Array`, which can result a nullptr.
-  if (buffer_offset >= data_length || destination->length() <= 0) {
+  if (buffer_offset >= src.size() || dst.size() <= 0) {
     return;
   }
 
-  size_t count = data_length - buffer_offset;
+  size_t count = std::min(dst.size(), src.size() - buffer_offset);
 
-  count = std::min(destination->length(), count);
+  DCHECK(src.data());
+  DCHECK(dst.data());
 
-  const float* src = channel_data->Data();
-  float* dst = destination->Data();
-
-  DCHECK(src);
-  DCHECK(dst);
-  DCHECK_LE(count, data_length);
-  DCHECK_LE(buffer_offset + count, data_length);
-
-  memmove(dst, src + buffer_offset, count * sizeof(*src));
+  dst.first(count).copy_from(src.subspan(buffer_offset, count));
 }
 
 void AudioBuffer::copyToChannel(NotShared<DOMFloat32Array> source,
@@ -295,25 +283,22 @@ void AudioBuffer::copyToChannel(NotShared<DOMFloat32Array> source,
     return;
   }
 
-  DOMFloat32Array* channel_data = channels_[channel_number].Get();
+  base::span<float> dst = channels_[channel_number].Get()->AsSpan();
 
-  if (buffer_offset >= channel_data->length()) {
+  if (buffer_offset >= dst.size()) {
     // Nothing to copy if the buffer offset is past the end of the AudioBuffer.
     return;
   }
 
-  size_t count = channel_data->length() - buffer_offset;
+  size_t count = dst.size() - buffer_offset;
 
-  count = std::min(source->length(), count);
-  const float* src = source->Data();
-  float* dst = channel_data->Data();
+  base::span<const float> src = source->AsSpan();
+  count = std::min(src.size(), count);
 
-  DCHECK(src);
-  DCHECK(dst);
-  DCHECK_LE(buffer_offset + count, channel_data->length());
-  DCHECK_LE(count, source->length());
+  DCHECK(src.data());
+  DCHECK(dst.data());
 
-  memmove(dst + buffer_offset, src, count * sizeof(*dst));
+  dst.subspan(buffer_offset, count).copy_from(src.first(count));
 }
 
 void AudioBuffer::Zero() {
