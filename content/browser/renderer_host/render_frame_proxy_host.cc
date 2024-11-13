@@ -74,6 +74,12 @@ using TokenFrameMap = std::unordered_map<blink::RemoteFrameToken,
 base::LazyInstance<TokenFrameMap>::Leaky g_token_frame_proxy_map =
     LAZY_INSTANCE_INITIALIZER;
 
+// TODO(https://crbug.com/339512240): Remove this killswitch once the
+// optimization for postMessage proxy creation finishes rolling out.
+BASE_FEATURE(kSkipPostMessageProxyCreationWithinFrameTree,
+             "SkipPostMessageProxyCreationWithinFrameTree",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace
 
 // static
@@ -652,6 +658,8 @@ void RenderFrameProxyHost::RouteMessageEvent(
     return;
   }
 
+  bool did_call_create_opener_proxies = false;
+
   // If there is a |source_frame_token|, translate it to the frame token of the
   // equivalent RenderFrameProxyHost in the target process.
   std::optional<blink::RemoteFrameToken> translated_source_token;
@@ -712,33 +720,48 @@ void RenderFrameProxyHost::RouteMessageEvent(
         // a postMessage to a subframe of its opener, where the subframe has no
         // prior references to the popup.
         //
-        // Subtle: postMessages may be sent between frames after their page has
-        // entered the back-forward cache (e.g., when dispatched from pagehide
-        // events) - see BackForwardCacheBrowserTest.PostMessageDelivered.
-        // (These messages are subsequently deferred by the target renderer
-        // until the cached page is re-activated.) In that case, it's neither
-        // correct nor possible to create proxies, as that requires going
-        // through FrameTreeNode and RenderFrameHostManager, where the current
-        // RenderFrameHost is no longer `source_rfh` but rather some other RFH
-        // in an unrelated SiteInstance. Fortunately, back-forward cache
-        // restricts GetRelatedActiveContentsCount to 1, and new on-demand
-        // proxies shouldn't ever be needed within a single FrameTree, where all
-        // frames already have references to one another. So, this case can
-        // simply be skipped. The same constraint would also apply to pending
-        // deletion RenderFrameHosts where messages could be sent from unload
-        // handlers, where it's also incorrect to create proxies in a
-        // FrameTreeNode that has moved on to some other unrelated RFH.
-        if (!source_rfh->IsInBackForwardCache() &&
-            !source_rfh->IsPendingDeletion()) {
-          // After skipping back-forward cache and pending deletion cases, we
-          // should only get here when source_rfh is the current RFH in its
-          // FrameTreeNode, since we shouldn't receive messages from
-          // speculative or pending-commit RenderFrameHosts.
-          CHECK_EQ(source_rfh,
-                   source_rfh->frame_tree_node()->current_frame_host());
-          source_rfh->frame_tree_node()->render_manager()->CreateOpenerProxies(
-              target_rfh->GetSiteInstance()->group(), nullptr,
-              source_rfh->browsing_context_state());
+        // All cases where a proxy might be missing must involve a message being
+        // sent across different FrameTrees, since all frames within the same
+        // FrameTree always have references to one another; therefore, only run
+        // proxy creation code for those cases as an optimization. For inner
+        // frame trees, guests are already handled above, and fenced frames
+        // disallow postMessage to/from their embedder.
+        if (&source_rfh->frame_tree_node()->frame_tree() !=
+                &target_rfh->frame_tree_node()->frame_tree() ||
+            !base::FeatureList::IsEnabled(
+                kSkipPostMessageProxyCreationWithinFrameTree)) {
+          // Subtle: postMessages may be sent between frames after their page
+          // has entered the back-forward cache (e.g., when dispatched from
+          // pagehide events) - see
+          // BackForwardCacheBrowserTest.PostMessageDelivered. (These messages
+          // are subsequently deferred by the target renderer until the cached
+          // page is re-activated.) In that case, it's neither correct nor
+          // possible to create proxies, as that requires going through
+          // FrameTreeNode and RenderFrameHostManager, where the current
+          // RenderFrameHost is no longer `source_rfh` but rather some other RFH
+          // in an unrelated SiteInstance. Fortunately, back-forward cache
+          // restricts GetRelatedActiveContentsCount to 1, and new on-demand
+          // proxies shouldn't ever be needed within a single FrameTree, where
+          // all frames already have references to one another. So, this case
+          // can simply be skipped. The same constraint would also apply to
+          // pending deletion RenderFrameHosts where messages could be sent from
+          // unload handlers, where it's also incorrect to create proxies in a
+          // FrameTreeNode that has moved on to some other unrelated RFH.
+          if (!source_rfh->IsInBackForwardCache() &&
+              !source_rfh->IsPendingDeletion()) {
+            // After skipping back-forward cache and pending deletion cases, we
+            // should only get here when source_rfh is the current RFH in its
+            // FrameTreeNode, since we shouldn't receive messages from
+            // speculative or pending-commit RenderFrameHosts.
+            CHECK_EQ(source_rfh,
+                     source_rfh->frame_tree_node()->current_frame_host());
+            source_rfh->frame_tree_node()
+                ->render_manager()
+                ->CreateOpenerProxies(target_rfh->GetSiteInstance()->group(),
+                                      nullptr,
+                                      source_rfh->browsing_context_state());
+            did_call_create_opener_proxies = true;
+          }
         }
       }
 
@@ -764,6 +787,9 @@ void RenderFrameProxyHost::RouteMessageEvent(
 
   base::UmaHistogramMicrosecondsTimes(
       "SiteIsolation.CrossProcessPostMessageTime", timer.Elapsed());
+  base::UmaHistogramBoolean(
+      "SiteIsolation.CrossProcessPostMessage.CreateOpenerProxiesCalled",
+      did_call_create_opener_proxies);
 }
 
 void RenderFrameProxyHost::PrintCrossProcessSubframe(const gfx::Rect& rect,

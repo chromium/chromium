@@ -858,6 +858,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SiteIsolation.CrossProcessPostMessage.CreateOpenerProxiesCalled"
+    enum="Boolean" expires_after="2025-11-07">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>nasko@chromium.org</owner>
+  <summary>
+    True if CreateOpenerProxies(), the logic to create proxies on demand, was
+    called in RenderFrameProxyHost::RouteMessageMessage(), which is used for
+    dispatching cross-process postMessage events in the browser process.
+    Collected once per successfully delivered message; cases that result in
+    blocking the message are excluded.
+  </summary>
+</histogram>
+
 <histogram name="SiteIsolation.CrossProcessPostMessageTime"
     units="microseconds" expires_after="2025-11-07">
   <owner>alexmos@chromium.org</owner>
