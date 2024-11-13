@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <LocalAuthentication/LocalAuthentication.h>
+
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
@@ -63,6 +65,13 @@ void ExpectIncognitoLockSettingInteractionHistogram(
       @"IOS.IncognitoLockSettingInteraction histogram for action %d was not "
       @"logged.",
       static_cast<int>(action));
+}
+
+// Checks if the device has Passcode, Face ID, or Touch ID set up.
+BOOL DeviceSupportsAuthentication() {
+  LAContext* context = [[LAContext alloc] init];
+  return [context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication
+                              error:nil];
 }
 
 }  // namespace
@@ -154,6 +163,34 @@ void ExpectIncognitoLockSettingInteractionHistogram(
   // Ensure interaction metric is correctly logged.
   ExpectIncognitoLockSettingInteractionHistogram(
       IncognitoLockSettingInteraction::kHideWithSoftLockSelected);
+
+  // TODO(crbug.com/370804664): Cover this use case with unit tests.
+  if (DeviceSupportsAuthentication()) {
+    // Select Hide with Reauth option.
+    [[EarlGrey selectElementWithMatcher:hideWithReauthCellMatcher()]
+        performAction:grey_tap()];
+
+    // Validate the local prefs have been updated.
+    GREYAssertFalse(
+        [ChromeEarlGrey localStateBooleanPref:prefs::kIncognitoSoftLockSetting],
+        @"Failed to enable incognito reauth lock with soft lock pref");
+    GREYAssertTrue(
+        [ChromeEarlGrey
+            localStateBooleanPref:prefs::kIncognitoAuthenticationSetting],
+        @"Failed to enable incognito reauth lock with reauth pref");
+
+    // Validate checkmark UI selection is updated.
+    [[EarlGrey selectElementWithMatcher:doNotHideCellMatcher()]
+        assertWithMatcher:elementIsSelectedMatcher(false)];
+    [[EarlGrey selectElementWithMatcher:hideWithSoftLockCellMatcher()]
+        assertWithMatcher:elementIsSelectedMatcher(false)];
+    [[EarlGrey selectElementWithMatcher:hideWithReauthCellMatcher()]
+        assertWithMatcher:elementIsSelectedMatcher(true)];
+
+    // Ensure interaction metric is correctly logged.
+    ExpectIncognitoLockSettingInteractionHistogram(
+        IncognitoLockSettingInteraction::kHideWithReauthSelected);
+  }
 }
 
 #pragma mark - Helpers

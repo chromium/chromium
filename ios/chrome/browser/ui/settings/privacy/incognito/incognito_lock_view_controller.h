@@ -11,7 +11,6 @@
 
 @protocol IncognitoLockViewControllerPresentationDelegate;
 @protocol IncognitoLockMutator;
-@protocol ReauthenticationProtocol;
 
 // View controller to manage the Incognito Lock setting.
 @interface IncognitoLockViewController
@@ -24,14 +23,6 @@
 
 // Mutator to apply all user changes on the view.
 @property(nonatomic, weak) id<IncognitoLockMutator> mutator;
-
-// Designated initializer. All the parameters should not be null.
-// `reauthModule`: provides access to currently enabled iOS authentication
-// capabilities.
-- (instancetype)initWithReauthModule:(id<ReauthenticationProtocol>)reauthModule
-    NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 @end
 

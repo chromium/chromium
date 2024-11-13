@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/settings/privacy/incognito/incognito_lock_mediator.h"
 #import "ios/chrome/browser/ui/settings/privacy/incognito/incognito_lock_view_controller.h"
 #import "ios/chrome/browser/ui/settings/privacy/incognito/incognito_lock_view_controller_presentation_delegate.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 @interface IncognitoLockCoordinator () <
     IncognitoLockViewControllerPresentationDelegate>
@@ -38,9 +37,8 @@
 }
 
 - (void)start {
-  ReauthenticationModule* reauthModule = [[ReauthenticationModule alloc] init];
-  _viewController =
-      [[IncognitoLockViewController alloc] initWithReauthModule:reauthModule];
+  _viewController = [[IncognitoLockViewController alloc]
+      initWithStyle:ChromeTableViewStyle()];
   _viewController.presentationDelegate = self;
 
   _mediator = [[IncognitoLockMediator alloc]
