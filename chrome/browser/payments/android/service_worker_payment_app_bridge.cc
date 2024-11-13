@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/payments/content/android/payment_handler_host.h"
 #include "components/payments/content/payment_event_response_util.h"
@@ -109,12 +108,11 @@ static void JNI_ServiceWorkerPaymentAppBridge_HasServiceWorkerPaymentApps(
 
 static void JNI_ServiceWorkerPaymentAppBridge_GetServiceWorkerPaymentAppsInfo(
     JNIEnv* env,
+    Profile* profile,
     const JavaParamRef<jobject>& jcallback) {
-  content::InstalledPaymentAppsFinder::GetInstance(
-      ProfileManager::GetActiveUserProfile())
-      ->GetAllPaymentApps(
-          base::BindOnce(&OnGetServiceWorkerPaymentAppsInfo,
-                         ScopedJavaGlobalRef<jobject>(env, jcallback)));
+  content::InstalledPaymentAppsFinder::GetInstance(profile)->GetAllPaymentApps(
+      base::BindOnce(&OnGetServiceWorkerPaymentAppsInfo,
+                     ScopedJavaGlobalRef<jobject>(env, jcallback)));
 }
 
 static void JNI_ServiceWorkerPaymentAppBridge_OnClosingPaymentAppWindow(

@@ -74,12 +74,13 @@ public class ServiceWorkerPaymentAppBridge {
     }
 
     /**
-     * Gets all installed SW payment apps' information.
+     * Gets all installed SW payment apps' information in the profile.
      *
+     * @param profile The profile for which the installed SW payment apps will be checked for.
      * @param callback The callback to return result.
      */
     public static void getServiceWorkerPaymentAppsInfo(
-            GetServiceWorkerPaymentAppsInfoCallback callback) {
+            Profile profile, GetServiceWorkerPaymentAppsInfoCallback callback) {
         ThreadUtils.assertOnUiThread();
 
         if (!PaymentFeatureList.isEnabled(PaymentFeatureList.SERVICE_WORKER_PAYMENT_APPS)) {
@@ -94,7 +95,7 @@ public class ServiceWorkerPaymentAppBridge {
                     });
             return;
         }
-        ServiceWorkerPaymentAppBridgeJni.get().getServiceWorkerPaymentAppsInfo(callback);
+        ServiceWorkerPaymentAppBridgeJni.get().getServiceWorkerPaymentAppsInfo(profile, callback);
     }
 
     /**
@@ -102,7 +103,7 @@ public class ServiceWorkerPaymentAppBridge {
      *
      * @param paymentRequestWebContents The web contents in the opened window. Can be null.
      * @param responseType The type of response for payment event, used to decide the user-visible
-     *         error message, defined in {@link PaymentEventResponseType}.
+     *     error message, defined in {@link PaymentEventResponseType}.
      */
     public static void onClosingPaymentAppWindow(
             @Nullable WebContents paymentRequestWebContents, int responseType) {
@@ -171,7 +172,9 @@ public class ServiceWorkerPaymentAppBridge {
         void hasServiceWorkerPaymentApps(
                 @JniType("Profile*") Profile profile, HasServiceWorkerPaymentAppsCallback callback);
 
-        void getServiceWorkerPaymentAppsInfo(GetServiceWorkerPaymentAppsInfoCallback callback);
+        void getServiceWorkerPaymentAppsInfo(
+                @JniType("Profile*") Profile profile,
+                GetServiceWorkerPaymentAppsInfoCallback callback);
 
         void onClosingPaymentAppWindow(WebContents paymentRequestWebContents, int reason);
 
