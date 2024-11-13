@@ -117,28 +117,6 @@ TEST(VideoFrameMac, CheckLifetime) {
   EXPECT_EQ(1, instances_destroyed);
 }
 
-TEST(VideoFrameMac, CheckWrapperFrame) {
-  const FormatPair format_pairs[] = {
-      {PIXEL_FORMAT_I420, kCVPixelFormatType_420YpCbCr8Planar},
-      {PIXEL_FORMAT_NV12, kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange},
-  };
-
-  for (const auto& format_pair : format_pairs) {
-    base::apple::ScopedCFTypeRef<CVPixelBufferRef> pb;
-    CVPixelBufferCreate(nullptr, kWidth, kHeight, format_pair.corevideo,
-                        nullptr, pb.InitializeInto());
-    ASSERT_TRUE(pb.get());
-
-    auto frame = VideoFrame::WrapCVPixelBuffer(pb.get(), kTimestamp);
-    ASSERT_TRUE(frame.get());
-    EXPECT_EQ(pb.get(), frame->CvPixelBuffer());
-    EXPECT_EQ(format_pair.chrome, frame->format());
-
-    frame = nullptr;
-    EXPECT_EQ(1, CFGetRetainCount(pb.get()));
-  }
-}
-
 static void FillFrameWithPredictableValues(const VideoFrame& frame) {
   for (size_t i = 0; i < VideoFrame::NumPlanes(frame.format()); ++i) {
     const gfx::Size& size =

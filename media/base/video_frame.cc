@@ -36,7 +36,11 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/gpu_memory_buffer.h"
+
 #if BUILDFLAG(IS_APPLE)
+#include <CoreVideo/CVPixelBuffer.h>
+
+#include "base/apple/scoped_cftyperef.h"
 #include "ui/gfx/mac/io_surface.h"
 #endif
 
@@ -996,54 +1000,6 @@ scoped_refptr<VideoFrame> VideoFrame::WrapUnacceleratedIOSurface(
   return frame;
 }
 
-// static
-scoped_refptr<VideoFrame> VideoFrame::WrapCVPixelBuffer(
-    CVPixelBufferRef cv_pixel_buffer,
-    base::TimeDelta timestamp) {
-  DCHECK(cv_pixel_buffer);
-  DCHECK(CFGetTypeID(cv_pixel_buffer) == CVPixelBufferGetTypeID());
-
-  const OSType cv_format = CVPixelBufferGetPixelFormatType(cv_pixel_buffer);
-  VideoPixelFormat format;
-  // There are very few compatible CV pixel formats, so just check each.
-  if (cv_format == kCVPixelFormatType_420YpCbCr8Planar) {
-    format = PIXEL_FORMAT_I420;
-  } else if (cv_format == kCVPixelFormatType_444YpCbCr8) {
-    format = PIXEL_FORMAT_I444;
-  } else if (cv_format == kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
-    format = PIXEL_FORMAT_NV12;
-  } else if (cv_format ==
-             kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar) {
-    format = PIXEL_FORMAT_NV12A;
-  } else {
-    DLOG(ERROR) << "CVPixelBuffer format not supported: " << cv_format;
-    return nullptr;
-  }
-
-  const gfx::Size coded_size(CVImageBufferGetEncodedSize(cv_pixel_buffer));
-  const gfx::Rect visible_rect(CVImageBufferGetCleanRect(cv_pixel_buffer));
-  const gfx::Size natural_size(CVImageBufferGetDisplaySize(cv_pixel_buffer));
-  const StorageType storage = STORAGE_UNOWNED_MEMORY;
-
-  if (!IsValidConfig(format, storage, coded_size, visible_rect, natural_size)) {
-    DLOG(ERROR) << __func__ << " Invalid config."
-                << ConfigToString(format, storage, coded_size, visible_rect,
-                                  natural_size);
-    return nullptr;
-  }
-
-  auto layout = VideoFrameLayout::Create(format, coded_size);
-  if (!layout) {
-    DLOG(ERROR) << "Invalid layout.";
-    return nullptr;
-  }
-
-  scoped_refptr<VideoFrame> frame(
-      new VideoFrame(*layout, storage, visible_rect, natural_size, timestamp));
-
-  frame->cv_pixel_buffer_.reset(cv_pixel_buffer, base::scoped_policy::RETAIN);
-  return frame;
-}
 #endif
 
 // static
@@ -1636,12 +1592,6 @@ int VideoFrame::GetDmabufFd(size_t i) const {
 
   DCHECK_EQ(storage_type_, STORAGE_DMABUFS);
   return dmabuf_fds_[i].get();
-}
-#endif
-
-#if BUILDFLAG(IS_APPLE)
-CVPixelBufferRef VideoFrame::CvPixelBuffer() const {
-  return cv_pixel_buffer_.get();
 }
 #endif
 

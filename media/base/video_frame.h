@@ -42,11 +42,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_metadata.h"
 
-#if BUILDFLAG(IS_APPLE)
-#include <CoreVideo/CVPixelBuffer.h>
-#include "base/apple/scoped_cftyperef.h"
-#endif  // BUILDFLAG(IS_APPLE)
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/files/scoped_file.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -92,10 +87,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
     STORAGE_OWNED_MEMORY = 3,  // VideoFrame has allocated its own data buffer.
     STORAGE_SHMEM = 4,         // Backed by read-only shared memory.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    // TODO(mcasas): Consider turning this type into STORAGE_NATIVE
-    // based on the idea of using this same enum value for both DMA
-    // buffers on Linux and CVPixelBuffers on Mac (which currently use
-    // STORAGE_UNOWNED_MEMORY) and handle it appropriately in all cases.
     STORAGE_DMABUFS = 5,  // Each plane is stored into a DmaBuf.
 #endif
     STORAGE_GPU_MEMORY_BUFFER = 6,
@@ -429,18 +420,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-  // Wraps a provided CVPixelBuffer with a VideoFrame. The pixel buffer is
-  // retained for the lifetime of the VideoFrame and released upon destruction.
-  // The image data is only accessible via the pixel buffer, which could be
-  // backed by an IOSurface from another process. All the attributes of the
-  // VideoFrame are derived from the pixel buffer, with the exception of the
-  // timestamp. If information is missing or is incompatible (for example, a
-  // pixel format that has no VideoFrame match), NULL is returned.
-  // http://crbug.com/401308
-  static scoped_refptr<VideoFrame> WrapCVPixelBuffer(
-      CVPixelBufferRef cv_pixel_buffer,
-      base::TimeDelta timestamp);
-
   // Wraps a provided IOSurface with a VideoFrame. The IOSurface is retained
   // and locked for the lifetime of the VideoFrame. This is for unaccelerated
   // (CPU-only) access to the IOSurface, and is not efficient. It is the path
@@ -746,11 +725,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   int GetDmabufFd(size_t i) const;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_APPLE)
-  // Returns the backing CVPixelBuffer, if present.
-  CVPixelBufferRef CvPixelBuffer() const;
-#endif
-
   // Sets the mailbox (and GpuMemoryBuffer, if desired) release callback.
   //
   // The callback may be run from ANY THREAD, and so it is up to the client to
@@ -996,16 +970,10 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   bool is_mappable_si_enabled_ = false;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
   // Dmabufs for the frame, used when storage is STORAGE_DMABUFS. Size is either
   // equal or less than the number of planes of the frame. If it is less, then
   // the memory area represented by the last FD contains the remaining planes.
   std::vector<base::ScopedFD> dmabuf_fds_;
-#endif
-
-#if BUILDFLAG(IS_APPLE)
-  // CVPixelBuffer, if this frame is wrapping one.
-  base::apple::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer_;
 #endif
 
   base::Lock done_callbacks_lock_;
