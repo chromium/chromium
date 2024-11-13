@@ -64,7 +64,6 @@ extern const char kTargetsUName[];
 extern const char kTargetsU[];
 extern const char kGmsName[];
 extern const char kGmsVersion[];
-extern const char kIsDesktopAndroid[];
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kPlatform[];

@@ -910,7 +910,6 @@ static_library("ui") {
     ]
 
     deps += [
-      "//build:android_buildflags",
       "//cc/slim",
       "//chrome/android:jni_headers",
       "//chrome/android/features/dev_ui:buildflags",
