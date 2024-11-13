@@ -4082,8 +4082,8 @@
   },
   {
     "name": "enable-vulkan",
-    "owners": [ "penghuang@chromium.org" ],
-    "expiry_milestone": 130
+    "owners": [ "vasilyt@chromium.org", "kylechar@chromium.org" ],
+    "expiry_milestone": 140
   },
   {
     "name": "enable-waitable-swap-chain",
