@@ -79,6 +79,7 @@ static_library("browser") {
     "password_autofill_manager.h",
     "password_bubble_experiment.cc",
     "password_bubble_experiment.h",
+    "password_change_service_interface.h",
     "password_check_referrer_android.h",
     "password_counter.cc",
     "password_counter.h",

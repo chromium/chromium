@@ -961,6 +961,8 @@ static_library("browser") {
     "password_manager/account_password_store_factory.h",
     "password_manager/bulk_leak_check_service_factory.cc",
     "password_manager/bulk_leak_check_service_factory.h",
+    "password_manager/chrome_password_change_service.cc",
+    "password_manager/chrome_password_change_service.h",
     "password_manager/chrome_password_manager_client.cc",
     "password_manager/chrome_password_manager_client.h",
     "password_manager/chrome_webauthn_credentials_delegate.cc",
