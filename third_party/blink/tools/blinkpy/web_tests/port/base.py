@@ -52,9 +52,11 @@ from urllib.parse import urljoin
 
 from blinkpy.common import exit_codes
 from blinkpy.common import find_files
-from blinkpy.common import read_checksum_from_png
 from blinkpy.common import path_finder
+from blinkpy.common import read_checksum_from_png
+from blinkpy.common.host import Host
 from blinkpy.common.memoized import memoized
+from blinkpy.common.net.web_test_results import BASELINE_EXTENSIONS
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.path import abspath_to_uri
 from blinkpy.w3c.wpt_manifest import (
@@ -236,9 +238,6 @@ class Port(object):
     BASELINE_SUFFIX = '-expected'
     BASELINE_MISMATCH_SUFFIX = '-expected-mismatch'
 
-    # All of the non-reftest baseline extensions we use.
-    BASELINE_EXTENSIONS = ('.wav', '.txt', '.png')
-
     FLAG_EXPECTATIONS_PREFIX = 'FlagExpectations'
 
     # The following two constants must match. When adding a new WPT root, also
@@ -295,7 +294,7 @@ class Port(object):
         assert port_name.startswith(cls.port_name)
         return port_name
 
-    def __init__(self, host, port_name, options=None, **kwargs):
+    def __init__(self, host: Host, port_name, options=None, **kwargs):
 
         # This value is the "full port name", and may be different from
         # cls.port_name by having version modifiers appended to it.
@@ -746,9 +745,10 @@ class Port(object):
             baseline_dict['.' + reference_files[0][0]] = \
                 self.relative_test_filename(reference_files[0][1])
 
-        for extension in self.BASELINE_EXTENSIONS:
-            path = self.expected_filename(
-                test_name, extension, return_default=False)
+        for extension in BASELINE_EXTENSIONS:
+            path = self.expected_filename(test_name,
+                                          extension,
+                                          return_default=False)
             baseline_dict[extension] = self.relative_test_filename(
                 path) if path else path
 
