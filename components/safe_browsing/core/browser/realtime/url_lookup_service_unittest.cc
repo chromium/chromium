@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -139,7 +140,7 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
     referrer_chain_provider_ = std::make_unique<MockReferrerChainProvider>();
 
     auto token_fetcher = std::make_unique<TestSafeBrowsingTokenFetcher>();
-    raw_token_fetcher_ = token_fetcher.get();
+    raw_token_fetcher_ = token_fetcher->AsWeakPtr();
     rt_service_ = std::make_unique<RealTimeUrlLookupService>(
         test_shared_loader_factory_, cache_manager_.get(),
         base::BindRepeating(
@@ -172,12 +173,11 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   }
 
   void TearDown() override {
+    rt_service_->Shutdown();
+    cache_manager_.reset();
     if (content_setting_map_) {
       content_setting_map_->ShutdownOnUIThread();
     }
-    raw_token_fetcher_ = nullptr;
-    rt_service_->Shutdown();
-    cache_manager_.reset();
   }
 
   bool CanCheckUrl(const GURL& url) { return rt_service_->CanCheckUrl(url); }
@@ -185,9 +185,8 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   bool CanSendRTSampleRequest() {
     return rt_service_->CanSendRTSampleRequest();
   }
-  std::unique_ptr<RTLookupRequest> FillRequestProto(
-      const GURL& url,
-      bool is_sampled_report) {
+  std::unique_ptr<RTLookupRequest> FillRequestProto(const GURL& url,
+                                                    bool is_sampled_report) {
     return rt_service_->FillRequestProto(url, is_sampled_report,
                                          SessionID::InvalidValue());
   }
@@ -288,11 +287,12 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   }
 
   void FulfillAccessTokenRequest(std::string token) {
+    CHECK(raw_token_fetcher_);
     raw_token_fetcher_->RunAccessTokenCallback(token);
   }
 
   TestSafeBrowsingTokenFetcher* raw_token_fetcher() {
-    return raw_token_fetcher_;
+    return raw_token_fetcher_.get();
   }
 
   bool AreTokenFetchesConfiguredInClient(
@@ -352,8 +352,7 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   std::unique_ptr<VerdictCacheManager> cache_manager_;
   scoped_refptr<HostContentSettingsMap> content_setting_map_;
   bool token_fetches_configured_in_client_ = false;
-  raw_ptr<TestSafeBrowsingTokenFetcher, DanglingUntriaged> raw_token_fetcher_ =
-      nullptr;
+  base::WeakPtr<TestSafeBrowsingTokenFetcher> raw_token_fetcher_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
