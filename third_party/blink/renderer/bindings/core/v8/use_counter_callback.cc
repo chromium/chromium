@@ -394,6 +394,12 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kConsoleContext:
       blink_feature = WebFeature::kV8ConsoleContext;
       break;
+    case v8::Isolate::kResizableArrayBuffer:
+      webdx_feature = WebDXFeature::kV8ResizableArrayBuffer;
+      break;
+    case v8::Isolate::kGrowableSharedArrayBuffer:
+      webdx_feature = WebDXFeature::kV8GrowableSharedArrayBuffer;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.

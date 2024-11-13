@@ -33935,6 +33935,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="218" label="BoxDecorationBreak"/>
   <int value="219" label="PageOrientation"/>
   <int value="220" label="FontSizeAdjust"/>
+  <int value="221" label="V8ResizableArrayBuffer"/>
+  <int value="222" label="V8GrowableSharedArrayBuffer"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
