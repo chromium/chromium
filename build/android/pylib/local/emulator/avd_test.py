@@ -22,6 +22,18 @@ def CreateAvdSettings():
   return avd_pb2.AvdSettings()
 
 
+class DebugTagsTest(unittest.TestCase):
+
+  def testOrdering(self):
+    self.assertEqual(['a', 'b', 'c'], avd.ProcessDebugTags('c,b,a'))
+    self.assertEqual(['a', 'd', '-b', '-c'], avd.ProcessDebugTags('-c,-b,d,a'))
+
+  def testOrderingWithDefaultTags(self):
+    default_debug_tags = ['a', '-d', '-c']
+    tags = avd.ProcessDebugTags('c,b,-e', default_debug_tags=default_debug_tags)
+    self.assertEqual(['a', 'b', 'c', '-c', '-d', '-e'], tags)
+
+
 class AvdCreateTest(unittest.TestCase):
 
   _CONFIG = """

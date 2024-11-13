@@ -48,6 +48,17 @@ _BACKING_FILES = ('system.img', 'vendor.img')
 _DEFAULT_AVDMANAGER_PATH = os.path.join(constants.ANDROID_SDK_ROOT,
                                         'cmdline-tools', 'latest', 'bin',
                                         'avdmanager')
+
+# Additional debug tags we would like to have when "--debug-tags" is passed.
+_DEFAULT_DEBUG_TAGS = (
+    'time',  # Show the timestamp in the logs.
+    '-asconnector',  # Keep reporting connection error so disable.
+    # The following are disabled because they flood the logs.
+    '-qemud',
+    '-gps',
+    '-sensors',
+)
+
 # Default to a 480dp mdpi screen (a relatively large phone).
 # See https://developer.android.com/training/multiscreen/screensizes
 # and https://developer.android.com/training/multiscreen/screendensities
@@ -149,6 +160,16 @@ def _FindMinSdkFile(apk_dir, min_sdk):
                  min_sdk, min_sdk_found['file_name'],
                  min_sdk_found['version_name'])
     return os.path.join(apk_dir, min_sdk_found['file_name'])
+
+
+def ProcessDebugTags(debug_tags_str, default_debug_tags=None):
+  """Given a string of debug tags, process them and return as a list."""
+  tags = set(debug_tags_str.split(','))
+  if default_debug_tags:
+    tags |= set(default_debug_tags)
+  # The disabled tags, i.e. tags with prefix '-', should come later otherwise
+  # the logging will not work properly.
+  return sorted(tags, key=lambda t: (t.startswith('-'), t))
 
 
 class _AvdManagerAgent:
@@ -1120,9 +1141,8 @@ class _AvdInstance:
                     or _DEFAULT_GPU_MODE)
       emulator_cmd.extend(['-gpu', gpu_mode])
       if debug_tags:
-        self._debug_tags = set(debug_tags.split(','))
-        # Always print timestamp when debug tags are set.
-        self._debug_tags.add('time')
+        self._debug_tags = ProcessDebugTags(
+            debug_tags, default_debug_tags=_DEFAULT_DEBUG_TAGS)
         emulator_cmd.extend(['-debug', ','.join(self._debug_tags)])
         if 'kernel' in self._debug_tags or 'all' in self._debug_tags:
           # TODO(crbug.com/40885864): newer API levels need "-virtio-console"
