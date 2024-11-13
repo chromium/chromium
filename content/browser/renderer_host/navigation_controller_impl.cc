@@ -169,9 +169,10 @@ bool ShouldOverrideUserAgent(
 }
 
 // Returns true if this navigation should be treated as a reload. For e.g.
-// navigating to the last committed url via the address bar or clicking on a
-// link which results in a navigation to the last committed URL (but wasn't
-// converted to do a replacement navigation in the renderer), etc.
+// clicking on a link which results in a navigation to the last committed URL
+// (but wasn't converted to do a replacement navigation in the renderer), etc.
+// This intentionally excludes navigating to the last committed URL via the
+// address bar, so that the current scroll position is not restored.
 // |node| is the FrameTreeNode which is navigating. |url|, |virtual_url|,
 // |base_url_for_data_url|, |transition_type| correspond to the new navigation
 // (i.e. the pending NavigationEntry). |last_committed_entry| is the last
@@ -196,21 +197,24 @@ bool ShouldTreatNavigationAsReload(FrameTreeNode* node,
   if (transition_type & ui::PAGE_TRANSITION_FROM_API)
     return false;
 
-  // We treat (PAGE_TRANSITION_RELOAD | PAGE_TRANSITION_FROM_ADDRESS_BAR),
-  // PAGE_TRANSITION_TYPED or PAGE_TRANSITION_LINK transitions as navigations
-  // which should be treated as reloads.
+  // Same URL navigations from the address bar should only be treated as reloads
+  // if PAGE_TRANSITION_RELOAD is set (not for PAGE_TRANSITION_TYPED or
+  // PAGE_TRANSITION_LINK). In non-address-bar cases, PAGE_TRANSITION_TYPED
+  // and PAGE_TRANSITION_LINK can be treated as reloads.
   bool transition_type_can_be_converted = false;
-  if (ui::PageTransitionCoreTypeIs(transition_type,
-                                   ui::PAGE_TRANSITION_RELOAD) &&
-      (transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)) {
-    transition_type_can_be_converted = true;
+  if (transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) {
+    if (ui::PageTransitionCoreTypeIs(transition_type,
+                                     ui::PAGE_TRANSITION_RELOAD)) {
+      transition_type_can_be_converted = true;
+    }
+  } else {
+    if (ui::PageTransitionCoreTypeIs(transition_type,
+                                     ui::PAGE_TRANSITION_TYPED) ||
+        ui::PageTransitionCoreTypeIs(transition_type,
+                                     ui::PAGE_TRANSITION_LINK)) {
+      transition_type_can_be_converted = true;
+    }
   }
-  if (ui::PageTransitionCoreTypeIs(transition_type,
-                                   ui::PAGE_TRANSITION_TYPED)) {
-    transition_type_can_be_converted = true;
-  }
-  if (ui::PageTransitionCoreTypeIs(transition_type, ui::PAGE_TRANSITION_LINK))
-    transition_type_can_be_converted = true;
   if (!transition_type_can_be_converted)
     return false;
 

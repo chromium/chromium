@@ -3459,8 +3459,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 }
 
 // Verify that navigations to the same URL are correctly classified as
-// EXISTING_ENTRY (if it becomes a reload) or NEW_ENTRY (if it becomes a
-// replacement navigation).
+// NEW_ENTRY and it becomes a replacement navigation.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        NavigationTypeClassification_ExistingEntrySameURL) {
   GURL url1(embedded_test_server()->GetURL(
@@ -3481,21 +3480,20 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   NavigationEntryImpl* previous_entry = controller.GetLastCommittedEntry();
 
   {
-    // Navigate to the same URL (browser-initiated).
+    // Navigate to the same URL (browser-initiated from address bar).
     FrameNavigateParamsCapturer capturer(root);
     EXPECT_TRUE(NavigateToURL(shell(), url1));
     capturer.Wait();
-    // The navigation got converted into a reload, and we're classifying this as
-    // EXISTING_ENTRY.
-    EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
-              capturer.navigation_type());
+    // The navigation is a replacement navigation, and we're classifying this as
+    // NEW_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY, capturer.navigation_type());
 
     // Ensure the pending entry was cleared after commit.
     EXPECT_FALSE(shell()->web_contents()->GetController().GetPendingEntry());
 
-    // We reuse the last committed entry for this navigation.
-    EXPECT_FALSE(capturer.did_replace_entry());
-    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    // We replaced the last committed entry for this navigation.
+    EXPECT_TRUE(capturer.did_replace_entry());
+    EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
     EXPECT_EQ(1, controller.GetEntryCount());
 
     // We keep the same history.state value.
@@ -3620,12 +3618,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // We're classifying this as NEW_ENTRY.
     EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY, capturer.navigation_type());
 
-    // The navigation added a new entry.
-    // TODO(crbug.com/40755155): This should replace the last committed
-    // entry instead.
-    EXPECT_FALSE(capturer.did_replace_entry());
+    // The navigation replaced the last committed entry.
+    EXPECT_TRUE(capturer.did_replace_entry());
     EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
-    EXPECT_EQ(2, controller.GetEntryCount());
+    EXPECT_EQ(1, controller.GetEntryCount());
 
     // We lost the history.state value from before the failed navigation.
     EXPECT_EQ(nullptr, EvalJs(root, "history.state"));
@@ -3654,7 +3650,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // The navigation replaced the previously committed entry with a new entry.
     EXPECT_TRUE(capturer.did_replace_entry());
     EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
-    EXPECT_EQ(2, controller.GetEntryCount());
+    EXPECT_EQ(1, controller.GetEntryCount());
 
     // We keep the same history.state value.
     EXPECT_EQ("foo", EvalJs(root, "history.state"));
@@ -3689,14 +3685,14 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // because the navigation resulted in an error page.
     EXPECT_TRUE(capturer.did_replace_entry());
     EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
-    EXPECT_EQ(2, controller.GetEntryCount());
+    EXPECT_EQ(1, controller.GetEntryCount());
 
     url_loader_interceptor.reset();
   }
 }
 
 // Verify that navigations to the same WebUI URL are correctly classified as
-// EXISTING_ENTRY (it becomes a reload).
+// NEW_ENTRY as it is a replacement navigation.
 // TODO(crbug.com/41489005): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_NavigationTypeClassification_ExistingEntrySameURL_WebUI \
@@ -3727,17 +3723,16 @@ IN_PROC_BROWSER_TEST_P(
     FrameNavigateParamsCapturer capturer(root);
     EXPECT_TRUE(NavigateToURL(shell(), web_ui_url));
     capturer.Wait();
-    // The navigation got converted into a reload, and we're classifying this as
-    // EXISTING_ENTRY.
-    EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
-              capturer.navigation_type());
+    // The navigation got converted into a replacement, and we're classifying
+    // this as NEW_ENTRY.
+    EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY, capturer.navigation_type());
 
     // Ensure the pending entry was cleared after commit.
     EXPECT_FALSE(shell()->web_contents()->GetController().GetPendingEntry());
 
-    // We reuse the last committed entry for this navigation.
-    EXPECT_FALSE(capturer.did_replace_entry());
-    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    // We replace the last committed entry for this navigation.
+    EXPECT_TRUE(capturer.did_replace_entry());
+    EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
     EXPECT_EQ(1, controller.GetEntryCount());
 
     previous_entry = controller.GetLastCommittedEntry();
@@ -3765,7 +3760,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // Verify that navigations to the same URL are correctly classified as
-// EXISTING_ENTRY even after redirects.
+// NEW_ENTRY with replacement even after redirects.
 IN_PROC_BROWSER_TEST_P(
     NavigationControllerBrowserTest,
     NavigationTypeClassification_ExistingEntrySameURLRedirect) {
@@ -3795,17 +3790,13 @@ IN_PROC_BROWSER_TEST_P(
     capturer.Wait();
 
     // Since it started out as a browser-initiated same-URL navigation, it got
-    // converted to a reload and classified as
-    // NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY and reuses the previous entry,
+    // converted to a replacement navigation, so it's classified as
+    // NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY and replaces the previous entry,
     // even though it ended up at a different URL than before.
-    // TODO(crbug.com/40196772): Perhaps this should be classified as
-    // NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY with replacement instead, to be
-    // consistent with reloads that redirected cross-site.
-    EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
-              capturer.navigation_type());
-    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY, capturer.navigation_type());
+    EXPECT_TRUE(capturer.did_replace_entry());
 
-    EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
+    EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
     EXPECT_EQ(url2, controller.GetLastCommittedEntry()->GetURL());
     EXPECT_EQ(1, controller.GetEntryCount());
   }
@@ -3888,19 +3879,26 @@ IN_PROC_BROWSER_TEST_P(
 
   {
     // Navigate to the same URL (browser-initiated).
+    // This is same url navigation from address bar of a url with fragment.
+    // It starts as same document navigation with should_replace_current_entry
+    // set, and RenderFrameImpl::MakeDidCommitProvisionalLoadParams reuses
+    // current history entry instead of replacing it.
+    // It is the same behavior as renderer-initiated navigation below.
     FrameNavigateParamsCapturer capturer(root);
     EXPECT_TRUE(NavigateToURL(shell(), url1));
     capturer.Wait();
-    // We're classifying this as EXISTING_ENTRY because the navigation got
-    // converted into a reload.
+    // We're classifying this as EXISTING_ENTRY because the current entry is
+    // reused.
     EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
               capturer.navigation_type());
 
-    // Since we did a reload, it's not classified as a same-document navigation.
-    EXPECT_FALSE(capturer.is_same_document());
+    // Same url navigation from address bar is a same-document navigation.
+    EXPECT_TRUE(capturer.is_same_document());
 
-    // We reuse the last committed entry for this navigation.
-    EXPECT_FALSE(capturer.did_replace_entry());
+    // did_replace_entry reflects should_replace_current_entry in navigation
+    // params when the navigation request starts and that is true.
+    EXPECT_TRUE(capturer.did_replace_entry());
+    // We reuse the last committed entry for this same document navigation.
     EXPECT_EQ(previous_entry, controller.GetLastCommittedEntry());
     EXPECT_EQ(1, controller.GetEntryCount());
 
@@ -3972,7 +3970,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadWithUrlAnchor) {
 }
 
 // Verify that reloading a page with url anchor and scroll scrolls to correct
-// position.
+// position (i.e., the previous scroll location).
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        ReloadWithUrlAnchorAndScroll) {
   GURL url(embedded_test_server()->GetURL(
@@ -4009,6 +4007,101 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // Reload.
   ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
+  EXPECT_FLOAT_EQ(expected_window_scroll_y, window_scroll_y);
+}
+
+// Verify that navigation to same url (without fragment) for a page with scroll
+// scrolls to correct position (i.e., the top).
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       SameUrlNavigationWithScroll) {
+  GURL url(embedded_test_server()->GetURL(
+      "/navigation_controller/reload-with-url-anchor.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  double window_scroll_y_without_user_scroll =
+      EvalJs(shell(), "window.scrollY").ExtractDouble();
+  EXPECT_FLOAT_EQ(window_scroll_y_without_user_scroll, 0);
+
+  // The 'center-element' y-position is 2000px. This script scrolls the view
+  // 100px below that element. 2000px and 100px are arbitrary values.
+  std::string script_scroll_down = "window.scroll(0, 2100)";
+  EXPECT_TRUE(ExecJs(shell(), script_scroll_down));
+
+  double window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
+
+  // TODO(bokan): The floor hack below can go
+  // away once FractionalScrolLOffsets ships. The reason it's required is that,
+  // at certain device scale factors, the given CSS pixel scroll value may land
+  // between physical pixels. Without the feature Blink will truncate to the
+  // nearest physical pixel so the expectation must account for that. When the
+  // feature is enabled, Blink stores the fractional offset so the truncation
+  // is unnecessary. https://crbug.com/414283.
+  bool fractional_scroll_offsets_enabled = IsFractionalScrollOffsetsEnabled();
+
+  double expected_window_scroll_y = 2100;
+  if (!fractional_scroll_offsets_enabled) {
+    float device_scale_factor = shell()
+                                    ->web_contents()
+                                    ->GetRenderWidgetHostView()
+                                    ->GetDeviceScaleFactor();
+    expected_window_scroll_y =
+        floor(device_scale_factor * expected_window_scroll_y) /
+        device_scale_factor;
+  }
+  EXPECT_FLOAT_EQ(expected_window_scroll_y, window_scroll_y);
+
+  // Navigate to the same url and user scroll should be dropped.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  expected_window_scroll_y = window_scroll_y_without_user_scroll;
+
+  window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
+  EXPECT_FLOAT_EQ(expected_window_scroll_y, window_scroll_y);
+}
+
+// Verify that navigation to same url for a page with url anchor and scroll
+// scrolls to correct position (i.e., the fragment).
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       SameUrlNavigationWithUrlAnchorAndScroll) {
+  GURL url(embedded_test_server()->GetURL(
+      "/navigation_controller/reload-with-url-anchor.html#center-element"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  double window_scroll_y_without_user_scroll =
+      EvalJs(shell(), "window.scrollY").ExtractDouble();
+
+  // The 'center-element' y-position is 2000px. This script scrolls the view
+  // 100px below this element. 2000px and 100px are arbitrary values.
+  std::string script_scroll_down = "window.scroll(0, 2100)";
+  EXPECT_TRUE(ExecJs(shell(), script_scroll_down));
+
+  double window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
+
+  // TODO(bokan): The floor hack below can go
+  // away once FractionalScrolLOffsets ships. The reason it's required is that,
+  // at certain device scale factors, the given CSS pixel scroll value may land
+  // between physical pixels. Without the feature Blink will truncate to the
+  // nearest physical pixel so the expectation must account for that. When the
+  // feature is enabled, Blink stores the fractional offset so the truncation
+  // is unnecessary. https://crbug.com/414283.
+  bool fractional_scroll_offsets_enabled = IsFractionalScrollOffsetsEnabled();
+
+  double expected_window_scroll_y = 2100;
+  if (!fractional_scroll_offsets_enabled) {
+    float device_scale_factor = shell()
+                                    ->web_contents()
+                                    ->GetRenderWidgetHostView()
+                                    ->GetDeviceScaleFactor();
+    expected_window_scroll_y =
+        floor(device_scale_factor * expected_window_scroll_y) /
+        device_scale_factor;
+  }
+  EXPECT_FLOAT_EQ(expected_window_scroll_y, window_scroll_y);
+
+  // Navigate to the same url and user scroll should be dropped.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  expected_window_scroll_y = window_scroll_y_without_user_scroll;
 
   window_scroll_y = EvalJs(shell(), "window.scrollY").ExtractDouble();
   EXPECT_FLOAT_EQ(expected_window_scroll_y, window_scroll_y);
@@ -15109,8 +15202,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadDoesntKeepTitle) {
     EXPECT_TRUE(NavigateToURL(shell(), start_url));
     NavigationEntry* entry2 = controller.GetLastCommittedEntry();
 
-    EXPECT_EQ(entry1, entry2);
-    EXPECT_TRUE(entry1->GetTitle().empty());
+    // Navigating to same url from address bar is a replacement navigation.
+    // A new navigation entry is expected.
+    EXPECT_NE(entry1, entry2);
+    EXPECT_TRUE(entry2->GetTitle().empty());
   }
 }
 

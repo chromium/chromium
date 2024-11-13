@@ -9938,10 +9938,24 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
     return false;
   }
 
-  // Reloads and history navigations have special handling and don't need to
-  // set |common_params_->should_replace_current_entry|.
-  if (common_params_->navigation_type !=
-      blink::mojom::NavigationType::DIFFERENT_DOCUMENT) {
+  // Only (1) cross-document navigations and (2) same-document navigations from
+  // browser UI (e.g., address bar) need to consider replacing the entry for
+  // same URL cases. Reloads and history navigations have special handling and
+  // don't need to. Note that same-document navigations with fragments from
+  // browser UI are not treated as reloads.
+  // Note that for same document navigation, even though the navigation request
+  // starts with should_replace_current_entry, no new history entry is created.
+  // With the logic in RenderFrameImpl::MakeDidCommitProvisionalLoadParams, we
+  // scroll to the fragment without change to navigation history.
+  // LocalFrame::ShouldReplaceForSameUrlNavigation also returns true for
+  // renderer initiated same url navigation within the same document.
+  bool is_same_document_navigation_from_browser_ui =
+      (common_params_->navigation_type ==
+       blink::mojom::NavigationType::SAME_DOCUMENT) &&
+      (common_params_->transition & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+  if (!is_same_document_navigation_from_browser_ui &&
+      (common_params_->navigation_type !=
+       blink::mojom::NavigationType::DIFFERENT_DOCUMENT)) {
     return false;
   }
   // Form submissions to the same url should not replace.
