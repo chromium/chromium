@@ -9,6 +9,8 @@
 
 #include "content/browser/service_worker/service_worker_single_script_update_checker.h"
 
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -249,13 +251,11 @@ void ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse(
   // https://w3c.github.io/ServiceWorker/#service-worker-script-response
   // Only main script needs the following check.
   if (is_main_script_) {
-    std::string service_worker_allowed;
-    bool has_header = response_head->headers->EnumerateHeader(
-        nullptr, ServiceWorkerConsts::kServiceWorkerAllowed,
-        &service_worker_allowed);
+    std::optional<std::string_view> service_worker_allowed =
+        response_head->headers->EnumerateHeader(
+            nullptr, ServiceWorkerConsts::kServiceWorkerAllowed);
     if (!service_worker_loader_helpers::IsPathRestrictionSatisfied(
-            scope_, script_url_, has_header ? &service_worker_allowed : nullptr,
-            &error_message)) {
+            scope_, script_url_, service_worker_allowed, &error_message)) {
       Fail(blink::ServiceWorkerStatusCode::kErrorSecurity, error_message,
            network::URLLoaderCompletionStatus(net::ERR_INSECURE_RESPONSE));
       return;
