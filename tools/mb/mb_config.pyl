@@ -132,8 +132,8 @@
     },
 
     'client.devtools-frontend.integration': {
-      'DevTools Linux': 'release_trybot_blink_do_typecheck',
-      'DevTools Linux Fastbuild': 'release_trybot_blink',
+      'DevTools Linux': 'release_trybot_blink_do_typecheck_siso',
+      'DevTools Linux Fastbuild': 'release_trybot_blink_siso',
     },
 
     'client.openscreen.chromium': {
@@ -643,6 +643,10 @@
 
     'release_trybot_blink_do_typecheck': [
       'release_trybot_blink', 'devtools_do_typecheck',
+    ],
+
+    'release_trybot_blink_do_typecheck_siso': [
+      'release_trybot_blink', 'devtools_do_typecheck', 'use_siso',
     ],
 
     'release_trybot_blink_siso': [
