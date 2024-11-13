@@ -45,6 +45,7 @@ BASE_DECLARE_FEATURE(kExtendInputAnrTimeout);
 BASE_DECLARE_FEATURE(kExtendIntentAnrTimeout);
 BASE_DECLARE_FEATURE(kExtendServiceAnrTimeout);
 BASE_DECLARE_FEATURE(kExternalStorageAccess);
+BASE_DECLARE_FEATURE(kFilePickerExperimentFeature);
 BASE_DECLARE_FEATURE(kGmsCoreLowMemoryKillerProtection);
 BASE_DECLARE_FEATURE(kGuestSwap);
 extern const base::FeatureParam<int> kGuestSwapSize;

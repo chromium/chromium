@@ -3352,6 +3352,9 @@ extern const char kArcExtendIntentAnrTimeoutDescription[];
 extern const char kArcExtendServiceAnrTimeoutName[];
 extern const char kArcExtendServiceAnrTimeoutDescription[];
 
+extern const char kArcFilePickerExperimentName[];
+extern const char kArcFilePickerExperimentDescription[];
+
 extern const char kArcFriendlierErrorDialogName[];
 extern const char kArcFriendlierErrorDialogDescription[];
 
