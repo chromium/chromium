@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
-#include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
 
@@ -103,12 +102,6 @@ void OverviewSessionMetricsRecorder::OnOverviewSessionEnding() {
                                                   *enter_presentation_time);
   }
 
-  if (IsRenderingDeskBarWithMiniViews()) {
-    SchedulePresentationTimeMetricsWithDeskBar(
-        std::move(enter_presentation_time_recorder_),
-        std::move(exit_presentation_time_recorder), desk_bar_visibility);
-  }
-
   CHECK(!overview_start_time_.is_null());
   base::UmaHistogramMediumTimes("Ash.Overview.TimeInOverview",
                                 base::Time::Now() - overview_start_time_);
@@ -130,27 +123,12 @@ void OverviewSessionMetricsRecorder::OnOverviewModeEndingAnimationComplete(
 }
 
 bool OverviewSessionMetricsRecorder::IsDeskBarOpen() const {
-  return IsTrueForAnyOverviewGrid(base::BindRepeating(
-      [](const OverviewGrid& grid) { return !!grid.desks_bar_view(); }));
-}
-
-bool OverviewSessionMetricsRecorder::IsRenderingDeskBarWithMiniViews() const {
-  return IsTrueForAnyOverviewGrid(
-      base::BindRepeating([](const OverviewGrid& grid) {
-        return grid.desks_bar_view() &&
-               !grid.desks_bar_view()->mini_views().empty();
-      }));
-}
-
-bool OverviewSessionMetricsRecorder::IsTrueForAnyOverviewGrid(
-    const base::RepeatingCallback<bool(const OverviewGrid& grid)>& predicate)
-    const {
   CHECK(session_);
   // Note an overview grid for the primary root window may not exist in some
   // corner cases (see http://crbug.com/378501600).
   for (const auto& root_window : Shell::GetAllRootWindows()) {
     auto* const overview_grid = session_->GetGridWithRootWindow(root_window);
-    if (overview_grid && predicate.Run(*overview_grid)) {
+    if (overview_grid && overview_grid->desks_bar_view()) {
       return true;
     }
   }

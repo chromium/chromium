@@ -279,21 +279,6 @@ chromium-metrics-reviews@google.com.
   <variant name="WalrusProvider" summary="Request from Walrus provider"/>
 </variants>
 
-<variants name="NumWindows">
-  <variant name="0" summary="0 windows open"/>
-  <variant name="1" summary="1 windows open"/>
-  <variant name="2" summary="2 windows open"/>
-  <variant name="3" summary="3 windows open"/>
-  <variant name="4" summary="4 windows open"/>
-  <variant name="5" summary="5 windows open"/>
-  <variant name="6" summary="6 windows open"/>
-  <variant name="7" summary="7 windows open"/>
-  <variant name="8" summary="8 windows open"/>
-  <variant name="9" summary="9 windows open"/>
-  <variant name="10" summary="10 windows open"/>
-  <variant name="MoreThan10" summary="More than 10 windows open"/>
-</variants>
-
 <variants name="OverviewAnimationMode">
   <variant name=".ClamshellMode"
       summary="Normal clamshell mode with multiple windows animates"/>
@@ -6910,23 +6895,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Ash.Overview.Enter.PresentationTime.WithDeskBarAndNumWindows{NumWindows}"
-    units="ms" expires_after="2025-04-20">
-  <owner>esum@google.com</owner>
-  <owner>cros-sw-perf@google.com</owner>
-  <summary>
-    Records the presentation time, which is the time in milliseconds it takes
-    from when the overview enter event was received and successfully processed
-    to when the next frame is shown to the user. Recorded once per overview
-    session in which a) there are {NumWindows} windows open across all desks b)
-    the desk bar is rendered immediately in the very first overview mode frame
-    c) the desk bar contains previews of each desk's contents. All other
-    overview sessions that do not meet these criteria are not recorded.
-  </summary>
-  <token key="NumWindows" variants="NumWindows"/>
-</histogram>
-
 <histogram name="Ash.Overview.Enter.PresentationTime2" units="ms"
     expires_after="2025-07-15">
   <owner>sammiequon@chromium.org</owner>
@@ -6954,23 +6922,6 @@ chromium-metrics-reviews@google.com.
     different profile and performance characteristics.
   </summary>
   <token key="OverviewStartReason" variants="OverviewStartReason"/>
-</histogram>
-
-<histogram
-    name="Ash.Overview.Exit.PresentationTime.WithDeskBarAndNumWindows{NumWindows}"
-    units="ms" expires_after="2025-04-20">
-  <owner>esum@google.com</owner>
-  <owner>cros-sw-perf@google.com</owner>
-  <summary>
-    Records the presentation time, which is the time in milliseconds it takes
-    from when the overview exit event was received and successfully processed to
-    when the next frame is shown to the user. Recorded once per overview session
-    in which a) there are {NumWindows} windows open across all desks b) the desk
-    bar was rendered at some point during the overview session c) the desk bar
-    contains previews of each desk's contents. All other overview sessions that
-    do not meet these criteria are not recorded.
-  </summary>
-  <token key="NumWindows" variants="NumWindows"/>
 </histogram>
 
 <histogram name="Ash.Overview.Exit.PresentationTime2" units="ms"
