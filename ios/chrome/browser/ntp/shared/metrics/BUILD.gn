@@ -63,6 +63,20 @@ source_set("home_metrics") {
   ]
 }
 
+source_set("utils") {
+  sources = [
+    "feed_metrics_utils.h",
+    "feed_metrics_utils.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/metrics/model:constants",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

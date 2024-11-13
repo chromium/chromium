@@ -24,10 +24,8 @@ specific_include_rules = {
     "+ios/web/public/test/http_server",
   ],
 
-  # TODO(crbug.com/359199652): FeedActivityBucket should be usable by both
-  # the model and the UI, so should be in ios/chrome/browser/ntp/shared.
   "ios_feed_activity_metrics_provider.*\.mm": [
-    "+ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h",
+    "+ios/chrome/browser/ntp/shared/metrics",
   ],
 
   "metrics_app_interface\.mm": [
