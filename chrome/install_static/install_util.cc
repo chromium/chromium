@@ -54,9 +54,6 @@ const wchar_t kRegValueChromeStatsSample[] = L"UsageStatsInSample";
 // The constants defined in this file are also defined in chrome/installer and
 // other places. we need to unify them.
 const wchar_t kHeadless[] = L"CHROME_HEADLESS";
-const wchar_t kShowRestart[] = L"CHROME_CRASHED";
-const wchar_t kRestartInfo[] = L"CHROME_RESTART";
-const wchar_t kRtlLocale[] = L"RIGHT_TO_LEFT";
 
 const wchar_t kCrashpadHandler[] = L"crashpad-handler";
 const wchar_t kFallbackHandler[] = L"fallback-handler";

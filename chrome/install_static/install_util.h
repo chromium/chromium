@@ -38,9 +38,6 @@ extern const wchar_t kRegValueChromeStatsSample[];
 // https://crbug.com/604923
 // Unify these constants with env_vars.h.
 extern const wchar_t kHeadless[];
-extern const wchar_t kShowRestart[];
-extern const wchar_t kRestartInfo[];
-extern const wchar_t kRtlLocale[];
 
 // TODO(ananta)
 // https://crbug.com/604923

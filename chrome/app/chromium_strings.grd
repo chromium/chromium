@@ -587,15 +587,6 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
-      <!-- Crash Recovery Dialog -->
-      <message name="IDS_CRASH_RECOVERY_TITLE" desc="Title of dialog shown when the browser crashes." translateable="false">
-        Chromium
-      </message>
-      <if expr="is_win">
-        <message name="IDS_CRASH_RECOVERY_CONTENT" desc="Text content telling the user the browser has crashed.">
-          Whoa! Chromium has crashed. Relaunch now?
-        </message>
-      </if>
       <!-- Password generation strings -->
       <message name="IDS_PASSWORD_GENERATION_PROMPT" desc="Autofill dropdown text describing password generation.">
         Chromium will save this password in your Google Account. You won’t have to remember it.

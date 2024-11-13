@@ -1704,12 +1704,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)
-  // Sets things up so that if we crash from this point on, a dialog will
-  // popup asking the user to restart chrome. It is done this late to avoid
-  // testing against a bunch of special cases that are taken care early on.
-  ChromeBrowserMainPartsWin::PrepareRestartOnCrashEnviroment(
-      *base::CommandLine::ForCurrentProcess());
-
   // Registers Chrome with the Windows Restart Manager, which will restore the
   // Chrome session when the computer is restarted after a system update.
   // This could be run as late as WM_QUERYENDSESSION for system update reboots,

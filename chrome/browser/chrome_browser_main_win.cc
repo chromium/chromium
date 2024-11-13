@@ -26,14 +26,12 @@
 #include "base/command_line.h"
 #include "base/dcheck_is_on.h"
 #include "base/enterprise_util.h"
-#include "base/environment.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer_cleaner.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -670,40 +668,6 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
 #endif  // GOOGLE_CHROME_BRANDING
 
   base::ImportantFileWriterCleaner::GetInstance().Start();
-}
-
-// static
-void ChromeBrowserMainPartsWin::PrepareRestartOnCrashEnviroment(
-    const base::CommandLine& parsed_command_line) {
-  // Clear this var so child processes don't show the dialog by default.
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  env->UnSetVar(env_vars::kShowRestart);
-
-  // For non-interactive tests we don't restart on crash.
-  if (env->HasVar(env_vars::kHeadless))
-    return;
-
-  // If the known command-line test options are used we don't create the
-  // environment block which means we don't get the restart dialog.
-  if (parsed_command_line.HasSwitch(switches::kBrowserCrashTest) ||
-      parsed_command_line.HasSwitch(switches::kNoErrorDialogs))
-    return;
-
-  // The encoding we use for the info is "title|context|direction" where
-  // direction is either env_vars::kRtlLocale or env_vars::kLtrLocale depending
-  // on the current locale.
-  std::u16string dlg_strings(
-      l10n_util::GetStringUTF16(IDS_CRASH_RECOVERY_TITLE));
-  dlg_strings.push_back('|');
-  std::u16string adjusted_string(
-      l10n_util::GetStringUTF16(IDS_CRASH_RECOVERY_CONTENT));
-  base::i18n::AdjustStringForLocaleDirection(&adjusted_string);
-  dlg_strings.append(adjusted_string);
-  dlg_strings.push_back('|');
-  dlg_strings.append(base::ASCIIToUTF16(
-      base::i18n::IsRTL() ? env_vars::kRtlLocale : env_vars::kLtrLocale));
-
-  env->SetVar(env_vars::kRestartInfo, base::UTF16ToUTF8(dlg_strings));
 }
 
 // static
