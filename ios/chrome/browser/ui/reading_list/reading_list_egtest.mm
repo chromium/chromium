@@ -1139,7 +1139,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests the Copy Link context menu action for a reading list entry.
-- (void)testContextMenuCopyLink {
+// TODO(crbug.com/378900884): Flaky on ios simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testContextMenuCopyLink DISABLED_testContextMenuCopyLink
+#else
+#define MAYBE_testContextMenuCopyLink testContextMenuCopyLink
+#endif
+- (void)MAYBE_testContextMenuCopyLink {
   AddEntriesAndOpenReadingList();
   LongPressEntry(kReadTitle);
 
@@ -1173,7 +1179,14 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests the Mark as Read/Unread context menu action for a reading list entry.
-- (void)testContextMenuMarkAsReadAndBack {
+// TODO(crbug.com/378900884): Flaky on ios simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testContextMenuMarkAsReadAndBack \
+  DISABLED_testContextMenuMarkAsReadAndBack
+#else
+#define MAYBE_testContextMenuMarkAsReadAndBack testContextMenuMarkAsReadAndBack
+#endif
+- (void)MAYBE_testContextMenuMarkAsReadAndBack {
   AddEntriesAndOpenReadingList();
 
   AssertAllEntriesVisible();
