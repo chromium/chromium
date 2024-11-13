@@ -33,6 +33,10 @@ const base::FeatureParam<base::TimeDelta> kTranslationAPIServiceIdleTimeout{
     &blink::features::kEnableTranslationAPI, "TranslationAPIServiceIdleTimeout",
     base::Minutes(1)};
 
+const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount{
+    &blink::features::kEnableTranslationAPI, "TranslationAPIMaxServiceCount",
+    10};
+
 // static
 base::FilePath GetTranslateKitBinaryPathFromCommandLine() {
   return GetPathFromCommandLine(kTranslateKitBinaryPath);

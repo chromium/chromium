@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -17,23 +18,29 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-forward.h"
+#include "url/origin.h"
 
 namespace on_device_translation {
 
 class FileOperationProxyImpl;
 enum class LanguagePackKey;
+class ServiceControllerManager;
 
 // This class is the controller that launches the on-device translation service
-// and delegates the functionalities.
+// and delegates the functionalities. It is designed to be shared by multiple
+// `TranslationManagerImpl` instances.  A single instance of this class is
+// created for each pair of browser context and origin.
 // TODO(crbug.com/364795294): This class does not support Android yet.
-class OnDeviceTranslationServiceController {
+class OnDeviceTranslationServiceController
+    : public base::RefCounted<OnDeviceTranslationServiceController> {
  public:
+  OnDeviceTranslationServiceController(ServiceControllerManager* manager,
+                                       const url::Origin& origin);
+
   OnDeviceTranslationServiceController(
       const OnDeviceTranslationServiceController&) = delete;
   OnDeviceTranslationServiceController& operator=(
       const OnDeviceTranslationServiceController&) = delete;
-
-  static OnDeviceTranslationServiceController* GetInstance();
 
   // Creates a translator class that implements
   // `mojom::Translator`, and bind it with the
@@ -55,11 +62,12 @@ class OnDeviceTranslationServiceController {
   // Sets the service idle timeout for testing. This must be called before the
   // service is started.
   void SetServiceIdleTimeoutForTesting(base::TimeDelta service_idle_timeout);
+
   // Returns true if the service is running.
-  bool IsServiceRunningForTesting() const { return !!service_remote_; }
+  bool IsServiceRunning() const { return !!service_remote_; }
 
  private:
-  friend base::NoDestructor<OnDeviceTranslationServiceController>;
+  friend base::RefCounted<OnDeviceTranslationServiceController>;
 
   // The information of a pending task. This is used to keep the tasks that are
   // waiting for the language packs to be installed.
@@ -78,7 +86,6 @@ class OnDeviceTranslationServiceController {
     base::OnceClosure once_closure;
   };
 
-  OnDeviceTranslationServiceController();
   ~OnDeviceTranslationServiceController();
 
   // Checks if the translate service can do translation from `source_lang` to
@@ -100,7 +107,9 @@ class OnDeviceTranslationServiceController {
   // Called when the language pack key pref is changed.
   void OnLanguagePackKeyPrefChanged(const std::string& pref_name);
 
-  mojo::Remote<mojom::OnDeviceTranslationService>& GetRemote();
+  // Tries to start the service if it is not already running. Returns true if
+  // the service is running or is started successfully.
+  bool MaybeStartService();
 
   void MaybeRunPendingTasks();
 
@@ -113,6 +122,14 @@ class OnDeviceTranslationServiceController {
       std::set<LanguagePackKey>& required_packs,
       std::vector<LanguagePackKey>& required_not_installed_packs,
       std::vector<LanguagePackKey>& to_be_registered_packs);
+
+  // The manager that manages the service controller. This `manager_` is owned
+  // by the BrowserContext, and `this` is owned by the `TranslationManagerImpl`
+  // instances which are DocumentUserData. So `manager_` must outlive `this`.
+  const raw_ptr<ServiceControllerManager> manager_;
+
+  // The origin of the web page that created this service controller.
+  const url::Origin origin_;
 
   // The idle timeout for the translation service. When the service is idle for
   // this amount of time, the service will be terminated.

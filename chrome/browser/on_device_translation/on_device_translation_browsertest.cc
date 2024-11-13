@@ -21,9 +21,12 @@
 #include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "chrome/browser/on_device_translation/service_controller.h"
+#include "chrome/browser/on_device_translation/service_controller_manager.h"
 #include "chrome/browser/on_device_translation/test/test_util.h"
 #include "chrome/browser/on_device_translation/translation_manager_impl.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
@@ -31,6 +34,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/on_device_translation/public/cpp/features.h"
 #include "components/services/on_device_translation/test/test_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -41,6 +45,7 @@
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 
 using ::blink::mojom::CanCreateTranslatorResult;
+using ::content::JsReplace;
 using ::testing::_;
 using ::testing::Invoke;
 
@@ -106,6 +111,7 @@ std::string_view GetCanCreateTranslatorResultString(
     case CanCreateTranslatorResult::kNoExceedsLanguagePackCountLimitation:
     case CanCreateTranslatorResult::kNoServiceCrashed:
     case CanCreateTranslatorResult::kNoDisallowedByPolicy:
+    case CanCreateTranslatorResult::kNoExceedsServiceCountLimitation:
       return "no";
   }
 }
@@ -178,8 +184,14 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
 
   // Evaluates the given script and returns the result string. If the script
   // throws an error, returns the error message.
-  std::string EvalJsCatchingError(std::string_view script) {
-    return EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+  // When `target_browser` is not nullptr, the script is evaluated in the
+  // context of the given browser, otherwise the script is evaluated in the
+  // context of the default browser.
+  std::string EvalJsCatchingError(std::string_view script,
+                                  Browser* target_browser = nullptr) {
+    return EvalJs((target_browser ? target_browser : browser())
+                      ->tab_strip_model()
+                      ->GetActiveWebContents(),
                   base::StringPrintf(R"(
       (async () => {
         try {
@@ -797,9 +809,12 @@ IN_PROC_BROWSER_TEST_F(
 
   NavigateToEmptyPage();
 
+  auto service_controller =
+      ServiceControllerManager::GetForBrowserContext(browser()->profile())
+          ->GetServiceControllerForOrigin(embedded_test_server()->GetOrigin());
+
   // Set the idle timeout to be 100 microseconds.
-  OnDeviceTranslationServiceController::GetInstance()
-      ->SetServiceIdleTimeoutForTesting(base::Microseconds(100));
+  service_controller->SetServiceIdleTimeoutForTesting(base::Microseconds(100));
 
   // Test that Translator API works.
   EXPECT_EQ(EvalJsCatchingError(R"(
@@ -811,8 +826,7 @@ IN_PROC_BROWSER_TEST_F(
     )"),
             "en to ja: hello");
   // Check that the service is still running.
-  EXPECT_TRUE(OnDeviceTranslationServiceController::GetInstance()
-                  ->IsServiceRunningForTesting());
+  EXPECT_TRUE(service_controller->IsServiceRunning());
   // Wait for 200 microseconds.
   EXPECT_EQ(EvalJsCatchingError(R"(
       await new Promise(resolve => { setTimeout(resolve, 200); });
@@ -821,8 +835,7 @@ IN_PROC_BROWSER_TEST_F(
             "OK");
   // Check that the service is still running, because the translator is still
   // available.
-  EXPECT_TRUE(OnDeviceTranslationServiceController::GetInstance()
-                  ->IsServiceRunningForTesting());
+  EXPECT_TRUE(service_controller->IsServiceRunning());
   // Destroy the translator. And wait for 200 microseconds. (Note: wait more
   // than the idle timeout 100 microseconds to avoid flakiness.)
   EXPECT_EQ(EvalJsCatchingError(R"(
@@ -833,8 +846,7 @@ IN_PROC_BROWSER_TEST_F(
             "OK");
   // Check that the service is not running, because the translator was
   // destroyed, and the idle timeout was reached.
-  EXPECT_FALSE(OnDeviceTranslationServiceController::GetInstance()
-                   ->IsServiceRunningForTesting());
+  EXPECT_FALSE(service_controller->IsServiceRunning());
 }
 
 // Tests that the service is terminated when the idle timeout is reached after
@@ -849,9 +861,11 @@ IN_PROC_BROWSER_TEST_F(
 
   NavigateToEmptyPage();
 
+  auto service_controller =
+      ServiceControllerManager::GetForBrowserContext(browser()->profile())
+          ->GetServiceControllerForOrigin(embedded_test_server()->GetOrigin());
   // Set the idle timeout to be 100 microseconds.
-  OnDeviceTranslationServiceController::GetInstance()
-      ->SetServiceIdleTimeoutForTesting(base::Microseconds(100));
+  service_controller->SetServiceIdleTimeoutForTesting(base::Microseconds(100));
 
   // Test that Translator API on an iframe works.
   EXPECT_EQ(EvalJsCatchingError(R"(
@@ -866,8 +880,7 @@ IN_PROC_BROWSER_TEST_F(
     )"),
             "en to ja: hello");
   // Check that the service is still running.
-  EXPECT_TRUE(OnDeviceTranslationServiceController::GetInstance()
-                  ->IsServiceRunningForTesting());
+  EXPECT_TRUE(service_controller->IsServiceRunning());
   // Wait for 200 microseconds.
   EXPECT_EQ(EvalJsCatchingError(R"(
       await new Promise(resolve => { setTimeout(resolve, 200); });
@@ -876,8 +889,7 @@ IN_PROC_BROWSER_TEST_F(
             "OK");
   // Check that the service is still running, because the ifame is still
   // available.
-  EXPECT_TRUE(OnDeviceTranslationServiceController::GetInstance()
-                  ->IsServiceRunningForTesting());
+  EXPECT_TRUE(service_controller->IsServiceRunning());
   // Remove the iframe and wait for 200 microseconds. (Note: wait more than the
   // idle timeout 100 microseconds to avoid flakiness.)
   EXPECT_EQ(EvalJsCatchingError(R"(
@@ -888,8 +900,7 @@ IN_PROC_BROWSER_TEST_F(
             "OK");
   // Check that the service is not running, because the iframe was removed, and
   // the idle timeout was reached.
-  EXPECT_FALSE(OnDeviceTranslationServiceController::GetInstance()
-                   ->IsServiceRunningForTesting());
+  EXPECT_FALSE(service_controller->IsServiceRunning());
 }
 
 // Test the behavior of canTranslate() when the language pack is ready.
@@ -1057,6 +1068,362 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationSkipAcceptLanguagesCheckBrowserTest,
   mock_component_manager.InstallMockTranslateKitComponent();
   mock_component_manager.InstallMockLanguagePack(LanguagePackKey::kEn_Ko);
   TestCanTranslateResult("en", "ko", CanCreateTranslatorResult::kReadily);
+}
+
+// Test the behavior of Translator API in a cross origin iframe.
+class OnDeviceTranslationCrossOriginBrowserTest
+    : public OnDeviceTranslationBrowserTest {
+ public:
+  OnDeviceTranslationCrossOriginBrowserTest() {
+    // Use a reduced value for TranslationAPIMaxServiceCount to speed
+    // up the test.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kEnableTranslationAPI,
+          {{"TranslationAPIMaxServiceCount", "2"}}}},
+        {});
+    CHECK_EQ(kTranslationAPIMaxServiceCount.Get(), 2u);
+  }
+  ~OnDeviceTranslationCrossOriginBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    // Need to use URLLoaderInterceptor to handle requests to multiple origins.
+    url_loader_interceptor_.emplace(base::BindRepeating(
+        &OnDeviceTranslationCrossOriginBrowserTest::InterceptRequest));
+  }
+
+  void TearDownOnMainThread() override { url_loader_interceptor_.reset(); }
+
+ protected:
+  // Creates a URL for an iframe with a unique origin.
+  static GURL CreateCrossOriginIframeUrl(size_t index) {
+    return GURL(
+        base::StringPrintf("https://test-%zd.example/frame.html", index));
+  }
+
+  // Navigates to the test page.
+  void NavigateToTestPage(Browser* target_browser) {
+    CHECK(ui_test_utils::NavigateToURL(
+        target_browser ? target_browser : browser(),
+        GURL("https://translation-api.test/index.html")));
+  }
+
+  // Adds an iframe to the test page.
+  void AddIframe(size_t index, Browser* target_browser) {
+    EXPECT_EQ(EvalJsCatchingError(JsReplace("return addIframe($1);",
+                                            CreateCrossOriginIframeUrl(index)),
+                                  target_browser),
+              "loaded");
+  }
+
+  // Removes the iframe and waits for the service deletion.
+  void RemoveIframeAndWaitForServiceDeletion(size_t index,
+                                             Browser* target_browser) {
+    base::RunLoop run_loop;
+    ServiceControllerManager::GetForBrowserContext(target_browser->profile())
+        ->set_service_controller_deleted_observer_for_testing(
+            run_loop.QuitClosure());
+    EXPECT_EQ(EvalJsCatchingError(JsReplace("return removeIframe($1);",
+                                            CreateCrossOriginIframeUrl(index)),
+                                  target_browser),
+              "removed");
+    run_loop.Run();
+  }
+
+  // Creates a translator and translates in the iframe. Returns the result of
+  // the translation or the error message.
+  std::string TryCreateTranslatorAndTranslateInIframe(size_t index,
+                                                      Browser* target_browser) {
+    const std::string_view translateTestScript = R"(
+      (async () => {
+        try {
+          window._translator = await translation.createTranslator({
+            sourceLanguage: 'en',
+            targetLanguage: 'ja',
+          });
+          return await window._translator.translate('hello');
+        } catch (e) {
+          return e.toString();
+        }
+      })()
+    )";
+    return EvalJsCatchingError(
+        JsReplace("return evalInIframe($1, $2);",
+                  CreateCrossOriginIframeUrl(index), translateTestScript),
+        target_browser);
+  }
+
+  // Checks that the translator is created and the translation is successful or
+  // not.
+  void CheckTranslateInIframe(size_t index,
+                              bool expect_success,
+                              Browser* target_browser) {
+    EXPECT_EQ(TryCreateTranslatorAndTranslateInIframe(index, target_browser),
+              expect_success ? "en to ja: hello"
+                             : "NotSupportedError: Unable to create translator "
+                               "for the given source and target language.");
+  }
+
+  // Checks the result of canTranslate() in the iframe.
+  std::string TryCanTranslateInIframe(size_t index, Browser* target_browser) {
+    const std::string_view translateTestScript = R"(
+      (async () => {
+        try {
+          return await translation.canTranslate({
+            sourceLanguage: 'en',
+            targetLanguage: 'ja',
+          });
+        } catch (e) {
+          return e.toString();
+        }
+      })()
+    )";
+    return EvalJsCatchingError(
+        JsReplace("return evalInIframe($1, $2);",
+                  CreateCrossOriginIframeUrl(index), translateTestScript),
+        target_browser);
+  }
+
+ private:
+  // URLLoaderInterceptor callback
+  static bool InterceptRequest(
+      content::URLLoaderInterceptor::RequestParams* params) {
+    if (params->url_request.url.path() == "/index.html") {
+      content::URLLoaderInterceptor::WriteResponse(
+          "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n\n",
+          R"(
+          <head><script>
+          const frames = {};
+          async function addIframe(url) {
+            const frame = document.createElement("iframe");
+            frames[url] = frame;
+            const loadedPromise = new Promise(resolve => {
+              frame.addEventListener("load", () => {
+                resolve('loaded');
+              });
+            });
+            frame.src = url;
+            document.body.appendChild(frame);
+            return await loadedPromise;
+          }
+          async function evalInIframe(url, script) {
+            const frame = frames[url];
+            const channel = new MessageChannel();
+            const onMessagePromise = new Promise(resolve => {
+              channel.port1.addEventListener('message', e => {
+                resolve(e.data);
+              });
+            });
+            channel.port1.start();
+            frame.contentWindow.postMessage(script, "*", [channel.port2]);
+            return await onMessagePromise;
+          }
+          function removeIframe(url) {
+            document.body.removeChild(frames[url]);
+            return 'removed';
+          }
+          </script></head>)",
+          params->client.get(),
+          /*ssl_info=*/std::nullopt, params->url_request.url);
+      return true;
+    } else if (params->url_request.url.path() == "/frame.html") {
+      content::URLLoaderInterceptor::WriteResponse(
+          "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n\n",
+          R"(
+          <head><script>
+          window.addEventListener('message', async (e) => {
+            e.ports[0].postMessage(await eval(e.data));
+          });
+          </script></head>)",
+          params->client.get(),
+          /*ssl_info=*/std::nullopt, params->url_request.url);
+      return true;
+    }
+    return false;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::optional<content::URLLoaderInterceptor> url_loader_interceptor_;
+};
+
+// Tests the behavior of the Translation API in a cross origin iframe.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
+                       TranslateInCrossOriginIframe) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+
+  NavigateToTestPage(browser());
+  AddIframe(0, browser());
+  CheckTranslateInIframe(0, /*expect_success=*/true, browser());
+}
+
+// Tests the behavior of the Translation API in a cross origin iframe when the
+// service count exceeds the limit.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
+                       ExceedServiceCountLimit) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+
+  NavigateToTestPage(browser());
+  size_t i = 0;
+  // Until the service count exceeds the limit, the translator can be created,
+  // and the translation is successful.
+  for (; i < kTranslationAPIMaxServiceCount.Get(); i++) {
+    AddIframe(i, browser());
+    CheckTranslateInIframe(i, /*expect_success=*/true, browser());
+    EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "readily");
+  }
+
+  // When the service count exceeds the limit, the translator cannot be created.
+  AddIframe(i, browser());
+  CheckTranslateInIframe(i, /*expect_success=*/false, browser());
+  EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "no");
+
+  // When the service count is back to under the limit, the translator can be
+  // created again.
+  RemoveIframeAndWaitForServiceDeletion(0, browser());
+  CheckTranslateInIframe(i, /*expect_success=*/true, browser());
+  EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "readily");
+}
+
+// Tests the behavior of the Translation API in a cross origin iframe using the
+// incognito profile.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
+                       TranslateInIframeIncognitoBrowser) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+
+  Browser* incognito_browser = CreateIncognitoBrowser();
+
+  NavigateToTestPage(incognito_browser);
+  AddIframe(0, incognito_browser);
+  CheckTranslateInIframe(0, /*expect_success=*/true, incognito_browser);
+}
+
+// Tests the behavior of the Translation API in a cross origin iframe using the
+// guest profile.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
+                       TranslateInIframeGuestBrowser) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+
+  Browser* guest_browser = CreateGuestBrowser();
+
+  NavigateToTestPage(guest_browser);
+  AddIframe(0, guest_browser);
+  CheckTranslateInIframe(0, /*expect_success=*/true, guest_browser);
+}
+
+// Tests the behavior of the Translation API in a cross origin iframe using
+// multiple profiles.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
+                       ServiceCountLimitIsolatedPerProfile) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  base::FilePath other_path =
+      profile_manager->GenerateNextProfileDirectoryPath();
+  // Create an additional profile.
+  Profile& additional_profile =
+      profiles::testing::CreateProfileSync(profile_manager, other_path);
+
+  std::vector<Browser*> browsers = {
+      browser(),
+      CreateBrowser(&additional_profile),
+      CreateIncognitoBrowser(),
+      CreateGuestBrowser(),
+  };
+
+  for (auto* target_browser : browsers) {
+    NavigateToTestPage(target_browser);
+  }
+
+  // Create translators and translate in each profile. Until the service count
+  // per profile exceeds the limit, the translator can be created, and the
+  // translation is successful.
+  for (size_t i = 0; i < kTranslationAPIMaxServiceCount.Get(); i++) {
+    for (auto* target_browser : browsers) {
+      AddIframe(i, target_browser);
+      CheckTranslateInIframe(i, /*expect_success=*/true, target_browser);
+    }
+  }
+
+  const size_t limit_count = kTranslationAPIMaxServiceCount.Get();
+
+  // When the service count per profile exceeds the limit, the translator
+  // cannot be created.
+  for (auto* target_browser : browsers) {
+    AddIframe(limit_count, target_browser);
+    CheckTranslateInIframe(limit_count, /*expect_success=*/false,
+                           target_browser);
+  }
+
+  // When the service count per profile is back to under the limit, the
+  // translator can be created again.
+  for (auto* target_browser : browsers) {
+    RemoveIframeAndWaitForServiceDeletion(0, target_browser);
+    CheckTranslateInIframe(limit_count, /*expect_success=*/true,
+                           target_browser);
+  }
+}
+
+// Tests the behavior of the Translation API in a cross origin iframe using
+// the command line. We need this test because the implementation of
+// canTranslate() is different when the command line is used.
+class OnDeviceTranslationCrossOriginWithCommandLineBrowserTest
+    : public OnDeviceTranslationCrossOriginBrowserTest {
+ public:
+  OnDeviceTranslationCrossOriginWithCommandLineBrowserTest() = default;
+  ~OnDeviceTranslationCrossOriginWithCommandLineBrowserTest() override =
+      default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    OnDeviceTranslationCrossOriginBrowserTest::SetUpCommandLine(command_line);
+    SetMockLibraryPathToCommandLine(command_line);
+    WriteFakeDictionaryDataAndSetCommandLine(LanguagePackKey::kEn_Ja,
+                                             GetTempDir(), command_line);
+  }
+};
+
+// Tests the behavior of the Translation API in a cross origin iframe when the
+// service count exceeds the limit.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginWithCommandLineBrowserTest,
+                       ExceedServiceCountLimit) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.DoNotExpectCallRegisterTranslateKitComponent();
+  mock_component_manager.DoNotExpectCallRegisterLanguagePackComponent();
+
+  NavigateToTestPage(browser());
+  size_t i = 0;
+  // Until the service count exceeds the limit, the translator can be created,
+  // and the translation is successful.
+  for (; i < kTranslationAPIMaxServiceCount.Get(); i++) {
+    AddIframe(i, browser());
+    CheckTranslateInIframe(i, /*expect_success=*/true, browser());
+    EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "readily");
+  }
+
+  // When the service count exceeds the limit, the translator cannot be created.
+  AddIframe(i, browser());
+  CheckTranslateInIframe(i, /*expect_success=*/false, browser());
+  EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "no");
+
+  // When the service count is back to under the limit, the translator can be
+  // created again.
+  RemoveIframeAndWaitForServiceDeletion(0, browser());
+  CheckTranslateInIframe(i, /*expect_success=*/true, browser());
+  EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "readily");
 }
 
 // Tests the behavior of the Origin Trial token for the Translation API.

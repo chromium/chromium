@@ -170,6 +170,8 @@ ScriptPromise<V8TranslationAvailability> Translation::canTranslate(
                     kNoExceedsLanguagePackCountLimitation:
                 case CanCreateTranslatorResult::kNoServiceCrashed:
                 case CanCreateTranslatorResult::kNoDisallowedByPolicy:
+                case CanCreateTranslatorResult::
+                    kNoExceedsServiceCountLimitation:
                   resolver->Resolve(V8TranslationAvailability(
                       V8TranslationAvailability::Enum::kNo));
                   break;

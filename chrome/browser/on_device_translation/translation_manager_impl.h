@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATION_MANAGER_IMPL_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/document_user_data.h"
@@ -15,8 +16,11 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom.h"
+#include "url/origin.h"
 
 namespace on_device_translation {
+
+class OnDeviceTranslationServiceController;
 
 // The browser-side implementation of `blink::mojom::TranslationManager`, it
 // should be destroyed together with the associated RFH or when the RFH is used
@@ -54,8 +58,12 @@ class TranslationManagerImpl
                                        const std::string& source_lang,
                                        const std::string& target_lang);
 
+  OnDeviceTranslationServiceController& GetServiceController();
+
+  const base::WeakPtr<content::BrowserContext> browser_context_;
+  const url::Origin origin_;
+  scoped_refptr<OnDeviceTranslationServiceController> service_controller_;
   mojo::UniqueReceiverSet<blink::mojom::Translator> translators_;
-  base::WeakPtr<content::BrowserContext> browser_context_;
   mojo::Receiver<blink::mojom::TranslationManager> receiver_{this};
   base::WeakPtrFactory<TranslationManagerImpl> weak_ptr_factory_{this};
 };

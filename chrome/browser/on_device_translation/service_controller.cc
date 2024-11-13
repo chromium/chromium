@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
@@ -18,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/translate_kit_component_installer.h"
@@ -27,6 +27,7 @@
 #include "chrome/browser/on_device_translation/file_operation_proxy_impl.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
+#include "chrome/browser/on_device_translation/service_controller_manager.h"
 #include "chrome/browser/on_device_translation/translation_metrics.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/services/on_device_translation/public/cpp/features.h"
@@ -55,8 +56,10 @@ namespace {
 // the risk of fingerprinting attacks.
 constexpr size_t kTranslationAPILimitLanguagePackCountMax = 3;
 
-const char kOnDeviceTranslationServiceDisplayName[] =
-    "On-device Translation Service";
+// Prefix for the display name of the on-device translation service. The origin
+// is appended to the prefix.
+const char kOnDeviceTranslationServiceDisplayNamePrefix[] =
+    "On-device Translation Service: ";
 
 std::string ToString(base::FilePath path) {
 #if BUILDFLAG(IS_WIN)
@@ -82,8 +85,12 @@ OnDeviceTranslationServiceController::PendingTask&
 OnDeviceTranslationServiceController::PendingTask::operator=(PendingTask&&) =
     default;
 
-OnDeviceTranslationServiceController::OnDeviceTranslationServiceController()
-    : service_idle_timeout_(kTranslationAPIServiceIdleTimeout.Get()),
+OnDeviceTranslationServiceController::OnDeviceTranslationServiceController(
+    ServiceControllerManager* manager,
+    const url::Origin& origin)
+    : manager_(manager),
+      origin_(origin),
+      service_idle_timeout_(kTranslationAPIServiceIdleTimeout.Get()),
       file_operation_proxy_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
   // Initialize the pref change registrar.
   pref_change_registrar_.Init(g_browser_process->local_state());
@@ -109,8 +116,10 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController()
   }
 }
 
-OnDeviceTranslationServiceController::~OnDeviceTranslationServiceController() =
-    default;
+OnDeviceTranslationServiceController::~OnDeviceTranslationServiceController() {
+  manager_->OnServiceControllerDeleted(
+      origin_, base::PassKey<OnDeviceTranslationServiceController>());
+}
 
 void OnDeviceTranslationServiceController::CreateTranslator(
     const std::string& source_lang,
@@ -180,7 +189,14 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
     base::OnceCallback<void(mojo::PendingRemote<mojom::Translator>)> callback) {
   mojo::PendingRemote<mojom::Translator> pending_remote;
   auto pending_receiver = pending_remote.InitWithNewPipeAndPassReceiver();
-  GetRemote()->CreateTranslator(
+
+  if (!MaybeStartService()) {
+    // If the service can't be started, we will return a null remote.
+    std::move(callback).Run(mojo::NullRemote());
+    return;
+  }
+  CHECK(service_remote_);
+  service_remote_->CreateTranslator(
       source_lang, target_lang, std::move(pending_receiver),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(
@@ -216,8 +232,17 @@ void OnDeviceTranslationServiceController::CanTranslate(
     return;
   }
 
+  if (!MaybeStartService()) {
+    // If the service can't be started, returns
+    // `kNoExceedsServiceCountLimitation`.
+    std::move(callback).Run(
+        CanCreateTranslatorResult::kNoExceedsServiceCountLimitation);
+    return;
+  }
+
   auto callbacks = base::SplitOnceCallback(std::move(callback));
-  GetRemote()->CanTranslate(
+  CHECK(service_remote_);
+  service_remote_->CanTranslate(
       source_lang, target_lang,
       mojo::WrapCallbackWithDropHandler(
           base::BindOnce(
@@ -243,6 +268,13 @@ OnDeviceTranslationServiceController::CanTranslateImpl(
   CalculateLanguagePackRequirements(source_lang, target_lang, required_packs,
                                     required_not_installed_packs,
                                     to_be_registered_packs);
+
+  if (!service_remote_ && !manager_->CanStartNewService()) {
+    // If the service can't be started, returns
+    // `kNoExceedsServiceCountLimitation`.
+    return CanCreateTranslatorResult::kNoExceedsServiceCountLimitation;
+  }
+
   if (required_packs.empty()) {
     // Empty `required_packs` means that the transltion for the specified
     // language pair is not supported.
@@ -314,10 +346,13 @@ void OnDeviceTranslationServiceController::MaybeRunPendingTasks() {
   }
 }
 
-mojo::Remote<mojom::OnDeviceTranslationService>&
-OnDeviceTranslationServiceController::GetRemote() {
+bool OnDeviceTranslationServiceController::MaybeStartService() {
   if (service_remote_) {
-    return service_remote_;
+    return true;
+  }
+
+  if (!manager_->CanStartNewService()) {
+    return false;
   }
 
   auto receiver = service_remote_.BindNewPipeAndPassReceiver();
@@ -339,7 +374,9 @@ OnDeviceTranslationServiceController::GetRemote() {
   content::ServiceProcessHost::Launch<mojom::OnDeviceTranslationService>(
       std::move(receiver),
       content::ServiceProcessHost::Options()
-          .WithDisplayName(kOnDeviceTranslationServiceDisplayName)
+          .WithDisplayName(
+              base::StrCat({kOnDeviceTranslationServiceDisplayNamePrefix,
+                            origin_.Serialize()}))
           .WithExtraCommandLineSwitches(extra_switches)
 #if BUILDFLAG(IS_WIN)
           .WithPreloadedLibraries(
@@ -367,7 +404,7 @@ OnDeviceTranslationServiceController::GetRemote() {
           new FileOperationProxyImpl(std::move(proxy_receiver), task_runner,
                                      std::move(package_pathes)),
           base::OnTaskRunnerDeleter(task_runner));
-  return service_remote_;
+  return true;
 }
 
 // static
@@ -390,12 +427,6 @@ void OnDeviceTranslationServiceController::CalculateLanguagePackRequirements(
                                std::back_inserter(to_be_registered_packs));
 }
 
-// static
-OnDeviceTranslationServiceController*
-OnDeviceTranslationServiceController::GetInstance() {
-  static base::NoDestructor<OnDeviceTranslationServiceController> instance;
-  return instance.get();
-}
 
 void OnDeviceTranslationServiceController::OnServiceIdle() {
   service_remote_.reset();
@@ -405,7 +436,7 @@ void OnDeviceTranslationServiceController::SetServiceIdleTimeoutForTesting(
     base::TimeDelta service_idle_timeout) {
   // To simplify the logic, we only allow the timeout to be set before the
   // service is running.
-  CHECK(!IsServiceRunningForTesting());  // IN-TEST
+  CHECK(!IsServiceRunning());
   service_idle_timeout_ = service_idle_timeout;
 }
 

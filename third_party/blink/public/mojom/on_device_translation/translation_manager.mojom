@@ -37,6 +37,10 @@ enum CanCreateTranslatorResult {
   // The translator cannot be created, because the use of Translator API is
   // disallowed by `TranslatorAPIAllowed` Enterprise policy
   kNoDisallowedByPolicy = 8,
+
+  // The translator cannot be created, because the number of services exceeds
+  // the limitation.
+  kNoExceedsServiceCountLimitation = 9,
 };
 
 // The client interface that receives a Translator from a TranslationManager.

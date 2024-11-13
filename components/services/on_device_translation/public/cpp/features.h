@@ -26,6 +26,10 @@ extern const base::FeatureParam<bool> kTranslationAPILimitLanguagePackCount;
 extern const base::FeatureParam<base::TimeDelta>
     kTranslationAPIServiceIdleTimeout;
 
+// The maximum number of on device translation service instances that can be
+// created per browser context.
+extern const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount;
+
 const char kTranslateKitBinaryPath[] = "translate-kit-binary-path";
 
 base::FilePath GetTranslateKitBinaryPathFromCommandLine();

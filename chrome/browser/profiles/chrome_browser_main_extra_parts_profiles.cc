@@ -80,6 +80,7 @@
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/omnibox/autocomplete_controller_emitter_factory.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
+#include "components/services/on_device_translation/buildflags/buildflags.h"
 
 #if !BUILDFLAG(IS_FUCHSIA)
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
@@ -538,6 +539,10 @@
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+#include "chrome/browser/on_device_translation/service_controller_manager_factory.h"
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 #include "chrome/browser/enterprise/data_controls/chrome_rules_service.h"
@@ -1024,6 +1029,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   OmniboxInputWatcherFactory::GetInstance();
   OmniboxSuggestionsWatcherFactory::GetInstance();
 #endif
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+  on_device_translation::ServiceControllerManagerFactory::GetInstance();
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   OnDeviceTailModelServiceFactory::GetInstance();
 #endif

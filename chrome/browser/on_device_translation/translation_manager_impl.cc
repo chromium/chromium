@@ -11,6 +11,7 @@
 #include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "chrome/browser/on_device_translation/service_controller.h"
+#include "chrome/browser/on_device_translation/service_controller_manager.h"
 #include "chrome/browser/on_device_translation/translation_metrics.h"
 #include "chrome/browser/on_device_translation/translator.h"
 #include "chrome/browser/profiles/profile.h"
@@ -50,9 +51,9 @@ bool IsSupportedPopularLanguage(const std::string& lang) {
 DOCUMENT_USER_DATA_KEY_IMPL(TranslationManagerImpl);
 
 TranslationManagerImpl::TranslationManagerImpl(content::RenderFrameHost* rfh)
-    : DocumentUserData<TranslationManagerImpl>(rfh) {
-  browser_context_ = rfh->GetBrowserContext()->GetWeakPtr();
-}
+    : DocumentUserData<TranslationManagerImpl>(rfh),
+      browser_context_(rfh->GetBrowserContext()->GetWeakPtr()),
+      origin_(rfh->GetLastCommittedOrigin()) {}
 
 TranslationManagerImpl::~TranslationManagerImpl() = default;
 
@@ -86,8 +87,8 @@ void TranslationManagerImpl::CanCreateTranslator(
         blink::mojom::CanCreateTranslatorResult::kNoAcceptLanguagesCheckFailed);
     return;
   }
-  OnDeviceTranslationServiceController::GetInstance()->CanTranslate(
-      source_lang, target_lang, std::move(callback));
+  GetServiceController().CanTranslate(source_lang, target_lang,
+                                      std::move(callback));
 }
 
 void TranslationManagerImpl::CreateTranslator(
@@ -109,8 +110,7 @@ void TranslationManagerImpl::CreateTranslator(
     mojo::Remote(std::move(client))->OnResult(mojo::NullRemote());
     return;
   }
-
-  OnDeviceTranslationServiceController::GetInstance()->CreateTranslator(
+  GetServiceController().CreateTranslator(
       options->source_lang, options->target_lang,
       base::BindOnce(
           [](base::WeakPtr<TranslationManagerImpl> self,
@@ -183,6 +183,17 @@ bool TranslationManagerImpl::PassAcceptLanguagesCheck(
     return false;
   }
   return true;
+}
+
+OnDeviceTranslationServiceController&
+TranslationManagerImpl::GetServiceController() {
+  if (!service_controller_) {
+    ServiceControllerManager* manager =
+        ServiceControllerManager::GetForBrowserContext(browser_context_.get());
+    CHECK(manager);
+    service_controller_ = manager->GetServiceControllerForOrigin(origin_);
+  }
+  return *service_controller_;
 }
 
 }  // namespace on_device_translation
