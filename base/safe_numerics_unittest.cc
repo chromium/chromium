@@ -58,7 +58,7 @@ template <typename Dst,
            DstLimits::is_iec559)
 constexpr Dst GetMaxConvertibleToFloat() {
   if constexpr (SrcLimits::digits <= DstLimits::digits &&
-                MaxExponent<Src>::value <= MaxExponent<Dst>::value) {
+                kMaxExponent<Src> <= kMaxExponent<Dst>) {
     return SrcLimits::max();
   } else {
     Src max = SrcLimits::max() / 2 + (SrcLimits::is_integer ? 1 : 0);
@@ -70,41 +70,34 @@ constexpr Dst GetMaxConvertibleToFloat() {
 }
 
 // Test corner case promotions used
-static_assert(IsIntegerArithmeticSafe<int32_t, int8_t, int8_t>::value);
-static_assert(IsIntegerArithmeticSafe<int32_t, int16_t, int8_t>::value);
-static_assert(IsIntegerArithmeticSafe<int32_t, int8_t, int16_t>::value);
-static_assert(!IsIntegerArithmeticSafe<int32_t, int32_t, int8_t>::value);
-static_assert(BigEnoughPromotion<int16_t, int8_t>::is_contained);
-static_assert(BigEnoughPromotion<int32_t, uint32_t>::is_contained);
-static_assert(BigEnoughPromotion<intmax_t, int8_t>::is_contained);
-static_assert(!BigEnoughPromotion<uintmax_t, int8_t>::is_contained);
-static_assert(std::same_as<BigEnoughPromotion<int16_t, int8_t>::type, int16_t>);
+static_assert(kIsIntegerArithmeticSafe<int32_t, int8_t, int8_t>);
+static_assert(kIsIntegerArithmeticSafe<int32_t, int16_t, int8_t>);
+static_assert(kIsIntegerArithmeticSafe<int32_t, int8_t, int16_t>);
+static_assert(!kIsIntegerArithmeticSafe<int32_t, int32_t, int8_t>);
+static_assert(kIsBigEnoughPromotionContained<int16_t, int8_t>);
+static_assert(kIsBigEnoughPromotionContained<int32_t, uint32_t>);
+static_assert(kIsBigEnoughPromotionContained<intmax_t, int8_t>);
+static_assert(!kIsBigEnoughPromotionContained<uintmax_t, int8_t>);
+static_assert(std::same_as<BigEnoughPromotion<int16_t, int8_t>, int16_t>);
+static_assert(std::same_as<BigEnoughPromotion<int32_t, uint32_t>, int64_t>);
+static_assert(std::same_as<BigEnoughPromotion<intmax_t, int8_t>, intmax_t>);
+static_assert(std::same_as<BigEnoughPromotion<uintmax_t, int8_t>, uintmax_t>);
+static_assert(kIsBigEnoughPromotionContained<int16_t, int8_t>);
+static_assert(kIsBigEnoughPromotionContained<int32_t, uint32_t>);
+static_assert(kIsBigEnoughPromotionContained<intmax_t, int8_t>);
+static_assert(!kIsBigEnoughPromotionContained<uintmax_t, int8_t>);
 static_assert(
-    std::same_as<BigEnoughPromotion<int32_t, uint32_t>::type, int64_t>);
+    std::same_as<FastIntegerArithmeticPromotion<int16_t, int8_t>, int32_t>);
 static_assert(
-    std::same_as<BigEnoughPromotion<intmax_t, int8_t>::type, intmax_t>);
+    std::same_as<FastIntegerArithmeticPromotion<int32_t, uint32_t>, int64_t>);
 static_assert(
-    std::same_as<BigEnoughPromotion<uintmax_t, int8_t>::type, uintmax_t>);
-static_assert(BigEnoughPromotion<int16_t, int8_t>::is_contained);
-static_assert(BigEnoughPromotion<int32_t, uint32_t>::is_contained);
-static_assert(BigEnoughPromotion<intmax_t, int8_t>::is_contained);
-static_assert(!BigEnoughPromotion<uintmax_t, int8_t>::is_contained);
+    std::same_as<FastIntegerArithmeticPromotion<intmax_t, int8_t>, intmax_t>);
 static_assert(
-    std::same_as<FastIntegerArithmeticPromotion<int16_t, int8_t>::type,
-                 int32_t>);
-static_assert(
-    std::same_as<FastIntegerArithmeticPromotion<int32_t, uint32_t>::type,
-                 int64_t>);
-static_assert(
-    std::same_as<FastIntegerArithmeticPromotion<intmax_t, int8_t>::type,
-                 intmax_t>);
-static_assert(
-    std::same_as<FastIntegerArithmeticPromotion<uintmax_t, int8_t>::type,
-                 uintmax_t>);
-static_assert(FastIntegerArithmeticPromotion<int16_t, int8_t>::is_contained);
-static_assert(FastIntegerArithmeticPromotion<int32_t, uint32_t>::is_contained);
-static_assert(!FastIntegerArithmeticPromotion<intmax_t, int8_t>::is_contained);
-static_assert(!FastIntegerArithmeticPromotion<uintmax_t, int8_t>::is_contained);
+    std::same_as<FastIntegerArithmeticPromotion<uintmax_t, int8_t>, uintmax_t>);
+static_assert(kIsFastIntegerArithmeticPromotionContained<int16_t, int8_t>);
+static_assert(kIsFastIntegerArithmeticPromotionContained<int32_t, uint32_t>);
+static_assert(!kIsFastIntegerArithmeticPromotionContained<intmax_t, int8_t>);
+static_assert(!kIsFastIntegerArithmeticPromotionContained<uintmax_t, int8_t>);
 
 // Test compile-time (constexpr) evaluation of checking and saturation.
 constexpr int32_t kIntOne = 1;
@@ -369,21 +362,19 @@ static void TestSpecializedArithmetic(const char* dst, int line) {
   volatile Dst negative_one = -1;
   TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(1) << negative_one);
   TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(1)
-                        << (IntegerBitsPlusSign<Dst>::value - 1));
-  TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(0)
-                        << IntegerBitsPlusSign<Dst>::value);
+                        << (kIntegerBitsPlusSign<Dst> - 1));
+  TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(0) << kIntegerBitsPlusSign<Dst>);
   TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(DstLimits::max()) << 1);
-  TEST_EXPECTED_VALUE(
-      static_cast<Dst>(1) << (IntegerBitsPlusSign<Dst>::value - 2),
-      CheckedNumeric<Dst>(1) << (IntegerBitsPlusSign<Dst>::value - 2));
+  TEST_EXPECTED_VALUE(static_cast<Dst>(1) << (kIntegerBitsPlusSign<Dst> - 2),
+                      CheckedNumeric<Dst>(1)
+                          << (kIntegerBitsPlusSign<Dst> - 2));
   TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(0)
-                             << (IntegerBitsPlusSign<Dst>::value - 1));
+                             << (kIntegerBitsPlusSign<Dst> - 1));
   TEST_EXPECTED_VALUE(1, CheckedNumeric<Dst>(1) << 0);
   TEST_EXPECTED_VALUE(2, CheckedNumeric<Dst>(1) << 1);
-  TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(1) >>
-                        IntegerBitsPlusSign<Dst>::value);
+  TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(1) >> kIntegerBitsPlusSign<Dst>);
   TEST_EXPECTED_VALUE(
-      0, CheckedNumeric<Dst>(1) >> (IntegerBitsPlusSign<Dst>::value - 1));
+      0, CheckedNumeric<Dst>(1) >> (kIntegerBitsPlusSign<Dst> - 1));
   TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(1) >> negative_one);
 
   // Modulus is legal only for integers.
@@ -417,26 +408,26 @@ static void TestSpecializedArithmetic(const char* dst, int line) {
   // Test bit shifts.
   TEST_EXPECTED_VALUE(DstLimits::Overflow(),
                       ClampedNumeric<Dst>(1)
-                          << (IntegerBitsPlusSign<Dst>::value - 1U));
+                          << (kIntegerBitsPlusSign<Dst> - 1U));
   TEST_EXPECTED_VALUE(Dst(0), ClampedNumeric<Dst>(0)
-                                  << (IntegerBitsPlusSign<Dst>::value + 0U));
+                                  << (kIntegerBitsPlusSign<Dst> + 0U));
   TEST_EXPECTED_VALUE(DstLimits::Overflow(),
                       ClampedNumeric<Dst>(DstLimits::max()) << 1U);
-  TEST_EXPECTED_VALUE(
-      static_cast<Dst>(1) << (IntegerBitsPlusSign<Dst>::value - 2U),
-      ClampedNumeric<Dst>(1) << (IntegerBitsPlusSign<Dst>::value - 2U));
+  TEST_EXPECTED_VALUE(static_cast<Dst>(1) << (kIntegerBitsPlusSign<Dst> - 2U),
+                      ClampedNumeric<Dst>(1)
+                          << (kIntegerBitsPlusSign<Dst> - 2U));
   TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(0)
-                             << (IntegerBitsPlusSign<Dst>::value - 1U));
+                             << (kIntegerBitsPlusSign<Dst> - 1U));
   TEST_EXPECTED_VALUE(1, ClampedNumeric<Dst>(1) << 0U);
   TEST_EXPECTED_VALUE(2, ClampedNumeric<Dst>(1) << 1U);
   TEST_EXPECTED_VALUE(
-      0, ClampedNumeric<Dst>(1) >> (IntegerBitsPlusSign<Dst>::value + 0U));
+      0, ClampedNumeric<Dst>(1) >> (kIntegerBitsPlusSign<Dst> + 0U));
   TEST_EXPECTED_VALUE(
-      0, ClampedNumeric<Dst>(1) >> (IntegerBitsPlusSign<Dst>::value - 1U));
+      0, ClampedNumeric<Dst>(1) >> (kIntegerBitsPlusSign<Dst> - 1U));
   TEST_EXPECTED_VALUE(
-      -1, ClampedNumeric<Dst>(-1) >> (IntegerBitsPlusSign<Dst>::value - 1U));
+      -1, ClampedNumeric<Dst>(-1) >> (kIntegerBitsPlusSign<Dst> - 1U));
   TEST_EXPECTED_VALUE(-1, ClampedNumeric<Dst>(DstLimits::lowest()) >>
-                              (IntegerBitsPlusSign<Dst>::value - 0U));
+                              (kIntegerBitsPlusSign<Dst> - 0U));
 
   TestStrictPointerMath<Dst>();
 }
@@ -501,25 +492,21 @@ static void TestSpecializedArithmetic(const char* dst, int line) {
   TEST_EXPECTED_VALUE(0, checked_dst %= 1);
   // Test that div by 0 is avoided but returns invalid result.
   TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(1) % 0);
-  TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(1)
-                        << IntegerBitsPlusSign<Dst>::value);
+  TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(1) << kIntegerBitsPlusSign<Dst>);
   // Test bit shifts.
   volatile int negative_one = -1;
   TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(1) << negative_one);
-  TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(1)
-                        << IntegerBitsPlusSign<Dst>::value);
-  TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(0)
-                        << IntegerBitsPlusSign<Dst>::value);
+  TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(1) << kIntegerBitsPlusSign<Dst>);
+  TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(0) << kIntegerBitsPlusSign<Dst>);
   TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(DstLimits::max()) << 1);
-  TEST_EXPECTED_VALUE(
-      static_cast<Dst>(1) << (IntegerBitsPlusSign<Dst>::value - 1),
-      CheckedNumeric<Dst>(1) << (IntegerBitsPlusSign<Dst>::value - 1));
+  TEST_EXPECTED_VALUE(static_cast<Dst>(1) << (kIntegerBitsPlusSign<Dst> - 1),
+                      CheckedNumeric<Dst>(1)
+                          << (kIntegerBitsPlusSign<Dst> - 1));
   TEST_EXPECTED_VALUE(1, CheckedNumeric<Dst>(1) << 0);
   TEST_EXPECTED_VALUE(2, CheckedNumeric<Dst>(1) << 1);
-  TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(1) >>
-                        IntegerBitsPlusSign<Dst>::value);
+  TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(1) >> kIntegerBitsPlusSign<Dst>);
   TEST_EXPECTED_VALUE(
-      0, CheckedNumeric<Dst>(1) >> (IntegerBitsPlusSign<Dst>::value - 1));
+      0, CheckedNumeric<Dst>(1) >> (kIntegerBitsPlusSign<Dst> - 1));
   TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(1) >> negative_one);
   TEST_EXPECTED_VALUE(1, CheckedNumeric<Dst>(1) & 1);
   TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(1) & 0);
@@ -558,20 +545,20 @@ static void TestSpecializedArithmetic(const char* dst, int line) {
   // Test bit shifts.
   TEST_EXPECTED_VALUE(DstLimits::Overflow(),
                       ClampedNumeric<Dst>(1)
-                          << as_unsigned(IntegerBitsPlusSign<Dst>::value));
-  TEST_EXPECTED_VALUE(Dst(0), ClampedNumeric<Dst>(0) << as_unsigned(
-                                  IntegerBitsPlusSign<Dst>::value));
+                          << as_unsigned(kIntegerBitsPlusSign<Dst>));
+  TEST_EXPECTED_VALUE(Dst(0), ClampedNumeric<Dst>(0)
+                                  << as_unsigned(kIntegerBitsPlusSign<Dst>));
   TEST_EXPECTED_VALUE(DstLimits::Overflow(),
                       ClampedNumeric<Dst>(DstLimits::max()) << 1U);
-  TEST_EXPECTED_VALUE(
-      static_cast<Dst>(1) << (IntegerBitsPlusSign<Dst>::value - 1U),
-      ClampedNumeric<Dst>(1) << (IntegerBitsPlusSign<Dst>::value - 1U));
+  TEST_EXPECTED_VALUE(static_cast<Dst>(1) << (kIntegerBitsPlusSign<Dst> - 1U),
+                      ClampedNumeric<Dst>(1)
+                          << (kIntegerBitsPlusSign<Dst> - 1U));
   TEST_EXPECTED_VALUE(1, ClampedNumeric<Dst>(1) << 0U);
   TEST_EXPECTED_VALUE(2, ClampedNumeric<Dst>(1) << 1U);
-  TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(1) >>
-                             as_unsigned(IntegerBitsPlusSign<Dst>::value));
   TEST_EXPECTED_VALUE(
-      0, ClampedNumeric<Dst>(1) >> (IntegerBitsPlusSign<Dst>::value - 1U));
+      0, ClampedNumeric<Dst>(1) >> as_unsigned(kIntegerBitsPlusSign<Dst>));
+  TEST_EXPECTED_VALUE(
+      0, ClampedNumeric<Dst>(1) >> (kIntegerBitsPlusSign<Dst> - 1U));
   TEST_EXPECTED_VALUE(1, ClampedNumeric<Dst>(1) & 1);
   TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(1) & 0);
   TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(0) & 1);
@@ -978,20 +965,20 @@ void TestStrictComparison(const char* dst, const char* src, int line) {
                                        DstLimits::max(), SrcLimits::lowest()));
 
   if constexpr (IsValueInRangeForNumericType<Dst>(SrcLimits::max())) {
-    TEST_EXPECTED_VALUE(Dst(SrcLimits::max()), (CommonMax<Dst, Src>()));
+    TEST_EXPECTED_VALUE(Dst(SrcLimits::max()), (kCommonMax<Dst, Src>));
     TEST_EXPECTED_VALUE(Dst(SrcLimits::max()),
                         (CommonMaxOrMin<Dst, Src>(false)));
   } else {
-    TEST_EXPECTED_VALUE(DstLimits::max(), (CommonMax<Dst, Src>()));
+    TEST_EXPECTED_VALUE(DstLimits::max(), (kCommonMax<Dst, Src>));
     TEST_EXPECTED_VALUE(DstLimits::max(), (CommonMaxOrMin<Dst, Src>(false)));
   }
 
   if constexpr (IsValueInRangeForNumericType<Dst>(SrcLimits::lowest())) {
-    TEST_EXPECTED_VALUE(Dst(SrcLimits::lowest()), (CommonMin<Dst, Src>()));
+    TEST_EXPECTED_VALUE(Dst(SrcLimits::lowest()), (kCommonMin<Dst, Src>));
     TEST_EXPECTED_VALUE(Dst(SrcLimits::lowest()),
                         (CommonMaxOrMin<Dst, Src>(true)));
   } else {
-    TEST_EXPECTED_VALUE(DstLimits::lowest(), (CommonMin<Dst, Src>()));
+    TEST_EXPECTED_VALUE(DstLimits::lowest(), (kCommonMin<Dst, Src>));
     TEST_EXPECTED_VALUE(DstLimits::lowest(), (CommonMaxOrMin<Dst, Src>(true)));
   }
 }
@@ -1007,10 +994,10 @@ struct TestNumericConversion<Dst, Src, SIGN_PRESERVING_VALUE_PRESERVING> {
                       (!(DstLimits::is_integer && SrcLimits::is_iec559) &&
                        // Same sign, same numeric, source is narrower or same.
                        ((SrcLimits::is_signed == DstLimits::is_signed &&
-                         MaxExponent<Dst>::value >= MaxExponent<Src>::value) ||
+                         kMaxExponent<Dst> >= kMaxExponent<Src>) ||
                         // Or signed destination and source is smaller
                         (DstLimits::is_signed &&
-                         MaxExponent<Dst>::value >= MaxExponent<Src>::value))),
+                         kMaxExponent<Dst> >= kMaxExponent<Src>))),
                   "Comparison must be sign preserving and value preserving");
 
     TestStrictComparison<Dst, Src>(dst, src, line);
@@ -1019,9 +1006,8 @@ struct TestNumericConversion<Dst, Src, SIGN_PRESERVING_VALUE_PRESERVING> {
     const ClampedNumeric<Dst> clamped_dst = SrcLimits::max();
     TEST_EXPECTED_SUCCESS(checked_dst);
     TEST_EXPECTED_VALUE(Dst(SrcLimits::max()), clamped_dst);
-    if constexpr (MaxExponent<Dst>::value > MaxExponent<Src>::value) {
-      if constexpr (MaxExponent<Dst>::value >=
-                    MaxExponent<Src>::value * 2 - 1) {
+    if constexpr (kMaxExponent<Dst> > kMaxExponent<Src>) {
+      if constexpr (kMaxExponent<Dst> >= kMaxExponent<Src> * 2 - 1) {
         // At least twice larger type.
         TEST_EXPECTED_SUCCESS(SrcLimits::max() * checked_dst);
         TEST_EXPECTED_VALUE(SrcLimits::max() * clamped_dst,
@@ -1065,7 +1051,7 @@ struct TestNumericConversion<Dst, Src, SIGN_PRESERVING_NARROW> {
     using DstLimits = SaturationDefaultLimits<Dst>;
     static_assert(SrcLimits::is_signed == DstLimits::is_signed,
                   "Destination and source sign must be the same");
-    static_assert(MaxExponent<Dst>::value <= MaxExponent<Src>::value,
+    static_assert(kMaxExponent<Dst> <= kMaxExponent<Src>,
                   "Destination must be narrower than source");
 
     TestStrictComparison<Dst, Src>(dst, src, line);
@@ -1129,7 +1115,7 @@ struct TestNumericConversion<Dst, Src, SIGN_TO_UNSIGN_WIDEN_OR_EQUAL> {
   static void Test(const char* dst, const char* src, int line) {
     using SrcLimits = SaturationDefaultLimits<Src>;
     using DstLimits = SaturationDefaultLimits<Dst>;
-    static_assert(MaxExponent<Dst>::value >= MaxExponent<Src>::value,
+    static_assert(kMaxExponent<Dst> >= kMaxExponent<Src>,
                   "Destination must be equal or wider than source.");
     static_assert(SrcLimits::is_signed, "Source must be signed");
     static_assert(!DstLimits::is_signed, "Destination must be unsigned");
@@ -1163,7 +1149,7 @@ struct TestNumericConversion<Dst, Src, SIGN_TO_UNSIGN_NARROW> {
   static void Test(const char* dst, const char* src, int line) {
     using SrcLimits = SaturationDefaultLimits<Src>;
     using DstLimits = SaturationDefaultLimits<Dst>;
-    static_assert(MaxExponent<Dst>::value < MaxExponent<Src>::value,
+    static_assert(kMaxExponent<Dst> < kMaxExponent<Src>,
                   "Destination must be narrower than source.");
     static_assert(SrcLimits::is_signed, "Source must be signed.");
     static_assert(!DstLimits::is_signed, "Destination must be unsigned.");
@@ -1231,7 +1217,7 @@ struct TestNumericConversion<Dst, Src, UNSIGN_TO_SIGN_NARROW_OR_EQUAL> {
   static void Test(const char* dst, const char* src, int line) {
     using SrcLimits = SaturationDefaultLimits<Src>;
     using DstLimits = SaturationDefaultLimits<Dst>;
-    static_assert(MaxExponent<Dst>::value <= MaxExponent<Src>::value,
+    static_assert(kMaxExponent<Dst> <= kMaxExponent<Src>,
                   "Destination must be narrower or equal to source.");
     static_assert(!SrcLimits::is_signed, "Source must be unsigned.");
     static_assert(DstLimits::is_signed, "Destination must be signed.");

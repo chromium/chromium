@@ -50,7 +50,7 @@ struct IsValueInRangeFastOp {
 // Signed to signed range comparison.
 template <typename Dst, typename Src>
   requires(std::signed_integral<Dst> && std::signed_integral<Src> &&
-           !IsTypeInRangeForNumericType<Dst, Src>::value)
+           !kIsTypeInRangeForNumericType<Dst, Src>)
 struct IsValueInRangeFastOp<Dst, Src> {
   static constexpr bool is_supported = true;
 
@@ -64,14 +64,14 @@ struct IsValueInRangeFastOp<Dst, Src> {
 // Signed to unsigned range comparison.
 template <typename Dst, typename Src>
   requires(std::unsigned_integral<Dst> && std::signed_integral<Src> &&
-           !IsTypeInRangeForNumericType<Dst, Src>::value)
+           !kIsTypeInRangeForNumericType<Dst, Src>)
 struct IsValueInRangeFastOp<Dst, Src> {
   static constexpr bool is_supported = true;
 
   static constexpr bool Do(Src value) {
     // We cast a signed as unsigned to overflow negative values to the top,
     // then compare against whichever maximum is smaller, as our upper bound.
-    return as_unsigned(value) <= as_unsigned(CommonMax<Src, Dst>());
+    return as_unsigned(value) <= as_unsigned(kCommonMax<Src, Dst>);
   }
 };
 
@@ -183,8 +183,8 @@ struct SaturateFastOp<Dst, Src> {
     // optimization heuristics across compilers. Do not change without
     // checking the emitted code.
     const Dst saturated = CommonMaxOrMin<Dst, Src>(
-        IsMaxInRangeForNumericType<Dst, Src>() ||
-        (!IsMinInRangeForNumericType<Dst, Src>() && IsValueNegative(value)));
+        kIsMaxInRangeForNumericType<Dst, Src> ||
+        (!kIsMinInRangeForNumericType<Dst, Src> && IsValueNegative(value)));
     if (IsValueInRangeForNumericType<Dst>(value)) [[likely]] {
       return static_cast<Dst>(value);
     }
@@ -226,26 +226,22 @@ template <typename Dst,
       // and use one large enough to represent the source.
       // Alternatively, you may be better served with the checked_cast<> or
       // saturated_cast<> template functions for your particular use case.
-      StaticDstRangeRelationToSrcRange<Dst, SrcType>::value ==
-          NUMERIC_RANGE_CONTAINED)
+      kStaticDstRangeRelationToSrcRange<Dst, SrcType> ==
+          NumericRangeRepresentation::kContained)
 constexpr Dst strict_cast(Src value) {
   return static_cast<Dst>(static_cast<SrcType>(value));
 }
 
 // Some wrappers to statically check that a type is in range.
 template <typename Dst, typename Src>
-struct IsNumericRangeContained {
-  static constexpr bool value = false;
-};
+inline constexpr bool kIsNumericRangeContained = false;
 
 template <typename Dst, typename Src>
-  requires(ArithmeticOrUnderlyingEnum<Dst>::value &&
-           ArithmeticOrUnderlyingEnum<Src>::value)
-struct IsNumericRangeContained<Dst, Src> {
-  static constexpr bool value =
-      StaticDstRangeRelationToSrcRange<Dst, Src>::value ==
-      NUMERIC_RANGE_CONTAINED;
-};
+  requires(std::is_arithmetic_v<ArithmeticOrUnderlyingEnum<Dst>> &&
+           std::is_arithmetic_v<ArithmeticOrUnderlyingEnum<Src>>)
+inline constexpr bool kIsNumericRangeContained<Dst, Src> =
+    kStaticDstRangeRelationToSrcRange<Dst, Src> ==
+    NumericRangeRepresentation::kContained;
 
 // StrictNumeric implements compile time range checking between numeric types by
 // wrapping assignment operations in a strict_cast. This class is intended to be
@@ -289,9 +285,9 @@ class StrictNumeric {
   // If none of that works, you may be better served with the checked_cast<> or
   // saturated_cast<> template functions for your particular use case.
   template <typename Dst>
-    requires(IsNumericRangeContained<Dst, T>::value)
-  constexpr operator Dst() const {
-    return static_cast<typename ArithmeticOrUnderlyingEnum<Dst>::type>(value_);
+    requires(kIsNumericRangeContained<Dst, T>)
+  constexpr operator Dst() const {  // NOLINT(google-explicit-constructor)
+    return static_cast<ArithmeticOrUnderlyingEnum<Dst>>(value_);
   }
 
  private:
@@ -315,8 +311,8 @@ constexpr StrictNumeric<typename UnderlyingType<T>::type> MakeStrictNum(
 
 #define BASE_NUMERIC_COMPARISON_OPERATORS(CLASS, NAME, OP)          \
   template <typename L, typename R>                                 \
-    requires(internal::Is##CLASS##Op<L, R>::value)                  \
-  constexpr bool operator OP(const L lhs, const R rhs) {            \
+    requires(internal::kIs##CLASS##Op<L, R>)                        \
+  constexpr bool operator OP(L lhs, R rhs) {                        \
     return SafeCompare<NAME, typename UnderlyingType<L>::type,      \
                        typename UnderlyingType<R>::type>(lhs, rhs); \
   }
@@ -333,9 +329,9 @@ BASE_NUMERIC_COMPARISON_OPERATORS(Strict, IsNotEqual, !=)
 using internal::as_signed;
 using internal::as_unsigned;
 using internal::checked_cast;
-using internal::IsTypeInRangeForNumericType;
 using internal::IsValueInRangeForNumericType;
 using internal::IsValueNegative;
+using internal::kIsTypeInRangeForNumericType;
 using internal::MakeStrictNum;
 using internal::SafeUnsignedAbs;
 using internal::saturated_cast;

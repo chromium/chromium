@@ -68,10 +68,9 @@ struct ClampedAddOp {};
 template <typename T, typename U>
   requires(std::integral<T> && std::integral<U>)
 struct ClampedAddOp<T, U> {
-  using result_type = typename MaxExponentPromotion<T, U>::type;
+  using result_type = MaxExponentPromotion<T, U>;
   template <typename V = result_type>
-    requires(std::same_as<V, result_type> ||
-             IsTypeInRangeForNumericType<U, V>::value)
+    requires(std::same_as<V, result_type> || kIsTypeInRangeForNumericType<U, V>)
   static constexpr V Do(T x, U y) {
     if (!std::is_constant_evaluated() && ClampedAddFastOp<T, U>::is_supported) {
       return ClampedAddFastOp<T, U>::template Do<V>(x, y);
@@ -91,10 +90,9 @@ struct ClampedSubOp {};
 template <typename T, typename U>
   requires(std::integral<T> && std::integral<U>)
 struct ClampedSubOp<T, U> {
-  using result_type = typename MaxExponentPromotion<T, U>::type;
+  using result_type = MaxExponentPromotion<T, U>;
   template <typename V = result_type>
-    requires(std::same_as<V, result_type> ||
-             IsTypeInRangeForNumericType<U, V>::value)
+    requires(std::same_as<V, result_type> || kIsTypeInRangeForNumericType<U, V>)
   static constexpr V Do(T x, U y) {
     if (!std::is_constant_evaluated() && ClampedSubFastOp<T, U>::is_supported) {
       return ClampedSubFastOp<T, U>::template Do<V>(x, y);
@@ -114,7 +112,7 @@ struct ClampedMulOp {};
 template <typename T, typename U>
   requires(std::integral<T> && std::integral<U>)
 struct ClampedMulOp<T, U> {
-  using result_type = typename MaxExponentPromotion<T, U>::type;
+  using result_type = MaxExponentPromotion<T, U>;
   template <typename V = result_type>
   static constexpr V Do(T x, U y) {
     if (!std::is_constant_evaluated() && ClampedMulFastOp<T, U>::is_supported) {
@@ -136,7 +134,7 @@ struct ClampedDivOp {};
 template <typename T, typename U>
   requires(std::integral<T> && std::integral<U>)
 struct ClampedDivOp<T, U> {
-  using result_type = typename MaxExponentPromotion<T, U>::type;
+  using result_type = MaxExponentPromotion<T, U>;
   template <typename V = result_type>
   static constexpr V Do(T x, U y) {
     V result = {};
@@ -155,7 +153,7 @@ struct ClampedModOp {};
 template <typename T, typename U>
   requires(std::integral<T> && std::integral<U>)
 struct ClampedModOp<T, U> {
-  using result_type = typename MaxExponentPromotion<T, U>::type;
+  using result_type = MaxExponentPromotion<T, U>;
   template <typename V = result_type>
   static constexpr V Do(T x, U y) {
     V result = {};
@@ -201,7 +199,7 @@ struct ClampedRshOp<T, U> {
   static constexpr V Do(T x, U shift) {
     // Signed right shift is odd, because it saturates to -1 or 0.
     const V saturated = as_unsigned(V(0)) - IsValueNegative(x);
-    if (shift < IntegerBitsPlusSign<T>::value) [[likely]] {
+    if (shift < kIntegerBitsPlusSign<T>) [[likely]] {
       return saturated_cast<V>(x >> shift);
     }
     return saturated;
@@ -214,8 +212,7 @@ struct ClampedAndOp {};
 template <typename T, typename U>
   requires(std::integral<T> && std::integral<U>)
 struct ClampedAndOp<T, U> {
-  using result_type =
-      std::make_unsigned_t<typename MaxExponentPromotion<T, U>::type>;
+  using result_type = std::make_unsigned_t<MaxExponentPromotion<T, U>>;
   template <typename V>
   static constexpr V Do(T x, U y) {
     return static_cast<result_type>(x) & static_cast<result_type>(y);
@@ -229,8 +226,7 @@ struct ClampedOrOp {};
 template <typename T, typename U>
   requires(std::integral<T> && std::integral<U>)
 struct ClampedOrOp<T, U> {
-  using result_type =
-      std::make_unsigned_t<typename MaxExponentPromotion<T, U>::type>;
+  using result_type = std::make_unsigned_t<MaxExponentPromotion<T, U>>;
   template <typename V>
   static constexpr V Do(T x, U y) {
     return static_cast<result_type>(x) | static_cast<result_type>(y);
@@ -244,8 +240,7 @@ struct ClampedXorOp {};
 template <typename T, typename U>
   requires(std::integral<T> && std::integral<U>)
 struct ClampedXorOp<T, U> {
-  using result_type =
-      std::make_unsigned_t<typename MaxExponentPromotion<T, U>::type>;
+  using result_type = std::make_unsigned_t<MaxExponentPromotion<T, U>>;
   template <typename V>
   static constexpr V Do(T x, U y) {
     return static_cast<result_type>(x) ^ static_cast<result_type>(y);
@@ -258,7 +253,7 @@ struct ClampedMaxOp {};
 template <typename T, typename U>
   requires(std::is_arithmetic_v<T> && std::is_arithmetic_v<U>)
 struct ClampedMaxOp<T, U> {
-  using result_type = typename MaxExponentPromotion<T, U>::type;
+  using result_type = MaxExponentPromotion<T, U>;
   template <typename V = result_type>
   static constexpr V Do(T x, U y) {
     return IsGreater<T, U>::Test(x, y) ? saturated_cast<V>(x)
@@ -272,7 +267,7 @@ struct ClampedMinOp {};
 template <typename T, typename U>
   requires(std::is_arithmetic_v<T> && std::is_arithmetic_v<U>)
 struct ClampedMinOp<T, U> {
-  using result_type = typename LowestValuePromotion<T, U>::type;
+  using result_type = LowestValuePromotion<T, U>;
   template <typename V = result_type>
   static constexpr V Do(T x, U y) {
     return IsLess<T, U>::Test(x, y) ? saturated_cast<V>(x)
@@ -282,15 +277,15 @@ struct ClampedMinOp<T, U> {
 
 // This is just boilerplate that wraps the standard floating point arithmetic.
 // A macro isn't the nicest solution, but it beats rewriting these repeatedly.
-#define BASE_FLOAT_ARITHMETIC_OPS(NAME, OP)                        \
-  template <typename T, typename U>                                \
-    requires(std::floating_point<T> || std::floating_point<U>)     \
-  struct Clamped##NAME##Op<T, U> {                                 \
-    using result_type = typename MaxExponentPromotion<T, U>::type; \
-    template <typename V = result_type>                            \
-    static constexpr V Do(T x, U y) {                              \
-      return saturated_cast<V>(x OP y);                            \
-    }                                                              \
+#define BASE_FLOAT_ARITHMETIC_OPS(NAME, OP)                    \
+  template <typename T, typename U>                            \
+    requires(std::floating_point<T> || std::floating_point<U>) \
+  struct Clamped##NAME##Op<T, U> {                             \
+    using result_type = MaxExponentPromotion<T, U>;            \
+    template <typename V = result_type>                        \
+    static constexpr V Do(T x, U y) {                          \
+      return saturated_cast<V>(x OP y);                        \
+    }                                                          \
   };
 
 BASE_FLOAT_ARITHMETIC_OPS(Add, +)

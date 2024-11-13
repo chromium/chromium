@@ -152,9 +152,8 @@ class ClampedNumeric {
   }
 
   template <typename Dst>
-  constexpr operator Dst() const {
-    return saturated_cast<typename ArithmeticOrUnderlyingEnum<Dst>::type>(
-        value_);
+  constexpr operator Dst() const {  // NOLINT(google-explicit-constructor)
+    return saturated_cast<ArithmeticOrUnderlyingEnum<Dst>>(value_);
   }
 
   // This method extracts the raw integer value without saturating it to the
