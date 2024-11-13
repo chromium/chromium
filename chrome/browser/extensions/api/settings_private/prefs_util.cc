@@ -91,6 +91,7 @@
 #include "chrome/browser/extensions/api/settings_private/chromeos_resolve_time_zone_by_geolocation_method_short.h"
 #include "chrome/browser/extensions/api/settings_private/chromeos_resolve_time_zone_by_geolocation_on_off.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/tether/pref_names.h"
@@ -1687,7 +1688,10 @@ PrefService* PrefsUtil::FindServiceForPref(const std::string& pref_name) {
   // explicitly mapped to profile prefs when changed in chrome://settings.
   if (pref_name == prefs::kDnsOverHttpsMode ||
       pref_name == prefs::kDnsOverHttpsTemplates) {
-    if (profile_->GetProfilePolicyConnector()->IsManaged()) {
+    // Only look at user profiles (e.g., doing this for the Sign-in Profile would lead to
+    // problems because it can change its "managed" state during enrollment).
+    if (ash::IsUserBrowserContext(profile_) &&
+        profile_->GetProfilePolicyConnector()->IsManaged()) {
       return g_browser_process->local_state();
     }
     return user_prefs;
