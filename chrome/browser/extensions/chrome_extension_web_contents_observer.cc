@@ -25,6 +25,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/switches.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
@@ -60,39 +61,21 @@ void ChromeExtensionWebContentsObserver::RenderFrameCreated(
   ReloadIfTerminated(render_frame_host);
   ExtensionWebContentsObserver::RenderFrameCreated(render_frame_host);
 
-  // This logic should match
-  // ChromeContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories.
-  const Extension* extension = GetExtensionFromFrame(render_frame_host, false);
-  if (!extension) {
-    return;
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kUseReadyToCommitForExtensionFrameSetup)) {
+    SetupRenderFrameHost(render_frame_host);
   }
+}
 
-  int process_id = render_frame_host->GetProcess()->GetID();
-  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
+void ChromeExtensionWebContentsObserver::ReadyToCommitNavigation(
+    content::NavigationHandle* navigation_handle) {
+  ExtensionWebContentsObserver::ReadyToCommitNavigation(navigation_handle);
 
-  // Components of chrome that are implemented as extensions or platform apps
-  // are allowed to use chrome://resources/ and chrome://theme/ URLs.
-  if ((extension->is_extension() || extension->is_platform_app()) &&
-      Manifest::IsComponentLocation(extension->location())) {
-    policy->GrantRequestOrigin(
-        process_id, url::Origin::Create(GURL(blink::kChromeUIResourcesURL)));
-    policy->GrantRequestOrigin(
-        process_id, url::Origin::Create(GURL(chrome::kChromeUIThemeURL)));
-  }
-
-  // Extensions, legacy packaged apps, and component platform apps are allowed
-  // to use chrome://favicon/ and chrome://extension-icon/ URLs. Hosted apps are
-  // not allowed because they are served via web servers (and are generally
-  // never given access to Chrome APIs).
-  if (extension->is_extension() ||
-      extension->is_legacy_packaged_app() ||
-      (extension->is_platform_app() &&
-       Manifest::IsComponentLocation(extension->location()))) {
-    policy->GrantRequestOrigin(
-        process_id, url::Origin::Create(GURL(chrome::kChromeUIFaviconURL)));
-    policy->GrantRequestOrigin(
-        process_id,
-        url::Origin::Create(GURL(chrome::kChromeUIExtensionIconURL)));
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kUseReadyToCommitForExtensionFrameSetup)) {
+    content::RenderFrameHost* render_frame_host =
+        navigation_handle->GetRenderFrameHost();
+    SetupRenderFrameHost(render_frame_host);
   }
 }
 
@@ -122,8 +105,46 @@ void ChromeExtensionWebContentsObserver::ReloadIfTerminated(
   //            extensions. It seems to be fast enough, but there is a race.
   //            We should delay loading until the extension has reloaded.
   if (registry->terminated_extensions().GetByID(extension_id)) {
-    ExtensionSystem::Get(browser_context())->
-        extension_service()->ReloadExtension(extension_id);
+    ExtensionSystem::Get(browser_context())
+        ->extension_service()
+        ->ReloadExtension(extension_id);
+  }
+}
+
+void ChromeExtensionWebContentsObserver::SetupRenderFrameHost(
+    content::RenderFrameHost* render_frame_host) {
+  // This logic should match
+  // ChromeContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories.
+  const Extension* extension = GetExtensionFromFrame(render_frame_host, false);
+  if (!extension) {
+    return;
+  }
+
+  int process_id = render_frame_host->GetProcess()->GetID();
+  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
+
+  // Components of chrome that are implemented as extensions or platform apps
+  // are allowed to use chrome://resources/ and chrome://theme/ URLs.
+  if ((extension->is_extension() || extension->is_platform_app()) &&
+      Manifest::IsComponentLocation(extension->location())) {
+    policy->GrantRequestOrigin(
+        process_id, url::Origin::Create(GURL(blink::kChromeUIResourcesURL)));
+    policy->GrantRequestOrigin(
+        process_id, url::Origin::Create(GURL(chrome::kChromeUIThemeURL)));
+  }
+
+  // Extensions, legacy packaged apps, and component platform apps are allowed
+  // to use chrome://favicon/ and chrome://extension-icon/ URLs. Hosted apps are
+  // not allowed because they are served via web servers (and are generally
+  // never given access to Chrome APIs).
+  if (extension->is_extension() || extension->is_legacy_packaged_app() ||
+      (extension->is_platform_app() &&
+       Manifest::IsComponentLocation(extension->location()))) {
+    policy->GrantRequestOrigin(
+        process_id, url::Origin::Create(GURL(chrome::kChromeUIFaviconURL)));
+    policy->GrantRequestOrigin(
+        process_id,
+        url::Origin::Create(GURL(chrome::kChromeUIExtensionIconURL)));
   }
 }
 
