@@ -92,7 +92,7 @@ export async function setEnabled(enabled: boolean): Promise<void> {
  * custom dimensions from `loadTimeData`.
  */
 export async function initMetrics(): Promise<void> {
-  const board = assertExists(/^(x86-)?(\w*)/.exec(loadTimeData.getBoard()))[0];
+  const board = loadTimeData.getBoard();
   const isTestImage = loadTimeData.getIsTestImage();
   const gaHelper = await getGaHelper();
 

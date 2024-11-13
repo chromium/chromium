@@ -505,7 +505,8 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
   // Please also update the mocked value in _handle_strings_m_js in
   // ash/webui/camera_app_ui/resources/utils/cca/commands/dev.py when adding or
   // removing keys here.
-  source->AddString("board_name", base::SysInfo::GetLsbReleaseBoard());
+  source->AddString("board_name",
+                    base::ToLowerASCII(base::SysInfo::HardwareModelName()));
   source->AddString("device_type",
                     DeviceTypeToString(chromeos::GetDeviceType()));
   source->AddBoolean("preview_ocr", base::FeatureList::IsEnabled(
