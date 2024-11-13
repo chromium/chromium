@@ -136,14 +136,8 @@ bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
       copy_rect_info.bytesPerPixel() * static_cast<size_t>(copy_rect.width());
   const size_t dest_height = static_cast<size_t>(copy_rect.height());
 
-  // Source image has top left origin but destination resource provider doesn't.
-  // Usually it means resource provider has bottom left origin. Apply flip op
-  // on copy result to fix it.
-  bool dest_flipped = !resource_provider->IsOriginTopLeft();
-
   std::vector<uint8_t> dest_pixels;
-  if (dest_flipped || source_row_bytes != dest_row_bytes ||
-      source_height != dest_height) {
+  if (source_row_bytes != dest_row_bytes || source_height != dest_height) {
     dest_pixels.resize(dest_row_bytes * dest_height);
 
     const size_t x_offset_bytes =
@@ -151,7 +145,7 @@ bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
     const size_t y_offset = copy_rect.y();
 
     for (size_t dst_y = 0; dst_y < dest_height; ++dst_y) {
-      size_t src_y = dest_flipped ? dest_height - dst_y - 1 : dst_y;
+      const size_t src_y = dst_y;
       memcpy(dest_pixels.data() + dst_y * dest_row_bytes,
              static_cast<const uint8_t*>(pixels) +
                  (y_offset + src_y) * source_row_bytes + x_offset_bytes,
