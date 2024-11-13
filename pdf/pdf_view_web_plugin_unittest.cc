@@ -125,6 +125,12 @@ constexpr SkColor kDefaultColor = SK_ColorGREEN;
 
 constexpr SkColor kPaintColor = SK_ColorRED;
 
+// This constant should have the same value as the one in
+// `pdf_view_web_plugin.cc`.
+// LINT.IfChange(searchify_state_propagation_delay)
+constexpr base::TimeDelta kSearchifyStatePropagationDelay = base::Seconds(1);
+// LINT.ThenChange(//pdf/pdf_view_web_plugin.cc:searchify_state_propagation_delay)
+
 struct PaintParams {
   // The plugin container's device scale.
   float device_scale;
@@ -1760,6 +1766,74 @@ TEST_F(PdfViewWebPluginTest, OnDocumentLoadComplete) {
   EXPECT_CALL(*client_ptr_, PostMessage);
   EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message))));
   plugin_->DocumentLoadComplete();
+}
+
+TEST_F(PdfViewWebPluginTest, OnSearchifyStarted) {
+  base::Value::Dict message;
+  message.Set("type", "showSearchifyInProgress");
+  message.Set("show", true);
+
+  EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message))));
+
+  plugin_->OnSearchifyStateChange(true);
+
+  // Wait for the state to be propagated.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), kSearchifyStatePropagationDelay);
+  run_loop.Run();
+}
+
+TEST_F(PdfViewWebPluginTest, OnSearchifyStartedAndStoppedFast) {
+  base::Value::Dict message;
+  message.Set("type", "showSearchifyInProgress");
+  message.Set("show", false);
+
+  // Since `PdfViewWebPlugin` does not keep two distinct states for "progress
+  // indicator is showing" and "progress indicator will be shown", an
+  // unnecessary hide message is sent to UI. This has no effect in the UI as the
+  // progress indicator is already not showing.
+  EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message))));
+
+  plugin_->OnSearchifyStateChange(true);
+  plugin_->OnSearchifyStateChange(false);
+
+  // Wait for the state to be propagated.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), kSearchifyStatePropagationDelay);
+  run_loop.Run();
+}
+
+TEST_F(PdfViewWebPluginTest, OnSearchifyStartedAndStoppedWithDelay) {
+  base::Value::Dict message_show;
+  message_show.Set("type", "showSearchifyInProgress");
+  message_show.Set("show", true);
+
+  base::Value::Dict message_hide;
+  message_hide.Set("type", "showSearchifyInProgress");
+  message_hide.Set("show", false);
+
+  EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message_show))));
+  EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message_hide))));
+
+  plugin_->OnSearchifyStateChange(true);
+
+  // Wait for the state to be propagated and indicator be shown.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), kSearchifyStatePropagationDelay * 2);
+  run_loop.Run();
+
+  plugin_->OnSearchifyStateChange(false);
+}
+
+TEST_F(PdfViewWebPluginTest, OnHasSearchifyText) {
+  base::Value::Dict message;
+  message.Set("type", "setHasSearchifyText");
+
+  EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(message))));
+  plugin_->OnHasSearchifyText();
 }
 
 class PdfViewWebPluginWithDocInfoTest : public PdfViewWebPluginTest {

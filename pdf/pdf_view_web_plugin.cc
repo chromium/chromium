@@ -144,6 +144,12 @@ constexpr base::TimeDelta kAccessibilityPageDelay = base::Milliseconds(100);
 
 constexpr base::TimeDelta kFindResultCooldown = base::Milliseconds(100);
 
+// This constant should have the same value as the one in
+// `pdf_view_web_plugin_unittest.cc`.
+// LINT.IfChange(searchify_state_propagation_delay)
+constexpr base::TimeDelta kSearchifyStatePropagationDelay = base::Seconds(1);
+// LINT.ThenChange(//pdf/pdf_view_web_plugin_unittest.cc:searchify_state_propagation_delay)
+
 constexpr std::string_view kChromeExtensionHost =
     "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/";
 
@@ -1466,7 +1472,7 @@ void PdfViewWebPlugin::OnSearchifyStateChange(bool busy) {
         FROM_HERE,
         base::BindOnce(&PdfViewWebPlugin::SetShowSearchifyInProgress,
                        weak_factory_.GetWeakPtr(), /*show=*/true),
-        base::Seconds(1));
+        kSearchifyStatePropagationDelay);
     return;
   }
 
@@ -1487,7 +1493,6 @@ void PdfViewWebPlugin::SetShowSearchifyInProgress(bool show) {
     return;
   }
 
-  // TODO(crbug.com/360803943): Add test.
   base::Value::Dict message;
   message.Set("type", "showSearchifyInProgress");
   message.Set("show", show);
@@ -1495,7 +1500,6 @@ void PdfViewWebPlugin::SetShowSearchifyInProgress(bool show) {
 }
 
 void PdfViewWebPlugin::OnHasSearchifyText() {
-  // TODO(crbug.com/360803943): Add test.
   base::Value::Dict message;
   message.Set("type", "setHasSearchifyText");
   client_->PostMessage(std::move(message));
