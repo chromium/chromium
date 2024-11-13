@@ -180,7 +180,8 @@ class HeaderParser:
   # Note: For now we only support a very specific `#if` statement to prevent the
   # possibility of miscalculating whether lines should be ignored when building
   # for Android.
-  if_buildflag_re = re.compile(r'^#if BUILDFLAG\((\w+)\)$')
+  if_buildflag_re = re.compile(
+      r'^#if BUILDFLAG\((\w+)\)(?: \|\| BUILDFLAG\((\w+)\))*$')
   if_buildflag_end_re = re.compile(r'^#endif.*$')
   generator_error_re = re.compile(r'^\s*//\s+GENERATED_JAVA_(\w+)\s*:\s*$')
   generator_directive_re = re.compile(
@@ -206,12 +207,12 @@ class HeaderParser:
     self._enum_definitions = []
     self._in_enum = False
     # Indicates whether an #if block was encountered on a previous line (until
-    # an #endif block was seen). When True, `_in_buildflag_android` indicates
-    # whether the block was `#if BUILDFLAG(IS_ANDROID)` or not.
+    # an #endif block was seen). When nonzero, `_in_buildflag_android` indicates
+    # whether the blocks were `#if BUILDFLAG(IS_ANDROID)` or not.
     # Note: Currently only statements like `#if BUILDFLAG(IS_<PLATFORM>)` are
     # supported.
-    self._in_preprocessor_block = False
-    self._in_buildflag_android = False
+    self._in_preprocessor_block = 0
+    self._in_buildflag_android = []
     self._current_definition = None
     self._current_comments = []
     self._generator_directives = DirectiveSet()
@@ -219,7 +220,7 @@ class HeaderParser:
     self._current_enum_entry = ''
 
   def _ShouldIgnoreLine(self):
-    return self._in_preprocessor_block and not self._in_buildflag_android
+    return self._in_preprocessor_block and not all(self._in_buildflag_android)
 
   def _ApplyGeneratorDirectives(self):
     self._generator_directives.UpdateDefinition(self._current_definition)
@@ -231,15 +232,14 @@ class HeaderParser:
     return self._enum_definitions
 
   def _ParseLine(self, line):
-    if m := HeaderParser.if_buildflag_re.match(line):
-      if self._in_preprocessor_block:
-        raise Exception('Nested #if statements not supported. Found: ' + line)
-      self._in_preprocessor_block = True
-      self._in_buildflag_android = m.group(1) == "IS_ANDROID"
+    if HeaderParser.if_buildflag_re.match(line):
+      self._in_preprocessor_block += 1
+      self._in_buildflag_android.append('BUILDFLAG(IS_ANDROID)' in line)
       return
-    if HeaderParser.if_buildflag_end_re.match(line):
-      self._in_preprocessor_block = False
-      self._in_buildflag_android = False
+    if self._in_preprocessor_block and HeaderParser.if_buildflag_end_re.match(
+        line):
+      self._in_preprocessor_block -= 1
+      self._in_buildflag_android.pop()
       return
 
     if self._ShouldIgnoreLine():

@@ -544,6 +544,15 @@ enum TerminationStatus {
   // On Windows, the OS terminated process due to code integrity failure.
   TERMINATION_STATUS_INTEGRITY_FAILURE = 9,
 #endif
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+  TERMINATION_STATUS_TEN = 10,
+  #if BUILDFLAG(IS_POSIX)
+    TERMINATION_STATUS_ELEVEN = 11,
+  #endif
+#endif
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  TERMINATION_STATUS_TWELVE = 12,
+#endif
 };
     """.split('\n')
     definitions = HeaderParser(test_data).ParseDefinitions()
@@ -562,6 +571,8 @@ enum TerminationStatus {
             ('OOM_PROTECTED', '6'),
             ('OOM', '8'),
             # INTEGRITY_FAILURE value should not appear here.
+            # TEN and ELEVEN should not appear here.
+            ('TWELVE', '12'),
         ]),
         definition.entries)
     self.assertEqual(
