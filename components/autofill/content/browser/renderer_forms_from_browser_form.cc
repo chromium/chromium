@@ -2,36 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/content/browser/renderer_forms_with_server_predictions.h"
+#include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
 
-#include <optional>
-#include <utility>
 #include <vector>
 
-#include "base/containers/flat_map.h"
-#include "base/feature_list.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
-#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_driver_router.h"
-#include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/global_routing_id.h"
 
 namespace autofill {
 
-// static
-std::optional<RendererFormsWithServerPredictions>
-RendererFormsWithServerPredictions::FromBrowserForm(AutofillManager& manager,
-                                                    FormGlobalId form_id) {
+std::optional<RendererForms> RendererFormsFromBrowserForm(
+    AutofillManager& manager,
+    FormGlobalId form_id) {
   FormStructure* browser_form = manager.FindCachedFormById(form_id);
   if (!browser_form) {
     return std::nullopt;
   }
 
-  RendererFormsWithServerPredictions result;
-  result.predictions = browser_form->GetServerPredictions();
   // The cast is safe, since this method can only get called by content
   // embedders.
   ContentAutofillClient& client =
@@ -41,7 +33,8 @@ RendererFormsWithServerPredictions::FromBrowserForm(AutofillManager& manager,
   std::vector<FormData> renderer_forms =
       router.GetRendererForms(browser_form->ToFormData());
 
-  result.renderer_forms.reserve(renderer_forms.size());
+  RendererForms result;
+  result.reserve(renderer_forms.size());
   base::flat_map<LocalFrameToken, content::GlobalRenderFrameHostId>
       token_rfh_map;
   for (FormData& form : renderer_forms) {
@@ -64,23 +57,10 @@ RendererFormsWithServerPredictions::FromBrowserForm(AutofillManager& manager,
     if (!rfh_id) {
       continue;
     }
-    result.renderer_forms.emplace_back(std::move(form), rfh_id);
+    result.emplace_back(std::move(form), rfh_id);
   }
 
-  return result;
+  return std::move(result);
 }
-
-RendererFormsWithServerPredictions::RendererFormsWithServerPredictions() =
-    default;
-
-RendererFormsWithServerPredictions::RendererFormsWithServerPredictions(
-    RendererFormsWithServerPredictions&&) = default;
-
-RendererFormsWithServerPredictions&
-RendererFormsWithServerPredictions::operator=(
-    RendererFormsWithServerPredictions&&) = default;
-
-RendererFormsWithServerPredictions::~RendererFormsWithServerPredictions() =
-    default;
 
 }  // namespace autofill

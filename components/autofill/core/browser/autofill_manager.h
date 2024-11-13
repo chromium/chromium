@@ -307,6 +307,11 @@ class AutofillManager
   virtual void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool success)> form_extraction_finished_callback);
 
+  // Returns predictions for fields in a form identified by `form_id`.
+  // Returns an empty map if the manager has no data about the form.
+  base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
+  GetServerPredictionsForForm(FormGlobalId form_id) const;
+
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
 
   void RemoveObserver(Observer* observer) {

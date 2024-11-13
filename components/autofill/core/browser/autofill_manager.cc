@@ -539,6 +539,15 @@ void AutofillManager::TriggerFormExtractionInAllFrames(
       std::move(form_extraction_finished_callback));
 }
 
+base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
+AutofillManager::GetServerPredictionsForForm(FormGlobalId form_id) const {
+  FormStructure* cached_form = FindCachedFormById(form_id);
+  if (!cached_form) {
+    return {};
+  }
+  return cached_form->GetServerPredictions();
+}
+
 void AutofillManager::ParseFormsAsync(
     const std::vector<FormData>& forms,
     base::OnceCallback<void(AutofillManager&, const std::vector<FormData>&)>

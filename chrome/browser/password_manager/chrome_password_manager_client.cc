@@ -52,7 +52,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
-#include "components/autofill/content/browser/renderer_forms_with_server_predictions.h"
+#include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -1850,15 +1850,13 @@ void ChromePasswordManagerClient::OnFieldTypesDetermined(
     return;
   }
 
-  std::optional<autofill::RendererFormsWithServerPredictions>
-      forms_and_predictions =
-          autofill::RendererFormsWithServerPredictions::FromBrowserForm(
-              manager, form_id);
-  if (!forms_and_predictions) {
+  std::optional<autofill::RendererForms> renderer_forms =
+      autofill::RendererFormsFromBrowserForm(manager, form_id);
+  if (!renderer_forms.has_value()) {
     return;
   }
 
-  for (const auto& [form, rfh_id] : forms_and_predictions->renderer_forms) {
+  for (const auto& [form, rfh_id] : renderer_forms.value()) {
     auto* rfh = content::RenderFrameHost::FromID(rfh_id);
     if (!rfh) {
       continue;
@@ -1870,7 +1868,7 @@ void ChromePasswordManagerClient::OnFieldTypesDetermined(
       continue;
     }
     password_manager_.ProcessAutofillPredictions(
-        driver, form, forms_and_predictions->predictions);
+        driver, form, manager.GetServerPredictionsForForm(form_id));
   }
 }
 
