@@ -6944,13 +6944,14 @@ void Element::SetPseudoElementStylesChangeCounters(bool value) {
 }
 
 ColumnPseudoElement* Element::CreateColumnPseudoElementIfNeeded(
+    wtf_size_t index,
     const PhysicalRect& column_rect) {
   if (const ComputedStyle* style = GetComputedStyle();
       !style || !style->HasPseudoElementStyle(kPseudoIdColumn)) {
     return nullptr;
   }
   auto* column_pseudo_element = MakeGarbageCollected<ColumnPseudoElement>(
-      /*originating_element=*/this, column_rect);
+      /*originating_element=*/this, index, column_rect);
   const ComputedStyle* style =
       column_pseudo_element->CustomStyleForLayoutObject(
           StyleRecalcContext::FromInclusiveAncestors(*this));

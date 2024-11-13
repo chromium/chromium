@@ -1196,7 +1196,7 @@ TEST_F(ElementTest, ColumnPseudoElements) {
 
   PhysicalRect dummy_column_rect;
   PseudoElement* first_column_pseudo_element =
-      element->CreateColumnPseudoElementIfNeeded(dummy_column_rect);
+      element->CreateColumnPseudoElementIfNeeded(0u, dummy_column_rect);
   ASSERT_TRUE(first_column_pseudo_element);
   EXPECT_EQ(first_column_pseudo_element->GetComputedStyle()->Opacity(), 0.5f);
   ASSERT_TRUE(
@@ -1207,7 +1207,7 @@ TEST_F(ElementTest, ColumnPseudoElements) {
             0.3f);
 
   PseudoElement* second_column_pseudo_element =
-      element->CreateColumnPseudoElementIfNeeded(dummy_column_rect);
+      element->CreateColumnPseudoElementIfNeeded(1u, dummy_column_rect);
   ASSERT_TRUE(second_column_pseudo_element);
   EXPECT_EQ(second_column_pseudo_element->GetComputedStyle()->Opacity(), 0.5f);
   ASSERT_TRUE(
@@ -1219,7 +1219,7 @@ TEST_F(ElementTest, ColumnPseudoElements) {
       0.3f);
 
   PseudoElement* third_column_pseudo_element =
-      element->CreateColumnPseudoElementIfNeeded(dummy_column_rect);
+      element->CreateColumnPseudoElementIfNeeded(2u, dummy_column_rect);
   ASSERT_TRUE(third_column_pseudo_element);
   EXPECT_EQ(third_column_pseudo_element->GetComputedStyle()->Opacity(), 0.5f);
   ASSERT_TRUE(

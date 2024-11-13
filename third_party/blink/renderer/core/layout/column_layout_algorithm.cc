@@ -1059,6 +1059,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
   StyleEngine::AttachScrollMarkersScope scope(
       Node().GetDocument().GetStyleEngine());
 
+  wtf_size_t num_columns = 0u;
   // Commit all column fragments to the fragment builder.
   for (auto result_with_offset : new_columns) {
     const PhysicalBoxFragment& column = result_with_offset.Fragment();
@@ -1073,7 +1074,8 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
         LogicalSize(ChildAvailableSize().inline_size, column_block_size_));
     ColumnPseudoElement* column_pseudo =
         element->CreateColumnPseudoElementIfNeeded(
-            converter.ToPhysical(column_logical_rect));
+            num_columns, converter.ToPhysical(column_logical_rect));
+    num_columns += column_pseudo != nullptr;
     if (column_pseudo &&
         column_pseudo->GetComputedStyle()->GetScrollSnapAlign() !=
             cc::ScrollSnapAlign()) {

@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -106,6 +107,20 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       }
       [[fallthrough]];
     case kPseudoIdMarker:
+      if (const ColumnPseudoElementsVector* columns =
+              parent_element->GetColumnPseudoElements();
+          columns && !columns->empty()) {
+        return columns->front();
+      }
+      [[fallthrough]];
+    case kPseudoIdColumn:
+      if (auto* column = DynamicTo<ColumnPseudoElement>(node)) {
+        const ColumnPseudoElementsVector* columns =
+            parent_element->GetColumnPseudoElements();
+        if (column->Index() + 1u < columns->size()) {
+          return columns->at(column->Index() + 1u);
+        }
+      }
       if (Node* next =
               parent_element->GetPseudoElement(kPseudoIdScrollMarker)) {
         return next;
@@ -240,8 +255,23 @@ Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
       }
       [[fallthrough]];
     case kPseudoIdScrollMarker:
-      if (Node* previous = parent_element->GetPseudoElement(kPseudoIdMarker))
+      if (const ColumnPseudoElementsVector* columns =
+              parent_element->GetColumnPseudoElements();
+          columns && !columns->empty()) {
+        return columns->back();
+      }
+      [[fallthrough]];
+    case kPseudoIdColumn:
+      if (auto* column = DynamicTo<ColumnPseudoElement>(node)) {
+        const ColumnPseudoElementsVector* columns =
+            parent_element->GetColumnPseudoElements();
+        if (column->Index() > 0) {
+          return columns->at(column->Index() - 1u);
+        }
+      }
+      if (Node* previous = parent_element->GetPseudoElement(kPseudoIdMarker)) {
         return previous;
+      }
       [[fallthrough]];
     case kPseudoIdMarker:
       if (Node* previous = parent_element->GetPseudoElement(
@@ -287,6 +317,13 @@ Node* LayoutTreeBuilderTraversal::LastChild(const Node& node) {
   if (Node* last = current_element->GetPseudoElement(kPseudoIdCheck)) {
     return last;
   }
+  if (const ColumnPseudoElementsVector* columns =
+          current_element->GetColumnPseudoElements();
+      columns && !columns->empty()) {
+    if (Node* last = columns->back()) {
+      return last;
+    }
+  }
   if (Node* last = current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
     return last;
   }
@@ -330,6 +367,13 @@ Node* LayoutTreeBuilderTraversal::FirstChild(const Node& node) {
     return first;
   if (Node* first = current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
     return first;
+  }
+  if (const ColumnPseudoElementsVector* columns =
+          current_element->GetColumnPseudoElements();
+      columns && !columns->empty()) {
+    if (Node* first = columns->front()) {
+      return first;
+    }
   }
   if (Node* first = current_element->GetPseudoElement(kPseudoIdCheck)) {
     return first;

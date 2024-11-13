@@ -1408,6 +1408,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // needs to be called before each layout pass that generate these pseudo
   // elements.
   ColumnPseudoElement* CreateColumnPseudoElementIfNeeded(
+      wtf_size_t index,
       const PhysicalRect& column_rect);
   const ColumnPseudoElementsVector* GetColumnPseudoElements() const;
   void ClearColumnPseudoElements();

@@ -852,6 +852,11 @@ bool LayoutObject::IsRenderedLegendInternal() const {
          LayoutFieldset::FindInFlowLegend(*parent_layout_block) == this;
 }
 
+bool LayoutObject::IsScrollMarker() const {
+  NOT_DESTROYED();
+  return GetNode() && GetNode()->IsScrollMarkerPseudoElement();
+}
+
 bool LayoutObject::IsScrollMarkerGroup() const {
   NOT_DESTROYED();
   return GetNode() && GetNode()->IsScrollMarkerGroupPseudoElement();
