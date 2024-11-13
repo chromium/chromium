@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "gin/gin_features.h"
 #include "gin/public/v8_platform.h"
 #include "v8/include/cppgc/platform.h"
@@ -19,28 +20,24 @@ int g_init_count = 0;
 }  // namespace
 
 void InitializeCppgcFromV8Platform() {
-  static constexpr size_t kRegularCageSize =
+#if BUILDFLAG(IS_ANDROID)
+  // Keep the cage size at 4GB on Android, since some vendors can configure the
+  // kernel to have address space limited to 2^39 or 2^36 bits, which is more
+  // prone to address space exhaustion.
+  static constexpr size_t kCageSize =
       static_cast<size_t>(4) * 1024 * 1024 * 1024;
-  static constexpr size_t kLargerCageSize =
+#else
+  static constexpr size_t kCageSize =
       static_cast<size_t>(16) * 1024 * 1024 * 1024;
+#endif
 
   DCHECK_GE(g_init_count, 0);
   if (g_init_count++ > 0) {
     return;
   }
 
-  size_t desired_cage_size = kRegularCageSize;
-  auto overridden_state = base::FeatureList::GetStateIfOverridden(
-      features::kV8CppGCEnableLargerCage);
-  if (overridden_state.has_value()) {
-    if (overridden_state.value()) {
-      desired_cage_size = kLargerCageSize;
-    } else {
-    }
-  }
-
   cppgc::InitializeProcess(gin::V8Platform::Get()->GetPageAllocator(),
-                           desired_cage_size);
+                           kCageSize);
 }
 
 void MaybeShutdownCppgc() {

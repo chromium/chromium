@@ -28,7 +28,6 @@ GIN_EXPORT extern const base::FeatureParam<int>
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8BaselineBatchCompilation);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8CodeMemoryWriteProtection);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8ConcurrentSparkplugHighPriorityThreads);
-GIN_EXPORT BASE_DECLARE_FEATURE(kV8CppGCEnableLargerCage);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8DelayMemoryReducer);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8ConcurrentMarkingHighPriorityThreads);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8DecommitPooledPages);

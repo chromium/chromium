@@ -231,11 +231,6 @@ BASE_FEATURE(kV8SlowHistogramsNoTurbofan,
              "V8SlowHistogramsNoTurbofan",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable 16GB heap reservation for Oilpan.
-BASE_FEATURE(kV8CppGCEnableLargerCage,
-             "V8CppGCEnableLargerCage",
-             kFeatureDefaultStateControlledByV8);
-
 BASE_FEATURE(kV8DelayMemoryReducer,
              "V8DelayMemoryReducer",
              base::FEATURE_ENABLED_BY_DEFAULT);
