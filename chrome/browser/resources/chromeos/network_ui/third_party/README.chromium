@@ -1,9 +1,9 @@
 Name: uPlot: A small, fast chart for time series, lines, areas, ohlc & bars
 Short Name: uPlot
 URL: https://github.com/leeoniya/uPlot/blob/master/dist
-Revision: a8854465fe44248980a675656ca544823d4fd01c
-Version: 1.6.21
-Date: 2022-08-8
+Revision: 2d13780998a9d6d7bc30eccf35a24f9eadd64425
+Version: 1.6.31
+Date: 2024-11-11
 License: MIT
 License File: LICENSE
 Security Critical: no
