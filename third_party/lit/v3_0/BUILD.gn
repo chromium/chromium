@@ -32,6 +32,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/components:build_ts",
     "//chrome/browser/resources/downloads:build_ts",
     "//chrome/browser/resources/extensions:build_ts",
+    "//chrome/browser/resources/family_link_user_internals:build_ts",
     "//chrome/browser/resources/feedback:build_ts",
     "//chrome/browser/resources/internals/user_education:build_ts",
     "//chrome/browser/resources/intro:build_ts",

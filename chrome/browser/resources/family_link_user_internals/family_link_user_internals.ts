@@ -2,14 +2,87 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/js/jstemplate_compiled.js';
-
+import {html, render} from '//resources/lit/v3_0/lit.rollup.js';
 import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
-interface Result {}
-interface BasicInfo {}
+interface Result {
+  reason: string;
+  result: string;
+  url: string;
+}
+
+interface DataEntry {
+  is_valid: boolean;
+  stat_name: string;
+  stat_value: string|boolean;
+}
+
+interface Section {
+  title: string;
+  data: DataEntry[];
+}
+
+interface BasicInfo {
+  sections: Section[];
+}
+
 type UserSettings = Record<string, any>;
+
+function getBasicInfoHtml(sections: Section[]) {
+  // clang-format off
+  return html`
+    ${sections.map((section, sectionIndex) => html`
+      <div class="section">
+        <h2>${section.title}</h2>
+        <table class="section-details">
+          ${section.data.map((item, dataIndex) => html`
+            <tr class="${item.is_valid ? '' : 'uninitialized'}"
+                ?highlighted="${
+                      shouldHighlight(item, sectionIndex, dataIndex)}">
+              <td class="detail" width=50%>${item.stat_name}</td>
+              <td class="value" width=50%>${item.stat_value}</td>
+            </tr>
+          `)}
+        </table>
+      </div>
+    `)}
+  `;
+  // clang-format on
+}
+
+function getUserSettingsHtml(pairs: Array<{key: string, value: string}>) {
+  if (pairs.length === 0) {
+    return html``;
+  }
+
+  // clang-format off
+  return html`
+    <h2>Family Link User Settings</h2>
+    <table class="section-details">
+      ${pairs.map(pair => html`
+        <tr>
+          <td>${pair.key}</td>
+          <td><pre>${pair.value}</pre></td>
+        </tr>
+      `)}
+    </table>`;
+  // clang-format on
+}
+
+function getFilteringResultsHtml(results: Result[]) {
+  // clang-format off
+  return html`
+    ${results.map(item => html`
+      <div class="filtering-results-entry">
+        <div class="url">${item.url}</div>
+        <span class="result">${item.result}</span>
+        <span class="reason">${item.reason}</span>
+      </div>
+    `)}
+  `;
+  // clang-format on
+}
 
 function initialize() {
   function submitURL(event: Event) {
@@ -26,34 +99,33 @@ function initialize() {
 
   getRequiredElement('try-url').addEventListener('submit', submitURL);
 
-  // Make the prototype jscontent element disappear.
-  jstProcess({}, getRequiredElement('filtering-results-container'));
-
   addWebUiListener('basic-info-received', receiveBasicInfo);
   addWebUiListener('user-settings-received', receiveUserSettings);
   addWebUiListener('filtering-result-received', receiveFilteringResult);
 
   chrome.send('registerForEvents');
-
   chrome.send('getBasicInfo');
 }
 
-function highlightIfChanged(
-    node: HTMLElement, oldVal: string, newVal: boolean|string) {
-  function clearHighlight() {
-    node.removeAttribute('highlighted');
+let previousSections: Section[] = [];
+
+function shouldHighlight(
+    item: DataEntry, sectionIndex: number, dataIndex: number): boolean {
+  if (sectionIndex >= previousSections.length) {
+    return false;
   }
 
-  const oldStr = oldVal.toString();
-  const newStr = newVal.toString();
-  if (oldStr !== '' && oldStr !== newStr) {
-    node.onanimationend = clearHighlight;
-    node.setAttribute('highlighted', '');
+  if (dataIndex >= previousSections[sectionIndex]!.data.length) {
+    return false;
   }
+
+  return previousSections[sectionIndex]!.data[dataIndex]!.stat_value !==
+      item.stat_value;
 }
 
 function receiveBasicInfo(info: BasicInfo) {
-  jstProcess(new JsEvalContext(info), getRequiredElement('basic-info'));
+  render(getBasicInfoHtml(info.sections), getRequiredElement('basic-info'));
+  previousSections = info.sections;
 
   // Hack: Schedule another refresh after a while.
   setTimeout(function() {
@@ -61,14 +133,7 @@ function receiveBasicInfo(info: BasicInfo) {
   }, 5000);
 }
 
-function receiveUserSettings(settings: UserSettings|null) {
-  if (settings === null) {
-    getRequiredElement('user-settings').classList.add('hidden');
-    return;
-  }
-
-  getRequiredElement('user-settings').classList.remove('hidden');
-
+function receiveUserSettings(settings: UserSettings) {
   // The user settings are returned as an object, flatten them into a
   // list of key/value pairs for easier consumption by the HTML template.
   // This is not done recursively, values are passed as their JSON
@@ -77,9 +142,7 @@ function receiveUserSettings(settings: UserSettings|null) {
     return {key, value: JSON.stringify(settings[key], null, 2)};
   });
 
-  jstProcess(
-      new JsEvalContext({settings: kvpairs}),
-      getRequiredElement('user-settings'));
+  render(getUserSettingsHtml(kvpairs), getRequiredElement('user-settings'));
 }
 
 /**
@@ -111,14 +174,11 @@ function receiveFilteringResult(result: Result) {
   // the scrollbar alone.
   const shouldScrollDown = isScrolledToBottom(container);
 
-  jstProcess(new JsEvalContext({results: filteringResults}), container);
+  render(getFilteringResultsHtml(filteringResults), container);
 
   if (shouldScrollDown) {
     scrollToBottom(container);
   }
 }
-
-// Export on window since it is called with jseval.
-Object.assign(window, {highlightIfChanged});
 
 document.addEventListener('DOMContentLoaded', initialize);
