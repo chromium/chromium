@@ -83,10 +83,10 @@ void FedCmAccountSelectionView::ShowDialogWidget() {
       browser->tab_strip_model()->GetActiveWebContents() != web_contents()) {
     // This is unexpected since we should never reach this codepath when the
     // WebContents is not the active one. Dump to get debug info on when this
-    // happens, and do not show the widget in this case.
+    // happens.
     base::debug::DumpWithoutCrashing();
-    return;
   }
+
   input_protector_->VisibilityChanged(true);
   GetDialogWidget()->Show();
   // An active widget would steal the focus when displayed, this would lead
@@ -206,11 +206,6 @@ bool FedCmAccountSelectionView::Show(
   if (create_view) {
     account_selection_view_ = CreateAccountSelectionView(
         rp_for_display_, idp_title, rp_context, rp_mode, has_modal_support);
-
-    if (!account_selection_view_) {
-      delegate_->OnDismiss(DismissReason::kOther);
-      return false;
-    }
   }
 
   if (sign_in_mode == Account::SignInMode::kAuto) {
@@ -408,11 +403,6 @@ bool FedCmAccountSelectionView::ShowFailureDialog(
     account_selection_view_ = CreateAccountSelectionView(
         rp_for_display_, base::UTF8ToUTF16(idp_etld_plus_one), rp_context,
         rp_mode, has_modal_support);
-
-    if (!account_selection_view_) {
-      delegate_->OnDismiss(DismissReason::kOther);
-      return false;
-    }
   }
 
   account_selection_view_->ShowFailureDialog(
@@ -474,11 +464,6 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
     account_selection_view_ = CreateAccountSelectionView(
         rp_for_display_, base::UTF8ToUTF16(idp_etld_plus_one), rp_context,
         rp_mode, has_modal_support);
-
-    if (!account_selection_view_) {
-      delegate_->OnDismiss(DismissReason::kOther);
-      return false;
-    }
   }
 
   account_selection_view_->ShowErrorDialog(
@@ -527,11 +512,6 @@ bool FedCmAccountSelectionView::ShowLoadingDialog(
         base::UTF8ToUTF16(rp_for_display), base::UTF8ToUTF16(idp_etld_plus_one),
         rp_context, rp_mode,
         /*has_modal_support=*/true);
-
-    if (!account_selection_view_) {
-      delegate_->OnDismiss(DismissReason::kOther);
-      return false;
-    }
   }
 
   account_selection_view_->ShowLoadingDialog();
@@ -606,14 +586,6 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateAccountSelectionView(
     blink::mojom::RpMode rp_mode,
     bool has_modal_support) {
   content::WebContents* web_contents = delegate_->GetWebContents();
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
-
-  // Reject the API if the browser is not found.
-  // TODO(crbug.com/342216390): It is unclear why there are callers attempting
-  // FedCM when some of these checks fail.
-  if (!browser) {
-    return nullptr;
-  }
 
   if (rp_mode == blink::mojom::RpMode::kActive && has_modal_support) {
     dialog_type_ = DialogType::MODAL;
@@ -624,8 +596,7 @@ AccountSelectionViewBase* FedCmAccountSelectionView::CreateAccountSelectionView(
   }
 
   dialog_type_ = DialogType::BUBBLE;
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  views::View* anchor_view = browser_view->contents_web_view();
+  views::View* anchor_view = tab_->GetBrowserWindowInterface()->GetWebView();
 
   return new AccountSelectionBubbleView(
       rp_for_display, idp_title, rp_context, web_contents, anchor_view,
