@@ -1576,38 +1576,7 @@ class TabListMediator implements TabListNotificationHandler {
 
     void hardCleanup() {
         assert !mShowingTabs;
-        if (!mCurrentTabGroupModelFilterSupplier.get().isIncognitoBranded()
-                && mOriginalProfile != null
-                && PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mOriginalProfile)
-                && (PriceTrackingFeatures.isPriceDropIphEnabled(mOriginalProfile)
-                        || PriceTrackingFeatures.isPriceDropBadgeEnabled(mOriginalProfile))) {
-            saveSeenPriceDrops();
-        }
         sViewedTabIds.clear();
-    }
-
-    /**
-     * While leaving the tab switcher grid this update whether a tab's current price drop has or has
-     * not been seen.
-     */
-    // TODO(crbug.com/343206772): Move code to TabSwitcherPane.
-    private void saveSeenPriceDrops() {
-        // The filter determines what's shown in the tab list.
-        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
-        // The filter's underlying model should have any tab that was viewed.
-        TabModel model = filter.getTabModel();
-        for (Integer tabId : sViewedTabIds) {
-            Tab tab = model.getTabById(tabId);
-            if (tab != null && !filter.isTabInTabGroup(tab)) {
-                ShoppingPersistedTabData.from(
-                        tab,
-                        (sptd) -> {
-                            if (sptd != null && sptd.getPriceDrop() != null) {
-                                sptd.setIsCurrentPriceDropSeen(true);
-                            }
-                        });
-            }
-        }
     }
 
     private void updateTab(int index, Tab tab, boolean isUpdatingId, boolean quickMode) {

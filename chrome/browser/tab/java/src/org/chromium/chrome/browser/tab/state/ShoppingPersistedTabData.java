@@ -64,7 +64,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     private static final String DISPLAY_TIME_MS_PARAM = "price_tracking_display_time_ms";
     private static final String RETURN_EMPTY_PRICE_DROPS_UNTIL_INIT_PARAM =
             "return_empty_price_drops_until_init";
-    private static final String CHECK_IF_PRICE_DROP_IS_SEEN_PARAM = "check_if_price_drop_is_seen";
     private static final String METRICS_IDENTIFIER_PREFIX = "NavigationComplete";
 
     private static final Class<ShoppingPersistedTabData> USER_DATA_KEY =
@@ -161,7 +160,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         public String currencyCode;
         public String offerId;
         public GURL gurl;
-        public boolean isCurrentPriceDropSeen;
         public String productTitle;
         public GURL productImageUrl;
 
@@ -666,9 +664,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         BuyableProduct buyableProduct = priceTrackingData.getBuyableProduct();
 
         if (hasPriceUpdate(priceTrackingData)) {
-            if (hasPriceChange(productUpdate)) {
-                setIsCurrentPriceDropSeen(false);
-            }
             setPriceMicros(productUpdate.getNewPrice().getAmountMicros());
             setPreviousPriceMicros(productUpdate.getOldPrice().getAmountMicros());
             setCurrencyCode(productUpdate.getOldPrice().getCurrencyCode());
@@ -868,23 +863,11 @@ public class ShoppingPersistedTabData extends PersistedTabData {
     }
 
     /**
-     * Sets whether the current price drop has been viewed in the tab switcher grid.
-     * @param isSeen  is true if the current price drop has been seen.
-     */
-    public void setIsCurrentPriceDropSeen(boolean isSeen) {
-        if (isCheckIfPriceDropIsSeenEnabled()) {
-            mPriceDropData.isCurrentPriceDropSeen = isSeen;
-            save();
-        }
-    }
-
-    /**
-     * @return returns whether the current price drop has been seen.
+     * On a deprecation path as related project was discontinued TODO(crbug.com/378879373) remove
+     * code outside of ShoppingPersistedTabData which consumes getIsCurrentPriceDropSeen and remove
+     * getIsCurrentPriceDropSeen.
      */
     public boolean getIsCurrentPriceDropSeen() {
-        if (isCheckIfPriceDropIsSeenEnabled()) {
-            return mPriceDropData.isCurrentPriceDropSeen;
-        }
         return false;
     }
 
@@ -922,8 +905,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                         .setPriceMicros(mPriceDropData.priceMicros)
                         .setPreviousPriceMicros(mPriceDropData.previousPriceMicros)
                         .setLastUpdatedMs(getLastUpdatedMs())
-                        .setLastPriceChangeTimeMs(mLastPriceChangeTimeMs)
-                        .setIsCurrentPriceDropSeen(mPriceDropData.isCurrentPriceDropSeen);
+                        .setLastPriceChangeTimeMs(mLastPriceChangeTimeMs);
         if (mPriceDropData.offerId != null) {
             builder.setMainOfferId(mPriceDropData.offerId);
         }
@@ -968,8 +950,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             mPriceDropData.currencyCode = shoppingPersistedTabDataProto.getPriceCurrencyCode();
             mPriceDropData.gurl =
                     GURL.deserialize(shoppingPersistedTabDataProto.getSerializedGurl());
-            mPriceDropData.isCurrentPriceDropSeen =
-                    shoppingPersistedTabDataProto.getIsCurrentPriceDropSeen();
             mPriceDropData.productTitle = shoppingPersistedTabDataProto.getProductTitle();
             mPriceDropData.productImageUrl =
                     GURL.deserialize(shoppingPersistedTabDataProto.getProductImageUrl());
@@ -1044,19 +1024,6 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                     NINETY_DAYS_SECONDS);
         }
         return NINETY_DAYS_SECONDS;
-    }
-
-    /**
-     * @return true if checking if a price drop is spotted is enabled.
-     */
-    public static boolean isCheckIfPriceDropIsSeenEnabled() {
-        if (FeatureList.isInitialized()) {
-            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                    CHECK_IF_PRICE_DROP_IS_SEEN_PARAM,
-                    false);
-        }
-        return false;
     }
 
     private static @DelayedInitMethod int getDelayedInitMethod() {

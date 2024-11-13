@@ -110,7 +110,6 @@ public class ShoppingPersistedTabDataTest {
         shoppingPersistedTabData.setCurrencyCode(
                 ShoppingPersistedTabDataTestUtils.GREAT_BRITAIN_CURRENCY_CODE);
         shoppingPersistedTabData.setPriceDropGurl(new GURL("https://www.google.com"));
-        shoppingPersistedTabData.setIsCurrentPriceDropSeen(true);
         shoppingPersistedTabData.setProductTitle(
                 ShoppingPersistedTabDataTestUtils.FAKE_PRODUCT_TITLE);
         shoppingPersistedTabData.setProductImageUrl(
@@ -125,7 +124,6 @@ public class ShoppingPersistedTabDataTest {
         Assert.assertEquals(
                 ShoppingPersistedTabDataTestUtils.GREAT_BRITAIN_CURRENCY_CODE,
                 deserialized.getCurrencyCode());
-        Assert.assertTrue(deserialized.getIsCurrentPriceDropSeen());
         Assert.assertEquals(
                 new GURL("https://www.google.com"), deserialized.getPriceDropDataForTesting().gurl);
         Assert.assertEquals(
@@ -1070,109 +1068,6 @@ public class ShoppingPersistedTabDataTest {
         protected boolean needsUpdate() {
             return false;
         }
-    }
-
-    @SmallTest
-    @Test
-    @EnableFeatures(ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":check_if_price_drop_is_seen/true")
-    public void testIsCurrentPriceDropSeen_PriceChange() throws TimeoutException {
-        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeMock,
-                HintsProto.OptimizationType.PRICE_TRACKING,
-                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
-                        .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
-        Tab tab =
-                ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
-                        ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
-        ShoppingPersistedTabData shoppingPersistedTabData =
-                ShoppingPersistedTabDataTestUtils
-                        .createShoppingPersistedTabDataWithPriceDropOnUiThread(tab);
-
-        CallbackHelper callbackHelper = new CallbackHelper();
-        int count = callbackHelper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    shoppingPersistedTabData.setIsCurrentPriceDropSeen(true);
-                    shoppingPersistedTabData.setPriceMicros(
-                            ShoppingPersistedTabDataTestUtils.LOW_PRICE_MICROS);
-                    tab.getUserDataHost()
-                            .setUserData(ShoppingPersistedTabData.class, shoppingPersistedTabData);
-                    ShoppingPersistedTabData.from(
-                            tab,
-                            (sptd) -> {
-                                Assert.assertFalse(sptd.getIsCurrentPriceDropSeen());
-                                callbackHelper.notifyCalled();
-                            });
-                });
-        callbackHelper.waitForCallback(count);
-    }
-
-    @SmallTest
-    @Test
-    @EnableFeatures(ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":check_if_price_drop_is_seen/true")
-    public void testIsCurrentPriceDropSeen_CurrencyChange() throws TimeoutException {
-        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeMock,
-                HintsProto.OptimizationType.PRICE_TRACKING,
-                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
-                        .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
-        Tab tab =
-                ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
-                        ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
-        ShoppingPersistedTabData shoppingPersistedTabData =
-                ShoppingPersistedTabDataTestUtils
-                        .createShoppingPersistedTabDataWithPriceDropOnUiThread(tab);
-
-        CallbackHelper callbackHelper = new CallbackHelper();
-        int count = callbackHelper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    shoppingPersistedTabData.setIsCurrentPriceDropSeen(true);
-                    shoppingPersistedTabData.setCurrencyCode(
-                            ShoppingPersistedTabDataTestUtils.JAPAN_CURRENCY_CODE);
-                    tab.getUserDataHost()
-                            .setUserData(ShoppingPersistedTabData.class, shoppingPersistedTabData);
-                    ShoppingPersistedTabData.from(
-                            tab,
-                            (sptd) -> {
-                                Assert.assertFalse(sptd.getIsCurrentPriceDropSeen());
-                                callbackHelper.notifyCalled();
-                            });
-                });
-        callbackHelper.waitForCallback(count);
-    }
-
-    @SmallTest
-    @Test
-    @EnableFeatures(ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":check_if_price_drop_is_seen/true")
-    public void testIsCurrentPriceDropSeen_NoPriceChange() throws TimeoutException {
-        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeMock,
-                HintsProto.OptimizationType.PRICE_TRACKING,
-                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
-                        .BUYABLE_PRODUCT_AND_PRODUCT_UPDATE);
-        Tab tab =
-                ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
-                        ShoppingPersistedTabDataTestUtils.TAB_ID, mProfileMock);
-        ShoppingPersistedTabData shoppingPersistedTabData =
-                ShoppingPersistedTabDataTestUtils
-                        .createShoppingPersistedTabDataWithPriceDropOnUiThread(tab);
-
-        CallbackHelper callbackHelper = new CallbackHelper();
-        int count = callbackHelper.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    shoppingPersistedTabData.setIsCurrentPriceDropSeen(true);
-                    tab.getUserDataHost()
-                            .setUserData(ShoppingPersistedTabData.class, shoppingPersistedTabData);
-                    ShoppingPersistedTabData.from(
-                            tab,
-                            (sptd) -> {
-                                Assert.assertTrue(sptd.getIsCurrentPriceDropSeen());
-                                callbackHelper.notifyCalled();
-                            });
-                });
-        callbackHelper.waitForCallback(count);
     }
 
     private static void registerObserverSupplier(
