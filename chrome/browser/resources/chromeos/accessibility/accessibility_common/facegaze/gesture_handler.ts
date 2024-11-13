@@ -16,6 +16,7 @@ import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 import {BubbleController} from './bubble_controller.js';
 import {FacialGesture} from './facial_gestures.js';
 import {GestureDetector} from './gesture_detector.js';
+import {GestureTimer} from './gesture_timer.js';
 import {MouseLongClickMacro} from './macros/mouse_long_click_macro.js';
 import {MouseScrollMacro} from './macros/mouse_scroll_macro.js';
 import {ResetCursorMacro} from './macros/reset_cursor_macro.js';
@@ -37,9 +38,12 @@ export class GestureHandler {
   private gesturesToKeyCombos_: Map<FacialGesture, KeyCombination> = new Map();
   private gestureToMacroName_: Map<FacialGesture, MacroName> = new Map();
   private gestureToConfidence_: Map<FacialGesture, number> = new Map();
+  // TODO (b:378511358): Use Date objects instead of numbers for clarity and
+  // consistency.
   private gestureLastRecognized_: Map<FacialGesture, number> = new Map();
   private mouseController_: MouseController;
   private bubbleController_: BubbleController;
+  private gestureTimer_: GestureTimer;
   private repeatDelayMs_ = GestureHandler.DEFAULT_REPEAT_DELAY_MS;
   private prefsListener_: (prefs: any) => void;
   private toggleInfoListener_: (enabled: boolean) => void;
@@ -60,6 +64,7 @@ export class GestureHandler {
     this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
     this.toggleInfoListener_ = enabled =>
         GestureDetector.toggleSendGestureDetectionInfo(enabled);
+    this.gestureTimer_ = new GestureTimer();
   }
 
   start(): void {
@@ -77,6 +82,7 @@ export class GestureHandler {
     chrome.accessibilityPrivate.onToggleGestureInfoForSettings.removeListener(
         this.toggleInfoListener_);
     this.previousGestures_ = [];
+    this.gestureTimer_.resetAll();
     this.gestureLastRecognized_.clear();
     // Executing these macros clears their state, so that we aren't left in a
     // mouse down or key down state.
@@ -235,17 +241,26 @@ export class GestureHandler {
   private gesturesToMacros_(gestures: FacialGesture[]): DetectMacrosResult {
     const macroNames: Map<MacroName, FacialGesture> = new Map();
     for (const gesture of gestures) {
-      const currentTime = new Date().getTime();
+      const currentTime = new Date();
+      // Check if this duration is valid before marking this gesture, otherwise
+      // the first gesture frame will instantly trigger the gesture.
+      const isDurationValid =
+          this.gestureTimer_.isDurationValid(gesture, currentTime);
+      this.gestureTimer_.mark(gesture, currentTime);
+      if (!isDurationValid) {
+        continue;
+      }
+
       if (this.gestureLastRecognized_.has(gesture) &&
-              currentTime - this.gestureLastRecognized_.get(gesture)! <
-                  this.repeatDelayMs_ ||
+              currentTime.getTime() - this.gestureLastRecognized_.get(gesture)!
+                  < this.repeatDelayMs_ ||
           this.macrosToCompleteLater_.has(gesture)) {
         // Avoid responding to the same macro repeatedly in too short a time
         // or if we are still waiting to complete them later (they shouldn't be
         // repeated until completed).
         continue;
       }
-      this.gestureLastRecognized_.set(gesture, currentTime);
+      this.gestureLastRecognized_.set(gesture, currentTime.getTime());
       const name = this.gestureToMacroName_.get(gesture);
       if (name) {
         macroNames.set(name, gesture);
@@ -287,6 +302,9 @@ export class GestureHandler {
     const macrosForLater: Macro[] = [];
     previousGestures.forEach(previousGesture => {
       if (!gestures.includes(previousGesture)) {
+        // Reset timer for gesture when it is stopped.
+        this.gestureTimer_.reset(previousGesture);
+
         // The gesture has stopped being recognized. Run the second half of this
         // macro, and stop saving it.
         const entry = this.macrosToCompleteLater_.get(previousGesture);

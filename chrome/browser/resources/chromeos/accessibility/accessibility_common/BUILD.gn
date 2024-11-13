@@ -66,6 +66,7 @@ ts_modules = [
   "facegaze/web_cam_face_landmarker.ts",
   "facegaze/gesture_detector.ts",
   "facegaze/gesture_handler.ts",
+  "facegaze/gesture_timer.ts",
   "facegaze/metrics_utils.ts",
   "facegaze/mouse_controller.ts",
   "facegaze/scroll_mode_controller.ts",

@@ -26,6 +26,8 @@ class Config {
     this.speeds = {up: 20, down: 20, left: 20, right: 20};
     /** @type {number} */
     this.repeatDelayMs = undefined;
+    /** @type {number} */
+    this.minDurationMs = undefined;
     /** @type {boolean} */
     this.cursorControlEnabled = true;
     /** @type {boolean} */
@@ -104,6 +106,15 @@ class Config {
    */
   withRepeatDelayMs(repeatDelayMs) {
     this.repeatDelayMs = repeatDelayMs;
+    return this;
+  }
+
+  /**
+   * @param {number} minDurationMs
+   * @return {!Config}
+   */
+  withMinDurationMs(minDurationMs) {
+    this.minDurationMs = minDurationMs;
     return this;
   }
 
@@ -324,6 +335,16 @@ FaceGazeTestBase = class extends E2ETestBase {
 
     if (config.repeatDelayMs !== undefined) {
       faceGaze.gestureHandler_.repeatDelayMs_ = config.repeatDelayMs;
+    }
+
+    // If no min duration is set then by default, set the timer to recognize
+    // all gestures instantly without requiring a duration.
+    if (config.minDurationMs === undefined) {
+      faceGaze.gestureHandler_.gestureTimer_.setGestureDurationForTesting(
+          false);
+    } else {
+      faceGaze.gestureHandler_.gestureTimer_.minDurationMs_ =
+          config.minDurationMs;
     }
 
     // Increase the bubble controller timeout to avoid flaky behavior when

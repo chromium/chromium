@@ -2531,3 +2531,226 @@ AX_TEST_F('FaceGazeTest', 'BlinkDoesNotTriggerEyeSquint', async function() {
               MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.3));
   assertEquals(result.macros.length, 1);
 });
+
+AX_TEST_F(
+    'FaceGazeTest', 'InvalidTimeDurationGestureNotDetected', async function() {
+      const gestureToMacroName =
+          new Map().set(FacialGesture.EYES_BLINK, MacroName.MOUSE_CLICK_LEFT);
+      const gestureToConfidence = new Map().set(FacialGesture.EYES_BLINK, 0.6);
+
+      // Set min duration very long so no duration should trigger action.
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withGestureToMacroName(gestureToMacroName)
+                         .withGestureToConfidence(gestureToConfidence)
+                         .withRepeatDelayMs(0)
+                         .withMinDurationMs(30 * 1000);
+      await this.configureFaceGaze(config);
+
+      const gestureHandler = this.getFaceGaze().gestureHandler_;
+
+      let result = new MockFaceLandmarkerResult()
+                       .addGestureWithConfidence(
+                           MediapipeFacialGesture.EYE_BLINK_LEFT, 0.6)
+                       .addGestureWithConfidence(
+                           MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.6);
+      this.processFaceLandmarkerResult(result);
+      assertEquals(1, gestureHandler.gestureTimer_.gestureStart_.size);
+      this.assertNumMouseEvents(0);
+
+      // Second landmarker result will give the gesture a duration but it should
+      // be too short to trigger the action.
+      result = new MockFaceLandmarkerResult()
+                   .addGestureWithConfidence(
+                       MediapipeFacialGesture.EYE_BLINK_LEFT, 0.6)
+                   .addGestureWithConfidence(
+                       MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.6);
+      this.processFaceLandmarkerResult(result);
+      assertEquals(1, gestureHandler.gestureTimer_.gestureStart_.size);
+      this.assertNumMouseEvents(0);
+    });
+
+AX_TEST_F('FaceGazeTest', 'ValidTimeDurationGestureDetected', async function() {
+  const gestureToMacroName =
+      new Map().set(FacialGesture.EYES_BLINK, MacroName.MOUSE_CLICK_LEFT);
+  const gestureToConfidence = new Map().set(FacialGesture.EYES_BLINK, 0.6);
+
+  // Set min duration very short so actions with any duration should be
+  // recognized. It is possible for a gesture to execute so quickly during a
+  // test that the duration appears to be 0 ms, so set the min duration
+  // threshold to -1 to ensure gestures with duration of 0 ms are recognized.
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence)
+                     .withRepeatDelayMs(0)
+                     .withMinDurationMs(-1);
+  await this.configureFaceGaze(config);
+
+  const gestureHandler = this.getFaceGaze().gestureHandler_;
+  assertEquals(-1, gestureHandler.gestureTimer_.minDurationMs_);
+
+  let result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.EYE_BLINK_LEFT, 0.6)
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.6);
+  this.processFaceLandmarkerResult(result);
+  assertEquals(1, gestureHandler.gestureTimer_.gestureStart_.size);
+  this.assertNumMouseEvents(0);
+
+  // Second landmarker result will give the gesture a duration, which should
+  // trigger the action since the min duration is set to 0.
+  result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.EYE_BLINK_LEFT, 0.6)
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.6);
+  this.processFaceLandmarkerResult(result);
+  assertEquals(1, gestureHandler.gestureTimer_.gestureStart_.size);
+  this.assertNumMouseEvents(2);
+
+  // Check that the start times are cleared if no gestures are detected at any
+  // confidence levels.
+  result = new MockFaceLandmarkerResult();
+  this.processFaceLandmarkerResult(result);
+  assertEquals(0, gestureHandler.gestureTimer_.gestureStart_.size);
+  this.assertNumMouseEvents(2);
+});
+
+AX_TEST_F(
+    'FaceGazeTest', 'ValidTimeDurationGestureDetectedAfterInvalid',
+    async function() {
+      const gestureToMacroName =
+          new Map().set(FacialGesture.EYES_BLINK, MacroName.MOUSE_CLICK_LEFT);
+      const gestureToConfidence = new Map().set(FacialGesture.EYES_BLINK, 0.6);
+
+      // Set min duration very short so actions with any duration should be
+      // recognized. It is possible for a gesture to execute so quickly during a
+      // test that the duration appears to be 0 ms, so set the min duration
+      // threshold to -1 to ensure gestures with duration of 0 ms are
+      // recognized.
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withGestureToMacroName(gestureToMacroName)
+                         .withGestureToConfidence(gestureToConfidence)
+                         .withRepeatDelayMs(0)
+                         .withMinDurationMs(-1);
+      await this.configureFaceGaze(config);
+      const gestureHandler = this.getFaceGaze().gestureHandler_;
+      assertEquals(-1, gestureHandler.gestureTimer_.minDurationMs_);
+
+      let result = new MockFaceLandmarkerResult()
+                       .addGestureWithConfidence(
+                           MediapipeFacialGesture.EYE_BLINK_LEFT, 0.6)
+                       .addGestureWithConfidence(
+                           MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.6);
+      this.processFaceLandmarkerResult(result);
+      assertEquals(1, gestureHandler.gestureTimer_.gestureStart_.size);
+      this.assertNumMouseEvents(0);
+
+      // Clear out the landmarker.
+      result = new MockFaceLandmarkerResult()
+                   .addGestureWithConfidence(
+                       MediapipeFacialGesture.EYE_BLINK_LEFT, 0.0)
+                   .addGestureWithConfidence(
+                       MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.0);
+      this.processFaceLandmarkerResult(result);
+      assertEquals(0, gestureHandler.gestureTimer_.gestureStart_.size);
+      this.assertNumMouseEvents(0);
+
+      // Start a new gesture.
+      result = new MockFaceLandmarkerResult()
+                   .addGestureWithConfidence(
+                       MediapipeFacialGesture.EYE_BLINK_LEFT, 0.6)
+                   .addGestureWithConfidence(
+                       MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.6);
+      this.processFaceLandmarkerResult(result);
+      assertEquals(1, gestureHandler.gestureTimer_.gestureStart_.size);
+      this.assertNumMouseEvents(0);
+
+      // This landmarker result should give the gesture a duration and trigger a
+      // mouse click.
+      result = new MockFaceLandmarkerResult()
+                   .addGestureWithConfidence(
+                       MediapipeFacialGesture.EYE_BLINK_LEFT, 0.6)
+                   .addGestureWithConfidence(
+                       MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.6);
+      this.processFaceLandmarkerResult(result);
+      assertEquals(1, gestureHandler.gestureTimer_.gestureStart_.size);
+      this.assertNumMouseEvents(2);
+    });
+
+AX_TEST_F(
+    'FaceGazeTest', 'ValidTimeDurationGestureTriggersActionMultiple',
+    async function() {
+      const gestureToMacroName =
+          new Map().set(FacialGesture.EYES_BLINK, MacroName.MOUSE_CLICK_LEFT);
+      const gestureToConfidence = new Map().set(FacialGesture.EYES_BLINK, 0.6);
+
+      // Set min duration very short so actions with any duration should be
+      // recognized. It is possible for a gesture to execute so quickly during a
+      // test that the duration appears to be 0 ms, so set the min duration
+      // threshold to -1 to ensure gestures with duration of 0 ms are
+      // recognized.
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withGestureToMacroName(gestureToMacroName)
+                         .withGestureToConfidence(gestureToConfidence)
+                         .withRepeatDelayMs(0)
+                         .withMinDurationMs(-1);
+      await this.configureFaceGaze(config);
+      const gestureHandler = this.getFaceGaze().gestureHandler_;
+      assertEquals(-1, gestureHandler.gestureTimer_.minDurationMs_);
+
+      let result = new MockFaceLandmarkerResult()
+                       .addGestureWithConfidence(
+                           MediapipeFacialGesture.EYE_BLINK_LEFT, 0.6)
+                       .addGestureWithConfidence(
+                           MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.6);
+      this.processFaceLandmarkerResult(result);
+      assertEquals(1, gestureHandler.gestureTimer_.gestureStart_.size);
+      this.assertNumMouseEvents(0);
+
+      // This landmarker result should give the gesture a duration and trigger a
+      // mouse click.
+      result = new MockFaceLandmarkerResult()
+                   .addGestureWithConfidence(
+                       MediapipeFacialGesture.EYE_BLINK_LEFT, 0.6)
+                   .addGestureWithConfidence(
+                       MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.6);
+      this.processFaceLandmarkerResult(result);
+      assertEquals(1, gestureHandler.gestureTimer_.gestureStart_.size);
+      this.assertNumMouseEvents(2);
+
+      // Clear out the landmarker result.
+      result = new MockFaceLandmarkerResult()
+                   .addGestureWithConfidence(
+                       MediapipeFacialGesture.EYE_BLINK_LEFT, 0.0)
+                   .addGestureWithConfidence(
+                       MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.0);
+      this.processFaceLandmarkerResult(result);
+      assertEquals(0, gestureHandler.gestureTimer_.gestureStart_.size);
+      this.assertNumMouseEvents(2);
+
+      // Start a new gesture.
+      result = new MockFaceLandmarkerResult()
+                   .addGestureWithConfidence(
+                       MediapipeFacialGesture.EYE_BLINK_LEFT, 0.6)
+                   .addGestureWithConfidence(
+                       MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.6);
+      this.processFaceLandmarkerResult(result);
+      assertEquals(1, gestureHandler.gestureTimer_.gestureStart_.size);
+      this.assertNumMouseEvents(2);
+
+      // This landmarker result should give the gesture a duration and trigger a
+      // mouse click.
+      result = new MockFaceLandmarkerResult()
+                   .addGestureWithConfidence(
+                       MediapipeFacialGesture.EYE_BLINK_LEFT, 0.6)
+                   .addGestureWithConfidence(
+                       MediapipeFacialGesture.EYE_BLINK_RIGHT, 0.6);
+      this.processFaceLandmarkerResult(result);
+      assertEquals(1, gestureHandler.gestureTimer_.gestureStart_.size);
+      this.assertNumMouseEvents(4);
+    });

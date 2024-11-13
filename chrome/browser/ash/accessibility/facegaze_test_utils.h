@@ -181,6 +181,7 @@ class FaceGazeTestUtils {
     bool use_landmark_weights() const { return use_landmark_weights_; }
     bool use_velocity_threshold() const { return use_velocity_threshold_; }
     bool dialog_accepted() const { return dialog_accepted_; }
+    bool use_gesture_duration() const { return use_gesture_duration_; }
     const std::optional<base::flat_map<FaceGazeGesture, MacroName>>&
     gestures_to_macros() const {
       return gestures_to_macros_;
@@ -205,6 +206,7 @@ class FaceGazeTestUtils {
     bool use_landmark_weights_;
     bool use_velocity_threshold_;
     bool dialog_accepted_;
+    bool use_gesture_duration_;
 
     // Optional properties.
     std::optional<base::flat_map<FaceGazeGesture, MacroName>>
@@ -292,6 +294,9 @@ class FaceGazeTestUtils {
 
   // Sets the gesture repeat delay threshold.
   void SetGestureRepeatDelayMs(int delay);
+
+  // Sets whether a gesture duration should be required to recognize a gesture.
+  void SetGestureDuration(bool use_duration);
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };

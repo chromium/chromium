@@ -66,6 +66,17 @@ class FaceGazeTestSupport {
     this.notifyCcTests_();
   }
 
+  /**
+   * Set to false to allow the GestureTimer to recognize a gesture without
+   * requiring a valid duration.
+   * @param {boolean} useDuration
+   */
+  setGestureDuration(useDuration) {
+    this.getGestureHandler_().gestureTimer_.setGestureDurationForTesting(
+        useDuration);
+    this.notifyCcTests_();
+  }
+
   /** @param {boolean} useWeights */
   setLandmarkWeights(useWeights) {
     this.getMouseController_().setLandmarkWeightsForTesting(useWeights);
