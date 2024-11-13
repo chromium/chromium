@@ -198,7 +198,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
         mActivityTestRule.executeJavaScriptAndWaitForResult(
                 mAwContents, mContentsClient, "location.href = '404.html'; ");
 
-        data = mListener.waitForOnPostMessage();
+        data = getNextMessageIgnoreFCP(mListener);
         String navigationId = new JSONObject(data.getAsString()).getString("id");
         assertNavigationMessage(
                 data,
@@ -215,7 +215,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
         // The previous page can be stored into the BFCache. If the BFCache
         // is not enabled, the original page will be deleted.
         if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_BACK_FORWARD_CACHE)) {
-            data = mListener.waitForOnPostMessage();
+            data = getNextMessageIgnoreFCP(mListener);
             Assert.assertEquals(page3ReplyProxy, data.mReplyProxy);
             assertNavigationMessageType(data, "PAGE_DELETED");
         }
@@ -346,8 +346,6 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 /* previousPageDeleted */ !AwFeatureMap.isEnabled(
                         AwFeatures.WEBVIEW_BACK_FORWARD_CACHE),
                 /* pageLoadEnd */ true);
-
-        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
     }
 
     // Test navigation messages when navigating to a URL that redirects.
@@ -448,7 +446,11 @@ public class NavigationListenerTest extends AwParameterizedTest {
         assertNavigationMessageType(data, "PAGE_LOAD_END");
         Assert.assertEquals(page2ReplyProxy, data.mReplyProxy);
 
-        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
+        if (!mListener.hasNoMoreOnPostMessage()) {
+            data = mListener.waitForOnPostMessage();
+            assertNavigationMessageType(data, "FIRST_CONTENTFUL_PAINT");
+            Assert.assertEquals(page2ReplyProxy, data.mReplyProxy);
+        }
     }
 
     // Test navigation messages when navigating to about:blank.
@@ -493,8 +495,6 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 /* statusCode */ 200,
                 /* previousPageDeleted */ false,
                 /* pageLoadEnd */ false);
-
-        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
     }
 
     // Test navigation messages when navigating with restoreState().
@@ -582,8 +582,16 @@ public class NavigationListenerTest extends AwParameterizedTest {
         assertNavigationMessageType(data, "PAGE_LOAD_END");
         Assert.assertEquals(page4ReplyProxy, data.mReplyProxy);
 
-        Assert.assertTrue(newListener.hasNoMoreOnPostMessage());
-        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
+        if (!newListener.hasNoMoreOnPostMessage()) {
+            data = newListener.waitForOnPostMessage();
+            assertNavigationMessageType(data, "FIRST_CONTENTFUL_PAINT");
+            Assert.assertEquals(page4ReplyProxy, data.mReplyProxy);
+        }
+        if (!mListener.hasNoMoreOnPostMessage()) {
+            data = mListener.waitForOnPostMessage();
+            assertNavigationMessageType(data, "FIRST_CONTENTFUL_PAINT");
+            Assert.assertEquals(page2ReplyProxy, data.mReplyProxy);
+        }
     }
 
     // Test navigation messages when navigating with loadDataWithBaseURL().
@@ -621,8 +629,6 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 /* statusCode */ 200,
                 /* previousPageDeleted */ true,
                 /* pageLoadEnd */ true);
-
-        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
     }
 
     // Test navigation messages for navigations that get intercepted.
@@ -686,8 +692,6 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 /* previousPageDeleted */ !AwFeatureMap.isEnabled(
                         AwFeatures.WEBVIEW_BACK_FORWARD_CACHE),
                 /* pageLoadEnd */ true);
-
-        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
     }
 
     // Test the navigation messages for navigations that get overridden.
@@ -825,8 +829,6 @@ public class NavigationListenerTest extends AwParameterizedTest {
                         /* previousPageDeleted */ true,
                         /* pageLoadEnd */ true);
         Assert.assertNotEquals(page2ReplyProxy, currentPageReplyProxy);
-
-        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
     }
 
     // Test the navigation messages on history navigations with BFCache enabled.
@@ -938,8 +940,6 @@ public class NavigationListenerTest extends AwParameterizedTest {
                         /* previousPageDeleted */ true,
                         /* pageLoadEnd */ true);
         Assert.assertNotEquals(page2ReplyProxy, currentPageReplyProxy);
-
-        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
     }
 
     // Test the navigation messages on history navigations with BFCache enabled, but the page was
@@ -979,7 +979,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 mAwContents, "foo", new String[] {"*"}, new TestWebMessageListener());
 
         // The `url` Page gets deleted as it's evicted from BFCache.
-        TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
+        TestWebMessageListener.Data data = getNextMessageIgnoreFCP(mListener);
         assertNavigationMessageType(data, "PAGE_DELETED");
         Assert.assertEquals(page2ReplyProxy, data.mReplyProxy);
 
@@ -1007,8 +1007,6 @@ public class NavigationListenerTest extends AwParameterizedTest {
                         /* previousPageDeleted */ false,
                         /* pageLoadEnd */ true);
         Assert.assertNotEquals(page2ReplyProxy, currentPageReplyProxy);
-
-        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
     }
 
     private String loadUrlFromPath(String path) throws Exception {
@@ -1115,7 +1113,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
             boolean previousPageDeleted,
             boolean loadEnds)
             throws Throwable {
-        TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
+        TestWebMessageListener.Data data = getNextMessageIgnoreFCP(mListener);
         JsReplyProxy previousPageReplyProxy = data.mReplyProxy;
         assertNavigationMessage(
                 data,
@@ -1131,7 +1129,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
         String navigationId = new JSONObject(data.getAsString()).getString("id");
 
         if (previousPageDeleted) {
-            data = mListener.waitForOnPostMessage();
+            data = getNextMessageIgnoreFCP(mListener);
             assertNavigationMessageType(data, "PAGE_DELETED");
             Assert.assertEquals(previousPageReplyProxy, data.mReplyProxy);
         }
@@ -1166,9 +1164,32 @@ public class NavigationListenerTest extends AwParameterizedTest {
             data = mListener.waitForOnPostMessage();
             assertNavigationMessageType(data, "PAGE_LOAD_END");
             Assert.assertEquals(currentPageReplyProxy, data.mReplyProxy);
+
+            // FIRST_CONTENTFUL_PAINT might be invoked if the page actually
+            // painted. This is optional sa some pages have empty content, and
+            // others just take a really long time to render. Wait for the next
+            // frame to increase likelihood of FCP.
+            mActivityTestRule.executeJavaScriptAndWaitForResult(
+                    mAwContents, mContentsClient, "await new Promise(requestAnimationFrame)");
+            if (!mListener.hasNoMoreOnPostMessage()) {
+                data = mListener.waitForOnPostMessage();
+                assertNavigationMessageType(data, "FIRST_CONTENTFUL_PAINT");
+                Assert.assertEquals(currentPageReplyProxy, data.mReplyProxy);
+            }
         }
 
         return currentPageReplyProxy;
+    }
+
+    private TestWebMessageListener.Data getNextMessageIgnoreFCP(TestWebMessageListener listener)
+            throws Throwable {
+        TestWebMessageListener.Data data = listener.waitForOnPostMessage();
+        if ("FIRST_CONTENTFUL_PAINT".equals(new JSONObject(data.getAsString()).getString("type"))) {
+            // An FCP message from a previous navigation only arrived now. Ignore it and get the
+            // next message.
+            data = listener.waitForOnPostMessage();
+        }
+        return data;
     }
 
     private JsReplyProxy setUpAndGetInitialProxy() throws Throwable {

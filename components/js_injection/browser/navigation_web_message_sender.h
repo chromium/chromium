@@ -86,6 +86,10 @@ class NavigationWebMessageSender
   // dispatched on `DOMContentLoaded()`.
   static const char kDOMContentLoadedMessage[];
 
+  // Indicates that the primary main frame just did a first contentful paint.
+  // This is dispatched on `OnFirstContentfulPaintInPrimaryMainFrame()`.
+  static const char kFirstContentfulPaintMessage[];
+
   // Indicates that the page has been deleted. This is dispatched from the class
   // destructor, since this is a PageUserData. If the page is BFCached, this
   // will be when the page is evicted. Otherwise, it will be when the primary
@@ -130,6 +134,7 @@ class NavigationWebMessageSender
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void OnFirstContentfulPaintInPrimaryMainFrame() override;
 
   void PostMessageWithType(std::string_view type);
   void PostMessage(base::Value::Dict message_dict);

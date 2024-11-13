@@ -1375,4 +1375,7 @@ interface LocalMainFrameHost {
   // Notify the browser that the draggable regions defined by the app-region
   // CSS property have been updated.
   DraggableRegionsChanged(array<DraggableRegion> regions);
+
+  // Called when the main frame did a first contentful paint.
+  OnFirstContentfulPaint();
 };
