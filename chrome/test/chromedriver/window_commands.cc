@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
+#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -65,6 +66,11 @@ const double kDefaultCookieExpiryTime = 20*365*24*60*60;
 
 // for pointer actions
 enum class PointerActionType { NOT_INITIALIZED, PRESS, MOVE, RELEASE, IDLE };
+
+const base::flat_set<StatusCode> kNavigationHints = {
+    kNoSuchExecutionContext,
+    kAbortedByNavigation,
+};
 
 Status GetMouseButton(const base::Value::Dict& params, MouseButton* button) {
   // Default to left mouse button.
@@ -721,13 +727,13 @@ Status ExecuteWindowCommand(const WindowCommand& command,
     }
 
     status = command.Run(session, web_view, params, value, &timeout);
-    if (status.code() == kNoSuchExecutionContext) {
+    if (kNavigationHints.contains(status.code())) {
       // Navigation was detected while running the command. Retry.
       continue;
     }
     if (status.code() == kTimeout) {
       // If the command timed out, let WaitForPendingNavigations cancel
-      // the navigation if there is one.
+      // the navigation if there is any.
       continue;
     } else if (status.code() == kUnknownError && web_view->IsNonBlocking() &&
                status.message().find(kTargetClosedMessage) !=
@@ -768,10 +774,11 @@ Status ExecuteWindowCommand(const WindowCommand& command,
   if (status.code() == kUnexpectedAlertOpen_Keep) {
     return Status(kUnexpectedAlertOpen, status.message());
   }
-  if (status.code() == kNoSuchExecutionContext) {
+  if (kNavigationHints.contains(status.code())) {
     // The command has failed to run due to pending navigation three times.
-    // Giving up with an appropriate standard error.
-    return Status{kUnknownError, status};
+    // Returning a "timeout" error because infinite retries would, presumably,
+    // never end.
+    return Status{kTimeout, status};
   }
   return status;
 }
