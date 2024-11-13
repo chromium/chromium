@@ -4542,11 +4542,11 @@ bool InvalidatePositionTryNames(Element* root,
     if (auto* element = DynamicTo<Element>(current)) {
       if (OutOfFlowData* data = element->GetOutOfFlowData()) {
         if (data->InvalidatePositionTryNames(try_names)) {
-          LayoutObject* layout_object = element->GetLayoutObject();
-          CHECK(layout_object);
-          layout_object->SetNeedsLayoutAndFullPaintInvalidation(
-              layout_invalidation_reason::kAnchorPositioning);
-          invalidated = true;
+          if (LayoutObject* layout_object = element->GetLayoutObject()) {
+            layout_object->SetNeedsLayoutAndFullPaintInvalidation(
+                layout_invalidation_reason::kAnchorPositioning);
+            invalidated = true;
+          }
         }
       }
       if (ComputedStyle::NullifyEnsured(element->GetComputedStyle()) ==
