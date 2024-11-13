@@ -40,14 +40,22 @@ CpuHistogramLogger::~CpuHistogramLogger() = default;
 
 void CpuHistogramLogger::OnResourceUsageUpdated(
     const resource_attribution::QueryResultMap& results) {
+  if (results.size() == 0) {
+    return;
+  }
+
+  CHECK_EQ(results.size(), 1ul);
+
   if (!proportion_tracker_started_) {
     proportion_tracker_.StartFirstInterval(base::TimeTicks::Now(), results);
     proportion_tracker_started_ = true;
   } else {
     std::map<resource_attribution::ResourceContext, double> cpu_proportion =
         proportion_tracker_.StartNextInterval(base::TimeTicks::Now(), results);
-    CHECK_EQ(results.size(), 1ul);
-    CHECK_EQ(cpu_proportion.size(), 1ul);
+    CHECK_EQ(cpu_proportion.size(), 1ul, base::NotFatalUntil::M134);
+    if (cpu_proportion.size() == 0) {
+      return;
+    }
     base::UmaHistogramCustomCounts(
         "History.Embeddings.Embedder.CpuUsage",
         cpu_proportion.begin()->second * kCpuUsageFactor, kCpuUsageMin,
