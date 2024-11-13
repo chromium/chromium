@@ -392,7 +392,6 @@ source_set("app_internal") {
     "//components/enterprise/idle",
     "//components/favicon/core",
     "//components/favicon_base",
-    "//components/feature_engagement",
     "//components/handoff",
     "//components/history/core/browser",
     "//components/infobars/core",
@@ -417,7 +416,6 @@ source_set("app_internal") {
     "//ios/chrome/app/background_refresh",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/profile:profile_controller",
-    "//ios/chrome/app/spotlight",
     "//ios/chrome/app/startup",
     "//ios/chrome/app/startup:ios_enable_sandbox_dump_buildflags",
     "//ios/chrome/app/startup:startup_basic",
@@ -439,7 +437,6 @@ source_set("app_internal") {
     "//ios/chrome/browser/download/model/background_service:background_service",
     "//ios/chrome/browser/download/ui_bundled",
     "//ios/chrome/browser/favicon/model",
-    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/first_run/ui_bundled",
     "//ios/chrome/browser/first_run/ui_bundled:utils",
@@ -458,14 +455,12 @@ source_set("app_internal") {
     "//ios/chrome/browser/promos_manager/model:factory",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
     "//ios/chrome/browser/push_notification/model:push_notification_util",
-    "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/screenshot/model",
     "//ios/chrome/browser/search_engines/model:search_engines_util",
     "//ios/chrome/browser/sessions/model:session_restoration_service",
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/sessions/model:session_util",
-    "//ios/chrome/browser/share_extension/model",
     "//ios/chrome/browser/shared/coordinator/scene",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
@@ -518,21 +513,13 @@ source_set("app_internal") {
   ]
 
   if (ios_enable_credential_provider_extension) {
-    deps += [
-      ":credential_provider_migrator_app_agent",
-      "//ios/chrome/browser/credential_provider/model",
-    ]
+    deps += [ ":credential_provider_migrator_app_agent" ]
   }
 
-  frameworks = [
-    "CoreSpotlight.framework",
-    "MediaPlayer.framework",
-  ]
+  frameworks = [ "MediaPlayer.framework" ]
 
-  allow_circular_includes_from = [
-    "//ios/chrome/app/application_delegate:application_delegate_internal",
-    "//ios/chrome/browser/shared/coordinator/scene",
-  ]
+  allow_circular_includes_from =
+      [ "//ios/chrome/browser/shared/coordinator/scene" ]
 }
 
 source_set("task_names") {

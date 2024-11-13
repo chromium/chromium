@@ -26,8 +26,6 @@ if (ios_enable_credential_provider_extension) {
       "credential_provider_service.mm",
       "credential_provider_service_factory.h",
       "credential_provider_service_factory.mm",
-      "credential_provider_support.cc",
-      "credential_provider_support.h",
       "credential_provider_util.h",
       "credential_provider_util.mm",
       "ios_credential_provider_infobar_delegate.h",

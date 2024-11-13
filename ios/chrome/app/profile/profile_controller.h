@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @class AppState;
+@class MetricsMediator;
 @class ProfileState;
 
 // The controller for a single Profile, owned by MainController. Owns all
@@ -16,6 +17,9 @@
 
 // Contains information about the Profile state.
 @property(nonatomic, readonly) ProfileState* state;
+
+// Used to check and update the metrics according to user preferences.
+@property(nonatomic, weak) MetricsMediator* metricsMediator;
 
 // The designated initializer.
 - (instancetype)initWithAppState:(AppState*)appState NS_DESIGNATED_INITIALIZER;

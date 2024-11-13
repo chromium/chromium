@@ -28,8 +28,6 @@
 #import "components/component_updater/installer_policies/plus_address_blocklist_component_installer.h"
 #import "components/component_updater/installer_policies/safety_tips_component_installer.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
-#import "components/feature_engagement/public/event_constants.h"
-#import "components/feature_engagement/public/tracker.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/metrics/metrics_service.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -56,7 +54,6 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/safe_mode_app_state_agent.h"
-#import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 #import "ios/chrome/app/startup/chrome_main_starter.h"
 #import "ios/chrome/app/startup/client_registration.h"
@@ -80,7 +77,6 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_app_agent.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
-#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/memory/model/memory_debugger_manager.h"
@@ -92,16 +88,12 @@
 #import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
 #import "ios/chrome/browser/profile/model/constants.h"
-#import "ios/chrome/browser/reading_list/model/reading_list_download_service.h"
-#import "ios/chrome/browser/reading_list/model/reading_list_download_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_metrics_recorder.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/sessions/model/session_util.h"
-#import "ios/chrome/browser/share_extension/model/share_extension_service.h"
-#import "ios/chrome/browser/share_extension/model/share_extension_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -146,9 +138,6 @@
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
 #import "ios/chrome/app/credential_provider_migrator_app_agent.h"
-#import "ios/chrome/browser/credential_provider/model/credential_provider_service_factory.h"
-#import "ios/chrome/browser/credential_provider/model/credential_provider_support.h"
-#import "ios/chrome/browser/credential_provider/model/credential_provider_util.h"
 #endif
 
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
@@ -198,10 +187,6 @@ NSString* const kSendQueuedFeedback = @"SendQueuedFeedback";
 // Constants for deferring the upload of crash reports.
 NSString* const kUploadCrashReports = @"UploadCrashReports";
 
-// Constants for deferring startup Spotlight bookmark indexing.
-NSString* const kStartSpotlightBookmarksIndexing =
-    @"StartSpotlightBookmarksIndexing";
-
 // Constants for deferring the enterprise managed device check.
 NSString* const kEnterpriseManagedDeviceCheck = @"EnterpriseManagedDeviceCheck";
 
@@ -210,10 +195,6 @@ NSString* const kPurgeWebSessionStates = @"PurgeWebSessionStates";
 
 // Constant for deffered memory experimentation.
 NSString* const kMemoryExperimentation = @"BeginMemoryExperimentation";
-
-// Constants for deferred initilization of reading list download service.
-NSString* const kInitializeReadingListDownloadService =
-    @"InitializeReadingListDownloadService";
 
 // Adapted from chrome/browser/ui/browser_init.cc.
 void RegisterComponentsForUpdate() {
@@ -413,10 +394,6 @@ void BeginMemoryExperimentationAfterDelay() {
   // appropriate pref changes.
   MemoryDebuggerManager* _memoryDebuggerManager;
 
-  // Responsible for indexing chrome links (such as bookmarks, most likely...)
-  // in system Spotlight index for all loaded profiles.
-  NSMutableArray<SpotlightManager*>* _spotlightManagers;
-
   // Variable backing metricsMediator property.
   __weak MetricsMediator* _metricsMediator;
 
@@ -455,7 +432,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
   if ((self = [super init])) {
     _isFirstRun = ShouldPresentFirstRunExperience();
     _startupTasks = [[StartupTasks alloc] init];
-    _spotlightManagers = [NSMutableArray array];
   }
   return self;
 }
@@ -592,30 +568,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
   [[PreviousSessionInfo sharedInstance] resetConnectedSceneSessionIDs];
 
-  for (ProfileIOS* profile :
-       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForProfile(profile);
-    // Send "Chrome Opened" event to the feature_engagement::Tracker on cold
-    // start.
-    tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
-
-    [_metricsMediator notifyCredentialProviderWasUsed:tracker];
-
-    [_spotlightManagers
-        addObject:[SpotlightManager spotlightManagerWithProfile:profile]];
-
-    ShareExtensionService* service =
-        ShareExtensionServiceFactory::GetForProfile(profile);
-    service->Initialize();
-
-#if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
-    if (IsCredentialProviderExtensionSupported()) {
-      CredentialProviderServiceFactory::GetForProfile(profile);
-    }
-#endif
-  }
-
   _windowConfigurationRecorder = [[WindowConfigurationRecorder alloc] init];
 }
 
@@ -682,6 +634,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
       [[ProfileController alloc] initWithAppState:self.appState];
   [controller.state addObserver:self];
   controller.state.profile = profile;
+  controller.metricsMediator = _metricsMediator;
   auto insertion_result = _profileControllers.insert(
       std::make_pair(profile->GetProfileName(), controller));
   DCHECK(insertion_result.second);
@@ -963,11 +916,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 - (void)stopChromeMain {
-  for (SpotlightManager* spotlightManager : _spotlightManagers) {
-    [spotlightManager shutdown];
-  }
-  [_spotlightManagers removeAllObjects];
-
   // _localStatePrefChangeRegistrar is observing the local state PrefService,
   // which is owned indirectly by _chromeMain (through the ApplicationContext).
   // Unregister the observer before the ApplicationContext is destroyed.
@@ -1158,15 +1106,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
                                         }];
 }
 
-- (void)scheduleReadingListDownloadServiceInitialization {
-  __weak MainController* weakSelf = self;
-  [_appState.deferredRunner
-      enqueueBlockNamed:kInitializeReadingListDownloadService
-                  block:^{
-                    [weakSelf initializeReadListDownloadService];
-                  }];
-}
-
 - (void)scheduleMemoryDebuggingTools {
   if (experimental_flags::IsMemoryDebuggingEnabled()) {
     __weak MainController* weakSelf = self;
@@ -1268,9 +1207,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
   // Deferred tasks.
   [self scheduleMemoryDebuggingTools];
-  [self scheduleReadingListDownloadServiceInitialization];
   [self sendQueuedFeedback];
-  [self scheduleSpotlightResync];
   [self scheduleDeleteTempDownloadsDirectory];
   [self scheduleDeleteTempPasswordsDirectory];
   [self scheduleDeleteTempChooseFileDirectory];
@@ -1322,20 +1259,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
                                         block:^{
                                           [startupTasks logSiriShortcuts];
                                         }];
-}
-
-- (void)scheduleSpotlightResync {
-  __weak MainController* weakSelf = self;
-  [_appState.deferredRunner enqueueBlockNamed:kStartSpotlightBookmarksIndexing
-                                        block:^{
-                                          [weakSelf resyncIndex];
-                                        }];
-}
-
-- (void)resyncIndex {
-  for (SpotlightManager* manager : _spotlightManagers) {
-    [manager resyncIndex];
-  }
 }
 
 #if BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
@@ -1447,13 +1370,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
   }
 
   std::move(concurrent).Done(std::move(closure));
-}
-
-- (void)initializeReadListDownloadService {
-  for (ProfileIOS* profile :
-       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    ReadingListDownloadServiceFactory::GetForProfile(profile)->Initialize();
-  }
 }
 
 - (void)pingDistributionServices {
