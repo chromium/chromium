@@ -22450,6 +22450,26 @@
             ]
         }
     ],
+    "SiteInstanceGroupsForDataUrls": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SiteInstanceGroupsForDataUrls"
+                    ]
+                }
+            ]
+        }
+    ],
     "SkiaGraphite": [
         {
             "platforms": [
