@@ -14,9 +14,7 @@
 #include "chrome/browser/ash/system/pointer_device_observer.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/inputs_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
-#include "chrome/browser/ui/webui/ash/settings/pages/power/power_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/printing_section.h"
-#include "chrome/browser/ui/webui/ash/settings/pages/storage/storage_section.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -90,10 +88,8 @@ class DeviceSection : public OsSettingsSection,
   system::PointerDeviceObserver pointer_device_observer_;
   mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
       cros_display_config_;
-  std::optional<InputsSection> inputs_subsection_;
-  std::optional<PowerSection> power_subsection_;
-  std::optional<PrintingSection> printing_subsection_;
-  std::optional<StorageSection> storage_subsection_;
+  InputsSection inputs_subsection_;
+  PrintingSection printing_subsection_;
   mojo::AssociatedReceiver<crosapi::mojom::CrosDisplayConfigObserver>
       cros_display_config_observer_receiver_{this};
 };

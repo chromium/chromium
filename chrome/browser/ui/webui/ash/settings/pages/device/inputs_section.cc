@@ -35,7 +35,6 @@ using ::chromeos::settings::mojom::kEditDictionarySubpagePath;
 using ::chromeos::settings::mojom::kInputMethodOptionsSubpagePath;
 using ::chromeos::settings::mojom::kInputSubpagePath;
 using ::chromeos::settings::mojom::kJapaneseManageUserDictionarySubpagePath;
-using ::chromeos::settings::mojom::kLanguagesAndInputSectionPath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
@@ -426,13 +425,8 @@ InputsSection::InputsSection(Profile* profile,
 InputsSection::~InputsSection() = default;
 
 void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kLocalizedStrings[] = {
-      {"inputPageTitle", kIsRevampEnabled
-                             ? IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE
-                             : IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE_V2},
+      {"inputPageTitle", IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE},
       {"inputMethodEnabled", IDS_SETTINGS_LANGUAGES_INPUT_METHOD_ENABLED},
       {"inputMethodsManagedbyPolicy",
        IDS_SETTINGS_LANGUAGES_INPUT_METHODS_MANAGED_BY_POLICY},
@@ -549,13 +543,10 @@ int InputsSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section InputsSection::GetSection() const {
-  // Note: This is a subsection that exists under the Device section when the
-  // OsSettingsRevampWayfinding feature is enabled, else under the Languages
-  // section. This is not a top-level section and does not have a respective
-  // declaration in chromeos::settings::mojom::Section.
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::Section::kDevice
-             : mojom::Section::kLanguagesAndInput;
+  // Note: This is a subsection that exists under the Device section. This is
+  // not a top-level section and does not have a respective declaration in
+  // chromeos::settings::mojom::Section.
+  return mojom::Section::kDevice;
 }
 
 mojom::SearchResultIcon InputsSection::GetSectionIcon() const {
@@ -563,9 +554,7 @@ mojom::SearchResultIcon InputsSection::GetSectionIcon() const {
 }
 
 const char* InputsSection::GetSectionPath() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::kDeviceSectionPath
-             : mojom::kLanguagesAndInputSectionPath;
+  return mojom::kDeviceSectionPath;
 }
 
 bool InputsSection::LogMetric(mojom::Setting setting,
@@ -576,7 +565,7 @@ bool InputsSection::LogMetric(mojom::Setting setting,
 
 void InputsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSubpage(
-      IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE_V2, mojom::Subpage::kInput,
+      IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE, mojom::Subpage::kInput,
       mojom::SearchResultIcon::kLanguage,
       mojom::SearchResultDefaultRank::kMedium, mojom::kInputSubpagePath);
   static constexpr mojom::Setting kInputSubpageSettings[] = {

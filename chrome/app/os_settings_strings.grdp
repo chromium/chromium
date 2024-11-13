@@ -418,9 +418,6 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE" desc="A page under “Languages and inputs” section in the OS settings page that users can add, remove and manage input methods.">
     Inputs
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE_V2" desc="A page under “Languages and inputs” section in the OS settings page that users can add, remove and manage input methods.">
-    Inputs and keyboards
-  </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_DEVICE_LANGUAGE_TITLE" desc="The label for the section where users can see their device language. This language will be used for system surfaces (launcher, shelf, and notifications etc.).">
     Device language
   </message>
@@ -947,9 +944,6 @@
   </message>
 
   <!-- Device Page (OS Settings) -->
-  <message name="IDS_OS_SETTINGS_TOUCHPAD_REVERSE_SCROLL_LABEL">
-    Enable reverse scrolling. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_TOUCHPAD_REVERSE_SCROLL_LABEL">
     Reverse scrolling <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
@@ -3853,9 +3847,6 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_TOUCHPAD_TITLE" desc="In Device Settings, the title of the touchpad settings subpage.">
     Touchpad
   </message>
-  <message name="IDS_SETTINGS_TOUCHPAD_TAP_TO_CLICK_ENABLED_LABEL" desc="In Device Settings, the text next to the checkbox that allows tapping the touchpad to work as a click.">
-    Enable tap-to-click
-  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_TOUCHPAD_TAP_TO_CLICK_LABEL" desc="In Device Settings, the text next to the checkbox that allows tapping the touchpad to work as a click.">
     Tap to click
   </message>
@@ -3898,17 +3889,11 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PRIMARY_MOUSE_BUTTON_RIGHT_LABEL" desc="In Device Settings, the text labelling the dropdown menu item for the right mouse button.">
     Right button
   </message>
-  <message name="IDS_SETTINGS_MOUSE_REVERSE_SCROLL_LABEL" desc="In Device Settings, the text next to the checkbox to set reverse scrolling.">
-    Enable reverse scrolling. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_MOUSE_REVERSE_SCROLL_LABEL" desc="In Device Settings, the text next to the checkbox to set reverse scrolling.">
     Reverse scrolling <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_MOUSE_REVERSE_SCROLL_DESCRIPTION" desc="In Device Settings, the description for the label to set mouse reverse scrolling.">
     Scroll up to move the page down
-  </message>
-  <message name="IDS_SETTINGS_MOUSE_ACCELERATION_LABEL" desc="In Device Settings, the text next to the checkbox to enable mouse acceleration.">
-    Enable mouse acceleration
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_MOUSE_ACCELERATION_LABEL" desc="In Device Settings, the text next to the checkbox to enable mouse acceleration.">
     Mouse acceleration
@@ -3930,9 +3915,6 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_POINTING_STICK_ACCELERATION_LABEL" desc="In Device Settings, the text next to the checkbox to disable pointing stick (a.k.a. TrackPoint) acceleration. (TrackPoint is a trademark that's not translated.)">
     Enable TrackPoint acceleration
-  </message>
-  <message name="IDS_SETTINGS_TOUCHPAD_ACCELERATION_LABEL" desc="In Device Settings, the text next to the checkbox to disable touchpad acceleration.">
-    Enable touchpad acceleration
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_TOUCHPAD_ACCELERATION_LABEL" desc="In Device Settings, the text next to the checkbox to disable touchpad acceleration.">
     Touchpad acceleration
@@ -6052,9 +6034,6 @@ Press an assigned switch or key to remove assignment.
   </message>
 
   <!-- Device display (OS settings) -->
-  <message name="IDS_SETTINGS_DISPLAY_TITLE" desc="In Device Settings, the title for display settings.">
-    Displays
-  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_TITLE" desc="In Device Settings, the title for display settings.">
     Display
   </message>
@@ -6166,14 +6145,8 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_DISPLAY_RESOLUTION_ONLY_MENU_ITEM" desc="In Device Settings > Displays, the text entry for a single item in the external display resolution drop down menu, when Resolution and Refresh Rate are displayed separately.">
     <ph name="WIDTH">$1<ex>1600</ex></ph> x <ph name="HEIGHT">$2<ex>1200</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_DISPLAY_REFRESH_RATE_TITLE" desc="In Device Settings > Displays, the label for the section for changing a display's refresh rate.">
-    Refresh Rate
-  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_REFRESH_RATE_TITLE" desc="In Device Settings > Displays, the label for the section for changing a display's refresh rate.">
     Refresh rate
-  </message>
-  <message name="IDS_SETTINGS_DISPLAY_REFRESH_RATE_SUBLABEL" desc="In Device Settings > Displays, the text describing the drop down menu to select the desired refresh rate of the selected external display.">
-    Determines the frequency that the screen updates
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_REFRESH_RATE_DESCRIPTION" desc="In Device Settings > Displays, the text describing the drop down menu to select the desired refresh rate of the selected external display.">
     With a higher refresh rate, you'll have a smoother display with more details. Increased refresh rate may impact battery life.
@@ -6184,14 +6157,8 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_DISPLAY_REFRESH_RATE_INTERLACED_MENU_ITEM" desc="In Device Settings > Displays, the text entry for a single item in the external display refresh rate drop down menu, when Resolution and Refresh Rate are displayed separately and the display mode is interlaced (which means the display's odd and even lines are scanned alternately in two interwoven rasterized lines). Hz is the SI unit Hertz">
     <ph name="REFRESH_RATE">$1<ex>60</ex></ph> Hz - interlaced
   </message>
-  <message name="IDS_SETTINGS_DISPLAY_ZOOM_TITLE" desc="In Device Settings > Displays, the title for the section for changing the display's zoom.">
-    Display size
-  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_ZOOM_LABEL" desc="In Device Settings > Displays, the label for the section for changing the display's zoom.">
     Display and text size
-  </message>
-  <message name="IDS_SETTINGS_DISPLAY_ZOOM_SUBLABEL" desc="In Device Settings > Displays, the text describing the display's zoom.">
-    Make items on your screen smaller or larger
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_ZOOM_DESCRIPTION" desc="In Device Settings > Displays, the description for the display's zoom.">
     Make items on your screen, including text, smaller or larger
@@ -6235,14 +6202,8 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_DISPLAY_OVERSCAN_TEXT" desc="Text explaining that this setting is used to adjust the boundaries of the selected display.">
     Adjust the boundaries of your desktop within the display
   </message>
-  <message name="IDS_SETTINGS_DISPLAY_OVERSCAN_TITLE" desc="Title of the settings subpage which adjusts display overscan.">
-    Overscan
-  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_BOUNDARIES_TITLE" desc="Title of the settings subpage which adjusts display boundaries.">
     Display boundaries
-  </message>
-  <message name="IDS_SETTINGS_DISPLAY_OVERSCAN_SUBTITLE" desc="Subtitle for the display overscan settings subpage.">
-    Adjust the boundaries of your display
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_BOUNDARIES_DESCRIPTION" desc="Description for the display boundaries settings subpage.">
     Press the arrow keys to shrink or expand the display area. To move the display area around, press shift and +, then use the arrow keys.
@@ -6535,9 +6496,6 @@ Press an assigned switch or key to remove assignment.
   </message>
 
   <!-- Device Keyboard page (OS settings) -->
-  <message name="IDS_SETTINGS_KEYBOARD_TITLE" desc="In Device Settings, the title of the keyboard settings subpage.">
-    Keyboard
-  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_KEYBOARD_AND_INPUTS_TITLE" desc="In Device Settings, the title of the keyboard and input settings subpage.">
     Keyboard and inputs
   </message>
@@ -6621,9 +6579,6 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_SHOW_LANGUAGE_AND_INPUT" desc="The link to navigate to the language and input method settings.">
     Change language and input settings
-  </message>
-  <message name="IDS_SETTINGS_KEYBOARD_SHOW_INPUT_SETTINGS" desc="The link to navigate to input method settings.">
-    Change input settings
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_KEYBOARD_SHOW_INPUT_SETTINGS" desc="The link to navigate to input method settings.">
     Input settings
