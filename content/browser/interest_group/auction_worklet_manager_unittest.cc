@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -662,9 +663,14 @@ class MockAuctionProcessManager
     DCHECK(!seller_worklet_);
 
     if (load_seller_worklet_client) {
-      mojo::Remote<auction_worklet::mojom::LoadSellerWorkletClient>(
-          std::move(load_seller_worklet_client))
-          ->SellerWorkletLoaded(/*trusted_signals_url_allowed=*/true);
+      if (trusted_signals_url_allowed_.has_value()) {
+        mojo::Remote<auction_worklet::mojom::LoadSellerWorkletClient>(
+            std::move(load_seller_worklet_client))
+            ->SellerWorkletLoaded(*trusted_signals_url_allowed_);
+      } else {
+        load_seller_worklet_clients_.emplace_back(
+            std::move(load_seller_worklet_client));
+      }
     }
 
     // Make sure this request came over the right pipe.
@@ -713,6 +719,10 @@ class MockAuctionProcessManager
     return seller_worklet_.get() != nullptr;
   }
 
+  void set_trusted_signals_url_allowed(bool trusted_signals_url_allowed) {
+    trusted_signals_url_allowed_ = trusted_signals_url_allowed;
+  }
+
  private:
   // The most recently created unclaimed bidder worklet.
   std::unique_ptr<MockBidderWorklet> bidder_worklet_;
@@ -737,9 +747,49 @@ class MockAuctionProcessManager
   mojo::ReceiverSet<auction_worklet::mojom::AuctionWorkletService, WorkletInfo>
       receiver_set_;
 
+  // The value passed to the LoadSellerWorkletClient when a seller worklet is
+  // requested. When not set, the pipe is kept alive and no signal is sent..
+  std::optional<bool> trusted_signals_url_allowed_;
+  std::vector<
+      mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>>
+      load_seller_worklet_clients_;
+
   bool defer_on_launched_for_handles_ = false;
   std::vector<std::unique_ptr<AuctionProcessManager::ProcessHandle>>
       deferred_on_launch_call_handles_;
+};
+
+// Helper to check that value of calling TrustedScoringSignalsUrlAllowed() on a
+// WorkletHandle during the invocation of a callback, to verify that the value
+// is correctly set before the callback is invoked.
+class QuerySignalsUrlAllowedHelper {
+ public:
+  QuerySignalsUrlAllowedHelper() = default;
+  ~QuerySignalsUrlAllowedHelper() = default;
+
+  base::OnceClosure GetCallback() {
+    return base::BindOnce(&QuerySignalsUrlAllowedHelper::OnCallback,
+                          base::Unretained(this));
+  }
+
+  std::unique_ptr<AuctionWorkletManager::WorkletHandle>& handle() {
+    return handle_;
+  }
+
+  bool ScoringSignalsUrlAllowed() {
+    run_loop_.Run();
+    return signals_url_allowed_;
+  }
+
+ private:
+  void OnCallback() {
+    signals_url_allowed_ = handle_->TrustedScoringSignalsUrlAllowed();
+    run_loop_.Quit();
+  }
+
+  std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle_;
+  bool signals_url_allowed_ = false;
+  base::RunLoop run_loop_;
 };
 
 class AuctionWorkletManagerTest : public RenderViewHostTestHarness,
@@ -3450,6 +3500,100 @@ TEST_F(AuctionWorkletManagerKVv2Test, KVv2SignalsCacheEnabled) {
   EXPECT_EQ(kDecisionLogicUrl, seller_worklet->script_source_url());
   EXPECT_EQ(kTrustedSignalsUrl, seller_worklet->trusted_scoring_signals_url());
   EXPECT_TRUE(PublicKeyEvaluateHelper(seller_worklet->public_key(), key_));
+}
+
+TEST_F(AuctionWorkletManagerKVv2Test,
+       SellerWorkletTrustedScoringSignalsUrlAllowed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFledgeUseKVv2SignalsCache);
+
+  const GURL kCrossOriginTrustedSignalsUrl =
+      GURL("https://other.origin.test/trusted_signals");
+
+  QuerySignalsUrlAllowedHelper helper1;
+  auction_process_manager_.set_trusted_signals_url_allowed(false);
+  auction_worklet_manager_->RequestSellerWorklet(
+      kAuction1, kCrossOriginTrustedSignalsUrl, kTrustedSignalsUrl,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_scoring_signals_coordinator=*/
+      url::Origin::Create(GURL("https://origin.test/")), helper1.GetCallback(),
+      NeverInvokedFatalErrorCallback(), helper1.handle(),
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+  EXPECT_FALSE(helper1.ScoringSignalsUrlAllowed());
+  // Destroy the process to prevent reuse.
+  helper1.handle().reset();
+  // Wait for the SellerWorklet request to be observed, and then destroy it, by
+  // throwing away the returned MockSellerWorklet.
+  auction_process_manager_.WaitForSellerWorklet();
+
+  QuerySignalsUrlAllowedHelper helper2;
+  auction_process_manager_.set_trusted_signals_url_allowed(true);
+  auction_worklet_manager_->RequestSellerWorklet(
+      kAuction1, kCrossOriginTrustedSignalsUrl, kTrustedSignalsUrl,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_scoring_signals_coordinator=*/
+      url::Origin::Create(GURL("https://origin.test/")), helper2.GetCallback(),
+      NeverInvokedFatalErrorCallback(), helper2.handle(),
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+  EXPECT_TRUE(helper2.ScoringSignalsUrlAllowed());
+  // Destroy seller worklet. The teardown order is a bit weird in these tests
+  // due to RenderViewHostTestHarness. If it's not explicitly destroyed here, it
+  // will outlive the ScopedTaskEnvironment, and destroying Mojo objects after
+  // that will CHECK.
+  auction_process_manager_.WaitForSellerWorklet();
+}
+
+// Check the case that the process crashes while waiting for the
+// ScoringSignalsUrlAllowed callback.
+TEST_F(AuctionWorkletManagerKVv2Test,
+       ClosePipeWhileWaitingForSellerWorkletTrustedScoringSignalsUrlAllowed) {
+  const char kErrorText[] = "Goat teleportation error";
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFledgeUseKVv2SignalsCache);
+
+  const GURL kCrossOriginTrustedSignalsUrl =
+      GURL("https://other.origin.test/trusted_signals");
+
+  FatalLoadErrorHelper load_error_helper;
+  std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle;
+  auction_worklet_manager_->RequestSellerWorklet(
+      kAuction1, kCrossOriginTrustedSignalsUrl, kTrustedSignalsUrl,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_scoring_signals_coordinator=*/
+      url::Origin::Create(GURL("https://origin.test/")),
+      base::MakeExpectedNotRunClosure(FROM_HERE), load_error_helper.Callback(),
+      handle,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+  // Wait for the SellerWorklet request to be observed, and then close it with
+  // an error.
+  auction_process_manager_.WaitForSellerWorklet()->ClosePipe(kErrorText);
+  load_error_helper.WaitForResult();
+  EXPECT_THAT(load_error_helper.errors(), testing::ElementsAre(kErrorText));
+  EXPECT_EQ(AuctionWorkletManager::FatalErrorType::kScriptLoadFailed,
+            load_error_helper.fatal_error_type());
+
+  // Try to load the worklet again, and simulate a process crash. This should
+  // create a new worklet pipe instead of reusing the one from above.
+  FatalLoadErrorHelper load_error_helper2;
+  std::unique_ptr<AuctionWorkletManager::WorkletHandle> handle2;
+  auction_worklet_manager_->RequestSellerWorklet(
+      kAuction1, kCrossOriginTrustedSignalsUrl, kTrustedSignalsUrl,
+      /*experiment_group_id=*/std::nullopt,
+      /*trusted_scoring_signals_coordinator=*/
+      url::Origin::Create(GURL("https://origin.test/")),
+      base::MakeExpectedNotRunClosure(FROM_HERE), load_error_helper2.Callback(),
+      handle2,
+      auction_metrics_recorder_manager_->CreateAuctionMetricsRecorder());
+  // Wait for the SellerWorklet request to be observed, and then destroy it, by
+  // throwing away the returned MockSellerWorklet.
+  auction_process_manager_.WaitForSellerWorklet();
+  load_error_helper2.WaitForResult();
+  EXPECT_THAT(load_error_helper2.errors(),
+              testing::ElementsAre(
+                  "https://other.origin.test/trusted_signals crashed."));
+  EXPECT_EQ(AuctionWorkletManager::FatalErrorType::kWorkletCrash,
+            load_error_helper2.fatal_error_type());
 }
 
 }  // namespace

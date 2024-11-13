@@ -201,6 +201,11 @@ class CONTENT_EXPORT AuctionWorkletManager {
     auction_worklet::mojom::BidderWorklet* GetBidderWorklet();
     auction_worklet::mojom::SellerWorklet* GetSellerWorklet();
 
+    // Whether the trusted scoring signals URL is allowed. May only be called
+    // when this is a seller worklet with a KVv2 trusted scoring signals URL,
+    // and KVv2 signals and the KVv2 cache are enabled.
+    bool TrustedScoringSignalsUrlAllowed() const;
+
     const SubresourceUrlAuthorizations&
     GetSubresourceUrlAuthorizationsForTesting();
 
@@ -223,9 +228,6 @@ class CONTENT_EXPORT AuctionWorkletManager {
     void OnWorkletAvailable();
     void OnFatalError(FatalErrorType type,
                       const std::vector<std::string>& errors);
-
-    // Returns true if `worklet_owner_` has created a worklet yet.
-    bool worklet_created() const;
 
     scoped_refptr<WorkletOwner> worklet_owner_;
     std::string devtools_auction_id_;
