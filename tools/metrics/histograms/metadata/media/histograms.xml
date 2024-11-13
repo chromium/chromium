@@ -120,6 +120,7 @@ chromium-metrics-reviews@google.com.
   <variant name="MPEG2"/>
   <variant name="MPEG4"/>
   <variant name="Theora"/>
+  <variant name="Unknown"/>
   <variant name="VC1"/>
   <variant name="VP8"/>
   <variant name="VP9"/>
