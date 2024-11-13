@@ -592,11 +592,7 @@ void DanglingRawPtrReleased(uintptr_t id) {
       "\n"
       "Please check for more information on:\n"
       "https://chromium.googlesource.com/chromium/src/+/main/docs/"
-      "dangling_ptr_guide.md\n"
-      "\n"
-      "Googlers: Please give us your feedback about the dangling pointer\n"
-      "          detector at:\n"
-      "          http://go/dangling-ptr-cq-survey\n";
+      "dangling_ptr_guide.md\n";
   if (free_info) {
     LOG(ERROR) << "Detected dangling raw_ptr with id="
                << StringPrintf("0x%016" PRIxPTR, id) << ":\n"
