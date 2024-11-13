@@ -8521,3 +8521,5 @@ crbug.com/378566925 [ Win ] external/wpt/storage-access-api/requestStorageAccess
 crbug.com/40919443 [ Win ] external/wpt/pointerevents/pointerevent_pointer_boundary_events_after_removing_last_over_element.html [ Failure Pass ]
 crbug.com/378566925 [ Win ] external/wpt/storage-access-api/requestStorageAccess-sandboxed-iframe-no-storage-access.sub.https.window.html [ Failure Pass ]
 crbug.com/378566925 [ Mac ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-cover-img.html [ Failure Pass ]
+crbug.com/356930166 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-same-size.html [ Failure Pass Timeout ]
+crbug.com/356930166 [ Mac13 ] external/wpt/webrtc/legacy/RTCPeerConnection-createOffer-offerToReceive.html [ Failure Pass Timeout ]
