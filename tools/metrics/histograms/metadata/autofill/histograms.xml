@@ -6012,10 +6012,7 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
   <token key="AutofillTimedFunction">
     <variant name="DetermineHeuristicTypes"/>
-    <variant name="ParseForm"/>
     <variant name="ParseFormAsync"/>
-    <variant name="ParseFormAsync.RunHeuristics"/>
-    <variant name="ParseFormAsync.UpdateCache"/>
     <variant name="ParseFormsAsync"/>
     <variant name="ParseFormsAsync.RunHeuristics"/>
     <variant name="ParseFormsAsync.UpdateCache"/>

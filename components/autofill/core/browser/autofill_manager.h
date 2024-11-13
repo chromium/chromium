@@ -405,31 +405,24 @@ class AutofillManager
       std::vector<raw_ptr<FormStructure, VectorExperimental>>* form_structures)
       const;
 
-  // Parses multiple forms in one go. The function proceeds in three stages:
+  // Parses multiple forms in one go. The function proceeds in four stages:
   //
   // 1. Turn (almost) every FormData into a FormStructure.
-  // 2. Run DetermineHeuristicTypes() on all FormStructures.
-  // 3. Update the cache member variable `form_structures_` and call `callback`.
+  // 2. Runs ML models on all FormStructures, if the necessary features are
+  //    enabled.
+  // 3. Run DetermineHeuristicTypes() on all FormStructures.
+  // 4. Update the cache member variable `form_structures_` and call `callback`.
   //
   // Step 1 runs synchronously on the main thread.
-  // Step 2 runs asynchronously on a worker task.
-  // Step 3 runs again on the main thread.
+  // Step 2 and 3 run sequentially, but asynchronously on (different) worker
+  // tasks.
+  // Step 4 runs again on the main thread.
   //
   // There are two conditions under which a FormData is skipped in Step 1:
   // - if the overall number exceeds `kAutofillManagerMaxFormCacheSize`;
   // - if the form should not be parsed according to ShouldParseForms().
   //
   // TODO(crbug.com/40219607): Add unit tests.
-  // TODO(crbug.com/40232021): Eliminate either the ParseFormsAsync() or
-  // ParseFormAsync(). There are a few possible directions:
-  // - Let ParseFormAsync() wrap the FormData in a vector, call
-  //   ParseFormsAsync(), and then unwrap the vector again.
-  // - Let OnFormsSeen() take a single FormData. That simplifies also
-  //   ContentAutofillDriver and AutofillDriverRouter a bit, but then the
-  //   AutofillCrowdsourcingManager needs to collect forms to send a batch
-  //   query.
-  // - Let all other events take a FormGlobalId instead of a FormData and fire
-  //   OnFormsSeen() before these events if necessary.
   void ParseFormsAsync(
       const std::vector<FormData>& forms,
       base::OnceCallback<void(AutofillManager&, const std::vector<FormData>&)>
@@ -439,6 +432,12 @@ class AutofillManager
   void ParseFormAsync(
       const FormData& form,
       base::OnceCallback<void(AutofillManager&, const FormData&)> callback);
+
+  // Steps 2-4 described above ParseFormsAsync(), which are shared with
+  // ParseFormAsync().
+  void ParseFormsAsyncCommon(
+      std::vector<std::unique_ptr<FormStructure>> form_structures,
+      base::OnceCallback<void(AutofillManager&)> callback);
 
   // Returns true only if the previewed form should be cleared.
   virtual bool ShouldClearPreviewedForm() = 0;
