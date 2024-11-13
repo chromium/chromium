@@ -1285,6 +1285,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowserRenderProcessHost.SpareRendererDispatchResult"
+    enum="SpareRendererDispatchResult" expires_after="2025-03-09">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records how a spare renderer process is used or destroyed. The UMA is
+    recorded when the spare renderer is used by navigation or destroyed because
+    of timeout or resource limit.
+  </summary>
+</histogram>
+
 <histogram
     name="BrowserRenderProcessHost.SuspendedChild.KernelExecutionRecorded"
     enum="BooleanRecorded" expires_after="never">

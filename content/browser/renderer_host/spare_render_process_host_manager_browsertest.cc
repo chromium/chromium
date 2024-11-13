@@ -184,6 +184,7 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
                        SpareRenderProcessHostTaken) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
+  base::HistogramTester histogram_tester;
   auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
   spare_manager.WarmupSpare(
       ShellContentBrowserClient::Get()->browser_context());
@@ -196,6 +197,9 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
 
   EXPECT_EQ(spare_renderer,
             window->web_contents()->GetPrimaryMainFrame()->GetProcess());
+  histogram_tester.ExpectUniqueSample(
+      "BrowserRenderProcessHost.SpareRendererDispatchResult",
+      SpareRendererDispatchResult::kUsed, 1);
 
   // The old spare render process host should no longer be available.
   if (!spare_manager.GetSpares().empty()) {
@@ -215,6 +219,7 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
 // will create a spare renderer and destroy it after the timeout.
 IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
                        CreateWithTimeoutDestroyedAfterTimeout) {
+  base::HistogramTester histogram_tester;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
       new base::TestMockTimeTaskRunner();
   auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
@@ -228,6 +233,9 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
   task_runner->FastForwardBy(kTimeout);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(spare_manager.GetSpares().size(), 0u);
+  histogram_tester.ExpectUniqueSample(
+      "BrowserRenderProcessHost.SpareRendererDispatchResult",
+      SpareRendererDispatchResult::kTimeout, 1);
 }
 
 // Verifies that creating a spare renderer without a timeout
@@ -307,6 +315,25 @@ IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
   task_runner->FastForwardBy(kTimeoutLong - kTimeoutShort);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(spare_manager.GetSpares().size(), 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,
+                       SpareRenderProcessOverridden) {
+  base::HistogramTester histogram_tester;
+  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+  spare_manager.WarmupSpare(
+      ShellContentBrowserClient::Get()->off_the_record_browser_context());
+  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
+  RenderProcessHost* spare_renderer = spare_manager.GetSpares()[0];
+  // Warm up spare renderer for another browser context, this shall
+  // override the original spare renderer.
+  spare_manager.WarmupSpare(
+      ShellContentBrowserClient::Get()->browser_context());
+  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
+  ASSERT_NE(spare_manager.GetSpares()[0], spare_renderer);
+  histogram_tester.ExpectUniqueSample(
+      "BrowserRenderProcessHost.SpareRendererDispatchResult",
+      SpareRendererDispatchResult::kOverridden, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SpareRenderProcessHostManagerTest,

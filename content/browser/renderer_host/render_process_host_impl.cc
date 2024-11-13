@@ -1363,7 +1363,8 @@ void RenderProcessHost::SetMaxRendererProcessCount(size_t count) {
   if (RenderProcessHostImpl::GetProcessCount() > count) {
     // TODO(pmonette): Only cleanup n spares, where n is the count of processes
     // that is over the limit.
-    SpareRenderProcessHostManagerImpl::Get().CleanupSpares();
+    SpareRenderProcessHostManagerImpl::Get().CleanupSpares(
+        SpareRendererDispatchResult::kDestroyedProcessLimit);
   }
 }
 
