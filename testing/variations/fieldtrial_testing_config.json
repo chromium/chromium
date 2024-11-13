@@ -12744,14 +12744,33 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_15",
                     "params": {
-                        "jump_start_max_away_time_minutes": "960",
-                        "jump_start_memory_threshold_kb": "2097152",
-                        "jump_start_min_away_time_minutes": "120"
+                        "jump_start_min_away_time_minutes": "15"
                     },
                     "enable_features": [
-                        "JumpStartOmnibox"
+                        "JumpStartOmnibox",
+                        "LocalHistoryZeroSuggestBeyondNTP"
+                    ]
+                },
+                {
+                    "name": "Enabled_30",
+                    "params": {
+                        "jump_start_min_away_time_minutes": "30"
+                    },
+                    "enable_features": [
+                        "JumpStartOmnibox",
+                        "LocalHistoryZeroSuggestBeyondNTP"
+                    ]
+                },
+                {
+                    "name": "Enabled_60",
+                    "params": {
+                        "jump_start_min_away_time_minutes": "60"
+                    },
+                    "enable_features": [
+                        "JumpStartOmnibox",
+                        "LocalHistoryZeroSuggestBeyondNTP"
                     ]
                 }
             ]
