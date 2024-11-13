@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLL_ANIMATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLL_ANIMATOR_H_
 
-#include <memory>
 #include "base/time/default_tick_clock.h"
 
 #include "base/time/time.h"
@@ -107,7 +106,6 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
                               base::DefaultTickClock::GetInstance());
   ~ScrollAnimator() override;
 
-  bool HasRunningAnimation() const override;
   ScrollOffset ComputeDeltaToConsume(const ScrollOffset& delta) const override;
 
   // The callback will be run if the animation is updated by another
@@ -148,7 +146,6 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
   // because we are already at targetPos.
   bool WillAnimateToOffset(const ScrollOffset& target_pos);
 
-  std::unique_ptr<cc::ScrollOffsetAnimationCurve> animation_curve_;
   const base::TickClock* const tick_clock_;
   base::TimeTicks start_time_;
 

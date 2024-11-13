@@ -151,6 +151,8 @@ bool ScrollMarkerGroupPseudoElement::UpdateSelectedScrollMarker(
   PhysicalOffset scroll_offset = PhysicalOffset::FromVector2dFFloor(offset);
   ScrollableArea* scrollable_area = scroller->GetScrollableArea();
   CHECK(scrollable_area);
+  ScrollOffset max_offset = scrollable_area->MaximumScrollOffset();
+  ScrollOffset min_offset = scrollable_area->MinimumScrollOffset();
   for (ScrollMarkerPseudoElement* scroll_marker : ScrollMarkers()) {
     if (!selected) {
       selected = scroll_marker;
@@ -191,8 +193,6 @@ bool ScrollMarkerGroupPseudoElement::UpdateSelectedScrollMarker(
     // to do so.
     // TODO(crbug.com/332396355): We should not really have to check the
     // min/max-offsets.
-    ScrollOffset max_offset = scrollable_area->MaximumScrollOffset();
-    ScrollOffset min_offset = scrollable_area->MinimumScrollOffset();
     if ((target_offset.left.Abs() <= scroll_offset.left.Abs() ||
          max_offset.x() == min_offset.x()) &&
         (target_offset.top.Abs() <= scroll_offset.top.Abs() ||
