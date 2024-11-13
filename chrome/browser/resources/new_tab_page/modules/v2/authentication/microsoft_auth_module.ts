@@ -10,6 +10,7 @@ import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
+import {getCss} from './microsoft_auth_module.css.js';
 import {getHtml} from './microsoft_auth_module.html.js';
 
 export interface MicrosoftAuthModuleElement {
@@ -28,6 +29,10 @@ const MicrosoftAuthModuleElementBase = I18nMixinLit(CrLitElement);
 export class MicrosoftAuthModuleElement extends MicrosoftAuthModuleElementBase {
   static get is() {
     return 'ntp-microsoft-authentication-module';
+  }
+
+  static override get styles() {
+    return getCss();
   }
 
   override render() {
@@ -72,6 +77,10 @@ export class MicrosoftAuthModuleElement extends MicrosoftAuthModuleElementBase {
 
   protected onDismissButtonClick_() {
     // TODO(crbug.com/377378212): Handle button click.
+  }
+
+  protected onSignInClick_() {
+    // TODO(crbug.com/377379069): Handle button click.
   }
 }
 

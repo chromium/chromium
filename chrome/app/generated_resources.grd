@@ -8830,6 +8830,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MICROSOFT_AUTHENTICATION_DISMISS_BUTTON_TEXT" desc="Text shown on the disable button of the Microsoft Authentication module.">
        Hide for 12 hours
       </message>
+      <message name="IDS_NTP_MICROSOFT_AUTHENTICATION_HEADING" desc="First line of text shown in the Microsoft Authentication module.">
+       See your Outlook Calendar and Sharepoint files
+      </message>
+      <message name="IDS_NTP_MICROSOFT_AUTHENTICATION_SUBHEADING" desc="Second line of text shown in the Microsoft Authentication module.">
+       Easily access recent documents and upcoming calendar events
+      </message>
+      <message name="IDS_NTP_MICROSOFT_AUTHENTICATION_SIGN_IN_BUTTON_TEXT" desc="Text shown on the Microsoft Authentication module's sign in button.">
+       Sign in with Microsoft
+      </message>
 
       <!-- Mobile NTP Middle Slot Promo -->
       <message name="IDS_NTP_MOBILE_PROMO_HEADER" desc="Header for a promo that shows on the Desktop NTP prompting user to scan a QR code with their mobile device">

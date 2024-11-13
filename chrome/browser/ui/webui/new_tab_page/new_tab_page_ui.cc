@@ -427,6 +427,11 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MICROSOFT_AUTHENTICATION_DISABLE_BUTTON_TEXT},
       {"modulesMicrosoftAuthDismiss",
        IDS_NTP_MICROSOFT_AUTHENTICATION_DISMISS_BUTTON_TEXT},
+      {"modulesMicrosoftAuthHeading", IDS_NTP_MICROSOFT_AUTHENTICATION_HEADING},
+      {"modulesMicrosoftAuthSubheading",
+       IDS_NTP_MICROSOFT_AUTHENTICATION_SUBHEADING},
+      {"modulesMicrosoftAuthSignIn",
+       IDS_NTP_MICROSOFT_AUTHENTICATION_SIGN_IN_BUTTON_TEXT},
 
       // Middle slot promo.
       {"undoDismissPromoButtonToast", IDS_NTP_UNDO_DISMISS_PROMO_BUTTON_TOAST},

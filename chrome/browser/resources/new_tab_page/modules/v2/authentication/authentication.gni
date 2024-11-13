@@ -5,3 +5,6 @@
 # List of files that should be passed to html_to_wrapper().
 authentication_web_component_files =
     [ "modules/v2/authentication/microsoft_auth_module.ts" ]
+
+authentication_css_files =
+    [ "modules/v2/authentication/microsoft_auth_module.css" ]
