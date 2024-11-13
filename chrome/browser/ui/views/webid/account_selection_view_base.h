@@ -160,12 +160,15 @@ class AccountHoverButton : public HoverButton {
   void StateChanged(ButtonState old_state) override;
   void OnThemeChanged() override;
   void OnPressed(const ui::Event& event);
-  bool HasSpinner();
+  bool HasBeenClicked();
 
   // Changes the opacity of elements in the button to appear disabled. Used when
   // the button is disabled in the verifying sheet.
   void SetDisabledOpacity();
   bool HasDisabledOpacity();
+
+  // Should only be invoked when the button has a secondary view.
+  void ReplaceSecondaryViewWithSpinner();
 
  private:
   PressedCallback callback_;
@@ -177,6 +180,7 @@ class AccountHoverButton : public HoverButton {
   int button_position_;
   bool has_spinner_{false};
   bool is_appear_disabled_{false};
+  bool has_been_clicked_{false};
 };
 
 class AccountHoverButtonSecondaryView : public views::View {

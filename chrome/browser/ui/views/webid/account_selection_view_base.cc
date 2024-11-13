@@ -460,18 +460,14 @@ void AccountHoverButton::OnPressed(const ui::Event& event) {
                                  button_position_,
                                  /*min=*/0,
                                  /*exclusive_max=*/10, /*buckets=*/11);
-  if (secondary_view()) {
-    has_spinner_ = true;
-    static_cast<AccountHoverButtonSecondaryView*>(secondary_view())
-        ->ReplaceWithSpinner();
-  }
+  has_been_clicked_ = true;
   if (callback_) {
     callback_.Run(event);
   }
 }
 
-bool AccountHoverButton::HasSpinner() {
-  return has_spinner_;
+bool AccountHoverButton::HasBeenClicked() {
+  return has_been_clicked_;
 }
 
 void AccountHoverButton::SetDisabledOpacity() {
@@ -499,6 +495,12 @@ void AccountHoverButton::SetDisabledOpacity() {
 
 bool AccountHoverButton::HasDisabledOpacity() {
   return is_appear_disabled_;
+}
+
+void AccountHoverButton::ReplaceSecondaryViewWithSpinner() {
+  has_spinner_ = true;
+  static_cast<AccountHoverButtonSecondaryView*>(secondary_view())
+      ->ReplaceWithSpinner();
 }
 
 AccountSelectionViewBase::AccountSelectionViewBase(
