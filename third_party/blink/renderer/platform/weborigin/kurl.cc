@@ -25,11 +25,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 #include <algorithm>
@@ -58,19 +53,20 @@
 
 namespace blink {
 
+namespace {
+
 #if DCHECK_IS_ON()
-static void AssertProtocolIsGood(const StringView protocol) {
+void AssertProtocolIsGood(const StringView protocol) {
   DCHECK(protocol != "");
-  for (size_t i = 0; i < protocol.length(); ++i) {
-    LChar c = protocol.Characters8()[i];
-    DCHECK(c > ' ' && c < 0x7F && !(c >= 'A' && c <= 'Z'));
-  }
+  DCHECK(std::ranges::all_of(protocol.Span8(), [](const LChar c) {
+    return c > ' ' && c < 0x7F && !(c >= 'A' && c <= 'Z');
+  }));
 }
 #endif
 
 // Note: You must ensure that |spec| is a valid canonicalized URL before calling
 // this function.
-static const char* AsURLChar8Subtle(const String& spec) {
+const char* AsURLChar8Subtle(const String& spec) {
   DCHECK(spec.Is8Bit());
   // characters8 really return characters in Latin-1, but because we
   // canonicalize URL strings, we know that everything before the fragment
@@ -82,25 +78,23 @@ static const char* AsURLChar8Subtle(const String& spec) {
 // Returns the characters for the given string, or a pointer to a static empty
 // string if the input string is null. This will always ensure we have a non-
 // null character pointer since ReplaceComponents has special meaning for null.
-static const char* CharactersOrEmpty(const StringUTF8Adaptor& string) {
+const char* CharactersOrEmpty(const StringUTF8Adaptor& string) {
   static const char kZero = 0;
   return string.data() ? string.data() : &kZero;
 }
 
-static bool IsSchemeFirstChar(char c) {
+bool IsSchemeFirstChar(char c) {
   return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 
-static bool IsSchemeChar(char c) {
+bool IsSchemeChar(char c) {
   return IsSchemeFirstChar(c) || (c >= '0' && c <= '9') || c == '.' ||
          c == '-' || c == '+';
 }
 
-static bool IsUnicodeEncoding(const WTF::TextEncoding* encoding) {
+bool IsUnicodeEncoding(const WTF::TextEncoding* encoding) {
   return encoding->EncodingForFormSubmission() == UTF8Encoding();
 }
-
-namespace {
 
 class KURLCharsetConverter final : public url::CharsetConverter {
   DISALLOW_NEW();
