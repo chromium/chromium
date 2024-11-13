@@ -336,6 +336,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kDatabaseOpenError"/>
   <int value="3" label="kDatabaseRazeError"/>
   <int value="4" label="kSQLExecutionError"/>
+  <int value="5" label="kAlterTableError"/>
 </enum>
 
 <enum name="CdmStorageStatus">
