@@ -5261,7 +5261,7 @@
   {
     "name": "ios-docking-promo",
     "owners": ["bwwilliams@google.com", "bling-get-set-up@google.com"],
-    "expiry_milestone": 132
+    "expiry_milestone": 135
   },
   {
     "name": "ios-edit-menu-hide-search-web",
