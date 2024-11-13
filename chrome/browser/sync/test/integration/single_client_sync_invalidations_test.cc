@@ -49,7 +49,7 @@ using testing::NotNull;
 using testing::SizeIs;
 
 constexpr char kSyncedBookmarkURL[] = "http://www.mybookmark.com";
-constexpr char kSyncedBookmarkTitle[] = "Title";
+constexpr char16_t kSyncedBookmarkTitle[] = u"Title";
 
 syncer::DataTypeSet DefaultInterestedDataTypes() {
   return Difference(syncer::ProtocolTypes(), syncer::CommitOnlyTypes());
@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                        ShouldPopulateFCMRegistrationTokens) {
-  const std::string kTitle = "title";
+  const std::u16string kTitle = u"title";
   const std::string kRemoteDeviceCacheGuid = "other_cache_guid";
   const std::string kRemoteFCMRegistrationToken = "other_fcm_token";
 
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
 IN_PROC_BROWSER_TEST_F(
     SingleClientSyncInvalidationsTest,
     ShouldNotPopulateFCMRegistrationTokensForInterestedDataTypes) {
-  const std::string kTitle = "title";
+  const std::u16string kTitle = u"title";
   const std::string kRemoteDeviceCacheGuid = "other_cache_guid";
   const std::string kRemoteFCMRegistrationToken = "other_fcm_token";
 
@@ -495,13 +495,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
 
   // Perform an additional sync cycle to be sure that there will be at least one
   // more GetUpdates request if it was triggered.
-  const std::string kTitle1 = "Title 1";
+  const std::u16string kTitle1 = u"Title 1";
   AddFolder(0, GetBookmarkBarNode(0), 0, kTitle1);
   ASSERT_TRUE(ServerBookmarksEqualityChecker({{kTitle1, GURL()}},
                                              /*cryptographer=*/nullptr)
                   .Wait());
 
-  const std::string kTitle2 = "Title 2";
+  const std::u16string kTitle2 = u"Title 2";
   AddFolder(0, GetBookmarkBarNode(0), 0, kTitle2);
   ASSERT_TRUE(
       ServerBookmarksEqualityChecker({{kTitle1, GURL()}, {kTitle2, GURL()}},

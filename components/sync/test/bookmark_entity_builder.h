@@ -50,6 +50,9 @@ class BookmarkEntityBuilder {
   BookmarkEntityBuilder(const std::string& title,
                         const base::Uuid& uuid,
                         const std::string& originator_cache_guid);
+  BookmarkEntityBuilder(const std::u16string& title,
+                        const base::Uuid& uuid,
+                        const std::string& originator_cache_guid);
   BookmarkEntityBuilder(const BookmarkEntityBuilder& other);
   ~BookmarkEntityBuilder();
 

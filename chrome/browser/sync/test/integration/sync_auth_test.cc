@@ -116,7 +116,8 @@ class SyncAuthTest : public SyncTest {
   // error, false if the bookmark is committed successfully.
   bool AttemptToTriggerAuthError() {
     int bookmark_index = GetNextBookmarkIndex();
-    std::string title = base::StringPrintf("Bookmark %d", bookmark_index);
+    std::u16string title =
+        base::ASCIIToUTF16(base::StringPrintf("Bookmark %d", bookmark_index));
     GURL url = GURL(base::StringPrintf("http://www.foo%d.com", bookmark_index));
     EXPECT_NE(nullptr, bookmarks_helper::AddURL(0, title, url));
 
@@ -418,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(SyncAuthTest, ShouldTrackDeletionsInSyncPausedState) {
   const bookmarks::BookmarkNode* bar = bookmarks_helper::GetBookmarkBarNode(0);
   ASSERT_FALSE(bookmarks_helper::HasNodeWithURL(0, kTestURL));
   const bookmarks::BookmarkNode* bookmark = bookmarks_helper::AddURL(
-      0, bar, bar->children().size(), "Title", kTestURL);
+      0, bar, bar->children().size(), u"Title", kTestURL);
 
   // ...set a pref...
   ASSERT_FALSE(HasUserPrefValue(pref_service, prefs::kHomePageIsNewTabPage));

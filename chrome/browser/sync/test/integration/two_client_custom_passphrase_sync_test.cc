@@ -50,16 +50,16 @@ class TwoClientCustomPassphraseSyncTest : public SyncTest {
   }
 
   void AddTestBookmarksToClient(int index) {
-    ASSERT_TRUE(AddURL(index, 0, "What are you syncing about?",
+    ASSERT_TRUE(AddURL(index, 0, u"What are you syncing about?",
                        GURL("https://google.com/synced-bookmark-1")));
-    ASSERT_TRUE(AddURL(index, 1, "Test bookmark",
+    ASSERT_TRUE(AddURL(index, 1, u"Test bookmark",
                        GURL("https://google.com/synced-bookmark-2")));
   }
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientCustomPassphraseSyncTest,
                        DecryptionFailsWhenIncorrectPassphraseProvided) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllModelsMatch());
 
   GetSyncService(kEncryptingClientId)
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientCustomPassphraseSyncTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientCustomPassphraseSyncTest, ClientsCanSyncData) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AllModelsMatch());
 
   GetSyncService(kEncryptingClientId)

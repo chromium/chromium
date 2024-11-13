@@ -397,8 +397,8 @@ class SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest
     // TODO(crbug.com/41483767): consider waiting for Cryptographer update
     // rather than relying on bookmarks.
     GetFakeServer()->InjectEntity(bookmarks_helper::CreateBookmarkServerEntity(
-        "title", GURL("http://abc.com")));
-    return bookmarks_helper::BookmarksTitleChecker(0, "title", 1).Wait();
+        u"title", GURL("http://abc.com")));
+    return bookmarks_helper::BookmarksTitleChecker(0, u"title", 1).Wait();
   }
 };
 
@@ -514,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(
       GetSyncService(0)->GetUserSettings()->GetAllEncryptedDataTypes().Has(
           syncer::DataType::BOOKMARKS));
-  const std::string kTitle = "Bookmark title";
+  const std::u16string kTitle = u"Bookmark title";
   const GURL kUrl = GURL("https://g.com");
   std::unique_ptr<syncer::LoopbackServerEntity> bookmark =
       bookmarks_helper::CreateBookmarkServerEntity(kTitle, kUrl);

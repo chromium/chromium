@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/rand_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 
 namespace fake_server {
@@ -39,6 +40,12 @@ BookmarkEntityBuilder EntityBuilderFactory::NewBookmarkEntityBuilder(
     builder.EnableClientTagHash();
   }
   return builder;
+}
+
+BookmarkEntityBuilder EntityBuilderFactory::NewBookmarkEntityBuilder(
+    const std::u16string& title,
+    const base::Uuid& uuid) {
+  return NewBookmarkEntityBuilder(base::UTF16ToUTF8(title), uuid);
 }
 
 }  // namespace fake_server

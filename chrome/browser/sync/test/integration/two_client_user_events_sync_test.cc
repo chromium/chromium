@@ -40,7 +40,7 @@ class TwoClientUserEventsSyncTest : public SyncTest {
 
   void AddTestBookmarksToClient(int index) {
     ASSERT_TRUE(bookmarks_helper::AddURL(
-        index, 0, "What are you syncing about?", GURL(kTestBookmarkURL)));
+        index, 0, u"What are you syncing about?", GURL(kTestBookmarkURL)));
   }
 };
 

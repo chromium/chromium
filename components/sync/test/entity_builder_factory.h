@@ -40,6 +40,9 @@ class EntityBuilderFactory {
   BookmarkEntityBuilder NewBookmarkEntityBuilder(
       const std::string& title,
       const base::Uuid& uuid = base::Uuid::GenerateRandomV4());
+  BookmarkEntityBuilder NewBookmarkEntityBuilder(
+      const std::u16string& title,
+      const base::Uuid& uuid = base::Uuid::GenerateRandomV4());
 
  private:
   const std::string cache_guid_;
