@@ -128,12 +128,6 @@ class CertificateViewerDialogHandler : public content::WebUIMessageHandler {
   // The input is an integer index to the certificate in the chain to view.
   void HandleRequestCertificateFields(const base::Value::List& args);
 
-  // Returns whether Certificate metadata was provided to the viewer.
-  void HandleHasCertificateMetadata(const base::Value::List& args);
-
-  // Returns the Certificate metadata that is provided to the viewer.
-  void HandleGetCertificateMetadata(const base::Value::List& args);
-
   // Helper function to get the certificate index. Returns -1 if the index is
   // out of range.
   int GetCertificateIndex(int requested_index) const;

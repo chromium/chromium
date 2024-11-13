@@ -5,6 +5,8 @@
 import type {CrTreeBaseElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_base.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 import type {TreeItemDetail} from 'chrome://view-cert/certificate_viewer.js';
+import {CertificateTrust} from 'chrome://view-cert/certificate_viewer.js';
+import type {ConstraintListElement} from 'chrome://view-cert/constraint_list.js';
 import {assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -75,6 +77,11 @@ suite('CertificateViewer', function() {
     // Test that selecting an item without a value empties the field.
     certFields.selectedItem = certFields.items[0]!;
     assertEquals('', certFieldVal.textContent);
+
+    // Test that when cert metadata is not provided is, modifications tab is
+    // hidden.
+    const modificationsTab = getRequiredElement('modifications-tab');
+    assertTrue(modificationsTab.hidden);
   });
 
   test('InvalidCert', async function() {
@@ -87,5 +94,23 @@ suite('CertificateViewer', function() {
         '787188ffa5cca48212ed291e62cb03e1' +
             '1c1f8279df07feb1d2b0e02e0e4aa9e4',
         getRequiredElement('sha256').textContent);
+  });
+
+  test('CheckMetadata', async function() {
+    const modificationsTab = getRequiredElement('modifications-tab');
+    assertFalse(modificationsTab.hidden);
+
+    const trustStateSelector =
+        (getRequiredElement('trust-state-select') as HTMLSelectElement);
+    assertEquals(
+        CertificateTrust.CERTIFICATE_TRUST_UNSPECIFIED,
+        Number(trustStateSelector.value) as CertificateTrust);
+
+    const constraintList =
+        (getRequiredElement('constraints') as ConstraintListElement);
+    assertEquals(3, constraintList.constraints.length);
+    assertTrue(constraintList.constraints.includes('*.example.com'));
+    assertTrue(constraintList.constraints.includes('*.domainname.com'));
+    assertTrue(constraintList.constraints.includes('127.0.0.1/24'));
   });
 });

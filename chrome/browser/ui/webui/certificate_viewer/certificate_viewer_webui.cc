@@ -156,7 +156,10 @@ std::string HandleOptionalOrError(
 }
 
 std::string DialogArgsForCertList(
-    const std::vector<x509_certificate_model::X509CertificateModel>& certs) {
+    const std::vector<x509_certificate_model::X509CertificateModel>& certs,
+    const std::optional<
+        chrome_browser_server_certificate_database::CertificateMetadata>&
+        cert_metadata) {
   std::string data;
 
   // Certificate information. The keys in this dictionary's general key
@@ -235,6 +238,32 @@ std::string DialogArgsForCertList(
   }
   // Set the last node as the top of the certificate hierarchy.
   cert_info.Set("hierarchy", std::move(children));
+
+  if (cert_metadata.has_value()) {
+    base::Value::Dict dict;
+    dict.Set(
+        "trust",
+        base::Value(ConvertTrustToInt(cert_metadata->trust().trust_type())));
+    if (cert_metadata->has_constraints()) {
+      base::Value::List constraints;
+      for (const auto& dns_constraint :
+           cert_metadata->constraints().dns_names()) {
+        constraints.Append(base::Value(dns_constraint));
+      }
+      for (const auto& cidr_constraint : cert_metadata->constraints().cidrs()) {
+        net::IPAddress ip(base::as_byte_span(cidr_constraint.ip()));
+        if (!ip.IsValid()) {
+          continue;
+        }
+        std::string cidr_string = ip.ToString();
+        cidr_string += "/";
+        cidr_string += base::NumberToString(cidr_constraint.prefix_length());
+        constraints.Append(base::Value(std::move(cidr_string)));
+      }
+      dict.Set("constraints", std::move(constraints));
+    }
+    cert_info.Set("certMetadata", std::move(dict));
+  }
 
   base::JSONWriter::Write(cert_info, &data);
 
@@ -390,7 +419,7 @@ CertificateViewerDialog::CertificateViewerDialog(
   constexpr gfx::Size kDefaultSize{544, 628};
   set_can_close(true);
   set_delete_on_close(false);
-  set_dialog_args(DialogArgsForCertList(certs));
+  set_dialog_args(DialogArgsForCertList(certs, cert_metadata));
   set_dialog_modal_type(ui::mojom::ModalType::kNone);
   set_dialog_content_url(GURL(chrome::kChromeUICertificateViewerURL));
   set_dialog_size(kDefaultSize);
@@ -429,16 +458,6 @@ void CertificateViewerDialogHandler::RegisterMessages() {
       "requestCertificateFields",
       base::BindRepeating(
           &CertificateViewerDialogHandler::HandleRequestCertificateFields,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "hasCertificateMetadata",
-      base::BindRepeating(
-          &CertificateViewerDialogHandler::HandleHasCertificateMetadata,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "requestCertificateMetadata",
-      base::BindRepeating(
-          &CertificateViewerDialogHandler::HandleGetCertificateMetadata,
           base::Unretained(this)));
 }
 
@@ -573,46 +592,4 @@ int CertificateViewerDialogHandler::GetCertificateIndex(
     return -1;
   }
   return cert_index;
-}
-
-void CertificateViewerDialogHandler::HandleHasCertificateMetadata(
-    const base::Value::List& args) {
-  AllowJavascript();
-  const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(callback_id,
-                            base::Value(cert_metadata_.has_value()));
-}
-
-void CertificateViewerDialogHandler::HandleGetCertificateMetadata(
-    const base::Value::List& args) {
-  AllowJavascript();
-  const base::Value& callback_id = args[0];
-  if (!cert_metadata_) {
-    RejectJavascriptCallback(callback_id,
-                             base::Value("No Cert Metadata available!"));
-    return;
-  }
-  base::Value::Dict dict;
-  dict.Set(
-      "trust",
-      base::Value(ConvertTrustToInt(cert_metadata_->trust().trust_type())));
-  if (cert_metadata_->has_constraints()) {
-    base::Value::List constraints;
-    for (auto& dns_constraint : cert_metadata_->constraints().dns_names()) {
-      constraints.Append(base::Value(dns_constraint));
-    }
-    for (auto& cidr_constraint : cert_metadata_->constraints().cidrs()) {
-      net::IPAddress ip(base::as_byte_span(cidr_constraint.ip()));
-      if (!ip.IsValid()) {
-        continue;
-      }
-      std::string cidr_string = ip.ToString();
-      cidr_string += "/";
-      cidr_string += base::NumberToString(cidr_constraint.prefix_length());
-      constraints.Append(base::Value(std::move(cidr_string)));
-    }
-    dict.Set("constraints", std::move(constraints));
-  }
-
-  ResolveJavascriptCallback(callback_id, std::move(dict));
 }

@@ -19,21 +19,7 @@ interface TreeInfo {
   label: string;
 }
 
-interface CertificateInfo {
-  general: {[key: string]: string};
-  hierarchy: TreeInfo[];
-  isError: boolean;
-}
-
-export interface TreeItemDetail {
-  payload: {
-    val?: string,
-    index?: number,
-  };
-  children: {[key: string|number]: CrTreeItemElement};
-}
-
-enum CertificateTrust {
+export enum CertificateTrust {
   // LINT.IfChange(CertificateTrustType)
   CERTIFICATE_TRUST_DISTRUSTED = 0,
   CERTIFICATE_TRUST_UNSPECIFIED = 1,
@@ -44,6 +30,22 @@ enum CertificateTrust {
 interface CertificateMetadata {
   trust: CertificateTrust;
   constraints: string[];
+}
+
+interface CertificateInfo {
+  general: {[key: string]: string};
+  hierarchy: TreeInfo[];
+  isError: boolean;
+
+  certMetadata?: CertificateMetadata;
+}
+
+export interface TreeItemDetail {
+  payload: {
+    val?: string,
+    index?: number,
+  };
+  children: {[key: string|number]: CrTreeItemElement};
 }
 
 /**
@@ -58,6 +60,7 @@ function initialize() {
   const args =
       JSON.parse(chrome.getVariableValue('dialogArguments')) as CertificateInfo;
   getCertificateInfo(args);
+  getCertificateMetadata(args);
 
   /**
    * Initialize the second tab's contents.
@@ -94,17 +97,10 @@ function initialize() {
   const exportButton = document.querySelector<HTMLElement>('#export');
   assert(exportButton);
   exportButton.onclick = exportCertificate;
-
-  // TODO(crbug.com/40928765): see if we can do this instead with dialog args
-  // versus callbacks.
-  // TODO(crbug.com/40928765): add test for cert metadata after trying dialog
-  // args refactor.
-  sendWithPromise('hasCertificateMetadata').then(onHasCertificateMetadata);
 }
 
-
-function onHasCertificateMetadata(hasCertificateMetadata: boolean) {
-  if (!hasCertificateMetadata) {
+function getCertificateMetadata(certInfo: CertificateInfo) {
+  if (certInfo.certMetadata === undefined) {
     return;
   }
 
@@ -112,19 +108,16 @@ function onHasCertificateMetadata(hasCertificateMetadata: boolean) {
       document.querySelector<HTMLElement>('#modifications-tab');
   assert(modificationsTab);
   modificationsTab.hidden = false;
-  sendWithPromise('requestCertificateMetadata').then(onGetCertificateMetadata);
-}
 
-function onGetCertificateMetadata(certMetadata: CertificateMetadata) {
   const trustStateSelect =
       document.querySelector<HTMLSelectElement>('#trust-state-select');
   assert(trustStateSelect);
-  trustStateSelect.value = certMetadata.trust.toString();
+  trustStateSelect.value = certInfo.certMetadata.trust.toString();
 
   const constraintsElement = document.querySelector('constraint-list');
   assert(constraintsElement);
 
-  constraintsElement.constraints = certMetadata.constraints;
+  constraintsElement.constraints = certInfo.certMetadata.constraints;
 }
 
 /**
