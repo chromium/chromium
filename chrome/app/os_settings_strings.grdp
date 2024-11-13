@@ -3308,14 +3308,8 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_STYLUS_NOTE_TAKING_APP_LABEL" desc="Label describing a dropdown that lets the user pick their default note-taking applications. The dropdown contains a list of all available choices. The user can install additional apps, so the contents of the dropdown is dynamic.">
     Note-taking app
   </message>
-  <message name="IDS_SETTINGS_STYLUS_NOTE_TAKING_APP_LOCK_SCREEN_CHECKBOX" desc="Label for a check box that enables note-taking by selected note-taking application when user session is locked (i.e. when lock screen is shown).">
-    Enable note-taking from lock screen
-  </message>
   <message name="IDS_SETTINGS_STYLUS_NOTE_TAKING_APP_KEEP_LATEST_NOTE" desc="Label for a check box that, when checked, indicates that the note-taking app should keep the latest note the user took while on the lock screen available to the user whenever the app is launched on the lock screen (i.e. if the active app window is closed, the note should be visible the next time the app is launched).">
     Keep latest note on lock screen
-  </message>
-  <message name="IDS_SETTINGS_STYLUS_LOCK_SCREEN_NOTES_TITLE" desc="In stylus settings, title of a section that contains settings for controlling note taking on the lock screen.">
-    Lock screen notes
   </message>
   <message name="IDS_SETTINGS_STYLUS_NOTE_TAKING_APP_NONE_AVAILABLE" desc="Secondary label used when there are no note-taking applications available.">
     None available
