@@ -205,9 +205,8 @@ static int WriteToStringBuilder(void* context, const char* buffer, int len) {
     NOTREACHED();
   }
 
-  int utf16_length =
-      static_cast<int>(buffer_u_char - string_buffer.Characters());
-  result_output.Append(string_buffer.Characters(), utf16_length);
+  result_output.Append(string_buffer.Span().first(
+      static_cast<size_t>(buffer_u_char - string_buffer.Characters())));
   return static_cast<int>(string_current - buffer);
 }
 

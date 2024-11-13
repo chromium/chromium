@@ -248,23 +248,6 @@ bool StringBuilder::DoesAppendCauseOverflow(unsigned length) const {
          Buffer16::MaxCapacity();
 }
 
-void StringBuilder::Append(const UChar* characters, unsigned length) {
-  if (!length)
-    return;
-  DCHECK(characters);
-
-  // If there's only one char we use append(UChar) instead since it will
-  // check for latin1 and avoid converting to 16bit if possible.
-  if (length == 1) {
-    Append(*characters);
-    return;
-  }
-
-  EnsureBuffer16(length);
-  buffer16_.Append(characters, length);
-  length_ += length;
-}
-
 void StringBuilder::Append(base::span<const UChar> chars) {
   if (chars.empty()) {
     return;
