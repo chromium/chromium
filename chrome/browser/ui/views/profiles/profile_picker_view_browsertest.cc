@@ -2167,32 +2167,22 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest, DeleteProfile) {
 // Regression test for https://crbug.com/1488267
 IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        DeleteProfileFromOwnTab) {
-  // TODO(crbug.com/375559953): Remove the lacros-specific logic below (see
-  // comment).
-  //
-  // Create a new profile and browser. This is required on Lacros because the
-  // main profile cannot be deleted.
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  base::FilePath other_path =
-      profile_manager->GenerateNextProfileDirectoryPath();
-  Profile& other_profile =
-      profiles::testing::CreateProfileSync(profile_manager, other_path);
-  Browser* other_browser = CreateBrowser(&other_profile);
-
   // Open the picker in a tab.
+  Profile* profile = browser()->profile();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      other_browser, GURL(chrome::kChromeUIProfilePickerUrl)));
+      browser(), GURL(chrome::kChromeUIProfilePickerUrl)));
+
   content::WebContents* contents =
-      other_browser->tab_strip_model()->GetActiveWebContents();
+      browser()->tab_strip_model()->GetActiveWebContents();
   ProfilePickerHandler* handler = contents->GetWebUI()
                                       ->GetController()
                                       ->GetAs<ProfilePickerUI>()
                                       ->GetProfilePickerHandlerForTesting();
 
   // Simulate profile deletion from the picker.
-  ProfileDestructionWaiter waiter(&other_profile);
+  ProfileDestructionWaiter waiter(profile);
   base::Value::List args;
-  args.Append(base::FilePathToValue(other_profile.GetPath()));
+  args.Append(base::FilePathToValue(profile->GetPath()));
   handler->HandleGetProfileStatistics(args);
   handler->HandleRemoveProfile(args);
   waiter.Wait();
