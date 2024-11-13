@@ -209,9 +209,6 @@ class ProfileImpl : public Profile {
   void UpdateAvatarInStorage();
   void UpdateIsEphemeralInStorage();
 
-  // Called to initialize Data Reduction Proxy.
-  void InitializeDataReductionProxy();
-
   // Called after a profile is initialized, to record 'one per profile creation'
   // metrics relating to user prefs.
   void RecordPrefValuesAfterProfileInitialization();
