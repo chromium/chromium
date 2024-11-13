@@ -628,8 +628,13 @@ void PlusAddressServiceImpl::OnPlusAddressSuggestionShown(
       /*plus_address_count=*/plus_address_cache_.Size());
 }
 
-void PlusAddressServiceImpl::DidFillPlusAddress() {
+void PlusAddressServiceImpl::DidFillPlusAddress(
+    bool did_show_email_suggestion) {
   pref_service_->SetTime(prefs::kLastPlusAddressFillingTime, base::Time::Now());
+  if (did_show_email_suggestion) {
+    TriggerUserPerceptionSurvey(
+        hats::SurveyType::kDidChoosePlusAddressOverEmail);
+  }
 }
 
 void PlusAddressServiceImpl::OnClickedRefreshInlineSuggestion(

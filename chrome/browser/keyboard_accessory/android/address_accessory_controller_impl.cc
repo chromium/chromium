@@ -153,7 +153,8 @@ void AddressAccessoryControllerImpl::OnFillingTriggered(
   FillValueIntoField(focused_field_id, selection.display_text());
   if (selection.suggestion_type() == AccessorySuggestionType::kPlusAddress &&
       plus_address_service_) {
-    plus_address_service_->DidFillPlusAddress();
+    plus_address_service_->DidFillPlusAddress(
+        /*did_show_email_suggestion=*/false);
   }
 }
 

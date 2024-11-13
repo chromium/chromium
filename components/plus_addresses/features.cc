@@ -146,6 +146,12 @@ BASE_FEATURE(kPlusAddressUserCreatedPlusAddressViaManualFallbackSurvey,
              "PlusAddressUserCreatedPlusAddressViaManualFallbackSurvey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, a HaTS survey is shown after the user chooses to fill a plus
+// address when an email suggestion is also offered in the Autofill popup.
+BASE_FEATURE(kPlusAddressUserDidChoosePlusAddressOverEmail,
+             "PlusAddressUserDidChoosePlusAddressOverEmail",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, the plus address creation dialogs or bottom sheets include
 // extended feature description and usage notice.
 BASE_FEATURE(kPlusAddressUserOnboardingEnabled,

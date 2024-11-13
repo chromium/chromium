@@ -868,7 +868,8 @@ void PasswordAccessoryControllerImpl::FillSelection(
   if (selection.suggestion_type() ==
           autofill::AccessorySuggestionType::kPlusAddress &&
       plus_address_service_) {
-    plus_address_service_->DidFillPlusAddress();
+    plus_address_service_->DidFillPlusAddress(
+        /*did_shown_email_suggestion=*/false);
   }
   if (base::FeatureList::IsEnabled(
           password_manager::features::

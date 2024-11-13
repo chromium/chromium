@@ -1896,7 +1896,7 @@ TEST_F(PlusAddressSuggestionsTest, GetManagePlusAddressSuggestion) {
 
 // Tests that the last plus address usage time is recorded correctly.
 TEST_F(PlusAddressSuggestionsTest, DidFillPlusAddress) {
-  service().DidFillPlusAddress();
+  service().DidFillPlusAddress(/*did_show_email_suggestion=*/false);
   EXPECT_EQ(pref_service().GetTime(prefs::kLastPlusAddressFillingTime),
             base::Time::Now());
 }

@@ -860,7 +860,20 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
         plus_address_delegate->RecordAutofillSuggestionEvent(
             AutofillPlusAddressDelegate::SuggestionEvent::
                 kExistingPlusAddressChosen);
-        plus_address_delegate->DidFillPlusAddress();
+        const bool did_show_email_suggestion = [this]() {
+          const AutofillField* autofill_trigger_field =
+              GetQueriedAutofillField();
+          const bool triggered_on_email_field =
+              autofill_trigger_field &&
+              autofill_trigger_field->Type().group() == FieldTypeGroup::kEmail;
+          // Email suggestions do not have a dedicated suggestion type. Address
+          // suggestions with the email as the main label are generated if the
+          // triggering field type is email.
+          return triggered_on_email_field &&
+                 base::Contains(shown_suggestion_types_,
+                                SuggestionType::kAddressEntry);
+        }();
+        plus_address_delegate->DidFillPlusAddress(did_show_email_suggestion);
       }
       manager_->FillOrPreviewField(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,

@@ -137,8 +137,10 @@ class AutofillPlusAddressDelegate {
       PasswordFormClassification::Type form_type,
       SuggestionType suggestion_type) = 0;
 
-  // Called when a plus address was filled into a web input field.
-  virtual void DidFillPlusAddress() = 0;
+  // Called when a plus address was filled into a web input field. If
+  // `did_show_email_suggestion` is `true`, a HaTS survey is launched to ask the
+  // user why did they choose a plus address over an email suggestion.
+  virtual void DidFillPlusAddress(bool did_show_email_suggestion) = 0;
 
   using UpdateSuggestionsCallback =
       base::OnceCallback<void(std::vector<Suggestion>,

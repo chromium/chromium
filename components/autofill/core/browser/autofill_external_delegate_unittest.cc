@@ -2237,14 +2237,70 @@ class AutofillExternalDelegatePlusAddressUnitTest
 // the mocked address used in the creation flow).
 TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
        ExternalDelegateFillsExistingPlusAddress) {
-  IssueOnQuery();
+  // Trigger the popup on an email field.
+  IssueOnQuery(kDefaultTriggerSource, EMAIL_ADDRESS, "email");
 
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(client(), ShowAutofillSuggestions(
                             PopupOpenArgsAre(SuggestionVectorIdsAre(
+                                SuggestionType::kAddressEntry,
                                 SuggestionType::kFillExistingPlusAddress)),
                             _));
+  const std::u16string plus_address = u"test+plus@test.example";
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back(/*main_text=*/u"example@gmail.com",
+                           SuggestionType::kAddressEntry);
+  suggestions.emplace_back(/*main_text=*/plus_address,
+                           SuggestionType::kFillExistingPlusAddress);
+  // This function tests the filling of existing plus addresses, which is why
+  // `OfferPlusAddressCreation` need not be mocked.
+  OnSuggestionsReturned(queried_field().global_id(), suggestions);
+
+  EXPECT_CALL(driver(), RendererShouldClearPreviewedForm());
+  EXPECT_CALL(
+      manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kPreview,
+                         mojom::FieldActionType::kReplaceAll,
+                         HasQueriedFormId(), HasQueriedFieldId(), plus_address,
+                         SuggestionType::kFillExistingPlusAddress,
+                         std::optional(EMAIL_ADDRESS)));
+  external_delegate().DidSelectSuggestion(suggestions[1]);
+  EXPECT_CALL(client(), HideAutofillSuggestions(
+                            SuggestionHidingReason::kAcceptSuggestion));
+  EXPECT_CALL(plus_address_delegate(),
+              RecordAutofillSuggestionEvent(
+                  MockAutofillPlusAddressDelegate::SuggestionEvent::
+                      kExistingPlusAddressChosen));
+  EXPECT_CALL(plus_address_delegate(),
+              DidFillPlusAddress(/*did_show_email_suggestion=*/true));
+  EXPECT_CALL(
+      manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kFill,
+                         mojom::FieldActionType::kReplaceAll,
+                         HasQueriedFormId(), HasQueriedFieldId(), plus_address,
+                         SuggestionType::kFillExistingPlusAddress,
+                         std::optional(EMAIL_ADDRESS)));
+  external_delegate().DidAcceptSuggestion(suggestions[1],
+                                          SuggestionPosition{.row = 0});
+}
+
+// Tests the scenario when the user triggers plus address suggestions manually
+// from the context menu and no email suggestions are shown.
+TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
+       AcceptsManuallyTriggeredPlusAddressFillingSuggestion) {
+  // Trigger the popup on an email field.
+  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(
+      client(),
+      ShowAutofillSuggestions(
+          PopupOpenArgsAre(
+              SuggestionVectorIdsAre(SuggestionType::kFillExistingPlusAddress),
+              AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses),
+          _));
   const std::u16string plus_address = u"test+plus@test.example";
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back(/*main_text=*/plus_address,
@@ -2268,7 +2324,8 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
               RecordAutofillSuggestionEvent(
                   MockAutofillPlusAddressDelegate::SuggestionEvent::
                       kExistingPlusAddressChosen));
-  EXPECT_CALL(plus_address_delegate(), DidFillPlusAddress);
+  EXPECT_CALL(plus_address_delegate(),
+              DidFillPlusAddress(/*did_show_email_suggestion=*/false));
   EXPECT_CALL(
       manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,

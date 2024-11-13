@@ -54,7 +54,7 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
                PasswordFormClassification::Type,
                SuggestionType),
               (override));
-  MOCK_METHOD(void, DidFillPlusAddress, (), (override));
+  MOCK_METHOD(void, DidFillPlusAddress, (bool), (override));
   MOCK_METHOD(void,
               OnClickedRefreshInlineSuggestion,
               (const url::Origin&,

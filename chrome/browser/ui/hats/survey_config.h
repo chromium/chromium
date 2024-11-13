@@ -80,6 +80,8 @@ extern const char kHatsSurveyTriggerPlusAddressCreatedMultiplePlusAddresses[];
 extern const char
     kHatsSurveyTriggerPlusAddressCreatedPlusAddressViaManualFallback[];
 extern const char kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate[];
+extern const char
+    kHatsSurveyTriggerPlusAddressDidChoosePlusAddressOverEmailSurvey[];
 extern const char kHatsSurveyTriggerPrivacySandboxSentimentSurvey[];
 
 extern const char kHatsSurveyTriggerTesting[];

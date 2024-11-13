@@ -30,6 +30,9 @@ enum class SurveyType {
   // The user has created a plus address by triggering the popup via the Chrome
   // context menu.
   kCreatedPlusAddressViaManualFallback = 4,
+  // The user was shown both an email and a plus address suggestion. The user
+  // accepted the plus address suggestion.
+  kDidChoosePlusAddressOverEmail = 5,
 };
 
 std::map<std::string, std::string> GetPlusAddressHatsData(
