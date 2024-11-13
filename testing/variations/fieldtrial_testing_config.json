@@ -5939,10 +5939,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "prob": "0.1",
-                        "survey_cycle_length": "7",
-                        "survey_start_date_ms": "1729580400000",
-                        "trigger_id": "44m1DgehL0ugnJ3q1cK0Qih71MRQ"
+                        "en_site_id": "44m1DgehL0ugnJ3q1cK0Qih71MRQ",
+                        "probability": "0.1"
                     },
                     "enable_features": [
                         "HappinessTrackingSurveysForComposeAcceptance"
@@ -5962,10 +5960,8 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "prob": "0.1",
-                        "survey_cycle_length": "7",
-                        "survey_start_date_ms": "1729580400000",
-                        "trigger_id": "mT2d9fiNR0ugnJ3q1cK0SdAewrT2"
+                        "en_site_id": "mT2d9fiNR0ugnJ3q1cK0SdAewrT2",
+                        "probability": "0.1"
                     },
                     "enable_features": [
                         "HappinessTrackingSurveysForComposeClose"
