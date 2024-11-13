@@ -851,9 +851,6 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
                           const webrtc::CodecSpecificInfo& info,
                           int32_t bitstream_buffer_id);
 
-  // Records |failed_timestamp_match_| value after a session.
-  void RecordTimestampMatchUMA() const;
-
   // Gets ActiveSpatialLayers that are currently active,
   // meaning the are configured, have active=true and have non-zero bandwidth
   // allocated to them.
@@ -1388,11 +1385,6 @@ void RTCVideoEncoder::Impl::RequestEncodingParametersChangeWithSizeChange(
   input_visible_size_ = input_visible_size;
 }
 
-void RTCVideoEncoder::Impl::RecordTimestampMatchUMA() const {
-  base::UmaHistogramBoolean("Media.RTCVideoEncoderTimestampMatchSuccess",
-                            !failed_timestamp_match_);
-}
-
 ActiveSpatialLayers RTCVideoEncoder::Impl::GetActiveSpatialLayers() const {
   if (init_spatial_layer_resolutions_.empty()) {
     return ActiveSpatialLayers();
@@ -1907,7 +1899,6 @@ void RTCVideoEncoder::Impl::NotifyErrorStatus(
 RTCVideoEncoder::Impl::~Impl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RecordTimestampMatchUMA();
   if (video_encoder_) {
     video_encoder_.reset();
     status_ = WEBRTC_VIDEO_CODEC_UNINITIALIZED;

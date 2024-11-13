@@ -5354,16 +5354,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Media.RTCVideoEncoderTimestampMatchSuccess"
-    enum="BooleanSuccess" expires_after="M77">
-  <owner>emircan@chromium.org</owner>
-  <summary>
-    Indicates whether we were successful in preserving timestamps in hardware
-    video encoder session. It is tracked during the session and logged after it
-    ends.
-  </summary>
-</histogram>
-
 <histogram name="Media.ScreenCaptureKit.FullscreenModuleMode"
     enum="ScreenCaptureKitFullscreenModuleMode" expires_after="2025-05-11">
   <owner>kron@chromium.org</owner>
