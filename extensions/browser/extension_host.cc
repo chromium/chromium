@@ -15,7 +15,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/input/native_web_keyboard_event.h"
-#include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -518,7 +517,7 @@ void ExtensionHost::OnEventAck(int event_id,
 
 content::JavaScriptDialogManager* ExtensionHost::GetJavaScriptDialogManager(
     WebContents* source) {
-  return javascript_dialogs::AppModalDialogManager::GetInstance();
+  return delegate_->GetJavaScriptDialogManager();
 }
 
 content::WebContents* ExtensionHost::AddNewContents(
