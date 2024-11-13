@@ -44,8 +44,6 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void SetMaxSize(int32_t width, int32_t height) override;
   void SetAppId(const std::string& app_id) override;
   void SetDecoration(DecorationMode decoration) override;
-  void Lock(WaylandOrientationLockType lock_type) override;
-  void Unlock() override;
   void SetSystemModal(bool modal) override;
   void SetFloatToLocation(
       WaylandFloatStartLocation float_start_location) override;

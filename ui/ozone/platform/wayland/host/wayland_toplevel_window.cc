@@ -891,14 +891,6 @@ void WaylandToplevelWindow::SetPip() {
   }
 }
 
-void WaylandToplevelWindow::Lock(WaylandOrientationLockType lock_type) {
-  shell_toplevel_->Lock(lock_type);
-}
-
-void WaylandToplevelWindow::Unlock() {
-  shell_toplevel_->Unlock();
-}
-
 bool WaylandToplevelWindow::SupportsPointerLock() {
   return !!connection()->zwp_pointer_constraints() &&
          !!connection()->zwp_relative_pointer_manager();

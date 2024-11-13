@@ -356,45 +356,6 @@ XDGSurfaceWrapperImpl* XDGToplevelWrapperImpl::xdg_surface_wrapper() const {
   return xdg_surface_wrapper_.get();
 }
 
-zaura_toplevel_orientation_lock ToZauraSurfaceOrientationLock(
-    WaylandOrientationLockType lock_type) {
-  switch (lock_type) {
-    case WaylandOrientationLockType::kLandscape:
-      return ZAURA_TOPLEVEL_ORIENTATION_LOCK_LANDSCAPE;
-    case WaylandOrientationLockType::kLandscapePrimary:
-      return ZAURA_TOPLEVEL_ORIENTATION_LOCK_LANDSCAPE_PRIMARY;
-    case WaylandOrientationLockType::kLandscapeSecondary:
-      return ZAURA_TOPLEVEL_ORIENTATION_LOCK_LANDSCAPE_SECONDARY;
-    case WaylandOrientationLockType::kPortrait:
-      return ZAURA_TOPLEVEL_ORIENTATION_LOCK_PORTRAIT;
-    case WaylandOrientationLockType::kPortraitPrimary:
-      return ZAURA_TOPLEVEL_ORIENTATION_LOCK_PORTRAIT_PRIMARY;
-    case WaylandOrientationLockType::kPortraitSecondary:
-      return ZAURA_TOPLEVEL_ORIENTATION_LOCK_PORTRAIT_SECONDARY;
-    case WaylandOrientationLockType::kAny:
-      return ZAURA_TOPLEVEL_ORIENTATION_LOCK_NONE;
-    case WaylandOrientationLockType::kNatural:
-      return ZAURA_TOPLEVEL_ORIENTATION_LOCK_CURRENT;
-  }
-  return ZAURA_TOPLEVEL_ORIENTATION_LOCK_NONE;
-}
-
-void XDGToplevelWrapperImpl::Lock(WaylandOrientationLockType lock_type) {
-  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
-                            ZAURA_TOPLEVEL_SET_ORIENTATION_LOCK_SINCE_VERSION) {
-    zaura_toplevel_set_orientation_lock(
-        aura_toplevel_.get(), ToZauraSurfaceOrientationLock(lock_type));
-  }
-}
-
-void XDGToplevelWrapperImpl::Unlock() {
-  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
-                            ZAURA_TOPLEVEL_SET_ORIENTATION_LOCK_SINCE_VERSION) {
-    zaura_toplevel_set_orientation_lock(aura_toplevel_.get(),
-                                        ZAURA_TOPLEVEL_ORIENTATION_LOCK_NONE);
-  }
-}
-
 void XDGToplevelWrapperImpl::SetSystemModal(bool modal) {
   if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
                             ZAURA_TOPLEVEL_SET_SYSTEM_MODAL_SINCE_VERSION) {

@@ -156,8 +156,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   void SetPip() override;
   bool SupportsPointerLock() override;
   void LockPointer(bool enabled) override;
-  void Lock(WaylandOrientationLockType lock_Type) override;
-  void Unlock() override;
   bool GetTabletMode() override;
   void SetFloatToLocation(
       WaylandFloatStartLocation float_start_location) override;

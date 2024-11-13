@@ -24,17 +24,6 @@ enum class WaylandFloatStartLocation {
   kBottomLeft,
 };
 
-enum class WaylandOrientationLockType {
-  kAny,
-  kNatural,
-  kPortrait,
-  kLandscape,
-  kPortraitPrimary,
-  kLandscapePrimary,
-  kPortraitSecondary,
-  kLandscapeSecondary,
-};
-
 class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
  public:
   // Waits for a Wayland roundtrip to ensure all side effects have been
@@ -102,10 +91,6 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandToplevelExtension {
   // Whether or not the underlying platform supports native pointer locking.
   virtual bool SupportsPointerLock() = 0;
   virtual void LockPointer(bool enabled) = 0;
-
-  // Lock and unlock the window rotation.
-  virtual void Lock(WaylandOrientationLockType lock_Type) = 0;
-  virtual void Unlock() = 0;
 
   // Retrieve current layout state.
   virtual bool GetTabletMode() = 0;

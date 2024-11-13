@@ -114,14 +114,6 @@ class ShellToplevelWrapper {
   // with this top level window.
   virtual void SetDecoration(DecorationMode decoration) = 0;
 
-  // Request that the server set the orientation lock to the provided lock type.
-  // This is only accepted if the requesting window is running in immersive
-  // fullscreen mode and in a tablet configuration.
-  virtual void Lock(WaylandOrientationLockType lock_type) = 0;
-
-  // Request that the server remove the applied orientation lock.
-  virtual void Unlock() = 0;
-
   // Request that the window be made a system modal.
   virtual void SetSystemModal(bool modal) = 0;
 
