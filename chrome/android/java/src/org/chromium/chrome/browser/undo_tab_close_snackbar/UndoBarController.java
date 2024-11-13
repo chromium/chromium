@@ -182,10 +182,7 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
                                                 ? SnackbarManager.DEFAULT_SNACKBAR_DURATION_LONG_MS
                                                 : SnackbarManager.DEFAULT_SNACKBAR_DURATION_MS)
                                 .setTemplateText(templateAndContent.first)
-                                .setAction(mContext.getString(R.string.undo), actionData)
-                                .setActionAccessibilityAnnouncement(
-                                        getUndoneAccessibilityAnnouncement(
-                                                templateAndContent.second, false)));
+                                .setAction(mContext.getString(R.string.undo), actionData));
     }
 
     private static class ClosureMetadata {
@@ -343,18 +340,9 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
         return singleTab ? Snackbar.UMA_TAB_CLOSE_UNDO : Snackbar.UMA_TAB_CLOSE_MULTIPLE_UNDO;
     }
 
-    private String getUndoneAccessibilityAnnouncement(String content, boolean isMultiple) {
-        return isMultiple
-                ? mContext.getString(
-                        R.string.accessibility_undo_multiple_closed_tabs_announcement_message,
-                        content)
-                : mContext.getString(
-                        R.string.accessibility_undo_closed_tab_announcement_message, content);
-    }
-
     /**
-     * Calls {@link TabModel#cancelTabClosure(int)} for the tab or for each tab in
-     * the list of closed tabs.
+     * Calls {@link TabModel#cancelTabClosure(int)} for the tab or for each tab in the list of
+     * closed tabs.
      */
     @SuppressWarnings("unchecked")
     @Override
