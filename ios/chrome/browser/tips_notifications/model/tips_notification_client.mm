@@ -180,6 +180,8 @@ void TipsNotificationClient::HandleNotificationInteraction(
                              weak_ptr_factory_.GetWeakPtr(), type, browser))];
 
   if (IsProvisionalNotificationAlertEnabled() && !permitted_) {
+    // Set `permitted_` here so that the OnPermittedPrefChanged exits early.
+    permitted_ = true;
     AuthenticationService* authService =
         AuthenticationServiceFactory::GetForProfile(
             GetSceneLevelForegroundActiveBrowser()->GetProfile());
