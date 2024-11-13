@@ -37,10 +37,12 @@ if (use_fuzzing_engine_with_lpm) {
       "//components/prefs",
       "//third_party/libprotobuf-mutator",
       "//ui/base",
+    ]
 
+    data_deps = [
       # .pak files loaded by the fuzzer.
       "//components:components_tests_pak",
-      "//ui/resources:ui_test_pak",
+      "//ui/resources:ui_test_pak_data",
     ]
   }
 
