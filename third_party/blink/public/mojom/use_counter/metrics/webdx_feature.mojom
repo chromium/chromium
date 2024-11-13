@@ -278,6 +278,11 @@ enum WebDXFeature {
   kFontSizeAdjust = 220,
   kV8ResizableArrayBuffer = 221,
   kV8GrowableSharedArrayBuffer = 222,
+  kV8ArrayByCopy = 223,
+  kV8ArrayFromAsync = 224,
+  kV8IteratorMethods = 225,
+  kV8PromiseAny = 226,
+  kV8SetMethods = 227,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -33941,6 +33941,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="220" label="FontSizeAdjust"/>
   <int value="221" label="V8ResizableArrayBuffer"/>
   <int value="222" label="V8GrowableSharedArrayBuffer"/>
+  <int value="223" label="V8ArrayByCopy"/>
+  <int value="224" label="V8ArrayFromAsync"/>
+  <int value="225" label="V8IteratorMethods"/>
+  <int value="226" label="V8PromiseAny"/>
+  <int value="227" label="V8SetMethods"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->
