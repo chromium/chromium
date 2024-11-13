@@ -71,7 +71,8 @@ public class TabSwitcherGroupCardFacility extends Facility<TabSwitcherStation> {
 
     /** Clicks the group card to open the tab group dialog. */
     public TabGroupDialogFacility<TabSwitcherStation> clickCard() {
+        boolean isIncognito = mHostStation.isIncognito();
         return mHostStation.enterFacilitySync(
-                new TabGroupDialogFacility<>(mTabIdsToGroup), mCardTitleSpec::click);
+                new TabGroupDialogFacility<>(mTabIdsToGroup, isIncognito), mCardTitleSpec::click);
     }
 }
