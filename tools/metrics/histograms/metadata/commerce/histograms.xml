@@ -879,7 +879,6 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram name="Commerce.{FeatureName}.IconInteractionState"
     enum="CommerceIconInteractionState" expires_after="2025-04-13">
-  <owner>josephjoopark@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>

@@ -7050,7 +7050,6 @@
   {
     "name": "price-tracking-icon-colors",
     "owners": [
-      "josephjoopark@chromium.org",
       "mdjones@chromium.org",
       "chrome-shopping-eng@google.com"
     ],
@@ -8035,7 +8034,7 @@
   },
   {
   "name": "shopping-icon-color-variant",
-    "owners": [ "josephjoopark@chromium.org", "chrome-desktop-ui-sea@google.com" ],
+    "owners": [ "chrome-desktop-ui-sea@google.com" ],
     "expiry_milestone": 126
   },
   {
@@ -8719,7 +8718,7 @@
   },
   {
     "name" : "toolbar-pinning",
-    "owners": [ "corising@chromium.org", "josephjoopark@chromium.org", "tbergquist@chromium.org", "chrome-desktop-ui-sea@chromium.org" ],
+    "owners": [ "corising@chromium.org", "tbergquist@chromium.org", "chrome-desktop-ui-sea@chromium.org" ],
     "expiry_milestone" : 135
   },
   {

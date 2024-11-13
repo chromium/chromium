@@ -718,7 +718,7 @@ void IconLabelBubbleView::HideAnimation() {
   UpdateBackground();
 }
 
-// TODO(josephjoopark): Refactor using addCircle().
+// TODO(crbug.com/378108580): Refactor using addCircle().
 SkPath IconLabelBubbleView::GetHighlightPath() const {
   gfx::Rect highlight_bounds = GetLocalBounds();
   if (ShouldShowSeparator()) {
