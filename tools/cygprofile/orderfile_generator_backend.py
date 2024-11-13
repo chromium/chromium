@@ -560,6 +560,9 @@ class OrderfileGenerator:
       assert options.buildbot, ('--use-common-out-dir-for-instrumented is only '
                                 'meant to be used with --buildbot, otherwise '
                                 'it will overwrite the local out/Release dir.')
+      assert options.common_out_dir, (
+          '--common-out-dir needs to be specified when '
+          '--use-common-out-dir-for-instrumented is passed.')
       # This is used on the bot to save the directory for the stack tool. We
       # only save the instrumented out dir since it is needed to deobfuscate the
       # stack trace. The uninstrumented build is used to compare performance on
@@ -1158,14 +1161,11 @@ def CreateArgumentParser():
                             'generated will be valid and nontrivial, but '
                             'may not be based on a representative profile '
                             'or other such considerations. Use with caution.'))
-  parser.add_argument('--commit-hashes', action='store_true',
+  parser.add_argument('--commit-hashes',
+                      action='store_true',
                       help=('Commit any orderfile hash files in the current '
                             'checkout; performs no other action'))
-  # TODO(https://crbug.com/375614283): Remove the default and add asserts that
-  #     this arg is passed whenever --use-common-out-dir-for-instrumented is
-  #     passed on the bot, after the migration is done.
   parser.add_argument('--common-out-dir',
-                      default=str(_OUT_PATH / 'Release'),
                       help='The bot will pass in its own unique path.')
   parser.add_argument('--use-common-out-dir-for-instrumented',
                       action='store_true',
