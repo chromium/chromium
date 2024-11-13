@@ -2311,8 +2311,6 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
     hr = codec_api_->SetValue(&CODECAPI_AVEncVideoSelectLayer, &var);
     RETURN_ON_HR_FAILURE(hr, "Couldn't set select temporal layer", hr);
     var.vt = VT_UI8;
-    // Only 16 least significant bits are responsible for generic frame QP
-    // values.
     var.ullVal = QindextoAVEncQP(codec_, quantizer.value());
     DVLOG(3) << "Setting CODECAPI_AVEncVideoEncodeQP to " << var.ullVal;
     hr = codec_api_->SetValue(&CODECAPI_AVEncVideoEncodeQP, &var);
