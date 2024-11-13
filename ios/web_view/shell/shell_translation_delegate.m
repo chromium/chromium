@@ -115,6 +115,12 @@
         targetLanguage, error);
 }
 
+- (void)translationController:(CWVTranslationController*)controller
+    didDeterminePageLanguageDetectionDetails:
+        (CWVTranslationLanguageDetectionDetails*)pageLanguageDetectionDetails {
+  NSLog(@"%@:%@", NSStringFromSelector(_cmd), pageLanguageDetectionDetails);
+}
+
 #pragma mark - Private
 
 - (UIWindow*)anyKeyWindow {
