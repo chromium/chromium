@@ -517,6 +517,7 @@ source_set("browser_sources") {
     "//components/crx_file:crx_creator",
     "//components/guest_view/buildflags",
     "//components/input",
+    "//components/javascript_dialogs",
     "//components/keyed_service/content",
     "//components/keyed_service/content:content",
     "//components/keyed_service/core",

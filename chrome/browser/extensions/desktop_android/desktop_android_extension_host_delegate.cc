@@ -21,13 +21,6 @@ void DesktopAndroidExtensionHostDelegate::OnExtensionHostCreated(
 void DesktopAndroidExtensionHostDelegate::OnMainFrameCreatedForBackgroundPage(
     ExtensionHost* host) {}
 
-content::JavaScriptDialogManager*
-DesktopAndroidExtensionHostDelegate::GetJavaScriptDialogManager() {
-  // TODO(crbug.com/373434594): Support dialogs.
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 void DesktopAndroidExtensionHostDelegate::CreateTab(
     std::unique_ptr<content::WebContents> web_contents,
     const ExtensionId& extension_id,
