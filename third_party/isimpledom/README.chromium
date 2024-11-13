@@ -9,6 +9,11 @@ License File: LICENSE
 Security Critical: yes
 Shipped: yes
 
+
+DO NOT USE. This API has been deprecated and will be removed, along with
+support, as soon as no longer needed for the JAWS screen reader.
+See https://crbug.com/378908266.
+
 Description:
 
   This directory contains the legacy ISimpleDOM API, which was previously needed

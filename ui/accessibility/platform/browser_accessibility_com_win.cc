@@ -1118,7 +1118,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_nodeInfo(
 
 // ISimpleDOMNode::get_attributes()
 // Returns HTML attributes -- not text attributes!
-// TODO(accessibility) Remove a few years after JAWS screen readers stops using.
+// TODO(https://crbug.com/378908266) Remove 3 years after JAWS stops using.
 IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(USHORT max_attribs,
                                                           BSTR* attrib_names,
                                                           SHORT* name_space_id,
