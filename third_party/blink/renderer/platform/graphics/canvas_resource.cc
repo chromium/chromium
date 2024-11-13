@@ -398,7 +398,13 @@ void CanvasResourceSharedBitmap::NotifyResourceLost() {
   shared_mapping_ = {};
 }
 
-void CanvasResourceSharedBitmap::TakeSkImage(sk_sp<SkImage> image) {
+void CanvasResourceSharedBitmap::UploadSoftwareRenderingResults(
+    SkSurface* sk_surface) {
+  auto image = sk_surface->makeImageSnapshot();
+  if (!image) {
+    return;
+  }
+
   auto sk_color_info = GetSkColorInfo();
   SkImageInfo image_info = SkImageInfo::Make(
       SkISize::Make(Size().width(), Size().height()), sk_color_info.colorType(),

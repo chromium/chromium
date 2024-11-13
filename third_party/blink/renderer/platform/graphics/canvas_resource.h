@@ -285,8 +285,8 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
       viz::TransferableResource* out_resource) final;
   gfx::Size Size() const final;
 
-  // Copies the contents of |image| to the resource's backing memory.
-  void TakeSkImage(sk_sp<SkImage> image);
+  // Uploads the contents of |sk_surface| to the resource's backing memory.
+  void UploadSoftwareRenderingResults(SkSurface* sk_surface);
 
   scoped_refptr<StaticBitmapImage> Bitmap() final;
   bool OriginClean() const final { return is_origin_clean_; }

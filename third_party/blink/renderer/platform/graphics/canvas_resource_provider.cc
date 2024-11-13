@@ -261,15 +261,10 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap,
 
     FlushCanvas(reason);
 
-    auto sk_image = GetSkSurface()->makeImageSnapshot();
-    if (!sk_image) {
-      return nullptr;
-    }
-
     // Note that the resource *must* be a CanvasResourceSharedBitmap as this
     // class creates CanvasResourceSharedBitmap instances exclusively.
     static_cast<CanvasResourceSharedBitmap*>(output_resource.get())
-        ->TakeSkImage(std::move(sk_image));
+        ->UploadSoftwareRenderingResults(GetSkSurface());
 
     return output_resource;
   }
