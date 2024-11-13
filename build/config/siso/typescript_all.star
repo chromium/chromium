@@ -16,11 +16,20 @@ def __filegroups(ctx):
     return {
         "third_party/node/node_modules:node_modules": {
             "type": "glob",
-            "includes": ["*.js", "*.cjs", "*.mjs", "*.json", "*.js.flow", "*.ts", "rollup", "terser", "tsc"],
+            "includes": [
+                "*.js",
+                "*.json",
+                "*.ts",
+                "tsc",
+            ],
         },
         "third_party/material_web_components/components-chromium/node_modules:node_modules": {
             "type": "glob",
-            "includes": ["package.json"],
+            "includes": [
+                # This is necessary for
+                # gen/third_party/cros-components/tsconfig_cros_components__ts_library.json
+                "package.json",
+            ],
         },
     }
 
