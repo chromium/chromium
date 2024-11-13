@@ -293,7 +293,9 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     return plugin_->available_area_.OffsetFromOrigin();
   }
 
-  float GetZoom() const override { return plugin_->zoom_; }
+  float GetZoom() const override {
+    return plugin_->zoom_ * plugin_->client_->DeviceScaleFactor();
+  }
 
   void Invalidate(const gfx::Rect& rect) override {
     return plugin_->Invalidate(rect);
