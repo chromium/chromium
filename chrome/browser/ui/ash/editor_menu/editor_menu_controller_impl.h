@@ -79,11 +79,6 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
   // user's view.
   class EditorCardSession : public EditorManager::Observer {
    public:
-    class Delegate {
-     public:
-      virtual void DismissCard() = 0;
-    };
-
     enum class Tab { kEditor, kLobster };
 
     explicit EditorCardSession(EditorMenuControllerImpl* controller,
