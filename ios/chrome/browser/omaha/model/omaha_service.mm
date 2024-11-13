@@ -398,6 +398,17 @@ void OmahaService::Start(std::unique_ptr<network::PendingSharedURLLoaderFactory>
 }
 
 // static
+bool OmahaService::HasStarted() {
+  if (!OmahaService::IsEnabled()) {
+    return false;
+  }
+
+  OmahaService* service = GetInstance();
+
+  return service->started_;
+}
+
+// static
 void OmahaService::CheckNow(OneOffCallback callback) {
   DCHECK(!callback.is_null());
 
@@ -510,6 +521,8 @@ OmahaService::~OmahaService() {
 
 void OmahaService::StartInternal(
     const scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (started_) {
     return;
   }
@@ -573,6 +586,12 @@ void OmahaService::StartInternal(
 
   if (persist_again)
     PersistStates();
+
+  if (IsOmahaServiceRefactorEnabled()) {
+    for (auto& observer : observers_) {
+      observer.OnServiceStarted(this);
+    }
+  }
 }
 
 // static

@@ -111,6 +111,7 @@ class IOSChromeSafetyCheckManager
       IOSChromePasswordCheckManager* password_check_manager) override;
 
   // `OmahaServiceObserver` implementation.
+  void OnServiceStarted(OmahaService* omaha_service) override;
   void UpgradeRecommendedDetailsChanged(
       UpgradeRecommendedDetails details) override;
   void ServiceWillShutdown(OmahaService* omaha_service) override;
@@ -159,6 +160,7 @@ class IOSChromeSafetyCheckManager
 
   // For unit-testing only.
   void StartOmahaCheckForTesting();
+  bool IsOmahaCheckQueuedForTesting() const;
   RunningSafetyCheckState GetRunningCheckStateForTesting() const;
   void SetPasswordCheckStateForTesting(PasswordSafetyCheckState state);
   void SetInsecurePasswordCountsForTesting(
@@ -231,6 +233,7 @@ class IOSChromeSafetyCheckManager
   // NOTE: The response from the Omaha service is handled by
   // `HandleOmahaResponse()`.
   void StartOmahaCheck();
+  void StartOmahaCheckInternal();
 
   // Checks if the Update Chrome check is still running after
   // `kOmahaNetworkWaitTime` has elapsed. If so, considers this an Omaha
@@ -322,6 +325,12 @@ class IOSChromeSafetyCheckManager
   // NOTE: `ignore_omaha_changes_` is reset to false when the Safety Check is
   // run again.
   bool ignore_omaha_changes_ = false;
+
+  // If `omaha_check_queued_` is true, an Omaha check was requested via
+  // `StartOmahaCheck()` but the Omaha service had not yet started.
+  // `OnServiceStarted()` will call `StartOmahaCheck()` again when the service
+  // becomes available.
+  bool omaha_check_queued_ = false;
 
   // If `ignore_password_check_changes_` is true when Password Check Manager
   // observer methods are called, nothing happens. Effectively, this enables
