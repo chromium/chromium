@@ -321,29 +321,6 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest,
 }
 
 TEST_F(RepeatingTimeIntervalTaskExecutorTest,
-       TimezoneChangesSendsNotifyUserNotification) {
-  auto scoped_timezone_settings =
-      std::make_unique<system::ScopedTimezoneSettings>(u"GMT");
-
-  base::test::TestFuture<void> user_activity_future;
-  chromeos::FakePowerManagerClient::Get()->set_user_activity_callback(
-      user_activity_future.GetRepeatingCallback());
-
-  auto interval = CreateWeeklyTimeInterval(DayOfWeek::MONDAY, base::Hours(21),
-                                           DayOfWeek::TUESDAY, base::Hours(8));
-  auto task_executor = CreateTestTaskExecutor(
-      interval, base::BindRepeating([](base::TimeDelta delta) {}),
-      base::BindRepeating([]() {}));
-
-  FastForwardTimeTo(interval.start());
-  task_executor->ScheduleTimer();
-  // Confirm that changing the timezone fires a user activity callback to cancel
-  // any pending suspend calls.
-  scoped_timezone_settings->SetTimezoneFromID(u"GMT-1");
-  EXPECT_TRUE(user_activity_future.WaitAndClear());
-}
-
-TEST_F(RepeatingTimeIntervalTaskExecutorTest,
        ChangingTimeZoneWithoutStartingExecutorIsNoOp) {
   auto scoped_timezone_settings =
       std::make_unique<system::ScopedTimezoneSettings>(u"PST");

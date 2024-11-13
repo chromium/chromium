@@ -21,8 +21,6 @@
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
-#include "chromeos/dbus/power/power_manager_client.h"
-#include "third_party/cros_system_api/dbus/power_manager/dbus-constants.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace ash {
@@ -112,12 +110,6 @@ void RepeatingTimeIntervalTaskExecutor::TimezoneChanged(
   }
 
   last_known_time_zone_id_ = updated_timezone_id;
-
-  // Notify the power manager of user activity to make sure any
-  // requests to suspend the device are cancelled so that the invariant of the
-  // timer waking up the device when the timer ends is maintained.
-  chromeos::PowerManagerClient::Get()->NotifyUserActivity(
-      power_manager::USER_ACTIVITY_OTHER);
 
   timer_->Stop();
   if (has_interval_end_timer_started_) {
