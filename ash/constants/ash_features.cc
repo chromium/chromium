@@ -18,16 +18,6 @@
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 
 namespace ash::features {
-namespace {
-
-// Controls whether Instant Tethering supports hosts which use the background
-// advertisement model.
-BASE_FEATURE(kInstantTetheringBackgroundAdvertisementSupport,
-             "InstantTetheringBackgroundAdvertisementSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
-
 // Enables the UI and logic that minimizes the amount of time the device spends
 // at full battery. This preserves battery lifetime.
 BASE_FEATURE(kAdaptiveCharging,
@@ -3972,11 +3962,6 @@ bool IsSnoopingProtectionEnabled() {
 
 bool IsStartAssistantAudioDecoderOnDemandEnabled() {
   return base::FeatureList::IsEnabled(kStartAssistantAudioDecoderOnDemand);
-}
-
-bool IsInstantTetheringBackgroundAdvertisingSupported() {
-  return base::FeatureList::IsEnabled(
-      kInstantTetheringBackgroundAdvertisementSupport);
 }
 
 bool IsInternalServerSideSpeechRecognitionEnabled() {
