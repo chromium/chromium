@@ -745,6 +745,9 @@ SEQUENCE_CHECKER(_sequenceChecker);
       case ProfileInitStage::kLoadProfile:
         break;
 
+      case ProfileInitStage::kMigrateStorage:
+        break;
+
       case ProfileInitStage::kProfileLoaded:
         break;
 
@@ -780,6 +783,9 @@ SEQUENCE_CHECKER(_sequenceChecker);
         NOTREACHED();
 
       case ProfileInitStage::kLoadProfile:
+        break;
+
+      case ProfileInitStage::kMigrateStorage:
         break;
 
       case ProfileInitStage::kProfileLoaded:

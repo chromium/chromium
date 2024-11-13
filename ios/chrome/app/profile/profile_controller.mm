@@ -164,6 +164,9 @@ bool ShouldLogStorageMetrics(PrefService* pref_service) {
     case ProfileInitStage::kLoadProfile:
       break;
 
+    case ProfileInitStage::kMigrateStorage:
+      break;
+
     case ProfileInitStage::kProfileLoaded:
       break;
 
@@ -196,6 +199,9 @@ bool ShouldLogStorageMetrics(PrefService* pref_service) {
       NOTREACHED();
 
     case ProfileInitStage::kLoadProfile:
+      break;
+
+    case ProfileInitStage::kMigrateStorage:
       break;
 
     case ProfileInitStage::kProfileLoaded:

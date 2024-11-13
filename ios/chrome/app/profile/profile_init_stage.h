@@ -18,6 +18,11 @@ enum class ProfileInitStage {
   // Perform all asynch operation to load profile's preferences from disk.
   kLoadProfile,
 
+  // Migrate the session storage for the profile.
+  // TODO(crbug.com/40945317): remove when migrating legacy session storage
+  // is no longer supported (i.e. all users have migrated).
+  kMigrateStorage,
+
   // Profile preferences have been loaded and the ProfileIOS object and all
   // KeyedServices can be used. The app will automatically transition to the
   // next stage.
