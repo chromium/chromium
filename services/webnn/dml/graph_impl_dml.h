@@ -262,17 +262,6 @@ class GraphImplDml final : public WebNNGraphImpl {
       base::expected<std::unique_ptr<ComputeResources>, HRESULT>
           recording_result);
 
-  // After the `RecordGraphExecutionOnBackgroundThread` task or
-  // `RecordGraphExecution` task is completed, the `ExecuteAndWaitAsync`
-  // method runs back on the gpuMain thread to copy the input data and submit
-  // the command list for execution.
-  void ExecuteAndWaitAsync(
-      scoped_refptr<Adapter> adapter,
-      base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
-      mojom::WebNNGraph::ComputeCallback callback,
-      base::expected<std::unique_ptr<ComputeResources>, HRESULT>
-          recording_result);
-
   GraphImplDml(scoped_refptr<Adapter> adapter,
                ContextImplDml* context,
                std::unique_ptr<CommandRecorder> command_recorder,
@@ -334,40 +323,15 @@ class GraphImplDml final : public WebNNGraphImpl {
       WebNNContextImpl::CreateGraphImplCallback callback,
       HRESULT hr);
 
-  // After the computation is completed, copy the output data from GPU readback
-  // buffer and then run the callback to send it to the renderer process.
-  //
-  // The ranges in the value of the `graph_output_name_to_d3d12_range_map` are
-  // the ranges in the readback output buffer and the default output buffer,
-  // which indicate the aligned offset for each output of the graph.
-  void OnComputationComplete(
-      mojom::WebNNGraph::ComputeCallback callback,
-      std::unique_ptr<ComputeResources> compute_resources,
-      HRESULT hr);
-
   // After the dispatch is completed, recycle the graph resources for another
   // dispatch.
   void OnDispatchComplete(std::unique_ptr<GraphResources> graph_resources,
                           HRESULT hr);
 
-  // If GraphImplDml::ComputeImpl fails, release the `compute_resources_`,
-  // report the error message via `callback` and let `context_` handle the
-  // error.
-  void HandleComputationFailure(const std::string& error_message,
-                                HRESULT hr,
-                                mojom::WebNNGraph::ComputeCallback callback);
-
   // If GraphImplDml::DispatchImpl fails, report and log an error message and
   // release the command recorder since it may haven't been closed normally by
   // CommandRecorder::CloseAndExecute.
   void HandleDispatchFailure(std::string_view error_message, HRESULT hr);
-
-  // Execute the compiled platform graph asynchronously. The `named_inputs` was
-  // validated in base class so we can use them to compute directly, the result
-  // of execution will be returned to renderer process with the `callback`.
-  void ComputeImpl(
-      base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
-      mojom::WebNNGraph::ComputeCallback callback) override;
 
   // Represent the input or output bindings for the graph execution.
   struct IoBindings {
@@ -393,6 +357,8 @@ class GraphImplDml final : public WebNNGraphImpl {
   IoBindings CreateAndCacheOutputBindings(
       const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs);
 
+  // Execute the compiled platform graph asynchronously. The inputs were
+  // validated in base class so we can use them to compute directly.
   void DispatchImpl(
       const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
       const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs)

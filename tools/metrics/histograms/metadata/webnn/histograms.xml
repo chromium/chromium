@@ -34,10 +34,6 @@ chromium-metrics-reviews@google.com.
       summary="time to write the temporary .mlmodel file."/>
   <variant name="MLWeightsWrite"
       summary="time to write the temporary weights.bin file."/>
-  <variant name="ModelOutputRead"
-      summary="time it took to read back the inference results."/>
-  <variant name="ModelPredict"
-      summary="time predictionFromFeatures took when calling compute()."/>
   <variant name="ModelPredictWithDispatch"
       summary="time predictionFromFeatures took when calling dispatch()."/>
 </variants>

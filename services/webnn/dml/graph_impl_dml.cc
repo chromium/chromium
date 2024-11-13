@@ -67,7 +67,6 @@ BASE_FEATURE(kApplyGraphFusion,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 using Microsoft::WRL::ComPtr;
-using mojom::ComputeResult;
 using mojom::CreateGraphResult;
 using mojom::Operand;
 using mojom::OperandPtr;
@@ -6769,16 +6768,6 @@ void GraphImplDml::CreateAndBuild(
                      std::move(constant_operands)));
 }
 
-void GraphImplDml::HandleComputationFailure(
-    const std::string& error_message,
-    HRESULT hr,
-    mojom::WebNNGraph::ComputeCallback callback) {
-  compute_resources_.reset();
-  std::move(callback).Run(ComputeResult::NewError(
-      CreateError(mojom::Error::Code::kUnknownError, error_message)));
-  context_->HandleContextLostOrCrash(error_message, hr);
-}
-
 void GraphImplDml::HandleDispatchFailure(std::string_view error_message,
                                          HRESULT hr) {
   command_recorder_.reset();
@@ -6788,166 +6777,6 @@ void GraphImplDml::HandleDispatchFailure(std::string_view error_message,
   previous_input_tensors_.clear();
   previous_output_tensors_.clear();
   context_->HandleContextLostOrCrash(error_message, hr);
-}
-
-void GraphImplDml::ExecuteAndWaitAsync(
-    scoped_refptr<Adapter> adapter,
-    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
-    mojom::WebNNGraph::ComputeCallback callback,
-    base::expected<std::unique_ptr<ComputeResources>, HRESULT>
-        recording_result) {
-  if (!recording_result.has_value()) {
-    HandleComputationFailure(
-        "Failed to record commands and bind resources for execution.",
-        std::move(recording_result.error()), std::move(callback));
-    return;
-  }
-  std::unique_ptr<ComputeResources> compute_resources =
-      std::move(recording_result.value());
-
-  HRESULT hr = S_OK;
-  if (compute_resources->input_aligned_byte_length.total_byte_length > 0) {
-    // For GPU supports UMA, the `input_buffer` is allocated in the custom heap
-    // which can be mapped and written by CPU efficiently.
-    auto* buffer = adapter->IsUMA() ? compute_resources->input_buffer.Get()
-                                    : compute_resources->upload_buffer.Get();
-    hr = MapAndCopyInputDataToBuffer(
-        named_inputs,
-        compute_resources->input_aligned_byte_length.key_to_d3d12_range_map,
-        buffer);
-    if (FAILED(hr)) {
-      HandleComputationFailure(
-          "Failed to copy the data from named inputs to the buffer.", hr,
-          std::move(callback));
-      return;
-    }
-  }
-
-  // Submit the command list for execution.
-  hr = compute_resources->command_recorder->Execute();
-  if (FAILED(hr)) {
-    HandleComputationFailure("Failed to execute the command list.", hr,
-                             std::move(callback));
-    return;
-  }
-
-  compute_resources->command_recorder->command_queue()->WaitAsync(
-      base::BindOnce(&GraphImplDml::OnComputationComplete,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(compute_resources)));
-}
-
-void GraphImplDml::ComputeImpl(
-    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
-    mojom::WebNNGraph::ComputeCallback callback) {
-  TRACE_EVENT0("gpu", "dml::GraphImplDml::ComputeImpl");
-
-  // It indicates whether we need to record commands and bind resources again
-  // for the graph execution by calling `RecordGraphExecution` method. If either
-  // the `compute_resources_` is not available during the graph execution, it
-  // must be set to true.
-  bool is_command_recording_needed = false;
-
-  // Use the existing compute resource if it is available, otherwise allocate
-  // a new one.
-  std::unique_ptr<ComputeResources> compute_resources =
-      std::move(compute_resources_);
-  if (!compute_resources) {
-    base::expected<std::unique_ptr<ComputeResources>, HRESULT>
-        compute_resources_allocation_result = AllocateComputeResources(
-            adapter_.get(), compiled_operator_.Get(), compute_resource_info());
-    if (!compute_resources_allocation_result.has_value()) {
-      HandleComputationFailure(
-          "Failed to allocate compute resource.",
-          std::move(compute_resources_allocation_result.error()),
-          std::move(callback));
-      return;
-    }
-    compute_resources = std::move(compute_resources_allocation_result.value());
-    is_command_recording_needed = true;
-  }
-  CHECK(compute_resources);
-
-  if (is_command_recording_needed) {
-    if (adapter_->IsNPU()) {
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE,
-          {base::TaskPriority::USER_BLOCKING,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-          base::BindOnce(&GraphImplDml::RecordGraphExecutionOnBackgroundThread,
-                         adapter_, persistent_resource_, compiled_operator_,
-                         std::move(compute_resources),
-                         graph_buffer_binding_info_),
-          base::BindOnce(&GraphImplDml::ExecuteAndWaitAsync,
-                         weak_factory_.GetWeakPtr(), adapter_,
-                         std::move(named_inputs), std::move(callback)));
-      return;
-    }
-
-    HRESULT hr = RecordGraphExecution(
-        adapter_.get(), compiled_operator_.Get(), compute_resources.get(),
-        persistent_resource_.get(), graph_buffer_binding_info_);
-    if (FAILED(hr)) {
-      HandleComputationFailure(
-          "Failed to record and bind resources for execution.", hr,
-          std::move(callback));
-      return;
-    }
-  }
-
-  ExecuteAndWaitAsync(adapter_, std::move(named_inputs), std::move(callback),
-                      std::move(compute_resources));
-}
-
-void GraphImplDml::OnComputationComplete(
-    mojom::WebNNGraph::ComputeCallback callback,
-    std::unique_ptr<ComputeResources> compute_resources,
-    HRESULT hr) {
-  TRACE_EVENT0("gpu", "dml::GraphImplDml::OnComputationComplete");
-  if (FAILED(hr)) {
-    HandleComputationFailure("Failed to wait for the computation to complete.",
-                             hr, std::move(callback));
-    return;
-  }
-
-  // Map entire buffer to readback the output data one by one with byte
-  // offset. For GPU supports UMA, the `output_buffer` is allocated in the
-  // custom heap that can be mapped and read by CPU efficiently.
-  void* mapped_buffer = nullptr;
-  auto* buffer_to_map = adapter_->IsUMA()
-                            ? compute_resources->output_buffer.Get()
-                            : compute_resources->readback_buffer.Get();
-  CHECK(buffer_to_map);
-  hr = buffer_to_map->Map(0, nullptr, &mapped_buffer);
-  if (FAILED(hr)) {
-    HandleComputationFailure("Failed to map the buffer for outputs.", hr,
-                             std::move(callback));
-    return;
-  }
-
-  const std::map<std::string, D3D12_RANGE>&
-      graph_output_name_to_d3d12_range_map =
-          compute_resources->output_aligned_byte_length.key_to_d3d12_range_map;
-  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
-  named_outputs.reserve(graph_output_name_to_d3d12_range_map.size());
-  for (auto& [name, d3d12_range] : graph_output_name_to_d3d12_range_map) {
-    named_outputs[name] = mojo_base::BigBuffer(base::make_span(
-        static_cast<const uint8_t*>(mapped_buffer) + d3d12_range.Begin,
-        compute_resource_info()
-            .output_names_to_descriptors.at(name)
-            .PackedByteLength()));
-  }
-
-  buffer_to_map->Unmap(0, nullptr);
-
-  // If there is an existing available compute resource, release this compute
-  // resource. Otherwise, recycle this compute resource for the next call.
-  if (!compute_resources_) {
-    compute_resources_ = std::move(compute_resources);
-  }
-
-  std::move(callback).Run(
-      ComputeResult::NewNamedOutputs(std::move(named_outputs)));
 }
 
 GraphImplDml::IoBindings::IoBindings(

@@ -9,13 +9,12 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_context.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink-forward.h"
-#include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink.h"
-#include "services/webnn/public/mojom/webnn_tensor.mojom-blink-forward.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
@@ -29,6 +28,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -38,7 +38,6 @@ namespace blink {
 class ExecutionContext;
 class MLTensor;
 class MLTensorDescriptor;
-class MLComputeResult;
 class MLContextLostInfo;
 class MLOpSupportLimits;
 
@@ -70,12 +69,6 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   ScriptPromise<MLContextLostInfo> lost(ScriptState* script_state);
 
   void destroy(ScriptState* script_state, ExceptionState& exception_state);
-
-  ScriptPromise<MLComputeResult> compute(ScriptState* script_state,
-                                         MLGraph* graph,
-                                         const MLNamedArrayBufferViews& inputs,
-                                         const MLNamedArrayBufferViews& outputs,
-                                         ExceptionState& exception_state);
 
   ScriptPromise<MLTensor> createTensor(ScriptState* script_state,
                                        const MLTensorDescriptor* descriptor,

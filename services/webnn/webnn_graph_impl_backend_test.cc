@@ -24,15 +24,16 @@
 #include "services/webnn/public/mojom/features.mojom-features.h"
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
-#include "services/webnn/public/mojom/webnn_graph.mojom-shared.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_test_utils.h"
 #include "services/webnn/webnn_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/fp16/src/include/fp16.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -64,6 +65,40 @@ namespace {
 struct Float16 {
   uint16_t data;
 };
+
+struct TensorRemoteAndHandle {
+  mojo::AssociatedRemote<mojom::WebNNTensor> remote;
+  blink::WebNNTensorToken handle;
+};
+
+TensorRemoteAndHandle CreateTensor(
+    mojo::Remote<mojom::WebNNContext>& context_remote,
+    mojom::TensorInfoPtr tensor_info) {
+  mojo::AssociatedRemote<mojom::WebNNTensor> webnn_tensor_remote;
+
+  base::test::TestFuture<mojom::CreateTensorResultPtr> create_tensor_future;
+  context_remote->CreateTensor(std::move(tensor_info),
+                               create_tensor_future.GetCallback());
+  mojom::CreateTensorResultPtr create_tensor_result =
+      create_tensor_future.Take();
+  EXPECT_TRUE(create_tensor_result->is_success());
+  webnn_tensor_remote.Bind(
+      std::move(create_tensor_result->get_success()->tensor_remote));
+  EXPECT_TRUE(webnn_tensor_remote.is_bound());
+
+  return TensorRemoteAndHandle{
+      .remote = std::move(webnn_tensor_remote),
+      .handle = create_tensor_result->get_success()->tensor_handle};
+}
+
+TensorRemoteAndHandle CreateTensorWithValues(
+    mojo::Remote<mojom::WebNNContext>& context_remote,
+    mojom::TensorInfoPtr tensor_info,
+    base::span<const uint8_t> data) {
+  auto remote_and_handle = CreateTensor(context_remote, std::move(tensor_info));
+  remote_and_handle.remote->WriteTensor(mojo_base::BigBuffer(data));
+  return remote_and_handle;
+}
 
 template <typename T>
 std::vector<T> BigBufferToVector(const mojo_base::BigBuffer& big_buffer) {
@@ -111,6 +146,44 @@ BuildAndCompute(
   webnn_context_remote->CreateGraphBuilder(
       webnn_graph_builder_remote.BindNewEndpointAndPassReceiver());
 
+  // Create input tensors.
+  std::vector<std::pair<std::string, TensorRemoteAndHandle>>
+      named_input_remotes_and_handles;
+  named_input_remotes_and_handles.reserve(graph_info->input_operands.size());
+
+  for (uint64_t operand_id : graph_info->input_operands) {
+    const mojom::Operand& operand =
+        *graph_info->id_to_operand_map.at(operand_id);
+    EXPECT_TRUE(operand.name.has_value());
+
+    auto it = named_inputs.find(*operand.name);
+    EXPECT_TRUE(it != named_inputs.end());
+
+    auto tensor_info = mojom::TensorInfo::New(
+        operand.descriptor, MLTensorUsage{MLTensorUsageFlags::kWrite});
+    named_input_remotes_and_handles.emplace_back(
+        *operand.name,
+        CreateTensorWithValues(webnn_context_remote, std::move(tensor_info),
+                               base::as_byte_span(it->second)));
+  }
+
+  // Create output tensors.
+  std::vector<std::pair<std::string, TensorRemoteAndHandle>>
+      named_output_remotes_and_handles;
+  named_output_remotes_and_handles.reserve(graph_info->output_operands.size());
+
+  for (uint64_t operand_id : graph_info->output_operands) {
+    const mojom::Operand& operand =
+        *graph_info->id_to_operand_map.at(operand_id);
+    EXPECT_TRUE(operand.name.has_value());
+
+    auto tensor_info = mojom::TensorInfo::New(
+        operand.descriptor, MLTensorUsage{MLTensorUsageFlags::kRead});
+    named_output_remotes_and_handles.emplace_back(
+        *operand.name,
+        CreateTensor(webnn_context_remote, std::move(tensor_info)));
+  }
+
   // The GraphImpl should be built successfully.
   base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
   webnn_graph_builder_remote->CreateGraph(std::move(graph_info),
@@ -136,36 +209,39 @@ BuildAndCompute(
       << create_graph_result->get_error()->message;
   EXPECT_TRUE(webnn_graph_remote.is_bound());
 
-  std::vector<std::pair<std::string, mojo_base::BigBuffer>> named_input_buffers;
-  named_input_buffers.reserve(named_inputs.size());
+  std::vector<std::pair<std::string, blink::WebNNTensorToken>>
+      named_input_handles;
+  named_input_handles.reserve(named_input_remotes_and_handles.size());
   base::ranges::transform(
-      named_inputs, std::back_inserter(named_input_buffers),
-      [](const auto& name_and_data) {
-        return std::make_pair(
-            name_and_data.first,
-            mojo_base::BigBuffer(base::as_byte_span(name_and_data.second)));
+      named_input_remotes_and_handles, std::back_inserter(named_input_handles),
+      [](const auto& input) {
+        return std::make_pair(input.first, input.second.handle);
+      });
+
+  std::vector<std::pair<std::string, blink::WebNNTensorToken>>
+      named_output_handles;
+  named_output_handles.reserve(named_output_remotes_and_handles.size());
+  base::ranges::transform(
+      named_output_remotes_and_handles,
+      std::back_inserter(named_output_handles), [](const auto& output) {
+        return std::make_pair(output.first, output.second.handle);
       });
 
   // The GraphImpl should compute successfully.
-  base::test::TestFuture<mojom::ComputeResultPtr> compute_future;
-  webnn_graph_remote->Compute(base::flat_map<std::string, mojo_base::BigBuffer>(
-                                  std::move(named_input_buffers)),
-                              compute_future.GetCallback());
-  mojom::ComputeResultPtr compute_result = compute_future.Take();
-  EXPECT_TRUE(compute_result->is_named_outputs());
-  EXPECT_FALSE(compute_result->get_named_outputs().empty());
-  auto named_outputs = std::move(compute_result->get_named_outputs());
+  webnn_graph_remote->Dispatch(named_input_handles, named_output_handles);
 
   // Read back the results from the output buffers.
   std::vector<std::pair<std::string, std::vector<OutputDataType>>>
       named_output_results;
-  named_output_results.reserve(named_outputs.size());
-  base::ranges::transform(
-      named_outputs, std::back_inserter(named_output_results),
-      [](auto& output) {
-        return std::make_pair(output.first,
-                              BigBufferToVector<OutputDataType>(output.second));
-      });
+  named_output_results.reserve(named_output_remotes_and_handles.size());
+  for (auto& output : named_output_remotes_and_handles) {
+    base::test::TestFuture<mojom::ReadTensorResultPtr> read_tensor_future;
+    output.second.remote->ReadTensor(read_tensor_future.GetCallback());
+    mojom::ReadTensorResultPtr result = read_tensor_future.Take();
+    EXPECT_FALSE(result->is_error());
+    named_output_results.emplace_back(
+        output.first, BigBufferToVector<OutputDataType>(result->get_buffer()));
+  }
 
   webnn_graph_remote.reset();
   webnn_graph_builder_remote.reset();

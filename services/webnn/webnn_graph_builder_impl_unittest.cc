@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_context_provider_impl.h"
@@ -52,11 +53,6 @@ class FakeWebNNGraphImpl final : public WebNNGraphImpl {
   ~FakeWebNNGraphImpl() override = default;
 
  private:
-  void ComputeImpl(base::flat_map<std::string, mojo_base::BigBuffer> inputs,
-                   mojom::WebNNGraph::ComputeCallback callback) override {
-    NOTIMPLEMENTED();
-  }
-
   void DispatchImpl(
       const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
       const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs)

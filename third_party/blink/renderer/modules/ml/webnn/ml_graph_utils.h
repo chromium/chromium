@@ -5,9 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_UTILS_H_
 
-#include <utility>
-#include <vector>
-
 #include "base/types/expected.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
@@ -17,13 +14,11 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_input_operand_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
-#include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -35,38 +30,6 @@ class ScriptState;
 // result, if 'i' depends on 'j'.
 MODULES_EXPORT HeapVector<Member<const MLOperator>>*
 GetOperatorsInTopologicalOrder(const MLNamedOperands& named_outputs);
-
-// `TransferNamedArrayBufferViews()` and `CreateNamedArrayBufferViews()`
-// implement the MLNamedArrayBufferViews transfer algorithm of WebNN spec:
-// https://www.w3.org/TR/webnn/#mlnamedarraybufferviews-transfer
-//
-// The `NamedArrayBufferViewsInfo` returned by `TransferNamedArrayBufferViews()`
-// doesn't contain any GC objects, so it is safe to be posted to a background
-// thread. After that, the `NamedArrayBufferViewsInfo` should be posted back to
-// the calling thread and call `CreateNamedArrayBufferViews()` to create
-// `MLNamedArrayBufferViews` from the info.
-//
-// If it fails to transfer an `ArrayBufferView` of the
-// `MLNamedArrayBufferViews`, the current implementation leaves the
-// already-transferred views detached, the failing one and remaining others
-// unchanged.
-//
-// TODO(crbug.com/1273291): Revisit the error handling once the WebNN spec issue
-// is resolved: https://github.com/webmachinelearning/webnn/issues/351
-//
-// TODO(crbug.com/332782852): Accepts a `ScriptPromiseResolver` rather than
-// `ExceptionState`. So the caller, i.e. `MLGraph::Compute()`, won't need to
-// pass both ways of throwing an exception.
-MODULES_EXPORT std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
-TransferNamedArrayBufferViews(v8::Isolate* isolate,
-                              const MLNamedArrayBufferViews& source_views,
-                              ExceptionState& exception_state);
-
-MODULES_EXPORT DOMArrayBufferView* CreateArrayBufferView(
-    ArrayBufferViewInfo view_info);
-
-MODULES_EXPORT MLNamedArrayBufferViews* CreateNamedArrayBufferViews(
-    std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>> views_info);
 
 MODULES_EXPORT DOMArrayBufferView::ViewType GetArrayBufferViewType(
     webnn::OperandDataType data_type);

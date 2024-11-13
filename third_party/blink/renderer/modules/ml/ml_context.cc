@@ -152,34 +152,6 @@ void MLContext::destroy(ScriptState* script_state,
   }
 }
 
-ScriptPromise<MLComputeResult> MLContext::compute(
-    ScriptState* script_state,
-    MLGraph* graph,
-    const MLNamedArrayBufferViews& inputs,
-    const MLNamedArrayBufferViews& outputs,
-    ExceptionState& exception_state) {
-  ScopedMLTrace scoped_trace("MLContext::compute");
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid script state");
-    return EmptyPromise();
-  }
-
-  if (graph->Context() != this) {
-    exception_state.ThrowTypeError(
-        "The graph isn't built within this context.");
-    return EmptyPromise();
-  }
-
-  LogConsoleWarning(script_state,
-                    "WARNING: MLContext.compute() is deprecated. Use "
-                    "MLContext.dispatch() instead.",
-                    mojom::blink::ConsoleMessageSource::kDeprecation);
-
-  return graph->Compute(std::move(scoped_trace), inputs, outputs, script_state,
-                        exception_state);
-}
-
 MLGraphBuilder* MLContext::CreateWebNNGraphBuilder(
     ScriptState* script_state,
     ExceptionState& exception_state) {

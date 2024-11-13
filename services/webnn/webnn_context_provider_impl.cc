@@ -14,7 +14,6 @@
 #include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/context_properties.h"
-#include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_context_impl.h"

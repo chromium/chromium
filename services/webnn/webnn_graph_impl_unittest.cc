@@ -64,15 +64,6 @@ class FakeWebNNGraphImpl final : public WebNNGraphImpl {
   }
 
  private:
-  // Return the `kOk` result for testing the validation of inputs and outputs in
-  // `WebNNGraphImpl::Compute()` function.
-  void ComputeImpl(base::flat_map<std::string, mojo_base::BigBuffer> inputs,
-                   mojom::WebNNGraph::ComputeCallback callback) override {
-    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
-    std::move(callback).Run(
-        mojom::ComputeResult::NewNamedOutputs(std::move(named_outputs)));
-  }
-
   // Return nothing for testing the validation of inputs and outputs in
   // `WebNNGraphImpl::Dispatch()` function.
   void DispatchImpl(
@@ -162,55 +153,6 @@ class FakeWebNNBackend : public WebNNContextProviderImpl::BackendForTesting {
     return context_impl;
   }
 };
-
-bool ValidateInputsForComputing(
-    mojom::GraphInfoPtr graph_info,
-    base::flat_map<std::string, mojo_base::BigBuffer> inputs) {
-  // Creates WebNN Context mojo interface with the provider.
-  mojo::Remote<mojom::WebNNContextProvider> provider_remote;
-  WebNNContextProviderImpl::CreateForTesting(
-      provider_remote.BindNewPipeAndPassReceiver());
-
-  base::test::TestFuture<mojom::CreateContextResultPtr> create_context_future;
-  provider_remote->CreateWebNNContext(mojom::CreateContextOptions::New(),
-                                      create_context_future.GetCallback());
-  mojom::CreateContextResultPtr create_context_result =
-      create_context_future.Take();
-  mojo::Remote<mojom::WebNNContext> webnn_context;
-  webnn_context.Bind(
-      std::move(create_context_result->get_success()->context_remote));
-
-  mojo::AssociatedRemote<mojom::WebNNGraphBuilder> graph_builder_remote;
-  webnn_context->CreateGraphBuilder(
-      graph_builder_remote.BindNewEndpointAndPassReceiver());
-
-  // Creates WebNN Graph mojo interface with the graph information which is
-  // validated before compiling.
-  base::test::TestFuture<mojom::CreateGraphResultPtr> create_graph_future;
-  graph_builder_remote->CreateGraph(std::move(graph_info),
-                                    create_graph_future.GetCallback());
-  mojom::CreateGraphResultPtr create_graph_result = create_graph_future.Take();
-  mojo::AssociatedRemote<mojom::WebNNGraph> webnn_graph;
-  webnn_graph.Bind(std::move(create_graph_result->get_graph_remote()));
-
-  // Validate the inputs in the `Compute` function.
-  bool valid = true;
-  // Set up the error handler for bad mojo messages.
-  mojo::SetDefaultProcessErrorHandler(
-      base::BindLambdaForTesting([&](const std::string& error_message) {
-        EXPECT_EQ(error_message,
-                  "The inputs for computation don't match the built graph's "
-                  "expectation.");
-        valid = false;
-      }));
-
-  base::test::TestFuture<mojom::ComputeResultPtr> compute_future;
-  webnn_graph->Compute(std::move(inputs), compute_future.GetCallback());
-  EXPECT_TRUE(compute_future.Wait());
-
-  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
-  return valid;
-}
 
 struct CreateTensorSuccess {
   std::optional<mojo::AssociatedRemote<mojom::WebNNTensor>> webnn_tensor;
@@ -7385,65 +7327,6 @@ TEST_F(WebNNGraphImplTest, WhereTest) {
                        false_value_operand_id, false_value_operand_id);
     EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
         context_properties, builder.GetGraphInfo()));
-  }
-}
-
-TEST_F(WebNNGraphImplTest, ValidateInputsTest) {
-  auto context_properties = GetContextPropertiesForTesting();
-  const std::vector<uint32_t> dimensions = {3, 5};
-  const size_t byte_length = 15;
-  // Build the graph with mojo type.
-  GraphInfoBuilder builder;
-  uint64_t lhs_operand_id =
-      builder.BuildInput("lhs", dimensions, OperandDataType::kUint8);
-  uint64_t rhs_operand_id =
-      builder.BuildInput("rhs", dimensions, OperandDataType::kUint8);
-  uint64_t output_operand_id =
-      builder.BuildOutput("output", dimensions, OperandDataType::kUint8);
-  builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
-                                 lhs_operand_id, rhs_operand_id,
-                                 output_operand_id);
-  EXPECT_TRUE(WebNNGraphBuilderImpl::IsValidForTesting(context_properties,
-                                                       builder.GetGraphInfo()));
-
-  {
-    // Validate the inputs match the expected.
-    base::flat_map<std::string, mojo_base::BigBuffer> inputs;
-    inputs["lhs"] = {std::vector<uint8_t>(byte_length)};
-    inputs["rhs"] = {std::vector<uint8_t>(byte_length)};
-    EXPECT_TRUE(ValidateInputsForComputing(builder.CloneGraphInfo(),
-                                           std::move(inputs)));
-  }
-  {
-    // Test the invalid inputs for invalid input size.
-    base::flat_map<std::string, mojo_base::BigBuffer> inputs;
-    inputs["lhs"] = {std::vector<uint8_t>(byte_length)};
-    EXPECT_FALSE(ValidateInputsForComputing(builder.CloneGraphInfo(),
-                                            std::move(inputs)));
-  }
-  {
-    // Test the invalid inputs for invalid input name.
-    base::flat_map<std::string, mojo_base::BigBuffer> inputs;
-    inputs["a_different_input_name"] = {std::vector<uint8_t>(byte_length)};
-    inputs["rhs"] = {std::vector<uint8_t>(byte_length)};
-    EXPECT_FALSE(ValidateInputsForComputing(builder.CloneGraphInfo(),
-                                            std::move(inputs)));
-  }
-  {
-    // Test the invalid inputs for invalid first input byte length.
-    base::flat_map<std::string, mojo_base::BigBuffer> inputs;
-    inputs["lhs"] = {std::vector<uint8_t>(20)};
-    inputs["rhs"] = {std::vector<uint8_t>(byte_length)};
-    EXPECT_FALSE(ValidateInputsForComputing(builder.CloneGraphInfo(),
-                                            std::move(inputs)));
-  }
-  {
-    // Test the invalid inputs for invalid second input byte length.
-    base::flat_map<std::string, mojo_base::BigBuffer> inputs;
-    inputs["lhs"] = {std::vector<uint8_t>(byte_length)};
-    inputs["rhs"] = {std::vector<uint8_t>(20)};
-    EXPECT_FALSE(ValidateInputsForComputing(builder.CloneGraphInfo(),
-                                            std::move(inputs)));
   }
 }
 

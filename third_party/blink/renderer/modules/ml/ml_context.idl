@@ -12,13 +12,6 @@
 // In the future, this interface may be extended when WebNN is implemented so
 // a dictionary may be insufficient.
 
-typedef record<DOMString, ArrayBufferView> MLNamedArrayBufferViews;
-
-dictionary MLComputeResult {
-  MLNamedArrayBufferViews inputs;
-  MLNamedArrayBufferViews outputs;
-};
-
 dictionary MLContextLostInfo {
   DOMString message;
 };
@@ -287,14 +280,6 @@ typedef record<DOMString, MLTensor> MLNamedTensors;
     CallWith=ScriptState,
     RaisesException
   ] void destroy();
-
-  [
-    RuntimeEnabled=MachineLearningNeuralNetwork,
-    CallWith=ScriptState,
-    RaisesException,
-    Measure
-  ] Promise<MLComputeResult> compute(
-      MLGraph graph, MLNamedArrayBufferViews inputs, MLNamedArrayBufferViews outputs);
 
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,

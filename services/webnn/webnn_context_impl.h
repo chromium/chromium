@@ -25,13 +25,14 @@
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
-#include "services/webnn/public/mojom/webnn_error.mojom.h"
-#include "services/webnn/public/mojom/webnn_graph.mojom.h"
-#include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
-#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
+#include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
+#include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
+#include "services/webnn/public/mojom/webnn_graph_builder.mojom-forward.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom-forward.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "services/webnn/webnn_object_impl.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace webnn {
 
