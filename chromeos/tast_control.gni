@@ -113,6 +113,7 @@ if (!is_chrome_branded) {
     "crostini.AppFirefoxWindowOperations.minimize_bookworm_clamshell_stable",
     "crostini.AppFirefoxWindowOperations.switch_tablet_bookworm_clamshell_stable",
     "crostini.AppGeditFilesharing.bookworm_clamshell_stable",
+    "crostini.AppGeditUnshareFolder.bookworm_clamshell_stable",
     "crostini.AppVscode.bookworm_clamshell_stable",
     "crostini.AppVscodeWindowOperations.switch_tablet_bookworm_clamshell_stable",
     "shimlessrma.SelectComponentsNoneNextCancel.critical",
