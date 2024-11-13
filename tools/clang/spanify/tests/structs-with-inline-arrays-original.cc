@@ -54,6 +54,52 @@ void fct() {
     int val;
   } func_buffer2[] = {{1}, {2}, {3}, {4}};
 
+  // Expected rewrite
+  // struct FuncBufferWithComment {
+  //   int val; // Comment
+  // };
+  // std::array<FuncBuffer, 4> funcBufferWithComment;
+  struct {
+    int val;  // Comment
+  } funcBufferWithComment[4];
+
+  // Classes can also be used in a similar way.
+  // Expected rewrite
+  // class UnnamedClassBuffer {
+  //  public:
+  //   int val;
+  // };
+  // std::array<UnnamedClassBuffer, 4> unnamedClassBuffer;
+  class {
+   public:
+    int val;
+  } unnamedClassBuffer[4];
+
+  // Unions can also be used in a similar way.
+  // Expected rewrite
+  // union UnnamedUnionBuffer {
+  //   int val;
+  //   float fval;
+  // };
+  // std::array<UnnamedUnionBuffer, 4> unnamedUnionBuffer;
+  union {
+    int val;
+    float fval;
+  } unnamedUnionBuffer[4];
+
+  // Expected rewrite
+  // struct NestedStructBuffer {
+  //   struct {
+  //     int val;
+  //   } inner;
+  // };
+  // std::array<NestedStructBuffer, 3> nestedStructBuffer;
+  struct {
+    struct {
+      int val;
+    } inner;
+  } nestedStructBuffer[4];
+
   // Buffer accesses to trigger spanification.
   func_buffer[2].val = 3;
   globalBuffer[2].val = 3;
@@ -62,4 +108,8 @@ void fct() {
   globalNamedBufferButNotInline[2].val = 3;
   funcNamedBufferButNotInline[3].val = 3;
   (void)func_buffer2[2].val;
+  funcBufferWithComment[2].val = 3;
+  unnamedClassBuffer[2].val = 3;
+  unnamedUnionBuffer[2].val = 3;
+  nestedStructBuffer[2].inner.val = 3;
 }

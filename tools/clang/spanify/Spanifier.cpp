@@ -619,21 +619,41 @@ std::pair<std::string, std::string> maybeGetUnnamedAndDefinition(
           &new_class_name_identifier);
       record_decl->setDeclName(temporal_class_name);
     }
+
     if (has_definition) {
-      clang::PrintingPolicy printing_policy(ast_context.getLangOpts());
-      // Because of class/struct definition, we will drop any qualifiers from
-      // `element_type`. E.g. `const struct { int val; }` must be
-      // `struct { int val; }`.
-      clang::QualType new_qual_type(element_type.getTypePtr(), 0);
-      printing_policy.SuppressScope = 0;
-      printing_policy.SuppressUnwrittenScope = 1;
-      printing_policy.SuppressElaboration = 0;
-      printing_policy.SuppressInlineNamespace = 1;
-      printing_policy.SuppressDefaultTemplateArgs = 1;
-      printing_policy.PrintCanonicalTypes = 0;
-      printing_policy.IncludeTagDefinition = 1;
-      printing_policy.AnonymousTagLocations = 1;
-      class_definition = new_qual_type.getAsString(printing_policy) + ";\n";
+      // Use `SourceManager` to capture the `{ ... }` part of the struct
+      // definition.
+      const clang::SourceManager& source_manager =
+          ast_context.getSourceManager();
+      llvm::StringRef struct_body_with_braces = clang::Lexer::getSourceText(
+          clang::CharSourceRange::getTokenRange(record_decl->getBraceRange()),
+          source_manager, ast_context.getLangOpts());
+
+      // Create new class definition.
+      if (is_unnamed) {
+        std::string type_keyword;
+        if (record_decl->isClass()) {
+          type_keyword = "class";
+        } else if (record_decl->isUnion()) {
+          type_keyword = "union";
+        } else if (record_decl->isEnum()) {
+          type_keyword = "enum";
+        } else {
+          assert(record_decl->isStruct());
+          type_keyword = "struct";
+        }
+
+        class_definition = type_keyword + " " + new_class_name_string + " " +
+                           struct_body_with_braces.str() + ";\n";
+      } else {
+        // Because of class/struct definition, drop any qualifiers from
+        // `element_type`. E.g. `const struct { int val; }` must be
+        // `struct { int val; }`.
+        clang::QualType unqualified_type = element_type.getUnqualifiedType();
+        std::string unqualified_type_str = unqualified_type.getAsString();
+        class_definition =
+            unqualified_type_str + " " + struct_body_with_braces.str() + ";\n";
+      }
     }
     if (is_unnamed) {
       record_decl->setDeclName(original_name);
