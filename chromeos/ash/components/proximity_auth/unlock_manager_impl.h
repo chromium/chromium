@@ -76,10 +76,13 @@ class UnlockManagerImpl : public UnlockManager,
     PRIMARY_USER_ABSENT,
   };
 
-  // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
+  // This enum is tied directly to the
+  // SmartLockGetRemoteStatusResultFailureReason UMA enum defined in
+  // //tools/metrics/histograms/metadata/cross_device/enums.xml, and should
+  // always reflect it (do not change one without changing the other). Entries
+  // should be never modified or deleted. Only additions possible.
+  //
+  // LINT.IfChange(SmartLockGetRemoteStatusResultFailureReason)
   enum class GetRemoteStatusResultFailureReason {
     kCanceledBluetoothDisabled = 0,
     kDeprecatedTimedOutCouldNotEstablishAuthenticatedChannel = 1,
@@ -89,6 +92,7 @@ class UnlockManagerImpl : public UnlockManager,
     kAuthenticatedChannelDropped = 5,
     kMaxValue = kAuthenticatedChannelDropped
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/cross_device/enums.xml:SmartLockGetRemoteStatusResultFailureReason)
 
   // MessengerObserver:
   void OnUnlockEventSent(bool success) override;

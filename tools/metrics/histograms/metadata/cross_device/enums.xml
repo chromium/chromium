@@ -240,6 +240,8 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Proximity periodic"/>
 </enum>
 
+<!-- LINT.IfChange(SmartLockAuthEvent) -->
+
 <enum name="EasyUnlockAuthEvent">
   <int value="0" label="Smart Lock success"/>
   <int value="1" label="Smart Lock failure"/>
@@ -267,6 +269,8 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Password entry: Primary user absent"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/ash/login/smart_lock/smart_lock_metrics.h:SmartLockAuthEvent) -->
+
 <enum name="EasyUnlockDeviceModelHash">
   <int value="-1829584143" label="Motorola XT1097"/>
   <int value="-1429808627" label="HTC One"/>
@@ -293,6 +297,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Lock screen enabled, trust agent enabled"/>
 </enum>
 
+<!-- LINT.IfChange(FirstSmartLockStatus) -->
+
 <enum name="FirstSmartLockStatus">
   <int value="0" label="Bluetooth disabled"/>
   <int value="1" label="Phone not lockable"/>
@@ -304,6 +310,8 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Phone authenticated, ready to unlock Chromebook"/>
   <int value="8" label="Primary user absent"/>
 </enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/proximity_auth/unlock_manager_impl.cc:FirstSmartLockStatus) -->
 
 <enum name="GCMClientResult">
   <int value="0" label="Success"/>
@@ -627,6 +635,8 @@ chromium-metrics-reviews@google.com.
              enough time to complete bandwidth upgrade process"/>
 </enum>
 
+<!-- LINT.IfChange(SmartLockAuthEventPasswordState) -->
+
 <enum name="SmartLockAuthEventPasswordState">
   <int value="0" label="Unknown state"/>
   <int value="1" label="(obsolete) No pairing"/>
@@ -650,10 +660,18 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="Primary user absent"/>
 </enum>
 
+<!-- LINT.ThenChange(//chromeos/ash/components/proximity_auth/smart_lock_metrics_recorder.h:SmartLockAuthEventPasswordState) -->
+
+<!-- LINT.IfChange(SmartLockAuthMethodChoice) -->
+
 <enum name="SmartLockAuthMethodChoice">
   <int value="0" label="Smart Lock"/>
   <int value="1" label="Other"/>
 </enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/proximity_auth/smart_lock_metrics_recorder.h:SmartLockAuthMethodChoice) -->
+
+<!-- LINT.IfChange(SmartLockAuthResultFailureReason) -->
 
 <enum name="SmartLockAuthResultFailureReason">
   <int value="0" label="Unlock not allowed"/>
@@ -673,11 +691,15 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="(obsolete) User controller sign in failure"/>
 </enum>
 
+<!-- LINT.ThenChange(//chromeos/ash/components/proximity_auth/smart_lock_metrics_recorder.h:SmartLockAuthResultFailureReason) -->
+
 <enum name="SmartLockEnabledState">
   <int value="0" label="Enabled"/>
   <int value="1" label="Disabled"/>
   <int value="2" label="Unset"/>
 </enum>
+
+<!-- LINT.IfChange(SmartLockFindAndConnectToHostResult) -->
 
 <enum name="SmartLockFindAndConnectToHostResult">
   <int value="0" label="Found and connected to host"/>
@@ -689,6 +711,10 @@ chromium-metrics-reviews@google.com.
              connection error occurred)"/>
 </enum>
 
+<!-- LINT.ThenChange(//chromeos/ash/components/proximity_auth/unlock_manager_impl.cc:SmartLockFindAndConnectToHostResult) -->
+
+<!-- LINT.IfChange(SmartLockGetRemoteStatusResultFailureReason) -->
+
 <enum name="SmartLockGetRemoteStatusResultFailureReason">
   <int value="0" label="Canceled, Bluetooth disabled"/>
   <int value="1"
@@ -699,6 +725,8 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Canceled, user entered password"/>
   <int value="5" label="Authenticated channel dropped"/>
 </enum>
+
+<!-- LINT.ThenChange(//chromeos/ash/components/proximity_auth/unlock_manager_impl.h:SmartLockGetRemoteStatusResultFailureReason) -->
 
 <enum name="SmartLockToggle">
   <int value="0" label="Enabled on multidevice page"/>

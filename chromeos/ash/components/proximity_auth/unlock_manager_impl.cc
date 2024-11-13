@@ -27,10 +27,12 @@ namespace {
 
 using SmartLockState = ash::SmartLockState;
 
-// This enum is tied directly to a UMA enum defined in
-// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-// change one without changing the other). Entries should be never modified
-// or deleted. Only additions possible.
+// This enum is tied directly to the SmartLockFindAndConnectToHostResult UMA
+// enum defined in //tools/metrics/histograms/metadata/cross_device/enums.xml,
+// and should always reflect it (do not change one without changing the other).
+// Entries should be never modified or deleted. Only additions possible.
+//
+// LINT.IfChange(SmartLockFindAndConnectToHostResult)
 enum class FindAndConnectToHostResult {
   kFoundAndConnectedToHost = 0,
   kCanceledBluetoothDisabled = 1,
@@ -39,6 +41,7 @@ enum class FindAndConnectToHostResult {
   kTimedOut = 4,
   kMaxValue = kTimedOut
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/cross_device/enums.xml:SmartLockFindAndConnectToHostResult)
 
 // The maximum amount of time that the unlock manager can stay in the 'waking
 // up' state after resuming from sleep.
@@ -66,7 +69,10 @@ const char kGetRemoteStatusSuccess[] = "success";
 
 // The subset of SmartLockStates that represent the first non-trival status
 // shown to the user. Entries persisted to UMA histograms; do not reorder or
-// delete enum values.
+// delete enum values. Keep in sync with FirstSmartLockStatus in
+// //tools/metrics/histograms/metadata/cross_device/enums.xml.
+//
+// LINT.IfChange(FirstSmartLockStatus)
 enum class FirstSmartLockStatus {
   kBluetoothDisabled = 0,
   kPhoneNotLockable = 1,
@@ -79,6 +85,7 @@ enum class FirstSmartLockStatus {
   kPrimaryUserAbsent = 8,
   kMaxValue = kPrimaryUserAbsent
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/cross_device/enums.xml:FirstSmartLockStatus)
 
 std::optional<FirstSmartLockStatus> GetFirstSmartLockStatus(
     SmartLockState state) {
