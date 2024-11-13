@@ -756,3 +756,33 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // end of the test. For now, close the popup so don't lose test coverage.
       Do([&]() { extensions_container()->HideActivePopup(); }));
 }
+
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
+                       PinningDisabledInIncognito) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
+  Browser* const incognito_browser = CreateIncognitoBrowser(profile());
+
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("uitest/window_open"),
+                    {.allow_in_incognito = true});
+
+  RunTestSequence(InContext(
+      incognito_browser->window()->GetElementContext(),
+      Steps(InstrumentTab(kTab), OpenExtensionsMenu(),
+            // Verify toggle visibility entry in context menu is disabled.
+            CheckResult(
+                [&]() {
+                  auto* context_menu =
+                      static_cast<extensions::ExtensionContextMenuModel*>(
+                          incognito_browser->GetBrowserView()
+                              .toolbar()
+                              ->extensions_container()
+                              ->GetActionForId(extension->id())
+                              ->GetContextMenu(
+                                  extensions::ExtensionContextMenuModel::
+                                      ContextMenuSource::kMenuItem));
+                  return context_menu->IsCommandIdEnabled(
+                      extensions::ExtensionContextMenuModel::TOGGLE_VISIBILITY);
+                },
+                false))));
+}
