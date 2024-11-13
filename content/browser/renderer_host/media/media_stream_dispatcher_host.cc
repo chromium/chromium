@@ -114,7 +114,6 @@ bool MayApplySubCaptureTarget(GlobalRenderFrameHostId capturing_id,
 
   // * target.is_zero() = uncrop-request.
   // * !target.is_zero() = crop-request.
-  // TODO(crbug.com/1418194): Extend to support other types.
   return target.is_zero() || helper->IsAssociatedWith(target, type);
 }
 
