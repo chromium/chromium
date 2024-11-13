@@ -7055,32 +7055,36 @@ CSSValue* ConsumeTextBoxEdge(CSSParserTokenStream& stream) {
   if (!over_type) {
     return nullptr;
   }
+  const auto over = over_type->ConvertTo<TextBoxEdge::Type>();
+  const std::optional<TextBoxEdge::Type> default_under =
+      TextBoxEdge::UnderForOver(over);
+
   // The second parameter is optional, the first parameter will be used for
   // both if the second parameter is not provided.
   if (CSSIdentifierValue* under_type =
           ConsumeIdent<CSSValueID::kText, CSSValueID::kAlphabetic>(stream)) {
     // Align with the CSS specification: "If only one value is specified,
-    // both edges are assigned that same keyword if possible; else 'text' is
-    // assumed as the missing value.".
-    // If the `over_type` is 'cap' or 'ex', since it does not have a
-    // corresponding line-under baseline, `text` will be used to fill the
-    // missing value. If the `over_type` is `text`, the default `under_type` is
-    // `text` to prioritize the same keyword.
-    // In all cases above, the `under_type` of `text` can be omitted for
-    // serialization.
-    if (under_type->GetValueID() == CSSValueID::kText) {
-      if (over_type->GetValueID() == CSSValueID::kText ||
-          over_type->GetValueID() == CSSValueID::kCap ||
-          over_type->GetValueID() == CSSValueID::kEx) {
-        return over_type;
-      }
+    // both edges are assigned that same keyword if possible".
+    // If the `default_under` has a value, and if it's the specified `under'
+    // value, the `under` value can be omitted.
+    if (default_under == under_type->ConvertTo<TextBoxEdge::Type>()) {
+      return over_type;
     }
+
     CSSValueList* const list = CSSValueList::CreateSpaceSeparated();
     list->Append(*over_type);
     list->Append(*under_type);
     return list;
   }
-  return over_type;
+
+  // If the `default_under` has a value; i.e., if the `under` can be omitted,
+  // return the `over` value.
+  if (default_under) {
+    return over_type;
+  }
+
+  // Fail if the `under` is required but it's missing.
+  return nullptr;
 }
 
 // Consume the `text-box-trim` production.

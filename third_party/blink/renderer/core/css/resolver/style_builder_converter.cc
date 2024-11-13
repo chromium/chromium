@@ -2744,6 +2744,7 @@ TextBoxEdge StyleBuilderConverter::ConvertTextBoxEdge(
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     return TextBoxEdge(identifier_value->ConvertTo<TextBoxEdge::Type>());
   }
+
   const auto* const list = DynamicTo<CSSValueList>(&value);
   DCHECK_EQ(list->length(), 2u);
   const CSSIdentifierValue& over = To<CSSIdentifierValue>(list->Item(0));
