@@ -10,6 +10,19 @@ external/wpt/accessibility/*
 external/wpt/acid/*
 external/wpt/ai/*
 external/wpt/apng/*
+external/wpt/audio-output/*
+external/wpt/autoplay-policy-detection/*
+external/wpt/avif/*
+external/wpt/background-sync/*
+external/wpt/badging/*
+external/wpt/beacon/*
+external/wpt/captured-mouse-events/*
+external/wpt/clear-site-data/*
+
+external/wpt/client-hints/accept-ch-stickiness/*
+external/wpt/client-hints/service-workers/*
+
+external/wpt/clipboard-apis/*
 external/wpt/css/css-align/*
 external/wpt/css/css-animations/*
 external/wpt/css/css-box/*
@@ -131,6 +144,7 @@ external/wpt/window-management/*
 external/wpt/x-frame-options/*
 external/wpt/xhr/*
 
+virtual/attribution-reporting-aggregatable-debug/*
 virtual/cookie-deprecation-label/*
 virtual/disable-raster-inducing-scroll/*
 virtual/document-picture-in-picture-user-activation/*

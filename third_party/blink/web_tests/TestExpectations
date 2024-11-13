@@ -8504,6 +8504,9 @@ crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/subgraph.https.any.html?gpu [ Pass Timeout ]
 crbug.com/375028401 [ Mac14 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/subgraph.https.any.worker.html?gpu [ Pass Timeout ]
 
+# Flaky on headless shell
+crbug.com/378914068 [ Win ] external/wpt/client-hints/accept-ch-stickiness/http-equiv-same-origin-iframe.https.html [ Failure Pass ]
+
 # Gardener 2024-11-12
 crbug.com/378566920 [ Debug Linux ] external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html* [ Failure Pass ]
 crbug.com/378566920 [ Debug Mac14 ] external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html* [ Failure Pass ]
