@@ -735,6 +735,7 @@ void WebViewHelper::InitializeWebView(
   if (is_prerendering) {
     prerender_param = blink::mojom::PrerenderParam::New();
     prerender_param->page_metric_suffix = "for_testing";
+    prerender_param->should_prepare_paint_tree = true;
   }
 
   web_view_ = To<WebViewImpl>(

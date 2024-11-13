@@ -652,6 +652,8 @@ WebViewImpl::WebViewImpl(
         String(prerender_param->page_metric_suffix));
     page_->SetShouldWarmUpCompositorOnPrerender(
         prerender_param->should_warm_up_compositor);
+    page_->SetShouldPreparePaintTreeOnPrerender(
+        prerender_param->should_prepare_paint_tree);
   }
 
   if (fenced_frame_mode && features::IsFencedFramesEnabled()) {
