@@ -1846,6 +1846,19 @@ void LensOverlayController::InitializeOverlay(
     ShowPreselectionBubble();
   }
 
+  if (lens::features::GetLensOverlayUseCustomBlur()) {
+    content::RenderWidgetHost* live_page_widget_host =
+        tab_->GetContents()
+            ->GetPrimaryMainFrame()
+            ->GetRenderViewHost()
+            ->GetWidget();
+
+    // Create the blur delegate so it is ready to blur once the view is visible.
+    lens_overlay_blur_layer_delegate_ =
+        std::make_unique<lens::LensOverlayBlurLayerDelegate>(
+            live_page_widget_host);
+  }
+
   state_ = State::kOverlay;
 
   // Only start the query flow again if we don't already have a full image
@@ -2316,18 +2329,7 @@ void LensOverlayController::AddBackgroundBlur() {
     return;
   }
 
-  if (lens::features::GetLensOverlayUseCustomBlur()) {
-    content::RenderWidgetHost* live_page_widget_host =
-        tab_->GetContents()
-            ->GetPrimaryMainFrame()
-            ->GetRenderViewHost()
-            ->GetWidget();
-
-    // Create the blur delegate which will start blurring the background;
-    lens_overlay_blur_layer_delegate_ =
-        std::make_unique<lens::LensOverlayBlurLayerDelegate>(
-            live_page_widget_host);
-
+  if (lens_overlay_blur_layer_delegate_) {
     // Add our blur layer to the view.
     overlay_view_->SetPaintToLayer();
     overlay_view_->layer()->Add(lens_overlay_blur_layer_delegate_->layer());
