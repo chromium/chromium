@@ -19690,7 +19690,6 @@
         {
             "platforms": [
                 "android_weblayer",
-                "android_webview",
                 "android",
                 "chromeos",
                 "fuchsia",
@@ -19701,7 +19700,61 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledSubframeWithQueueing_20240108",
+                    "name": "EnabledSubframeWithQueueing",
+                    "params": {
+                        "level": "subframe",
+                        "queueing_level": "full"
+                    },
+                    "enable_features": [
+                        "DelayLayerTreeViewDeletionOnLocalSwap",
+                        "QueueNavigationsWhileWaitingForCommit",
+                        "RenderDocument"
+                    ],
+                    "disable_features": [
+                        "RenderDocumentCompositorReuse"
+                    ]
+                },
+                {
+                    "name": "EnabledCrashedFrameWithQueueing",
+                    "params": {
+                        "level": "crashed-frame",
+                        "queueing_level": "full"
+                    },
+                    "enable_features": [
+                        "DelayLayerTreeViewDeletionOnLocalSwap",
+                        "QueueNavigationsWhileWaitingForCommit",
+                        "RenderDocument"
+                    ],
+                    "disable_features": [
+                        "RenderDocumentCompositorReuse"
+                    ]
+                },
+                {
+                    "name": "EnabledAllFramesWithQueueing",
+                    "params": {
+                        "level": "all-frames",
+                        "queueing_level": "full"
+                    },
+                    "enable_features": [
+                        "DelayLayerTreeViewDeletionOnLocalSwap",
+                        "QueueNavigationsWhileWaitingForCommit",
+                        "RenderDocument"
+                    ],
+                    "disable_features": [
+                        "RenderDocumentCompositorReuse"
+                    ]
+                }
+            ]
+        }
+    ],
+    "RenderDocumentWithNavigationQueueing_WebView": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledSubframeWithQueueing",
                     "params": {
                         "level": "subframe",
                         "queueing_level": "full"
@@ -19715,7 +19768,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledCrashedFrameWithQueueing_20240108",
+                    "name": "EnabledCrashedFrameWithQueueing",
                     "params": {
                         "level": "crashed-frame",
                         "queueing_level": "full"
@@ -19729,33 +19782,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledNLRSubframeWithQueueing_20240108",
-                    "params": {
-                        "level": "non-local-root-subframe",
-                        "queueing_level": "full"
-                    },
-                    "enable_features": [
-                        "QueueNavigationsWhileWaitingForCommit",
-                        "RenderDocument"
-                    ],
-                    "disable_features": [
-                        "RenderDocumentCompositorReuse"
-                    ]
-                },
-                {
-                    "name": "EnabledSubframeWithQueueingAndCompReuse_20240108",
-                    "params": {
-                        "level": "subframe",
-                        "queueing_level": "full"
-                    },
-                    "enable_features": [
-                        "QueueNavigationsWhileWaitingForCommit",
-                        "RenderDocument",
-                        "RenderDocumentCompositorReuse"
-                    ]
-                },
-                {
-                    "name": "EnabledAllFramesWithQueueing_20240108",
+                    "name": "EnabledAllFramesWithQueueing",
                     "params": {
                         "level": "all-frames",
                         "queueing_level": "full"
