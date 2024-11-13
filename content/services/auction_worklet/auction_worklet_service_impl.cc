@@ -339,7 +339,9 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     std::optional<uint16_t> experiment_group_id,
-    mojom::TrustedSignalsPublicKeyPtr public_key) {
+    mojom::TrustedSignalsPublicKeyPtr public_key,
+    mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>
+        load_seller_worklet_client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers;
   for (size_t i = 0; i < auction_seller_v8_helper_holders_.size(); ++i) {
@@ -357,7 +359,8 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
       std::move(public_key),
       base::BindRepeating(
           &AuctionWorkletServiceImpl::GetNextSellerWorkletThreadIndex,
-          base::Unretained(this)));
+          base::Unretained(this)),
+      std::move(load_seller_worklet_client));
   auto* seller_worklet_ptr = seller_worklet.get();
 
   mojo::ReceiverId receiver_id = seller_worklets_.Add(

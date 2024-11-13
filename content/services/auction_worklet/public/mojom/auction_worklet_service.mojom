@@ -37,6 +37,17 @@ struct TrustedSignalsPublicKey {
   uint8 id;
 };
 
+// Client interface for receiving a notification when a requested seller worklet
+// finished loading. Use a client interface instead of a callback because that
+// allows not invoking the callback.
+interface LoadSellerWorkletClient {
+  // Invoked once the SellerWorklet has been loaded. Indicates if the response
+  // for the requested script URL indicated that the passed in trusted scoring
+  // signals URL may be requested. It's always true if the trusted scoring
+  // signals URL is same origin to the script URL.
+  SellerWorkletLoaded(bool trusted_signals_url_allowed);
+};
+
 // Used by the browser to load and run FLEDGE worklets. This can run in a
 // sandboxed utility process (non-Android) or inside a regular renderer
 // (Android).
@@ -154,9 +165,9 @@ interface AuctionWorkletService {
   //  SellerWorklet pipe.
   //
   // `shared_storage_hosts` The pipes for the SellerWorklet threads to send
-  // shared storage requests to the browser process. Will all be null if the
-  // `kSharedStorageAPI` feature or the "shared-storage" permissions policy is
-  // disabled.
+  //  shared storage requests to the browser process. Will all be null if the
+  //  `kSharedStorageAPI` feature or the "shared-storage" permissions policy is
+  //  disabled.
   //
   // `pause_for_debugger_on_start` If this is true, the worklet should not
   //  commence any work until it gets a Runtime.runIfWaitingForDebugger debugger
@@ -176,7 +187,19 @@ interface AuctionWorkletService {
   // `permissions_policy_state` The permissions policy state of the worklet.
   //
   // `experiment_group_id`: An optional parameter to pass to trusted signals
-  // server and as part of AuctionConfig.
+  //  server and as part of AuctionConfig.
+  //
+  // `load_seller_worklet_client` may be passed in to get a notification when
+  // the `script_source_url` has been loaded, and is passed whether
+  // `trusted_scoring_signals_url` may be requested. It's needed when
+  // `trusted_scoring_signals_url` is non-null and is cross-origin to
+  // `script_source_url`, and the trusted signals cache is in use. In that
+  // case, the browser process will be responsible for starting and managing
+  // signals fetches, so needs to know if the seller script's headers have
+  // provided permissions for signals to be requested from the scoring signals'
+  // origin. In other cases, the notification is not needed, since the worklet
+  // process itself is responsible for respecting those permissions, and the
+  // worklet API may be used before the script URL has finished loading.
   LoadSellerWorklet(
       pending_receiver<SellerWorklet> seller_worklet,
       array<pending_remote<AuctionSharedStorageHost>?> shared_storage_hosts,
@@ -188,5 +211,6 @@ interface AuctionWorkletService {
       url.mojom.Origin top_window_origin,
       AuctionWorkletPermissionsPolicyState permissions_policy_state,
       uint16? experiment_group_id,
-      TrustedSignalsPublicKey? public_key);
+      TrustedSignalsPublicKey? public_key,
+      pending_remote<LoadSellerWorkletClient>? load_seller_worklet_client);
 };

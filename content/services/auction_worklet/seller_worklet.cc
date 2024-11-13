@@ -39,6 +39,7 @@
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "content/services/auction_worklet/real_time_reporting_bindings.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
@@ -433,7 +434,9 @@ SellerWorklet::SellerWorklet(
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     std::optional<uint16_t> experiment_group_id,
     mojom::TrustedSignalsPublicKeyPtr public_key,
-    GetNextThreadIndexCallback get_next_thread_index_callback)
+    GetNextThreadIndexCallback get_next_thread_index_callback,
+    mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>
+        load_seller_worklet_client)
     : url_loader_factory_(std::move(pending_url_loader_factory)),
       script_source_url_(decision_logic_url),
       trusted_scoring_signals_origin_(
@@ -443,7 +446,8 @@ SellerWorklet::SellerWorklet(
       auction_network_events_handler_(
           std::move(auction_network_events_handler)),
       get_next_thread_index_callback_(
-          std::move(get_next_thread_index_callback)) {
+          std::move(get_next_thread_index_callback)),
+      load_seller_worklet_client_(std::move(load_seller_worklet_client)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   DCHECK(!v8_helpers.empty());
@@ -510,6 +514,7 @@ void SellerWorklet::ScoreAd(
     const std::optional<blink::AdCurrency>& bid_currency,
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
+    mojom::TrustedSignalsCacheKeyPtr trusted_signals_cache_key,
     const std::optional<GURL>& direct_from_seller_seller_signals,
     const std::optional<std::string>&
         direct_from_seller_seller_signals_header_ad_slot,
@@ -1916,6 +1921,15 @@ void SellerWorklet::OnDownloadComplete(
 
   DCHECK_NE(trusted_signals_relation_,
             SignalsOriginRelation::kUnknownPermissionCrossOriginSignals);
+  if (load_seller_worklet_client_) {
+    mojo::Remote<mojom::LoadSellerWorkletClient>(
+        std::move(load_seller_worklet_client_))
+        ->SellerWorkletLoaded(
+            trusted_signals_relation_ ==
+                SignalsOriginRelation::kSameOriginSignals ||
+            trusted_signals_relation_ ==
+                SignalsOriginRelation::kPermittedCrossOriginSignals);
+  }
 
   for (size_t i = 0; i < v8_runners_.size(); ++i) {
     v8_runners_[i]->PostTask(

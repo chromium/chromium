@@ -5462,7 +5462,9 @@ void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
   seller_worklet_handle_->AuthorizeSubresourceUrls(*url_builder);
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
       bid_raw->ad_metadata, bid_raw->bid, bid_raw->bid_currency,
-      config_->non_shared_params, GetDirectFromSellerSellerSignals(url_builder),
+      config_->non_shared_params,
+      auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
+      GetDirectFromSellerSellerSignals(url_builder),
       GetDirectFromSellerSellerSignalsHeaderAdSlot(
           *direct_from_seller_signals_header_ad_slot_),
       GetDirectFromSellerAuctionSignals(url_builder),

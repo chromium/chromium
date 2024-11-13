@@ -168,7 +168,9 @@ class TestAuctionProcessManager
       auction_worklet::mojom::AuctionWorkletPermissionsPolicyStatePtr
           permissions_policy_state,
       std::optional<uint16_t> experiment_id,
-      auction_worklet::mojom::TrustedSignalsPublicKeyPtr public_key) override {
+      auction_worklet::mojom::TrustedSignalsPublicKeyPtr public_key,
+      mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>
+          trusted_signals_url_allowed) override {
     NOTREACHED();
   }
 

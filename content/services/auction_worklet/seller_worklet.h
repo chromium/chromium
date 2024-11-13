@@ -102,7 +102,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
       std::optional<uint16_t> experiment_group_id,
       mojom::TrustedSignalsPublicKeyPtr public_key,
-      GetNextThreadIndexCallback next_thread_index_callback);
+      GetNextThreadIndexCallback next_thread_index_callback,
+      mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>
+          load_seller_worklet_client);
 
   explicit SellerWorklet(const SellerWorklet&) = delete;
   SellerWorklet& operator=(const SellerWorklet&) = delete;
@@ -127,6 +129,7 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       const std::optional<blink::AdCurrency>& bid_currency,
       const blink::AuctionConfig::NonSharedParams&
           auction_ad_config_non_shared_params,
+      mojom::TrustedSignalsCacheKeyPtr trusted_signals_cache_key,
       const std::optional<GURL>& direct_from_seller_seller_signals,
       const std::optional<std::string>&
           direct_from_seller_seller_signals_header_ad_slot,
@@ -662,6 +665,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       auction_network_events_handler_;
 
   GetNextThreadIndexCallback get_next_thread_index_callback_;
+
+  mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>
+      load_seller_worklet_client_;
 
   SEQUENCE_CHECKER(user_sequence_checker_);
 

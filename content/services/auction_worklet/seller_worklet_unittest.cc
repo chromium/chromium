@@ -35,11 +35,11 @@
 #include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/services/auction_worklet/public/cpp/real_time_reporting.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "content/services/auction_worklet/worklet_v8_debug_test_util.h"
@@ -222,7 +222,8 @@ class TestScoreAdClient : public mojom::ScoreAdClient {
   ScoreAdCompleteCallback score_ad_complete_callback_;
 };
 
-class SellerWorkletTest : public testing::Test {
+class SellerWorkletTest : public testing::Test,
+                          public mojom::LoadSellerWorkletClient {
  public:
   explicit SellerWorkletTest(
       base::test::TaskEnvironment::TimeSource time_mode =
@@ -426,6 +427,7 @@ class SellerWorkletTest : public testing::Test {
       base::OnceClosure done_closure) {
     seller_worklet->ScoreAd(
         ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
+        /*key_value_signals_cache_key=*/nullptr,
         direct_from_seller_seller_signals_,
         direct_from_seller_seller_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
@@ -527,6 +529,7 @@ class SellerWorkletTest : public testing::Test {
       mojom::SellerWorklet* seller_worklet) {
     seller_worklet->ScoreAd(
         ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
+        auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
         direct_from_seller_seller_signals_,
         direct_from_seller_seller_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
@@ -792,6 +795,10 @@ class SellerWorkletTest : public testing::Test {
 
     CHECK_EQ(v8_helpers_.size(), shared_storage_hosts_.size());
 
+    mojo::PendingRemote<mojom::LoadSellerWorkletClient>
+        load_seller_worklet_client;
+    load_seller_worklet_client_receivers_.Add(
+        this, load_seller_worklet_client.InitWithNewPipeAndPassReceiver());
     mojo::Remote<mojom::SellerWorklet> seller_worklet;
     auto seller_worklet_impl = std::make_unique<SellerWorklet>(
         v8_helpers_, std::move(shared_storage_hosts_),
@@ -801,7 +808,8 @@ class SellerWorkletTest : public testing::Test {
         permissions_policy_state_.Clone(), experiment_group_id_,
         public_key_ ? public_key_.Clone() : nullptr,
         base::BindRepeating(&SellerWorkletTest::GetNextThreadIndex,
-                            base::Unretained(this)));
+                            base::Unretained(this)),
+        std::move(load_seller_worklet_client));
 
     shared_storage_hosts_.resize(NumThreads());
 
@@ -860,6 +868,11 @@ class SellerWorkletTest : public testing::Test {
     if (disconnect_run_loop_) {
       disconnect_run_loop_->Quit();
     }
+  }
+
+  // LoadSellerWorkletClient implementation:
+  void SellerWorkletLoaded(bool trusted_signals_url_allowed) override {
+    trusted_signals_url_allowed_ = trusted_signals_url_allowed;
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -925,10 +938,16 @@ class SellerWorkletTest : public testing::Test {
 
   size_t next_thread_index_ = 0;
 
+  // Value received through the last call to the LoadSellerWorkletClient
+  // interface.
+  std::optional<bool> trusted_signals_url_allowed_;
+
   // Owns all created seller worklets - having a ReceiverSet allows them to have
   // a ClosePipeCallback which behaves just like the one in
   // AuctionWorkletServiceImpl, to better match production behavior.
   mojo::UniqueReceiverSet<mojom::SellerWorklet> seller_worklets_;
+  mojo::ReceiverSet<mojom::LoadSellerWorkletClient>
+      load_seller_worklet_client_receivers_;
 };
 
 class SellerWorkletTwoThreadsTest : public SellerWorkletTest {
@@ -2171,6 +2190,7 @@ TEST_F(SellerWorkletTest, ScoreAdJsFetchLatency) {
   base::RunLoop run_loop;
   seller_worklet->ScoreAd(
       ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
+      auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
       direct_from_seller_seller_signals_,
       direct_from_seller_seller_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
@@ -4083,6 +4103,7 @@ TEST_P(SellerWorkletMultiThreadingTest, ScriptIsolation) {
       seller_worklet->ScoreAd(
           ad_metadata_, bid_, bid_currency_,
           auction_ad_config_non_shared_params_,
+          auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
           direct_from_seller_seller_signals_,
           direct_from_seller_seller_signals_header_ad_slot_,
           direct_from_seller_auction_signals_,
@@ -4185,6 +4206,7 @@ TEST_F(SellerWorkletTest,
     base::RunLoop run_loop;
     seller_worklet->ScoreAd(
         ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
+        auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
         direct_from_seller_seller_signals_,
         direct_from_seller_seller_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
@@ -4290,6 +4312,7 @@ TEST_F(
     base::RunLoop run_loop;
     seller_worklet->ScoreAd(
         ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
+        auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
         direct_from_seller_seller_signals_,
         direct_from_seller_seller_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
@@ -4402,6 +4425,7 @@ TEST_F(
         ->ScoreAd(
             ad_metadata_, bid_, bid_currency_,
             auction_ad_config_non_shared_params_,
+            auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
             direct_from_seller_seller_signals_,
             direct_from_seller_seller_signals_header_ad_slot_,
             direct_from_seller_auction_signals_,
@@ -4520,6 +4544,7 @@ TEST_F(SellerWorkletTwoThreadsTest,
     base::RunLoop run_loop;
     seller_worklet->ScoreAd(
         ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
+        auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
         direct_from_seller_seller_signals_,
         direct_from_seller_seller_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
@@ -4582,6 +4607,7 @@ TEST_F(SellerWorkletTest, ContextReuseDoesNotCrashLazyFiller) {
     base::RunLoop run_loop;
     seller_worklet->ScoreAd(
         ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
+        auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
         direct_from_seller_seller_signals_,
         direct_from_seller_seller_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
@@ -4628,6 +4654,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper().get());
   seller_worklet->ScoreAd(
       ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
+      auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
       direct_from_seller_seller_signals_,
       direct_from_seller_seller_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
@@ -5656,6 +5683,7 @@ TEST_F(SellerWorkletTest, Cancelation) {
 
   seller_worklet->ScoreAd(
       ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
+      auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
       direct_from_seller_seller_signals_,
       direct_from_seller_seller_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
@@ -5722,6 +5750,7 @@ TEST_F(SellerWorkletTest, CancelBeforeFetch) {
 
   seller_worklet->ScoreAd(
       ad_metadata_, bid_, bid_currency_, auction_ad_config_non_shared_params_,
+      auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
       direct_from_seller_seller_signals_,
       direct_from_seller_seller_signals_header_ad_slot_,
       direct_from_seller_auction_signals_,
@@ -6760,6 +6789,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
     seller_worklet->ScoreAd(
         ad_metadata_, i + 1, bid_currency_,
         auction_ad_config_non_shared_params_,
+        auction_worklet::mojom::TrustedSignalsCacheKeyPtr(),
         direct_from_seller_seller_signals_,
         direct_from_seller_seller_signals_header_ad_slot_,
         direct_from_seller_auction_signals_,
@@ -7476,6 +7506,9 @@ TEST_F(SellerWorkletTest, SameOrigin) {
       "crossOriginTrustedSignals === null ? 1 : 0", 1,
       /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
       /*expected_data_version=*/5);
+  load_seller_worklet_client_receivers_.FlushForTesting();
+  EXPECT_TRUE(*trusted_signals_url_allowed_);
+
   RunScoreAdWithReturnValueExpectingResult(
       "arguments.length", 7,
       /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
@@ -7521,8 +7554,12 @@ TEST_F(SellerWorkletTest, ForbiddenCrossOrigin) {
       extra_js_headers_ = std::nullopt;
     }
 
+    trusted_signals_url_allowed_.reset();
     RunScoreAdWithReturnValueExpectingResult(
         "crossOriginTrustedSignals === null ? 1 : 0", 1, expected_errors);
+    load_seller_worklet_client_receivers_.FlushForTesting();
+    EXPECT_FALSE(*trusted_signals_url_allowed_);
+
     RunScoreAdWithReturnValueExpectingResult("arguments.length", 7,
                                              expected_errors);
     RunScoreAdWithReturnValueExpectingResult(
@@ -7594,11 +7631,14 @@ TEST_F(SellerWorkletTest, ForbiddenCrossOriginNoFetch) {
     EXPECT_EQ(1, url_loader_factory_.NumPending());
     EXPECT_TRUE(url_loader_factory_.IsPending(decision_logic_url_.spec()));
 
+    trusted_signals_url_allowed_.reset();
     AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
                           CreateScoreAdScript(kScoreExpr), extra_js_headers_);
     run_loop.Run();
     // We didn't just time out the signals fetch, it didn't happen at all.
     EXPECT_THAT(saw_urls, testing::ElementsAre(decision_logic_url_));
+    load_seller_worklet_client_receivers_.FlushForTesting();
+    EXPECT_FALSE(*trusted_signals_url_allowed_);
 
     // Also check the histograms.
     histogram_tester.ExpectTotalCount(
@@ -7646,10 +7686,13 @@ TEST_F(SellerWorkletTest, AllowedCrossOrigin) {
     throw actual + "!" + expected;
   )";
 
+  trusted_signals_url_allowed_.reset();
   RunScoreAdWithJavascriptExpectingResult(
       CreateScoreAdScript("3", kValidate), 7,
       /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
       /*expected_data_version=*/5);
+  load_seller_worklet_client_receivers_.FlushForTesting();
+  EXPECT_TRUE(*trusted_signals_url_allowed_);
 
   // Versions in crossOriginDataVersion, and passed out of worklet.
   RunScoreAdWithReturnValueExpectingResult(

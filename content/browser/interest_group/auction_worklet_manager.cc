@@ -613,7 +613,9 @@ void AuctionWorkletManager::WorkletOwner::LoadWorkletIfReady(
           GetAuctionWorkletPermissionsPolicyState(delegate->GetFrame(),
                                                   worklet_info_.script_url),
           worklet_info_.experiment_group_id,
-          std::move(trusted_signals_kvv2_public_key_));
+          std::move(trusted_signals_kvv2_public_key_),
+          mojo::PendingRemote<
+              auction_worklet::mojom::LoadSellerWorkletClient>());
       seller_worklet_.set_disconnect_with_reason_handler(base::BindOnce(
           &WorkletOwner::OnWorkletDisconnected, base::Unretained(this)));
       break;
