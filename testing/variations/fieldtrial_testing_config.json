@@ -18098,36 +18098,6 @@
             ]
         }
     ],
-    "PrivacyHubAppPermissions": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrosPrivacyHubAppPermissions"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PrivacyHubAppPermissionsV2": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrosPrivacyHubAppPermissionsV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivacyHubGeolocation": [
         {
             "platforms": [
@@ -18139,35 +18109,6 @@
                     "enable_features": [
                         "CrosPrivacyHub"
                     ]
-                }
-            ]
-        }
-    ],
-    "PrivacyHubMVP": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230616_Dogfood",
-                    "enable_features": [
-                        "CrosPrivacyHubV0"
-                    ]
-                },
-                {
-                    "name": "Control_20230616_Dogfood",
-                    "enable_features": []
-                },
-                {
-                    "name": "Enabled_20230616",
-                    "enable_features": [
-                        "CrosPrivacyHubV0"
-                    ]
-                },
-                {
-                    "name": "Control_20230616",
-                    "enable_features": []
                 }
             ]
         }
