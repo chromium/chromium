@@ -34,6 +34,8 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -87,6 +89,7 @@ const char* const kAutofillUpstreamLaunchedCountries[] = {
 
 bool IsCreditCardUploadEnabled(
     const syncer::SyncService* sync_service,
+    const PrefService& pref_service,
     const std::string& user_country,
     AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     LogManager* log_manager) {
@@ -127,10 +130,17 @@ bool IsCreditCardUploadEnabled(
   // the kAutofill type as disabled in this case.)
   // TODO(crbug.com/40066949): Simplify once IsSyncFeatureActive() is deleted
   // from the codebase.
+  bool addresses_in_transport_mode = base::FeatureList::IsEnabled(
+      syncer::kSyncEnableContactInfoDataTypeInTransportMode);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Dice users don't have addresses in transport mode until they went through
+  // the explicit signin flow.
+  addresses_in_transport_mode =
+      addresses_in_transport_mode &&
+      pref_service.GetBoolean(::prefs::kExplicitBrowserSignin);
+#endif
   bool syncing_or_addresses_in_transport_mode =
-      sync_service->IsSyncFeatureActive() ||
-      base::FeatureList::IsEnabled(
-          syncer::kSyncEnableContactInfoDataTypeInTransportMode);
+      sync_service->IsSyncFeatureActive() || addresses_in_transport_mode;
   if (syncing_or_addresses_in_transport_mode &&
       !sync_service->GetUserSettings()->GetSelectedTypes().Has(
           syncer::UserSelectableType::kAutofill)) {
@@ -197,6 +207,7 @@ bool IsCreditCardUploadEnabled(
 
 bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
                                   syncer::SyncService* sync_service,
+                                  const PrefService& pref_service,
                                   bool is_test_mode,
                                   LogManager* log_manager) {
   PaymentsDataManager& payments_data_manager =
@@ -206,7 +217,7 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
   // local card migration browsertests.
   if (!is_test_mode &&
       !IsCreditCardUploadEnabled(
-          sync_service,
+          sync_service, pref_service,
           payments_data_manager.GetCountryCodeForExperimentGroup(),
           payments_data_manager.GetPaymentsSigninStateForMetrics(),
           log_manager)) {

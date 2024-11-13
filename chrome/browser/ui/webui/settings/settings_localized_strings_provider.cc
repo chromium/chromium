@@ -1347,6 +1347,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       !is_guest_mode &&
           autofill::IsCreditCardMigrationEnabled(
               personal_data, SyncServiceFactory::GetForProfile(profile),
+              *profile->GetPrefs(),
               /*is_test_mode=*/false,
               /*log_manager=*/nullptr));
 

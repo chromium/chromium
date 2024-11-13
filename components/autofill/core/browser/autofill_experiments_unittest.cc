@@ -16,6 +16,9 @@
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -34,6 +37,7 @@ class AutofillExperimentsTest : public testing::Test {
   void SetUp() override {
     pref_service_.registry()->RegisterBooleanPref(prefs::kAutofillHasSeenIban,
                                                   false);
+    signin::IdentityManager::RegisterProfilePrefs(pref_service_.registry());
     log_manager_ = LogManager::Create(nullptr, base::NullCallback());
     mock_device_authenticator_ = std::make_unique<MockDeviceAuthenticator>();
   }
@@ -46,9 +50,9 @@ class AutofillExperimentsTest : public testing::Test {
   bool IsCreditCardUploadEnabled(
       const std::string& user_country,
       const AutofillMetrics::PaymentsSigninState signin_state_for_metrics) {
-    return autofill::IsCreditCardUploadEnabled(&sync_service_, user_country,
-                                               signin_state_for_metrics,
-                                               log_manager_.get());
+    return autofill::IsCreditCardUploadEnabled(
+        &sync_service_, pref_service_, user_country, signin_state_for_metrics,
+        log_manager_.get());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -169,6 +173,10 @@ TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_TransportWithAddresses_AutofillSelected) {
   base::test::ScopedFeatureList feature{
       syncer::kSyncEnableContactInfoDataTypeInTransportMode};
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Migrate Dice users.
+  pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
+#endif
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
@@ -182,6 +190,10 @@ TEST_F(AutofillExperimentsTest,
        IsCardUploadEnabled_TransportWithAddresses_AutofillDisabled) {
   base::test::ScopedFeatureList features{
       syncer::kSyncEnableContactInfoDataTypeInTransportMode};
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Migrate Dice users.
+  pref_service_.SetBoolean(::prefs::kExplicitBrowserSignin, true);
+#endif
   sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
   sync_service_.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
@@ -195,6 +207,23 @@ TEST_F(AutofillExperimentsTest,
           kSyncServiceMissingAutofillSelectedType,
       1);
 }
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(
+    AutofillExperimentsTest,
+    IsCardUploadEnabled_TransportWithAddresses_AutofillDisabled_DiceMigration) {
+  base::test::ScopedFeatureList feature{
+      syncer::kSyncEnableContactInfoDataTypeInTransportMode};
+  // Dice user not migrated to explicit signin.
+  ASSERT_FALSE(pref_service_.GetBoolean(::prefs::kExplicitBrowserSignin));
+  sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kPayments});
+  EXPECT_TRUE(
+      IsCreditCardUploadEnabled(AutofillMetrics::PaymentsSigninState::
+                                    kSignedInAndWalletSyncTransportEnabled));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Tests that for transport mode users, when CONTACT_INFO is unavailable, credit
 // card upload is offered independently of the kAutofill (address autofill +
