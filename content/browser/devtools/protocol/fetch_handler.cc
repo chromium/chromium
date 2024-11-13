@@ -20,6 +20,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
+#include "services/network/public/cpp/header_util.h"
 
 namespace content {
 namespace protocol {
@@ -170,6 +171,19 @@ bool ValidateHeaders(Fetch::HeaderEntry* entry, Callback* callback) {
   }
   return true;
 }
+
+bool ValidateHeadersForRequest(
+    Fetch::HeaderEntry* entry,
+    Fetch::Backend::ContinueRequestCallback* callback) {
+  if (!ValidateHeaders(entry, callback)) {
+    return false;
+  }
+  if (!network::IsRequestHeaderSafe(entry->GetName(), entry->GetValue())) {
+    callback->sendFailure(Response::InvalidParams("Unsafe header"));
+    return false;
+  }
+  return true;
+}
 }  // namespace
 
 void FetchHandler::FailRequest(const String& requestId,
@@ -272,8 +286,9 @@ void FetchHandler::ContinueRequest(
     request_headers = std::make_unique<
         DevToolsURLLoaderInterceptor::Modifications::HeadersVector>();
     for (auto& entry : headers.value()) {
-      if (!ValidateHeaders(entry.get(), callback.get()))
+      if (!ValidateHeadersForRequest(entry.get(), callback.get())) {
         return;
+      }
       request_headers->emplace_back(entry->GetName(), entry->GetValue());
     }
   }
