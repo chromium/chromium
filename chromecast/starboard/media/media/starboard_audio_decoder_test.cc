@@ -253,6 +253,32 @@ TEST_F(StarboardAudioDecoderTest, WritesEndOfStreamToStarboard) {
             MediaPipelineBackend::BufferStatus::kBufferSuccess);
 }
 
+TEST_F(StarboardAudioDecoderTest,
+       EndOfStreamAfterStopDoesNotPushToNullSbPlayer) {
+  // Regression test for crbug.com/375652489.
+  EXPECT_CALL(*starboard_, WriteEndOfStream(nullptr, kStarboardMediaTypeAudio))
+      .Times(0);
+  EXPECT_CALL(*starboard_,
+              WriteEndOfStream(&fake_player_, kStarboardMediaTypeAudio))
+      .Times(1);
+
+  StarboardAudioDecoder decoder(starboard_.get());
+  MockDelegate delegate;
+
+  const AudioConfig config = GetBasicConfig();
+
+  decoder.Initialize(&fake_player_);
+  decoder.SetConfig(config);
+  decoder.SetDelegate(&delegate);
+  decoder.Stop();
+
+  EXPECT_EQ(decoder.PushBuffer(CastDecoderBufferImpl::CreateEOSBuffer().get()),
+            MediaPipelineBackend::BufferStatus::kBufferPending);
+
+  // This should trigger the WriteEndOfStream call.
+  decoder.Initialize(&fake_player_);
+}
+
 TEST_F(StarboardAudioDecoderTest, ForwardsSetVolumeCallToStarboard) {
   constexpr float kVolume = 0.77;
 
