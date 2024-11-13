@@ -9,6 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_change_service_interface.h"
 
 class GURL;
@@ -26,6 +27,7 @@ class ChromePasswordChangeService
  public:
   explicit ChromePasswordChangeService(
       affiliations::AffiliationService* affiliation_service);
+  ~ChromePasswordChangeService();
 
   // Starts password change for a given |url|, |username| and |password|.
   // |originator| belongs to a tab which initiated the process.
@@ -43,6 +45,8 @@ class ChromePasswordChangeService
 
  private:
   raw_ptr<affiliations::AffiliationService> affiliation_service_;
+
+  base::WeakPtrFactory<ChromePasswordChangeService> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_CHROME_PASSWORD_CHANGE_SERVICE_H_

@@ -4,14 +4,25 @@
 
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 
+#include "components/affiliations/core/browser/affiliation_service.h"
+#include "components/password_manager/core/browser/features/password_features.h"
+#include "url/gurl.h"
+
 ChromePasswordChangeService::ChromePasswordChangeService(
     affiliations::AffiliationService* affiliation_service)
     : affiliation_service_(affiliation_service) {}
 
+ChromePasswordChangeService::~ChromePasswordChangeService() = default;
+
 bool ChromePasswordChangeService::IsPasswordChangeSupported(const GURL& url) {
-  NOTIMPLEMENTED();
-  return false;
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kImprovedPasswordChangeService)) {
+    return false;
+  }
+
+  return affiliation_service_->GetChangePasswordURL(url).is_valid();
 }
+
 void ChromePasswordChangeService::StartPasswordChange(
     const GURL& url,
     const std::u16string& username,
