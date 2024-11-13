@@ -5,44 +5,46 @@
 #include "chrome/browser/ash/input_method/input_methods_by_language.h"
 
 #include <algorithm>
-#include <array>
-#include <string_view>
+#include <string>
+#include <vector>
 
 #include "base/containers/contains.h"
-#include "base/containers/span.h"
+#include "base/no_destructor.h"
 
 namespace ash::input_method {
 
-base::span<const std::string_view> AfrikaansInputMethods() {
-  // Afrikaans does not have a separate IME.
-  return {};
+const std::vector<std::string>& AfrikaansInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
+      // Afrikaans does not have a separate IME.
+  });
+  return *input_methods;
 }
 
-base::span<const std::string_view> DanishInputMethods() {
-  static constexpr auto kInputMethods = std::to_array<std::string_view>({
+const std::vector<std::string>& DanishInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
       "xkb:dk::dan",  // Danish
   });
-  return kInputMethods;
+  return *input_methods;
 }
 
-base::span<const std::string_view> DutchInputMethods() {
-  static constexpr auto kInputMethods = std::to_array<std::string_view>({
+const std::vector<std::string>& DutchInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
       "xkb:be::nld",         // Dutch (Belgium)
       "xkb:us:intl_pc:nld",  // Dutch (Netherlands) with US intl pc keyboard
       "xkb:us:intl:nld",     // Dutch (Netherlands)
   });
-  return kInputMethods;
+  return *input_methods;
 }
 
-base::span<const std::string_view> FinnishInputMethods() {
-  static constexpr auto kInputMethods = std::to_array<std::string_view>({
+const std::vector<std::string>& FinnishInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
       "xkb:fi::fin",  // Finnish
   });
-  return kInputMethods;
+  return *input_methods;
 }
 
-base::span<const std::string_view> EnglishInputMethods() {
-  static constexpr auto kInputMethods = std::to_array<std::string_view>({
+const std::vector<std::string>& EnglishInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
       "xkb:ca:eng:eng",           // Canada
       "xkb:gb::eng",              // UK
       "xkb:gb:extd:eng",          // UK Extended
@@ -60,11 +62,11 @@ base::span<const std::string_view> EnglishInputMethods() {
       "xkb:us::eng",              // US
       "xkb:za:gb:eng"             // South Africa
   });
-  return kInputMethods;
+  return *input_methods;
 }
 
-base::span<const std::string_view> FrenchInputMethods() {
-  static constexpr auto kInputMethods = std::to_array<std::string_view>({
+const std::vector<std::string>& FrenchInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
       "xkb:be::fra",        // French (Belgium)
       "xkb:ca::fra",        // French (Canada)
       "xkb:ca:multix:fra",  // French (Canada) with multilingual keyboard
@@ -72,72 +74,72 @@ base::span<const std::string_view> FrenchInputMethods() {
       "xkb:fr:bepo:fra",    // French (France) with bepo keyboard
       "xkb:ch:fr:fra",      // French (Switzerland)
   });
-  return kInputMethods;
+  return *input_methods;
 }
 
-base::span<const std::string_view> GermanInputMethods() {
-  static constexpr auto kInputMethods = std::to_array<std::string_view>({
+const std::vector<std::string>& GermanInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
       "xkb:be::ger",     // German (Belgium)
       "xkb:de::ger",     // German (Germany)
       "xkb:de:neo:ger",  // German (Germany) with neo keyboard
       "xkb:ch::ger",     // German (Switzerland)
   });
-  return kInputMethods;
+  return *input_methods;
 }
 
-base::span<const std::string_view> ItalianInputMethods() {
-  static constexpr auto kInputMethods = std::to_array<std::string_view>({
+const std::vector<std::string>& ItalianInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
       "xkb:it::ita",  // Italian
   });
-  return kInputMethods;
+  return *input_methods;
 }
 
-base::span<const std::string_view> JapaneseInputMethods() {
-  static constexpr auto kInputMethods = std::to_array<std::string_view>({
+const std::vector<std::string>& JapaneseInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
       "xkb:jp::jpn",   // Alphanumeric with Japanese keyboard
       "nacl_mozc_us",  // Japanese with US keyboard
       "nacl_mozc_jp",  // Japanese
   });
-  return kInputMethods;
+  return *input_methods;
 }
 
-base::span<const std::string_view> NorwegianInputMethods() {
-  static constexpr auto kInputMethods = std::to_array<std::string_view>({
+const std::vector<std::string>& NorwegianInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
       "xkb:no::nob",  // Norwegian
   });
-  return kInputMethods;
+  return *input_methods;
 }
 
-base::span<const std::string_view> PolishInputMethods() {
-  static constexpr auto kInputMethods = std::to_array<std::string_view>({
+const std::vector<std::string>& PolishInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
       "xkb:pl::pol",  // Polish
   });
-  return kInputMethods;
+  return *input_methods;
 }
 
-base::span<const std::string_view> PortugeseInputMethods() {
-  static constexpr auto kInputMethods = std::to_array<std::string_view>({
+const std::vector<std::string>& PortugeseInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
       "xkb:br::por",         // Portugese (Brazil)
       "xkb:pt::por",         // Portugese (Portugal)
       "xkb:us:intl_pc:por",  // Portugese with US intl pc keyboard
       "xkb:us:intl:por",     // Portugese with US intl keyboard
   });
-  return kInputMethods;
+  return *input_methods;
 }
 
-base::span<const std::string_view> SpanishInputMethods() {
-  static constexpr auto kInputMethods = std::to_array<std::string_view>({
+const std::vector<std::string>& SpanishInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
       "xkb:latam::spa",  // Spanish (Latin America)
       "xkb:es::spa",     // Spanish (Spain)
   });
-  return kInputMethods;
+  return *input_methods;
 }
 
-base::span<const std::string_view> SwedishInputMethods() {
-  static constexpr auto kInputMethods = std::to_array<std::string_view>({
+const std::vector<std::string>& SwedishInputMethods() {
+  static const base::NoDestructor<std::vector<std::string>> input_methods({
       "xkb:se::swe",  // Swedish
   });
-  return kInputMethods;
+  return *input_methods;
 }
 
 LanguageCategory InputMethodToLanguageCategory(std::string_view input_method) {

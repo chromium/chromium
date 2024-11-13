@@ -14,7 +14,6 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "base/containers/extend.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/containers/to_vector.h"
 #include "base/json/json_reader.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/input_methods_by_language.h"
@@ -53,48 +52,46 @@ constexpr char kExperimentName[] = "OrcaEnabled";
 constexpr char kImeAllowlistLabel[] = "ime_allowlist";
 
 std::vector<std::string> AllowedInputMethods() {
-  auto to_string = [](std::string_view sv) { return std::string(sv); };
-  std::vector<std::string> input_methods =
-      base::ToVector(EnglishInputMethods(), to_string);
+  std::vector<std::string> input_methods = EnglishInputMethods();
 
   if (base::FeatureList::IsEnabled(features::kOrcaAfrikaans)) {
-    base::Extend(input_methods, AfrikaansInputMethods(), to_string);
+    base::Extend(input_methods, AfrikaansInputMethods());
   }
   if (base::FeatureList::IsEnabled(features::kOrcaDanish)) {
-    base::Extend(input_methods, DanishInputMethods(), to_string);
+    base::Extend(input_methods, DanishInputMethods());
   }
   if (base::FeatureList::IsEnabled(features::kOrcaDutch)) {
-    base::Extend(input_methods, DutchInputMethods(), to_string);
+    base::Extend(input_methods, DutchInputMethods());
   }
   if (base::FeatureList::IsEnabled(features::kOrcaFinnish)) {
-    base::Extend(input_methods, FinnishInputMethods(), to_string);
+    base::Extend(input_methods, FinnishInputMethods());
   }
   if (base::FeatureList::IsEnabled(features::kOrcaFrench)) {
-    base::Extend(input_methods, FrenchInputMethods(), to_string);
+    base::Extend(input_methods, FrenchInputMethods());
   }
   if (base::FeatureList::IsEnabled(features::kOrcaGerman)) {
-    base::Extend(input_methods, GermanInputMethods(), to_string);
+    base::Extend(input_methods, GermanInputMethods());
   }
   if (base::FeatureList::IsEnabled(features::kOrcaItalian)) {
-    base::Extend(input_methods, ItalianInputMethods(), to_string);
+    base::Extend(input_methods, ItalianInputMethods());
   }
   if (base::FeatureList::IsEnabled(features::kOrcaJapanese)) {
-    base::Extend(input_methods, JapaneseInputMethods(), to_string);
+    base::Extend(input_methods, JapaneseInputMethods());
   }
   if (base::FeatureList::IsEnabled(features::kOrcaNorwegian)) {
-    base::Extend(input_methods, NorwegianInputMethods(), to_string);
+    base::Extend(input_methods, NorwegianInputMethods());
   }
   if (base::FeatureList::IsEnabled(features::kOrcaPolish)) {
-    base::Extend(input_methods, PolishInputMethods(), to_string);
+    base::Extend(input_methods, PolishInputMethods());
   }
   if (base::FeatureList::IsEnabled(features::kOrcaPortugese)) {
-    base::Extend(input_methods, PortugeseInputMethods(), to_string);
+    base::Extend(input_methods, PortugeseInputMethods());
   }
   if (base::FeatureList::IsEnabled(features::kOrcaSpanish)) {
-    base::Extend(input_methods, SpanishInputMethods(), to_string);
+    base::Extend(input_methods, SpanishInputMethods());
   }
   if (base::FeatureList::IsEnabled(features::kOrcaSwedish)) {
-    base::Extend(input_methods, SwedishInputMethods(), to_string);
+    base::Extend(input_methods, SwedishInputMethods());
   }
 
   return input_methods;
