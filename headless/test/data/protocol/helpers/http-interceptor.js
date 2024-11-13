@@ -107,6 +107,15 @@
   }
 
   /**
+   * Returns the array of requested URLs.
+   *
+   * @return {!Array<string>}
+   */
+  requestedUrls() {
+    return this.requestedUrls_;
+  }
+
+  /**
    * Checks if specified urls have been requested.
    *
    * @param {[string]} urls Array of urls to check against requested urls.

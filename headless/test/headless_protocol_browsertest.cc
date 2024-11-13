@@ -22,6 +22,8 @@
 #include "headless/test/headless_browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/switches.h"
 
 namespace headless {
@@ -237,6 +239,13 @@ void HeadlessProtocolBrowserTest::FinishTest() {
 #define HEADLESS_PROTOCOL_TEST(TEST_NAME, SCRIPT_NAME)                 \
   HEADLESS_PROTOCOL_TEST_CLASS(HeadlessProtocolBrowserTest, TEST_NAME, \
                                SCRIPT_NAME)
+
+#define HEADLESS_PROTOCOL_TEST_P(CLASS_NAME, TEST_NAME, SCRIPT_NAME) \
+  IN_PROC_BROWSER_TEST_P(CLASS_NAME, TEST_NAME) {                    \
+    test_folder_ = "/protocol/";                                     \
+    script_name_ = SCRIPT_NAME;                                      \
+    RunTest();                                                       \
+  }
 
 // Headless-specific tests
 HEADLESS_PROTOCOL_TEST(VirtualTimeBasics, "emulation/virtual-time-basics.js")
@@ -470,6 +479,33 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple("*", "avc1.64000b", have_proprietary_codecs)));
 
 HEADLESS_DEVTOOLED_TEST_P(HeadlessAllowedVideoCodecsTest);
+
+class PopupWindowOpenTest : public HeadlessProtocolBrowserTest,
+                            public testing::WithParamInterface<bool> {
+ protected:
+  PopupWindowOpenTest() = default;
+
+  void CustomizeHeadlessBrowserContext(
+      HeadlessBrowserContext::Builder& builder) override {
+    builder.SetBlockNewWebContents(ShouldBlockNewWebContents());
+  }
+
+  base::Value::Dict GetPageUrlExtraParams() override {
+    base::Value::Dict params;
+    params.Set("blockingNewWebContents", ShouldBlockNewWebContents());
+    return params;
+  }
+
+  bool ShouldBlockNewWebContents() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         PopupWindowOpenTest,
+                         ::testing::Bool());
+
+HEADLESS_PROTOCOL_TEST_P(PopupWindowOpenTest,
+                         Open,
+                         "sanity/popup-window-open.js")
 
 class HeadlessProtocolBrowserTestWithoutSiteIsolation
     : public HeadlessProtocolBrowserTest {

@@ -620,8 +620,6 @@ test("headless_browsertests") {
     "test/headless_origin_trials_browsertest.cc",
     "test/headless_test_launcher.cc",
     "test/headless_web_contents_browsertest.cc",
-    "test/test_network_interceptor.cc",
-    "test/test_network_interceptor.h",
   ]
 
   if (enable_printing && enable_pdf) {

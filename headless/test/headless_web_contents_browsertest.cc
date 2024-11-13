@@ -31,7 +31,6 @@
 #include "headless/test/headless_browser_test.h"
 #include "headless/test/headless_browser_test_utils.h"
 #include "headless/test/headless_devtooled_browsertest.h"
-#include "headless/test/test_network_interceptor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/switches.h"
@@ -627,94 +626,6 @@ class CookiesEnabled : public HeadlessDevTooledBrowserTest {
 };
 
 HEADLESS_DEVTOOLED_TEST_F(CookiesEnabled);
-
-namespace {
-const char* kPageWhichOpensAWindow = R"(
-<html>
-<body>
-<script>
-const win = window.open('/page2.html');
-if (!win)
-  console.error('ready');
-win.addEventListener('load', () => console.log('ready'));
-</script>
-</body>
-</html>
-)";
-
-const char* kPage2 = R"(
-<html>
-<body>
-Page 2.
-</body>
-</html>
-)";
-}  // namespace
-
-class WebContentsOpenTest : public HeadlessDevTooledBrowserTest {
- public:
-  void PreRunAsynchronousTest() override {
-    interceptor_ = std::make_unique<TestNetworkInterceptor>();
-  }
-
-  void PostRunAsynchronousTest() override { interceptor_.reset(); }
-
-  void RunDevTooledTest() override {
-    DCHECK(interceptor_);
-
-    interceptor_->InsertResponse("http://foo.com/index.html",
-                                 {kPageWhichOpensAWindow, "text/html"});
-    interceptor_->InsertResponse("http://foo.com/page2.html",
-                                 {kPage2, "text/html"});
-
-    devtools_client_.AddEventHandler(
-        "Runtime.consoleAPICalled",
-        base::BindRepeating(&WebContentsOpenTest::OnConsoleAPICalled,
-                            base::Unretained(this)));
-    SendCommandSync(devtools_client_, "Runtime.enable");
-
-    devtools_client_.SendCommand("Page.navigate",
-                                 Param("url", "http://foo.com/index.html"));
-  }
-
-  virtual void OnConsoleAPICalled(const base::Value::Dict& params) {}
-
- protected:
-  std::unique_ptr<TestNetworkInterceptor> interceptor_;
-};
-
-class DontBlockWebContentsOpenTest : public WebContentsOpenTest {
- public:
-  void CustomizeHeadlessBrowserContext(
-      HeadlessBrowserContext::Builder& builder) override {
-    builder.SetBlockNewWebContents(false);
-  }
-
-  void OnConsoleAPICalled(const base::Value::Dict& params) override {
-    EXPECT_THAT(
-        interceptor_->urls_requested(),
-        ElementsAre("http://foo.com/index.html", "http://foo.com/page2.html"));
-    FinishAsynchronousTest();
-  }
-};
-
-HEADLESS_DEVTOOLED_TEST_F(DontBlockWebContentsOpenTest);
-
-class BlockWebContentsOpenTest : public WebContentsOpenTest {
- public:
-  void CustomizeHeadlessBrowserContext(
-      HeadlessBrowserContext::Builder& builder) override {
-    builder.SetBlockNewWebContents(true);
-  }
-
-  void OnConsoleAPICalled(const base::Value::Dict& params) override {
-    EXPECT_THAT(interceptor_->urls_requested(),
-                ElementsAre("http://foo.com/index.html"));
-    FinishAsynchronousTest();
-  }
-};
-
-HEADLESS_DEVTOOLED_TEST_F(BlockWebContentsOpenTest);
 
 // Regression test for crbug.com/1385982.
 class BlockDevToolsEmbedding : public HeadlessDevTooledBrowserTest {
