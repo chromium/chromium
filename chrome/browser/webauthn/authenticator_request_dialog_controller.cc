@@ -42,7 +42,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/webauthn/ambient/ambient_signin_controller.h"
-#include "chrome/browser/ui/webauthn/passkey_upgrade_request_controller.h"
 #include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
@@ -713,18 +712,11 @@ void AuthenticatorRequestDialogController::StartFlow(
   PopulateMechanisms();
   model_->priority_mechanism_index = IndexOfPriorityMechanism();
 
-  switch (ui_presentation_) {
-    case UIPresentation::kModal:
-      StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection();
-      break;
-    case UIPresentation::kAutofill:
-      StartAutofillRequest();
-      break;
-    case UIPresentation::kPasskeyUpgrade:
-      StartPasskeyUpgradeRequest();
-      break;
-    case UIPresentation::kDisabled:
-      NOTREACHED();
+  if (ui_presentation_ == UIPresentation::kAutofill) {
+    // This is a conditional mediation request.
+    StartAutofillRequest();
+  } else {
+    StartGuidedFlowForMostLikelyTransportOrShowMechanismSelection();
   }
 }
 
@@ -2546,29 +2538,4 @@ bool AuthenticatorRequestDialogController::CanDefaultToEnclave(
 content::RenderFrameHost*
 AuthenticatorRequestDialogController::GetRenderFrameHost() const {
   return content::RenderFrameHost::FromID(frame_host_id_);
-}
-
-void AuthenticatorRequestDialogController::StartPasskeyUpgradeRequest() {
-  auto* controller =
-      PasskeyUpgradeRequestController::GetOrCreateForCurrentDocument(
-          GetRenderFrameHost());
-  if (!model_->user_entity.name) {
-    FIDO_LOG(ERROR) << "Ignoring passkey upgrade request: empty username";
-    return;
-  }
-  controller->TryUpgradePasswordToPasskey(
-      model_->relying_party_id, *model_->user_entity.name,
-      base::BindOnce(
-          [](base::WeakPtr<AuthenticatorRequestDialogController> controller,
-             bool success) {
-            if (!controller) {
-              return;
-            }
-            // The pending request callback is resolved through the
-            // MakeCredentialRequestHandler.
-            FIDO_LOG(EVENT)
-                << "Passkey upgrade request complete success=" << success;
-          },
-          weak_factory_.GetWeakPtr()));
-  SetCurrentStep(Step::kPasskeyUpgrade);
 }

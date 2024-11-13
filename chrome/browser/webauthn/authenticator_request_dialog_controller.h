@@ -423,7 +423,6 @@ class AuthenticatorRequestDialogController
   void ContactPhoneAfterBleIsPowered(std::string name);
 
   void StartAutofillRequest();
-  void StartPasskeyUpgradeRequest();
 
   void DispatchRequestAsync(AuthenticatorReference* authenticator);
 

@@ -286,8 +286,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kUserActivationSameOriginVisibility)},
           {wf::EnableWebAuthenticationAmbient,
            raw_ref(device::kWebAuthnAmbientSignin)},
-          {wf::EnableWebAuthenticationConditionalCreate,
-           raw_ref(device::kWebAuthnPasskeyUpgrade)},
           {wf::EnableWebBluetooth, raw_ref(features::kWebBluetooth),
            kSetOnlyIfOverridden},
           {wf::EnableWebBluetoothGetDevices,

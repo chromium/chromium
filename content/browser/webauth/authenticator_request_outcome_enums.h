@@ -67,7 +67,6 @@ enum class AuthenticationRequestMode {
   kModalWebAuthn = 0,
   kConditional = 1,
   kPayment = 2,
-  kPasskeyUpgrade = 3,
 };
 
 }  // namespace content
