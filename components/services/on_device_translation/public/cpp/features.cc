@@ -29,6 +29,10 @@ const base::FeatureParam<bool> kTranslationAPILimitLanguagePackCount{
     &blink::features::kEnableTranslationAPI,
     "TranslationAPILimitLanguagePackCount", true};
 
+const base::FeatureParam<base::TimeDelta> kTranslationAPIServiceIdleTimeout{
+    &blink::features::kEnableTranslationAPI, "TranslationAPIServiceIdleTimeout",
+    base::Minutes(1)};
+
 // static
 base::FilePath GetTranslateKitBinaryPathFromCommandLine() {
   return GetPathFromCommandLine(kTranslateKitBinaryPath);

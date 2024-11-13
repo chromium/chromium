@@ -83,7 +83,8 @@ OnDeviceTranslationServiceController::PendingTask::operator=(PendingTask&&) =
     default;
 
 OnDeviceTranslationServiceController::OnDeviceTranslationServiceController()
-    : file_operation_proxy_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
+    : service_idle_timeout_(kTranslationAPIServiceIdleTimeout.Get()),
+      file_operation_proxy_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {
   // Initialize the pref change registrar.
   pref_change_registrar_.Init(g_browser_process->local_state());
   if (!ComponentManager::HasTranslateKitLibraryPathFromCommandLine()) {
@@ -177,9 +178,21 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
     const std::string& source_lang,
     const std::string& target_lang,
     base::OnceCallback<void(mojo::PendingRemote<mojom::Translator>)> callback) {
-  GetRemote()->CreateTranslator(source_lang, target_lang,
-                                mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-                                    std::move(callback), mojo::NullRemote()));
+  mojo::PendingRemote<mojom::Translator> pending_remote;
+  auto pending_receiver = pending_remote.InitWithNewPipeAndPassReceiver();
+  GetRemote()->CreateTranslator(
+      source_lang, target_lang, std::move(pending_receiver),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(
+              [](base::OnceCallback<void(
+                     mojo::PendingRemote<mojom::Translator>)> callback,
+                 mojo::PendingRemote<mojom::Translator> pending_remote,
+                 bool success) {
+                std::move(callback).Run(success ? std::move(pending_remote)
+                                                : mojo::NullRemote());
+              },
+              std::move(callback), std::move(pending_remote)),
+          false));
 }
 
 void OnDeviceTranslationServiceController::CanTranslate(
@@ -309,6 +322,10 @@ OnDeviceTranslationServiceController::GetRemote() {
 
   auto receiver = service_remote_.BindNewPipeAndPassReceiver();
   service_remote_.reset_on_disconnect();
+  service_remote_.set_idle_handler(
+      service_idle_timeout_,
+      base::BindRepeating(&OnDeviceTranslationServiceController::OnServiceIdle,
+                          base::Unretained(this)));
 
   const base::FilePath binary_path =
       ComponentManager::GetTranslateKitLibraryPath();
@@ -378,6 +395,18 @@ OnDeviceTranslationServiceController*
 OnDeviceTranslationServiceController::GetInstance() {
   static base::NoDestructor<OnDeviceTranslationServiceController> instance;
   return instance.get();
+}
+
+void OnDeviceTranslationServiceController::OnServiceIdle() {
+  service_remote_.reset();
+}
+
+void OnDeviceTranslationServiceController::SetServiceIdleTimeoutForTesting(
+    base::TimeDelta service_idle_timeout) {
+  // To simplify the logic, we only allow the timeout to be set before the
+  // service is running.
+  CHECK(!IsServiceRunningForTesting());  // IN-TEST
+  service_idle_timeout_ = service_idle_timeout;
 }
 
 }  // namespace on_device_translation

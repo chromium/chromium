@@ -52,6 +52,12 @@ class OnDeviceTranslationServiceController {
       base::OnceCallback<void(blink::mojom::CanCreateTranslatorResult)>
           callback);
 
+  // Sets the service idle timeout for testing. This must be called before the
+  // service is started.
+  void SetServiceIdleTimeoutForTesting(base::TimeDelta service_idle_timeout);
+  // Returns true if the service is running.
+  bool IsServiceRunningForTesting() const { return !!service_remote_; }
+
  private:
   friend base::NoDestructor<OnDeviceTranslationServiceController>;
 
@@ -98,6 +104,9 @@ class OnDeviceTranslationServiceController {
 
   void MaybeRunPendingTasks();
 
+  // Called when the service is idle and the idle timeout is reached.
+  void OnServiceIdle();
+
   static void CalculateLanguagePackRequirements(
       const std::string& source_lang,
       const std::string& target_lang,
@@ -105,6 +114,9 @@ class OnDeviceTranslationServiceController {
       std::vector<LanguagePackKey>& required_not_installed_packs,
       std::vector<LanguagePackKey>& to_be_registered_packs);
 
+  // The idle timeout for the translation service. When the service is idle for
+  // this amount of time, the service will be terminated.
+  base::TimeDelta service_idle_timeout_;
   // TODO(crbug.com/335374928): implement the error handling for the translation
   // service crash.
   mojo::Remote<mojom::OnDeviceTranslationService> service_remote_;

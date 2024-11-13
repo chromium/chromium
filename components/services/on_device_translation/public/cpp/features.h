@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace on_device_translation {
 
@@ -19,6 +20,11 @@ extern const base::FeatureParam<bool> kTranslationAPIAcceptLanguagesCheck;
 // This feature limits the number of language components downloaded by
 // createTranslator() to 3.
 extern const base::FeatureParam<bool> kTranslationAPILimitLanguagePackCount;
+
+// The duration that the OnDeviceTranslation service can remain idle before it
+// is terminated.
+extern const base::FeatureParam<base::TimeDelta>
+    kTranslationAPIServiceIdleTimeout;
 
 const char kTranslateKitBinaryPath[] = "translate-kit-binary-path";
 

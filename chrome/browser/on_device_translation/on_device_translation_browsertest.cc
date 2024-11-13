@@ -13,12 +13,14 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/on_device_translation/component_manager.h"
 #include "chrome/browser/on_device_translation/constants.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/pref_names.h"
+#include "chrome/browser/on_device_translation/service_controller.h"
 #include "chrome/browser/on_device_translation/test/test_util.h"
 #include "chrome/browser/on_device_translation/translation_manager_impl.h"
 #include "chrome/browser/profiles/profile.h"
@@ -782,6 +784,112 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
       await promise;
     )"),
             "AbortError: The translator has been destoried.");
+}
+
+// Tests that the service is terminated when the idle timeout is reached.
+IN_PROC_BROWSER_TEST_F(
+    OnDeviceTranslationBrowserTest,
+    TerminateServiceWhenIdleTimeoutReachedAfterTranslatorDestroyed) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+
+  NavigateToEmptyPage();
+
+  // Set the idle timeout to be 100 microseconds.
+  OnDeviceTranslationServiceController::GetInstance()
+      ->SetServiceIdleTimeoutForTesting(base::Microseconds(100));
+
+  // Test that Translator API works.
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      window._translator = await translation.createTranslator({
+        sourceLanguage: 'en',
+        targetLanguage: 'ja',
+      });
+      return await window._translator.translate('hello');
+    )"),
+            "en to ja: hello");
+  // Check that the service is still running.
+  EXPECT_TRUE(OnDeviceTranslationServiceController::GetInstance()
+                  ->IsServiceRunningForTesting());
+  // Wait for 200 microseconds.
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      await new Promise(resolve => { setTimeout(resolve, 200); });
+      return 'OK';
+    )"),
+            "OK");
+  // Check that the service is still running, because the translator is still
+  // available.
+  EXPECT_TRUE(OnDeviceTranslationServiceController::GetInstance()
+                  ->IsServiceRunningForTesting());
+  // Destroy the translator. And wait for 200 microseconds. (Note: wait more
+  // than the idle timeout 100 microseconds to avoid flakiness.)
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      window._translator.destroy();
+      await new Promise(resolve => { setTimeout(resolve, 200); });
+      return 'OK';
+    )"),
+            "OK");
+  // Check that the service is not running, because the translator was
+  // destroyed, and the idle timeout was reached.
+  EXPECT_FALSE(OnDeviceTranslationServiceController::GetInstance()
+                   ->IsServiceRunningForTesting());
+}
+
+// Tests that the service is terminated when the idle timeout is reached after
+// the frame is removed.
+IN_PROC_BROWSER_TEST_F(
+    OnDeviceTranslationBrowserTest,
+    TerminateServiceWhenIdleTimeoutReachedAfterFrameRemoved) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+
+  NavigateToEmptyPage();
+
+  // Set the idle timeout to be 100 microseconds.
+  OnDeviceTranslationServiceController::GetInstance()
+      ->SetServiceIdleTimeoutForTesting(base::Microseconds(100));
+
+  // Test that Translator API on an iframe works.
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      window._iframe = document.createElement('iframe');
+      document.body.appendChild(window._iframe);
+      const translator =
+          await window._iframe.contentWindow.translation.createTranslator({
+            sourceLanguage: 'en',
+            targetLanguage: 'ja',
+          });
+      return await translator.translate('hello');
+    )"),
+            "en to ja: hello");
+  // Check that the service is still running.
+  EXPECT_TRUE(OnDeviceTranslationServiceController::GetInstance()
+                  ->IsServiceRunningForTesting());
+  // Wait for 200 microseconds.
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      await new Promise(resolve => { setTimeout(resolve, 200); });
+      return 'OK';
+    )"),
+            "OK");
+  // Check that the service is still running, because the ifame is still
+  // available.
+  EXPECT_TRUE(OnDeviceTranslationServiceController::GetInstance()
+                  ->IsServiceRunningForTesting());
+  // Remove the iframe and wait for 200 microseconds. (Note: wait more than the
+  // idle timeout 100 microseconds to avoid flakiness.)
+  EXPECT_EQ(EvalJsCatchingError(R"(
+      document.body.removeChild(window._iframe);
+      await new Promise(resolve => { setTimeout(resolve, 200); });
+      return 'OK';
+    )"),
+            "OK");
+  // Check that the service is not running, because the iframe was removed, and
+  // the idle timeout was reached.
+  EXPECT_FALSE(OnDeviceTranslationServiceController::GetInstance()
+                   ->IsServiceRunningForTesting());
 }
 
 // Test the behavior of canTranslate() when the language pack is ready.

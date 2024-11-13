@@ -70,18 +70,17 @@ class OnDeviceTranslationServiceTest : public testing::Test {
       const std::string& target_lang) {
     mojo::Remote<mojom::Translator> translator_remote;
     base::RunLoop run_loop;
+    bool succeeded = false;
     service_remote_->CreateTranslator(
         source_lang, target_lang,
-        base::BindLambdaForTesting(
-            [&](mojo::PendingRemote<mojom::Translator> result) {
-              if (result) {
-                translator_remote =
-                    mojo::Remote<mojom::Translator>(std::move(result));
-              }
-              run_loop.Quit();
-            }));
+        translator_remote.BindNewPipeAndPassReceiver(),
+        base::BindLambdaForTesting([&](bool result) {
+          succeeded = result;
+          run_loop.Quit();
+        }));
     run_loop.Run();
-    return translator_remote;
+    return succeeded ? std::move(translator_remote)
+                     : mojo::Remote<mojom::Translator>();
   }
 
  private:

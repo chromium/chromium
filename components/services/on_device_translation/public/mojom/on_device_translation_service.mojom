@@ -79,11 +79,15 @@ interface OnDeviceTranslationService {
 
   // Creates a `Translator` that could do translation from `source_lang` to
   // `target_lang`. When succeeds, the result callback will be called with a
-  // valid `Translator` pending remote. Otherwise, the result callback will be
-  // called with a null pending remote.
+  // true `is_sucessful`. Otherwise, the result callback will be called with a
+  // false `is_sucessful`.
+  // To detect the idle state of the service, this IPC is passing a
+  // pending_receiver instead of returning a pending_remote. See
+  // https://crrev.com/c/5992971/comment/ca3edf7c_2ae4ca1a/ for more details.
   CreateTranslator(string source_lang,
-                   string target_lang)
-      => (pending_remote<Translator>? translator);
+                   string target_lang,
+                   pending_receiver<Translator> receiver)
+      => (bool is_sucessful);
 
   // Returns if the service could translate text from `source_lang` to
   // `target_lang`.
