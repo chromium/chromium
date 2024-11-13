@@ -50,10 +50,6 @@ int64_t MockWaylandPlatformWindowDelegate::OnStateUpdate(
     OnBoundsChanged({origin_changed});
   }
 
-  if (old.occlusion_state != latest.occlusion_state) {
-    OnOcclusionStateChanged(latest.occlusion_state);
-  }
-
   if (!on_state_update_callback_.is_null()) {
     on_state_update_callback_.Run();
   }

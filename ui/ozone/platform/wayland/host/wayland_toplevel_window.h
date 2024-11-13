@@ -57,8 +57,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   void UpdateWindowScale(bool update_bounds) override;
   void LockFrame() override;
   void UnlockFrame() override;
-  void OcclusionStateChanged(
-      PlatformWindowOcclusionState occlusion_state) override;
   void DeskChanged(int state) override;
   void StartThrottle() override;
   void EndThrottle() override;
@@ -101,7 +99,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   void HideTooltip() override;
   void PropagateBufferScale(float new_scale) override;
   base::WeakPtr<WaylandWindow> AsWeakPtr() override;
-  void OnRotateFocus(uint32_t serial, uint32_t direction, bool restart);
 
   // WmDragHandler:
   bool ShouldReleaseCaptureForDrag(ui::OSExchangeData* data) const override;

@@ -755,24 +755,6 @@ EventTargeter* WaylandWindow::GetEventTargeter() {
   return nullptr;
 }
 
-void WaylandWindow::OcclusionStateChanged(
-    PlatformWindowOcclusionState occlusion_state) {
-  // Put non-synchronized occlusion state updates into pending occlusion state
-  // as well, to avoid an earlier pending synchronized occlusion state update
-  // being applied later and overwriting a non-synchronized occlusion state that
-  // happened in between. This can only happen if a non-synchronized occlusion
-  // state update is sent after configure is initiated from the server but
-  // before it is finalized (and the pending state is applied). It's also safe
-  // to overwrite the current pending state from a configure, because there's no
-  // happens-before/after guarantees on unsynchronised state setting w.r.t.
-  // configures, so it would be valid for the configure ack's commit to have the
-  // unsynchronised occlusion state set, if that happened after configure but
-  // before the corresponding frame was produced.
-  // TODO(crbug.com/40208263): Remove this once the oldest ash we want to use
-  // supports synchronized occlusion state in configure.
-  SetPendingOcclusionState(occlusion_state);
-}
-
 void WaylandWindow::HandleSurfaceConfigure(uint32_t serial) {
   NOTREACHED()
       << "Only shell surfaces must receive HandleSurfaceConfigure calls.";
@@ -1348,12 +1330,6 @@ void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
   if (pending_configure_state_.size_px.has_value()) {
     state.size_px = pending_configure_state_.size_px.value();
   }
-  if (pending_configure_state_.raster_scale.has_value()) {
-    state.raster_scale = pending_configure_state_.raster_scale.value();
-  }
-  if (pending_configure_state_.occlusion_state.has_value()) {
-    state.occlusion_state = pending_configure_state_.occlusion_state.value();
-  }
 
   if (state.bounds_dip.IsEmpty() &&
       GetPlatformWindowState() == PlatformWindowState::kMinimized &&
@@ -1386,17 +1362,7 @@ void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
 
 void WaylandWindow::RequestStateFromServer(PlatformWindowDelegate::State state,
                                            int64_t serial) {
-  bool force = false;
-  // Changing the native occlusion state can affect the compositor visibility,
-  // which can affect whether frames are produced. To avoid a bad interaction
-  // with state update throttling and frames not being produced, which could
-  // leave the system not able to apply a new state while also not being able to
-  // produce any frames to clear the previously throttled states, always force
-  // applying the state if the occlusion state changes.
-  if (state.occlusion_state != applied_state_.occlusion_state) {
-    force = true;
-  }
-  RequestState(state, serial, force);
+  RequestState(state, serial, /*force=*/false);
 }
 
 void WaylandWindow::RequestStateFromClient(

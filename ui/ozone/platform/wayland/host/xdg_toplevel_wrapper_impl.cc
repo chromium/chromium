@@ -338,90 +338,6 @@ void XDGToplevelWrapperImpl::OnDecorationConfigure(
   self->decoration_mode_ = ToDecorationMode(mode);
 }
 
-// static
-void XDGToplevelWrapperImpl::OnAuraToplevelConfigure(
-    void* data,
-    zaura_toplevel* aura_toplevel,
-    int32_t x,
-    int32_t y,
-    int32_t width,
-    int32_t height,
-    wl_array* states) {
-  auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
-  DCHECK(self);
-
-  WaylandWindow::WindowStates window_states;
-  window_states.is_maximized =
-      CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_MAXIMIZED);
-  window_states.is_fullscreen =
-      CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_FULLSCREEN);
-  window_states.is_activated =
-      CheckIfWlArrayHasValue(states, XDG_TOPLEVEL_STATE_ACTIVATED);
-  window_states.is_minimized =
-      CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_MINIMIZED);
-  window_states.is_snapped_primary =
-      CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_SNAPPED_PRIMARY);
-  window_states.is_snapped_secondary =
-      CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_SNAPPED_SECONDARY);
-  window_states.is_floated =
-      CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_FLOATED);
-  window_states.is_pip =
-      CheckIfWlArrayHasValue(states, ZAURA_TOPLEVEL_STATE_PIP);
-
-  self->wayland_window_->HandleToplevelConfigureWithOrigin(x, y, width, height,
-                                                           window_states);
-}
-
-// static
-void XDGToplevelWrapperImpl::OnOriginChange(void* data,
-                                            zaura_toplevel* aura_toplevel,
-                                            int32_t x,
-                                            int32_t y) {
-  auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
-  DCHECK(self);
-  auto* toplevel_window =
-      static_cast<WaylandToplevelWindow*>(self->wayland_window_);
-  toplevel_window->SetOrigin(gfx::Point(x, y));
-}
-
-// static
-void XDGToplevelWrapperImpl::OnConfigureRasterScale(
-    void* data,
-    zaura_toplevel* aura_toplevel,
-    uint32_t scale_as_uint) {
-  auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
-  DCHECK(self);
-  auto* wayland_window = static_cast<WaylandWindow*>(self->wayland_window_);
-  float scale = base::bit_cast<float>(scale_as_uint);
-  wayland_window->SetPendingRasterScale(scale);
-}
-
-// static
-void XDGToplevelWrapperImpl::OnRotateFocus(void* data,
-                                           zaura_toplevel* aura_toplevel,
-                                           uint32_t serial,
-                                           uint32_t direction,
-                                           uint32_t restart) {
-  auto* self = static_cast<XDGToplevelWrapperImpl*>(data);
-  DCHECK(self);
-  auto* toplevel_window =
-      static_cast<WaylandToplevelWindow*>(self->wayland_window_);
-  toplevel_window->OnRotateFocus(serial, direction, restart);
-}
-
-// static
-void XDGToplevelWrapperImpl::OnConfigureOcclusionState(
-    void* data,
-    struct zaura_toplevel* zaura_toplevel,
-    uint32_t mode) {
-  auto* surface = static_cast<XDGToplevelWrapperImpl*>(data);
-  DCHECK(surface);
-  auto* wayland_window = static_cast<WaylandWindow*>(surface->wayland_window_);
-  auto occlusion_state =
-      WaylandOcclusionStateToPlatformWindowOcclusionState(mode);
-  wayland_window->SetPendingOcclusionState(occlusion_state);
-}
-
 void XDGToplevelWrapperImpl::SetTopLevelDecorationMode(
     DecorationMode requested_mode) {
   if (!zxdg_toplevel_decoration_ || requested_mode == decoration_mode_) {
@@ -553,16 +469,6 @@ void XDGToplevelWrapperImpl::EnableScreenCoordinates() {
     return;
   }
   zaura_toplevel_set_supports_screen_coordinates(aura_toplevel_.get());
-
-  static constexpr zaura_toplevel_listener kAuraToplevelListener = {
-      .configure = &OnAuraToplevelConfigure,
-      .origin_change = &OnOriginChange,
-      .configure_raster_scale = &OnConfigureRasterScale,
-      .rotate_focus = &OnRotateFocus,
-      .overview_change = nullptr,
-      .configure_occlusion_state = &OnConfigureOcclusionState};
-  zaura_toplevel_add_listener(aura_toplevel_.get(), &kAuraToplevelListener,
-                              this);
 }
 #endif
 

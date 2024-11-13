@@ -98,32 +98,6 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
                                     zxdg_toplevel_decoration_v1* decoration,
                                     uint32_t mode);
 
-  // zaura_toplevel_listener callbacks:
-  static void OnAuraToplevelConfigure(void* data,
-                                      zaura_toplevel* aura_toplevel,
-                                      int32_t x,
-                                      int32_t y,
-                                      int32_t width,
-                                      int32_t height,
-                                      wl_array* states);
-  static void OnOriginChange(void* data,
-                             zaura_toplevel* aura_toplevel,
-                             int32_t x,
-                             int32_t y);
-
-  static void OnConfigureRasterScale(void* data,
-                                     struct zaura_toplevel* zaura_toplevel,
-                                     uint32_t scale_as_uint);
-
-  static void OnConfigureOcclusionState(void* data,
-                                        struct zaura_toplevel* zaura_toplevel,
-                                        uint32_t mode);
-  static void OnRotateFocus(void* data,
-                            zaura_toplevel* aura_toplevel,
-                            uint32_t serial,
-                            uint32_t direction,
-                            uint32_t restart);
-
   // Send request to wayland compositor to enable a requested decoration mode.
   void SetTopLevelDecorationMode(DecorationMode requested_mode);
 

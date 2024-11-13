@@ -254,10 +254,6 @@ class WaylandWindow : public PlatformWindow,
   std::unique_ptr<EventTargetIterator> GetChildIterator() const override;
   EventTargeter* GetEventTargeter() override;
 
-  // WaylandZAuraSurface::Delegate:
-  void OcclusionStateChanged(
-      PlatformWindowOcclusionState occlusion_state) override;
-
   // Handles the configuration events coming from the shell objects.
   // The width and height come in DIP of the output that the surface is
   // currently bound to.
@@ -289,6 +285,9 @@ class WaylandWindow : public PlatformWindow,
   virtual void HandleToplevelConfigure(int32_t width,
                                        int32_t height,
                                        const WindowStates& window_states);
+  // TODO(crbug.com/374244479): Linux/Wayland doesn't support configure events
+  // with origin changes as clients are not shared with their onscreen
+  // coordinates. Remove this and fix tests that rely on origin changes.
   virtual void HandleToplevelConfigureWithOrigin(
       int32_t x,
       int32_t y,
@@ -305,16 +304,6 @@ class WaylandWindow : public PlatformWindow,
   // Called by shell surfaces to indicate that this window can start submitting
   // frames. Updating state based on configure is handled separately to this.
   void OnSurfaceConfigureEvent();
-
-  // Sets the raster scale to be applied on the next configure.
-  void SetPendingRasterScale(float scale) {
-    pending_configure_state_.raster_scale = scale;
-  }
-
-  // Sets the raster scale to be applied on the next configure.
-  void SetPendingOcclusionState(PlatformWindowOcclusionState occlusion_state) {
-    pending_configure_state_.occlusion_state = occlusion_state;
-  }
 
   // See comments on the member variable for an explanation of this.
   const PlatformWindowDelegate::State& applied_state() const {
@@ -528,8 +517,6 @@ class WaylandWindow : public PlatformWindow,
     std::optional<PlatformWindowState> window_state;
     std::optional<gfx::Rect> bounds_dip;
     std::optional<gfx::Size> size_px;
-    std::optional<float> raster_scale;
-    std::optional<PlatformWindowOcclusionState> occlusion_state;
   };
 
   // This holds the requested state for the next configure from the server.
