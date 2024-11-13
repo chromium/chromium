@@ -38,7 +38,7 @@ void GpuTaskSchedulerHelper::ScheduleGpuTask(
     base::OnceClosure callback,
     std::vector<gpu::SyncToken> sync_token_fences,
     const SyncToken& release,
-    SingleTaskSequence::ReportingCallback report_callback) {
+    ReportingCallback report_callback) {
   // There are two places where this function is called: inside
   // SkiaOutputSurface, where |using_command_buffer_| is false, or by other
   // users when sharing with command buffer, where we should have

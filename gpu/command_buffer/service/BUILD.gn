@@ -37,6 +37,8 @@ target(link_target_type, "service_sources") {
 
   sources = [
     "async_api_interface.h",
+    "blocking_sequence_runner.cc",
+    "blocking_sequence_runner.h",
     "command_buffer_direct.cc",
     "command_buffer_direct.h",
     "command_buffer_service.cc",

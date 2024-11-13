@@ -60,6 +60,10 @@ class GPU_EXPORT FenceSyncReleaseDelegate {
 using TaskCallback =
     base::OnceCallback<void(FenceSyncReleaseDelegate* release_delegate)>;
 
+// A callback to be used for reporting when the task is ready to run (when the
+// dependencies have been solved).
+using ReportingCallback = base::OnceCallback<void(base::TimeTicks task_ready)>;
+
 // ScopedSyncPointClientState (if valid) destroys the corresponding
 // SyncPointClientState when it is destructed. It is move-only to avoid
 // calling destroy multiple times.
@@ -95,11 +99,6 @@ class GPU_EXPORT ScopedSyncPointClientState {
 // between tasks.
 class GPU_EXPORT TaskGraph {
  public:
-  // A callback to be used for reporting when the task is ready to run (when the
-  // dependencies have been solved).
-  using ReportingCallback =
-      base::OnceCallback<void(base::TimeTicks task_ready)>;
-
   class Sequence;
 
   explicit TaskGraph(SyncPointManager* sync_point_manager);

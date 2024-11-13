@@ -14,10 +14,6 @@
 #include "gpu/command_buffer/service/task_graph.h"
 #include "gpu/gpu_gles2_export.h"
 
-namespace base {
-class TimeTicks;
-}
-
 namespace viz {
 class DisplayCompositorMemoryAndTaskController;
 }
@@ -58,9 +54,6 @@ class GPU_GLES2_EXPORT GpuTaskSchedulerHelper {
   // GpuTaskSchedulerHelper. This is only needed for sharing with the command
   // buffer, thus no need to be called when using SkiaRenderer.
   void Initialize(CommandBufferHelper* command_buffer_helper);
-
-  using ReportingCallback =
-      base::OnceCallback<void(base::TimeTicks task_ready)>;
 
   // This is called outside of CommandBuffer and would need to flush the command
   // buffer if the CommandBufferHelper is present. CommandBuffer is a friend of

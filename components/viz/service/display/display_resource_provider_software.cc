@@ -7,9 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/feature_list.h"
-#include "base/synchronization/waitable_event.h"
-#include "components/viz/common/features.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
@@ -25,26 +22,28 @@ DisplayResourceProviderSoftware::DisplayResourceProviderSoftware(
     : DisplayResourceProvider(DisplayResourceProvider::kSoftware),
       shared_bitmap_manager_(shared_bitmap_manager),
       shared_image_manager_(shared_image_manager),
-      sync_point_manager_(sync_point_manager),
-      gpu_scheduler_(scheduler),
-      sync_point_order_data_(
-          sync_point_manager_ ? sync_point_manager_->CreateSyncPointOrderData()
-                              : nullptr) {
+      gpu_scheduler_(scheduler) {
   memory_tracker_ = std::make_unique<gpu::MemoryTypeTracker>(nullptr);
 }
 
 DisplayResourceProviderSoftware::~DisplayResourceProviderSoftware() {
   Destroy();
-  if (sync_point_order_data_) {
-    sync_point_order_data_->Destroy();
-  }
 }
 
 std::unique_ptr<gpu::MemoryImageRepresentation>
 DisplayResourceProviderSoftware::GetSharedImageRepresentation(
     const gpu::Mailbox& mailbox,
     const gpu::SyncToken& sync_token) {
-  WaitSyncToken(sync_token);
+  if (!blocking_sequence_runner_) {
+    // There are cases where a nullptr `gpu_scheduler_` is used. In such cases,
+    // this method shouldn't be called.
+    CHECK(gpu_scheduler_);
+    blocking_sequence_runner_ =
+        std::make_unique<gpu::BlockingSequenceRunner>(gpu_scheduler_);
+  }
+  blocking_sequence_runner_->AddTask(base::OnceClosure(base::DoNothing()),
+                                     {sync_token}, gpu::SyncToken());
+  blocking_sequence_runner_->RunAllTasks();
   return shared_image_manager_->ProduceMemory(mailbox, memory_tracker_.get());
 }
 
@@ -56,7 +55,7 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
   // Determine whether this resource is using a software SharedImage or a legacy
   // shared bitmap.
   if (resource->transferable.IsSoftwareSharedImage()) {
-    DCHECK(shared_image_manager_ && sync_point_manager_);
+    DCHECK(shared_image_manager_);
     auto it = resource_shared_images_.find(id);
     if (it == resource_shared_images_.end()) {
       const gpu::Mailbox& mailbox = resource->transferable.mailbox();
@@ -209,27 +208,6 @@ DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
     sk_image_ = nullptr;
     return;
   }
-}
-
-void DisplayResourceProviderSoftware::WaitSyncToken(gpu::SyncToken sync_token) {
-  uint32_t order_num = sync_point_order_data_->GenerateUnprocessedOrderNumber();
-  base::WaitableEvent completion;
-  if (sync_point_manager_->Wait(
-          sync_token, sync_point_order_data_->sequence_id(), order_num,
-          base::BindOnce(&base::WaitableEvent::Signal,
-                         base::Unretained(&completion)))) {
-    gpu::SequenceId release_sequence_id =
-        sync_point_manager_->GetSyncTokenReleaseSequenceId(sync_token);
-    gpu::Scheduler::ScopedSetSequencePriority waiting(
-        gpu_scheduler_, release_sequence_id, gpu::SchedulingPriority::kHigh);
-
-    completion.Wait();
-  }
-
-  // We don't have any tasks to run here, but we need to mark order number as
-  // complete.
-  sync_point_order_data_->BeginProcessingOrderNumber(order_num);
-  sync_point_order_data_->FinishProcessingOrderNumber(order_num);
 }
 
 DisplayResourceProviderSoftware::ScopedReadLockSkImage::

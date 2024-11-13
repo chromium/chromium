@@ -1445,7 +1445,7 @@ void SkiaOutputSurfaceImpl::FlushGpuTasksWithImpl(
       std::move(gpu_tasks_), sync_mode, event.get(), impl_on_gpu, make_current_,
       need_framebuffer_, post_task_timestamp);
 
-  gpu::GpuTaskSchedulerHelper::ReportingCallback reporting_callback;
+  gpu::ReportingCallback reporting_callback;
   if (should_measure_next_post_task_) {
     // Note that the usage of base::Unretained() with the impl_on_gpu_ is
     // considered safe as it is also owned by |callback| and share the same

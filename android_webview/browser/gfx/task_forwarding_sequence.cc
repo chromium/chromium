@@ -28,7 +28,7 @@ void TaskForwardingSequence::ScheduleTask(
     gpu::TaskCallback task,
     std::vector<gpu::SyncToken> sync_token_fences,
     const gpu::SyncToken& release,
-    ReportingCallback report_callback) {
+    gpu::ReportingCallback report_callback) {
   task_queue_->ScheduleTask(std::move(task), std::move(sync_token_fences),
                             release, std::move(report_callback));
 }
@@ -37,7 +37,7 @@ void TaskForwardingSequence::ScheduleTask(
     base::OnceClosure task,
     std::vector<gpu::SyncToken> sync_token_fences,
     const gpu::SyncToken& release,
-    ReportingCallback report_callback) {
+    gpu::ReportingCallback report_callback) {
   task_queue_->ScheduleTask(std::move(task), std::move(sync_token_fences),
                             release, std::move(report_callback));
 }
@@ -46,7 +46,7 @@ void TaskForwardingSequence::ScheduleOrRetainTask(
     base::OnceClosure task,
     std::vector<gpu::SyncToken> sync_token_fences,
     const gpu::SyncToken& release,
-    ReportingCallback report_callback) {
+    gpu::ReportingCallback report_callback) {
   task_queue_->ScheduleOrRetainTask(std::move(task),
                                     std::move(sync_token_fences), release,
                                     std::move(report_callback));

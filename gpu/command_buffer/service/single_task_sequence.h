@@ -14,10 +14,6 @@
 #include "gpu/command_buffer/service/task_graph.h"
 #include "gpu/gpu_gles2_export.h"
 
-namespace base {
-class TimeTicks;
-}
-
 namespace gpu {
 // Represents a single task execution sequence. Tasks posted to a sequence are
 // run in order. Tasks across sequences should be synchronized using sync
@@ -33,10 +29,6 @@ class GPU_GLES2_EXPORT SingleTaskSequence {
 
   // Returns true if sequence should yield while running its current task.
   virtual bool ShouldYield() = 0;
-
-  // A callback to measure when a given task was ready to be scheduled.
-  using ReportingCallback =
-      base::OnceCallback<void(base::TimeTicks task_ready)>;
 
   // Schedule a task with provided sync token dependencies and release.
   // For scheduling from viz thread, due to limitations in Android WebView,

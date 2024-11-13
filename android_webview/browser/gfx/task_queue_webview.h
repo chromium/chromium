@@ -5,26 +5,22 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_GFX_TASK_QUEUE_WEBVIEW_H_
 #define ANDROID_WEBVIEW_BROWSER_GFX_TASK_QUEUE_WEBVIEW_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/sequence_id.h"
-#include "gpu/command_buffer/service/single_task_sequence.h"
 #include "gpu/command_buffer/service/task_graph.h"
 
 namespace gpu {
-class Scheduler;
-class ScopedSyncPointClientState;
-struct SyncToken;
+class BlockingSequenceRunner;
 }  // namespace gpu
 
 namespace android_webview {
@@ -75,19 +71,18 @@ class TaskQueueWebView {
 
   gpu::SequenceId GetSequenceId();
 
-  using ReportingCallback = gpu::SingleTaskSequence::ReportingCallback;
   void ScheduleTask(gpu::TaskCallback task,
                     std::vector<gpu::SyncToken> sync_token_fences,
                     const gpu::SyncToken& release,
-                    ReportingCallback report_callback);
+                    gpu::ReportingCallback report_callback);
   void ScheduleTask(base::OnceClosure task,
                     std::vector<gpu::SyncToken> sync_token_fences,
                     const gpu::SyncToken& release,
-                    ReportingCallback report_callback);
+                    gpu::ReportingCallback report_callback);
   void ScheduleOrRetainTask(base::OnceClosure task,
                             std::vector<gpu::SyncToken> sync_token_fences,
                             const gpu::SyncToken& release,
-                            ReportingCallback report_callback);
+                            gpu::ReportingCallback report_callback);
 
   // Called to schedule delayed tasks.
   void ScheduleIdleTask(base::OnceClosure task);
@@ -97,34 +92,6 @@ class TaskQueueWebView {
       gpu::CommandBufferId command_buffer_id);
 
  private:
-  class Sequence : public gpu::TaskGraph::Sequence {
-   public:
-    explicit Sequence(gpu::Scheduler* scheduler);
-
-    void RunAllTasks() LOCKS_EXCLUDED(lock());
-
-    // The following methods acquire the TaskGraph lock before calling the
-    // corresponding methods in gpu::TaskGraph::Sequence.
-    bool HasTasksAcquiringLock() const LOCKS_EXCLUDED(lock());
-    uint32_t AddTaskAcquiringLock(gpu::TaskCallback task_callback,
-                                  std::vector<gpu::SyncToken> wait_fences,
-                                  const gpu::SyncToken& release,
-                                  ReportingCallback report_callback)
-        LOCKS_EXCLUDED(lock());
-    uint32_t AddTaskAcquiringLock(base::OnceClosure task_closure,
-                                  std::vector<gpu::SyncToken> wait_fences,
-                                  const gpu::SyncToken& release,
-                                  ReportingCallback report_callback)
-        LOCKS_EXCLUDED(lock());
-    [[nodiscard]] gpu::ScopedSyncPointClientState
-    CreateSyncPointClientStateAcquiringLock(
-        gpu::CommandBufferNamespace namespace_id,
-        gpu::CommandBufferId command_buffer_id) LOCKS_EXCLUDED(lock());
-
-   private:
-    const raw_ptr<gpu::Scheduler> scheduler_ = nullptr;
-  };
-
   TaskQueueWebView();
 
   void RunOnViz(VizTask viz_task);
@@ -143,7 +110,8 @@ class TaskQueueWebView {
   base::ConditionVariable condvar_{&lock_};
   bool done_ GUARDED_BY(lock_) = true;
 
-  raw_ptr<Sequence> sequence_ GUARDED_BY(lock_) = nullptr;
+  std::unique_ptr<gpu::BlockingSequenceRunner> blocking_sequence_runner_
+      GUARDED_BY(lock_);
 };
 
 }  // namespace android_webview

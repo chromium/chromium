@@ -35,21 +35,21 @@ class TaskForwardingSequence : public gpu::SingleTaskSequence {
   // There is only one task queue. ShouldYield always return false.
   bool ShouldYield() override;
 
-  void ScheduleTask(
-      gpu::TaskCallback task,
-      std::vector<gpu::SyncToken> sync_token_fences,
-      const gpu::SyncToken& release,
-      ReportingCallback report_callback = ReportingCallback()) override;
-  void ScheduleTask(
-      base::OnceClosure task,
-      std::vector<gpu::SyncToken> sync_token_fences,
-      const gpu::SyncToken& release,
-      ReportingCallback report_callback = ReportingCallback()) override;
-  void ScheduleOrRetainTask(
-      base::OnceClosure task,
-      std::vector<gpu::SyncToken> sync_token_fences,
-      const gpu::SyncToken& release,
-      ReportingCallback report_callback = ReportingCallback()) override;
+  void ScheduleTask(gpu::TaskCallback task,
+                    std::vector<gpu::SyncToken> sync_token_fences,
+                    const gpu::SyncToken& release,
+                    gpu::ReportingCallback report_callback =
+                        gpu::ReportingCallback()) override;
+  void ScheduleTask(base::OnceClosure task,
+                    std::vector<gpu::SyncToken> sync_token_fences,
+                    const gpu::SyncToken& release,
+                    gpu::ReportingCallback report_callback =
+                        gpu::ReportingCallback()) override;
+  void ScheduleOrRetainTask(base::OnceClosure task,
+                            std::vector<gpu::SyncToken> sync_token_fences,
+                            const gpu::SyncToken& release,
+                            gpu::ReportingCallback report_callback =
+                                gpu::ReportingCallback()) override;
 
   // Should not be called because tasks aren't reposted to wait for sync tokens,
   // or for yielding execution since ShouldYield() returns false.
