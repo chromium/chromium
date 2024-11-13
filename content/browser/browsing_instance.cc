@@ -11,6 +11,7 @@
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/security/coop/coop_related_group.h"
 #include "content/browser/site_info.h"
+#include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_or_resource_context.h"
@@ -74,6 +75,14 @@ bool BrowsingInstance::HasSiteInstance(const SiteInfo& site_info) {
 scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURL(
     const UrlInfo& url_info,
     bool allow_default_instance) {
+  return GetSiteInstanceForURL(url_info, /*creation_group=*/nullptr,
+                               allow_default_instance);
+}
+
+scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURL(
+    const UrlInfo& url_info,
+    SiteInstanceGroup* creation_group,
+    bool allow_default_instance) {
   scoped_refptr<SiteInstanceImpl> site_instance =
       GetSiteInstanceForURLHelper(url_info, allow_default_instance);
 
@@ -90,6 +99,12 @@ scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURL(
   if (SiteInstanceImpl::ShouldAssignSiteForUrlInfo(url_info) ||
       isolation_context_.is_guest()) {
     instance->SetSite(url_info);
+  }
+
+  // Add the new SiteInstance to `group`, if it exists.
+  if (creation_group) {
+    creation_group->AddSiteInstance(instance.get());
+    instance->SetSiteInstanceGroup(creation_group);
   }
 
   return instance;
@@ -114,6 +129,16 @@ scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForSiteInfo(
 
   scoped_refptr<SiteInstanceImpl> instance = new SiteInstanceImpl(this);
   instance->SetSite(site_info);
+  return instance;
+}
+
+scoped_refptr<SiteInstanceImpl>
+BrowsingInstance::GetMaybeGroupRelatedSiteInstanceForURL(
+    const UrlInfo& url_info,
+    SiteInstanceGroup* creation_group) {
+  CHECK(creation_group);
+  scoped_refptr<SiteInstanceImpl> instance = GetSiteInstanceForURL(
+      url_info, creation_group, /*allow_default_instance=*/false);
   return instance;
 }
 

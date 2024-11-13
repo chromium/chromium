@@ -3183,8 +3183,15 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest, CookiesInheritedDataUrl) {
       main_document->child_at(0)->current_frame_host();
   EXPECT_EQ("data:text/html,", sub_document_1->GetLastCommittedURL());
   EXPECT_TRUE(sub_document_1->GetLastCommittedOrigin().opaque());
-  EXPECT_EQ(main_document->GetSiteInstance(),
-            sub_document_1->GetSiteInstance());
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    EXPECT_NE(main_document->GetSiteInstance(),
+              sub_document_1->GetSiteInstance());
+    EXPECT_EQ(main_document->GetSiteInstance()->group(),
+              sub_document_1->GetSiteInstance()->group());
+  } else {
+    EXPECT_EQ(main_document->GetSiteInstance(),
+              sub_document_1->GetSiteInstance());
+  }
 
   // 1. Writing a cookie inside a data-URL document is forbidden.
   {
@@ -3225,8 +3232,15 @@ IN_PROC_BROWSER_TEST_F(NavigationCookiesBrowserTest, CookiesInheritedDataUrl) {
   EXPECT_EQ(url_a, main_document->GetLastCommittedURL());
   EXPECT_EQ("data:text/html,", sub_document_2->GetLastCommittedURL());
   EXPECT_TRUE(sub_document_2->GetLastCommittedOrigin().opaque());
-  EXPECT_EQ(main_document->GetSiteInstance(),
-            sub_document_2->GetSiteInstance());
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    EXPECT_NE(main_document->GetSiteInstance(),
+              sub_document_2->GetSiteInstance());
+    EXPECT_EQ(main_document->GetSiteInstance()->GetSiteInstanceGroupId(),
+              sub_document_2->GetSiteInstance()->GetSiteInstanceGroupId());
+  } else {
+    EXPECT_EQ(main_document->GetSiteInstance(),
+              sub_document_2->GetSiteInstance());
+  }
 
   // 5. Writing a cookie inside a data-URL document is still forbidden.
   {

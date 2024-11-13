@@ -713,6 +713,10 @@ class CONTENT_EXPORT RenderFrameHostManager {
   enum class SiteInstanceRelation {
     // A SiteInstance in a different browsing instance from the current.
     UNRELATED,
+    // A SiteInstance in the same SiteInstanceGroup, and thus process.
+    // Note: Using this value requires passing in a valid `source_site_instance`
+    // to ConvertToSiteInstance.
+    RELATED_IN_GROUP,
     // A SiteInstance in a different BrowsingInstance, but in the same
     // CoopRelatedGroup. Only used for COOP: restrict-properties
     // navigations.
@@ -898,11 +902,15 @@ class CONTENT_EXPORT RenderFrameHostManager {
       std::string* reason = nullptr);
 
   // Converts a SiteInstanceDescriptor to the actual SiteInstance it describes.
-  // If a |candidate_instance| is provided (is not nullptr) and it matches the
+  // If a `candidate_instance` is provided (is not nullptr) and it matches the
   // description, it is returned as is.
+  // `source_site_instance` is needed for navigations that use
+  // SiteInstanceGroup, where the new SiteInstance belongs to the group of the
+  // source SiteInstance.
   scoped_refptr<SiteInstanceImpl> ConvertToSiteInstance(
       const SiteInstanceDescriptor& descriptor,
-      SiteInstanceImpl* candidate_instance);
+      SiteInstanceImpl* candidate_instance,
+      SiteInstanceImpl* source_site_instance = nullptr);
 
   // Returns true if `candidate` is currently same site with `dest_url_info`.
   // This method is a special case for handling hosted apps in this object. Most

@@ -1230,7 +1230,17 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
             devtools_extension_panel_rfh->GetSiteInstance());
   EXPECT_EQ(extensions_instance, panel_frame_rfh->GetSiteInstance());
   EXPECT_EQ(extensions_instance, about_blank_frame_rfh->GetSiteInstance());
-  EXPECT_EQ(extensions_instance, data_frame_rfh->GetSiteInstance());
+
+  // Expect the data frame to have its own SiteInstance with SiteInstanceGroups
+  // enabled. Expect the data frame and its parent to share a process whether or
+  // not the feature is enabled.
+  if (base::FeatureList::IsEnabled(features::kSiteInstanceGroupsForDataUrls)) {
+    EXPECT_NE(extensions_instance, data_frame_rfh->GetSiteInstance());
+  } else {
+    EXPECT_EQ(extensions_instance, data_frame_rfh->GetSiteInstance());
+  }
+  EXPECT_EQ(extensions_instance->GetProcess(),
+            data_frame_rfh->GetSiteInstance()->GetProcess());
 
   EXPECT_EQ(web_url.host(),
             web_frame_rfh->GetSiteInstance()->GetSiteURL().host());

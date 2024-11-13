@@ -6,6 +6,7 @@
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/site_per_process_browsertest.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -1448,16 +1449,21 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessIsolatedSandboxedIframeTest,
     ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
   }
 
-  // Verify parent and child frames share a non-sandboxed SiteInstance.
+  // Verify parent and child frames share a non-sandboxed SiteInstanceGroup.
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
   ASSERT_EQ(1U, root->child_count());
+  SiteInstanceImpl* root_site_instance =
+      root->current_frame_host()->GetSiteInstance();
   FrameTreeNode* child = root->child_at(0);
-  EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
-            child->current_frame_host()->GetSiteInstance());
-  EXPECT_FALSE(child->current_frame_host()
-                   ->GetSiteInstance()
-                   ->GetSiteInfo()
-                   .is_sandboxed());
+  SiteInstanceImpl* child_site_instance =
+      child->current_frame_host()->GetSiteInstance();
+  EXPECT_EQ(root_site_instance->group(), child_site_instance->group());
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    EXPECT_NE(root_site_instance, child_site_instance);
+  } else {
+    EXPECT_EQ(root_site_instance, child_site_instance);
+  }
+  EXPECT_FALSE(child_site_instance->GetSiteInfo().is_sandboxed());
 
   // Now make the subframe sandboxed.
   {

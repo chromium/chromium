@@ -1186,8 +1186,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       DepictFrameTree(root));
 
   // Navigate iframe to a data URL. The navigation happens from a script in the
-  // parent frame, so the data URL should be committed in the same SiteInstance
-  // as the parent frame.
+  // parent frame, so the data URL should be committed in the same
+  // SiteInstanceGroup as the parent frame. If kSiteInstanceGroupsForDataUrls is
+  // enabled, the data URL should be in its own SiteInstance. Otherwise it
+  // shares a SiteInstance with its parent.
   RenderFrameDeletedObserver deleted_observer1(
       root->child_at(0)->current_frame_host());
   GURL data_url("data:text/html,dataurl");
@@ -1199,27 +1201,54 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   deleted_observer1.WaitUntilDeleted();
 
   // Ensure that we have navigated using the top level process.
-  EXPECT_EQ(
-      " Site A\n"
-      "   |--Site A\n"
-      "   +--Site A\n"
-      "        +--Site A\n"
-      "Where A = http://a.com/",
-      DepictFrameTree(root));
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    // Site A and Site C are in the same SiteInstanceGroup, so there are no
+    // proxies for each other.
+    // TODO(crbug.com/341741267, yangsharon): Update output to show that A and C
+    // are in the same SiteInstanceGroup.
+    EXPECT_EQ(
+        " Site A\n"
+        "   |--Site C\n"
+        "   +--Site A\n"
+        "        +--Site A\n"
+        "Where A = http://a.com/\n"
+        "      C = data:nonce_C",
+        DepictFrameTree(root));
+  } else {
+    EXPECT_EQ(
+        " Site A\n"
+        "   |--Site A\n"
+        "   +--Site A\n"
+        "        +--Site A\n"
+        "Where A = http://a.com/",
+        DepictFrameTree(root));
+  }
 
   // Load cross-site page into iframe.
   url = embedded_test_server()->GetURL("bar.com", "/title2.html");
   EXPECT_TRUE(NavigateToURLFromRenderer(child, url));
   EXPECT_TRUE(observer.last_navigation_succeeded());
   EXPECT_EQ(url, observer.last_navigation_url());
-  EXPECT_EQ(
-      " Site A ------------ proxies for C\n"
-      "   |--Site C ------- proxies for A\n"
-      "   +--Site A ------- proxies for C\n"
-      "        +--Site A -- proxies for C\n"
-      "Where A = http://a.com/\n"
-      "      C = http://bar.com/",
-      DepictFrameTree(root));
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    EXPECT_EQ(
+        " Site A ------------ proxies for D\n"
+        "   |--Site D ------- proxies for {A,C}\n"
+        "   +--Site A ------- proxies for D\n"
+        "        +--Site A -- proxies for D\n"
+        "Where A = http://a.com/\n"
+        "      C = data:nonce_C\n"
+        "      D = http://bar.com/",
+        DepictFrameTree(root));
+  } else {
+    EXPECT_EQ(
+        " Site A ------------ proxies for C\n"
+        "   |--Site C ------- proxies for A\n"
+        "   +--Site A ------- proxies for C\n"
+        "        +--Site A -- proxies for C\n"
+        "Where A = http://a.com/\n"
+        "      C = http://bar.com/",
+        DepictFrameTree(root));
+  }
 
   // Navigate iframe to about:blank. The navigation happens from a script in the
   // parent frame, so it should be committed in the same SiteInstance as the
@@ -1248,14 +1277,26 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(NavigateToURLFromRenderer(child, url));
   EXPECT_TRUE(observer.last_navigation_succeeded());
   EXPECT_EQ(url, observer.last_navigation_url());
-  EXPECT_EQ(
-      " Site A ------------ proxies for D\n"
-      "   |--Site D ------- proxies for A\n"
-      "   +--Site A ------- proxies for D\n"
-      "        +--Site A -- proxies for D\n"
-      "Where A = http://a.com/\n"
-      "      D = http://f00.com/",
-      DepictFrameTree(root));
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    EXPECT_EQ(
+        " Site A ------------ proxies for E\n"
+        "   |--Site E ------- proxies for {A,C}\n"
+        "   +--Site A ------- proxies for E\n"
+        "        +--Site A -- proxies for E\n"
+        "Where A = http://a.com/\n"
+        "      C = data:nonce_C\n"
+        "      E = http://f00.com/",
+        DepictFrameTree(root));
+  } else {
+    EXPECT_EQ(
+        " Site A ------------ proxies for D\n"
+        "   |--Site D ------- proxies for A\n"
+        "   +--Site A ------- proxies for D\n"
+        "        +--Site A -- proxies for D\n"
+        "Where A = http://a.com/\n"
+        "      D = http://f00.com/",
+        DepictFrameTree(root));
+  }
 
   // Navigate the iframe itself to about:blank using a script executing in its
   // own context. It should stay in the same SiteInstance as before, not the
@@ -1266,14 +1307,26 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(about_blank_url, child->current_url());
 
   // Ensure that we have navigated using the top level process.
-  EXPECT_EQ(
-      " Site A ------------ proxies for D\n"
-      "   |--Site D ------- proxies for A\n"
-      "   +--Site A ------- proxies for D\n"
-      "        +--Site A -- proxies for D\n"
-      "Where A = http://a.com/\n"
-      "      D = http://f00.com/",
-      DepictFrameTree(root));
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    EXPECT_EQ(
+        " Site A ------------ proxies for E\n"
+        "   |--Site E ------- proxies for {A,C}\n"
+        "   +--Site A ------- proxies for E\n"
+        "        +--Site A -- proxies for E\n"
+        "Where A = http://a.com/\n"
+        "      C = data:nonce_C\n"
+        "      E = http://f00.com/",
+        DepictFrameTree(root));
+  } else {
+    EXPECT_EQ(
+        " Site A ------------ proxies for D\n"
+        "   |--Site D ------- proxies for A\n"
+        "   +--Site A ------- proxies for D\n"
+        "        +--Site A -- proxies for D\n"
+        "Where A = http://a.com/\n"
+        "      D = http://f00.com/",
+        DepictFrameTree(root));
+  }
 }
 
 // This test checks that killing a renderer process of a remote frame
@@ -2004,7 +2057,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CreateProxiesForNewFrames) {
 
   // Add a new child frame to the top-level frame.
   RenderFrameHostCreatedObserver frame_observer(shell()->web_contents(), 1);
-  EXPECT_TRUE(ExecJs(shell(), "addFrame('data:text/html,foo');"));
+  EXPECT_TRUE(ExecJs(shell(), "addFrame('about:blank');"));
   frame_observer.Wait();
 
   // The new frame should have a proxy in Site B, for use by the old frame.
@@ -5728,7 +5781,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       child_1->current_frame_host()->GetSiteInstance();
 
   // Navigate the iframes to data URLs via renderer initiated navigations, which
-  // will commit in the existing SiteInstances.
+  // will commit in the existing SiteInstanceGroups.
   TestNavigationObserver observer(shell()->web_contents());
   GURL data_url_0("data:text/html,dataurl_0");
   {
@@ -5738,8 +5791,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   }
   EXPECT_TRUE(observer.last_navigation_succeeded());
   EXPECT_EQ(data_url_0, observer.last_navigation_url());
-  EXPECT_EQ(child_site_instance_0,
-            child_0->current_frame_host()->GetSiteInstance());
+
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    EXPECT_NE(child_site_instance_0,
+              child_0->current_frame_host()->GetSiteInstance());
+    EXPECT_EQ(child_site_instance_0->group(),
+              child_0->current_frame_host()->GetSiteInstance()->group());
+  } else {
+    EXPECT_EQ(child_site_instance_0,
+              child_0->current_frame_host()->GetSiteInstance());
+  }
 
   GURL data_url_1("data:text/html,dataurl_1");
   {
@@ -5749,8 +5810,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   }
   EXPECT_TRUE(observer.last_navigation_succeeded());
   EXPECT_EQ(data_url_1, observer.last_navigation_url());
-  EXPECT_EQ(child_site_instance_1,
-            child_1->current_frame_host()->GetSiteInstance());
+
+  if (ShouldCreateSiteInstanceForDataUrls()) {
+    EXPECT_NE(child_site_instance_1,
+              child_1->current_frame_host()->GetSiteInstance());
+    EXPECT_EQ(child_site_instance_1->group(),
+              child_1->current_frame_host()->GetSiteInstance()->group());
+  } else {
+    EXPECT_EQ(child_site_instance_1,
+              child_1->current_frame_host()->GetSiteInstance());
+  }
 
   // Grab the NavigationEntry and clone its PageState into a new entry for
   // restoring into a new tab.

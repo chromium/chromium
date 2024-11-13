@@ -1089,10 +1089,20 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
     EXPECT_EQ(expect_app_process,
               process_map_->Contains(subframe->GetProcess()->GetID()))
         << " for " << url << " from " << parent_rfh->GetLastCommittedURL();
-    EXPECT_EQ(expect_app_process,
-              subframe->GetSiteInstance()->GetSiteURL().SchemeIs(
-                  extensions::kExtensionScheme))
-        << " for " << url << " from " << parent_rfh->GetLastCommittedURL();
+    if (!base::FeatureList::IsEnabled(
+            features::kSiteInstanceGroupsForDataUrls)) {
+      // When SiteInstanceGroups are enabled, same-process subframes may be in a
+      // different SiteInstance from their parent.
+      EXPECT_EQ(expect_app_process,
+                subframe->GetSiteInstance()->GetSiteURL().SchemeIs(
+                    extensions::kExtensionScheme))
+          << " for " << url << " from " << parent_rfh->GetLastCommittedURL();
+    } else if (subframe->GetLastCommittedURL().SchemeIs(url::kDataScheme)) {
+      // If SiteInstanceGroups are enabled, expect subframe data: URLs to be in
+      // the same SiteInstanceGroup as their parent.
+      EXPECT_EQ(parent_rfh->GetSiteInstance()->GetSiteInstanceGroupId(),
+                subframe->GetSiteInstance()->GetSiteInstanceGroupId());
+    }
 
     return subframe;
   }

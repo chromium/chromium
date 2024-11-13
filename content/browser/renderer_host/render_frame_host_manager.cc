@@ -2411,9 +2411,7 @@ RenderFrameHostManager::SiteInstanceDescriptor::SiteInstanceDescriptor(
     : existing_site_instance(nullptr),
       dest_url_info(dest_url_info),
       relation(relation_to_current) {
-  DCHECK((relation_to_current == SiteInstanceRelation::RELATED) ||
-         (relation_to_current == SiteInstanceRelation::RELATED_IN_COOP_GROUP) ||
-         (relation_to_current == SiteInstanceRelation::UNRELATED));
+  CHECK(relation_to_current != SiteInstanceRelation::PREEXISTING);
 }
 
 void RenderFrameHostManager::CleanupSpeculativeRfhForRenderProcessGone() {
@@ -2935,8 +2933,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
       transition, error_page_process, is_same_site, *should_swap_result,
       was_server_redirect, reason);
 
-  scoped_refptr<SiteInstanceImpl> new_instance =
-      ConvertToSiteInstance(new_instance_descriptor, candidate_instance);
+  scoped_refptr<SiteInstanceImpl> new_instance = ConvertToSiteInstance(
+      new_instance_descriptor, candidate_instance, source_instance);
   DCHECK(IsSiteInstanceCompatibleWithWebExposedIsolation(
       new_instance.get(), dest_url_info.web_exposed_isolation_info));
   CHECK(!new_instance->GetSiteInfo().agent_cluster_key() ||
@@ -3338,13 +3336,30 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     }
   }
 
-  // Check if we should use `source_instance`, such as for about:blank and data:
-  // URLs.  Preferring `source_instance` over a site-less `current_instance` is
-  // important in session restore scenarios which should commit in the
-  // SiteInstance based on FrameNavigationEntry's initiator_origin.
+  // Check if we should use `source_instance`, such as for about:blank and
+  // sometimes data: URLs. Preferring `source_instance` over a site-less
+  // `current_instance` is important in session restore scenarios which should
+  // commit in the SiteInstance based on FrameNavigationEntry's
+  // initiator_origin.
   if (can_use_source_instance) {
     AppendReason(reason, "DetermineSiteInstanceForURL => source_instance");
     return SiteInstanceDescriptor(source_instance);
+  } else if (ShouldCreateSiteInstanceForDataUrls() &&
+             dest_url_info.url.SchemeIs(url::kDataScheme) &&
+             !was_server_redirect && !frame_tree_node_->IsMainFrame() &&
+             source_instance && !dest_url_info.is_sandboxed &&
+             !dest_url_info.is_pdf) {
+    // In the case a subframe data: URL (excluding server redirects, see
+    // CanUseSourceSiteInstance), if it can't use the source SiteInstance, it
+    // should have its own SiteInstance that shares a group with the initiator.
+    // Main frame data: URLs are excluded, as they must be browser initiated,
+    // and will not be part of another group.
+    // TODO(crbug.com/40269084): Add support for sandboxed and PDF data:
+    // subframe URLs, which require a variation of the source SiteInstance's
+    // group.
+    AppendReason(reason, "DetermineSiteInstanceForURL => related_in_group");
+    return SiteInstanceDescriptor(dest_url_info,
+                                  SiteInstanceRelation::RELATED_IN_GROUP);
   }
 
   DCHECK_EQ(GetNavigationController().GetBrowserContext(),
@@ -3618,7 +3633,8 @@ bool RenderFrameHostManager::IsBrowsingInstanceSwapAllowedForPageTransition(
 
 scoped_refptr<SiteInstanceImpl> RenderFrameHostManager::ConvertToSiteInstance(
     const SiteInstanceDescriptor& descriptor,
-    SiteInstanceImpl* candidate_instance) {
+    SiteInstanceImpl* candidate_instance,
+    SiteInstanceImpl* source_site_instance) {
   SiteInstanceImpl* current_instance = render_frame_host_->GetSiteInstance();
 
   // If we are asked to return a related SiteInstance but the BrowsingInstance
@@ -3674,6 +3690,12 @@ scoped_refptr<SiteInstanceImpl> RenderFrameHostManager::ConvertToSiteInstance(
     return descriptor.existing_site_instance.get();
   } else {
     DCHECK_NE(descriptor.relation, SiteInstanceRelation::PREEXISTING);
+  }
+
+  if (descriptor.relation == SiteInstanceRelation::RELATED_IN_GROUP) {
+    CHECK(source_site_instance);
+    return source_site_instance->GetMaybeGroupRelatedSiteInstanceImpl(
+        descriptor.dest_url_info);
   }
 
   // Note: If the `candidate_instance` matches the descriptor,
@@ -3734,11 +3756,16 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
     return false;
   }
 
-  // We use the source SiteInstance in case of data URLs, about:srcdoc pages and
-  // about:blank pages because the content is then controlled and/or scriptable
-  // by the initiator and therefore needs to stay in the `source_instance`.
-  if (!dest_url_info.url.SchemeIs(url::kDataScheme) &&
-      !IsAbout(dest_url_info.url)) {
+  // When the source SiteInstance is present, we use it for cases like
+  // about:srcdoc and about:blank, because the content is then controlled and/or
+  // scriptable by the initiator and therefore needs to stay in source_instance.
+  // data: URLs (which can only have a source SiteInstance in subframe cases)
+  // are treated the same way, unless the kSiteInstanceGroupsForDataUrls feature
+  // is enabled.
+  bool use_source_site_instance_for_data_url =
+      dest_url_info.url.SchemeIs(url::kDataScheme) &&
+      !ShouldCreateSiteInstanceForDataUrls();
+  if (!use_source_site_instance_for_data_url && !IsAbout(dest_url_info.url)) {
     AppendReason(reason,
                  "CanUseSourceSiteInstance => false "
                  "(not-data-url-or-about-srcdoc)");
@@ -4680,8 +4707,8 @@ RenderFrameHostManager::GetReplacementFrameToken(
     RenderFrameProxyHost* existing_proxy,
     RenderFrameHostImpl* render_frame_host) const {
   // Check whether there is an existing proxy for this frame in this
-  // SiteInstance. If there is, the new RenderFrame needs to be able to find
-  // the proxy it is replacing, so that it can fully initialize itself.
+  // SiteInstanceGroup. If there is, the new RenderFrame needs to be able to
+  // find the proxy it is replacing, so that it can fully initialize itself.
   // NOTE: This is the only time that a RenderFrameProxyHost can be in the same
   // SiteInstance as its RenderFrameHost. This is only the case until the
   // RenderFrameHost commits, at which point it will replace and delete the
