@@ -212,6 +212,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             new TabContentManagerThumbnailProvider(tabContentManager),
                             /* actionOnRelatedTabs= */ false,
                             actionConfirmationManager,
+                            dataSharingTabManager,
                             gridCardOnClickListenerProvider,
                             mMediator.getTabGridDialogHandler(),
                             TabProperties.TabActionState.CLOSABLE,

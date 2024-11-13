@@ -100,6 +100,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
@@ -325,6 +326,7 @@ public class TabListMediatorUnitTest {
     @Mock SelectionDelegate<Integer> mSelectionDelegate;
     @Mock ModalDialogManager mModalDialogManager;
     @Mock ActionConfirmationManager mActionConfirmationManager;
+    @Mock DataSharingTabManager mDataSharingTabManager;
     @Mock TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
     @Mock IdentityServicesProvider mIdentityServicesProvider;
     @Mock IdentityManager mIdentityManager;
@@ -1659,6 +1661,7 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabActionState.CLOSABLE,
                         mActionConfirmationManager,
+                        mDataSharingTabManager,
                         /* onTabGroupCreation= */ null);
         mMediator.initWithNative(mProfile);
 
@@ -3412,6 +3415,7 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.CLOSABLE,
                         mActionConfirmationManager,
+                        mDataSharingTabManager,
                         /* onTabGroupCreation= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
@@ -3445,6 +3449,7 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.CLOSABLE,
                         mActionConfirmationManager,
+                        mDataSharingTabManager,
                         /* onTabGroupCreation= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
@@ -3982,6 +3987,7 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.SELECTABLE,
                         mActionConfirmationManager,
+                        mDataSharingTabManager,
                         /* onTabGroupCreation= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
@@ -4026,6 +4032,7 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.SELECTABLE,
                         mActionConfirmationManager,
+                        mDataSharingTabManager,
                         /* onTabGroupCreation= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
@@ -4070,6 +4077,7 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.SELECTABLE,
                         mActionConfirmationManager,
+                        mDataSharingTabManager,
                         /* onTabGroupCreation= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
@@ -4337,6 +4345,26 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testOnMenuItemClickedCallback_ShareGroupInTabSwitcher() {
+        List<Tab> tabs = new ArrayList<>();
+        for (int i = 0; i < mTabModel.getCount(); i++) {
+            tabs.add(mTabModel.getTabAt(i));
+        }
+
+        // Create tab group.
+        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1));
+        createTabGroup(group1, TAB1_ID, TAB_GROUP_ID);
+        mMediator.resetWithListOfTabs(tabs, false);
+
+        String myTitle = "Unshared group";
+        // Assert that the callback performs as expected.
+        mModelList.get(POSITION1).model.set(TabProperties.TITLE, myTitle);
+        assertNotNull(mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
+        mMediator.onMenuItemClicked(R.id.share_group, TAB1_ID, /* collaborationId= */ null);
+        verify(mDataSharingTabManager).createGroupFlow(eq(mActivity), eq(myTitle), any(), any());
+    }
+
+    @Test
     public void testOnMenuItemClickedCallback_CloseGroupInTabSwitcher_SingleTabGroup() {
         List<Tab> tabs = new ArrayList<>();
         for (int i = 0; i < mTabModel.getCount(); i++) {
@@ -4438,6 +4466,7 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         TabProperties.TabActionState.CLOSABLE,
                         mActionConfirmationManager,
+                        mDataSharingTabManager,
                         /* onTabGroupCreation= */ null);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
@@ -4800,6 +4829,7 @@ public class TabListMediatorUnitTest {
                         getClass().getSimpleName(),
                         tabActionState,
                         mActionConfirmationManager,
+                        mDataSharingTabManager,
                         /* onTabGroupCreation= */ null);
         TrackerFactory.setTrackerForTests(mTracker);
         mMediator.registerOrientationListener(mGridLayoutManager);

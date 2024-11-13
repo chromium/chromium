@@ -193,11 +193,12 @@ public abstract class TabGroupOverflowMenuCoordinator {
         }
     }
 
+    protected final @NonNull CollaborationService mCollaborationService;
+
     private final @LayoutRes int mMenuLayout;
     private final OnItemClickedCallback mOnItemClickedCallback;
     private final Supplier<TabModel> mTabModelSupplier;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
-    private final @NonNull CollaborationService mCollaborationService;
     private @Nullable OverflowMenuHolder mMenuHolder;
 
     /**

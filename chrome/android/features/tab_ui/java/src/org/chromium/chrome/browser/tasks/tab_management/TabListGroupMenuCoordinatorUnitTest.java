@@ -87,6 +87,7 @@ public class TabListGroupMenuCoordinatorUnitTest {
         CollaborationServiceFactory.setForTesting(mCollaborationService);
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
+        when(mServiceStatus.isAllowedToCreate()).thenReturn(false);
 
         when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab);
         when(mTab.getTabGroupId()).thenReturn(TAB_GROUP_TOKEN);
@@ -155,6 +156,66 @@ public class TabListGroupMenuCoordinatorUnitTest {
                 /* isTabGroupSyncEnabled= */ true,
                 /* hasCollaborationData= */ false);
 
+        assertListMenuItemsAre(modelList, menuIds);
+    }
+
+    @Test
+    public void testBuildMenuItems_Share() {
+        when(mServiceStatus.isAllowedToCreate()).thenReturn(false);
+        ModelList modelList = new ModelList();
+        mMenuCoordinator.buildMenuActionItems(
+                modelList,
+                /* isIncognito= */ false,
+                /* isTabGroupSyncEnabled= */ true,
+                /* hasCollaborationData= */ false);
+
+        // Eligible for all menu items except share.
+        List<Integer> menuIds =
+                List.of(
+                        R.id.close_tab_group,
+                        R.id.edit_group_name,
+                        R.id.ungroup_tab,
+                        R.id.delete_tab_group);
+        assertListMenuItemsAre(modelList, menuIds);
+
+        when(mServiceStatus.isAllowedToCreate()).thenReturn(true);
+        modelList = new ModelList();
+        mMenuCoordinator.buildMenuActionItems(
+                modelList,
+                /* isIncognito= */ false,
+                /* isTabGroupSyncEnabled= */ true,
+                /* hasCollaborationData= */ false);
+
+        // Eligible for all menu items.
+        menuIds =
+                List.of(
+                        R.id.close_tab_group,
+                        R.id.edit_group_name,
+                        R.id.ungroup_tab,
+                        R.id.share_group,
+                        R.id.delete_tab_group);
+        assertListMenuItemsAre(modelList, menuIds);
+
+        modelList = new ModelList();
+        mMenuCoordinator.buildMenuActionItems(
+                modelList,
+                /* isIncognito= */ true,
+                /* isTabGroupSyncEnabled= */ true,
+                /* hasCollaborationData= */ false);
+
+        // Incognito so is not synced so not deletable or shareable.
+        menuIds = List.of(R.id.close_tab_group, R.id.edit_group_name, R.id.ungroup_tab);
+        assertListMenuItemsAre(modelList, menuIds);
+
+        modelList = new ModelList();
+        mMenuCoordinator.buildMenuActionItems(
+                modelList,
+                /* isIncognito= */ false,
+                /* isTabGroupSyncEnabled= */ true,
+                /* hasCollaborationData= */ true);
+
+        // Already shared and delete depends on collaboration service readback.
+        menuIds = List.of(R.id.close_tab_group, R.id.edit_group_name);
         assertListMenuItemsAre(modelList, menuIds);
     }
 

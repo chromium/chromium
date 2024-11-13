@@ -16,6 +16,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.THU
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -56,6 +57,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -351,6 +353,7 @@ class TabListMediator implements TabListNotificationHandler {
     private final TabGridDialogHandler mTabGridDialogHandler;
     private final Supplier<PriceWelcomeMessageController> mPriceWelcomeMessageControllerSupplier;
     private final @Nullable ActionConfirmationManager mActionConfirmationManager;
+    private final @Nullable DataSharingTabManager mDataSharingTabManager;
     private final Runnable mOnTabGroupCreation;
     private final TabModelObserver mTabModelObserver;
     private final TabActionListener mTabClosedListener;
@@ -883,6 +886,7 @@ class TabListMediator implements TabListNotificationHandler {
      * @param initialTabActionState The initial {@link TabActionState} to use for the shown tabs.
      *     Must always be CLOSABLE for TabListMode.STRIP.
      * @param actionConfirmationManager Used for showing confirmation dialogs.
+     * @param dataSharingTabManager The service used to initiate data sharing.
      * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
      */
     public TabListMediator(
@@ -901,6 +905,7 @@ class TabListMediator implements TabListNotificationHandler {
             String componentName,
             @TabActionState int initialTabActionState,
             @Nullable ActionConfirmationManager actionConfirmationManager,
+            @Nullable DataSharingTabManager dataSharingTabManager,
             @Nullable Runnable onTabGroupCreation) {
         mContext = context;
         mModelList = modelList;
@@ -917,6 +922,7 @@ class TabListMediator implements TabListNotificationHandler {
         mComponentName = componentName;
         mTabActionState = initialTabActionState;
         mActionConfirmationManager = actionConfirmationManager;
+        mDataSharingTabManager = dataSharingTabManager;
         mOnTabGroupCreation = onTabGroupCreation;
 
         mTabModelObserver =
@@ -2774,6 +2780,18 @@ class TabListMediator implements TabListNotificationHandler {
                     mActionConfirmationManager,
                     mModalDialogManager,
                     tabId);
+        } else if (menuId == R.id.share_group) {
+            assert mDataSharingTabManager != null;
+            RecordUserAction.record("TabGroupItemMenu.ShareGroup");
+            int index = mModelList.indexFromId(tabId);
+            PropertyModel model = mModelList.get(index).model;
+            TabUiUtils.startShareTabGroupFlow(
+                    (Activity) mContext,
+                    mCurrentTabGroupModelFilterSupplier.get(),
+                    mDataSharingTabManager,
+                    tabId,
+                    model.get(TabProperties.TITLE),
+                    (unused) -> {});
         }
     }
 

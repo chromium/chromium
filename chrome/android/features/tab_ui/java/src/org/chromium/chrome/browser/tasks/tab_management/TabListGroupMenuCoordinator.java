@@ -87,6 +87,17 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                             R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
                             isIncognito,
                             true));
+            if (!isIncognito && mCollaborationService.getServiceStatus().isAllowedToCreate()) {
+                itemList.add(
+                        BrowserUiListMenuUtils.buildMenuListItemWithIncognitoBranding(
+                                R.string.share_tab_group_menu_item,
+                                R.id.share_group,
+                                /* startIconId= */ Resources.ID_NULL,
+                                /* iconTintColorStateList= */ Resources.ID_NULL,
+                                R.style.TextAppearance_TextLarge_Primary_Baseline_Light,
+                                isIncognito,
+                                true));
+            }
         }
         // Delete does not make sense for incognito since the tab group is not saved to sync.
         if (isTabGroupSyncEnabled && !isIncognito && !hasCollaborationData) {

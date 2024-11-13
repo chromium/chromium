@@ -482,6 +482,7 @@ class TabListEditorCoordinator {
                         thumbnailProvider,
                         mDisplayGroups,
                         /* actionConfirmationManager= */ null,
+                        /* dataSharingTabManager= */ null,
                         mGridCardOnClickListenerProvider,
                         /* dialogHandler= */ null,
                         mTabActionState,

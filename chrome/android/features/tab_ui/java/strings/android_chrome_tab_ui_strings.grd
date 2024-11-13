@@ -758,6 +758,9 @@
       <message name="IDS_SHARE_TAB_GROUP_CONTEXT_MENU_ITEM" desc="Menu item text which will be display for tab group context menu on strip to allow sharing a tab group.">
         Share group
       </message>
+      <message name="IDS_SHARE_TAB_GROUP_MENU_ITEM" desc="Menu item text which will be displayed for the tab group context menu in the grid tab switcher to share the tab group. Intentionally shorter than IDS_SHARE_TAB_GROUP_CONTEXT_MENU_ITEM.">
+        Share
+      </message>
       <message name="IDS_TAB_GROUP_RENAME_DIALOG_TITLE" desc="When users edit an existing tab group, a dialog will pop up and this text is the title of that dialog. [CHAR_LIMIT=24]">
         Rename tab group
       </message>

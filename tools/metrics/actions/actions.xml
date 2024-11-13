@@ -42554,6 +42554,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroupItemMenu.ShareGroup">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a user clicks the share option on a tab group item in the tab
+    switcher.
+  </description>
+</action>
+
 <action name="TabGroupItemMenu.Ungroup">
   <owner>ckitagawa@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>

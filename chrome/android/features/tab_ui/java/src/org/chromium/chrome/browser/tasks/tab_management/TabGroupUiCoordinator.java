@@ -196,6 +196,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             /* thumbnailProvider= */ null,
                             /* actionOnRelatedTabs= */ false,
                             mActionConfirmationSupplier.get(),
+                            mDataSharingTabManager,
                             /* gridCardOnClickListenerProvider= */ null,
                             /* dialogHandler= */ null,
                             TabProperties.TabActionState.UNSET,
