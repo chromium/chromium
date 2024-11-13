@@ -407,16 +407,14 @@ UChar32 StringImpl::CharacterStartingAt(wtf_size_t i) {
   return 0;
 }
 
-wtf_size_t StringImpl::CopyTo(UChar* buffer,
-                              wtf_size_t start,
-                              wtf_size_t max_length) const {
-  wtf_size_t number_of_characters_to_copy =
-      std::min(length() - start, max_length);
+size_t StringImpl::CopyTo(base::span<UChar> buffer, wtf_size_t start) const {
+  size_t number_of_characters_to_copy =
+      std::min<size_t>(length() - start, buffer.size());
   if (!number_of_characters_to_copy)
     return 0;
-  auto buffer_span = base::span(buffer, number_of_characters_to_copy);
+  buffer = buffer.first(number_of_characters_to_copy);
   VisitCharacters(StringView(*this, start, number_of_characters_to_copy),
-                  [buffer_span](auto chars) { CopyChars(buffer_span, chars); });
+                  [buffer](auto chars) { CopyChars(buffer, chars); });
   return number_of_characters_to_copy;
 }
 

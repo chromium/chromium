@@ -45,7 +45,7 @@ namespace blink {
 typedef unsigned TruncationFunction(const String&,
                                     unsigned length,
                                     unsigned keep_count,
-                                    UChar* buffer);
+                                    base::span<UChar> buffer);
 
 static inline int TextBreakAtOrPreceding(
     const NonSharedCharacterBreakIterator& it,
@@ -68,7 +68,7 @@ static inline int BoundedTextBreakFollowing(
 static unsigned CenterTruncateToBuffer(const String& string,
                                        unsigned length,
                                        unsigned keep_count,
-                                       UChar* buffer) {
+                                       base::span<UChar> buffer) {
   DCHECK_LT(keep_count, length);
   DCHECK(keep_count < STRING_BUFFER_SIZE);
 
@@ -81,9 +81,9 @@ static unsigned CenterTruncateToBuffer(const String& string,
   unsigned truncated_length = omit_start + 1 + (length - omit_end);
   DCHECK_LE(truncated_length, length);
 
-  string.CopyTo(buffer, 0, omit_start);
+  string.CopyTo(buffer.first(omit_start), 0);
   buffer[omit_start] = kHorizontalEllipsisCharacter;
-  string.CopyTo(&buffer[omit_start + 1], omit_end, length - omit_end);
+  string.CopyTo(buffer.subspan(omit_start + 1, length - omit_end), omit_end);
 
   return truncated_length;
 }
@@ -91,7 +91,7 @@ static unsigned CenterTruncateToBuffer(const String& string,
 static unsigned RightTruncateToBuffer(const String& string,
                                       unsigned length,
                                       unsigned keep_count,
-                                      UChar* buffer) {
+                                      base::span<UChar> buffer) {
   DCHECK_LT(keep_count, length);
   DCHECK(keep_count < STRING_BUFFER_SIZE);
 
@@ -99,7 +99,7 @@ static unsigned RightTruncateToBuffer(const String& string,
   unsigned keep_length = TextBreakAtOrPreceding(it, keep_count);
   unsigned truncated_length = keep_length + 1;
 
-  string.CopyTo(buffer, 0, keep_length);
+  string.CopyTo(buffer.first(keep_length), 0);
   buffer[keep_length] = kHorizontalEllipsisCharacter;
 
   return truncated_length;
@@ -135,7 +135,7 @@ static String TruncateString(const String& string,
         CenterTruncateToBuffer(string, length, keep_count, string_buffer);
   } else {
     keep_count = length;
-    string.CopyTo(string_buffer, 0, length);
+    string.CopyTo(base::span(string_buffer).first(length), 0);
     truncated_length = length;
   }
 

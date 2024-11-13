@@ -466,12 +466,10 @@ class WTF_EXPORT StringImpl {
 
   scoped_refptr<StringImpl> UpconvertedString();
 
-  // Copy characters from string starting at |start| up until |maxLength| or
-  // the end of the string is reached. Returns the actual number of characters
-  // copied.
-  wtf_size_t CopyTo(UChar* buffer,
-                    wtf_size_t start,
-                    wtf_size_t max_length) const;
+  // Copy characters from string starting at `start` up until the size of
+  // `buffer` or the end of the string is reached. Returns the actual number of
+  // characters copied.
+  size_t CopyTo(base::span<UChar> buffer, wtf_size_t start) const;
 
   // Append characters from this string into a buffer. Expects the buffer to
   // have the methods:

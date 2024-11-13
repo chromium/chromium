@@ -424,8 +424,8 @@ class WTF_EXPORT String {
   }
 
   // Copy characters out of the string. See StringImpl.h for detailed docs.
-  unsigned CopyTo(UChar* buffer, unsigned start, unsigned max_length) const {
-    return impl_ ? impl_->CopyTo(buffer, start, max_length) : 0;
+  size_t CopyTo(base::span<UChar> buffer, wtf_size_t start) const {
+    return impl_ ? impl_->CopyTo(buffer, start) : 0;
   }
   template <typename BufferType>
   void AppendTo(BufferType&,

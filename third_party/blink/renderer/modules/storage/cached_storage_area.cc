@@ -789,7 +789,9 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
   switch (format_option) {
     case FormatOption::kSessionStorageForceUTF16: {
       Vector<uint8_t> result(input.length() * sizeof(UChar));
-      input.CopyTo(reinterpret_cast<UChar*>(result.data()), 0, input.length());
+      input.CopyTo(
+          base::span(reinterpret_cast<UChar*>(result.data()), input.length()),
+          0);
       return result;
     }
     case FormatOption::kSessionStorageForceUTF8: {
