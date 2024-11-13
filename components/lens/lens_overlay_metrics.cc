@@ -126,18 +126,6 @@ void RecordSessionDuration(LensOverlayInvocationSource invocation_source,
                                 /*max=*/base::Minutes(10), /*buckets=*/50);
 }
 
-void RecordContextualSearchboxFocusedInSession(
-    bool contextual_searchbox_focused_in_session,
-    lens::PageContentMimeType page_content_type) {
-  base::UmaHistogramBoolean("Lens.Overlay.ContextualSearchbox.FocusedInSession",
-                            contextual_searchbox_focused_in_session);
-  const auto histogram_name =
-      "Lens.Overlay.ContextualSearchbox.ByDocumentType." +
-      DocumentTypeToString(page_content_type) + ".FocusedInSession";
-  base::UmaHistogramBoolean(histogram_name,
-                            contextual_searchbox_focused_in_session);
-}
-
 void RecordSessionForegroundDuration(
     LensOverlayInvocationSource invocation_source,
     base::TimeDelta duration) {

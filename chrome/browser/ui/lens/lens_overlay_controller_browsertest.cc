@@ -4132,13 +4132,6 @@ class LensOverlayControllerBrowserPDFTest
         ->tab_features()
         ->lens_overlay_controller();
   }
-
-  void CloseOverlayAndWaitForOff(LensOverlayController* controller,
-                                 LensOverlayDismissalSource dismissal_source) {
-    controller->CloseUIAsync(dismissal_source);
-    ASSERT_TRUE(base::test::RunUntil(
-        [&]() { return controller->state() == State::kOff; }));
-  }
 };
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
@@ -4173,7 +4166,6 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
 
 IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
                        PdfBytesExcludedInRequest) {
-  base::HistogramTester histogram_tester;
   // Open the PDF document and wait for it to finish loading.
   const GURL url = embedded_test_server()->GetURL(kPdfDocument);
   content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(url);
@@ -4194,11 +4186,6 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFTest,
       controller->get_lens_overlay_query_controller_for_testing());
   ASSERT_TRUE(
       fake_query_controller->last_sent_underlying_content_bytes_.empty());
-
-  // Histogram shouldn't be recorded if CSB isn't shown in session.
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchbox.FocusedInSession",
-      /*expected_count=*/0);
 }
 
 // This test is wrapped in this BUILDFLAG block because the fallback region
@@ -4437,70 +4424,6 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       "Lens.Overlay.ContextualSearchBox.ByDocumentType.Pdf.Shown",
       /*sample*/ true,
       /*expected_bucket_count=*/1);
-}
-
-IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
-                       RecordSearchboxFocusedInSessionNavigationHistograms) {
-  base::HistogramTester histogram_tester;
-
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Open the overlay.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_EQ(controller->state(), State::kScreenshot);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-
-  controller->OnFocusChangedForTesting(true);
-
-  // Make a searchbox query.
-  controller->IssueSearchBoxRequestForTesting(
-      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
-      /*is_zero_prefix_suggestion=*/false,
-      /*additional_query_params=*/{});
-
-  // Verify transitions to live page.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kLivePageAndResults; }));
-
-  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
-      controller->get_lens_overlay_query_controller_for_testing());
-  fake_query_controller->Reset();
-
-  // Change page to a PDF.
-  const GURL url = embedded_test_server()->GetURL(kPdfDocumentWithForm);
-  LoadPdfGetExtensionHost(url);
-
-  // Issue a new searchbox query.
-  controller->IssueSearchBoxRequestForTesting(
-      "oranges", AutocompleteMatchType::SEARCH_SUGGEST,
-      /*is_zero_prefix_suggestion=*/false,
-      /*additional_query_params=*/{});
-
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return !fake_query_controller->last_sent_underlying_content_bytes_.empty();
-    controller->OnFocusChangedForTesting(true);
-  }));
-  ASSERT_EQ(lens::PageContentMimeType::kPdf,
-            fake_query_controller->last_sent_underlying_content_type_);
-
-  CloseOverlayAndWaitForOff(controller,
-                            LensOverlayDismissalSource::kOverlayCloseButton);
-  // Even after navigation, histograms should still be recorded.
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchbox.FocusedInSession",
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSearchbox.FocusedInSession", true,
-      /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchbox.ByDocumentType.Web.FocusedInSession",
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSearchbox.ByDocumentType.Web.FocusedInSession",
-      true, /*expected_count=*/1);
 }
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
@@ -4872,87 +4795,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       "Lens.Overlay.ContextualSearchBox.ByDocumentType.Web.Shown",
       /*sample*/ true,
       /*expected_bucket_count=*/1);
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       RecordSearchboxFocusedInSessionHistograms) {
-  base::HistogramTester histogram_tester;
-  WaitForPaint(kDocumentWithNonAsciiCharacters);
-
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Open the overlay.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_EQ(controller->state(), State::kScreenshot);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-
-  // Verify inner HTML was included as bytes in the the query.
-  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
-      controller->get_lens_overlay_query_controller_for_testing());
-  ASSERT_FALSE(
-      fake_query_controller->last_sent_underlying_content_bytes_.empty());
-
-  // Simulate the searchbox being focused.
-  controller->OnFocusChangedForTesting(true);
-
-  // Close the overlay and assert that each histogram was recorded once and
-  // that the searchbox was focused in the session.
-  CloseOverlayAndWaitForOff(controller,
-                            LensOverlayDismissalSource::kOverlayCloseButton);
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchbox.FocusedInSession",
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSearchbox.FocusedInSession", true,
-      /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchbox.ByDocumentType.Web.FocusedInSession",
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSearchbox.ByDocumentType.Web.FocusedInSession",
-      true, /*expected_count=*/1);
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       RecordSearchboxNotFocusedInSessionHistograms) {
-  base::HistogramTester histogram_tester;
-  WaitForPaint(kDocumentWithNonAsciiCharacters);
-
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Open the overlay.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_EQ(controller->state(), State::kScreenshot);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-
-  // Verify inner HTML was included as bytes in the the query.
-  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
-      controller->get_lens_overlay_query_controller_for_testing());
-  ASSERT_FALSE(
-      fake_query_controller->last_sent_underlying_content_bytes_.empty());
-
-  // Close the overlay and assert that the histogram was recorded once and
-  // that the searchbox was not focused in the session.
-  CloseOverlayAndWaitForOff(controller,
-                            LensOverlayDismissalSource::kOverlayCloseButton);
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchbox.FocusedInSession",
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSearchbox.FocusedInSession", false,
-      /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Lens.Overlay.ContextualSearchbox.ByDocumentType.Web.FocusedInSession",
-      /*expected_count=*/1);
-  histogram_tester.ExpectBucketCount(
-      "Lens.Overlay.ContextualSearchbox.ByDocumentType.Web.FocusedInSession",
-      false, /*expected_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

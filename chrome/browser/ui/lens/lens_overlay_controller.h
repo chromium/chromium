@@ -469,9 +469,6 @@ class LensOverlayController : public LensSearchboxClient,
   // testing.
   void OnThumbnailRemovedForTesting();
 
-  // Handles the event where serachbox was focused for testing.
-  void OnFocusChangedForTesting(bool focused);
-
   // Returns the lens suggest inputs stored in this controller for testing.
   const lens::proto::LensOverlaySuggestInputs& GetLensSuggestInputsForTesting();
 
@@ -662,7 +659,7 @@ class LensOverlayController : public LensSearchboxClient,
       SkBitmap rgb_screenshot);
 
   // Stores the page content and continues the initialization process.
-  void StorePageContentAndContinueInitialization(
+  void StorePageContentAndContinueIntialization(
       std::unique_ptr<OverlayInitializationData> initialization_data,
       std::vector<uint8_t> bytes,
       lens::PageContentMimeType content_type);
@@ -1072,19 +1069,6 @@ class LensOverlayController : public LensSearchboxClient,
   // to record success/abandonment rate, as defined by whether or not a search
   // was performed.
   bool search_performed_in_session_ = false;
-
-  // Indicates whether the contextual searchbox was focused in the current
-  // session. Used to record interaction rate, defined by whether or not a
-  // user focused the contextual searchbox in sessions in which it was shown.
-  // Not set if contextual searchbox is not shown.
-  std::optional<bool> contextual_searchbox_focused_in_session_;
-
-  // The page content type when the lens overlay was initialized. This is used
-  // when recording contextual searchbox metrics at the end of sessions, since
-  // the initialization data can change on page contextualization updates and
-  // these metrics only want to record the initial invocation page content type.
-  lens::PageContentMimeType initial_page_content_type_ =
-      lens::PageContentMimeType::kNone;
 
   // The time at which the overlay was invoked. Used to compute timing metrics.
   base::TimeTicks invocation_time_;

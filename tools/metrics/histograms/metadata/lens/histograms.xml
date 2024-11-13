@@ -169,19 +169,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Lens.Overlay.ContextualSearchbox.ByDocumentType.{DocumentType}.FocusedInSession"
-    enum="Boolean" expires_after="2025-05-06">
-  <owner>niharm@google.com</owner>
-  <owner>lens-chrome@google.com</owner>
-  <summary>
-    Recorded once when the Lens Overlay feature is dismissed, sliced by document
-    type. Records whether the contextual searchbox was focused at least once in
-    sessions in which it was shown.
-  </summary>
-  <token key="DocumentType" variants="DocumentTypes"/>
-</histogram>
-
-<histogram
     name="Lens.Overlay.ContextualSearchBox.ByDocumentType.{DocumentType}.Shown"
     enum="BooleanShown" expires_after="2025-05-06">
   <owner>stanfield@google.com</owner>
@@ -192,17 +179,6 @@ chromium-metrics-reviews@google.com.
     type.
   </summary>
   <token key="DocumentType" variants="DocumentTypes"/>
-</histogram>
-
-<histogram name="Lens.Overlay.ContextualSearchbox.FocusedInSession"
-    enum="Boolean" expires_after="2025-05-06">
-  <owner>niharm@google.com</owner>
-  <owner>lens-chrome@google.com</owner>
-  <summary>
-    Recorded once when the Lens Overlay feature is dismissed. Records whether
-    the contextual searchbox was focused at least once in sessions in which it
-    was shown.
-  </summary>
 </histogram>
 
 <histogram name="Lens.Overlay.ContextualSearchBox.Shown" enum="BooleanShown"
