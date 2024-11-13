@@ -1159,6 +1159,12 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_WARNING_CONFLICTING_GESTURES_TRIPLE_LABEL},
       {"faceGazeWarningCombinedLabel",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_WARNING_COMBINED_LABEL},
+      {"faceGazePrecisionClickLabel",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_PRECISION_CLICK_LABEL},
+      {"faceGazePrecisionClickDescription",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_PRECISION_CLICK_DESCRIPTION},
+      {"precisionClickSpeedFactorsLabel",
+       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_PRECISION_CLICK_FACTORS_LABEL},
       {"flashNotificationsLabel", IDS_SETTINGS_FLASH_NOTIFICATIONS_LABEL},
       {"flashNotificationsDescription",
        IDS_SETTINGS_FLASH_NOTIFICATIONS_DESCRIPTION},
@@ -1503,6 +1509,8 @@ void AccessibilitySection::AddLoadTimeData(
                           ash::kDefaultFaceGazeCursorUseAcceleration);
   html_source->AddInteger("defaultFaceGazeVelocityThreshold",
                           ash::kDefaultFaceGazeVelocityThreshold);
+  html_source->AddInteger("defaultFaceGazePrecisionClickSpeedFactor",
+                          ash::kDefaultFaceGazePrecisionClickSpeedFactor);
 
   html_source->AddBoolean(
       "showExperimentalAccessibilitySwitchAccessImprovedTextInput",

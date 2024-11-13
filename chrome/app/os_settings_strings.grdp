@@ -1592,6 +1592,18 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_WARNING_COMBINED_LABEL" desc="Label that is shown when the user is attempting to bind a gesture that is already assigned and conflicts with other gestures.">
     <ph name="ALREADY_ASSIGNED_MESSAGE">$1<ex>Selecting an already assigned gesture will remove it from its original action.</ex></ph> <ph name="CONFLICTING_GESTURES_MESSAGE">$2<ex>Smile may overlap with squint left eye. If possible, try picking a different gesture.</ex></ph>
   </message>
+  <!-- TODO(b/376478655): Update string after it's finalized by UX writing. -->
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_PRECISION_CLICK_LABEL" desc="A label for a button on the FaceGaze settings page that enables precision click." translateable="false">
+    Precision click
+  </message>
+  <!-- TODO(b/376478655): Update string after it's finalized by UX writing. -->
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_PRECISION_CLICK_DESCRIPTION" desc="A sub label explaining in further detail what 'precision click' means for FaceGaze." translateable="false">
+    Perform the gesture assigned to left-click. Your mouse speed will decrease to make controlling the mouse easier. Perform the gesture again to click on the desired item.
+  </message>
+  <!-- TODO(b/376478655): Update string after it's finalized by UX writing. -->
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_PRECISION_CLICK_FACTORS_LABEL" desc="A label for a drop down menu that allows users to choose how much to dampen their mouse speed by when using FaceGaze." translateable="false">
+    Reduce mouse speed by
+  </message>
   <message name="IDS_SETTINGS_FLASH_NOTIFICATIONS_LABEL" desc="The label of a setting that flashes the screen in a color when a notification is received.">
     Flash notifications
   </message>

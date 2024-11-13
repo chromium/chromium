@@ -149,6 +149,26 @@
       sub-label="$i18n{faceGazeCursorAccelerationDescription}"
       pref="{{prefs.settings.a11y.face_gaze.cursor_use_acceleration}}">
   </settings-toggle-button>
+  <settings-toggle-button
+      class="hr"
+      id="faceGazePrecisionClickButton"
+      label="$i18n{faceGazePrecisionClickLabel}"
+      sub-label="$i18n{faceGazePrecisionClickDescription}"
+      pref="{{prefs.settings.a11y.face_gaze.precision_click}}">
+  </settings-toggle-button>
+  <template is="dom-if"
+        if="[[prefs.settings.a11y.face_gaze.precision_click.value]]" restamp>
+    <div class="settings-box sub-item">
+      <div class="start settings-box-text" id="precisionClickSpeedFactorsLabel">
+        $i18n{precisionClickSpeedFactorsLabel}
+      </div>
+      <settings-dropdown-menu id="precisionClickSpeedFactorsDropdown"
+          aria-labelledby="precisionClickSpeedFactorsLabel"
+          pref="{{prefs.settings.a11y.face_gaze.precision_click_speed_factor}}"
+          menu-options="[[precisionClickSpeedFactorOptions_]]">
+      </settings-dropdown-menu>
+    </div>
+  </template>
   <div class="settings-box">
     <template is="dom-if" if="[[shouldAnnounceA11yCursorSettingsReset_]]"
         restamp>

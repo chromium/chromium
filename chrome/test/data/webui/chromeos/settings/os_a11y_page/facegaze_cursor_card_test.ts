@@ -16,6 +16,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 import {clearBody} from '../utils.js';
 
 const DEFAULT_CURSOR_SPEED = 10;
+const DEFAULT_PRECISION_CLICK_SPEED_FACTOR = 50;
 const DEFAULT_VELOCITY_THRESHOLD = 9;
 
 // Note that cursor speed doesn't follow a linear scale, so this value will not
@@ -452,6 +453,19 @@ suite('<facegaze-cursor-card>', () => {
     flush();
     assertFalse(prefs.cursor_use_acceleration.value);
 
+    const precisionClickToggle =
+        faceGazeCursorCard.shadowRoot!
+            .querySelector<SettingsToggleButtonElement>(
+                '#faceGazePrecisionClickButton');
+    assert(precisionClickToggle);
+    assertTrue(isVisible(precisionClickToggle));
+    assertFalse(precisionClickToggle.checked);
+    assertFalse(prefs.precision_click.value);
+    precisionClickToggle.click();
+    flush();
+    assertTrue(precisionClickToggle.checked);
+    assertTrue(prefs.precision_click.value);
+
     // Now, reset everything.
     const resetButton =
         faceGazeCursorCard.shadowRoot!.querySelector<CrButtonElement>(
@@ -462,11 +476,65 @@ suite('<facegaze-cursor-card>', () => {
     flush();
 
     assertFalse(prefs.adjust_speed_separately.value);
-    assertEquals(prefs.velocity_threshold.value, DEFAULT_VELOCITY_THRESHOLD);
+    assertEquals(DEFAULT_VELOCITY_THRESHOLD, prefs.velocity_threshold.value);
     assertTrue(prefs.cursor_use_acceleration.value);
-    assertEquals(prefs.cursor_speed_up.value, DEFAULT_CURSOR_SPEED);
-    assertEquals(prefs.cursor_speed_down.value, DEFAULT_CURSOR_SPEED);
-    assertEquals(prefs.cursor_speed_left.value, DEFAULT_CURSOR_SPEED);
-    assertEquals(prefs.cursor_speed_right.value, DEFAULT_CURSOR_SPEED);
+    assertEquals(DEFAULT_CURSOR_SPEED, prefs.cursor_speed_up.value);
+    assertEquals(DEFAULT_CURSOR_SPEED, prefs.cursor_speed_down.value);
+    assertEquals(DEFAULT_CURSOR_SPEED, prefs.cursor_speed_left.value);
+    assertEquals(DEFAULT_CURSOR_SPEED, prefs.cursor_speed_right.value);
+    assertFalse(prefs.precision_click.value);
+    assertEquals(
+        DEFAULT_PRECISION_CLICK_SPEED_FACTOR,
+        prefs.precision_click_speed_factor.value);
+  });
+
+  test('precision click toggle shows and hides dropdown', async () => {
+    await initPage();
+    const prefs = faceGazeCursorCard.prefs.settings.a11y.face_gaze;
+    // Verify default values.
+    assertFalse(prefs.precision_click.value);
+    assertEquals(50, prefs.precision_click_speed_factor.value);
+
+    // Toggle should be off by default.
+    const precisionClickToggle =
+        faceGazeCursorCard.shadowRoot!
+            .querySelector<SettingsToggleButtonElement>(
+                '#faceGazePrecisionClickButton');
+    assert(precisionClickToggle);
+    assertTrue(isVisible(precisionClickToggle));
+    assertFalse(precisionClickToggle.checked);
+
+    // Dropdown should be hidden by default.
+    let precisionClickDropDown =
+        faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
+            '#precisionClickSpeedFactorsDropdown');
+    assertNull(precisionClickDropDown);
+
+    precisionClickToggle.click();
+    flush();
+
+    assertTrue(precisionClickToggle.checked);
+    assertTrue(prefs.precision_click.value);
+
+    // After enabling the toggle, the dropdown is shown and has the default
+    // value.
+    precisionClickDropDown =
+        faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
+            '#precisionClickSpeedFactorsDropdown');
+    assert(precisionClickDropDown);
+    assertTrue(isVisible(precisionClickDropDown));
+    assertEquals(50, precisionClickDropDown.pref.value);
+
+    precisionClickToggle.click();
+    flush();
+
+    assertFalse(precisionClickToggle.checked);
+    assertFalse(prefs.precision_click.value);
+
+    // Dropdown should be hidden again.
+    precisionClickDropDown =
+        faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
+            '#precisionClickSpeedFactorsDropdown');
+    assertNull(precisionClickDropDown);
   });
 });
