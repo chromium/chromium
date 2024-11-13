@@ -547,6 +547,47 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                   WaitForWebContentsReady(kTab, GURL("chrome://extensions")));
 }
 
+// Tests clicking on the 'context menu' button opens the extension's context
+// menu.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
+                       ContextMenuButtonOpensContextMenu) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
+  constexpr char kExtensionContextMenuButton[] =
+      "extension_context_menu_button";
+
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("simple_with_icon"));
+
+  RunTestSequence(
+      InstrumentTab(kTab), OpenExtensionsMenu(),
+      CheckResult(
+          [&]() {
+            return GetMenuItemViewFor(extension->id())
+                ->IsContextMenuRunningForTesting();
+          },
+          false),
+
+      // Open the extension's context menu.
+      CheckView(kExtensionMenuItemViewElementId,
+                [extension](ExtensionMenuItemView* menu_item) {
+                  return menu_item->view_controller()->GetId() ==
+                         extension->id();
+                }),
+      NameDescendantViewByType<HoverButton>(kExtensionMenuItemViewElementId,
+                                            kExtensionContextMenuButton, 1u),
+      PressButton(kExtensionContextMenuButton),
+
+      // Verify context menu is opened.
+      CheckResult(
+          [&]() {
+            return GetMenuItemViewFor(extension->id())
+                ->IsContextMenuRunningForTesting();
+          },
+          true)
+
+  );
+}
+
 // Tests triggering the extension's action while the extensions menu is opened
 // records the correct invocation source.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
