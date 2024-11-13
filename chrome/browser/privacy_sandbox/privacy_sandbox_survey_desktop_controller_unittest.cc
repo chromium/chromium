@@ -53,6 +53,7 @@ class PrivacySandboxSurveyDesktopControllerTest : public testing::Test {
   }
 
   void TearDown() override {
+    mock_hats_service_ = nullptr;
     survey_desktop_controller_.reset();
     survey_service_.reset();
   }
@@ -78,7 +79,7 @@ class PrivacySandboxSurveyDesktopControllerTest : public testing::Test {
   TestingProfile profile_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
-  raw_ptr<MockHatsService, DanglingUntriaged> mock_hats_service_;
+  raw_ptr<MockHatsService> mock_hats_service_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<PrivacySandboxSurveyDesktopController>
       survey_desktop_controller_;
@@ -114,20 +115,6 @@ TEST_F(PrivacySandboxSurveyDesktopControllerTest, EmitsSurveyShownHistogram) {
 }
 
 TEST_F(PrivacySandboxSurveyDesktopControllerTest,
-       EmitsHatsServiceFailedHistogram) {
-  HatsServiceFactory::GetInstance()->SetTestingFactory(
-      profile(), base::BindRepeating(
-                     [](content::BrowserContext* context)
-                         -> std::unique_ptr<KeyedService> { return nullptr; }));
-  survey_desktop_controller_->MaybeShowSentimentSurvey(profile());
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.SentimentSurvey.Status",
-      PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::
-          kHatsServiceFailed,
-      1);
-}
-
-TEST_F(PrivacySandboxSurveyDesktopControllerTest,
        EmitsSurveyLaunchedFailedHistogram) {
   EXPECT_CALL(*mock_hats_service_, LaunchSurvey(_, _, _, _, _))
       .WillOnce(Invoke([](const std::string& trigger,
@@ -143,6 +130,33 @@ TEST_F(PrivacySandboxSurveyDesktopControllerTest,
       "PrivacySandbox.SentimentSurvey.Status",
       PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::
           kSurveyLaunchFailed,
+      1);
+}
+
+class PrivacySandboxSurveyDesktopControllerNullHatsService
+    : public PrivacySandboxSurveyDesktopControllerTest {
+  void SetUp() override {
+    feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
+                                                GetDisabledFeatures());
+    mock_hats_service_ = static_cast<MockHatsService*>(
+        HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile(), base::BindOnce([](content::BrowserContext* context)
+                                          -> std::unique_ptr<KeyedService> {
+              return nullptr;
+            })));
+    survey_desktop_controller_ =
+        std::make_unique<PrivacySandboxSurveyDesktopController>(
+            survey_service());
+  }
+};
+
+TEST_F(PrivacySandboxSurveyDesktopControllerNullHatsService,
+       EmitsHatsServiceFailedHistogram) {
+  survey_desktop_controller_->MaybeShowSentimentSurvey(profile());
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.SentimentSurvey.Status",
+      PrivacySandboxSurveyService::PrivacySandboxSentimentSurveyStatus::
+          kHatsServiceFailed,
       1);
 }
 
