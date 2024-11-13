@@ -12,6 +12,7 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -43,6 +44,11 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
     kHibernationAbortedBecauseNoSurface = 12,
     kMaxValue = kHibernationAbortedBecauseNoSurface,
   };
+
+  static void ReportHibernationEvent(
+      CanvasHibernationHandler::HibernationEvent event) {
+    UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.HibernationEvents", event);
+  }
 
   explicit CanvasHibernationHandler(CanvasResourceHost& resource_host);
   CanvasHibernationHandler(const CanvasHibernationHandler&) = delete;

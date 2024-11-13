@@ -28,7 +28,6 @@
 
 #include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
@@ -50,11 +49,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
   // TODO(crbug.com/40280152): Eliminate Canvas2DLayerBridge entirely.
   CanvasHibernationHandler& GetHibernationHandler() {
     return hibernation_handler_;
-  }
-
-  static void ReportHibernationEvent(
-      CanvasHibernationHandler::HibernationEvent event) {
-    UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.HibernationEvents", event);
   }
 
  private:

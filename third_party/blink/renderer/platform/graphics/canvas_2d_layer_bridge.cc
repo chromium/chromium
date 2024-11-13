@@ -65,8 +65,9 @@ Canvas2DLayerBridge::Canvas2DLayerBridge(CanvasResourceHost& resource_host)
 
 Canvas2DLayerBridge::~Canvas2DLayerBridge() {
   if (hibernation_handler_.IsHibernating()) {
-    ReportHibernationEvent(CanvasHibernationHandler::HibernationEvent::
-                               kHibernationEndedWithTeardown);
+    CanvasHibernationHandler::ReportHibernationEvent(
+        CanvasHibernationHandler::HibernationEvent::
+            kHibernationEndedWithTeardown);
   }
 }
 
@@ -77,7 +78,7 @@ void Canvas2DLayerBridge::HibernateOrLogFailure(
   if (bridge) {
     bridge->Hibernate();
   } else {
-    ReportHibernationEvent(
+    CanvasHibernationHandler::ReportHibernationEvent(
         CanvasHibernationHandler::HibernationEvent::
             kHibernationAbortedDueToDestructionWhileHibernatePending);
   }
@@ -91,25 +92,28 @@ void Canvas2DLayerBridge::Hibernate() {
   hibernation_scheduled_ = false;
 
   if (!resource_host_->ResourceProvider()) {
-    ReportHibernationEvent(CanvasHibernationHandler::HibernationEvent::
-                               kHibernationAbortedBecauseNoSurface);
+    CanvasHibernationHandler::ReportHibernationEvent(
+        CanvasHibernationHandler::HibernationEvent::
+            kHibernationAbortedBecauseNoSurface);
     return;
   }
 
   if (resource_host_->IsPageVisible()) {
-    ReportHibernationEvent(CanvasHibernationHandler::HibernationEvent::
-                               kHibernationAbortedDueToVisibilityChange);
+    CanvasHibernationHandler::ReportHibernationEvent(
+        CanvasHibernationHandler::HibernationEvent::
+            kHibernationAbortedDueToVisibilityChange);
     return;
   }
 
   if (!resource_host_->IsResourceValid()) {
-    ReportHibernationEvent(CanvasHibernationHandler::HibernationEvent::
-                               kHibernationAbortedDueGpuContextLoss);
+    CanvasHibernationHandler::ReportHibernationEvent(
+        CanvasHibernationHandler::HibernationEvent::
+            kHibernationAbortedDueGpuContextLoss);
     return;
   }
 
   if (resource_host_->GetRasterMode() == RasterMode::kCPU) {
-    ReportHibernationEvent(
+    CanvasHibernationHandler::ReportHibernationEvent(
         CanvasHibernationHandler::HibernationEvent::
             kHibernationAbortedDueToSwitchToUnacceleratedRendering);
     return;
@@ -123,15 +127,17 @@ void Canvas2DLayerBridge::Hibernate() {
   scoped_refptr<StaticBitmapImage> snapshot =
       resource_host_->ResourceProvider()->Snapshot(FlushReason::kHibernating);
   if (!snapshot) {
-    ReportHibernationEvent(CanvasHibernationHandler::HibernationEvent::
-                               kHibernationAbortedDueSnapshotFailure);
+    CanvasHibernationHandler::ReportHibernationEvent(
+        CanvasHibernationHandler::HibernationEvent::
+            kHibernationAbortedDueSnapshotFailure);
     return;
   }
   sk_sp<SkImage> sw_image =
       snapshot->PaintImageForCurrentFrame().GetSwSkImage();
   if (!sw_image) {
-    ReportHibernationEvent(CanvasHibernationHandler::HibernationEvent::
-                               kHibernationAbortedDueSnapshotFailure);
+    CanvasHibernationHandler::ReportHibernationEvent(
+        CanvasHibernationHandler::HibernationEvent::
+            kHibernationAbortedDueSnapshotFailure);
     return;
   }
   hibernation_handler_.SaveForHibernation(
@@ -166,7 +172,7 @@ void Canvas2DLayerBridge::InitiateHibernationIfNecessary() {
   }
 
   resource_host_->ClearLayerTexture();
-  ReportHibernationEvent(
+  CanvasHibernationHandler::ReportHibernationEvent(
       CanvasHibernationHandler::HibernationEvent::kHibernationScheduled);
   hibernation_scheduled_ = true;
   ThreadScheduler::Current()->PostIdleTask(
