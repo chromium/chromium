@@ -172,6 +172,7 @@ NumCooldownFramesForAckOnSurfaceActivationDuringInteraction();
 VIZ_COMMON_EXPORT extern const base::FeatureParam<int>
     kNumCooldownFramesForAckOnSurfaceActivationDuringInteraction;
 VIZ_COMMON_EXPORT bool ShouldAckOnSurfaceActivationWhenInteractive();
+VIZ_COMMON_EXPORT bool Use90HzSwapChainCountFor72fps();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 VIZ_COMMON_EXPORT bool IsCrosContentAdjustedRefreshRateEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

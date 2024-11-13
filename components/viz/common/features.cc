@@ -460,6 +460,11 @@ BASE_FEATURE(kVizNullHypothesis,
              "VizNullHypothesis",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Treat frame rates of 72hz as if they were 90Hz for buffer sizing purposes.
+BASE_FEATURE(kUse90HzSwapChainCountFor72fps,
+             "Use90HzSwapChainCountFor72fps",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Allows the display to seamlessly adjust the refresh rate in order to match
 // content preferences. ChromeOS only.
@@ -558,6 +563,10 @@ bool ShouldDrawImmediatelyWhenInteractive() {
 bool ShouldAckOnSurfaceActivationWhenInteractive() {
   return base::FeatureList::IsEnabled(
       features::kAckOnSurfaceActivationWhenInteractive);
+}
+
+bool Use90HzSwapChainCountFor72fps() {
+  return base::FeatureList::IsEnabled(kUse90HzSwapChainCountFor72fps);
 }
 
 std::optional<uint64_t>

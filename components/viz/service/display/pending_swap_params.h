@@ -20,6 +20,9 @@ struct VIZ_SERVICE_EXPORT PendingSwapParams {
   PendingSwapParams& operator=(PendingSwapParams&&);
 
   int max_pending_swaps;
+  // If set, should be the max number of pending frames when running at 72hz
+  // Otherwise, fallback to `max_pending_swaps`.
+  std::optional<int> max_pending_swaps_72hz;
   // If set, should be the max number of pending frames when running at 90hz
   // Otherwise, fallback to `max_pending_swaps`.
   std::optional<int> max_pending_swaps_90hz;

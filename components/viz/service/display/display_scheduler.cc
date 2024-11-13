@@ -347,7 +347,8 @@ void DisplayScheduler::OnBeginFrameContinuation(const BeginFrameArgs& args) {
 }
 
 int DisplayScheduler::MaxPendingSwaps() const {
-  // Interval for 90hz and 120hz with some delta for margin of error.
+  // Interval for 72, 90, and 120hz with some delta for margin of error.
+  constexpr base::TimeDelta k72HzInterval = base::Microseconds(14000);
   constexpr base::TimeDelta k90HzInterval = base::Microseconds(11500);
   constexpr base::TimeDelta k120HzInterval = base::Microseconds(8500);
   int param_max_pending_swaps;
@@ -359,6 +360,10 @@ int DisplayScheduler::MaxPendingSwaps() const {
              pending_swap_params_.max_pending_swaps_90hz) {
     param_max_pending_swaps =
         pending_swap_params_.max_pending_swaps_90hz.value();
+  } else if (current_begin_frame_args_.interval < k72HzInterval &&
+             pending_swap_params_.max_pending_swaps_72hz) {
+    param_max_pending_swaps =
+        pending_swap_params_.max_pending_swaps_72hz.value();
   } else {
     param_max_pending_swaps = pending_swap_params_.max_pending_swaps;
   }
