@@ -613,6 +613,43 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
   );
 }
 
+// Tests triggering the extension's action closes the extensions menu, even when
+// there is no extension action to pop out.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
+                       TriggeringExtensionClosesMenu) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTab);
+  constexpr char kExtensionMenuItemActionButton[] =
+      "extension_menu_item_action_button";
+
+  // This test should not use a popped-out action, as we want to make sure that
+  // the menu closes on its own and not because a popup dialog replaces it.
+  const extensions::Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("api_test/trigger_actions/browser_action"));
+
+  RunTestSequence(
+      InstrumentTab(kTab),
+
+      // Trigger the extension's action by clicking on its menu entry.
+      OpenExtensionsMenu(),
+      CheckView(kExtensionMenuItemViewElementId,
+                [extension](ExtensionMenuItemView* menu_item) {
+                  return menu_item->view_controller()->GetId() ==
+                         extension->id();
+                }),
+      NameDescendantViewByType<ExtensionsMenuButton>(
+          kExtensionMenuItemViewElementId, kExtensionMenuItemActionButton),
+      PressButton(kExtensionMenuItemActionButton),
+
+      // Verify extension menu is closed.
+      WaitForHide(kExtensionsMenuMainPageElementId),
+      CheckResult(
+          [&]() { return extensions_container()->IsExtensionsMenuShowing(); },
+          false),
+      CheckResult(
+          [&]() { return extensions_container()->GetPoppedOutActionId(); },
+          std::nullopt));
+}
+
 // Tests triggering the extension's action while the extensions menu is opened
 // records the correct invocation source.
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
