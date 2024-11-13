@@ -239,26 +239,6 @@ BASE_FEATURE(kLockGuestMemory,
              "ArcLockGuestMemory",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls ARCVM MGLRU reclaim feature.
-BASE_FEATURE(kMglruReclaim,
-             "ArcMglruReclaim",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls the interval between MGLRU reclaims in milliseconds
-// A value of 0 will disable the MGLRU reclaim feature.
-// Current value is the best tuning from the ChromeOSARCVMAppRescue experiment.
-const base::FeatureParam<int> kMglruReclaimInterval{&kMglruReclaim, "interval",
-                                                    30000};
-
-// Controls the swappiness of MGLRU reclaims, in the range of 0 to 200
-// 0 means only filecache will be used while 200 means only swap will be used
-// any value in between will be a mix of both
-// The lower the value, the higher the ratio of freeing filecache pages
-// Implementation and a more detailed description can be found in ChromeOS
-// src/third_party/kernel/v5.10-arcvm/mm/vmscan.c
-const base::FeatureParam<int> kMglruReclaimSwappiness{&kMglruReclaim,
-                                                      "swappiness", 0};
-
 // Toggles between native bridge implementations for ARC.
 // Note, that we keep the original feature name to preserve
 // corresponding metrics.
