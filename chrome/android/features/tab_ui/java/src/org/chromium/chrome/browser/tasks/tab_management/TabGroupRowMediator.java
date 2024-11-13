@@ -174,7 +174,7 @@ class TabGroupRowMediator {
                     DELETE_RUNNABLE,
                     () ->
                             processDeleteSharedGroup(
-                                    groupData.displayName, groupData.groupToken.groupId));
+                                    groupData.displayName, groupData.groupToken.collaborationId));
             mPropertyModel.set(LEAVE_RUNNABLE, null);
         } else {
             // TODO(crbug.com/365852281): Leave action should look like a delete if there are no
@@ -182,7 +182,9 @@ class TabGroupRowMediator {
             mPropertyModel.set(DELETE_RUNNABLE, null);
             mPropertyModel.set(
                     LEAVE_RUNNABLE,
-                    () -> processLeaveGroup(groupData.displayName, groupData.groupToken.groupId));
+                    () ->
+                            processLeaveGroup(
+                                    groupData.displayName, groupData.groupToken.collaborationId));
         }
 
         if (sharedState == GroupSharedState.COLLABORATION_ONLY) {

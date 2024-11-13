@@ -118,16 +118,17 @@ public class SharedGroupObserver implements Destroyable {
         @Nullable String currentCollaborationId = mCurrentCollaborationIdSupplier.get();
         if (groupData == null
                 || groupData.groupToken == null
-                || !TabShareUtils.isCollaborationIdValid(groupData.groupToken.groupId)) {
+                || !TabShareUtils.isCollaborationIdValid(groupData.groupToken.collaborationId)) {
             return false;
         } else if (TabShareUtils.isCollaborationIdValid(currentCollaborationId)) {
-            return Objects.equals(groupData.groupToken.groupId, currentCollaborationId);
+            return Objects.equals(groupData.groupToken.collaborationId, currentCollaborationId);
         } else {
             @Nullable SavedTabGroup syncGroup = mTabGroupSyncService.getGroup(mLocalTabGroupId);
             boolean matches =
                     syncGroup != null
                             && Objects.equals(
-                                    syncGroup.collaborationId, groupData.groupToken.groupId);
+                                    syncGroup.collaborationId,
+                                    groupData.groupToken.collaborationId);
             if (matches) {
                 mCurrentCollaborationIdSupplier.set(syncGroup.collaborationId);
             }

@@ -18,8 +18,9 @@ import org.chromium.components.data_sharing.member_role.MemberRole;
  * Test helpers for creating data_sharing objects and mocking calls to {@link DataSharingService}.
  */
 public class SharedGroupTestHelper {
-    public static final String COLLABORATION_ID1 = "colabId1";
-    public static final String COLLABORATION_ID2 = "colabId2";
+    public static final String COLLABORATION_ID1 = "collabId1";
+    public static final String COLLABORATION_ID2 = "collabId2";
+    public static final String ACCESS_TOKEN1 = "accessToken1";
     public static final String GAIA_ID1 = "gaiaId1";
     public static final String GAIA_ID2 = "gaiaId2";
     public static final String DISPLAY_NAME1 = "Jane Doe";

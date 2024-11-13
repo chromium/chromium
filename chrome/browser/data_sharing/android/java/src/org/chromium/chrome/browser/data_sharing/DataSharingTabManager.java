@@ -72,15 +72,15 @@ public class DataSharingTabManager {
 
     /** This class is responsible for observing sync tab activities. */
     private static class SyncObserver implements TabGroupSyncService.Observer {
-        private final String mDataSharingGroupId;
+        private final String mCollaborationId;
         private final TabGroupSyncService mTabGroupSyncService;
         private Callback<SavedTabGroup> mCallback;
 
         SyncObserver(
-                String dataSharingGroupId,
+                String collaborationId,
                 TabGroupSyncService tabGroupSyncService,
                 Callback<SavedTabGroup> callback) {
-            mDataSharingGroupId = dataSharingGroupId;
+            mCollaborationId = collaborationId;
             mTabGroupSyncService = tabGroupSyncService;
             mCallback = callback;
 
@@ -89,7 +89,7 @@ public class DataSharingTabManager {
 
         @Override
         public void onTabGroupAdded(SavedTabGroup group, @TriggerSource int source) {
-            if (mDataSharingGroupId.equals(group.collaborationId)) {
+            if (mCollaborationId.equals(group.collaborationId)) {
                 Callback<SavedTabGroup> callback = mCallback;
                 destroy();
                 callback.onResult(group);
@@ -243,13 +243,14 @@ public class DataSharingTabManager {
         }
 
         GroupToken groupToken = parseResult.groupToken;
-        String groupId = groupToken.groupId;
+        String collaborationId = groupToken.collaborationId;
         DataSharingUIDelegate uiDelegate = dataSharingService.getUiDelegate();
         assert uiDelegate != null;
         JoinFlowTracker joinFlowTracker = new JoinFlowTracker(uiDelegate);
 
         // Verify that tab group does not already exist in sync.
-        SavedTabGroup existingGroup = getTabGroupForCollabIdFromSync(groupId, tabGroupSyncService);
+        SavedTabGroup existingGroup =
+                getTabGroupForCollabIdFromSync(collaborationId, tabGroupSyncService);
         if (existingGroup != null) {
             DataSharingMetrics.recordJoinActionFlowState(
                     DataSharingMetrics.JoinActionStateAndroid.SYNCED_TAB_GROUP_EXISTS);
@@ -258,10 +259,10 @@ public class DataSharingTabManager {
         }
 
         long startTime = SystemClock.uptimeMillis();
-        if (!mSyncObserversList.containsKey(groupId)) {
+        if (!mSyncObserversList.containsKey(collaborationId)) {
             SyncObserver syncObserver =
                     new SyncObserver(
-                            groupId,
+                            collaborationId,
                             tabGroupSyncService,
                             (group) -> {
                                 DataSharingMetrics.recordJoinFlowLatency(
@@ -271,7 +272,7 @@ public class DataSharingTabManager {
                                 joinFlowTracker.onTabGroupOpened();
                             });
 
-            mSyncObserversList.put(groupId, syncObserver);
+            mSyncObserversList.put(collaborationId, syncObserver);
         }
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_ANDROID_V2)) {
@@ -291,7 +292,7 @@ public class DataSharingTabManager {
                             joinFlowTracker.onGroupJoined(onJoinFinished);
                             DataSharingMetrics.recordJoinActionFlowState(
                                     DataSharingMetrics.JoinActionStateAndroid.ADD_MEMBER_SUCCESS);
-                            assert groupData.getGroupId().equals(groupId);
+                            assert groupData.getGroupId().equals(collaborationId);
                         }
                     };
             joinFlowTracker.setSessionId(
@@ -306,7 +307,7 @@ public class DataSharingTabManager {
         }
 
         dataSharingService.addMember(
-                groupToken.groupId,
+                groupToken.collaborationId,
                 groupToken.accessToken,
                 result -> {
                     if (result != PeopleGroupActionOutcome.SUCCESS) {
@@ -496,7 +497,7 @@ public class DataSharingTabManager {
                                 DataSharingMetrics.ShareActionStateAndroid.GROUP_CREATE_FAILED);
                     } else {
                         tabGroupService.makeTabGroupShared(
-                                localTabGroupId, result.groupData.groupToken.groupId);
+                                localTabGroupId, result.groupData.groupToken.collaborationId);
                         createGroupFinishedCallback.onResult(true);
 
                         DataSharingMetrics.recordShareActionFlowState(
@@ -592,7 +593,7 @@ public class DataSharingTabManager {
                         // GroupToken instead.
                         showShareSheet(
                                 new GroupData(
-                                        groupToken.groupId,
+                                        groupToken.collaborationId,
                                         "Tab Group",
                                         /* members= */ null,
                                         groupToken.accessToken));

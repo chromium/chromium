@@ -101,7 +101,9 @@ public class DataSharingServiceImpl implements DataSharingService {
     public GURL getDataSharingUrl(GroupData groupData) {
         return DataSharingServiceImplJni.get()
                 .getDataSharingUrl(
-                        mNativePtr, groupData.groupToken.groupId, groupData.groupToken.accessToken);
+                        mNativePtr,
+                        groupData.groupToken.collaborationId,
+                        groupData.groupToken.accessToken);
     }
 
     @Override
@@ -120,7 +122,7 @@ public class DataSharingServiceImpl implements DataSharingService {
             GroupToken groupToken, Callback<SharedDataPreviewOrFailureOutcome> callback) {
         DataSharingServiceImplJni.get()
                 .getSharedEntitiesPreview(
-                        mNativePtr, groupToken.groupId, groupToken.accessToken, callback);
+                        mNativePtr, groupToken.collaborationId, groupToken.accessToken, callback);
     }
 
     @Override
