@@ -6119,16 +6119,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "ntp-chrome-cart-in-journeys-module",
-    "owners": [ "yuezhanggg@chromium.org", "romanarora@chromium.org", "tiborg@chromium.org" ],
-    "expiry_milestone": 122
-  },
-  {
-    "name": "ntp-chrome-cart-journeys-module-coexist",
-    "owners": [ "yuezhanggg@chromium.org", "romanarora@chromium.org", "tiborg@chromium.org" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "ntp-chrome-cart-module",
     "owners": [ "wychen@chromium.org", "tiborg@chromium.org", "yuezhanggg@chromium.org" ],
     "expiry_milestone": 122
