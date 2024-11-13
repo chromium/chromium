@@ -19,8 +19,7 @@ namespace blink {
 
 // To get pretty messages out of the CHECK_OP-type macros, we must teach it
 // how to print its operand.
-std::ostream& operator<<(std::ostream& stream,
-                         const HashSet<QualifiedName>& names) {
+std::ostream& operator<<(std::ostream& stream, const SanitizerNameSet& names) {
   stream << "{";
   const char* separator = "";
   for (const auto& name : names) {
@@ -87,13 +86,13 @@ TEST(SanitizerBuiltinsTest, DefaultSafeContainsOnlyKnownNames) {
   const Sanitizer* all =
       sanitizer_generated_builtins::BuildAllKnownConfig_ForTesting();
 
-  HashSet<QualifiedName> elements(safe->allow_elements().begin(),
-                                  safe->allow_elements().end());
+  SanitizerNameSet elements(safe->allow_elements().begin(),
+                            safe->allow_elements().end());
   elements.RemoveAll(all->allow_elements());
   CHECK_EMPTY(elements);
 
-  HashSet<QualifiedName> attrs(safe->allow_attrs().begin(),
-                               safe->allow_attrs().end());
+  SanitizerNameSet attrs(safe->allow_attrs().begin(),
+                         safe->allow_attrs().end());
   attrs.RemoveAll(all->allow_attrs());
   CHECK_EMPTY(attrs);
 }
@@ -131,14 +130,21 @@ TEST(SanitizerBuiltinsTest, RemovingBaselineShouldNotContainScriptyStuff) {
   // TODO(vogelheim): Once the Sanitizer API is more completely implemented,
   // the logic below should probably be re-implemented with Sanitizer methods
   // like removeUnsafe();
-  HashSet<QualifiedName> elements = all->allow_elements();
+  Sanitizer* all_without_baseline = MakeGarbageCollected<Sanitizer>();
+
+  SanitizerNameSet elements = all->allow_elements();
   elements.RemoveAll(baseline->remove_elements());
-  HashSet<QualifiedName> attrs = all->allow_attrs();
+  for (const auto& element : elements) {
+    all_without_baseline->AllowElement(element);
+  }
+
+  SanitizerNameSet attrs = all->allow_attrs();
   attrs.RemoveAll(baseline->remove_attrs());
-  Sanitizer* removed = MakeGarbageCollected<Sanitizer>(
-      elements, HashSet<QualifiedName>{}, attrs, HashSet<QualifiedName>{},
-      HashSet<QualifiedName>{}, false, false);
-  CheckForScriptyStuff(removed);
+  for (const auto& attr : attrs) {
+    all_without_baseline->AllowAttribute(attr);
+  }
+
+  CheckForScriptyStuff(all_without_baseline);
 }
 
 }  // namespace blink

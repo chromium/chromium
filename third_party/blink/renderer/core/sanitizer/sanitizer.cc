@@ -43,11 +43,11 @@ Sanitizer::Sanitizer(HashSet<QualifiedName> allow_elements,
                      HashSet<QualifiedName> remove_attrs,
                      bool allow_data_attrs,
                      bool allow_comments)
-    : allow_elements_(allow_elements),
-      remove_elements_(remove_elements),
-      replace_elements_(replace_elements),
-      allow_attrs_(allow_attrs),
-      remove_attrs_(remove_attrs),
+    : allow_elements_(allow_elements.begin(), allow_elements.end()),
+      remove_elements_(remove_elements.begin(), remove_elements.end()),
+      replace_elements_(replace_elements.begin(), replace_elements.end()),
+      allow_attrs_(allow_attrs.begin(), allow_attrs.end()),
+      remove_attrs_(remove_attrs.begin(), remove_attrs.end()),
       allow_data_attrs_(allow_data_attrs),
       allow_comments_(allow_comments) {}
 
@@ -62,14 +62,14 @@ void Sanitizer::allowElement(
         element->GetAsSanitizerElementNamespaceWithAttributes();
     if (element_with_attrs->hasAttributes()) {
       const auto add_result =
-          allow_attrs_per_element_.insert(name, HashSet<QualifiedName>());
+          allow_attrs_per_element_.insert(name, SanitizerNameSet());
       for (const auto& attr : element_with_attrs->attributes()) {
         add_result.stored_value->value.insert(getFrom(attr));
       }
     }
     if (element_with_attrs->hasRemoveAttributes()) {
       const auto add_result =
-          remove_attrs_per_element_.insert(name, HashSet<QualifiedName>());
+          remove_attrs_per_element_.insert(name, SanitizerNameSet());
       for (const auto& attr : element_with_attrs->removeAttributes()) {
         add_result.stored_value->value.insert(getFrom(attr));
       }

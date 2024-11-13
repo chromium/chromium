@@ -9,6 +9,10 @@ blink_core_sources_sanitizer = [
   "sanitizer_api.h",
   "sanitizer_builtins.cc",
   "sanitizer_builtins.h",
+  "sanitizer_names.h",
 ]
 
-blink_core_tests_sanitizer = [ "sanitizer_builtins_unittest.cc" ]
+blink_core_tests_sanitizer = [
+  "sanitizer_builtins_unittest.cc",
+  "sanitizer_names_unittest.cc",
+]

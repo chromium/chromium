@@ -6,9 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SANITIZER_SANITIZER_H_
 
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/sanitizer/sanitizer_names.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
@@ -63,23 +62,15 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   void RemoveAttribute(const QualifiedName&);
 
   // Accessors, mainly for testing:
-  const HashSet<QualifiedName>& allow_elements() const {
-    return allow_elements_;
-  }
-  const HashSet<QualifiedName>& remove_elements() const {
-    return remove_elements_;
-  }
-  const HashSet<QualifiedName>& replace_elements() const {
-    return replace_elements_;
-  }
-  const HashSet<QualifiedName>& allow_attrs() const { return allow_attrs_; }
-  const HashSet<QualifiedName>& remove_attrs() const { return remove_attrs_; }
-  const HashMap<QualifiedName, HashSet<QualifiedName>>&
-  allow_attrs_per_element() const {
+  const SanitizerNameSet& allow_elements() const { return allow_elements_; }
+  const SanitizerNameSet& remove_elements() const { return remove_elements_; }
+  const SanitizerNameSet& replace_elements() const { return replace_elements_; }
+  const SanitizerNameSet& allow_attrs() const { return allow_attrs_; }
+  const SanitizerNameSet& remove_attrs() const { return remove_attrs_; }
+  const SanitizerNameMap& allow_attrs_per_element() const {
     return allow_attrs_per_element_;
   }
-  const HashMap<QualifiedName, HashSet<QualifiedName>>&
-  remove_attrs_per_element() const {
+  const SanitizerNameMap& remove_attrs_per_element() const {
     return remove_attrs_per_element_;
   }
   bool allow_data_attrs() const { return allow_data_attrs_; }
@@ -102,14 +93,14 @@ class CORE_EXPORT Sanitizer final : public ScriptWrappable {
   // These members are Blink-representation of SanitizerConfig, and the core
   // data structure(s) for Sanitizer. We'll try to keep them simple (sets and
   // maps), and to use QualifiedName, since that's an efficient-to-compare
-  // QName implementation.
-  HashSet<QualifiedName> allow_elements_;
-  HashSet<QualifiedName> remove_elements_;
-  HashSet<QualifiedName> replace_elements_;
-  HashSet<QualifiedName> allow_attrs_;
-  HashSet<QualifiedName> remove_attrs_;
-  HashMap<QualifiedName, HashSet<QualifiedName>> allow_attrs_per_element_;
-  HashMap<QualifiedName, HashSet<QualifiedName>> remove_attrs_per_element_;
+  // implementation.
+  SanitizerNameSet allow_elements_;
+  SanitizerNameSet remove_elements_;
+  SanitizerNameSet replace_elements_;
+  SanitizerNameSet allow_attrs_;
+  SanitizerNameSet remove_attrs_;
+  SanitizerNameMap allow_attrs_per_element_;
+  SanitizerNameMap remove_attrs_per_element_;
   bool allow_data_attrs_;
   bool allow_comments_;
 };
