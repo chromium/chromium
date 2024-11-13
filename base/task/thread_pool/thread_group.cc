@@ -162,7 +162,6 @@ void ThreadGroup::StartImpl(
       thread_type_hint_ != ThreadType::kBackground
           ? kForegroundBlockedWorkersPoll
           : kBackgroundBlockedWorkersPoll;
-  in_start().max_num_workers_created = base::kMaxNumWorkersCreated.Get();
 
   CheckedAutoLock auto_lock(lock_);
 

@@ -66,10 +66,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPumpFastToSleepAndroid);
 // Feature to run tasks by batches before pumping out messages.
 BASE_EXPORT BASE_DECLARE_FEATURE(kRunTasksByBatches);
 
-// Feature to use ThreadGroupSemaphore instead of ThreadGroupImpl.
-BASE_EXPORT BASE_DECLARE_FEATURE(kThreadGroupSemaphore);
-extern const BASE_EXPORT base::FeatureParam<int> kMaxNumWorkersCreated;
-
 }  // namespace base
 
 #endif  // BASE_TASK_TASK_FEATURES_H_
