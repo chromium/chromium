@@ -5445,7 +5445,7 @@ No devices connected.
         Help me read
       </message>
       <message name="IDS_ASH_MAHI_PANEL_DISCLAIMER" desc="Text for the disclaimer label in the Mahi panel">
-        Quality may vary when using generative AI.
+        Generative AI can make mistakes, including about people, so double-check it. <ph name="LINK_TO_SERVICE_TERMS">$1<ex>Learn more</ex></ph>
       </message>
       <message name="IDS_ASH_MAHI_PANEL_DISCLAIMER_FEEDBACK_DISABLED" desc="Text for the disclaimer label in the Mahi panel when the feedback buttons are disabled">
         Generative AI is experimental and content may be inaccurate, misleading, or offensive. Contact your administrator to report an issue. <ph name="LINK_TO_SERVICE_TERMS">$1<ex>Learn more</ex></ph>

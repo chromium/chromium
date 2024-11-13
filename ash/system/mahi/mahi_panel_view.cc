@@ -104,8 +104,6 @@ constexpr gfx::Insets kInfoSparkIconPadding = gfx::Insets::VH(0, 2);
 // (on top of the default 8px spacing for the whole panel).
 constexpr int kScrollViewAndAskQuestionSpacing = 8;
 
-constexpr int kFooterSpacing = 1;
-
 constexpr base::TimeDelta kPanelShowAnimationDelay = base::Milliseconds(50);
 constexpr base::TimeDelta kPanelShowAnimationDuration = base::Milliseconds(300);
 
@@ -714,48 +712,29 @@ MahiPanelView::MahiPanelView(MahiUiController* ui_controller)
   question_textfield_->RemoveHoverEffect();
   InstallTextfieldFocusRing(question_textfield_, send_button_);
 
-  std::unique_ptr<views::View> footer_view;
+  std::vector<size_t> offsets;
+  const std::u16string link_text =
+      l10n_util::GetStringUTF16(IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT);
+  std::u16string footer_text;
   if (mahi_utils::ShouldShowFeedbackButton()) {
-    footer_view =
-        views::Builder<views::BoxLayoutView>()
-            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-            .SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter)
-            .SetBetweenChildSpacing(kFooterSpacing)
-            .AddChildren(views::Builder<views::Label>()
-                             .SetID(mahi_constants::ViewId::kFooterLabel)
-                             .SetText(l10n_util::GetStringUTF16(
-                                 IDS_ASH_MAHI_PANEL_DISCLAIMER)),
-                         views::Builder<views::Link>()
-                             .SetText(l10n_util::GetStringUTF16(
-                                 IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT))
-                             .SetAccessibleName(l10n_util::GetStringUTF16(
-                                 IDS_ASH_MAHI_LEARN_MORE_LINK_ACCESSIBLE_NAME))
-                             .SetCallback(base::BindRepeating(
-                                 &MahiPanelView::OnLearnMoreLinkClicked,
-                                 weak_ptr_factory_.GetWeakPtr()))
-                             .SetID(mahi_constants::ViewId::kLearnMoreLink))
-            .Build();
+    footer_text = l10n_util::GetStringFUTF16(IDS_ASH_MAHI_PANEL_DISCLAIMER,
+                                             {link_text}, &offsets);
   } else {
-    // Use `views::StyledLabel` here instead so that the learn more link can be
-    // displayed in the same row as the multilined footer text.
-    std::vector<size_t> offsets;
-    const std::u16string link_text =
-        l10n_util::GetStringUTF16(IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT);
-    const std::u16string footer_text = l10n_util::GetStringFUTF16(
+    footer_text = l10n_util::GetStringFUTF16(
         IDS_ASH_MAHI_PANEL_DISCLAIMER_FEEDBACK_DISABLED, {link_text}, &offsets);
-    footer_view =
-        views::Builder<views::StyledLabel>()
-            .SetID(mahi_constants::ViewId::kFooterLabel)
-            .SetText(footer_text)
-            .AddStyleRange(
-                gfx::Range(offsets.at(0), offsets.at(0) + link_text.length()),
-                GetLinkTextStyle(
-                    base::BindRepeating(&MahiPanelView::OnLearnMoreLinkClicked,
-                                        weak_ptr_factory_.GetWeakPtr())))
-            .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
-            .SetAutoColorReadabilityEnabled(false)
-            .Build();
   }
+  std::unique_ptr<views::View> footer_view =
+      views::Builder<views::StyledLabel>()
+          .SetID(mahi_constants::ViewId::kFooterLabel)
+          .SetText(footer_text)
+          .AddStyleRange(
+              gfx::Range(offsets.at(0), offsets.at(0) + link_text.length()),
+              GetLinkTextStyle(
+                  base::BindRepeating(&MahiPanelView::OnLearnMoreLinkClicked,
+                                      weak_ptr_factory_.GetWeakPtr())))
+          .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
+          .SetAutoColorReadabilityEnabled(false)
+          .Build();
 
   main_container_->AddChildView(std::move(footer_view));
 

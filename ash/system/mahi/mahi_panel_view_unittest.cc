@@ -443,8 +443,8 @@ TEST_F(MahiPanelViewTest, CloseButton) {
 }
 
 TEST_F(MahiPanelViewTest, LearnMoreLink) {
-  auto* learn_more_link =
-      panel_view()->GetViewByID(mahi_constants::ViewId::kLearnMoreLink);
+  auto* disclaimer_text = views::AsViewClass<views::StyledLabel>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kFooterLabel));
   // Run layout so the link updates its size and becomes clickable.
   views::test::RunScheduledLayout(widget());
 
@@ -452,7 +452,7 @@ TEST_F(MahiPanelViewTest, LearnMoreLink) {
               OpenUrl(GURL(chrome::kHelpMeReadWriteLearnMoreURL),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       NewWindowDelegate::Disposition::kNewForegroundTab));
-  LeftClickOn(learn_more_link);
+  disclaimer_text->ClickFirstLinkForTesting();
   Mock::VerifyAndClearExpectations(&new_window_delegate());
 }
 
@@ -2050,10 +2050,13 @@ TEST_F(MahiPanelViewTest, FeedbackButtonsAllowed) {
       panel_view()
           ->GetViewByID(mahi_constants::ViewId::kFeedbackButtonsContainer)
           ->GetVisible());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_MAHI_PANEL_DISCLAIMER),
-            static_cast<views::Label*>(
-                panel_view()->GetViewByID(mahi_constants::ViewId::kFooterLabel))
-                ->GetText());
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_ASH_MAHI_PANEL_DISCLAIMER,
+          l10n_util::GetStringUTF16(IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT)),
+      static_cast<views::StyledLabel*>(
+          panel_view()->GetViewByID(mahi_constants::ViewId::kFooterLabel))
+          ->GetText());
 }
 
 TEST_F(MahiPanelViewTest, FeedbackButtonResetWhenRefresh) {
