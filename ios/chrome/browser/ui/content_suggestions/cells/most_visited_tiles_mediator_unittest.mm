@@ -5,15 +5,18 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/types/cxx23_to_underlying.h"
 #import "components/ntp_tiles/icon_cacher.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/metrics/model/constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
@@ -25,7 +28,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
-// Testing Suite for MostVisitedTilesMediator
+// Testing Suite for MostVisitedTilesMediator.
 class MostVisitedTilesMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
@@ -39,6 +42,7 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
         IOSChromeLargeIconServiceFactory::GetForProfile(profile_.get());
     LargeIconCache* cache =
         IOSChromeLargeIconCacheFactory::GetForProfile(profile_.get());
+    RegisterProfilePrefs(pref_service_.registry());
     std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites =
         std::make_unique<ntp_tiles::MostVisitedSites>(
             &pref_service_, /*identity_manager*/ nullptr,

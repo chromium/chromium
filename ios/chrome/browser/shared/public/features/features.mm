@@ -29,28 +29,26 @@ bool IsFeedBackgroundRefreshEnabledOnly() {
 // Helper function that returns a vector of two booleans, with vector[0] being
 // the desired state for the combined MVT, and vector[1] being whether homestack
 // should be enabled.
-std::vector<bool> ShouldEnableCombinedMVTAndHomestack() {
-  // TODO(crbug.com/377587259): Use actual feed engagement level.
-  FeedActivityBucket engagement_level = FeedActivityBucket::kNoActivity;
-  if (engagement_level == FeedActivityBucket::kNoActivity ||
-      !base::FeatureList::IsEnabled(kNewFeedPositioning)) {
+std::vector<bool> ShouldEnableCombinedMVTAndHomestack(
+    FeedActivityBucket feed_activity_bucket) {
+  if (!base::FeatureList::IsEnabled(kNewFeedPositioning)) {
     return {false, false};
   }
   std::string mvt_state_param_name;
-  switch (engagement_level) {
-    case FeedActivityBucket::kLowActivity:
+  switch (feed_activity_bucket) {
+    case FeedActivityBucket::kNoActivity:
       mvt_state_param_name = kNewFeedPositioningCombinedMVTForLowEngaged;
       break;
-    case FeedActivityBucket::kMediumActivity:
+    case FeedActivityBucket::kLowActivity:
       mvt_state_param_name = kNewFeedPositioningCombinedMVTForMidEngaged;
       break;
+    case FeedActivityBucket::kMediumActivity:
     case FeedActivityBucket::kHighActivity:
       mvt_state_param_name = kNewFeedPositioningCombinedMVTForHighEngaged;
       break;
-    case FeedActivityBucket::kNoActivity:
     default:
       NOTREACHED() << "Should not reach engagement level: "
-                   << static_cast<int>(engagement_level);
+                   << static_cast<int>(feed_activity_bucket);
   }
   bool should_combine_mvt = base::GetFieldTrialParamByFeatureAsBool(
       kNewFeedPositioning, mvt_state_param_name, /*default_value=*/true);
@@ -968,10 +966,11 @@ bool IsTabResumptionImagesThumbnailsEnabled() {
   return image_type == kTabResumptionImagesTypesThumbnails || image_type == "";
 }
 
-bool ShouldPutMostVisitedSitesInMagicStack() {
+bool ShouldPutMostVisitedSitesInMagicStack(
+    FeedActivityBucket feed_activity_bucket) {
   return base::GetFieldTrialParamByFeatureAsBool(
              kMagicStack, kMagicStackMostVisitedModuleParam, false) ||
-         ShouldEnableCombinedMVTAndHomestack()[0];
+         ShouldEnableCombinedMVTAndHomestack(feed_activity_bucket)[0];
 }
 
 double ReducedNTPTopMarginSpaceForMagicStack() {
@@ -1188,8 +1187,8 @@ const char kNewFeedPositioningCombinedMVTForLowEngaged[] =
 const char kNewFeedPositioningHomestackOnForAll[] = "homestack_on_for_all";
 
 // Returns whether homestack should be enabled.
-bool ShouldEnableHomestack() {
-  return ShouldEnableCombinedMVTAndHomestack()[1];
+bool ShouldEnableHomestack(FeedActivityBucket feed_activity_bucket) {
+  return ShouldEnableCombinedMVTAndHomestack(feed_activity_bucket)[1];
 }
 
 BASE_FEATURE(kDefaultBrowserBannerPromo,

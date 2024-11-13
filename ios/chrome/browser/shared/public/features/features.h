@@ -11,6 +11,8 @@
 #import "base/metrics/field_trial_params.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/notifications_promo_view_constants.h"
 
+enum class FeedActivityBucket;
+
 namespace base {
 class TimeDelta;
 }  // namespace base
@@ -785,8 +787,10 @@ bool IsTabResumptionImagesThumbnailsEnabled();
 // X-Devices tabs only.
 const base::TimeDelta TabResumptionForXDevicesTimeThreshold();
 
-// Whether the Most Visited Sites should be put into the Magic Stack.
-bool ShouldPutMostVisitedSitesInMagicStack();
+// Whether the Most Visited Sites should be put into the Magic Stack based on
+// `feed_activity_bucket`.
+bool ShouldPutMostVisitedSitesInMagicStack(
+    FeedActivityBucket feed_activity_bucket);
 
 // How much the NTP top margin should be reduced by for the Magic Stack design.
 double ReducedNTPTopMarginSpaceForMagicStack();
@@ -957,8 +961,8 @@ extern const char kNewFeedPositioningCombinedMVTForMidEngaged[];
 extern const char kNewFeedPositioningCombinedMVTForLowEngaged[];
 extern const char kNewFeedPositioningHomestackOnForAll[];
 
-// Returns whether homestack should be enabled.
-bool ShouldEnableHomestack();
+// Returns whether homestack should be enabled based on `feed_activity_bucket`.
+bool ShouldEnableHomestack(FeedActivityBucket feed_activity_bucket);
 
 // Feature flag to control whether the Default Browser banner promo is enabled.
 BASE_DECLARE_FEATURE(kDefaultBrowserBannerPromo);
