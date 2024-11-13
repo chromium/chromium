@@ -430,6 +430,13 @@ void BeginMemoryExperimentationAfterDelay() {
 
   // Used to force the device orientation in portrait mode on iPhone.
   std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
+
+  // The highest ProfileInitStage reached by any ProfileState. This value
+  // can only be increased, never decreased. It gates application-level
+  // initialisation that should only happen once at least one Profile has
+  // reached a significant stage (e.g. loaded the session and allowed the
+  // user to interact with the application, ...).
+  ProfileInitStage _highestProfileInitStageReached;
 }
 
 // Defined by public protocols.
@@ -557,6 +564,12 @@ SEQUENCE_CHECKER(_sequenceChecker);
 
 // This initialization must happen before any windows are created.
 - (void)startUpBeforeFirstWindowCreated {
+  // TODO(crbug.com/40190949): Determine whether Chrome needs to resume
+  // watching for crashes.
+  self.appState.postCrashAction = [self postCrashAction];
+  base::UmaHistogramEnumeration("Stability.IOS.PostCrashAction",
+                                self.appState.postCrashAction);
+
   GetApplicationContext()->OnAppEnterForeground();
 
   // Although this duplicates some metrics_service startup logic also in
@@ -649,9 +662,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
 }
 
 - (void)startUpBrowserForegroundInitialization {
-  // TODO(crbug.com/40190949): Determine whether Chrome needs to resume watching
-  // for crashes.
-
   const std::vector<ProfileIOS*> loadedProfiles =
       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
 
@@ -663,11 +673,6 @@ SEQUENCE_CHECKER(_sequenceChecker);
   for (SceneState* sceneState in self.appState.connectedScenes) {
     [self attachProfileToSceneState:sceneState];
   }
-
-  self.appState.postCrashAction = [self postCrashAction];
-  [self startUpBeforeFirstWindowCreated];
-  base::UmaHistogramEnumeration("Stability.IOS.PostCrashAction",
-                                self.appState.postCrashAction);
 }
 
 - (void)initializeProfile:(ProfileIOS*)profile {
@@ -791,8 +796,79 @@ SEQUENCE_CHECKER(_sequenceChecker);
 #pragma mark - ProfileStateObserver
 
 - (void)profileState:(ProfileState*)profileState
+    willTransitionToInitStage:(ProfileInitStage)nextInitStage
+                fromInitStage:(ProfileInitStage)fromInitStage {
+  if (nextInitStage > _highestProfileInitStageReached) {
+    switch (nextInitStage) {
+      case ProfileInitStage::kStart:
+        NOTREACHED();
+
+      case ProfileInitStage::kLoadProfile:
+        break;
+
+      case ProfileInitStage::kProfileLoaded:
+        break;
+
+      case ProfileInitStage::kPrepareUI:
+        break;
+
+      case ProfileInitStage::kUIReady:
+        [self startUpBeforeFirstWindowCreated];
+        break;
+
+      case ProfileInitStage::kFirstRun:
+        break;
+
+      case ProfileInitStage::kChoiceScreen:
+        break;
+
+      case ProfileInitStage::kNormalUI:
+        break;
+
+      case ProfileInitStage::kFinal:
+        break;
+    }
+  }
+}
+
+- (void)profileState:(ProfileState*)profileState
     didTransitionToInitStage:(ProfileInitStage)nextInitStage
                fromInitStage:(ProfileInitStage)fromInitStage {
+  if (nextInitStage > _highestProfileInitStageReached) {
+    _highestProfileInitStageReached = nextInitStage;
+    switch (nextInitStage) {
+      case ProfileInitStage::kStart:
+        NOTREACHED();
+
+      case ProfileInitStage::kLoadProfile:
+        break;
+
+      case ProfileInitStage::kProfileLoaded:
+        break;
+
+      case ProfileInitStage::kPrepareUI:
+        break;
+
+      case ProfileInitStage::kUIReady:
+        break;
+
+      case ProfileInitStage::kFirstRun:
+        break;
+
+      case ProfileInitStage::kChoiceScreen:
+        break;
+
+      case ProfileInitStage::kNormalUI:
+        break;
+
+      case ProfileInitStage::kFinal:
+        break;
+    }
+  }
+
+  // This should happen for all ProfileStage as it is responsible for
+  // removing self from the observers and for recording the lauch metrics
+  // which should wait until all SceneStates have been mapped to Profiles.
   if (nextInitStage == ProfileInitStage::kFinal) {
     [profileState removeObserver:self];
     [self recordLaunchMetrics];
