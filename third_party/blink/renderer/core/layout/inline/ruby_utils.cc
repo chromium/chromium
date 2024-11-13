@@ -741,11 +741,14 @@ FontHeight RubyBlockPositionCalculator::RubyLine::UpdateMetrics() {
     if (!margins.has_value()) {
       metrics_.Unite(ComputeLogicalLineEmHeight(*column->annotation_items));
     } else {
-      DCHECK_GT(column->annotation_items->size(), 0u);
-      const LogicalLineItem& item = (*column->annotation_items)[0];
-      DCHECK(item.IsPlaceholder());
-      metrics_.Unite({-item.BlockOffset() + margins->first,
-                      item.BlockEndOffset() + margins->second});
+      // A placeholder item is at [0] in LTR, but it's not at [0] in RTL.
+      for (const LogicalLineItem& item : *column->annotation_items) {
+        if (item.IsPlaceholder()) {
+          metrics_.Unite({-item.BlockOffset() + margins->first,
+                          item.BlockEndOffset() + margins->second});
+          break;
+        }
+      }
     }
   }
   return metrics_;
