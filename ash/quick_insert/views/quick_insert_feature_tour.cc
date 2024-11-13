@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/quick_insert/resources/grit/quick_insert_resources.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/system_dialog_delegate_view.h"
@@ -18,7 +19,6 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/branding_buildflags.h"
-#include "chromeos/ash/grit/ash_resources.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
@@ -93,12 +93,8 @@ std::u16string GetBodyText(QuickInsertFeatureTour::EditorStatus editor_status) {
 }
 
 ui::ImageModel GetIllustration() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
-      IDR_PICKER_FEATURE_TOUR_ILLUSTRATION);
-#else
-  return {};
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      IDR_QUICK_INSERT_FEATURE_TOUR_ILLUSTRATION);
 }
 
 std::unique_ptr<views::Widget> CreateWidget(

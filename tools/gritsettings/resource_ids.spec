@@ -694,7 +694,6 @@
   },
   "chromeos/ash/resources/ash_resources.grd": {
     "includes": [5780],
-    "structures": [5790],
   },
   "chromeos/ash/resources/internal/ash_internal_scaled_resources.grd": {
     "structures": [5800],
@@ -1229,6 +1228,9 @@
   "ash/public/cpp/resources/ash_public_unscaled_resources.grd": {
     "includes": [9160],
     "structures": [9180],
+  },
+  "ash/quick_insert/resources/quick_insert_resources.grd": {
+    "structures":[9190],
   },
   "ash/system/mahi/resources/mahi_resources.grd": {
     "structures":[9200],

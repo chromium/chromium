@@ -3348,6 +3348,7 @@ component("ash") {
     "//ash/login/resources:resources_grit",
     "//ash/public/cpp/ambient/proto",
     "//ash/public/mojom:hid_preserving_bluetooth_state_controller",
+    "//ash/quick_insert/resources:quick_insert_resources_grit",
     "//ash/quick_pair",
     "//ash/quick_pair/companion_app",
     "//ash/quick_pair/feature_status_tracker",

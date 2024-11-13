@@ -243,6 +243,7 @@ template("chrome_extra_paks") {
     if (is_chromeos_ash) {
       sources += [
         "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",
+        "$root_gen_dir/ash/quick_insert/resources/quick_insert_resources.pak",
         "$root_gen_dir/ash/system/mahi/resources/mahi_resources.pak",
         "$root_gen_dir/ash/system/video_conference/resources/vc_resources.pak",
         "$root_gen_dir/ash/webui/ash_annotator_untrusted_resources.pak",
@@ -338,6 +339,7 @@ template("chrome_extra_paks") {
       deps += [
         "//ash/components/arc/input_overlay/resources",
         "//ash/public/cpp/resources:ash_public_unscaled_resources",
+        "//ash/quick_insert/resources:quick_insert_resources",
         "//ash/system/mahi/resources:mahi_resources",
         "//ash/system/video_conference/resources:vc_resources",
         "//ash/webui/boca_ui/resources:resources",

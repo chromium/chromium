@@ -17,12 +17,14 @@ repack("ash_test_resources_unscaled") {
   output = "$root_build_dir/ash_test_resources_unscaled.pak"
   sources = [
     "$root_gen_dir/ash/public/cpp/resources/ash_public_unscaled_resources.pak",
+    "$root_gen_dir/ash/quick_insert/resources/quick_insert_resources.pak",
     "$root_gen_dir/ash/system/mahi/resources/mahi_resources.pak",
     "$root_gen_dir/ash/system/video_conference/resources/vc_resources.pak",
     "$root_gen_dir/ash/wm/overview/birch/resources/coral_resources.pak",
   ]
   deps = [
     "//ash/public/cpp/resources:ash_public_unscaled_resources",
+    "//ash/quick_insert/resources:quick_insert_resources",
     "//ash/system/mahi/resources:mahi_resources",
     "//ash/system/video_conference/resources:vc_resources",
     "//ash/wm/overview/birch/resources:coral_resources_grit",

@@ -22,6 +22,7 @@
 #include "ash/quick_insert/model/quick_insert_search_results_section.h"
 #include "ash/quick_insert/quick_insert_category.h"
 #include "ash/quick_insert/quick_insert_search_result.h"
+#include "ash/quick_insert/resources/grit/quick_insert_resources.h"
 #include "ash/quick_insert/views/quick_insert_emoji_bar_view.h"
 #include "ash/quick_insert/views/quick_insert_item_with_submenu_view.h"
 #include "ash/quick_insert/views/quick_insert_key_event_handler.h"
@@ -50,7 +51,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
-#include "chromeos/ash/grit/ash_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -255,12 +255,8 @@ std::u16string GetNoResultsFoundDescription(QuickInsertCategory category) {
 }
 
 ui::ImageModel GetNoResultsFoundIllustration() {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
-      IDR_PICKER_NO_RESULTS_ILLUSTRATION);
-#else
-  return {};
-#endif
+      IDR_QUICK_INSERT_NO_RESULTS_ILLUSTRATION);
 }
 
 bool IsEditorAvailable(
