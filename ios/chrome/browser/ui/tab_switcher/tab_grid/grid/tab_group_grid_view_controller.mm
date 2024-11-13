@@ -131,10 +131,10 @@
 
 // Returns the header which contains the title and the color view.
 - (TabGroupHeader*)header {
-  NSInteger tabSectionIndex = [self.diffableDataSource
-      indexForSectionIdentifier:kGridOpenTabsSectionIdentifier];
+  NSInteger headerSectionIndex = [self.diffableDataSource
+      indexForSectionIdentifier:kTabGroupHeaderSectionIdentifier];
   NSIndexPath* indexPath = [NSIndexPath indexPathForItem:0
-                                               inSection:tabSectionIndex];
+                                               inSection:headerSectionIndex];
   TabGroupHeader* header =
       base::apple::ObjCCast<TabGroupHeader>([self.collectionView
           supplementaryViewForElementKind:UICollectionElementKindSectionHeader

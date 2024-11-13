@@ -1586,4 +1586,39 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
   [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
 }
 
+// Tests renaming a group from the overflow menu in the group view.
+- (void)testRenamingGroupFromGroupView {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // Open the group view.
+  OpenTabGroupAtIndex(0);
+
+  // Display the tab group overflow menu.
+  [[EarlGrey selectElementWithMatcher:TabGroupOverflowMenuButton()]
+      performAction:grey_tap()];
+
+  // Tap the rename group button.
+  [[EarlGrey selectElementWithMatcher:RenameGroupButton()]
+      performAction:grey_tap()];
+
+  // Rename the group.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupCreationView()];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:kGroup1Name flags:0];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_textFieldValue(kGroup1Name)];
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGroupCreationView()];
+
+  // Check that the group name has been updated.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTabGroupViewTitleIdentifier)]
+      assertWithMatcher:grey_accessibilityLabel(kGroup1Name)];
+}
+
 @end
