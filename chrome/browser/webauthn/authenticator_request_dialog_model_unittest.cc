@@ -2715,6 +2715,95 @@ TEST_F(AuthenticatorRequestDialogControllerTest, DeduplicateAccounts) {
   }
 }
 
+// Tests the text on the hybrid button label.
+// Regression test for crbug.com/328698086.
+TEST_F(AuthenticatorRequestDialogControllerTest, HybridButtonLabel) {
+#if BUILDFLAG(IS_WIN)
+  device::FakeWinWebAuthnApi fake_win_webauthn_api;
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(
+      &fake_win_webauthn_api);
+#endif
+  constexpr int kDifferentPhoneOrSk =
+      IDS_WEBAUTHN_PASSKEY_DIFFERENT_PHONE_TABLET_OR_SECURITY_KEY_LABEL;
+  constexpr int kPhoneOrSk =
+      IDS_WEBAUTHN_PASSKEY_PHONE_TABLET_OR_SECURITY_KEY_LABEL;
+  constexpr int kDifferentPhone =
+      IDS_WEBAUTHN_PASSKEY_DIFFERENT_PHONE_OR_TABLET_LABEL;
+  constexpr int kPhone = IDS_WEBAUTHN_PASSKEY_PHONE_OR_TABLET_LABEL;
+  const auto usb = AuthenticatorTransport::kUsbHumanInterfaceDevice;
+  const auto hybrid = AuthenticatorTransport::kHybrid;
+  enum CanDoUSB : bool {
+    kNoUSB = false,
+    kUSB = true,
+  };
+  enum ListedPhones : bool {
+    kNoListedPhones = false,
+    kListedPhones = true,
+  };
+  struct TestCase {
+    ListedPhones listed_phones;
+    CanDoUSB chrome_can_do_usb;
+    BleStatus ble_status;
+    std::optional<AuthenticatorTransport> transport_hint;
+    int expected;
+  } kTestCases[] = {
+      {kNoListedPhones, kUSB, BleStatus::kOn, std::nullopt, kPhoneOrSk},
+      {kNoListedPhones, kUSB, BleStatus::kOn, usb, kPhone},
+      {kNoListedPhones, kUSB, BleStatus::kOn, hybrid, kPhone},
+      {kNoListedPhones, kUSB, BleStatus::kOff, std::nullopt, kPhone},
+      {kNoListedPhones, kNoUSB, BleStatus::kOn, std::nullopt, kPhone},
+      {kListedPhones, kUSB, BleStatus::kOn, std::nullopt, kDifferentPhoneOrSk},
+      {kListedPhones, kUSB, BleStatus::kOn, usb, kDifferentPhone},
+      {kListedPhones, kUSB, BleStatus::kOn, hybrid, kDifferentPhone},
+      {kListedPhones, kUSB, BleStatus::kOff, std::nullopt, kDifferentPhone},
+      {kListedPhones, kNoUSB, BleStatus::kOn, std::nullopt, kDifferentPhone},
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.transport_hint
+                     ? static_cast<int>(*test_case.transport_hint)
+                     : -1);
+    SCOPED_TRACE(static_cast<int>(test_case.ble_status));
+    SCOPED_TRACE(static_cast<int>(test_case.chrome_can_do_usb));
+    SCOPED_TRACE(static_cast<int>(test_case.listed_phones));
+    auto model =
+        base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
+    AuthenticatorRequestDialogController controller(model.get(), main_rfh());
+    TransportAvailabilityInfo transports_info;
+    transports_info.request_type = device::FidoRequestType::kMakeCredential;
+    transports_info.attestation_conveyance_preference =
+        device::AttestationConveyancePreference::kNone;
+    std::vector<std::unique_ptr<device::cablev2::Pairing>> pairings;
+    if (test_case.listed_phones) {
+      pairings.emplace_back(GetPairingFromQR());
+    }
+    controller.set_cable_transport_info(
+        /*extension_is_v2=*/std::nullopt, std::move(pairings),
+        base::DoNothing(), std::nullopt);
+    if (test_case.chrome_can_do_usb) {
+      transports_info.available_transports = {
+          device::FidoTransportProtocol::kHybrid,
+          device::FidoTransportProtocol::kUsbHumanInterfaceDevice};
+    } else {
+      transports_info.available_transports = {
+          device::FidoTransportProtocol::kHybrid};
+    }
+    transports_info.ble_status = test_case.ble_status;
+    content::AuthenticatorRequestClientDelegate::Hints hints;
+    hints.transport = test_case.transport_hint;
+    controller.SetHints(std::move(hints));
+
+    controller.StartFlow(std::move(transports_info));
+    auto hybrid_button_it =
+        base::ranges::find_if(model->mechanisms, [](const auto& m) {
+          return absl::holds_alternative<
+              AuthenticatorRequestDialogModel::Mechanism::AddPhone>(m.type);
+        });
+    ASSERT_NE(hybrid_button_it, model->mechanisms.end());
+    EXPECT_EQ(hybrid_button_it->name,
+              l10n_util::GetStringUTF16(test_case.expected));
+  }
+}
+
 #if BUILDFLAG(IS_MAC)
 
 TEST_F(AuthenticatorRequestDialogControllerTest, Dispatch) {

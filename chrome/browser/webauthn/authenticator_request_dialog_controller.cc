@@ -2299,8 +2299,12 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
        hints_.transport == AuthenticatorTransport::kHybrid);
 
   if (include_add_phone_option) {
+    bool merge_usb_and_hybrid =
+        base::Contains(transport_availability_.available_transports,
+                       AuthenticatorTransport::kUsbHumanInterfaceDevice) &&
+        !include_usb_option;
     std::u16string label = l10n_util::GetStringUTF16(
-        GetHybridButtonLabel(!include_usb_option, specific_phones_listed));
+        GetHybridButtonLabel(merge_usb_and_hybrid, specific_phones_listed));
     model_->mechanisms.emplace_back(
         Mechanism::AddPhone(), label, label, kQrcodeGeneratorIcon,
         base::BindRepeating(
