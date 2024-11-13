@@ -361,7 +361,9 @@ struct NavigateParams {
   // This option forces PWA navigation capturing (which captures some
   // navigations into PWA windows or tabs) off. This is only recommended to be
   // used if the navigation MUST not be captured. See
-  // https://bit.ly/pwa-navigation-capturing.
+  // https://bit.ly/pwa-navigation-capturing for a description about what PWA
+  // navigation capturing does. Setting this field to `true` will disable all of
+  // the behaviors listed in that document.
   bool pwa_navigation_capturing_force_off = false;
 
  private:
