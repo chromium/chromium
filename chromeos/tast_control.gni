@@ -104,6 +104,7 @@ if (!is_chrome_branded) {
   tast_disabled_tests_from_chrome_all += [
     # b/377802615: "runtime variable XXX is missing" error
     "bruschetta.AppVscodeWindowOperations.minimize",
+    "crostini.AppAudacityWindowOperations.minimize_bookworm_clamshell_stable",
     "crostini.AppAudacityWindowOperations.switch_tablet_bookworm_clamshell_stable",
     "crostini.AppEmacsWindowOperations.minimize_bookworm_clamshell_stable",
     "crostini.AppEmacsWindowOperations.switch_tablet_bookworm_clamshell_stable",
@@ -112,6 +113,7 @@ if (!is_chrome_branded) {
     "crostini.AppFirefoxWindowOperations.minimize_bookworm_clamshell_stable",
     "crostini.AppFirefoxWindowOperations.switch_tablet_bookworm_clamshell_stable",
     "crostini.AppGeditFilesharing.bookworm_clamshell_stable",
+    "crostini.AppVscode.bookworm_clamshell_stable",
     "crostini.AppVscodeWindowOperations.switch_tablet_bookworm_clamshell_stable",
     "shimlessrma.SelectComponentsNoneNextCancel.critical",
     "shimlessrma.WelcomeCancel.critical",
