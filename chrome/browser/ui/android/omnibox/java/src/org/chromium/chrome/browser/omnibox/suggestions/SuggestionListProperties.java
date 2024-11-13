@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -62,7 +63,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
             new WritableObjectPropertyKey<>();
 
     /** Whether the dropdown should draw over top of the anchor view. */
-    static final WritableBooleanPropertyKey DRAW_OVER_ANCHOR = new WritableBooleanPropertyKey();
+    static final ReadableBooleanPropertyKey DRAW_OVER_ANCHOR = new ReadableBooleanPropertyKey();
 
     /**
      * Whether the dropdown container should always be visible, even if there's no suggestions to
