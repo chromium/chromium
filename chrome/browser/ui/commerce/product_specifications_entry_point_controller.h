@@ -112,6 +112,7 @@ class ProductSpecificationsEntryPointController
 
   // Show the tab strip entry point for navigation.
   void ShowEntryPointWithTitleForNavigation(
+      std::vector<GURL> urls,
       std::optional<EntryPointInfo> entry_point_info);
 
   // Helper method to show the entry point with title.

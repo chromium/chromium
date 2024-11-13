@@ -20494,6 +20494,29 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Shopping.Compare.ClusterIdenfitiedByClient">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>chrome-shopping-eng@google.com</owner>
+  <summary>
+    Recorded when we identified a set of URLs that users might be doing
+    comparison in using the client-side heuristics, and after checking if these
+    URLs are comparable based on a server call. This event is recorded one per
+    URL for all URLs in the set.
+  </summary>
+  <metric name="ComparableByServer" enum="Boolean">
+    <summary>
+      Whether the URL in this client-identified cluster is also comparable based
+      on the response from querying the server.
+    </summary>
+  </metric>
+  <metric name="CompareEventID">
+    <summary>
+      An ID corresponding to the event that will enable joining all active tabs
+      for this event together.
+    </summary>
+  </metric>
+</event>
+
 <event name="Shopping.Discounts">
   <owner>meiliang@chromium.org</owner>
   <owner>ayman@chromium.org</owner>

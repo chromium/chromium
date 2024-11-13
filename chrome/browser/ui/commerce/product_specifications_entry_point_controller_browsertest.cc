@@ -30,8 +30,10 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -907,6 +909,7 @@ class ProductSpecificationsEntryPointControllerWithServerClusteringBrowserTest
 IN_PROC_BROWSER_TEST_F(
     ProductSpecificationsEntryPointControllerWithServerClusteringBrowserTest,
     TriggerEntryPointWithSelection_ServerClustering) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   // Mock EntryPointInfo returned by ClusterManager.
   std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl1), kProductId1},
                                                {GURL(kTestUrl2), kProductId2}};
@@ -941,6 +944,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
   EXPECT_EQ(1, user_action_tester_.GetActionCount(
                    "Commerce.Compare.CandidateClusterRejected"));
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::Shopping_Compare_ClusterIdenfitiedByClient::kEntryName);
+  EXPECT_EQ(2u, entries.size());
+  // Response from server only contains kTestUrl1.
+  ukm_recorder.ExpectEntrySourceHasUrl(entries[0], GURL(kTestUrl1));
+  ukm_recorder.ExpectEntryMetric(entries[0], "ComparableByServer", true);
+  ukm_recorder.ExpectEntrySourceHasUrl(entries[1], GURL(kTestUrl2));
+  ukm_recorder.ExpectEntryMetric(entries[1], "ComparableByServer", false);
 
   // Test when the server returns that the products are comparable.
   mock_cluster_manager_->SetResponseForGetComparableProducts(info);
@@ -951,6 +962,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
   EXPECT_EQ(1, user_action_tester_.GetActionCount(
                    "Commerce.Compare.CandidateClusterRejected"));
+  entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::Shopping_Compare_ClusterIdenfitiedByClient::kEntryName);
+  EXPECT_EQ(4u, entries.size());
+  // Response from server contains both kTestUrl1 and kTestUrl2.
+  ukm_recorder.ExpectEntrySourceHasUrl(entries[2], GURL(kTestUrl1));
+  ukm_recorder.ExpectEntryMetric(entries[2], "ComparableByServer", true);
+  ukm_recorder.ExpectEntrySourceHasUrl(entries[3], GURL(kTestUrl2));
+  ukm_recorder.ExpectEntryMetric(entries[3], "ComparableByServer", true);
 }
 
 // TODO(https://crbug.com/350021928): Flaky on Linux builders.
@@ -964,6 +983,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ProductSpecificationsEntryPointControllerWithServerClusteringBrowserTest,
     MAYBE_TriggerEntryPointWithNavigation_ServerClustering) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   // Mock EntryPointInfo returned by ClusterManager.
   std::map<GURL, uint64_t> similar_products = {{GURL(kTestUrl2), kProductId2},
                                                {GURL(kTestUrl3), kProductId3},
@@ -979,8 +999,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Current window has to have more than three unique tabs that are similar in
   // order to trigger the entry point for navigation.
-  std::vector<std::string> urls_to_open = {kTestUrl2, kTestUrl3, kTestUrl3,
-                                           kTestUrl1};
+  std::vector<std::string> urls_to_open = {kTestUrl2, kTestUrl3, kTestUrl1};
   for (auto& url : urls_to_open) {
     ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 0, GURL(url),
                                        ui::PAGE_TRANSITION_LINK, true));
@@ -1005,6 +1024,16 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(controller_->entry_point_info_for_testing().has_value());
   EXPECT_EQ(1, user_action_tester_.GetActionCount(
                    "Commerce.Compare.CandidateClusterRejected"));
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::Shopping_Compare_ClusterIdenfitiedByClient::kEntryName);
+  EXPECT_EQ(3u, entries.size());
+  // Response from server only contains kTestUrl2 and kTestUrl3.
+  ukm_recorder.ExpectEntrySourceHasUrl(entries[0], GURL(kTestUrl4));
+  ukm_recorder.ExpectEntryMetric(entries[0], "ComparableByServer", false);
+  ukm_recorder.ExpectEntrySourceHasUrl(entries[1], GURL(kTestUrl3));
+  ukm_recorder.ExpectEntryMetric(entries[1], "ComparableByServer", true);
+  ukm_recorder.ExpectEntrySourceHasUrl(entries[2], GURL(kTestUrl2));
+  ukm_recorder.ExpectEntryMetric(entries[2], "ComparableByServer", true);
 
   // Test when the server returns that the products are comparable.
   mock_cluster_manager_->SetResponseForGetComparableProducts(info);
@@ -1014,4 +1043,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(controller_->entry_point_info_for_testing().has_value());
   EXPECT_EQ(1, user_action_tester_.GetActionCount(
                    "Commerce.Compare.CandidateClusterRejected"));
+  entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::Shopping_Compare_ClusterIdenfitiedByClient::kEntryName);
+  EXPECT_EQ(6u, entries.size());
+  // Response from server contains all URLs in the cluster.
+  ukm_recorder.ExpectEntrySourceHasUrl(entries[3], GURL(kTestUrl4));
+  ukm_recorder.ExpectEntryMetric(entries[3], "ComparableByServer", true);
+  ukm_recorder.ExpectEntrySourceHasUrl(entries[4], GURL(kTestUrl3));
+  ukm_recorder.ExpectEntryMetric(entries[4], "ComparableByServer", true);
+  ukm_recorder.ExpectEntrySourceHasUrl(entries[5], GURL(kTestUrl2));
+  ukm_recorder.ExpectEntryMetric(entries[5], "ComparableByServer", true);
 }
