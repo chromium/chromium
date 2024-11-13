@@ -115,11 +115,6 @@ const UserMetricsAction* GetActionForLocationAndDisposition(
   }
 }
 
-bool IsNodeManaged(bookmarks::ManagedBookmarkService* managed_service,
-                   const BookmarkNode* node) {
-  return managed_service && managed_service->IsNodeManaged(node);
-}
-
 }  // namespace
 
 BookmarkContextMenuController::BookmarkContextMenuController(
@@ -138,20 +133,18 @@ BookmarkContextMenuController::BookmarkContextMenuController(
       opened_from_(opened_from),
       parent_(parent),
       selection_(selection),
-      bookmark_merged_surface_service_(
-          BookmarkMergedSurfaceServiceFactory::GetForProfile(profile)),
-      managed_bookmark_service_(
-          ManagedBookmarkServiceFactory::GetForProfile(profile)) {
+      bookmark_service_(
+          BookmarkMergedSurfaceServiceFactory::GetForProfile(profile)) {
   DCHECK(profile_);
-  DCHECK(bookmark_merged_surface_service_->loaded());
+  DCHECK(bookmark_service_->loaded());
   menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
-  bookmark_merged_surface_service_->bookmark_model()->AddObserver(this);
+  bookmark_service_->bookmark_model()->AddObserver(this);
 
   BuildMenu();
 }
 
 BookmarkContextMenuController::~BookmarkContextMenuController() {
-  bookmark_merged_surface_service_->bookmark_model()->RemoveObserver(this);
+  bookmark_service_->bookmark_model()->RemoveObserver(this);
 }
 
 void BookmarkContextMenuController::BuildMenu() {
@@ -290,10 +283,9 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       base::RecordAction(
           UserMetricsAction("BookmarkBar_ContextMenu_AddToBookmarkBar"));
       for (const bookmarks::BookmarkNode* node : selection_) {
-        bookmark_merged_surface_service_->Move(
-            node, BookmarkParentFolder::BookmarkBarFolder(),
-            bookmark_merged_surface_service_->GetChildrenCount(
-                BookmarkParentFolder::BookmarkBarFolder()));
+        bookmark_service_->Move(node, BookmarkParentFolder::BookmarkBarFolder(),
+                                bookmark_service_->GetChildrenCount(
+                                    BookmarkParentFolder::BookmarkBarFolder()));
       }
       break;
     }
@@ -302,10 +294,9 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       base::RecordAction(
           UserMetricsAction("BookmarkBar_ContextMenu_RemoveFromBookmarkBar"));
       for (const bookmarks::BookmarkNode* node : selection_) {
-        bookmark_merged_surface_service_->Move(
-            node, BookmarkParentFolder::OtherFolder(),
-            bookmark_merged_surface_service_->GetChildrenCount(
-                BookmarkParentFolder::OtherFolder()));
+        bookmark_service_->Move(node, BookmarkParentFolder::OtherFolder(),
+                                bookmark_service_->GetChildrenCount(
+                                    BookmarkParentFolder::OtherFolder()));
       }
       break;
     }
@@ -331,9 +322,9 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       RecordBookmarkRemoved(opened_from_);
 
       bookmarks::ScopedGroupBookmarkActions group_remove(
-          bookmark_merged_surface_service_->bookmark_model());
+          bookmark_service_->bookmark_model());
       for (const bookmarks::BookmarkNode* node : selection_) {
-        bookmark_merged_surface_service_->bookmark_model()->Remove(
+        bookmark_service_->bookmark_model()->Remove(
             node, bookmarks::metrics::BookmarkEditSource::kUser, FROM_HERE);
       }
       selection_.clear();
@@ -419,17 +410,17 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
     }
 
     case IDC_CUT:
-      bookmarks::CopyToClipboard(
-          bookmark_merged_surface_service_->bookmark_model(), selection_, true,
-          bookmarks::metrics::BookmarkEditSource::kUser,
-          profile_->IsOffTheRecord());
+      bookmarks::CopyToClipboard(bookmark_service_->bookmark_model(),
+                                 selection_, true,
+                                 bookmarks::metrics::BookmarkEditSource::kUser,
+                                 profile_->IsOffTheRecord());
       break;
 
     case IDC_COPY:
-      bookmarks::CopyToClipboard(
-          bookmark_merged_surface_service_->bookmark_model(), selection_, false,
-          bookmarks::metrics::BookmarkEditSource::kUser,
-          profile_->IsOffTheRecord());
+      bookmarks::CopyToClipboard(bookmark_service_->bookmark_model(),
+                                 selection_, false,
+                                 bookmarks::metrics::BookmarkEditSource::kUser,
+                                 profile_->IsOffTheRecord());
       break;
 
     case IDC_PASTE: {
@@ -442,9 +433,8 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
         return;
       }
 
-      bookmarks::PasteFromClipboard(
-          bookmark_merged_surface_service_->bookmark_model(), paste_target,
-          index);
+      bookmarks::PasteFromClipboard(bookmark_service_->bookmark_model(),
+                                    paste_target, index);
       break;
     }
 
@@ -511,13 +501,14 @@ bool BookmarkContextMenuController::IsCommandIdChecked(int command_id) const {
 bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
   PrefService* prefs = profile_->GetPrefs();
 
-  // TODO(b/369304373): Update to handle `selection_` containing 2 permanent
-  // nodes.
-  bool is_root_node =
-      selection_.size() == 1 && selection_[0]->is_permanent_node();
+  bool is_root_node = base::ranges::any_of(
+      selection_,
+      [](const BookmarkNode* node) { return node->is_permanent_node(); });
   bool can_edit =
       prefs->GetBoolean(bookmarks::prefs::kEditBookmarksEnabled) &&
-      chrome::CanAllBeEditedByUser(managed_bookmark_service_, selection_);
+      base::ranges::all_of(selection_, [&](const BookmarkNode* node) {
+        return !bookmark_service_->IsNodeManaged(node);
+      });
   policy::IncognitoModeAvailability incognito_avail =
       IncognitoModePrefs::GetAvailability(prefs);
 
@@ -544,21 +535,19 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
     case IDC_BOOKMARK_BAR_ADD_TO_BOOKMARKS_BAR:
       for (const bookmarks::BookmarkNode* node : selection_) {
         if (node->is_permanent_node() ||
-            bookmark_merged_surface_service_->IsPermanentNodeOfType(
-                node->parent(), PermanentFolderType::kBookmarkBarNode)) {
+            node->parent()->type() == BookmarkNode::BOOKMARK_BAR) {
           return false;
         }
       }
-      return can_edit && !IsNodeManaged(managed_bookmark_service_, parent_);
+      return can_edit && !bookmark_service_->IsNodeManaged(parent_);
     case IDC_BOOKMARK_BAR_REMOVE_FROM_BOOKMARKS_BAR:
       for (const bookmarks::BookmarkNode* node : selection_) {
         if (node->is_permanent_node() ||
-            !bookmark_merged_surface_service_->IsPermanentNodeOfType(
-                node->parent(), PermanentFolderType::kBookmarkBarNode)) {
+            node->parent()->type() != BookmarkNode::BOOKMARK_BAR) {
           return false;
         }
       }
-      return can_edit && !IsNodeManaged(managed_bookmark_service_, parent_);
+      return can_edit && !bookmark_service_->IsNodeManaged(parent_);
 
     case IDC_BOOKMARK_BAR_UNDO:
       return can_edit && BookmarkUndoServiceFactory::GetForProfile(profile_)
@@ -575,7 +564,7 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
 
     case IDC_BOOKMARK_BAR_NEW_FOLDER:
     case IDC_BOOKMARK_BAR_ADD_NEW_BOOKMARK:
-      return can_edit && !IsNodeManaged(managed_bookmark_service_, parent_) &&
+      return can_edit && !bookmark_service_->IsNodeManaged(parent_) &&
              bookmarks::GetParentForNewNodes(parent_, selection_, nullptr);
 
     case IDC_BOOKMARK_BAR_ALWAYS_SHOW:
@@ -595,10 +584,9 @@ bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
       return can_edit &&
              ((!selection_.empty() &&
                bookmarks::CanPasteFromClipboard(
-                   bookmark_merged_surface_service_->bookmark_model(),
-                   selection_[0])) ||
+                   bookmark_service_->bookmark_model(), selection_[0])) ||
               bookmarks::CanPasteFromClipboard(
-                  bookmark_merged_surface_service_->bookmark_model(), parent_));
+                  bookmark_service_->bookmark_model(), parent_));
   }
   return true;
 }
@@ -607,7 +595,8 @@ bool BookmarkContextMenuController::IsCommandIdVisible(int command_id) const {
   if (command_id == IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS) {
     // The option to hide the Managed Bookmarks folder is only available if
     // there are any managed bookmarks configured at all.
-    return !managed_bookmark_service_->managed_node()->children().empty();
+    return bookmark_service_->GetChildrenCount(
+        BookmarkParentFolder::ManagedFolder());
   }
 
   return true;

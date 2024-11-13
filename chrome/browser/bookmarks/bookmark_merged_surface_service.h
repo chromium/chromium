@@ -89,11 +89,6 @@ class BookmarkMergedSurfaceService : public KeyedService {
   BookmarkMergedSurfaceService& operator=(const BookmarkMergedSurfaceService&) =
       delete;
 
-  // Returns true if `node` is of equivalent type to permanent `folder`.
-  static bool IsPermanentNodeOfType(
-      const bookmarks::BookmarkNode* node,
-      BookmarkParentFolder::PermanentFolderType folder);
-
   // Returns underlying nodes in `folder`. This is either:
   // - a single bookmark folder node or
   // - two permanent folder nodes representing local and account bookmark nodes

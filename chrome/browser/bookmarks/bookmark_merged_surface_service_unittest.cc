@@ -167,29 +167,6 @@ TEST_F(BookmarkMergedSurfaceServiceTest, ManagedNodeNull) {
             0u);
 }
 
-TEST_F(BookmarkMergedSurfaceServiceTest, IsPermanentNodeOfType) {
-  LoadBookmarkModelWithManaged(/*managed_bookmarks_size=*/1);
-
-  EXPECT_TRUE(service().IsPermanentNodeOfType(
-      model().bookmark_bar_node(), PermanentFolderType::kBookmarkBarNode));
-  EXPECT_TRUE(service().IsPermanentNodeOfType(model().other_node(),
-                                              PermanentFolderType::kOtherNode));
-  EXPECT_TRUE(BookmarkMergedSurfaceService::IsPermanentNodeOfType(
-      model().mobile_node(), PermanentFolderType::kMobileNode));
-  EXPECT_TRUE(BookmarkMergedSurfaceService::IsPermanentNodeOfType(
-      managed_node(), PermanentFolderType::kManagedNode));
-
-  EXPECT_FALSE(BookmarkMergedSurfaceService::IsPermanentNodeOfType(
-      model().other_node(), PermanentFolderType::kMobileNode));
-
-  AddNodesFromModelString(&model(), model().other_node(), "1 2 3 ");
-  EXPECT_EQ(model().other_node()->children().size(), 3u);
-  for (const auto& node : model().other_node()->children()) {
-    EXPECT_FALSE(BookmarkMergedSurfaceService::IsPermanentNodeOfType(
-        node.get(), PermanentFolderType::kOtherNode));
-  }
-}
-
 TEST_F(BookmarkMergedSurfaceServiceTest, GetIndexOf) {
   LoadBookmarkModelWithManaged(/*managed_bookmarks_size=*/3);
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),

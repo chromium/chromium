@@ -153,13 +153,6 @@ BookmarkMergedSurfaceService::BookmarkMergedSurfaceService(
 
 BookmarkMergedSurfaceService::~BookmarkMergedSurfaceService() = default;
 
-// static
-bool BookmarkMergedSurfaceService::IsPermanentNodeOfType(
-    const BookmarkNode* node,
-    PermanentFolderType folder) {
-  return GetIfPermanentFolderType(node) == folder;
-}
-
 std::vector<const BookmarkNode*>
 BookmarkMergedSurfaceService::GetUnderlyingNodes(
     const BookmarkParentFolder& folder) const {
