@@ -158,6 +158,8 @@ const char* AnimationAbortReasonToString(AnimationAbortReason abort_reason) {
       return "kAnimationFinished";
     case AnimationAbortReason::kPrimaryMainFrameRenderProcessDestroyed:
       return "kPrimaryMainFrameRenderProcessDestroyed";
+    case AnimationAbortReason::kSameDocNavRestarts:
+      return "kSameDocNavRestarts";
   }
   NOTREACHED();
 }
@@ -840,6 +842,12 @@ void BackForwardTransitionAnimator::DidFinishNavigation(
   // ignored completely. We should decide what to do before launch.
   if (!tracked_request_ ||
       tracked_request_->navigation_id != navigation_handle->GetNavigationId()) {
+    return;
+  }
+
+  if (static_cast<NavigationRequest*>(navigation_handle)
+          ->was_reset_for_cross_document_restart()) {
+    AbortAnimation(AnimationAbortReason::kSameDocNavRestarts);
     return;
   }
 

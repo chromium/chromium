@@ -3109,6 +3109,10 @@ void NavigationRequest::ResetForCrossDocumentRestart() {
     navigation_handle_proxy_->DidFinish();
 #endif
 
+  // Set this bit so the observers on `DidFinishNavigation()` are also aware of
+  // the restart.
+  was_reset_for_cross_document_restart_ = true;
+
   // It is necessary to call DidFinishNavigation before resetting
   // |navigation_handle_proxy_|. See https://crbug.com/958396.
   if (IsNavigationStarted()) {

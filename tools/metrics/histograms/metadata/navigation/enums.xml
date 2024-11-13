@@ -55,6 +55,7 @@ chromium-metrics-reviews@google.com.
   <int value="18" label="Physical size changed mid-animation"/>
   <int value="19" label="Animation successfully finishes"/>
   <int value="20" label="Primary Main Frame Render Process Is Destroyed"/>
+  <int value="21" label="Same-doc navigation restarts as cross-doc"/>
 </enum>
 
 <enum name="AutomaticBeaconOutcome">
