@@ -1499,7 +1499,7 @@ Canvas2DLayerBridge* HTMLCanvasElement::GetOrCreateCanvas2DLayerBridge() {
                             ? RasterModeHint::kPreferGPU
                             : RasterModeHint::kPreferCPU;
   SetPreferred2DRasterMode(hint);
-  canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(this);
+  canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(*this);
 
   UpdateMemoryUsage();
 
@@ -1517,7 +1517,7 @@ void HTMLCanvasElement::SetResourceProviderForTesting(
   SetIntegralAttribute(html_names::kWidthAttr, size.width());
   SetIntegralAttribute(html_names::kHeightAttr, size.height());
   CanvasResourceHost::SetSize(size);
-  canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(this);
+  canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(*this);
   ReplaceResourceProvider(std::move(provider));
 }
 
@@ -1885,7 +1885,7 @@ void HTMLCanvasElement::ReplaceExisting2dLayerBridge(
       old_provider->ReleaseRecorder();
   ResetLayer();
   ReplaceResourceProvider(nullptr);
-  canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(this);
+  canvas2d_bridge_ = std::make_unique<Canvas2DLayerBridge>(*this);
 
   if (new_provider_for_testing) {
     ReplaceResourceProvider(std::move(new_provider_for_testing));

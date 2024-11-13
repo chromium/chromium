@@ -26,7 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_2D_LAYER_BRIDGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_2D_LAYER_BRIDGE_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -37,7 +37,7 @@ class CanvasResourceHost;
 
 class PLATFORM_EXPORT Canvas2DLayerBridge {
  public:
-  explicit Canvas2DLayerBridge(CanvasResourceHost* resource_host);
+  explicit Canvas2DLayerBridge(CanvasResourceHost& resource_host);
   Canvas2DLayerBridge(const Canvas2DLayerBridge&) = delete;
   Canvas2DLayerBridge& operator=(const Canvas2DLayerBridge&) = delete;
 
@@ -66,7 +66,7 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
 
   bool hibernation_scheduled_ = false;
 
-  raw_ptr<CanvasResourceHost> resource_host_;
+  const base::raw_ref<CanvasResourceHost> resource_host_;
 
   base::WeakPtrFactory<Canvas2DLayerBridge> weak_ptr_factory_{this};
 };

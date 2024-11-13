@@ -60,11 +60,8 @@ gpu::ContextSupport* GetContextSupport() {
 
 }  // namespace
 
-Canvas2DLayerBridge::Canvas2DLayerBridge(CanvasResourceHost* resource_host)
-    : hibernation_handler_(CHECK_DEREF(resource_host)),
-      resource_host_(resource_host) {
-  CHECK(resource_host_);
-}
+Canvas2DLayerBridge::Canvas2DLayerBridge(CanvasResourceHost& resource_host)
+    : hibernation_handler_(resource_host), resource_host_(resource_host) {}
 
 Canvas2DLayerBridge::~Canvas2DLayerBridge() {
   if (hibernation_handler_.IsHibernating()) {
