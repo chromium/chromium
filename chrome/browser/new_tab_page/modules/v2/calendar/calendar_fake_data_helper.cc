@@ -36,8 +36,10 @@ ntp::calendar::mojom::CalendarEventPtr GetFakeEvent(
     ntp::calendar::mojom::AttachmentPtr attachment =
         ntp::calendar::mojom::Attachment::New();
     attachment->title = "Attachment " + base::NumberToString(i);
-    attachment->resource_url =
-        GURL("https://foo.com/attachment" + base::NumberToString(i));
+    if (calendar_type != CalendarType::OUTLOOK_CALENDAR) {
+      attachment->resource_url =
+          GURL("https://foo.com/attachment" + base::NumberToString(i));
+    }
     attachment->icon_url = calendar_type == CalendarType::GOOGLE_CALENDAR
                                ? GURL(kGoogleCalendarDriveIconUrl)
                                : GURL(kOutlookCalendarDocIconUrl);

@@ -11,8 +11,8 @@ import "url/mojom/url.mojom";
 struct Attachment {
   // Name of attachment.
   string title;
-  // Url to attachment.
-  url.mojom.Url resource_url;
+  // Url to attachment, if it exists.
+  url.mojom.Url? resource_url;
   // Url to attachment icon.
   url.mojom.Url icon_url;
 };

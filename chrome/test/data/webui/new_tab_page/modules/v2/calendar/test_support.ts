@@ -14,14 +14,17 @@ export function toTime(time: Date): Time {
   };
 }
 
-export function createAttachments(num: number): Attachment[] {
+export function createAttachments(
+    num: number, overrides?: Partial<Attachment>): Attachment[] {
   const attachments: Attachment[] = [];
   for (let i = 0; i < num; i++) {
-    attachments.push({
-      title: `Attachment ${i}`,
-      iconUrl: {url: `https://foo.com/attachment${i}`},
-      resourceUrl: {url: `https://foo.com/attachmet${i}`},
-    });
+    attachments.push(Object.assign(
+        {
+          title: `Attachment ${i}`,
+          iconUrl: {url: `https://foo.com/attachment${i}`},
+          resourceUrl: {url: `https://foo.com/attachmet${i}`},
+        },
+        overrides));
   }
   return attachments;
 }
