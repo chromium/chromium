@@ -95,8 +95,10 @@ class CORE_EXPORT PseudoElement : public Element {
     STACK_ALLOCATED();
 
    public:
-    AttachLayoutTreeScope(PseudoElement*);
+    AttachLayoutTreeScope(PseudoElement*, const AttachContext&);
     ~AttachLayoutTreeScope();
+
+    void OverrideComputedStyle(const ComputedStyle& new_style);
 
    private:
     PseudoElement* element_;

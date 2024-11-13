@@ -160,8 +160,8 @@ bool ScrollMarkerGroupPseudoElement::UpdateSelectedScrollMarker(
     if (!target_box) {
       continue;
     }
-    const LayoutBox* scroll_marker_box = scroll_marker->GetLayoutBox();
-    CHECK(scroll_marker_box);
+    const LayoutObject* scroll_marker_object = scroll_marker->GetLayoutObject();
+    CHECK(scroll_marker_object);
     PhysicalBoxStrut scroll_margin =
         target_box->Style() ? target_box->Style()->ScrollMarginStrut()
                             : PhysicalBoxStrut();
@@ -173,7 +173,7 @@ bool ScrollMarkerGroupPseudoElement::UpdateSelectedScrollMarker(
             ? kIgnoreStickyOffset
             : 0;
     PhysicalRect rect_to_scroll = scroller->AbsoluteToLocalRect(
-        scroll_marker_box->AbsoluteBoundingBoxRectForScrollIntoView(), flag);
+        scroll_marker_object->AbsoluteBoundingBoxRectForScrollIntoView(), flag);
     rect_to_scroll.Expand(scroll_margin);
     ScrollOffset target_scroll_offset =
         scroll_into_view_util::GetScrollOffsetToExpose(

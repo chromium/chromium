@@ -74,6 +74,18 @@
 
 namespace blink {
 
+namespace {
+
+// Return true if this block container allows inline children. If false is
+// returned, and there are inline children, an anonymous block wrapper needs to
+// be created.
+bool AllowsInlineChildren(const LayoutBlockFlow& block) {
+  return !IsA<LayoutMultiColumnFlowThread>(block) &&
+         !block.IsScrollMarkerGroup();
+}
+
+}  // anonymous namespace
+
 struct SameSizeAsLayoutBlockFlow : public LayoutBlock {
   Member<void*> member;
   Member<void*> inline_node_data;
@@ -82,7 +94,9 @@ struct SameSizeAsLayoutBlockFlow : public LayoutBlock {
 ASSERT_SIZE(LayoutBlockFlow, SameSizeAsLayoutBlockFlow);
 
 LayoutBlockFlow::LayoutBlockFlow(ContainerNode* node) : LayoutBlock(node) {
-  SetChildrenInline(true);
+  if (AllowsInlineChildren(*this)) {
+    SetChildrenInline(true);
+  }
 }
 
 LayoutBlockFlow::~LayoutBlockFlow() = default;
@@ -333,13 +347,7 @@ static bool AllowsCollapseAnonymousBlockChild(const LayoutBlockFlow& parent,
   if (child.IsViewTransitionRoot()) {
     return false;
   }
-  if (IsA<LayoutMultiColumnFlowThread>(parent) &&
-      parent.Parent()->IsLayoutNGObject() && child.ChildrenInline()) {
-    // The test[1] reaches here.
-    // [1] "fast/multicol/dynamic/remove-spanner-in-content.html"
-    return false;
-  }
-  return true;
+  return !child.ChildrenInline() || AllowsInlineChildren(parent);
 }
 
 void LayoutBlockFlow::CollapseAnonymousBlockChild(LayoutBlockFlow* child) {
@@ -423,22 +431,16 @@ void LayoutBlockFlow::ReparentPrecedingFloatingOrOutOfFlowSiblings() {
   }
 }
 
-static bool AllowsInlineChildren(const LayoutBlockFlow& block_flow) {
-  // Collapsing away anonymous wrappers isn't relevant for the children of
-  // anonymous blocks.
-  if (block_flow.IsAnonymousBlock()) {
-    return false;
-  }
-  if (IsA<LayoutMultiColumnFlowThread>(block_flow) &&
-      block_flow.Parent()->IsLayoutNGObject())
-    return false;
-  return true;
-}
-
 void LayoutBlockFlow::MakeChildrenInlineIfPossible() {
   NOT_DESTROYED();
-  if (!AllowsInlineChildren(*this))
+  if (!AllowsInlineChildren(*this)) {
     return;
+  }
+  // Collapsing away anonymous wrappers isn't relevant for the children of
+  // anonymous blocks.
+  if (IsAnonymousBlock()) {
+    return;
+  }
 
   HeapVector<Member<LayoutBlockFlow>, 3> blocks_to_remove;
   for (LayoutObject* child = FirstChild(); child;

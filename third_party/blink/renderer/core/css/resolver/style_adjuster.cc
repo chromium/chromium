@@ -681,10 +681,11 @@ static bool IsCanvasPlacedElement(const Element* element) {
   return false;
 }
 
-static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
-                                  const ComputedStyle& layout_parent_style,
-                                  const Element* element,
-                                  Document* document) {
+void StyleAdjuster::AdjustStyleForDisplay(
+    ComputedStyleBuilder& builder,
+    const ComputedStyle& layout_parent_style,
+    const Element* element,
+    Document* document) {
   bool is_canvas_placed_element = IsCanvasPlacedElement(element);
 
   if ((layout_parent_style.BlockifiesChildren() && !HostIsInputFile(element)) ||
@@ -727,12 +728,6 @@ static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
       builder.SetIsInInlinifyingDisplay();
       builder.SetDisplay(EquivalentInlineDisplay(builder.Display()));
     }
-  }
-
-  // TODO(332396355): Remove temporary blockifing of ::scroll-marker pseudo
-  // elements.
-  if (builder.StyleType() == kPseudoIdScrollMarker) {
-    builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
   }
 
   if (builder.Display() == EDisplay::kBlock) {

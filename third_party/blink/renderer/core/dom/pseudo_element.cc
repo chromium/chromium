@@ -29,6 +29,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
+#include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
@@ -339,12 +340,20 @@ void PseudoElement::Dispose() {
 }
 
 PseudoElement::AttachLayoutTreeScope::AttachLayoutTreeScope(
-    PseudoElement* element)
+    PseudoElement* element,
+    const AttachContext& attach_context)
     : element_(element) {
   if (const ComputedStyle* style = element->GetComputedStyle()) {
     if (style->Display() == EDisplay::kContents) {
-      original_style_ = style;
-      element->SetComputedStyle(element->LayoutStyleForDisplayContents(*style));
+      OverrideComputedStyle(*element->LayoutStyleForDisplayContents(*style));
+    } else if (element->IsScrollMarkerPseudoElement()) {
+      ComputedStyleBuilder builder(*style);
+      // The layout parent of a scroll marker is the scroll marker group, not
+      // the originating element of the scroll marker.
+      StyleAdjuster::AdjustStyleForDisplay(builder,
+                                           attach_context.parent->StyleRef(),
+                                           element, &element->GetDocument());
+      OverrideComputedStyle(*builder.TakeStyle());
     }
   }
 }
@@ -352,6 +361,13 @@ PseudoElement::AttachLayoutTreeScope::AttachLayoutTreeScope(
 PseudoElement::AttachLayoutTreeScope::~AttachLayoutTreeScope() {
   if (original_style_)
     element_->SetComputedStyle(std::move(original_style_));
+}
+
+void PseudoElement::AttachLayoutTreeScope::OverrideComputedStyle(
+    const ComputedStyle& new_style) {
+  const ComputedStyle* style = element_->GetComputedStyle();
+  original_style_ = style;
+  element_->SetComputedStyle(&new_style);
 }
 
 void PseudoElement::AttachLayoutTree(AttachContext& context) {
@@ -375,7 +391,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
   }
 
   {
-    AttachLayoutTreeScope scope(this);
+    AttachLayoutTreeScope scope(this, context);
     Element::AttachLayoutTree(context);
   }
   LayoutObject* layout_object = GetLayoutObject();
