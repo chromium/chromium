@@ -5700,7 +5700,7 @@
   },
   {
     "name": "legacy-tech-report-enable-cookie-issue-reports",
-    "owners": ["sandormajor@google.com", "zmin@chromium.org", "parastoog@chromium.org"],
+    "owners": ["sandormajor@chromium.org", "zmin@chromium.org", "parastoog@chromium.org"],
     "expiry_milestone": 129
   },
   {
@@ -6828,7 +6828,7 @@
   },
   {
     "name": "partitioned-popins",
-    "owners": [ "arichiv@chromium.org", "johannhof@chromium.org", "sandormajor@google.com" ],
+    "owners": [ "arichiv@chromium.org", "johannhof@chromium.org", "sandormajor@chromium.org" ],
     "expiry_milestone": 138
   },
   {

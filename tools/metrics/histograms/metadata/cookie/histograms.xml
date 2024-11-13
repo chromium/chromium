@@ -342,7 +342,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Cookie.Experimental.CookiesAllowedForUrlsUsage"
     enum="CookiesAllowedForUrlsUsage" expires_after="2025-04-27">
   <owner>dylancutler@google.com</owner>
-  <owner>sandormajor@google.com</owner>
+  <owner>sandormajor@chromium.org</owner>
   <summary>
     Records what types of rules are present in the CookiesAllowedForUrls policy.
     This policy supports content settings that only apply to the cookie's site,
