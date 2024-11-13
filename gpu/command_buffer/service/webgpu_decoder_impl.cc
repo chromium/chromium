@@ -375,6 +375,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   WGPUBool AdapterHasFeatureImpl(WGPUAdapter adapter, WGPUFeatureName feature);
   size_t AdapterEnumerateFeaturesImpl(WGPUAdapter adapter,
                                       WGPUFeatureName* features);
+  void AdapterGetFeaturesImpl(WGPUAdapter adapter,
+                              WGPUSupportedFeatures* features_out);
   template <typename CallbackInfo>
   WGPUFuture RequestDeviceImpl(WGPUAdapter adapter,
                                const WGPUDeviceDescriptor* descriptor,
@@ -1189,6 +1191,17 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
     return parent_decoder->AdapterEnumerateFeaturesImpl(
         std::forward<decltype(args)>(args)...);
   };
+  wire_procs.adapterGetFeatures = [](auto... args) {
+    DCHECK(parent_decoder);
+    return parent_decoder->AdapterGetFeaturesImpl(
+        std::forward<decltype(args)>(args)...);
+  };
+  wire_procs.supportedFeaturesFreeMembers =
+      [](WGPUSupportedFeatures supported_features) -> void {
+    // We don't need any state so we don't need the parent decoder and can free
+    // immediately.
+    delete[] supported_features.features;
+  };
   wire_procs.adapterRequestDevice2 = [](auto... args) {
     DCHECK(parent_decoder);
     return parent_decoder->RequestDeviceImpl(
@@ -1401,6 +1414,30 @@ size_t WebGPUDecoderImpl::AdapterEnumerateFeaturesImpl(
     memcpy(features_out, features.data(), sizeof(wgpu::FeatureName) * count);
   }
   return count;
+}
+
+void WebGPUDecoderImpl::AdapterGetFeaturesImpl(
+    WGPUAdapter adapter,
+    WGPUSupportedFeatures* features_out) {
+  wgpu::Adapter adapter_obj(adapter);
+  wgpu::SupportedFeatures supported_features;
+  adapter_obj.GetFeatures(&supported_features);
+
+  std::vector<wgpu::FeatureName> exposed_features;
+  for (uint32_t i = 0; i < supported_features.featureCount; ++i) {
+    wgpu::FeatureName feature = supported_features.features[i];
+    if (IsFeatureExposed(feature)) {
+      exposed_features.push_back(feature);
+    };
+  }
+  const size_t count = exposed_features.size();
+  WGPUFeatureName* features = new WGPUFeatureName[count];
+  uint32_t index = 0;
+  for (wgpu::FeatureName feature : exposed_features) {
+    features[index++] = static_cast<WGPUFeatureName>(feature);
+  }
+  features_out->featureCount = count;
+  features_out->features = features;
 }
 
 template <typename CallbackInfo>

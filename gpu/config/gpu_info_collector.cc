@@ -832,6 +832,7 @@ bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
   return true;
 }
 
+// TODO(crbug.com/351564777): should be UNSAFE_BUFFER_USAGE
 void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
                      bool collect_metrics,
                      std::vector<std::string>* dawn_info_list) {
@@ -956,10 +957,13 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
         // Get supported features under required adapter toggles if Dawn
         // available, or default toggles otherwise.
         dawn_info_list->push_back("[Adapter Supported Features]");
-        std::vector<wgpu::FeatureName> features(
-            adapter.EnumerateFeatures(nullptr));
-        adapter.EnumerateFeatures(features.data());
-        for (wgpu::FeatureName f : features) {
+        wgpu::SupportedFeatures supportedFeatures;
+        adapter.GetFeatures(&supportedFeatures);
+        // SAFETY: Required from caller
+        const auto features =
+            UNSAFE_BUFFERS(base::span<const wgpu::FeatureName>(
+                supportedFeatures.features, supportedFeatures.featureCount));
+        for (const auto& f : features) {
           dawn_info_list->push_back(dawn::native::GetFeatureInfo(f)->name);
         }
 

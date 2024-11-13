@@ -89,19 +89,18 @@ std::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(wgpu::FeatureName f) {
 
 namespace {
 
+// TODO(crbug.com/351564777): should be UNSAFE_BUFFER_USAGE
 GPUSupportedFeatures* MakeFeatureNameSet(wgpu::Adapter adapter,
                                          ExecutionContext* execution_context) {
   GPUSupportedFeatures* features = MakeGarbageCollected<GPUSupportedFeatures>();
   DCHECK(features->FeatureNameSet().empty());
 
-  size_t feature_count = adapter.EnumerateFeatures(nullptr);
-  DCHECK(feature_count <= std::numeric_limits<wtf_size_t>::max());
-
-  Vector<wgpu::FeatureName> feature_names(
-      static_cast<wtf_size_t>(feature_count));
-  adapter.EnumerateFeatures(feature_names.data());
-
-  for (wgpu::FeatureName f : feature_names) {
+  wgpu::SupportedFeatures supported_features;
+  adapter.GetFeatures(&supported_features);
+  // SAFETY: Required from caller
+  const auto features_span = UNSAFE_BUFFERS(base::span<const wgpu::FeatureName>(
+      supported_features.features, supported_features.featureCount));
+  for (const auto& f : features_span) {
     auto feature_name_enum_optional = ToV8FeatureNameEnum(f);
     if (feature_name_enum_optional) {
       V8GPUFeatureName::Enum feature_name_enum =
