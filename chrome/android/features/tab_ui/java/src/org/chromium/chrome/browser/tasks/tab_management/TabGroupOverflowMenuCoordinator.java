@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
@@ -30,9 +29,8 @@ import org.chromium.base.LifetimeAssert;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
-import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -198,36 +196,29 @@ public abstract class TabGroupOverflowMenuCoordinator {
     private final @LayoutRes int mMenuLayout;
     private final OnItemClickedCallback mOnItemClickedCallback;
     private final Supplier<TabModel> mTabModelSupplier;
-    private final boolean mIsTabGroupSyncEnabled;
-    private final @Nullable IdentityManager mIdentityManager;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
-    private final @Nullable DataSharingService mDataSharingService;
+    private final @NonNull CollaborationService mCollaborationService;
     private @Nullable OverflowMenuHolder mMenuHolder;
 
     /**
      * @param menuLayout The menu layout to use.
      * @param onItemClickedCallback A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
-     * @param isTabGroupSyncEnabled Whether to tab group sync is enabled.
-     * @param identityManager Used for checking the current account.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
-     * @param dataSharingService Used for checking the user is the owner of a group.
+     * @param collaborationService Used for checking the user is the owner of a group.
      */
     protected TabGroupOverflowMenuCoordinator(
             @LayoutRes int menuLayout,
             OnItemClickedCallback onItemClickedCallback,
             Supplier<TabModel> tabModelSupplier,
-            boolean isTabGroupSyncEnabled,
-            @Nullable IdentityManager identityManager,
             @Nullable TabGroupSyncService tabGroupSyncService,
-            @Nullable DataSharingService dataSharingService) {
+            @NonNull CollaborationService collaborationService) {
         mMenuLayout = menuLayout;
         mOnItemClickedCallback = onItemClickedCallback;
         mTabModelSupplier = tabModelSupplier;
-        mIsTabGroupSyncEnabled = isTabGroupSyncEnabled;
-        mIdentityManager = identityManager;
         mTabGroupSyncService = tabGroupSyncService;
-        mDataSharingService = dataSharingService;
+        assert collaborationService != null;
+        mCollaborationService = collaborationService;
     }
 
     /**
@@ -258,11 +249,10 @@ public abstract class TabGroupOverflowMenuCoordinator {
      * Concrete class required to define what to add for collaborations.
      *
      * @param itemList The {@link ModelList} to populate.
-     * @param identityManager Used for checking the current account.
-     * @param outcome The outcome of fetching collaboration data.
+     * @param memberRole The role of the current user in the group.
      */
     protected abstract void buildCollaborationMenuItems(
-            ModelList itemList, IdentityManager identityManager, GroupDataOrFailureOutcome outcome);
+            ModelList itemList, @MemberRole int memberRole);
 
     /** Concrete class required to get a specific menu width for the menu pop up window. */
     protected abstract @DimenRes int getMenuWidth();
@@ -353,14 +343,13 @@ public abstract class TabGroupOverflowMenuCoordinator {
     private void configureMenuItems(
             ModelList modelList, boolean isIncognito, @Nullable String collaborationId) {
         boolean hasCollaborationData =
-                !TextUtils.isEmpty(collaborationId)
-                        && mIdentityManager != null
-                        && mDataSharingService != null;
-        buildMenuActionItems(modelList, isIncognito, mIsTabGroupSyncEnabled, hasCollaborationData);
+                TabShareUtils.isCollaborationIdValid(collaborationId)
+                        && mCollaborationService.getServiceStatus().isAllowedToJoin();
+        buildMenuActionItems(
+                modelList, isIncognito, mTabGroupSyncService != null, hasCollaborationData);
         if (hasCollaborationData) {
-            mDataSharingService.readGroup(
-                    collaborationId,
-                    (outcome) -> buildCollaborationMenuItems(modelList, mIdentityManager, outcome));
+            buildCollaborationMenuItems(
+                    modelList, mCollaborationService.getCurrentUserRoleForGroup(collaborationId));
         }
     }
 

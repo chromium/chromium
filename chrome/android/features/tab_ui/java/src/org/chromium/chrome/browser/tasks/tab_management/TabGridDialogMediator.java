@@ -29,18 +29,17 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
@@ -67,13 +66,13 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.messaging.CollaborationEvent;
 import org.chromium.components.collaboration.messaging.EitherId.EitherGroupId;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService.PersistentMessageObserver;
 import org.chromium.components.collaboration.messaging.PersistentMessage;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -207,6 +206,7 @@ public class TabGridDialogMediator
     private final Profile mOriginalProfile;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final @Nullable DataSharingService mDataSharingService;
+    private final @NonNull CollaborationService mCollaborationService;
     private final @Nullable TransitiveSharedGroupObserver mTransitiveSharedGroupObserver;
     private final @Nullable MessagingBackendService mMessagingBackendService;
     private final @Nullable MessagingBackendService.PersistentMessageObserver
@@ -266,42 +266,37 @@ public class TabGridDialogMediator
                         .getProfile()
                         .getOriginalProfile();
         mDesktopWindowStateManager = desktopWindowStateManager;
-        if (TabGroupSyncFeatures.isTabGroupSyncEnabled(mOriginalProfile)) {
-            mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mOriginalProfile);
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
-                mDataSharingService = DataSharingServiceFactory.getForProfile(mOriginalProfile);
-                mTransitiveSharedGroupObserver =
-                        new TransitiveSharedGroupObserver(
-                                mTabGroupSyncService, mDataSharingService);
-                mTransitiveSharedGroupObserver
-                        .getGroupSharedStateSupplier()
-                        .addObserver(mOnGroupSharedStateChanged);
-                mTransitiveSharedGroupObserver
-                        .getCollaborationIdSupplier()
-                        .addObserver(mOnCollaborationIdChanged);
-                mMessagingBackendService =
-                        MessagingBackendServiceFactory.getForProfile(mOriginalProfile);
-                mPersistentMessageObserver =
-                        new PersistentMessageObserver() {
-                            @Override
-                            public void displayPersistentMessage(PersistentMessage message) {
-                                updateOnMatch(message);
-                            }
+        mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mOriginalProfile);
+        mCollaborationService = CollaborationServiceFactory.getForProfile(mOriginalProfile);
+        // TODO(crbug.com/377366460): This checks only the flag and might break for join only cases.
+        // Figure out what to do here.
+        if (mTabGroupSyncService != null
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
+            mDataSharingService = DataSharingServiceFactory.getForProfile(mOriginalProfile);
+            mTransitiveSharedGroupObserver =
+                    new TransitiveSharedGroupObserver(mTabGroupSyncService, mDataSharingService);
+            mTransitiveSharedGroupObserver
+                    .getGroupSharedStateSupplier()
+                    .addObserver(mOnGroupSharedStateChanged);
+            mTransitiveSharedGroupObserver
+                    .getCollaborationIdSupplier()
+                    .addObserver(mOnCollaborationIdChanged);
+            mMessagingBackendService =
+                    MessagingBackendServiceFactory.getForProfile(mOriginalProfile);
+            mPersistentMessageObserver =
+                    new PersistentMessageObserver() {
+                        @Override
+                        public void displayPersistentMessage(PersistentMessage message) {
+                            updateOnMatch(message);
+                        }
 
-                            @Override
-                            public void hidePersistentMessage(PersistentMessage message) {
-                                updateOnMatch(message);
-                            }
-                        };
-                mMessagingBackendService.addPersistentMessageObserver(mPersistentMessageObserver);
-            } else {
-                mDataSharingService = null;
-                mTransitiveSharedGroupObserver = null;
-                mMessagingBackendService = null;
-                mPersistentMessageObserver = null;
-            }
+                        @Override
+                        public void hidePersistentMessage(PersistentMessage message) {
+                            updateOnMatch(message);
+                        }
+                    };
+            mMessagingBackendService.addPersistentMessageObserver(mPersistentMessageObserver);
         } else {
-            mTabGroupSyncService = null;
             mDataSharingService = null;
             mTransitiveSharedGroupObserver = null;
             mMessagingBackendService = null;
@@ -996,22 +991,15 @@ public class TabGridDialogMediator
 
     private View.OnClickListener getMenuButtonClickListener() {
         assert mTabListEditorControllerSupplier != null;
-        boolean isTabGroupSyncEnabled = mTabGroupSyncService != null;
 
-        IdentityManager identityManager = null;
-        if (isTabGroupSyncEnabled && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
-            identityManager = IdentityServicesProvider.get().getIdentityManager(mOriginalProfile);
-        }
         if (mTabGridDialogMenuCoordinator == null) {
             mTabGridDialogMenuCoordinator =
                     new TabGridDialogMenuCoordinator(
                             this::onToolbarMenuItemClick,
                             () -> mCurrentTabGroupModelFilterSupplier.get().getTabModel(),
                             () -> mCurrentTabId,
-                            isTabGroupSyncEnabled,
-                            identityManager,
                             mTabGroupSyncService,
-                            mDataSharingService);
+                            mCollaborationService);
         }
 
         return mTabGridDialogMenuCoordinator.getOnClickListener();
@@ -1048,6 +1036,7 @@ public class TabGridDialogMediator
         boolean isIncognitoBranded = mCurrentTabGroupModelFilterSupplier.get().isIncognitoBranded();
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
                 || isIncognitoBranded
+                || !mCollaborationService.getServiceStatus().isAllowedToJoin()
                 || mCurrentTabId == Tab.INVALID_TAB_ID) {
             mTransitiveSharedGroupObserver.setTabGroupId(/* tabGroupId= */ null);
             return;

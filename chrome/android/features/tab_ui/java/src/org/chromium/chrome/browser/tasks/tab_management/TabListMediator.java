@@ -63,7 +63,6 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawable;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -98,7 +97,6 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -1305,6 +1303,12 @@ class TabListMediator implements TabListNotificationHandler {
         mOnTabGroupModelFilterChanged.onResult(
                 mCurrentTabGroupModelFilterSupplier.addObserver(mOnTabGroupModelFilterChanged));
 
+        mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(originalProfile);
+        if (mTabGroupSyncService != null) {
+            mDataSharingService = DataSharingServiceFactory.getForProfile(originalProfile);
+        }
+        mCollaborationService = CollaborationServiceFactory.getForProfile(originalProfile);
+
         mTabGroupTitleEditor =
                 new TabGroupTitleEditor() {
                     @Override
@@ -1376,12 +1380,6 @@ class TabListMediator implements TabListNotificationHandler {
                         }
                     };
             mModelList.addObserver(mListObserver);
-
-            if (TabGroupSyncFeatures.isTabGroupSyncEnabled(mOriginalProfile)) {
-                mTabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(mOriginalProfile);
-                mDataSharingService = DataSharingServiceFactory.getForProfile(mOriginalProfile);
-                mCollaborationService = CollaborationServiceFactory.getForProfile(mOriginalProfile);
-            }
         }
     }
 
@@ -1900,28 +1898,19 @@ class TabListMediator implements TabListNotificationHandler {
     private TabListMediator.TabActionListener getTabGroupOverflowMenuClickListener() {
         if (mTabListGroupMenuCoordinator == null) {
             TabModel tabModel = mCurrentTabGroupModelFilterSupplier.get().getTabModel();
-            boolean isTabGroupSyncEnabled =
-                    mTabGroupSyncService != null && !tabModel.isIncognitoBranded();
-            IdentityManager identityManager = null;
-            TabGroupSyncService tabGroupSyncService = null;
-            DataSharingService dataSharingService = null;
-            if (isTabGroupSyncEnabled
-                    && mDataSharingService != null
-                    && mCollaborationService != null
-                    && mCollaborationService.getServiceStatus().isAllowedToJoin()) {
-                identityManager =
-                        IdentityServicesProvider.get().getIdentityManager(mOriginalProfile);
-                tabGroupSyncService = mTabGroupSyncService;
-                dataSharingService = mDataSharingService;
-            }
+            boolean isIncognito = tabModel.isIncognitoBranded();
+            TabGroupSyncService tabGroupSyncService = isIncognito ? null : mTabGroupSyncService;
+            assert mCollaborationService != null;
+            CollaborationService collaborationService =
+                    isIncognito
+                            ? CollaborationServiceFactory.getForProfile(tabModel.getProfile())
+                            : mCollaborationService;
             mTabListGroupMenuCoordinator =
                     new TabListGroupMenuCoordinator(
                             mOnMenuItemClickedCallback,
                             () -> mCurrentTabGroupModelFilterSupplier.get().getTabModel(),
-                            isTabGroupSyncEnabled,
-                            identityManager,
                             tabGroupSyncService,
-                            dataSharingService);
+                            collaborationService);
         }
         return mTabListGroupMenuCoordinator.getTabActionListener();
     }

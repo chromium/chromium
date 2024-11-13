@@ -38,11 +38,13 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
@@ -51,15 +53,9 @@ import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoordinator.OnItemClickedCallback;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
-import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
-import org.chromium.components.data_sharing.GroupData;
-import org.chromium.components.data_sharing.GroupMember;
-import org.chromium.components.data_sharing.PeopleGroupActionFailure;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.member_role.MemberRole;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
@@ -99,19 +95,24 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @Mock private ActionConfirmationManager mActionConfirmationManager;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabCreator mTabCreator;
-    @Captor private ArgumentCaptor<Callback<Integer>> mActionConfirmationResultCaptor;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private TabGroupSyncService mTabGroupSyncService;
+    @Mock private CollaborationService mCollaborationService;
+    @Mock private ServiceStatus mServiceStatus;
     @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private WeakReference<Activity> mWeakReferenceActivity;
-    @Mock private DataSharingService mDataSharingService;
-    @Mock private IdentityManager mIdentityManager;
-    @Mock private GroupDataOrFailureOutcome mGroupDataOrFailureOutcome;
     @Mock private Callback<Boolean> mCallback;
+
+    @Captor private ArgumentCaptor<Callback<Integer>> mActionConfirmationResultCaptor;
 
     @Before
     public void setUp() {
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        CollaborationServiceFactory.setForTesting(mCollaborationService);
+        when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
+
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         LayoutInflater inflater = LayoutInflater.from(mActivity);
         mMenuView = inflater.inflate(R.layout.tab_strip_group_menu_layout, null);
@@ -257,9 +258,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 /* hasCollaborationData= */ true);
 
         // Build collaboration view.
-        GroupDataOrFailureOutcome outcome = setUpSharedGroup(MemberRole.OWNER);
-        mTabGroupContextMenuCoordinator.buildCollaborationMenuItems(
-                modelList, mIdentityManager, outcome);
+        mTabGroupContextMenuCoordinator.buildCollaborationMenuItems(modelList, MemberRole.OWNER);
 
         // Assert: verify number of items in the model list.
         assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
@@ -286,9 +285,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 /* hasCollaborationData= */ true);
 
         // Build collaboration view.
-        GroupDataOrFailureOutcome outcome = setUpSharedGroup(MemberRole.MEMBER);
-        mTabGroupContextMenuCoordinator.buildCollaborationMenuItems(
-                modelList, mIdentityManager, outcome);
+        mTabGroupContextMenuCoordinator.buildCollaborationMenuItems(modelList, MemberRole.MEMBER);
 
         // Assert: verify number of items in the model list.
         assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
@@ -440,29 +437,5 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                     R.id.leave_group,
                     modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
         }
-    }
-
-    private GroupDataOrFailureOutcome setUpSharedGroup(@MemberRole int memberRole) {
-        GroupMember groupMember =
-                new GroupMember(
-                        GAIA_ID,
-                        /* displayName= */ null,
-                        EMAIL,
-                        memberRole,
-                        /* avatarUrl= */ null,
-                        /* givenName= */ null);
-        GroupMember[] groupMemberArray = new GroupMember[] {groupMember};
-        GroupData groupData =
-                new GroupData(
-                        COLLABORATION_ID,
-                        /* displayName= */ null,
-                        groupMemberArray,
-                        /* groupToken= */ null);
-        GroupDataOrFailureOutcome outcome =
-                new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
-        CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(EMAIL, GAIA_ID);
-        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
-                .thenReturn(coreAccountInfo);
-        return outcome;
     }
 }

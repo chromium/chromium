@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.view.View;
 
 import androidx.annotation.DimenRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -15,10 +16,8 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
-import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -31,30 +30,25 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
     private Supplier<Integer> mTabIdSupplier;
 
     /**
+     * @param onItemClicked A callback for listening to clicks.
      * @param tabModelSupplier The supplier of the tab model.
      * @param tabIdSupplier The tab ID supplier for the tab or a tab ID from the group being acted
      *     on.
-     * @param isTabGroupSyncEnabled Whether tab group sync is enabled.
-     * @param identityManager Used for checking the current account.
      * @param tabGroupSyncService Used to checking if a group is shared or synced.
-     * @param dataSharingService Used for checking the user is the owner of a group.
+     * @param collaborationService Used for checking the user is the owner of a group.
      */
     public TabGridDialogMenuCoordinator(
             OnItemClickedCallback onItemClicked,
             Supplier<TabModel> tabModelSupplier,
             Supplier<Integer> tabIdSupplier,
-            boolean isTabGroupSyncEnabled,
-            @Nullable IdentityManager identityManager,
             @Nullable TabGroupSyncService tabGroupSyncService,
-            @Nullable DataSharingService dataSharingService) {
+            @NonNull CollaborationService collaborationService) {
         super(
                 R.layout.tab_switcher_action_menu_layout,
                 onItemClicked,
                 tabModelSupplier,
-                isTabGroupSyncEnabled,
-                identityManager,
                 tabGroupSyncService,
-                dataSharingService);
+                collaborationService);
         mTabIdSupplier = tabIdSupplier;
     }
 
@@ -125,11 +119,7 @@ public class TabGridDialogMenuCoordinator extends TabGroupOverflowMenuCoordinato
 
     @VisibleForTesting
     @Override
-    public void buildCollaborationMenuItems(
-            ModelList itemList,
-            IdentityManager identityManager,
-            GroupDataOrFailureOutcome outcome) {
-        @MemberRole int memberRole = TabShareUtils.getSelfMemberRole(outcome, identityManager);
+    public void buildCollaborationMenuItems(ModelList itemList, @MemberRole int memberRole) {
         if (memberRole != MemberRole.UNKNOWN) {
             // Insert these items above the close group menu item.
             int insertionIndex = getMenuItemIndex(itemList, R.id.close_tab_group);

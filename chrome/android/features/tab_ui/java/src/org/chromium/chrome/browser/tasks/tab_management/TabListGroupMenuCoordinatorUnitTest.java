@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -27,25 +26,18 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoordinator.OnItemClickedCallback;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
-import org.chromium.components.data_sharing.GroupData;
-import org.chromium.components.data_sharing.GroupMember;
-import org.chromium.components.data_sharing.PeopleGroupActionFailure;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.data_sharing.member_role.MemberRole;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -61,9 +53,6 @@ import java.util.List;
 public class TabListGroupMenuCoordinatorUnitTest {
     private static final int TAB_ID = 123;
     private static final String COLLABORATION_ID1 = "A";
-    private static final String GAIA_ID1 = "Z";
-    private static final String GAIA_ID2 = "Y";
-    private static final String EMAIL = "fake@gmail.com";
     private static final Token TAB_GROUP_TOKEN = Token.createRandom();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -75,13 +64,11 @@ public class TabListGroupMenuCoordinatorUnitTest {
     @Mock private Tab mTab;
     @Mock private Profile mProfile;
     @Mock private TabModel mTabModel;
-    @Mock private IdentityServicesProvider mIdentityServicesProvider;
-    @Mock private IdentityManager mIdentityManager;
     @Mock private TabGroupSyncService mTabGroupSyncService;
-    @Mock private DataSharingService mDataSharingService;
+    @Mock private CollaborationService mCollaborationService;
+    @Mock private ServiceStatus mServiceStatus;
     @Mock private OnItemClickedCallback mOnItemClickedCallback;
 
-    @Captor private ArgumentCaptor<Callback<GroupDataOrFailureOutcome>> mReadGroupCallbackCaptor;
     @Captor private ArgumentCaptor<ModelList> mModelListCaptor;
 
     private TabListGroupMenuCoordinator mMenuCoordinator;
@@ -96,28 +83,24 @@ public class TabListGroupMenuCoordinatorUnitTest {
         when(mTab.getTabGroupId()).thenReturn(TAB_GROUP_TOKEN);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModel.isIncognitoBranded()).thenReturn(false);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-        when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
-        DataSharingServiceFactory.setForTesting(mDataSharingService);
+        CollaborationServiceFactory.setForTesting(mCollaborationService);
+        when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
+        when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
 
         when(mTabModel.getTabById(TAB_ID)).thenReturn(mTab);
         when(mTab.getTabGroupId()).thenReturn(TAB_GROUP_TOKEN);
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.collaborationId = COLLABORATION_ID1;
         when(mTabGroupSyncService.getGroup(any(LocalTabGroupId.class))).thenReturn(savedTabGroup);
-        CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(EMAIL, GAIA_ID1);
-        when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(coreAccountInfo);
 
         mMenuCoordinator =
                 spy(
                         new TabListGroupMenuCoordinator(
                                 mOnItemClickedCallback,
                                 () -> mTabModel,
-                                /* isTabGroupSyncEnabled= */ true,
-                                mIdentityManager,
                                 mTabGroupSyncService,
-                                mDataSharingService));
+                                mCollaborationService));
     }
 
     private void onActivity(TestActivity activity) {
@@ -177,67 +160,22 @@ public class TabListGroupMenuCoordinatorUnitTest {
 
     @Test
     public void testBuildCollaborationMenuItems_Unknown() {
-        GroupMember groupMember =
-                new GroupMember(
-                        GAIA_ID2,
-                        /* displayName= */ null,
-                        EMAIL,
-                        MemberRole.OWNER,
-                        /* avatarUrl= */ null,
-                        /* givenName= */ null);
-        GroupMember[] groupMemberArray = new GroupMember[] {groupMember};
-        GroupData groupData =
-                new GroupData(
-                        COLLABORATION_ID1,
-                        /* displayName= */ null,
-                        groupMemberArray,
-                        /* groupToken= */ null);
-        GroupDataOrFailureOutcome outcome =
-                new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
-
         ModelList modelList = new ModelList();
-        mMenuCoordinator.buildCollaborationMenuItems(modelList, mIdentityManager, outcome);
+        mMenuCoordinator.buildCollaborationMenuItems(modelList, MemberRole.UNKNOWN);
 
         assertEquals(0, modelList.size());
     }
 
     @Test
     public void testBuildAllItems_Member() {
-        GroupMember groupMember1 =
-                new GroupMember(
-                        GAIA_ID1,
-                        /* displayName= */ null,
-                        EMAIL,
-                        MemberRole.MEMBER,
-                        /* avatarUrl= */ null,
-                        /* givenName= */ null);
-        GroupMember groupMember2 =
-                new GroupMember(
-                        GAIA_ID2,
-                        /* displayName= */ null,
-                        EMAIL,
-                        MemberRole.OWNER,
-                        /* avatarUrl= */ null,
-                        /* givenName= */ null);
-        GroupMember[] groupMemberArray = new GroupMember[] {groupMember1, groupMember2};
-        GroupData groupData =
-                new GroupData(
-                        COLLABORATION_ID1,
-                        /* displayName= */ null,
-                        groupMemberArray,
-                        /* groupToken= */ null);
-        GroupDataOrFailureOutcome outcome =
-                new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
+        when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
+                .thenReturn(MemberRole.MEMBER);
 
         mMenuCoordinator.getTabActionListener().run(mView, TAB_ID);
 
-        verify(mDataSharingService)
-                .readGroup(eq(COLLABORATION_ID1), mReadGroupCallbackCaptor.capture());
-        mReadGroupCallbackCaptor.getValue().onResult(outcome);
-
         verify(mMenuCoordinator).buildMenuActionItems(any(), eq(false), eq(true), eq(true));
         verify(mMenuCoordinator)
-                .buildCollaborationMenuItems(mModelListCaptor.capture(), any(), any());
+                .buildCollaborationMenuItems(mModelListCaptor.capture(), eq(MemberRole.MEMBER));
 
         List<Integer> menuIds =
                 List.of(R.id.close_tab_group, R.id.edit_group_name, R.id.leave_group);
@@ -248,33 +186,14 @@ public class TabListGroupMenuCoordinatorUnitTest {
 
     @Test
     public void testBuildAllItems_Owner() {
-        GroupMember groupMember =
-                new GroupMember(
-                        GAIA_ID1,
-                        /* displayName= */ null,
-                        EMAIL,
-                        MemberRole.OWNER,
-                        /* avatarUrl= */ null,
-                        /* givenName= */ null);
-        GroupMember[] groupMemberArray = new GroupMember[] {groupMember};
-        GroupData groupData =
-                new GroupData(
-                        COLLABORATION_ID1,
-                        /* displayName= */ null,
-                        groupMemberArray,
-                        /* groupToken= */ null);
-        GroupDataOrFailureOutcome outcome =
-                new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
+        when(mCollaborationService.getCurrentUserRoleForGroup(COLLABORATION_ID1))
+                .thenReturn(MemberRole.OWNER);
 
         mMenuCoordinator.getTabActionListener().run(mView, TAB_ID);
 
-        verify(mDataSharingService)
-                .readGroup(eq(COLLABORATION_ID1), mReadGroupCallbackCaptor.capture());
-        mReadGroupCallbackCaptor.getValue().onResult(outcome);
-
         verify(mMenuCoordinator).buildMenuActionItems(any(), eq(false), eq(true), eq(true));
         verify(mMenuCoordinator)
-                .buildCollaborationMenuItems(mModelListCaptor.capture(), any(), any());
+                .buildCollaborationMenuItems(mModelListCaptor.capture(), eq(MemberRole.OWNER));
 
         List<Integer> menuIds =
                 List.of(R.id.close_tab_group, R.id.edit_group_name, R.id.delete_shared_group);

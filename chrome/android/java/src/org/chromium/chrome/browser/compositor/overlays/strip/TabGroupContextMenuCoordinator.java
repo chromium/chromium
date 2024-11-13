@@ -17,6 +17,8 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import androidx.annotation.DimenRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.res.ResourcesCompat;
@@ -24,12 +26,11 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
@@ -42,14 +43,11 @@ import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.C
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerType;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoordinator;
-import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
-import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
+import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -111,10 +109,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             WindowAndroid windowAndroid,
             TabGroupSyncService tabGroupSyncService,
             DataSharingTabManager dataSharingTabManager,
-            DataSharingService dataSharingService,
-            IdentityManager identityManager,
-            Callback<Boolean> onGroupSharedCallback,
-            boolean isTabGroupSyncEnabled) {
+            CollaborationService collaborationService,
+            Callback<Boolean> onGroupSharedCallback) {
         super(
                 R.layout.tab_strip_group_menu_layout,
                 getMenuItemClickedCallback(
@@ -125,12 +121,10 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         tabCreator,
                         dataSharingTabManager,
                         onGroupSharedCallback,
-                        isTabGroupSyncEnabled),
+                        tabGroupSyncService != null),
                 tabModelSupplier,
-                isTabGroupSyncEnabled,
-                identityManager,
                 tabGroupSyncService,
-                dataSharingService);
+                collaborationService);
         mTabGroupModelFilter = tabGroupModelFilter;
         mWindowAndroid = windowAndroid;
         mKeyboardVisibilityListener =
@@ -162,19 +156,14 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
             WindowAndroid windowAndroid,
             DataSharingTabManager dataSharingTabManager,
             Callback<Boolean> onGroupSharedCallback) {
-        boolean isTabGroupSyncEnabled =
-                TabGroupSyncFeatures.isTabGroupSyncEnabled(tabModel.getProfile());
+        Profile profile = tabModel.getProfile();
+        @Nullable
         TabGroupSyncService tabGroupSyncService =
-                isTabGroupSyncEnabled
-                        ? TabGroupSyncServiceFactory.getForProfile(tabModel.getProfile())
-                        : null;
-        IdentityManager identityManager = null;
-        DataSharingService dataSharingService = null;
-        if (isTabGroupSyncEnabled && ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)) {
-            identityManager =
-                    IdentityServicesProvider.get().getIdentityManager(tabModel.getProfile());
-            dataSharingService = DataSharingServiceFactory.getForProfile(tabModel.getProfile());
-        }
+                profile.isOffTheRecord() ? null : TabGroupSyncServiceFactory.getForProfile(profile);
+        @NonNull
+        CollaborationService collaborationService =
+                CollaborationServiceFactory.getForProfile(profile);
+
         return new TabGroupContextMenuCoordinator(
                 () -> tabModel,
                 tabGroupModelFilter,
@@ -184,10 +173,8 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 windowAndroid,
                 tabGroupSyncService,
                 dataSharingTabManager,
-                dataSharingService,
-                identityManager,
-                onGroupSharedCallback,
-                isTabGroupSyncEnabled);
+                collaborationService,
+                onGroupSharedCallback);
     }
 
     @VisibleForTesting
@@ -363,11 +350,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
     }
 
     @Override
-    public void buildCollaborationMenuItems(
-            ModelList itemList,
-            IdentityManager identityManager,
-            GroupDataOrFailureOutcome outcome) {
-        @MemberRole int memberRole = TabShareUtils.getSelfMemberRole(outcome, identityManager);
+    public void buildCollaborationMenuItems(ModelList itemList, @MemberRole int memberRole) {
         if (memberRole != MemberRole.UNKNOWN) {
             int insertionIndex = getMenuItemIndex(itemList, R.id.close_tab_group);
             itemList.add(
