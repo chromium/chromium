@@ -18,7 +18,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.ComponentCallbacks;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -341,7 +340,7 @@ class TabListMediator implements TabListNotificationHandler {
             new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
     private final TabListGroupMenuCoordinator.OnItemClickedCallback mOnMenuItemClickedCallback =
             this::onMenuItemClicked;
-    private final Context mContext;
+    private final Activity mActivity;
     private final TabListModel mModelList;
     private final @TabListMode int mMode;
     private final ModalDialogManager mModalDialogManager;
@@ -865,7 +864,7 @@ class TabListMediator implements TabListNotificationHandler {
      * Construct the Mediator with the given Models and observing hooks from the given
      * ChromeActivity.
      *
-     * @param context The context used to get some configuration information.
+     * @param activity The activity used to get some configuration information.
      * @param modelList The {@link TabListModel} to keep state about a list of {@link Tab}s.
      * @param mode The {@link TabListMode}
      * @param modalDialogManager The {@link ModalDialogManager} for managing dialog lifecycles.
@@ -890,7 +889,7 @@ class TabListMediator implements TabListNotificationHandler {
      * @param onTabGroupCreation Should be run when the UI is used to create a tab group.
      */
     public TabListMediator(
-            Context context,
+            Activity activity,
             TabListModel modelList,
             @TabListMode int mode,
             @Nullable ModalDialogManager modalDialogManager,
@@ -907,7 +906,7 @@ class TabListMediator implements TabListNotificationHandler {
             @Nullable ActionConfirmationManager actionConfirmationManager,
             @Nullable DataSharingTabManager dataSharingTabManager,
             @Nullable Runnable onTabGroupCreation) {
-        mContext = context;
+        mActivity = activity;
         mModelList = modelList;
         mMode = mode;
         mModalDialogManager = modalDialogManager;
@@ -1236,10 +1235,11 @@ class TabListMediator implements TabListNotificationHandler {
                 };
 
         var tabGroupCreationDialogManager =
-                new TabGroupCreationDialogManager(context, modalDialogManager, mOnTabGroupCreation);
+                new TabGroupCreationDialogManager(
+                        activity, modalDialogManager, mOnTabGroupCreation);
         mTabGridItemTouchHelperCallback =
                 new TabGridItemTouchHelperCallback(
-                        context,
+                        activity,
                         tabGroupCreationDialogManager,
                         mModelList,
                         mCurrentTabGroupModelFilterSupplier,
@@ -1698,7 +1698,7 @@ class TabListMediator implements TabListNotificationHandler {
                     @Override
                     public void onLowMemory() {}
                 };
-        mContext.registerComponentCallbacks(mComponentCallbacks);
+        mActivity.registerComponentCallbacks(mComponentCallbacks);
         mGridLayoutManager = manager;
     }
 
@@ -1781,12 +1781,11 @@ class TabListMediator implements TabListNotificationHandler {
     }
 
     /**
-     * Span count is computed based on screen width for tablets and orientation for phones.
-     * When in multi-window mode on phone, the span count is fixed to 2 to keep tab card size
-     * reasonable.
+     * Span count is computed based on screen width for tablets and orientation for phones. When in
+     * multi-window mode on phone, the span count is fixed to 2 to keep tab card size reasonable.
      */
     private int getSpanCount(int screenWidthDp) {
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             return screenWidthDp < TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP
                     ? TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT
                     : screenWidthDp < TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP
@@ -1853,7 +1852,7 @@ class TabListMediator implements TabListNotificationHandler {
         mCurrentTabGroupModelFilterSupplier.removeObserver(mOnTabGroupModelFilterChanged);
 
         if (mComponentCallbacks != null) {
-            mContext.unregisterComponentCallbacks(mComponentCallbacks);
+            mActivity.unregisterComponentCallbacks(mComponentCallbacks);
         }
         unregisterOnScrolledListener();
     }
@@ -2092,48 +2091,46 @@ class TabListMediator implements TabListNotificationHandler {
         int numOfRelatedTabs = getRelatedTabsForId(tab.getId()).size();
         if (isInTabGroup) {
             String title = getLatestTitleForTab(tab, /* useDefault= */ false);
-            Resources res = mContext.getResources();
+            Resources res = mActivity.getResources();
             TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
             @TabGroupColorId int colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
             final @StringRes int colorDescRes =
-                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
-                    colorId);
+                    ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(colorId);
             String colorDesc = res.getString(colorDescRes);
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
-                && hasCollaboration(tab)) {
+                    && hasCollaboration(tab)) {
                 model.set(
-                    TabProperties.CONTENT_DESCRIPTION_STRING,
-                    title.isEmpty()
-                        ? res.getQuantityString(
-                        R.plurals
-                            .accessibility_expand_shared_tab_group_with_color,
-                        numOfRelatedTabs,
-                        numOfRelatedTabs,
-                        colorDesc)
-                        : res.getQuantityString(
-                            R.plurals
-                                .accessibility_expand_shared_tab_group_with_group_name_with_color,
-                            numOfRelatedTabs,
-                            title,
-                            numOfRelatedTabs,
-                            colorDesc));
+                        TabProperties.CONTENT_DESCRIPTION_STRING,
+                        title.isEmpty()
+                                ? res.getQuantityString(
+                                        R.plurals.accessibility_expand_shared_tab_group_with_color,
+                                        numOfRelatedTabs,
+                                        numOfRelatedTabs,
+                                        colorDesc)
+                                : res.getQuantityString(
+                                        R.plurals
+                                                .accessibility_expand_shared_tab_group_with_group_name_with_color,
+                                        numOfRelatedTabs,
+                                        title,
+                                        numOfRelatedTabs,
+                                        colorDesc));
                 return;
             }
             model.set(
-                TabProperties.CONTENT_DESCRIPTION_STRING,
-                title.isEmpty()
-                    ? res.getQuantityString(
-                    R.plurals.accessibility_expand_tab_group_with_color,
-                    numOfRelatedTabs,
-                    numOfRelatedTabs,
-                    colorDesc)
-                    : res.getQuantityString(
-                        R.plurals
-                            .accessibility_expand_tab_group_with_group_name_with_color,
-                        numOfRelatedTabs,
-                        title,
-                        numOfRelatedTabs,
-                        colorDesc));
+                    TabProperties.CONTENT_DESCRIPTION_STRING,
+                    title.isEmpty()
+                            ? res.getQuantityString(
+                                    R.plurals.accessibility_expand_tab_group_with_color,
+                                    numOfRelatedTabs,
+                                    numOfRelatedTabs,
+                                    colorDesc)
+                            : res.getQuantityString(
+                                    R.plurals
+                                            .accessibility_expand_tab_group_with_group_name_with_color,
+                                    numOfRelatedTabs,
+                                    title,
+                                    numOfRelatedTabs,
+                                    colorDesc));
         } else {
             model.set(TabProperties.CONTENT_DESCRIPTION_STRING, null);
         }
@@ -2155,7 +2152,7 @@ class TabListMediator implements TabListNotificationHandler {
 
         model.set(
                 ACTION_BUTTON_DESCRIPTION_STRING,
-                mContext.getString(R.string.accessibility_tabstrip_btn_close_tab, tab.getTitle()));
+                mActivity.getString(R.string.accessibility_tabstrip_btn_close_tab, tab.getTitle()));
     }
 
     @VisibleForTesting
@@ -2196,7 +2193,7 @@ class TabListMediator implements TabListNotificationHandler {
             if (useDefault) {
                 TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
                 return TabGroupTitleUtils.getDefaultTitle(
-                        mContext, filter.getRelatedTabCountForRootId(tab.getRootId()));
+                        mActivity, filter.getRelatedTabCountForRootId(tab.getRootId()));
             } else {
                 return "";
             }
@@ -2588,7 +2585,7 @@ class TabListMediator implements TabListNotificationHandler {
                 QuickDeleteAnimationGradientDrawable.getAnimationsIntersectionHeight(tabGridHeight);
         QuickDeleteAnimationGradientDrawable gradientDrawable =
                 QuickDeleteAnimationGradientDrawable.createQuickDeleteWipeAnimationDrawable(
-                        mContext,
+                        mActivity,
                         tabGridHeight,
                         mCurrentTabGroupModelFilterSupplier.get().isIncognitoBranded());
 
@@ -2767,7 +2764,7 @@ class TabListMediator implements TabListNotificationHandler {
         } else if (menuId == R.id.delete_shared_group) {
             RecordUserAction.record("TabGroupItemMenu.DeleteShared");
             TabUiUtils.deleteSharedTabGroup(
-                    mContext,
+                    mActivity,
                     mCurrentTabGroupModelFilterSupplier.get(),
                     mActionConfirmationManager,
                     mModalDialogManager,
@@ -2775,7 +2772,7 @@ class TabListMediator implements TabListNotificationHandler {
         } else if (menuId == R.id.leave_group) {
             RecordUserAction.record("TabGroupItemMenu.LeaveShared");
             TabUiUtils.leaveTabGroup(
-                    mContext,
+                    mActivity,
                     mCurrentTabGroupModelFilterSupplier.get(),
                     mActionConfirmationManager,
                     mModalDialogManager,
@@ -2786,7 +2783,7 @@ class TabListMediator implements TabListNotificationHandler {
             int index = mModelList.indexFromId(tabId);
             PropertyModel model = mModelList.get(index).model;
             TabUiUtils.startShareTabGroupFlow(
-                    (Activity) mContext,
+                    mActivity,
                     mCurrentTabGroupModelFilterSupplier.get(),
                     mDataSharingTabManager,
                     tabId,
@@ -2802,7 +2799,7 @@ class TabListMediator implements TabListNotificationHandler {
 
         var tabGroupVisualDataDialogManager =
                 new TabGroupVisualDataDialogManager(
-                        mContext,
+                        mActivity,
                         mModalDialogManager,
                         TabGroupVisualDataDialogManager.DialogType.TAB_GROUP_EDIT,
                         R.string.tab_group_rename_dialog_title);
@@ -2863,31 +2860,30 @@ class TabListMediator implements TabListNotificationHandler {
     }
 
     private String getActionButtonDescriptionString(int numOfRelatedTabs, String title, Tab tab) {
-        Resources res = mContext.getResources();
+        Resources res = mActivity.getResources();
         TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         @TabGroupColorId int colorId = filter.getTabGroupColorWithFallback(tab.getRootId());
         final @StringRes int colorDescRes =
-            ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(colorId);
+                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(colorId);
         String colorDesc = res.getString(colorDescRes);
         if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
             String descriptionTitle = title;
             if (TextUtils.isEmpty(descriptionTitle)) {
-                descriptionTitle =
-                    TabGroupTitleUtils.getDefaultTitle(mContext, numOfRelatedTabs);
+                descriptionTitle = TabGroupTitleUtils.getDefaultTitle(mActivity, numOfRelatedTabs);
             }
             if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
-                || !hasCollaboration(tab)) {
+                    || !hasCollaboration(tab)) {
                 return res.getString(
-                    R.string
-                        .accessibility_open_tab_group_overflow_menu_with_group_name_with_color,
-                    descriptionTitle,
-                    colorDesc);
+                        R.string
+                                .accessibility_open_tab_group_overflow_menu_with_group_name_with_color,
+                        descriptionTitle,
+                        colorDesc);
             } else {
                 return res.getString(
-                    R.string
-                        .accessibility_open_shared_tab_group_overflow_menu_with_group_name_with_color,
-                    descriptionTitle,
-                    colorDesc);
+                        R.string
+                                .accessibility_open_shared_tab_group_overflow_menu_with_group_name_with_color,
+                        descriptionTitle,
+                        colorDesc);
             }
         } else {
             if (TextUtils.isEmpty(title)) {
@@ -3004,7 +3000,7 @@ class TabListMediator implements TabListNotificationHandler {
         if (provider == null) {
             provider =
                     new TabGroupColorViewProvider(
-                            mContext,
+                            mActivity,
                             tabGroupId,
                             tab.isIncognitoBranded(),
                             colorId,

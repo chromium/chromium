@@ -12,14 +12,12 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.content.Context;
-import android.view.ContextThemeWrapper;
+import android.app.Activity;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -89,19 +87,21 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private RecyclerView mRecyclerView;
 
-    private Context mContext;
+    private Activity mActivity;
     private ArchivedTabsDialogCoordinator mCoordinator;
     private ObservableSupplierImpl<Integer> mTabCountSupplier = new ObservableSupplierImpl<>();
 
     @Before
     public void setUp() {
         setUpMocks();
-        mContext =
-                new ContextThemeWrapper(
-                        ApplicationProvider.getApplicationContext(),
-                        R.style.Theme_BrowserUI_DayNight);
-        mRootView = spy(new FrameLayout(mContext));
-        mTabSwitcherView = new FrameLayout(mContext);
+        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
+    }
+
+    private void onActivity(Activity activity) {
+        mActivity = activity;
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mRootView = spy(new FrameLayout(mActivity));
+        mTabSwitcherView = new FrameLayout(mActivity);
         FrameLayout.LayoutParams layoutparams =
                 new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -109,13 +109,13 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                         Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
         mTabSwitcherView.setLayoutParams(layoutparams);
 
-        TabListRecyclerView recyclerView = new TabListRecyclerView(mContext, null);
+        TabListRecyclerView recyclerView = new TabListRecyclerView(mActivity, null);
         recyclerView.setId(R.id.tab_list_recycler_view);
         mTabSwitcherView.addView(recyclerView);
 
         mCoordinator =
                 new ArchivedTabsDialogCoordinator(
-                        mContext,
+                        mActivity,
                         mArchivedTabModelOrchestrator,
                         mBrowserControlsStateProvider,
                         mTabContentManager,
@@ -129,7 +129,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                         mModalDialogManager,
                         /* desktopWindowStateManager= */ null);
         mCoordinator.setTabListEditorCoordinatorForTesting(mTabListEditorCoordinator);
-        recyclerView = new TabListRecyclerView(mContext, null);
+        recyclerView = new TabListRecyclerView(mActivity, null);
         recyclerView.setId(R.id.tab_list_recycler_view);
         ((ViewGroup) mCoordinator.getViewForTesting().findViewById(R.id.tab_list_editor_container))
                 .addView(recyclerView);

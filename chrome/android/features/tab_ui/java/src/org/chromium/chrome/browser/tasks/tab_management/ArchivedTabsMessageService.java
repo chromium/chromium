@@ -11,7 +11,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardV
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.NUMBER_OF_ARCHIVED_TABS;
 import static org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsCardViewProperties.WIDTH;
 
-import android.content.Context;
+import android.app.Activity;
 import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,7 +82,7 @@ public class ArchivedTabsMessageService extends MessageService
                     mArchivedTabModel.getTabCountSupplier().addObserver(mTabCountObserver);
 
                     mCustomCardView =
-                            LayoutInflater.from(mContext)
+                            LayoutInflater.from(mActivity)
                                     .inflate(R.layout.archived_tabs_message_card_view, null);
                     if (mShowTwoStepIph) {
                         mCustomCardView.addOnAttachStateChangeListener(
@@ -128,7 +128,7 @@ public class ArchivedTabsMessageService extends MessageService
     private final TabListItemSizeChangedObserver mTabListItemSizeChangedObserver =
             this::maybeResizeCard;
 
-    private final @NonNull Context mContext;
+    private final @NonNull Activity mActivity;
     private final @NonNull ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private final @NonNull BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final @NonNull TabContentManager mTabContentManager;
@@ -154,7 +154,7 @@ public class ArchivedTabsMessageService extends MessageService
     private boolean mShowTwoStepIph;
 
     ArchivedTabsMessageService(
-            @NonNull Context context,
+            @NonNull Activity activity,
             @NonNull ArchivedTabModelOrchestrator archivedTabModelOrchestrator,
             @NonNull BrowserControlsStateProvider browserControlStateProvider,
             @NonNull TabContentManager tabContentManager,
@@ -169,7 +169,7 @@ public class ArchivedTabsMessageService extends MessageService
             @NonNull ObservableSupplier<TabListCoordinator> tabListCoordinatorSupplier,
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         super(MessageType.ARCHIVED_TABS_MESSAGE);
-        mContext = context;
+        mActivity = activity;
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
         mBrowserControlsStateProvider = browserControlStateProvider;
         mTabContentManager = tabContentManager;
@@ -325,7 +325,7 @@ public class ArchivedTabsMessageService extends MessageService
     private void createArchivedTabsDialogCoordinator() {
         mArchivedTabsDialogCoordinator =
                 new ArchivedTabsDialogCoordinator(
-                        mContext,
+                        mActivity,
                         mArchivedTabModelOrchestrator,
                         mBrowserControlsStateProvider,
                         mTabContentManager,

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
@@ -224,7 +225,7 @@ class TabListEditorCoordinator {
                 }
             };
 
-    private final Context mContext;
+    private final Activity mActivity;
     private final ViewGroup mRootView;
     private final ViewGroup mParentView;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -250,7 +251,7 @@ class TabListEditorCoordinator {
     private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
     /**
-     * @param context The Android context to use.
+     * @param activity The Android activity to use.
      * @param rootView The top ViewGroup which has parentView attached to it, or the same if no
      *     custom parentView is present.
      * @param parentView The ViewGroup which the TabListEditor will attach itself to it may be
@@ -270,7 +271,7 @@ class TabListEditorCoordinator {
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      */
     public TabListEditorCoordinator(
-            Context context,
+            Activity activity,
             ViewGroup rootView,
             ViewGroup parentView,
             BrowserControlsStateProvider browserControlsStateProvider,
@@ -287,7 +288,7 @@ class TabListEditorCoordinator {
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         try (TraceEvent e = TraceEvent.scoped("TabListEditorCoordinator.constructor")) {
-            mContext = context;
+            mActivity = activity;
             mRootView = rootView;
             mParentView = parentView;
             mBrowserControlsStateProvider = browserControlsStateProvider;
@@ -305,7 +306,7 @@ class TabListEditorCoordinator {
 
             // The change processor isn't created until TabListCoordinator is created (lazily).
             mTabListEditorLayout =
-                    LayoutInflater.from(context)
+                    LayoutInflater.from(activity)
                             .inflate(R.layout.tab_list_editor_layout, parentView, false)
                             .findViewById(R.id.selectable_list);
             mModel = new PropertyModel.Builder(TabListEditorProperties.ALL_KEYS).build();
@@ -314,7 +315,7 @@ class TabListEditorCoordinator {
             // parentViews in a stack to avoid contention and using new snackbar managers.
             mTabListEditorMediator =
                     new TabListEditorMediator(
-                            mContext,
+                            activity,
                             mCurrentTabGroupModelFilterSupplier,
                             mModel,
                             mSelectionDelegate,
@@ -325,7 +326,7 @@ class TabListEditorCoordinator {
                             mTabActionState,
                             desktopWindowStateManager);
             mTabListEditorMediator.setNavigationProvider(
-                    new TabListEditorNavigationProvider(mContext, mTabListEditorController));
+                    new TabListEditorNavigationProvider(activity, mTabListEditorController));
         }
     }
 
@@ -475,7 +476,7 @@ class TabListEditorCoordinator {
         mTabListCoordinator =
                 new TabListCoordinator(
                         mTabListMode,
-                        mContext,
+                        mActivity,
                         mBrowserControlsStateProvider,
                         mModalDialogManager,
                         mCurrentTabGroupModelFilterSupplier,
@@ -554,7 +555,7 @@ class TabListEditorCoordinator {
         if (displayGroups) {
             mMultiThumbnailCardProvider =
                     new MultiThumbnailCardProvider(
-                            mContext,
+                            mActivity,
                             mBrowserControlsStateProvider,
                             tabContentManager,
                             mCurrentTabGroupModelFilterSupplier);

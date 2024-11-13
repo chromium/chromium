@@ -8,7 +8,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.content.Context;
+import android.app.Activity;
 import android.content.res.Resources;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -110,7 +110,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 @Override
                 public void openArchiveSettings() {
                     SettingsNavigationFactory.createSettingsNavigation()
-                            .startSettings(mContext, TabArchiveSettingsFragment.class);
+                            .startSettings(mActivity, TabArchiveSettingsFragment.class);
                     RecordUserAction.record("Tabs.OpenArchivedTabsSettingsMenuItem");
                 }
 
@@ -258,7 +258,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 }
             };
 
-    private final @NonNull Context mContext;
+    private final @NonNull Activity mActivity;
     private final @NonNull ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private final @NonNull TabModel mArchivedTabModel;
     private final @NonNull BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -288,7 +288,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private boolean mIsShowing;
 
     /**
-     * @param context The android context.
+     * @param activity The android activity.
      * @param archivedTabModelOrchestrator The TabModelOrchestrator for archived tabs.
      * @param browserControlsStateProvider Used as a dependency to TabListEditorCoordiantor.
      * @param tabContentManager Used as a dependency to TabListEditorCoordiantor.
@@ -302,7 +302,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
      * @param desktopWindowStateManager Manager to get desktop window and app header state.
      */
     public ArchivedTabsDialogCoordinator(
-            @NonNull Context context,
+            @NonNull Activity activity,
             @NonNull ArchivedTabModelOrchestrator archivedTabModelOrchestrator,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull TabContentManager tabContentManager,
@@ -315,7 +315,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
             @NonNull TabArchiveSettings tabArchiveSettings,
             @NonNull ModalDialogManager modalDialogManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {
-        mContext = context;
+        mActivity = activity;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabContentManager = tabContentManager;
         mMode = mode;
@@ -334,7 +334,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         .getModel(/* incognito= */ false);
         mUndoBarController =
                 new UndoBarController(
-                        mContext,
+                        mActivity,
                         mArchivedTabModelOrchestrator.getTabModelSelector(),
                         /* snackbarManageable= */ this,
                         /* dialogVisibilitySupplier= */ null);
@@ -343,7 +343,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         // Inflate the dialog view and hook it up
         mDialogView =
                 (ViewGroup)
-                        LayoutInflater.from(mContext)
+                        LayoutInflater.from(mActivity)
                                 .inflate(R.layout.archived_tabs_dialog, mRootView, false);
         mDialogView
                 .findViewById(R.id.close_all_tabs_button)
@@ -352,10 +352,10 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         // Initialize the shadow for the "Close all inactive tabs" container.
         mShadowView = mDialogView.findViewById(R.id.close_all_tabs_button_container_shadow);
         mShadowView.init(
-                mContext.getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_BOTTOM);
+                mActivity.getColor(R.color.toolbar_shadow_color), FadingShadow.POSITION_BOTTOM);
 
         // Initialize the confirmation dialog for when the last archived tab is removed.
-        mActionConfirmationDialog = new ActionConfirmationDialog(mContext, mModalDialogManager);
+        mActionConfirmationDialog = new ActionConfirmationDialog(mActivity, mModalDialogManager);
     }
 
     /** Hides the dialog. */
@@ -422,7 +422,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
             }
             mIphMessagePropertyModel =
                     ArchivedTabsIphMessageCardViewModel.create(
-                            mContext, this::onIphReviewClicked, this::onIphDismissClicked);
+                            mActivity, this::onIphReviewClicked, this::onIphDismissClicked);
             updateIphPropertyModel();
             mTabListEditorCoordinator.addSpecialListItem(
                     0, UiType.MESSAGE, mIphMessagePropertyModel);
@@ -533,7 +533,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     void updateTitle() {
         int numInactiveTabs = mArchivedTabModel.getCount();
         String title =
-                mContext.getResources()
+                mActivity
+                        .getResources()
                         .getQuantityString(
                                 R.plurals.archived_tabs_dialog_title,
                                 numInactiveTabs,
@@ -544,7 +545,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     private void createTabListEditorCoordinator() {
         mTabListEditorCoordinator =
                 new TabListEditorCoordinator(
-                        mContext,
+                        mActivity,
                         mRootView,
                         /* parentView= */ mDialogView.findViewById(R.id.tab_list_editor_container),
                         mBrowserControlsStateProvider,
@@ -623,7 +624,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
     private void onIphReviewClicked() {
         SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(mContext, TabArchiveSettingsFragment.class);
+                .startSettings(mActivity, TabArchiveSettingsFragment.class);
         RecordUserAction.record("Tabs.ArchivedTabsDialogIphClicked");
     }
 
@@ -640,23 +641,23 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         int archiveTimeDeltaDays = mTabArchiveSettings.getArchiveTimeDeltaDays();
         int autoDeleteTimeDeletaDays = mTabArchiveSettings.getAutoDeleteTimeDeltaDays();
         String settingsTitle =
-                mContext.getString(R.string.archived_tab_iph_card_subtitle_settings_title);
+                mActivity.getString(R.string.archived_tab_iph_card_subtitle_settings_title);
         // The auto-delete section is blank when the feature param is disabled.
         String autoDeleteTitle =
                 mTabArchiveSettings.isAutoDeleteEnabled()
-                        ? mContext.getString(
+                        ? mActivity.getString(
                                 R.string.archived_tab_iph_card_subtitle_autodelete_section,
                                 autoDeleteTimeDeletaDays)
                         : "";
         String description =
-                mContext.getString(
+                mActivity.getString(
                         R.string.archived_tab_iph_card_subtitle,
                         archiveTimeDeltaDays,
                         autoDeleteTitle,
                         settingsTitle);
         SpannableString ss = new SpannableString(description);
         ForegroundColorSpan fcs =
-                new ForegroundColorSpan(SemanticColorUtils.getDefaultTextColorAccent1(mContext));
+                new ForegroundColorSpan(SemanticColorUtils.getDefaultTextColorAccent1(mActivity));
         ss.setSpan(
                 fcs,
                 description.indexOf(settingsTitle),

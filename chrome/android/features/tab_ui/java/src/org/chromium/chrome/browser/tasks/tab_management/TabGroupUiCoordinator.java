@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
 import android.view.LayoutInflater;
@@ -66,7 +65,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             new ObservableSupplierImpl<>();
 
     private final Activity mActivity;
-    private final Context mContext;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final PropertyModel mModel;
     private final TabGroupUiToolbarView mToolbarView;
@@ -109,7 +107,6 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             @NonNull ThemeColorProvider themeColorProvider) {
         try (TraceEvent e = TraceEvent.scoped("TabGroupUiCoordinator.constructor")) {
             mActivity = activity;
-            mContext = parentView.getContext();
             mBrowserControlsStateProvider = browserControlsStateProvider;
             mScrimCoordinator = scrimCoordinator;
             mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
@@ -122,7 +119,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             : R.layout.bottom_tab_strip_toolbar;
             mToolbarView =
                     (TabGroupUiToolbarView)
-                            LayoutInflater.from(mContext).inflate(layoutId, parentView, false);
+                            LayoutInflater.from(activity).inflate(layoutId, parentView, false);
             mTabListContainerView = mToolbarView.getViewContainer();
             mBottomSheetController = bottomSheetController;
             mDataSharingTabManager = dataSharingTabManager;
@@ -189,7 +186,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             mTabStripCoordinator =
                     new TabListCoordinator(
                             TabListCoordinator.TabListMode.STRIP,
-                            mContext,
+                            mActivity,
                             mBrowserControlsStateProvider,
                             mModalDialogManager,
                             currentTabGroupModelFilterSupplier,

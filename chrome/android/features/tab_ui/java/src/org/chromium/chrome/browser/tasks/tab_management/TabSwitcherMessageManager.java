@@ -4,14 +4,13 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.content.Context;
+import android.app.Activity;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -125,7 +124,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     private static boolean sAppendedMessagesForTesting;
 
     private final @NonNull ObserverList<MessageUpdateObserver> mObservers = new ObserverList<>();
-    private final @NonNull Context mContext;
+    private final @NonNull Activity mActivity;
     private final @NonNull ActivityLifecycleDispatcher mLifecylceDispatcher;
     private final @NonNull ObservableSupplier<TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
@@ -154,7 +153,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     private @Nullable ArchivedTabsMessageService mArchivedTabsMessageService;
 
     /**
-     * @param context The Android activity context.
+     * @param activity The Android activity.
      * @param lifecycleDispatcher The {@link ActivityLifecycleDispatcher} for the activity.
      * @param currentTabGroupModelFilterSupplier The supplier of the current {@link
      *     TabGroupModelFilter}.
@@ -171,7 +170,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
      * @param desktopWindowStateManager Manager to get desktop window and app header state.
      */
     public TabSwitcherMessageManager(
-            @NonNull Context context,
+            @NonNull Activity activity,
             @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
             @NonNull ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
@@ -184,7 +183,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             @NonNull TabCreator regularTabCreator,
             @NonNull BackPressManager backPressManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {
-        mContext = context;
+        mActivity = activity;
         mLifecylceDispatcher = lifecycleDispatcher;
         mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
         mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
@@ -200,12 +199,12 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
 
         mMessageCardProviderCoordinator =
                 new MessageCardProviderCoordinator(
-                        context,
+                        activity,
                         () -> currentTabGroupModelFilterSupplier.get().getTabModel().getProfile(),
                         this::dismissHandler);
 
         mTabGridIphDialogCoordinator =
-                new TabGridIphDialogCoordinator(mContext, mModalDialogManager);
+                new TabGridIphDialogCoordinator(activity, mModalDialogManager);
 
         mMultiWindowModeStateDispatcher.addObserver(mMultiWindowModeObserver);
         mOnTabGroupModelFilterChanged.onResult(
@@ -291,7 +290,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()) {
             mArchivedTabsMessageService =
                     new ArchivedTabsMessageService(
-                            mContext,
+                            mActivity,
                             ArchivedTabModelOrchestrator.getForProfile(mProfile),
                             mBrowserControlsStateProvider,
                             mTabContentManager,
@@ -318,12 +317,12 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()
                 && mIncognitoReauthPromoMessageService == null) {
             IncognitoReauthManager incognitoReauthManager =
-                    new IncognitoReauthManager(ContextUtils.activityFromContext(mContext), profile);
+                    new IncognitoReauthManager(mActivity, profile);
             mIncognitoReauthPromoMessageService =
                     new IncognitoReauthPromoMessageService(
                             MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,
                             profile,
-                            mContext,
+                            mActivity,
                             ChromeSharedPreferences.getInstance(),
                             incognitoReauthManager,
                             mSnackbarManager,
