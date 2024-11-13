@@ -31,8 +31,6 @@
 namespace blink {
 
 struct ResourcePriority final {
-  STACK_ALLOCATED();
-
  public:
   enum VisibilityStatus {
     kNotVisible,

@@ -1664,6 +1664,11 @@ extern const char
 // enabled.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSpeculationRulesPrefetchFuture);
 
+// When enabled, some in-viewport images will initiate image decode immediately
+// upon load, rather than waiting for the next BeginMainFrame to trigger decode
+// as part of rasterization.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSpeculativeImageDecodes);
+
 // TODO(crbug/1431792): Speculatively warm-up service worker.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSpeculativeServiceWorkerWarmUp);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(

@@ -57,6 +57,7 @@ namespace blink {
 enum class ResourceType : uint8_t;
 class PermissionsPolicy;
 class KURL;
+class Resource;
 struct ResourceLoaderOptions;
 class SecurityOrigin;
 class WebScopedVirtualTimePauser;
@@ -174,6 +175,9 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
       const std::optional<float> resource_width,
       ResourceRequest&,
       const ResourceLoaderOptions&);
+
+  virtual void StartSpeculativeImageDecode(Resource* resource,
+                                           base::OnceClosure callback);
 
   // Called when the underlying context is detached. Note that some
   // FetchContexts continue working after detached (e.g., for fetch() operations

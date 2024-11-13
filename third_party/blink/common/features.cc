@@ -2495,6 +2495,10 @@ BASE_FEATURE(kSpeculationRulesPrefetchFuture,
              "SpeculationRulesPrefetchFuture",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSpeculativeImageDecodes,
+             "SpeculativeImageDecodes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable service worker warming-up feature. (https://crbug.com/1431792)
 BASE_FEATURE(kSpeculativeServiceWorkerWarmUp,
              "SpeculativeServiceWorkerWarmUp",
