@@ -22,6 +22,7 @@ source_set("incognito") {
     "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/common/ui/reauthentication",
   ]
 }
 
@@ -40,11 +41,13 @@ source_set("incognito_ui") {
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/elements:info_popover_view_controller",
     "//ios/chrome/browser/ui/settings/privacy:privacy_constants",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/reauthentication",
     "//ui/base",
   ]
 }
@@ -62,16 +65,21 @@ source_set("incognito_protocols") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "incognito_lock_mediator_unittest.mm" ]
+  sources = [
+    "incognito_lock_mediator_unittest.mm",
+    "incognito_lock_view_controller_unittest.mm",
+  ]
   deps = [
     ":incognito",
     ":incognito_protocols",
+    ":incognito_ui",
     "//base/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:features",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/common/ui/reauthentication",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
