@@ -6,7 +6,6 @@
 
 #include <math.h>
 
-#include <algorithm>
 #include <cstddef>
 #include <utility>
 
@@ -183,16 +182,7 @@ void Database::RequireBlockingTransactionClientsToBeActive(
 
     // If any of the connection's transactions is holding one of the blocked
     // lock IDs, require that client to be active.
-    if (std::any_of(
-            connection->transactions().begin(),
-            connection->transactions().end(),
-            [&](const std::pair<const int64_t, std::unique_ptr<Transaction>>&
-                    existing_transaction) {
-              return !base::STLSetIntersection<std::vector<PartitionedLockId>>(
-                          blocked_lock_ids,
-                          existing_transaction.second->lock_ids())
-                          .empty();
-            })) {
+    if (connection->IsHoldingLocks(blocked_lock_ids)) {
       connection->DisallowInactiveClient(
           storage::mojom::DisallowInactiveClientReason::
               kTransactionIsAcquiringLocks,

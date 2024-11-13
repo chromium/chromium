@@ -4,12 +4,14 @@
 
 #include "content/browser/indexed_db/instance/connection.h"
 
+#include <algorithm>
 #include <set>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
+#include "base/stl_util.h"
 #include "base/trace_event/base_tracing.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "content/browser/indexed_db/instance/callback_helpers.h"
@@ -113,24 +115,34 @@ void Connection::DisallowInactiveClient(
     return;
   }
 
-  if (reason ==
-      storage::mojom::DisallowInactiveClientReason::kVersionChangeEvent) {
-    // It's only necessary to keep the client active under this scenario.
-    mojo::Remote<storage::mojom::IndexedDBClientKeepActive>
-        client_keep_active_remote;
-    client_state_checker_->DisallowInactiveClient(
-        reason, client_keep_active_remote.BindNewPipeAndPassReceiver(),
-        std::move(callback));
-    client_keep_active_remotes_.Add(std::move(client_keep_active_remote));
-  } else {
-    client_state_checker_->DisallowInactiveClient(reason, mojo::NullReceiver(),
-                                                  std::move(callback));
-  }
+  mojo::Remote<storage::mojom::IndexedDBClientKeepActive>
+      client_keep_active_remote;
+  client_state_checker_->DisallowInactiveClient(
+      reason, client_keep_active_remote.BindNewPipeAndPassReceiver(),
+      std::move(callback));
+  client_keep_active_remotes_.Add(std::move(client_keep_active_remote));
 }
 
 void Connection::RemoveTransaction(int64_t id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  transactions_.erase(id);
+
+  size_t removed = transactions_.erase(id);
+  if (!removed) {
+    return;
+  }
+
+  // If this client is still blocking other clients, leave the keep-actives
+  // alive.
+  for (const auto& [_, transaction] : transactions_) {
+    if (transaction->state() == Transaction::State::STARTED &&
+        transaction->IsTransactionBlockingOtherClients(
+            /*consider_priority=*/true)) {
+      return;
+    }
+  }
+
+  // Safe to make this client inactive.
+  client_keep_active_remotes_.Clear();
 }
 
 void Connection::AbortTransactionAndTearDownOnError(
@@ -872,6 +884,18 @@ bool Connection::HasHigherPriorityThan(const PartitionedLockHolder* this_one,
 
   return this_lock_request_data->scheduling_priority <
          other_lock_request_data->scheduling_priority;
+}
+
+bool Connection::IsHoldingLocks(
+    const std::vector<PartitionedLockId>& lock_ids) const {
+  return std::ranges::any_of(
+      transactions_,
+      [&](const std::pair<const int64_t, std::unique_ptr<Transaction>>&
+              existing_transaction) {
+        return !base::STLSetIntersection<std::vector<PartitionedLockId>>(
+                    lock_ids, existing_transaction.second->lock_ids())
+                    .empty();
+      });
 }
 
 }  // namespace content::indexed_db

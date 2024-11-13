@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idb_transaction_options.h"
 #include "third_party/blink/renderer/core/dom/dom_string_list.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
@@ -58,7 +59,7 @@ class V8UnionStringOrStringSequence;
 class MODULES_EXPORT IDBDatabase final
     : public EventTarget,
       public ActiveScriptWrappable<IDBDatabase>,
-      public ExecutionContextLifecycleObserver,
+      public ExecutionContextLifecycleStateObserver,
       public mojom::blink::IDBDatabaseCallbacks {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -125,9 +126,11 @@ class MODULES_EXPORT IDBDatabase final
   // ScriptWrappable
   bool HasPendingActivity() const final;
 
-  // ExecutionContextLifecycleObserver
+  // ExecutionContextLifecycleStateObserver
   void ContextDestroyed() override;
   void ContextEnteredBackForwardCache() override;
+  void ContextLifecycleStateChanged(
+      mojom::blink::FrameLifecycleState state) override;
 
   // EventTarget
   const AtomicString& InterfaceName() const override;

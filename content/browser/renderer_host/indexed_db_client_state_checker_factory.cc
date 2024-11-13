@@ -116,13 +116,19 @@ class DocumentIndexedDBClientStateChecker final
       mojo::PendingReceiver<storage::mojom::IndexedDBClientKeepActive>
           keep_active,
       DisallowInactiveClientCallback callback) override {
+    CHECK(keep_active.is_valid());
     bool was_active = CheckIfClientWasActive(reason);
-    if (was_active && keep_active.is_valid()) {
-      // This is the only reason that we need to prevent the client from
-      // inactive state.
-      CHECK_EQ(
-          reason,
-          storage::mojom::DisallowInactiveClientReason::kVersionChangeEvent);
+
+    // If the client is still active, the `keep_active` is usually dropped.
+    // That's because we always first allow a client to enter BFCache, and then
+    // evict it afterwards if we've determined it is blocking another client.
+    // The only exception is for the kVersionChangeEvent reason, which is called
+    // preemptively to ensure the client doesn't enter BFCache while the version
+    // change event is being handled.
+    // TODO(362464956): Add support for unfreezing frozen clients as well.
+    if (was_active &&
+        reason ==
+            storage::mojom::DisallowInactiveClientReason::kVersionChangeEvent) {
       // If the document is active, we need to register a non sticky feature to
       // prevent putting it into BFCache until the IndexedDB connection is
       // successfully closed and the context is automatically destroyed.

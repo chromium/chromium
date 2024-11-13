@@ -104,7 +104,7 @@ IDBDatabase::IDBDatabase(
     mojo::PendingAssociatedRemote<mojom::blink::IDBDatabase> pending_database,
     int connection_priority)
     : ActiveScriptWrappable<IDBDatabase>({}),
-      ExecutionContextLifecycleObserver(context),
+      ExecutionContextLifecycleStateObserver(context),
       database_remote_(context),
       connection_lifetime_(std::move(connection_lifetime)),
       scheduling_priority_(connection_priority),
@@ -119,6 +119,8 @@ IDBDatabase::IDBDatabase(
       FrameOrWorkerScheduler::ObserverType::kWorkerScheduler,
       WTF::BindRepeating(&IDBDatabase::OnSchedulerLifecycleStateChanged,
                          WrapWeakPersistent(this)));
+
+  UpdateStateIfNeeded();
 }
 
 void IDBDatabase::Trace(Visitor* visitor) const {
@@ -547,7 +549,21 @@ void IDBDatabase::ContextDestroyed() {
 }
 
 void IDBDatabase::ContextEnteredBackForwardCache() {
-  if (database_remote_.is_bound()) {
+  if (!database_remote_.is_bound()) {
+    return;
+  }
+
+  DidBecomeInactive();
+}
+
+void IDBDatabase::ContextLifecycleStateChanged(
+    mojom::blink::FrameLifecycleState state) {
+  if (!database_remote_.is_bound()) {
+    return;
+  }
+
+  if (state == mojom::blink::FrameLifecycleState::kFrozen ||
+      state == mojom::blink::FrameLifecycleState::kFrozenAutoResumeMedia) {
     DidBecomeInactive();
   }
 }

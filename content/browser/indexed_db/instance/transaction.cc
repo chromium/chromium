@@ -297,9 +297,8 @@ bool Transaction::IsTransactionBlockingOtherClients(
   CHECK_EQ(state_, STARTED);
   std::set<PartitionedLockHolder*> blocked_requests =
       bucket_context_->lock_manager().GetBlockedRequests(lock_ids());
-  return std::any_of(
-      blocked_requests.begin(), blocked_requests.end(),
-      [&](PartitionedLockHolder* blocked_lock_holder) {
+  return std::ranges::any_of(
+      blocked_requests, [&](PartitionedLockHolder* blocked_lock_holder) {
         auto* lock_request_data = static_cast<LockRequestData*>(
             blocked_lock_holder->GetUserData(LockRequestData::kKey));
         if (!lock_request_data) {
