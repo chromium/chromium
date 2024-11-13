@@ -270,16 +270,19 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   self.identityDiscView.translatesAutoresizingMaskIntoConstraints = NO;
   CGFloat dimension =
       ntp_home::kIdentityAvatarDimension + 2 * ntp_home::kHeaderIconMargin;
+  CGFloat identityAvatarPadding = ntp_home::kIdentityAvatarPadding;
   if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
     // Add extra margin to show the error badge if any.
     dimension += ntp_home::kHeaderIconMargin;
+    // And remove the padding so that the disc does not move
+    identityAvatarPadding -= ntp_home::kHeaderIconMargin / 2;
   }
   [NSLayoutConstraint activateConstraints:@[
     [self.identityDiscView.heightAnchor constraintEqualToConstant:dimension],
     [self.identityDiscView.widthAnchor constraintEqualToConstant:dimension],
     [self.identityDiscView.trailingAnchor
         constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor
-                       constant:-ntp_home::kIdentityAvatarPadding],
+                       constant:-identityAvatarPadding],
     [self.identityDiscView.centerYAnchor
         constraintEqualToAnchor:self.toolBarView.centerYAnchor],
   ]];
