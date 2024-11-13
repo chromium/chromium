@@ -80,6 +80,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   id<MostVisitedTilesStackViewConsumer> _stackViewConsumer;
 }
 
+@synthesize inMagicStack = _inMagicStack;
+
 - (instancetype)
     initWithMostVisitedSite:
         (std::unique_ptr<ntp_tiles::MostVisitedSites>)mostVisitedSites
@@ -92,6 +94,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
     _prefService = prefService;
     _URLLoadingBrowserAgent = URLLoadingBrowserAgent;
     _incognitoAvailable = !IsIncognitoModeDisabled(prefService);
+    _inMagicStack = ShouldPutMostVisitedSitesInMagicStack();
     _mostVisitedAttributesProvider = [[FaviconAttributesProvider alloc]
         initWithFaviconSize:kMagicStackFaviconWidth
              minFaviconSize:kMagicStackMostVisitedFaviconMinimalSize
@@ -355,12 +358,12 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
                         std::move(freshMostVisitedSites));
 
   _mostVisitedConfig = [[MostVisitedTilesConfig alloc] init];
-  _mostVisitedConfig.inMagicStack = ShouldPutMostVisitedSitesInMagicStack();
+  _mostVisitedConfig.inMagicStack = self.inMagicStack;
   _mostVisitedConfig.imageDataSource = self;
   _mostVisitedConfig.commandHandler = self;
   _mostVisitedConfig.mostVisitedItems = _freshMostVisitedItems;
   _mostVisitedConfig.consumerSource = self;
-  if (ShouldPutMostVisitedSitesInMagicStack()) {
+  if (self.inMagicStack) {
     if ([_freshMostVisitedItems count] == 0) {
       [self.delegate removeMostVisitedTilesModule];
     } else if (!oldMostVisitedSites.empty()) {
@@ -378,7 +381,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 - (void)logMostVisitedOpening:(ContentSuggestionsMostVisitedItem*)item
                       atIndex:(NSInteger)mostVisitedIndex {
   [self.NTPActionsDelegate mostVisitedTileOpened];
-  if (ShouldPutMostVisitedSitesInMagicStack()) {
+  if (self.inMagicStack) {
     [self.delegate logMagicStackEngagementForType:ContentSuggestionsModuleType::
                                                       kMostVisited];
   }

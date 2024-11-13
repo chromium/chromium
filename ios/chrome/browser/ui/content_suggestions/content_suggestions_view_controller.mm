@@ -86,7 +86,8 @@
                                      : -kBottomMagicStackPadding)]
   ]];
 
-  if (_mostVisitedTileConfig && !ShouldPutMostVisitedSitesInMagicStack()) {
+  if (_mostVisitedTileConfig) {
+    CHECK(!_mostVisitedTileConfig.inMagicStack);
     [self createAndInsertMostVisitedModule];
   }
 }
@@ -119,6 +120,7 @@
 #pragma mark - ContentSuggestionsConsumer
 
 - (void)setMostVisitedTilesConfig:(MostVisitedTilesConfig*)config {
+  CHECK(!config.inMagicStack);
   _mostVisitedTileConfig = config;
   if (self.mostVisitedModuleContainer) {
     [self.mostVisitedModuleContainer removeFromSuperview];
@@ -154,22 +156,19 @@
 }
 
 - (void)createAndInsertMostVisitedModule {
-  if (!ShouldPutMostVisitedSitesInMagicStack()) {
-    [self.verticalStackView
-        insertArrangedSubview:self.mostVisitedModuleContainer
-                      atIndex:0];
-    [self.verticalStackView setCustomSpacing:(IsHomeCustomizationEnabled()
-                                                  ? 0
-                                                  : kMostVisitedBottomMargin)
-                                   afterView:self.mostVisitedModuleContainer];
-    [NSLayoutConstraint activateConstraints:@[
-      [self.mostVisitedModuleContainer.widthAnchor
-          constraintEqualToAnchor:self.view.widthAnchor],
-      [self.mostVisitedModuleContainer.centerXAnchor
-          constraintEqualToAnchor:self.view.centerXAnchor],
-    ]];
-    [self.view layoutIfNeeded];
-  }
+  [self.verticalStackView insertArrangedSubview:self.mostVisitedModuleContainer
+                                        atIndex:0];
+  [self.verticalStackView
+      setCustomSpacing:(IsHomeCustomizationEnabled() ? 0
+                                                     : kMostVisitedBottomMargin)
+             afterView:self.mostVisitedModuleContainer];
+  [NSLayoutConstraint activateConstraints:@[
+    [self.mostVisitedModuleContainer.widthAnchor
+        constraintEqualToAnchor:self.view.widthAnchor],
+    [self.mostVisitedModuleContainer.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
+  ]];
+  [self.view layoutIfNeeded];
 }
 
 @end

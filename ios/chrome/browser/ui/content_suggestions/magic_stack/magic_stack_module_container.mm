@@ -248,20 +248,25 @@ const CGFloat kSeparatorHeight = 0.5;
 
 - (void)configureWithConfig:(MagicStackModule*)config {
   [self resetView];
+  // By default, the container is in the magic stack.
+  BOOL inMagicStack = YES;
   // Ensures that the modules conforms to a height of kModuleMaxHeight. For
   // the MVT when it lives outside of the Magic Stack to stay as close to its
   // intrinsic size as possible, the constraint is configured to be less than
   // or equal to.
-  BOOL inMagicStack = ShouldPutMostVisitedSitesInMagicStack();
-  if (config.type == ContentSuggestionsModuleType::kMostVisited &&
-      !inMagicStack) {
-    self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-    self.layer.cornerRadius = kCornerRadius;
-    self.clipsToBounds = YES;
-    _containerHeightAnchor.active = NO;
-    _containerHeightAnchor = [self.heightAnchor
-        constraintLessThanOrEqualToConstant:kModuleMaxHeight];
-    [NSLayoutConstraint activateConstraints:@[ _containerHeightAnchor ]];
+  if (config.type == ContentSuggestionsModuleType::kMostVisited) {
+    MostVisitedTilesConfig* mvtConfig =
+        static_cast<MostVisitedTilesConfig*>(config);
+    inMagicStack = mvtConfig.inMagicStack;
+    if (!inMagicStack) {
+      self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+      self.layer.cornerRadius = kCornerRadius;
+      self.clipsToBounds = YES;
+      _containerHeightAnchor.active = NO;
+      _containerHeightAnchor = [self.heightAnchor
+          constraintLessThanOrEqualToConstant:kModuleMaxHeight];
+      [NSLayoutConstraint activateConstraints:@[ _containerHeightAnchor ]];
+    }
   }
 
   if (config.type == ContentSuggestionsModuleType::kPlaceholder) {

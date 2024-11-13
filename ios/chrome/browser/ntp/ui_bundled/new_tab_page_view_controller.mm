@@ -497,7 +497,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
     [self addViewControllerAboveFeed:self.magicStackCollectionView];
   }
 
-  if (!ShouldPutMostVisitedSitesInMagicStack() &&
+  if (self.contentSuggestionsViewController &&
       (!IsHomeCustomizationEnabled() || self.mostVisitedVisible)) {
     [self addViewControllerAboveFeed:self.contentSuggestionsViewController];
   }
@@ -590,7 +590,7 @@ const CGFloat kFeedContainerExtraHeight = 500;
 
   [self removeFromViewHierarchy:self.feedWrapperViewController];
   [self removeFromViewHierarchy:self.magicStackCollectionView];
-  if (!ShouldPutMostVisitedSitesInMagicStack()) {
+  if (self.contentSuggestionsViewController) {
     [self removeFromViewHierarchy:self.contentSuggestionsViewController];
   }
 
@@ -1544,14 +1544,12 @@ const CGFloat kFeedContainerExtraHeight = 500;
           constraintEqualToAnchor:self.moduleLayoutGuide.trailingAnchor],
     ]];
   }
-  if (!ShouldPutMostVisitedSitesInMagicStack()) {
-    if (!IsHomeCustomizationEnabled()) {
-      [NSLayoutConstraint activateConstraints:@[
-        [self.magicStackCollectionView.view.topAnchor
-            constraintEqualToAnchor:self.contentSuggestionsViewController.view
-                                        .bottomAnchor],
-      ]];
-    }
+  if (self.contentSuggestionsViewController && !IsHomeCustomizationEnabled()) {
+    [NSLayoutConstraint activateConstraints:@[
+      [self.magicStackCollectionView.view.topAnchor
+          constraintEqualToAnchor:self.contentSuggestionsViewController.view
+                                      .bottomAnchor],
+    ]];
   }
 
   // Anchor each module except the one directly below the header, since it will

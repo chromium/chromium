@@ -447,7 +447,7 @@ using segmentation_platform::TipIdentifier;
     [moduleMediators addObject:_tipsMediator];
   }
 
-  if (!ShouldPutMostVisitedSitesInMagicStack()) {
+  if (!_mostVisitedTilesMediator.inMagicStack) {
     ContentSuggestionsViewController* viewController =
         [[ContentSuggestionsViewController alloc] init];
     viewController.audience = self;
