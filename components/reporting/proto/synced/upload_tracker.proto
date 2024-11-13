@@ -54,7 +54,6 @@ message UploadTracker {
   // finalize the upload at the end (after that, this field should be cleared).
   // This field is implementation-dependent; having it generic allows to choose
   // the actual upload protocol and/or unit test the whole process.
-
   // ${COPYBARA_DATAPOL_ST_ACCOUNT_CREDENTIAL}
   optional string session_token = 4;  // required, while upload is in progress.
 
