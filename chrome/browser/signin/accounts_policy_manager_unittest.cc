@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/accounts_policy_manager.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/accounts_policy_manager_factory.h"
@@ -52,12 +53,14 @@ class AccountsPolicyManagerTest : public testing::Test {
   void CreateTestingProfile() {
     DCHECK(!profile_);
 
-    profile_ = profile_manager_.CreateTestingProfile(
-        "accounts_policy_manager_test_profile_path",
-        IdentityTestEnvironmentProfileAdaptor::
-            GetIdentityTestEnvironmentFactories());
+    profile_ =
+        profile_manager_
+            .CreateTestingProfile("accounts_policy_manager_test_profile_path",
+                                  IdentityTestEnvironmentProfileAdaptor::
+                                      GetIdentityTestEnvironmentFactories())
+            ->GetWeakPtr();
     identity_test_env_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     AccountsPolicyManagerFactory::GetForProfile(GetProfile())
@@ -74,9 +77,9 @@ class AccountsPolicyManagerTest : public testing::Test {
 
   PrefService* GetLocalState() { return profile_manager_.local_state()->Get(); }
 
-  TestingProfile* GetProfile() {
+  Profile* GetProfile() {
     DCHECK(profile_);
-    return profile_;
+    return profile_.get();
   }
 
   TestingProfileManager* GetProfileManager() { return &profile_manager_; }
@@ -97,7 +100,7 @@ class AccountsPolicyManagerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  raw_ptr<TestingProfile, DanglingUntriaged> profile_ = nullptr;
+  base::WeakPtr<Profile> profile_ = nullptr;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
 };
