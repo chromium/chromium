@@ -234,7 +234,7 @@ void TabModel::Close() {
   auto* window_interface = GetBrowserWindowInterface();
   auto* tab_strip = window_interface->GetTabStripModel();
   CHECK(tab_strip);
-  int tab_idx = tab_strip->GetIndexOfTab(GetHandle());
+  const int tab_idx = tab_strip->GetIndexOfTab(this);
   CHECK(tab_idx != TabStripModel::kNoTab);
   tab_strip->CloseWebContentsAt(tab_idx, TabCloseTypes::CLOSE_NONE);
 }
@@ -318,8 +318,7 @@ TabInterface* TabInterface::MaybeGetFromContents(
 
 // static
 TabInterface* TabInterface::MaybeGetFromHandle(uint32_t handle_id) {
-  auto& helper = internal::HandleHelper<TabModel, int>::GetInstance();
-  return helper.LookupObject(handle_id);
+  return TabHandle(handle_id).Get();
 }
 
 }  // namespace tabs

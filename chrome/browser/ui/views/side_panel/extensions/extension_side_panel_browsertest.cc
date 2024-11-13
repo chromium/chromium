@@ -992,8 +992,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
                        UnloadExtensionAfterMovingTab) {
   OpenNewForegroundTab();
   ASSERT_TRUE(browser()->tab_strip_model()->IsTabSelected(1));
-  const tabs::TabModel* second_tab =
-      browser()->tab_strip_model()->GetTabHandleAt(1).Get();
+  const tabs::TabInterface* second_tab =
+      browser()->tab_strip_model()->GetTabAtIndex(1);
   ASSERT_TRUE(second_tab);
   int second_tab_id = GetCurrentTabId();
 
@@ -1007,7 +1007,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
   {
     // Register a SidePanelEntry for the extension for the second tab.
     SidePanelRegistry* second_tab_registry =
-        SidePanelRegistry::GetDeprecated(second_tab->contents());
+        SidePanelRegistry::GetDeprecated(second_tab->GetContents());
     ExtensionSidePanelRegistryWaiter waiter(second_tab_registry,
                                             extension->id());
     RunSetOptions(*extension, second_tab_id, "panel_1.html",

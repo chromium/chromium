@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
@@ -739,14 +741,14 @@ TEST_P(TabStripModelTest, TestTabHandlesStaticTabstrip) {
   EXPECT_TRUE(tabstrip.empty());
 
   tabstrip.AppendWebContents(CreateWebContentsWithID(1), true);
-  const tabs::TabHandle handle1 = tabstrip.GetTabHandleAt(0);
+  const tabs::TabHandle handle1 = tabstrip.GetTabAtIndex(0)->GetHandle();
   tabstrip.AppendWebContents(CreateWebContentsWithID(2), true);
-  const tabs::TabHandle handle2 = tabstrip.GetTabHandleAt(1);
+  const tabs::TabHandle handle2 = tabstrip.GetTabAtIndex(1)->GetHandle();
 
-  EXPECT_EQ(0, tabstrip.GetIndexOfTab(handle1));
-  EXPECT_EQ(handle1, tabstrip.GetTabHandleAt(0));
-  EXPECT_EQ(1, tabstrip.GetIndexOfTab(handle2));
-  EXPECT_EQ(handle2, tabstrip.GetTabHandleAt(1));
+  EXPECT_EQ(0, tabstrip.GetIndexOfTab(handle1.Get()));
+  EXPECT_EQ(handle1, tabstrip.GetTabAtIndex(0)->GetHandle());
+  EXPECT_EQ(1, tabstrip.GetIndexOfTab(handle2.Get()));
+  EXPECT_EQ(handle2, tabstrip.GetTabAtIndex(1)->GetHandle());
 }
 
 TEST_P(TabStripModelTest, TestTabHandlesMovingTabInSameTabstrip) {
@@ -755,16 +757,16 @@ TEST_P(TabStripModelTest, TestTabHandlesMovingTabInSameTabstrip) {
   EXPECT_TRUE(tabstrip.empty());
 
   tabstrip.AppendWebContents(CreateWebContentsWithID(1), true);
-  const tabs::TabHandle handle1 = tabstrip.GetTabHandleAt(0);
+  const tabs::TabHandle handle1 = tabstrip.GetTabAtIndex(0)->GetHandle();
   tabstrip.AppendWebContents(CreateWebContentsWithID(2), true);
-  const tabs::TabHandle handle2 = tabstrip.GetTabHandleAt(1);
+  const tabs::TabHandle handle2 = tabstrip.GetTabAtIndex(1)->GetHandle();
 
   tabstrip.MoveWebContentsAt(0, 1, false);
 
-  EXPECT_EQ(0, tabstrip.GetIndexOfTab(handle2));
-  EXPECT_EQ(handle2, tabstrip.GetTabHandleAt(0));
-  EXPECT_EQ(1, tabstrip.GetIndexOfTab(handle1));
-  EXPECT_EQ(handle1, tabstrip.GetTabHandleAt(1));
+  EXPECT_EQ(0, tabstrip.GetIndexOfTab(handle2.Get()));
+  EXPECT_EQ(handle2, tabstrip.GetTabAtIndex(0)->GetHandle());
+  EXPECT_EQ(1, tabstrip.GetIndexOfTab(handle1.Get()));
+  EXPECT_EQ(handle1, tabstrip.GetTabAtIndex(1)->GetHandle());
 }
 
 TEST_P(TabStripModelTest, TestTabHandlesTabClosed) {
@@ -773,12 +775,12 @@ TEST_P(TabStripModelTest, TestTabHandlesTabClosed) {
   EXPECT_TRUE(tabstrip.empty());
 
   tabstrip.AppendWebContents(CreateWebContentsWithID(1), true);
-  const tabs::TabHandle handle = tabstrip.GetTabHandleAt(0);
+  const tabs::TabHandle handle = tabstrip.GetTabAtIndex(0)->GetHandle();
   tabstrip.AppendWebContents(CreateWebContentsWithID(2), true);
 
   tabstrip.CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
 
-  EXPECT_EQ(TabStripModel::kNoTab, tabstrip.GetIndexOfTab(handle));
+  EXPECT_EQ(TabStripModel::kNoTab, tabstrip.GetIndexOfTab(handle.Get()));
   EXPECT_EQ(nullptr, handle.Get());
 }
 
@@ -790,34 +792,37 @@ TEST_P(TabStripModelTest, TestTabHandlesOutOfBounds) {
   tabstrip.AppendWebContents(CreateWebContentsWithID(1), true);
   tabstrip.AppendWebContents(CreateWebContentsWithID(2), true);
 
-  EXPECT_EQ(TabStripModel::kNoTab,
-            tabstrip.GetIndexOfTab(tabs::TabHandle::Null()));
-  EXPECT_DEATH_IF_SUPPORTED(tabstrip.GetTabHandleAt(2).Get(), "");
-  EXPECT_DEATH_IF_SUPPORTED(tabstrip.GetTabHandleAt(-1).Get(), "");
+  EXPECT_EQ(TabStripModel::kNoTab, tabstrip.GetIndexOfTab(nullptr));
+  EXPECT_DEATH_IF_SUPPORTED(tabstrip.GetTabAtIndex(2)->GetHandle(), "");
+  EXPECT_DEATH_IF_SUPPORTED(tabstrip.GetTabAtIndex(-1)->GetHandle(), "");
 }
 
 TEST_P(TabStripModelTest, TestTabHandlesAcrossModels) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());
+  MockBrowserWindowInterface bwi;
+  delegate.SetBrowserWindowInterface(&bwi);
+  ON_CALL(bwi, GetTabStripModel).WillByDefault(::testing::Return(&tabstrip));
   ASSERT_TRUE(tabstrip.empty());
 
   tabstrip.AppendWebContents(CreateWebContentsWithID(1), true);
-  const tabs::TabHandle handle = tabstrip.GetTabHandleAt(0);
-  content::WebContents* raw_contents = handle.Get()->contents();
+  const tabs::TabHandle handle = tabstrip.GetTabAtIndex(0)->GetHandle();
+  content::WebContents* raw_contents = handle.Get()->GetContents();
   tabstrip.AppendWebContents(CreateWebContentsWithID(2), true);
   content::WebContents* const opener = tabstrip.GetWebContentsAt(1);
 
-  ASSERT_EQ(0, tabstrip.GetIndexOfTab(handle));
-  ASSERT_EQ(handle, tabstrip.GetTabHandleAt(0));
-  ASSERT_EQ(&tabstrip, handle.Get()->owning_model());
+  ASSERT_EQ(0, tabstrip.GetIndexOfTab(handle.Get()));
+  ASSERT_EQ(handle, tabstrip.GetTabAtIndex(0)->GetHandle());
+  ASSERT_EQ(&tabstrip,
+            handle.Get()->GetBrowserWindowInterface()->GetTabStripModel());
 
   tabstrip.SetOpenerOfWebContentsAt(0, opener);
-  ASSERT_NE(nullptr, handle.Get()->opener());
-  ASSERT_EQ(opener, handle.Get()->opener()->contents());
+  ASSERT_NE(nullptr, tabstrip.GetOpenerOfTabAt(0));
+  ASSERT_EQ(opener, tabstrip.GetOpenerOfTabAt(0)->GetContents());
   tabstrip.SetTabPinned(0, true);
-  ASSERT_EQ(true, handle.Get()->pinned());
+  ASSERT_EQ(true, handle.Get()->IsPinned());
   tabstrip.SetTabBlocked(0, true);
-  ASSERT_EQ(true, handle.Get()->blocked());
+  ASSERT_EQ(true, tabstrip.IsTabBlocked(0));
 
   // Detach the tab, and the TabModel should continue to exist, but its state
   // should get mostly reset.
@@ -825,24 +830,27 @@ TEST_P(TabStripModelTest, TestTabHandlesAcrossModels) {
   std::unique_ptr<tabs::TabModel> owned_tab =
       tabstrip.DetachTabAtForInsertion(0);
   EXPECT_EQ(owned_tab.get(), handle.Get());
-  EXPECT_EQ(nullptr, handle.Get()->owning_model());
+  // Tabs not in a tabstrip are not supported - this should CHECK.
+  EXPECT_DEATH_IF_SUPPORTED(handle.Get()->GetBrowserWindowInterface(), "");
 
-  EXPECT_EQ(raw_contents, handle.Get()->contents());
-  EXPECT_EQ(nullptr, handle.Get()->opener());
-  EXPECT_EQ(false, handle.Get()->reset_opener_on_active_tab_change());
-  EXPECT_EQ(false, handle.Get()->pinned());
-  EXPECT_EQ(false, handle.Get()->blocked());
+  EXPECT_EQ(raw_contents, handle.Get()->GetContents());
+  EXPECT_EQ(nullptr, owned_tab.get()->opener());
+  EXPECT_EQ(false, owned_tab.get()->reset_opener_on_active_tab_change());
+  EXPECT_EQ(false, handle.Get()->IsPinned());
+  EXPECT_EQ(false, owned_tab.get()->blocked());
 
   // Add it back into the tabstrip.
 
   tabstrip.InsertDetachedTabAt(0, std::move(owned_tab), AddTabTypes::ADD_NONE);
-  EXPECT_EQ(&tabstrip, handle.Get()->owning_model());
+  EXPECT_EQ(&tabstrip,
+            handle.Get()->GetBrowserWindowInterface()->GetTabStripModel());
 
-  EXPECT_EQ(raw_contents, handle.Get()->contents());
-  EXPECT_EQ(nullptr, handle.Get()->opener());
-  EXPECT_EQ(false, handle.Get()->reset_opener_on_active_tab_change());
-  EXPECT_EQ(false, handle.Get()->pinned());
-  EXPECT_EQ(false, handle.Get()->blocked());
+  EXPECT_EQ(raw_contents, handle.Get()->GetContents());
+  EXPECT_EQ(nullptr, tabstrip.GetOpenerOfTabAt(0));
+  EXPECT_EQ(false, handle.Get()->IsPinned());
+  EXPECT_EQ(false, tabstrip.IsTabBlocked(0));
+
+  delegate.SetBrowserWindowInterface(nullptr);
 }
 
 TEST_P(TabStripModelTest, TestBasicOpenerAPI) {
@@ -880,8 +888,8 @@ TEST_P(TabStripModelTest, TestBasicOpenerAPI) {
 
   // All the tabs should have the same opener.
   for (int i = 1; i < tabstrip.count(); ++i) {
-    const tabs::TabModel* tab_opener = tabstrip.GetOpenerOfTabAt(i);
-    EXPECT_EQ(raw_opener, tab_opener ? tab_opener->contents() : nullptr);
+    const tabs::TabInterface* tab_opener = tabstrip.GetOpenerOfTabAt(i);
+    EXPECT_EQ(raw_opener, tab_opener ? tab_opener->GetContents() : nullptr);
   }
 
   // If there is a next adjacent item, then the index should be of that item.
@@ -912,8 +920,8 @@ TEST_P(TabStripModelTest, TestBasicOpenerAPI) {
   }
 
   for (int i = 0; i < tabstrip.count() - 1; ++i) {
-    const tabs::TabModel* tab_opener = tabstrip.GetOpenerOfTabAt(i);
-    EXPECT_EQ(raw_contents5, tab_opener ? tab_opener->contents() : nullptr);
+    const tabs::TabInterface* tab_opener = tabstrip.GetOpenerOfTabAt(i);
+    EXPECT_EQ(raw_contents5, tab_opener ? tab_opener->GetContents() : nullptr);
   }
 
   // If there is a next adjacent item, then the index should be of that item.
@@ -1104,8 +1112,8 @@ TEST_P(TabStripModelTest, TestInsertionIndexDeterminationAfterDragged) {
   // TODO(johnme): Maybe its opener should be reset when it's dragged away.
   EXPECT_EQ(-1, tabstrip.GetIndexOfLastWebContentsOpenedBy(raw_opener1, 0));
 
-  tabs::TabModel* tab_opener = tabstrip.GetOpenerOfTabAt(2);
-  EXPECT_EQ(raw_opener1, tab_opener ? tab_opener->contents() : nullptr);
+  tabs::TabInterface* tab_opener = tabstrip.GetOpenerOfTabAt(2);
+  EXPECT_EQ(raw_opener1, tab_opener ? tab_opener->GetContents() : nullptr);
 
   // Activate the parent tab again.
   tabstrip.ActivateTabAt(0,
@@ -1194,8 +1202,8 @@ TEST_P(TabStripModelTest, TestInsertionIndexDeterminationNestedOpener) {
   EXPECT_EQ("1 111 12 2", GetTabStripStateString(tabstrip));
   EXPECT_EQ(1, GetID(tabstrip.GetActiveWebContents()));
   // opener1 is now the opener of 111, so has two adjacent descendants (111, 12)
-  tabs::TabModel* tab_opener = tabstrip.GetOpenerOfTabAt(1);
-  EXPECT_EQ(raw_opener1, tab_opener ? tab_opener->contents() : nullptr);
+  tabs::TabInterface* tab_opener = tabstrip.GetOpenerOfTabAt(1);
+  EXPECT_EQ(raw_opener1, tab_opener ? tab_opener->GetContents() : nullptr);
   EXPECT_EQ(2, tabstrip.GetIndexOfLastWebContentsOpenedBy(raw_opener1, 0));
 
   tabstrip.CloseAllTabs();
@@ -3338,7 +3346,7 @@ TEST_P(TabStripModelTest, TabBlockedState) {
   // Detach the tab.
   std::unique_ptr<tabs::TabModel> moved_tab =
       strip_src.DetachTabAtForInsertion(1);
-  EXPECT_EQ(raw_contents2, moved_tab->contents());
+  EXPECT_EQ(raw_contents2, moved_tab->GetContents());
 
   // Attach the tab to the destination tab strip.
   strip_dst.AppendTab(std::move(moved_tab), true);
@@ -4415,7 +4423,7 @@ TEST_P(TabStripModelTest, DanglingOpener) {
 
   // Ensure the opener for the tab at index 0 isn't dangling. It should be null
   // instead.
-  tabs::TabModel* opener = strip.GetOpenerOfTabAt(0);
+  tabs::TabInterface* opener = strip.GetOpenerOfTabAt(0);
   EXPECT_FALSE(opener);
 
   strip.CloseAllTabs();
@@ -4724,6 +4732,10 @@ TEST_P(TabStripModelTest, AppendTab) {
   TestTabStripModelDelegate delegate;
   std::unique_ptr<TabStripModel> tabstrip =
       std::make_unique<TabStripModel>(&delegate, profile());
+  MockBrowserWindowInterface bwi;
+  delegate.SetBrowserWindowInterface(&bwi);
+  ON_CALL(bwi, GetTabStripModel)
+      .WillByDefault(::testing::Return(tabstrip.get()));
   ASSERT_TRUE(tabstrip->empty());
 
   // Create a 2 tabs to serve as an opener and the previous opener.
@@ -4732,23 +4744,26 @@ TEST_P(TabStripModelTest, AppendTab) {
 
   // Force the opener of tab in index 1 to be tab at index 0.
   tabstrip->SetOpenerOfWebContentsAt(1, tabstrip->GetWebContentsAt(0));
-  ASSERT_EQ(tabstrip->GetTabAtIndex(0),
-            tabstrip->GetTabHandleAt(1).Get()->opener());
+  ASSERT_EQ(tabstrip->GetTabAtIndex(0), tabstrip->GetOpenerOfTabAt(1));
 
   // Detach 2 tabs for the test, one for each option.
   std::unique_ptr<tabs::TabModel> tab_model_with_foreground_true =
       tabstrip->DetachTabAtForInsertion(2);
-  tabs::TabModel* tab_model_with_foreground_true_ptr =
+  tabs::TabInterface* tab_with_foreground_true_ptr =
       tab_model_with_foreground_true.get();
   ASSERT_EQ(3, tabstrip->count());
-  ASSERT_EQ(tab_model_with_foreground_true->owning_model(), nullptr);
+  // Tabs not in a tabstrip are not supported - this should CHECK.
+  ASSERT_DEATH_IF_SUPPORTED(
+      tab_with_foreground_true_ptr->GetBrowserWindowInterface(), "");
 
   std::unique_ptr<tabs::TabModel> tab_model_with_foreground_false =
       tabstrip->DetachTabAtForInsertion(2);
-  tabs::TabModel* tab_model_with_foreground_false_ptr =
+  tabs::TabInterface* tab_with_foreground_false_ptr =
       tab_model_with_foreground_false.get();
   ASSERT_EQ(2, tabstrip->count());
-  ASSERT_EQ(tab_model_with_foreground_false->owning_model(), nullptr);
+  // Tabs not in a tabstrip are not supported - this should CHECK.
+  ASSERT_DEATH_IF_SUPPORTED(
+      tab_with_foreground_true_ptr->GetBrowserWindowInterface(), "");
 
   // Add a 3rd tab using the foreground option. When the foreground option is
   // used, the new tab should become active, and the previous tab should become
@@ -4757,9 +4772,10 @@ TEST_P(TabStripModelTest, AppendTab) {
                       /*foreground=*/true);
   EXPECT_TRUE(tabstrip->ContainsIndex(2));
   EXPECT_EQ(2, tabstrip->active_index());
-  EXPECT_EQ(tabstrip->GetTabAtIndex(1),
-            tabstrip->GetTabHandleAt(2).Get()->opener());
-  EXPECT_EQ(tab_model_with_foreground_true_ptr->owning_model(), tabstrip.get());
+  EXPECT_EQ(tabstrip->GetTabAtIndex(1), tabstrip->GetOpenerOfTabAt(2));
+  EXPECT_EQ(tab_with_foreground_true_ptr->GetBrowserWindowInterface()
+                ->GetTabStripModel(),
+            tabstrip.get());
 
   // Add a 4th tab using the non foreground option. this is similar to using the
   // AddType NONE, which should not set the active tab and should not inherit
@@ -4768,9 +4784,12 @@ TEST_P(TabStripModelTest, AppendTab) {
                       /*foreground=*/false);
   EXPECT_TRUE(tabstrip->ContainsIndex(3));
   EXPECT_EQ(2, tabstrip->active_index());
-  EXPECT_EQ(nullptr, tabstrip->GetTabHandleAt(3).Get()->opener());
-  EXPECT_EQ(tab_model_with_foreground_false_ptr->owning_model(),
+  EXPECT_EQ(nullptr, tabstrip->GetOpenerOfTabAt(3));
+  EXPECT_EQ(tab_with_foreground_false_ptr->GetBrowserWindowInterface()
+                ->GetTabStripModel(),
             tabstrip.get());
+
+  delegate.SetBrowserWindowInterface(nullptr);
 }
 
 TEST_P(TabStripModelTest, SelectionChangedSingleOperationObserverTest) {

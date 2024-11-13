@@ -2031,7 +2031,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   const gfx::Rect initial_bounds(browser()->window()->GetBounds());
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
-  tabs::TabHandle dragged_tab = browser()->tab_strip_model()->GetTabHandleAt(0);
+  tabs::TabHandle dragged_tab =
+      browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle();
 
   // Move to the first tab and drag it enough so that it detaches.
   int tab_0_width = tab_strip->tab_at(0)->width();
@@ -2054,8 +2055,10 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   EXPECT_EQ("0", IDString(new_browser->tab_strip_model()));
   EXPECT_EQ("1", IDString(browser()->tab_strip_model()));
-  EXPECT_EQ(0, new_browser->tab_strip_model()->GetIndexOfTab(dragged_tab));
-  EXPECT_EQ(new_browser->tab_strip_model(), dragged_tab.Get()->owning_model());
+  EXPECT_EQ(0,
+            new_browser->tab_strip_model()->GetIndexOfTab(dragged_tab.Get()));
+  EXPECT_EQ(new_browser->tab_strip_model(),
+            dragged_tab.Get()->GetBrowserWindowInterface()->GetTabStripModel());
 
   // The bounds of the initial window should not have changed.
   EXPECT_EQ(initial_bounds.ToString(),
@@ -2566,7 +2569,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        RevertDragWhileDetached) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
-  tabs::TabHandle dragged_tab = browser()->tab_strip_model()->GetTabHandleAt(0);
+  tabs::TabHandle dragged_tab =
+      browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle();
 
   ui_test_utils::BrowserChangeObserver removed_observer(
       nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kRemoved);
@@ -2585,8 +2589,9 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   EXPECT_EQ("0 1", IDString(browser()->tab_strip_model()));
   EXPECT_NE(nullptr, dragged_tab.Get());
-  EXPECT_EQ(0, browser()->tab_strip_model()->GetIndexOfTab(dragged_tab));
-  EXPECT_EQ(browser()->tab_strip_model(), dragged_tab.Get()->owning_model());
+  EXPECT_EQ(0, browser()->tab_strip_model()->GetIndexOfTab(dragged_tab.Get()));
+  EXPECT_EQ(browser()->tab_strip_model(),
+            dragged_tab.Get()->GetBrowserWindowInterface()->GetTabStripModel());
 
   // Remaining browser window should not be maximized
   EXPECT_FALSE(browser()->window()->IsMaximized());

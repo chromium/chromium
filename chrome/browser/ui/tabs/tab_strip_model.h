@@ -185,9 +185,6 @@ class TabStripModel : public TabGroupController {
   int count() const;
   bool empty() const;
 
-  int GetIndexOfTab(tabs::TabHandle tab) const;
-  tabs::TabHandle GetTabHandleAt(int index) const;
-
   // Retrieve the Profile associated with this TabStripModel.
   Profile* profile() const { return profile_; }
 
@@ -702,7 +699,7 @@ class TabStripModel : public TabGroupController {
   struct MoveNotification {
     int initial_index;
     std::optional<tab_groups::TabGroupId> intial_group;
-    tabs::TabHandle handle;
+    raw_ptr<const tabs::TabModel> tab;
     TabStripSelectionChange selection_change;
   };
 

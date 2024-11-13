@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -337,9 +338,8 @@ class SaveCardBubbleControllerImplTest : public BrowserWithTestWindowTest {
         PersonalDataManagerFactory::GetForBrowserContext(profile()));
   }
 
-  tabs::TabHandle tab_handle() {
-    return browser()->tab_strip_model()->GetTabHandleAt(
-        browser()->tab_strip_model()->active_index());
+  tabs::TabInterface* active_tab() {
+    return browser()->tab_strip_model()->GetActiveTab();
   }
 
   raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_ = nullptr;
@@ -1278,7 +1278,7 @@ TEST_F(SaveCardBubbleControllerImplTest, VisibilityChange_Upload_HideBubble) {
 // re-shown without user prompt.
 TEST_F(SaveCardBubbleControllerImplTest,
        VisibilityChange_Upload_ReshowAfterLinkClick) {
-  tabs::TabHandle tab = tab_handle();
+  tabs::TabInterface* tab = active_tab();
 
   ShowUploadBubble();
   EXPECT_TRUE(IsSaveCardBubbleVisible());
@@ -1340,7 +1340,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
 // card, the confirmation bubble will be showing.
 TEST_F(SaveCardBubbleControllerImplTest,
        VisibilityChange_Upload_InProgressStateTransitionIntoCompletedState) {
-  tabs::TabHandle tab = tab_handle();
+  tabs::TabInterface* tab = active_tab();
 
   ShowUploadBubble();
   controller()->OnSaveButton({});
@@ -1379,7 +1379,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
 TEST_F(SaveCardBubbleControllerImplTest,
        Metrics_VisibilityChange_Upload_ReshowAfterLinkClick) {
   base::HistogramTester histogram_tester;
-  tabs::TabHandle tab = tab_handle();
+  tabs::TabInterface* tab = active_tab();
 
   ShowUploadBubble();
   histogram_tester.ExpectUniqueSample(
