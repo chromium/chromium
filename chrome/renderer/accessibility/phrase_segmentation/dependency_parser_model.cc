@@ -110,8 +110,8 @@ int64_t DependencyParserModel::GetModelVersion() const {
   return 1;
 }
 
-std::vector<unsigned int> DependencyParserModel::GetDependencyHeads(
-    std::vector<std::string> input) {
+std::vector<size_t> DependencyParserModel::GetDependencyHeads(
+    base::span<const std::string> input) {
   DCHECK(IsAvailable());
   base::ElapsedTimer timer;
 
@@ -126,7 +126,7 @@ std::vector<unsigned int> DependencyParserModel::GetDependencyHeads(
   TfLiteTensor* input_tensor = interpreter->input_tensor(0);
   tflite::DynamicBuffer input_buffer;
 
-  for (absl::string_view token : input) {
+  for (const auto& token : input) {
     tflite::StringRef string_ref;
     string_ref.str = token.data();
     string_ref.len = token.size();
@@ -147,7 +147,7 @@ std::vector<unsigned int> DependencyParserModel::GetDependencyHeads(
   const TfLiteTensor* output_tensor = interpreter->output_tensor(0);
   if (output_tensor == nullptr) {
     DLOG(ERROR) << "Error: output tensor is null.";
-    return std::vector<unsigned int>();
+    return {};
   }
   size_t size = output_tensor->dims->data[0];
   base::UmaHistogramBoolean(
@@ -155,7 +155,7 @@ std::vector<unsigned int> DependencyParserModel::GetDependencyHeads(
       size == input.size());
   if (size != input.size()) {
     DLOG(ERROR) << "Error: output tensor size does not match input size.";
-    return std::vector<unsigned int>();
+    return {};
   }
 
   std::vector<std::vector<float>> dependency_graph;
@@ -170,21 +170,19 @@ std::vector<unsigned int> DependencyParserModel::GetDependencyHeads(
     dependency_graph.emplace_back(dependency_graph_inner);
   }
 
-  std::vector<unsigned int> dependency_heads =
-      SolveDependencies(dependency_graph);
-  return dependency_heads;
+  return SolveDependencies(dependency_graph);
 }
 
-std::vector<unsigned int> DependencyParserModel::SolveDependencies(
+std::vector<size_t> DependencyParserModel::SolveDependencies(
     base::span<const std::vector<float>> input) {
-  tensorflow::text::MstSolver<unsigned int, float> solver;
-  int size = input.size();
+  tensorflow::text::MstSolver<size_t, float> solver;
+  size_t size = input.size();
   if (!solver.Init(/*forest=*/false, size).ok()) {
     return {};
   }
 
-  for (int i = 0; i < size; i++) {
-    for (int j = 0; j < size; j++) {
+  for (size_t i = 0; i < size; i++) {
+    for (size_t j = 0; j < size; j++) {
       if (i == j) {
         solver.AddRoot(i, input[i][j]);
       } else {
@@ -193,7 +191,7 @@ std::vector<unsigned int> DependencyParserModel::SolveDependencies(
     }
   }
 
-  std::vector<unsigned int> heads;
+  std::vector<size_t> heads;
   heads.resize(size);
   if (!solver.Solve(&heads).ok()) {
     return {};

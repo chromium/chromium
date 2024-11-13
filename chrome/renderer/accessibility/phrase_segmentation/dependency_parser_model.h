@@ -5,6 +5,12 @@
 #ifndef CHROME_RENDERER_ACCESSIBILITY_PHRASE_SEGMENTATION_DEPENDENCY_PARSER_MODEL_H_
 #define CHROME_RENDERER_ACCESSIBILITY_PHRASE_SEGMENTATION_DEPENDENCY_PARSER_MODEL_H_
 
+#include <stddef.h>
+
+#include <string>
+#include <vector>
+
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "third_party/tflite/src/tensorflow/lite/core/interpreter.h"
 
@@ -54,14 +60,14 @@ class DependencyParserModel {
 
   // Runs the TFLite dependency parser model on a string. This will return
   // a vector of dependency head for each word in the string.
-  std::vector<unsigned int> GetDependencyHeads(std::vector<std::string> input);
+  std::vector<size_t> GetDependencyHeads(base::span<const std::string> input);
 
  private:
   // Returns the dependency head of each node in a dependency graph. The input
   // is the the matrix of probabilities where input[i][j] signals the
   // probability that node i is the dependency head of node j. The i-th element
   // in the returned array signals the dependency head of the node.
-  std::vector<unsigned int> SolveDependencies(
+  std::vector<size_t> SolveDependencies(
       base::span<const std::vector<float>> input);
 
   // The tflite model for dependency parsing.

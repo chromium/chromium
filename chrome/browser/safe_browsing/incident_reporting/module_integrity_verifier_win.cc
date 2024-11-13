@@ -29,7 +29,7 @@ namespace safe_browsing {
 namespace {
 
 // The maximum amount of bytes that can be reported as modified by VerifyModule.
-const size_t kMaxModuleModificationBytes = 256;
+constexpr size_t kMaxModuleModificationBytes = 256;
 
 struct Export {
   Export(const void* addr, const std::string& name);
@@ -171,7 +171,7 @@ int ExamineByteRangeDiff(base::span<const uint8_t> disk_data,
     bytes_different += bytes_in_modification;
     modification->set_byte_count(bytes_in_modification);
     base::span<const uint8_t> modification_data = mem_data.subspan(
-        range_start - mem_data.begin(),
+        static_cast<size_t>(range_start - mem_data.begin()),
         std::min(bytes_in_modification, kMaxModuleModificationBytes));
     modification->set_modified_bytes(modification_data.data(),
                                      modification_data.size());

@@ -1009,29 +1009,26 @@ namespace {
 void CreateTabGroups(TabStripModel* model,
                      base::span<const std::optional<int>> specified_groups) {
   ASSERT_TRUE(model->SupportsTabGroups());
-  ASSERT_EQ(model->count(), static_cast<int>(specified_groups.size()));
+  ASSERT_EQ(static_cast<size_t>(model->count()), specified_groups.size());
 
   // Maps |specified_groups| IDs to actual group IDs in |model|.
   base::flat_map<int, tab_groups::TabGroupId> group_map;
 
   for (int i = 0; i < model->count(); ++i) {
-    if (specified_groups[i] == std::nullopt) {
-      continue;
-    }
+    if (const auto& entry = specified_groups[static_cast<size_t>(i)]) {
+      auto match = group_map.find(*entry);
 
-    const int specified_group = specified_groups[i].value();
-    auto match = group_map.find(specified_group);
-
-    // If |group_map| doesn't contain a value for |specified_group|, we can
-    // assume we haven't created the group yet.
-    if (match == group_map.end()) {
-      const tab_groups::TabGroupId actual_group = model->AddToNewGroup({i});
-      group_map.insert(std::make_pair(specified_group, actual_group));
-    } else {
-      const content::WebContents* const contents = model->GetWebContentsAt(i);
-      model->AddToExistingGroup({i}, match->second);
-      // Make sure we didn't move the tab.
-      EXPECT_EQ(contents, model->GetWebContentsAt(i));
+      // If |group_map| doesn't contain a value for |specified_group|, we can
+      // assume we haven't created the group yet.
+      if (match == group_map.end()) {
+        const tab_groups::TabGroupId actual_group = model->AddToNewGroup({i});
+        group_map.insert(std::make_pair(*entry, actual_group));
+      } else {
+        const content::WebContents* const contents = model->GetWebContentsAt(i);
+        model->AddToExistingGroup({i}, match->second);
+        // Make sure we didn't move the tab.
+        EXPECT_EQ(contents, model->GetWebContentsAt(i));
+      }
     }
   }
 }
@@ -1048,7 +1045,8 @@ void CheckTabGrouping(TabStripModel* model,
   for (int i = 0; i < model->count(); ++i) {
     SCOPED_TRACE(i);
 
-    const std::optional<int> specified_group = specified_groups[i];
+    const std::optional<int> specified_group =
+        specified_groups[static_cast<size_t>(i)];
     const std::optional<tab_groups::TabGroupId> actual_group =
         model->GetTabGroupForTab(i);
 

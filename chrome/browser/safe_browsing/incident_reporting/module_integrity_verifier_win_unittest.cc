@@ -145,12 +145,14 @@ class SafeBrowsingModuleVerifierWinTest : public testing::Test {
     UNSAFE_BUFFERS(base::span<uint8_t> module_data(
         reinterpret_cast<uint8_t*>(mem_handle), module_info.SizeOfImage));
 
-    uint8_t* export_addr =
-        reinterpret_cast<uint8_t*>(GetProcAddress(mem_handle, export_name));
-    EXPECT_NE(nullptr, export_addr);
-
-    return module_data.subspan(export_addr -
-                               base::to_address(module_data.begin()));
+    const auto export_addr =
+        reinterpret_cast<uintptr_t>(GetProcAddress(mem_handle, export_name));
+    const auto module_addr =
+        reinterpret_cast<uintptr_t>(base::to_address(module_data.begin()));
+    CHECK_GE(export_addr, module_addr);
+    const size_t offset = export_addr - module_addr;
+    CHECK_LT(offset, module_info.SizeOfImage);
+    return module_data.subspan(offset);
   }
 
   static void AssertModuleUnmodified(const ModuleState& state,

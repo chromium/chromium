@@ -58,8 +58,7 @@ TEST_F(ChromeLabsModelTest, CheckFeatureWithParamsVariations) {
           feature_entry_descriptions = entry->feature.feature_variations;
       EXPECT_EQ(feature_entry_descriptions.size(),
                 translated_descriptions.size());
-      for (int i = 0; i < static_cast<int>(translated_descriptions.size());
-           i++) {
+      for (size_t i = 0; i < translated_descriptions.size(); ++i) {
         EXPECT_EQ(
             CanonicalizeString(base::UTF16ToUTF8(translated_descriptions[i])),
             CanonicalizeString(feature_entry_descriptions[i].description_text));

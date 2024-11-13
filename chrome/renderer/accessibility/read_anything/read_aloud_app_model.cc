@@ -4,6 +4,13 @@
 
 #include "chrome/renderer/accessibility/read_anything/read_aloud_app_model.h"
 
+#include <stddef.h>
+
+#include <algorithm>
+#include <string>
+#include <vector>
+
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
@@ -16,14 +23,12 @@
 
 namespace {
 
-std::vector<unsigned int> GetDependencyHeads(
+std::vector<size_t> GetDependencyHeads(
     DependencyParserModel& dependency_parser_model,
-    std::vector<std::string> input) {
-  if (dependency_parser_model.IsAvailable()) {
-    return dependency_parser_model.GetDependencyHeads(input);
-  } else {
-    return {};
-  }
+    base::span<const std::string> input) {
+  return dependency_parser_model.IsAvailable()
+             ? dependency_parser_model.GetDependencyHeads(input)
+             : std::vector<size_t>();
 }
 
 }  // namespace
@@ -169,25 +174,23 @@ void ReadAloudAppModel::CalculatePhrases(
 
   const TokenizedSentence tokenized_sentence =
       TokenizedSentence(granularity.text);
-  const std::vector<std::u16string_view> tokens = tokenized_sentence.tokens();
-
   // Need to convert because model inference only takes std::string array.
   std::vector<std::string> phrase_tokens;
-  for (auto token : tokens) {
-    std::u16string u16token(token);
-    phrase_tokens.push_back(base::UTF16ToUTF8(u16token));
-  }
+  phrase_tokens.reserve(tokenized_sentence.tokens().size());
+  std::ranges::transform(
+      tokenized_sentence.tokens(), std::back_inserter(phrase_tokens),
+      static_cast<std::string (*)(std::u16string_view)>(&base::UTF16ToUTF8));
 
   // Perform computation of dependency heads synchronously.
-  std::vector<unsigned int> heads =
+  std::vector<size_t> heads =
       GetDependencyHeads(dependency_parser_model, phrase_tokens);
 
-  if (heads.size() == 0) {
+  if (heads.empty()) {
     // Empty output.
     return;
   }
 
-  // Cast from unsigned int to int.
+  // Cast from size_t to int.
   std::vector<int> dependency_heads(heads.begin(), heads.end());
 
   // Calculate the token boundary weights.

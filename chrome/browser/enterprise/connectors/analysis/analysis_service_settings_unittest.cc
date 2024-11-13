@@ -730,7 +730,7 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
       GURL regionalized_url =
           GURL(GetServiceProviderConfig()
                    ->at("google")
-                   .analysis->region_urls[static_cast<int>(data_region())]);
+                   .analysis->region_urls[static_cast<size_t>(data_region())]);
       absl::get<CloudAnalysisSettings>(
           GetParam().expected_settings->cloud_or_local_settings)
           .analysis_url = regionalized_url;

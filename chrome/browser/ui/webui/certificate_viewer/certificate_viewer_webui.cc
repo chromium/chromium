@@ -473,7 +473,8 @@ void CertificateViewerDialogHandler::HandleExportCertificate(
           dialog_->GetNativeWebContentsModalDialog()));
 
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> export_certs;
-  for (const auto& cert : base::make_span(certs_).subspan(cert_index)) {
+  for (const auto& cert :
+       base::span(certs_).subspan(static_cast<size_t>(cert_index))) {
     export_certs.push_back(bssl::UpRef(cert.cert_buffer()));
   }
   ShowCertExportDialog(web_ui()->GetWebContents(), window,

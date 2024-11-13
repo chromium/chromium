@@ -954,7 +954,7 @@ TEST_P(ConnectorsManagerDataRegionTest, RegionalizedEndpoint) {
   GURL expected_analysis_url =
       GURL(GetServiceProviderConfig()
                ->at("google")
-               .analysis->region_urls[static_cast<int>(data_region())]);
+               .analysis->region_urls[static_cast<size_t>(data_region())]);
   EXPECT_TRUE(settings_from_manager.has_value());
   if (settings_from_manager.has_value()) {
     EXPECT_EQ(
