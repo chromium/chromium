@@ -1158,6 +1158,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @RequiresRestart("crbug.com/344674734")
+    @DisabledTest(message = "crbug.com/378787472")
     public void testDialogSelectionEditor_UngroupAll() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 4);
