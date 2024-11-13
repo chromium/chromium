@@ -67,18 +67,20 @@ void ScrollMarkerGroupPseudoElement::RemoveFromFocusGroup(
   }
 }
 
-void ScrollMarkerGroupPseudoElement::ActivateNextScrollMarker() {
-  ActivateScrollMarker(&ScrollMarkerGroupPseudoElement::FindNextScrollMarker);
+void ScrollMarkerGroupPseudoElement::ActivateNextScrollMarker(bool focus) {
+  ActivateScrollMarker(&ScrollMarkerGroupPseudoElement::FindNextScrollMarker,
+                       focus);
 }
 
-void ScrollMarkerGroupPseudoElement::ActivatePrevScrollMarker() {
+void ScrollMarkerGroupPseudoElement::ActivatePrevScrollMarker(bool focus) {
   ActivateScrollMarker(
-      &ScrollMarkerGroupPseudoElement::FindPreviousScrollMarker);
+      &ScrollMarkerGroupPseudoElement::FindPreviousScrollMarker, focus);
 }
 
 void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
     ScrollMarkerPseudoElement* (ScrollMarkerGroupPseudoElement::*
-                                    find_scroll_marker_func)(const Element&)) {
+                                    find_scroll_marker_func)(const Element&),
+    bool focus) {
   if (!selected_marker_) {
     return;
   }
@@ -93,10 +95,12 @@ void ScrollMarkerGroupPseudoElement::ActivateScrollMarker(
       scroll_into_view_util::CreateScrollIntoViewParams(
           *scroll_marker->parentElement()->GetComputedStyle());
   scroll_marker->ScrollIntoViewNoVisualUpdate(std::move(params));
-  GetDocument().SetFocusedElement(scroll_marker,
-                                  FocusParams(SelectionBehaviorOnFocus::kNone,
-                                              mojom::blink::FocusType::kNone,
-                                              /*capabilities=*/nullptr));
+  if (focus) {
+    GetDocument().SetFocusedElement(scroll_marker,
+                                    FocusParams(SelectionBehaviorOnFocus::kNone,
+                                                mojom::blink::FocusType::kNone,
+                                                /*capabilities=*/nullptr));
+  }
   SetSelected(*scroll_marker);
 }
 

@@ -36,8 +36,8 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement,
   // Set selected scroll marker. Returns true if the selected marker changed.
   CORE_EXPORT bool SetSelected(ScrollMarkerPseudoElement& scroll_marker);
   ScrollMarkerPseudoElement* Selected() { return selected_marker_; }
-  void ActivateNextScrollMarker();
-  void ActivatePrevScrollMarker();
+  void ActivateNextScrollMarker(bool focus);
+  void ActivatePrevScrollMarker(bool focus);
 
   void Dispose() final;
   void Trace(Visitor* v) const final;
@@ -50,9 +50,13 @@ class ScrollMarkerGroupPseudoElement : public PseudoElement,
   bool UpdateSelectedScrollMarker(const ScrollOffset& offset);
 
  private:
-  void ActivateScrollMarker(ScrollMarkerPseudoElement* (
-      ScrollMarkerGroupPseudoElement::*find_scroll_marker_func)(
-      const Element&));
+  // `focus` arg controls if active scroll marker should be set as focused.
+  // When activation is coming from scroll button, the button should retain
+  // focus.
+  void ActivateScrollMarker(
+      ScrollMarkerPseudoElement* (ScrollMarkerGroupPseudoElement::*
+                                      find_scroll_marker_func)(const Element&),
+      bool focus);
 
   bool UpdateSnapshotInternal();
 

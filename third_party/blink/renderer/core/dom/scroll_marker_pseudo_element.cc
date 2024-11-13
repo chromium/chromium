@@ -48,9 +48,9 @@ void ScrollMarkerPseudoElement::DefaultEventHandler(Event& event) {
   if (should_intercept) {
     if (scroll_marker_group_) {
       if (is_right_or_down_arrow_key) {
-        scroll_marker_group_->ActivateNextScrollMarker();
+        scroll_marker_group_->ActivateNextScrollMarker(/*focus=*/true);
       } else if (is_left_or_up_arrow_key) {
-        scroll_marker_group_->ActivatePrevScrollMarker();
+        scroll_marker_group_->ActivatePrevScrollMarker(/*focus=*/true);
       } else if (is_click || is_enter_or_space) {
         ScrollMarkerPseudoElement* scroll_marker = this;
         scroll_marker_group_->SetSelected(*scroll_marker);
