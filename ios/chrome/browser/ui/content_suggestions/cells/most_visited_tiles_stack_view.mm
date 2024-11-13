@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_stack_view.h"
 
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_commands.h"
@@ -21,7 +20,7 @@
 - (instancetype)initWithConfig:(MostVisitedTilesConfig*)config
                        spacing:(CGFloat)spacing {
   if ((self = [super init])) {
-    if (ShouldPutMostVisitedSitesInMagicStack()) {
+    if (config.inMagicStack) {
       [config.consumerSource addConsumer:self];
     }
     self.axis = UILayoutConstraintAxisHorizontal;
@@ -49,7 +48,8 @@
   for (ContentSuggestionsMostVisitedItem* item in config.mostVisitedItems) {
     ContentSuggestionsMostVisitedTileView* view =
         [[ContentSuggestionsMostVisitedTileView alloc]
-            initWithConfiguration:item];
+             initInMagicStack:config.inMagicStack
+            withConfiguration:item];
     view.menuProvider = item.menuProvider;
     view.accessibilityIdentifier = [NSString
         stringWithFormat:

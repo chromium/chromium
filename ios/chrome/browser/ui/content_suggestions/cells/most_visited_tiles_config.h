@@ -17,6 +17,9 @@
 // Config object for the Most Visited Tiles module.
 @interface MostVisitedTilesConfig : MagicStackModule
 
+// Whether the most visited tiles is inside the magic stack.
+@property(nonatomic, assign) BOOL inMagicStack;
+
 // List of Most Visited Tiles to show in module.
 @property(nonatomic, strong)
     NSArray<ContentSuggestionsMostVisitedItem*>* mostVisitedItems;

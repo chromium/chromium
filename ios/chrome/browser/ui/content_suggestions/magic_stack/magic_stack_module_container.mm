@@ -252,8 +252,9 @@ const CGFloat kSeparatorHeight = 0.5;
   // the MVT when it lives outside of the Magic Stack to stay as close to its
   // intrinsic size as possible, the constraint is configured to be less than
   // or equal to.
+  BOOL inMagicStack = ShouldPutMostVisitedSitesInMagicStack();
   if (config.type == ContentSuggestionsModuleType::kMostVisited &&
-      !ShouldPutMostVisitedSitesInMagicStack()) {
+      !inMagicStack) {
     self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
     self.layer.cornerRadius = kCornerRadius;
     self.clipsToBounds = YES;
@@ -276,9 +277,11 @@ const CGFloat kSeparatorHeight = 0.5;
   }
   _type = config.type;
 
-  _title.text = [MagicStackModuleContainer titleStringForModule:_type];
+  _title.text = [MagicStackModuleContainer titleStringForModule:_type
+                                                   inMagicStack:inMagicStack];
   _title.accessibilityIdentifier =
-      [MagicStackModuleContainer accessibilityIdentifierForModule:_type];
+      [MagicStackModuleContainer accessibilityIdentifierForModule:_type
+                                                     inMagicStack:inMagicStack];
 
   _seeMoreButton.hidden = !config.shouldShowSeeMore;
 
@@ -349,13 +352,14 @@ const CGFloat kSeparatorHeight = 0.5;
 }
 
 // Returns the module's title, if any, given the Magic Stack module `type`.
-+ (NSString*)titleStringForModule:(ContentSuggestionsModuleType)type {
++ (NSString*)titleStringForModule:(ContentSuggestionsModuleType)type
+                     inMagicStack:(BOOL)inMagicStack {
   switch (type) {
     case ContentSuggestionsModuleType::kShortcuts:
       return l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_SHORTCUTS_MODULE_TITLE);
     case ContentSuggestionsModuleType::kMostVisited:
-      if (ShouldPutMostVisitedSitesInMagicStack()) {
+      if (inMagicStack) {
         return l10n_util::GetNSString(
             IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE);
       }
@@ -387,8 +391,8 @@ const CGFloat kSeparatorHeight = 0.5;
 }
 
 // Returns the accessibility identifier given the Magic Stack module `type`.
-+ (NSString*)accessibilityIdentifierForModule:
-    (ContentSuggestionsModuleType)type {
++ (NSString*)accessibilityIdentifierForModule:(ContentSuggestionsModuleType)type
+                                 inMagicStack:(BOOL)inMagicStack {
   switch (type) {
     case ContentSuggestionsModuleType::kTabResumption:
       return kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier;
@@ -396,7 +400,7 @@ const CGFloat kSeparatorHeight = 0.5;
     default:
       // TODO(crbug.com/40946679): the code should use constants for
       // accessibility identifiers, and not localized strings.
-      return [self titleStringForModule:type];
+      return [self titleStringForModule:type inMagicStack:inMagicStack];
   }
 }
 

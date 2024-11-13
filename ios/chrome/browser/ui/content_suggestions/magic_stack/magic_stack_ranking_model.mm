@@ -776,7 +776,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         (ContentSuggestionsModuleType)[moduleNumber intValue];
     switch (moduleType) {
       case ContentSuggestionsModuleType::kMostVisited:
-        if (ShouldPutMostVisitedSitesInMagicStack() &&
+        if (_mostVisitedTilesMediator.mostVisitedConfig.inMagicStack &&
             [_mostVisitedTilesMediator.mostVisitedConfig
                     .mostVisitedItems count] > 0) {
           [magicStackOrder

@@ -355,6 +355,7 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
                         std::move(freshMostVisitedSites));
 
   _mostVisitedConfig = [[MostVisitedTilesConfig alloc] init];
+  _mostVisitedConfig.inMagicStack = ShouldPutMostVisitedSitesInMagicStack();
   _mostVisitedConfig.imageDataSource = self;
   _mostVisitedConfig.commandHandler = self;
   _mostVisitedConfig.mostVisitedItems = _freshMostVisitedItems;

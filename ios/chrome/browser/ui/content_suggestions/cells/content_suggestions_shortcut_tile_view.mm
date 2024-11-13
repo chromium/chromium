@@ -25,7 +25,8 @@ const CGFloat kCountBorderWidth = 24;
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame
-                     tileType:ContentSuggestionsTileType::kShortcuts];
+                     tileType:ContentSuggestionsTileType::kShortcuts
+                 inMagicStack:YES];
   if (self) {
     _iconView = [[UIImageView alloc] initWithFrame:self.bounds];
     _iconView.translatesAutoresizingMaskIntoConstraints = NO;

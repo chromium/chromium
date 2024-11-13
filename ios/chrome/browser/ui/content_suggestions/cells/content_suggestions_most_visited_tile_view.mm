@@ -29,9 +29,10 @@
 
 @implementation ContentSuggestionsMostVisitedTileView
 
-- (instancetype)initWithFrame:(CGRect)frame {
+- (instancetype)initWithFrame:(CGRect)frame inMagicStack:(BOOL)inMagicStack {
   self = [super initWithFrame:frame
-                     tileType:ContentSuggestionsTileType::kMostVisited];
+                     tileType:ContentSuggestionsTileType::kMostVisited
+                 inMagicStack:inMagicStack];
   if (self) {
       self.imageContainerView.backgroundColor =
           [UIColor colorNamed:kGrey100Color];
@@ -76,9 +77,9 @@
   return self;
 }
 
-- (instancetype)initWithConfiguration:
-    (ContentSuggestionsMostVisitedItem*)config {
-  self = [self initWithFrame:CGRectZero];
+- (instancetype)initInMagicStack:(BOOL)inMagicStack
+               withConfiguration:(ContentSuggestionsMostVisitedItem*)config {
+  self = [self initWithFrame:CGRectZero inMagicStack:inMagicStack];
   if (self) {
     if (!config) {
       // If there is no config, then this is a placeholder tile.

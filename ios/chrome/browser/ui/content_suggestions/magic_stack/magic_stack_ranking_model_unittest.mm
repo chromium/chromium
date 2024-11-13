@@ -165,6 +165,7 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
     _config = [[MostVisitedTilesConfig alloc] init];
     _config.mostVisitedItems =
         @[ [[ContentSuggestionsMostVisitedItem alloc] init] ];
+    _config.inMagicStack = ShouldPutMostVisitedSitesInMagicStack();
   }
   return _config;
 }
