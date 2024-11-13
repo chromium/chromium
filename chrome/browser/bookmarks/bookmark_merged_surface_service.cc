@@ -180,7 +180,14 @@ BookmarkMergedSurfaceService::GetUnderlyingNodes(
 size_t BookmarkMergedSurfaceService::GetIndexOf(
     const bookmarks::BookmarkNode* node) const {
   CHECK(node);
-  return *node->parent()->GetIndexOf(node);
+  std::optional<PermanentFolderType> permanent_folder =
+      GetIfPermanentFolderType(node->parent());
+  if (!permanent_folder ||
+      permanent_folder == PermanentFolderType::kManagedNode) {
+    return *node->parent()->GetIndexOf(node);
+  }
+
+  return GetPermanentFolderOrderingTracker(*permanent_folder).GetIndexOf(node);
 }
 
 const bookmarks::BookmarkNode* BookmarkMergedSurfaceService::GetNodeAtIndex(
@@ -267,12 +274,12 @@ void BookmarkMergedSurfaceService::CopyBookmarkNodeDataElement(
 }
 
 bool BookmarkMergedSurfaceService::IsParentFolderManaged(
-    const BookmarkParentFolder& parent) const {
-  if (parent.HoldsNonPermanentFolder()) {
-    return IsNodeManaged(parent.as_non_permanent_folder());
+    const BookmarkParentFolder& folder) const {
+  if (folder.HoldsNonPermanentFolder()) {
+    return IsNodeManaged(folder.as_non_permanent_folder());
   }
 
-  if (parent.as_permanent_folder() == PermanentFolderType::kManagedNode) {
+  if (folder.as_permanent_folder() == PermanentFolderType::kManagedNode) {
     CHECK(managed_permanent_node());
     return true;
   }
@@ -280,9 +287,9 @@ bool BookmarkMergedSurfaceService::IsParentFolderManaged(
 }
 
 bool BookmarkMergedSurfaceService::IsNodeManaged(
-    const bookmarks::BookmarkNode* parent) const {
+    const bookmarks::BookmarkNode* node) const {
   return managed_bookmark_service_ &&
-         managed_bookmark_service_->IsNodeManaged(parent);
+         managed_bookmark_service_->IsNodeManaged(node);
 }
 
 const BookmarkNode* BookmarkMergedSurfaceService::PermanentFolderToNode(
@@ -306,4 +313,11 @@ const BookmarkNode* BookmarkMergedSurfaceService::managed_permanent_node()
     return managed_bookmark_service_->managed_node();
   }
   return nullptr;
+}
+
+const PermanentFolderOrderingTracker&
+BookmarkMergedSurfaceService::GetPermanentFolderOrderingTracker(
+    PermanentFolderType folder_type) const {
+  CHECK_NE(folder_type, PermanentFolderType::kManagedNode);
+  return *permanent_folder_to_tracker_.find(folder_type)->second;
 }

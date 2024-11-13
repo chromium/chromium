@@ -45,6 +45,11 @@ class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
   std::vector<const bookmarks::BookmarkNode*> GetUnderlyingPermanentNodes()
       const;
 
+  // Returns index of `node`.
+  // `node` must be a direct child of one of the tracked permanent
+  // nodes in `this`.
+  size_t GetIndexOf(const bookmarks::BookmarkNode* node) const;
+
   // bookmarks::BookmarkModelObserver:
   void BookmarkModelLoaded(bool ids_reassigned) override;
   void BookmarkNodeMoved(const bookmarks::BookmarkNode* old_parent,
@@ -60,22 +65,31 @@ class PermanentFolderOrderingTracker : public bookmarks::BookmarkModelObserver {
                            const std::set<GURL>& removed_urls,
                            const base::Location& location) override;
   void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
-                                   const base::Location& location) override {}
+                                   const base::Location& location) override;
   void BookmarkNodeChanged(const bookmarks::BookmarkNode* node) override {}
   void BookmarkNodeFaviconChanged(
       const bookmarks::BookmarkNode* node) override {}
   void BookmarkNodeChildrenReordered(
-      const bookmarks::BookmarkNode* node) override {}
+      const bookmarks::BookmarkNode* node) override;
+
+  // Public for testing.
+  void SetNodesOrderingForTesting(
+      std::vector<raw_ptr<const bookmarks::BookmarkNode>> ordering);
 
  private:
   void SetTrackedPermanentNodes();
+  size_t GetDefaultIndexOf(const bookmarks::BookmarkNode* node) const;
 
   const raw_ptr<bookmarks::BookmarkModel> model_;
   const bookmarks::BookmarkNode::Type tracked_type_;
   raw_ptr<const bookmarks::BookmarkNode> local_or_syncable_node_ = nullptr;
   raw_ptr<const bookmarks::BookmarkNode> account_node_ = nullptr;
 
-  base::ScopedObservation<bookmarks::BookmarkModel, BookmarkModelObserver>
+  // Non-empty if any special ordering exists.
+  std::vector<raw_ptr<const bookmarks::BookmarkNode>> ordering_;
+
+  base::ScopedObservation<bookmarks::BookmarkModel,
+                          bookmarks::BookmarkModelObserver>
       model_observation_{this};
 };
 

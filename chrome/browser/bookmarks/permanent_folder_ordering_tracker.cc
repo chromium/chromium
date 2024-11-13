@@ -57,30 +57,26 @@ PermanentFolderOrderingTracker::GetUnderlyingPermanentNodes() const {
   return nodes;
 }
 
-void PermanentFolderOrderingTracker::BookmarkModelLoaded(bool ids_reassigned) {
-  SetTrackedPermanentNodes();
-  // TODO(crbug.com/364594278): Handle `ids_reassigned == true`.
-}
+size_t PermanentFolderOrderingTracker::GetIndexOf(
+    const bookmarks::BookmarkNode* node) const {
+  CHECK(node);
+  CHECK(node->parent());
+  CHECK_EQ(node->parent()->type(), tracked_type_);
+  CHECK(node->parent() == account_node_ ||
+        node->parent() == local_or_syncable_node_);
 
-void PermanentFolderOrderingTracker::BookmarkNodeAdded(
-    const bookmarks::BookmarkNode* parent,
-    size_t index,
-    bool added_by_user) {
-  if (parent->children()[index]->type() == tracked_type_) {
-    // Account node created.
-    SetTrackedPermanentNodes();
+  // No special order between local and account nodes.
+  if (ordering_.empty()) {
+    return GetDefaultIndexOf(node);
   }
-}
 
-void PermanentFolderOrderingTracker::BookmarkNodeRemoved(
-    const bookmarks::BookmarkNode* parent,
-    size_t old_index,
-    const bookmarks::BookmarkNode* node,
-    const std::set<GURL>& removed_urls,
-    const base::Location& location) {
-  if (node->type() == tracked_type_) {
-    SetTrackedPermanentNodes();
+  // Special order.
+  for (size_t i = 0; i < ordering_.size(); i++) {
+    if (ordering_[i] == node) {
+      return i;
+    }
   }
+  NOTREACHED();
 }
 
 void PermanentFolderOrderingTracker::SetTrackedPermanentNodes() {
@@ -105,4 +101,61 @@ void PermanentFolderOrderingTracker::SetTrackedPermanentNodes() {
       return;
   }
   NOTREACHED();
+}
+
+size_t PermanentFolderOrderingTracker::GetDefaultIndexOf(
+    const bookmarks::BookmarkNode* node) const {
+  CHECK(node);
+  CHECK(node->parent());
+  if (node->parent() == account_node_) {
+    return *account_node_->GetIndexOf(node);
+  }
+  CHECK_EQ(node->parent(), local_or_syncable_node_);
+  return account_node_ ? account_node_->children().size() +
+                             *local_or_syncable_node_->GetIndexOf(node)
+                       : *local_or_syncable_node_->GetIndexOf(node);
+}
+
+void PermanentFolderOrderingTracker::BookmarkModelLoaded(bool ids_reassigned) {
+  SetTrackedPermanentNodes();
+  // TODO(crbug.com/364594278): Handle `ids_reassigned == true`.
+}
+
+void PermanentFolderOrderingTracker::BookmarkNodeAdded(
+    const bookmarks::BookmarkNode* parent,
+    size_t index,
+    bool added_by_user) {
+  if (parent->children()[index]->type() == tracked_type_) {
+    // Account node created.
+    SetTrackedPermanentNodes();
+  }
+  // TODO(crbug.com/364594278): Update custom ordering.
+}
+
+void PermanentFolderOrderingTracker::BookmarkNodeRemoved(
+    const bookmarks::BookmarkNode* parent,
+    size_t old_index,
+    const bookmarks::BookmarkNode* node,
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
+  if (node->type() == tracked_type_) {
+    SetTrackedPermanentNodes();
+  }
+  // TODO(crbug.com/364594278): Update custom ordering.
+}
+
+void PermanentFolderOrderingTracker::BookmarkAllUserNodesRemoved(
+    const std::set<GURL>& removed_urls,
+    const base::Location& location) {
+  // TODO(crbug.com/364594278): Reset any custom ordering.
+}
+
+void PermanentFolderOrderingTracker::BookmarkNodeChildrenReordered(
+    const bookmarks::BookmarkNode* node) {
+  // TODO(crbug.com/364594278): Update custom ordering.
+}
+
+void PermanentFolderOrderingTracker::SetNodesOrderingForTesting(
+    std::vector<raw_ptr<const bookmarks::BookmarkNode>> ordering) {
+  ordering_ = std::move(ordering);
 }

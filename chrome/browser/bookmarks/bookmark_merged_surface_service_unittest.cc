@@ -191,7 +191,7 @@ TEST_F(BookmarkMergedSurfaceServiceTest, IsPermanentNodeOfType) {
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, GetIndexOf) {
-  LoadBookmarkModel();
+  LoadBookmarkModelWithManaged(/*managed_bookmarks_size=*/3);
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),
                           "1 2 3 f1:[ 4 5 ] ");
   AddNodesFromModelString(&model(), model().other_node(), "6 7 8 ");
@@ -201,6 +201,9 @@ TEST_F(BookmarkMergedSurfaceServiceTest, GetIndexOf) {
   EXPECT_EQ(service().GetIndexOf(f1->children()[1].get()), 1u);
   EXPECT_EQ(service().GetIndexOf(model().other_node()->children()[2].get()),
             2u);
+
+  // Managed node.
+  EXPECT_EQ(service().GetIndexOf(managed_node()->children()[1].get()), 1u);
 }
 
 TEST_F(BookmarkMergedSurfaceServiceTest, GetNodeAtIndex) {

@@ -163,6 +163,9 @@ class BookmarkMergedSurfaceService : public KeyedService {
 
   const bookmarks::BookmarkNode* managed_permanent_node() const;
 
+  const PermanentFolderOrderingTracker& GetPermanentFolderOrderingTracker(
+      BookmarkParentFolder::PermanentFolderType folder_type) const;
+
   const raw_ptr<bookmarks::BookmarkModel> model_;
   const raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
   const base::flat_map<BookmarkParentFolder::PermanentFolderType,
