@@ -33,14 +33,17 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/types/expected.h"
 #include "base/version.h"
 #include "base/win/pe_image.h"
 #include "base/win/win_util.h"
@@ -98,6 +101,7 @@
 #include "components/crash/core/common/crash_key.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/hashing.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "components/webapps/common/web_app_id.h"
@@ -421,6 +425,48 @@ void MaybeBlockDynamicCodeForBrowserProcess() {
             sandbox::MITIGATION_DYNAMIC_CODE_DISABLE_WITH_OPT_OUT);
   }
 }
+
+base::expected<base::FilePath, DWORD> GetProcessExecutablePath(
+    const base::Process& process) {
+  std::wstring image_path(MAX_PATH, L'\0');
+  DWORD path_length = image_path.size();
+  BOOL success = ::QueryFullProcessImageNameW(process.Handle(), 0,
+                                              image_path.data(), &path_length);
+  if (!success && ::GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+    // Process name is potentially greater than MAX_PATH, try larger max size.
+    // https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation
+    image_path.resize(UNICODE_STRING_MAX_CHARS);
+    path_length = image_path.size();
+    success = ::QueryFullProcessImageNameW(process.Handle(), 0,
+                                           image_path.data(), &path_length);
+  }
+  if (!success) {
+    PLOG_IF(ERROR, ::GetLastError() != ERROR_GEN_FAILURE)
+        << "Failed to get process image path";
+    return base::unexpected(::GetLastError());
+  }
+  return base::FilePath(image_path);
+}
+
+void ReportParentProcessName() {
+  base::ProcessId ppid =
+      base::GetParentProcessId(base::GetCurrentProcessHandle());
+
+  base::Process process(
+      base::Process::OpenWithAccess(ppid, PROCESS_QUERY_LIMITED_INFORMATION));
+
+  if (process.IsValid()) {
+    auto result = GetProcessExecutablePath(process);
+
+    if (result.has_value()) {
+      uint32_t hash = 0U;
+      hash = variations::HashName(
+          base::ToLowerASCII(base::SysWideToUTF8(result->BaseName().value())));
+      base::UmaHistogramSparse("Windows.ParentProcessNameHash", hash);
+    }
+  }
+}
+
 // This error message is not localized because we failed to load the
 // localization data files.
 const char kMissingLocaleDataTitle[] = "Missing File Error";
@@ -666,6 +712,11 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
       prefs::kOsUpdateHandlerEnabled,
       base::FeatureList::IsEnabled(features::kRegisterOsUpdateHandlerWin));
 #endif  // GOOGLE_CHROME_BRANDING
+
+  // Record the parent process at a low priority.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(&ReportParentProcessName));
 
   base::ImportantFileWriterCleaner::GetInstance().Start();
 }
