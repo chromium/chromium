@@ -1834,6 +1834,63 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoEraseLoadedV2Shapes) {
   PerformRedo();
 }
 
+// Regression test for crbug.com/378724153.
+TEST_F(PdfInkModuleUndoRedoTest, StrokeStrokeUndoStroke) {
+  InitializeSimpleSinglePageBasicLayout();
+
+  // Draw stroke 1.
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  // Draw stroke 2.
+  constexpr gfx::PointF kMouseDownPoint2 = gfx::PointF(11.0f, 15.0f);
+  constexpr gfx::PointF kMouseMovePoint2 = gfx::PointF(21.0f, 25.0f);
+  constexpr gfx::PointF kMouseUpPoint2 = gfx::PointF(31.0f, 17.0f);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint2, base::span_from_ref(kMouseMovePoint2), kMouseUpPoint2);
+
+  // Strokes 1 and 2 should be visible.
+  const auto kInitialStrokeMatchers = {
+      ElementsAre(kMouseDownPoint, kMouseMovePoint, kMouseUpPoint),
+      ElementsAre(kMouseDownPoint2, kMouseMovePoint2, kMouseUpPoint2)};
+  const auto kInitialStrokeMatchersSpan =
+      base::make_span(kInitialStrokeMatchers);
+  EXPECT_THAT(
+      StrokeInputPositions(),
+      ElementsAre(Pair(0, ElementsAreArray(kInitialStrokeMatchersSpan))));
+  EXPECT_THAT(
+      VisibleStrokeInputPositions(),
+      ElementsAre(Pair(0, ElementsAreArray(kInitialStrokeMatchersSpan))));
+
+  // Undo makes 1 stroke visible.
+  PerformUndo();
+  EXPECT_THAT(
+      StrokeInputPositions(),
+      ElementsAre(Pair(0, ElementsAreArray(kInitialStrokeMatchersSpan))));
+  EXPECT_THAT(VisibleStrokeInputPositions(),
+              ElementsAre(Pair(
+                  0, ElementsAreArray(kInitialStrokeMatchersSpan.first(1u)))));
+
+  // Stroke IDs are 0-indexed, so stroke 2 has a stroke ID of 1.
+  EXPECT_CALL(client(), DiscardStroke(/*page_index=*/0, InkStrokeId(1)));
+
+  // Draw stroke 3. Stroke 2 was undone and should be discarded.
+  constexpr gfx::PointF kMouseDownPoint3 = gfx::PointF(12.0f, 15.0f);
+  constexpr gfx::PointF kMouseMovePoint3 = gfx::PointF(22.0f, 25.0f);
+  constexpr gfx::PointF kMouseUpPoint3 = gfx::PointF(32.0f, 17.0f);
+  ApplyStrokeWithMouseAtPoints(
+      kMouseDownPoint3, base::span_from_ref(kMouseMovePoint3), kMouseUpPoint3);
+
+  // Strokes 1 and 3 should be visible.
+  const auto kNextStrokeMatchers = {
+      ElementsAre(kMouseDownPoint, kMouseMovePoint, kMouseUpPoint),
+      ElementsAre(kMouseDownPoint3, kMouseMovePoint3, kMouseUpPoint3)};
+  const auto kNextStrokeMatchersSpan = base::make_span(kNextStrokeMatchers);
+  EXPECT_THAT(StrokeInputPositions(),
+              ElementsAre(Pair(0, ElementsAreArray(kNextStrokeMatchersSpan))));
+  EXPECT_THAT(VisibleStrokeInputPositions(),
+              ElementsAre(Pair(0, ElementsAreArray(kNextStrokeMatchersSpan))));
+}
+
 using PdfInkModuleGetVisibleStrokesTest = PdfInkModuleStrokeTest;
 
 TEST_F(PdfInkModuleGetVisibleStrokesTest, NoPageStrokes) {
