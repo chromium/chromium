@@ -7,7 +7,7 @@ load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "gardener_rotations", "siso")
+load("//lib/builders.star", "cpu", "gardener_rotations", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
@@ -325,6 +325,8 @@ ci.gpu.mac_builder(
         ],
     ),
     targets = targets.bundle(),
+    cores = None,
+    cpu = cpu.ARM64,
     gardener_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
