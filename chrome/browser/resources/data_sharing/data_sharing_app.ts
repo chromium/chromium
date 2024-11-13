@@ -122,6 +122,12 @@ export class DataSharingApp extends CustomElement {
     const tabGroupId = params.get(UrlQueryParams.TAB_GROUP_ID);
     const parent = this.getRequiredElement('#dialog-container');
 
+    if (flow === FlowValues.SHARE) {
+      parent.classList.add('invite');
+    } else {
+      parent.classList.remove('invite');
+    }
+
     switch (flow) {
       case FlowValues.SHARE:
         this.dataSharingSdk_

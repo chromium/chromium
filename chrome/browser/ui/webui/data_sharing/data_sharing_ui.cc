@@ -71,6 +71,7 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src "
       "chrome-untrusted://theme "
+      "chrome-untrusted://resources "
       "'unsafe-inline' "
       "'self';");
 

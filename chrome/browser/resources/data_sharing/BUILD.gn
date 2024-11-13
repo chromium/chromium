@@ -33,7 +33,6 @@ build_webui("build") {
   static_files = [
     "data_sharing.html",
     "data_sharing_api.html",
-    "data_sharing_dev.css",
   ]
 
   web_component_files = [ "data_sharing_app.ts" ]
