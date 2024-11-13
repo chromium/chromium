@@ -58,7 +58,7 @@ class ElementInnerTextCollector final {
     Result& operator=(const Result&) = delete;
 
     void EmitNewline();
-    void EmitRequiredLineBreak(int count);
+    void EmitRequiredLineBreak(wtf_size_t count);
     void EmitTab();
     void EmitText(const StringView& text);
     String Finish();
@@ -69,7 +69,7 @@ class ElementInnerTextCollector final {
     void FlushRequiredLineBreak();
 
     StringBuilder builder_;
-    int required_line_break_count_ = 0;
+    wtf_size_t required_line_break_count_ = 0;
   };
 
   static bool HasDisplayContentsStyle(const Node& node);
@@ -80,8 +80,9 @@ class ElementInnerTextCollector final {
 
   const OffsetMapping* GetOffsetMapping(const LayoutText& layout_text);
   void ProcessChildren(const Node& node);
-  void ProcessChildrenWithRequiredLineBreaks(const Node& node,
-                                             int required_line_break_count);
+  void ProcessChildrenWithRequiredLineBreaks(
+      const Node& node,
+      wtf_size_t required_line_break_count);
   void ProcessLayoutText(const LayoutText& layout_text, const Text& text_node);
   void ProcessNode(const Node& node);
   void ProcessOptionElement(const HTMLOptionElement& element);
@@ -227,9 +228,9 @@ void ElementInnerTextCollector::ProcessChildren(const Node& container) {
 
 void ElementInnerTextCollector::ProcessChildrenWithRequiredLineBreaks(
     const Node& node,
-    int required_line_break_count) {
-  DCHECK_GE(required_line_break_count, 1);
-  DCHECK_LE(required_line_break_count, 2);
+    wtf_size_t required_line_break_count) {
+  DCHECK_GE(required_line_break_count, 1u);
+  DCHECK_LE(required_line_break_count, 2u);
   result_.EmitRequiredLineBreak(required_line_break_count);
   ProcessChildren(node);
   result_.EmitRequiredLineBreak(required_line_break_count);
@@ -350,7 +351,7 @@ void ElementInnerTextCollector::ProcessNode(const Node& node) {
   if (IsA<HTMLParagraphElement>(node)) {
     // Note: <p style="display:contents>foo</p> doesn't generate layout object
     // for P.
-    ProcessChildrenWithRequiredLineBreaks(node, 2);
+    ProcessChildrenWithRequiredLineBreaks(node, 2u);
     return;
   }
 
@@ -358,7 +359,7 @@ void ElementInnerTextCollector::ProcessNode(const Node& node) {
   // then append 1 (a required line break count) at the beginning and end of
   // items.
   if (IsDisplayBlockLevel(node))
-    return ProcessChildrenWithRequiredLineBreaks(node, 1);
+    return ProcessChildrenWithRequiredLineBreaks(node, 1u);
 
   ProcessChildren(node);
 }
@@ -420,15 +421,15 @@ void ElementInnerTextCollector::Result::EmitNewline() {
   builder_.Append(kNewlineCharacter);
 }
 
-void ElementInnerTextCollector::Result::EmitRequiredLineBreak(int count) {
-  DCHECK_GE(count, 0);
-  DCHECK_LE(count, 2);
+void ElementInnerTextCollector::Result::EmitRequiredLineBreak(
+    wtf_size_t count) {
+  DCHECK_LE(count, 2u);
   if (count == 0)
     return;
   // 4. Remove any runs of consecutive required line break count items at the
   // start or end of results.
   if (builder_.empty()) {
-    DCHECK_EQ(required_line_break_count_, 0);
+    DCHECK_EQ(required_line_break_count_, 0u);
     return;
   }
   // 5. Replace each remaining run of consecutive required line break count
@@ -446,7 +447,7 @@ void ElementInnerTextCollector::Result::EmitText(const StringView& text) {
   if (text.empty())
     return;
   FlushRequiredLineBreak();
-  DCHECK_EQ(required_line_break_count_, 0);
+  DCHECK_EQ(required_line_break_count_, 0u);
   builder_.Append(text);
 }
 
@@ -455,9 +456,9 @@ String ElementInnerTextCollector::Result::Finish() {
 }
 
 void ElementInnerTextCollector::Result::FlushRequiredLineBreak() {
-  DCHECK_GE(required_line_break_count_, 0);
-  DCHECK_LE(required_line_break_count_, 2);
-  builder_.Append("\n\n", required_line_break_count_);
+  DCHECK_LE(required_line_break_count_, 2u);
+  builder_.Append(
+      base::byte_span_from_cstring("\n\n").first(required_line_break_count_));
   required_line_break_count_ = 0;
 }
 

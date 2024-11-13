@@ -74,6 +74,7 @@ _CONFIG = [
             'base::as_writable_chars',
             'base::AutoReset',
             'base::bit_cast',
+            'base::byte_span(_with_nul)?_from_cstring',
             'base::CheckedContiguousIterator',
             'base::ConditionVariable',
             'base::Contains',
