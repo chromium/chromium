@@ -15,10 +15,12 @@ found in the LICENSE file.
         android:id="@+id/scan_card_button"
         style="@style/Widget.Material3.Button.TonalButton.Icon"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/local_card_scanner_height"
         android:text="@string/autofill_scan_credit_card_button"
-        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Small"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+        app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Large"
         app:icon="@drawable/ic_photo_camera"
+        app:iconSize="@dimen/text_size_medium"
         app:iconGravity="textStart"
         android:visibility="gone"/>
 
