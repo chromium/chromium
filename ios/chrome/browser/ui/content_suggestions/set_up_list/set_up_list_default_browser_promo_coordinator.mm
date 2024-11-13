@@ -226,7 +226,7 @@ using base::UserMetricsAction;
 
     _viewController = staticViewController;
   }
-
+  [_viewController setModalPresentationStyle:UIModalPresentationFormSheet];
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
