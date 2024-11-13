@@ -653,6 +653,13 @@
        {}
       ]
      ],
+     "chrome-377324991-crash.html": [
+      "1a5b17d1efe681b89cbc8e746c9d51f34bc16d40",
+      [
+       null,
+       {}
+      ]
+     ],
      "chrome-40286059-crash.html": [
       "cee9d2d97775dacbd7583edf143fd5b06de31bff",
       [
@@ -346367,6 +346374,10 @@
       "5139078a147d01a3b4abfbca662e439539352f22",
       []
      ],
+     "WEB_FEATURES.yml": [
+      "01c52de458e85d85e3b9ab7ca7521391147d6b2c",
+      []
+     ],
      "resources": {
       "common.js": [
        "c4a06b02fad08d3af46e7feb52959a782de94b88",
@@ -346410,6 +346421,18 @@
       ],
       "stash.py": [
        "3c65e2b59b3e54f670929ba22a5a21591753dbe9",
+       []
+      ]
+     },
+     "scrollsnapchange": {
+      "WEB_FEATURES.yml": [
+       "5bd7aef477a5f8a78d1d67ccbe77d107ecec39dd",
+       []
+      ]
+     },
+     "scrollsnapchanging": {
+      "WEB_FEATURES.yml": [
+       "5bd7aef477a5f8a78d1d67ccbe77d107ecec39dd",
        []
       ]
      }
@@ -482466,6 +482489,13 @@
        {}
       ]
      ],
+     "scope-pseudo-in-shadow.html": [
+      "ca8720d975f1cc2db82342989f88aceb3a5e6818",
+      [
+       null,
+       {}
+      ]
+     ],
      "shadow-cascade-order-001.html": [
       "59b71b0ee105bba69d68d8535832538f01a39e07",
       [
@@ -521188,7 +521218,7 @@
     "legacy-mb-schinese": {
      "gb18030": {
       "gb18030-decoder.any.js": [
-       "aa226e185be7cad46ef21ed033bf373de2bf4b22",
+       "53e6109ecf504509a7a67737637b768a15cd35fd",
        [
         "encoding/legacy-mb-schinese/gb18030/gb18030-decoder.any.html",
         {
@@ -670912,7 +670942,7 @@
       ]
      ],
      "document-rules.https.html": [
-      "805f1cfbc36bfddaf84f5063d8f0d990a0ef78a1",
+      "ae75ec94036f451ed9742c57b0a34a05b603db13",
       [
        "speculation-rules/prefetch/document-rules.https.html?include=and",
        {}
@@ -670975,10 +671005,6 @@
       ],
       [
        "speculation-rules/prefetch/document-rules.https.html?include=selectorMatchesDisplayNone",
-       {}
-      ],
-      [
-       "speculation-rules/prefetch/document-rules.https.html?include=selectorMatchesInShadowTree",
        {}
       ],
       [
