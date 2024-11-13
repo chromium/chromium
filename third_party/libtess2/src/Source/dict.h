@@ -32,11 +32,13 @@
 #ifndef DICT_LIST_H
 #define DICT_LIST_H
 
-typedef void *DictKey;
+#include "../Include/tesselator.h"
+#include "mesh.h"
+
 typedef struct Dict Dict;
 typedef struct DictNode DictNode;
 
-Dict *dictNewDict( TESSalloc* alloc, void *frame, int (*leq)(void *frame, DictKey key1, DictKey key2) );
+Dict *dictNewDict( TESSalloc* alloc, void *frame, int (*leq)(TESStesselator *frame, ActiveRegion *key1, ActiveRegion *key2) );
 
 void dictDeleteDict( TESSalloc* alloc, Dict *dict );
 
@@ -44,8 +46,8 @@ void dictDeleteDict( TESSalloc* alloc, Dict *dict );
 * to the given key.  If there is no such key, returns a node whose
 * key is NULL.  Similarly, Succ(Max(d)) has a NULL key, etc.
 */
-DictNode *dictSearch( Dict *dict, DictKey key );
-DictNode *dictInsertBefore( Dict *dict, DictNode *node, DictKey key );
+DictNode *dictSearch( Dict *dict, ActiveRegion *key );
+DictNode *dictInsertBefore( Dict *dict, DictNode *node, ActiveRegion *key );
 void dictDelete( Dict *dict, DictNode *node );
 
 #define dictKey(n)	((n)->key)
@@ -59,7 +61,7 @@ void dictDelete( Dict *dict, DictNode *node );
 /*** Private data structures ***/
 
 struct DictNode {
-	DictKey	key;
+	ActiveRegion *key;
 	DictNode *next;
 	DictNode *prev;
 };
@@ -68,7 +70,7 @@ struct Dict {
 	DictNode head;
 	void *frame;
 	struct BucketAlloc *nodePool;
-	int (*leq)(void *frame, DictKey key1, DictKey key2);
+	int (*leq)(TESStesselator *frame, ActiveRegion *key1, ActiveRegion *key2);
 };
 
 #endif

@@ -13,4 +13,4 @@ Game and tools oriented refactored version of GLU tesselator.
 
 Local Modifications:
 
-None
+patches/0000-leq-cfi.patch: Fix CFI (and UBSAN) error with function pointers.

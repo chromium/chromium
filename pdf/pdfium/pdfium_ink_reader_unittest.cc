@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/cfi_buildflags.h"
 #include "pdf/pdf_ink_constants.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_page.h"
@@ -24,13 +23,7 @@ namespace chrome_pdf {
 
 using PDFiumInkReaderTest = PDFiumTestBase;
 
-// TODO(crbug.com/377704081): Enable test for CFI.
-#if BUILDFLAG(CFI_ICALL_CHECK)
-#define MAYBE_Basic DISABLED_Basic
-#else
-#define MAYBE_Basic Basic
-#endif
-TEST_P(PDFiumInkReaderTest, MAYBE_Basic) {
+TEST_P(PDFiumInkReaderTest, Basic) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("ink_v2.pdf"));

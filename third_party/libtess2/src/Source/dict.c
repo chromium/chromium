@@ -35,7 +35,7 @@
 #include "dict.h"
 
 /* really tessDictListNewDict */
-Dict *dictNewDict( TESSalloc* alloc, void *frame, int (*leq)(void *frame, DictKey key1, DictKey key2) )
+Dict *dictNewDict( TESSalloc* alloc, void *frame, int (*leq)(TESStesselator *frame, ActiveRegion *key1, ActiveRegion *key2) )
 {
 	Dict *dict = (Dict *)alloc->memalloc( alloc->userData, sizeof( Dict ));
 	DictNode *head;
@@ -68,7 +68,7 @@ void dictDeleteDict( TESSalloc* alloc, Dict *dict )
 }
 
 /* really tessDictListInsertBefore */
-DictNode *dictInsertBefore( Dict *dict, DictNode *node, DictKey key )
+DictNode *dictInsertBefore( Dict *dict, DictNode *node, ActiveRegion *key )
 {
 	DictNode *newNode;
 
@@ -97,7 +97,7 @@ void dictDelete( Dict *dict, DictNode *node ) /*ARGSUSED*/
 }
 
 /* really tessDictListSearch */
-DictNode *dictSearch( Dict *dict, DictKey key )
+DictNode *dictSearch( Dict *dict, ActiveRegion *key )
 {
 	DictNode *node = &dict->head;
 

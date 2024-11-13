@@ -1115,7 +1115,7 @@ static void InitEdgeDict( TESStesselator *tess )
 	TESSreal w, h;
 	TESSreal smin, smax, tmin, tmax;
 
-	tess->dict = dictNewDict( &tess->alloc, tess, (int (*)(void *, DictKey, DictKey)) EdgeLeq );
+	tess->dict = dictNewDict( &tess->alloc, tess, EdgeLeq );
 	if (tess->dict == NULL) longjmp(tess->env,1);
 
 	/* If the bbox is empty, ensure that sentinels are not coincident by slightly enlarging it. */

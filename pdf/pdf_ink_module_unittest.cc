@@ -10,7 +10,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/cfi_buildflags.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
@@ -1739,13 +1738,7 @@ TEST_F(PdfInkModuleUndoRedoTest, UndoRedoOnTwoPages) {
               ElementsAre(kPage0Matcher, kPage1Matcher));
 }
 
-// TODO(crbug.com/377704081): Enable test for CFI.
-#if BUILDFLAG(CFI_ICALL_CHECK)
-#define MAYBE_UndoRedoEraseLoadedV2Shapes DISABLED_UndoRedoEraseLoadedV2Shapes
-#else
-#define MAYBE_UndoRedoEraseLoadedV2Shapes UndoRedoEraseLoadedV2Shapes
-#endif
-TEST_F(PdfInkModuleUndoRedoTest, MAYBE_UndoRedoEraseLoadedV2Shapes) {
+TEST_F(PdfInkModuleUndoRedoTest, UndoRedoEraseLoadedV2Shapes) {
   constexpr int kPageIndex = 0;
   constexpr InkModeledShapeId kShapeId0(0);
   constexpr InkModeledShapeId kShapeId1(1);

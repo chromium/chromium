@@ -15,7 +15,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/cfi_buildflags.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/hash/md5.h"
@@ -2039,13 +2038,7 @@ TEST_P(PDFiumEngineInkTest, CannotSelectTextInAnnotationMode) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 }
 
-// TODO(crbug.com/377704081): Enable test for CFI.
-#if BUILDFLAG(CFI_ICALL_CHECK)
-#define MAYBE_LoadV2InkPathsForPage DISABLED_LoadV2InkPathsForPage
-#else
-#define MAYBE_LoadV2InkPathsForPage LoadV2InkPathsForPage
-#endif
-TEST_P(PDFiumEngineInkTest, MAYBE_LoadV2InkPathsForPage) {
+TEST_P(PDFiumEngineInkTest, LoadV2InkPathsForPage) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("ink_v2.pdf"));
@@ -2171,15 +2164,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
             2);
 }
 
-// TODO(crbug.com/377704081): Enable test for CFI.
-#if BUILDFLAG(CFI_ICALL_CHECK)
-#define MAYBE_LoadedV2InkPathsAndUpdateShapeActive \
-  DISABLED_LoadedV2InkPathsAndUpdateShapeActive
-#else
-#define MAYBE_LoadedV2InkPathsAndUpdateShapeActive \
-  LoadedV2InkPathsAndUpdateShapeActive
-#endif
-TEST_P(PDFiumEngineInkDrawTest, MAYBE_LoadedV2InkPathsAndUpdateShapeActive) {
+TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndUpdateShapeActive) {
   NiceMock<MockTestClient> client;
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("ink_v2.pdf"));
