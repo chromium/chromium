@@ -4616,6 +4616,53 @@ public class TabListMediatorUnitTest {
                 mModelList.get(POSITION2).model.get(TabProperties.TAB_CARD_LABEL_DATA));
     }
 
+    @Test
+    public void testObserversRemovedAfterHiding() {
+        setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
+
+        verify(mTabGroupModelFilter, times(1)).addObserver(mTabModelObserverCaptor.getValue());
+        verify(mTabGroupModelFilter, times(1))
+                .addTabGroupObserver(mTabGroupModelFilterObserverCaptor.getValue());
+
+        // Hide the GTS. The observers should be removed.
+        mMediator.postHiding();
+        verify(mTabGroupModelFilter).removeObserver(mTabModelObserverCaptor.getValue());
+        verify(mTabGroupModelFilter)
+                .removeTabGroupObserver(mTabGroupModelFilterObserverCaptor.getValue());
+    }
+
+    @Test
+    public void testMoveNonExistantTab() {
+        setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
+
+        // Assume added a new tab to tab model after tab1
+        // and move it to the end(index is 2).
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(0);
+        doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(1);
+        doReturn(newTab).when(mTabGroupModelFilter).getTabAt(2);
+
+        // The index was changed to 2 from 1 after moving the new tab from 1 to 2.
+        doReturn(2).when(mTabGroupModelFilter).indexOf(newTab);
+
+        doReturn(3).when(mTabGroupModelFilter).getCount();
+        doReturn(3).when(mTabModel).getCount();
+        doReturn(Arrays.asList(newTab)).when(mTabGroupModelFilter).getRelatedTabList(eq(TAB3_ID));
+
+        // The tab list wasn't updated. The length is still 2.
+        assertThat(mModelList.size(), equalTo(2));
+        assertThat(mModelList.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
+        assertThat(mModelList.get(1).model.get(TabProperties.TITLE), equalTo(TAB2_TITLE));
+
+        // Call didMoveTabGroup with the new tab. It should not crash and the tab list
+        // should not be updated.
+        mTabGroupModelFilterObserverCaptor.getValue().didMoveTabGroup(newTab, 2, 1);
+
+        assertThat(mModelList.size(), equalTo(2));
+        assertThat(mModelList.get(1).model.get(TabProperties.TAB_ID), equalTo(TAB2_ID));
+        assertThat(mModelList.get(1).model.get(TabProperties.TITLE), equalTo(TAB2_TITLE));
+    }
+
     private void setUpCloseButtonDescriptionString(boolean isGroup) {
         if (isGroup) {
             doAnswer(
