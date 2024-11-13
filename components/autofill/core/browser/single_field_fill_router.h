@@ -91,8 +91,6 @@ class SingleFieldFillRouter {
  private:
   // Handles autocompleting single fields. The `AutocompleteHistoryManager` is
   // a KeyedService that outlives the `SingleFieldFillRouter`.
-  // TODO(crbug.com/40941458): Once WebView doesn't have an
-  // AutocompleteHistoryManager anymore, this should become a raw_ptr instead.
   raw_ref<AutocompleteHistoryManager> autocomplete_history_manager_;
 
   // Handles autofilling IBAN fields. Can be null on unsupported platforms, but
