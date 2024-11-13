@@ -2950,10 +2950,12 @@ class Port(object):
 
     def build_path(self, *comps: str, target: Optional[str] = None):
         """Returns a path from the build directory."""
-        return self._filesystem.join(
-            self._path_from_chromium_base(),
-            self.get_option('build_directory') or 'out', target
-            or self._options.target, *comps)
+        build_path = self.get_option('build_directory')
+        if build_path:
+            return self._filesystem.join(self._filesystem.abspath(build_path),
+                                         *comps)
+        return self._filesystem.join(self._path_from_chromium_base(), 'out',
+                                     target or self._options.target, *comps)
 
     def _check_driver_build_up_to_date(self, target):
         # FIXME: We should probably get rid of this check altogether as it has

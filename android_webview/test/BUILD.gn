@@ -99,20 +99,14 @@ script_test("system_webview_crx_smoke_tests") {
 _common_web_test_options = [
   "--no-show-results",
   "--zero-tests-executed-ok",
+  "--build-directory",
+  "@WrappedPath(.)",
 ]
 if (is_debug) {
   _common_web_test_options += [ "--debug" ]
 } else {
   _common_web_test_options += [ "--release" ]
 }
-base_out_dir = rebase_path(get_path_info(root_build_dir, "dir"), "../../.")
-out_dir = get_path_info(root_build_dir, "name")
-_common_web_test_options += [
-  "--build-directory",
-  base_out_dir,
-  "--target",
-  out_dir,
-]
 
 script_test("system_webview_wpt") {
   script = "//third_party/blink/tools/run_wpt_tests.py"

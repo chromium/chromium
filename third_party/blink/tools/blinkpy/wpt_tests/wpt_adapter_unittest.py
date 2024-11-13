@@ -397,8 +397,10 @@ class WPTAdapterTest(unittest.TestCase):
             self.assertEqual(os.environ['NEW_ENV_VAR'], 'new_env_var_value')
 
     def test_show_results(self):
-        adapter = WPTAdapter.from_args(
-            self.host, ['--product=headless_shell', '--no-manifest-update'])
+        adapter = WPTAdapter.from_args(self.host, [
+            '--product=headless_shell', '--no-manifest-update',
+            '--build-directory=/mock-checkout/out/Release'
+        ])
         post_run_tasks = mock.Mock()
         self._mocks.enter_context(
             mock.patch('blinkpy.web_tests.port.base.Port.clean_up_test_run',

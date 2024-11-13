@@ -1132,6 +1132,8 @@ if (use_blink && !is_cronet_build) {
   _common_web_test_options = [
     "--no-show-results",
     "--zero-tests-executed-ok",
+    "--build-directory",
+    "@WrappedPath(.)",
   ]
   if (is_debug) {
     _common_web_test_options += [ "--debug" ]
@@ -1160,15 +1162,6 @@ if (use_blink && !is_cronet_build) {
     _common_web_test_options += [
       "--out-dir",
       "@WrappedPath(.)",
-    ]
-  } else {
-    base_out_dir = rebase_path(get_path_info(root_build_dir, "dir"), ".")
-    out_dir = get_path_info(root_build_dir, "name")
-    _common_web_test_options += [
-      "--build-directory",
-      base_out_dir,
-      "--target",
-      out_dir,
     ]
   }
 
@@ -1381,6 +1374,8 @@ if (use_blink && !is_cronet_build) {
     "4",
     "--debug-rwt-logging",
     "--clobber-old-results",
+    "--build-directory",
+    "@WrappedPath(.)",
   ]
 
   # https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md

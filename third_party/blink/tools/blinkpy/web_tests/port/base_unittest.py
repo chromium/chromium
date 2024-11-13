@@ -1727,8 +1727,10 @@ class PortTest(LoggingTestCase):
         # Test for a protected method - pylint: disable=protected-access
         # Test that optional paths are used regardless of whether they exist.
         options = optparse.Values({
-            'configuration': 'Release',
-            'build_directory': 'xcodebuild'
+            'configuration':
+            'Release',
+            'build_directory':
+            '/mock-checkout/xcodebuild/Release'
         })
         self.assertEqual(
             self.make_port(options=options).build_path(),
