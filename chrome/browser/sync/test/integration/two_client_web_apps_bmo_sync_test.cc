@@ -356,7 +356,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSynced) {
   // profile 1.
   EXPECT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               Not(ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1)))));
-  EXPECT_FALSE(GetRegistrar(GetProfile(1)).IsInstalled(app_id));
+  EXPECT_FALSE(
+      GetRegistrar(GetProfile(1))
+          .IsInstallState(
+              app_id,
+              {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSyncedThenSynced) {

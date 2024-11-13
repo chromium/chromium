@@ -178,7 +178,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id));
+  EXPECT_TRUE(registrar_unsafe().IsInstallState(
+      app_id, {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
@@ -428,7 +431,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  EXPECT_FALSE(registrar_unsafe().IsInstalled(app_id));
+  EXPECT_FALSE(registrar_unsafe().IsInstallState(
+      app_id, {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
@@ -441,7 +447,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id));
+  EXPECT_TRUE(registrar_unsafe().IsInstallState(
+      app_id, {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 
   auto manifest_id = GenerateManifestId(relative_manifest_id, url);
   auto info = std::make_unique<WebAppInstallInfo>(manifest_id, url);
@@ -467,7 +476,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id));
+  EXPECT_TRUE(registrar_unsafe().IsInstallState(
+      app_id, {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 
   auto manifest_id = GenerateManifestId(relative_manifest_id, url);
   auto info = std::make_unique<WebAppInstallInfo>(manifest_id, url);
@@ -496,7 +508,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id));
+  EXPECT_TRUE(registrar_unsafe().IsInstallState(
+      app_id, {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   const WebApp* web_app = registrar_unsafe().GetAppById(app_id);
   ASSERT_TRUE(web_app);
 
@@ -519,7 +534,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id));
+  EXPECT_TRUE(registrar_unsafe().IsInstallState(
+      app_id, {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
   EXPECT_EQ(registrar_unsafe().GetAppUserDisplayMode(app_id),
             mojom::UserDisplayMode::kStandalone);
 }
@@ -537,7 +555,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InvalidStartUrl) {
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  EXPECT_FALSE(registrar_unsafe().IsInstalled(app_id));
+  EXPECT_FALSE(registrar_unsafe().IsInstallState(
+      app_id, {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Sync.InvalidEntity"),
               base::BucketsAre(
@@ -566,7 +587,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, NoStartUrl) {
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  EXPECT_FALSE(registrar_unsafe().IsInstalled(app_id));
+  EXPECT_FALSE(registrar_unsafe().IsInstallState(
+      app_id, {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 
   std::vector<sync_pb::SyncEntity> server_apps =
       GetFakeServer()->GetSyncEntitiesByDataType(syncer::WEB_APPS);
@@ -600,7 +624,10 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InvalidManifestId) {
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  EXPECT_FALSE(registrar_unsafe().IsInstalled(app_id));
+  EXPECT_FALSE(registrar_unsafe().IsInstallState(
+      app_id, {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 
   std::vector<sync_pb::SyncEntity> server_apps =
       GetFakeServer()->GetSyncEntitiesByDataType(syncer::WEB_APPS);
