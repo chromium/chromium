@@ -284,8 +284,7 @@ class OverviewSessionTest
   // OverviewTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureStates(
-        {{features::kDesksTemplates, DeskTemplatesOn()},
-         {features::kDeskBarWindowOcclusionOptimization, true}});
+        {{features::kDesksTemplates, DeskTemplatesOn()}});
 
     OverviewTestBase::SetUp();
     Shell::Get()->overview_controller()->set_windows_have_snapshot_for_test(
@@ -6253,8 +6252,7 @@ class ContinuousOverviewAnimationTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kContinuousOverviewScrollAnimation,
-                              features::kDeskButton,
-                              features::kDeskBarWindowOcclusionOptimization},
+                              features::kDeskButton},
         /*disabled_features=*/{});
     OverviewTestBase::SetUp();
 
@@ -7127,8 +7125,7 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
  public:
   SplitViewOverviewSessionTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kDeskBarWindowOcclusionOptimization,
-                              chromeos::features::
+        /*enabled_features=*/{chromeos::features::
                                   kOverviewSessionInitOptimizations},
         /*disabled_features=*/{});
   }
@@ -11227,8 +11224,7 @@ class OverviewWallpaperTest : public OverviewTestBase {
  public:
   OverviewWallpaperTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kForestFeature,
-                              features::kDeskBarWindowOcclusionOptimization},
+        /*enabled_features=*/{features::kForestFeature},
         /*disabled_features=*/{});
   }
   OverviewWallpaperTest(const OverviewWallpaperTest&) = delete;

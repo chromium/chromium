@@ -436,7 +436,6 @@ class SavedDeskTest : public OverviewTestBase,
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kDesksTemplates,
-         features::kDeskBarWindowOcclusionOptimization,
          chromeos::features::kOverviewSessionInitOptimizations},
         {});
     OverviewTestBase::SetUp();

@@ -342,8 +342,7 @@ bool DeskBarController::IsShowingDeskBar() const {
 void DeskBarController::OpenDeskBar(aura::Window* root) {
   CHECK(root && root->IsRootWindow());
 
-  if (!window_occlusion_calculator_ &&
-      features::IsDeskBarWindowOcclusionOptimizationEnabled()) {
+  if (!window_occlusion_calculator_) {
     window_occlusion_calculator_.emplace();
   }
 

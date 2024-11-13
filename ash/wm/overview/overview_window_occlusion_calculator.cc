@@ -4,7 +4,6 @@
 
 #include "ash/wm/overview/overview_window_occlusion_calculator.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -29,8 +28,7 @@ OverviewWindowOcclusionCalculator::GetCalculator() {
 }
 
 void OverviewWindowOcclusionCalculator::OnOverviewModeStarting() {
-  if (!features::IsDeskBarWindowOcclusionOptimizationEnabled() ||
-      !desks_util::ShouldRenderDeskBarWithMiniViews()) {
+  if (!desks_util::ShouldRenderDeskBarWithMiniViews()) {
     return;
   }
   TRACE_EVENT0("ui",

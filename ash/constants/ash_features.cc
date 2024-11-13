@@ -553,13 +553,6 @@ BASE_FEATURE(kDisplayPerformanceMode,
              "DisplayPerformanceMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Performance optimization that only renders visible windows in each desk's
-// preview within the desk bar. Should have no user-visible effects except
-// lower latency when opening the desk bar and overview mode.
-BASE_FEATURE(kDeskBarWindowOcclusionOptimization,
-             "DeskBarWindowOcclusionOptimization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Adds a desk button to the shelf that the user can use to navigate between
 // desks.
 BASE_FEATURE(kDeskButton, "DeskButton", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3541,10 +3534,6 @@ bool IsCrosSwitcherEnabled() {
 
 bool IsDemoModeSignInEnabled() {
   return base::FeatureList::IsEnabled(kDemoModeSignIn);
-}
-
-bool IsDeskBarWindowOcclusionOptimizationEnabled() {
-  return base::FeatureList::IsEnabled(kDeskBarWindowOcclusionOptimization);
 }
 
 bool IsDeskButtonEnabled() {

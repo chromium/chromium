@@ -48,8 +48,7 @@ class OverviewFocusCyclerTest : public OverviewTestBase,
   // OverviewTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureStates(
-        {{features::kDesksTemplates, AreDeskTemplatesEnabled()},
-         {features::kDeskBarWindowOcclusionOptimization, true}});
+        {{features::kDesksTemplates, AreDeskTemplatesEnabled()}});
     OverviewTestBase::SetUp();
   }
 
