@@ -271,37 +271,6 @@ TEST_F(BookmarkMergedSurfaceServiceTest, MoveToBookmarkNode) {
   EXPECT_EQ(ModelStringFromNode(model().other_node()), "6 7 ");
 }
 
-TEST_F(BookmarkMergedSurfaceServiceTest, CopyToPermanentFolder) {
-  LoadBookmarkModel();
-  AddNodesFromModelString(&model(), model().bookmark_bar_node(), "1 2 3 ");
-  AddNodesFromModelString(&model(), model().other_node(), "4 5 6 ");
-
-  // Move node "2" in bookmark bar to be after "4" in other node.
-  const BookmarkNode* node = model().bookmark_bar_node()->children()[1].get();
-  service().Copy(node, BookmarkParentFolder::OtherFolder(), 1);
-  EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()), "1 2 3 ");
-  EXPECT_EQ(ModelStringFromNode(model().other_node()), "4 2 5 6 ");
-}
-
-TEST_F(BookmarkMergedSurfaceServiceTest, CopyToBookmarkNode) {
-  LoadBookmarkModel();
-  AddNodesFromModelString(&model(), model().bookmark_bar_node(),
-                          "1 2 3 f1:[ 4 5 ] ");
-  AddNodesFromModelString(&model(), model().other_node(), "6 7 8 f2:[ 9 ] ");
-
-  // Copy node "f1" to "f2".
-  const BookmarkNode* node_to_copy =
-      model().bookmark_bar_node()->children()[3].get();
-  const BookmarkNode* destination = model().other_node()->children()[3].get();
-  service().Copy(node_to_copy,
-                 BookmarkParentFolder::FromNonPermanentNode(destination), 1);
-
-  EXPECT_EQ(ModelStringFromNode(model().bookmark_bar_node()),
-            "1 2 3 f1:[ 4 5 ] ");
-  EXPECT_EQ(ModelStringFromNode(model().other_node()),
-            "6 7 8 f2:[ 9 f1:[ 4 5 ] ] ");
-}
-
 TEST_F(BookmarkMergedSurfaceServiceTest, CopyBookmarkNodeDataElement) {
   LoadBookmarkModel();
   AddNodesFromModelString(&model(), model().bookmark_bar_node(),

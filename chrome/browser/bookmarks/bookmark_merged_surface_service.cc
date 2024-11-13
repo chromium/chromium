@@ -233,20 +233,6 @@ void BookmarkMergedSurfaceService::Move(const bookmarks::BookmarkNode* node,
   }
 }
 
-void BookmarkMergedSurfaceService::Copy(const bookmarks::BookmarkNode* node,
-                                        const BookmarkParentFolder& new_parent,
-                                        size_t index) {
-  CHECK(!IsParentFolderManaged(new_parent));
-  if (new_parent.as_permanent_folder()) {
-    // Note: This will be updated once support for account only bookmarks is
-    // added.
-    model_->Copy(node, PermanentFolderToNode(*new_parent.as_permanent_folder()),
-                 index);
-  } else {
-    model_->Copy(node, new_parent.as_non_permanent_folder(), index);
-  }
-}
-
 void BookmarkMergedSurfaceService::CopyBookmarkNodeDataElement(
     const bookmarks::BookmarkNodeData::Element& element,
     const BookmarkParentFolder& new_parent,

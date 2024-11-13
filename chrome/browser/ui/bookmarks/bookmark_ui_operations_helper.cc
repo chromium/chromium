@@ -108,21 +108,8 @@ void BookmarkUIOperationsHelperNonMergedSurfaces::CopyBookmarkNodeData(
     const base::FilePath& profile_path,
     size_t index_to_add_at) {
   bookmarks::ScopedGroupBookmarkActions group_drops(model_);
-  const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>
-      copied_nodes = data.GetNodes(model_, profile_path);
-  if (copied_nodes.empty()) {
-    bookmarks::CloneBookmarkNode(model_, data.elements, parent_,
-                                 index_to_add_at,
-                                 /*reset_node_times=*/true);
-    return;
-  }
-
-  for (const auto& copied_node : copied_nodes) {
-    model_->Copy(copied_node, parent_, index_to_add_at);
-    // Increment `index` so that the next copied node ends up after the
-    // one that was just inserted.
-    ++index_to_add_at;
-  }
+  bookmarks::CloneBookmarkNode(model_, data.elements, parent_, index_to_add_at,
+                               /*reset_node_times=*/true);
 }
 
 void BookmarkUIOperationsHelperNonMergedSurfaces::MoveBookmarkNodeData(
@@ -181,14 +168,8 @@ void BookmarkUIOperationsHelperMergedSurfaces::CopyBookmarkNodeData(
     const base::FilePath& profile_path,
     size_t index_to_add_at) {
   CHECK_EQ(data.size(), 1u);
-  const BookmarkNode* copied_node = data.GetFirstNode(model(), profile_path);
-  if (!copied_node) {
-    merged_surface_service_->CopyBookmarkNodeDataElement(
-        data.elements[0], *parent_, index_to_add_at);
-    return;
-  }
-
-  merged_surface_service_->Copy(copied_node, *parent_, index_to_add_at);
+  merged_surface_service_->CopyBookmarkNodeDataElement(
+      data.elements[0], *parent_, index_to_add_at);
 }
 
 void BookmarkUIOperationsHelperMergedSurfaces::MoveBookmarkNodeData(
