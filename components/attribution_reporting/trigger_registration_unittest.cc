@@ -61,9 +61,6 @@ TriggerRegistration TriggerRegistrationWith(
 }
 
 TEST(TriggerRegistrationTest, Parse) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAttributionReportingAggregatableFilteringIds);
   const struct {
     const char* description;
     const char* json;
@@ -342,9 +339,6 @@ TEST(TriggerRegistrationTest, Parse) {
 }
 
 TEST(TriggerRegistrationTest, ToJson) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAttributionReportingAggregatableFilteringIds);
   const struct {
     TriggerRegistration input;
     const char* expected_json;
@@ -479,9 +473,6 @@ TEST(TriggerRegistrationTest, ParseAggregationCoordinator) {
 }
 
 TEST(TriggerRegistrationTest, SerializeAggregationCoordinator) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAttributionReportingAggregatableFilteringIds);
   const struct {
     TriggerRegistration input;
     const char* expected_json;
@@ -489,6 +480,7 @@ TEST(TriggerRegistrationTest, SerializeAggregationCoordinator) {
       {
           TriggerRegistration(),
           R"json({
+            "aggregatable_filtering_id_max_bytes": 1,
             "aggregatable_source_registration_time": "exclude",
             "debug_reporting": false,
             "aggregatable_debug_reporting": {
@@ -502,6 +494,7 @@ TEST(TriggerRegistrationTest, SerializeAggregationCoordinator) {
                 SuitableOrigin::Create(GURL("https://a.test"));
           }),
           R"json({
+            "aggregatable_filtering_id_max_bytes": 1,
             "aggregatable_source_registration_time": "exclude",
             "aggregation_coordinator_origin": "https://a.test",
             "debug_reporting": false,

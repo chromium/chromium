@@ -62,8 +62,7 @@ using StoreSourceStatus = ::attribution_reporting::mojom::StoreSourceResult;
 constexpr size_t kMaxContributions = 2;
 
 constexpr char kApiIdentifier[] = "attribution-reporting-debug";
-constexpr char kVersion[] = "0.1";
-constexpr char kVersionWithFlexibleContributionFiltering[] = "1.0";
+constexpr char kVersion[] = "1.0";
 
 std::optional<DebugDataType> GetDebugType(const StoreSourceResult& result) {
   switch (result.status()) {
@@ -190,12 +189,6 @@ GetAggregatableContributions(
     }
   }
   return contributions;
-}
-
-bool IsAggregatableFilteringIdsEnabled() {
-  return base::FeatureList::IsEnabled(
-      attribution_reporting::features::
-          kAttributionReportingAggregatableFilteringIds);
 }
 
 }  // namespace
@@ -362,12 +355,6 @@ std::optional<AggregatableReportRequest>
 AggregatableDebugReport::CreateAggregatableReportRequest() const {
   CHECK(report_id_.is_valid());
 
-  std::optional<size_t> filtering_id_max_bytes;
-  if (IsAggregatableFilteringIdsEnabled()) {
-    filtering_id_max_bytes =
-        attribution_reporting::AggregatableFilteringIdsMaxBytes().value();
-  }
-
   base::Value::Dict additional_fields;
   SetAttributionDestination(additional_fields, effective_destination_);
   return AggregatableReportRequest::Create(
@@ -377,15 +364,12 @@ AggregatableDebugReport::CreateAggregatableReportRequest() const {
           aggregation_coordinator_origin_
               ? std::make_optional(**aggregation_coordinator_origin_)
               : std::nullopt,
-          kMaxContributions, filtering_id_max_bytes),
+          kMaxContributions,
+          attribution_reporting::AggregatableFilteringIdsMaxBytes().value()),
       AggregatableReportSharedInfo(
           scheduled_report_time_, report_id_, reporting_origin_,
           AggregatableReportSharedInfo::DebugMode::kDisabled,
-          std::move(additional_fields),
-          filtering_id_max_bytes.has_value()
-              ? kVersionWithFlexibleContributionFiltering
-              : kVersion,
-          kApiIdentifier),
+          std::move(additional_fields), kVersion, kApiIdentifier),
       // The returned request cannot be serialized due to the null `delay_type`.
       /*delay_type=*/std::nullopt);
 }

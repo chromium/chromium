@@ -88,38 +88,13 @@ AggregatableDebugData DebugDataAll(
   return debug_data;
 }
 
-class AggregatableDebugReportTest : public testing::Test,
-                                    public testing::WithParamInterface<bool> {
- public:
-  AggregatableDebugReportTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        attribution_reporting::features::
-            kAttributionAggregatableDebugReporting};
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    const bool filtering_ids_enabled = GetParam();
-    if (filtering_ids_enabled) {
-      enabled_features.emplace_back(
-          attribution_reporting::features::
-              kAttributionReportingAggregatableFilteringIds);
-    } else {
-      disabled_features.emplace_back(
-          attribution_reporting::features::
-              kAttributionReportingAggregatableFilteringIds);
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
-  bool filtering_ids_enabled() const { return GetParam(); }
-
+class AggregatableDebugReportTest : public testing::Test {
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list{
+      attribution_reporting::features::kAttributionAggregatableDebugReporting};
 };
 
-INSTANTIATE_TEST_SUITE_P(All, AggregatableDebugReportTest, ::testing::Bool());
-
-TEST_P(AggregatableDebugReportTest, SourceDebugReport_Enablement) {
+TEST_F(AggregatableDebugReportTest, SourceDebugReport_Enablement) {
   const struct {
     const char* desc;
     bool is_within_fenced_frame = false;
@@ -199,7 +174,7 @@ TEST_P(AggregatableDebugReportTest, SourceDebugReport_Enablement) {
   }
 }
 
-TEST_P(AggregatableDebugReportTest, SourceDebugReport) {
+TEST_F(AggregatableDebugReportTest, SourceDebugReport) {
   const struct {
     DebugDataType type;
     StoreSourceResult::Result result;
@@ -333,7 +308,7 @@ TEST_P(AggregatableDebugReportTest, SourceDebugReport) {
   }
 }
 
-TEST_P(AggregatableDebugReportTest, SourceDebugReport_Unsupported) {
+TEST_F(AggregatableDebugReportTest, SourceDebugReport_Unsupported) {
   const struct {
     StoreSourceResult::Result result;
   } kTestCases[] = {
@@ -365,7 +340,7 @@ TEST_P(AggregatableDebugReportTest, SourceDebugReport_Unsupported) {
   }
 }
 
-TEST_P(AggregatableDebugReportTest, TriggerDebugReport_Enablement) {
+TEST_F(AggregatableDebugReportTest, TriggerDebugReport_Enablement) {
   const struct {
     const char* desc;
     bool is_within_fenced_frame = false;
@@ -442,7 +417,7 @@ TEST_P(AggregatableDebugReportTest, TriggerDebugReport_Enablement) {
   }
 }
 
-TEST_P(AggregatableDebugReportTest, TriggerDebugReport_EventLevel) {
+TEST_F(AggregatableDebugReportTest, TriggerDebugReport_EventLevel) {
   const struct {
     CreateReportResult::EventLevel result;
     DebugDataType type;
@@ -572,7 +547,7 @@ TEST_P(AggregatableDebugReportTest, TriggerDebugReport_EventLevel) {
   }
 }
 
-TEST_P(AggregatableDebugReportTest, TriggerDebugReport_EventLevelUnsupported) {
+TEST_F(AggregatableDebugReportTest, TriggerDebugReport_EventLevelUnsupported) {
   const struct {
     CreateReportResult::EventLevel result;
     bool has_matching_source = false;
@@ -634,7 +609,7 @@ TEST_P(AggregatableDebugReportTest, TriggerDebugReport_EventLevelUnsupported) {
   }
 }
 
-TEST_P(AggregatableDebugReportTest, TriggerDebugReport_Aggregatable) {
+TEST_F(AggregatableDebugReportTest, TriggerDebugReport_Aggregatable) {
   const struct {
     CreateReportResult::Aggregatable result;
     DebugDataType type;
@@ -749,7 +724,7 @@ TEST_P(AggregatableDebugReportTest, TriggerDebugReport_Aggregatable) {
   }
 }
 
-TEST_P(AggregatableDebugReportTest,
+TEST_F(AggregatableDebugReportTest,
        TriggerDebugReport_AggregatableUnsupported) {
   const struct {
     CreateReportResult::Aggregatable result;
@@ -805,7 +780,7 @@ TEST_P(AggregatableDebugReportTest,
   }
 }
 
-TEST_P(AggregatableDebugReportTest,
+TEST_F(AggregatableDebugReportTest,
        TriggerDebugReport_EventLevelAndAggregatable) {
   const struct {
     const char* desc;
@@ -894,7 +869,7 @@ TEST_P(AggregatableDebugReportTest,
 
 }  // namespace
 
-TEST_P(AggregatableDebugReportTest, SourceDebugReport_Data) {
+TEST_F(AggregatableDebugReportTest, SourceDebugReport_Data) {
   const base::Time source_time = base::Time::Now();
   const SuitableOrigin source_origin =
       *SuitableOrigin::Deserialize("https://a.test");
@@ -950,7 +925,7 @@ TEST_P(AggregatableDebugReportTest, SourceDebugReport_Data) {
           Property(&AggregatableDebugReport::BudgetRequired, 5))));
 }
 
-TEST_P(AggregatableDebugReportTest, TriggerDebugReport_Data) {
+TEST_F(AggregatableDebugReportTest, TriggerDebugReport_Data) {
   const base::Time trigger_time = base::Time::Now();
   const SuitableOrigin destination_origin =
       *SuitableOrigin::Deserialize("https://d.test");
@@ -1003,7 +978,7 @@ TEST_P(AggregatableDebugReportTest, TriggerDebugReport_Data) {
           Property(&AggregatableDebugReport::BudgetRequired, 5))));
 }
 
-TEST_P(AggregatableDebugReportTest, CreateAggregatableReportRequest) {
+TEST_F(AggregatableDebugReportTest, CreateAggregatableReportRequest) {
   ::aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting
       scoped_coordinator_allowlist_{
           {url::Origin::Create(GURL("https://a.test"))}};
@@ -1027,10 +1002,6 @@ TEST_P(AggregatableDebugReportTest, CreateAggregatableReportRequest) {
   auto request = report.CreateAggregatableReportRequest();
   ASSERT_TRUE(request.has_value());
 
-  std::optional<size_t> expected_filtering_id_max_bytes;
-  if (filtering_ids_enabled()) {
-    expected_filtering_id_max_bytes = 1u;
-  }
   auto expected_request = AggregatableReportRequest::Create(
       AggregationServicePayloadContents(
           AggregationServicePayloadContents::Operation::kHistogram,
@@ -1040,7 +1011,7 @@ TEST_P(AggregatableDebugReportTest, CreateAggregatableReportRequest) {
           blink::mojom::AggregationServiceMode::kDefault,
           /*aggregation_coordinator_origin=*/
           url::Origin::Create(GURL("https://a.test")),
-          /*max_contributions_allowed=*/2u, expected_filtering_id_max_bytes),
+          /*max_contributions_allowed=*/2u, /*filtering_id_max_bytes=*/1u),
       AggregatableReportSharedInfo(
           scheduled_report_time, report_id,
           /*reporting_origin=*/
@@ -1048,7 +1019,7 @@ TEST_P(AggregatableDebugReportTest, CreateAggregatableReportRequest) {
           AggregatableReportSharedInfo::DebugMode::kDisabled,
           /*additional_fields=*/
           base::Value::Dict().Set("attribution_destination", "https://d.test"),
-          /*api_version=*/filtering_ids_enabled() ? "1.0" : "0.1",
+          /*api_version=*/"1.0",
           /*api_identifier=*/"attribution-reporting-debug"));
   ASSERT_TRUE(expected_request.has_value());
 

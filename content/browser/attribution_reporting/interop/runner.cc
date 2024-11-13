@@ -448,12 +448,6 @@ RunAttributionInteropSimulation(
                                       kAttributionAggregatableDebugReporting);
   }
 
-  if (run.config.needs_aggregatable_filtering_ids) {
-    enabled_features.emplace_back(
-        attribution_reporting::features::
-            kAttributionReportingAggregatableFilteringIds);
-  }
-
   if (run.config.needs_attribution_scopes) {
     enabled_features.emplace_back(
         attribution_reporting::features::kAttributionScopes);
