@@ -100,7 +100,6 @@ const char kEchoCancellation[] = "echoCancellation";
 const char kDisableLocalEcho[] = "disableLocalEcho";
 const char kGoogAutoGainControl[] = "googAutoGainControl";
 const char kGoogNoiseSuppression[] = "googNoiseSuppression";
-const char kGoogExperimentalNoiseSuppression[] = "googNoiseSuppression2";
 const char kGoogHighpassFilter[] = "googHighpassFilter";
 const char kGoogAudioMirroring[] = "googAudioMirroring";
 // Audio constraints.
@@ -216,9 +215,6 @@ static void ParseOldStyleNames(
       result.goog_auto_gain_control.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_ == kGoogNoiseSuppression) {
       result.goog_noise_suppression.SetExact(ToBoolean(constraint.value_));
-    } else if (constraint.name_ == kGoogExperimentalNoiseSuppression) {
-      result.goog_experimental_noise_suppression.SetExact(
-          ToBoolean(constraint.value_));
     } else if (constraint.name_ == kGoogHighpassFilter) {
       result.goog_highpass_filter.SetExact(ToBoolean(constraint.value_));
     } else if (constraint.name_ == kGoogAudioMirroring) {

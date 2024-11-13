@@ -10,7 +10,6 @@ void AudioProcessingProperties::DisableDefaultProperties() {
   echo_cancellation_type = EchoCancellationType::kEchoCancellationDisabled;
   goog_auto_gain_control = false;
   goog_noise_suppression = false;
-  goog_experimental_noise_suppression = false;
   goog_highpass_filter = false;
   voice_isolation = VoiceIsolationType::kVoiceIsolationDefault;
 }
@@ -35,8 +34,6 @@ bool AudioProcessingProperties::HasSameNonReconfigurableSettings(
          goog_audio_mirroring == other.goog_audio_mirroring &&
          goog_auto_gain_control == other.goog_auto_gain_control &&
          goog_noise_suppression == other.goog_noise_suppression &&
-         goog_experimental_noise_suppression ==
-             other.goog_experimental_noise_suppression &&
          goog_highpass_filter == other.goog_highpass_filter &&
          voice_isolation == other.voice_isolation;
 }
@@ -53,9 +50,6 @@ AudioProcessingProperties::ToAudioProcessingSettings(
       echo_cancellation_type == EchoCancellationType::kEchoCancellationAec3;
   out.noise_suppression =
       goog_noise_suppression && !system_noise_suppression_activated;
-  // TODO(https://bugs.webrtc.org/5298): Also toggle transient suppression when
-  // system effects are activated?
-  out.transient_noise_suppression = goog_experimental_noise_suppression;
 
   out.automatic_gain_control =
       goog_auto_gain_control && !system_gain_control_activated;

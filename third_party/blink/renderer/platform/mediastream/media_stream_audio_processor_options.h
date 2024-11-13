@@ -74,9 +74,6 @@ struct PLATFORM_EXPORT AudioProcessingProperties {
   bool goog_audio_mirroring = false;
   bool goog_auto_gain_control = true;
   bool goog_noise_suppression = true;
-  // Experimental noise suppression maps to transient suppression (keytap
-  // removal).
-  bool goog_experimental_noise_suppression = true;
   bool goog_highpass_filter = true;
   VoiceIsolationType voice_isolation =
       VoiceIsolationType::kVoiceIsolationDefault;

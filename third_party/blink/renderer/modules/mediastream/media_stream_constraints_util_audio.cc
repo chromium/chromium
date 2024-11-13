@@ -484,8 +484,6 @@ class EchoCancellationContainer {
 
     properties->goog_noise_suppression &= default_audio_processing_value;
     properties->voice_isolation = VoiceIsolationType::kVoiceIsolationDefault;
-    properties->goog_experimental_noise_suppression &=
-        default_audio_processing_value;
     properties->goog_highpass_filter &= default_audio_processing_value;
   }
 
@@ -746,7 +744,6 @@ class ProcessingBasedContainer {
         BoolSet(), /* auto_gain_control_set */
         BoolSet(), /* goog_audio_mirroring_set */
         BoolSet(), /* goog_noise_suppression_set */
-        BoolSet(), /* goog_experimental_noise_suppression_set */
         BoolSet(), /* goog_highpass_filter_set */
         BoolSet(), /* voice_isolation_set */
         IntRangeSet::FromValue(GetSampleSize()),    /* sample_size_range */
@@ -773,7 +770,6 @@ class ProcessingBasedContainer {
         BoolSet({false}), /* auto_gain_control_set */
         BoolSet(),        /* goog_audio_mirroring_set */
         BoolSet({false}), /* goog_noise_suppression_set */
-        BoolSet({false}), /* goog_experimental_noise_suppression_set */
         BoolSet({false}), /* goog_highpass_filter_set */
         BoolSet(),        /* voice_isolation_set */
         IntRangeSet::FromValue(GetSampleSize()), /* sample_size_range */
@@ -799,7 +795,6 @@ class ProcessingBasedContainer {
         BoolSet({false}), /* auto_gain_control_set */
         BoolSet({false}), /* goog_audio_mirroring_set */
         BoolSet({false}), /* goog_noise_suppression_set */
-        BoolSet({false}), /* goog_experimental_noise_suppression_set */
         BoolSet({false}), /* goog_highpass_filter_set */
         BoolSet({false}), /* voice_isolation_set */
         IntRangeSet::FromValue(GetSampleSize()), /* sample_size_range */
@@ -966,7 +961,6 @@ class ProcessingBasedContainer {
   enum BooleanContainerId {
     kGoogAudioMirroring,
     kGoogNoiseSuppression,
-    kGoogExperimentalNoiseSuppression,
     kGoogHighpassFilter,
     kNumBooleanContainerIds
   };
@@ -987,9 +981,6 @@ class ProcessingBasedContainer {
            &AudioProcessingProperties::goog_audio_mirroring},
           {kGoogNoiseSuppression, &ConstraintSet::goog_noise_suppression,
            &AudioProcessingProperties::goog_noise_suppression},
-          {kGoogExperimentalNoiseSuppression,
-           &ConstraintSet::goog_experimental_noise_suppression,
-           &AudioProcessingProperties::goog_experimental_noise_suppression},
           {kGoogHighpassFilter, &ConstraintSet::goog_highpass_filter,
            &AudioProcessingProperties::goog_highpass_filter}};
 
@@ -1004,7 +995,6 @@ class ProcessingBasedContainer {
                            BoolSet auto_gain_control_set,
                            BoolSet goog_audio_mirroring_set,
                            BoolSet goog_noise_suppression_set,
-                           BoolSet goog_experimental_noise_suppression_set,
                            BoolSet goog_highpass_filter_set,
                            BoolSet voice_isolation_set,
                            IntRangeSet sample_size_range,
@@ -1040,8 +1030,6 @@ class ProcessingBasedContainer {
         BooleanContainer(goog_audio_mirroring_set);
     boolean_containers_[kGoogNoiseSuppression] =
         BooleanContainer(goog_noise_suppression_set);
-    boolean_containers_[kGoogExperimentalNoiseSuppression] =
-        BooleanContainer(goog_experimental_noise_suppression_set);
     boolean_containers_[kGoogHighpassFilter] =
         BooleanContainer(goog_highpass_filter_set);
 

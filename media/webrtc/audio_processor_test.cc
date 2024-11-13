@@ -80,7 +80,6 @@ void ReadDataFromSpeechFile(char* data, int length) {
 void DisableDefaultSettings(AudioProcessingSettings& settings) {
   settings.echo_cancellation = false;
   settings.noise_suppression = false;
-  settings.transient_noise_suppression = false;
   settings.automatic_gain_control = false;
   settings.high_pass_filter = false;
   settings.multi_channel_capture_processing = false;

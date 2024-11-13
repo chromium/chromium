@@ -841,19 +841,6 @@ TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
 }
 
 TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
-     TrueWhenExperimentalNoiseSuppression) {
-  test::TaskEnvironment task_environment_;
-  blink::AudioProcessingProperties properties;
-  properties.DisableDefaultProperties();
-  properties.goog_experimental_noise_suppression = true;
-  EXPECT_TRUE(MediaStreamAudioProcessor::WouldModifyAudio(properties));
-
-  scoped_refptr<MediaStreamAudioProcessor> audio_processor =
-      CreateAudioProcessorWithProperties(properties);
-  EXPECT_TRUE(audio_processor->has_webrtc_audio_processing());
-}
-
-TEST(MediaStreamAudioProcessorWouldModifyAudioTest,
      TrueWhenHighpassFilterIsEnabled) {
   test::TaskEnvironment task_environment_;
   blink::AudioProcessingProperties properties;
