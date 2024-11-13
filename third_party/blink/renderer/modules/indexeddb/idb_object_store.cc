@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value_factory.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_idb_get_all_records_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbcursor_idbindex_idbobjectstore.h"
 #include "third_party/blink/renderer/core/dom/dom_string_list.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -250,6 +251,25 @@ IDBRequest* IDBObjectStore::getAllKeys(ScriptState* script_state,
       IDBRequest::TypeForMetrics::kObjectStoreGetAllKeys, script_state,
       key_range, mojom::blink::IDBGetAllResultType::Keys, max_count,
       mojom::blink::IDBCursorDirection::Next, exception_state);
+}
+
+IDBRequest* IDBObjectStore::getAllRecords(
+    ScriptState* script_state,
+    const IDBGetAllRecordsOptions* options,
+    ExceptionState& exception_state) {
+  TRACE_EVENT1("IndexedDB", "IDBObjectStore::getAllRecordsRequestSetup",
+               "store_name", metadata_->name.Utf8());
+
+  uint32_t max_count =
+      options->getCountOr(std::numeric_limits<uint32_t>::max());
+
+  mojom::blink::IDBCursorDirection direction =
+      IDBCursor::V8EnumToDirection(options->direction().AsEnum());
+
+  return CreateGetAllRequest(
+      IDBRequest::TypeForMetrics::kObjectStoreGetAllRecords, script_state,
+      options->query(), mojom::blink::IDBGetAllResultType::Records, max_count,
+      direction, exception_state);
 }
 
 static Vector<std::unique_ptr<IDBKey>> GenerateIndexKeysForValue(

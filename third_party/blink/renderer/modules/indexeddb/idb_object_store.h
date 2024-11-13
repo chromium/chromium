@@ -44,6 +44,7 @@ namespace blink {
 
 class DOMStringList;
 class ExceptionState;
+class IDBGetAllRecordsOptions;
 
 class MODULES_EXPORT IDBObjectStore final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -94,6 +95,9 @@ class MODULES_EXPORT IDBObjectStore final : public ScriptWrappable {
   IDBRequest* getAllKeys(ScriptState*,
                          const ScriptValue& range,
                          ExceptionState&);
+  IDBRequest* getAllRecords(ScriptState*,
+                            const IDBGetAllRecordsOptions*,
+                            ExceptionState&);
   IDBRequest* add(ScriptState*, const ScriptValue& value, ExceptionState&);
   IDBRequest* add(ScriptState*,
                   const ScriptValue& value,

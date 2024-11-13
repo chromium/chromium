@@ -120,6 +120,8 @@ const char* RequestTypeToName(IDBRequest::TypeForMetrics type) {
       return "IDBObjectStore::openKeyCursor";
     case IDBRequest::TypeForMetrics::kObjectStoreCount:
       return "IDBObjectStore::count";
+    case IDBRequest::TypeForMetrics::kObjectStoreGetAllRecords:
+      return "IDBObjectStore::getAllRecords";
   }
 }
 
@@ -194,6 +196,7 @@ void RecordHistogram(IDBRequest::TypeForMetrics type,
     case IDBRequest::TypeForMetrics::kObjectStoreOpenCursor:
     case IDBRequest::TypeForMetrics::kObjectStoreOpenKeyCursor:
     case IDBRequest::TypeForMetrics::kObjectStoreCount:
+    case IDBRequest::TypeForMetrics::kObjectStoreGetAllRecords:
       break;
   }
 }
