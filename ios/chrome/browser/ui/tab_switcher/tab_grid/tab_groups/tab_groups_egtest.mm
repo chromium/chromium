@@ -646,7 +646,15 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
   }
 }
 
-- (void)testMovingBetweenGroupsUsingGridContextMenuInRegularGrid {
+// TODO(crbug.com/378900884): Flaky on ios simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testMovingBetweenGroupsUsingGridContextMenuInRegularGrid \
+  DISABLED_testMovingBetweenGroupsUsingGridContextMenuInRegularGrid
+#else
+#define MAYBE_testMovingBetweenGroupsUsingGridContextMenuInRegularGrid \
+  testMovingBetweenGroupsUsingGridContextMenuInRegularGrid
+#endif
+- (void)MAYBE_testMovingBetweenGroupsUsingGridContextMenuInRegularGrid {
   [self testMovingBetweenGroupsUsingGridContextMenuInGrid:/*incognito*/ NO];
 }
 
