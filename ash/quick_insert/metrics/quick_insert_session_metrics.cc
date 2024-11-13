@@ -278,8 +278,10 @@ QuickInsertSessionMetrics::~QuickInsertSessionMetrics() {
 
 void QuickInsertSessionMetrics::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(prefs::kPickerCapsLockSelectedCountPrefName, 0);
-  registry->RegisterIntegerPref(prefs::kPickerCapsLockDislayedCountPrefName, 0);
+  registry->RegisterIntegerPref(prefs::kQuickInsertLockSelectedCountPrefName,
+                                0);
+  registry->RegisterIntegerPref(
+      prefs::kQuickInsertCapsLockDisplayedCountPrefName, 0);
 }
 
 void QuickInsertSessionMetrics::SetOutcome(SessionOutcome outcome) {
@@ -346,9 +348,9 @@ void QuickInsertSessionMetrics::UpdateCapLockPrefs(bool caps_lock_selected) {
     return;
   }
   int caps_lock_displayed_count =
-      prefs_->GetInteger(prefs::kPickerCapsLockDislayedCountPrefName) + 1;
+      prefs_->GetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName) + 1;
   int caps_lock_selected_count =
-      prefs_->GetInteger(prefs::kPickerCapsLockSelectedCountPrefName);
+      prefs_->GetInteger(prefs::kQuickInsertLockSelectedCountPrefName);
   if (caps_lock_selected) {
     ++caps_lock_selected_count;
   }
@@ -360,9 +362,9 @@ void QuickInsertSessionMetrics::UpdateCapLockPrefs(bool caps_lock_selected) {
     caps_lock_displayed_count /= 2;
     caps_lock_selected_count /= 2;
   }
-  prefs_->SetInteger(prefs::kPickerCapsLockDislayedCountPrefName,
+  prefs_->SetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName,
                      caps_lock_displayed_count);
-  prefs_->SetInteger(prefs::kPickerCapsLockSelectedCountPrefName,
+  prefs_->SetInteger(prefs::kQuickInsertLockSelectedCountPrefName,
                      caps_lock_selected_count);
 }
 

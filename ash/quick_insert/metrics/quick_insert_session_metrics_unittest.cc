@@ -200,9 +200,9 @@ TEST_F(QuickInsertSessionMetricsTest,
 TEST_F(QuickInsertSessionMetricsTest, UpdatesCapsLockPrefsWhenNotSelected) {
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterIntegerPref(
-      prefs::kPickerCapsLockDislayedCountPrefName, 2);
+      prefs::kQuickInsertCapsLockDisplayedCountPrefName, 2);
   prefs.registry()->RegisterIntegerPref(
-      prefs::kPickerCapsLockSelectedCountPrefName, 1);
+      prefs::kQuickInsertLockSelectedCountPrefName, 1);
 
   {
     QuickInsertSessionMetrics metrics(&prefs);
@@ -214,16 +214,17 @@ TEST_F(QuickInsertSessionMetricsTest, UpdatesCapsLockPrefsWhenNotSelected) {
     metrics.SetOutcome(QuickInsertSessionMetrics::SessionOutcome::kFormat);
   }
 
-  EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockDislayedCountPrefName), 3);
-  EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockSelectedCountPrefName), 1);
+  EXPECT_EQ(prefs.GetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName),
+            3);
+  EXPECT_EQ(prefs.GetInteger(prefs::kQuickInsertLockSelectedCountPrefName), 1);
 }
 
 TEST_F(QuickInsertSessionMetricsTest, UpdatesCapsLockPrefsWhenSelected) {
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterIntegerPref(
-      prefs::kPickerCapsLockDislayedCountPrefName, 2);
+      prefs::kQuickInsertCapsLockDisplayedCountPrefName, 2);
   prefs.registry()->RegisterIntegerPref(
-      prefs::kPickerCapsLockSelectedCountPrefName, 1);
+      prefs::kQuickInsertLockSelectedCountPrefName, 1);
 
   {
     QuickInsertSessionMetrics metrics(&prefs);
@@ -235,17 +236,18 @@ TEST_F(QuickInsertSessionMetricsTest, UpdatesCapsLockPrefsWhenSelected) {
     metrics.SetOutcome(QuickInsertSessionMetrics::SessionOutcome::kFormat);
   }
 
-  EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockDislayedCountPrefName), 3);
-  EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockSelectedCountPrefName), 2);
+  EXPECT_EQ(prefs.GetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName),
+            3);
+  EXPECT_EQ(prefs.GetInteger(prefs::kQuickInsertLockSelectedCountPrefName), 2);
 }
 
 TEST_F(QuickInsertSessionMetricsTest,
        DoesNotUpdateCapsLockPrefsWhenNotDisplayed) {
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterIntegerPref(
-      prefs::kPickerCapsLockDislayedCountPrefName, 2);
+      prefs::kQuickInsertCapsLockDisplayedCountPrefName, 2);
   prefs.registry()->RegisterIntegerPref(
-      prefs::kPickerCapsLockSelectedCountPrefName, 1);
+      prefs::kQuickInsertLockSelectedCountPrefName, 1);
 
   {
     QuickInsertSessionMetrics metrics(&prefs);
@@ -256,16 +258,17 @@ TEST_F(QuickInsertSessionMetricsTest,
     metrics.SetOutcome(QuickInsertSessionMetrics::SessionOutcome::kFormat);
   }
 
-  EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockDislayedCountPrefName), 2);
-  EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockSelectedCountPrefName), 1);
+  EXPECT_EQ(prefs.GetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName),
+            2);
+  EXPECT_EQ(prefs.GetInteger(prefs::kQuickInsertLockSelectedCountPrefName), 1);
 }
 
 TEST_F(QuickInsertSessionMetricsTest, HalvesCapsLockPrefs) {
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterIntegerPref(
-      prefs::kPickerCapsLockDislayedCountPrefName, 19);
+      prefs::kQuickInsertCapsLockDisplayedCountPrefName, 19);
   prefs.registry()->RegisterIntegerPref(
-      prefs::kPickerCapsLockSelectedCountPrefName, 9);
+      prefs::kQuickInsertLockSelectedCountPrefName, 9);
 
   {
     QuickInsertSessionMetrics metrics(&prefs);
@@ -277,8 +280,9 @@ TEST_F(QuickInsertSessionMetricsTest, HalvesCapsLockPrefs) {
     metrics.SetOutcome(QuickInsertSessionMetrics::SessionOutcome::kFormat);
   }
 
-  EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockDislayedCountPrefName), 10);
-  EXPECT_EQ(prefs.GetInteger(prefs::kPickerCapsLockSelectedCountPrefName), 5);
+  EXPECT_EQ(prefs.GetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName),
+            10);
+  EXPECT_EQ(prefs.GetInteger(prefs::kQuickInsertLockSelectedCountPrefName), 5);
 }
 
 }  // namespace

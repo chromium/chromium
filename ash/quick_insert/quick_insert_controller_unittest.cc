@@ -1162,40 +1162,40 @@ TEST_F(QuickInsertControllerTest, IsValidDuringWidgetClose) {
 
 TEST_F(QuickInsertControllerTest,
        ReturnsCapsLockPositionTopWhenCapsLockHasNotShownEnoughTimes) {
-  prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 4);
-  prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 0);
+  prefs().SetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName, 4);
+  prefs().SetInteger(prefs::kQuickInsertLockSelectedCountPrefName, 0);
   EXPECT_EQ(controller().GetCapsLockPosition(),
             QuickInsertCapsLockPosition::kTop);
 }
 
 TEST_F(QuickInsertControllerTest,
        ReturnsCapsLockPositionTopWhenCapsLockIsAlwaysUsed) {
-  prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 15);
-  prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 14);
+  prefs().SetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName, 15);
+  prefs().SetInteger(prefs::kQuickInsertLockSelectedCountPrefName, 14);
   EXPECT_EQ(controller().GetCapsLockPosition(),
             QuickInsertCapsLockPosition::kTop);
 }
 
 TEST_F(QuickInsertControllerTest,
        ReturnsCapsLockPositionMiddleWhenCapsLockIsSometimesUsed) {
-  prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 15);
-  prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 7);
+  prefs().SetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName, 15);
+  prefs().SetInteger(prefs::kQuickInsertLockSelectedCountPrefName, 7);
   EXPECT_EQ(controller().GetCapsLockPosition(),
             QuickInsertCapsLockPosition::kMiddle);
 }
 
 TEST_F(QuickInsertControllerTest,
        ReturnsCapsLockPositionBottomWhenCapsLockIsNeverUsed) {
-  prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 15);
-  prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 0);
+  prefs().SetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName, 15);
+  prefs().SetInteger(prefs::kQuickInsertLockSelectedCountPrefName, 0);
   EXPECT_EQ(controller().GetCapsLockPosition(),
             QuickInsertCapsLockPosition::kBottom);
 }
 
 TEST_F(QuickInsertControllerTest,
        ReturnCapsLockPositionTopWhenCapsLockIsEnabled) {
-  prefs().SetInteger(prefs::kPickerCapsLockDislayedCountPrefName, 4);
-  prefs().SetInteger(prefs::kPickerCapsLockSelectedCountPrefName, 0);
+  prefs().SetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName, 4);
+  prefs().SetInteger(prefs::kQuickInsertLockSelectedCountPrefName, 0);
   GetImeKeyboard()->SetCapsLockEnabled(true);
 
   EXPECT_EQ(controller().GetCapsLockPosition(),

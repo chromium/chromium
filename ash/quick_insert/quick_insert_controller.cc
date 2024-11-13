@@ -751,9 +751,9 @@ QuickInsertCapsLockPosition QuickInsertController::GetCapsLockPosition() {
   }
 
   int caps_lock_displayed_count =
-      prefs->GetInteger(prefs::kPickerCapsLockDislayedCountPrefName);
+      prefs->GetInteger(prefs::kQuickInsertCapsLockDisplayedCountPrefName);
   int caps_lock_selected_count =
-      prefs->GetInteger(prefs::kPickerCapsLockSelectedCountPrefName);
+      prefs->GetInteger(prefs::kQuickInsertLockSelectedCountPrefName);
   float caps_lock_selected_ratio =
       static_cast<float>(caps_lock_selected_count) / caps_lock_displayed_count;
 
