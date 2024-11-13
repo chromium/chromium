@@ -157,9 +157,4 @@ interface PeerConnectionTrackerHost {
   // |lid| is the renderer local id,
   // |value| is the list of stats reports.
   AddStandardStats(int32 lid, mojo_base.mojom.ListValue value);
-
-  // Adds legacy PeerConnection stats for webrtc-internals.
-  // |lid| is the renderer local id,
-  // |value| is the list of stats reports.
-  AddLegacyStats(int32 lid, mojo_base.mojom.ListValue value);
 };

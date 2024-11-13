@@ -1226,8 +1226,4 @@ void PeerConnectionTracker::AddStandardStats(int lid, base::Value::List value) {
   peer_connection_tracker_host_->AddStandardStats(lid, std::move(value));
 }
 
-void PeerConnectionTracker::AddLegacyStats(int lid, base::Value::List value) {
-  peer_connection_tracker_host_->AddLegacyStats(lid, std::move(value));
-}
-
 }  // namespace blink
