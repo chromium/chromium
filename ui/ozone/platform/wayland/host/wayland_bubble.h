@@ -47,7 +47,6 @@ class WaylandBubble final : public WaylandWindow {
   // by SetBoundsInDIP.
   void AckConfigure(uint32_t serial) override {}
   base::WeakPtr<WaylandWindow> AsWeakPtr() override;
-  bool IsScreenCoordinatesEnabled() const override;
   bool IsActive() const override;
   WaylandBubble* AsWaylandBubble() override;
 

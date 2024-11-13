@@ -88,7 +88,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool IsActive() const override;
   bool IsSuspended() const override;
   void SetWindowGeometry(const PlatformWindowDelegate::State& state) override;
-  bool IsScreenCoordinatesEnabled() const override;
   bool SupportsConfigureMinimizedState() const override;
   bool SupportsConfigurePinnedState() const override;
   void ShowTooltip(const std::u16string& text,
@@ -141,8 +140,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool IsClientControlledWindowMovementSupported() const override;
   void NotifyStartupComplete(const std::string& startup_id) override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
-  void SetBoundsInPixels(const gfx::Rect& bounds) override;
-  void SetBoundsInDIP(const gfx::Rect& bounds) override;
 
   // WmMoveLoopHandler:
   bool RunMoveLoop(const gfx::Vector2d& drag_offset) override;
@@ -298,9 +295,6 @@ class WaylandToplevelWindow : public WaylandWindow,
 
   // The z order for the window.
   ZOrderLevel z_order_ = ZOrderLevel::kNormal;
-
-  // True when screen coordinates is enabled.
-  bool screen_coordinates_enabled_;
 
   // The last buffer scale sent to the wayland server.
   std::optional<float> last_sent_buffer_scale_;

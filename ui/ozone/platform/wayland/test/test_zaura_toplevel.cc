@@ -25,11 +25,6 @@ void SurfaceSubmissionInPixelCoordinates(struct wl_client* client,
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void SetSupportsScreenCoordinates(struct wl_client* client,
-                                  struct wl_resource* resource) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 void SetWindowBounds(struct wl_client* client,
                      struct wl_resource* resource,
                      int32_t x,
@@ -192,7 +187,7 @@ TestZAuraToplevel::~TestZAuraToplevel() = default;
 const struct zaura_toplevel_interface kTestZAuraToplevelImpl = {
     &SetOrientationLock,
     &SurfaceSubmissionInPixelCoordinates,
-    &SetSupportsScreenCoordinates,
+    nullptr,
     &SetWindowBounds,
     nullptr,
     &SetSystemModal,

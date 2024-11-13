@@ -421,29 +421,6 @@ void XDGToplevelWrapperImpl::Unlock() {
   }
 }
 
-void XDGToplevelWrapperImpl::RequestWindowBounds(const gfx::Rect& bounds,
-                                                 int64_t display_id) {
-  const WaylandOutputManager* manager = connection_->wayland_output_manager();
-
-  WaylandOutput* target_output = nullptr;
-  if (display_id != display::kInvalidDisplayId) {
-    auto output_id_for_display_id =
-        manager->wayland_screen()->GetOutputIdForDisplayId(display_id);
-    // the output for the valid display_id should exist.
-    LOG_IF(WARNING, !output_id_for_display_id)
-        << "No output found for display id:" << display_id;
-
-    target_output = manager->GetOutput(output_id_for_display_id);
-  }
-
-  if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
-                            ZAURA_TOPLEVEL_SET_WINDOW_BOUNDS_SINCE_VERSION) {
-    zaura_toplevel_set_window_bounds(
-        aura_toplevel_.get(), bounds.x(), bounds.y(), bounds.width(),
-        bounds.height(), target_output ? target_output->get_output() : nullptr);
-  }
-}
-
 void XDGToplevelWrapperImpl::SetSystemModal(bool modal) {
   if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=
                             ZAURA_TOPLEVEL_SET_SYSTEM_MODAL_SINCE_VERSION) {
@@ -454,23 +431,6 @@ void XDGToplevelWrapperImpl::SetSystemModal(bool modal) {
     }
   }
 }
-
-bool XDGToplevelWrapperImpl::SupportsScreenCoordinates() const {
-  return aura_toplevel_ &&
-         zaura_toplevel_get_version(aura_toplevel_.get()) >=
-             ZAURA_TOPLEVEL_SET_SUPPORTS_SCREEN_COORDINATES_SINCE_VERSION;
-}
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void XDGToplevelWrapperImpl::EnableScreenCoordinates() {
-  if (!SupportsScreenCoordinates()) {
-    LOG(WARNING) << "Server implementation of wayland is incompatible, "
-                    "WaylandScreenCoordinatesEnabled has no effect.";
-    return;
-  }
-  zaura_toplevel_set_supports_screen_coordinates(aura_toplevel_.get());
-}
-#endif
 
 void XDGToplevelWrapperImpl::SetZOrder(ZOrderLevel z_order) {
   if (aura_toplevel_ && zaura_toplevel_get_version(aura_toplevel_.get()) >=

@@ -368,8 +368,7 @@ class OzonePlatformWayland : public OzonePlatform,
       // their parents. As for toplevel surfaces, clients simply don't know
       // their position on screens and always assume they are located at some
       // arbitrary position.
-      properties->supports_global_screen_coordinates =
-          kDefaultScreenCoordinateEnabled;
+      properties->supports_global_screen_coordinates = false;
 
 #if BUILDFLAG(IS_LINUX)
       // TODO(crbug.com/40800718): Revisit (and maybe remove) once proper

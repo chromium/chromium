@@ -66,8 +66,7 @@ constexpr int kVisibleOnAllWorkspaces = -1;
 
 WaylandToplevelWindow::WaylandToplevelWindow(PlatformWindowDelegate* delegate,
                                              WaylandConnection* connection)
-    : WaylandWindow(delegate, connection),
-      screen_coordinates_enabled_(kDefaultScreenCoordinateEnabled) {
+    : WaylandWindow(delegate, connection) {
   // Set a class property key, which allows |this| to be used for interactive
   // events, e.g. move or resize.
   SetWmMoveResizeHandler(this, AsWmMoveResizeHandler());
@@ -89,15 +88,6 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  screen_coordinates_enabled_ &= shell_toplevel_->SupportsScreenCoordinates();
-  screen_coordinates_enabled_ &= !use_native_frame_;
-
-  if (screen_coordinates_enabled_) {
-    shell_toplevel_->EnableScreenCoordinates();
-  }
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
   shell_toplevel_->SetAppId(window_unique_id_);
 #else
   shell_toplevel_->SetAppId(app_id_);
@@ -112,16 +102,6 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
   if (system_modal_ && zaura_surface) {
     zaura_surface->SetFrame(ZAURA_SURFACE_FRAME_TYPE_SHADOW);
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (screen_coordinates_enabled_) {
-    auto bounds_dip = GetBoundsInDIP();
-    WaylandWindow::SetBoundsInDIP(bounds_dip);
-    if (shell_toplevel_) {
-      shell_toplevel_->RequestWindowBounds(bounds_dip, initial_display_id_);
-    }
-  }
-#endif
 
   // This could be the proper time to update window mask using
   // NonClientView::GetWindowMask, since |non_client_view| is not created yet
@@ -461,10 +441,6 @@ void WaylandToplevelWindow::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
   }
 }
 
-bool WaylandToplevelWindow::IsScreenCoordinatesEnabled() const {
-  return screen_coordinates_enabled_;
-}
-
 bool WaylandToplevelWindow::SupportsConfigureMinimizedState() const {
   return shell_toplevel_ && shell_toplevel_->IsSupportedOnAuraToplevel(
                                 ZAURA_TOPLEVEL_STATE_MINIMIZED_SINCE_VERSION);
@@ -646,20 +622,6 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   if (prev_suspended != is_suspended_) {
     frame_manager()->OnWindowSuspensionChanged();
   }
-}
-
-void WaylandToplevelWindow::SetBoundsInPixels(const gfx::Rect& bounds) {
-  WaylandWindow::SetBoundsInPixels(bounds);
-  if (shell_toplevel_ && screen_coordinates_enabled_) {
-    gfx::Rect bounds_in_dip = delegate()->ConvertRectToDIP(bounds);
-    shell_toplevel_->RequestWindowBounds(bounds_in_dip);
-  }
-}
-
-void WaylandToplevelWindow::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
-  WaylandWindow::SetBoundsInDIP(bounds_dip);
-  if (shell_toplevel_ && screen_coordinates_enabled_)
-    shell_toplevel_->RequestWindowBounds(bounds_dip);
 }
 
 void WaylandToplevelWindow::SetOrigin(const gfx::Point& origin) {

@@ -103,13 +103,6 @@ class ShellToplevelWrapper {
   // the content area of the surface.
   virtual void SetWindowGeometry(const gfx::Rect& bounds) = 0;
 
-  // Requests a desired window position and size in global screen coordinates,
-  // with a hint in which display the window should be placed.  The compositor
-  // may or may not filfill the request.
-  virtual void RequestWindowBounds(
-      const gfx::Rect& bounds,
-      int64_t display_id = display::kInvalidDisplayId) = 0;
-
   // Sets the minimum size for the top level.
   virtual void SetMinSize(int32_t width, int32_t height) = 0;
 
@@ -137,16 +130,6 @@ class ShellToplevelWrapper {
 
   // Request that the window be made a system modal.
   virtual void SetSystemModal(bool modal) = 0;
-
-  // Checks if the server supports chrome to control the window position in
-  // screen coordinates.
-  virtual bool SupportsScreenCoordinates() const = 0;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Enables screen coordinates support. This is no-op if the server does not
-  // support the screen coordinates.
-  virtual void EnableScreenCoordinates() = 0;
-#endif
 
   // Sets/usets a native window to float state. This places it on top of other
   // windows.

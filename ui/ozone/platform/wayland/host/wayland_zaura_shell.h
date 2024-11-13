@@ -19,13 +19,6 @@ namespace ui {
 
 class WaylandConnection;
 
-constexpr bool kDefaultScreenCoordinateEnabled =
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    true;
-#else
-    false;
-#endif
-
 // Wraps the zaura_shell object.
 class WaylandZAuraShell : public wl::GlobalObjectRegistrar<WaylandZAuraShell> {
  public:

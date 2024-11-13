@@ -382,9 +382,6 @@ class WaylandWindow : public PlatformWindow,
   virtual WaylandPopup* AsWaylandPopup();
   virtual WaylandToplevelWindow* AsWaylandToplevelWindow();
 
-  // Returns true if the window's bounds is in screen coordinates.
-  virtual bool IsScreenCoordinatesEnabled() const;
-
   // Returns true if this window's configure state supports the minimized state.
   virtual bool SupportsConfigureMinimizedState() const;
 

@@ -1112,13 +1112,8 @@ TEST_P(WaylandWindowDragControllerTest, DragExitAttached) {
 
   EXPECT_EQ(window_.get(),
             window_manager()->GetCurrentPointerOrTouchFocusedWindow());
-  if (window_->IsScreenCoordinatesEnabled()) {
-    EXPECT_EQ(window_->GetWidget(),
-              screen_->GetLocalProcessWidgetAtPoint({70, 70}, {}));
-  } else {
-    EXPECT_EQ(window_->GetWidget(),
-              screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
-  }
+  EXPECT_EQ(window_->GetWidget(),
+            screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
 }
 
 // Verifies wl_data_device::leave events are properly handled and propagated

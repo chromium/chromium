@@ -275,15 +275,6 @@ std::optional<WaylandOutput::Id> WaylandWindow::GetPreferredEnteredOutputId() {
   if (root_surface_->entered_outputs().empty()) {
     // The nullcheck is necessary because some tests create mock screen
     // instead of emulating at wayland level.
-    if (IsScreenCoordinatesEnabled() &&
-        connection_->wayland_output_manager()->wayland_screen()) {
-      // If the surface hasn't entered any output yet, but the
-      // screen coordinates is enabled, try to find the screen that
-      // matches the window's bounds.
-      return connection_->wayland_output_manager()
-          ->wayland_screen()
-          ->GetOutputIdMatching(GetBoundsInDIP());
-    }
     return std::nullopt;
   }
 
@@ -942,11 +933,7 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
     auto* screen = display::Screen::GetScreen();
     DCHECK(screen) << "A TestScreen must be instantiated for tests creating "
                       "windows with no initial bounds.";
-    const gfx::Point origin =
-        IsScreenCoordinatesEnabled()
-            ? screen->GetDisplayForNewWindows().work_area().CenterPoint()
-            : gfx::Point(0, 0);
-    state.bounds_dip = gfx::Rect(origin, {1, 1});
+    state.bounds_dip = gfx::Rect({0, 0}, {1, 1});
   }
 
   opacity_ = properties.opacity;
@@ -1076,10 +1063,6 @@ WaylandPopup* WaylandWindow::AsWaylandPopup() {
 
 WaylandToplevelWindow* WaylandWindow::AsWaylandToplevelWindow() {
   return nullptr;
-}
-
-bool WaylandWindow::IsScreenCoordinatesEnabled() const {
-  return false;
 }
 
 uint32_t WaylandWindow::DispatchEventToDelegate(

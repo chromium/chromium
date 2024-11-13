@@ -48,13 +48,7 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void SetDecoration(DecorationMode decoration) override;
   void Lock(WaylandOrientationLockType lock_type) override;
   void Unlock() override;
-  void RequestWindowBounds(const gfx::Rect& bounds,
-                           int64_t display_id) override;
   void SetSystemModal(bool modal) override;
-  bool SupportsScreenCoordinates() const override;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void EnableScreenCoordinates() override;
-#endif
   void SetFloatToLocation(
       WaylandFloatStartLocation float_start_location) override;
   void UnSetFloat() override;

@@ -250,10 +250,6 @@ void WaylandPopup::UpdateWindowMask() {
   root_surface()->set_opaque_region(region);
 }
 
-bool WaylandPopup::IsScreenCoordinatesEnabled() const {
-  return parent_window()->IsScreenCoordinatesEnabled();
-}
-
 base::WeakPtr<WaylandWindow> WaylandPopup::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

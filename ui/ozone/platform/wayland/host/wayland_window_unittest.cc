@@ -5112,49 +5112,6 @@ class MultiDisplayWaylandWindowTest : public WaylandWindowTest {
                                          /*register_screen=*/true};
 };
 
-// Asserts new windows have their bounds set on the display for new windows if
-// init bounds are unspecified.
-TEST_P(MultiDisplayWaylandWindowTest, SetsNewWindowBoundsToCorrectDisplay) {
-  MockWaylandPlatformWindowDelegate delegate;
-
-  // Set the secondary display as the new window target.
-  std::optional<display::ScopedDisplayForNewWindows> scoped_display_new_windows;
-  scoped_display_new_windows.emplace(kSecondaryDisplayId);
-
-  // Init a new window with empty init bounds.
-  auto init_properties = PlatformWindowInitProperties(gfx::Rect(0, 0));
-  auto window = delegate.CreateWaylandWindow(connection_.get(),
-                                             std::move(init_properties));
-  ASSERT_TRUE(window);
-
-  // Assert the window is placed on the display for new windows, if supported.
-  gfx::Rect bounds_dip = window->GetBoundsInDIP();
-  EXPECT_EQ(gfx::Size(1, 1), bounds_dip.size());
-  if (window->IsScreenCoordinatesEnabled()) {
-    EXPECT_TRUE(kSecondaryDisplayBounds.Contains(bounds_dip));
-  } else {
-    EXPECT_EQ(gfx::Rect(0, 0, 1, 1), bounds_dip);
-  }
-
-  // Set the primary display as the new window target.
-  scoped_display_new_windows.emplace(kPrimaryDisplayId);
-  init_properties = PlatformWindowInitProperties(gfx::Rect(0, 0));
-
-  // Init a new window with empty init bounds.
-  window = delegate.CreateWaylandWindow(connection_.get(),
-                                        std::move(init_properties));
-  ASSERT_TRUE(window);
-
-  // Assert the window is placed on the display for new windows, if supported.
-  bounds_dip = window->GetBoundsInDIP();
-  EXPECT_EQ(gfx::Size(1, 1), bounds_dip.size());
-  if (window->IsScreenCoordinatesEnabled()) {
-    EXPECT_TRUE(kPrimaryDisplayBounds.Contains(bounds_dip));
-  } else {
-    EXPECT_EQ(gfx::Rect(0, 0, 1, 1), bounds_dip);
-  }
-}
-
 // Asserts new windows ignore the display for new windows if bounds have been
 // explicitly specified.
 TEST_P(MultiDisplayWaylandWindowTest, NewWindowsRespectInitParamBounds) {

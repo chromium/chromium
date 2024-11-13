@@ -140,10 +140,6 @@ base::WeakPtr<WaylandWindow> WaylandBubble::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-bool WaylandBubble::IsScreenCoordinatesEnabled() const {
-  return parent_window()->IsScreenCoordinatesEnabled();
-}
-
 bool WaylandBubble::IsActive() const {
   bool is_active = activatable_ && parent_window() &&
                    parent_window()->IsActive() &&

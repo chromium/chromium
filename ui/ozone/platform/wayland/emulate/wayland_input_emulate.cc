@@ -158,7 +158,7 @@ void WaylandInputEmulate::EmulatePointerMotion(
                         ->xdg_surface_wrapper()
                         ->xdg_surface();
     }
-    bool screen_coordinates = window->IsScreenCoordinatesEnabled();
+    bool screen_coordinates = false;
     if (force_use_screen_coordinates_once_) {
       screen_coordinates = true;
       force_use_screen_coordinates_once_ = false;
@@ -180,9 +180,7 @@ void WaylandInputEmulate::EmulatePointerMotion(
     // event with non-zero width and height is received, so we must use
     // `mouse_surface_location` even if `force_use_screen_coordinates_once_` is
     // true.
-    target_location = window->IsScreenCoordinatesEnabled()
-                          ? mouse_screen_location
-                          : mouse_surface_location;
+    target_location = mouse_surface_location;
   }
 
   VLOG(1) << "Requesting pointer motion: location="

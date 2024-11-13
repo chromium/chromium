@@ -40,7 +40,6 @@ class WaylandPopup final : public WaylandWindow {
   void SetWindowGeometry(const PlatformWindowDelegate::State& state) override;
   void UpdateWindowMask() override;
   base::WeakPtr<WaylandWindow> AsWeakPtr() override;
-  bool IsScreenCoordinatesEnabled() const override;
 
   // PlatformWindow
   void Show(bool inactive) override;
