@@ -23,13 +23,6 @@ void ShellExtensionHostDelegate::OnExtensionHostCreated(
 void ShellExtensionHostDelegate::OnMainFrameCreatedForBackgroundPage(
     ExtensionHost* host) {}
 
-content::JavaScriptDialogManager*
-ShellExtensionHostDelegate::GetJavaScriptDialogManager() {
-  // TODO(jamescook): Create a JavaScriptDialogManager or reuse the one from
-  // content_shell.
-  NOTREACHED();
-}
-
 void ShellExtensionHostDelegate::CreateTab(
     std::unique_ptr<content::WebContents> web_contents,
     const ExtensionId& extension_id,
