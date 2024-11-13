@@ -1062,6 +1062,26 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/hub/android/java/src/org/chromium/chrome/browser/hub/PaneId.java:PaneId) -->
 
+<!-- LINT.IfChange(HubSearchEntrypoint) -->
+
+<enum name="HubSearchEntrypoint">
+  <int value="0" label="Regular searchbox"/>
+  <int value="1" label="Incognito searchbox"/>
+  <int value="2" label="Regular loupe"/>
+  <int value="3" label="Incognito loupe"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/hub/internal/android/java/src/org/chromium/chrome/browser/hub/HubToolbarMediator.java:HubSearchEntrypoint) -->
+
+<!-- LINT.IfChange(HubSearchExitReason) -->
+
+<enum name="HubSearchExitReason">
+  <int value="0" label="Custom back arrow"/>
+  <int value="1" label="System backpress"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchActivity.java:HubSearchExitReason) -->
+
 <enum name="IncognitoReauthPromoActionType">
   <int value="0" label="Promo accepted"/>
   <int value="1" label="No thanks"/>
