@@ -62,3 +62,9 @@ bool IsAvoidNTPCleanupOnBackgroundEnabled() {
       kIOSStartTimeBrowserBackgroundRemediations,
       kIOSStartTimeBackgroundRemediationsAvoidNTPCleanup, false);
 }
+
+bool IsAvoidFeedRefreshOnBackgroundEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kIOSStartTimeBrowserBackgroundRemediations,
+      kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefresh, false);
+}

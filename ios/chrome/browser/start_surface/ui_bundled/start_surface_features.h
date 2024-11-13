@@ -54,4 +54,9 @@ StartupRemediationsType GetIOSStartTimeStartupRemediationsEnabledType();
 // the kIOSStartTimeBrowserBackgroundRemediations is enabled.
 bool IsAvoidNTPCleanupOnBackgroundEnabled();
 
+// Checks whether the
+// kIOSStartTimeBrowserBackgroundRemediationsUpdateFeedRefresh arm of the
+// kIOSStartTimeBrowserBackgroundRemediations is enabled.
+bool IsAvoidFeedRefreshOnBackgroundEnabled();
+
 #endif  // IOS_CHROME_BROWSER_START_SURFACE_UI_BUNDLED_START_SURFACE_FEATURES_H_

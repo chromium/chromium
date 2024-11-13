@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 
 namespace {
 
@@ -239,10 +240,12 @@ class DiscoverFeedProfileHelperList {
 #pragma mark - ObservingAppAgent
 
 - (void)appDidEnterBackground {
-  if (IsFeedBackgroundRefreshEnabled()) {
-    [self scheduleBackgroundRefresh];
-  } else {
-    _helpers.RefreshFeedInBackground();
+  if (!IsAvoidFeedRefreshOnBackgroundEnabled()) {
+    if (IsFeedBackgroundRefreshEnabled()) {
+      [self scheduleBackgroundRefresh];
+    } else {
+      _helpers.RefreshFeedInBackground();
+    }
   }
 }
 

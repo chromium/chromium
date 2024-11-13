@@ -91,6 +91,7 @@ source_set("discover_feed_app_agent") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
   ]
   frameworks = [
     "BackgroundTasks.framework",
