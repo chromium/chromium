@@ -39,6 +39,10 @@ class DefaultSearchManager
   static constexpr char kDefaultSearchProviderDataPrefName[] =
       "default_search_provider_data.template_url_data";
 
+  // A mirrored copy of the Default Search Engine data.
+  static constexpr char kMirroredDefaultSearchProviderDataPrefName[] =
+      "default_search_provider_data.mirrored_template_url_data";
+
   static const char kID[];
   static const char kShortName[];
   static const char kKeyword[];
@@ -84,6 +88,8 @@ class DefaultSearchManager
   static const char kIsActive[];
   static const char kStarterPackId[];
   static const char kEnforcedByPolicy[];
+
+  static const char kDefaultSearchEngineMirroredMetric[];
 
   enum Source {
     // Default search engine chosen either from prepopulated engines set for

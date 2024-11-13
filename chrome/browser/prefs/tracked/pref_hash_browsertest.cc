@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -416,6 +417,8 @@ class PrefHashBrowserTestBase : public extensions::ExtensionBrowserTest {
 
   const SettingsProtectionLevel protection_level_;
 
+  base::HistogramTester histograms_;
+
  private:
   SettingsProtectionLevel GetProtectionLevel() {
     if (!ProfilePrefStoreManager::kPlatformSupportsPreferenceTracking)
@@ -489,6 +492,14 @@ class PrefHashBrowserTestUnchangedDefault : public PrefHashBrowserTestBase {
         0, GetTrackedPrefHistogramCount(
                user_prefs::tracked::kTrackedPrefHistogramMigratedLegacyDeviceId,
                ALLOW_NONE));
+
+    histograms_.ExpectUniqueSample(
+        DefaultSearchManager::kDefaultSearchEngineMirroredMetric, true,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+        2);  // CHROMEOS doesn't support Preference tracking.
+#else
+        1);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     if (SupportsRegistryValidation()) {
       // Expect all prefs to be reported as Unchanged.
@@ -1280,6 +1291,14 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
       EXPECT_NE(current_dse->url(),
                 "http://bad_default_engine/search?q=dirty_user_query");
     }
+// This doesn't work on OS_CHROMEOS because we fail to attack Preferences.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    // This test creates 2 DefaultSearchManagers, because the browser creates
+    // one, and this function creates a second one, so 2 samples are emitted,
+    // both attacked by the PRE_ test.
+    histograms_.ExpectUniqueSample(
+        DefaultSearchManager::kDefaultSearchEngineMirroredMetric, false, 2);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   }
 };
 

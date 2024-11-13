@@ -11,6 +11,7 @@
 
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -158,6 +159,8 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserPref) {
                 manager->GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_FALLBACK, source);
 
+  base::HistogramTester histograms;
+
   // Setting a user pref overrides the pre-populated values.
   std::unique_ptr<TemplateURLData> data = GenerateDummyTemplateURLData("user");
   manager->SetUserSelectedDefaultSearchEngine(*data);
@@ -175,6 +178,15 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserPref) {
 
   ExpectSimilar(new_data.get(), manager->GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+
+  // Check that the mirrored pref metric didn't record a mismatch.
+  // Metric is recorded once for the first search manager, and then four more
+  // times when there are two search managers.
+  histograms.ExpectBucketCount(
+      DefaultSearchManager::kDefaultSearchEngineMirroredMetric, true, 1);
+
+  histograms.ExpectBucketCount(
+      DefaultSearchManager::kDefaultSearchEngineMirroredMetric, false, 0);
 
   // Clearing the user pref should cause the default search to revert to the
   // prepopulated values.
@@ -291,6 +303,13 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserAndRecommendedPolicy) {
   DefaultSearchManager::Source source = DefaultSearchManager::FROM_FALLBACK;
   ExpectSimilar(user_data.get(), manager->GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+
+  // Check that the TemplateURLData was mirrored to the mirrored pref.
+  const base::Value* user_value = pref_service()->GetUserPrefValue(
+      DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName);
+  ASSERT_TRUE(user_value && user_value->is_dict());
+  auto turl_data = TemplateURLDataFromDictionary(user_value->GetDict());
+  ExpectSimilar(user_data.get(), turl_data.get());
 
   // Set recommended policy DSE.
   std::unique_ptr<TemplateURLData> policy_data =

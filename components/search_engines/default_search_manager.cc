@@ -11,6 +11,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_map.h"
@@ -85,6 +87,9 @@ const char DefaultSearchManager::kIsActive[] = "is_active";
 const char DefaultSearchManager::kStarterPackId[] = "starter_pack_id";
 const char DefaultSearchManager::kEnforcedByPolicy[] = "enforced_by_policy";
 
+const char DefaultSearchManager::kDefaultSearchEngineMirroredMetric[] =
+    "Search.DefaultSearchEngineMirrored";
+
 DefaultSearchManager::DefaultSearchManager(
     PrefService* pref_service,
     search_engines::SearchEngineChoiceService* search_engine_choice_service,
@@ -124,6 +129,18 @@ DefaultSearchManager::DefaultSearchManager(
     LoadSavedGuestSearch();
   }
   LoadDefaultSearchEngineFromPrefs();
+  const base::Value::Dict& url_dict =
+      pref_service_->GetDict(kDefaultSearchProviderDataPrefName);
+  const base::Value::Dict& mirrored_dict =
+      pref_service_->GetDict(kMirroredDefaultSearchProviderDataPrefName);
+  if (mirrored_dict.empty() && !url_dict.empty()) {
+    pref_service_->SetDict(kMirroredDefaultSearchProviderDataPrefName,
+                           url_dict.Clone());
+  } else {
+    base::UmaHistogramBoolean(
+        DefaultSearchManager::kDefaultSearchEngineMirroredMetric,
+        mirrored_dict == url_dict);
+  }
 }
 
 DefaultSearchManager::~DefaultSearchManager() = default;
@@ -132,6 +149,7 @@ DefaultSearchManager::~DefaultSearchManager() = default;
 void DefaultSearchManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(kDefaultSearchProviderDataPrefName);
+  registry->RegisterDictionaryPref(kMirroredDefaultSearchProviderDataPrefName);
 }
 
 // static
@@ -251,6 +269,11 @@ void DefaultSearchManager::OnDefaultSearchPrefChanged() {
   bool source_was_fallback = GetDefaultSearchEngineSource() == FROM_FALLBACK;
 
   LoadDefaultSearchEngineFromPrefs();
+  // Mirror the dse pref to the mirrored pref.
+  const base::Value::Dict& url_dict =
+      pref_service_->GetDict(kDefaultSearchProviderDataPrefName);
+  pref_service_->SetDict(kMirroredDefaultSearchProviderDataPrefName,
+                         url_dict.Clone());
 
   // The effective DSE may have changed unless we were using the fallback source
   // both before and after the above load.
@@ -314,8 +337,9 @@ void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
 
   const base::Value::Dict& url_dict =
       pref_service_->GetDict(kDefaultSearchProviderDataPrefName);
-  if (url_dict.empty())
+  if (url_dict.empty()) {
     return;
+  }
 
   if (default_search_mandatory_by_policy_ ||
       default_search_recommended_by_policy_) {
@@ -327,7 +351,7 @@ void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
   if (!turl_data)
     return;
 
-  // Check if default search preference is overriden by extension.
+  // Check if default search preference is overridden by extension.
   if (pref->IsExtensionControlled()) {
     extension_default_search_ = std::move(turl_data);
   } else {
