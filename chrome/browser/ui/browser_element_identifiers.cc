@@ -46,6 +46,7 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kExtensionsRequestAccessButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(
     kExtensionsMv2DisabledDialogRemoveButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kMemorySaverChipElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kGlicButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kHistorySearchInputElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kInactiveTabSettingElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kInstallPwaElementId);

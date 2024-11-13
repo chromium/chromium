@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
+#include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_organization_button.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -118,6 +120,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   // Add and configure the TabSearchContainer and ProductSpecificationsButton.
   std::unique_ptr<TabSearchContainer> tab_search_container;
   std::unique_ptr<ProductSpecificationsButton> product_specifications_button;
+  std::unique_ptr<GlicButton> glic_button;
   if (browser &&
       (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL)) {
     tab_search_container = std::make_unique<TabSearchContainer>(
@@ -137,6 +140,15 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
               render_tab_search_before_tab_strip_, this);
       product_specifications_button->SetProperty(
           views::kCrossAxisAlignmentKey, views::LayoutAlignment::kCenter);
+    }
+
+    if (features::IsGlicEnabled()) {
+      glic_button = std::make_unique<GlicButton>(tab_strip_->controller());
+      glic_button->SetProperty(views::kCrossAxisAlignmentKey,
+                               views::LayoutAlignment::kCenter);
+      glic_button->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
     }
   }
 
@@ -261,6 +273,10 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
         gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
   }
 
+  if (glic_button) {
+    glic_button_ = AddChildView(std::move(glic_button));
+  }
+
   UpdateTabStripMargin();
 }
 
@@ -355,6 +371,10 @@ views::View::Views TabStripRegionView::GetChildrenInZOrder() {
 
   if (product_specifications_button_) {
     children.emplace_back(product_specifications_button_.get());
+  }
+
+  if (glic_button_) {
+    children.emplace_back(glic_button_.get());
   }
 
   if (reserved_grab_handle_space_) {

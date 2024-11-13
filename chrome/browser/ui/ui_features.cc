@@ -349,13 +349,6 @@ const base::FeatureParam<double> kTabOrganizationTriggerSensitivityThreshold{
 const base::FeatureParam<bool> KTabOrganizationTriggerDemoMode{
     &kTabOrganization, "trigger_demo_mode", false};
 
-BASE_FEATURE(kTabstripComboButton,
-             "TabstripComboButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsTabstripComboButtonEnabled() {
-  return base::FeatureList::IsEnabled(features::kTabstripComboButton);
-}
-
 // Controls feature parameters for Tab Search's `Recently Closed` entries.
 BASE_FEATURE(kTabSearchRecentlyClosed,
              "TabSearchRecentlyClosed",

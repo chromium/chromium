@@ -233,9 +233,6 @@ extern const base::FeatureParam<double>
 // predictably and frequently.
 extern const base::FeatureParam<bool> KTabOrganizationTriggerDemoMode;
 
-BASE_DECLARE_FEATURE(kTabstripComboButton);
-bool IsTabstripComboButtonEnabled();
-
 BASE_DECLARE_FEATURE(kTabSearchRecentlyClosed);
 
 // Default number of recently closed entries to display by default when no

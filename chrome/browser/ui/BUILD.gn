@@ -4668,6 +4668,8 @@ static_library("ui") {
       "views/tabs/fade_view.h",
       "views/tabs/filename_elider.cc",
       "views/tabs/filename_elider.h",
+      "views/tabs/glic_button.cc",
+      "views/tabs/glic_button.h",
       "views/tabs/glow_hover_controller.cc",
       "views/tabs/glow_hover_controller.h",
       "views/tabs/new_tab_button.cc",
