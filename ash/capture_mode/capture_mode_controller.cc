@@ -2055,7 +2055,7 @@ void CaptureModeController::OnImageFileSaved(
   delegate_->FinalizeSavedFile(
       base::BindOnce(&CaptureModeController::OnImageFileFinalized,
                      weak_ptr_factory_.GetWeakPtr(), image, behavior),
-      file_saved_path, image);
+      file_saved_path, image, /*for_video=*/false);
 }
 
 void CaptureModeController::OnImageFileFinalized(
@@ -2658,7 +2658,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(
                                  weak_ptr_factory_.GetWeakPtr(),
                                  /*should_delete_file=*/false,
                                  video_thumbnail)),
-        video_file_path, gfx::Image(video_thumbnail));
+        video_file_path, gfx::Image(video_thumbnail), /*for_video=*/true);
   }
 }
 

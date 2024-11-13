@@ -24,16 +24,20 @@ constexpr char kUploadNotificationId[] = "skyvault_capture_upload_notification";
 }  // namespace
 
 SkyvaultCaptureUploadNotification::SkyvaultCaptureUploadNotification(
-    const base::FilePath& filename) {
+    const base::FilePath& filename,
+    bool for_video) {
   message_center::RichNotificationData options;
   options.buttons = {message_center::ButtonInfo(l10n_util::GetStringUTF16(
       IDS_POLICY_SKYVAULT_SCREENCAPTURE_UPLOAD_CANCEL_BUTTON))};
   options.progress_status = l10n_util::GetStringUTF16(
       IDS_POLICY_SKYVAULT_SCREENCAPTURE_UPLOAD_ONEDRIVE_MESSAGE);
 
+  const auto title_id =
+      for_video ? IDS_POLICY_SKYVAULT_SCREENCAPTURE_RECORDING_UPLOAD_TITLE
+                : IDS_POLICY_SKYVAULT_SCREENCAPTURE_UPLOAD_TITLE;
   notification_ = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_PROGRESS, kUploadNotificationId,
-      l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_SCREENCAPTURE_UPLOAD_TITLE),
+      l10n_util::GetStringUTF16(title_id),
       /*message=*/std::u16string(), ui::ImageModel(),
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE), GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,

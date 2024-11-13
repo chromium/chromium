@@ -406,7 +406,8 @@ void ChromeCaptureModeDelegate::NotifyDeviceUsedWhileDisabled(
 void ChromeCaptureModeDelegate::FinalizeSavedFile(
     base::OnceCallback<void(bool, const base::FilePath&)> callback,
     const base::FilePath& path,
-    const gfx::Image& thumbnail) {
+    const gfx::Image& thumbnail,
+    bool for_video) {
   auto* profile = ProfileManager::GetActiveUserProfile();
   if (!odfs_temp_dir_.GetPath().empty() &&
       odfs_temp_dir_.GetPath().IsParent(path) && profile) {
@@ -414,7 +415,7 @@ void ChromeCaptureModeDelegate::FinalizeSavedFile(
     // file upload finishes.
     auto notification =
         std::make_unique<policy::skyvault::SkyvaultCaptureUploadNotification>(
-            path);
+            path, for_video);
     auto notification_ptr = notification.get();
     auto uploader = ash::cloud_upload::OdfsSkyvaultUploader::Upload(
         profile, path, policy::local_user_files::UploadTrigger::kScreenCapture,

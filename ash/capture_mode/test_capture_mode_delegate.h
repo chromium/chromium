@@ -142,7 +142,8 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void FinalizeSavedFile(
       base::OnceCallback<void(bool, const base::FilePath&)> callback,
       const base::FilePath& path,
-      const gfx::Image& thumbnail) override;
+      const gfx::Image& thumbnail,
+      bool for_video) override;
   base::FilePath RedirectFilePath(const base::FilePath& path) override;
   std::unique_ptr<AshWebView> CreateSearchResultsView() const override;
   MOCK_METHOD(void,

@@ -108,7 +108,8 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   void FinalizeSavedFile(
       base::OnceCallback<void(bool, const base::FilePath&)> callback,
       const base::FilePath& path,
-      const gfx::Image& thumbnail) override;
+      const gfx::Image& thumbnail,
+      bool for_video) override;
   base::FilePath RedirectFilePath(const base::FilePath& path) override;
   std::unique_ptr<ash::AshWebView> CreateSearchResultsView() const override;
   void DetectTextInImage(const SkBitmap& image,

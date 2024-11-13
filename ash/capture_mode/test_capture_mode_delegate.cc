@@ -208,7 +208,8 @@ void TestCaptureModeDelegate::NotifyDeviceUsedWhileDisabled(
 void TestCaptureModeDelegate::FinalizeSavedFile(
     base::OnceCallback<void(bool, const base::FilePath&)> callback,
     const base::FilePath& path,
-    const gfx::Image& thumbnail) {
+    const gfx::Image& thumbnail,
+    bool for_video) {
   std::move(callback).Run(/*success=*/true, path);
 }
 

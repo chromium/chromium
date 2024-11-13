@@ -230,7 +230,8 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
   virtual void FinalizeSavedFile(
       base::OnceCallback<void(bool, const base::FilePath&)> callback,
       const base::FilePath& path,
-      const gfx::Image& thumbnail) = 0;
+      const gfx::Image& thumbnail,
+      bool for_video) = 0;
 
   // Returns a temporary location where a file with the capture should be saved
   // instead of `path`, if needed, e.g. to be uploaded to cloud later.
