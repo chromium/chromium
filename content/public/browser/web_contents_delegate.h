@@ -59,23 +59,6 @@ class WindowFeatures;
 }
 }  // namespace blink
 
-namespace content {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
-class ColorChooser;
-#endif
-class EyeDropperListener;
-class FileSelectListener;
-class JavaScriptDialogManager;
-class RenderFrameHost;
-class RenderWidgetHost;
-class SessionStorageNamespace;
-class SiteInstance;
-struct ContextMenuParams;
-struct DropData;
-struct MediaPlayerWatchTime;
-struct Referrer;
-}  // namespace content
-
 namespace device {
 namespace mojom {
 class GeolocationContext;
@@ -107,7 +90,21 @@ enum class ProtocolHandlerSecurityLevel;
 namespace content {
 
 class AudioStreamBrokerFactory;
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
+class ColorChooser;
+#endif
+class EyeDropperListener;
+class FileSelectListener;
+class JavaScriptDialogManager;
+class RenderFrameHost;
+class RenderWidgetHost;
+class SessionStorageNamespace;
+class SiteInstance;
+struct ContextMenuParams;
+struct DropData;
+struct MediaPlayerWatchTime;
 struct OpenURLParams;
+struct Referrer;
 
 enum class KeyboardEventProcessingResult;
 
