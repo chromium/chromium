@@ -189,6 +189,32 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
       {"m1NoticeEeaLearnMoreBullet3",
        IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LEARN_MORE_BULLET_3},
 
+      // Strings for the notice step of the combined dialog with the Ads API UX
+      // Enhancement.
+      {"m1NoticeEEADescription1V2",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_DESCRIPTION_1_V2},
+      {"m1NoticeEEASiteSuggestedAdsTitle",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_TITLE},
+      {"m1NoticeEEASiteSuggestedAdsDescription",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_DESCRIPTION},
+      {"m1NoticeEEASiteSuggestedAdsLearnMoreLabel",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_LABEL},
+      {"m1NoticeEEASiteSuggestedAdsLearnMoreBullet1",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_BULLET_1},
+      {"m1NoticeEEASiteSuggestedAdsLearnMoreBullet1DescriptionNoLink",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_BULLET_1_DESCRIPTION_NO_LINK},
+      {"m1NoticeEEASiteSuggestedAdsLearnMoreBullet2",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_BULLET_2},
+      {"m1NoticeEEAAdMeasurementTitle",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_AD_MEASUREMENT_TITLE},
+      {"m1NoticeEEAAdMeasurementDescription",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_AD_MEASUREMENT_DESCRIPTION},
+      {"m1NoticeEEAAdMeasurementLearnMoreLabel",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_AD_MEASUREMENT_LEARN_MORE_LABEL},
+      {"m1NoticeEEAAdMeasurementLearnMoreBullet1",
+       IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_AD_MEASUREMENT_LEARN_MORE_BULLET_1},
+      {"m1NoticeEEALastText", IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LAST_TEXT},
+
       // Strings for the notice dialog (kM1NoticeROW).
       {"m1NoticeRowTitle", IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_TITLE},
       {"m1NoticeRowDescription1",
@@ -243,6 +269,7 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
 
   source->AddLocalizedStrings(kStrings);
 
+  // Adding Privacy Policy link to EEA Consent
   source->AddString(
       "m1ConsentLearnMorePrivacyPolicyLink",
       l10n_util::GetStringFUTF16(
@@ -256,10 +283,24 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
   source->AddBoolean("isPrivacySandboxAdsApiUxEnhancementsEnabled",
                      base::FeatureList::IsEnabled(
                          privacy_sandbox::kPrivacySandboxAdsApiUxEnhancements));
+
+  // Adding Privacy Policy Link to EEA Consent for V2 with Ads API UX
+  // Enhancements.
   source->AddString(
       "m1ConsentLearnmoreBullet2Description",
       l10n_util::GetStringFUTF16(
           IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2_DESCRIPTION,
+          kPrivacyPolicyIdV2,
+          l10n_util::GetStringUTF16(
+              IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP_ARIA_DESCRIPTION),
+          kPrivacyPolicyFunc));
+
+  // Adding Privacy Policy Link to EEA Notice for V2 with Ads API UX
+  // Enhancements.
+  source->AddString(
+      "m1NoticeEEASiteSuggestedAdsLearnMoreBullet1Description",
+      l10n_util::GetStringFUTF16(
+          IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_BULLET_1_DESCRIPTION,
           kPrivacyPolicyIdV2,
           l10n_util::GetStringUTF16(
               IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP_ARIA_DESCRIPTION),

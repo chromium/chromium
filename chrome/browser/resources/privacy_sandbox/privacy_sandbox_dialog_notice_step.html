@@ -14,48 +14,104 @@
   }
 </style>
 
-<div class="content-area custom-scrollbar" scrollable tabindex="-1">
-  <div class="content-wrapper">
-    <div class="header">
-      <img class="logo" alt="">
-      <h1>$i18n{m1NoticeEeaTitle}</h1>
-    </div>
-    <div class="section cr-secondary-text">
-      $i18n{m1NoticeEeaDescription1}
-    </div>
-    <div class="banner">
-      <img class="fledge-banner" alt="">
-    </div>
-    <ul class="section cr-secondary-text">
-      <li>$i18n{m1NoticeEeaBullet1}</li>
-      <li>$i18n{m1NoticeEeaBullet2}</li>
-    </ul>
-    <privacy-sandbox-dialog-learn-more class="learn-more-section"
-        expanded="{{expanded_}}"
-        title="$i18n{m1NoticeEeaLearnMoreExpandLabel}">
-      <h2>$i18n{m1NoticeEeaLearnMoreHeading1}</h2>
-      <ul class="cr-secondary-text">
-        <li>$i18nRaw{m1NoticeEeaLearnMoreBullet1}</li>
-        <li>$i18nRaw{m1NoticeEeaLearnMoreBullet2}</li>
-        <li>$i18nRaw{m1NoticeEeaLearnMoreBullet3}</li>
-      </ul>
-      <h2>$i18n{m1NoticeEeaLearnMoreHeading2}</h2>
-      <div class="cr-secondary-text">
-        $i18n{m1NoticeEeaLearnMoreDescription}
+<div id="notice" hidden$="[[hideNoticePage_]]">
+  <div class="content-area custom-scrollbar" scrollable tabindex="-1">
+    <div class="content-wrapper">
+      <div class="header">
+        <img class="logo" alt="">
+        <h1>$i18n{m1NoticeEeaTitle}</h1>
       </div>
-    </privacy-sandbox-dialog-learn-more>
-    <div class="section cr-secondary-text" id="lastTextElement">
-      $i18n{m1NoticeEeaDescription2}
+      <template is="dom-if" if="[[!shouldShowV2_]]">
+        <div id="noticeContent">
+          <div class="section cr-secondary-text">
+            $i18n{m1NoticeEeaDescription1}
+          </div>
+          <div class="banner">
+            <img class="fledge-banner" alt="">
+          </div>
+          <ul class="section cr-secondary-text">
+            <li>$i18n{m1NoticeEeaBullet1}</li>
+            <li>$i18n{m1NoticeEeaBullet2}</li>
+          </ul>
+          <privacy-sandbox-dialog-learn-more class="learn-more-section"
+              expanded="{{expanded_}}"
+              title="$i18n{m1NoticeEeaLearnMoreExpandLabel}">
+            <h2>$i18n{m1NoticeEeaLearnMoreHeading1}</h2>
+            <ul class="cr-secondary-text">
+              <li>$i18nRaw{m1NoticeEeaLearnMoreBullet1}</li>
+              <li>$i18nRaw{m1NoticeEeaLearnMoreBullet2}</li>
+              <li>$i18nRaw{m1NoticeEeaLearnMoreBullet3}</li>
+            </ul>
+            <h2>$i18n{m1NoticeEeaLearnMoreHeading2}</h2>
+            <div class="cr-secondary-text">
+              $i18n{m1NoticeEeaLearnMoreDescription}
+            </div>
+          </privacy-sandbox-dialog-learn-more>
+          <div class="section cr-secondary-text" id="lastTextElement">
+            $i18n{m1NoticeEeaDescription2}
+          </div>
+        </div>
+      </template>
+      <template is="dom-if" if="[[shouldShowV2_]]">
+        <div id="noticeContentV2">
+          <div class="section cr-secondary-text">
+            $i18n{m1NoticeEEADescription1V2}
+          </div>
+          <div class="banner">
+            <img class="fledge-banner" alt="">
+          </div>
+          <div class="section cr-secondary-text">
+            $i18n{m1NoticeEEASiteSuggestedAdsTitle}
+          </div>
+          <div class="section cr-secondary-text">
+            $i18n{m1NoticeEEASiteSuggestedAdsDescription}
+          </div>
+          <privacy-sandbox-dialog-learn-more class="learn-more-section"
+              expanded="{{siteSuggestedAdsLearnMoreExpanded_}}"
+              title="$i18n{m1NoticeEEASiteSuggestedAdsLearnMoreLabel}">
+            <ul class="cr-secondary-text">
+              <li>$i18nRaw{m1NoticeEEASiteSuggestedAdsLearnMoreBullet1}</li>
+              <template is="dom-if" if="[[isPrivacyPolicyLinkEnabled_]]">
+                <div class="learn-more-bullet-description">
+                  $i18nRaw{m1NoticeEEASiteSuggestedAdsLearnMoreBullet1Description}
+                </div>
+              </template>
+              <template is="dom-if" if="[[!isPrivacyPolicyLinkEnabled_]]">
+                <div class="learn-more-bullet-description">
+                  $i18n{m1NoticeEEASiteSuggestedAdsLearnMoreBullet1DescriptionNoLink}
+                </div>
+              </template>
+              <li>$i18nRaw{m1NoticeEEASiteSuggestedAdsLearnMoreBullet2}</li>
+            </ul>
+          </privacy-sandbox-dialog-learn-more>
+          <div class="section cr-secondary-text">
+            $i18n{m1NoticeEEAAdMeasurementTitle}
+          </div>
+          <div class="section cr-secondary-text">
+            $i18n{m1NoticeEEAAdMeasurementDescription}
+          </div>
+          <privacy-sandbox-dialog-learn-more class="learn-more-section"
+              expanded="{{adMeasurementLearnMoreExpanded_}}"
+              title="$i18n{m1NoticeEEAAdMeasurementLearnMoreLabel}">
+            <ul class="cr-secondary-text">
+              <li>$i18nRaw{m1NoticeEEAAdMeasurementLearnMoreBullet1}</li>
+            </ul>
+          </privacy-sandbox-dialog-learn-more>
+          <div class="section cr-secondary-text" id="lastTextElementV2">
+            $i18n{m1NoticeEEALastText}
+          </div>
+        </div>
+      </template>
     </div>
-  </div>
-  <div class="buttons-container">
-    <cr-button id="settingsButton" on-click="onNoticeOpenSettings">
-      $i18n{m1NoticeEeaSettingsButton}
-    </cr-button>
-    <cr-button id="ackButton" class="action-button"
-        on-click="onNoticeAcknowledge">
-      $i18n{m1NoticeEeaAckButton}
-    </cr-button>
+    <div class="buttons-container">
+      <cr-button id="settingsButton" on-click="onNoticeOpenSettings">
+        $i18n{m1NoticeEeaSettingsButton}
+      </cr-button>
+      <cr-button id="ackButton" class="action-button"
+          on-click="onNoticeAcknowledge">
+        $i18n{m1NoticeEeaAckButton}
+      </cr-button>
+    </div>
   </div>
 </div>
 <div id="showMoreOverlay" hidden="[[wasScrolledToBottom]]">
@@ -65,3 +121,10 @@
     <cr-icon icon="cr:expand-more"></cr-icon>
   </cr-button>
 </div>
+<template is="dom-if" if="[[isPrivacyPolicyLinkEnabled_]]">
+  <privacy-sandbox-privacy-policy-dialog
+      id="privacyPolicyDialog"
+      should-show="[[hideNoticePage_]]"
+      on-back-button-clicked="onBackButtonClicked_">
+  </privacy-sandbox-privacy-policy-dialog>
+</template>

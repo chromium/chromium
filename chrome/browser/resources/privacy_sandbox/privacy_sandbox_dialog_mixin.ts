@@ -68,6 +68,28 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
           }
         }
 
+        onNoticeSiteSuggestedAdsLearnMoreExpandedChanged(
+            newValue: boolean, oldValue: boolean) {
+          // TODO(crbug.com/377557616): Create new PromptAction and add metrics
+          if (newValue && !oldValue) {
+            this.onContentSizeChanging_(/*expanding=*/ true);
+          }
+          if (!newValue && oldValue) {
+            this.onContentSizeChanging_(/*expanding=*/ false);
+          }
+        }
+
+        onNoticeAdMeasurementLearnMoreExpandedChanged(
+            newValue: boolean, oldValue: boolean) {
+          // TODO(crbug.com/377557616): Create new PromptAction and add metrics
+          if (newValue && !oldValue) {
+            this.onContentSizeChanging_(/*expanding=*/ true);
+          }
+          if (!newValue && oldValue) {
+            this.onContentSizeChanging_(/*expanding=*/ false);
+          }
+        }
+
         onNoticeOpenSettings() {
           this.promptActionOccurred(
               PrivacySandboxPromptAction.NOTICE_OPEN_SETTINGS);
@@ -242,6 +264,10 @@ export interface PrivacySandboxDialogMixinInterface {
 
   onConsentLearnMoreExpandedChanged(newValue: boolean, oldValue: boolean): void;
   onNoticeLearnMoreExpandedChanged(newValue: boolean, oldValue: boolean): void;
+  onNoticeSiteSuggestedAdsLearnMoreExpandedChanged(
+      newValue: boolean, oldValue: boolean): void;
+  onNoticeAdMeasurementLearnMoreExpandedChanged(
+      newValue: boolean, oldValue: boolean): void;
   onNoticeOpenSettings(): void;
   onNoticeAcknowledge(): void;
   maybeShowMoreButton(): Promise<void>;
