@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 
 #include "base/files/file_path.h"
@@ -21,6 +16,7 @@
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -42,12 +38,13 @@ std::string ToASCIIOrEmpty(const WebString& string) {
   return string.ContainsOnlyASCII() ? string.Ascii() : std::string();
 }
 
-template <typename CHARTYPE, typename SIZETYPE>
-std::string ToLowerASCIIInternal(CHARTYPE* str, SIZETYPE length) {
+template <typename CharType>
+std::string ToLowerASCIIInternal(base::span<const CharType> chars) {
   std::string lower_ascii;
-  lower_ascii.reserve(length);
-  for (CHARTYPE* p = str; p < str + length; p++)
-    lower_ascii.push_back(base::ToLowerASCII(static_cast<char>(*p)));
+  lower_ascii.reserve(chars.size());
+  for (size_t i = 0; i < chars.size(); i++) {
+    lower_ascii.push_back(base::ToLowerASCII(static_cast<char>(chars[i])));
+  }
   return lower_ascii;
 }
 
@@ -55,9 +52,8 @@ std::string ToLowerASCIIInternal(CHARTYPE* str, SIZETYPE length) {
 std::string ToLowerASCIIOrEmpty(const String& str) {
   if (str.empty() || !str.ContainsOnlyASCIIOrEmpty())
     return std::string();
-  if (str.Is8Bit())
-    return ToLowerASCIIInternal(str.Characters8(), str.length());
-  return ToLowerASCIIInternal(str.Characters16(), str.length());
+  return WTF::VisitCharacters(
+      str, [](auto chars) { return ToLowerASCIIInternal(chars); });
 }
 
 STATIC_ASSERT_ENUM(MIMETypeRegistry::kNotSupported,
