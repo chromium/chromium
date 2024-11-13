@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_SUMMARIZER_FACTORY_H_
 
 #include "base/task/sequenced_task_runner.h"
-#include "third_party/blink/public/mojom/ai/ai_assistant.mojom-blink.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_summarizer_create_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"

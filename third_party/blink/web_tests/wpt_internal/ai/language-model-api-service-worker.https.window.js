@@ -4,7 +4,7 @@
 promise_test(async () => {
   const result = await new Promise(async resolve => {
     navigator.serviceWorker.register(
-      'assistant-api-test-service-worker.js'
+      'language-model-api-test-service-worker.js'
     );
     navigator.serviceWorker.ready.then(() => {
       navigator.serviceWorker.onmessage = e => {

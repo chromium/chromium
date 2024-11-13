@@ -13,7 +13,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
@@ -71,26 +71,28 @@ class AITestUtils {
     mojo::Receiver<blink::mojom::ModelDownloadProgressObserver> receiver_{this};
   };
 
-  class MockCreateAssistantClient
-      : public blink::mojom::AIManagerCreateAssistantClient {
+  class MockCreateLanguageModelClient
+      : public blink::mojom::AIManagerCreateLanguageModelClient {
    public:
-    MockCreateAssistantClient();
-    ~MockCreateAssistantClient() override;
-    MockCreateAssistantClient(const MockCreateAssistantClient&) = delete;
-    MockCreateAssistantClient& operator=(const MockCreateAssistantClient&) =
+    MockCreateLanguageModelClient();
+    ~MockCreateLanguageModelClient() override;
+    MockCreateLanguageModelClient(const MockCreateLanguageModelClient&) =
         delete;
+    MockCreateLanguageModelClient& operator=(
+        const MockCreateLanguageModelClient&) = delete;
 
-    mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient>
+    mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
     BindNewPipeAndPassRemote();
 
-    MOCK_METHOD(void,
-                OnResult,
-                (mojo::PendingRemote<blink::mojom::AIAssistant> assistant,
-                 blink::mojom::AIAssistantInfoPtr info),
-                (override));
+    MOCK_METHOD(
+        void,
+        OnResult,
+        (mojo::PendingRemote<blink::mojom::AILanguageModel> language_model,
+         blink::mojom::AILanguageModelInfoPtr info),
+        (override));
 
    private:
-    mojo::Receiver<blink::mojom::AIManagerCreateAssistantClient> receiver_{
+    mojo::Receiver<blink::mojom::AIManagerCreateLanguageModelClient> receiver_{
         this};
   };
 

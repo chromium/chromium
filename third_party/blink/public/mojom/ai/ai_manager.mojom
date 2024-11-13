@@ -4,7 +4,7 @@
 
 module blink.mojom;
 
-import "third_party/blink/public/mojom/ai/ai_assistant.mojom";
+import "third_party/blink/public/mojom/ai/ai_language_model.mojom";
 import "third_party/blink/public/mojom/ai/ai_rewriter.mojom";
 import "third_party/blink/public/mojom/ai/ai_writer.mojom";
 import "third_party/blink/public/mojom/ai/ai_summarizer.mojom";
@@ -92,19 +92,19 @@ interface AIManagerCreateSummarizerClient {
 
 // The manager that could create a new session for the model.
 interface AIManager {
-  // Returns if it is possible to create an assistant. For example, when
+  // Returns if it is possible to create a language model. For example, when
   // the service in charge of model loading and session creation is not
   // available, this should return false.
-  CanCreateAssistant() => (ModelAvailabilityCheckResult result);
-  // Creates a new assistant.
+  CanCreateLanguageModel() => (ModelAvailabilityCheckResult result);
+  // Creates a new language model.
   // Note that this could return nullptr even if the previous
-  // `CanCreateAssistant()` returns `kReadily`, because some errors can only
-  // occur when we actually create the assistant.
+  // `CanCreateLanguageModel()` returns `kReadily`, because some errors can only
+  // occur when we actually create the language model.
   // See the explainer (https://github.com/explainers-by-googlers/prompt-api)
   // for more information about the meaning of each parameter.
-  CreateAssistant(
-    pending_remote<AIManagerCreateAssistantClient> client,
-    AIAssistantCreateOptions options
+  CreateLanguageModel(
+    pending_remote<AIManagerCreateLanguageModelClient> client,
+    AILanguageModelCreateOptions options
   );
   // Returns if it is possible to create a summarizer. For example, when
   // the service in charge of model loading and session creation is not

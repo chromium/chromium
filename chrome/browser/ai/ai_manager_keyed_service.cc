@@ -22,9 +22,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/ai/ai_assistant.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
+#include "chrome/browser/ai/ai_language_model.h"
 #include "chrome/browser/ai/ai_rewriter.h"
 #include "chrome/browser/ai/ai_summarizer.h"
 #include "chrome/browser/ai/ai_writer.h"
@@ -41,7 +41,7 @@
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
@@ -240,27 +240,28 @@ void AIManagerKeyedService::AddReceiver(
                          weak_factory_.GetWeakPtr(), receiver_id)));
 }
 
-void AIManagerKeyedService::CanCreateAssistant(
-    CanCreateAssistantCallback callback) {
+void AIManagerKeyedService::CanCreateLanguageModel(
+    CanCreateLanguageModelCallback callback) {
   CanCreateSession(optimization_guide::ModelBasedCapabilityKey::kPromptApi,
                    std::move(callback));
 }
 
-std::unique_ptr<CreateAssistantOnDeviceSessionTask>
-AIManagerKeyedService::CreateAssistantInternal(
-    const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
+std::unique_ptr<CreateLanguageModelOnDeviceSessionTask>
+AIManagerKeyedService::CreateLanguageModelInternal(
+    const blink::mojom::AILanguageModelSamplingParamsPtr& sampling_params,
     AIContextBoundObjectSet& context_bound_object_set,
-    base::OnceCallback<void(std::unique_ptr<AIAssistant>)> callback,
-    const std::optional<const AIAssistant::Context>& context,
+    base::OnceCallback<void(std::unique_ptr<AILanguageModel>)> callback,
+    const std::optional<const AILanguageModel::Context>& context,
     base::SupportsUserData* context_user_data) {
   CHECK(browser_context_);
-  auto task = std::make_unique<CreateAssistantOnDeviceSessionTask>(
+  auto task = std::make_unique<CreateLanguageModelOnDeviceSessionTask>(
       context_bound_object_set, browser_context_.get(), sampling_params,
       base::BindOnce(
           [](base::WeakPtr<content::BrowserContext> browser_context,
              AIContextBoundObjectSet& context_bound_object_set,
-             const std::optional<const AIAssistant::Context>& context,
-             base::OnceCallback<void(std::unique_ptr<AIAssistant>)> callback,
+             const std::optional<const AILanguageModel::Context>& context,
+             base::OnceCallback<void(std::unique_ptr<AILanguageModel>)>
+                 callback,
              std::unique_ptr<
                  optimization_guide::OptimizationGuideModelExecutor::Session>
                  session) {
@@ -269,8 +270,8 @@ AIManagerKeyedService::CreateAssistantInternal(
               return;
             }
 
-            mojo::PendingRemote<blink::mojom::AIAssistant> pending_remote;
-            std::move(callback).Run(std::make_unique<AIAssistant>(
+            mojo::PendingRemote<blink::mojom::AILanguageModel> pending_remote;
+            std::move(callback).Run(std::make_unique<AILanguageModel>(
                 std::move(session), browser_context, std::move(pending_remote),
                 context_bound_object_set, context));
           },
@@ -280,10 +281,11 @@ AIManagerKeyedService::CreateAssistantInternal(
   return task;
 }
 
-void AIManagerKeyedService::CreateAssistant(
-    mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient> client,
-    blink::mojom::AIAssistantCreateOptionsPtr options) {
-  blink::mojom::AIAssistantSamplingParamsPtr sampling_params =
+void AIManagerKeyedService::CreateLanguageModel(
+    mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
+        client,
+    blink::mojom::AILanguageModelCreateOptionsPtr options) {
+  blink::mojom::AILanguageModelSamplingParamsPtr sampling_params =
       std::move(options->sampling_params);
 
   // Since this is a mojo IPC implementation, the context should be
@@ -294,57 +296,59 @@ void AIManagerKeyedService::CreateAssistant(
       AIContextBoundObjectSet::GetFromContext(*context_user_data);
   CHECK(context_bound_object_set);
 
-  auto create_assistant_callback = base::BindOnce(
-      [](mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient>
+  auto create_language_model_callback = base::BindOnce(
+      [](mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
              client,
          AIContextBoundObjectSet& context_bound_object_set,
-         blink::mojom::AIAssistantCreateOptionsPtr options,
-         std::unique_ptr<AIAssistant> assistant) {
-        mojo::Remote<blink::mojom::AIManagerCreateAssistantClient>
+         blink::mojom::AILanguageModelCreateOptionsPtr options,
+         std::unique_ptr<AILanguageModel> language_model) {
+        mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
             client_remote(std::move(client));
-        if (!assistant) {
+        if (!language_model) {
           // TODO(crbug.com/343325183): probably we should consider
           // returning an error enum and throw a clear exception from
           // the blink side.
           client_remote->OnResult(
-              mojo::PendingRemote<blink::mojom::AIAssistant>(),
+              mojo::PendingRemote<blink::mojom::AILanguageModel>(),
               /*info=*/nullptr);
           return;
         }
 
         const std::optional<std::string>& system_prompt =
             options->system_prompt;
-        std::vector<blink::mojom::AIAssistantInitialPromptPtr>&
+        std::vector<blink::mojom::AILanguageModelInitialPromptPtr>&
             initial_prompts = options->initial_prompts;
         if (system_prompt.has_value() || !initial_prompts.empty()) {
           // If the initial prompt is provided, we need to set it and
           // invoke the callback after this, because the token counting
           // happens asynchronously.
-          assistant->SetInitialPrompts(
+          language_model->SetInitialPrompts(
               system_prompt, std::move(initial_prompts),
               base::BindOnce(
-                  [](mojo::Remote<blink::mojom::AIManagerCreateAssistantClient>
+                  [](mojo::Remote<
+                         blink::mojom::AIManagerCreateLanguageModelClient>
                          client_remote,
-                     mojo::PendingRemote<blink::mojom::AIAssistant> remote,
-                     blink::mojom::AIAssistantInfoPtr info) {
+                     mojo::PendingRemote<blink::mojom::AILanguageModel> remote,
+                     blink::mojom::AILanguageModelInfoPtr info) {
                     client_remote->OnResult(std::move(remote), std::move(info));
                   },
                   std::move(client_remote)));
         } else {
-          client_remote->OnResult(assistant->TakePendingRemote(),
-                                  assistant->GetAssistantInfo());
+          client_remote->OnResult(language_model->TakePendingRemote(),
+                                  language_model->GetLanguageModelInfo());
         }
 
-        context_bound_object_set.AddContextBoundObject(std::move(assistant));
+        context_bound_object_set.AddContextBoundObject(
+            std::move(language_model));
       },
       std::move(client), std::ref(*context_bound_object_set),
       std::move(options));
 
-  // When creating a new assistant, the `context` will not be set since it
+  // When creating a new language model, the `context` will not be set since it
   // should start fresh.
   auto task =
-      CreateAssistantInternal(sampling_params, *context_bound_object_set,
-                              std::move(create_assistant_callback));
+      CreateLanguageModelInternal(sampling_params, *context_bound_object_set,
+                                  std::move(create_language_model_callback));
   if (task->IsPending()) {
     // Put `task` to AIContextBoundObjectSet to continue observing the model
     // availability.
@@ -372,9 +376,9 @@ void AIManagerKeyedService::CreateSummarizer(
 }
 
 void AIManagerKeyedService::GetModelInfo(GetModelInfoCallback callback) {
-  auto default_sampling_params = GetAssistantDefaultSamplingParams();
+  auto default_sampling_params = GetLanguageModelDefaultSamplingParams();
   std::move(callback).Run(blink::mojom::AIModelInfo::New(
-      default_sampling_params.top_k, GetAssistantModelMaxTopK(),
+      default_sampling_params.top_k, GetLanguageModelMaxTopK(),
       default_sampling_params.temperature));
 }
 
@@ -415,7 +419,7 @@ void AIManagerKeyedService::CreateRewriter(
 
 void AIManagerKeyedService::CanCreateSession(
     optimization_guide::ModelBasedCapabilityKey capability,
-    CanCreateAssistantCallback callback) {
+    CanCreateLanguageModelCallback callback) {
   auto model_path =
       optimization_guide::switches::GetOnDeviceModelExecutionOverride();
   if (model_path.has_value()) {
@@ -460,38 +464,40 @@ void AIManagerKeyedService::CanCreateSession(
       /*result=*/blink::mojom::ModelAvailabilityCheckResult::kReadily);
 }
 
-void AIManagerKeyedService::CreateAssistantForCloning(
-    base::PassKey<AIAssistant> pass_key,
-    blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
+void AIManagerKeyedService::CreateLanguageModelForCloning(
+    base::PassKey<AILanguageModel> pass_key,
+    blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
     AIContextBoundObjectSet& context_bound_object_set,
-    const AIAssistant::Context& context,
-    mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote) {
-  auto create_assistant_callback = base::BindOnce(
+    const AILanguageModel::Context& context,
+    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+        client_remote) {
+  auto create_language_model_callback = base::BindOnce(
       [](AIContextBoundObjectSet& context_bound_object_set,
-         mojo::Remote<blink::mojom::AIManagerCreateAssistantClient>
+         mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
              client_remote,
-         std::unique_ptr<AIAssistant> assistant) {
-        if (!assistant) {
+         std::unique_ptr<AILanguageModel> language_model) {
+        if (!language_model) {
           client_remote->OnResult(
-              mojo::PendingRemote<blink::mojom::AIAssistant>(),
+              mojo::PendingRemote<blink::mojom::AILanguageModel>(),
               /*info=*/nullptr);
           return;
         }
 
-        client_remote->OnResult(assistant->TakePendingRemote(),
-                                assistant->GetAssistantInfo());
-        context_bound_object_set.AddContextBoundObject(std::move(assistant));
+        client_remote->OnResult(language_model->TakePendingRemote(),
+                                language_model->GetLanguageModelInfo());
+        context_bound_object_set.AddContextBoundObject(
+            std::move(language_model));
       },
       std::ref(context_bound_object_set), std::move(client_remote));
-  // When cloning an existing assistant, the `context` from the source of clone
-  // should be provided.
-  auto task =
-      CreateAssistantInternal(sampling_params, context_bound_object_set,
-                              std::move(create_assistant_callback), context,
-                              /*context_user_data=*/nullptr);
-  // The on-device model must be available before the existing assistant was
-  // created, so the `CreateAssistantOnDeviceSessionTask` should complete
-  // without waiting for the on-device model availability changes.
+  // When cloning an existing language model, the `context` from the source of
+  // clone should be provided.
+  auto task = CreateLanguageModelInternal(
+      sampling_params, context_bound_object_set,
+      std::move(create_language_model_callback), context,
+      /*context_user_data=*/nullptr);
+  // The on-device model must be available before the existing language model
+  // was created, so the `CreateLanguageModelOnDeviceSessionTask` should
+  // complete without waiting for the on-device model availability changes.
   CHECK(!task->IsPending());
 }
 
@@ -511,9 +517,9 @@ void AIManagerKeyedService::RemoveReceiver(mojo::ReceiverId receiver_id) {
 }
 
 optimization_guide::SamplingParams
-AIManagerKeyedService::GetAssistantDefaultSamplingParams() {
-  if (default_assistant_sampling_params_.has_value()) {
-    return default_assistant_sampling_params_.value();
+AIManagerKeyedService::GetLanguageModelDefaultSamplingParams() {
+  if (default_language_model_sampling_params_.has_value()) {
+    return default_language_model_sampling_params_.value();
   }
 
   // Create a `kPromptApi` session without specifying the config params. The
@@ -533,8 +539,8 @@ AIManagerKeyedService::GetAssistantDefaultSamplingParams() {
       optimization_guide::ModelBasedCapabilityKey::kPromptApi, config_params);
 
   if (session) {
-    default_assistant_sampling_params_ = session->GetSamplingParams();
-    return default_assistant_sampling_params_.value();
+    default_language_model_sampling_params_ = session->GetSamplingParams();
+    return default_language_model_sampling_params_.value();
   }
   return optimization_guide::SamplingParams{
       uint32_t(optimization_guide::features::GetOnDeviceModelMaxTopK()),
@@ -542,12 +548,13 @@ AIManagerKeyedService::GetAssistantDefaultSamplingParams() {
           optimization_guide::features::GetOnDeviceModelDefaultTemperature())};
 }
 
-uint32_t AIManagerKeyedService::GetAssistantModelMaxTopK() {
+uint32_t AIManagerKeyedService::GetLanguageModelMaxTopK() {
   int max_top_k = optimization_guide::features::GetOnDeviceModelMaxTopK();
   if (base::FeatureList::IsEnabled(
-          features::kAIAssistantOverrideConfiguration)) {
-    max_top_k = std::min(
-        max_top_k, features::kAIAssistantOverrideConfigurationMaxTopK.Get());
+          features::kAILanguageModelOverrideConfiguration)) {
+    max_top_k =
+        std::min(max_top_k,
+                 features::kAILanguageModelOverrideConfigurationMaxTopK.Get());
   }
   return max_top_k;
 }

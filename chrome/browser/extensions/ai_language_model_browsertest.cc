@@ -49,13 +49,13 @@ constexpr char kLanguageModelOriginTrialTokensField[] =
 static constexpr char kManifestTemplate[] =
     R"JS(
     {
-      "name": "AI assistant test",
+      "name": "AI language model test",
       "version": "0.1",
       "manifest_version": 3,
       %s
       %s
       "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3H6Jc0On6l0H3DJ6bx4aOW3+srCfjSdr+3ukwIEZrL6jDy500XweIwOp9PItpM9sijwu8v1rdyoBPubm/ottp/oz42aKp+2xIxcMTa6/cA2BL2kOWxwv+WP9d01IOFbFpWmQBDQNpp2UmH67OFbie6zHhyrSJKL2o9d05iX0a9Xwv9W48JKYpldo+/2JTP/5en0jxgiN+qkOCZuLag2cS/6Az0LArqsf5D+ReJemIBCNJhVxu3P0naxfEG6B6XczzuuptrX3H2vDr1LxZasLh9bzV88+8BxarjETACebOfqy366QxXluwAjnu/NHPv53edXlXvXrZ0C69RvvlMh1qQIDAQAB",
-      "description": "Extension for testing the AI assistant API.",
+      "description": "Extension for testing the AI language model API.",
       "background": {
         "service_worker": "sw.js"
       }
@@ -71,9 +71,9 @@ static constexpr char kServiceWorkerScript[] =
           chrome.test.succeed();
         },
         function verifyChromeAiOriginTrial() {
-          const expectChromeAiOriginTrialAssistant = %s;
+          const expectChromeAiOriginTrialLanguageModel = %s;
           chrome.test.assertEq(
-            expectChromeAiOriginTrialAssistant,
+            expectChromeAiOriginTrialLanguageModel,
             !!(chrome.aiOriginTrial && chrome.aiOriginTrial.languageModel)
           );
           chrome.test.succeed();
@@ -87,37 +87,38 @@ static constexpr char kServiceWorkerScript[] =
 // 3. if the kill switch is triggered;
 // 4. if the extension requests for the right permission;
 // 5. if the extension is participating in the origin trial.
-using ExtensionAIAssistantBrowserTestVariant =
+using ExtensionAILanguageModelBrowserTestVariant =
     std::tuple<bool, bool, bool, bool, bool>;
 
 bool IsPromptAPIForWebPlatformEnabled(
-    ExtensionAIAssistantBrowserTestVariant param) {
+    ExtensionAILanguageModelBrowserTestVariant param) {
   return std::get<0>(param);
 }
 
 bool IsPromptAPIForExtensionEnabled(
-    ExtensionAIAssistantBrowserTestVariant param) {
+    ExtensionAILanguageModelBrowserTestVariant param) {
   return std::get<1>(param);
 }
 
 bool IsPromptAPIForExtensionKillSwitchTriggered(
-    ExtensionAIAssistantBrowserTestVariant param) {
+    ExtensionAILanguageModelBrowserTestVariant param) {
   return std::get<2>(param);
 }
 
 bool IsExtensionPermissionRequested(
-    ExtensionAIAssistantBrowserTestVariant param) {
+    ExtensionAILanguageModelBrowserTestVariant param) {
   return std::get<3>(param);
 }
 
 bool IsExtensionParticipatingInOriginTrial(
-    ExtensionAIAssistantBrowserTestVariant param) {
+    ExtensionAILanguageModelBrowserTestVariant param) {
   return std::get<4>(param);
 }
 
 // Describes the test variants in a meaningful way in the parameterized tests.
 std::string DescribeTestVariant(
-    const testing::TestParamInfo<ExtensionAIAssistantBrowserTestVariant> info) {
+    const testing::TestParamInfo<ExtensionAILanguageModelBrowserTestVariant>
+        info) {
   std::string WebPlatformFeatureString = base::StringPrintf(
       "PromptAPI%sForWebPlatform",
       IsPromptAPIForWebPlatformEnabled(info.param) ? "Enabled" : "Disabled");
@@ -143,10 +144,10 @@ std::string DescribeTestVariant(
 
 }  // namespace
 
-class ExtensionAIAssistantBrowserTest
+class ExtensionAILanguageModelBrowserTest
     : public ExtensionBrowserTest,
       public testing::WithParamInterface<
-          ExtensionAIAssistantBrowserTestVariant> {
+          ExtensionAILanguageModelBrowserTestVariant> {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionBrowserTest::SetUpCommandLine(command_line);
@@ -212,7 +213,7 @@ class ExtensionAIAssistantBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
-    ExtensionAIAssistantBrowserTest,
+    ExtensionAILanguageModelBrowserTest,
     testing::Combine(testing::Bool(),
                      testing::Bool(),
                      testing::Bool(),
@@ -221,13 +222,14 @@ INSTANTIATE_TEST_SUITE_P(
     &DescribeTestVariant);
 
 #if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TestAssistantFactoryExistence \
-  DISABLED_TestAssistantFactoryExistence
+#define MAYBE_TestLanguageModelFactoryExistence \
+  DISABLED_TestLanguageModelFactoryExistence
 #else
-#define MAYBE_TestAssistantFactoryExistence TestAssistantFactoryExistence
+#define MAYBE_TestLanguageModelFactoryExistence \
+  TestLanguageModelFactoryExistence
 #endif  // BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(ExtensionAIAssistantBrowserTest,
-                       MAYBE_TestAssistantFactoryExistence) {
+IN_PROC_BROWSER_TEST_P(ExtensionAILanguageModelBrowserTest,
+                       MAYBE_TestLanguageModelFactoryExistence) {
   TestExtensionDir test_dir;
   test_dir.WriteManifest(GetManifest());
   auto bool_to_str = [](bool value) { return value ? "true" : "false"; };

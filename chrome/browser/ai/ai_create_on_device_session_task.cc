@@ -12,7 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
-#include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 
 namespace {
 
@@ -147,10 +147,10 @@ void CreateOnDeviceSessionTask::SetState(State state) {
   state_ = state;
 }
 
-CreateAssistantOnDeviceSessionTask::CreateAssistantOnDeviceSessionTask(
+CreateLanguageModelOnDeviceSessionTask::CreateLanguageModelOnDeviceSessionTask(
     AIContextBoundObjectSet& context_bound_object_set,
     content::BrowserContext* browser_context,
-    const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
+    const blink::mojom::AILanguageModelSamplingParamsPtr& sampling_params,
     base::OnceCallback<
         void(std::unique_ptr<
              optimization_guide::OptimizationGuideModelExecutor::Session>)>
@@ -165,23 +165,23 @@ CreateAssistantOnDeviceSessionTask::CreateAssistantOnDeviceSessionTask(
   if (sampling_params) {
     sampling_params_ = optimization_guide::SamplingParams{
         .top_k = std::min(sampling_params->top_k,
-                          service->GetAssistantModelMaxTopK()),
+                          service->GetLanguageModelMaxTopK()),
         .temperature = sampling_params->temperature};
   } else {
-    sampling_params_ = service->GetAssistantDefaultSamplingParams();
+    sampling_params_ = service->GetLanguageModelDefaultSamplingParams();
   }
 }
 
-CreateAssistantOnDeviceSessionTask::~CreateAssistantOnDeviceSessionTask() =
-    default;
+CreateLanguageModelOnDeviceSessionTask::
+    ~CreateLanguageModelOnDeviceSessionTask() = default;
 
-void CreateAssistantOnDeviceSessionTask::OnFinish(
+void CreateLanguageModelOnDeviceSessionTask::OnFinish(
     std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
         session) {
   std::move(completion_callback_).Run(std::move(session));
 }
 
-void CreateAssistantOnDeviceSessionTask::UpdateSessionConfigParams(
+void CreateLanguageModelOnDeviceSessionTask::UpdateSessionConfigParams(
     optimization_guide::SessionConfigParams* config_params) {
   config_params->sampling_params = sampling_params_;
 }

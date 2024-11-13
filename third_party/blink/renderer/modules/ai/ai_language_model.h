@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_LANGUAGE_MODEL_H_
 
 #include "base/types/pass_key.h"
-#include "third_party/blink/public/mojom/ai/ai_assistant.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_clone_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_language_model_prompt_options.h"
@@ -25,11 +25,12 @@ class AILanguageModel final : public EventTarget,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  AILanguageModel(ExecutionContext* execution_context,
-                  mojo::PendingRemote<mojom::blink::AIAssistant> pending_remote,
-                  scoped_refptr<base::SequencedTaskRunner> task_runner,
-                  mojom::blink::AIAssistantInfoPtr info,
-                  uint64_t current_tokens);
+  AILanguageModel(
+      ExecutionContext* execution_context,
+      mojo::PendingRemote<mojom::blink::AILanguageModel> pending_remote,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      mojom::blink::AILanguageModelInfoPtr info,
+      uint64_t current_tokens);
   ~AILanguageModel() override = default;
 
   void Trace(Visitor* visitor) const override;
@@ -72,9 +73,9 @@ class AILanguageModel final : public EventTarget,
   // getting it from the remote.
   void SetInfo(std::variant<base::PassKey<AILanguageModelFactory>,
                             base::PassKey<AILanguageModel>> pass_key,
-               const mojom::blink::AIAssistantInfoPtr info);
+               const mojom::blink::AILanguageModelInfoPtr info);
 
-  HeapMojoRemote<mojom::blink::AIAssistant>& GetAILanguageModelRemote();
+  HeapMojoRemote<mojom::blink::AILanguageModel>& GetAILanguageModelRemote();
   scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
   uint64_t GetCurrentTokens();
 
@@ -89,7 +90,7 @@ class AILanguageModel final : public EventTarget,
   float temperature_ = 0.0;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  HeapMojoRemote<mojom::blink::AIAssistant> language_model_remote_;
+  HeapMojoRemote<mojom::blink::AILanguageModel> language_model_remote_;
 };
 
 }  // namespace blink

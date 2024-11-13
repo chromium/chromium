@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AI_AI_ASSISTANT_H_
-#define CHROME_BROWSER_AI_AI_ASSISTANT_H_
+#ifndef CHROME_BROWSER_AI_AI_LANGUAGE_MODEL_H_
+#define CHROME_BROWSER_AI_AI_LANGUAGE_MODEL_H_
 
 #include <deque>
 #include <optional>
@@ -18,20 +18,20 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-forward.h"
 
-// The implementation of `blink::mojom::ModelGenericSession`, which exposes the
-// single stream-based `Execute()` API for model execution.
-class AIAssistant : public AIContextBoundObject,
-                    public blink::mojom::AIAssistant {
+// The implementation of `blink::mojom::AILanguageModel`, which exposes the APIs
+// for model execution.
+class AILanguageModel : public AIContextBoundObject,
+                        public blink::mojom::AILanguageModel {
  public:
   using PromptApiPrompt = optimization_guide::proto::PromptApiPrompt;
   using PromptApiRequest = optimization_guide::proto::PromptApiRequest;
-  using CreateAssistantCallback =
-      base::OnceCallback<void(mojo::PendingRemote<blink::mojom::AIAssistant>,
-                              blink::mojom::AIAssistantInfoPtr)>;
+  using CreateLanguageModelCallback = base::OnceCallback<void(
+      mojo::PendingRemote<blink::mojom::AILanguageModel>,
+      blink::mojom::AILanguageModelInfoPtr)>;
 
   // The Context class manages the history of prompt input and output, which are
   // used to build the context when performing the next execution. Context is
@@ -90,38 +90,40 @@ class AIAssistant : public AIContextBoundObject,
     bool use_prompt_api_proto_;
   };
 
-  AIAssistant(
+  AILanguageModel(
       std::unique_ptr<
           optimization_guide::OptimizationGuideModelExecutor::Session> session,
       base::WeakPtr<content::BrowserContext> browser_context,
-      mojo::PendingRemote<blink::mojom::AIAssistant> pending_remote,
+      mojo::PendingRemote<blink::mojom::AILanguageModel> pending_remote,
       AIContextBoundObjectSet& session_set,
       const std::optional<const Context>& context = std::nullopt);
-  AIAssistant(const AIAssistant&) = delete;
-  AIAssistant& operator=(const AIAssistant&) = delete;
+  AILanguageModel(const AILanguageModel&) = delete;
+  AILanguageModel& operator=(const AILanguageModel&) = delete;
 
-  ~AIAssistant() override;
+  ~AILanguageModel() override;
 
-  // `blink::mojom::AIAssistant` implementation.
+  // `blink::mojom::AILanguageModel` implementation.
   void Prompt(const std::string& input,
               mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                   pending_responder) override;
-  void Fork(mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient>
-                client) override;
+  void Fork(
+      mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
+          client) override;
   void Destroy() override;
   void CountPromptTokens(
       const std::string& input,
-      mojo::PendingRemote<blink::mojom::AIAssistantCountPromptTokensClient>
+      mojo::PendingRemote<blink::mojom::AILanguageModelCountPromptTokensClient>
           client) override;
 
   // Format the initial prompts, gets the token count, updates the session,
   // and passes the session information back through the callback.
   void SetInitialPrompts(
       const std::optional<std::string> system_prompt,
-      std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
-      CreateAssistantCallback callback);
-  blink::mojom::AIAssistantInfoPtr GetAssistantInfo();
-  mojo::PendingRemote<blink::mojom::AIAssistant> TakePendingRemote();
+      std::vector<blink::mojom::AILanguageModelInitialPromptPtr>
+          initial_prompts,
+      CreateLanguageModelCallback callback);
+  blink::mojom::AILanguageModelInfoPtr GetLanguageModelInfo();
+  mojo::PendingRemote<blink::mojom::AILanguageModel> TakePendingRemote();
 
  private:
   void ModelExecutionCallback(
@@ -132,7 +134,7 @@ class AIAssistant : public AIContextBoundObject,
 
   void InitializeContextWithInitialPrompts(
       optimization_guide::proto::PromptApiRequest request,
-      CreateAssistantCallback callback,
+      CreateLanguageModelCallback callback,
       uint32_t size);
 
   // This function is passed as a completion callback to the
@@ -160,10 +162,10 @@ class AIAssistant : public AIContextBoundObject,
   // `context_bound_object_set_`.
   base::raw_ref<AIContextBoundObjectSet> context_bound_object_set_;
 
-  mojo::PendingRemote<blink::mojom::AIAssistant> pending_remote_;
-  mojo::Receiver<blink::mojom::AIAssistant> receiver_;
+  mojo::PendingRemote<blink::mojom::AILanguageModel> pending_remote_;
+  mojo::Receiver<blink::mojom::AILanguageModel> receiver_;
 
-  base::WeakPtrFactory<AIAssistant> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AILanguageModel> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_AI_AI_ASSISTANT_H_
+#endif  // CHROME_BROWSER_AI_AI_LANGUAGE_MODEL_H_

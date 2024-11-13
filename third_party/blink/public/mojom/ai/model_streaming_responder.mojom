@@ -64,7 +64,7 @@ interface ModelStreamingResponder {
   // Called when the model execution completes. The optional `context_info`
   // contain information about the session like the current number of tokens
   // and if the context overflows.
-  // It will only be set when necessary, for example, in the `AIAssistant`
+  // It will only be set when necessary, for example, in the `AILanguageModel`
   // interface as it maintains the context of the past model execution.
   OnCompletion(ModelExecutionContextInfo? context_info);
 };

@@ -4,7 +4,7 @@
 promise_test(async () => {
   const result = await new Promise(async resolve => {
     const worker = new SharedWorker(
-      "assistant-api-test-shared-worker.js"
+      "language-model-api-test-shared-worker.js"
     );
     worker.port.onmessage = e => {
       resolve(e.data);

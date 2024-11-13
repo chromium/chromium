@@ -7,7 +7,7 @@ promise_test(async (t) => {
       signal: signal
     });
   });
-}, "Aborting AIAssistantFactory.create().");
+}, "Aborting AILanguageModelFactory.create().");
 
 promise_test(async (t) => {
   const session = await ai.languageModel.create();
@@ -16,7 +16,7 @@ promise_test(async (t) => {
       signal: signal
     });
   });
-}, "Aborting AIAssistant.clone().");
+}, "Aborting AILanguageModel.clone().");
 
 promise_test(async (t) => {
   const session = await ai.languageModel.create();
@@ -25,5 +25,5 @@ promise_test(async (t) => {
       "Write a poem", { signal: signal }
     );
   });
-}, "Aborting AIAssistant.prompt().");
+}, "Aborting AILanguageModel.prompt().");
 

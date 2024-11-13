@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ai/ai_assistant.h"
+#include "chrome/browser/ai/ai_language_model.h"
 
 #include <memory>
 #include <optional>
@@ -35,13 +35,13 @@ using optimization_guide::proto::PromptApiPrompt;
 using optimization_guide::proto::PromptApiRequest;
 using optimization_guide::proto::PromptApiRole;
 
-PromptApiRole ConvertRole(blink::mojom::AIAssistantInitialPromptRole role) {
+PromptApiRole ConvertRole(blink::mojom::AILanguageModelInitialPromptRole role) {
   switch (role) {
-    case blink::mojom::AIAssistantInitialPromptRole::kSystem:
+    case blink::mojom::AILanguageModelInitialPromptRole::kSystem:
       return PromptApiRole::PROMPT_API_ROLE_SYSTEM;
-    case blink::mojom::AIAssistantInitialPromptRole::kUser:
+    case blink::mojom::AILanguageModelInitialPromptRole::kUser:
       return PromptApiRole::PROMPT_API_ROLE_USER;
-    case blink::mojom::AIAssistantInitialPromptRole::kAssistant:
+    case blink::mojom::AILanguageModelInitialPromptRole::kAssistant:
       return PromptApiRole::PROMPT_API_ROLE_ASSISTANT;
   }
 }
@@ -97,31 +97,32 @@ std::unique_ptr<optimization_guide::proto::StringValue> ToStringValue(
 
 }  // namespace
 
-AIAssistant::Context::ContextItem::ContextItem() = default;
-AIAssistant::Context::ContextItem::ContextItem(const ContextItem&) = default;
-AIAssistant::Context::ContextItem::ContextItem(ContextItem&&) = default;
-AIAssistant::Context::ContextItem::~ContextItem() = default;
+AILanguageModel::Context::ContextItem::ContextItem() = default;
+AILanguageModel::Context::ContextItem::ContextItem(const ContextItem&) =
+    default;
+AILanguageModel::Context::ContextItem::ContextItem(ContextItem&&) = default;
+AILanguageModel::Context::ContextItem::~ContextItem() = default;
 
 using ModelExecutionError = optimization_guide::
     OptimizationGuideModelExecutionError::ModelExecutionError;
 
-AIAssistant::Context::Context(uint32_t max_tokens,
-                              ContextItem initial_prompts,
-                              bool use_prompt_api_proto)
+AILanguageModel::Context::Context(uint32_t max_tokens,
+                                  ContextItem initial_prompts,
+                                  bool use_prompt_api_proto)
     : max_tokens_(max_tokens),
       initial_prompts_(std::move(initial_prompts)),
       use_prompt_api_proto_(use_prompt_api_proto) {
   CHECK_GE(max_tokens_, initial_prompts_.tokens)
-      << "the caller shouldn't create an AIAssistant with the initial "
+      << "the caller shouldn't create an AILanguageModel with the initial "
          "prompts containing more tokens than the limit.";
   current_tokens_ += initial_prompts.tokens;
 }
 
-AIAssistant::Context::Context(const Context& context) = default;
+AILanguageModel::Context::Context(const Context& context) = default;
 
-AIAssistant::Context::~Context() = default;
+AILanguageModel::Context::~Context() = default;
 
-bool AIAssistant::Context::AddContextItem(ContextItem context_item) {
+bool AILanguageModel::Context::AddContextItem(ContextItem context_item) {
   bool is_overflow = false;
   context_items_.emplace_back(context_item);
   current_tokens_ += context_item.tokens;
@@ -134,7 +135,7 @@ bool AIAssistant::Context::AddContextItem(ContextItem context_item) {
 }
 
 std::unique_ptr<google::protobuf::MessageLite>
-AIAssistant::Context::MaybeFormatRequest(PromptApiRequest request) {
+AILanguageModel::Context::MaybeFormatRequest(PromptApiRequest request) {
   if (use_prompt_api_proto_) {
     return std::make_unique<PromptApiRequest>(std::move(request));
   }
@@ -142,7 +143,7 @@ AIAssistant::Context::MaybeFormatRequest(PromptApiRequest request) {
 }
 
 std::unique_ptr<google::protobuf::MessageLite>
-AIAssistant::Context::MakeRequest() {
+AILanguageModel::Context::MakeRequest() {
   PromptApiRequest request;
   request.mutable_initial_prompts()->MergeFrom(initial_prompts_.prompts);
   for (auto& context_item : context_items_) {
@@ -151,15 +152,15 @@ AIAssistant::Context::MakeRequest() {
   return MaybeFormatRequest(std::move(request));
 }
 
-bool AIAssistant::Context::HasContextItem() {
+bool AILanguageModel::Context::HasContextItem() {
   return current_tokens_;
 }
 
-AIAssistant::AIAssistant(
+AILanguageModel::AILanguageModel(
     std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
         session,
     base::WeakPtr<content::BrowserContext> browser_context,
-    mojo::PendingRemote<blink::mojom::AIAssistant> pending_remote,
+    mojo::PendingRemote<blink::mojom::AILanguageModel> pending_remote,
     AIContextBoundObjectSet& context_bound_object_set,
     const std::optional<const Context>& context)
     : AIContextBoundObject(context_bound_object_set),
@@ -184,12 +185,12 @@ AIAssistant::AIAssistant(
       ParseMetadata(session_->GetOnDeviceFeatureMetadata()).version() >= 1);
 }
 
-AIAssistant::~AIAssistant() = default;
+AILanguageModel::~AILanguageModel() = default;
 
-void AIAssistant::SetInitialPrompts(
+void AILanguageModel::SetInitialPrompts(
     const std::optional<std::string> system_prompt,
-    std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
-    CreateAssistantCallback callback) {
+    std::vector<blink::mojom::AILanguageModelInitialPromptPtr> initial_prompts,
+    CreateLanguageModelCallback callback) {
   PromptApiRequest request;
   if (system_prompt) {
     *request.add_initial_prompts() =
@@ -201,14 +202,14 @@ void AIAssistant::SetInitialPrompts(
   }
   session_->GetContextSizeInTokens(
       *context_->MaybeFormatRequest(request),
-      base::BindOnce(&AIAssistant::InitializeContextWithInitialPrompts,
+      base::BindOnce(&AILanguageModel::InitializeContextWithInitialPrompts,
                      weak_ptr_factory_.GetWeakPtr(), request,
                      std::move(callback)));
 }
 
-void AIAssistant::InitializeContextWithInitialPrompts(
+void AILanguageModel::InitializeContextWithInitialPrompts(
     optimization_guide::proto::PromptApiRequest initial_request,
-    CreateAssistantCallback callback,
+    CreateLanguageModelCallback callback,
     uint32_t size) {
   // If the on device model service fails to get the size, it will be 0.
   // TODO(crbug.com/351935691): make sure the error is explicitly returned and
@@ -231,10 +232,10 @@ void AIAssistant::InitializeContextWithInitialPrompts(
   initial_prompts.prompts.Swap(initial_request.mutable_initial_prompts());
   context_ = std::make_unique<Context>(max_token, std::move(initial_prompts),
                                        context_->use_prompt_api_proto());
-  std::move(callback).Run(TakePendingRemote(), GetAssistantInfo());
+  std::move(callback).Run(TakePendingRemote(), GetLanguageModelInfo());
 }
 
-void AIAssistant::AddPromptHistoryAndSendCompletion(
+void AILanguageModel::AddPromptHistoryAndSendCompletion(
     const PromptApiRequest& history_request,
     blink::mojom::ModelStreamingResponder* responder,
     uint32_t size) {
@@ -252,7 +253,7 @@ void AIAssistant::AddPromptHistoryAndSendCompletion(
       context_->current_tokens(), did_overflow));
 }
 
-void AIAssistant::ModelExecutionCallback(
+void AILanguageModel::ModelExecutionCallback(
     const PromptApiRequest& input,
     mojo::RemoteSetElementId responder_id,
     optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
@@ -275,7 +276,7 @@ void AIAssistant::ModelExecutionCallback(
   }
   if (result.response->is_complete) {
     // TODO(crbug.com/351935390): instead of calculating this from the
-    // AIAssistant, it should be returned by the model since the token
+    // AILanguageModel, it should be returned by the model since the token
     // should be calculated during the execution.
     PromptApiRequest request;
     request.mutable_prompt_history()->CopyFrom(input.current_prompts());
@@ -283,12 +284,12 @@ void AIAssistant::ModelExecutionCallback(
         MakePrompt(PromptApiRole::PROMPT_API_ROLE_ASSISTANT, response->value());
     session_->GetContextSizeInTokens(
         *context_->MaybeFormatRequest(request),
-        base::BindOnce(&AIAssistant::AddPromptHistoryAndSendCompletion,
+        base::BindOnce(&AILanguageModel::AddPromptHistoryAndSendCompletion,
                        weak_ptr_factory_.GetWeakPtr(), request, responder));
   }
 }
 
-void AIAssistant::Prompt(
+void AILanguageModel::Prompt(
     const std::string& input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
@@ -311,20 +312,22 @@ void AIAssistant::Prompt(
       MakePrompt(PromptApiRole::PROMPT_API_ROLE_USER, input);
   session_->ExecuteModel(
       *context_->MaybeFormatRequest(request),
-      base::BindRepeating(&AIAssistant::ModelExecutionCallback,
+      base::BindRepeating(&AILanguageModel::ModelExecutionCallback,
                           weak_ptr_factory_.GetWeakPtr(), request,
                           responder_id));
 }
 
-void AIAssistant::Fork(
-    mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient> client) {
-  mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote(
+void AILanguageModel::Fork(
+    mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
+        client) {
+  mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient> client_remote(
       std::move(client));
   if (!browser_context_) {
     // The `browser_context_` is already destroyed before the renderer owner
     // is gone.
-    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AIAssistant>(),
-                            /*info=*/nullptr);
+    client_remote->OnResult(
+        mojo::PendingRemote<blink::mojom::AILanguageModel>(),
+        /*info=*/nullptr);
     return;
   }
 
@@ -332,14 +335,14 @@ void AIAssistant::Fork(
       session_->GetSamplingParams();
 
   AIManagerKeyedServiceFactory::GetAIManagerKeyedService(browser_context_.get())
-      ->CreateAssistantForCloning(
-          base::PassKey<AIAssistant>(),
-          blink::mojom::AIAssistantSamplingParams::New(
+      ->CreateLanguageModelForCloning(
+          base::PassKey<AILanguageModel>(),
+          blink::mojom::AILanguageModelSamplingParams::New(
               sampling_param.top_k, sampling_param.temperature),
           context_bound_object_set_.get(), *context_, std::move(client_remote));
 }
 
-void AIAssistant::Destroy() {
+void AILanguageModel::Destroy() {
   if (session_) {
     session_.reset();
   }
@@ -352,18 +355,18 @@ void AIAssistant::Destroy() {
   responder_set_.Clear();
 }
 
-blink::mojom::AIAssistantInfoPtr AIAssistant::GetAssistantInfo() {
+blink::mojom::AILanguageModelInfoPtr AILanguageModel::GetLanguageModelInfo() {
   const optimization_guide::SamplingParams session_sampling_params =
       session_->GetSamplingParams();
-  return blink::mojom::AIAssistantInfo::New(
+  return blink::mojom::AILanguageModelInfo::New(
       context_->max_tokens(),
-      blink::mojom::AIAssistantSamplingParams::New(
+      blink::mojom::AILanguageModelSamplingParams::New(
           session_sampling_params.top_k, session_sampling_params.temperature));
 }
 
-void AIAssistant::CountPromptTokens(
+void AILanguageModel::CountPromptTokens(
     const std::string& input,
-    mojo::PendingRemote<blink::mojom::AIAssistantCountPromptTokensClient>
+    mojo::PendingRemote<blink::mojom::AILanguageModelCountPromptTokensClient>
         client) {
   PromptApiRequest request;
   *request.add_current_prompts() =
@@ -372,16 +375,16 @@ void AIAssistant::CountPromptTokens(
   session_->GetExecutionInputSizeInTokens(
       *context_->MaybeFormatRequest(request),
       base::BindOnce(
-          [](mojo::Remote<blink::mojom::AIAssistantCountPromptTokensClient>
+          [](mojo::Remote<blink::mojom::AILanguageModelCountPromptTokensClient>
                  client_remote,
              uint32_t number_of_tokens) {
             client_remote->OnResult(number_of_tokens);
           },
-          mojo::Remote<blink::mojom::AIAssistantCountPromptTokensClient>(
+          mojo::Remote<blink::mojom::AILanguageModelCountPromptTokensClient>(
               std::move(client))));
 }
 
-mojo::PendingRemote<blink::mojom::AIAssistant>
-AIAssistant::TakePendingRemote() {
+mojo::PendingRemote<blink::mojom::AILanguageModel>
+AILanguageModel::TakePendingRemote() {
   return std::move(pending_remote_);
 }

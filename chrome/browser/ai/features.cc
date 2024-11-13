@@ -6,11 +6,11 @@
 
 namespace features {
 
-BASE_FEATURE(kAIAssistantOverrideConfiguration,
-             "kAIAssistantOverrideConfiguration",
+BASE_FEATURE(kAILanguageModelOverrideConfiguration,
+             "kAILanguageModelOverrideConfiguration",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kAIAssistantOverrideConfigurationMaxTopK{
-    &features::kAIAssistantOverrideConfiguration, "max_top_k", 8};
+const base::FeatureParam<int> kAILanguageModelOverrideConfigurationMaxTopK{
+    &features::kAILanguageModelOverrideConfiguration, "max_top_k", 8};
 
 }  // namespace features

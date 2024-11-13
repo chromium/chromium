@@ -13,8 +13,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "third_party/blink/public/mojom/ai/ai_assistant.mojom-forward.h"
-#include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 
@@ -43,11 +43,12 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
   EchoAIManagerImpl();
 
   // `blink::mojom::AIManager` implementation.
-  void CanCreateAssistant(CanCreateAssistantCallback callback) override;
+  void CanCreateLanguageModel(CanCreateLanguageModelCallback callback) override;
 
-  void CreateAssistant(
-      mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient> client,
-      blink::mojom::AIAssistantCreateOptionsPtr options) override;
+  void CreateLanguageModel(
+      mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
+          client,
+      blink::mojom::AILanguageModelCreateOptionsPtr options) override;
 
   void CanCreateSummarizer(CanCreateSummarizerCallback callback) override;
 
@@ -66,10 +67,12 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
       mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
           observer_remote) override;
 
-  void ReturnAIAssistantCreationResult(
-      mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote);
+  void ReturnAILanguageModelCreationResult(
+      mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+          client_remote);
   void DoMockDownloadingAndReturn(
-      mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote);
+      mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+          client_remote);
 
   mojo::RemoteSet<blink::mojom::ModelDownloadProgressObserver>
       download_progress_observers_;

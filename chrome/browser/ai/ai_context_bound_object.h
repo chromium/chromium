@@ -14,7 +14,7 @@
 class AIContextBoundObjectSet;
 
 // Base class for storing an object that shall be deleted when the
-// document is gone such as `AIAssistant` and `AISummarizer`.
+// document is gone such as `AILanguageModel` and `AISummarizer`.
 
 // The ownership chain of the relevant class is:
 // `BucketContext` (via `SupportsUserData` or `DocumentAssociatedData`) -owns->

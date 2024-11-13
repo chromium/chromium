@@ -29,11 +29,13 @@ AITestUtils::MockModelDownloadProgressMonitor::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
-AITestUtils::MockCreateAssistantClient::MockCreateAssistantClient() = default;
-AITestUtils::MockCreateAssistantClient::~MockCreateAssistantClient() = default;
+AITestUtils::MockCreateLanguageModelClient::MockCreateLanguageModelClient() =
+    default;
+AITestUtils::MockCreateLanguageModelClient::~MockCreateLanguageModelClient() =
+    default;
 
-mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient>
-AITestUtils::MockCreateAssistantClient::BindNewPipeAndPassRemote() {
+mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
+AITestUtils::MockCreateLanguageModelClient::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 

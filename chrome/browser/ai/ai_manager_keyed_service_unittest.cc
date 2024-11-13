@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/current_thread.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ai/ai_assistant.h"
+#include "chrome/browser/ai/ai_language_model.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -19,7 +19,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 
@@ -68,7 +68,7 @@ TEST_F(AIManagerKeyedServiceTest, NoUAFWithInvalidOnDeviceModelPath) {
         return false;
       }));
 
-  base::MockCallback<blink::mojom::AIManager::CanCreateAssistantCallback>
+  base::MockCallback<blink::mojom::AIManager::CanCreateLanguageModelCallback>
       callback;
   EXPECT_CALL(callback, Run(_))
       .Times(AtMost(1))
@@ -81,7 +81,7 @@ TEST_F(AIManagerKeyedServiceTest, NoUAFWithInvalidOnDeviceModelPath) {
   AIManagerKeyedService* ai_manager =
       AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
           main_rfh()->GetBrowserContext());
-  ai_manager->CanCreateAssistant(callback.Get());
+  ai_manager->CanCreateLanguageModel(callback.Get());
 
   // The callback may still be pending, delete the WebContents and destroy the
   // associated RFH, which should not result in a UAF.
@@ -91,20 +91,20 @@ TEST_F(AIManagerKeyedServiceTest, NoUAFWithInvalidOnDeviceModelPath) {
 }
 
 // Tests the `AIUserDataSet`'s behavior of managing the lifetime of
-// `AIAssistant`s.
+// `AILanguageModel`s.
 TEST_F(AIManagerKeyedServiceTest, AIContextBoundObjectSet) {
   SetupMockOptimizationGuideKeyedService();
 
-  mojo::Remote<blink::mojom::AIAssistant> mock_session;
-  AITestUtils::MockCreateAssistantClient mock_create_assistant_client;
+  mojo::Remote<blink::mojom::AILanguageModel> mock_session;
+  AITestUtils::MockCreateLanguageModelClient mock_create_language_model_client;
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_create_assistant_client, OnResult(_, _))
+  EXPECT_CALL(mock_create_language_model_client, OnResult(_, _))
       .WillOnce(testing::Invoke(
-          [&](mojo::PendingRemote<blink::mojom::AIAssistant> assistant,
-              blink::mojom::AIAssistantInfoPtr info) {
-            EXPECT_TRUE(assistant);
-            mock_session =
-                mojo::Remote<blink::mojom::AIAssistant>(std::move(assistant));
+          [&](mojo::PendingRemote<blink::mojom::AILanguageModel> language_model,
+              blink::mojom::AILanguageModelInfoPtr info) {
+            EXPECT_TRUE(language_model);
+            mock_session = mojo::Remote<blink::mojom::AILanguageModel>(
+                std::move(language_model));
             run_loop.Quit();
           }));
 
@@ -116,15 +116,15 @@ TEST_F(AIManagerKeyedServiceTest, AIContextBoundObjectSet) {
           ->GetWeakPtrForTesting();
   ASSERT_EQ(1u, context_bound_objects->GetSizeForTesting());
 
-  // After creating one `AIAssistant`, the `AIContextBoundObjectSet` contains 2
-  // elements.
-  mock_remote->CreateAssistant(
-      mock_create_assistant_client.BindNewPipeAndPassRemote(),
-      blink::mojom::AIAssistantCreateOptions::New(
+  // After creating one `AILanguageModel`, the `AIContextBoundObjectSet`
+  // contains 2 elements.
+  mock_remote->CreateLanguageModel(
+      mock_create_language_model_client.BindNewPipeAndPassRemote(),
+      blink::mojom::AILanguageModelCreateOptions::New(
           /*sampling_params=*/nullptr,
           /*system_prompt=*/std::nullopt,
           /*initial_prompts=*/
-          std::vector<blink::mojom::AIAssistantInitialPromptPtr>()));
+          std::vector<blink::mojom::AILanguageModelInitialPromptPtr>()));
   run_loop.Run();
   ASSERT_EQ(2u, context_bound_objects->GetSizeForTesting());
 

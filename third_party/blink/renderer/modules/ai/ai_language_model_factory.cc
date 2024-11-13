@@ -9,7 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "third_party/blink/public/mojom/ai/ai_assistant.mojom-blink.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ai_create_monitor_callback.h"
@@ -34,22 +34,22 @@ namespace blink {
 
 namespace {
 
-mojom::blink::AIAssistantInitialPromptRole AILanguageModelInitialPromptRole(
+mojom::blink::AILanguageModelInitialPromptRole AILanguageModelInitialPromptRole(
     V8AILanguageModelInitialPromptRole role) {
   switch (role.AsEnum()) {
     case V8AILanguageModelInitialPromptRole::Enum::kSystem:
-      return mojom::blink::AIAssistantInitialPromptRole::kSystem;
+      return mojom::blink::AILanguageModelInitialPromptRole::kSystem;
     case V8AILanguageModelInitialPromptRole::Enum::kUser:
-      return mojom::blink::AIAssistantInitialPromptRole::kUser;
+      return mojom::blink::AILanguageModelInitialPromptRole::kUser;
     case V8AILanguageModelInitialPromptRole::Enum::kAssistant:
-      return mojom::blink::AIAssistantInitialPromptRole::kAssistant;
+      return mojom::blink::AILanguageModelInitialPromptRole::kAssistant;
   }
   NOTREACHED();
 }
 
 class CreateLanguageModelClient
     : public GarbageCollected<CreateLanguageModelClient>,
-      public mojom::blink::AIManagerCreateAssistantClient,
+      public mojom::blink::AIManagerCreateLanguageModelClient,
       public AIMojoClient<AILanguageModel> {
  public:
   CreateLanguageModelClient(
@@ -57,9 +57,9 @@ class CreateLanguageModelClient
       AI* ai,
       ScriptPromiseResolver<AILanguageModel>* resolver,
       AbortSignal* signal,
-      mojom::blink::AIAssistantSamplingParamsPtr sampling_params,
+      mojom::blink::AILanguageModelSamplingParamsPtr sampling_params,
       WTF::String system_prompt,
-      Vector<mojom::blink::AIAssistantInitialPromptPtr> initial_prompts,
+      Vector<mojom::blink::AILanguageModelInitialPromptPtr> initial_prompts,
       AICreateMonitor* monitor)
       : AIMojoClient(script_state, ai, resolver, signal),
         ai_(ai),
@@ -70,14 +70,15 @@ class CreateLanguageModelClient
           monitor->BindRemote());
     }
 
-    mojo::PendingRemote<mojom::blink::AIManagerCreateAssistantClient>
+    mojo::PendingRemote<mojom::blink::AIManagerCreateLanguageModelClient>
         client_remote;
     receiver_.Bind(client_remote.InitWithNewPipeAndPassReceiver(),
                    ai->GetTaskRunner());
-    ai_->GetAIRemote()->CreateAssistant(
-        std::move(client_remote), mojom::blink::AIAssistantCreateOptions::New(
-                                      std::move(sampling_params), system_prompt,
-                                      std::move(initial_prompts)));
+    ai_->GetAIRemote()->CreateLanguageModel(
+        std::move(client_remote),
+        mojom::blink::AILanguageModelCreateOptions::New(
+            std::move(sampling_params), system_prompt,
+            std::move(initial_prompts)));
   }
   ~CreateLanguageModelClient() override = default;
 
@@ -93,8 +94,8 @@ class CreateLanguageModelClient
   }
 
   void OnResult(
-      mojo::PendingRemote<mojom::blink::AIAssistant> language_model_remote,
-      mojom::blink::AIAssistantInfoPtr info) override {
+      mojo::PendingRemote<mojom::blink::AILanguageModel> language_model_remote,
+      mojom::blink::AILanguageModelInfoPtr info) override {
     if (!GetResolver()) {
       return;
     }
@@ -122,7 +123,7 @@ class CreateLanguageModelClient
   // is created, the `AICreateMonitor` will be destroyed so there is no more
   // events even if the model is uninstalled and downloaded again.
   Member<AICreateMonitor> monitor_;
-  HeapMojoReceiver<mojom::blink::AIManagerCreateAssistantClient,
+  HeapMojoReceiver<mojom::blink::AIManagerCreateLanguageModelClient,
                    CreateLanguageModelClient>
       receiver_;
 };
@@ -186,7 +187,7 @@ ScriptPromise<AILanguageModelCapabilities> AILanguageModelFactory::capabilities(
                                     AIMetrics::AISessionType::kLanguageModel),
                                 AIMetrics::AIAPI::kCanCreateSession);
 
-  ai_->GetAIRemote()->CanCreateAssistant(
+  ai_->GetAIRemote()->CanCreateLanguageModel(
       WTF::BindOnce(&AILanguageModelFactory::OnCanCreateSessionComplete,
                     WrapPersistent(this), WrapPersistent(resolver)));
 
@@ -215,9 +216,9 @@ ScriptPromise<AILanguageModel> AILanguageModelFactory::create(
     return promise;
   }
 
-  mojom::blink::AIAssistantSamplingParamsPtr sampling_params;
+  mojom::blink::AILanguageModelSamplingParamsPtr sampling_params;
   WTF::String system_prompt;
-  WTF::Vector<mojom::blink::AIAssistantInitialPromptPtr> initial_prompts;
+  WTF::Vector<mojom::blink::AILanguageModelInitialPromptPtr> initial_prompts;
   AbortSignal* signal = nullptr;
   AICreateMonitor* monitor = MakeGarbageCollected<AICreateMonitor>(
       GetExecutionContext(), task_runner_);
@@ -238,7 +239,7 @@ ScriptPromise<AILanguageModel> AILanguageModelFactory::create(
     if (!options->hasTopK() && !options->hasTemperature()) {
       sampling_params = nullptr;
     } else if (options->hasTopK() && options->hasTemperature()) {
-      sampling_params = mojom::blink::AIAssistantSamplingParams::New(
+      sampling_params = mojom::blink::AILanguageModelSamplingParams::New(
           options->topK(), options->temperature());
     } else {
       resolver->Reject(DOMException::Create(
@@ -280,9 +281,10 @@ ScriptPromise<AILanguageModel> AILanguageModelFactory::create(
                 kExceptionMessageSystemPromptIsNotTheFirst);
             return promise;
           }
-          initial_prompts.push_back(mojom::blink::AIAssistantInitialPrompt::New(
-              AILanguageModelInitialPromptRole(prompt->role()),
-              prompt->content()));
+          initial_prompts.push_back(
+              mojom::blink::AILanguageModelInitialPrompt::New(
+                  AILanguageModelInitialPromptRole(prompt->role()),
+                  prompt->content()));
         }
       }
     }

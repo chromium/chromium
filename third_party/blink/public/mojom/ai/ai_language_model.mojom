@@ -16,7 +16,7 @@ import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
 
 // This struct contains the parameters that control the sampling behavior of
 // the model execution behind the session.
-struct AIAssistantSamplingParams {
+struct AILanguageModelSamplingParams {
   uint32 top_k;
   float temperature;
 };
@@ -29,16 +29,16 @@ struct AIModelInfo {
   float default_temperature;
 };
 
-// The information of an AIAssistant, this should be returned from any method
-// that creates a new AIAssistant.
-struct AIAssistantInfo {
+// The information of an AILanguageModel, this should be returned from any method
+// that creates a new AILanguageModel.
+struct AILanguageModelInfo {
   uint64 max_tokens;
 
-  AIAssistantSamplingParams sampling_params;
+  AILanguageModelSamplingParams sampling_params;
 };
 
 // The enum describes the possible roles in the initial prompt.
-enum AIAssistantInitialPromptRole {
+enum AILanguageModelInitialPromptRole {
   kSystem = 0,
   kUser = 1,
   kAssistant = 2,
@@ -47,44 +47,44 @@ enum AIAssistantInitialPromptRole {
 };
 
 // Each initial prompt contains a role and the actual content.
-struct AIAssistantInitialPrompt {
-  AIAssistantInitialPromptRole role;
+struct AILanguageModelInitialPrompt {
+  AILanguageModelInitialPromptRole role;
   // This can be any arbitrary string taken from the JavaScript API.
   string content;
 };
 
-// This is used when creating a new AIAssistant.
-struct AIAssistantCreateOptions {
-  AIAssistantSamplingParams? sampling_params;
+// This is used when creating a new AILanguageModel.
+struct AILanguageModelCreateOptions {
+  AILanguageModelSamplingParams? sampling_params;
   // This can be any arbitrary string taken from the JavaScript API.
   string? system_prompt;
-  array<AIAssistantInitialPrompt> initial_prompts;
+  array<AILanguageModelInitialPrompt> initial_prompts;
 };
 
-// The client interface that receives an AIAssistant from an AIManager.
-interface AIManagerCreateAssistantClient {
-  // Called with a created assistant's mojo interface as a result for the
-  // CreateAssistant() method of the AIManager. When failed to create a
-  // AIAssistant, this method is called with a null pending remote.
-  // It also returns the assistant info if the assistant is created
+// The client interface that receives an AILanguageModel from an AIManager.
+interface AIManagerCreateLanguageModelClient {
+  // Called with a created language model's mojo interface as a result for the
+  // CreateLanguageModel() method of the AIManager. When failed to create an
+  // AILanguageModel, this method is called with a null pending remote.
+  // It also returns the language model info if the language model is created
   // successfully.
   OnResult(
-    pending_remote<blink.mojom.AIAssistant>? assistant_remote,
-    AIAssistantInfo? info
+    pending_remote<blink.mojom.AILanguageModel>? language_model_remote,
+    AILanguageModelInfo? info
   );
 };
 
 // The client interface that receives the number of tokens counted by the
 // AIManager.
-interface AIAssistantCountPromptTokensClient {
-  // Called with a created assistant's mojo interface as a result for the
+interface AILanguageModelCountPromptTokensClient {
+  // Called with a created language model's mojo interface as a result for the
   // CountPromptTokens() method of the AIManager.
   OnResult(uint32 number_of_tokens);
 };
 
 // A session for a model that allows executing an input and streaming the
 // output.
-interface AIAssistant {
+interface AILanguageModel {
   // Prompts the model on the given input which can be an arbitrary string
   // from the JavaScript API.
   Prompt(
@@ -92,14 +92,14 @@ interface AIAssistant {
   );
   // Creates a new session with the same configuration and existing context
   // as the current session.
-  // Note that this method is called by the `AIAssistant.clone()` method from
+  // Note that this method is called by the `AILanguageModel.clone()` method from
   // blink, but it is named as `Fork` instead of `Clone` to avoid confusion
   // with the "clone" term in mojo context (which indicates binding another
   // client to the same instance).
-  // Similar to `AIManager.CreateAssistant()`, this method returns the
+  // Similar to `AIManager.CreateLanguageModel()`, this method returns the
   // information of the created session.
   Fork(
-    pending_remote<AIManagerCreateAssistantClient> client
+    pending_remote<AIManagerCreateLanguageModelClient> client
   );
   // Destroys the session.
   Destroy();
@@ -107,6 +107,6 @@ interface AIAssistant {
   // be an arbitrary string from the JavaScript API.
   CountPromptTokens(
     string input,
-    pending_remote<AIAssistantCountPromptTokensClient> client
+    pending_remote<AILanguageModelCountPromptTokensClient> client
   );
 };
