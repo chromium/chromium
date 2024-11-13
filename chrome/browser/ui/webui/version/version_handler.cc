@@ -19,6 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/variations/active_field_trials.h"
+#include "components/variations/net/variations_command_line.h"
 #include "components/version_ui/version_handler_helper.h"
 #include "components/version_ui/version_ui_constants.h"
 #include "content/public/browser/browser_thread.h"
@@ -99,8 +100,13 @@ void VersionHandler::HandleRequestVariationInfo(const base::Value::List& args) {
     response.Set(version_ui::kKeyVariationsCmd,
                  version_ui::GetVariationsCommandLine());
   } else {
-    response.Set(version_ui::kKeyVariationsCmd,
-                 base::Base64Encode(version_ui::GetVariationsCommandLine()));
+    std::string content;
+    bool success =
+        variations::VariationsCommandLine::GetForCurrentProcess().WriteToString(
+            &content);
+    if (success) {
+      response.Set(version_ui::kKeyVariationsCmd, base::Base64Encode(content));
+    }
   }
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }

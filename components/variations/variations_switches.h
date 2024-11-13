@@ -47,6 +47,8 @@ COMPONENT_EXPORT(VARIATIONS)
 extern const char kEnableFinchSeedDeltaCompression[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kAcceptEmptySeedSignatureForTesting[];
+COMPONENT_EXPORT(VARIATIONS)
+extern const char kVariationsStateFile[];
 
 }  // namespace switches
 }  // namespace variations

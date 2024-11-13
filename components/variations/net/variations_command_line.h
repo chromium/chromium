@@ -16,6 +16,12 @@ class FilePath;
 
 namespace variations {
 
+// Parses the content of `variations::switches::kVariationsStateFile` and
+// modifies the command-line arguments of the running process by setting the
+// switches contained in that file. The function will exit the process with
+// an error message if the passed file's contents are invalid.
+void MaybeUnpackVariationsStateFile();
+
 // This struct contains all the fields that are needed to replicate the complete
 // state of variations (including all the registered trials with corresponding
 // groups, params and features) for the client, with methods to convert this to
@@ -52,10 +58,20 @@ struct VariationsCommandLine {
   static std::optional<VariationsCommandLine> ReadFromFile(
       const base::FilePath& file_path);
 
+  // Loads the feature state as serialized by `WriteToString`.
+  // Returns nullopt if loading failed for some reason.
+  static std::optional<VariationsCommandLine> ReadFromString(
+      const std::string& serialized_json);
+
   // Serializes the state to `file_path`. The serialized state can be loaded
   // back in with `ReadFromFile`. Returns false if saving failed for some
   // reason.
   bool WriteToFile(const base::FilePath& file_path) const;
+
+  // Serializes the state to `serialized_json`. The serialized state can be
+  // loaded back in with `ReadFromString`. Returns false if saving failed for
+  // some reason.
+  bool WriteToString(std::string* serialized_json) const;
 };
 
 }  // namespace variations

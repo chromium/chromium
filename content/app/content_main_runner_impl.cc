@@ -59,6 +59,7 @@
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "components/power_monitor/make_power_monitor_device_source.h"
+#include "components/variations/net/variations_command_line.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/app/mojo_ipc_support.h"
 #include "content/browser/browser_main.h"
@@ -1174,7 +1175,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
           switches::kSingleProcess)) {
     mojo::SyncCallRestrictions::DisableSyncCallInterrupts();
   }
-
+  variations::MaybeUnpackVariationsStateFile();
   if (!mojo_ipc_support_) {
     const ContentMainDelegate::InvokedInBrowserProcess invoked_in_browser{
         .is_running_test = !main_params.ui_task.is_null()};
