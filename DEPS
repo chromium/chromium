@@ -2450,7 +2450,7 @@ deps = {
   },
 
   'src/third_party/ruy/src':
-    Var('chromium_git') + '/external/github.com/google/ruy.git' + '@' + 'c08ec529fc91722bde519628d9449258082eb847',
+    Var('chromium_git') + '/external/github.com/google/ruy.git' + '@' + '9889171210b81138fd15fb57dd06e98fe6d37b3c',
 
   'src/third_party/skia':
     Var('skia_git') + '/skia.git' + '@' +  Var('skia_revision'),
