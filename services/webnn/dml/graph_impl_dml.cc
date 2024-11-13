@@ -1202,6 +1202,12 @@ void RetrieveOperationConnectivity(
       output_ids = {reshape->output_operand_id};
       break;
     }
+    case Operation::Tag::kReverse: {
+      const auto& reverse = operation->get_reverse();
+      input_ids = {reverse->input_operand_id};
+      output_ids = {reverse->output_operand_id};
+      break;
+    }
     case Operation::Tag::kScatterElements: {
       const auto& scatter_elements = operation->get_scatter_elements();
       input_ids = {scatter_elements->input_operand_id,
@@ -3082,6 +3088,49 @@ void CreateOperatorNodeForReshape(const ContextProperties& context_properties,
   base::span<const uint32_t> new_shape = output_operand->descriptor.shape();
 
   const NodeOutput* output = CreateReshapeNode(graph_builder, input, new_shape);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+}
+
+// Emulated by slice operator.
+void CreateOperatorNodeForReverse(const ContextProperties& context_properties,
+                                  const IdToOperandMap& id_to_operand_map,
+                                  const mojom::Reverse& reverse,
+                                  GraphBuilderDml& graph_builder,
+                                  IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input =
+      GetNodeOutputForOperand(id_to_node_output_map, reverse.input_operand_id);
+  const TensorDesc& input_tensor_desc = input->GetTensorDesc();
+  const size_t input_rank = input_tensor_desc.GetDimensions().size();
+
+  const uint64_t output_id = reverse.output_operand_id;
+  const TensorDesc output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  // Slice copies the tensor as-is when setting starting offset=0, window
+  // size=dimension size and stride=1, then by setting stride=-1 for specified
+  // axes the copying order can be reversed on these dimensions.
+  base::FixedArray<uint32_t> starts(input_rank, 0);
+  base::FixedArray<int32_t> strides(input_rank, 1);
+  for (uint32_t axis : reverse.axes) {
+    CHECK_LT(axis, input_rank);
+    strides[axis] = -1;
+  }
+
+  DML_SLICE1_OPERATOR_DESC reverse_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .DimensionCount = base::checked_cast<uint32_t>(input_rank),
+      .InputWindowOffsets = starts.data(),
+      .InputWindowSizes = input_tensor_desc.GetDimensions().data(),
+      .InputWindowStrides = strides.data()};
+
+  std::array<const NodeOutput*, 1> inputs = {input};
+  const GraphNode* node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_SLICE1, &reverse_desc, inputs, reverse.label);
+
+  const NodeOutput* output =
+      graph_builder.CreateNodeOutput(node, std::move(output_tensor_desc));
   // The output id must be unique in the map.
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 }
@@ -6587,6 +6636,12 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
       case Operation::Tag::kReshape: {
         CreateOperatorNodeForReshape(context_properties, id_to_operand_map,
                                      operation->get_reshape(), graph_builder,
+                                     id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kReverse: {
+        CreateOperatorNodeForReverse(context_properties, id_to_operand_map,
+                                     *operation->get_reverse(), graph_builder,
                                      id_to_node_output_map);
         break;
       }

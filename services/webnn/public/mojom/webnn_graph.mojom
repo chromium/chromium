@@ -1029,6 +1029,18 @@ struct Reshape {
   string label;
 };
 
+// Represents an operation of reversing the order of input along specified axes.
+struct Reverse {
+  // The input operand (referenced by input_operand_id) must be distinct from
+  // the output operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+  // The axes to reverse along.
+  array<uint32> axes;
+  // User defined label from MLOperatorOptions.
+  string label;
+};
+
 // Represents ScatterElements operation that first copies the values of `input`
 // tensor to `output` tensor, and then overwrites the values of `output` tensor
 // to values specified by `updates` tensor at specific index positions specified
@@ -1382,6 +1394,7 @@ union Operation {
   Relu relu;
   Resample2d resample2d;
   Reshape reshape;
+  Reverse reverse;
   ScatterElements scatter_elements;
   ScatterND scatter_nd;
   Sigmoid sigmoid;

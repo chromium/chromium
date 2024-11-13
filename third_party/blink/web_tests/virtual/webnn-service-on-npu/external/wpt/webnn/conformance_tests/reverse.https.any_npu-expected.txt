@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] reverse float32 2D input with default options
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'reverse' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] reverse float32 3D input options.axes=[1, 2]
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'reverse' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] reverse float32 4D input options.axes=[3, 1]
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'reverse' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+[FAIL] reverse float32 4D input options.axes=[]
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'reverse' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
+Harness: the test ran to completion.
+

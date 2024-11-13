@@ -833,6 +833,13 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       SupportedDataTypesToSupportLimits(data_type_limits.reshape_input));
   op_support_limits->setReshape(reshape);
 
+  MLSingleInputSupportLimits* reverse = MLSingleInputSupportLimits::Create();
+  reverse->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reverse_input));
+  reverse->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.reverse_input));
+  op_support_limits->setReverse(reverse);
+
   MLScatterSupportLimits* scatter_elements = MLScatterSupportLimits::Create();
   scatter_elements->setInput(SupportedDataTypesToSupportLimits(
       data_type_limits.scatter_elements_input));

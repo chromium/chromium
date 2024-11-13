@@ -25,6 +25,7 @@ class MLGruCellOptions;
 class MLLstmOptions;
 class MLLstmCellOptions;
 class MLPadOptions;
+class MLReverseOptions;
 class MLSliceOptions;
 class MLSplitOptions;
 
@@ -248,6 +249,23 @@ class MODULES_EXPORT MLPadOperator : public MLOperator {
  private:
   Vector<uint32_t> beginning_padding_;
   Vector<uint32_t> ending_padding_;
+};
+
+class MODULES_EXPORT MLReverseOperator : public MLOperator {
+ public:
+  MLReverseOperator(MLGraphBuilder* builder,
+                    Vector<uint32_t> axes,
+                    const MLReverseOptions* options);
+
+  MLReverseOperator(const MLReverseOperator&) = delete;
+  MLReverseOperator& operator=(const MLReverseOperator&) = delete;
+
+  ~MLReverseOperator() override;
+
+  const Vector<uint32_t>& Axes() const;
+
+ private:
+  Vector<uint32_t> axes_;
 };
 
 class MODULES_EXPORT MLSliceOperator : public MLOperator {
