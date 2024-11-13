@@ -338,6 +338,7 @@ void FedCmMetrics::RecordRequestTokenStatus(
   base::UmaHistogramEnumeration("Blink.FedCm.Status.RequestIdToken", status);
   base::UmaHistogramEnumeration("Blink.FedCm.Status.MediationRequirement",
                                 requirement);
+  base::UmaHistogramEnumeration("Blink.FedCm.RpMode", rp_mode);
   // Reset the `session_id_`. We expect no more metrics from this API call.
   session_id_ = -1;
 }

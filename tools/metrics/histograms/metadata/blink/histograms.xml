@@ -1691,6 +1691,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.RpMode" enum="FedCmRpMode"
+    expires_after="2025-04-13">
+  <owner>npm@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the RP mode of the FedCM API. Recorded once per API call together
+    with Blink.FedCm.Status.RequestIdToken when the request is fulfilled (either
+    resolved or rejected).
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.RpParametersAndScopeState"
     enum="FedCmRpParameters" expires_after="2025-04-13">
   <owner>cbiesinger@chromium.org</owner>

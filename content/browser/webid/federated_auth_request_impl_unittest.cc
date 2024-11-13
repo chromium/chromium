@@ -2955,6 +2955,8 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 1, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.ReadyToShow",
                                        1, 1);
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.RpMode",
+                                       static_cast<int>(RpMode::kPassive), 1);
 
   ExpectUKMPresence("Timing.ShowAccountsDialog");
   ExpectUKMPresenceInternal(
@@ -7437,6 +7439,8 @@ TEST_F(FederatedAuthRequestImplTest, ActiveFlowNotAffectEmbargo) {
   RunAuthTest(parameters, expectations, configuration);
 
   ukm_loop.Run();
+  histogram_tester_.ExpectUniqueSample("Blink.FedCm.RpMode",
+                                       static_cast<int>(RpMode::kActive), 1);
   ExpectUkmValue("RpMode", static_cast<int>(RpMode::kActive));
 
   EXPECT_TRUE(did_show_accounts_dialog());
