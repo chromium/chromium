@@ -768,15 +768,12 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldNotifyObserversOnDisableSync) {
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
 
   // Observers must be notified for closed groups and tabs to make it sure that
-  // both will be closed.
+  // both will be closed. Note that only one tab is notified because when the
+  // last tab is removed, the whole group is removed and there is a notification
+  // for the group removal only.
   EXPECT_CALL(mock_model_observer(), SavedTabGroupRemovedFromSync);
   EXPECT_CALL(mock_model_observer(),
-              SavedTabGroupUpdatedFromSync(Eq(group.saved_guid()),
-                                           Eq(tab1.saved_tab_guid())));
-  // TODO(crbug.com/319521964): uncomment the following line once fixed.
-  // EXPECT_CALL(mock_model_observer(),
-  // SavedTabGroupUpdatedFromSync(Eq(group.saved_guid()),
-  // Eq(tab2.saved_tab_guid())));
+              SavedTabGroupUpdatedFromSync(group.saved_guid(), _));
   bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
 }
 
