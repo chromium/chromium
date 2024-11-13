@@ -78,9 +78,7 @@ scoped_refptr<EncodedFormData> BeaconDOMArrayBufferView::GetEncodedFormData()
     const {
   DCHECK(data_);
 
-  return EncodedFormData::Create(
-      data_->BaseAddress(),
-      base::checked_cast<wtf_size_t>(data_->byteLength()));
+  return EncodedFormData::Create(data_->ByteSpan());
 }
 
 void BeaconDOMArrayBufferView::Serialize(ResourceRequest& request) const {
@@ -100,8 +98,7 @@ scoped_refptr<EncodedFormData> BeaconDOMArrayBuffer::GetEncodedFormData()
     const {
   DCHECK(data_);
 
-  return EncodedFormData::Create(
-      data_->Data(), base::checked_cast<wtf_size_t>(data_->ByteLength()));
+  return EncodedFormData::Create(data_->ByteSpan());
 }
 
 void BeaconDOMArrayBuffer::Serialize(ResourceRequest& request) const {

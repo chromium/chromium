@@ -110,14 +110,19 @@ class PLATFORM_EXPORT EncodedFormData : public RefCounted<EncodedFormData> {
   FormDataType GetType() const;
 
   static scoped_refptr<EncodedFormData> Create();
-  static scoped_refptr<EncodedFormData> Create(const void*, wtf_size_t);
-  static scoped_refptr<EncodedFormData> Create(base::span<const char>);
+  static scoped_refptr<EncodedFormData> Create(base::span<const uint8_t>);
+  static scoped_refptr<EncodedFormData> Create(base::span<const char> chars) {
+    return Create(base::as_bytes(chars));
+  }
   static scoped_refptr<EncodedFormData> Create(SegmentedBuffer&&);
   scoped_refptr<EncodedFormData> Copy() const;
   scoped_refptr<EncodedFormData> DeepCopy() const;
   ~EncodedFormData();
 
-  void AppendData(const void* data, wtf_size_t);
+  void AppendData(base::span<const uint8_t> data);
+  void AppendData(base::span<const char> data) {
+    AppendData(base::as_bytes(data));
+  }
   void AppendData(SegmentedBuffer&&);
   void AppendFile(const String& file_path,
                   const std::optional<base::Time>& expected_modification_time);

@@ -85,9 +85,7 @@ bool StructTraits<blink::mojom::FetchAPIRequestBodyDataView,
     switch (element.type()) {
       case network::DataElement::Tag::kBytes: {
         const auto& bytes = element.As<network::DataElementBytes>();
-        form_data->AppendData(
-            bytes.bytes().data(),
-            base::checked_cast<wtf_size_t>(bytes.bytes().size()));
+        form_data->AppendData(bytes.bytes());
         break;
       }
       case network::DataElement::Tag::kFile: {

@@ -924,16 +924,15 @@ void XMLHttpRequest::send(URLSearchParams* body,
 
 void XMLHttpRequest::send(DOMArrayBuffer* body,
                           ExceptionState& exception_state) {
-  SendBytesData(body->Data(), body->ByteLength(), exception_state);
+  SendBytesData(body->ByteSpan(), exception_state);
 }
 
 void XMLHttpRequest::send(DOMArrayBufferView* body,
                           ExceptionState& exception_state) {
-  SendBytesData(body->BaseAddress(), body->byteLength(), exception_state);
+  SendBytesData(body->ByteSpan(), exception_state);
 }
 
-void XMLHttpRequest::SendBytesData(const void* data,
-                                   size_t length,
+void XMLHttpRequest::SendBytesData(base::span<const uint8_t> bytes,
                                    ExceptionState& exception_state) {
   if (!InitSend(exception_state))
     return;
@@ -941,8 +940,7 @@ void XMLHttpRequest::SendBytesData(const void* data,
   scoped_refptr<EncodedFormData> http_body;
 
   if (AreMethodAndURLValidForSend()) {
-    http_body =
-        EncodedFormData::Create(data, base::checked_cast<wtf_size_t>(length));
+    http_body = EncodedFormData::Create(bytes);
   }
 
   CreateRequest(std::move(http_body), exception_state);

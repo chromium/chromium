@@ -79,7 +79,7 @@ class SimpleDataPipeGetter : public network::mojom::blink::DataPipeGetter {
 scoped_refptr<EncodedFormData> ComplexFormData() {
   scoped_refptr<EncodedFormData> data = EncodedFormData::Create();
 
-  data->AppendData("foo", 3);
+  data->AppendData(base::span_from_cstring("foo"));
   data->AppendFileRange("/foo/bar/baz", 3, 4,
                         base::Time::FromSecondsSinceUnixEpoch(5));
   auto blob_data = std::make_unique<BlobData>();
@@ -218,8 +218,8 @@ TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromArrayBufferView) {
 
 TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromSimpleFormData) {
   scoped_refptr<EncodedFormData> data = EncodedFormData::Create();
-  data->AppendData("foo", 3);
-  data->AppendData("hoge", 4);
+  data->AppendData(base::span_from_cstring("foo"));
+  data->AppendData(base::span_from_cstring("hoge"));
 
   auto result = (MakeGarbageCollected<BytesConsumerTestReader>(
                      MakeGarbageCollected<FormDataBytesConsumer>(
@@ -550,7 +550,7 @@ scoped_refptr<EncodedFormData> CreateDataPipeData() {
   boundary.Append("\0", 1);
   data->SetBoundary(boundary);
 
-  data->AppendData("foo", 3);
+  data->AppendData(base::span_from_cstring("foo"));
   AppendDataPipe(data, " hello world");
   return data;
 }
@@ -575,7 +575,7 @@ scoped_refptr<EncodedFormData> CreateBlobData() {
   boundary.Append("\0", 1);
   data->SetBoundary(boundary);
 
-  data->AppendData("foo", 3);
+  data->AppendData(base::span_from_cstring("foo"));
   data->AppendBlob(CreateBlobHandle("bar"));
   return data;
 }

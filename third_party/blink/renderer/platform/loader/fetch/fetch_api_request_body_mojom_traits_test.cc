@@ -38,7 +38,7 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripEmpty) {
 
 TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripBytes) {
   ResourceRequestBody src(EncodedFormData::Create());
-  src.FormBody()->AppendData("hello", 5);
+  src.FormBody()->AppendData(base::span_from_cstring("hello"));
   src.FormBody()->SetIdentifier(29);
   src.FormBody()->SetContainsPasswordData(true);
 

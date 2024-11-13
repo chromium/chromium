@@ -26,6 +26,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -234,7 +235,7 @@ class CORE_EXPORT XMLHttpRequest final
   void ThrowForLoadFailureIfNeeded(ExceptionState&, const String&);
 
   bool InitSend(ExceptionState&);
-  void SendBytesData(const void*, size_t, ExceptionState&);
+  void SendBytesData(base::span<const uint8_t>, ExceptionState&);
   void send(Document*, ExceptionState&);
   void send(const String&, ExceptionState&);
   void send(Blob*, ExceptionState&);

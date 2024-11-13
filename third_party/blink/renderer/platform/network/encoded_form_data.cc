@@ -109,18 +109,10 @@ scoped_refptr<EncodedFormData> EncodedFormData::Create() {
   return base::AdoptRef(new EncodedFormData);
 }
 
-scoped_refptr<EncodedFormData> EncodedFormData::Create(const void* data,
-                                                       wtf_size_t size) {
-  scoped_refptr<EncodedFormData> result = Create();
-  result->AppendData(data, size);
-  return result;
-}
-
 scoped_refptr<EncodedFormData> EncodedFormData::Create(
-    base::span<const char> string) {
+    base::span<const uint8_t> data) {
   scoped_refptr<EncodedFormData> result = Create();
-  result->AppendData(string.data(),
-                     base::checked_cast<wtf_size_t>(string.size()));
+  result->AppendData(data);
   return result;
 }
 
@@ -195,11 +187,11 @@ EncodedFormData::FormDataType EncodedFormData::GetType() const {
   return type;
 }
 
-void EncodedFormData::AppendData(const void* data, wtf_size_t size) {
+void EncodedFormData::AppendData(base::span<const uint8_t> bytes) {
   if (elements_.empty() || elements_.back().type_ != FormDataElement::kData)
     elements_.push_back(FormDataElement());
   FormDataElement& e = elements_.back();
-  e.data_.Append(static_cast<const char*>(data), size);
+  e.data_.AppendSpan(bytes);
 }
 
 void EncodedFormData::AppendData(SegmentedBuffer&& buffer) {

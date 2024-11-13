@@ -41,7 +41,7 @@ class EncodedFormDataTest : public testing::Test {
 
 TEST_F(EncodedFormDataTest, DeepCopy) {
   scoped_refptr<EncodedFormData> original(EncodedFormData::Create());
-  original->AppendData("Foo", 3);
+  original->AppendData(base::span_from_cstring("Foo"));
   original->AppendFileRange("example.txt", 12345, 56789,
                             base::Time::FromSecondsSinceUnixEpoch(9999.0));
 
@@ -97,7 +97,7 @@ TEST_F(EncodedFormDataTest, GetType) {
   scoped_refptr<EncodedFormData> form_data(EncodedFormData::Create());
   EXPECT_EQ(EncodedFormData::FormDataType::kDataOnly, form_data->GetType());
 
-  form_data->AppendData("Foo", 3);
+  form_data->AppendData(base::span_from_cstring("Foo"));
   EXPECT_EQ(EncodedFormData::FormDataType::kDataOnly, form_data->GetType());
 
   form_data->AppendFile("Bar.txt", base::Time());
@@ -112,7 +112,7 @@ TEST_F(EncodedFormDataTest, GetType2) {
   scoped_refptr<EncodedFormData> form_data(EncodedFormData::Create());
   EXPECT_EQ(EncodedFormData::FormDataType::kDataOnly, form_data->GetType());
 
-  form_data->AppendData("Foo", 3);
+  form_data->AppendData(base::span_from_cstring("Foo"));
   EXPECT_EQ(EncodedFormData::FormDataType::kDataOnly, form_data->GetType());
 
   form_data->AppendDataPipe(nullptr);

@@ -274,7 +274,7 @@ scoped_refptr<EncodedFormData> FormData::EncodeFormData(
             : Encode(entry->Value()),
         encoding_type);
   }
-  form_data->AppendData(encoded_data.data(), encoded_data.size());
+  form_data->AppendData(encoded_data);
   return form_data;
 }
 
@@ -327,7 +327,7 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
     FormDataEncoder::FinishMultiPartHeader(header);
 
     // Append body
-    form_data->AppendData(header.data(), header.size());
+    form_data->AppendData(header);
     if (entry->GetBlob()) {
       if (entry->GetBlob()->HasBackingFile()) {
         auto* file = To<File>(entry->GetBlob());
@@ -340,15 +340,13 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
     } else {
       std::string encoded_value =
           Encode(NormalizeLineEndingsToCRLF(entry->Value()));
-      form_data->AppendData(
-          encoded_value.c_str(),
-          base::checked_cast<wtf_size_t>(encoded_value.length()));
+      form_data->AppendData(encoded_value);
     }
-    form_data->AppendData("\r\n", 2);
+    form_data->AppendData(base::span_from_cstring("\r\n"));
   }
   FormDataEncoder::AddBoundaryToMultiPartHeader(
       encoded_data, form_data->Boundary().data(), true);
-  form_data->AppendData(encoded_data.data(), encoded_data.size());
+  form_data->AppendData(encoded_data);
   return form_data;
 }
 

@@ -327,7 +327,7 @@ void URLSearchParams::EncodeAsFormData(Vector<char>& encoded_data) const {
 scoped_refptr<EncodedFormData> URLSearchParams::ToEncodedFormData() const {
   Vector<char> encoded_data;
   EncodeAsFormData(encoded_data);
-  return EncodedFormData::Create(encoded_data.data(), encoded_data.size());
+  return EncodedFormData::Create(encoded_data);
 }
 
 PairSyncIterable<URLSearchParams>::IterationSource*

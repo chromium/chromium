@@ -503,22 +503,18 @@ FormDataBytesConsumer::FormDataBytesConsumer(const String& string)
           UTF8Encoding().Encode(string, WTF::kNoUnencodables)))) {}
 
 FormDataBytesConsumer::FormDataBytesConsumer(DOMArrayBuffer* buffer)
-    : FormDataBytesConsumer(
-          buffer->Data(),
-          base::checked_cast<wtf_size_t>(buffer->ByteLength())) {}
+    : FormDataBytesConsumer(buffer->ByteSpan()) {}
 
 FormDataBytesConsumer::FormDataBytesConsumer(DOMArrayBufferView* view)
-    : FormDataBytesConsumer(
-          view->BaseAddress(),
-          base::checked_cast<wtf_size_t>(view->byteLength())) {}
+    : FormDataBytesConsumer(view->ByteSpan()) {}
 
 FormDataBytesConsumer::FormDataBytesConsumer(SegmentedBuffer&& buffer)
     : impl_(MakeGarbageCollected<DataOnlyBytesConsumer>(
           EncodedFormData::Create(std::move(buffer)))) {}
 
-FormDataBytesConsumer::FormDataBytesConsumer(const void* data, wtf_size_t size)
+FormDataBytesConsumer::FormDataBytesConsumer(base::span<const uint8_t> bytes)
     : impl_(MakeGarbageCollected<DataOnlyBytesConsumer>(
-          EncodedFormData::Create(data, size))) {}
+          EncodedFormData::Create(bytes))) {}
 
 FormDataBytesConsumer::FormDataBytesConsumer(
     ExecutionContext* execution_context,
