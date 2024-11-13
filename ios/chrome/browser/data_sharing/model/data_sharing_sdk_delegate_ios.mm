@@ -23,7 +23,7 @@ DataSharingSDKDelegateIOS::~DataSharingSDKDelegateIOS() = default;
 
 void DataSharingSDKDelegateIOS::Initialize(
     DataSharingNetworkLoader* data_sharing_network_loader) {
-  NOTIMPLEMENTED();
+  // No op.
 }
 
 void DataSharingSDKDelegateIOS::CreateGroup(
@@ -31,7 +31,7 @@ void DataSharingSDKDelegateIOS::CreateGroup(
     base::OnceCallback<
         void(const base::expected<data_sharing_pb::CreateGroupResult,
                                   absl::Status>&)> callback) {
-  NOTIMPLEMENTED();
+  NOTREACHED();
 }
 
 void DataSharingSDKDelegateIOS::ReadGroups(
@@ -53,13 +53,13 @@ void DataSharingSDKDelegateIOS::ReadGroups(
 void DataSharingSDKDelegateIOS::AddMember(
     const data_sharing_pb::AddMemberParams& params,
     base::OnceCallback<void(const absl::Status&)> callback) {
-  NOTIMPLEMENTED();
+  NOTREACHED();
 }
 
 void DataSharingSDKDelegateIOS::RemoveMember(
     const data_sharing_pb::RemoveMemberParams& params,
     base::OnceCallback<void(const absl::Status&)> callback) {
-  NOTIMPLEMENTED();
+  NOTREACHED();
 }
 
 void DataSharingSDKDelegateIOS::LeaveGroup(
@@ -95,7 +95,7 @@ void DataSharingSDKDelegateIOS::LookupGaiaIdByEmail(
 }
 
 void DataSharingSDKDelegateIOS::Shutdown() {
-  NOTIMPLEMENTED();
+  // No op.
 }
 
 void DataSharingSDKDelegateIOS::AddAccessToken(
@@ -103,7 +103,7 @@ void DataSharingSDKDelegateIOS::AddAccessToken(
     base::OnceCallback<
         void(const base::expected<data_sharing_pb::AddAccessTokenResult,
                                   absl::Status>&)> callback) {
-  NOTIMPLEMENTED();
+  NOTREACHED();
 }
 
 }  // namespace data_sharing
