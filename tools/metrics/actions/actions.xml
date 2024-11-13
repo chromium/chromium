@@ -46560,7 +46560,6 @@ should be able to be added at any place in this file.
 </action>
 
 <action-suffix separator="." ordering="suffix">
-  <suffix name="EnhancedProtection" label="EnhancedProtection"/>
   <suffix name="FamilyLink" label="Family Link"/>
   <suffix name="GANslate" label="GANslate"/>
   <suffix name="GeminiShortcut" label="Gemini Shortcut"/>
@@ -46573,10 +46572,11 @@ should be able to be added at any place in this file.
   <suffix name="HistoryEmbeddings" label="History Embeddings Search"/>
   <suffix name="LensOverlayTranslateButton"
       label="Lens Overlay Translate Button"/>
-  <suffix name="Passkeys" label="Passkeys"/>
   <suffix name="PdfSearchify" label="PDF Searchify"/>
   <suffix name="PerformanceInterventionUI" label="Performance Intervention"/>
-  <suffix name="SafetyCheck" label="Safety Check"/>
+  <suffix name="SafetyEnhancedprotection" label="SafetyEnhancedprotection"/>
+  <suffix name="SafetyPasskeys" label="SafetyPasskeys"/>
+  <suffix name="SafetySafetycheck" label="Safety Check"/>
   <suffix name="SaveTabGroups" label="Saved Tab Groups"/>
   <suffix name="SearchBoxSuggestions" label="Search Box Suggestions"/>
   <suffix name="SidePanelPinning" label="Side Panel Pinning"/>
