@@ -21,7 +21,7 @@ namespace internal {
 template <typename T>
   requires(std::signed_integral<T>)
 constexpr T SaturatedNegWrapper(T value) {
-  return IsConstantEvaluated() || !ClampedNegFastOp<T>::is_supported
+  return std::is_constant_evaluated() || !ClampedNegFastOp<T>::is_supported
              ? (NegateWrapper(value) != std::numeric_limits<T>::lowest()
                     ? NegateWrapper(value)
                     : std::numeric_limits<T>::max())
@@ -73,9 +73,9 @@ struct ClampedAddOp<T, U> {
     requires(std::same_as<V, result_type> ||
              IsTypeInRangeForNumericType<U, V>::value)
   static constexpr V Do(T x, U y) {
-    if (!IsConstantEvaluated() && ClampedAddFastOp<T, U>::is_supported)
+    if (!std::is_constant_evaluated() && ClampedAddFastOp<T, U>::is_supported) {
       return ClampedAddFastOp<T, U>::template Do<V>(x, y);
-
+    }
     const V saturated = CommonMaxOrMin<V>(IsValueNegative(y));
     V result = {};
     if (CheckedAddOp<T, U>::Do(x, y, &result)) [[likely]] {
@@ -96,9 +96,9 @@ struct ClampedSubOp<T, U> {
     requires(std::same_as<V, result_type> ||
              IsTypeInRangeForNumericType<U, V>::value)
   static constexpr V Do(T x, U y) {
-    if (!IsConstantEvaluated() && ClampedSubFastOp<T, U>::is_supported)
+    if (!std::is_constant_evaluated() && ClampedSubFastOp<T, U>::is_supported) {
       return ClampedSubFastOp<T, U>::template Do<V>(x, y);
-
+    }
     const V saturated = CommonMaxOrMin<V>(!IsValueNegative(y));
     V result = {};
     if (CheckedSubOp<T, U>::Do(x, y, &result)) [[likely]] {
@@ -117,9 +117,9 @@ struct ClampedMulOp<T, U> {
   using result_type = typename MaxExponentPromotion<T, U>::type;
   template <typename V = result_type>
   static constexpr V Do(T x, U y) {
-    if (!IsConstantEvaluated() && ClampedMulFastOp<T, U>::is_supported)
+    if (!std::is_constant_evaluated() && ClampedMulFastOp<T, U>::is_supported) {
       return ClampedMulFastOp<T, U>::template Do<V>(x, y);
-
+    }
     V result = {};
     const V saturated =
         CommonMaxOrMin<V>(IsValueNegative(x) ^ IsValueNegative(y));
@@ -214,8 +214,8 @@ struct ClampedAndOp {};
 template <typename T, typename U>
   requires(std::integral<T> && std::integral<U>)
 struct ClampedAndOp<T, U> {
-  using result_type = typename std::make_unsigned<
-      typename MaxExponentPromotion<T, U>::type>::type;
+  using result_type =
+      std::make_unsigned_t<typename MaxExponentPromotion<T, U>::type>;
   template <typename V>
   static constexpr V Do(T x, U y) {
     return static_cast<result_type>(x) & static_cast<result_type>(y);
@@ -229,8 +229,8 @@ struct ClampedOrOp {};
 template <typename T, typename U>
   requires(std::integral<T> && std::integral<U>)
 struct ClampedOrOp<T, U> {
-  using result_type = typename std::make_unsigned<
-      typename MaxExponentPromotion<T, U>::type>::type;
+  using result_type =
+      std::make_unsigned_t<typename MaxExponentPromotion<T, U>::type>;
   template <typename V>
   static constexpr V Do(T x, U y) {
     return static_cast<result_type>(x) | static_cast<result_type>(y);
@@ -244,8 +244,8 @@ struct ClampedXorOp {};
 template <typename T, typename U>
   requires(std::integral<T> && std::integral<U>)
 struct ClampedXorOp<T, U> {
-  using result_type = typename std::make_unsigned<
-      typename MaxExponentPromotion<T, U>::type>::type;
+  using result_type =
+      std::make_unsigned_t<typename MaxExponentPromotion<T, U>::type>;
   template <typename V>
   static constexpr V Do(T x, U y) {
     return static_cast<result_type>(x) ^ static_cast<result_type>(y);

@@ -35,6 +35,7 @@
 #include <iosfwd>
 #include <limits>
 #include <optional>
+#include <type_traits>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -354,7 +355,7 @@ class PLATFORM_EXPORT FixedPoint {
   // If we're building ARM 32-bit on GCC we replace the C++ versions with some
   // native ARM assembly for speed.
   constexpr inline void SaturatedSet(int value) {
-    if (IsConstantEvaluated() || sizeof(Storage) > sizeof(int)) {
+    if (std::is_constant_evaluated() || sizeof(Storage) > sizeof(int)) {
       SaturatedSetNonAsm(value);
     } else {
       SaturatedSetAsm(value);
@@ -387,7 +388,7 @@ class PLATFORM_EXPORT FixedPoint {
   }
 
   constexpr inline void SaturatedSet(unsigned value) {
-    if (IsConstantEvaluated() || sizeof(Storage) > sizeof(int)) {
+    if (std::is_constant_evaluated() || sizeof(Storage) > sizeof(int)) {
       SaturatedSetNonAsm(value);
     } else {
       SaturatedSetAsm(value);

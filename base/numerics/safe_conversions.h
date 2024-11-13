@@ -201,7 +201,8 @@ template <typename Dst,
           typename Src>
 constexpr Dst saturated_cast(Src value) {
   using SrcType = typename UnderlyingType<Src>::type;
-  return !IsConstantEvaluated() && SaturateFastOp<Dst, SrcType>::is_supported &&
+  return !std::is_constant_evaluated() &&
+                 SaturateFastOp<Dst, SrcType>::is_supported &&
                  std::is_same_v<SaturationHandler<Dst>,
                                 SaturationDefaultLimits<Dst>>
              ? SaturateFastOp<Dst, SrcType>::Do(static_cast<SrcType>(value))

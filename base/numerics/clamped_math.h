@@ -20,7 +20,7 @@ class ClampedNumeric {
  public:
   using type = T;
 
-  constexpr ClampedNumeric() : value_(0) {}
+  constexpr ClampedNumeric() = default;
 
   // Copy constructor.
   template <typename Src>
@@ -167,7 +167,7 @@ class ClampedNumeric {
     requires std::is_arithmetic_v<U>
   friend class ClampedNumeric;
 
-  T value_;
+  T value_ = 0;
 
   // These wrappers allow us to handle state the same way for both
   // ClampedNumeric and POD arithmetic types.

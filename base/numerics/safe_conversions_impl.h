@@ -14,31 +14,24 @@
 #include <limits>
 #include <type_traits>
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 // The std library doesn't provide a binary max_exponent for integers, however
 // we can compute an analog using std::numeric_limits<>::digits.
 template <typename NumericType>
 struct MaxExponent {
-  static const int value = std::is_floating_point_v<NumericType>
-                               ? std::numeric_limits<NumericType>::max_exponent
-                               : std::numeric_limits<NumericType>::digits + 1;
+  static constexpr int value =
+      std::is_floating_point_v<NumericType>
+          ? std::numeric_limits<NumericType>::max_exponent
+          : std::numeric_limits<NumericType>::digits + 1;
 };
 
 // The number of bits (including the sign) in an integer. Eliminates sizeof
 // hacks.
 template <typename NumericType>
 struct IntegerBitsPlusSign {
-  static const int value =
+  static constexpr int value =
       std::numeric_limits<NumericType>::digits + std::is_signed_v<NumericType>;
-};
-
-// Helper templates for integer manipulations.
-
-template <typename Integer>
-struct PositionOfSignBit {
-  static const size_t value = IntegerBitsPlusSign<Integer>::value - 1;
 };
 
 // Determines if a numeric value is negative without throwing compiler
@@ -59,8 +52,8 @@ constexpr bool IsValueNegative(T value) {
 template <typename T>
   requires std::is_integral_v<T>
 constexpr auto ConditionalNegate(T x, bool is_negative) {
-  using SignedT = typename std::make_signed<T>::type;
-  using UnsignedT = typename std::make_unsigned<T>::type;
+  using SignedT = std::make_signed_t<T>;
+  using UnsignedT = std::make_unsigned_t<T>;
   return static_cast<SignedT>((static_cast<UnsignedT>(x) ^
                                static_cast<UnsignedT>(-SignedT(is_negative))) +
                               is_negative);
@@ -70,15 +63,11 @@ constexpr auto ConditionalNegate(T x, bool is_negative) {
 template <typename T>
   requires std::is_integral_v<T>
 constexpr auto SafeUnsignedAbs(T value) {
-  using UnsignedT = typename std::make_unsigned<T>::type;
+  using UnsignedT = std::make_unsigned_t<T>;
   return IsValueNegative(value)
              ? static_cast<UnsignedT>(0u - static_cast<UnsignedT>(value))
              : static_cast<UnsignedT>(value);
 }
-
-// TODO(jschuh): Switch to std::is_constant_evaluated() once C++20 is supported.
-// Alternately, the usage could be restructured for "consteval if" in C++23.
-#define IsConstantEvaluated() (__builtin_is_constant_evaluated())
 
 // TODO(jschuh): Debug builds don't reliably propagate constants, so we restrict
 // some accelerated runtime paths to release builds until this can be forced
@@ -138,7 +127,7 @@ struct StaticDstRangeRelationToSrcRange;
 // larger.
 template <typename Dst, typename Src, IntegerRepresentation Sign>
 struct StaticDstRangeRelationToSrcRange<Dst, Src, Sign, Sign> {
-  static const NumericRangeRepresentation value =
+  static constexpr NumericRangeRepresentation value =
       MaxExponent<Dst>::value >= MaxExponent<Src>::value
           ? NUMERIC_RANGE_CONTAINED
           : NUMERIC_RANGE_NOT_CONTAINED;
@@ -151,7 +140,7 @@ struct StaticDstRangeRelationToSrcRange<Dst,
                                         Src,
                                         INTEGER_REPRESENTATION_SIGNED,
                                         INTEGER_REPRESENTATION_UNSIGNED> {
-  static const NumericRangeRepresentation value =
+  static constexpr NumericRangeRepresentation value =
       MaxExponent<Dst>::value > MaxExponent<Src>::value
           ? NUMERIC_RANGE_CONTAINED
           : NUMERIC_RANGE_NOT_CONTAINED;
@@ -163,35 +152,32 @@ struct StaticDstRangeRelationToSrcRange<Dst,
                                         Src,
                                         INTEGER_REPRESENTATION_UNSIGNED,
                                         INTEGER_REPRESENTATION_SIGNED> {
-  static const NumericRangeRepresentation value = NUMERIC_RANGE_NOT_CONTAINED;
+  static constexpr NumericRangeRepresentation value =
+      NUMERIC_RANGE_NOT_CONTAINED;
 };
 
 // This class wraps the range constraints as separate booleans so the compiler
 // can identify constants and eliminate unused code paths.
 class RangeCheck {
  public:
+  constexpr RangeCheck() = default;
   constexpr RangeCheck(bool is_in_lower_bound, bool is_in_upper_bound)
       : is_underflow_(!is_in_lower_bound), is_overflow_(!is_in_upper_bound) {}
-  constexpr RangeCheck() : is_underflow_(false), is_overflow_(false) {}
+
+  constexpr bool operator==(const RangeCheck& rhs) const = default;
+
   constexpr bool IsValid() const { return !is_overflow_ && !is_underflow_; }
   constexpr bool IsInvalid() const { return is_overflow_ && is_underflow_; }
   constexpr bool IsOverflow() const { return is_overflow_ && !is_underflow_; }
   constexpr bool IsUnderflow() const { return !is_overflow_ && is_underflow_; }
   constexpr bool IsOverflowFlagSet() const { return is_overflow_; }
   constexpr bool IsUnderflowFlagSet() const { return is_underflow_; }
-  constexpr bool operator==(const RangeCheck rhs) const {
-    return is_underflow_ == rhs.is_underflow_ &&
-           is_overflow_ == rhs.is_overflow_;
-  }
-  constexpr bool operator!=(const RangeCheck rhs) const {
-    return !(*this == rhs);
-  }
 
  private:
   // Do not change the order of these member variables. The integral conversion
   // optimization depends on this exact order.
-  const bool is_underflow_;
-  const bool is_overflow_;
+  const bool is_underflow_ = false;
+  const bool is_overflow_ = false;
 };
 
 // The following helper template addresses a corner case in range checks for
@@ -221,7 +207,7 @@ struct NarrowingRange {
   using DstLimits = std::numeric_limits<Dst>;
 
   // Computes the mask required to make an accurate comparison between types.
-  static const int kShift =
+  static constexpr int kShift =
       (MaxExponent<Src>::value > MaxExponent<Dst>::value &&
        SrcLimits::digits < DstLimits::digits)
           ? (DstLimits::digits - SrcLimits::digits)
@@ -358,7 +344,7 @@ struct DstRangeRelationToSrcRangeImpl<Dst,
     bool ge_zero = false;
     // Converting floating-point to integer will discard fractional part, so
     // values in (-1.0, -0.0) will truncate to 0 and fit in Dst.
-    if (std::is_floating_point_v<Src>) {
+    if constexpr (std::is_floating_point_v<Src>) {
       ge_zero = value > Src(-1);
     } else {
       ge_zero = value >= Src(0);
@@ -376,8 +362,9 @@ struct DstRangeRelationToSrcRangeImpl<Dst,
 // Simple wrapper for statically checking if a type's range is contained.
 template <typename Dst, typename Src>
 struct IsTypeInRangeForNumericType {
-  static const bool value = StaticDstRangeRelationToSrcRange<Dst, Src>::value ==
-                            NUMERIC_RANGE_CONTAINED;
+  static constexpr bool value =
+      StaticDstRangeRelationToSrcRange<Dst, Src>::value ==
+      NUMERIC_RANGE_CONTAINED;
 };
 
 template <typename Dst,
@@ -423,55 +410,26 @@ struct TwiceWiderInteger {
                                        IsSigned>::type;
 };
 
-enum ArithmeticPromotionCategory {
-  LEFT_PROMOTION,  // Use the type of the left-hand argument.
-  RIGHT_PROMOTION  // Use the type of the right-hand argument.
-};
-
 // Determines the type that can represent the largest positive value.
-template <typename Lhs,
-          typename Rhs,
-          ArithmeticPromotionCategory Promotion =
-              (MaxExponent<Lhs>::value > MaxExponent<Rhs>::value)
-                  ? LEFT_PROMOTION
-                  : RIGHT_PROMOTION>
-struct MaxExponentPromotion;
-
 template <typename Lhs, typename Rhs>
-struct MaxExponentPromotion<Lhs, Rhs, LEFT_PROMOTION> {
-  using type = Lhs;
-};
-
-template <typename Lhs, typename Rhs>
-struct MaxExponentPromotion<Lhs, Rhs, RIGHT_PROMOTION> {
-  using type = Rhs;
+struct MaxExponentPromotion {
+  using type =
+      std::conditional_t<(MaxExponent<Lhs>::value > MaxExponent<Rhs>::value),
+                         Lhs,
+                         Rhs>;
 };
 
 // Determines the type that can represent the lowest arithmetic value.
-template <typename Lhs,
-          typename Rhs,
-          ArithmeticPromotionCategory Promotion =
-              std::is_signed_v<Lhs>
-                  ? (std::is_signed_v<Rhs>
-                         ? (MaxExponent<Lhs>::value > MaxExponent<Rhs>::value
-                                ? LEFT_PROMOTION
-                                : RIGHT_PROMOTION)
-                         : LEFT_PROMOTION)
-                  : (std::is_signed_v<Rhs>
-                         ? RIGHT_PROMOTION
-                         : (MaxExponent<Lhs>::value < MaxExponent<Rhs>::value
-                                ? LEFT_PROMOTION
-                                : RIGHT_PROMOTION))>
-struct LowestValuePromotion;
-
 template <typename Lhs, typename Rhs>
-struct LowestValuePromotion<Lhs, Rhs, LEFT_PROMOTION> {
-  using type = Lhs;
-};
-
-template <typename Lhs, typename Rhs>
-struct LowestValuePromotion<Lhs, Rhs, RIGHT_PROMOTION> {
-  using type = Rhs;
+struct LowestValuePromotion {
+  using type = std::conditional_t<
+      std::is_signed_v<Lhs>
+          ? (!std::is_signed_v<Rhs> ||
+             MaxExponent<Lhs>::value > MaxExponent<Rhs>::value)
+          : (!std::is_signed_v<Rhs> &&
+             MaxExponent<Lhs>::value < MaxExponent<Rhs>::value),
+      Lhs,
+      Rhs>;
 };
 
 // Determines the type that is best able to represent an arithmetic result.
@@ -494,7 +452,7 @@ struct BigEnoughPromotion;
 template <typename Lhs, typename Rhs, bool is_intmax_type>
 struct BigEnoughPromotion<Lhs, Rhs, is_intmax_type, true> {
   using type = typename MaxExponentPromotion<Lhs, Rhs>::type;
-  static const bool is_contained = true;
+  static constexpr bool is_contained = true;
 };
 
 // We can use a twice wider type to fit.
@@ -504,14 +462,14 @@ struct BigEnoughPromotion<Lhs, Rhs, false, false> {
       typename TwiceWiderInteger<typename MaxExponentPromotion<Lhs, Rhs>::type,
                                  std::is_signed_v<Lhs> ||
                                      std::is_signed_v<Rhs>>::type;
-  static const bool is_contained = true;
+  static constexpr bool is_contained = true;
 };
 
 // No type is large enough.
 template <typename Lhs, typename Rhs>
 struct BigEnoughPromotion<Lhs, Rhs, true, false> {
   using type = typename MaxExponentPromotion<Lhs, Rhs>::type;
-  static const bool is_contained = false;
+  static constexpr bool is_contained = false;
 };
 
 // We can statically check if operations on the provided types can wrap, so we
@@ -520,7 +478,7 @@ struct BigEnoughPromotion<Lhs, Rhs, true, false> {
 // the source.
 template <typename T, typename Lhs, typename Rhs = Lhs>
 struct IsIntegerArithmeticSafe {
-  static const bool value =
+  static constexpr bool value =
       !std::is_floating_point_v<T> && !std::is_floating_point_v<Lhs> &&
       !std::is_floating_point_v<Rhs> &&
       std::is_signed_v<T> >= std::is_signed_v<Lhs> &&
@@ -534,7 +492,7 @@ struct IsIntegerArithmeticSafe {
 template <typename Lhs, typename Rhs>
 struct FastIntegerArithmeticPromotion {
   using type = typename BigEnoughPromotion<Lhs, Rhs>::type;
-  static const bool is_contained = false;
+  static constexpr bool is_contained = false;
 };
 
 template <typename Lhs, typename Rhs>
@@ -548,22 +506,22 @@ struct FastIntegerArithmeticPromotion<Lhs, Rhs> {
       typename TwiceWiderInteger<typename MaxExponentPromotion<Lhs, Rhs>::type,
                                  std::is_signed_v<Lhs> ||
                                      std::is_signed_v<Rhs>>::type;
-  static_assert(IsIntegerArithmeticSafe<type, Lhs, Rhs>::value, "");
-  static const bool is_contained = true;
+  static_assert(IsIntegerArithmeticSafe<type, Lhs, Rhs>::value);
+  static constexpr bool is_contained = true;
 };
 
 // Extracts the underlying type from an enum.
 template <typename T>
 struct ArithmeticOrUnderlyingEnum {
   using type = T;
-  static const bool value = std::is_arithmetic_v<type>;
+  static constexpr bool value = std::is_arithmetic_v<type>;
 };
 
 template <typename T>
   requires(std::is_enum_v<T>)
 struct ArithmeticOrUnderlyingEnum<T> {
-  using type = typename std::underlying_type<T>::type;
-  static const bool value = std::is_arithmetic_v<type>;
+  using type = std::underlying_type_t<T>;
+  static constexpr bool value = std::is_arithmetic_v<type>;
 };
 
 // The following are helper templates used in the CheckedNumeric class.
@@ -583,49 +541,49 @@ class StrictNumeric;
 template <typename T>
 struct UnderlyingType {
   using type = typename ArithmeticOrUnderlyingEnum<T>::type;
-  static const bool is_numeric = std::is_arithmetic_v<type>;
-  static const bool is_checked = false;
-  static const bool is_clamped = false;
-  static const bool is_strict = false;
+  static constexpr bool is_numeric = std::is_arithmetic_v<type>;
+  static constexpr bool is_checked = false;
+  static constexpr bool is_clamped = false;
+  static constexpr bool is_strict = false;
 };
 
 template <typename T>
 struct UnderlyingType<CheckedNumeric<T>> {
   using type = T;
-  static const bool is_numeric = true;
-  static const bool is_checked = true;
-  static const bool is_clamped = false;
-  static const bool is_strict = false;
+  static constexpr bool is_numeric = true;
+  static constexpr bool is_checked = true;
+  static constexpr bool is_clamped = false;
+  static constexpr bool is_strict = false;
 };
 
 template <typename T>
 struct UnderlyingType<ClampedNumeric<T>> {
   using type = T;
-  static const bool is_numeric = true;
-  static const bool is_checked = false;
-  static const bool is_clamped = true;
-  static const bool is_strict = false;
+  static constexpr bool is_numeric = true;
+  static constexpr bool is_checked = false;
+  static constexpr bool is_clamped = true;
+  static constexpr bool is_strict = false;
 };
 
 template <typename T>
 struct UnderlyingType<StrictNumeric<T>> {
   using type = T;
-  static const bool is_numeric = true;
-  static const bool is_checked = false;
-  static const bool is_clamped = false;
-  static const bool is_strict = true;
+  static constexpr bool is_numeric = true;
+  static constexpr bool is_checked = false;
+  static constexpr bool is_clamped = false;
+  static constexpr bool is_strict = true;
 };
 
 template <typename L, typename R>
 struct IsCheckedOp {
-  static const bool value =
+  static constexpr bool value =
       UnderlyingType<L>::is_numeric && UnderlyingType<R>::is_numeric &&
       (UnderlyingType<L>::is_checked || UnderlyingType<R>::is_checked);
 };
 
 template <typename L, typename R>
 struct IsClampedOp {
-  static const bool value =
+  static constexpr bool value =
       UnderlyingType<L>::is_numeric && UnderlyingType<R>::is_numeric &&
       (UnderlyingType<L>::is_clamped || UnderlyingType<R>::is_clamped) &&
       !(UnderlyingType<L>::is_checked || UnderlyingType<R>::is_checked);
@@ -633,7 +591,7 @@ struct IsClampedOp {
 
 template <typename L, typename R>
 struct IsStrictOp {
-  static const bool value =
+  static constexpr bool value =
       UnderlyingType<L>::is_numeric && UnderlyingType<R>::is_numeric &&
       (UnderlyingType<L>::is_strict || UnderlyingType<R>::is_strict) &&
       !(UnderlyingType<L>::is_checked || UnderlyingType<R>::is_checked) &&
@@ -644,8 +602,8 @@ struct IsStrictOp {
 // Numeric template) cast as a signed integral of equivalent precision.
 // I.e. it's mostly an alias for: static_cast<std::make_signed<T>::type>(t)
 template <typename Src,
-          typename Dst = typename std::make_signed<
-              typename base::internal::UnderlyingType<Src>::type>::type>
+          typename Dst = std::make_signed_t<
+              typename base::internal::UnderlyingType<Src>::type>>
   requires std::integral<Dst>
 constexpr auto as_signed(Src value) {
   return static_cast<Dst>(value);
@@ -655,8 +613,8 @@ constexpr auto as_signed(Src value) {
 // Numeric template) cast as an unsigned integral of equivalent precision.
 // I.e. it's mostly an alias for: static_cast<std::make_unsigned<T>::type>(t)
 template <typename Src,
-          typename Dst = typename std::make_unsigned<
-              typename base::internal::UnderlyingType<Src>::type>::type>
+          typename Dst = std::make_unsigned_t<
+              typename base::internal::UnderlyingType<Src>::type>>
   requires std::integral<Dst>
 constexpr auto as_unsigned(Src value) {
   return static_cast<Dst>(value);
@@ -809,7 +767,6 @@ constexpr Dst CommonMaxOrMin(bool is_min) {
   return is_min ? CommonMin<Dst, Src>() : CommonMax<Dst, Src>();
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal
 
 #endif  // BASE_NUMERICS_SAFE_CONVERSIONS_IMPL_H_

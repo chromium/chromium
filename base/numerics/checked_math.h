@@ -138,7 +138,7 @@ class CheckedNumeric {
 
   constexpr CheckedNumeric operator-() const {
     // Use an optimized code path for a known run-time variable.
-    if (!IsConstantEvaluated() && std::is_signed_v<T> &&
+    if (!std::is_constant_evaluated() && std::is_signed_v<T> &&
         std::is_floating_point_v<T>) {
       return FastRuntimeNegate();
     }
