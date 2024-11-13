@@ -53,7 +53,6 @@
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
-#include "chrome/browser/ui/lens/lens_search_bubble_controller.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -196,12 +195,6 @@ constexpr char kCheckSidePanelThumbnailShownScript[] =
 constexpr char kHistoryStateScript[] =
     "(function() {history.replaceState({'test':1}, 'test'); "
     "history.pushState({'test':1}, 'test'); history.back();})();";
-
-constexpr char kCloseSearchBubbleScript[] =
-    "(function() {const appRoot = "
-    "document.getElementsByTagName('search-bubble-app')[0].shadowRoot;"
-    "const closeButton = appRoot.getElementById('closeButton');"
-    "closeButton.click();})();";
 
 // Returns true if the selection elements have bounds and are ready for input
 // events.
@@ -694,8 +687,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   virtual void SetupFeatureList() {
     feature_list_.InitWithFeaturesAndParameters(
         {{lens::features::kLensOverlay,
-          {{"search-bubble", "true"},
-           {"results-search-url", kResultsSearchBaseUrl},
+          {{"results-search-url", kResultsSearchBaseUrl},
            {"use-dynamic-theme", "true"},
            {"use-dynamic-theme-min-population-pct", "0.002"},
            {"use-dynamic-theme-min-chroma", "3.0"}}},
@@ -2268,91 +2260,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_EQ(fake_controller->is_side_panel_loading_set_to_false_, 0);
 }
 
-// TODO(crbug.com/360161233): This test is flaky.
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       DISABLED_CloseSearchBubbleOnOverlayInteraction) {
-  WaitForPaint();
-
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Showing UI should eventually result in overlay state. When the overlay is
-  // bound, it should start the query flow which returns a response for the
-  // interaction data callback.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-
-  auto* bubble_controller =
-      controller->get_lens_search_bubble_controller_for_testing();
-  EXPECT_TRUE(!!bubble_controller->bubble_view_for_testing());
-
-  // We need to flush the mojo receiver calls to make sure the screenshot was
-  // passed back to the WebUI or else the region selection UI will not render.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->FlushForTesting();
-  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-
-  // Simulate mouse events on the overlay for drawing a manual region.
-  gfx::Point center =
-      GetOverlayWebContents()->GetContainerBounds().CenterPoint();
-  gfx::Point off_center = gfx::Point(center);
-  off_center.Offset(100, 100);
-  SimulateLeftClickDrag(center, off_center);
-
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlayAndResults; }));
-  EXPECT_FALSE(!!bubble_controller->bubble_view_for_testing());
-}
-
-// TODO(crbug.com/360161233): This test is flaky.
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       DISABLED_SearchBubblePageClassification) {
-  WaitForPaint();
-
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Showing UI should eventually result in overlay state. When the overlay is
-  // bound, it should start the query flow which returns a response for the
-  // interaction data callback.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-
-  EXPECT_EQ(controller->GetPageClassificationForTesting(),
-            metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
-
-  // We need to flush the mojo receiver calls to make sure the screenshot was
-  // passed back to the WebUI or else the region selection UI will not render.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->FlushForTesting();
-  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-
-  // Simulate mouse events on the overlay for drawing a manual region.
-  gfx::Point center =
-      GetOverlayWebContents()->GetContainerBounds().CenterPoint();
-  gfx::Point off_center = gfx::Point(center);
-  off_center.Offset(100, 100);
-  SimulateLeftClickDrag(center, off_center);
-
-  // A lens request results in a kOverlayAndResults state. This results in the
-  // page classification switching from CONTEXTUAL_SEARCHBOX to
-  // LENS_SIDE_PANEL_SEARCHBOX.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlayAndResults; }));
-  EXPECT_EQ(controller->GetPageClassificationForTesting(),
-            metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX);
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       SearchBubbleLivePageAndResults) {
+                       CsbLivePageAndResults) {
   WaitForPaint();
 
   // State should start in off.
@@ -2383,7 +2292,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       SearchBubbleInputTypeSetsLensSelectionType) {
+                       CsbInputTypeSetsLensSelectionType) {
   WaitForPaint();
 
   // State should start in off.
@@ -2454,44 +2363,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 
   EXPECT_EQ(third_search_query->lens_selection_type_,
             lens::MULTIMODAL_SUGGEST_TYPEAHEAD);
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       SearchBubbleCloseButtonClosesOverlay) {
-  WaitForPaint();
-
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Showing UI should eventually result in overlay state. When the overlay is
-  // bound, it should start the query flow which returns a response for the
-  // interaction data callback.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-
-  auto* bubble_controller =
-      controller->get_lens_search_bubble_controller_for_testing();
-  EXPECT_TRUE(!!bubble_controller->bubble_view_for_testing());
-
-  // We need to flush the Mojo receiver calls to make sure the screenshot was
-  // passed back to the WebUI or else the region selection UI will not render.
-  auto* fake_controller = static_cast<LensOverlayControllerFake*>(controller);
-  ASSERT_TRUE(fake_controller);
-  fake_controller->FlushForTesting();
-  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
-
-  // Click the search bubble close button.
-  EXPECT_TRUE(content::ExecJs(
-      bubble_controller->search_bubble_web_contents_for_testing()
-          ->GetPrimaryMainFrame(),
-      content::JsReplace(kCloseSearchBubbleScript)));
-
-  // Verify the overlay turns off.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOff; }));
 }
 
 // TODO(crbug.com/377033756): Test flaky on Mac.

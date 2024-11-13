@@ -154,9 +154,6 @@ inline constexpr char kChromeUIKillHost[] = "kill";
 inline constexpr char kChromeUILauncherInternalsHost[] = "launcher-internals";
 inline constexpr char kChromeUILauncherInternalsURL[] =
     "chrome://launcher-internals";
-inline constexpr char kChromeUILensSearchBubbleHost[] = "lens-search-bubble";
-inline constexpr char kChromeUILensSearchBubbleURL[] =
-    "chrome://lens-search-bubble/";
 inline constexpr char kChromeUILocalStateHost[] = "local-state";
 inline constexpr char kChromeUILocationInternalsHost[] = "location-internals";
 inline constexpr char kChromeUIManagementHost[] = "management";

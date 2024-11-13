@@ -1841,12 +1841,6 @@ Permissions you've already given to websites and apps may apply to this account.
           Pinned! You can access Google Lens again from the new button on the toolbar
         </message>
 
-        <!-- Search Bubble Strings -->
-        <message name="IDS_LENS_SEARCH_BUBBLE_DIALOG_TITLE"
-          desc="The name of the lens search bubble dialog.">
-          Google Lens Search Bubble
-        </message>
-
         <!-- Overlay WebUI Strings -->
         <message name="IDS_LENS_OVERLAY_COPY"
           desc="Command in the Lens Overlay context menu to copy text.">

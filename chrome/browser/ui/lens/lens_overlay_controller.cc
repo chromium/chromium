@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
-#include "chrome/browser/ui/lens/lens_search_bubble_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -284,8 +283,6 @@ LensOverlayController::LensOverlayController(
                           weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
       &LensOverlayController::WillDetach, weak_factory_.GetWeakPtr())));
-  search_bubble_controller_ =
-      std::make_unique<lens::LensSearchBubbleController>(this);
   lens_overlay_event_handler_ =
       std::make_unique<lens::LensOverlayEventHandler>(this);
 
@@ -430,9 +427,6 @@ void LensOverlayController::ShowUI(
   if (!results_side_panel_coordinator_) {
     results_side_panel_coordinator_ =
         std::make_unique<lens::LensOverlaySidePanelCoordinator>(this);
-  }
-  if (lens::features::IsLensOverlaySearchBubbleEnabled()) {
-    search_bubble_controller_->Show();
   }
 
   Profile* profile =
@@ -618,14 +612,7 @@ void LensOverlayController::SetSidePanelSearchboxHandler(
 
 void LensOverlayController::SetContextualSearchboxHandler(
     std::unique_ptr<RealboxHandler> handler) {
-  if (lens::features::IsLensOverlaySearchBubbleEnabled()) {
-    search_bubble_controller_->SetContextualSearchboxHandler(
-        std::move(handler));
-  } else {
-    // If the search bubble doesn't exist the, searchbox is in the overlay, and
-    // therefore the handler is owned by this LensOverlayController class
-    overlay_searchbox_handler_ = std::move(handler);
-  }
+  overlay_searchbox_handler_ = std::move(handler);
 }
 
 void LensOverlayController::ResetSidePanelSearchboxHandler() {
@@ -1730,7 +1717,6 @@ void LensOverlayController::BackgroundUI() {
   overlay_view_->SetVisible(false);
   SetLiveBlur(false);
   HidePreselectionBubble();
-  CloseSearchBubble();
   // Re-enable mouse and keyboard events to the tab contents web view.
   auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
   CHECK(contents_web_view);
@@ -1754,9 +1740,6 @@ void LensOverlayController::CloseUIPart2(
 
   // TODO(b/331940245): Refactor to be decoupled from permission_prompt_factory
   state_ = State::kClosing;
-
-  // Closes lens search bubble if it exists.
-  CloseSearchBubble();
 
   // Closes preselection toast if it exists.
   ClosePreselectionBubble();
@@ -1859,7 +1842,7 @@ void LensOverlayController::InitializeOverlay(
 
   // Show the preselection overlay now that the overlay is initialized and ready
   // to be shown.
-  if (!pending_region_ && !lens::features::IsLensOverlaySearchBubbleEnabled()) {
+  if (!pending_region_) {
     ShowPreselectionBubble();
   }
 
@@ -2023,8 +2006,7 @@ void LensOverlayController::OnWidgetDestroying(views::Widget* widget) {
 void LensOverlayController::OnOmniboxFocusChanged(
     OmniboxFocusState state,
     OmniboxFocusChangeReason reason) {
-  if (state_ == LensOverlayController::State::kOverlay &&
-      !lens::features::IsLensOverlaySearchBubbleEnabled()) {
+  if (state_ == LensOverlayController::State::kOverlay) {
     if (state == OMNIBOX_FOCUS_NONE) {
       ShowPreselectionBubble();
     } else {
@@ -2217,11 +2199,7 @@ void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {
                  ? State::kOverlayAndResults
                  : State::kOverlay;
     if (state_ != State::kOverlayAndResults) {
-      if (lens::features::IsLensOverlaySearchBubbleEnabled()) {
-        search_bubble_controller_->Show();
-      } else {
-        ShowPreselectionBubble();
-      }
+      ShowPreselectionBubble();
     }
   }
 }
@@ -2492,10 +2470,6 @@ void LensOverlayController::IssueTextSelectionRequestInner(
   MaybeLaunchSurvey();
 }
 
-void LensOverlayController::CloseSearchBubble() {
-  search_bubble_controller_->Close();
-}
-
 void LensOverlayController::ClosePreselectionBubble() {
   if (preselection_widget_) {
     preselection_widget_->Close();
@@ -2597,7 +2571,6 @@ void LensOverlayController::IssueSearchBoxRequestPart2(
         initialization_data_->additional_search_query_params_,
         selected_region_bitmap);
   }
-  CloseSearchBubble();
   RecordTimeToFirstInteraction(
       lens::LensOverlayFirstInteractionType::kSearchbox);
   search_performed_in_session_ = true;

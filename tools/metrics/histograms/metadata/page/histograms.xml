@@ -241,7 +241,6 @@ chromium-metrics-reviews@google.com.
   <variant name=".Feed"/>
   <variant name=".HistoryClustersSidePanel"/>
   <variant name=".LensOverlayUntrusted"/>
-  <variant name=".LensSearchBubble"/>
   <variant name=".LensSidePanelUntrusted"/>
   <variant name=".MakoUntrusted"/>
   <variant name=".PerformanceSidePanel"/>

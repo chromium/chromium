@@ -19,7 +19,6 @@ source_set("lens") {
     "lens_overlay_side_panel_navigation_throttle.h",
     "lens_overlay_untrusted_ui.h",
     "lens_side_panel_untrusted_ui.h",
-    "search_bubble_ui.h",
   ]
   friend = [
     ":*",
@@ -61,13 +60,8 @@ source_set("lens") {
     "lens_permission_bubble_controller.h",
     "lens_preselection_bubble.cc",
     "lens_preselection_bubble.h",
-    "lens_search_bubble_controller.cc",
-    "lens_search_bubble_controller.h",
     "lens_side_panel_untrusted_ui.cc",
     "ref_counted_lens_overlay_client_logs.h",
-    "search_bubble_page_handler.cc",
-    "search_bubble_page_handler.h",
-    "search_bubble_ui.cc",
   ]
 
   public_deps = [
@@ -96,8 +90,6 @@ source_set("lens") {
     "//chrome/browser/profiles",
     "//chrome/browser/resources/lens/overlay:resources",
     "//chrome/browser/resources/lens/overlay:resources_grit",
-    "//chrome/browser/resources/lens/overlay/search_bubble:resources",
-    "//chrome/browser/resources/lens/overlay/search_bubble:resources_grit",
     "//chrome/browser/resources/lens/shared:resources",
     "//chrome/browser/resources/lens/shared:resources_grit",
     "//chrome/browser/search",

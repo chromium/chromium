@@ -65,7 +65,6 @@ namespace lens {
 class LensOverlayQueryController;
 class LensOverlaySidePanelCoordinator;
 class LensPermissionBubbleController;
-class LensSearchBubbleController;
 class LensOverlayEventHandler;
 }  // namespace lens
 
@@ -509,11 +508,6 @@ class LensOverlayController : public LensSearchboxClient,
     return preselection_widget_.get();
   }
 
-  lens::LensSearchBubbleController*
-  get_lens_search_bubble_controller_for_testing() {
-    return search_bubble_controller_.get();
-  }
-
   lens::LensOverlayQueryController*
   get_lens_overlay_query_controller_for_testing() {
     return lens_overlay_query_controller_.get();
@@ -840,7 +834,6 @@ class LensOverlayController : public LensSearchboxClient,
   void ClosePreselectionBubble() override;
   void CloseRequestedByOverlayCloseButton() override;
   void CloseRequestedByOverlayBackgroundClick() override;
-  void CloseSearchBubble() override;
   void CopyImage(lens::mojom::CenterRotatedBoxPtr region) override;
   void CopyText(const std::string& text) override;
   void FeedbackRequestedByOverlay() override;
@@ -1145,10 +1138,6 @@ class LensOverlayController : public LensSearchboxClient,
   // so that the life cycle outlasts the query controller, allowing gen204
   // requests to be sent upon query end.
   std::unique_ptr<lens::LensOverlayGen204Controller> gen204_controller_;
-
-  // Owns the search bubble that shows over the overlay, before the side panel
-  // is showing.
-  std::unique_ptr<lens::LensSearchBubbleController> search_bubble_controller_;
 
   // Searchbox handler for passing in image and text selections. The handler is
   // null if the WebUI containing the searchbox has not been initialized yet,

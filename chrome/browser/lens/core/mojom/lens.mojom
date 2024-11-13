@@ -171,11 +171,6 @@ interface LensPageHandler {
   // state to the default non-translate mode.
   IssueEndTranslateModeRequest();
 
-  // When called, the C++ coordinator closes the lens search bubble. When the
-  // user selects text or thumbnail on the WebUI overlay, the search bubble
-  // must close.
-  CloseSearchBubble();
-
   // Copies the given text to the users clipboard using the browser process.
   // This is different than using navigator.clipboard.writeText since
   // navigator.clipboard.writeText requires explicet user activation on the web

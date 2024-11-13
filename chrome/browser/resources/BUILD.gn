@@ -40,7 +40,6 @@ group("resources") {
       "identity_internals:resources",
       "key_value_pair_viewer_shared:resources",
       "lens/overlay:resources",
-      "lens/overlay/search_bubble:resources",
       "lens/shared:resources",
       "management:resources",
       "new_tab_page:resources",

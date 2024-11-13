@@ -444,10 +444,6 @@
     "META": {"sizes": {"includes": [70]}},
     "includes": [4180],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/lens/overlay/search_bubble/resources.grd": {
-    "META": {"sizes": {"includes": [20]}},
-    "includes": [4200],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/lens/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [4220],

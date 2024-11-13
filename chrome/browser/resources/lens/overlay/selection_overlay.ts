@@ -733,7 +733,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.set('currentGesture.state', GestureState.STARTING);
 
     // Send events to hide UI.
-    this.browserProxy.handler.closeSearchBubble();
     this.browserProxy.handler.closePreselectionBubble();
     this.suppressCopyAndSaveAsImage = false;
     this.dispatchEvent(

@@ -171,7 +171,6 @@
 #endif
 #include "chrome/browser/ui/lens/lens_overlay_untrusted_ui.h"
 #include "chrome/browser/ui/lens/lens_side_panel_untrusted_ui.h"
-#include "chrome/browser/ui/lens/search_bubble_ui.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_ui.h"
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
@@ -1001,12 +1000,6 @@ void PopulateChromeWebUIFrameBinders(
                                            lens::LensOverlayUntrustedUI>(map);
   }
 
-  if (lens::features::IsLensOverlayEnabled() &&
-      lens::features::IsLensOverlaySearchBubbleEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        lens::mojom::SearchBubblePageHandlerFactory, lens::SearchBubbleUI>(map);
-  }
-
   RegisterWebUIControllerInterfaceBinder<
       color_change_listener::mojom::PageHandler,
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -1806,12 +1799,6 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
         .Add<color_change_listener::mojom::PageHandler>()
         .Add<help_bubble::mojom::HelpBubbleHandlerFactory>()
         .Add<searchbox::mojom::PageHandler>();
-  }
-  if (lens::features::IsLensOverlaySearchBubbleEnabled()) {
-    registry.ForWebUI<lens::SearchBubbleUI>()
-        .Add<lens::mojom::SearchBubblePageHandlerFactory>()
-        .Add<searchbox::mojom::PageHandler>()
-        .Add<color_change_listener::mojom::PageHandler>();
   }
   registry.ForWebUI<ReadAnythingUntrustedUI>()
       .Add<color_change_listener::mojom::PageHandler>();

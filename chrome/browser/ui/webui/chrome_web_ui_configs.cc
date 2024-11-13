@@ -75,7 +75,6 @@
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/ui/webui/media_router/cast_feedback_ui.h"
 #endif
-#include "chrome/browser/ui/lens/search_bubble_ui.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals_ui.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
@@ -295,7 +294,6 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<HistoryClustersSidePanelUIConfig>());
   map.AddWebUIConfig(std::make_unique<IdentityInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<InspectUIConfig>());
-  map.AddWebUIConfig(std::make_unique<lens::SearchBubbleUIConfig>());
   map.AddWebUIConfig(std::make_unique<ManagementUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<media_router::MediaRouterInternalsUIConfig>());
