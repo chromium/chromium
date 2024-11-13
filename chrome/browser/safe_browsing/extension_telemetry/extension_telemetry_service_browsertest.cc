@@ -76,8 +76,6 @@ class ExtensionTelemetryServiceBrowserTest
         {kExtensionTelemetryForEnterprise,
          kExtensionTelemetryReportContactedHosts,
          kExtensionTelemetryReportHostsContactedViaWebSocket,
-         kExtensionTelemetryTabsApiSignal,
-         kExtensionTelemetryTabsApiSignalCaptureVisibleTab,
          kExtensionTelemetryDeclarativeNetRequestActionSignal,
          extensions_features::kIncludeJSCallStackInExtensionApiRequest},
         /*disabled_features=*/

@@ -138,14 +138,6 @@ extern const base::FeatureParam<int>
     kExtensionTelemetryEnterpriseReportingIntervalSeconds;
 
 // Enables collection of telemetry signal whenever an extension invokes the
-// chrome.tabs API methods.
-BASE_DECLARE_FEATURE(kExtensionTelemetryTabsApiSignal);
-
-// Enables collection of telemetry signal whenever an extension invokes the
-// chrome.tabs.captureVisibleTab API method.
-BASE_DECLARE_FEATURE(kExtensionTelemetryTabsApiSignalCaptureVisibleTab);
-
-// Enables collection of telemetry signal whenever an extension invokes the
 // tabs.executeScript API call.
 BASE_DECLARE_FEATURE(kExtensionTelemetryTabsExecuteScriptSignal);
 

@@ -82,7 +82,6 @@
 #include "chrome/common/url_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -446,15 +445,7 @@ void NotifyExtensionTelemetry(Profile* profile,
   auto* extension_telemetry_service =
       safe_browsing::ExtensionTelemetryService::Get(profile);
 
-  if (!extension_telemetry_service || !extension_telemetry_service->enabled() ||
-      !base::FeatureList::IsEnabled(
-          safe_browsing::kExtensionTelemetryTabsApiSignal)) {
-    return;
-  }
-
-  if (api_method == safe_browsing::TabsApiInfo::CAPTURE_VISIBLE_TAB &&
-      !base::FeatureList::IsEnabled(
-          safe_browsing::kExtensionTelemetryTabsApiSignalCaptureVisibleTab)) {
+  if (!extension_telemetry_service || !extension_telemetry_service->enabled()) {
     return;
   }
 

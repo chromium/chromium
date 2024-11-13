@@ -159,14 +159,6 @@ BASE_FEATURE(
     "SafeBrowsingExtensionTelmetryInterceptRemoteHostsContactedInRenderer",
     base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExtensionTelemetryTabsApiSignal,
-             "SafeBrowsingExtensionTelemetryTabsApiSignal",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kExtensionTelemetryTabsApiSignalCaptureVisibleTab,
-             "SafeBrowsingExtensionTelemetryTabsApiSignalCaptureVisibleTab",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kExtensionTelemetryTabsExecuteScriptSignal,
              "SafeBrowsingExtensionTelemetryTabsExecuteScriptSignal",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -362,8 +354,6 @@ base::Value::List GetFeatureStatusList() {
       &kExtensionTelemetryPotentialPasswordTheft,
       &kExtensionTelemetryReportContactedHosts,
       &kExtensionTelemetryReportHostsContactedViaWebSocket,
-      &kExtensionTelemetryTabsApiSignal,
-      &kExtensionTelemetryTabsApiSignalCaptureVisibleTab,
       &kExtensionTelemetryTabsExecuteScriptSignal,
       &kExternalAppRedirectTelemetry,
       &kHashPrefixRealTimeLookups,
