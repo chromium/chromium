@@ -1902,38 +1902,44 @@ AuthenticationCredentialsContainer::create(
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotSupportedError,
         "Required parameters missing in `options.publicKey`."));
-  } else if (mojo_options->user->id.size() > 64) {
+    return promise;
+  }
+
+  if (mojo_options->user->id.size() > 64) {
     // https://www.w3.org/TR/webauthn/#user-handle
     v8::Isolate* isolate = resolver->GetScriptState()->GetIsolate();
     resolver->Reject(V8ThrowException::CreateTypeError(
         isolate, "User handle exceeds 64 bytes."));
-  } else {
-    if (!mojo_options->relying_party->id) {
-      mojo_options->relying_party->id =
-          resolver->GetExecutionContext()->GetSecurityOrigin()->Domain();
-    }
+    return promise;
+  }
 
-    auto* authenticator =
-        CredentialManagerProxy::From(script_state)->Authenticator();
-    if (mojo_options->is_payment_credential_creation) {
-      String rp_id_for_payment_extension = mojo_options->relying_party->id;
-      WTF::Vector<uint8_t> user_id_for_payment_extension =
-          mojo_options->user->id;
-      authenticator->MakeCredential(
-          std::move(mojo_options),
-          WTF::BindOnce(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
-                        std::make_unique<ScopedPromiseResolver>(resolver),
-                        std::move(scoped_abort_state),
-                        rp_id_for_payment_extension,
-                        std::move(user_id_for_payment_extension)));
-    } else {
-      authenticator->MakeCredential(
-          std::move(mojo_options),
-          WTF::BindOnce(&OnMakePublicKeyCredentialComplete,
-                        std::make_unique<ScopedPromiseResolver>(resolver),
-                        std::move(scoped_abort_state), required_origin_type,
-                        is_rk_required));
+  if (!mojo_options->relying_party->id) {
+    mojo_options->relying_party->id =
+        resolver->GetExecutionContext()->GetSecurityOrigin()->Domain();
+  }
+
+  auto* authenticator =
+      CredentialManagerProxy::From(script_state)->Authenticator();
+  if (mojo_options->is_payment_credential_creation) {
+    String rp_id_for_payment_extension = mojo_options->relying_party->id;
+    WTF::Vector<uint8_t> user_id_for_payment_extension = mojo_options->user->id;
+    authenticator->MakeCredential(
+        std::move(mojo_options),
+        WTF::BindOnce(&OnMakePublicKeyCredentialWithPaymentExtensionComplete,
+                      std::make_unique<ScopedPromiseResolver>(resolver),
+                      std::move(scoped_abort_state),
+                      rp_id_for_payment_extension,
+                      std::move(user_id_for_payment_extension)));
+  } else {
+    if (RuntimeEnabledFeatures::WebAuthenticationConditionalCreateEnabled()) {
+      mojo_options->is_conditional = options->mediation() == "conditional";
     }
+    authenticator->MakeCredential(
+        std::move(mojo_options),
+        WTF::BindOnce(&OnMakePublicKeyCredentialComplete,
+                      std::make_unique<ScopedPromiseResolver>(resolver),
+                      std::move(scoped_abort_state), required_origin_type,
+                      is_rk_required));
   }
 
   return promise;

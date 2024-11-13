@@ -42,6 +42,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -68,6 +69,8 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -494,6 +497,23 @@ static constexpr char kGetAssertionConditionalUI[] = R"((() => {
         allowCredentials: [],
     }}).then(c => window.domAutomationController.send('webauthn: OK'),
              e => window.domAutomationController.send('error ' + e));
+})())";
+
+static constexpr char kMakeCredentialConditionalCreate[] = R"((() => {
+  return navigator.credentials.create({
+    mediation: "conditional",
+    publicKey: {
+      rp: { name: "www.example.com" },
+      user: {
+        id: new Uint8Array([1]),
+        name: "bar@example.com",
+        displayName: "Foo Bar"
+      },
+      pubKeyCredParams: [{type: "public-key", alg: -7}],
+      challenge: new Uint8Array([0]),
+    }
+  }).then(c => window.domAutomationController.send('webauthn: ' + c.id),
+          e => window.domAutomationController.send('error ' + e));
 })())";
 
 bool IsReady(GPMEnclaveController::AccountState state) {
@@ -4042,3 +4062,83 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorWithPinBrowserTest,
 }  // namespace
 
 #endif  // !defined(MEMORY_SANITIZER)
+
+class EnclaveAuthenticatorConditionalCreateBrowserTest
+    : public EnclaveAuthenticatorWithPinBrowserTest {
+ protected:
+  EnclaveAuthenticatorConditionalCreateBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(device::kWebAuthnPasskeyUpgrade);
+    CHECK(base::FeatureList::IsEnabled(device::kWebAuthnPasskeyUpgrade));
+    CHECK(base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator));
+  }
+
+  // Creates a credential to ensure the enclave authenticator is in a usable
+  // state prior to making a conditional create request.
+  void BootstrapEnclave() {
+    trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+        registration_state_result;
+    registration_state_result.state = trusted_vault::
+        DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
+    SetMockVaultConnectionOnRequestDelegate(
+        std::move(registration_state_result));
+
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::DOMMessageQueue message_queue(web_contents);
+    content::ExecuteScriptAsync(web_contents, kMakeCredentialUvRequired);
+    delegate_observer()->WaitForUI();
+
+    EXPECT_EQ(dialog_model()->step(),
+              AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+    EXPECT_EQ(request_delegate()
+                  ->enclave_controller_for_testing()
+                  ->account_state_for_testing(),
+              GPMEnclaveController::AccountState::kEmpty);
+    dialog_model()->OnGPMCreatePasskey();
+    EXPECT_EQ(dialog_model()->step(),
+              AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+    dialog_model()->OnGPMPinEntered(u"123456");
+
+    std::string script_result;
+    ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+    EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
+  }
+
+  void InjectPassword(base::Time last_used) {
+    password_manager::PasswordStoreInterface* password_store =
+        ProfilePasswordStoreFactory::GetForProfile(
+            browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+            .get();
+    password_manager::PasswordForm saved_form;
+    saved_form.signon_realm = https_server_.GetURL("example.com", "/").spec();
+    saved_form.url = https_server_.GetURL("example.com",
+                                          "/password/prefilled_username.html");
+    saved_form.username_value = u"bar@example.com";
+    saved_form.password_value = u"hunter1";
+    saved_form.date_last_used = last_used;
+    password_store->AddLogin(saved_form);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorConditionalCreateBrowserTest,
+                       ConditionalCreate) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+
+  BootstrapEnclave();
+  InjectPassword(base::Time::Now());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialConditionalCreate);
+  delegate_observer()->WaitForUI();
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  std::optional<std::vector<uint8_t>> cred_id =
+      ParseCredentialId(script_result);
+  ASSERT_TRUE(cred_id);
+}
