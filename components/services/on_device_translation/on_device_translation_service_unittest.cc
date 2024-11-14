@@ -74,8 +74,8 @@ class OnDeviceTranslationServiceTest : public testing::Test {
     service_remote_->CreateTranslator(
         source_lang, target_lang,
         translator_remote.BindNewPipeAndPassReceiver(),
-        base::BindLambdaForTesting([&](bool result) {
-          succeeded = result;
+        base::BindLambdaForTesting([&](mojom::CreateTranslatorResult result) {
+          succeeded = result == mojom::CreateTranslatorResult::kSuccess;
           run_loop.Quit();
         }));
     run_loop.Run();

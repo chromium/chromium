@@ -53,6 +53,27 @@ struct OnDeviceTranslationServiceConfig {
   pending_remote<FileOperationProxy> file_operation_proxy;
 };
 
+// The result of creating a translator.
+enum CreateTranslatorResult {
+  // The translator is created successfully.
+  kSuccess = 0,
+
+  // The translator cannot be created because the library binary failed to
+  // loaded.
+  kErrorInvalidBinary = 1,
+
+  // The translator cannot be created because the function pointer of the
+  // library is invalid.
+  kErrorInvalidFunctionPointer = 2,
+
+  // The translator cannot be created because the library failed to initialize.
+  kErrorFailedToInitialize = 3,
+
+  // The translator cannot be created because the library failed to create the
+  // translator.
+  kErrorFailedToCreateTranslator = 4,
+};
+
 // Currently the sandboxing of the On Device Translation service is supported
 // only on macOS and Linux.
 // TODO(crbug.com/340778819): Implement sandboxing on other platforms.
@@ -79,15 +100,15 @@ interface OnDeviceTranslationService {
 
   // Creates a `Translator` that could do translation from `source_lang` to
   // `target_lang`. When succeeds, the result callback will be called with a
-  // true `is_sucessful`. Otherwise, the result callback will be called with a
-  // false `is_sucessful`.
+  // true `kSuccess`. Otherwise, the result callback will be called with one of
+  // the other error codes.
   // To detect the idle state of the service, this IPC is passing a
   // pending_receiver instead of returning a pending_remote. See
   // https://crrev.com/c/5992971/comment/ca3edf7c_2ae4ca1a/ for more details.
   CreateTranslator(string source_lang,
                    string target_lang,
                    pending_receiver<Translator> receiver)
-      => (bool is_sucessful);
+      => (CreateTranslatorResult result);
 
   // Returns if the service could translate text from `source_lang` to
   // `target_lang`.

@@ -195,20 +195,24 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
     std::move(callback).Run(mojo::NullRemote());
     return;
   }
+  auto callbacks = base::SplitOnceCallback(std::move(callback));
   CHECK(service_remote_);
   service_remote_->CreateTranslator(
       source_lang, target_lang, std::move(pending_receiver),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      mojo::WrapCallbackWithDropHandler(
           base::BindOnce(
               [](base::OnceCallback<void(
                      mojo::PendingRemote<mojom::Translator>)> callback,
                  mojo::PendingRemote<mojom::Translator> pending_remote,
-                 bool success) {
-                std::move(callback).Run(success ? std::move(pending_remote)
-                                                : mojo::NullRemote());
+                 mojom::CreateTranslatorResult result) {
+                if (result == mojom::CreateTranslatorResult::kSuccess) {
+                  std::move(callback).Run(std::move(pending_remote));
+                } else {
+                  std::move(callback).Run(mojo::NullRemote());
+                }
               },
-              std::move(callback), std::move(pending_remote)),
-          false));
+              std::move(callbacks.first), std::move(pending_remote)),
+          base::BindOnce(std::move(callbacks.second), mojo::NullRemote())));
 }
 
 void OnDeviceTranslationServiceController::CanTranslate(

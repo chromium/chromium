@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/services/on_device_translation/proto/translate_kit_api.pb.h"
 #include "components/services/on_device_translation/public/cpp/features.h"
@@ -24,6 +25,8 @@
 
 namespace on_device_translation {
 namespace {
+
+using mojom::CreateTranslatorResult;
 
 // Logs UMA after an attempt to load the TranslateKit binary.
 void LogLoadTranslateKitResult(LoadTranslateKitResult result,
@@ -139,31 +142,37 @@ TranslateKitClient::TranslateKitClient(const base::FilePath& library_path,
           lib_.GetFunctionPointer("DeleteTranslator"))),
       translator_translate_func_(reinterpret_cast<TranslatorTranslateFn>(
           lib_.GetFunctionPointer("TranslatorTranslate"))) {
+  LogLoadTranslateKitResult(CheckLoadTranslateKitResult(), lib_.GetError());
+}
+
+LoadTranslateKitResult TranslateKitClient::CheckLoadTranslateKitResult() {
   if (!lib_.is_valid()) {
-    load_lib_result_ = LoadTranslateKitResult::kInvalidBinary;
-    LogLoadTranslateKitResult(load_lib_result_, lib_.GetError());
-    return;
+    maybe_kit_ptr_ =
+        base::unexpected(CreateTranslatorResult::kErrorInvalidBinary);
+    return LoadTranslateKitResult::kInvalidBinary;
   }
 
   if (!initialize_storage_backend_fnc_ || !create_translate_kit_fnc_ ||
       !delete_tanslate_kit_fnc_ || !set_language_packages_func_ ||
       !translate_kit_create_translator_func_ || !delete_translator_fnc_ ||
       !translator_translate_func_) {
-    load_lib_result_ = LoadTranslateKitResult::kInvalidFunctionPointer;
-  } else {
-    load_lib_result_ = LoadTranslateKitResult::kSuccess;
+    maybe_kit_ptr_ =
+        base::unexpected(CreateTranslatorResult::kErrorInvalidFunctionPointer);
+    return LoadTranslateKitResult::kInvalidFunctionPointer;
   }
-  LogLoadTranslateKitResult(load_lib_result_, lib_.GetError());
+  return LoadTranslateKitResult::kSuccess;
 }
 
 DISABLE_CFI_DLSYM
 bool TranslateKitClient::MaybeInitialize() {
-  if (failed_to_initialize_ ||
-      load_lib_result_ != LoadTranslateKitResult::kSuccess) {
-    return false;
-  }
-  if (kit_ptr_) {
+  if (maybe_kit_ptr_.has_value() && *maybe_kit_ptr_) {
+    // Already successfully initialized.
     return true;
+  }
+  if (!maybe_kit_ptr_.has_value()) {
+    // An error occurred while loading the TranslateKit binary or the previous
+    // initialization failed.
+    return false;
   }
   initialize_storage_backend_fnc_(
       &TranslateKitClient::FileExists,
@@ -171,11 +180,13 @@ bool TranslateKitClient::MaybeInitialize() {
       &DeleteReadOnlyMemoryRegion, &ReadOnlyMemoryRegionData,
       &ReadOnlyMemoryRegionLength, reinterpret_cast<std::uintptr_t>(this));
 
-  kit_ptr_ = create_translate_kit_fnc_();
-  if (!kit_ptr_) {
-    failed_to_initialize_ = true;
+  maybe_kit_ptr_ = create_translate_kit_fnc_();
+  if (!*maybe_kit_ptr_) {
+    maybe_kit_ptr_ =
+        base::unexpected(CreateTranslatorResult::kErrorFailedToInitialize);
+    return false;
   }
-  return !!kit_ptr_;
+  return true;
 }
 
 DISABLE_CFI_DLSYM
@@ -210,35 +221,43 @@ void TranslateKitClient::SetConfig(
 
   const std::string packages_str = config_proto.SerializeAsString();
   CHECK(set_language_packages_func_(
-      kit_ptr_, TranslateKitSetLanguagePackagesArgs{packages_str.c_str(),
-                                                    packages_str.size()}))
+      *maybe_kit_ptr_,
+      TranslateKitSetLanguagePackagesArgs{packages_str.c_str(),
+                                          packages_str.size()}))
       << "Failed to set config";
 }
 
 DISABLE_CFI_DLSYM
 TranslateKitClient::~TranslateKitClient() {
-  if (!kit_ptr_) {
+  if (!maybe_kit_ptr_.has_value() || !*maybe_kit_ptr_) {
     return;
   }
-  delete_tanslate_kit_fnc_(kit_ptr_);
-  kit_ptr_ = 0;
+  delete_tanslate_kit_fnc_(*maybe_kit_ptr_);
+  maybe_kit_ptr_ = 0;
   translators_.clear();
 }
 
 bool TranslateKitClient::CanTranslate(const std::string& source_lang,
                                       const std::string& target_lang) {
-  if (!MaybeInitialize() || !file_operation_proxy_) {
+  if (!maybe_kit_ptr_.has_value()) {
     return false;
   }
-  return !!TranslateKitClient::GetTranslator(source_lang, target_lang);
+  CHECK(*maybe_kit_ptr_) << "SetConfig must have been called";
+  CHECK(file_operation_proxy_);
+
+  return TranslateKitClient::GetTranslator(source_lang, target_lang)
+      .has_value();
 }
 
-TranslateKitClient::Translator* TranslateKitClient::GetTranslator(
-    const std::string& source_lang,
-    const std::string& target_lang) {
-  if (!MaybeInitialize() || !file_operation_proxy_) {
-    return nullptr;
+base::expected<TranslateKitClient::Translator*, CreateTranslatorResult>
+TranslateKitClient::GetTranslator(const std::string& source_lang,
+                                  const std::string& target_lang) {
+  if (!maybe_kit_ptr_.has_value()) {
+    CHECK_NE(maybe_kit_ptr_.error(), CreateTranslatorResult::kSuccess);
+    return base::unexpected(maybe_kit_ptr_.error());
   }
+  CHECK(*maybe_kit_ptr_) << "SetConfig must have been called";
+  CHECK(file_operation_proxy_);
 
   TranslatorKey key(source_lang, target_lang);
   if (auto it = translators_.find(key); it != translators_.end()) {
@@ -246,7 +265,8 @@ TranslateKitClient::Translator* TranslateKitClient::GetTranslator(
   }
   auto translator = TranslatorImpl::MaybeCreate(this, source_lang, target_lang);
   if (!translator) {
-    return nullptr;
+    return base::unexpected(
+        CreateTranslatorResult::kErrorFailedToCreateTranslator);
   }
   auto raw_translator_ptr = translator.get();
   translators_.emplace(std::move(key), std::move(translator));
@@ -261,7 +281,7 @@ TranslateKitClient::TranslatorImpl::MaybeCreate(
     const std::string& target_lang) {
   CHECK(client->translate_kit_create_translator_func_);
   std::uintptr_t translator_ptr = client->translate_kit_create_translator_func_(
-      client->kit_ptr_,
+      *client->maybe_kit_ptr_,
       TranslateKitLanguage(source_lang.c_str(), source_lang.length()),
       TranslateKitLanguage(target_lang.c_str(), target_lang.length()));
   if (!translator_ptr) {

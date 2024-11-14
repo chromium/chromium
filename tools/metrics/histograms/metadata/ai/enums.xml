@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(LoadTranslateKitResult) -->
 
 <enum name="LoadTranslateKitResult">
-  <int value="0" label="Unknown"/>
+  <int value="0" label="[deprecated] Unknown"/>
   <int value="1" label="Success">Success to load TranslateKit binary.</int>
   <int value="2" label="InvalidBinary">
     Fails due to invalid TranslateKit binary.

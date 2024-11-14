@@ -4,7 +4,10 @@
 
 #include "components/services/on_device_translation/translate_kit_client.h"
 
+#include <tuple>
+
 #include "base/files/scoped_temp_file.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
@@ -14,6 +17,9 @@
 
 namespace on_device_translation {
 namespace {
+
+using base::test::ErrorIs;
+using mojom::CreateTranslatorResult;
 
 class TranslateKitClientTest : public testing::Test {
  public:
@@ -29,6 +35,14 @@ class TranslateKitClientTest : public testing::Test {
       const std::vector<std::pair<std::string, std::string>>& packages,
       const std::vector<TestFile>& files) {
     auto client = TranslateKitClient::CreateForTest(GetMockLibraryPath());
+    SetConfig(*client, packages, files);
+    return client;
+  }
+
+  void SetConfig(
+      TranslateKitClient& client,
+      const std::vector<std::pair<std::string, std::string>>& packages,
+      const std::vector<TestFile>& files) {
     auto config = mojom::OnDeviceTranslationServiceConfig::New();
 
     for (const auto& pair : packages) {
@@ -37,8 +51,7 @@ class TranslateKitClientTest : public testing::Test {
     }
     file_operation_proxy_ = FakeFileOperationProxy::Create(
         config->file_operation_proxy.InitWithNewPipeAndPassReceiver(), files);
-    client->SetConfig(std::move(config));
-    return client;
+    client.SetConfig(std::move(config));
   }
 
  private:
@@ -74,10 +87,11 @@ TEST_F(TranslateKitClientTest, CanTranslateBrokenLanguagePack) {
   EXPECT_FALSE(client->CanTranslate("en", "ja"));
 }
 
-// Tests that the CanTranslate method returns false if no config is set.
+// Tests that the CanTranslate method crashes if no config is set.
 TEST_F(TranslateKitClientTest, CanTranslateNoConfig) {
   auto client = TranslateKitClient::CreateForTest(GetMockLibraryPath());
-  EXPECT_FALSE(client->CanTranslate("en", "ja"));
+  EXPECT_DEATH_IF_SUPPORTED(client->CanTranslate("en", "ja"),
+                            "SetConfig must have been called");
 }
 
 // Tests that the GetTranslator method returns a valid translator for a language
@@ -87,7 +101,7 @@ TEST_F(TranslateKitClientTest, GetTranslatorMatchingLanguagePack) {
                              {
                                  {"0/dict.dat", "En to Ja - "},
                              });
-  auto* translator = client->GetTranslator("en", "ja");
+  ASSERT_OK_AND_ASSIGN(auto* translator, client->GetTranslator("en", "ja"));
   ASSERT_TRUE(translator);
   // Check that the translator can be used to translate text.
   // Note: the mock library returns the concatenation of the content of
@@ -95,27 +109,59 @@ TEST_F(TranslateKitClientTest, GetTranslatorMatchingLanguagePack) {
   EXPECT_EQ(translator->Translate("test"), "En to Ja - test");
 }
 
-// Tests that the GetTranslator method returns null for a language pair that is
-// not supported.
+// Tests that the GetTranslator method returns `kErrorFailedToCreateTranslator`
+// for a language pair that is not supported.
 TEST_F(TranslateKitClientTest, GetTranslatorNoMatchingLanguagePack) {
   auto client = CreateClient(GetMockLibraryPath(), {{"en", "ja"}},
                              {
                                  {"0/dict.dat", "En to Ja - "},
                              });
-  EXPECT_FALSE(client->GetTranslator("en", "es"));
+  EXPECT_THAT(client->GetTranslator("en", "es"),
+              ErrorIs(CreateTranslatorResult::kErrorFailedToCreateTranslator));
 }
 
-// Tests that the GetTranslator method returns null for a language pair that
-// language data is not available.
+// Tests that the GetTranslator method returns `kErrorFailedToCreateTranslator`
+// for a language pair that language data is not available.
 TEST_F(TranslateKitClientTest, GetTranslatorBrokenLanguagePack) {
   auto client = CreateClient(GetMockLibraryPath(), {{"en", "ja"}}, {});
-  EXPECT_FALSE(client->GetTranslator("en", "ja"));
+  EXPECT_THAT(client->GetTranslator("en", "ja"),
+              ErrorIs(CreateTranslatorResult::kErrorFailedToCreateTranslator));
 }
 
-// Tests that the GetTranslator method returns null if no config is set.
+// Tests that the GetTranslator method crashes if no config is set.
 TEST_F(TranslateKitClientTest, GetTranslatorNoConfig) {
   auto client = TranslateKitClient::CreateForTest(GetMockLibraryPath());
-  EXPECT_FALSE(client->GetTranslator("en", "ja"));
+  EXPECT_DEATH_IF_SUPPORTED(
+      { std::ignore = client->GetTranslator("en", "ja"); },
+      "SetConfig must have been called");
+}
+
+// Tests that SetConfig updates the config of the client, and the new config is
+// used to create translators.
+TEST_F(TranslateKitClientTest, UpdatingConfig) {
+  auto client = CreateClient(GetMockLibraryPath(), {{"en", "ja"}},
+                             {
+                                 {"0/dict.dat", "En to Ja - "},
+                             });
+  ASSERT_OK_AND_ASSIGN(auto* translator1, client->GetTranslator("en", "ja"));
+  ASSERT_TRUE(translator1);
+  EXPECT_EQ(translator1->Translate("test"), "En to Ja - test");
+  EXPECT_THAT(client->GetTranslator("en", "es"),
+              ErrorIs(CreateTranslatorResult::kErrorFailedToCreateTranslator));
+
+  SetConfig(*client, {{"en", "ja"}, {"en", "es"}},
+            {
+                {"0/dict.dat", "En to Ja - "},
+                {"1/dict.dat", "En to Es - "},
+            });
+
+  ASSERT_OK_AND_ASSIGN(auto* translator2, client->GetTranslator("en", "ja"));
+  ASSERT_TRUE(translator2);
+  EXPECT_EQ(translator2->Translate("test"), "En to Ja - test");
+
+  ASSERT_OK_AND_ASSIGN(auto* translator3, client->GetTranslator("en", "es"));
+  ASSERT_TRUE(translator3);
+  EXPECT_EQ(translator3->Translate("test"), "En to Es - test");
 }
 
 // Tests that two translators can be created for the different language pairs,
@@ -126,9 +172,9 @@ TEST_F(TranslateKitClientTest, TwoTranslators) {
                                  {"0/dict.dat", "En to Ja - "},
                                  {"1/dict.dat", "En to Es - "},
                              });
-  auto* translator1 = client->GetTranslator("en", "ja");
+  ASSERT_OK_AND_ASSIGN(auto* translator1, client->GetTranslator("en", "ja"));
   ASSERT_TRUE(translator1);
-  auto* translator2 = client->GetTranslator("en", "es");
+  ASSERT_OK_AND_ASSIGN(auto* translator2, client->GetTranslator("en", "es"));
   ASSERT_TRUE(translator2);
   EXPECT_NE(translator1, translator2);
   EXPECT_EQ(translator1->Translate("test"), "En to Ja - test");
@@ -143,13 +189,13 @@ TEST_F(TranslateKitClientTest, SameTranslator) {
                                  {"0/dict.dat", "En to Ja - "},
                                  {"1/dict.dat", "En to Es - "},
                              });
-  auto* translator1 = client->GetTranslator("en", "ja");
+  ASSERT_OK_AND_ASSIGN(auto* translator1, client->GetTranslator("en", "ja"));
   ASSERT_TRUE(translator1);
-  auto* translator2 = client->GetTranslator("en", "ja");
+  ASSERT_OK_AND_ASSIGN(auto* translator2, client->GetTranslator("en", "ja"));
   ASSERT_TRUE(translator2);
   EXPECT_EQ(translator1, translator2);
-  EXPECT_EQ(translator1->Translate("test1"), "En to Ja - test1");
-  EXPECT_EQ(translator1->Translate("test2"), "En to Ja - test2");
+  EXPECT_EQ(translator1->Translate("test"), "En to Ja - test");
+  EXPECT_EQ(translator2->Translate("test"), "En to Ja - test");
 }
 
 // Tests that the translate method returns nullopt if the library returns an
@@ -159,7 +205,7 @@ TEST_F(TranslateKitClientTest, TranslateFailure) {
                              {
                                  {"0/dict.dat", "En to Ja - "},
                              });
-  auto* translator = client->GetTranslator("en", "ja");
+  ASSERT_OK_AND_ASSIGN(auto* translator, client->GetTranslator("en", "ja"));
   ASSERT_TRUE(translator);
   EXPECT_EQ(translator->Translate("SIMULATE_ERROR"), std::nullopt);
 }
@@ -185,7 +231,8 @@ TEST_F(TranslateKitClientTest, InvalidBinary) {
   // Calling following methods should not cause a crash.
   client->SetConfig(mojom::OnDeviceTranslationServiceConfigPtr());
   EXPECT_FALSE(client->CanTranslate("en", "ja"));
-  EXPECT_FALSE(client->GetTranslator("en", "ja"));
+  EXPECT_THAT(client->GetTranslator("en", "ja"),
+              ErrorIs(CreateTranslatorResult::kErrorInvalidBinary));
 }
 
 // Tests the behavior of TranslateKitClient when the library doesn't contain
@@ -201,7 +248,8 @@ TEST_F(TranslateKitClientTest, InvalidFunctionPointerBinary) {
   // Calling following methods should not cause a crash.
   client->SetConfig(mojom::OnDeviceTranslationServiceConfigPtr());
   EXPECT_FALSE(client->CanTranslate("en", "ja"));
-  EXPECT_FALSE(client->GetTranslator("en", "ja"));
+  EXPECT_THAT(client->GetTranslator("en", "ja"),
+              ErrorIs(CreateTranslatorResult::kErrorInvalidFunctionPointer));
 }
 
 // Tests the behavior of TranslateKitClient when the library's
@@ -215,7 +263,8 @@ TEST_F(TranslateKitClientTest, FailingBinary) {
   // Calling following methods should not cause a crash.
   client->SetConfig(mojom::OnDeviceTranslationServiceConfigPtr());
   EXPECT_FALSE(client->CanTranslate("en", "ja"));
-  EXPECT_FALSE(client->GetTranslator("en", "ja"));
+  EXPECT_THAT(client->GetTranslator("en", "ja"),
+              ErrorIs(CreateTranslatorResult::kErrorFailedToInitialize));
 }
 
 }  // namespace
