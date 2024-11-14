@@ -1032,7 +1032,7 @@ UIColor* BackgroundColor() {
   [self.passkeyNavigationController pushViewController:welcomeScreen
                                               animated:NO];
   [self.presentingView presentViewController:self.passkeyNavigationController
-                                    animated:YES
+                                    animated:NO
                                   completion:nil];
 }
 
