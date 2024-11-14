@@ -123,10 +123,12 @@ bool ShouldLogStorageMetrics(PrefService* pref_service) {
   SpotlightManager* _spotlightManager;
 }
 
-- (instancetype)initWithAppState:(AppState*)appState {
+- (instancetype)initWithAppState:(AppState*)appState
+                 metricsMediator:(MetricsMediator*)metricsMediator {
   if ((self = [super init])) {
     _state = [[ProfileState alloc] initWithAppState:appState];
     _scopedForceOrientation = ForcePortraitOrientationOnIphone(appState);
+    _metricsMediator = metricsMediator;
     [_state addObserver:self];
   }
   return self;

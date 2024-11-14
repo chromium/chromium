@@ -12,6 +12,6 @@ using PlatformControllerTest = PlatformTest;
 // Tests that creating a ProfileController also creates a ProfileState.
 TEST_F(PlatformControllerTest, initializer) {
   ProfileController* controller =
-      [[ProfileController alloc] initWithAppState:nil];
+      [[ProfileController alloc] initWithAppState:nil metricsMediator:nil];
   EXPECT_NE(controller.state, nil);
 }

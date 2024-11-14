@@ -631,10 +631,10 @@ SEQUENCE_CHECKER(_sequenceChecker);
   DCHECK(!profile->IsOffTheRecord());
 
   ProfileController* controller =
-      [[ProfileController alloc] initWithAppState:self.appState];
+      [[ProfileController alloc] initWithAppState:self.appState
+                                  metricsMediator:_metricsMediator];
   [controller.state addObserver:self];
   controller.state.profile = profile;
-  controller.metricsMediator = _metricsMediator;
   auto insertion_result = _profileControllers.insert(
       std::make_pair(profile->GetProfileName(), controller));
   DCHECK(insertion_result.second);
