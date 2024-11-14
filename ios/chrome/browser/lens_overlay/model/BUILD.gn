@@ -97,6 +97,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/lens:enterprise_policy",
     "//components/prefs",
+    "//components/variations",
+    "//components/variations:test_support",
     "//ios/chrome/browser/lens_overlay/coordinator:test_support",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile/test",

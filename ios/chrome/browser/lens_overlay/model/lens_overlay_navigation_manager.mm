@@ -11,6 +11,7 @@
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
+#import "net/base/url_util.h"
 
 #pragma mark - LensResultItem
 
@@ -121,6 +122,14 @@ void LensOverlayNavigationManager::RegisterSubNavigation(GURL url) {
   if (lens_navigation_items_.empty()) {
     NOTREACHED(kLensOverlayNotFatalUntil)
         << "Web navigation without lens result is not supported.";
+  }
+
+  // To prevent dark mode toggles from creating new navigation history entries,
+  // remove the dark mode parameter from the URL. The parameter that determines
+  // the interface style is kept in sync with the system preference and appended
+  // before the URL is loaded.
+  if (url.has_query()) {
+    url = net::AppendOrReplaceQueryParameter(url, "cs", std::nullopt);
   }
 
   // Add sub navigation if it's not a reload.

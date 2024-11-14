@@ -10,6 +10,8 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/uuid.h"
+#import "components/variations/scoped_variations_ids_provider.h"
+#import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/fake_chrome_lens_overlay_result.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_mutator.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -119,6 +121,9 @@ class LensOverlayNavigationManagerTest : public PlatformTest {
   id mock_mutator_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   std::unique_ptr<LensOverlayNavigationManager> manager_;
+
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 
 // Tests simulating a lens navigation.
