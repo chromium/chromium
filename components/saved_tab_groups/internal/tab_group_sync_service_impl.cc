@@ -51,19 +51,37 @@ bool IsSanitizationRequired(const SavedTabGroup& tab_group, const GURL url) {
   return tab_group.is_shared_tab_group() && url.SchemeIsHTTPOrHTTPS();
 }
 
-void UpdateTabSanitizationStatus(const SavedTabGroup& group,
-                                 SavedTabGroupTab* tab) {
-  bool is_sanitization_required = IsSanitizationRequired(group, tab->url());
-  if (is_sanitization_required) {
-    if (IsTabTitleSanitizationEnabled()) {
-      tab->SetIsPendingSanitization(true);
-      return;
-    } else {
-      // TODO(crbug.com/374221675): uncomment the following line.
-      // tab->SetTitle(GetTitleFromUrlForDisplay(tab->url()));
+void UpdateTabTitleIfNeeded(
+    const SavedTabGroup& group,
+    SavedTabGroupTab& tab,
+    optimization_guide::OptimizationGuideDecider* opt_guide) {
+  if (!IsSanitizationRequired(group, tab.url())) {
+    return;
+  }
+
+  std::u16string title = GetTitleFromUrlForDisplay(tab.url());
+  // Optimization guide may be null in tests.
+  if (!IsTabTitleSanitizationEnabled() || !opt_guide) {
+    tab.SetTitle(title);
+    return;
+  }
+
+  optimization_guide::OptimizationMetadata metadata;
+  optimization_guide::OptimizationGuideDecision decision =
+      opt_guide->CanApplyOptimization(
+          tab.url(), optimization_guide::proto::PAGE_ENTITIES, &metadata);
+
+  if (decision == optimization_guide::OptimizationGuideDecision::kTrue &&
+      metadata.any_metadata().has_value()) {
+    std::optional<optimization_guide::proto::PageEntitiesMetadata>
+        page_entities_metadata = metadata.ParsedMetadata<
+            optimization_guide::proto::PageEntitiesMetadata>();
+    if (page_entities_metadata.has_value() &&
+        !page_entities_metadata->alternative_title().empty()) {
+      title = base::ASCIIToUTF16(page_entities_metadata->alternative_title());
     }
   }
-  tab->SetIsPendingSanitization(false);
+  tab.SetTitle(title);
 }
 
 void OnCanApplyOptimizationCompleted(
@@ -83,31 +101,6 @@ void OnCanApplyOptimizationCompleted(
   }
 
   std::move(callback).Run(std::move(url_restriction));
-}
-
-void OnPageEntitiesResponseReceived(
-    const GURL& url,
-    base::OnceCallback<void(const std::u16string&)> callback,
-    optimization_guide::OptimizationGuideDecision decision,
-    const optimization_guide::OptimizationMetadata& metadata) {
-  if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
-    std::move(callback).Run(std::u16string());
-    return;
-  }
-
-  if (metadata.any_metadata().has_value()) {
-    std::optional<optimization_guide::proto::PageEntitiesMetadata>
-        page_entities_metadata = metadata.ParsedMetadata<
-            optimization_guide::proto::PageEntitiesMetadata>();
-    if (page_entities_metadata.has_value() &&
-        !page_entities_metadata->alternative_title().empty()) {
-      std::move(callback).Run(
-          base::ASCIIToUTF16(page_entities_metadata->alternative_title()));
-      return;
-    }
-  }
-
-  std::move(callback).Run(std::u16string());
 }
 
 }  // namespace
@@ -345,7 +338,7 @@ void TabGroupSyncServiceImpl::AddTab(const LocalTabGroupID& group_id,
                            /*saved_tab_guid=*/std::nullopt, tab_id);
   new_tab.SetCreatorCacheGuid(
       sync_bridge_mediator_->GetLocalCacheGuidForSavedBridge());
-  UpdateTabSanitizationStatus(*group, &new_tab);
+  UpdateTabTitleIfNeeded(*group, new_tab, opt_guide_);
 
   UpdateAttributions(group_id);
   model_->UpdateLastUserInteractionTimeLocally(group_id);
@@ -379,7 +372,7 @@ void TabGroupSyncServiceImpl::NavigateTab(const LocalTabGroupID& group_id,
   SavedTabGroupTab updated_tab(*tab);
   updated_tab.SetURL(url);
   updated_tab.SetTitle(title);
-  UpdateTabSanitizationStatus(*group, &updated_tab);
+  UpdateTabTitleIfNeeded(*group, updated_tab, opt_guide_);
 
   model_->UpdateLastUserInteractionTimeLocally(group_id);
   model_->UpdateTabInGroup(group->saved_guid(), std::move(updated_tab),
@@ -503,7 +496,7 @@ void TabGroupSyncServiceImpl::MakeTabGroupShared(
   SavedTabGroup shared_group =
       saved_group->CloneAsSharedTabGroup(std::string(collaboration_id));
   for (auto& tab : shared_group.saved_tabs()) {
-    UpdateTabSanitizationStatus(shared_group, &tab);
+    UpdateTabTitleIfNeeded(shared_group, tab, opt_guide_);
   }
 
   // Make a copy before moving the group.
@@ -1149,19 +1142,6 @@ void TabGroupSyncServiceImpl::LogEvent(
   event_details.local_tab_group_id = group_id;
   event_details.local_tab_id = tab_id;
   metrics_logger_->LogEvent(event_details, group, tab);
-}
-
-void TabGroupSyncServiceImpl::GetPageTitle(const GURL& url,
-                                           GetTitleCallback callback) {
-  if (!opt_guide_) {
-    std::move(callback).Run(std::u16string());
-    return;
-  }
-
-  opt_guide_->CanApplyOptimization(
-      url, optimization_guide::proto::PAGE_ENTITIES,
-      base::BindOnce(&OnPageEntitiesResponseReceived, url,
-                     std::move(callback)));
 }
 
 bool TabGroupSyncServiceImpl::TransitionSavedToSharedTabGroupIfNeeded(

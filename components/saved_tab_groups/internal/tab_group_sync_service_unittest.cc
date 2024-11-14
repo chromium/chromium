@@ -46,6 +46,7 @@ using testing::_;
 using testing::An;
 using testing::ByRef;
 using testing::ContainerEq;
+using testing::DoAll;
 using testing::Eq;
 using testing::Invoke;
 using testing::IsEmpty;
@@ -53,6 +54,7 @@ using testing::Matcher;
 using testing::NotNull;
 using testing::Return;
 using testing::Sequence;
+using testing::SetArgPointee;
 using testing::SizeIs;
 using testing::WithArgs;
 
@@ -60,6 +62,18 @@ namespace tab_groups {
 namespace {
 
 const char kTestCacheGuid[] = "test_cache_guid";
+
+optimization_guide::OptimizationMetadata GetPageEntitiesMetadata(
+    const std::string& title) {
+  optimization_guide::proto::PageEntitiesMetadata page_entities_metadata;
+  page_entities_metadata.set_alternative_title(title);
+  optimization_guide::proto::Any any;
+  any.set_type_url(page_entities_metadata.GetTypeName());
+  page_entities_metadata.SerializeToString(any.mutable_value());
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.set_any_metadata(any);
+  return metadata;
+}
 
 class MockTabGroupSyncServiceObserver : public TabGroupSyncService::Observer {
  public:
@@ -586,7 +600,6 @@ TEST_F(TabGroupSyncServiceTest, AddTab) {
 
 // Tests that addubg a tab to a shared group.
 TEST_F(TabGroupSyncServiceTest, AddTabToSharedGroup) {
-  feature_list_.InitWithFeatures({tab_groups::kEnableTabTitleSanitization}, {});
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id_1_);
   ASSERT_EQ(group->saved_tabs().size(), 1u);
@@ -610,11 +623,11 @@ TEST_F(TabGroupSyncServiceTest, AddTabToSharedGroup) {
                                   GURL("www.google.com"), std::nullopt);
 
   shared_group = tab_group_sync_service_->GetGroup(local_group_id_1_);
-  ASSERT_EQ(shared_group->saved_tabs().size(), 3u);
-  // Only tab 2 has pending sanitization as it is a HTTPS url.
-  ASSERT_FALSE(shared_group->saved_tabs()[0].is_pending_sanitization());
-  ASSERT_TRUE(shared_group->saved_tabs()[1].is_pending_sanitization());
-  ASSERT_FALSE(shared_group->saved_tabs()[2].is_pending_sanitization());
+  EXPECT_EQ(shared_group->saved_tabs().size(), 3u);
+  // Only tab 2 has title sanitized as it is an HTTPS url.
+  EXPECT_EQ(shared_group->saved_tabs()[0].title(), u"Only Tab");
+  EXPECT_EQ(shared_group->saved_tabs()[1].title(), u"google.com");
+  EXPECT_EQ(shared_group->saved_tabs()[2].title(), u"foo2");
 }
 
 TEST_F(TabGroupSyncServiceTest, AddUpdateRemoveTabWithUnknownGroupId) {
@@ -1234,38 +1247,70 @@ TEST_F(TabGroupSyncServiceTest, GetURLRestrictionFailed) {
   }
 }
 
-TEST_F(TabGroupSyncServiceTest, UpdateTabTitleForSharedTabGroup) {
-  feature_list_.InitWithFeatures({tab_groups::kEnableTabTitleSanitization}, {});
+TEST_F(TabGroupSyncServiceTest, SharedTabGroupTabTitleSanitizedWhenNavigate) {
   tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_, "colab");
   // The new group replaces the originating one asynchronously.
   WaitForPostedTasks();
 
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), SizeIs(1));
-  auto tab =
+  SavedTabGroupTab tab =
       tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_tabs()[0];
-  EXPECT_FALSE(tab.is_pending_sanitization());
   tab_group_sync_service_->UpdateLocalTabId(
       local_group_id_1_, tab.saved_tab_guid(), local_tab_id_1_);
 
   tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
                                        GURL("https://foo.com"), u"title2");
   tab = tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_tabs()[0];
-  EXPECT_TRUE(tab.is_pending_sanitization());
+  EXPECT_EQ(tab.title(), u"foo.com");
 }
 
-TEST_F(TabGroupSyncServiceTest, TabPendingSanitizationAfterMakeTabGroupShared) {
-  feature_list_.InitWithFeatures({tab_groups::kEnableTabTitleSanitization}, {});
+TEST_F(TabGroupSyncServiceTest, TabTitleSanitizedAfterMakeTabGroupShared) {
   tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
                                        GURL("https://foo.com"), u"title");
-  auto tab =
-      tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_tabs()[0];
-  EXPECT_FALSE(tab.is_pending_sanitization());
-
   tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_, "colab");
   // The new group replaces the originating one asynchronously.
   WaitForPostedTasks();
+
+  EXPECT_EQ(
+      tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_tabs().size(),
+      1u);
+  SavedTabGroupTab tab =
+      tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_tabs()[0];
+  EXPECT_EQ(tab.title(), u"foo.com");
+}
+
+TEST_F(TabGroupSyncServiceTest, GetTabTitleFromOptGuide) {
+  feature_list_.InitWithFeatures({tab_groups::kEnableTabTitleSanitization}, {});
+  tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
+                                       GURL("https://foo.com"), u"title");
+
+  EXPECT_CALL(*decider_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::PAGE_ENTITIES,
+                  Matcher<optimization_guide::OptimizationMetadata*>(_)))
+      .WillOnce(
+          DoAll(SetArgPointee<2>(GetPageEntitiesMetadata("alt1")),
+                Return(optimization_guide::OptimizationGuideDecision::kTrue)));
+  tab_group_sync_service_->MakeTabGroupShared(local_group_id_1_, "colab");
+  // The new group replaces the originating one asynchronously.
+  WaitForPostedTasks();
+  SavedTabGroupTab tab =
+      tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_tabs()[0];
+  EXPECT_EQ(tab.title(), u"alt1");
+
+  EXPECT_CALL(*decider_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::PAGE_ENTITIES,
+                  Matcher<optimization_guide::OptimizationMetadata*>(_)))
+      .WillOnce(
+          DoAll(SetArgPointee<2>(GetPageEntitiesMetadata("alt2")),
+                Return(optimization_guide::OptimizationGuideDecision::kTrue)));
+  tab_group_sync_service_->UpdateLocalTabId(
+      local_group_id_1_, tab.saved_tab_guid(), local_tab_id_1_);
+  tab_group_sync_service_->NavigateTab(local_group_id_1_, local_tab_id_1_,
+                                       GURL("https://foo.com"), u"title2");
   tab = tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_tabs()[0];
-  EXPECT_TRUE(tab.is_pending_sanitization());
+  EXPECT_EQ(tab.title(), u"alt2");
 }
 
 TEST_F(TabGroupSyncServiceTest, MakeTabGroupShared) {

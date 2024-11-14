@@ -21,6 +21,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/saved_tab_groups/public/utils.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
@@ -247,13 +248,19 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
   MakeTabGroupShared(local_group_id, "collaboration");
 
   // Saved tab group remains intact, hence verify only that the shared tab group
-  // is committed.
-  EXPECT_TRUE(
-      ServerSharedTabGroupMatchChecker(
-          UnorderedElementsAre(HasSpecificsSharedTabGroup(
-                                   "title", sync_pb::SharedTabGroup::BLUE),
-                               HasSpecificsSharedTab(kDefaultTabTitle, kUrl)))
-          .Wait());
+  // is committed. Page title will be sanitized when convering a saved tab group
+  // to a shared tab group, thus is may not match the original title.
+  // TODO(crbug.com/374221675): test the case that title is from optimization
+  // guide.
+  EXPECT_TRUE(ServerSharedTabGroupMatchChecker(
+                  UnorderedElementsAre(
+                      HasSpecificsSharedTabGroup("title",
+                                                 sync_pb::SharedTabGroup::BLUE),
+                      HasSpecificsSharedTab(
+                          base::UTF16ToUTF8(
+                              tab_groups::GetTitleFromUrlForDisplay(kUrl)),
+                          kUrl)))
+                  .Wait());
 
   std::vector<sync_pb::SyncEntity> server_entities_shared =
       GetFakeServer()->GetSyncEntitiesByDataType(syncer::SHARED_TAB_GROUP_DATA);

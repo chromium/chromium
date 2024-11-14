@@ -230,10 +230,6 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
                 LocalTabGroupID group_id,
                 const std::optional<LocalTabID>& tab_id = std::nullopt);
 
-  using GetTitleCallback = base::OnceCallback<void(const std::u16string&)>;
-  // Get the title on a given URL.
-  void GetPageTitle(const GURL& url, GetTitleCallback callback);
-
   // Creates a copy of all shared tab groups from the model and stores them in
   // `shared_tab_groups_available_at_startup_for_messaging_` for later
   // retrieval.
