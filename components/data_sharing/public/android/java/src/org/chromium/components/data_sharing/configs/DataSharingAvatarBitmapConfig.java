@@ -19,15 +19,15 @@ public final class DataSharingAvatarBitmapConfig {
     private final DataSharingAvatarCallback mDataSharingAvatarCallback;
 
     /** Interface used to pass the result of avatar loading. */
+    @FunctionalInterface
     public interface DataSharingAvatarCallback {
 
         /**
          * Called when the avatar bitmap is ready.
          *
-         * @param bitmap The loaded avatar bitmap. If might return null, if group member is
-         *               invalid.
+         * @param bitmap The loaded avatar bitmap. If might return null, if group member is invalid.
          */
-        default void onAvatarLoaded(Bitmap bitmap) {}
+        void onAvatarLoaded(Bitmap bitmap);
     }
 
     private DataSharingAvatarBitmapConfig(Builder builder) {

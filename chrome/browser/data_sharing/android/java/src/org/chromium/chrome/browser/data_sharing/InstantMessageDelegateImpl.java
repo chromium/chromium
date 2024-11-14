@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.data_sharing;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
@@ -14,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
@@ -27,6 +30,10 @@ import org.chromium.components.collaboration.messaging.InstantNotificationLevel;
 import org.chromium.components.collaboration.messaging.MessageUtils;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.MessagingBackendService.InstantMessageDelegate;
+import org.chromium.components.data_sharing.DataSharingUIDelegate;
+import org.chromium.components.data_sharing.GroupMember;
+import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
+import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig.DataSharingAvatarCallback;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
@@ -34,6 +41,7 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +71,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
     }
 
     private final List<AttachedWindowInfo> mAttachList = new ArrayList<>();
+    private final DataSharingUIDelegate mDataSharingUiDelegate;
 
     /**
      * @param profile The current profile to get dependencies with.
@@ -72,6 +81,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
         MessagingBackendService messagingBackendService =
                 MessagingBackendServiceFactory.getForProfile(profile);
         messagingBackendService.setInstantMessageDelegate(this);
+        mDataSharingUiDelegate = DataSharingServiceFactory.getForProfile(profile).getUiDelegate();
     }
 
     /**
@@ -191,9 +201,21 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
         return null;
     }
 
-    private Drawable iconFromMessage(Context context) {
-        // TODO(https://crbug.com/369163940): Fetch this, potentially async.
-        return ContextCompat.getDrawable(context, R.drawable.ic_features_24dp);
+    private void fetchAvatarIconFromMessage(
+            Context context, GroupMember groupMember, Callback<Drawable> onDrawable) {
+        DataSharingAvatarCallback onBitmap =
+                (Bitmap bitmap) -> onDrawable.onResult(new BitmapDrawable(bitmap));
+        int sizeInPixels =
+                context.getResources().getDimensionPixelSize(R.dimen.message_description_icon_size);
+        DataSharingAvatarBitmapConfig config =
+                new DataSharingAvatarBitmapConfig.Builder()
+                        .setContext(context)
+                        .setGroupMember(groupMember)
+                        .setIsDarkMode(ColorUtils.inNightMode(context))
+                        .setAvatarSizeInPixels(sizeInPixels)
+                        .setDataSharingAvatarCallback(onBitmap)
+                        .build();
+        mDataSharingUiDelegate.getAvatarBitmap(config);
     }
 
     private void showTabRemoved(
@@ -207,16 +229,23 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 context.getString(
                         R.string.data_sharing_browser_message_removed_tab, givenName, tabTitle);
         String buttonText = context.getString(R.string.data_sharing_browser_message_reopen);
-        Drawable icon = iconFromMessage(context);
+        GroupMember groupMember = MessageUtils.extractMember(message);
         // TODO(https://crbug.com/369163940): Once the message has the url, we can restore.
-        showGenericMessage(
-                messageDispatcher,
-                MessageIdentifier.TAB_REMOVED_THROUGH_COLLABORATION,
-                title,
-                buttonText,
-                icon,
-                () -> {},
-                onSuccess);
+        Runnable action = CallbackUtils.emptyRunnable();
+
+        fetchAvatarIconFromMessage(
+                context,
+                groupMember,
+                (icon) -> {
+                    showGenericMessage(
+                            messageDispatcher,
+                            MessageIdentifier.TAB_REMOVED_THROUGH_COLLABORATION,
+                            title,
+                            buttonText,
+                            icon,
+                            action,
+                            onSuccess);
+                });
     }
 
     private void showTabChange(
@@ -230,16 +259,23 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 context.getString(
                         R.string.data_sharing_browser_message_changed_tab, givenName, tabTitle);
         String buttonText = context.getString(R.string.data_sharing_browser_message_reopen);
-        Drawable icon = iconFromMessage(context);
+        GroupMember groupMember = MessageUtils.extractMember(message);
         // TODO(https://crbug.com/369163940): Once the message has the url, we can restore.
-        showGenericMessage(
-                messageDispatcher,
-                MessageIdentifier.TAB_NAVIGATED_THROUGH_COLLABORATION,
-                title,
-                buttonText,
-                icon,
-                () -> {},
-                onSuccess);
+        Runnable action = CallbackUtils.emptyRunnable();
+
+        fetchAvatarIconFromMessage(
+                context,
+                groupMember,
+                (icon) -> {
+                    showGenericMessage(
+                            messageDispatcher,
+                            MessageIdentifier.TAB_NAVIGATED_THROUGH_COLLABORATION,
+                            title,
+                            buttonText,
+                            icon,
+                            action,
+                            onSuccess);
+                });
     }
 
     private void showCollaborationMemberAdded(
@@ -258,7 +294,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                         givenName,
                         tabGroupTitle);
         String buttonText = activity.getString(R.string.data_sharing_browser_message_manage);
-        Drawable icon = iconFromMessage(activity);
+        GroupMember groupMember = MessageUtils.extractMember(message);
         Runnable openManageSharingRunnable =
                 () -> {
                     // TODO(crbug.com/379148260): Use shared #isCollaborationIdValid.
@@ -266,14 +302,20 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                         dataSharingTabManager.showManageSharing(activity, collaborationId);
                     }
                 };
-        showGenericMessage(
-                messageDispatcher,
-                MessageIdentifier.COLLABORATION_MEMBER_ADDED,
-                title,
-                buttonText,
-                icon,
-                openManageSharingRunnable,
-                onSuccess);
+
+        fetchAvatarIconFromMessage(
+                activity,
+                groupMember,
+                (icon) -> {
+                    showGenericMessage(
+                            messageDispatcher,
+                            MessageIdentifier.COLLABORATION_MEMBER_ADDED,
+                            title,
+                            buttonText,
+                            icon,
+                            openManageSharingRunnable,
+                            onSuccess);
+                });
     }
 
     private void showCollaborationRemoved(
@@ -294,7 +336,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 title,
                 buttonText,
                 icon,
-                () -> {},
+                CallbackUtils.emptyRunnable(),
                 onSuccess);
     }
 

@@ -25,6 +25,7 @@ import static org.chromium.components.messages.MessageBannerProperties.TITLE;
 import static org.chromium.components.messages.PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -54,6 +55,9 @@ import org.chromium.components.collaboration.messaging.MessageAttribution;
 import org.chromium.components.collaboration.messaging.MessagingBackendService;
 import org.chromium.components.collaboration.messaging.TabGroupMessageMetadata;
 import org.chromium.components.collaboration.messaging.TabMessageMetadata;
+import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.DataSharingUIDelegate;
+import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessagesFactory;
@@ -81,12 +85,15 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Mock private Profile mProfile;
     @Mock private MessagingBackendService mMessagingBackendService;
+    @Mock private DataSharingService mDataSharingService;
+    @Mock private DataSharingUIDelegate mDataSharingUiDelegate;
     @Mock private ManagedMessageDispatcher mManagedMessageDispatcher;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private Callback<Boolean> mSuccessCallback;
     @Mock private DataSharingNotificationManager mDataSharingNotificationManager;
     @Mock private DataSharingTabManager mDataSharingTabManager;
+    @Mock private Bitmap mAvatarBitmap;
 
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
 
@@ -102,6 +109,13 @@ public class InstantMessageDelegateImplUnitTest {
 
     private void onActivity(Activity activity) {
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
+        DataSharingServiceFactory.setForTesting(mDataSharingService);
+        when(mDataSharingService.getUiDelegate()).thenReturn(mDataSharingUiDelegate);
+        MockitoHelper.doCallback(
+                        (DataSharingAvatarBitmapConfig config) ->
+                                config.getDataSharingAvatarCallback().onAvatarLoaded(mAvatarBitmap))
+                .when(mDataSharingUiDelegate)
+                .getAvatarBitmap(any());
 
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUnownedUserDataHost);
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mManagedMessageDispatcher);

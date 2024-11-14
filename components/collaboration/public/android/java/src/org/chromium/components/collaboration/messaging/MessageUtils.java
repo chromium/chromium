@@ -7,6 +7,7 @@ package org.chromium.components.collaboration.messaging;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Token;
+import org.chromium.components.data_sharing.GroupMember;
 
 /** Provides functions to safely read fields out of messages, performing null checks. */
 public class MessageUtils {
@@ -73,5 +74,16 @@ public class MessageUtils {
         return message == null || message.attribution == null
                 ? null
                 : message.attribution.collaborationId;
+    }
+
+    /** Returns a GroupMember associated with the message, prioritizing affected over triggering. */
+    public static GroupMember extractMember(@Nullable InstantMessage message) {
+        if (message == null || message.attribution == null) {
+            return null;
+        } else if (message.attribution.affectedUser != null) {
+            return message.attribution.affectedUser;
+        } else {
+            return message.attribution.triggeringUser;
+        }
     }
 }

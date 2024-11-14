@@ -6,6 +6,9 @@ package org.chromium.components.collaboration.messaging;
 
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER1;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER2;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -124,5 +127,22 @@ public class MessageUtilsUnitTest {
         assertEquals("", MessageUtils.extractTabGroupTitle(message));
 
         assertEquals("", MessageUtils.extractTabGroupTitle(null));
+    }
+
+    @Test
+    public void testExtractMember() {
+        assertEquals(null, MessageUtils.extractMember(null));
+
+        InstantMessage message = new InstantMessage();
+        assertEquals(null, MessageUtils.extractMember(message));
+
+        message.attribution = new MessageAttribution();
+        assertEquals(null, MessageUtils.extractMember(message));
+
+        message.attribution.triggeringUser = GROUP_MEMBER1;
+        assertEquals(GROUP_MEMBER1, MessageUtils.extractMember(message));
+
+        message.attribution.affectedUser = GROUP_MEMBER2;
+        assertEquals(GROUP_MEMBER2, MessageUtils.extractMember(message));
     }
 }
