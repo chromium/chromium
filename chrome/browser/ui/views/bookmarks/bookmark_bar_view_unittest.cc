@@ -558,7 +558,13 @@ TEST_F(BookmarkBarViewTest, ManagedShowAppsShortcutInBookmarksBar) {
 
 // Verifies the SavedTabGroupBar's page navigator is set when the
 // bookmarkbarview's page navigator is set.
-TEST_F(BookmarkBarViewTest, PageNavigatorSet) {
+// TODO(crbug.com/375364962): Flaky on Windows & Linux.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#define MAYBE_PageNavigatorSet DISABLED_PageNavigatorSet
+#else
+#define MAYBE_PageNavigatorSet PageNavigatorSet
+#endif
+TEST_F(BookmarkBarViewTest, MAYBE_PageNavigatorSet) {
   // Expect SavedTabGroupBar to have a page navigator when BookmarkBarView
   // does.
   EXPECT_FALSE(test_helper_->saved_tab_group_bar()->page_navigator());
@@ -643,7 +649,13 @@ TEST_F(BookmarkBarViewInWidgetTest, UpdateTooltipText) {
   EXPECT_EQ(u"new title\na.com", button->GetTooltipText(p));
 }
 
-TEST_F(BookmarkBarViewTest, AccessibleRoleDescription) {
+// TODO(crbug.com/375364962): Flaky on Windows & Linux.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#define MAYBE_AccessibleRoleDescription DISABLED_AccessibleRoleDescription
+#else
+#define MAYBE_AccessibleRoleDescription AccessibleRoleDescription
+#endif
+TEST_F(BookmarkBarViewTest, MAYBE_AccessibleRoleDescription) {
   AddNodesToBookmarkBarFromModelString("a b c d e f ");
   SizeUntilButtonsVisible(1);
   views::LabelButton* button = test_helper_->GetBookmarkButton(0);

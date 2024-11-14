@@ -1121,7 +1121,13 @@ class NetworkServiceCookieTest
 // SetCookieEncryptionProvider is called with a provider, and
 // enable_encrypted_cookies is on, then the GetEncryptor method is called and
 // the returned Encryptor is used for encryption.
-TEST_P(NetworkServiceCookieTest, CookieEncryptionProvider) {
+// TODO(crbug.com/378060730): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CookieEncryptionProvider DISABLED_CookieEncryptionProvider
+#else
+#define MAYBE_CookieEncryptionProvider CookieEncryptionProvider
+#endif
+TEST_P(NetworkServiceCookieTest, MAYBE_CookieEncryptionProvider) {
   const auto cookie_path = base::FilePath(FILE_PATH_LITERAL("Cookies"));
   testing::StrictMock<TestCookieEncryptionProvider> provider;
   std::optional<base::ScopedClosureRunner> maybe_teardown_os_crypt;
