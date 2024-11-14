@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
+#include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -73,6 +74,9 @@ class PlusAddressCreationControllerAndroid
 
   // Returns whether the onboarding screen with the notice should be shown.
   bool ShouldShowNotice() const;
+
+  // Shows an applicable user perception survey.
+  void TriggerUserPerceptionSurvey(hats::SurveyType survey_type);
 
   PlusAddressService* GetPlusAddressService();
   PlusAddressSettingService* GetPlusAddressSettingService();

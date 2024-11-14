@@ -21,6 +21,7 @@
 #include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
+#include "components/plus_addresses/plus_address_hats_utils.h"
 #include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/mock_plus_address_setting_service.h"
@@ -34,6 +35,7 @@
 namespace plus_addresses {
 namespace {
 
+using ::testing::Optional;
 using ::testing::Return;
 
 constexpr std::string_view kPlusAddressModalEventHistogram =
@@ -165,6 +167,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, AcceptCreation) {
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "PlusAddresses.OfferedPlusAddressAccepted"),
             1);
+  EXPECT_EQ(plus_address_service().get_triggered_survey_type(), std::nullopt);
 }
 
 // Tests that no notice is shown if the onboarding feature is disabled.
@@ -189,6 +192,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
   FastForwardBy(kDuration);
   controller->OnConfirmed();
   EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(plus_address_service().get_triggered_survey_type(), std::nullopt);
 }
 
 // Tests that the notice is shown and its acceptance registered if the
@@ -236,6 +240,8 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeAccept) {
   EXPECT_EQ(profile()->GetTestingPrefService()->GetTime(
                 prefs::kFirstPlusAddressCreationTime),
             base::Time::Now());
+  EXPECT_THAT(plus_address_service().get_triggered_survey_type(),
+              Optional(hats::SurveyType::kAcceptedFirstTimeCreate));
 }
 
 // Tests that the notice is shown if the  `kPlusAddressUserOnboardingEnabled`,
@@ -278,6 +284,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeCancel) {
           metrics::PlusAddressModalCompletionStatus::kModalCanceled,
           /*notice_shown=*/true),
       0, 1);
+  EXPECT_EQ(plus_address_service().get_triggered_survey_type(), std::nullopt);
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, RefreshPlusAddress) {
@@ -360,6 +367,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnConfirmedError) {
   EXPECT_EQ(
       user_action_tester.GetActionCount("PlusAddresses.CreateErrorCanceled"),
       1);
+  EXPECT_EQ(plus_address_service().get_triggered_survey_type(), std::nullopt);
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnReservedError) {
@@ -402,6 +410,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, OnReservedError) {
   EXPECT_EQ(
       user_action_tester.GetActionCount("PlusAddresses.ReserveErrorCanceled"),
       1);
+  EXPECT_EQ(plus_address_service().get_triggered_survey_type(), std::nullopt);
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
@@ -461,6 +470,7 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ModalCanceled) {
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "PlusAddresses.OfferedPlusAddressDeclined"),
             1);
+  EXPECT_EQ(plus_address_service().get_triggered_survey_type(), std::nullopt);
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest,

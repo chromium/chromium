@@ -322,6 +322,7 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
             ->GetPrefs()
             ->SetTime(prefs::kFirstPlusAddressCreationTime, base::Time::Now());
         GetPlusAddressSettingService()->SetHasAcceptedNotice();
+        TriggerUserPerceptionSurvey(hats::SurveyType::kAcceptedFirstTimeCreate);
       }
       std::move(callback_).Run(*maybe_plus_profile->plus_address);
       RecordModalShownOutcome(
@@ -391,6 +392,13 @@ bool PlusAddressCreationControllerAndroid::ShouldShowNotice() const {
   return setting_service && !setting_service->GetHasAcceptedNotice() &&
          base::FeatureList::IsEnabled(
              features::kPlusAddressUserOnboardingEnabled);
+}
+
+void PlusAddressCreationControllerAndroid::TriggerUserPerceptionSurvey(
+    hats::SurveyType survey_type) {
+  if (PlusAddressService* plus_address_service = GetPlusAddressService()) {
+    plus_address_service->TriggerUserPerceptionSurvey(survey_type);
+  }
 }
 
 PlusAddressService*
