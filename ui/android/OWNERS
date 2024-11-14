@@ -10,3 +10,7 @@ per-file BUILD.gn=file://ui/android/java/res/LAYOUT_OWNERS
 # for display/window/view_android
 boliu@chromium.org
 jinsukkim@chromium.org
+
+# for inset related files
+per-file *Inset*=wenyufu@chromium.org
+per-file *Inset*=pnoland@chromium.org
