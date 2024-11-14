@@ -428,6 +428,8 @@ component("net") {
     "cookies/site_for_cookies.h",
     "cookies/static_cookie_policy.cc",
     "cookies/static_cookie_policy.h",
+    "device_bound_sessions/session_key.cc",
+    "device_bound_sessions/session_key.h",
     "disk_cache/backend_cleanup_tracker.cc",
     "disk_cache/backend_cleanup_tracker.h",
     "disk_cache/backend_experiment.cc",
@@ -1190,8 +1192,6 @@ component("net") {
       "device_bound_sessions/session_inclusion_rules.h",
       "device_bound_sessions/session_json_utils.cc",
       "device_bound_sessions/session_json_utils.h",
-      "device_bound_sessions/session_key.cc",
-      "device_bound_sessions/session_key.h",
       "device_bound_sessions/session_params.cc",
       "device_bound_sessions/session_params.h",
       "device_bound_sessions/session_service.cc",
@@ -3431,9 +3431,7 @@ if (!is_ios) {
     }
 
     if (is_android) {
-      deps += [
-        "//net/android:net_java",
-      ]
+      deps += [ "//net/android:net_java" ]
     }
   }
 }

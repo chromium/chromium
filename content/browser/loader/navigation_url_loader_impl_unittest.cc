@@ -129,9 +129,7 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
         /*trust_token_observer=*/mojo::NullRemote(),
         /*url_loader_network_observer=*/mojo::NullRemote(),
         /*devtools_observer=*/mojo::NullRemote(),
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
         /*device_bound_session_observer=*/mojo::NullRemote(),
-#endif
         /*accept_ch_frame_observer=*/mojo::NullRemote(),
         /*attribution_request_helper=*/nullptr,
         /*shared_storage_writable=*/false);

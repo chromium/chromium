@@ -523,14 +523,12 @@ bool IncludesValidLoadField(const net::HttpResponseHeaders* headers) {
   return item->item.is_token() && item->item.GetString() == "load";
 }
 
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 mojo::SharedRemote<mojom::DeviceBoundSessionAccessObserver> Clone(
     mojom::DeviceBoundSessionAccessObserver& observer) {
   mojo::SharedRemote<mojom::DeviceBoundSessionAccessObserver> new_observer;
   observer.Clone(new_observer.BindNewPipeAndPassReceiver());
   return new_observer;
 }
-#endif
 
 }  // namespace
 
@@ -586,10 +584,8 @@ URLLoader::URLLoader(
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
     mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver>
         device_bound_session_observer,
-#endif
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
     std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
     bool shared_storage_writable_eligible)
@@ -651,13 +647,11 @@ URLLoader::URLLoader(
       devtools_observer_remote_(std::move(devtools_observer)),
       devtools_observer_(PtrOrFallback(devtools_observer_remote_,
                                        context.GetDevToolsObserver())),
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
       device_bound_session_observer_remote_(
           std::move(device_bound_session_observer)),
       device_bound_session_observer_(
           PtrOrFallback(device_bound_session_observer_remote_,
                         context.GetDeviceBoundSessionAccessObserver())),
-#endif
       shared_storage_request_helper_(
           std::make_unique<SharedStorageRequestHelper>(
               shared_storage_writable_eligible,
@@ -914,7 +908,6 @@ void URLLoader::ConfigureRequest(
     url_request_->set_socket_tag(std::move(socket_tag));
   }
 
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   // Device bound session access can happen asynchronously as a result
   // of this URLRequest. So create a separate Remote that will outlive
   // this.
@@ -923,7 +916,6 @@ void URLLoader::ConfigureRequest(
         &mojom::DeviceBoundSessionAccessObserver::OnDeviceBoundSessionAccessed,
         Clone(*device_bound_session_observer_)));
   }
-#endif
 }
 
 // This class is used to manage the queue of pending file upload operations

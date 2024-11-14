@@ -9,12 +9,12 @@
 #include <optional>
 #include <string>
 
-#include "base/types/strong_alias.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/base/net_export.h"
 #include "net/device_bound_sessions/cookie_craving.h"
 #include "net/device_bound_sessions/session_inclusion_rules.h"
+#include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/session_params.h"
 #include "url/gurl.h"
 
@@ -31,7 +31,7 @@ class Session;
 // This class represents a DBSC (Device Bound Session Credentials) session.
 class NET_EXPORT Session {
  public:
-  using Id = base::StrongAlias<class IdTag, std::string>;
+  using Id = SessionKey::Id;
   using KeyIdOrError =
       unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>;
 

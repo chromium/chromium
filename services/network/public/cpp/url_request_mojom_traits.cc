@@ -23,6 +23,7 @@
 #include "services/network/public/cpp/url_request_param_mojom_traits.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom.h"
@@ -32,10 +33,6 @@
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 #include "url/mojom/origin_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
-
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-#include "services/network/public/mojom/device_bound_sessions.mojom.h"
-#endif
 
 namespace mojo {
 
@@ -106,10 +103,8 @@ bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
       mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>>();
   out->devtools_observer = data.TakeDevtoolsObserver<
       mojo::PendingRemote<network::mojom::DevToolsObserver>>();
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   out->device_bound_session_observer = data.TakeDeviceBoundSessionObserver<
       mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>>();
-#endif
   if (!data.ReadClientSecurityState(&out->client_security_state)) {
     return false;
   }

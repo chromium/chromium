@@ -17,6 +17,7 @@ namespace net::device_bound_sessions {
 
 std::unique_ptr<SessionService> SessionService::Create(
     const URLRequestContext* request_context) {
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   unexportable_keys::UnexportableKeyService* service =
       UnexportableKeyServiceFactory::GetInstance()->GetShared();
   if (!service) {
@@ -29,6 +30,9 @@ std::unique_ptr<SessionService> SessionService::Create(
   // Loads saved sessions if `session_store` is not null.
   session_service->LoadSessionsAsync();
   return session_service;
+#else
+  return nullptr;
+#endif
 }
 
 }  // namespace net::device_bound_sessions

@@ -24,6 +24,7 @@
 #include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -31,10 +32,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/mojom/origin_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
-
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-#include "services/network/public/mojom/device_bound_sessions.mojom.h"
-#endif
 
 namespace network {
 namespace {

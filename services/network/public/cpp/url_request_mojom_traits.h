@@ -32,6 +32,7 @@
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom-forward.h"
 #include "services/network/public/mojom/devtools_observer.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/trust_token_access_observer.mojom-forward.h"
@@ -41,10 +42,6 @@
 #include "services/network/public/mojom/url_request.mojom-forward.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom-forward.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
-
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-#include "services/network/public/mojom/device_bound_sessions.mojom-forward.h"
-#endif
 
 namespace mojo {
 
@@ -120,7 +117,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
         const_cast<network::ResourceRequest::TrustedParams&>(trusted_params)
             .devtools_observer);
   }
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   static mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
   device_bound_session_observer(
       const network::ResourceRequest::TrustedParams& trusted_params) {
@@ -131,7 +127,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
         const_cast<network::ResourceRequest::TrustedParams&>(trusted_params)
             .device_bound_session_observer);
   }
-#endif
   static const network::mojom::ClientSecurityStatePtr& client_security_state(
       const network::ResourceRequest::TrustedParams& trusted_params) {
     return trusted_params.client_security_state;

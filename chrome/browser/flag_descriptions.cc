@@ -8253,7 +8253,6 @@ const char
         "manual testing only.";
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 const char kEnableStandardBoundSessionCredentialsName[] =
     "Device Bound Session Credentials (Standard)";
 const char kEnableStandardBoundSessionCredentialsDescription[] =
@@ -8264,7 +8263,6 @@ const char kEnableStandardBoundSessionPersistenceName[] =
 const char kEnableStandardBoundSessionPersistenceDescription[] =
     "Enables session persistence for the official version of "
     "Device Bound Session Credentials.";
-#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 const char kEnableCertManagementV2UIName[] = "Cert Management V2 UI";

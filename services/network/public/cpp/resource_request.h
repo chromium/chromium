@@ -31,6 +31,7 @@
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom-forward.h"
 #include "services/network/public/mojom/devtools_observer.mojom-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
@@ -43,10 +44,6 @@
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-#include "services/network/public/mojom/device_bound_sessions.mojom-forward.h"
-#endif
 
 namespace network {
 
@@ -83,10 +80,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer;
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
     mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver>
         device_bound_session_observer;
-#endif
     mojom::ClientSecurityStatePtr client_security_state;
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer;
     mojo::PendingRemote<mojom::SharedDictionaryAccessObserver>

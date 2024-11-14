@@ -5,15 +5,17 @@
 #ifndef NET_DEVICE_BOUND_SESSIONS_SESSION_KEY_H_
 #define NET_DEVICE_BOUND_SESSIONS_SESSION_KEY_H_
 
+#include "base/types/strong_alias.h"
 #include "net/base/schemeful_site.h"
-#include "net/device_bound_sessions/session.h"
 
 namespace net::device_bound_sessions {
 
 // Unique identifier for a `Session`.
 struct NET_EXPORT SessionKey {
+  using Id = base::StrongAlias<class IdTag, std::string>;
+
   SessionKey();
-  SessionKey(SchemefulSite site, Session::Id id);
+  SessionKey(SchemefulSite site, Id id);
   ~SessionKey();
 
   SessionKey(const SessionKey&);
@@ -23,7 +25,7 @@ struct NET_EXPORT SessionKey {
   SessionKey& operator=(SessionKey&&);
 
   SchemefulSite site;
-  Session::Id id;
+  Id id;
 };
 
 }  // namespace net::device_bound_sessions

@@ -47,6 +47,7 @@
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
@@ -65,10 +66,6 @@
 #include "services/network/trust_tokens/trust_token_request_helper_factory.h"
 #include "services/network/upload_progress_tracker.h"
 #include "services/network/url_loader_context.h"
-
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-#include "services/network/public/mojom/device_bound_sessions.mojom.h"
-#endif
 
 namespace net {
 class HttpResponseHeaders;
@@ -198,10 +195,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_observer,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
       mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver>
           device_bound_session_access_observer,
-#endif
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
           accept_ch_frame_observer,
       std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
@@ -842,12 +837,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       url_loader_network_observer_ = nullptr;
   const mojo::Remote<mojom::DevToolsObserver> devtools_observer_remote_;
   const raw_ptr<mojom::DevToolsObserver> devtools_observer_ = nullptr;
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   const mojo::Remote<mojom::DeviceBoundSessionAccessObserver>
       device_bound_session_observer_remote_;
   const raw_ptr<mojom::DeviceBoundSessionAccessObserver>
       device_bound_session_observer_ = nullptr;
-#endif
 
   // Request helper responsible for processing Shared Storage headers
   // (https://github.com/WICG/shared-storage#from-response-headers).

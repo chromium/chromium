@@ -479,6 +479,7 @@ mojom("url_loader_base") {
     "cross_origin_embedder_policy.mojom",
     "cross_origin_opener_policy.mojom",
     "data_pipe_getter.mojom",
+    "device_bound_sessions.mojom",
     "devtools_observer.mojom",
     "document_isolation_policy.mojom",
     "early_hints.mojom",
@@ -546,10 +547,6 @@ mojom("url_loader_base") {
     # TODO(crbug.com/40263697): Remove this once is_linux in the mojom IDL does
     # not include lacros.
     enabled_features += [ "use_network_interface_change_listener" ]
-  }
-
-  if (enable_device_bound_sessions) {
-    enabled_features += [ "enable_device_bound_sessions" ]
   }
 
   if (!is_ios) {
@@ -681,11 +678,8 @@ mojom("url_loader_base") {
         "//services/network/public/mojom/devtools_observer.mojom.h",
         "//services/network/public/mojom/cookie_access_observer.mojom.h",
         "//services/network/public/mojom/trust_token_access_observer.mojom.h",
+        "//services/network/public/mojom/device_bound_sessions.mojom.h",
       ]
-      if (enable_device_bound_sessions) {
-        traits_private_headers +=
-            [ "//services/network/public/mojom/device_bound_sessions.mojom.h" ]
-      }
       traits_public_deps = [
         ":mojom_network_isolation_key",
         "//base",
@@ -831,6 +825,21 @@ mojom("url_loader_base") {
           [ "//services/network/public/cpp/load_timing_info_mojom_traits.h" ]
       traits_public_deps = [ "//net" ]
     },
+    {
+      types = [
+        {
+          mojom = "network.mojom.DeviceBoundSessionKey"
+          cpp = "::net::device_bound_sessions::SessionKey"
+        },
+      ]
+      traits_headers = [
+        "//services/network/public/cpp/device_bound_sessions_mojom_traits.h",
+      ]
+      traits_sources = [
+        "//services/network/public/cpp/device_bound_sessions_mojom_traits.cc",
+      ]
+      traits_public_deps = [ "//net" ]
+    },
   ]
 
   if (is_linux) {
@@ -851,28 +860,6 @@ mojom("url_loader_base") {
           },
         ]
         traits_headers = [ "//services/network/public/cpp/network_interface_change_listener_mojom_traits.h" ]
-      },
-    ]
-  }
-
-  if (enable_device_bound_sessions) {
-    sources += [ "device_bound_sessions.mojom" ]
-
-    cpp_typemaps += [
-      {
-        types = [
-          {
-            mojom = "network.mojom.DeviceBoundSessionKey"
-            cpp = "::net::device_bound_sessions::SessionKey"
-          },
-        ]
-        traits_headers = [
-          "//services/network/public/cpp/device_bound_sessions_mojom_traits.h",
-        ]
-        traits_sources = [
-          "//services/network/public/cpp/device_bound_sessions_mojom_traits.cc",
-        ]
-        traits_public_deps = [ "//net" ]
       },
     ]
   }
@@ -1576,10 +1563,6 @@ mojom("mojom") {
     # TODO(crbug.com/40263697): Remove this once is_linux in the mojom IDL does
     # not include lacros.
     enabled_features += [ "use_network_interface_change_listener" ]
-  }
-
-  if (enable_device_bound_sessions) {
-    enabled_features += [ "enable_device_bound_sessions" ]
   }
 
   # Typemaps which apply to both Blink and non-Blink bindings.

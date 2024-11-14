@@ -76,6 +76,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/device_bound_sessions/session_service.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/extras/sqlite/cookie_crypto_delegate.h"
@@ -104,6 +105,7 @@
 #include "services/network/brokered_client_socket_factory.h"
 #include "services/network/cookie_manager.h"
 #include "services/network/data_remover_util.h"
+#include "services/network/device_bound_session_manager.h"
 #include "services/network/disk_cache/mojo_backend_file_operations_factory.h"
 #include "services/network/host_resolver.h"
 #include "services/network/http_auth_cache_copier.h"
@@ -195,11 +197,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-#include "net/device_bound_sessions/session_service.h"
-#include "services/network/device_bound_session_manager.h"
-#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 namespace network {
 
@@ -815,10 +812,8 @@ NetworkContext::NetworkContext(
     InitializePrefetchURLLoaderFactory();
   }
 
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-  device_bound_session_manager_ = std::make_unique<DeviceBoundSessionManager>(
+  device_bound_session_manager_ = DeviceBoundSessionManager::Create(
       url_request_context_->device_bound_session_service());
-#endif
 }
 
 NetworkContext::NetworkContext(
@@ -2925,7 +2920,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     builder.set_cookie_deprecation_label(*params_->cookie_deprecation_label);
   }
 
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   if (params_->device_bound_sessions_enabled) {
     builder.set_has_device_bound_session_service(true);
 
@@ -2943,7 +2937,6 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
       }
     }
   }
-#endif
 
   if (on_url_request_context_builder_configured) {
     std::move(on_url_request_context_builder_configured).Run(&builder);
@@ -3408,14 +3401,14 @@ void NetworkContext::GetBoundNetworkForTesting(
   std::move(callback).Run(url_request_context()->bound_network());
 }
 
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 void NetworkContext::GetDeviceBoundSessionManager(
     mojo::PendingReceiver<network::mojom::DeviceBoundSessionManager>
         device_bound_session_manager) {
-  device_bound_session_manager_->AddReceiver(
-      std::move(device_bound_session_manager));
+  if (device_bound_session_manager_) {
+    device_bound_session_manager_->AddReceiver(
+        std::move(device_bound_session_manager));
+  }
 }
-#endif
 
 bool NetworkContext::IsNetworkForNonceAndUrlAllowed(
     const base::UnguessableToken& nonce,

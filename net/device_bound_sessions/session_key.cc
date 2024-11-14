@@ -7,8 +7,7 @@
 namespace net::device_bound_sessions {
 
 SessionKey::SessionKey() = default;
-SessionKey::SessionKey(SchemefulSite site, Session::Id id)
-    : site(site), id(id) {}
+SessionKey::SessionKey(SchemefulSite site, Id id) : site(site), id(id) {}
 SessionKey::~SessionKey() = default;
 
 SessionKey::SessionKey(const SessionKey&) = default;

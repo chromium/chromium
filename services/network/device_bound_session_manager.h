@@ -17,8 +17,9 @@ namespace network {
 
 class DeviceBoundSessionManager : public mojom::DeviceBoundSessionManager {
  public:
-  explicit DeviceBoundSessionManager(
+  static std::unique_ptr<DeviceBoundSessionManager> Create(
       net::device_bound_sessions::SessionService* service);
+
   ~DeviceBoundSessionManager() override;
 
   void AddReceiver(
@@ -30,6 +31,9 @@ class DeviceBoundSessionManager : public mojom::DeviceBoundSessionManager {
       const net::device_bound_sessions::SessionKey& session_key) override;
 
  private:
+  explicit DeviceBoundSessionManager(
+      net::device_bound_sessions::SessionService* service);
+
   raw_ptr<net::device_bound_sessions::SessionService> service_;
   mojo::ReceiverSet<network::mojom::DeviceBoundSessionManager> receivers_;
 };

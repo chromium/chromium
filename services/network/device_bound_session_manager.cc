@@ -8,6 +8,16 @@
 
 namespace network {
 
+// static
+std::unique_ptr<DeviceBoundSessionManager> DeviceBoundSessionManager::Create(
+    net::device_bound_sessions::SessionService* service) {
+  if (!service) {
+    return nullptr;
+  }
+
+  return base::WrapUnique(new DeviceBoundSessionManager(service));
+}
+
 DeviceBoundSessionManager::DeviceBoundSessionManager(
     net::device_bound_sessions::SessionService* service)
     : service_(service) {}

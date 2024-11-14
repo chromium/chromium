@@ -39,6 +39,8 @@ component("network_service") {
     "data_pipe_element_reader.h",
     "data_remover_util.cc",
     "data_remover_util.h",
+    "device_bound_session_manager.cc",
+    "device_bound_session_manager.h",
     "disk_cache/mojo_backend_file_operations.cc",
     "disk_cache/mojo_backend_file_operations.h",
     "disk_cache/mojo_backend_file_operations_factory.cc",
@@ -299,13 +301,6 @@ component("network_service") {
     sources += [
       "network_change_notifier_passive_factory.cc",
       "network_change_notifier_passive_factory.h",
-    ]
-  }
-
-  if (enable_device_bound_sessions) {
-    sources += [
-      "device_bound_session_manager.cc",
-      "device_bound_session_manager.h",
     ]
   }
 

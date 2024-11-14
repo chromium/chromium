@@ -653,10 +653,7 @@ struct URLLoaderOptions {
         std::move(shared_dictionary_manager),
         std::move(shared_dictionary_checker), std::move(cookie_observer),
         std::move(trust_token_observer), std::move(url_loader_network_observer),
-        std::move(devtools_observer),
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
-        std::move(device_bound_session_observer),
-#endif
+        std::move(devtools_observer), std::move(device_bound_session_observer),
         std::move(accept_ch_frame_observer),
         std::move(attribution_request_helper),
         shared_storage_writable_eligible);
@@ -681,10 +678,8 @@ struct URLLoaderOptions {
       url_loader_network_observer = mojo::NullRemote();
   mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer =
       mojo::NullRemote();
-#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
   mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver>
       device_bound_session_observer = mojo::NullRemote();
-#endif
   mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer =
       mojo::NullRemote();
   bool shared_storage_writable_eligible = false;
