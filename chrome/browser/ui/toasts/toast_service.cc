@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
@@ -38,6 +39,12 @@
 #include "chrome/browser/ui/views/user_education/low_usage_promo.h"
 #include "components/plus_addresses/resources/vector_icons.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+// TODO(crbug.com/379125549): Remove forward declaration and directly include
+// chrome/browser/ui/chrome_pages.h once circular dependency is resolved.
+namespace chrome {
+GURL GetSettingsUrl(std::string_view sub_page);
+}
 
 ToastService::ToastService(BrowserWindowInterface* browser_window_interface) {
   toast_registry_ = std::make_unique<ToastRegistry>();
@@ -152,7 +159,8 @@ void ToastService::RegisterToasts(
                 base::BindRepeating(
                     [](BrowserWindowInterface* window) {
                       window->OpenGURL(
-                          GURL("chrome://settings/security"),
+                          chrome::GetSettingsUrl(
+                              chrome::kSafeBrowsingEnhancedProtectionSubPage),
                           WindowOpenDisposition::NEW_FOREGROUND_TAB);
                     },
                     base::Unretained(browser_window_interface)))
