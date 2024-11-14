@@ -81,7 +81,7 @@ bool MoreRecentlyModified(const BookmarkNode* n1, const BookmarkNode* n2) {
   return n1->date_folder_modified() > n2->date_folder_modified();
 }
 
-// Returns true if |text| contains each string in |words|. This is used when
+// Returns true if `text` contains each string in `words`. This is used when
 // searching for bookmarks.
 bool DoesBookmarkTextContainWords(const std::u16string& text,
                                   const std::vector<std::u16string>& words) {
@@ -116,7 +116,7 @@ bool HasSelectedAncestor(
   return HasSelectedAncestor(model, selected_nodes, node->parent());
 }
 
-// Recursively searches for a node satisfying the functor |pred| . Returns
+// Recursively searches for a node satisfying the functor `pred` . Returns
 // nullptr if not found.
 template <typename Predicate>
 const BookmarkNode* FindNode(const BookmarkNode* node, Predicate pred) {
@@ -281,8 +281,8 @@ void CopyToClipboard(
   }
 }
 
-// Updates |title| such that |url| and |title| pair are unique among the
-// children of |parent|.
+// Updates `title` such that `url` and `title` pair are unique among the
+// children of `parent`.
 void MakeTitleUnique(const BookmarkModel* model,
                      const BookmarkNode* parent,
                      const GURL& url,
@@ -476,7 +476,7 @@ std::vector<std::u16string> ParseBookmarkQuery(
   return query_words;
 }
 
-// Returns true if |node|s title or url contains the strings in |words|.
+// Returns true if `node`s title or url contains the strings in `words`.
 bool DoesBookmarkContainWords(const std::u16string& title,
                               const GURL& url,
                               const std::vector<std::u16string>& words) {

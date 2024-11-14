@@ -252,7 +252,7 @@ std::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
     match.title_match_positions.swap(title_matches);
   }
   // Now that we're done processing this entry, correct the offsets of the
-  // matches in |url_matches| so they point to offsets in the original URL
+  // matches in `url_matches` so they point to offsets in the original URL
   // spec, not the cleaned-up URL string that we used for matching.
   std::vector<size_t> offsets =
       TitledUrlMatch::OffsetsFromMatchPositions(url_matches);
@@ -379,7 +379,7 @@ TitledUrlIndex::TitledUrlNodes TitledUrlIndex::RetrieveNodesMatchingTerm(
   }
 
   // Loop through index adding all entries that start with term to
-  // |prefix_matches|.
+  // `prefix_matches`.
   TitledUrlNodes prefix_matches;
   while (i != index_.end() && IsPrefix(term, i->first)) {
     prefix_matches.insert(prefix_matches.end(), i->second.begin(),

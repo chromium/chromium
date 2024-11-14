@@ -42,8 +42,8 @@ void UpdateUserFolderStatsRecursively(const BookmarkNode& node,
 BookmarkLoadDetails::BookmarkLoadDetails()
     : titled_url_index_(std::make_unique<TitledUrlIndex>()),
       load_start_(base::TimeTicks::Now()) {
-  // WARNING: do NOT add |client| as a member. Much of this code runs on another
-  // thread, and |client_| is not thread safe, and/or may be destroyed before
+  // WARNING: do NOT add `client` as a member. Much of this code runs on another
+  // thread, and `client_` is not thread safe, and/or may be destroyed before
   // this.
   root_node_ = std::make_unique<BookmarkNode>(
       /*id=*/0, base::Uuid::ParseLowercase(kRootNodeUuid), GURL());

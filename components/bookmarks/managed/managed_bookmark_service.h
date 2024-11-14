@@ -45,10 +45,10 @@ class ManagedBookmarkService : public KeyedService,
   // will be invoked in the Profile's IO task runner.
   LoadManagedNodeCallback GetLoadManagedNodeCallback();
 
-  // Returns true if the |node| can have its title updated.
+  // Returns true if the `node` can have its title updated.
   bool CanSetPermanentNodeTitle(const BookmarkNode* node);
 
-  // Returns true if |node| is a descendant of the managed node.
+  // Returns true if `node` is a descendant of the managed node.
   bool IsNodeManaged(const BookmarkNode* node);
 
   // Top-level managed bookmarks folder, defined by an enterprise policy; may be

@@ -43,8 +43,8 @@ class BookmarkPermanentNodeLoader {
 
   ~BookmarkPermanentNodeLoader() = default;
 
-  // Initializes |node_| from |initial_bookmarks_| and |title_id_| and returns
-  // it. The ids are assigned starting at |next_node_id| and the value is
+  // Initializes `node_` from `initial_bookmarks_` and `title_id_` and returns
+  // it. The ids are assigned starting at `next_node_id` and the value is
   // updated as a side-effect.
   std::unique_ptr<BookmarkPermanentNode> Load(int64_t* next_node_id) {
     node_->set_id(*next_node_id);
@@ -60,8 +60,8 @@ class BookmarkPermanentNodeLoader {
   int title_id_;
 };
 
-// Returns a std::unique_ptr<BookmarkPermanentNode> using |next_node_id| for
-// assigning an id. |next_node_id| is updated as a side effect of calling this
+// Returns a std::unique_ptr<BookmarkPermanentNode> using `next_node_id` for
+// assigning an id. `next_node_id` is updated as a side effect of calling this
 // method.
 std::unique_ptr<BookmarkPermanentNode> LoadManagedNode(
     std::unique_ptr<BookmarkPermanentNodeLoader> loader,
@@ -113,7 +113,7 @@ LoadManagedNodeCallback ManagedBookmarkService::GetLoadManagedNodeCallback() {
 
 bool ManagedBookmarkService::CanSetPermanentNodeTitle(
     const BookmarkNode* node) {
-  // |managed_node_| can have its title updated if the user signs in or out,
+  // `managed_node_` can have its title updated if the user signs in or out,
   // since the name of the managed domain can appear in it. It can also have
   // its title updated on locale changes (http://crbug.com/459448).
   if (node == managed_node_)

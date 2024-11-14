@@ -269,8 +269,8 @@ bool BookmarkCodec::DecodeChildren(const base::Value::List& child_value_list,
 bool BookmarkCodec::DecodeNode(const base::Value::Dict& value,
                                BookmarkNode* parent,
                                BookmarkNode* node) {
-  // If no |node| is specified, we'll create one and add it to the |parent|.
-  // Therefore, in that case, |parent| must be non-NULL.
+  // If no `node` is specified, we'll create one and add it to the `parent`.
+  // Therefore, in that case, `parent` must be non-NULL.
   if (!node && !parent) {
     NOTREACHED();
   }
@@ -302,7 +302,7 @@ bool BookmarkCodec::DecodeNode(const base::Value::Dict& value,
     title = base::UTF8ToUTF16(*string_value);
 
   base::Uuid uuid;
-  // |node| is only passed in for bookmarks of type BookmarkPermanentNode, in
+  // `node` is only passed in for bookmarks of type BookmarkPermanentNode, in
   // which case we do not need to check for UUID validity as their UUIDs are
   // hard-coded and not read from the persisted file.
   if (!node) {

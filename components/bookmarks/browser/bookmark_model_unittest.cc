@@ -1198,7 +1198,7 @@ TEST_F(BookmarkModelTest, NonMovingMoveCall) {
   const BookmarkNode* node = model_->AddURL(bookmark_bar_node, 0, title, url);
   model_->SetDateFolderModified(bookmark_bar_node, old_date);
 
-  // Since |node| is already at the index 0 of |bookmark_bar_node|, this is
+  // Since `node` is already at the index 0 of `bookmark_bar_node`, this is
   // no-op.
   model_->Move(node, bookmark_bar_node, 0);
 
@@ -1767,7 +1767,7 @@ TEST_F(BookmarkModelTest, GetMostRecentlyAddedUserNodeForURLSkipsManagedNodes) {
   const BookmarkNode* managed_parent = managed_node;
   const GURL url("http://google.com");
 
-  // |url| is not bookmarked yet.
+  // `url` is not bookmarked yet.
   EXPECT_TRUE(model_->GetMostRecentlyAddedUserNodeForURL(url) == nullptr);
 
   // Having a managed node doesn't count.
