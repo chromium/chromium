@@ -1428,7 +1428,7 @@ bool HTMLElement::togglePopover(
     if (options && options->hasForce()) {
       force = options->force();
     }
-    invoker = (options && options->hasInvoker()) ? options->invoker() : nullptr;
+    invoker = (options && options->hasSource()) ? options->source() : nullptr;
   }
   if (!force && popover_was_open) {
     hidePopover(exception_state);
@@ -1455,7 +1455,7 @@ void HTMLElement::showPopover(ShowPopoverOptions* options,
     options = nullptr;
   }
   Element* invoker =
-      options && options->hasInvoker() ? options->invoker() : nullptr;
+      options && options->hasSource() ? options->source() : nullptr;
   ShowPopoverInternal(invoker, &exception_state);
 }
 
