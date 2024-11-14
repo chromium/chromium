@@ -240,6 +240,10 @@ component("gpu") {
       "windows/d3d12_helpers.h",
       "windows/d3d12_video_decoder_wrapper.cc",
       "windows/d3d12_video_decoder_wrapper.h",
+      "windows/d3d12_video_encode_accelerator.cc",
+      "windows/d3d12_video_encode_accelerator.h",
+      "windows/d3d12_video_encode_delegate.cc",
+      "windows/d3d12_video_encode_delegate.h",
       "windows/d3d12_video_processor_wrapper.cc",
       "windows/d3d12_video_processor_wrapper.h",
       "windows/d3d_com_defs.h",
@@ -290,6 +294,7 @@ component("gpu") {
       "d3d12.lib",
       "dxgi.lib",
       "dxva2.lib",
+      "dxgi.lib",
       "strmiids.lib",
       "mf.lib",
       "mfplat.lib",
@@ -300,6 +305,7 @@ component("gpu") {
       "/DELAYLOAD:d3d11.dll",
       "/DELAYLOAD:d3d12.dll",
       "/DELAYLOAD:dxva2.dll",
+      "/DELAYLOAD:dxgi.dll",
       "/DELAYLOAD:mf.dll",
       "/DELAYLOAD:mfplat.dll",
     ]
@@ -644,12 +650,16 @@ source_set("unit_tests") {
       "windows/d3d11_video_device_format_support_unittest.cc",
       "windows/d3d11_video_processor_proxy_unittest.cc",
       "windows/d3d12_helpers_unittest.cc",
+      "windows/d3d12_video_encode_accelerator_unittest.cc",
       "windows/mf_audio_encoder_unittest.cc",
       "windows/mf_video_processor_accelerator_unittest.cc",
       "windows/scoped_d3d_buffers_unittest.cc",
       "windows/supported_profile_helpers_unittest.cc",
     ]
-    libs = [ "dxguid.lib" ]
+    libs = [
+      "dxguid.lib",
+      "d3d12.lib",
+    ]
   }
 
   if (is_apple) {
