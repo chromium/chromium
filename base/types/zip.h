@@ -73,7 +73,7 @@ class Zipper {
     }
 
     template <std::size_t... Is>
-    constexpr void advance(std::index_sequence<Is...>) LIFETIME_BOUND {
+    constexpr void advance(std::index_sequence<Is...>) {
       CHECK(operator!=(ZipEnd()));
       // SAFETY: The increment is safe as it has been just CHECKed so it is
       // guaranteed to be inside [begin_, end_).
