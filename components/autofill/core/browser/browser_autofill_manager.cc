@@ -931,11 +931,22 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 
   std::unique_ptr<FormStructure> submitted_form = ValidateSubmittedForm(form);
   CHECK(!client().IsOffTheRecord() || !submitted_form);
+
+  if (!submitted_form) {
+    // We always give Autocomplete a chance to save the data.
+    // TODO(crbug.com/40276862): Verify frequency of plus address (or the other
+    // type(s) checked for below, for that matter) slipping through in this code
+    // path.
+    client().GetSingleFieldFillRouter().OnWillSubmitForm(
+        form, nullptr, client().IsAutocompleteEnabled());
+    return;
+  }
+
   // Try to import the `form` into user annotations via the
   // `AutofillAiDelegate`. `MaybeImportFromSubmittedForm()` will be called if
   // the import was not successful.
   if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
-      delegate && delegate->IsUserEligible() && submitted_form) {
+      delegate && delegate->IsUserEligible()) {
     // Only upload server statistics and UMA metrics if at least some local data
     // is available to use as a baseline.
     std::vector<const AutofillProfile*> profiles =
@@ -978,8 +989,8 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
               // The manager may have been destroyed already.
               // See crbug.com/373831707#comment5.
               if (manager) {
-                manager->MaybeImportFromSubmittedForm(
-                    form, submitted_form.get(), autofill_ai_shows_bubble);
+                manager->MaybeImportFromSubmittedForm(*submitted_form,
+                                                      autofill_ai_shows_bubble);
                 manager->OnFormSubmittedAfterImport(
                     form, std::move(submitted_form), source,
                     form_submitted_timestamp);
@@ -995,7 +1006,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     // - It should be guaranteed that they are always called. Currently, it is
     //   hard to see that all codepaths in
     //   AutofillAiDelegate::MaybeImportForm() calls it.
-    MaybeImportFromSubmittedForm(form, submitted_form.get(),
+    MaybeImportFromSubmittedForm(*submitted_form,
                                  /*autofill_ai_shows_bubble=*/false);
     OnFormSubmittedAfterImport(form, std::move(submitted_form), source,
                                form_submitted_timestamp);
@@ -1007,9 +1018,6 @@ void BrowserAutofillManager::OnFormSubmittedAfterImport(
     std::unique_ptr<FormStructure> submitted_form,
     SubmissionSource source,
     base::TimeTicks form_submitted_timestamp) {
-  if (!submitted_form) {
-    return;
-  }
   submitted_form->set_submission_source(source);
   if (submitted_form->IsAutofillable()) {
     // Associate the form signatures of recently submitted address/credit card
@@ -1158,22 +1166,12 @@ void BrowserAutofillManager::ProcessPendingFormForUpload() {
 }
 
 void BrowserAutofillManager::MaybeImportFromSubmittedForm(
-    const FormData& form,
-    const FormStructure* const form_structure,
+    const FormStructure& form_structure,
     bool autofill_ai_shows_bubble) {
-  if (!form_structure) {
-    // We always give Autocomplete a chance to save the data.
-    // TODO(crbug.com/40276862): Verify frequency of plus address (or the other
-    // type(s) checked for below, for that matter) slipping through in this code
-    // path.
-    client().GetSingleFieldFillRouter().OnWillSubmitForm(
-        form, nullptr, client().IsAutocompleteEnabled());
-    return;
-  }
-  if (!autofill_ai_shows_bubble && form_structure->IsAutofillable()) {
+  if (!autofill_ai_shows_bubble && form_structure.IsAutofillable()) {
     // Update Personal Data with the form's submitted data.
     client().GetFormDataImporter()->ImportAndProcessFormData(
-        *form_structure, client().IsAutofillProfileEnabled(),
+        form_structure, client().IsAutofillProfileEnabled(),
         client().IsAutofillPaymentMethodsEnabled());
   }
 
@@ -1181,8 +1179,8 @@ void BrowserAutofillManager::MaybeImportFromSubmittedForm(
       client().GetPlusAddressDelegate();
 
   std::vector<FormFieldData> fields_for_autocomplete;
-  fields_for_autocomplete.reserve(form.fields().size());
-  for (const auto& autofill_field : *form_structure) {
+  fields_for_autocomplete.reserve(form_structure.fields().size());
+  for (const auto& autofill_field : form_structure) {
     fields_for_autocomplete.push_back(*autofill_field);
     if (autofill_field->Type().GetStorableType() ==
         CREDIT_CARD_VERIFICATION_CODE) {
@@ -1201,10 +1199,10 @@ void BrowserAutofillManager::MaybeImportFromSubmittedForm(
   }
 
   // TODO crbug.com/40100455 - Eliminate `form_for_autocomplete`.
-  FormData form_for_autocomplete = form_structure->ToFormData();
+  FormData form_for_autocomplete = form_structure.ToFormData();
   form_for_autocomplete.set_fields(std::move(fields_for_autocomplete));
   client().GetSingleFieldFillRouter().OnWillSubmitForm(
-      form_for_autocomplete, form_structure, client().IsAutocompleteEnabled());
+      form_for_autocomplete, &form_structure, client().IsAutocompleteEnabled());
 }
 
 void BrowserAutofillManager::LogSubmissionMetrics(

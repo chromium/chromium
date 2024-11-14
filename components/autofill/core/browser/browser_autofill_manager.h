@@ -450,8 +450,7 @@ class BrowserAutofillManager : public AutofillManager {
   };
 
   // Triggers the possible import of submitted data at submission time.
-  void MaybeImportFromSubmittedForm(const FormData& form,
-                                    const FormStructure* const form_structure,
+  void MaybeImportFromSubmittedForm(const FormStructure& form_structure,
                                     bool autofill_ai_shows_bubble);
 
   // Method containing logic to be run in `OnFormSubmittedImpl()` after any
