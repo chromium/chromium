@@ -415,48 +415,11 @@ void CandidateWindowView::UpdateCandidates(
 void CandidateWindowView::SetCursorAndCompositionBounds(
     const gfx::Rect& cursor_bounds,
     const gfx::Rect& composition_bounds) {
-  if (base::FeatureList::IsEnabled(ash::features::kImeKoreanModeSwitchDebug)) {
-    auto* input_method_manager = ash::input_method::InputMethodManager::Get();
-
-    if (input_method_manager) {
-      const std::string& current_input_method_id =
-          input_method_manager->GetActiveIMEState()
-              ->GetCurrentInputMethod()
-              .id();
-
-      if (ash::extension_ime_util::IsCros1pKorean(current_input_method_id)) {
-        pending_anchor_rect_ = candidate_window_.show_window_at_composition()
-                                   ? composition_bounds
-                                   : cursor_bounds;
-        ash::input_method::GetTextFieldContextualInfo(base::BindOnce(
-            &CandidateWindowView::OnTextFieldContextualInfoAvailable,
-            base::Unretained(this)));
-        return;
-      }
-    }
-  }
-
   if (candidate_window_.show_window_at_composition()) {
     SetAnchorRect(composition_bounds);
   } else {
     SetAnchorRect(cursor_bounds);
   }
-}
-
-void CandidateWindowView::OnTextFieldContextualInfoAvailable(
-    const ash::input_method::TextFieldContextualInfo& info) {
-  if (!base::FeatureList::IsEnabled(ash::features::kImeKoreanModeSwitchDebug)) {
-    return;
-  }
-
-  if (!info.tab_url.DomainIs("docs.google.com")) {
-    SetAnchorRect(pending_anchor_rect_);
-    return;
-  }
-
-  const gfx::Rect& display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
-  SetAnchorRect(gfx::Rect(80, display_bounds.height() - 60, 0, 0));
 }
 
 void CandidateWindowView::MaybeInitializeCandidateViews(

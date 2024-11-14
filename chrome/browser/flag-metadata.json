@@ -2736,11 +2736,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-cros-ime-korean-mode-switch-debug",
-    "owners": [ "tranbaoduy@chromium.org", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 122
-  },
-  {
     "name": "enable-cros-ime-korean-only-mode-switch-on-right-alt",
     "owners": [ "tranbaoduy@chromium.org", "essential-inputs-team@google.com" ],
     "expiry_milestone": 123

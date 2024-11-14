@@ -6927,11 +6927,6 @@ const char kImeFstDecoderParamsUpdateName[] =
 const char kImeFstDecoderParamsUpdateDescription[] =
     "Enable updated parameters for the FST decoder.";
 
-const char kImeKoreanModeSwitchDebugName[] =
-    "Korean input method's mode switch debug";
-const char kImeKoreanModeSwitchDebugDescription[] =
-    "Enables debug info UI for Korean input method's internal-mode switch";
-
 const char kImeKoreanOnlyModeSwitchOnRightAltName[] =
     "Only internal-mode switch on right-Alt in Korean input method";
 const char kImeKoreanOnlyModeSwitchOnRightAltDescription[] =

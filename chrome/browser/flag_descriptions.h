@@ -4000,9 +4000,6 @@ extern const char kImeAssistMultiWordDescription[];
 extern const char kImeFstDecoderParamsUpdateName[];
 extern const char kImeFstDecoderParamsUpdateDescription[];
 
-extern const char kImeKoreanModeSwitchDebugName[];
-extern const char kImeKoreanModeSwitchDebugDescription[];
-
 extern const char kImeKoreanOnlyModeSwitchOnRightAltName[];
 extern const char kImeKoreanOnlyModeSwitchOnRightAltDescription[];
 

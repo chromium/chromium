@@ -99,8 +99,6 @@ bool COMPONENT_EXPORT(UI_BASE_IME_ASH)
 std::string COMPONENT_EXPORT(UI_BASE_IME_ASH)
     GetComponentIDByInputMethodID(const std::string& input_method_id);
 
-// Only used when ash::features::kImeKoreanModeSwitchDebug flag is enabled.
-// TODO(b/302460634): Remove when no longer needed.
 bool COMPONENT_EXPORT(UI_BASE_IME_ASH)
     IsCros1pKorean(const std::string& input_method_id);
 
