@@ -70,9 +70,7 @@ FeaturePromoControllerCommon::FeaturePromoControllerCommon(
     FeaturePromoSessionPolicy* session_policy,
     TutorialService* tutorial_service,
     ProductMessagingController* messaging_controller)
-    : in_iph_demo_mode_(
-          base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode)),
-      registry_(registry),
+    : registry_(registry),
       feature_engagement_tracker_(feature_engagement_tracker),
       bubble_factory_registry_(help_bubble_registry),
       storage_service_(storage_service),

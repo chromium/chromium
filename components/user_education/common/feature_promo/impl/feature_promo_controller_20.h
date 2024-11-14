@@ -137,6 +137,9 @@ class FeaturePromoController20 : public FeaturePromoControllerCommon {
   // Tracks pending promos that have been queued (e.g. for startup).
   QueuedPromos queued_promos_;
 
+  // Whether the IPH Demo Mode flag has been set at startup.
+  const bool in_iph_demo_mode_;
+
   base::WeakPtrFactory<FeaturePromoController20> weak_ptr_factory_{this};
 };
 

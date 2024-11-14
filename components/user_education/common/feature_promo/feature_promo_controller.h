@@ -360,8 +360,6 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   const FeaturePromoRegistry* registry() const { return registry_; }
   FeaturePromoRegistry* registry() { return registry_; }
 
-  bool in_iph_demo_mode() const { return in_iph_demo_mode_; }
-
   // Removes a promo from the queue and returns whether the promo was found and
   // canceled.
   virtual bool MaybeUnqueuePromo(const base::Feature& iph_feature) = 0;
@@ -479,9 +477,6 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       FeaturePromoSpecification::CustomActionCallback custom_action_callback,
       bool custom_action_is_default,
       int custom_action_dismiss_string_id);
-
-  // Whether the IPH Demo Mode flag has been set at startup.
-  const bool in_iph_demo_mode_;
 
   // The feature promo registry to use.
   const raw_ptr<FeaturePromoRegistry> registry_;

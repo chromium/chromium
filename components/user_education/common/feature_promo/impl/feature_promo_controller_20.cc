@@ -49,7 +49,9 @@ FeaturePromoController20::FeaturePromoController20(
                                    storage_service,
                                    session_policy,
                                    tutorial_service,
-                                   messaging_controller) {}
+                                   messaging_controller),
+      in_iph_demo_mode_(
+          base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode)) {}
 
 FeaturePromoController20::~FeaturePromoController20() {
   FailQueuedPromos();
@@ -60,7 +62,7 @@ void FeaturePromoController20::MaybeShowStartupPromo(
   const base::Feature* const iph_feature = &params.feature.get();
 
   // No point in queueing a disabled feature.
-  if (!in_iph_demo_mode() && !base::FeatureList::IsEnabled(*iph_feature)) {
+  if (!in_iph_demo_mode_ && !base::FeatureList::IsEnabled(*iph_feature)) {
     RecordPromoNotShown(iph_feature->name,
                         FeaturePromoResult::kFeatureDisabled);
     PostShowPromoResult(std::move(params.show_promo_result_callback),
@@ -118,7 +120,7 @@ FeaturePromoResult FeaturePromoController20::CanShowPromoCommon(
   // disabled features. This prevents us from calling into the Feature
   // Engagement tracker more times than necessary, emitting unnecessary logging
   // events when features are disabled.
-  if (!for_demo && !in_iph_demo_mode() &&
+  if (!for_demo && !in_iph_demo_mode_ &&
       !base::FeatureList::IsEnabled(*params.feature)) {
     return FeaturePromoResult::kFeatureDisabled;
   }
@@ -132,7 +134,7 @@ FeaturePromoResult FeaturePromoController20::CanShowPromoCommon(
   if (spec->reshow_delay()) {
     lifecycle->SetReshowPolicy(*spec->reshow_delay(), spec->max_show_count());
   }
-  if (!for_demo && !in_iph_demo_mode()) {
+  if (!for_demo && !in_iph_demo_mode_) {
     if (const auto result = lifecycle->CanShow(); !result) {
       return result;
     }
@@ -162,7 +164,7 @@ FeaturePromoResult FeaturePromoController20::CanShowPromoCommon(
 
   // When not in demo mode, refer to the session policy to determine if the
   // promo can show.
-  if (!for_demo && !in_iph_demo_mode()) {
+  if (!for_demo && !in_iph_demo_mode_) {
     const auto promo_info = session_policy()->GetPromoPriorityInfo(*spec);
     auto result = session_policy()->CanShowPromo(promo_info, current);
     if (!result) {
@@ -430,7 +432,7 @@ FeaturePromoResult FeaturePromoController20::MaybeShowPromoCommon(
   // TODO(crbug.com/40200981): Currently this must be called before
   // ShouldTriggerHelpUI() below. See bug for details.
   const bool screen_reader_available =
-      CheckScreenReaderPromptAvailable(for_demo || in_iph_demo_mode());
+      CheckScreenReaderPromptAvailable(for_demo || in_iph_demo_mode_);
 
   if (!for_demo && !feature_engagement_tracker()->ShouldTriggerHelpUI(
                        params.feature.get())) {
