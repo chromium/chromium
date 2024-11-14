@@ -10,6 +10,7 @@
 
 #include "base/logging.h"
 #include "base/token.h"
+#include "base/types/strong_alias.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -30,6 +31,8 @@ using LocalTabGroupID = tab_groups::TabGroupId;
 
 typedef std::variant<base::Uuid, LocalTabGroupID> EitherGroupID;
 typedef std::variant<base::Uuid, LocalTabID> EitherTabID;
+
+using CollaborationId = base::StrongAlias<class CollaborationIdTag, std::string>;
 
 // Base context for tab group actions. Platforms can subclass this to pass
 // additional context such as a browser window.
