@@ -80,16 +80,18 @@ TEST_F(PasteboardUtilTest, StoreInPasteboardWorks) {
 
 // Tests that clearing the pasteboard does remove pasteboard items.
 TEST_F(PasteboardUtilTest, ClearPasteboardWorks) {
-  base::RunLoop run_loop;
-
   // Get something stored in the pasteboard.
   NSString* test_text = base::SysUTF8ToNSString(kTestText);
   GURL test_url(kTestURL);
-  StoreInPasteboard(test_text, test_url);
+  base::RunLoop store_run_loop;
+  StoreInPasteboard(test_text, test_url, store_run_loop.QuitClosure());
+
+  store_run_loop.Run();
 
   // Clear and assert.
-  ClearPasteboard(run_loop.QuitClosure());
-  run_loop.Run();
+  base::RunLoop clear_run_loop;
+  ClearPasteboard(clear_run_loop.QuitClosure());
+  clear_run_loop.Run();
   EXPECT_FALSE(UIPasteboard.generalPasteboard.hasURLs);
   EXPECT_FALSE(UIPasteboard.generalPasteboard.hasStrings);
 }
