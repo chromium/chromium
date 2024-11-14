@@ -617,8 +617,6 @@ class BASE_EXPORT GSL_OWNER Value {
     BASE_EXPORT friend bool operator<=(const Dict& lhs, const Dict& rhs);
     BASE_EXPORT friend bool operator>=(const Dict& lhs, const Dict& rhs);
 
-    explicit Dict(const flat_map<std::string, std::unique_ptr<Value>>& storage);
-
     // TODO(dcheng): Replace with `flat_map<std::string, Value>` once no caller
     // relies on stability of pointers anymore.
     flat_map<std::string, std::unique_ptr<Value>> storage_;
