@@ -124,8 +124,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     @Override
     public boolean hasLongClickAction() {
-        // TODO(https://crbug.com/333777015): Implement long press to drag tab group.
-        return false;
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU);
     }
 
     /**
