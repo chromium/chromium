@@ -102,7 +102,7 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
     private @Px int getMaximumActiveModeSheetHeightPx() {
         View accountSelectionSheet = mContentView.findViewById(R.id.account_selection_sheet);
         accountSelectionSheet.measure(
-                View.MeasureSpec.makeMeasureSpec(mContentView.getWidth(), View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         return accountSelectionSheet.getMeasuredHeight();
     }
@@ -192,9 +192,9 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getHalfHeightRatio() {
-        // Passive mode does not use half height.
         if (mRpMode == RpMode.PASSIVE) {
-            return HeightMode.DISABLED;
+            computeAndUpdateAccountListHeight();
+            return HeightMode.WRAP_CONTENT;
         }
         return Math.min(
                         getDesiredActiveModeSheetHeightPx(),
