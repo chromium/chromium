@@ -108,6 +108,7 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
     EXPECT_NE(request.headers.end(), request.headers.find("X-Client-Data"));
     EXPECT_TRUE(base::Contains(request.headers,
                                net::HttpRequestHeaders::kAuthorization));
+    std::move(model_execution_request_closure_).Run();
 
     if (should_server_fail_model_execution_) {
       response->set_code(net::HTTP_NOT_FOUND);
@@ -140,6 +141,8 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
 
   bool should_server_fail_model_execution_ = false;
 
+  base::OnceClosure model_execution_request_closure_;
+
   // Identity test support.
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
@@ -164,7 +167,11 @@ class ModelExecutionValidationBrowserTest
 #endif
 IN_PROC_BROWSER_TEST_F(ModelExecutionValidationBrowserTest,
                        MAYBE_ModelExecutionSuccess) {
+  base::RunLoop run_loop;
+  model_execution_request_closure_ = run_loop.QuitClosure();
+
   EnableSignin();
+  run_loop.Run();
   RetryForHistogramUntilCountReached(
       &histogram_tester_, "OptimizationGuide.ModelExecution.Result.Test", 1);
 
@@ -184,8 +191,12 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionValidationBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(ModelExecutionValidationBrowserTest,
                        MAYBE_ModelExecutionFailsServerFailure) {
+  base::RunLoop run_loop;
+  model_execution_request_closure_ = run_loop.QuitClosure();
+
   EnableServerModelExecutionFailure();
   EnableSignin();
+  run_loop.Run();
   RetryForHistogramUntilCountReached(
       &histogram_tester_, "OptimizationGuide.ModelExecution.Result.Test", 1);
 
