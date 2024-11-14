@@ -872,6 +872,10 @@ struct URLLoaderFactoryParams {
   // Used to notify devtools about events.
   pending_remote<DevToolsObserver>? devtools_observer;
 
+  // Used to notify about usages of device bound sessions.
+  [EnableIf=enable_device_bound_sessions]
+  pending_remote<DeviceBoundSessionAccessObserver>? device_bound_session_observer;
+
   // If this equals kForbid, the context to which this loader is bound does not
   // allow Trust Tokens (https://github.com/wicg/trust-token-api) issuance
   // operation.

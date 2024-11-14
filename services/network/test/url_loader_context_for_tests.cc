@@ -42,6 +42,13 @@ mojom::DevToolsObserver* URLLoaderContextForTests::GetDevToolsObserver() const {
   return nullptr;
 }
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+mojom::DeviceBoundSessionAccessObserver*
+URLLoaderContextForTests::GetDeviceBoundSessionAccessObserver() const {
+  return nullptr;
+}
+#endif
+
 mojom::NetworkContextClient* URLLoaderContextForTests::GetNetworkContextClient()
     const {
   return network_context_client_;

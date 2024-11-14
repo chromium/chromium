@@ -39,6 +39,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/isolation_info.h"
@@ -57,6 +58,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/static_cookie_policy.h"
+#include "net/device_bound_sessions/session.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_connection_info.h"
 #include "net/http/http_request_headers.h"
@@ -521,6 +523,15 @@ bool IncludesValidLoadField(const net::HttpResponseHeaders* headers) {
   return item->item.is_token() && item->item.GetString() == "load";
 }
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+mojo::SharedRemote<mojom::DeviceBoundSessionAccessObserver> Clone(
+    mojom::DeviceBoundSessionAccessObserver& observer) {
+  mojo::SharedRemote<mojom::DeviceBoundSessionAccessObserver> new_observer;
+  observer.Clone(new_observer.BindNewPipeAndPassReceiver());
+  return new_observer;
+}
+#endif
+
 }  // namespace
 
 URLLoader::MaybeSyncURLLoaderClient::MaybeSyncURLLoaderClient(
@@ -575,6 +586,10 @@ URLLoader::URLLoader(
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+    mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver>
+        device_bound_session_observer,
+#endif
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
     std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
     bool shared_storage_writable_eligible)
@@ -636,6 +651,13 @@ URLLoader::URLLoader(
       devtools_observer_remote_(std::move(devtools_observer)),
       devtools_observer_(PtrOrFallback(devtools_observer_remote_,
                                        context.GetDevToolsObserver())),
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+      device_bound_session_observer_remote_(
+          std::move(device_bound_session_observer)),
+      device_bound_session_observer_(
+          PtrOrFallback(device_bound_session_observer_remote_,
+                        context.GetDeviceBoundSessionAccessObserver())),
+#endif
       shared_storage_request_helper_(
           std::make_unique<SharedStorageRequestHelper>(
               shared_storage_writable_eligible,
@@ -891,6 +913,17 @@ void URLLoader::ConfigureRequest(
   if (socket_tag != net::SocketTag()) {
     url_request_->set_socket_tag(std::move(socket_tag));
   }
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  // Device bound session access can happen asynchronously as a result
+  // of this URLRequest. So create a separate Remote that will outlive
+  // this.
+  if (device_bound_session_observer_) {
+    url_request_->SetDeviceBoundSessionAccessCallback(base::BindRepeating(
+        &mojom::DeviceBoundSessionAccessObserver::OnDeviceBoundSessionAccessed,
+        Clone(*device_bound_session_observer_)));
+  }
+#endif
 }
 
 // This class is used to manage the queue of pending file upload operations

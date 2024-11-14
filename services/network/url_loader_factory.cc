@@ -87,7 +87,13 @@ URLLoaderFactory::URLLoaderFactory(
       cors_url_loader_factory_(cors_url_loader_factory),
       cookie_observer_(std::move(params_->cookie_observer)),
       trust_token_observer_(std::move(params_->trust_token_observer)),
-      devtools_observer_(std::move(params_->devtools_observer)) {
+      devtools_observer_(std::move(params_->devtools_observer))
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+      ,
+      device_bound_session_observer_(
+          std::move(params_->device_bound_session_observer))
+#endif
+{
   DCHECK(context);
   DCHECK_NE(mojom::kInvalidProcessId, params_->process_id);
   DCHECK(!params_->factory_override);
@@ -353,6 +359,18 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
             resource_request.trusted_params->devtools_observer));
   }
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver>
+      device_bound_session_observer;
+  if (resource_request.trusted_params &&
+      resource_request.trusted_params->device_bound_session_observer) {
+    device_bound_session_observer = std::move(
+        const_cast<
+            mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver>&>(
+            resource_request.trusted_params->device_bound_session_observer));
+  }
+#endif
+
   mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer;
   if (resource_request.trusted_params &&
       resource_request.trusted_params->accept_ch_frame_observer) {
@@ -377,7 +395,11 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
       context_->GetSharedDictionaryManager(),
       std::move(shared_dictionary_checker), std::move(cookie_observer),
       std::move(trust_token_observer), std::move(url_loader_network_observer),
-      std::move(devtools_observer), std::move(accept_ch_frame_observer),
+      std::move(devtools_observer),
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+      std::move(device_bound_session_observer),
+#endif
+      std::move(accept_ch_frame_observer),
       std::move(attribution_request_helper),
       resource_request.shared_storage_writable_eligible);
 
@@ -395,6 +417,16 @@ mojom::DevToolsObserver* URLLoaderFactory::GetDevToolsObserver() const {
   }
   return nullptr;
 }
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+mojom::DeviceBoundSessionAccessObserver*
+URLLoaderFactory::GetDeviceBoundSessionAccessObserver() const {
+  if (device_bound_session_observer_) {
+    return device_bound_session_observer_.get();
+  }
+  return nullptr;
+}
+#endif
 
 mojom::CookieAccessObserver* URLLoaderFactory::GetCookieAccessObserver() const {
   if (cookie_observer_) {

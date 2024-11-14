@@ -36,6 +36,9 @@ import "services/network/public/mojom/accept_ch_frame_observer.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
+[EnableIf=enable_device_bound_sessions]
+import "services/network/public/mojom/device_bound_sessions.mojom";
+
 // This enums corresponds to net::SourceStream::SourceType.
 enum SourceType {
   kBrotli,
@@ -97,6 +100,13 @@ struct TrustedUrlRequestParams {
   pending_remote<URLLoaderNetworkServiceObserver>? url_loader_network_observer;
 
   pending_remote<DevToolsObserver>? devtools_observer;
+
+  // Observer which should be notified when this URLRequest leads to an
+  // access of a device bound session. This include registration or
+  // deferral. If this is set to non-null, the observer passed in
+  // URLLoaderFactoryParams will be ignored.
+  [EnableIf=enable_device_bound_sessions]
+  pending_remote<DeviceBoundSessionAccessObserver>? device_bound_session_observer;
 
   // Specifies the security state of the client, for cases when the
   // URLLoaderFactory is shared among multiple clients.

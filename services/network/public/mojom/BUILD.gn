@@ -548,6 +548,10 @@ mojom("url_loader_base") {
     enabled_features += [ "use_network_interface_change_listener" ]
   }
 
+  if (enable_device_bound_sessions) {
+    enabled_features += [ "enable_device_bound_sessions" ]
+  }
+
   if (!is_ios) {
     export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
     export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
@@ -678,6 +682,10 @@ mojom("url_loader_base") {
         "//services/network/public/mojom/cookie_access_observer.mojom.h",
         "//services/network/public/mojom/trust_token_access_observer.mojom.h",
       ]
+      if (enable_device_bound_sessions) {
+        traits_private_headers +=
+            [ "//services/network/public/mojom/device_bound_sessions.mojom.h" ]
+      }
       traits_public_deps = [
         ":mojom_network_isolation_key",
         "//base",

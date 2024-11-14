@@ -21,6 +21,10 @@
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "services/network/url_loader_context.h"
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
+#endif
+
 namespace network {
 
 class NetworkContext;
@@ -89,6 +93,10 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
       const override;
   orb::PerFactoryState& GetMutableOrbState() override;
   bool DataUseUpdatesEnabled() override;
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  mojom::DeviceBoundSessionAccessObserver* GetDeviceBoundSessionAccessObserver()
+      const override;
+#endif
 
   // Allows starting a URLLoader with a synchronous URLLoaderClient as an
   // optimization.
@@ -147,6 +155,10 @@ class URLLoaderFactory : public mojom::URLLoaderFactory,
   mojo::Remote<mojom::CookieAccessObserver> cookie_observer_;
   mojo::Remote<mojom::TrustTokenAccessObserver> trust_token_observer_;
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  mojo::Remote<mojom::DeviceBoundSessionAccessObserver>
+      device_bound_session_observer_;
+#endif
 
   base::OneShotTimer update_load_info_timer_;
   bool waiting_on_load_state_ack_ = false;

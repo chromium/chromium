@@ -54,6 +54,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoaderContext {
       const = 0;
   virtual orb::PerFactoryState& GetMutableOrbState() = 0;
   virtual bool DataUseUpdatesEnabled() = 0;
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  virtual mojom::DeviceBoundSessionAccessObserver*
+  GetDeviceBoundSessionAccessObserver() const = 0;
+#endif
 
  protected:
   // `protected` destructor = can only destruct via concrete implementations

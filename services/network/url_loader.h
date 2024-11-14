@@ -66,6 +66,10 @@
 #include "services/network/upload_progress_tracker.h"
 #include "services/network/url_loader_context.h"
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
+#endif
+
 namespace net {
 class HttpResponseHeaders;
 class IOBufferWithSize;
@@ -153,23 +157,24 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     net::UploadProgress upload_progress;
   };
 
-  // |delete_callback| tells the URLLoader's owner to destroy the URLLoader.
+  // `delete_callback` tells the URLLoader's owner to destroy the URLLoader.
   //
-  // |trust_token_helper_factory| must be non-null exactly when the request has
+  // `trust_token_helper_factory` must be non-null exactly when the request has
   // Trust Tokens parameters.
   //
   // The caller needs to guarantee that the pointers/references in the
-  // |context| will live longer than the constructed URLLoader.  One
+  // `context` will live longer than the constructed URLLoader.  One
   // (incomplete) reason why this guarantee is true in production code is that
-  // |context| is implemented by URLLoaderFactory which outlives the lifecycle
-  // of the URLLoader (and some pointers in |context| point to objects owned by
+  // `context` is implemented by URLLoaderFactory which outlives the lifecycle
+  // of the URLLoader (and some pointers in `context` point to objects owned by
   // URLLoaderFactory).
   //
-  // Pointers from the |url_loader_context| will be used if
-  // |dev_tools_observer|, |cookie_access_observer| or
-  // |url_loader_network_observer| are not provided.
+  // Pointers from the `url_loader_context` will be used if
+  // `dev_tools_observer`, `cookie_access_observer`,
+  // `url_loader_network_observer`, or `device_bound_session_observer`
+  // are not provided.
   //
-  // |third_party_cookies_enabled| is also false if all cookies are disabled.
+  // `third_party_cookies_enabled` is also false if all cookies are disabled.
   // The mojom::kURLLoadOptionBlockThirdPartyCookies can be set or unset
   // independently of this option.
   URLLoader(
@@ -193,6 +198,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_observer,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+      mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver>
+          device_bound_session_access_observer,
+#endif
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
           accept_ch_frame_observer,
       std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
@@ -833,6 +842,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       url_loader_network_observer_ = nullptr;
   const mojo::Remote<mojom::DevToolsObserver> devtools_observer_remote_;
   const raw_ptr<mojom::DevToolsObserver> devtools_observer_ = nullptr;
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+  const mojo::Remote<mojom::DeviceBoundSessionAccessObserver>
+      device_bound_session_observer_remote_;
+  const raw_ptr<mojom::DeviceBoundSessionAccessObserver>
+      device_bound_session_observer_ = nullptr;
+#endif
 
   // Request helper responsible for processing Shared Storage headers
   // (https://github.com/WICG/shared-storage#from-response-headers).

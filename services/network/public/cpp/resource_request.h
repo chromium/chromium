@@ -44,6 +44,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "services/network/public/mojom/device_bound_sessions.mojom-forward.h"
+#endif
+
 namespace network {
 
 // Typemapped to network.mojom.URLRequest in url_request.mojom.
@@ -79,6 +83,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer;
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+    mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver>
+        device_bound_session_observer;
+#endif
     mojom::ClientSecurityStatePtr client_security_state;
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer;
     mojo::PendingRemote<mojom::SharedDictionaryAccessObserver>
