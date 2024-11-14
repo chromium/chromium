@@ -310,18 +310,33 @@ const ComputedStyle* PseudoElement::CustomStyleForLayoutObject(
                    view_transition_name_));
 }
 
-const ComputedStyle* PseudoElement::LayoutStyleForDisplayContents(
-    const ComputedStyle& style) {
-  // For display:contents we should not generate a box, but we generate a non-
-  // observable inline box for pseudo elements to be able to locate the
-  // anonymous layout objects for generated content during DetachLayoutTree().
-  ComputedStyleBuilder builder =
-      GetDocument().GetStyleResolver().CreateComputedStyleBuilderInheritingFrom(
-          style);
-  builder.SetContent(style.GetContentData());
-  builder.SetDisplay(EDisplay::kInline);
-  builder.SetStyleType(GetPseudoIdForStyling());
-  return builder.TakeStyle();
+const ComputedStyle* PseudoElement::AdjustedLayoutStyle(
+    const ComputedStyle& style,
+    const ComputedStyle& layout_parent_style) {
+  if (style.Display() == EDisplay::kContents) {
+    // For display:contents we should not generate a box, but we generate a non-
+    // observable inline box for pseudo elements to be able to locate the
+    // anonymous layout objects for generated content during DetachLayoutTree().
+    ComputedStyleBuilder builder =
+        GetDocument()
+            .GetStyleResolver()
+            .CreateComputedStyleBuilderInheritingFrom(style);
+    builder.SetContent(style.GetContentData());
+    builder.SetDisplay(EDisplay::kInline);
+    builder.SetStyleType(GetPseudoIdForStyling());
+    return builder.TakeStyle();
+  }
+
+  if (IsScrollMarkerPseudoElement()) {
+    ComputedStyleBuilder builder(style);
+    // The layout parent of a scroll marker is the scroll marker group, not
+    // the originating element of the scroll marker.
+    StyleAdjuster::AdjustStyleForDisplay(builder, layout_parent_style, this,
+                                         &GetDocument());
+    return builder.TakeStyle();
+  }
+
+  return nullptr;
 }
 
 void PseudoElement::Dispose() {
@@ -343,31 +358,21 @@ PseudoElement::AttachLayoutTreeScope::AttachLayoutTreeScope(
     PseudoElement* element,
     const AttachContext& attach_context)
     : element_(element) {
-  if (const ComputedStyle* style = element->GetComputedStyle()) {
-    if (style->Display() == EDisplay::kContents) {
-      OverrideComputedStyle(*element->LayoutStyleForDisplayContents(*style));
-    } else if (element->IsScrollMarkerPseudoElement()) {
-      ComputedStyleBuilder builder(*style);
-      // The layout parent of a scroll marker is the scroll marker group, not
-      // the originating element of the scroll marker.
-      StyleAdjuster::AdjustStyleForDisplay(builder,
-                                           attach_context.parent->StyleRef(),
-                                           element, &element->GetDocument());
-      OverrideComputedStyle(*builder.TakeStyle());
-    }
+  const ComputedStyle* style = element->GetComputedStyle();
+  const LayoutObject* parent = attach_context.parent;
+  if (!style || !parent) {
+    return;
+  }
+  if (const ComputedStyle* adjusted_style =
+          element->AdjustedLayoutStyle(*style, parent->StyleRef())) {
+    original_style_ = style;
+    element->SetComputedStyle(adjusted_style);
   }
 }
 
 PseudoElement::AttachLayoutTreeScope::~AttachLayoutTreeScope() {
   if (original_style_)
     element_->SetComputedStyle(std::move(original_style_));
-}
-
-void PseudoElement::AttachLayoutTreeScope::OverrideComputedStyle(
-    const ComputedStyle& new_style) {
-  const ComputedStyle* style = element_->GetComputedStyle();
-  original_style_ = style;
-  element_->SetComputedStyle(&new_style);
 }
 
 void PseudoElement::AttachLayoutTree(AttachContext& context) {

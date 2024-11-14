@@ -4299,9 +4299,10 @@ StyleRecalcChange Element::RecalcOwnStyle(
 
     const ComputedStyle* layout_style = new_style;
     if (auto* pseudo_element = DynamicTo<PseudoElement>(this)) {
-      if (layout_style->Display() == EDisplay::kContents) {
-        layout_style =
-            pseudo_element->LayoutStyleForDisplayContents(*layout_style);
+      if (const ComputedStyle* adjusted_style =
+              pseudo_element->AdjustedLayoutStyle(
+                  *layout_style, layout_object->Parent()->StyleRef())) {
+        layout_style = adjusted_style;
       }
     } else if (auto* html_element = DynamicTo<HTMLHtmlElement>(this)) {
       if (this == GetDocument().documentElement()) {
