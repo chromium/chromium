@@ -12,6 +12,7 @@
 
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -515,6 +516,15 @@ TEST_F(AddressAccessoryControllerTest, TriggersPlusAddressCreationBottomSheet) {
                                base::UTF8ToUTF16(plus_address)));
   controller()->OnOptionSelected(
       AccessoryAction::CREATE_PLUS_ADDRESS_FROM_ADDRESS_SHEET);
+}
+
+TEST_F(AddressAccessoryControllerTest, TriggersManagePlusAddress) {
+  base::UserActionTester user_action_tester;
+  controller()->OnOptionSelected(
+      AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_ADDRESS_SHEET);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.ManageOptionOnAddressManualFallbackSelected"),
+            1);
 }
 
 TEST_F(AddressAccessoryControllerTest, FillsPlusAddressSuggestion) {

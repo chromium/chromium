@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -2124,6 +2125,16 @@ TEST_F(PasswordAccessoryControllerTest,
   EXPECT_CALL(*mock_access_loss_warning_bridge_, MaybeShowAccessLossNoticeSheet)
       .Times(0);
   controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
+}
+
+TEST_F(PasswordAccessoryControllerTest, TriggersManagePlusAddress) {
+  base::UserActionTester user_action_tester;
+  CreateSheetController();
+  controller()->OnOptionSelected(
+      AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "PlusAddresses.ManageOptionOnPasswordManualFallbackSelected"),
+            1);
 }
 
 class PasswordAccessoryControllerWithTestStoreTest

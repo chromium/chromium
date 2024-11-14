@@ -32417,6 +32417,24 @@ should be able to be added at any place in this file.
   <description>User accepted to fill a plus address suggestion.</description>
 </action>
 
+<action name="PlusAddresses.ManageOptionOnAddressManualFallbackSelected">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    The user tapped on &quot;Manage plus addresses&quot; in the Address Manual
+    Fallback view.
+  </description>
+</action>
+
+<action name="PlusAddresses.ManageOptionOnPasswordManualFallbackSelected">
+  <owner>vizcay@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <description>
+    The user tapped on &quot;Manage plus addresses&quot; in the Password Manual
+    Fallback view.
+  </description>
+</action>
+
 <action name="PlusAddresses.ManualFallbackDesktopContextManualFallbackSelected">
   <owner>vizcay@google.com</owner>
   <owner>jkeitel@google.com</owner>

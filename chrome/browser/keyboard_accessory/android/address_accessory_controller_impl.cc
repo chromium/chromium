@@ -9,6 +9,8 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -196,6 +198,8 @@ void AddressAccessoryControllerImpl::OnOptionSelected(
       return;
     case AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_ADDRESS_SHEET:
       plus_addresses::ShowManagePlusAddressesPage(GetWebContents());
+      base::RecordAction(base::UserMetricsAction(
+          "PlusAddresses.ManageOptionOnAddressManualFallbackSelected"));
       return;
     default:
       NOTREACHED() << "Unhandled selected action: "

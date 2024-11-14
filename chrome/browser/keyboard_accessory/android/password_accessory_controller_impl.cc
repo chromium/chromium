@@ -17,6 +17,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -476,6 +478,8 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
       return;
     case autofill::AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET:
       plus_addresses::ShowManagePlusAddressesPage(GetWebContents());
+      base::RecordAction(base::UserMetricsAction(
+          "PlusAddresses.ManageOptionOnPasswordManualFallbackSelected"));
       return;
     default:
       NOTREACHED() << "Unhandled selected action: "
