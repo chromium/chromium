@@ -34,29 +34,6 @@
 using base::Bucket;
 using testing::ElementsAre;
 
-namespace {
-
-class WebContentsNonEmptyPaintWaiter : public content::WebContentsObserver {
- public:
-  explicit WebContentsNonEmptyPaintWaiter(content::WebContents* web_contents)
-      : WebContentsObserver(web_contents) {}
-
-  void Wait() {
-    if (web_contents()->CompletedFirstVisuallyNonEmptyPaint()) {
-      return;
-    }
-    run_loop_.Run();
-  }
-
- private:
-  // WebContentsObserver:
-  void DidFirstVisuallyNonEmptyPaint() override { run_loop_.Quit(); }
-
-  base::RunLoop run_loop_;
-};
-
-}  // namespace
-
 namespace webui {
 
 class LogWebUIUrlTest : public InProcessBrowserTest {
@@ -144,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(LogWebUIUrlTest, ShownWebUI) {
   browser()->tab_strip_model()->InsertWebContentsAt(0, std::move(web_contents),
                                                     AddTabTypes::ADD_ACTIVE);
 
-  WebContentsNonEmptyPaintWaiter(web_contents_ptr).Wait();
+  content::WaitForFirstNonEmptyPaint(web_contents_ptr);
   EXPECT_THAT(histogram_tester().GetAllSamples(webui::kWebUIShownUrl),
               ElementsAre(Bucket(origin_hash, 1)));
 }

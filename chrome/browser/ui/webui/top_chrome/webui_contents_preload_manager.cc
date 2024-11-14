@@ -17,6 +17,7 @@
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,12 +34,20 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/site_instance.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/models/menu_model.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
 namespace {
+
+constexpr char kWebUIPreloadedHistogramName[] = "WebUI.PreloadedUrl";
+constexpr char kWebUIPreloadedAndShownHistogramName[] =
+    "WebUI.PreloadedAndShownUrl";
 
 // Enum class representing the results of attempting to use a preloaded WebUI
 // when WebUIContentsPreloadedManager::Request() is called.
@@ -118,6 +127,69 @@ content::WebUIController* GetWebUIController(
 
   return webui->GetController();
 }
+
+// A helper object used for capturing metrics data for preloaded WebUIs.
+class WebUIContentsPreloadMetricsHelper
+    : public content::WebContentsObserver,
+      public content::WebContentsUserData<WebUIContentsPreloadMetricsHelper> {
+ public:
+  ~WebUIContentsPreloadMetricsHelper() override = default;
+
+  WebUIContentsPreloadMetricsHelper(const WebUIContentsPreloadMetricsHelper&) =
+      delete;
+  WebUIContentsPreloadMetricsHelper& operator=(
+      const WebUIContentsPreloadMetricsHelper&) = delete;
+
+  void set_request_time(const base::TimeTicks& request_time) {
+    request_time_ = request_time;
+  }
+  std::optional<base::TimeTicks> request_time() const { return request_time_; }
+
+ private:
+  friend class content::WebContentsUserData<WebUIContentsPreloadMetricsHelper>;
+
+  explicit WebUIContentsPreloadMetricsHelper(content::WebContents* web_contents,
+                                             bool is_preloaded)
+      : content::WebContentsObserver(web_contents),
+        content::WebContentsUserData<WebUIContentsPreloadMetricsHelper>(
+            *web_contents),
+        is_preloaded_(is_preloaded) {
+    if (is_preloaded) {
+      base::UmaHistogramSparse(kWebUIPreloadedHistogramName,
+                               GetUrlHashForLogging());
+    }
+  }
+
+  // WebContentsObserver:
+  void DidFirstVisuallyNonEmptyPaint() override {
+    // Log only the first paint. After this WebContents is handed over to the
+    // client, it can navigate and trigger new paint. This paint is not related
+    // to the preloading.
+    if (!is_preloaded_ || logged_first_paint_) {
+      return;
+    }
+
+    logged_first_paint_ = true;
+    base::UmaHistogramSparse(kWebUIPreloadedAndShownHistogramName,
+                             GetUrlHashForLogging());
+  }
+
+  uint32_t GetUrlHashForLogging() const {
+    // This is NOT web contents' GetVisibleURL(). The actual URL may be
+    // different from the visible URL, e.g. chrome://newtab can be rewrote to
+    // chrome://new-tab-page or chrome://new-tab-page-third-party.
+    const GURL& url = web_contents()->GetSiteInstance()->GetSiteURL();
+    return base::Hash(url.DeprecatedGetOriginAsURL().spec());
+  }
+
+  const bool is_preloaded_;
+  std::optional<base::TimeTicks> request_time_;
+  bool logged_first_paint_ = false;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebUIContentsPreloadMetricsHelper);
 
 }  // namespace
 
@@ -338,7 +410,8 @@ void WebUIContentsPreloadManager::MaybePreloadForBrowserContext(
     return;
   }
 
-  SetPreloadedContents(CreateNewContents(browser_context, *preload_url));
+  SetPreloadedContents(
+      CreateNewContents(browser_context, *preload_url, /*preloading=*/true));
 }
 
 void WebUIContentsPreloadManager::MaybePreloadForBrowserContextLater(
@@ -393,7 +466,8 @@ RequestResult WebUIContentsPreloadManager::Request(
     is_ready_to_show = webui_controller_embedder_stub_->is_ready_to_show();
     SetPreloadedContents(nullptr);
   } else {
-    web_contents_ret = CreateNewContents(browser_context, webui_url);
+    web_contents_ret =
+        CreateNewContents(browser_context, webui_url, /*preloading=*/false);
     is_ready_to_show = false;
   }
 
@@ -415,7 +489,11 @@ RequestResult WebUIContentsPreloadManager::Request(
   }
 
   task_manager::WebContentsTags::ClearTag(web_contents_ret.get());
-  request_time_map_[web_contents_ret.get()] = request_time;
+
+  auto* metrics_helper = WebUIContentsPreloadMetricsHelper::FromWebContents(
+      web_contents_ret.get());
+  CHECK(metrics_helper);
+  metrics_helper->set_request_time(request_time);
 
   RequestResult result;
   result.web_contents = std::move(web_contents_ret);
@@ -425,9 +503,10 @@ RequestResult WebUIContentsPreloadManager::Request(
 
 std::optional<base::TimeTicks> WebUIContentsPreloadManager::GetRequestTime(
     content::WebContents* web_contents) {
-  return base::Contains(request_time_map_, web_contents)
-             ? std::make_optional(request_time_map_[web_contents])
-             : std::nullopt;
+  const auto* metrics_helper =
+      WebUIContentsPreloadMetricsHelper::FromWebContents(web_contents);
+
+  return metrics_helper ? metrics_helper->request_time() : std::nullopt;
 }
 
 void WebUIContentsPreloadManager::DisableNavigationForTesting() {
@@ -437,7 +516,8 @@ void WebUIContentsPreloadManager::DisableNavigationForTesting() {
 std::unique_ptr<content::WebContents>
 WebUIContentsPreloadManager::CreateNewContents(
     content::BrowserContext* browser_context,
-    GURL url) {
+    GURL url,
+    bool preloading) {
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(
           GetWebContentsCreateParams(url, browser_context));
@@ -452,6 +532,10 @@ WebUIContentsPreloadManager::CreateNewContents(
   webui_tracker_->AddWebContents(web_contents.get());
 
   LoadURLForContents(web_contents.get(), url);
+  // This is called after LoadURLForContents() because it needs to know the URL
+  // for logging.
+  WebUIContentsPreloadMetricsHelper::CreateForWebContents(web_contents.get(),
+                                                          preloading);
 
   return web_contents;
 }
@@ -512,7 +596,6 @@ void WebUIContentsPreloadManager::OnWebContentsDestroyed(
   } else {
     MaybePreloadForBrowserContext(web_contents->GetBrowserContext());
   }
-  request_time_map_.erase(web_contents);
 }
 
 void WebUIContentsPreloadManager::OnWebContentsPrimaryPageChanged(

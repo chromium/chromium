@@ -10378,6 +10378,28 @@ regressions. -->
   <summary>URLs for which Chrome creates WebUIControllers.</summary>
 </histogram>
 
+<histogram name="WebUI.PreloadedAndShownUrl" enum="WebUIUrlHashes"
+    expires_after="2025-05-04">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>dpapad@chromium.org</owner>
+  <owner>chrome-webui@google.com</owner>
+  <summary>
+    WebUI URLs that are preloaded and shown. Recorded after the first non-empty
+    paint of a preloaded WebUI.
+  </summary>
+</histogram>
+
+<histogram name="WebUI.PreloadedUrl" enum="WebUIUrlHashes"
+    expires_after="2025-05-04">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>dpapad@chromium.org</owner>
+  <owner>chrome-webui@google.com</owner>
+  <summary>
+    WebUI URLs that are preloaded. Recorded after navigation. This differs from
+    WebUI.CreatedForUrl as it only logs WebUIs that are preloaded.
+  </summary>
+</histogram>
+
 <histogram name="WebUI.Settings.PathVisited" enum="WebUISettingsPathHashes"
     expires_after="2025-04-13">
   <owner>dschuyler@chromium.org</owner>
@@ -10394,7 +10416,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUI.ShownUrl" enum="WebUIUrlHashes"
-    expires_after="2025-03-02">
+    expires_after="2025-05-04">
   <owner>kerenzhu@chromium.org</owner>
   <owner>dpapad@chromium.org</owner>
   <owner>chrome-webui@google.com</owner>
