@@ -1302,10 +1302,8 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest, ShowsToastOnImageCopied) {
   EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
 }
 
-// TODO(crbug.com/369900725): Show the toast when triggering via the context
-// menu opened on a side panel.
 IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
-                       PreventTriggeringToastOnSidePanelContextMenus) {
+                       ShowToastOnSidePanelContextMenus) {
   auto* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
   ASSERT_TRUE(side_panel_ui);
   side_panel_ui->Show(SidePanelEntryId::kReadAnything);
@@ -1319,7 +1317,7 @@ IN_PROC_BROWSER_TEST_P(ContextMenuBrowserTest,
       blink::mojom::ContextMenuDataMediaType::kCanvas,
       ui::mojom::MenuSourceType::kMouse);
   menu->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYIMAGE, /*event_flags=*/0);
-  EXPECT_FALSE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+  EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

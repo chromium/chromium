@@ -61,6 +61,7 @@ class Profile;
 class ReadWriteCardObserver;
 class SpellingMenuObserver;
 class SpellingOptionsSubMenuObserver;
+class ToastController;
 
 namespace content {
 class RenderFrameHost;
@@ -159,6 +160,10 @@ class RenderViewContextMenu
   // This may return nullptr (e.g. for WebUI dialogs). Virtual to allow tests to
   // override.
   virtual Browser* GetBrowser() const;
+
+  // May return nullptr if the WebContents does not have an associated
+  // BrowserWindowInterface (e.g. in isolated WebUI, or in tests).
+  ToastController* GetToastController() const;
 
   // Returns the correct IDC for the Search by Image context menu string
   int GetSearchForImageIdc() const;

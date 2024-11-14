@@ -4261,6 +4261,7 @@ static_library("browser") {
       "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar",
+      "//chrome/browser/ui/webui:webui_util",
       "//chrome/browser/ui/webui/commerce",
       "//chrome/browser/ui/webui/commerce:impl",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",

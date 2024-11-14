@@ -327,6 +327,7 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #endif
 
 using base::UserMetricsAction;
@@ -839,11 +840,6 @@ bool IsLensOptionEnteredThroughKeyboard(int event_flags) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-ToastController* GetToastController(Browser* browser) {
-  // Browser can sometimes be undefined in tests or when trying to open the
-  // context menu on a non-tab WebContents.
-  return browser ? browser->GetFeatures().toast_controller() : nullptr;
-}
 }  // namespace
 
 // static
@@ -2325,7 +2321,7 @@ void RenderViewContextMenu::AppendLinkToTextItems() {
   link_to_text_menu_observer_ = LinkToTextMenuObserver::Create(
       this,
       content::GlobalRenderFrameHostId(render_process_id_, render_frame_id_),
-      GetToastController(GetBrowser()));
+      GetToastController());
   if (link_to_text_menu_observer_) {
     observers_.AddObserver(link_to_text_menu_observer_.get());
     link_to_text_menu_observer_->InitMenu(params_);
@@ -3267,7 +3263,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       WriteURLToClipboard(params_.unfiltered_link_url);
 #if !BUILDFLAG(IS_ANDROID)
       if (toast_features::IsEnabled(toast_features::kLinkCopiedToast)) {
-        auto* const toast_controller = GetToastController(GetBrowser());
+        auto* const toast_controller = GetToastController();
         if (toast_controller) {
           toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied));
         }
@@ -3288,7 +3284,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       ExecCopyImageAt();
 #if !BUILDFLAG(IS_ANDROID)
       if (toast_features::IsEnabled(toast_features::kImageCopiedToast)) {
-        auto* const toast_controller = GetToastController(GetBrowser());
+        auto* const toast_controller = GetToastController();
         if (toast_controller) {
           toast_controller->MaybeShowToast(ToastParams(ToastId::kImageCopied));
         }
@@ -4833,6 +4829,21 @@ void RenderViewContextMenu::PluginActionAt(
 
 Browser* RenderViewContextMenu::GetBrowser() const {
   return chrome::FindBrowserWithTab(embedder_web_contents_);
+}
+
+ToastController* RenderViewContextMenu::GetToastController() const {
+  // If the context menu is opened in a normal tab, get the browser directly.
+  BrowserWindowInterface* browser = GetBrowser();
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Otherwise, if the menu is opened in embedded WebUI, attempt to find the
+  // related browser from its embedding context.
+  if (!browser) {
+    browser = webui::GetBrowserWindowInterface(embedder_web_contents_);
+  }
+#endif
+
+  return browser ? browser->GetFeatures().toast_controller() : nullptr;
 }
 
 bool RenderViewContextMenu::CanTranslate(bool menu_logging) {
