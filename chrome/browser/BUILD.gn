@@ -6986,9 +6986,6 @@ static_library("browser") {
       sources += [
         "icon_loader_chromeos.cc",
         "shell_integration_chromeos.cc",
-        "upgrade_detector/get_installed_version_lacros.cc",
-        "upgrade_detector/installed_version_monitor_lacros.cc",
-        "upgrade_detector/installed_version_monitor_lacros.h",
       ]
       deps += [ "//chromeos/strings:strings_grit" ]
     } else {
