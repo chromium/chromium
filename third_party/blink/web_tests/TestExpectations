@@ -2879,7 +2879,7 @@ crbug.com/362784014 external/wpt/webcodecs/audioDecoder-codec-specific.https.any
 crbug.com/362784014 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?pcm_u8 [ Timeout ]
 crbug.com/362784002 external/wpt/css/css-text-decor/text-underline-offset-calc.html [ Failure ]
 crbug.com/362784002 external/wpt/css/css-text-decor/text-underline-offset-percentage.html [ Failure ]
-crbug.com/362622397 [ Win ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Timeout ]
+crbug.com/40755330 external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Failure Timeout ]
 crbug.com/361617757 external/wpt/css/css-masking/clip-path/clip-path-circle-closest-corner.html [ Failure ]
 crbug.com/361617757 external/wpt/css/css-masking/clip-path/clip-path-circle-farthest-corner.html [ Failure ]
 crbug.com/361617757 external/wpt/css/css-masking/clip-path/clip-path-ellipse-closest-farthest-corner.html [ Failure ]
@@ -6689,9 +6689,6 @@ crbug.com/1395552 webaudio/codec-tests/vorbis/vbr-128kbps-44khz.html [ Failure P
 # Sheriff 2022-12-07
 crbug.com/1396185 accessibility/reach-and-scroll-overflow-div-without-mouse.html [ Pass Timeout ]
 
-# Flaky (sheriff 2022-12-15)
-crbug.com/1186788 [ Mac ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Failure Pass Timeout ]
-
 # TODO(crbug.com/1401396): Re-enable this test
 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Pass Timeout ]
 
@@ -6731,6 +6728,8 @@ crbug.com/1409463 external/wpt/html/browsers/the-window-object/open-close/open-f
 
 # WPT for checking if the browser supports lazy loading of non matching media queries
 crbug.com/1001078 external/wpt/css/mediaqueries/mq-non-matching-lazy-load.tentative.html [ Failure ]
+
+crbug.com/378787482 external/wpt/pointerevents/compat/pointerevent_touch_target_after_pointerdown_target_removed.tentative.html [ Failure ]
 
 # Sheriff 2023-02-07
 crbug.com/1413770 wpt_internal/storage/estimate-usage-details-filesystem.https.tentative.any.worker.html [ Failure Pass ]

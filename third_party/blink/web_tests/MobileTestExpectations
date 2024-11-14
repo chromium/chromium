@@ -78,10 +78,8 @@ crbug.com/349397104 [ Webview ] external/wpt/pointerevents/touch-action-with-swi
 crbug.com/349397104 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?mouse [ Skip Timeout ]
 crbug.com/349397104 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?pen [ Skip Timeout ]
 crbug.com/349397104 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html?touch [ Skip Timeout ]
-crbug.com/349397104 external/wpt/pointerevents/compat/pointerevent_touch_target_after_pointerdown_target_removed.tentative.html [ Failure ]
 crbug.com/349397104 external/wpt/pointerevents/pointer-events-none-skip-scroll-in-iframe.html [ Failure Pass ]
 crbug.com/349397104 external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Failure Timeout ]  # Flaky output
-crbug.com/349397104 external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen [ Failure ]
 crbug.com/349397104 external/wpt/pointerevents/pointerevent_touch-action-span-none-test_touch.html [ Skip Timeout ]
 crbug.com/349397104 external/wpt/pointerevents/pointerlock/pointerevent_getCoalescedEvents_when_pointerlocked.https.html [ Failure Pass ]
 crbug.com/349397104 external/wpt/pointerevents/pointerlock/pointerevent_pointerlock_after_pointercapture.html [ Failure Pass ]

@@ -50,7 +50,6 @@ crbug.com/1421239 [ iOS17-simulator ] external/wpt/pointerevents/coalesced_event
 crbug.com/1421239 [ iOS17-simulator ] external/wpt/pointerevents/pointerevent_auxclick_is_a_pointerevent.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS17-simulator ] external/wpt/pointerevents/pointerevent_fractional_coordinates.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS17-simulator ] external/wpt/pointerevents/pointerevent_mouse_pointercapture_inactivate_pointer.html [ Skip Timeout ]
-crbug.com/1421239 [ iOS17-simulator ] external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS17-simulator ] external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS17-simulator ] external/wpt/pointerevents/predicted_events_attributes.html [ Skip Timeout ]
 crbug.com/1421239 [ iOS17-simulator ] external/wpt/screen-capture/getdisplaymedia-framerate.https.html [ Skip Timeout ]
