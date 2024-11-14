@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/ash/shelf/arc_app_window.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/crostini_app_window.h"
-#include "chrome/browser/ui/ash/shelf/lacros_app_window.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -500,11 +499,6 @@ void AppServiceAppWindowShelfController::AddWindowToShelf(
             arc::ArcAppShelfId::FromString(shelf_id.app_id),
             views::Widget::GetWidgetForNativeWindow(window), this,
             owner()->profile());
-    app_window = app_window_ptr.get();
-    aura_window_to_app_window_[window] = std::move(app_window_ptr);
-  } else if (crosapi::browser_util::IsLacrosWindow(window)) {
-    auto app_window_ptr = std::make_unique<LacrosAppWindow>(
-        shelf_id, views::Widget::GetWidgetForNativeWindow(window));
     app_window = app_window_ptr.get();
     aura_window_to_app_window_[window] = std::move(app_window_ptr);
   } else if (crostini_tracker_ &&

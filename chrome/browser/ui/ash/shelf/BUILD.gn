@@ -56,8 +56,6 @@ static_library("shelf") {
     "isolated_web_app_installer_context_menu.h",
     "isolated_web_app_installer_shelf_item_controller.cc",
     "isolated_web_app_installer_shelf_item_controller.h",
-    "lacros_app_window.cc",
-    "lacros_app_window.h",
     "lacros_shelf_item_controller.h",
     "settings_window_observer.cc",
     "settings_window_observer.h",
