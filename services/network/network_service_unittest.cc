@@ -1121,13 +1121,7 @@ class NetworkServiceCookieTest
 // SetCookieEncryptionProvider is called with a provider, and
 // enable_encrypted_cookies is on, then the GetEncryptor method is called and
 // the returned Encryptor is used for encryption.
-// TODO(crbug.com/378060730): Flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_CookieEncryptionProvider DISABLED_CookieEncryptionProvider
-#else
-#define MAYBE_CookieEncryptionProvider CookieEncryptionProvider
-#endif
-TEST_P(NetworkServiceCookieTest, MAYBE_CookieEncryptionProvider) {
+TEST_P(NetworkServiceCookieTest, CookieEncryptionProvider) {
   const auto cookie_path = base::FilePath(FILE_PATH_LITERAL("Cookies"));
   testing::StrictMock<TestCookieEncryptionProvider> provider;
   std::optional<base::ScopedClosureRunner> maybe_teardown_os_crypt;
@@ -1161,6 +1155,11 @@ TEST_P(NetworkServiceCookieTest, MAYBE_CookieEncryptionProvider) {
   params->enable_encrypted_cookies = IsEncryptionEnabled();
   params->file_paths->data_directory = temp_dir.GetPath();
   params->file_paths->cookie_database_name = cookie_path;
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/377940976): Remove this once the background sequence runner
+  // can be fully drained of tasks during network context shutdown.
+  params->enable_locking_cookie_database = false;
+#endif  // BUILDFLAG(IS_WIN)
 
   mojo::Remote<mojom::NetworkContext> network_context;
   service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
