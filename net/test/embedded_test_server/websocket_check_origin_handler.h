@@ -20,9 +20,6 @@ namespace net::test_server {
 // complete. Useful for testing WebSocket origin policies.
 class WebSocketCheckOriginHandler : public WebSocketHandler {
  public:
-  // Creates a handler callback for managing WebSocket upgrade requests.
-  static EmbeddedTestServer::HandleUpgradeRequestCallback CreateHandler();
-
   // Constructs the handler with a given WebSocket connection.
   explicit WebSocketCheckOriginHandler(
       scoped_refptr<WebSocketConnection> connection);

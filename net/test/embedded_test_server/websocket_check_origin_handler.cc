@@ -5,8 +5,6 @@
 #include "net/test/embedded_test_server/websocket_check_origin_handler.h"
 
 #include "base/logging.h"
-#include "net/test/embedded_test_server/create_websocket_handler.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace net::test_server {
 
@@ -30,16 +28,6 @@ void WebSocketCheckOriginHandler::OnHandshakeComplete() {
   DVLOG(3) << "Sending stored origin after handshake completion: " << origin_;
   connection()->SendTextMessage(origin_);
   connection()->StartClosingHandshake(1000, "Goodbye");
-}
-
-EmbeddedTestServer::HandleUpgradeRequestCallback
-WebSocketCheckOriginHandler::CreateHandler() {
-  return CreateWebSocketHandler(
-      "/check-origin",
-      base::BindRepeating([](scoped_refptr<WebSocketConnection> connection)
-                              -> std::unique_ptr<WebSocketHandler> {
-        return std::make_unique<WebSocketCheckOriginHandler>(connection);
-      }));
 }
 
 }  // namespace net::test_server

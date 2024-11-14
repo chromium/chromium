@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "net/test/embedded_test_server/create_websocket_handler.h"
 #include "net/test/embedded_test_server/websocket_check_origin_handler.h"
 #include "net/test/embedded_test_server/websocket_close_handler.h"
 #include "net/test/embedded_test_server/websocket_close_observer_handler.h"
@@ -17,16 +18,17 @@
 namespace net::test_server {
 
 void InstallDefaultWebSocketHandlers(EmbeddedTestServer& server) {
-  server.RegisterUpgradeRequestHandler(
-      WebSocketCheckOriginHandler::CreateHandler());
-  server.RegisterUpgradeRequestHandler(WebSocketCloseHandler::CreateHandler());
-  server.RegisterUpgradeRequestHandler(
-      WebSocketCloseObserverHandler::CreateHandler());
-  server.RegisterUpgradeRequestHandler(WebSocketEchoHandler::CreateHandler());
-  server.RegisterUpgradeRequestHandler(
-      WebSocketEchoRequestHeadersHandler::CreateHandler());
-  server.RegisterUpgradeRequestHandler(
-      WebSocketSplitPacketCloseHandler::CreateHandler());
+  RegisterWebSocketHandler<WebSocketCheckOriginHandler>(server,
+                                                        "/check-origin");
+  RegisterWebSocketHandler<WebSocketCloseHandler>(server, "/close");
+  RegisterWebSocketHandler<WebSocketCloseObserverHandler>(server,
+                                                          "/close-observer");
+  RegisterWebSocketHandler<WebSocketEchoHandler>(server,
+                                                 "/echo-with-no-extension");
+  RegisterWebSocketHandler<WebSocketEchoRequestHeadersHandler>(
+      server, "/echo-request-headers");
+  RegisterWebSocketHandler<WebSocketSplitPacketCloseHandler>(
+      server, "/close-with-split-packet");
 }
 
 GURL ToWebSocketUrl(const GURL& url) {

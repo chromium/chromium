@@ -17,9 +17,6 @@ namespace net::test_server {
 // after the client initiates the close handshake.
 class WebSocketSplitPacketCloseHandler : public WebSocketHandler {
  public:
-  // Creates a handler callback for managing WebSocket upgrade requests.
-  static EmbeddedTestServer::HandleUpgradeRequestCallback CreateHandler();
-
   // Constructs the handler with a given WebSocket connection.
   explicit WebSocketSplitPacketCloseHandler(
       scoped_refptr<WebSocketConnection> connection);

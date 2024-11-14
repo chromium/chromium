@@ -32,6 +32,43 @@ EmbeddedTestServer::HandleUpgradeRequestCallback CreateWebSocketHandler(
     std::string_view handle_path,
     WebSocketHandlerCreator websocket_handler_creator);
 
+// Registers a WebSocket handler for the specified subclass of WebSocketHandler.
+// This template function streamlines registration by eliminating the need for
+// a separate CreateHandler() method for each handler subclass. Instead, it
+// binds the subclass directly to the embedded test server's upgrade request
+// handler.
+//
+// Usage Example:
+//   RegisterWebSocketHandler<MyWebSocketHandler>(embedded_test_server,
+//   "/mypath");
+// This registers `MyWebSocketHandler` with `embedded_test_server` so that a new
+// instance is created for each WebSocket handshake on the specified path.
+//
+// Template Parameters:
+//   - Handler: Subclass of WebSocketHandler defining the connection behavior.
+//
+// Parameters:
+//   - embedded_test_server: The EmbeddedTestServer to register with.
+//   - handle_path: Path where the handler responds to WebSocket requests
+//   (starts with '/').
+//
+// Requirements:
+//   - `Handler` must derive from `WebSocketHandler`.
+
+template <typename Handler>
+  requires std::is_base_of_v<WebSocketHandler, Handler>
+void RegisterWebSocketHandler(EmbeddedTestServer& embedded_test_server,
+                              std::string_view handle_path) {
+  const auto websocket_handler_creator =
+      base::BindRepeating([](scoped_refptr<WebSocketConnection> connection)
+                              -> std::unique_ptr<WebSocketHandler> {
+        return std::make_unique<Handler>(std::move(connection));
+      });
+  const auto callback =
+      CreateWebSocketHandler(handle_path, websocket_handler_creator);
+
+  embedded_test_server.RegisterUpgradeRequestHandler(callback);
+}
 }  // namespace net::test_server
 
 #endif  // NET_TEST_EMBEDDED_TEST_SERVER_CREATE_WEBSOCKET_HANDLER_H_

@@ -20,9 +20,6 @@ namespace net::test_server {
 // close code and reason.
 class WebSocketCloseHandler : public WebSocketHandler {
  public:
-  // Creates a handler callback for managing WebSocket upgrade requests.
-  static EmbeddedTestServer::HandleUpgradeRequestCallback CreateHandler();
-
   // Constructs the handler with a given WebSocket connection.
   explicit WebSocketCloseHandler(scoped_refptr<WebSocketConnection> connection);
 

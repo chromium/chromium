@@ -7,7 +7,6 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "net/base/url_util.h"
-#include "net/test/embedded_test_server/create_websocket_handler.h"
 #include "net/test/embedded_test_server/websocket_connection.h"
 
 namespace net::test_server {
@@ -93,16 +92,6 @@ void WebSocketCloseObserverHandler::SendCloseCode() {
   const std::string response =
       (*g_code == 1001) ? "OK" : "WRONG CODE " + base::NumberToString(*g_code);
   connection()->SendTextMessage(response);
-}
-
-EmbeddedTestServer::HandleUpgradeRequestCallback
-WebSocketCloseObserverHandler::CreateHandler() {
-  return CreateWebSocketHandler(
-      "/close-observer",
-      base::BindRepeating([](scoped_refptr<WebSocketConnection> connection)
-                              -> std::unique_ptr<WebSocketHandler> {
-        return std::make_unique<WebSocketCloseObserverHandler>(connection);
-      }));
 }
 
 }  // namespace net::test_server

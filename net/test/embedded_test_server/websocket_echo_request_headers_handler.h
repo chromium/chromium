@@ -16,9 +16,6 @@ namespace net::test_server {
 
 class WebSocketEchoRequestHeadersHandler : public WebSocketHandler {
  public:
-  // Creates a handler callback for managing WebSocket upgrade requests.
-  static EmbeddedTestServer::HandleUpgradeRequestCallback CreateHandler();
-
   explicit WebSocketEchoRequestHeadersHandler(
       scoped_refptr<WebSocketConnection> connection);
 

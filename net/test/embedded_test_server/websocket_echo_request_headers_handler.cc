@@ -7,7 +7,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "net/test/embedded_test_server/create_websocket_handler.h"
 #include "net/test/embedded_test_server/websocket_connection.h"
 
 namespace net::test_server {
@@ -33,16 +32,6 @@ void WebSocketEchoRequestHeadersHandler::OnHandshake(
   // Use base::WriteJson to serialize headers to JSON, assuming it will succeed.
   const std::string json_headers = base::WriteJson(headers_dict).value();
   connection()->SendTextMessage(json_headers);
-}
-
-EmbeddedTestServer::HandleUpgradeRequestCallback
-WebSocketEchoRequestHeadersHandler::CreateHandler() {
-  return CreateWebSocketHandler(
-      "/echo-request-headers",
-      base::BindRepeating([](scoped_refptr<WebSocketConnection> connection)
-                              -> std::unique_ptr<WebSocketHandler> {
-        return std::make_unique<WebSocketEchoRequestHeadersHandler>(connection);
-      }));
 }
 
 }  // namespace net::test_server

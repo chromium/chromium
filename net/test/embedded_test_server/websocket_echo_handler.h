@@ -19,9 +19,6 @@ namespace net::test_server {
 // back any received text or binary messages to the sender.
 class WebSocketEchoHandler : public WebSocketHandler {
  public:
-  // Creates a handler callback for managing WebSocket upgrade requests.
-  static EmbeddedTestServer::HandleUpgradeRequestCallback CreateHandler();
-
   // Constructs the handler with a given WebSocket connection.
   explicit WebSocketEchoHandler(scoped_refptr<WebSocketConnection> connection);
 

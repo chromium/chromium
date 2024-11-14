@@ -67,7 +67,6 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
-#include "net/test/embedded_test_server/websocket_echo_handler.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/ssl_test_util.h"
 #include "net/test/test_data_directory.h"
@@ -468,8 +467,7 @@ TEST_F(WebSocketEndToEndTest, EmbeddedBasicSmokeTest) {
   test_server::EmbeddedTestServer embedded_test_server(
       net::EmbeddedTestServer::TYPE_HTTP);
 
-  embedded_test_server.RegisterUpgradeRequestHandler(
-      test_server::WebSocketEchoHandler::CreateHandler());
+  test_server::InstallDefaultWebSocketHandlers(embedded_test_server);
 
   ASSERT_TRUE(embedded_test_server.Start());
 

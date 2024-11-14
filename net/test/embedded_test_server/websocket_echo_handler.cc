@@ -7,8 +7,6 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "net/test/embedded_test_server/create_websocket_handler.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/websocket_connection.h"
 #include "net/test/embedded_test_server/websocket_handler.h"
 
@@ -31,16 +29,6 @@ void WebSocketEchoHandler::OnTextMessage(std::string_view message) {
 void WebSocketEchoHandler::OnBinaryMessage(base::span<const uint8_t> message) {
   CHECK(connection());
   connection()->SendBinaryMessage(message);
-}
-
-EmbeddedTestServer::HandleUpgradeRequestCallback
-WebSocketEchoHandler::CreateHandler() {
-  return CreateWebSocketHandler(
-      "/echo-with-no-extension",
-      base::BindRepeating([](scoped_refptr<WebSocketConnection> connection)
-                              -> std::unique_ptr<WebSocketHandler> {
-        return std::make_unique<WebSocketEchoHandler>(connection);
-      }));
 }
 
 }  // namespace net::test_server

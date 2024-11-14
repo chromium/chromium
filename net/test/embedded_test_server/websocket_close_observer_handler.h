@@ -15,8 +15,6 @@ namespace net::test_server {
 
 class WebSocketCloseObserverHandler : public WebSocketHandler {
  public:
-  static EmbeddedTestServer::HandleUpgradeRequestCallback CreateHandler();
-
   explicit WebSocketCloseObserverHandler(
       scoped_refptr<WebSocketConnection> connection);
 
