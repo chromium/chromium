@@ -4,10 +4,6 @@
 
 package org.chromium.chrome.test.transit;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import java.util.Objects;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
@@ -15,14 +11,21 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.transit.hub.TabSwitcherGroupCardFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabThumbnailCondition;
+import org.chromium.chrome.test.util.TabBinningUtil;
+import org.chromium.chrome.test.util.tabmodel.TabBinList;
+import org.chromium.chrome.test.util.tabmodel.TabBinList.TabBinPosition;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /* Helper class for extended multi-stage Trips. */
 public class Journeys {
@@ -170,14 +173,19 @@ public class Journeys {
         assert !tabs.isEmpty();
         TabModel currentModel = tabSwitcher.getTabModelSelectorSupplier().get().getCurrentModel();
         TabSwitcherListEditorFacility editor = tabSwitcher.openAppMenu().clickSelectTabs();
+
+        TabBinList tabBinList = TabBinningUtil.binTabsByCard(currentModel);
         for (Tab tab : tabs) {
-            int index = currentModel.indexOf(tab);
+            TabBinPosition tabPosition = tabBinList.tabIdToPositionMap.get(tab.getId());
+            assert tabPosition != null;
+
+            int tabCardIndex = tabPosition.cardIndexInTabSwitcher;
             int tabId = tab.getId();
-            editor = editor.addTabToSelection(index, tabId);
+            editor = editor.addTabToSelection(tabCardIndex, tabId);
         }
 
-        TabSwitcherGroupCardFacility groupCard = editor.openAppMenuWithEditor()
-                .groupTabs().pressDone();
+        TabSwitcherGroupCardFacility groupCard =
+                editor.openAppMenuWithEditor().groupTabs().pressDone();
 
         verifyTabGroupMergeSuccessful(tabs, currentModel);
         return groupCard;

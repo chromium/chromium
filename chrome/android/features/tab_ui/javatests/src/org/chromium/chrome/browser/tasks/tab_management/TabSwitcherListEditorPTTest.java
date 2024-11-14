@@ -16,20 +16,24 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.RequiresRestart;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
 import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.hub.NewTabGroupDialogFacility;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.hub.TabGroupDialogFacility;
+import org.chromium.chrome.test.transit.hub.TabSwitcherGroupCardFacility;
 import org.chromium.chrome.test.transit.hub.TabSwitcherListEditorFacility;
+import org.chromium.chrome.test.transit.hub.TabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.omnibox.OmniboxFeatureList;
@@ -177,5 +181,37 @@ public class TabSwitcherListEditorPTTest {
         // Go back to PageStation for InitialStateRule to reset
         firstPage = tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
         assertFinalDestination(firstPage);
+    }
+
+    @Test
+    @MediumTest
+    @RequiresRestart("crbug.com/378502216")
+    public void testCreate2TabGroups() {
+        WebPageStation pageStation = mInitialStateRule.startOnBlankPage();
+        pageStation =
+                Journeys.prepareTabsWithThumbnails(
+                        pageStation, 10, 0, "about:blank", WebPageStation::newBuilder);
+
+        TabModel currentModel = pageStation.getActivity().getCurrentTabModel();
+        List<Tab> tabGroup1 = List.of(currentModel.getTabAt(0), currentModel.getTabAt(3));
+        List<Tab> tabGroup2 =
+                List.of(
+                        currentModel.getTabAt(1),
+                        currentModel.getTabAt(7),
+                        currentModel.getTabAt(8));
+
+        RegularTabSwitcherStation tabSwitcher = pageStation.openRegularTabSwitcher();
+        TabSwitcherGroupCardFacility groupCard =
+                Journeys.mergeTabsToNewGroup(tabSwitcher, tabGroup1);
+        TabGroupDialogFacility<TabSwitcherStation> tabGroupDialogFacility = groupCard.clickCard();
+        tabGroupDialogFacility.pressBackArrowToExit();
+
+        groupCard = Journeys.mergeTabsToNewGroup(tabSwitcher, tabGroup2);
+        tabGroupDialogFacility = groupCard.clickCard();
+        tabGroupDialogFacility.pressBackArrowToExit();
+
+        // Go back to PageStation for InitialStateRule to reset
+        pageStation = tabSwitcher.leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
+        assertFinalDestination(pageStation);
     }
 }

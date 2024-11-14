@@ -74,9 +74,8 @@ public class TabBinningUtil {
     private static Map<Integer, TabBinPosition> createTabToPositionMap(List<TabBin> tabBins) {
         Map<Integer, TabBinPosition> map = new LinkedHashMap<>();
         int binIndex = 0;
-        int tabIndex;
         for (TabBin bin : tabBins) {
-            tabIndex = 0;
+            int tabIndex = 0;
             for (Tab tab : bin.tabs) {
                 TabBinPosition position = new TabBinPosition(binIndex, tabIndex);
                 map.put(tab.getId(), position);
