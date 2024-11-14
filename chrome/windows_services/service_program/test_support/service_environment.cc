@@ -5,6 +5,7 @@
 #include "chrome/windows_services/service_program/test_support/service_environment.h"
 
 #include <string>
+#include <utility>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -34,3 +35,8 @@ ServiceEnvironment::ServiceEnvironment(
 }
 
 ServiceEnvironment::~ServiceEnvironment() = default;
+
+void ServiceEnvironment::SetLogMessageCallback(
+    ScopedLogGrabber::LogMessageCallback callback) {
+  log_grabber_.SetLogMessageCallback(std::move(callback));
+}

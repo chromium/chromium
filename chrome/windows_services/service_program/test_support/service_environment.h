@@ -33,6 +33,12 @@ class ServiceEnvironment {
 
   bool is_valid() const { return service_.has_value(); }
 
+  // Sets a callback to be run for each message received from a service process.
+  // The callback is run with the process ID of the service and the log message.
+  // The message is not emitted to the test process's stderr if the callback
+  // returns true.
+  void SetLogMessageCallback(ScopedLogGrabber::LogMessageCallback callback);
+
  private:
   ScopedLogGrabber log_grabber_;
   std::optional<ScopedInstallService> service_;
