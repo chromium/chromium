@@ -164,29 +164,33 @@ public class AuxiliarySearchDonor {
     }
 
     /**
-     * Donates tabs with favicons.
+     * Donates favicons. Only the tabs with favicons will be donated.
      *
      * @param entries The list of {@link AuxiliarySearchEntry} object which contains a Tab's data.
      * @param tabIdToFaviconMap The map of <TabId, favicon>.
      */
     @VisibleForTesting
-    public void donateTabs(
+    public void donateFavicons(
             @NonNull List<AuxiliarySearchEntry> entries,
-            @Nullable Map<Integer, Bitmap> tabIdToFaviconMap,
+            @NonNull Map<Integer, Bitmap> tabIdToFaviconMap,
             @NonNull Callback<Boolean> callback) {
         List<WebPage> docs = new ArrayList<WebPage>();
 
         for (AuxiliarySearchEntry entry : entries) {
-            Bitmap favicon =
-                    tabIdToFaviconMap != null ? tabIdToFaviconMap.get(entry.getId()) : null;
-            docs.add(
-                    buildDocument(
-                            entry.getId(),
-                            entry.getUrl(),
-                            entry.getTitle(),
-                            entry.getLastAccessTimestamp(),
-                            favicon));
+            Bitmap favicon = tabIdToFaviconMap.get(entry.getId());
+            if (favicon != null) {
+                docs.add(
+                        buildDocument(
+                                entry.getId(),
+                                entry.getUrl(),
+                                entry.getTitle(),
+                                entry.getLastAccessTimestamp(),
+                                favicon));
+            }
         }
+
+        assert !docs.isEmpty();
+
         donateTabsImpl(docs, callback);
     }
 

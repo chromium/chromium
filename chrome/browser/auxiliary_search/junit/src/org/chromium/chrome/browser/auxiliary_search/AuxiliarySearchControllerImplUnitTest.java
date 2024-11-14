@@ -188,7 +188,8 @@ public class AuxiliarySearchControllerImplUnitTest {
                 entries, map, Mockito.mock(Callback.class), now);
 
         verify(mAuxiliarySearchDonor)
-                .donateTabs(eq(entries), eq(map), mBackgroundTaskCompleteCallbackCaptor.capture());
+                .donateFavicons(
+                        eq(entries), eq(map), mBackgroundTaskCompleteCallbackCaptor.capture());
         mFakeTime.advanceMillis(timeDelta);
 
         mBackgroundTaskCompleteCallbackCaptor.getValue().onResult(true);

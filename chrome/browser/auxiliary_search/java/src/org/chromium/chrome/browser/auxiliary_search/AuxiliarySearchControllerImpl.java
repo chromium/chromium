@@ -129,7 +129,7 @@ public class AuxiliarySearchControllerImpl implements AuxiliarySearchController 
             @NonNull Map<Integer, Bitmap> tabIdToFaviconMap,
             @NonNull Callback<Boolean> callback,
             long startTimeMillis) {
-        mDonor.donateTabs(
+        mDonor.donateFavicons(
                 tabs,
                 tabIdToFaviconMap,
                 (success) -> {

@@ -106,7 +106,7 @@ public final class AuxiliarySearchDonorTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mAuxiliarySearchDonor.donateTabs(
+                    mAuxiliarySearchDonor.donateFavicons(
                             entryList,
                             map,
                             (success) -> {
