@@ -42,7 +42,7 @@ void HandleDeterministicModeSwitch(base::CommandLine& command_line) {
 }
 
 bool HandleRemoteDebuggingPort(base::CommandLine& command_line,
-                               HeadlessBrowser::Options::Builder& builder) {
+                               HeadlessBrowser::Options& options) {
   DCHECK(command_line.HasSwitch(::switches::kRemoteDebuggingPort));
 
   int port;
@@ -53,12 +53,13 @@ bool HandleRemoteDebuggingPort(base::CommandLine& command_line,
     LOG(ERROR) << "Invalid devtools server port: " << port_str;
     return false;
   }
-  builder.EnableDevToolsServer(base::checked_cast<uint16_t>(port));
+
+  options.devtools_port = base::checked_cast<uint16_t>(port);
   return true;
 }
 
 void HandleProxyServer(base::CommandLine& command_line,
-                       HeadlessBrowser::Options::Builder& builder) {
+                       HeadlessBrowser::Options& options) {
   DCHECK(command_line.HasSwitch(switches::kProxyServer));
 
   std::string proxy_server =
@@ -70,11 +71,12 @@ void HandleProxyServer(base::CommandLine& command_line,
         command_line.GetSwitchValueASCII(switches::kProxyBypassList);
     proxy_config->proxy_rules().bypass_rules.ParseFromString(bypass_list);
   }
-  builder.SetProxyConfig(std::move(proxy_config));
+
+  options.proxy_config = std::move(proxy_config);
 }
 
 bool HandleWindowSize(base::CommandLine& command_line,
-                      HeadlessBrowser::Options::Builder& builder) {
+                      HeadlessBrowser::Options& options) {
   DCHECK(command_line.HasSwitch(switches::kWindowSize));
 
   const std::string switch_value =
@@ -88,12 +90,12 @@ bool HandleWindowSize(base::CommandLine& command_line,
     return false;
   }
 
-  builder.SetWindowSize(gfx::Size(width, height));
+  options.window_size = gfx::Size(width, height);
   return true;
 }
 
 bool HandleScreenScaleFactor(base::CommandLine& command_line,
-                             HeadlessBrowser::Options::Builder& builder) {
+                             HeadlessBrowser::Options& options) {
   DCHECK(command_line.HasSwitch(switches::kScreenScaleFactor));
 
   const std::string switch_value =
@@ -106,12 +108,12 @@ bool HandleScreenScaleFactor(base::CommandLine& command_line,
     return false;
   }
 
-  builder.SetScreenScaleFactor(static_cast<float>(scale_factor));
+  options.screen_scale_factor = base::checked_cast<float>(scale_factor);
   return true;
 }
 
 bool HandleFontRenderHinting(base::CommandLine& command_line,
-                             HeadlessBrowser::Options::Builder& builder) {
+                             HeadlessBrowser::Options& options) {
   std::string switch_value =
       command_line.GetSwitchValueASCII(switches::kFontRenderHinting);
 
@@ -130,7 +132,7 @@ bool HandleFontRenderHinting(base::CommandLine& command_line,
     return false;
   }
 
-  builder.SetFontRenderHinting(font_render_hinting);
+  options.font_render_hinting = font_render_hinting;
   return true;
 }
 
@@ -157,26 +159,26 @@ base::FilePath EnsureDirectoryExists(const base::FilePath& file_path) {
 }  // namespace
 
 bool HandleCommandLineSwitches(base::CommandLine& command_line,
-                               HeadlessBrowser::Options::Builder& builder) {
+                               HeadlessBrowser::Options& options) {
   if (command_line.HasSwitch(switches::kDeterministicMode)) {
     HandleDeterministicModeSwitch(command_line);
   }
 
   if (command_line.HasSwitch(switches::kEnableBeginFrameControl)) {
-    builder.SetEnableBeginFrameControl(true);
+    options.enable_begin_frame_control = true;
   }
 
   if (command_line.HasSwitch(::switches::kRemoteDebuggingPort)) {
-    if (!HandleRemoteDebuggingPort(command_line, builder)) {
+    if (!HandleRemoteDebuggingPort(command_line, options)) {
       return false;
     }
   }
   if (command_line.HasSwitch(::switches::kRemoteDebuggingPipe)) {
-    builder.EnableDevToolsPipe();
+    options.devtools_pipe_enabled = true;
   }
 
   if (command_line.HasSwitch(switches::kProxyServer)) {
-    HandleProxyServer(command_line, builder);
+    HandleProxyServer(command_line, options);
   }
 
   if (command_line.HasSwitch(switches::kUserDataDir)) {
@@ -185,10 +187,10 @@ bool HandleCommandLineSwitches(base::CommandLine& command_line,
     if (dir.empty()) {
       return false;
     }
-    builder.SetUserDataDir(dir);
+    options.user_data_dir = dir;
 
     if (!command_line.HasSwitch(switches::kIncognito)) {
-      builder.SetIncognitoMode(false);
+      options.incognito_mode = false;
     }
   }
 
@@ -198,17 +200,17 @@ bool HandleCommandLineSwitches(base::CommandLine& command_line,
     if (dir.empty()) {
       return false;
     }
-    builder.SetDiskCacheDir(dir);
+    options.disk_cache_dir = dir;
   }
 
   if (command_line.HasSwitch(switches::kWindowSize)) {
-    if (!HandleWindowSize(command_line, builder)) {
+    if (!HandleWindowSize(command_line, options)) {
       return false;
     }
   }
 
   if (command_line.HasSwitch(switches::kScreenScaleFactor)) {
-    if (!HandleScreenScaleFactor(command_line, builder)) {
+    if (!HandleScreenScaleFactor(command_line, options)) {
       return false;
     }
   }
@@ -217,31 +219,31 @@ bool HandleCommandLineSwitches(base::CommandLine& command_line,
     std::string user_agent =
         command_line.GetSwitchValueASCII(switches::kUserAgent);
     if (net::HttpUtil::IsValidHeaderValue(user_agent)) {
-      builder.SetUserAgent(user_agent);
+      options.user_agent = user_agent;
     }
   }
 
   if (command_line.HasSwitch(switches::kAcceptLang)) {
-    builder.SetAcceptLanguage(
-        command_line.GetSwitchValueASCII(switches::kAcceptLang));
+    options.accept_language =
+        command_line.GetSwitchValueASCII(switches::kAcceptLang);
   }
 
   if (command_line.HasSwitch(switches::kFontRenderHinting)) {
-    if (!HandleFontRenderHinting(command_line, builder)) {
+    if (!HandleFontRenderHinting(command_line, options)) {
       return false;
     }
   }
 
   if (command_line.HasSwitch(switches::kBlockNewWebContents)) {
-    builder.SetBlockNewWebContents(true);
+    options.block_new_web_contents = true;
   }
 
   if (command_line.HasSwitch(switches::kDisableLazyLoading)) {
-    builder.SetEnableLazyLoading(false);
+    options.lazy_load_enabled = false;
   }
 
   if (command_line.HasSwitch(switches::kForceNewBrowsingInstance)) {
-    builder.SetForceNewBrowsingInstance(true);
+    options.force_new_browsing_instance = true;
   }
 
   return true;

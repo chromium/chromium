@@ -81,8 +81,7 @@ class HEADLESS_EXPORT HeadlessBrowser {
 
 // Embedding API overrides for the headless browser.
 struct HEADLESS_EXPORT HeadlessBrowser::Options {
-  class Builder;
-
+  Options();
   Options(Options&& options);
 
   Options(const Options&) = delete;
@@ -110,7 +109,7 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
 
   // Default window size. This is also used to create the window tree host and
   // as the headless screen size. Defaults to 800x600.
-  gfx::Size window_size;
+  gfx::Size window_size = gfx::Size(800, 600);
 
   // Headless screen scale factor.
   float screen_scale_factor = 1.0;
@@ -134,7 +133,8 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   bool enable_begin_frame_control = false;
 
   // Font render hinting value to override any default settings
-  gfx::FontRenderParams::Hinting font_render_hinting;
+  gfx::FontRenderParams::Hinting font_render_hinting =
+      gfx::FontRenderParams::Hinting::HINTING_FULL;
 
   // Whether lazy loading of images and frames is enabled.
   bool lazy_load_enabled = true;
@@ -144,48 +144,6 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
 
   // Reminder: when adding a new field here, do not forget to add it to
   // HeadlessBrowserContextOptions (where appropriate).
- private:
-  Options();
-};
-
-class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
- public:
-  Builder();
-
-  Builder(const Builder&) = delete;
-  Builder& operator=(const Builder&) = delete;
-
-  ~Builder();
-
-  // Browser-wide settings.
-
-  Builder& EnableDevToolsServer(int port);
-  Builder& EnableDevToolsPipe();
-
-  // Settings that are currently browser-wide, but could be per-context if
-  // needed.
-  Builder& SetEnableLazyLoading(bool enable);
-
-  // Per-context settings.
-
-  Builder& SetAcceptLanguage(const std::string& language);
-  Builder& SetEnableBeginFrameControl(bool enable);
-  Builder& SetUserAgent(const std::string& agent);
-  Builder& SetProxyConfig(std::unique_ptr<net::ProxyConfig> config);
-  Builder& SetWindowSize(const gfx::Size& size);
-  Builder& SetScreenScaleFactor(float scale_factor);
-  Builder& SetUserDataDir(const base::FilePath& dir);
-  Builder& SetDiskCacheDir(const base::FilePath& dir);
-  Builder& SetIncognitoMode(bool incognito);
-  Builder& SetBlockNewWebContents(bool block);
-  Builder& SetCrashReporterEnabled(bool enabled);
-  Builder& SetCrashDumpsDir(const base::FilePath& dir);
-  Builder& SetFontRenderHinting(gfx::FontRenderParams::Hinting hinting);
-  Builder& SetForceNewBrowsingInstance(bool force);
-  Options Build();
-
- private:
-  Options options_;
 };
 
 }  // namespace headless

@@ -11,7 +11,7 @@
 namespace headless {
 
 bool HandleCommandLineSwitches(base::CommandLine& command_line,
-                               HeadlessBrowser::Options::Builder& builder);
+                               HeadlessBrowser::Options& options);
 
 }  // namespace headless
 

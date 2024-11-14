@@ -344,8 +344,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, DefaultSizes) {
   HeadlessWebContents* web_contents =
       browser_context->CreateWebContentsBuilder().Build();
 
-  HeadlessBrowser::Options::Builder builder;
-  const HeadlessBrowser::Options kDefaultOptions = builder.Build();
+  const HeadlessBrowser::Options kDefaultOptions;
 
   const int expected_width = kDefaultOptions.window_size.width();
   const int expected_height = kDefaultOptions.window_size.height();

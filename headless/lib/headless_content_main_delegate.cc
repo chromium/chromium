@@ -508,13 +508,12 @@ HeadlessContentMainDelegate* HeadlessContentMainDelegate::GetInstance() {
 }
 
 std::optional<int> HeadlessContentMainDelegate::PreBrowserMain() {
-  HeadlessBrowser::Options::Builder builder;
-
+  HeadlessBrowser::Options browser_options;
   if (!HandleCommandLineSwitches(*base::CommandLine::ForCurrentProcess(),
-                                 builder)) {
+                                 browser_options)) {
     return EXIT_FAILURE;
   }
-  browser_->SetOptions(builder.Build());
+  browser_->SetOptions(std::move(browser_options));
 
 #if BUILDFLAG(IS_WIN)
   // Register callback to handle resource exhaustion.
