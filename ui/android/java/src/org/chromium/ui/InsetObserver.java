@@ -65,6 +65,13 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
          */
         default void onInsetChanged(int left, int top, int right, int bottom) {}
 
+        /**
+         * Called when the keyboard inset changes. Note that the keyboard inset passed to this
+         * method does not take inset consumption into account so this value represents the raw IME
+         * inset received from the system.
+         *
+         * @param inset The raw, non-consumed keyboard inset.
+         */
         default void onKeyboardInsetChanged(int inset) {}
 
         /** Called when a new Display Cutout safe area is applied. */

@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.hub.HubLayout;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -374,7 +375,7 @@ public class AppHeaderCoordinatorBrowserTest {
 
     @Test
     @MediumTest
-    public void testKeyboardInDesktopWindowingModePadsRootView() throws TimeoutException {
+    public void testKeyboardInDesktopWindow_RootViewPadded() throws TimeoutException {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         triggerDesktopWindowingModeChange(activity, true);
         var insetObserver = activity.getWindowAndroid().getInsetObserver();
@@ -400,7 +401,11 @@ public class AppHeaderCoordinatorBrowserTest {
         var rootView = activity.getWindow().getDecorView().getRootView();
         CriteriaHelper.pollUiThread(
                 () -> {
-                    var keyboardInset = insetObserver.getSupplierForKeyboardInset().get();
+                    var keyboardInset =
+                            insetObserver
+                                    .getLastRawWindowInsets()
+                                    .getInsets(WindowInsetsCompat.Type.ime())
+                                    .bottom;
                     Criteria.checkThat(rootView.getPaddingBottom(), Matchers.is(keyboardInset));
                 });
 
@@ -409,33 +414,44 @@ public class AppHeaderCoordinatorBrowserTest {
                 activity.getActivityTab().getWebContents(),
                 "document.querySelector('input').blur()");
 
-        // Verify that the root view bottom padding uses the system bar bottom inset.
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    var systemBarBottomInset =
-                            insetObserver
-                                    .getLastRawWindowInsets()
-                                    .getInsets(WindowInsetsCompat.Type.systemBars())
-                                    .bottom;
-                    Criteria.checkThat(
-                            rootView.getPaddingBottom(), Matchers.is(systemBarBottomInset));
-                });
-
-        // Dispatch window insets to simulate no overlap of the app window with system bar windows.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    insetObserver.onApplyWindowInsets(
-                            rootView,
-                            new WindowInsetsCompat.Builder()
-                                    .setInsets(
-                                            WindowInsetsCompat.Type.systemBars(),
-                                            Insets.of(0, 0, 0, 0))
-                                    .build());
-                });
-
         // Verify that the root view bottom padding is reset.
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(rootView.getPaddingBottom(), Matchers.is(0)));
+    }
+
+    @Test
+    @MediumTest
+    public void testKeyboardInDesktopWindow_RootViewNotPaddedOnOmniboxFocus() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        triggerDesktopWindowingModeChange(activity, true);
+
+        // Focus on the omnibox, this should trigger the OSK.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    activity.getToolbarManager()
+                            .setUrlBarFocus(true, OmniboxFocusReason.OMNIBOX_TAP);
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    boolean isKeyboardShowing =
+                            mActivityTestRule
+                                    .getKeyboardDelegate()
+                                    .isKeyboardShowing(activity, activity.getTabsView());
+                    Criteria.checkThat(isKeyboardShowing, Matchers.is(true));
+                },
+                KEYBOARD_TIMEOUT,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        // Verify that the root view is not bottom-padded even when the OSK is visible.
+        var rootView = activity.getWindow().getDecorView().getRootView();
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(rootView.getPaddingBottom(), Matchers.is(0)));
+
+        // Remove omnibox focus and restore state.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    activity.getToolbarManager().setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
+                });
     }
 
     @Test

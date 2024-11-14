@@ -35,8 +35,7 @@ import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.InsetObserver;
-import org.chromium.ui.InsetObserver.WindowInsetObserver;
-import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
+import org.chromium.ui.InsetObserver.WindowInsetsConsumer;
 import org.chromium.ui.InsetsRectProvider;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.TokenHolder;
@@ -49,7 +48,8 @@ import org.chromium.ui.util.TokenHolder;
 public class AppHeaderCoordinator
         implements DesktopWindowStateManager,
                 TopResumedActivityChangedObserver,
-                SaveInstanceStateObserver {
+                SaveInstanceStateObserver,
+                WindowInsetsConsumer {
     @VisibleForTesting
     public static final String INSTANCE_STATE_KEY_IS_APP_IN_UNFOCUSED_DW =
             "is_app_in_unfocused_desktop_window";
@@ -63,7 +63,6 @@ public class AppHeaderCoordinator
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
     private final InsetObserver mInsetObserver;
     private final InsetsRectProvider mCaptionBarRectProvider;
-    private final WindowInsetObserver mWindowInsetObserver;
     private final WindowInsetsController mInsetsController;
     private final ObserverList<AppHeaderObserver> mObservers = new ObserverList<>();
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -78,7 +77,6 @@ public class AppHeaderCoordinator
     private @DesktopWindowHeuristicResult int mHeuristicResult =
             DesktopWindowHeuristicResult.UNKNOWN;
     private int mKeyboardInset;
-    private int mSystemBarBottomInset;
 
     /**
      * Instantiate the coordinator to handle drawing the tab strip into the captionBar area.
@@ -110,21 +108,7 @@ public class AppHeaderCoordinator
         mRootView = rootView;
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
         mInsetObserver = insetObserver;
-        mWindowInsetObserver =
-                new WindowInsetObserver() {
-                    @Override
-                    public void onInsetChanged(int left, int top, int right, int bottom) {
-                        mSystemBarBottomInset = bottom;
-                        maybeUpdateRootViewBottomPadding();
-                    }
-
-                    @Override
-                    public void onKeyboardInsetChanged(int inset) {
-                        mKeyboardInset = inset;
-                        maybeUpdateRootViewBottomPadding();
-                    }
-                };
-        mInsetObserver.addObserver(mWindowInsetObserver);
+        mInsetObserver.addInsetsConsumer(this, InsetConsumerSource.APP_HEADER_COORDINATOR_IME);
         mInsetsController = mRootView.getWindowInsetsController();
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
@@ -158,7 +142,7 @@ public class AppHeaderCoordinator
     public void destroy() {
         mActivity = null;
         mCaptionBarRectProvider.destroy();
-        mInsetObserver.removeObserver(mWindowInsetObserver);
+        mInsetObserver.removeInsetsConsumer(this);
         mObservers.clear();
         mActivityLifecycleDispatcher.unregister(this);
     }
@@ -240,9 +224,6 @@ public class AppHeaderCoordinator
 
         // 1. Enter E2E if we are in desktop windowing mode.
         setEdgeToEdgeState(mIsInDesktopWindow);
-        // Update the root-level content view's padding to account for bottom insets depending on
-        // the edge to edge state.
-        maybeUpdateRootViewBottomPadding();
 
         // 2. Set the captionBar background appropriately to draw into the region.
         updateCaptionBarBackground(mIsInDesktopWindow);
@@ -333,26 +314,28 @@ public class AppHeaderCoordinator
                 captionBarAppearance, APPEARANCE_LIGHT_CAPTION_BARS);
     }
 
-    // Desktop windows use E2E display and the root-level content view's bottom padding needs to be
-    // updated to "resize" the content view and restrict showing bottom Chrome UI within these
-    // bounds.
+    /**
+     * Update the root-level content view's bottom padding to "resize" the content view and restrict
+     * showing bottom Chrome UI within these bounds in a desktop window, where E2E is active.
+     *
+     * @return {@code true} if a non-zero bottom padding is applied to the content view, {@code
+     *     false} otherwise.
+     */
     // TODO (crbug/325506516): Remove this logic when E2E implementation handles this.
-    private void maybeUpdateRootViewBottomPadding() {
+    private boolean maybeUpdateRootViewBottomPadding() {
         int rootViewBottomPadding = mRootView.getPaddingBottom();
-        // Pad the root view with bottom window insets only if E2E is active.
-        int bottomInset =
-                FALSE.equals(mEdgeToEdgeStateProvider.get())
-                        ? 0
-                        : Math.max(mKeyboardInset, mSystemBarBottomInset);
+        // Pad the root view with IME bottom insets only if E2E is active.
+        int bottomInset = FALSE.equals(mEdgeToEdgeStateProvider.get()) ? 0 : mKeyboardInset;
 
         // If the root view is padded as needed already, return early.
-        if (rootViewBottomPadding == bottomInset) return;
+        if (rootViewBottomPadding == bottomInset) return bottomInset != 0;
 
         mRootView.setPadding(
                 mRootView.getPaddingLeft(),
                 mRootView.getPaddingTop(),
                 mRootView.getPaddingRight(),
                 bottomInset);
+        return bottomInset != 0;
     }
 
     /** Set states for testing. */
@@ -372,10 +355,6 @@ public class AppHeaderCoordinator
         ResettersForTesting.register(() -> sInsetsRectProviderForTesting = null);
     }
 
-    WindowInsetObserver getWindowInsetObserverForTesting() {
-        return mWindowInsetObserver;
-    }
-
     private void setEdgeToEdgeState(boolean active) {
         if (active) {
             mEdgeToEdgeToken = mEdgeToEdgeStateProvider.acquireSetDecorFitsSystemWindowToken();
@@ -383,5 +362,20 @@ public class AppHeaderCoordinator
             mEdgeToEdgeStateProvider.releaseSetDecorFitsSystemWindowToken(mEdgeToEdgeToken);
             mEdgeToEdgeToken = TokenHolder.INVALID_TOKEN;
         }
+    }
+
+    // WindowInsetsConsumer implementation.
+    @NonNull
+    @Override
+    public WindowInsetsCompat onApplyWindowInsets(
+            @NonNull View view, @NonNull WindowInsetsCompat windowInsetsCompat) {
+        mKeyboardInset = windowInsetsCompat.getInsets(WindowInsetsCompat.Type.ime()).bottom;
+        boolean resizedRootView = maybeUpdateRootViewBottomPadding();
+        if (!resizedRootView) return windowInsetsCompat;
+
+        // Consume IME insets if the root view has been adjusted.
+        return new WindowInsetsCompat.Builder(windowInsetsCompat)
+                .setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE)
+                .build();
     }
 }

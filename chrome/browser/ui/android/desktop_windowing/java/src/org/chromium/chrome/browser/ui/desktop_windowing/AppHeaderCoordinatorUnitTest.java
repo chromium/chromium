@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.desktop_windowing;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -51,7 +52,6 @@ import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.InsetObserver;
-import org.chromium.ui.InsetObserver.WindowInsetObserver;
 import org.chromium.ui.InsetsRectProvider;
 import org.chromium.ui.base.TestActivity;
 
@@ -70,8 +70,7 @@ public class AppHeaderCoordinatorUnitTest {
     private static final int HEADER_HEIGHT = 30;
     private static final Rect WIDEST_UNOCCLUDED_RECT =
             new Rect(LEFT_BLOCK, 0, WINDOW_WIDTH - RIGHT_BLOCK, HEADER_HEIGHT);
-    private static final int KEYBOARD_INSET = 672;
-    private static final int SYSTEM_BAR_BOTTOM_INSET = 64;
+    private static final int KEYBOARD_INSET = 736;
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -91,7 +90,6 @@ public class AppHeaderCoordinatorUnitTest {
     private View mSpyRootView;
     private WindowInsetsCompat mLastSeenRawWindowInsets = new WindowInsetsCompat(null);
     private Bundle mSavedInstanceStateBundle;
-    private WindowInsetObserver mWindowInsetObserver;
     private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
 
     @Before
@@ -399,7 +397,7 @@ public class AppHeaderCoordinatorUnitTest {
     }
 
     @Test
-    public void noBottomSystemOrImeInsets() {
+    public void noImeInsets() {
         // Simulate switching to desktop windowing mode, without any bottom insets.
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectObserver();
@@ -412,12 +410,21 @@ public class AppHeaderCoordinatorUnitTest {
                 /* error= */ "DesktopWindowing should exit when no insets is supplied.");
 
         // Simulate overlapping keyboard.
-        mWindowInsetObserver.onKeyboardInsetChanged(KEYBOARD_INSET);
+        var insets = applyWindowInsets(KEYBOARD_INSET);
+        assertNotEquals(
+                "Ime insets should not be consumed when root view is not adjusted.",
+                Insets.NONE,
+                insets.getInsets(WindowInsetsCompat.Type.ime()));
         assertEquals("Root view bottom should not be padded.", 0, mSpyRootView.getPaddingBottom());
 
         // Simulate switching to desktop windowing mode.
         setupWithLeftAndRightBoundingRect();
         notifyInsetsRectObserver();
+        insets = applyWindowInsets(KEYBOARD_INSET);
+        assertEquals(
+                "Ime insets should be consumed when root view is bottom-padded.",
+                Insets.NONE,
+                insets.getInsets(WindowInsetsCompat.Type.ime()));
         verifyDesktopWindowingEnabled();
         assertEquals(
                 "Root view bottom padding should be updated.",
@@ -427,6 +434,11 @@ public class AppHeaderCoordinatorUnitTest {
         // Simulate switching out of desktop windowing mode.
         setupWithNoInsets();
         notifyInsetsRectObserver();
+        insets = applyWindowInsets(KEYBOARD_INSET);
+        assertNotEquals(
+                "Ime insets should not be consumed when root view is not adjusted.",
+                Insets.NONE,
+                insets.getInsets(WindowInsetsCompat.Type.ime()));
         assertEquals(
                 "Root view bottom padding should be reset.", 0, mSpyRootView.getPaddingBottom());
     }
@@ -438,78 +450,25 @@ public class AppHeaderCoordinatorUnitTest {
         notifyInsetsRectObserver();
 
         // Simulate overlapping keyboard.
-        mWindowInsetObserver.onKeyboardInsetChanged(KEYBOARD_INSET);
+        var insets = applyWindowInsets(KEYBOARD_INSET);
+        assertEquals(
+                "Ime insets should be consumed when root view is adjusted.",
+                Insets.NONE,
+                insets.getInsets(WindowInsetsCompat.Type.ime()));
         assertEquals(
                 "Root view bottom padding should be updated.",
                 KEYBOARD_INSET,
                 mSpyRootView.getPaddingBottom());
 
         // Simulate moving a desktop window that causes the keyboard inset to be updated.
-        mWindowInsetObserver.onKeyboardInsetChanged(KEYBOARD_INSET + 100);
+        insets = applyWindowInsets(KEYBOARD_INSET + 100);
+        assertEquals(
+                "Ime insets should be consumed when root view is adjusted.",
+                Insets.NONE,
+                insets.getInsets(WindowInsetsCompat.Type.ime()));
         assertEquals(
                 "Root view bottom padding should be updated.",
                 KEYBOARD_INSET + 100,
-                mSpyRootView.getPaddingBottom());
-    }
-
-    @Test
-    public void overlappingBottomSystemBar_SwitchToAndFromDesktopWindowingMode() {
-        verifyDesktopWindowingDisabled(
-                /* error= */ "Desktop windowing mode should be disabled initially.");
-
-        // Simulate overlapping system bar bottom inset.
-        mWindowInsetObserver.onInsetChanged(0, 0, 0, SYSTEM_BAR_BOTTOM_INSET);
-        assertEquals("Root view bottom should not be padded.", 0, mSpyRootView.getPaddingBottom());
-
-        // Simulate switching to desktop windowing mode.
-        setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectObserver();
-        verifyDesktopWindowingEnabled();
-        assertEquals(
-                "Root view bottom padding should be updated.",
-                SYSTEM_BAR_BOTTOM_INSET,
-                mSpyRootView.getPaddingBottom());
-
-        // Simulate switching out of desktop windowing mode.
-        setupWithNoInsets();
-        notifyInsetsRectObserver();
-        assertEquals(
-                "Root view bottom padding should be reset.", 0, mSpyRootView.getPaddingBottom());
-    }
-
-    @Test
-    public void overlappingBottomSystemBar_MoveDesktopWindow() {
-        // Simulate switching to desktop windowing mode.
-        setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectObserver();
-
-        // Simulate overlapping system bar bottom inset.
-        mWindowInsetObserver.onInsetChanged(0, 0, 0, SYSTEM_BAR_BOTTOM_INSET);
-        assertEquals(
-                "Root view bottom padding should be updated.",
-                SYSTEM_BAR_BOTTOM_INSET,
-                mSpyRootView.getPaddingBottom());
-
-        // Simulate moving a desktop window that causes the system bar inset to be updated.
-        mWindowInsetObserver.onInsetChanged(0, 0, 0, SYSTEM_BAR_BOTTOM_INSET - 10);
-        assertEquals(
-                "Root view bottom padding should be updated.",
-                SYSTEM_BAR_BOTTOM_INSET - 10,
-                mSpyRootView.getPaddingBottom());
-    }
-
-    @Test
-    public void overlappingKeyboardAndBottomSystemBar() {
-        // Simulate switching to desktop windowing mode.
-        setupWithLeftAndRightBoundingRect();
-        notifyInsetsRectObserver();
-
-        // Simulate overlapping keyboard and system bar bottom insets.
-        mWindowInsetObserver.onKeyboardInsetChanged(KEYBOARD_INSET);
-        mWindowInsetObserver.onInsetChanged(0, 0, 0, SYSTEM_BAR_BOTTOM_INSET);
-        assertEquals(
-                "Root view bottom padding should be updated.",
-                KEYBOARD_INSET,
                 mSpyRootView.getPaddingBottom());
     }
 
@@ -524,7 +483,6 @@ public class AppHeaderCoordinatorUnitTest {
                         mSavedInstanceStateBundle,
                         mEdgeToEdgeStateProvider);
         mAppHeaderCoordinator.addObserver(mObserver);
-        mWindowInsetObserver = mAppHeaderCoordinator.getWindowInsetObserverForTesting();
     }
 
     private void setupWithNoInsets() {
@@ -574,5 +532,12 @@ public class AppHeaderCoordinatorUnitTest {
     private void verifyDesktopWindowingDisabled(String error) {
         assertFalse(error, mAppHeaderCoordinator.isInDesktopWindow());
         assertFalse("Edge to edge should not be active.", mEdgeToEdgeStateProvider.get());
+    }
+
+    private WindowInsetsCompat applyWindowInsets(int keyboardInset) {
+        var windowInsetsBuilder = new WindowInsetsCompat.Builder();
+        windowInsetsBuilder.setInsets(
+                WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, keyboardInset));
+        return mAppHeaderCoordinator.onApplyWindowInsets(mSpyRootView, windowInsetsBuilder.build());
     }
 }
