@@ -41,7 +41,10 @@ const char kBackgroundDumpMode[] = "background";
 perfetto::protos::gen::TraceConfig TraceConfigWithHistograms(
     const std::string& category_filter_string,
     const std::vector<std::string>& histograms) {
-  base::trace_event::TraceConfig trace_event_config(category_filter_string, "");
+  // Which categories are specified in the legacy config should not affect
+  // anything. Only the list of enabled histograms should be read from the
+  // legacy config.
+  base::trace_event::TraceConfig trace_event_config;
   for (const auto& histogram : histograms) {
     trace_event_config.EnableHistogram(histogram);
   }

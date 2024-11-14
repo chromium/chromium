@@ -32,15 +32,10 @@ class COMPONENT_EXPORT(TRACING_CPP) CustomEventRecorder
 
   // perfetto::TrackEventSessionObserver implementation
   void OnSetup(const perfetto::DataSourceBase::SetupArgs&) override;
+  void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
   void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
   void WillClearIncrementalState(
       const perfetto::DataSourceBase::ClearIncrementalStateArgs&) override;
-
-  void OnStartupTracingStarted(
-      const base::trace_event::TraceConfig& trace_config,
-      bool privacy_filtering_enabled);
-  void OnTracingStarted(const perfetto::DataSourceConfig& data_source_config);
-  void OnTracingStopped(base::OnceClosure stop_complete_callback);
 
   void SetActiveProcessesCallback(ActiveProcessesCallback callback) {
     active_processes_callback_ = callback;
@@ -68,7 +63,7 @@ class COMPONENT_EXPORT(TRACING_CPP) CustomEventRecorder
   SEQUENCE_CHECKER(perfetto_sequence_checker_);
   // Extracts UMA histogram names that should be logged in traces and logs their
   // starting values.
-  void ResetHistograms(const base::trace_event::TraceConfig& trace_config);
+  void ResetHistograms(const std::unordered_set<std::string>& histogram_names);
   // Logs selected UMA histogram.
   void LogHistograms();
   // Logs a given histogram in traces.
