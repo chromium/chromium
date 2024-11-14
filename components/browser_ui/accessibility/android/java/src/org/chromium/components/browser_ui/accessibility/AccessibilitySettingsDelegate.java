@@ -61,4 +61,11 @@ public interface AccessibilitySettingsDelegate {
      *     preference.
      */
     BooleanPreferenceDelegate getForceEnableZoomAccessibilityDelegate();
+
+    /**
+     * @return the BooleanPreferenceDelegate instance that should be used for reading and setting
+     *     the reader (simplified view) value for accessibility settings. Return null to omit the
+     *     preference.
+     */
+    BooleanPreferenceDelegate getReaderAccessibilityDelegate();
 }

@@ -205,7 +205,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
         if (fragment instanceof AccessibilitySettings) {
             ((AccessibilitySettings) fragment)
                     .setDelegate(new ChromeAccessibilitySettingsDelegate(mProfile));
-            ((AccessibilitySettings) fragment).setPrefService(UserPrefs.get(mProfile));
         }
         if (fragment instanceof PasswordSettings) {
             ((PasswordSettings) fragment)

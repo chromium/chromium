@@ -36,23 +36,24 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
         }
     }
 
-    private static class ForceEnableZoomAccessibilityDelegate implements BooleanPreferenceDelegate {
+    private static class ChromeBooleanPreferenceDelegate implements BooleanPreferenceDelegate {
         private final BrowserContextHandle mBrowserContextHandle;
+        private final String mPreferenceKey;
 
-        public ForceEnableZoomAccessibilityDelegate(BrowserContextHandle mBrowserContextHandle) {
+        public ChromeBooleanPreferenceDelegate(
+                BrowserContextHandle mBrowserContextHandle, String mPreferenceKey) {
             this.mBrowserContextHandle = mBrowserContextHandle;
+            this.mPreferenceKey = mPreferenceKey;
         }
 
         @Override
         public boolean getValue() {
-            return UserPrefs.get(mBrowserContextHandle)
-                    .getBoolean(Pref.ACCESSIBILITY_FORCE_ENABLE_ZOOM);
+            return UserPrefs.get(mBrowserContextHandle).getBoolean(mPreferenceKey);
         }
 
         @Override
         public void setValue(boolean value) {
-            UserPrefs.get(mBrowserContextHandle)
-                    .setBoolean(Pref.ACCESSIBILITY_FORCE_ENABLE_ZOOM, value);
+            UserPrefs.get(mBrowserContextHandle).setBoolean(mPreferenceKey, value);
         }
     }
 
@@ -89,6 +90,13 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
 
     @Override
     public BooleanPreferenceDelegate getForceEnableZoomAccessibilityDelegate() {
-        return new ForceEnableZoomAccessibilityDelegate(getBrowserContextHandle());
+        return new ChromeBooleanPreferenceDelegate(
+                getBrowserContextHandle(), Pref.ACCESSIBILITY_FORCE_ENABLE_ZOOM);
+    }
+
+    @Override
+    public BooleanPreferenceDelegate getReaderAccessibilityDelegate() {
+        return new ChromeBooleanPreferenceDelegate(
+                getBrowserContextHandle(), Pref.READER_FOR_ACCESSIBILITY);
     }
 }

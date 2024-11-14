@@ -15,7 +15,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
 import org.chromium.components.browser_ui.accessibility.PageZoomPreference;
 import org.chromium.components.browser_ui.accessibility.PageZoomUma;
@@ -27,7 +26,6 @@ import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.omnibox.OmniboxFeatures;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 
@@ -51,13 +49,8 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     private ChromeSwitchPreference mJumpStartOmnibox;
     private AccessibilitySettingsDelegate mDelegate;
     private double mPageZoomLatestDefaultZoomPrefValue;
-    private PrefService mPrefService;
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
-
-    public void setPrefService(PrefService prefService) {
-        mPrefService = prefService;
-    }
 
     public void setDelegate(AccessibilitySettingsDelegate delegate) {
         mDelegate = delegate;
@@ -112,7 +105,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         ChromeSwitchPreference readerForAccessibilityPref =
                 (ChromeSwitchPreference) findPreference(PREF_READER_FOR_ACCESSIBILITY);
         readerForAccessibilityPref.setChecked(
-                mPrefService.getBoolean(Pref.READER_FOR_ACCESSIBILITY));
+                mDelegate.getReaderAccessibilityDelegate().getValue());
         readerForAccessibilityPref.setOnPreferenceChangeListener(this);
 
         Preference captions = findPreference(PREF_CAPTIONS);
@@ -176,7 +169,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         if (PREF_FORCE_ENABLE_ZOOM.equals(preference.getKey())) {
             mDelegate.getForceEnableZoomAccessibilityDelegate().setValue((Boolean) newValue);
         } else if (PREF_READER_FOR_ACCESSIBILITY.equals(preference.getKey())) {
-            mPrefService.setBoolean(Pref.READER_FOR_ACCESSIBILITY, (Boolean) newValue);
+            mDelegate.getReaderAccessibilityDelegate().setValue((Boolean) newValue);
         } else if (PREF_PAGE_ZOOM_DEFAULT_ZOOM.equals(preference.getKey())) {
             mPageZoomLatestDefaultZoomPrefValue =
                     PageZoomUtils.convertSeekBarValueToZoomLevel((Integer) newValue);
