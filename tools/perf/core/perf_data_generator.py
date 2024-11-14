@@ -1707,13 +1707,13 @@ def generate_telemetry_args(tester_config, platform):
   elif (tester_config['platform'] == 'win'
         and not tester_config['dimension'].get('cpu', '').startswith('arm64')
         and tester_config['target_bits'] == 64):
-    browser_name = 'release_x64'
+    browser_name = 'builder'  # crbug.com/377748127
   elif tester_config['platform'] == 'fuchsia-wes':
     browser_name = 'web-engine-shell'
   elif tester_config['platform'] == 'fuchsia-chrome':
     browser_name = 'fuchsia-chrome'
   else:
-    browser_name = 'release'
+    browser_name = 'builder'  # crbug.com/377748127
   test_args = [
       '-v',
       '--browser=%s' % browser_name,

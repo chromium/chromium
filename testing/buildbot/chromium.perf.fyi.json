@@ -195,7 +195,7 @@
       {
         "args": [
           "-v",
-          "--browser=release",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=linux-perf-fyi_map.json",
           "--ignore-benchmark-exit-code",
@@ -239,7 +239,7 @@
       {
         "args": [
           "-v",
-          "--browser=release_x64",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=win-10_laptop_low_end-perf_hp-candidate_map.json",
           "--ignore-benchmark-exit-code",
@@ -285,7 +285,7 @@
       {
         "args": [
           "-v",
-          "--browser=release",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=win-arm64-snapdragon-elite-perf_map.json",
           "--ignore-benchmark-exit-code",
@@ -329,7 +329,7 @@
       {
         "args": [
           "-v",
-          "--browser=release",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=win-arm64-snapdragon-plus-perf_map.json",
           "--ignore-benchmark-exit-code",

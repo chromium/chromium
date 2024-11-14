@@ -876,7 +876,7 @@
       {
         "args": [
           "-v",
-          "--browser=release",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=linux-perf_map.json",
           "--ignore-benchmark-exit-code",
@@ -924,7 +924,7 @@
       {
         "args": [
           "-v",
-          "--browser=release",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=linux-perf-pgo_map.json",
           "--ignore-benchmark-exit-code",
@@ -968,7 +968,7 @@
       {
         "args": [
           "-v",
-          "--browser=release",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=linux-perf-rel_map.json",
           "--ignore-benchmark-exit-code",
@@ -1020,7 +1020,7 @@
       {
         "args": [
           "-v",
-          "--browser=release",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=linux-r350-perf_map.json",
           "--ignore-benchmark-exit-code",
@@ -1125,7 +1125,7 @@
       {
         "args": [
           "-v",
-          "--browser=release",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=mac-intel-perf_map.json",
           "--ignore-benchmark-exit-code",
@@ -1170,7 +1170,7 @@
       {
         "args": [
           "-v",
-          "--browser=release",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=mac-laptop_high_end-perf_map.json",
           "--ignore-benchmark-exit-code",
@@ -1219,7 +1219,7 @@
       {
         "args": [
           "-v",
-          "--browser=release",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=mac-laptop_high_end-perf-pgo_map.json",
           "--ignore-benchmark-exit-code",
@@ -1272,7 +1272,7 @@
       {
         "args": [
           "-v",
-          "--browser=release",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=mac-laptop_low_end-perf_map.json",
           "--ignore-benchmark-exit-code",
@@ -1321,7 +1321,7 @@
       {
         "args": [
           "-v",
-          "--browser=release",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=mac-laptop_low_end-perf-pgo_map.json",
           "--ignore-benchmark-exit-code",
@@ -1374,7 +1374,7 @@
       {
         "args": [
           "-v",
-          "--browser=release",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=mac-m1-pro-perf_map.json",
           "--ignore-benchmark-exit-code",
@@ -1418,7 +1418,7 @@
       {
         "args": [
           "-v",
-          "--browser=release",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=mac-m1_mini_2020-no-brp-perf_map.json",
           "--ignore-benchmark-exit-code",
@@ -1462,7 +1462,7 @@
       {
         "args": [
           "-v",
-          "--browser=release",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=mac-m1_mini_2020-perf_map.json",
           "--ignore-benchmark-exit-code",
@@ -1506,7 +1506,7 @@
       {
         "args": [
           "-v",
-          "--browser=release",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=mac-m1_mini_2020-perf-pgo_map.json",
           "--ignore-benchmark-exit-code",
@@ -1550,7 +1550,7 @@
       {
         "args": [
           "-v",
-          "--browser=release",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=mac-m2-pro-perf_map.json",
           "--ignore-benchmark-exit-code",
@@ -1595,7 +1595,7 @@
       {
         "args": [
           "-v",
-          "--browser=release_x64",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=win-10-perf_map.json",
           "--ignore-benchmark-exit-code",
@@ -1642,7 +1642,7 @@
       {
         "args": [
           "-v",
-          "--browser=release_x64",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=win-10-perf-pgo_map.json",
           "--ignore-benchmark-exit-code",
@@ -1693,7 +1693,7 @@
       {
         "args": [
           "-v",
-          "--browser=release_x64",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=win-10_amd_laptop-perf_map.json",
           "--ignore-benchmark-exit-code",
@@ -1737,7 +1737,7 @@
       {
         "args": [
           "-v",
-          "--browser=release_x64",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=win-10_amd_laptop-perf-pgo_map.json",
           "--ignore-benchmark-exit-code",
@@ -1781,7 +1781,7 @@
       {
         "args": [
           "-v",
-          "--browser=release_x64",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=win-10_laptop_low_end-perf_map.json",
           "--ignore-benchmark-exit-code",
@@ -1829,7 +1829,7 @@
       {
         "args": [
           "-v",
-          "--browser=release_x64",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=win-10_laptop_low_end-perf-pgo_map.json",
           "--ignore-benchmark-exit-code",
@@ -1880,7 +1880,7 @@
       {
         "args": [
           "-v",
-          "--browser=release_x64",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=win-11-perf_map.json",
           "--ignore-benchmark-exit-code",
@@ -1928,7 +1928,7 @@
       {
         "args": [
           "-v",
-          "--browser=release_x64",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=win-11-perf-pgo_map.json",
           "--ignore-benchmark-exit-code",
