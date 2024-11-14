@@ -39,8 +39,7 @@ BASE_FEATURE(kDevToolsFreestyler,
              "DevToolsFreestyler",
              base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kDevToolsFreestylerModelId{
-    &kDevToolsFreestyler, "aida_model_id",
-    /*default_value=*/"codey_gemit_mpp_streaming"};
+    &kDevToolsFreestyler, "aida_model_id", /*default_value=*/""};
 const base::FeatureParam<double> kDevToolsFreestylerTemperature{
     &kDevToolsFreestyler, "aida_temperature", /*default_value=*/-1};
 const base::FeatureParam<DevToolsFreestylerUserTier>
