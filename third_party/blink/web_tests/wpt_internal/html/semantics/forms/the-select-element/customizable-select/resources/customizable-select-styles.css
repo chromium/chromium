@@ -34,6 +34,10 @@
   align-content: center;
 }
 
+.customizable-select-option.disabled {
+  color: color-mix(in lab, currentColor 50%, transparent);
+}
+
 .customizable-select-option::before {
   content: '\2713' / '';
 }

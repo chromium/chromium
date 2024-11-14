@@ -91,16 +91,6 @@ select::picker(select) {
   display: block !important;
 }
 
-/* TODO(crbug.com/1511354): These hover styles should only be applied when
- * the select has appearance:base-select. This will be challenging because
- * the selector is targeting an option rather than the select itself. However,
- * these hover rules don't seem to affect appearance:auto options in the popup
- * for now. */
-select:not(:-internal-list-box) option:not(:disabled):hover {
-  background-color: SelectedItem;
-  color: SelectedItemText;
-}
-
 select:not(:-internal-list-box) option {
   /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
    * https://github.com/openui/open-ui/issues/1026
@@ -112,6 +102,16 @@ select:not(:-internal-list-box) option {
   min-block-size: max(24px, 1.2em);
   align-content: center;
   font-weight: -internal-appearance-auto-base-select(normal, inherit);
+}
+
+select:not(:-internal-list-box) option:enabled:hover {
+  background-color: color-mix(in lab, currentColor 20%, transparent);
+}
+select:not(:-internal-list-box) option:enabled:active {
+  background-color: color-mix(in lab, currentColor 30%, transparent);
+}
+select:not(:-internal-list-box) option:disabled {
+  color: -internal-appearance-auto-base-select(inherit, color-mix(in lab, currentColor 50%, transparent));
 }
 
 
