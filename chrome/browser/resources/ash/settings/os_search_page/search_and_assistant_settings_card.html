@@ -116,18 +116,16 @@
     </iron-collapse>
   </template>
 
-<if expr="_google_chrome">
   <template is="dom-if" if="[[isSunfishSettingsToggleVisible_]]">
+    <!-- TODO: b/368184169 - Localise the label and add an icon, sublabel and
+        learn more link. -->
     <settings-toggle-button
         id="sunfishToggle"
         class="hr"
-        icon="ash-internal:sunfish"
         pref="{{prefs.ash.capture_mode.sunfish_enabled}}"
-        label="$i18n{enableSunfish}"
-        sub-label="$i18n{enableSunfishDesc}"
+        label="Enable Sunfish"
         deep-link-focus-id$="[[Setting.kSunfishOnOff]]">
     </settings-toggle-button>
-</if>
   </template>
 
 </settings-card>
