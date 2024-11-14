@@ -76,7 +76,7 @@ if (is_win) {
     }
   }
 
-  if (host_os == "win" && !is_debug) {
+  if (host_os == "win") {
     test_app_installer("app1") {
       setup_script = "test_app1_setup.py"
     }
@@ -85,9 +85,11 @@ if (is_win) {
       setup_script = "test_app2_setup.cmd"
     }
   } else {
+    # Resource editing script does not work on non-Windows platform. Just copy
+    # the pre-built binary for cross-compile support.
     copy("test_app2_installer") {
-      sources =
-          [ "//chrome/updater/test/data/test_installer/Testapp2Setup.exe" ]
+      sources = [ "//chrome/updater/test/data/test_installer/$target_cpu/" +
+                  "Testapp2Setup.exe" ]
       outputs = [ "$root_build_dir/test_installer/{{source_file_part}}" ]
     }
   }
