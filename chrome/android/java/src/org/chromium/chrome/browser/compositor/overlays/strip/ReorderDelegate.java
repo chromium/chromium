@@ -443,6 +443,22 @@ public class ReorderDelegate {
     }
 
     /**
+     * Merges the interacting tab to the given group. Animates accordingly.
+     *
+     * @param destinationTabId The tab ID to merge the interacting tab to.
+     * @param groupTitle The title of the group the interacting tab is attempting to merge to.
+     * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
+     */
+    protected void mergeInteractingTabToGroup(
+            int destinationTabId, StripLayoutGroupTitle groupTitle, boolean towardEnd) {
+        mTabGroupModelFilter.mergeTabsToGroup(mInteractingTab.getTabId(), destinationTabId);
+        RecordUserAction.record("MobileToolbarReorderTab.TabAddedToGroup");
+
+        // Animate the group indicator after updating the tab model.
+        animateGroupIndicatorForTabReorder(groupTitle, /* isMovingOutOfGroup= */ false, towardEnd);
+    }
+
+    /**
      * Wrapper for {@link TabGroupModelFilter#moveTabOutOfGroupInDirection} that also records the
      * tab-strip specific User Action.
      */
@@ -487,7 +503,7 @@ public class ReorderDelegate {
      * @param isMovingOutOfGroup Whether the action is merging/removing a tab to/from a group.
      * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
      */
-    void animateGroupIndicatorForTabReorder(
+    private void animateGroupIndicatorForTabReorder(
             StripLayoutGroupTitle groupTitle, boolean isMovingOutOfGroup, boolean towardEnd) {
         List<Animator> animators = new ArrayList<>();
 

@@ -3745,27 +3745,6 @@ public class StripLayoutHelper
     }
 
     /**
-     * This method checks whether or not interacting tab has met the conditions to be merged to an
-     * adjacent tab group. If so, it merges the tab to the group and returns the new index for
-     * interacting tab.
-     *
-     * @param destinationTabId The tab ID to merge the interacting tab to.
-     * @param groupTitle The title of the group the interacting tab is attempting to merge to.
-     * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
-     */
-    @VisibleForTesting
-    protected void mergeInteractingTabToGroup(
-            int destinationTabId, StripLayoutGroupTitle groupTitle, boolean towardEnd) {
-        mTabGroupModelFilter.mergeTabsToGroup(
-                mReorderDelegate.getInteractingTab().getTabId(), destinationTabId);
-        RecordUserAction.record("MobileToolbarReorderTab.TabAddedToGroup");
-
-        // Animate the group indicator after updating the tab model.
-        mReorderDelegate.animateGroupIndicatorForTabReorder(
-                groupTitle, /* isMovingOutOfGroup= */ false, towardEnd);
-    }
-
-    /**
      * This method determines the new index for the interacting tab, based on whether or not it has
      * met the conditions to be moved past a neighboring collapsed tab group.
      */
@@ -3902,7 +3881,7 @@ public class StripLayoutHelper
                     throughGroupTitle = towardEnd;
 
                     if (Math.abs(offset) > mReorderDelegate.getDragInThreshold()) {
-                        mergeInteractingTabToGroup(
+                        mReorderDelegate.mergeInteractingTabToGroup(
                                 adjTab.getId(), interactingGroupTitle, towardEnd);
                         destIndex = curIndex;
                     }
