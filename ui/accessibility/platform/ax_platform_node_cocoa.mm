@@ -902,6 +902,19 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
               leafTextRange.focus()->GetAnchor())
         << "An anchor range should only span a single object.";
 
+    int leafTextLength = leafTextRange.GetText().length();
+    NSRange leafRange = NSMakeRange(anchorStartOffset, leafTextLength);
+
+    // As we iterate over the attributed string's string using leaf ranges,
+    // double check that the next leaf string actually matches the text in the
+    // attributed string. If it doesn't, the leaf text is "extra" text that's
+    // not included in the attributed string.
+    if (leafRange.location >= attributedString.length ||
+        base::SysNSStringToUTF16([attributedString.string
+            substringWithRange:leafRange]) != leafTextRange.GetText()) {
+      continue;
+    }
+
     ui::AXNode* anchor = leafTextRange.focus()->GetAnchor();
     DCHECK(anchor) << "A non-null position should have a non-null anchor node.";
 
@@ -934,14 +947,9 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
                  range:NSMakeRange(misspellingStart, misspellingLength)];
     }
 
-    // Add annotation information
-    int leafTextLength = leafTextRange.GetText().length();
-    DCHECK_LE(static_cast<unsigned long>(anchorStartOffset + leafTextLength),
-              attributedString.length);
-    NSRange leafRange = NSMakeRange(anchorStartOffset, leafTextLength);
-
     CollectAncestorRoles(*anchor, ancestor_roles);
 
+    // Add annotation information
     if (ancestor_roles[anchor->id()].contains(ax::mojom::Role::kMark)) {
       [attributedString addAttribute:@"AXHighlight" value:@YES range:leafRange];
     }
