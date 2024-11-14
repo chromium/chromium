@@ -66,4 +66,10 @@ void ViewsTestHelperMac::SetUpTestViewsDelegate(
   delegate->set_context_factory(context_factories_.GetContextFactory());
 }
 
+void ViewsTestHelperMac::TearDownTestViewsDelegate(
+    TestViewsDelegate* delegate) {
+  delegate->set_context_factory(nullptr);
+  ViewsTestHelper::TearDownTestViewsDelegate(delegate);
+}
+
 }  // namespace views
