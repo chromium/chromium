@@ -9103,9 +9103,10 @@
       "shik@chromium.org",
       "chingkang@chromium.org",
       "jcliang@chromium.org",
+      "ototot@chromium.org",
       "cros-odml-foundations-eng@google.com"
     ],
-    "expiry_milestone": 133
+    "expiry_milestone": 140
   },
   {
     "name": "vc-retouch-inference-backend",
@@ -9116,7 +9117,7 @@
       "ototot@google.com",
       "cros-odml-foundations-eng@google.com"
     ],
-    "expiry_milestone": 135
+    "expiry_milestone": 140
   },
   {
     "name": "vc-segmentation-inference-backend",
@@ -9124,9 +9125,10 @@
       "shik@chromium.org",
       "chingkang@chromium.org",
       "jcliang@chromium.org",
+      "ototot@chromium.org",
       "cros-odml-foundations-eng@google.com"
     ],
-    "expiry_milestone": 133
+    "expiry_milestone": 140
   },
   {
     "name": "vc-segmentation-model",
