@@ -35,6 +35,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
@@ -198,6 +199,7 @@ public class JavascriptTabModalDialogTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
+    @DisabledTest(message = "Flaky - crbug.com/378915567")
     public void testAlertModalDialogMessageFocus() throws TimeoutException, ExecutionException {
         assertScrollViewFocusabilityInAlertDialog("alert('Short message!');", false);
 
