@@ -117,6 +117,11 @@ const char kHistogramGWSIsFirstNavigationForGWS[] =
 const char kHistogramGWSConnectionReuseStatus[] =
     HISTOGRAM_PREFIX "ConnectionReuseStatus";
 
+const char kHistogramGWSAllHeadersExpected[] =
+    HISTOGRAM_PREFIX "SyntheticResponse.AllHeadersExpected";
+const char kHistogramGWSHeaderMismatchType[] =
+    HISTOGRAM_PREFIX "SyntheticResponse.HeaderMismatchType";
+
 }  // namespace internal
 
 namespace {
@@ -298,9 +303,10 @@ struct HeaderInfo {
 using ReportedHeaders = std::vector<HeaderInfo>;
 
 enum class HeaderMismatchType {
-  kHeaderNotExpected,
-  kValueMismatched,
-  kHeaderNotActuallyExist,
+  kHeaderNotExpected = 1 << 0,
+  kValueMismatched = 1 << 1,
+  kHeaderNotActuallyExist = 1 << 2,
+  kMaxValue = kHeaderNotActuallyExist,
 };
 
 void SetHeaderCrashKeys(const ReportedHeaders& reported_headers,
@@ -772,9 +778,6 @@ void GWSPageLoadMetricsObserver::RecordLatencyHitograms(
 
 void GWSPageLoadMetricsObserver::MaybeRecordUnexpectedHeaders(
     const net::HttpResponseHeaders* response_headers) {
-  if (!base::FeatureList::IsEnabled(kSyntheticResponseReportUnexpectedHeader)) {
-    return;
-  }
 
   ReportedHeaders not_expected_headers;
   ReportedHeaders value_mismatched_headers;
@@ -782,7 +785,6 @@ void GWSPageLoadMetricsObserver::MaybeRecordUnexpectedHeaders(
 
   std::unordered_map<std::string, ExpectedHeaderInfo> expected_headers =
       GetExpectedHeaderInfo();
-  bool set_crash_key = false;
 
   size_t iter = 0;
   std::string name, value;
@@ -817,23 +819,44 @@ void GWSPageLoadMetricsObserver::MaybeRecordUnexpectedHeaders(
     not_exist_headers.emplace_back(header.first, "");
   }
 
+  bool all_headers_expected = not_expected_headers.empty() &&
+                              value_mismatched_headers.empty() &&
+                              not_exist_headers.empty();
+  bool set_crash_key =
+      !all_headers_expected &&
+      base::FeatureList::IsEnabled(kSyntheticResponseReportUnexpectedHeader);
+
+  // Potential hit rate of the synthetic response.
+  base::UmaHistogramBoolean(internal::kHistogramGWSAllHeadersExpected,
+                            all_headers_expected);
+
+  size_t mismatch_type = 0;
   if (!not_expected_headers.empty()) {
-    set_crash_key = true;
-    SetHeaderCrashKeys(not_expected_headers,
-                       HeaderMismatchType::kHeaderNotExpected);
+    mismatch_type |= static_cast<int>(HeaderMismatchType::kHeaderNotExpected);
   }
   if (!value_mismatched_headers.empty()) {
-    set_crash_key = true;
-    SetHeaderCrashKeys(value_mismatched_headers,
-                       HeaderMismatchType::kValueMismatched);
+    mismatch_type |= static_cast<int>(HeaderMismatchType::kValueMismatched);
   }
   if (!not_exist_headers.empty()) {
-    set_crash_key = true;
-    SetHeaderCrashKeys(not_exist_headers,
-                       HeaderMismatchType::kHeaderNotActuallyExist);
+    mismatch_type |=
+        static_cast<int>(HeaderMismatchType::kHeaderNotActuallyExist);
   }
+  UMA_HISTOGRAM_COUNTS_100(internal::kHistogramGWSHeaderMismatchType,
+                           mismatch_type);
 
   if (set_crash_key) {
+    if (!not_expected_headers.empty()) {
+      SetHeaderCrashKeys(not_expected_headers,
+                         HeaderMismatchType::kHeaderNotExpected);
+    }
+    if (!value_mismatched_headers.empty()) {
+      SetHeaderCrashKeys(value_mismatched_headers,
+                         HeaderMismatchType::kValueMismatched);
+    }
+    if (!not_exist_headers.empty()) {
+      SetHeaderCrashKeys(not_exist_headers,
+                         HeaderMismatchType::kHeaderNotActuallyExist);
+    }
     base::debug::DumpWithoutCrashing();
   }
 }
