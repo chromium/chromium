@@ -14,7 +14,8 @@ namespace blink {
 int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   test::TaskEnvironment task_environment;
-  String string = String::FromUTF8(data, size);
+  // SAFETY: libfuzzer guarantees `data` ad `size` are safe.
+  String string = String::FromUTF8(UNSAFE_BUFFERS(base::span(data, size)));
   KURL manifest_url("https://whatever.test/manifest.json");
   KURL document_url("https://whatever.test/");
   ManifestParser parser(string, manifest_url, document_url,

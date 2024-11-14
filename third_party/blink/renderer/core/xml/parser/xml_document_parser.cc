@@ -96,7 +96,7 @@ namespace blink {
 static const unsigned kMaxXMLTreeDepth = 5000;
 
 static inline String ToString(const xmlChar* string, size_t length) {
-  return String::FromUTF8(string, length);
+  return String::FromUTF8(base::span(string, length));
 }
 
 static inline String ToString(const xmlChar* string) {

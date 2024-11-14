@@ -34,6 +34,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       blink::BlinkFuzzerTestSupport();
   blink::test::TaskEnvironment task_environment;
   blink::DummyTokenHandler handler;
-  blink::DateTimeFormat::Parse(WTF::String::FromUTF8(data, size), handler);
+  // SAFETY: libfuzzer guarantees `data` ad `size` are safe.
+  blink::DateTimeFormat::Parse(
+      WTF::String::FromUTF8(UNSAFE_BUFFERS(base::span(data, size))), handler);
   return 0;
 }

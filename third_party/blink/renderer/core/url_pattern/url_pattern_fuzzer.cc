@@ -20,8 +20,9 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   test::TaskEnvironment task_environment;
   DummyExceptionStateForTesting exception_state;
-  auto* input =
-      MakeGarbageCollected<V8URLPatternInput>(String::FromUTF8(data, size));
+  // SAFETY: libfuzzer guarantees `data` ad `size` are safe.
+  auto* input = MakeGarbageCollected<V8URLPatternInput>(
+      String::FromUTF8(UNSAFE_BUFFERS(base::span(data, size))));
   URLPattern::Create(task_environment.isolate(), input, exception_state);
   return 0;
 }

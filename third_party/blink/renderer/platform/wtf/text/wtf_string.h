@@ -524,7 +524,6 @@ class WTF_EXPORT String {
   // the input data contains invalid UTF-8 sequences.
   // Does not strip BOMs.
   [[nodiscard]] static String FromUTF8(base::span<const uint8_t>);
-  [[nodiscard]] static String FromUTF8(const uint8_t*, size_t);
   [[nodiscard]] static String FromUTF8(const char* s);
   [[nodiscard]] static String FromUTF8(std::string_view s) {
     return FromUTF8(base::as_byte_span(s));

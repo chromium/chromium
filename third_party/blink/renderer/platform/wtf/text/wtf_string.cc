@@ -459,11 +459,8 @@ String String::Make16BitFrom8BitSource(base::span<const LChar> source) {
 }
 
 String String::FromUTF8(base::span<const uint8_t> bytes) {
-  return FromUTF8(bytes.data(), bytes.size());
-}
-
-String String::FromUTF8(const uint8_t* string_start, size_t string_length) {
-  wtf_size_t length = base::checked_cast<wtf_size_t>(string_length);
+  const uint8_t* string_start = bytes.data();
+  wtf_size_t length = base::checked_cast<wtf_size_t>(bytes.size());
 
   if (!string_start)
     return String();
@@ -473,7 +470,7 @@ String String::FromUTF8(const uint8_t* string_start, size_t string_length) {
 
   ASCIIStringAttributes attributes = CharacterAttributes(string_start, length);
   if (attributes.contains_only_ascii)
-    return StringImpl::Create({string_start, length}, attributes);
+    return StringImpl::Create(bytes, attributes);
 
   Vector<UChar, 1024> buffer(length);
   UChar* buffer_start = buffer.data();

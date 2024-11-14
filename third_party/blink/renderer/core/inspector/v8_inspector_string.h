@@ -42,10 +42,7 @@ class CORE_EXPORT StringUtil {
   STATIC_ONLY(StringUtil);
 
  public:
-  static String fromUTF8(const uint8_t* data, size_t length) {
-    return String::FromUTF8(data, length);
-  }
-
+  static String fromUTF8(const uint8_t* data, size_t length);
   static String fromUTF16LE(const uint16_t* data, size_t length);
 
   static const uint8_t* CharactersLatin1(const String& s) {

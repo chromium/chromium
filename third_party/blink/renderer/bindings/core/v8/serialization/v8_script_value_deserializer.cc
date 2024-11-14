@@ -282,8 +282,9 @@ bool V8ScriptValueDeserializer::ReadUTF8String(String* string) {
   const void* utf8_data = nullptr;
   if (!ReadUint32(&utf8_length) || !ReadRawBytes(utf8_length, &utf8_data))
     return false;
-  *string =
-      String::FromUTF8(reinterpret_cast<const LChar*>(utf8_data), utf8_length);
+  // SAFETY: ReadRawBytes() guarantees `utf8_data` and `utf8_length` are safe.
+  *string = String::FromUTF8(UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<const LChar*>(utf8_data), utf8_length)));
 
   // Decoding must have failed; this encoding does not distinguish between null
   // and empty strings.
