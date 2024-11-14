@@ -535,8 +535,28 @@ void InlineBoxFragmentPainter::PaintAllFragments(
 
   wtf_size_t container_fragment_idx =
       first_container_cursor.ContainerFragmentIndex() + fragment_data_idx;
-  const PhysicalBoxFragment* container_fragment =
-      block_flow->GetPhysicalFragment(container_fragment_idx);
+  const PhysicalBoxFragment* container_fragment = nullptr;
+  if (block_flow->MayBeNonContiguousIfc()) {
+    // Skip over container fragments with no items (it's likely that there are
+    // such container fragments here, since the container has been marked as
+    // potentially non-contiguous). This LayoutInline isn't represented in
+    // container fragments with no items.
+    wtf_size_t idx = 0;
+    for (const PhysicalBoxFragment& candidate :
+         block_flow->PhysicalFragments()) {
+      if (!candidate.HasItems()) {
+        continue;
+      }
+      if (idx++ == container_fragment_idx) {
+        container_fragment = &candidate;
+        break;
+      }
+    }
+    DCHECK(container_fragment);
+  } else {
+    container_fragment =
+        block_flow->GetPhysicalFragment(container_fragment_idx);
+  }
 
   InlineCursor cursor(*container_fragment);
   cursor.MoveTo(layout_inline);
