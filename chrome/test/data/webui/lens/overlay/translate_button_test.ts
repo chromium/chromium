@@ -871,6 +871,7 @@ suite('OverlayTranslateButtonLanguages', function() {
   let overlayTranslateButtonElement: TranslateButtonElement;
   let testBrowserProxy: TestLensOverlayBrowserProxy;
   let testLanguageBrowserProxy: TestLanguageBrowserProxy;
+  let metrics: MetricsTracker;
 
   // Helper function for adding the translate button element. Needed so we can
   // modify the browser proxy response per unit test since the languages are
@@ -881,6 +882,13 @@ suite('OverlayTranslateButtonLanguages', function() {
     disableCssTransitions(overlayTranslateButtonElement);
     await flushTasks();
     await waitAfterNextRender(overlayTranslateButtonElement);
+  }
+
+  // Change the input element's value and dispatch an input changed event soon
+  // after.
+  function dispatchInputEvent(inputElement: HTMLInputElement, query: string) {
+    inputElement.value = query;
+    inputElement.dispatchEvent(new InputEvent('input'));
   }
 
   setup(async () => {
@@ -904,8 +912,11 @@ suite('OverlayTranslateButtonLanguages', function() {
     testLanguageBrowserProxy = new TestLanguageBrowserProxy();
     LanguageBrowserProxyImpl.setInstance(testLanguageBrowserProxy);
 
+    metrics = fakeMetricsPrivate();
+
     // Clear window localStorage.
     window.localStorage.clear();
+    await flushTasks();
   });
 
   test('UseServerLanguageListOnSuccess', async () => {
@@ -1498,4 +1509,409 @@ suite('OverlayTranslateButtonLanguages', function() {
     assertEquals(secondRecentLanguage, secondTargetLanguage.languageCode);
   });
 
+  test('SearchAndClickSourceLanguages', async () => {
+    // Store a recent language so we can test visibility of the recent language
+    // section.
+    const storedRecentLanguageCode = TEST_FETCH_LANGUAGES[1]!.languageCode;
+    testLanguageBrowserProxy.storeRecentSourceLanguages(
+        [storedRecentLanguageCode]);
+
+    testBrowserProxy.handler.setLanguagesToFetchForTesting(
+        'en-US', TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+    await addTranslateButtonElement();
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
+
+    // Click the translate button to show the language picker.
+    overlayTranslateButtonElement.$.translateEnableButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // The source language button should be visible but the language picker
+    // menu should not be visible.
+    assertTrue(isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
+
+    // Clicking the source language button should open the picker menu.
+    overlayTranslateButtonElement.$.sourceLanguageButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // The source language picker menu is visible as well as the search button.
+    // The searchbox should not be.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguageSearchButton));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguageSearchbox));
+
+    // Clicking the search button should make the search box visible.
+    overlayTranslateButtonElement.$.sourceLanguageSearchButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguageSearchButton));
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguageSearchbox));
+
+    // All and recent language sections should still be present until the user
+    // types into the searchbox. The searched language section is also not
+    // visible.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.allSourceLanguagesMenu));
+    assertTrue(isVisible(
+        overlayTranslateButtonElement.$.recentSourceLanguagesSection));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.searchSourceLanguagePicker));
+
+    dispatchInputEvent(
+        overlayTranslateButtonElement.$.sourceLanguageSearchbox, 's');
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // The all and recent languages sections should no longer be visible, while
+    // the searched language section should now be visible.
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.allSourceLanguagesMenu));
+    assertFalse(isVisible(
+        overlayTranslateButtonElement.$.recentSourceLanguagesSection));
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.searchSourceLanguagePicker));
+
+    // There should only be one visible language in the searched language picker
+    // section.
+    const sourceLanguageMenuItems =
+        overlayTranslateButtonElement.$.searchSourceLanguagePicker
+            .querySelectorAll<CrButtonElement>('cr-button');
+    assertTrue(sourceLanguageMenuItems.length === 1);
+    const menuItem = sourceLanguageMenuItems[0]!;
+    // Reset proxy so we only get the latest call.
+    testBrowserProxy.handler.reset();
+    menuItem.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // Assert everything has closed in the picker.
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
+
+    // The source language button should update.
+    assertEquals(
+        overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
+        menuItem.innerText.trim());
+    const args = await testBrowserProxy.handler.whenCalled(
+        'issueTranslateFullPageRequest');
+    const sourceLanguage = args[0];
+    assertEquals(sourceLanguage, 'es');
+    // Verify that a source languages changes were recorded in this test.
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction',
+            UserAction.kTranslateSourceLanguageChanged));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+            UserAction.kTranslateSourceLanguageChanged));
+
+    // Verify that re-opening the language picker menu has reset the searchbox
+    // state.
+    overlayTranslateButtonElement.$.sourceLanguageButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // The source language picker menu is visible as well as the search button.
+    // The searchbox should not be.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguageSearchButton));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguageSearchbox));
+
+    // All and recent language sections should still be present until the user
+    // types into the searchbox. The searched language section is also not
+    // visible.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.allSourceLanguagesMenu));
+    assertTrue(isVisible(
+        overlayTranslateButtonElement.$.recentSourceLanguagesSection));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.searchSourceLanguagePicker));
+  });
+
+  test('SearchAndClickTargetLanguages', async () => {
+    // Store a recent language so we can test visibility of the recent language
+    // section.
+    const storedRecentLanguageCode = TEST_FETCH_LANGUAGES[1]!.languageCode;
+    testLanguageBrowserProxy.storeRecentTargetLanguages(
+        [storedRecentLanguageCode]);
+
+    testBrowserProxy.handler.setLanguagesToFetchForTesting(
+        'en-US', TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+    await addTranslateButtonElement();
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.targetLanguageButton));
+
+    // Click the translate button to show the language picker.
+    overlayTranslateButtonElement.$.translateEnableButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // The target language button should be visible but the language picker
+    // menu should not be visible.
+    assertTrue(isVisible(overlayTranslateButtonElement.$.targetLanguageButton));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
+
+    // Clicking the target language button should open the picker menu.
+    overlayTranslateButtonElement.$.targetLanguageButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // The target language picker menu is visible as well as the search button.
+    // The searchbox should not be.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.targetLanguageSearchButton));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.targetLanguageSearchbox));
+
+    // Clicking the search button should make the search box visible.
+    overlayTranslateButtonElement.$.targetLanguageSearchButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.targetLanguageSearchButton));
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.targetLanguageSearchbox));
+
+    // All and recent language sections should still be present until the user
+    // types into the searchbox. The searched language section is also not
+    // visible.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.allTargetLanguagesMenu));
+    assertTrue(isVisible(
+        overlayTranslateButtonElement.$.recentTargetLanguagesSection));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.searchTargetLanguagePicker));
+
+    dispatchInputEvent(
+        overlayTranslateButtonElement.$.targetLanguageSearchbox, 's');
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // The all and recent languages sections should no longer be visible, while
+    // the searched language section should now be visible.
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.allTargetLanguagesMenu));
+    assertFalse(isVisible(
+        overlayTranslateButtonElement.$.recentTargetLanguagesSection));
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.searchTargetLanguagePicker));
+
+    // There should only be one visible language in the searched language picker
+    // section.
+    const targetLanguageMenuItems =
+        overlayTranslateButtonElement.$.searchTargetLanguagePicker
+            .querySelectorAll<CrButtonElement>('cr-button');
+    assertTrue(targetLanguageMenuItems.length === 1);
+    const menuItem = targetLanguageMenuItems[0]!;
+    // Reset proxy so we only get the latest call.
+    testBrowserProxy.handler.reset();
+    menuItem.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // Assert everything has closed in the picker.
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
+
+    // The target language button should update.
+    assertEquals(
+        overlayTranslateButtonElement.$.targetLanguageButton.innerText,
+        menuItem.innerText.trim());
+    const args = await testBrowserProxy.handler.whenCalled(
+        'issueTranslateFullPageRequest');
+    const targetLanguage = args[1];
+    assertEquals(targetLanguage, 'es');
+    // Verify that a target languages changes were recorded in this test.
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction',
+            UserAction.kTranslateTargetLanguageChanged));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+            UserAction.kTranslateTargetLanguageChanged));
+
+    // Verify that re-opening the language picker menu has reset the searchbox
+    // state.
+    overlayTranslateButtonElement.$.targetLanguageButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // The target language picker menu is visible as well as the search button.
+    // The searchbox should not be.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.targetLanguageSearchButton));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.targetLanguageSearchbox));
+
+    // All and recent language sections should still be present until the user
+    // types into the searchbox. The searched language section is also not
+    // visible.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.allTargetLanguagesMenu));
+    assertTrue(isVisible(
+        overlayTranslateButtonElement.$.recentTargetLanguagesSection));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.searchTargetLanguagePicker));
+  });
+
+  test('BackButtonWhenSearchingSourceLanguages', async () => {
+    // Store a recent language so we can test visibility of the recent language
+    // section.
+    const storedRecentLanguageCode = TEST_FETCH_LANGUAGES[1]!.languageCode;
+    testLanguageBrowserProxy.storeRecentSourceLanguages(
+        [storedRecentLanguageCode]);
+
+    testBrowserProxy.handler.setLanguagesToFetchForTesting(
+        'en-US', TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+    await addTranslateButtonElement();
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
+
+    // Click the translate button to show the language picker.
+    overlayTranslateButtonElement.$.translateEnableButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // The source language button should be visible but the language picker
+    // menu should not be visible.
+    assertTrue(isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
+
+    // Clicking the source language button should open the picker menu.
+    overlayTranslateButtonElement.$.sourceLanguageButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // The source language picker menu is visible as well as the search button.
+    // The searchbox should not be.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguageSearchButton));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguageSearchbox));
+
+    // Clicking the search button should make the search box visible.
+    overlayTranslateButtonElement.$.sourceLanguageSearchButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguageSearchButton));
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguageSearchbox));
+
+    // All and recent language sections should still be present until the user
+    // types into the searchbox. The searched language section is also not
+    // visible.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.allSourceLanguagesMenu));
+    assertTrue(isVisible(
+        overlayTranslateButtonElement.$.recentSourceLanguagesSection));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.searchSourceLanguagePicker));
+
+    // Clicking the back button SHOULD NOT close the language picker menu in
+    // this case.
+    overlayTranslateButtonElement.$.sourceLanguagePickerBackButton.click();
+
+    // The search button should re-appear and the searchbox should hide.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguageSearchButton));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.sourceLanguageSearchbox));
+
+    // All and recent language sections should still be present until the user
+    // types into the searchbox. The searched language section is also not
+    // visible.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.allSourceLanguagesMenu));
+    assertTrue(isVisible(
+        overlayTranslateButtonElement.$.recentSourceLanguagesSection));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.searchSourceLanguagePicker));
+  });
+
+  test('BackButtonWhenSearchingTargetLanguages', async () => {
+    // Store a recent language so we can test visibility of the recent language
+    // section.
+    const storedRecentLanguageCode = TEST_FETCH_LANGUAGES[1]!.languageCode;
+    testLanguageBrowserProxy.storeRecentTargetLanguages(
+        [storedRecentLanguageCode]);
+
+    testBrowserProxy.handler.setLanguagesToFetchForTesting(
+        'en-US', TEST_FETCH_LANGUAGES, TEST_FETCH_LANGUAGES);
+    await addTranslateButtonElement();
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.targetLanguageButton));
+
+    // Click the translate button to show the language picker.
+    overlayTranslateButtonElement.$.translateEnableButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // The target language button should be visible but the language picker
+    // menu should not be visible.
+    assertTrue(isVisible(overlayTranslateButtonElement.$.targetLanguageButton));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
+
+    // Clicking the target language button should open the picker menu.
+    overlayTranslateButtonElement.$.targetLanguageButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+
+    // The target language picker menu is visible as well as the search button.
+    // The searchbox should not be.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.targetLanguageSearchButton));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.targetLanguageSearchbox));
+
+    // Clicking the search button should make the search box visible.
+    overlayTranslateButtonElement.$.targetLanguageSearchButton.click();
+    await waitAfterNextRender(overlayTranslateButtonElement);
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.targetLanguageSearchButton));
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.targetLanguageSearchbox));
+
+    // All and recent language sections should still be present until the user
+    // types into the searchbox. The searched language section is also not
+    // visible.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.allTargetLanguagesMenu));
+    assertTrue(isVisible(
+        overlayTranslateButtonElement.$.recentTargetLanguagesSection));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.searchTargetLanguagePicker));
+
+    // Clicking the back button SHOULD NOT close the language picker menu in
+    // this case.
+    overlayTranslateButtonElement.$.targetLanguagePickerBackButton.click();
+
+    // The search button should re-appear and the searchbox should hide.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.targetLanguageSearchButton));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.targetLanguageSearchbox));
+
+    // All and recent language sections should still be present until the user
+    // types into the searchbox. The searched language section is also not
+    // visible.
+    assertTrue(
+        isVisible(overlayTranslateButtonElement.$.allTargetLanguagesMenu));
+    assertTrue(isVisible(
+        overlayTranslateButtonElement.$.recentTargetLanguagesSection));
+    assertFalse(
+        isVisible(overlayTranslateButtonElement.$.searchTargetLanguagePicker));
+  });
 });

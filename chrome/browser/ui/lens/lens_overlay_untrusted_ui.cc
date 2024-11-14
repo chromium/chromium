@@ -115,6 +115,8 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString(
       "searchboxGhostLoaderNoSuggestText",
       IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_NO_SUGGEST_TEXT);
+  html_source->AddLocalizedString(
+      "searchButton", IDS_LENS_OVERLAY_SEARCH_LANGUAGE_PICKER_LABEL);
 
   // Add default theme colors.
   const auto& palette = lens::kPaletteColors.at(lens::PaletteId::kFallback);
