@@ -317,17 +317,20 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
   }
 
-  // <if expr="enable_pdf_ink2">
+  // <if expr="enable_ink or enable_pdf_ink2">
   override connectedCallback() {
     super.connectedCallback();
+    this.tracker.add(window, 'beforeunload', this.onBeforeUnload_.bind(this));
+    // <if expr="enable_pdf_ink2">
     this.tracker.add(window, 'resize', this.onResize_.bind(this));
+    // </if> enable_pdf_ink2
   }
 
   override disconnectedCallback() {
     this.tracker.removeAll();
     super.disconnectedCallback();
   }
-  // </if>
+  // </if> enable_ink or enable_pdf_ink2
 
   getBackgroundColor(): number {
     return this.pdfCr23Enabled ? CR23_BACKGROUND_COLOR : BACKGROUND_COLOR;
@@ -1436,8 +1439,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    * Handles the `BeforeUnloadEvent` event.
    * @param event The `BeforeUnloadEvent` object representing the event.
    */
-  override onBeforeUnload(event: BeforeUnloadEvent) {
-    super.onBeforeUnload(event);
+  private onBeforeUnload_(event: BeforeUnloadEvent) {
     // When a user tries to leave PDF with unsaved changes, show the 'Leave
     // site' dialog. OOPIF PDF only, since MimeHandler handles the beforeunload
     // event instead.
