@@ -21,7 +21,6 @@ struct CallTimerState {
     kDidChangeScrollOffsetImpl,
     kExtractForm,
     kFocusedElementChanged,
-    kFocusedElementChangedDeprecated,
     kGetFormDataFromUnownedInputElements,
     kGetFormDataFromWebForm,
     kGetSubmittedForm,

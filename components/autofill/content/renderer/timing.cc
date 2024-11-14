@@ -25,8 +25,6 @@ std::string_view CallSiteToString(CallTimerState::CallSite call_site) {
       return "ExtractForm";
     case kFocusedElementChanged:
       return "FocusedElementChanged";
-    case kFocusedElementChangedDeprecated:
-      return "FocusedElementChangedDeprecated";
     case kGetFormDataFromUnownedInputElements:
       return "GetFormDataFromUnownedInputElements";
     case kGetFormDataFromWebForm:

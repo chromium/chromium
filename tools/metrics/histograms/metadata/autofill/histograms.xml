@@ -344,7 +344,6 @@ spaces. This should be deprecated in favor of FirstShowOrReshow.
   <variant name="DidChangeScrollOffsetImpl"/>
   <variant name="ExtractForm"/>
   <variant name="FocusedElementChanged"/>
-  <variant name="FocusedElementChangedDeprecated"/>
   <variant name="GetFormDataFromUnownedInputElements"/>
   <variant name="GetFormDataFromWebForm"/>
   <variant name="GetSubmittedForm"/>
