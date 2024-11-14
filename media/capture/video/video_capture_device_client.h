@@ -115,6 +115,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
       std::optional<base::TimeTicks> capture_begin_timestamp,
+      const std::optional<VideoFrameMetadata>& metadata,
       int frame_feedback_id) override;
   void OnIncomingCapturedGfxBuffer(
       gfx::GpuMemoryBuffer* buffer,
@@ -123,13 +124,15 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
       std::optional<base::TimeTicks> capture_begin_timestamp,
+      const std::optional<VideoFrameMetadata>& metadata,
       int frame_feedback_id) override;
   void OnIncomingCapturedExternalBuffer(
       CapturedExternalVideoBuffer buffer,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
       std::optional<base::TimeTicks> capture_begin_timestamp,
-      const gfx::Rect& visible_rect) override;
+      const gfx::Rect& visible_rect,
+      const std::optional<VideoFrameMetadata>& metadata) override;
   ReserveResult ReserveOutputBuffer(const gfx::Size& dimensions,
                                     VideoPixelFormat format,
                                     int frame_feedback_id,
@@ -141,7 +144,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       const VideoCaptureFormat& format,
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
-      std::optional<base::TimeTicks> capture_begin_timestamp) override;
+      std::optional<base::TimeTicks> capture_begin_timestamp,
+      const std::optional<VideoFrameMetadata>& metadata) override;
   void OnIncomingCapturedBufferExt(
       Buffer buffer,
       const VideoCaptureFormat& format,
@@ -150,7 +154,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       base::TimeDelta timestamp,
       std::optional<base::TimeTicks> capture_begin_timestamp,
       gfx::Rect visible_rect,
-      const VideoFrameMetadata& additional_metadata) override;
+      const std::optional<VideoFrameMetadata>& additional_metadata) override;
   void OnError(VideoCaptureError error,
                const base::Location& from_here,
                const std::string& reason) override;
@@ -166,6 +170,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       base::TimeDelta timestamp,
       std::optional<base::TimeTicks> capture_begin_timestamp,
       const gfx::Rect& visible_rect,
+      const std::optional<VideoFrameMetadata>& metadata,
       ReadyFrameInBuffer* ready_buffer);
 
   // A branch of OnIncomingCapturedData for Y16 frame_format.pixel_format.
@@ -176,6 +181,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
       std::optional<base::TimeTicks> capture_begin_timestamp,
+      const std::optional<VideoFrameMetadata>& metadata,
       int frame_feedback_id);
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)

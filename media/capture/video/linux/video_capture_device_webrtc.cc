@@ -135,7 +135,9 @@ int32_t VideoCaptureDeviceWebRtc::OnRawFrame(
   client_->OnIncomingCapturedData(
       video_frame, video_frame_length, format, gfx::ColorSpace(),
       rotation_degree, false /* flip_y */, base::TimeTicks::Now(),
-      base::Milliseconds(capture_time_ms) - *base_time_, std::nullopt);
+      base::Milliseconds(capture_time_ms) - *base_time_,
+      /*capture_begin_timestamp=*/std::nullopt,
+      /*metadata=*/std::nullopt);
   return 0;
 }
 

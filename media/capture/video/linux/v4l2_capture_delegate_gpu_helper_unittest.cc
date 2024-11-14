@@ -42,6 +42,7 @@ class MockV4l2GpuClient : public VideoCaptureDevice::Client {
                               base::TimeTicks reference_time,
                               base::TimeDelta timestamp,
                               std::optional<base::TimeTicks> capture_begin_time,
+                              const std::optional<VideoFrameMetadata>& metadata,
                               int frame_feedback_id = 0) override {}
 
   void OnIncomingCapturedGfxBuffer(
@@ -51,6 +52,7 @@ class MockV4l2GpuClient : public VideoCaptureDevice::Client {
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
       std::optional<base::TimeTicks> capture_begin_time,
+      const std::optional<VideoFrameMetadata>& metadata,
       int frame_feedback_id = 0) override {}
 
   void OnIncomingCapturedExternalBuffer(
@@ -58,7 +60,8 @@ class MockV4l2GpuClient : public VideoCaptureDevice::Client {
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
       std::optional<base::TimeTicks> capture_begin_time,
-      const gfx::Rect& visible_rect) override {}
+      const gfx::Rect& visible_rect,
+      const std::optional<VideoFrameMetadata>& metadata) override {}
 
   void OnCaptureConfigurationChanged() override {}
 
@@ -75,7 +78,8 @@ class MockV4l2GpuClient : public VideoCaptureDevice::Client {
       const VideoCaptureFormat& format,
       base::TimeTicks reference_,
       base::TimeDelta timestamp,
-      std::optional<base::TimeTicks> capture_begin_time) override {}
+      std::optional<base::TimeTicks> capture_begin_time,
+      const std::optional<VideoFrameMetadata>& metadata) override {}
 
   MOCK_METHOD8(OnIncomingCapturedBufferExt,
                void(Buffer,
@@ -85,7 +89,7 @@ class MockV4l2GpuClient : public VideoCaptureDevice::Client {
                     base::TimeDelta,
                     std::optional<base::TimeTicks> capture_begin_time,
                     gfx::Rect,
-                    const VideoFrameMetadata&));
+                    const std::optional<VideoFrameMetadata>&));
 
   MOCK_METHOD3(OnError,
                void(VideoCaptureError,

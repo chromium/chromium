@@ -646,7 +646,8 @@ void VideoCaptureDeviceAndroid::SendIncomingDataToClient(
     return;
   client_->OnIncomingCapturedData(
       data, length, capture_format_, capture_color_space_, rotation,
-      false /* flip_y */, reference_time, timestamp, std::nullopt);
+      false /* flip_y */, reference_time, timestamp,
+      /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
 }
 
 VideoPixelFormat VideoCaptureDeviceAndroid::GetColorspace() {

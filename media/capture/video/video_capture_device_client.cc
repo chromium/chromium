@@ -371,6 +371,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
+    const std::optional<VideoFrameMetadata>& metadata,
     int frame_feedback_id) {
   DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
@@ -406,7 +407,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
   if (format.pixel_format == PIXEL_FORMAT_Y16) {
     return OnIncomingCapturedY16Data(data, length, format, reference_time,
                                      timestamp, capture_begin_timestamp,
-                                     frame_feedback_id);
+                                     metadata, frame_feedback_id);
   }
 
   // |new_unrotated_{width,height}| are the dimensions of the output buffer that
@@ -442,16 +443,16 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
       effects_processor_) {
     auto data_span = base::make_span(data, base::checked_cast<size_t>(length));
 
-    VideoFrameMetadata metadata;
     // Note: we are not setting `metadata.is_webgpu_compatible` here since we
     // have not verified whether the buffer pool returns frames that are
     // WebGPU-compatible across all platforms.
-    metadata.frame_rate = format.frame_rate;
-    metadata.reference_time = reference_time;
-    metadata.capture_begin_time = capture_begin_timestamp;
+    auto mutable_metadata = metadata.value_or(VideoFrameMetadata{});
+    mutable_metadata.frame_rate = format.frame_rate;
+    mutable_metadata.reference_time = reference_time;
+    mutable_metadata.capture_begin_time = capture_begin_timestamp;
 
     mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New(
-        timestamp, metadata, format.pixel_format, format.frame_size,
+        timestamp, mutable_metadata, format.pixel_format, format.frame_size,
         gfx::Rect(format.frame_size), buffer.is_premapped, data_color_space,
         mojom::PlaneStridesPtr{});
 
@@ -544,7 +545,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
       VideoCaptureFormat(dimensions, format.frame_rate, PIXEL_FORMAT_I420);
   OnIncomingCapturedBufferExt(
       std::move(buffer), output_format, color_space, reference_time, timestamp,
-      capture_begin_timestamp, gfx::Rect(dimensions), VideoFrameMetadata());
+      capture_begin_timestamp, gfx::Rect(dimensions), metadata);
 }
 
 void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
@@ -554,6 +555,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
+    const std::optional<VideoFrameMetadata>& metadata,
     int frame_feedback_id) {
   DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
@@ -632,7 +634,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
   const VideoCaptureFormat output_format = VideoCaptureFormat(
       dimensions, frame_format.frame_rate, PIXEL_FORMAT_I420);
   OnIncomingCapturedBuffer(std::move(output_buffer), output_format,
-                           reference_time, timestamp, capture_begin_timestamp);
+                           reference_time, timestamp, capture_begin_timestamp,
+                           metadata);
 }
 
 void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
@@ -640,7 +643,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
-    const gfx::Rect& visible_rect) {
+    const gfx::Rect& visible_rect,
+    const std::optional<VideoFrameMetadata>& metadata) {
   DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer");
@@ -655,15 +659,15 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
     // TODO(https://crbug.com/377532863): Skip effects service overhead when
     // having no-op effects config.
 
-    VideoFrameMetadata metadata;
     // Note: we are not setting `metadata.is_webgpu_compatible` here since we
     // have not verified whether the buffer pool returns frames that are
     // WebGPU-compatible across all platforms.
-    metadata.frame_rate = buffer.format.frame_rate;
-    metadata.reference_time = reference_time;
-    metadata.capture_begin_time = capture_begin_timestamp;
+    auto mutable_metadata = metadata.value_or(VideoFrameMetadata{});
+    mutable_metadata.frame_rate = buffer.format.frame_rate;
+    mutable_metadata.reference_time = reference_time;
+    mutable_metadata.capture_begin_time = capture_begin_timestamp;
     mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New(
-        timestamp, metadata, buffer.format.pixel_format,
+        timestamp, mutable_metadata, buffer.format.pixel_format,
         buffer.format.frame_size, visible_rect, /*is_premapped=*/false,
         buffer.color_space, mojom::PlaneStridesPtr{});
 
@@ -729,7 +733,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
   ReadyFrameInBuffer ready_frame;
   if (CreateReadyFrameFromExternalBuffer(
           std::move(buffer), reference_time, timestamp, capture_begin_timestamp,
-          visible_rect, &ready_frame) != ReserveResult::kSucceeded) {
+          visible_rect, metadata, &ready_frame) != ReserveResult::kSucceeded) {
     DVLOG(2) << __func__
              << " CreateReadyFrameFromExternalBuffer failed: reservation "
                 "tracker failed.";
@@ -745,6 +749,7 @@ VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
     const gfx::Rect& visible_rect,
+    const std::optional<VideoFrameMetadata>& metadata,
     ReadyFrameInBuffer* ready_buffer) {
   // Reserve an ID for this buffer that will not conflict with any of the IDs
   // used by |buffer_pool_|.
@@ -793,18 +798,18 @@ VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
 
   // Construct the ready frame, to be passed on to the |receiver_| by the caller
   // of this method.
-  VideoFrameMetadata metadata;
   // Note: we are not setting `metadata.is_webgpu_compatible` here since we
   // have not verified whether the external buffer is WebGPU-compatible on all
   // platforms.
-  metadata.frame_rate = buffer.format.frame_rate;
-  metadata.reference_time = reference_time;
-  metadata.capture_begin_time = capture_begin_timestamp;
+  auto mutable_metadata = metadata.value_or(VideoFrameMetadata{});
+  mutable_metadata.frame_rate = buffer.format.frame_rate;
+  mutable_metadata.reference_time = reference_time;
+  mutable_metadata.capture_begin_time = capture_begin_timestamp;
 
   mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New(
-      timestamp, metadata, buffer.format.pixel_format, buffer.format.frame_size,
-      visible_rect, /*is_premapped=*/false, buffer.color_space,
-      mojom::PlaneStridesPtr{});
+      timestamp, mutable_metadata, buffer.format.pixel_format,
+      buffer.format.frame_size, visible_rect, /*is_premapped=*/false,
+      buffer.color_space, mojom::PlaneStridesPtr{});
 
   buffer_pool_->HoldForConsumers(buffer_id, 1);
   buffer_pool_->RelinquishProducerReservation(buffer_id);
@@ -895,13 +900,13 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBuffer(
     const VideoCaptureFormat& format,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
-    std::optional<base::TimeTicks> capture_begin_timestamp) {
+    std::optional<base::TimeTicks> capture_begin_timestamp,
+    const std::optional<VideoFrameMetadata>& metadata) {
   DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
 
   OnIncomingCapturedBufferExt(
       std::move(buffer), format, gfx::ColorSpace(), reference_time, timestamp,
-      capture_begin_timestamp, gfx::Rect(format.frame_size),
-      VideoFrameMetadata());
+      capture_begin_timestamp, gfx::Rect(format.frame_size), metadata);
 }
 
 void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
@@ -912,12 +917,12 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
     gfx::Rect visible_rect,
-    const VideoFrameMetadata& additional_metadata) {
+    const std::optional<VideoFrameMetadata>& additional_metadata) {
   DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureDeviceClient::OnIncomingCapturedBufferExt");
 
-  VideoFrameMetadata metadata = additional_metadata;
+  auto metadata = additional_metadata.value_or(VideoFrameMetadata{});
   // Note: we are not setting `metadata.is_webgpu_compatible` here since we
   // have not verified whether the buffer pool returns frames that are
   // WebGPU-compatible across all platforms.
@@ -1041,6 +1046,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedY16Data(
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
+    const std::optional<VideoFrameMetadata>& metadata,
     int frame_feedback_id) {
   Buffer buffer;
   const auto reservation_result_code = ReserveOutputBuffer(
@@ -1062,6 +1068,6 @@ void VideoCaptureDeviceClient::OnIncomingCapturedY16Data(
   const VideoCaptureFormat output_format = VideoCaptureFormat(
       format.frame_size, format.frame_rate, PIXEL_FORMAT_Y16);
   OnIncomingCapturedBuffer(std::move(buffer), output_format, reference_time,
-                           timestamp, capture_begin_timestamp);
+                           timestamp, capture_begin_timestamp, metadata);
 }
 }  // namespace media

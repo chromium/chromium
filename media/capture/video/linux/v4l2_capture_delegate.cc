@@ -1158,7 +1158,8 @@ void V4L2CaptureDelegate::DoCapture() {
         client_->OnIncomingCapturedData(
             buffer_tracker->start(), buffer_tracker->payload_size(),
             capture_format_, gfx::ColorSpace(), rotation_, false /* flip_y */,
-            now, timestamp, std::nullopt);
+            now, timestamp, /*capture_begin_timestamp=*/std::nullopt,
+            /*metadata=*/std::nullopt);
     }
 
     while (!take_photo_callbacks_.empty()) {

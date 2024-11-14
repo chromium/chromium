@@ -20,6 +20,9 @@ namespace media {
 // A container for information about effects that might be applied to a frame.
 struct EffectInfo {
   bool enabled;
+  bool operator==(const EffectInfo& other) const {
+    return enabled == other.enabled;
+  }
 };
 
 // NOTE: When adding new VideoFrameMetadata fields, please ensure you update the

@@ -180,6 +180,7 @@ class SharedMemoryBufferHandleHolder : public BufferHandleHolder {
       frame->AddDestructionObserver(
           base::DoNothingWithBoundArgs(std::move(mapping)));
     }
+    frame->metadata().MergeMetadataFrom(frame_info->metadata);
 
     return frame;
   }

@@ -844,7 +844,9 @@ void OwnBufferFrameDeliverer::PaintAndDeliverNextFrame(
       buffer_.data(), frame_size, device_state()->format,
       GetDefaultColorSpace(device_state()->format.pixel_format),
       0 /* rotation */, false /* flip_y */, now,
-      CalculateTimeSinceFirstInvocation(now), std::nullopt);
+      CalculateTimeSinceFirstInvocation(now),
+      /*capture_begin_timestamp=*/std::nullopt,
+      /*metadata=*/std::nullopt);
 }
 
 ClientBufferFrameDeliverer::ClientBufferFrameDeliverer(
@@ -881,7 +883,8 @@ void ClientBufferFrameDeliverer::PaintAndDeliverNextFrame(
   base::TimeTicks now = base::TimeTicks::Now();
   client()->OnIncomingCapturedBuffer(
       std::move(capture_buffer), device_state()->format, now,
-      CalculateTimeSinceFirstInvocation(now), std::nullopt);
+      CalculateTimeSinceFirstInvocation(now),
+      /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
 }
 
 JpegEncodingFrameDeliverer::JpegEncodingFrameDeliverer(
@@ -922,7 +925,9 @@ void JpegEncodingFrameDeliverer::PaintAndDeliverNextFrame(
   client()->OnIncomingCapturedData(
       &jpeg_buffer_[0], frame_size, device_state()->format,
       gfx::ColorSpace::CreateJpeg(), 0 /* rotation */, false /* flip_y */, now,
-      CalculateTimeSinceFirstInvocation(now), std::nullopt);
+      CalculateTimeSinceFirstInvocation(now),
+      /*capture_begin_timestamp=*/std::nullopt,
+      /*metadata=*/std::nullopt);
 }
 
 GpuMemoryBufferFrameDeliverer::GpuMemoryBufferFrameDeliverer(
@@ -979,7 +984,8 @@ void GpuMemoryBufferFrameDeliverer::PaintAndDeliverNextFrame(
   modified_format.pixel_format = PIXEL_FORMAT_NV12;
   client()->OnIncomingCapturedBuffer(
       std::move(capture_buffer), modified_format, now,
-      CalculateTimeSinceFirstInvocation(now), std::nullopt);
+      CalculateTimeSinceFirstInvocation(now),
+      /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
 }
 
 void FakeVideoCaptureDevice::BeepAndScheduleNextCapture(

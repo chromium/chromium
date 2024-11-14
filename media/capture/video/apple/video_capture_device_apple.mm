@@ -243,7 +243,8 @@ void VideoCaptureDeviceApple::ReceiveFrame(
   client_->OnIncomingCapturedData(
       video_frame, video_frame_length, frame_format, color_space,
       rotation /* clockwise_rotation */, false /* flip_y */,
-      base::TimeTicks::Now(), timestamp, capture_begin_time);
+      base::TimeTicks::Now(), timestamp, capture_begin_time,
+      /*metadata=*/std::nullopt);
 }
 
 void VideoCaptureDeviceApple::ReceiveExternalGpuMemoryBufferFrame(
@@ -259,7 +260,7 @@ void VideoCaptureDeviceApple::ReceiveExternalGpuMemoryBufferFrame(
   }
   client_->OnIncomingCapturedExternalBuffer(
       std::move(frame), base::TimeTicks::Now(), timestamp, capture_begin_time,
-      gfx::Rect(capture_format_.frame_size));
+      gfx::Rect(capture_format_.frame_size), /*metadata=*/std::nullopt);
 }
 
 void VideoCaptureDeviceApple::OnPhotoTaken(const uint8_t* image_data,

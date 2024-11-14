@@ -67,7 +67,8 @@ void IOSurfaceCaptureDeviceBase::SendLastReceivedIOSurfaceToClient() {
       media::CapturedExternalVideoBuffer(std::move(handle),
                                          last_received_capture_format_,
                                          gfx::ColorSpace::CreateREC709()),
-      now, now - first_frame_time_, std::nullopt, last_visible_rect_);
+      now, now - first_frame_time_, std::nullopt, last_visible_rect_,
+      /*metadata=*/std::nullopt);
 }
 
 void IOSurfaceCaptureDeviceBase::ComputeFrameSizeAndDestRect(

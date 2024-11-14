@@ -119,7 +119,7 @@ void CameraDeviceContext::SubmitCapturedGpuMemoryBuffer(
 
   client->second->OnIncomingCapturedGfxBuffer(
       buffer, frame_format, GetCameraFrameRotation(), reference_time, timestamp,
-      std::nullopt);
+      /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
 }
 
 void CameraDeviceContext::SetSensorOrientation(int sensor_orientation) {
