@@ -327,9 +327,6 @@ extern const char
 extern const char kAutofillEnableFpanRiskBasedAuthenticationName[];
 extern const char kAutofillEnableFpanRiskBasedAuthenticationDescription[];
 
-extern const char kAutofillEnableManualFallbackIPHName[];
-extern const char kAutofillEnableManualFallbackIPHDescription[];
-
 extern const char kAutofillEnableCardArtImageName[];
 extern const char kAutofillEnableCardArtImageDescription[];
 
@@ -353,12 +350,6 @@ extern const char kAutofillEnableCardInfoRuntimeRetrievalDescription[];
 
 extern const char kAutofillEnableCardProductNameName[];
 extern const char kAutofillEnableCardProductNameDescription[];
-
-extern const char kAutofillGranularFillingAvailableName[];
-extern const char kAutofillGranularFillingAvailableDescription[];
-
-extern const char kAutofillForUnclassifiedFieldsAvailableName[];
-extern const char kAutofillForUnclassifiedFieldsAvailableDescription[];
 
 extern const char kAutofillEnableLocalIbanName[];
 extern const char kAutofillEnableLocalIbanDescription[];

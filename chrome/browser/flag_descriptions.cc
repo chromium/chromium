@@ -534,12 +534,6 @@ const char kAutofillEnableFpanRiskBasedAuthenticationDescription[] =
     "When enabled, server card retrieval will begin with a risk-based check "
     "instead of jumping straight to CVC or biometric auth.";
 
-const char kAutofillEnableManualFallbackIPHName[] =
-    "Show autofill manual fallback IPH";
-const char kAutofillEnableManualFallbackIPHDescription[] =
-    "Show a promo on address fields which educates the users about the "
-    "possibility to trigger autofill from the context menu.";
-
 const char kAutofillEnableCardArtImageName[] = "Enable showing card art images";
 const char kAutofillEnableCardArtImageDescription[] =
     "When enabled, card product images (instead of network icons) will be "
@@ -587,18 +581,6 @@ const char kAutofillEnableCardProductNameName[] =
 const char kAutofillEnableCardProductNameDescription[] =
     "When enabled, card product name (instead of issuer network) will be shown "
     "in Payments Autofill UI.";
-
-const char kAutofillGranularFillingAvailableName[] =
-    "Enable autofill address granular filling";
-const char kAutofillGranularFillingAvailableDescription[] =
-    "When enabled, autofill address suggestions contain child suggestions for "
-    "group and granular field filling.";
-
-const char kAutofillForUnclassifiedFieldsAvailableName[] =
-    "Enable address and payments autofill for unclassified fields";
-const char kAutofillForUnclassifiedFieldsAvailableDescription[] =
-    "When enabled, address and payments autofill can be triggered on "
-    "unclassified fields via the Chrome context menu.";
 
 const char kAutofillEnableLocalIbanName[] =
     "Enable local IBAN save and autofilling";

@@ -661,11 +661,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "autofill-enable-manual-fallback-iph",
-    "owners": [ "theocristea@google.com", "brunobraga@chromium.org" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "autofill-enable-new-card-art-and-network-images",
     "owners": ["alexandertekle@google.com", "vishwasuppoor@google.com"],
     "expiry_milestone": 130
@@ -762,16 +757,6 @@
     "name": "autofill-enable-virtual-card-metadata",
     "owners": [ "siyua@chromium.org", "siashah@chromium.org"],
     "expiry_milestone": 130
-  },
-  {
-    "name": "autofill-for-unclassified-fields-available",
-    "owners": [ "tchudakov@chromium.org", "vykochko@chromium.org", "brunobraga@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
-    "name": "autofill-granular-filling-available",
-    "owners": [ "tchudakov@chromium.org", "vykochko@chromium.org", "brunobraga@chromium.org" ],
-    "expiry_milestone": 140
   },
   {
     "name": "autofill-highlight-only-changed-value-in-preview-mode",

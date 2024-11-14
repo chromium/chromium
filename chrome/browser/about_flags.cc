@@ -3660,50 +3660,6 @@ const FeatureEntry::FeatureVariation kLinkPreviewTriggerTypeVariations[] = {
      std::size(kLinkPreviewTriggerTypeLongPress), nullptr}};
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam
-    kAutofillGranularFillingAvailableVariationWithoutImprovedLabels[] = {
-        {"autofill_granular_filling_with_improved_labels", "false"},
-        {"autofill_granular_filling_with_fill_everything_in_the_footer",
-         "true"},
-        {"autofill_granular_filling_with_expand_control_visible_on_selection_"
-         "only",
-         "false"}};
-
-const FeatureEntry::FeatureParam
-    kAutofillGranularFillingAvailableVariationWithFillEverythingAtTheTop[] = {
-        {"autofill_granular_filling_with_improved_labels", "true"},
-        {"autofill_granular_filling_with_fill_everything_in_the_footer",
-         "false"},
-        {"autofill_granular_filling_with_expand_control_visible_on_selection_"
-         "only",
-         "false"}};
-
-const FeatureEntry::FeatureParam
-    kAutofillGranularFillingAvailableVariationWithExpandControlVisibleOnSelectionOnly
-        [] = {{"autofill_granular_filling_with_improved_labels", "true"},
-              {"autofill_granular_filling_with_fill_everything_in_the_footer",
-               "true"},
-              {"autofill_granular_filling_with_expand_control_visible_on_"
-               "selection_only",
-               "true"}};
-
-const FeatureEntry::FeatureVariation kAutofillGranularFillingAvailableVariations[] =
-    {{"Without improved labels",
-      kAutofillGranularFillingAvailableVariationWithoutImprovedLabels,
-      std::size(
-          kAutofillGranularFillingAvailableVariationWithoutImprovedLabels),
-      nullptr},
-     {"With \"Fill everything\" at the top",
-      kAutofillGranularFillingAvailableVariationWithFillEverythingAtTheTop,
-      std::size(
-          kAutofillGranularFillingAvailableVariationWithFillEverythingAtTheTop),
-      nullptr},
-     {"With sub-popup expand control visible for selected/expanded rows only",
-      kAutofillGranularFillingAvailableVariationWithExpandControlVisibleOnSelectionOnly,
-      std::size(
-          kAutofillGranularFillingAvailableVariationWithExpandControlVisibleOnSelectionOnly),
-      nullptr}};
-
 #if BUILDFLAG(IS_ANDROID)
 inline constexpr flags_ui::FeatureEntry::FeatureParam
     kAutofillVirtualViewStructureAndroidSkipCompatibilityCheck = {
@@ -8397,22 +8353,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableCardProductNameDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardProductName)},
 
-    {"autofill-granular-filling-available",
-     flag_descriptions::kAutofillGranularFillingAvailableName,
-     flag_descriptions::kAutofillGranularFillingAvailableDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         autofill::features::kAutofillGranularFillingAvailable,
-         kAutofillGranularFillingAvailableVariations,
-         "AutofillGranularFillingAndManualFallbackForUnclassifiedFieldsAvailabl"
-         "e")},
-
-    {"autofill-for-unclassified-fields-available",
-     flag_descriptions::kAutofillForUnclassifiedFieldsAvailableName,
-     flag_descriptions::kAutofillForUnclassifiedFieldsAvailableDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillForUnclassifiedFieldsAvailable)},
-
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW) && BUILDFLAG(IS_ANDROID)
     {"paint-preview-demo", flag_descriptions::kPaintPreviewDemoName,
      flag_descriptions::kPaintPreviewDemoDescription, kOsAndroid,
@@ -9018,11 +8958,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableInputEventLoggingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ui::kEnableInputEventLogging)},
 #endif
-
-    {"autofill-enable-manual-fallback-iph",
-     flag_descriptions::kAutofillEnableManualFallbackIPHName,
-     flag_descriptions::kAutofillEnableManualFallbackIPHDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableManualFallbackIPH)},
 
     {flag_descriptions::kEnableLensStandaloneFlagId,
      flag_descriptions::kEnableLensStandaloneName,
