@@ -278,7 +278,9 @@ class ScriptPromise {
       ScriptState* script_state,
       ThenCallable<IDLResolvedType, ResolveClass, ReturnPromiseResolveType>*
           on_fulfilled) const {
-    CHECK(!IsEmpty());
+    if (IsEmpty()) {
+      return ScriptPromise<ReturnPromiseResolveType>();
+    }
     v8::Local<v8::Promise> v8_promise =
         V8Promise()
             ->Then(script_state->GetContext(),
@@ -298,7 +300,9 @@ class ScriptPromise {
           on_fulfilled,
       ThenCallable<IDLAny, RejectClass, ReturnPromiseRejectType>* on_rejected)
       const {
-    CHECK(!IsEmpty());
+    if (IsEmpty()) {
+      return ScriptPromise<ReturnPromiseResolveType>();
+    }
     on_fulfilled->SetTypingFailureCallable(on_rejected);
     v8::Local<v8::Promise> v8_promise =
         V8Promise()
@@ -317,7 +321,9 @@ class ScriptPromise {
       ThenCallable<IDLResolvedType,
                    ResolveClass,
                    IDLPromise<ReturnPromiseResolveType>>* on_fulfilled) const {
-    CHECK(!IsEmpty());
+    if (IsEmpty()) {
+      return ScriptPromise<ReturnPromiseResolveType>();
+    }
     v8::Local<v8::Promise> v8_promise =
         V8Promise()
             ->Then(script_state->GetContext(),
@@ -331,7 +337,9 @@ class ScriptPromise {
   void React(ScriptState* script_state,
              ThenCallable<IDLResolvedType, ResolveClass, IDLUndefined>*
                  on_fulfilled) const {
-    CHECK(!IsEmpty());
+    if (IsEmpty()) {
+      return;
+    }
     std::ignore = V8Promise()->Then(script_state->GetContext(),
                                     on_fulfilled->ToV8Function(script_state));
   }
@@ -341,7 +349,9 @@ class ScriptPromise {
       ScriptState* script_state,
       ThenCallable<IDLResolvedType, ResolveClass, IDLUndefined>* on_fulfilled,
       ThenCallable<IDLAny, RejectClass, IDLUndefined>* on_rejected) const {
-    CHECK(!IsEmpty());
+    if (IsEmpty()) {
+      return;
+    }
     on_fulfilled->SetTypingFailureCallable(on_rejected);
     std::ignore = V8Promise()->Then(script_state->GetContext(),
                                     on_fulfilled->ToV8Function(script_state),
@@ -353,7 +363,9 @@ class ScriptPromise {
       ScriptState* script_state,
       ThenCallable<IDLAny, ResolveClass, IDLUndefined>* on_fulfilled,
       ThenCallable<IDLAny, RejectClass, IDLUndefined>* on_rejected) const {
-    CHECK(!IsEmpty());
+    if (IsEmpty()) {
+      return;
+    }
     std::ignore = V8Promise()->Then(script_state->GetContext(),
                                     on_fulfilled->ToV8Function(script_state),
                                     on_rejected->ToV8Function(script_state));
@@ -363,7 +375,9 @@ class ScriptPromise {
   void Catch(
       ScriptState* script_state,
       ThenCallable<IDLAny, RejectClass, IDLUndefined>* on_rejected) const {
-    CHECK(!IsEmpty());
+    if (IsEmpty()) {
+      return;
+    }
     std::ignore = V8Promise()->Catch(script_state->GetContext(),
                                      on_rejected->ToV8Function(script_state));
   }
