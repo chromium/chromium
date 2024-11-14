@@ -73,6 +73,7 @@ export class ToolbarElement extends ToolbarElementBase {
         this.populateUi_.bind(this)));
 
     this.addWebUiListener('theme-changed', this.populateUi_.bind(this));
+    chrome.send('observeThemeChanges');
   }
 
   override disconnectedCallback() {
