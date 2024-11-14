@@ -19,9 +19,6 @@
 
 namespace gfx {
 
-COLOR_SPACE_EXPORT BASE_DECLARE_FEATURE(kHlgPqUnifiedTonemap);
-COLOR_SPACE_EXPORT BASE_DECLARE_FEATURE(kHlgPqSdrRelative);
-
 class COLOR_SPACE_EXPORT ColorTransform {
  public:
   // Parameters that must be specified at creation time. Changing these
