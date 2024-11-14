@@ -24,6 +24,7 @@ import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabCountChangedCondition;
+import org.chromium.chrome.test.transit.tabmodel.TabModelChangedCondition;
 
 /** The action menu opened when long pressing the tab switcher button in a {@link PageStation}. */
 public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
@@ -41,6 +42,16 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
     public static final ViewSpec NEW_INCOGNITO_TAB_MENU_ITEM =
             viewSpec(
                     withText(R.string.menu_new_incognito_tab),
+                    isDescendantOfA(APP_MENU_LIST.getViewMatcher()));
+
+    public static final ViewSpec SWITCH_TO_INCOGNITO_MENU_ITEM =
+            viewSpec(
+                    withText(R.string.menu_switch_to_incognito),
+                    isDescendantOfA(APP_MENU_LIST.getViewMatcher()));
+
+    public static final ViewSpec SWITCH_OUT_OF_INCOGNITO_MENU_ITEM =
+            viewSpec(
+                    withText(R.string.menu_switch_out_of_incognito),
                     isDescendantOfA(APP_MENU_LIST.getViewMatcher()));
 
     @Override
@@ -147,8 +158,40 @@ public class TabSwitcherActionMenuFacility extends Facility<PageStation> {
                 NEW_INCOGNITO_TAB_MENU_ITEM::click);
     }
 
+    /** Switches out of incognito tab model to regular tab model */
+    public WebPageStation selectSwitchOutOfIncognito() {
+        WebPageStation destination =
+                WebPageStation.newBuilder()
+                        .withIsOpeningTabs(0)
+                        .withIsSelectingTabs(1)
+                        .withIncognito(false)
+                        .build();
+        return mHostStation.travelToSync(
+                destination,
+                Transition.conditionOption(createTabModelChangedCondition()),
+                SWITCH_OUT_OF_INCOGNITO_MENU_ITEM::click);
+    }
+
+    /** Switches to incognito tab model from regular tab model */
+    public PageStation selectSwitchToIncognito() {
+        WebPageStation destination =
+                WebPageStation.newBuilder()
+                        .withIsOpeningTabs(0)
+                        .withIsSelectingTabs(1)
+                        .withIncognito(true)
+                        .build();
+        return mHostStation.travelToSync(
+                destination,
+                Transition.conditionOption(createTabModelChangedCondition()),
+                SWITCH_TO_INCOGNITO_MENU_ITEM::click);
+    }
+
     private Condition createTabCountChangedCondition(boolean incognito, int change) {
         return new TabCountChangedCondition(
                 mHostStation.getActivity().getTabModelSelector().getModel(incognito), change);
+    }
+
+    private Condition createTabModelChangedCondition() {
+        return new TabModelChangedCondition(mHostStation.getActivity().getTabModelSelector());
     }
 }

@@ -18,6 +18,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -27,6 +29,7 @@ import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPo
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.page.TabSwitcherActionMenuFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
@@ -115,6 +118,26 @@ public class TabSwitcherActionMenuPTTest {
         assertEquals(0, regularTabModel.getCount());
         assertEquals(1, incognitoTabModel.getCount());
         assertFinalDestination(tabSwitcher);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    @LargeTest
+    public void testSwitchIntoAndOutOfIncognito() {
+        // Open 1 regular and 1 incognito tab.
+        WebPageStation blankPage = mTransitEntryPoints.startOnBlankPageNonBatched();
+        PageStation incognitoNtp = blankPage.openNewIncognitoTabFast();
+
+        // Open action menu and switch out of incognito.
+        TabSwitcherActionMenuFacility actionMenu = incognitoNtp.openTabSwitcherActionMenu();
+        blankPage = actionMenu.selectSwitchOutOfIncognito();
+
+        // Open action menu and switch to incognito.
+        actionMenu = blankPage.openTabSwitcherActionMenu();
+        incognitoNtp = actionMenu.selectSwitchToIncognito();
+
+        // Final destination should be incognito tab.
+        assertFinalDestination(incognitoNtp);
     }
 
     private TabModelSelector getTabModelSelector() {
