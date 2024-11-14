@@ -55,10 +55,8 @@ MigratableCreditCard& MigratableCreditCard::operator=(MigratableCreditCard&&) =
 
 MigratableCreditCard::~MigratableCreditCard() = default;
 
-LocalCardMigrationManager::LocalCardMigrationManager(
-    AutofillClient* client,
-    const std::string& app_locale)
-    : client_(CHECK_DEREF(client)), app_locale_(app_locale) {}
+LocalCardMigrationManager::LocalCardMigrationManager(AutofillClient* client)
+    : client_(CHECK_DEREF(client)) {}
 
 LocalCardMigrationManager::~LocalCardMigrationManager() = default;
 
@@ -159,7 +157,7 @@ void LocalCardMigrationManager::AttemptToOfferLocalCardMigration(
   payments_network_interface->GetCardUploadDetails(
       std::vector<AutofillProfile>(), GetDetectedValues(),
       /*client_behavior_signals=*/std::vector<ClientBehaviorConstants>(),
-      app_locale_,
+      client_->GetAppLocale(),
       base::BindOnce(&LocalCardMigrationManager::OnDidGetUploadDetails,
                      weak_ptr_factory_.GetWeakPtr(), is_from_settings_page),
       payments::kMigrateCardsBillableServiceNumber,
@@ -370,7 +368,7 @@ void LocalCardMigrationManager::SendMigrateLocalCardsRequest() {
   if (observer_for_testing_)
     observer_for_testing_->OnSentMigrateCardsRequest();
 
-  migration_request_.app_locale = app_locale_;
+  migration_request_.app_locale = client_->GetAppLocale();
   migration_request_.billing_customer_number =
       payments::GetBillingCustomerId(&payments_data_manager());
   client_->GetPaymentsAutofillClient()
@@ -418,7 +416,7 @@ int LocalCardMigrationManager::GetDetectedValues() const {
   for (MigratableCreditCard migratable_credit_card : migratable_credit_cards_) {
     all_cards_have_cardholder_name &=
         !migratable_credit_card.credit_card()
-             .GetInfo(CREDIT_CARD_NAME_FULL, app_locale_)
+             .GetInfo(CREDIT_CARD_NAME_FULL, client_->GetAppLocale())
              .empty();
   }
   if (all_cards_have_cardholder_name)

@@ -190,9 +190,7 @@ class AutofillAgentTests : public web::WebTest {
 // not autofilled are skipped. Tests logic based on renderer ids usage.
 TEST_F(AutofillAgentTests,
        OnFormDataFilledTestWithFrameMessagingUsingRendererIDs) {
-  std::string locale("en");
-  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
-                                              locale);
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil);
 
   std::vector<autofill::FormFieldData::FillData> fill_data;
   autofill::FormFieldData field;
@@ -244,9 +242,7 @@ TEST_F(AutofillAgentTests,
 // Tests that `fillSpecificFormField` in `autofill_agent_` dispatches the
 // correct javascript call to the autofill controller.
 TEST_F(AutofillAgentTests, FillSpecificFormField) {
-  std::string locale("en");
-  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
-                                              locale);
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil);
 
   autofill::FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
@@ -272,8 +268,7 @@ TEST_F(AutofillAgentTests, FillSpecificFormField) {
 // successfully.
 TEST_F(AutofillAgentTests,
        FillSpecificFormField_UpdateWithResults_WhenSuccess) {
-  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
-                                              "en");
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil);
 
   std::vector<autofill::FormFieldData::FillData> fields =
       MinimalFormFieldDataForFilling();
@@ -311,8 +306,7 @@ TEST_F(AutofillAgentTests,
 // failed.
 TEST_F(AutofillAgentTests,
        FillSpecificFormField_UpdateWithResults_WhenFailure) {
-  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
-                                              "en");
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil);
 
   std::vector<autofill::FormFieldData::FillData> fields =
       MinimalFormFieldDataForFilling();
@@ -347,9 +341,8 @@ TEST_F(AutofillAgentTests,
 // Tests that `ApplyFieldAction` in `AutofillDriverIOS` dispatches the
 // correct javascript call to the autofill controller.
 TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
-  std::string locale("en");
   AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_,
-                                              autofill_agent_, locale);
+                                              autofill_agent_);
 
   autofill::FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
@@ -378,9 +371,8 @@ TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
 // Tests that `ApplyFieldAction` with `ActionPersistence::kPreview`in
 // `AutofillDriverIOS` does not dispatch a JS call.
 TEST_F(AutofillAgentTests, DriverPreviewSpecificFormField) {
-  std::string locale("en");
   AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_,
-                                              autofill_agent_, locale);
+                                              autofill_agent_);
 
   autofill::FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
@@ -897,8 +889,8 @@ class AutofillAgentTestFrameInitializationOrderFrames
     AutofillAgentTests::SetUp();
     RemoveWebFrame(fake_main_frame_->GetFrameId());
     ASSERT_FALSE(AutofillDriverIOSFactory::FromWebState(&fake_web_state_));
-    AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
-                                                "en");
+    AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_,
+                                                nil);
   }
 };
 
@@ -1021,9 +1013,7 @@ TEST_F(AutofillAgentTestFrameInitializationOrderFrames,
 TEST_F(AutofillAgentTests, FillData_UpdateWithResults) {
   auto test_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
-  std::string locale("en");
-  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
-                                              locale);
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil);
 
   std::vector<autofill::FormFieldData::FillData> fields =
       MinimalFormFieldDataForFilling();
@@ -1071,8 +1061,7 @@ TEST_F(AutofillAgentTests, FillData_UpdateWithResults) {
 // Tests that if there is an unknown field id in the results, the agent isn't
 // notified.
 TEST_F(AutofillAgentTests, FillData_UnknowFieldIdInResults) {
-  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
-                                              "en");
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil);
 
   std::vector<autofill::FormFieldData::FillData> fields =
       MinimalFormFieldDataForFilling();
@@ -1101,8 +1090,7 @@ TEST_F(AutofillAgentTests, FillData_UnknowFieldIdInResults) {
 
 // Tests selecting an autocomplete suggestion.
 TEST_F(AutofillAgentTests, DidSelectSuggestion_AutocompleteEntry) {
-  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
-                                              /*locale=*/"en");
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil);
 
   FormRendererId form_id(1);
   FieldRendererId field1_id(2);
@@ -1152,8 +1140,7 @@ TEST_F(AutofillAgentTests, DidSelectSuggestion_AutocompleteEntry) {
 }
 
 TEST_F(AutofillAgentTests, DidSelectSuggestion_ClearFormEntry) {
-  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
-                                              /*locale=*/"en");
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil);
 
   FormRendererId form_id(1);
   FieldRendererId field1_id(2);

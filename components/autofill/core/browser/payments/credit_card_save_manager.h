@@ -103,7 +103,7 @@ class CreditCardSaveManager {
   };
 
   // `client` must outlive the CreditCardSaveManager.
-  CreditCardSaveManager(AutofillClient* client, const std::string& app_locale);
+  explicit CreditCardSaveManager(AutofillClient* client);
 
   CreditCardSaveManager(const CreditCardSaveManager&) = delete;
   CreditCardSaveManager& operator=(const CreditCardSaveManager&) = delete;
@@ -153,9 +153,6 @@ class CreditCardSaveManager {
   // Returns true if all the conditions for enabling the upload of credit card
   // are satisfied.
   virtual bool IsCreditCardUploadEnabled();
-
-  // For testing.
-  void SetAppLocale(std::string app_locale) { app_locale_ = app_locale; }
 
   // Set Autofill address profiles that are only preliminarily imported.
   // A preliminary import may happen when the address is found in the same
@@ -359,8 +356,6 @@ class CreditCardSaveManager {
   const PaymentsDataManager& payments_data_manager() const;
 
   const raw_ref<AutofillClient> client_;
-
-  std::string app_locale_;
 
   // The credit card to be saved if local credit card or local or server CVC
   // save is accepted.

@@ -14,7 +14,7 @@ namespace autofill {
 
 BrowserAutofillManagerForPopupTest::BrowserAutofillManagerForPopupTest(
     AutofillDriver* driver)
-    : BrowserAutofillManager(driver, "en-US") {
+    : BrowserAutofillManager(driver) {
   test_api(*this).SetExternalDelegate(
       std::make_unique<
           ::testing::NiceMock<AutofillExternalDelegateForPopupTest>>(this));

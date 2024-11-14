@@ -283,7 +283,7 @@ TestCreditCardForm GetTestCreditCardForm() {
 class TestAutofillManager : public BrowserAutofillManager {
  public:
   explicit TestAutofillManager(AutofillDriverIOS* driver)
-      : BrowserAutofillManager(driver, "en-US") {}
+      : BrowserAutofillManager(driver) {}
 
   [[nodiscard]] testing::AssertionResult WaitForFormsSeen(
       int min_num_awaited_calls) {
@@ -430,8 +430,7 @@ class AutofillAcrossIframesTest : public AutofillTestWithWebState {
     // Driver factory needs to exist before any call to
     // `AutofillDriverIOS::FromWebStateAndWebFrame`, or we crash.
     autofill::AutofillDriverIOSFactory::CreateForWebState(
-        web_state(), &autofill_client_, /*bridge=*/autofill_agent_,
-        /*locale=*/"en");
+        web_state(), &autofill_client_, /*bridge=*/autofill_agent_);
 
     // Password autofill agent needs to exist before any call to fill data.
     autofill::PasswordAutofillAgent::CreateForWebState(web_state(),

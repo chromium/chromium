@@ -58,7 +58,6 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 namespace ios_web_view {
 namespace {
 
-const char kApplicationLocale[] = "en-US";
 NSString* const kTestFormName = @"FormName";
 FormRendererId kTestFormRendererID = FormRendererId(0);
 NSString* const kTestFieldIdentifier = @"FieldIdentifier";
@@ -118,8 +117,7 @@ class CWVAutofillControllerTest : public web::WebTest {
                 autofillAgent:autofill_agent_
               passwordManager:std::move(password_manager)
         passwordManagerClient:std::move(password_manager_client)
-           passwordController:password_controller_
-            applicationLocale:kApplicationLocale];
+           passwordController:password_controller_];
     form_activity_tab_helper_ =
         std::make_unique<autofill::TestFormActivityTabHelper>(&web_state_);
   }

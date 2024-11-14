@@ -104,8 +104,7 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
     passwordManagerClient:
         (std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>)
             passwordManagerClient
-       passwordController:(SharedPasswordController*)passwordController
-        applicationLocale:(const std::string&)applicationLocale {
+       passwordController:(SharedPasswordController*)passwordController {
   self = [super init];
   if (self) {
     DCHECK(webState);
@@ -124,7 +123,7 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
     _autofillClient->set_bridge(self);
 
     autofill::AutofillDriverIOSFactory::CreateForWebState(
-        _webState, _autofillClient.get(), self, applicationLocale);
+        _webState, _autofillClient.get(), self);
 
     _passwordManagerClient = std::move(passwordManagerClient);
     _passwordManagerClient->set_bridge(self);

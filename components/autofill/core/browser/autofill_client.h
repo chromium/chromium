@@ -215,6 +215,9 @@ class AutofillClient {
 
   virtual base::WeakPtr<AutofillClient> GetWeakPtr() = 0;
 
+  // Returns the app locale, e.g., "en-US".
+  virtual const std::string& GetAppLocale() const = 0;
+
   // Returns the channel for the installation. In branded builds, this will be
   // version_info::Channel::{STABLE,BETA,DEV,CANARY}. In unbranded builds, or
   // in branded builds when the channel cannot be determined, this will be

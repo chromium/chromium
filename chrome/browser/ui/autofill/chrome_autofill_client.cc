@@ -228,6 +228,10 @@ base::WeakPtr<AutofillClient> ChromeAutofillClient::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+const std::string& ChromeAutofillClient::GetAppLocale() const {
+  return g_browser_process->GetApplicationLocale();
+}
+
 version_info::Channel ChromeAutofillClient::GetChannel() const {
   return chrome::GetChannel();
 }
@@ -399,10 +403,8 @@ FormDataImporter* ChromeAutofillClient::GetFormDataImporter() {
     Profile* profile =
         Profile::FromBrowserContext(web_contents()->GetBrowserContext());
     form_data_importer_ = std::make_unique<FormDataImporter>(
-        this,
-        HistoryServiceFactory::GetForProfile(
-            profile, ServiceAccessType::EXPLICIT_ACCESS),
-        GetPersonalDataManager()->app_locale());
+        this, HistoryServiceFactory::GetForProfile(
+                  profile, ServiceAccessType::EXPLICIT_ACCESS));
   }
   return form_data_importer_.get();
 }
@@ -970,8 +972,7 @@ void ChromeAutofillClient::ShowAutofillSuggestionsImpl(
 std::unique_ptr<AutofillManager> ChromeAutofillClient::CreateManager(
     base::PassKey<ContentAutofillDriver> pass_key,
     ContentAutofillDriver& driver) {
-  return std::make_unique<BrowserAutofillManager>(
-      &driver, g_browser_process->GetApplicationLocale());
+  return std::make_unique<BrowserAutofillManager>(&driver);
 }
 
 void ChromeAutofillClient::set_test_addresses(

@@ -57,6 +57,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
 
   // AutofillClient:
   base::WeakPtr<AutofillClient> GetWeakPtr() override;
+  const std::string& GetAppLocale() const override;
   bool IsOffTheRecord() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   AutofillDriverFactory& GetAutofillDriverFactory() override;

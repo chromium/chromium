@@ -1022,9 +1022,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
               autofillAgent:autofillAgent
             passwordManager:std::move(passwordManager)
       passwordManagerClient:std::move(passwordManagerClient)
-         passwordController:passwordController
-          applicationLocale:ios_web_view::ApplicationContext::GetInstance()
-                                ->GetApplicationLocale()];
+         passwordController:passwordController];
 }
 
 #pragma mark - Find In Page

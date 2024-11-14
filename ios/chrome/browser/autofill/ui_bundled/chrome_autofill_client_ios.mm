@@ -115,6 +115,10 @@ base::WeakPtr<autofill::AutofillClient> ChromeAutofillClientIOS::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+const std::string& ChromeAutofillClientIOS::GetAppLocale() const {
+  return GetApplicationContext()->GetApplicationLocale();
+}
+
 version_info::Channel ChromeAutofillClientIOS::GetChannel() const {
   return ::GetChannel();
 }
@@ -193,10 +197,8 @@ const signin::IdentityManager* ChromeAutofillClientIOS::GetIdentityManager()
 FormDataImporter* ChromeAutofillClientIOS::GetFormDataImporter() {
   if (!form_data_importer_) {
     form_data_importer_ = std::make_unique<FormDataImporter>(
-        this,
-        ios::HistoryServiceFactory::GetForProfile(
-            profile_, ServiceAccessType::EXPLICIT_ACCESS),
-        GetApplicationContext()->GetApplicationLocale());
+        this, ios::HistoryServiceFactory::GetForProfile(
+                  profile_, ServiceAccessType::EXPLICIT_ACCESS));
   }
 
   return form_data_importer_.get();
@@ -307,9 +309,8 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
   }
 
   auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
-      profile, original_profile, GetUserEmail(),
-      GetApplicationContext()->GetApplicationLocale(), is_migration_to_account,
-      std::move(callback));
+      profile, original_profile, GetUserEmail(), GetAppLocale(),
+      is_migration_to_account, std::move(callback));
 
   infobar_manager_->AddInfoBar(std::make_unique<InfoBarIOS>(
       InfobarType::kInfobarTypeSaveAutofillAddressProfile,

@@ -80,7 +80,6 @@ class AutofillDriverIOS final : public AutofillDriver,
                     AutofillClient* client,
                     AutofillDriverRouter* router,
                     id<AutofillDriverIOSBridge> bridge,
-                    const std::string& app_locale,
                     base::PassKey<AutofillDriverIOSFactory>);
 
   ~AutofillDriverIOS() override;

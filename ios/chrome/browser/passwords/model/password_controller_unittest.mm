@@ -260,7 +260,7 @@ class PasswordControllerTest : public PlatformTest {
     PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
 
     autofill::AutofillDriverIOSFactory::CreateForWebState(
-        web_state(), &autofill_client_, /*bridge=*/nil, /*locale=*/"en");
+        web_state(), &autofill_client_, /*bridge=*/nil);
 
     passwordController_ = CreatePasswordController(
         profile_->GetPrefs(), web_state(), store_.get(), &weak_client_);
@@ -1265,7 +1265,7 @@ class PasswordControllerTestSimple : public PlatformTest {
                                    std::move(web_frames_manager));
 
     autofill::AutofillDriverIOSFactory::CreateForWebState(
-        &web_state_, &autofill_client_, /*bridge=*/nil, /*locale=*/"en");
+        &web_state_, &autofill_client_, /*bridge=*/nil);
 
     passwordController_ = CreatePasswordController(&pref_service_, &web_state_,
                                                    store_.get(), &weak_client_);

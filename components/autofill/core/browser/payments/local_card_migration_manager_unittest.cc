@@ -86,8 +86,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
     credit_card_save_manager_ = credit_card_save_manager.get();
     credit_card_save_manager_->SetCreditCardUploadEnabled(true);
     auto local_card_migration_manager =
-        std::make_unique<TestLocalCardMigrationManager>(&autofill_client_,
-                                                        "en-US");
+        std::make_unique<TestLocalCardMigrationManager>(&autofill_client_);
     local_card_migration_manager_ = local_card_migration_manager.get();
     std::unique_ptr<TestStrikeDatabase> test_strike_database =
         std::make_unique<TestStrikeDatabase>();
@@ -96,7 +95,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
     autofill_client_.set_test_form_data_importer(
         std::make_unique<TestFormDataImporter>(
             &autofill_client_, std::move(credit_card_save_manager),
-            /*iban_save_manager=*/nullptr, "en-US",
+            /*iban_save_manager=*/nullptr,
             std::move(local_card_migration_manager)));
 
     browser_autofill_manager_ =
@@ -1090,7 +1089,7 @@ TEST_F(
 TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_GetUploadDetailsFails) {
   // Anything other than "en-US" will cause GetUploadDetails to return a failure
   // response.
-  local_card_migration_manager_->SetAppLocaleForTesting("pt-BR");
+  autofill_client_.set_app_locale("pt-BR");
 
   UseLocalCardWithOtherLocalCardsOnFile();
 
@@ -1287,7 +1286,7 @@ TEST_F(LocalCardMigrationManagerTest,
        LogMigrationDecisionMetric_GetUploadDetailsFails) {
   // Anything other than "en-US" will cause GetUploadDetails to return a failure
   // response.
-  local_card_migration_manager_->SetAppLocaleForTesting("pt-BR");
+  autofill_client_.set_app_locale("pt-BR");
 
   base::HistogramTester histogram_tester;
   UseLocalCardWithOtherLocalCardsOnFile();

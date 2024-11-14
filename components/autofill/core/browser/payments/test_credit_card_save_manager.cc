@@ -11,7 +11,7 @@
 namespace autofill {
 
 TestCreditCardSaveManager::TestCreditCardSaveManager(AutofillClient* client)
-    : CreditCardSaveManager(client, "en-US") {}
+    : CreditCardSaveManager(client) {}
 
 TestCreditCardSaveManager::~TestCreditCardSaveManager() = default;
 

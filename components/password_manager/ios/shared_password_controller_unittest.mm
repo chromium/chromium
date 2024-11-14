@@ -176,8 +176,8 @@ class SharedPasswordControllerTest : public PlatformTest {
     web_state_.SetWebFramesManager(content_world,
                                    std::move(web_frames_manager));
 
-    AutofillDriverIOSFactory::CreateForWebState(
-        &web_state_, &autofill_client_, /*bridge=*/nil, /*locale=*/"en");
+    AutofillDriverIOSFactory::CreateForWebState(&web_state_, &autofill_client_,
+                                                /*bridge=*/nil);
     // The manager injector must be created before creating the controller to
     // make sure it can exchange the manager before the controller starts
     // observing it.
@@ -1222,8 +1222,8 @@ class SharedPasswordControllerTestWithRealSuggestionHelper
 
     controller_.delegate = delegate_;
 
-    AutofillDriverIOSFactory::CreateForWebState(
-        &web_state_, &autofill_client_, /*bridge=*/nil, /*locale=*/"en");
+    AutofillDriverIOSFactory::CreateForWebState(&web_state_, &autofill_client_,
+                                                /*bridge=*/nil);
 
     web_state_.SetCurrentURL(GURL(kTestURL));
   }

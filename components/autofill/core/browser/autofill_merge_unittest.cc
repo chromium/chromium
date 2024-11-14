@@ -176,7 +176,7 @@ AutofillMergeTest::~AutofillMergeTest() = default;
 void AutofillMergeTest::SetUp() {
   test_api(test_address_data_manager()).set_auto_accept_address_imports(true);
   form_data_importer_ = std::make_unique<FormDataImporter>(
-      &autofill_client_, /*history_service=*/nullptr, "en");
+      &autofill_client_, /*history_service=*/nullptr);
   scoped_feature_list_.InitWithFeatures(
       {features::kAutofillConsiderPhoneNumberSeparatorsValidLabels,
        features::kAutofillEnableSupportForPhoneNumberTrunkTypes,

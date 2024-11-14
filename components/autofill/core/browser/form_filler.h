@@ -54,9 +54,7 @@ enum class RefillTriggerReason {
 // It holds any state that is only relevant for [re]filling.
 class FormFiller {
  public:
-  FormFiller(BrowserAutofillManager& manager,
-             LogManager* log_manager,
-             const std::string& app_locale);
+  FormFiller(BrowserAutofillManager& manager, LogManager* log_manager);
 
   FormFiller(const FormFiller&) = delete;
   FormFiller& operator=(const FormFiller&) = delete;
@@ -274,10 +272,6 @@ class FormFiller {
       FormFieldData& field_data,
       mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill);
-
-  const std::string& app_locale() const { return app_locale_; }
-
-  std::string app_locale_;
 
   // Container holding the history of Autofill filling operations. Used to undo
   // some of the filling operations.

@@ -281,10 +281,8 @@ FormFiller::FillingContext::FillingContext(
 
 FormFiller::FillingContext::~FillingContext() = default;
 
-FormFiller::FormFiller(BrowserAutofillManager& manager,
-                       LogManager* log_manager,
-                       const std::string& app_locale)
-    : app_locale_(app_locale), log_manager_(log_manager), manager_(manager) {}
+FormFiller::FormFiller(BrowserAutofillManager& manager, LogManager* log_manager)
+    : log_manager_(log_manager), manager_(manager) {}
 
 FormFiller::~FormFiller() = default;
 
@@ -977,13 +975,14 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
       : absl::holds_alternative<const AutofillProfile*>(profile_or_credit_card)
           ? GetFillingValueAndTypeForProfile(
                 *absl::get<const AutofillProfile*>(profile_or_credit_card),
-                app_locale_, autofill_field.Type(), field_data,
-                manager_->client().GetAddressNormalizer(), failure_to_fill)
+                manager_->client().GetAppLocale(), autofill_field.Type(),
+                field_data, manager_->client().GetAddressNormalizer(),
+                failure_to_fill)
           : std::make_pair(
                 GetFillingValueForCreditCard(
                     *absl::get<const CreditCard*>(profile_or_credit_card),
-                    app_locale_, action_persistence, autofill_field,
-                    failure_to_fill),
+                    manager_->client().GetAppLocale(), action_persistence,
+                    autofill_field, failure_to_fill),
                 autofill_field.Type().GetStorableType());
   return {value_to_fill, filling_type, value_is_an_override};
 }

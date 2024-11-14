@@ -42,7 +42,7 @@ namespace {
 class TestAutofillManager : public autofill::BrowserAutofillManager {
  public:
   explicit TestAutofillManager(autofill::ContentAutofillDriver* driver)
-      : BrowserAutofillManager(driver, "en-US") {}
+      : BrowserAutofillManager(driver) {}
 
   [[nodiscard]] testing::AssertionResult WaitForFormsSeen(
       int min_num_awaited_calls) {

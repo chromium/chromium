@@ -88,6 +88,11 @@ base::WeakPtr<AutofillClient> WebViewAutofillClientIOS::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+const std::string& WebViewAutofillClientIOS::GetAppLocale() const {
+  return ios_web_view::ApplicationContext::GetInstance()
+      ->GetApplicationLocale();
+}
+
 bool WebViewAutofillClientIOS::IsOffTheRecord() const {
   return web_state_->GetBrowserState()->IsOffTheRecord();
 }
@@ -149,11 +154,8 @@ const signin::IdentityManager* WebViewAutofillClientIOS::GetIdentityManager()
 
 FormDataImporter* WebViewAutofillClientIOS::GetFormDataImporter() {
   if (!form_data_importer_) {
-    form_data_importer_ = std::make_unique<FormDataImporter>(
-        this,
-        /*history_service=*/nullptr,
-        ios_web_view::ApplicationContext::GetInstance()
-            ->GetApplicationLocale());
+    form_data_importer_ =
+        std::make_unique<FormDataImporter>(this, /*history_service=*/nullptr);
   }
   return form_data_importer_.get();
 }

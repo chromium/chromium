@@ -119,7 +119,7 @@ class AutofillPolicyTest : public PolicyTest,
   class TestAutofillManager : public autofill::BrowserAutofillManager {
    public:
     explicit TestAutofillManager(autofill::ContentAutofillDriver* driver)
-        : autofill::BrowserAutofillManager(driver, "en-US") {}
+        : autofill::BrowserAutofillManager(driver) {}
 
     [[nodiscard]] AssertionResult WaitForFormsSeen() {
       return forms_seen_waiter_.Wait();

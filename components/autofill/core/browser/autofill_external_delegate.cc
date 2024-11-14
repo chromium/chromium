@@ -1267,7 +1267,7 @@ void AutofillExternalDelegate::PreviewAddressFieldByFieldFillingSuggestion(
     const AutofillProfile& profile,
     const Suggestion& suggestion) {
   const auto& [filling_value, filling_type] = GetFillingValueAndTypeForProfile(
-      profile, manager_->app_locale(),
+      profile, manager_->client().GetAppLocale(),
       AutofillType(*suggestion.field_by_field_filling_type_used), query_field_,
       manager_->client().GetAddressNormalizer());
   if (!filling_value.empty()) {
@@ -1321,7 +1321,7 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
   }
 
   const auto& [filling_value, filling_type] = GetFillingValueAndTypeForProfile(
-      profile, manager_->app_locale(),
+      profile, manager_->client().GetAppLocale(),
       AutofillType(*suggestion.field_by_field_filling_type_used), query_field_,
       manager_->client().GetAddressNormalizer());
   if (!filling_value.empty()) {
@@ -1373,7 +1373,8 @@ void AutofillExternalDelegate::OnCreditCardFetched(
   manager_->FillOrPreviewField(
       mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
       query_form_, query_field_,
-      credit_card->GetInfo(CREDIT_CARD_NUMBER, manager_->app_locale()),
+      credit_card->GetInfo(CREDIT_CARD_NUMBER,
+                           manager_->client().GetAppLocale()),
       SuggestionType::kCreditCardFieldByFieldFilling, CREDIT_CARD_NUMBER);
 }
 

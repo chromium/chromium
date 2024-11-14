@@ -737,9 +737,8 @@ BrowserAutofillManager::MetricsState::~MetricsState() {
   address_form_event_logger.OnDestroyed();
 }
 
-BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
-                                               const std::string& app_locale)
-    : AutofillManager(driver), app_locale_(app_locale) {}
+BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver)
+    : AutofillManager(driver) {}
 
 BrowserAutofillManager::~BrowserAutofillManager() {
   if (metrics_->has_parsed_forms) {
@@ -976,7 +975,8 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 
     DeterminePossibleFieldTypesForUpload(
         std::move(copied_profiles), std::move(copied_credit_cards),
-        last_unlocked_credit_card_cvc_, app_locale_, submitted_form.get());
+        last_unlocked_credit_card_cvc_, client().GetAppLocale(),
+        submitted_form.get());
 
     delegate->MaybeImportForm(
         std::move(submitted_form),
@@ -1131,7 +1131,8 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
       FROM_HERE,
       base::BindOnce(&DeterminePossibleFieldTypesForUpload,
                      std::move(copied_profiles), std::move(copied_credit_cards),
-                     last_unlocked_credit_card_cvc_, app_locale_, raw_form),
+                     last_unlocked_credit_card_cvc_, client().GetAppLocale(),
+                     raw_form),
       std::move(call_after_determine_field_types));
 
   return true;
@@ -2572,10 +2573,10 @@ void BrowserAutofillManager::UploadVotesAndLogQuality(
   FieldTypeSet non_empty_types;
   for (const AutofillProfile* profile :
        pdm->address_data_manager().GetProfiles()) {
-    profile->GetNonEmptyTypes(app_locale_, &non_empty_types);
+    profile->GetNonEmptyTypes(client().GetAppLocale(), &non_empty_types);
   }
   for (const CreditCard* card : pdm->payments_data_manager().GetCreditCards()) {
-    card->GetNonEmptyTypes(app_locale_, &non_empty_types);
+    card->GetNonEmptyTypes(client().GetAppLocale(), &non_empty_types);
   }
   // As CVC is not stored, treat it separately.
   if (!last_unlocked_credit_card_cvc_.empty() ||
@@ -3478,8 +3479,8 @@ void BrowserAutofillManager::PreProcessStateMatchingTypes(
       continue;
     }
 
-    const std::u16string& country_code =
-        profile.GetInfo(AutofillType(HtmlFieldType::kCountryCode), app_locale_);
+    const std::u16string& country_code = profile.GetInfo(
+        AutofillType(HtmlFieldType::kCountryCode), client().GetAppLocale());
 
     for (auto& field : *form_structure) {
       if (field->state_is_a_matching_type()) {

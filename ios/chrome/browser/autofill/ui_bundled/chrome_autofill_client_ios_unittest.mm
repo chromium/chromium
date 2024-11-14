@@ -51,7 +51,7 @@ namespace {
 class TestAutofillManager : public BrowserAutofillManager {
  public:
   explicit TestAutofillManager(AutofillDriverIOS* driver)
-      : BrowserAutofillManager(driver, "en-US") {}
+      : BrowserAutofillManager(driver) {}
 
   TestAutofillManagerWaiter& waiter() { return waiter_; }
 
@@ -101,7 +101,7 @@ class ChromeAutofillClientIOSTest : public PlatformTest {
         profile_.get(), web_state_.get(),
         InfoBarManagerImpl::FromWebState(web_state_.get()), autofill_agent);
     autofill::AutofillDriverIOSFactory::CreateForWebState(
-        web_state_.get(), autofill_client_.get(), autofill_agent, "en");
+        web_state_.get(), autofill_client_.get(), autofill_agent);
     autofill_manager_injector_ =
         std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(
             web_state_.get());

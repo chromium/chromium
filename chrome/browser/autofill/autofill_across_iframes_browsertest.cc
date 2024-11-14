@@ -79,7 +79,7 @@ constexpr char kCvc[] = "123";
 class TestAutofillManager : public BrowserAutofillManager {
  public:
   explicit TestAutofillManager(ContentAutofillDriver* driver)
-      : BrowserAutofillManager(driver, "en-US") {
+      : BrowserAutofillManager(driver) {
     test_api(test_api(*this).form_filler())
         .set_limit_before_refill(base::Hours(1));
   }

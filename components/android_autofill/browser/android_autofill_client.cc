@@ -56,6 +56,10 @@ base::WeakPtr<autofill::AutofillClient> AndroidAutofillClient::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+const std::string& AndroidAutofillClient::GetAppLocale() const {
+  NOTREACHED();
+}
+
 bool AndroidAutofillClient::IsOffTheRecord() const {
   auto* mutable_this = const_cast<AndroidAutofillClient*>(this);
   return mutable_this->GetWebContents().GetBrowserContext()->IsOffTheRecord();

@@ -94,8 +94,7 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
         profile_.get(), web_state_.get(), infobar_manager, autofill_agent_);
 
     autofill::AutofillDriverIOSFactory::CreateForWebState(
-        web_state_.get(), autofill_client_.get(), autofill_agent_,
-        /*app_locale=*/"en");
+        web_state_.get(), autofill_client_.get(), autofill_agent_);
   }
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;

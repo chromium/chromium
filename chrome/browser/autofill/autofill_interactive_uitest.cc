@@ -3310,7 +3310,7 @@ class AutofillInteractiveFormSubmissionTest
   class MockAutofillManager : public BrowserAutofillManager {
    public:
     explicit MockAutofillManager(ContentAutofillDriver* driver)
-        : BrowserAutofillManager(driver, "en-US") {}
+        : BrowserAutofillManager(driver) {}
     MOCK_METHOD(void,
                 OnFormSubmittedImpl,
                 (const FormData&, mojom::SubmissionSource),

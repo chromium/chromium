@@ -39,12 +39,8 @@ void AutofillDriverIOSFactory::Observer::OnAutofillDriverStateChanged(
 AutofillDriverIOSFactory::AutofillDriverIOSFactory(
     web::WebState* web_state,
     AutofillClient* client,
-    id<AutofillDriverIOSBridge> bridge,
-    const std::string& app_locale)
-    : app_locale_(app_locale),
-      client_(client),
-      web_state_(web_state),
-      bridge_(bridge) {
+    id<AutofillDriverIOSBridge> bridge)
+    : client_(client), web_state_(web_state), bridge_(bridge) {
   web_state_->AddObserver(this);
   GetWebFramesManager().AddObserver(this);
 }
@@ -124,7 +120,7 @@ AutofillDriverIOS* AutofillDriverIOSFactory::DriverForFrame(
   std::unique_ptr<AutofillDriverIOS>& driver = iter->second;
   if (insertion_happened) {
     driver = std::make_unique<AutofillDriverIOS>(
-        web_state_, web_frame, client_, &router_, bridge_, app_locale_,
+        web_state_, web_frame, client_, &router_, bridge_,
         base::PassKey<AutofillDriverIOSFactory>());
     for (auto& observer : observers()) {
       observer.OnAutofillDriverCreated(*this, *driver);

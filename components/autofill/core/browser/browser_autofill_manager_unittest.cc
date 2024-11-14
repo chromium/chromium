@@ -838,7 +838,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     autofill_client_.set_test_form_data_importer(
         std::make_unique<TestFormDataImporter>(
             &autofill_client_, std::move(credit_card_save_manager),
-            std::make_unique<IbanSaveManager>(&autofill_client_), "en-US"));
+            std::make_unique<IbanSaveManager>(&autofill_client_)));
 
     ResetBrowserAutofillManager();
     // By default, if we offer single field form fill, suggestions should be

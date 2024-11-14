@@ -88,8 +88,7 @@ class LocalCardMigrationManager {
   };
 
   // `client` must outlive the LocalCardMigrationManager.
-  LocalCardMigrationManager(AutofillClient* client,
-                            const std::string& app_locale);
+  explicit LocalCardMigrationManager(AutofillClient* client);
 
   LocalCardMigrationManager(const LocalCardMigrationManager&) = delete;
   LocalCardMigrationManager& operator=(const LocalCardMigrationManager&) =
@@ -150,11 +149,6 @@ class LocalCardMigrationManager {
   // unsupported cards. If so, the first OnDidGetUploadDetails() will need to
   // store the supported ranges locally.
   void GetMigratableCreditCards();
-
-  // For testing.
-  void SetAppLocaleForTesting(const std::string& app_locale) {
-    app_locale_ = app_locale;
-  }
 
  protected:
   // Callback after successfully getting the legal documents. On success,
@@ -220,8 +214,6 @@ class LocalCardMigrationManager {
   }
 
   const raw_ref<AutofillClient> client_;
-
-  std::string app_locale_;
 
   // The parsed lines from the legal message return from GetUploadDetails.
   LegalMessageLines legal_message_lines_;

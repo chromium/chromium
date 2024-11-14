@@ -142,7 +142,7 @@ class FormStructureBrowserTest
   class TestAutofillManager : public BrowserAutofillManager {
    public:
     explicit TestAutofillManager(AutofillDriverIOS* driver)
-        : BrowserAutofillManager(driver, "en-US") {}
+        : BrowserAutofillManager(driver) {}
 
     TestAutofillManagerWaiter& waiter() { return waiter_; }
 
@@ -254,10 +254,8 @@ void FormStructureBrowserTest::SetUp() {
   autofill_client_ = std::make_unique<TestAutofillClient>(
       profile_.get(), web_state(), infobar_manager, autofill_agent_);
 
-  std::string locale("en");
   autofill::AutofillDriverIOSFactory::CreateForWebState(
-      web_state(), autofill_client_.get(), /*autofill_agent=*/autofill_agent_,
-      locale);
+      web_state(), autofill_client_.get(), /*autofill_agent=*/autofill_agent_);
 
   autofill_manager_injector_ =
       std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(

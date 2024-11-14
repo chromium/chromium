@@ -159,11 +159,10 @@ FormDataImporter::ExtractedFormData::operator=(
 FormDataImporter::ExtractedFormData::~ExtractedFormData() = default;
 
 FormDataImporter::FormDataImporter(AutofillClient* client,
-                                   history::HistoryService* history_service,
-                                   const std::string& app_locale)
+                                   history::HistoryService* history_service)
     : client_(CHECK_DEREF(client)),
       credit_card_save_manager_(
-          std::make_unique<CreditCardSaveManager>(client, app_locale)),
+          std::make_unique<CreditCardSaveManager>(client)),
       address_profile_save_manager_(
           std::make_unique<AddressProfileSaveManager>(client)),
 #if !BUILDFLAG(IS_IOS)
@@ -171,10 +170,9 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
 #endif  // !BUILDFLAG(IS_IOS)
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       local_card_migration_manager_(
-          std::make_unique<LocalCardMigrationManager>(client, app_locale)),
+          std::make_unique<LocalCardMigrationManager>(client)),
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      app_locale_(app_locale),
-      multistep_importer_(app_locale,
+      multistep_importer_(client_->GetAppLocale(),
                           client_->GetVariationConfigCountryCode()) {
   address_data_manager_observation_.Observe(&address_data_manager());
   if (history_service) {
@@ -243,8 +241,8 @@ bool FormDataImporter::ComplementCountry(AutofillProfile& profile,
         << CTag{};
   }
   return profile.SetInfoWithVerificationStatus(
-      ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16(fallback), app_locale_,
-      VerificationStatus::kObserved);
+      ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16(fallback),
+      client_->GetAppLocale(), VerificationStatus::kObserved);
 }
 
 bool FormDataImporter::SetPhoneNumber(
@@ -254,7 +252,7 @@ bool FormDataImporter::SetPhoneNumber(
     return true;
 
   bool parsed_successfully = PhoneNumber::ImportPhoneNumberToProfile(
-      combined_phone, app_locale_, profile);
+      combined_phone, client_->GetAppLocale(), profile);
   autofill_metrics::LogPhoneNumberImportParsingResult(parsed_successfully);
   return parsed_successfully;
 }
@@ -408,7 +406,7 @@ AutofillProfile FormDataImporter::ConstructProfileFromObservedValues(
     // Try setting the collected country value into the profile and report
     // invalid country if the operation failed.
     candidate_profile.SetInfoWithVerificationStatus(
-        ADDRESS_HOME_COUNTRY, country_it->second, app_locale_,
+        ADDRESS_HOME_COUNTRY, country_it->second, client_->GetAppLocale(),
         VerificationStatus::kObserved);
 
     // Track the validity of the entered country for metrics.
@@ -443,7 +441,7 @@ AutofillProfile FormDataImporter::ConstructProfileFromObservedValues(
       combined_phone.SetInfo(type, value);
     } else {
       candidate_profile.SetInfoWithVerificationStatus(
-          type, value, app_locale_, VerificationStatus::kObserved);
+          type, value, client_->GetAppLocale(), VerificationStatus::kObserved);
     }
   }
 
@@ -691,7 +689,7 @@ bool FormDataImporter::ProcessAddressProfileImportCandidates(
       if (!candidate.all_requirements_fulfilled)
         continue;
       address_profile_save_manager_->ImportProfileFromForm(
-          candidate.profile, app_locale_, candidate.url,
+          candidate.profile, client_->GetAppLocale(), candidate.url,
           /*allow_only_silent_updates=*/false, candidate.import_metadata);
       // Limit the number of importable profiles to 2.
       if (++imported_profiles >= 2)
@@ -706,7 +704,7 @@ bool FormDataImporter::ProcessAddressProfileImportCandidates(
   for (const auto& candidate : address_profile_import_candidates) {
     // First try to import a single complete profile.
     address_profile_save_manager_->ImportProfileFromForm(
-        candidate.profile, app_locale_, candidate.url,
+        candidate.profile, client_->GetAppLocale(), candidate.url,
         /*allow_only_silent_updates=*/true, candidate.import_metadata);
   }
   return false;
@@ -842,7 +840,8 @@ std::optional<CreditCard> FormDataImporter::ExtractCreditCard(
     // Make a local copy so that the data in `local_credit_cards_` isn't
     // modified directly by the UpdateFromImportedCard() call.
     CreditCard maybe_updated_card = *local_card;
-    if (maybe_updated_card.UpdateFromImportedCard(candidate, app_locale_)) {
+    if (maybe_updated_card.UpdateFromImportedCard(candidate,
+                                                  client_->GetAppLocale())) {
       payments_data_manager().UpdateCreditCard(maybe_updated_card);
       credit_card_import_type_ = CreditCardImportType::kLocalCard;
       // Update `candidate` to reflect all the details of the updated card.
@@ -944,12 +943,13 @@ FormDataImporter::ExtractCreditCardFromFormResult
 FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
   // Populated by the lambdas below.
   ExtractCreditCardFromFormResult result;
+  std::string app_locale = client_->GetAppLocale();
 
   // Populates `result` from `field` if it's a credit card field.
   // For example, if `field` contains credit card number, this sets the number
   // of `result.card` to the `field`'s value.
-  auto extract_if_credit_card_field = [&result, &app_locale = app_locale_](
-                                          const AutofillField& field) {
+  auto extract_if_credit_card_field = [&result,
+                                       app_locale](const AutofillField& field) {
     std::u16string value = [&field] {
       if (field.Type().GetStorableType() == FieldType::CREDIT_CARD_NUMBER) {
         // Credit card numbers are sometimes obfuscated on form submission.
@@ -1002,7 +1002,7 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
   // function sets the credit card first, last, and full name and erases
   // all `fields` of type `CREDIT_CARD_NAME_{FULL,FIRST,LAST}`.
   auto extract_data_and_remove_field_if =
-      [&result, &extract_if_credit_card_field, &app_locale = app_locale_](
+      [&result, &extract_if_credit_card_field, &app_locale](
           std::vector<const AutofillField*>& fields, const auto& pred) {
         for (const AutofillField* field : fields) {
           if (std::invoke(pred, *field)) {
@@ -1044,7 +1044,7 @@ Iban FormDataImporter::ExtractIbanFromForm(const FormStructure& form) {
     }
     FieldType field_type = field->Type().GetStorableType();
     if (field_type == IBAN_VALUE && Iban::IsValid(value)) {
-      candidate_iban.SetInfo(IBAN_VALUE, value, app_locale_);
+      candidate_iban.SetInfo(IBAN_VALUE, value, client_->GetAppLocale());
       break;
     }
   }

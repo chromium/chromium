@@ -104,6 +104,8 @@ class TestAutofillClientTemplate : public T {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  const std::string& GetAppLocale() const override { return app_locale_; }
+
   version_info::Channel GetChannel() const override {
     return channel_for_testing_;
   }
@@ -182,8 +184,7 @@ class TestAutofillClientTemplate : public T {
     if (!form_data_importer_) {
       set_test_form_data_importer(std::make_unique<FormDataImporter>(
           /*client=*/this,
-          /*history_service=*/nullptr,
-          /*app_locale=*/"en-US"));
+          /*history_service=*/nullptr));
     }
     return form_data_importer_.get();
   }
@@ -509,6 +510,10 @@ class TestAutofillClientTemplate : public T {
     format_for_large_keyboard_accessory_ = format_for_large_keyboard_accessory;
   }
 
+  void set_app_locale(std::string app_locale) {
+    app_locale_ = std::move(app_locale);
+  }
+
   void set_channel_for_testing(const version_info::Channel channel) {
     channel_for_testing_ = channel;
   }
@@ -600,6 +605,8 @@ class TestAutofillClientTemplate : public T {
   bool should_save_autofill_profiles_ = true;
 
   bool format_for_large_keyboard_accessory_ = false;
+
+  std::string app_locale_ = "en-US";
 
   version_info::Channel channel_for_testing_ = version_info::Channel::UNKNOWN;
 

@@ -85,8 +85,7 @@ class PasswordSuggestionHelperTest : public PlatformTest {
     web_state_.SetWebFramesManager(content_world, std::move(frames_manager));
 
     autofill::AutofillDriverIOSFactory::CreateForWebState(
-        &web_state_, &autofill_client_, /*autofill_agent=*/nil,
-        /*locale=*/"en");
+        &web_state_, &autofill_client_, /*autofill_agent=*/nil);
 
     delegate_ = OCMProtocolMock(@protocol(PasswordSuggestionHelperDelegate));
 

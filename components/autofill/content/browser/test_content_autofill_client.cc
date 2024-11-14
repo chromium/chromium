@@ -15,7 +15,7 @@ namespace autofill {
 std::unique_ptr<AutofillManager> TestContentAutofillClient::CreateManager(
     base::PassKey<ContentAutofillDriver> pass_key,
     ContentAutofillDriver& driver) {
-  return std::make_unique<BrowserAutofillManager>(&driver, "en-US");
+  return std::make_unique<BrowserAutofillManager>(&driver);
 }
 
 }  // namespace autofill

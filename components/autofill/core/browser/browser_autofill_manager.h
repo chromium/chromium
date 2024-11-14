@@ -106,7 +106,7 @@ class BrowserAutofillManager : public AutofillManager {
       std::optional<autofill_metrics::SuggestionRankingContext>
           ranking_context)>;
 
-  BrowserAutofillManager(AutofillDriver* driver, const std::string& app_locale);
+  explicit BrowserAutofillManager(AutofillDriver* driver);
 
   BrowserAutofillManager(const BrowserAutofillManager&) = delete;
   BrowserAutofillManager& operator=(const BrowserAutofillManager&) = delete;
@@ -214,8 +214,6 @@ class BrowserAutofillManager : public AutofillManager {
   void OnSingleFieldSuggestionSelected(const Suggestion& suggestion,
                                        const FormData& form,
                                        const FormFieldData& field);
-
-  const std::string& app_locale() const { return app_locale_; }
 
   // Will send an upload based on the |form_structure| data and the local
   // Autofill profile data. |observed_submission| is specified if the upload
@@ -713,8 +711,6 @@ class BrowserAutofillManager : public AutofillManager {
   std::unique_ptr<TouchToFillDelegate> touch_to_fill_delegate_;
   std::unique_ptr<FastCheckoutDelegate> fast_checkout_delegate_;
 
-  std::string app_locale_;
-
   // This is always non-nullopt except very briefly during Reset().
   std::optional<MetricsState> metrics_ = std::make_optional<MetricsState>(this);
 
@@ -732,7 +728,7 @@ class BrowserAutofillManager : public AutofillManager {
   // Helper class to autofill forms and fields. Do not use directly, use
   // form_filler() instead, because tests inject test objects.
   std::unique_ptr<FormFiller> form_filler_ =
-      std::make_unique<FormFiller>(*this, log_manager(), app_locale_);
+      std::make_unique<FormFiller>(*this, log_manager());
 
   std::u16string last_unlocked_credit_card_cvc_;
 
