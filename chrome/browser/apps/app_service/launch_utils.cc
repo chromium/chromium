@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -473,8 +474,11 @@ AppIdsToLaunchForUrl::~AppIdsToLaunchForUrl() = default;
 
 AppIdsToLaunchForUrl FindAppIdsToLaunchForUrl(AppServiceProxy* proxy,
                                               const GURL& url) {
+  // Navigation Capturing also enables launching of browser-tab apps.
+  bool exclude_browser_tab_apps = !features::IsNavigationCapturingReimplEnabled();
   AppIdsToLaunchForUrl result;
-  result.candidates = proxy->GetAppIdsForUrl(url, /*exclude_browsers=*/true);
+  result.candidates =
+      proxy->GetAppIdsForUrl(url, /*exclude_browsers=*/true, exclude_browser_tab_apps);
   if (result.candidates.empty()) {
     return result;
   }
