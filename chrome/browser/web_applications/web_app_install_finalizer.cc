@@ -420,28 +420,6 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   }
 }
 
-bool WebAppInstallFinalizer::CanReparentTab(const webapps::AppId& app_id,
-                                            bool shortcut_created) const {
-  // Reparent the web contents into its own window only if that is the
-  // app's launch type.
-  DCHECK(provider_);
-  if (provider_->registrar_unsafe().GetAppUserDisplayMode(app_id) ==
-      mojom::UserDisplayMode::kBrowser) {
-    return false;
-  }
-
-  return provider_->ui_manager().CanReparentAppTabToWindow(app_id,
-                                                           shortcut_created);
-}
-
-void WebAppInstallFinalizer::ReparentTab(const webapps::AppId& app_id,
-                                         bool shortcut_created,
-                                         content::WebContents* web_contents) {
-  DCHECK(web_contents);
-  provider_->ui_manager().ReparentAppTabToWindow(web_contents, app_id,
-                                                 shortcut_created);
-}
-
 void WebAppInstallFinalizer::FinalizeUpdate(
     const WebAppInstallInfo& web_app_info,
     InstallFinalizedCallback callback) {

@@ -1015,8 +1015,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
 }
 
 // This test should fail since web apps with browser display mode shouldn't be
-// reparentable to match the behavior of post-installation reparenting. But now
-// the check only applies in WebAppInstallFinalizer::CanReparentTab.
+// reparentable to match the behavior of post-installation reparenting.
 // TODO(crbug.com/339453521): Find a proper way to check the display mode.
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
                        DISABLED_OpenCurrentPageInApp_NotReparentable) {

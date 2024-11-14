@@ -716,20 +716,17 @@ void ReparentWebContentsIntoBrowserImpl(Browser* source_browser,
 }
 
 std::optional<webapps::AppId> GetWebAppForActiveTab(const Browser* browser) {
-  const WebAppProvider* const provider =
-      WebAppProvider::GetForWebApps(browser->profile());
-  if (!provider) {
-    return std::nullopt;
-  }
-
   const content::WebContents* const web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   if (!web_contents) {
     return std::nullopt;
   }
-
-  return provider->registrar_unsafe().FindInstalledAppWithUrlInScope(
-      web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
+  const WebAppTabHelper* tab_helper =
+      WebAppTabHelper::FromWebContents(web_contents);
+  if (!tab_helper) {
+    return std::nullopt;
+  }
+  return tab_helper->app_id();
 }
 
 void PrunePreScopeNavigationHistory(const GURL& scope,
@@ -830,6 +827,7 @@ Browser* ReparentWebContentsIntoAppBrowser(
   // disabled if the previous page was outside scope. Packaged apps are not
   // affected.
   WebAppProvider* provider = WebAppProvider::GetForWebApps(profile);
+  CHECK(provider);
   WebAppRegistrar& registrar = provider->registrar_unsafe();
   const WebApp* web_app = registrar.GetAppById(app_id);
   if (!web_app) {
@@ -847,7 +845,8 @@ Browser* ReparentWebContentsIntoAppBrowser(
   }
   WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(contents);
   // This function assumes `contents` is from a browser tab.
-  CHECK(!tab_helper->is_in_app_window());
+  CHECK(!tab_helper->is_in_app_window())
+      << tab_helper->window_app_id().value_or("<none>");
 
   auto launch_url = contents->GetLastCommittedURL();
   UpdateLaunchStats(contents, app_id, launch_url);

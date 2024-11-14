@@ -63,19 +63,17 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // explicitly from elsewhere.
   void SetAppId(std::optional<webapps::AppId> app_id);
 
-  // Called by `WebAppBrowserController::OnTabInserted` and `OnTabRemoved` to
-  // indicate if this web contents is currently being displayed inside an app
-  // window.
-  void SetIsInAppWindow(bool is_in_app_window);
-
-  // True when this web contents is currently being displayed inside an app
-  // window instead of in a browser tab.
-  bool is_in_app_window() const { return is_in_app_window_; }
+  // Called by `WebAppBrowserController` and `WebKioskBrowserControllerBase`'s
+  // `OnTabInserted` and `OnTabRemoved` methods to indicate if this web contents
+  // is currently being displayed inside an app window. `window_app_id` is the
+  // id of the app.
+  void SetIsInAppWindow(std::optional<webapps::AppId> window_app_id);
 
   const base::UnguessableToken& GetAudioFocusGroupIdForTesting() const;
 
   // Returns the installed web app that 'controls' the last committed url of
-  // this tab.
+  // this tab. This is populated for this tab no matter where it is, whether in
+  // a browser window, or in a standalone app window.
   // - 'controls' means it's the web app who's scope contains the last committed
   //    url. If there are multiple web apps that satisfy this constraint, then
   //    it chooses the one with the longest (aka most specific) scope prefix.
@@ -84,7 +82,26 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   //   InstallState::INSTALLED_WITHOUT_OS_INTEGRATION (which is usually only
   //   preinstalled apps). And thus this excludes the
   //   InstallState::SUGGESTED_FROM_ANOTHER_DEVICE state.
-  const std::optional<webapps::AppId> app_id() const { return app_id_; }
+  //
+  // Note: This is populated on construction from the current tab's
+  // `GetLastCommittedURL()`, and afterwards only after navigation is committed.
+  //
+  // Note: If we are in an app window, this is not guaranteed to match
+  // `window_app_id()` - for example, if the web contents of an app navigates
+  // out of scope of the app, this will be std::nullopt.
+  const std::optional<webapps::AppId>& app_id() const { return app_id_; }
+
+  // Returns the installed web app window that contains this tab, or
+  // std::nullopt if this tab is in a normal browser window. This is not
+  // guaranteed to match `app_id()`, because app windows can display content
+  // that is out of scope of the app (and even in scope of another app).
+  const std::optional<webapps::AppId>& window_app_id() const {
+    return window_app_id_;
+  }
+
+  // True when this web contents is currently being displayed inside an app
+  // window instead of in a browser tab.
+  bool is_in_app_window() const { return window_app_id_.has_value(); }
 
   bool is_pinned_home_tab() const { return is_pinned_home_tab_; }
   void set_is_pinned_home_tab(bool is_pinned_home_tab) {
@@ -113,7 +130,8 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // Sets the state of this tab helper. This will call
   // `WebAppUiManager::OnAssociatedAppChanged` if the id has changed, and
   // `UpdateAudioFocusGroupId()` if either has changed.
-  void SetState(std::optional<webapps::AppId> app_id, bool is_in_app_window);
+  void SetState(std::optional<webapps::AppId> app_id,
+                std::optional<webapps::AppId> window_app_id);
 
   // Runs any logic when the associated app is added, changed or removed.
   void OnAssociatedAppChanged(
@@ -128,10 +146,8 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
 
   std::optional<webapps::AppId> FindAppWithUrlInScope(const GURL& url) const;
 
-  // WebApp associated with this tab.
   std::optional<webapps::AppId> app_id_;
-
-  bool is_in_app_window_ = false;
+  std::optional<webapps::AppId> window_app_id_;
 
   // True when this tab is the pinned home tab of a tabbed web app.
   bool is_pinned_home_tab_ = false;
