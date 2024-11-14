@@ -59,8 +59,6 @@ source_set("lib") {
     "//base",
     "//components/tracing:tracing_service_idl",
   ]
-
-  libs = [ "rpcrt4.lib" ]
 }
 
 source_set("service_lib") {
@@ -112,6 +110,7 @@ test("elevated_tracing_service_unittests") {
     "//chrome/windows_services/service_program",
     "//chrome/windows_services/service_program:common",
     "//chrome/windows_services/service_program:lib",
+    "//chrome/windows_services/service_program:unit_tests",
     "//chrome/windows_services/service_program/test_support",
     "//chrome/windows_services/service_program/test_support:unit_tests",
     "//components/tracing:tracing_service_idl",

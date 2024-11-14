@@ -37,6 +37,7 @@ class ServiceEnvironment {
   // The callback is run with the process ID of the service and the log message.
   // The message is not emitted to the test process's stderr if the callback
   // returns true.
+  using LogMessageCallback = ScopedLogGrabber::LogMessageCallback;
   void SetLogMessageCallback(ScopedLogGrabber::LogMessageCallback callback);
 
  private:

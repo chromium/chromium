@@ -60,6 +60,13 @@ void InitializeLogging(const base::CommandLine& command_line) {
     settings.logging_dest |= logging::LOG_TO_FILE;
     // Pass ownership of this handle to logging.
     settings.log_file = log_file_handle.release();
+
+    // Include the service's pid, tid, and the tick count in log messages for
+    // the sake of tests.
+    logging::SetLogItems(/*enable_process_id=*/true,
+                         /*enable_thread_id=*/true,
+                         /*enable_timestamp=*/false,
+                         /*enable_tickcount=*/true);
   }
 
   logging::InitLogging(settings);

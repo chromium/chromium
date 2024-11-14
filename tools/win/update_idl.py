@@ -141,21 +141,22 @@ def main():
 
     for target_cpu in ['arm64', 'x64', 'x86']:
         for idl_target in [
-                'updater_idl',
-                'updater_idl_user',
-                'updater_idl_system',
-                'updater_internal_idl',
-                'updater_internal_idl_user',
-                'updater_internal_idl_system',
-                'updater_legacy_idl',
-                'updater_legacy_idl_user',
-                'updater_legacy_idl_system',
+                'chrome/windows_services/service_program:test_service_idl',
                 'elevation_service_idl',
                 'gaia_credential_provider_idl',
                 'iaccessible2',
                 'ichromeaccessible',
                 'isimpledom',
                 'remoting_lib_idl',
+                'updater_idl',
+                'updater_idl_system',
+                'updater_idl_user',
+                'updater_internal_idl',
+                'updater_internal_idl_system',
+                'updater_internal_idl_user',
+                'updater_legacy_idl',
+                'updater_legacy_idl_system',
+                'updater_legacy_idl_user',
         ]:
             IDLUpdater(idl_target + '_idl_action', target_cpu, False).update()
 
