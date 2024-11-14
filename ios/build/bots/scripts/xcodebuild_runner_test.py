@@ -200,6 +200,7 @@ class XCodebuildRunnerTest(test_runner_test.TestCase):
     self.mock(xcodebuild_runner.SimulatorParallelTestRunner,
               '_create_xctest_run_enum_tests',
               lambda _, include_disabled: 'fake-path')
+    self.mock(xcode_util, 'using_xcode_16_or_higher', lambda: False)
 
   def tearDown(self):
     super(XCodebuildRunnerTest, self).tearDown()
@@ -335,6 +336,7 @@ class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
               lambda _: ['Class1/passedTest1', 'Class1/passedTest2'])
     self.mock(iossim_util, 'is_device_with_udid_simulator', lambda _: False)
     self.mock(xcode_util, 'using_xcode_15_or_higher', lambda: True)
+    self.mock(xcode_util, 'using_xcode_16_or_higher', lambda: False)
     self.mock(mac_util, 'kill_usbmuxd', lambda: None)
     self.mock(xcode_util, 'xctest_path', lambda _: 'fake-path')
     self.mock(os.path, 'isfile', lambda _: True)
@@ -484,6 +486,7 @@ class SimulatorParallelTestRunnerTest(test_runner_test.TestCase):
     self.mock(xcodebuild_runner.SimulatorParallelTestRunner,
               '_create_xctest_run_enum_tests',
               lambda _, include_disabled: 'fake-path')
+    self.mock(xcode_util, 'using_xcode_16_or_higher', lambda: False)
 
   @mock.patch(
       'builtins.open', new=mock.mock_open(read_data=_ENUMERATE_TESTS_OUTPUT))

@@ -28,7 +28,7 @@ import shard_util
 import test_apps
 from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner_errors
-from xcode_log_parser import XcodeLogParser
+from xcode_log_parser import XcodeLogParser, Xcode16LogParser
 import xcode_util
 import xctest_utils
 
@@ -486,8 +486,12 @@ class TestRunner(object):
     for xcresult in xcresult_paths:
       # This is what was passed in -resultBundlePath to xcodebuild command.
       result_bundle_path = os.path.splitext(xcresult)[0]
-      XcodeLogParser.copy_artifacts(result_bundle_path)
-      XcodeLogParser.export_diagnostic_data(result_bundle_path)
+      if xcode_util.using_xcode_16_or_higher():
+        Xcode16LogParser.copy_artifacts(result_bundle_path)
+        Xcode16LogParser.export_diagnostic_data(result_bundle_path)
+      else:
+        XcodeLogParser.copy_artifacts(result_bundle_path)
+        XcodeLogParser.export_diagnostic_data(result_bundle_path)
       # result_bundle_path is a symlink to xcresult directory.
       if os.path.islink(result_bundle_path):
         os.unlink(result_bundle_path)
