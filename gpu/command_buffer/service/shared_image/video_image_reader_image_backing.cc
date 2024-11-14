@@ -412,7 +412,7 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
     base::ScopedFD sync_fd = scoped_hardware_buffer_->TakeFence();
 
     if (sync_fd.is_valid()) {
-      wgpu::SharedFenceVkSemaphoreSyncFDDescriptor sync_fd_desc;
+      wgpu::SharedFenceSyncFDDescriptor sync_fd_desc;
       // NOTE: There is no ownership transfer here, as Dawn internally dup()s
       // the passed-in handle.
       sync_fd_desc.handle = sync_fd.get();
@@ -485,7 +485,7 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
     }
 
     wgpu::SharedFenceExportInfo export_info;
-    wgpu::SharedFenceVkSemaphoreSyncFDExportInfo sync_fd_export_info;
+    wgpu::SharedFenceSyncFDExportInfo sync_fd_export_info;
     export_info.nextInChain = &sync_fd_export_info;
 
     if (end_access_desc.fenceCount) {

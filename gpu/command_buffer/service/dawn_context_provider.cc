@@ -196,7 +196,7 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
       // The following features are always supported when running on the Vulkan
       // backend on Android.
       wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer,
-      wgpu::FeatureName::SharedFenceVkSemaphoreSyncFD,
+      wgpu::FeatureName::SharedFenceSyncFD,
 
       // The following features are always supported by the the D3D backends.
       wgpu::FeatureName::SharedTextureMemoryD3D11Texture2D,

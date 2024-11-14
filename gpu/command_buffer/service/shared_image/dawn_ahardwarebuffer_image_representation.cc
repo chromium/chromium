@@ -91,7 +91,7 @@ wgpu::Texture DawnAHardwareBufferImageRepresentation::BeginAccess(
   // If the semaphore from BeginWrite is valid then pass it to
   // SharedTextureMemory::BeginAccess() below.
   if (sync_fd.is_valid()) {
-    wgpu::SharedFenceVkSemaphoreSyncFDDescriptor sync_fd_desc;
+    wgpu::SharedFenceSyncFDDescriptor sync_fd_desc;
     // NOTE: There is no ownership transfer here, as Dawn internally dup()s the
     // passed-in handle.
     sync_fd_desc.handle = sync_fd.get();
@@ -171,7 +171,7 @@ void DawnAHardwareBufferImageRepresentation::EndAccess() {
   }
 
   wgpu::SharedFenceExportInfo export_info;
-  wgpu::SharedFenceVkSemaphoreSyncFDExportInfo sync_fd_export_info;
+  wgpu::SharedFenceSyncFDExportInfo sync_fd_export_info;
   export_info.nextInChain = &sync_fd_export_info;
 
   // Note: Dawn may export zero fences if there were no begin fences,

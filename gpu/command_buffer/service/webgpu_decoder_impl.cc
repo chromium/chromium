@@ -1478,7 +1478,7 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
 
 #if BUILDFLAG(IS_ANDROID)
       wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer,
-      wgpu::FeatureName::SharedFenceVkSemaphoreSyncFD,
+      wgpu::FeatureName::SharedFenceSyncFD,
 #endif
 
       wgpu::FeatureName::SharedTextureMemoryD3D11Texture2D,
