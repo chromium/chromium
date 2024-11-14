@@ -1926,7 +1926,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ads.InterestGroup.ServerAuction.Request.APIAllowed"
-    enum="Boolean" expires_after="M129">
+    enum="Boolean" expires_after="M134">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
@@ -1934,6 +1934,8 @@ chromium-metrics-reviews@google.com.
     The return value of `IsInterestGroupAPIAllowed()` while processing a call to
     `navigator.getInterestGroupAdAuctionData()`. Recorded after checking the
     involved origins are HTTPS and before loading data or fetching the key.
+
+    Warning: this histogram was expired from M130 to M131; data may be missing.
 
     See
     https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
@@ -1943,13 +1945,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ads.InterestGroup.ServerAuction.Request.NumGroups"
-    units="count" expires_after="M129">
+    units="count" expires_after="M134">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>
     The number of interest groups included in a request constructed using the
     Bidding and Auction Services API. Recorded when the request is created.
+
+    Warning: this histogram was expired from M130 to M131; data may be missing.
 
     See
     https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
@@ -1980,7 +1984,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize"
-    units="%" expires_after="M129">
+    units="%" expires_after="M134">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
@@ -1988,6 +1992,8 @@ chromium-metrics-reviews@google.com.
     The compressed size as a percentage of the uncompressed size when
     compressing a request constructed using the Bidding and Auction API.
     Recorded when the request is created.
+
+    Warning: this histogram was expired from M130 to M131; data may be missing.
 
     See
     https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
