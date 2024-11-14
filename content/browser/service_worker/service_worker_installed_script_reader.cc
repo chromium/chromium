@@ -29,7 +29,6 @@ class ServiceWorkerInstalledScriptReader::MetaDataSender {
   MetaDataSender(scoped_refptr<net::IOBufferWithSize> meta_data,
                  mojo::ScopedDataPipeProducerHandle handle)
       : meta_data_(std::move(meta_data)),
-        bytes_sent_(0),
         handle_(std::move(handle)),
         watcher_(FROM_HERE,
                  mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC,
@@ -76,8 +75,9 @@ class ServiceWorkerInstalledScriptReader::MetaDataSender {
         "ServiceWorker",
         "ServiceWorkerInstalledScriptReader::MetaDataSender::OnWritable",
         "meta_data size", meta_data_->size(), "new bytes_sent_", bytes_sent_);
-    if (meta_data_->size() == bytes_sent_)
+    if (static_cast<size_t>(meta_data_->size()) == bytes_sent_) {
       OnCompleted(true);
+    }
   }
 
   void OnCompleted(bool success) {
@@ -93,7 +93,7 @@ class ServiceWorkerInstalledScriptReader::MetaDataSender {
   base::OnceCallback<void(bool /* success */)> callback_;
 
   scoped_refptr<net::IOBufferWithSize> meta_data_;
-  int64_t bytes_sent_;
+  size_t bytes_sent_ = 0;
   mojo::ScopedDataPipeProducerHandle handle_;
   mojo::SimpleWatcher watcher_;
 
