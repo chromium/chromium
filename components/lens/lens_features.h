@@ -521,11 +521,6 @@ extern bool SendVisualSearchInteractionParamForLensTextQueries();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern double GetLensOverlaySelectTextOverRegionTriggerThreshold();
 
-// Returns whether the shimmer should be rendered using Canvas2D or CSS Paint
-// Api.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetLensOverlayUseShimmerCanvas();
-
 // Minimum area (in device-independent pixels) for significant regions to send
 // with the screenshot.
 COMPONENT_EXPORT(LENS_FEATURES)

@@ -340,10 +340,8 @@
   <div id="selectionElements">
     <!-- Other elements that need to be bounded to the image go here -->
     <div id="extraScrim"></div>
-    <overlay-shimmer-canvas hidden$="[[!useShimmerCanvas]]" theme="[[theme]]"
+    <overlay-shimmer-canvas hidden$="[[disableShimmer]]" theme="[[theme]]"
         id="overlayShimmerCanvas"></overlay-shimmer-canvas>
-    <overlay-shimmer hidden$="[[useShimmerCanvas]]" theme="[[theme]]"
-        id="overlayShimmer"></overlay-shimmer>
     <post-selection-renderer id="postSelectionRenderer"
         selection-overlay-rect="[[selectionOverlayRect]]">
     </post-selection-renderer>

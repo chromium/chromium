@@ -6,7 +6,6 @@ import './object_layer.js';
 import './text_layer.js';
 import './region_selection.js';
 import './post_selection_renderer.js';
-import './overlay_shimmer.js';
 import './overlay_shimmer_canvas.js';
 import '/strings.m.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
@@ -27,7 +26,6 @@ import {UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
 import {recordLensOverlayInteraction} from './metrics_utils.js';
 import type {ObjectLayerElement} from './object_layer.js';
-import type {OverlayShimmerElement} from './overlay_shimmer.js';
 import type {OverlayShimmerCanvasElement} from './overlay_shimmer_canvas.js';
 import type {PostSelectionRendererElement} from './post_selection_renderer.js';
 import type {RegionSelectionElement} from './region_selection.js';
@@ -93,7 +91,6 @@ export interface SelectionOverlayElement {
     initialFlashScrim: HTMLDivElement,
     objectSelectionLayer: ObjectLayerElement,
     overlayShimmerCanvas: OverlayShimmerCanvasElement,
-    overlayShimmer: OverlayShimmerElement,
     postSelectionRenderer: PostSelectionRendererElement,
     regionSelectionLayer: RegionSelectionElement,
     selectedRegionContextMenu: HTMLElement,
@@ -165,11 +162,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         type: Boolean,
         readOnly: true,
         value: !loadTimeData.getBoolean('enableShimmer'),
-      },
-      useShimmerCanvas: {
-        type: Boolean,
-        readOnly: true,
-        value: loadTimeData.getBoolean('useShimmerCanvas'),
       },
       enableCopyAsImage: {
         type: Boolean,
@@ -257,7 +249,6 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // gesture has started.
   private currentGesture: GestureEvent = emptyGestureEvent();
   private disableShimmer: boolean;
-  private useShimmerCanvas: boolean;
   private enableCopyAsImage: boolean =
       loadTimeData.getBoolean('enableCopyAsImage');
   private enableSaveAsImage: boolean =
@@ -916,9 +907,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     this.$.regionSelectionLayer.setCanvasSizeTo(newWidth, newHeight);
     this.$.postSelectionRenderer.setCanvasSizeTo(newWidth, newHeight);
     this.$.objectSelectionLayer.setCanvasSizeTo(newWidth, newHeight);
-    if (this.useShimmerCanvas) {
-      this.$.overlayShimmerCanvas.setCanvasSizeTo(newWidth, newHeight);
-    }
+    this.$.overlayShimmerCanvas.setCanvasSizeTo(newWidth, newHeight);
   }
 
   // Updates the currentGesture to correspond with the given PointerEvent.
@@ -1064,11 +1053,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     // Don't start the shimmer animation until the initial flash animation is
     // finished.
     if (!this.disableShimmer) {
-      if (this.useShimmerCanvas) {
-        this.$.overlayShimmerCanvas.startAnimation();
-      } else {
-        this.$.overlayShimmer.startAnimation();
-      }
+      this.$.overlayShimmerCanvas.startAnimation();
     }
   }
 

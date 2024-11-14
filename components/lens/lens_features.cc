@@ -147,8 +147,6 @@ const base::FeatureParam<std::string> kResultsSearchLoadingDarkModeUrl{
     "https://www.gstatic.com/lens/chrome/"
     "lens_overlay_sidepanel_results_ghostloader_dark-"
     "b7b5c4f8c8891c881b7a20344f5298b0.svg"};
-const base::FeatureParam<bool> kLensOverlayUseShimmerCanvas{
-    &kLensOverlay, "use-shimmer-canvas", true};
 
 const base::FeatureParam<bool> kLensOverlayGoogleDseRequired{
     &kLensOverlay, "google-dse-required", true};
@@ -727,10 +725,6 @@ bool SendVisualSearchInteractionParamForLensTextQueries() {
 
 double GetLensOverlaySelectTextOverRegionTriggerThreshold() {
   return kLensOverlaySelectTextOverRegionTriggerThreshold.Get();
-}
-
-bool GetLensOverlayUseShimmerCanvas() {
-  return kLensOverlayUseShimmerCanvas.Get();
 }
 
 int GetLensOverlaySignificantRegionMinArea() {
