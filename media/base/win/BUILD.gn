@@ -91,6 +91,8 @@ source_set("test_support") {
     "d3d11_mocks.h",
     "d3d12_mocks.cc",
     "d3d12_mocks.h",
+    "d3d12_video_mocks.cc",
+    "d3d12_video_mocks.h",
     "mf_mocks.cc",
     "mf_mocks.h",
     "test_utils.h",
