@@ -4564,6 +4564,8 @@ enum WebFeature {
   kActiveViewTransitionPseudo = 5190,
   kScrollFunctionTimeline = 5191,
   kViewFunctionTimeline = 5192,
+  kV8Animation_Constructor = 5193,
+  kV8Element_GetAnimations_Method = 5194,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

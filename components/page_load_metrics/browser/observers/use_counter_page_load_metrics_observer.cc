@@ -552,6 +552,14 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kScrollDrivenAnimations},
           {WebFeature::kViewFunctionTimeline,
            WebDXFeature::kScrollDrivenAnimations},
+          {WebFeature::kV8Element_Animate_Method, WebDXFeature::kWebAnimations},
+          {WebFeature::kV8Document_GetAnimations_Method,
+           WebDXFeature::kWebAnimations},
+          {WebFeature::kV8ShadowRoot_GetAnimations_Method,
+           WebDXFeature::kWebAnimations},
+          {WebFeature::kV8Element_GetAnimations_Method,
+           WebDXFeature::kWebAnimations},
+          {WebFeature::kV8Animation_Constructor, WebDXFeature::kWebAnimations},
       }};
 
   return *kMap;
