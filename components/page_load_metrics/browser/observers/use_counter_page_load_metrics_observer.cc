@@ -543,6 +543,7 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
            WebDXFeature::kClipPathGeometryBox},
           {WebFeature::kActiveViewTransitionPseudo,
            WebDXFeature::kActiveViewTransition},
+          {WebFeature::kSnapEvent, WebDXFeature::kScrollSnapEvent},
       }};
 
   return *kMap;
