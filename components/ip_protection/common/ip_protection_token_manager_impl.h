@@ -64,6 +64,8 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
     return !disable_cache_management_for_testing_;
   }
 
+  // Disable active cache management and reset the manager back to its base
+  // state: no tokens, no backoff, no active token fetches, no pending timers.
   void DisableCacheManagementForTesting(
       base::OnceClosure on_cache_management_disabled);
 

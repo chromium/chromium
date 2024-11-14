@@ -440,16 +440,23 @@ void IpProtectionTokenManagerImpl::MeasureTokenRates() {
 
 void IpProtectionTokenManagerImpl::DisableCacheManagementForTesting(
     base::OnceClosure on_cache_management_disabled) {
-  disable_cache_management_for_testing_ = true;
-  ScheduleMaybeRefillCache();
-
   if (fetching_auth_tokens_) {
     // If a `TryGetAuthTokens()` call is underway (due to active cache
     // management), wait for it to finish.
     SetOnTryGetAuthTokensCompletedForTesting(  // IN-TEST
-        std::move(on_cache_management_disabled));
+        base::BindOnce(
+            &IpProtectionTokenManagerImpl::DisableCacheManagementForTesting,
+            weak_ptr_factory_.GetWeakPtr(),
+            std::move(on_cache_management_disabled)));
     return;
   }
+
+  // Mark cache management as disabled and reset everything.
+  disable_cache_management_for_testing_ = true;
+  try_get_auth_tokens_after_ = base::Time();
+  cache_by_geo_.clear();
+  next_maybe_refill_cache_.Stop();
+
   std::move(on_cache_management_disabled).Run();
 }
 
