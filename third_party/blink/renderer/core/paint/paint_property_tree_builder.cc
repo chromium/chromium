@@ -2721,10 +2721,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollNode() {
   state.user_scrollable_vertical =
       scrollable_area->UserInputScrollable(kVerticalScrollbar);
 
-  if (state.user_scrollable_horizontal || state.user_scrollable_vertical) {
-    object_.GetFrameView()->AddUserScrollableArea(scrollable_area);
-  } else {
-    object_.GetFrameView()->RemoveUserScrollableArea(scrollable_area);
+  if (!RuntimeEnabledFeatures::UnifiedScrollableAreasEnabled()) {
+    if (state.user_scrollable_horizontal || state.user_scrollable_vertical) {
+      object_.GetFrameView()->AddUserScrollableArea(*scrollable_area);
+    } else {
+      object_.GetFrameView()->RemoveUserScrollableArea(*scrollable_area);
+    }
   }
 
   state.composited_scrolling_preference =

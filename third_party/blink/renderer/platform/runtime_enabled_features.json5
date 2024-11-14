@@ -4422,6 +4422,14 @@
     {
       name: "UnexposedTaskIds",
     },
+    // Killswitch to be removed after M133 or M134 reaches stable.
+    // With it enabled, LocalFrameView::ScrollableAreas() includes all
+    // scrollable areas in the frame's document, otherwise only user scrollable
+    // ones.
+    {
+      name: "UnifiedScrollableAreas",
+      status: "stable",
+    },
     {
       // Skip CSS animation events on unowned CSS animations:
       // https://drafts.csswg.org/css-animations-2/#event-dispatch
