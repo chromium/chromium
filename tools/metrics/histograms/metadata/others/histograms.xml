@@ -850,6 +850,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.IdleProcessExpired" enum="Boolean"
+    expires_after="2025-05-13">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Whether an idle worklet process expired (i.e. the expiration timer timed out
+    before the process could be activated). Recorded when the process expires or
+    is activated.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.LoadGroupsCacheHit" enum="Boolean"
     expires_after="2025-05-04">
   <owner>abigailkatcoff@chromium.org</owner>

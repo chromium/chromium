@@ -1586,6 +1586,7 @@ TEST_P(SitePerProcessAuctionProcessManagerTest,
 
 TEST_P(SitePerProcessAuctionProcessManagerTest,
        RemovesProcessAfterExpirationTime) {
+  base::HistogramTester histogram_tester;
   MaybeStartAnticipatoryProcess(kOriginA, GetWorkletType());
   CheckOnlyIdleProcessesWithCount(1);
   task_environment_.FastForwardBy(
@@ -1594,6 +1595,8 @@ TEST_P(SitePerProcessAuctionProcessManagerTest,
   CheckOnlyIdleProcessesWithCount(1);
   task_environment_.FastForwardBy(base::Milliseconds(1));
   CheckOnlyIdleProcessesWithCount(0);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.IdleProcessExpired", true, 1);
 }
 
 TEST_P(SitePerProcessAuctionProcessManagerTest,
@@ -1629,6 +1632,7 @@ TEST_P(SitePerProcessAuctionProcessManagerTest,
   MaybeStartAnticipatoryProcess(kOriginA, GetWorkletType());
   CheckOnlyIdleProcessesWithCount(1);
   AuctionProcessManager::ProcessHandle handle;
+  base::HistogramTester histogram_tester;
   RequestWorkletService(&handle, kOriginA, GetWorkletType(),
                         /*expect_success=*/true,
                         RequestWorkletServiceOutcome::kUsedIdleProcess);
@@ -1639,6 +1643,8 @@ TEST_P(SitePerProcessAuctionProcessManagerTest,
       features::kFledgeStartAnticipatoryProcessExpirationTime.Get());
   EXPECT_EQ(GetActiveProcessesOfWorkletType(), 1u);
   EXPECT_EQ(auction_process_manager_->GetIdleProcessCountForTesting(), 0u);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.IdleProcessExpired", false, 1);
 }
 
 TEST_P(SitePerProcessAuctionProcessManagerTest,

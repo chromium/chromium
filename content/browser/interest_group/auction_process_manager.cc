@@ -53,6 +53,11 @@ void RecordRequestWorkletServiceOutcomeUMA(
                     "RequestWorkletServiceOutcome"}),
       result);
 }
+
+void RecordIdleProcessExpiredUma(bool result) {
+  base::UmaHistogramBoolean("Ads.InterestGroup.Auction.IdleProcessExpired",
+                            result);
+}
 }  // namespace
 
 constexpr size_t AuctionProcessManager::kMaxBidderProcesses = 10;
@@ -95,9 +100,10 @@ AuctionProcessManager::WorkletProcess::WorkletProcess(
     remove_idle_process_from_manager_timer_.Start(
         FROM_HERE,
         features::kFledgeStartAnticipatoryProcessExpirationTime.Get(),
-        base::BindOnce(&WorkletProcess::RemoveFromProcessManager,
-                       base::Unretained(this),
-                       /*on_destruction=*/false));
+        base::BindOnce(&RecordIdleProcessExpiredUma, true)
+            .Then(base::BindOnce(&WorkletProcess::RemoveFromProcessManager,
+                                 base::Unretained(this),
+                                 /*on_destruction=*/false)));
   }
 }
 
@@ -161,6 +167,7 @@ void AuctionProcessManager::WorkletProcess::ActivateAndBindIfUnbound(
     OnBoundToOrigin();
   }
   is_idle_ = false;
+  RecordIdleProcessExpiredUma(false);
   remove_idle_process_from_manager_timer_.Stop();
 }
 
