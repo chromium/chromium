@@ -174,6 +174,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     protected void performPreInflationStartup() {
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(this);
         mHadWarmStart = LibraryLoader.getInstance().isInitialized();
+        SimpleStartupForegroundSessionDetector.onTransitionToForeground();
         // TODO(crbug.com/40621278): Dispatch in #preInflationStartup instead so that
         // subclass's #performPreInflationStartup has executed before observers are notified.
         mLifecycleDispatcher.dispatchPreInflationStartup();
@@ -551,11 +552,15 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     public void onResume() {
         super.onResume();
 
+        if (!mFirstResumePending) {
+            // The foreground transition for the first onResume() is handled in
+            // #performPreInflationStartup().
+            SimpleStartupForegroundSessionDetector.onTransitionToForeground();
+        }
         // Start by setting the launch as cold or warm. It will be used in some resume handlers.
         mIsWarmOnResume = !mFirstResumePending || hadWarmStart();
         mFirstResumePending = false;
 
-        SimpleStartupForegroundSessionDetector.onTransitionToForeground();
         mNativeInitializationController.onResume();
     }
 
