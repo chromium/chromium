@@ -168,21 +168,6 @@ _BANNED_JAVA_IMPORTS : Sequence[BanRule] = (
       ),
     ),
     BanRule(
-      'import androidx.test.rule.UiThreadTestRule;',
-      (
-       'Do not use UiThreadTestRule, just use '
-       '@org.chromium.base.test.UiThreadTest on test methods that should run '
-       'on the UI thread. See https://crbug.com/1111893.',
-      ),
-    ),
-    BanRule(
-      'import androidx.test.annotation.UiThreadTest;',
-      ('Do not use androidx.test.annotation.UiThreadTest, use '
-       'org.chromium.base.test.UiThreadTest instead. See '
-       'https://crbug.com/1111893.',
-      ),
-    ),
-    BanRule(
       'import androidx.test.rule.ActivityTestRule;',
       (
        'Do not use ActivityTestRule, use '

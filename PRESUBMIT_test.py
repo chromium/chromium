@@ -1570,12 +1570,6 @@ class AndroidBannedImportTest(unittest.TestCase):
             MockAffectedFile('BannedTargetApi.java', [
                 'import android.annotation.TargetApi;',
             ]),
-            MockAffectedFile('BannedUiThreadTestRule.java', [
-                'import androidx.test.rule.UiThreadTestRule;',
-            ]),
-            MockAffectedFile('BannedUiThreadTest.java', [
-                'import androidx.test.annotation.UiThreadTest;',
-            ]),
             MockAffectedFile('BannedActivityTestRule.java', [
                 'import androidx.test.rule.ActivityTestRule;',
             ]),
@@ -1602,16 +1596,8 @@ class AndroidBannedImportTest(unittest.TestCase):
         self.assertTrue(msgs[4][0].message.startswith(
             textwrap.dedent("""\
       Banned imports were used.
-          BannedUiThreadTestRule.java:1:""")))
-        self.assertTrue(msgs[5][0].message.startswith(
-            textwrap.dedent("""\
-      Banned imports were used.
-          BannedUiThreadTest.java:1:""")))
-        self.assertTrue(msgs[6][0].message.startswith(
-            textwrap.dedent("""\
-      Banned imports were used.
           BannedActivityTestRule.java:1:""")))
-        self.assertTrue(msgs[7][0].message.startswith(
+        self.assertTrue(msgs[5][0].message.startswith(
             textwrap.dedent("""\
       Banned imports were used.
           BannedVectorDrawableCompat.java:1:""")))
