@@ -592,7 +592,6 @@ CdmStorageOpenError CdmStorageDatabase::OpenDatabase(bool is_retry) {
 
 bool CdmStorageDatabase::UpgradeDatabaseSchema(sql::MetaTable* meta_table) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Histogram to track when incompatible version schema detected.
 
   // Previously in UpgradeDatabaseSchema, we were setting the version number for
   // the meta table, but not the compatible version number, which should have
@@ -600,12 +599,12 @@ bool CdmStorageDatabase::UpgradeDatabaseSchema(sql::MetaTable* meta_table) {
   // would be called all the time since we compare meta_table's compatible
   // version number to kVersionNumber. This fixes this change by setting it
   // correctly in the cases where this was incorrectly set.
-  // TODO(crbug.com/40272342): Remove in M123.
   if (meta_table->GetCompatibleVersionNumber() == 1 &&
       meta_table->GetVersionNumber() == 2) {
     return meta_table->SetCompatibleVersionNumber(2);
   }
 
+  // Histogram to track when incompatible version schema detected.
   base::UmaHistogramBoolean(
       "Media.EME.CdmStorageDatabase.IncompatibleDatabaseDetected", true);
 
