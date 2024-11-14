@@ -1164,6 +1164,10 @@ class GaiaInfoScreenTester extends ScreenElementApi {
     return loadTimeData.getBoolean('testapi_isOobeQuickStartEnabled');
   }
 
+  isCrossDeviceFeatureSuiteAllowed(): boolean {
+    return loadTimeData.getBoolean('testapi_isCrossDeviceFeatureSuiteAllowed');
+  }
+
   /**
    * Select option to manually enter Google credentials.
    */
