@@ -194,12 +194,12 @@ export class SettingsSafetyCheckChildElement extends
 
   /** @return The icon to show when the row is clickable. */
   private computeRowClickableIcon_(): string {
-    return this.external ? 'cr:open-in-new' : 'cr:arrow-right';
+    return this.external ? 'cr:open-in-new' : 'cr:chevron-right';
   }
 
   /** @return The subpage role description if the arrow right icon is used. */
   private getRoleDescription_(): string {
-    return this.rowClickableIcon_ === 'cr:arrow-right' ?
+    return this.rowClickableIcon_ === 'cr:chevron-right' ?
         this.i18n('subpageArrowRoleDescription') :
         '';
   }
