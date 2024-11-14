@@ -1018,6 +1018,8 @@ const char* ToString(ax::mojom::State state) {
       return "focusable";
     case ax::mojom::State::kHasActions:
       return "hasActions";
+    case ax::mojom::State::kHasInterestTarget:
+      return "hasInterestTarget";
     case ax::mojom::State::kHorizontal:
       return "horizontal";
     case ax::mojom::State::kHovered:

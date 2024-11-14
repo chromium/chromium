@@ -383,7 +383,8 @@
     richlyEditable,
     vertical,
     visited,
-    hasActions
+    hasActions,
+    hasInterestTarget
   };
 
   // All possible actions that can be performed on automation nodes.

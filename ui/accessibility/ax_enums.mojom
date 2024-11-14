@@ -359,8 +359,8 @@ enum Role {
 
 // Bitfield value. Each state can either be true or false.
 //
-// Next version: 2
-// Next value: 20
+// Next version: 3
+// Next value: 21
 [Extensible, Stable, Uuid="35e7123a-f31f-4de7-94a4-3412dcb6bd5a"]
 enum State {
   [Default]kNone = 0,
@@ -386,6 +386,7 @@ enum State {
   kVertical = 17,
   kVisited = 18,
   [MinVersion=1] kHasActions = 19,
+  [MinVersion=2] kHasInterestTarget = 20,
 };
 
 // An action to be taken on an accessibility node.

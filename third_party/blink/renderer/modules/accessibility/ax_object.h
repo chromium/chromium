@@ -905,6 +905,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   AXObject* GetPopoverTargetForInvoker() const;
 
   // Heuristic to get the interest target for an invoking element.
+  // Returns null if the interest target points to plain content and can be
+  // expose as a description instead.
   AXObject* GetInterestTargetForInvoker() const;
 
   // Elements can be positioned relative to other elements with CSS anchor

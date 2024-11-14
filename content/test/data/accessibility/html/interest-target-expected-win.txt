@@ -1,7 +1,7 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++IA2_ROLE_SECTION
 ++++ROLE_SYSTEM_TEXT FOCUSABLE
-++ROLE_SYSTEM_PUSHBUTTON name='Button' FOCUSABLE details-from:interest-target details-roles:*
+++ROLE_SYSTEM_PUSHBUTTON name='Button' FOCUSABLE has-interest-target:true details-from:interest-target details-roles:*
 ++ROLE_SYSTEM_PUSHBUTTON name='Button' FOCUSABLE
 ++IA2_ROLE_SECTION
 ++++ROLE_SYSTEM_TEXT FOCUSABLE

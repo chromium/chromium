@@ -4,7 +4,7 @@ rootWebArea
 ++++++genericContainer
 ++++++++textField
 ++++++++++genericContainer
-++++++button name='Button' detailsFrom=interestTarget detailsIds=genericContainer
+++++++button hasInterestTarget name='Button' detailsFrom=interestTarget detailsIds=genericContainer
 ++++++++staticText name='Button'
 ++++++++++inlineTextBox name='Button'
 ++++++button name='Button'

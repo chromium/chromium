@@ -1,7 +1,7 @@
 [document web]
 ++[section] details-for=[push button]
 ++++[entry] selectable-text
-++[push button] name='Button' details=[section] details-from:interest-target details-roles:*
+++[push button] name='Button' details=[section] details-from:interest-target details-roles:* has-interest-target:true
 ++[push button] name='Button'
 ++[section]
 ++++[entry] selectable-text

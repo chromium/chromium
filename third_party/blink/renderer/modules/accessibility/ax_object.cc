@@ -2564,7 +2564,7 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
     }
   }
 
-  // Check for presence of aria-actions. Even if the value is empty because the
+  // Check for presence of aria-actions. Even if the value is empty or the
   // targets are hidden, we still want to expose that there could be actions.
   if (RuntimeEnabledFeatures::AriaActionsEnabled() &&
       HasAriaAttribute(html_names::kAriaActionsAttr)) {
@@ -2611,21 +2611,25 @@ void AXObject::SerializeComputedDetailsRelation(
     return;
   }
 
+  // Add aria-details for a interest target.
+  if (AXObject* interest_popover = GetInterestTargetForInvoker()) {
+    // Add state even if the target is hidden.
+    node_data->AddState(ax::mojom::blink::State::kHasInterestTarget);
+    if (interest_popover->IsVisible()) {
+      node_data->AddIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kDetailsIds,
+          {static_cast<int32_t>(interest_popover->AXObjectID())});
+      node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kInterestTarget);
+      return;
+    }
+  }
+
   // Add aria-details for a popover invoker.
   if (AXObject* popover = GetPopoverTargetForInvoker()) {
     node_data->AddIntListAttribute(
         ax::mojom::blink::IntListAttribute::kDetailsIds,
         {static_cast<int32_t>(popover->AXObjectID())});
     node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kPopoverTarget);
-    return;
-  }
-
-  // Add aria-details for a popover invoker.
-  if (AXObject* interest_popover = GetInterestTargetForInvoker()) {
-    node_data->AddIntListAttribute(
-        ax::mojom::blink::IntListAttribute::kDetailsIds,
-        {static_cast<int32_t>(interest_popover->AXObjectID())});
-    node_data->SetDetailsFrom(ax::mojom::blink::DetailsFrom::kInterestTarget);
     return;
   }
 
@@ -2719,7 +2723,7 @@ AXObject* AXObject::GetInterestTargetForInvoker() const {
     return nullptr;
   }
 
-  return ax_popover->IsVisible() ? ax_popover : nullptr;
+  return ax_popover;
 }
 
 AXObject* AXObject::GetPositionedObjectForAnchor(ui::AXNodeData* data) const {

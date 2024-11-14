@@ -1373,6 +1373,10 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     AddAttributeToList("haspopup", "menu", attributes);
   }
 
+  if (HasState(ax::mojom::State::kHasInterestTarget)) {
+    AddAttributeToList("has-interest-target", "true", attributes);
+  }
+
   // Expose the aria-ispopup attribute.
   int32_t is_popup;
   if (GetIntAttribute(ax::mojom::IntAttribute::kIsPopup, &is_popup)) {

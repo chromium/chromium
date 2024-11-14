@@ -358,6 +358,7 @@ declare namespace chrome {
       FOCUSABLE = 'focusable',
       FOCUSED = 'focused',
       HAS_ACTIONS = 'hasActions',
+      HAS_INTEREST_TARGET = 'hasInterestTarget',
       HORIZONTAL = 'horizontal',
       HOVERED = 'hovered',
       IGNORED = 'ignored',
