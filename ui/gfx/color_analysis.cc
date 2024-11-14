@@ -481,8 +481,9 @@ SkColor CalculateKMeanColorOfBuffer(base::span<const uint8_t> decoded_data,
       // found, destroy this cluster.
       bool color_unique = false;
       for (int i = 0; i < 10; ++i) {
-        int pixel_pos = sampler->GetSample(img_width, img_height) %
-            (img_width * img_height);
+        const auto pixel_pos =
+            static_cast<size_t>(sampler->GetSample(img_width, img_height) %
+                                (img_width * img_height));
 
         uint8_t b = decoded_data[pixel_pos * 4];
         uint8_t g = decoded_data[pixel_pos * 4 + 1];
