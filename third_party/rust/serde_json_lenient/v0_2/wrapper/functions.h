@@ -30,7 +30,7 @@ struct Functions {
   void (*list_append_str_fn)(ContextPointer&, rust::Str);
   // The returned ContextPointer reference is given to the visitor functions as
   // an argument for all nodes visited in this list.
-  ContextPointer& (*list_append_list_fn)(ContextPointer&, size_t);
+  ContextPointer& (*list_append_list_fn)(ContextPointer&);
   // The returned ContextPointer reference is given to the visitor functions as
   // an argument for all nodes visited in this dict.
   ContextPointer& (*list_append_dict_fn)(ContextPointer&);
@@ -42,7 +42,7 @@ struct Functions {
   void (*dict_set_str_fn)(ContextPointer&, rust::Str, rust::Str);
   // The returned ContextPointer reference is given to the visitor functions as
   // an argument for all nodes visited in this list.
-  ContextPointer& (*dict_set_list_fn)(ContextPointer&, rust::Str, size_t);
+  ContextPointer& (*dict_set_list_fn)(ContextPointer&, rust::Str);
   // The returned ContextPointer reference is given to the visitor functions as
   // an argument for all nodes visited in this dict.
   ContextPointer& (*dict_set_dict_fn)(ContextPointer&, rust::Str);
@@ -62,8 +62,8 @@ struct Functions {
   void list_append_str(ContextPointer& c, rust::Str val) const {
     list_append_str_fn(c, val);
   }
-  ContextPointer& list_append_list(ContextPointer& c, size_t reserve) const {
-    return list_append_list_fn(c, reserve);
+  ContextPointer& list_append_list(ContextPointer& c) const {
+    return list_append_list_fn(c);
   }
   ContextPointer& list_append_dict(ContextPointer& c) const {
     return list_append_dict_fn(c);
@@ -84,9 +84,8 @@ struct Functions {
   void dict_set_str(ContextPointer& c, rust::Str key, rust::Str val) const {
     dict_set_str_fn(c, key, val);
   }
-  ContextPointer& dict_set_list(ContextPointer& c, rust::Str key,
-                                size_t reserve) const {
-    return dict_set_list_fn(c, key, reserve);
+  ContextPointer& dict_set_list(ContextPointer& c, rust::Str key) const {
+    return dict_set_list_fn(c, key);
   }
   ContextPointer& dict_set_dict(ContextPointer& c, rust::Str key) const {
     return dict_set_dict_fn(c, key);
