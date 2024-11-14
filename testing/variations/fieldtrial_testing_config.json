@@ -5043,6 +5043,22 @@
             ]
         }
     ],
+    "ChromnientFetchSrp": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "FetchSrpEnabled"
+                }
+            ]
+        }
+    ],
     "ChromnientIOS": [
         {
             "platforms": [
