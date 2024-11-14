@@ -233,7 +233,10 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
 
   // Trigger a focus loss to close the popup.
   void ClosePopupViaFocusLoss() {
-    EXPECT_TRUE(ExtensionActionTestHelper::Create(browser())->HasPopup());
+    ToolbarActionViewController* popup_owner =
+        extensions_container()->popup_owner_for_testing();
+    EXPECT_TRUE(popup_owner);
+    EXPECT_TRUE(popup_owner->GetPopupNativeView());
 
     ExtensionHostTestHelper host_helper(profile());
 
@@ -251,12 +254,16 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
 #endif
 
     // The window disappears immediately.
-    EXPECT_FALSE(ExtensionActionTestHelper::Create(browser())->HasPopup());
-
+    popup_owner = extensions_container()->popup_owner_for_testing();
+    EXPECT_FALSE(popup_owner);
     // Wait for the notification to achieve a consistent state and verify that
     // the popup was properly torn down.
     host_helper.WaitForHostDestroyed();
     base::RunLoop().RunUntilIdle();
+  }
+
+  ExtensionsToolbarContainer* extensions_container() {
+    return browser()->GetBrowserView().toolbar()->extensions_container();
   }
 
   int num_popup_hosts_created() const { return host_watcher_->created(); }
@@ -455,8 +462,11 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
                        DeleteBrowserActionWithPopupOpen) {
   // First, we open a popup.
   OpenPopupViaAPI(false);
-  auto browser_action_test_util = ExtensionActionTestHelper::Create(browser());
-  EXPECT_TRUE(browser_action_test_util->HasPopup());
+
+  ToolbarActionViewController* popup_owner =
+      extensions_container()->popup_owner_for_testing();
+  EXPECT_TRUE(popup_owner);
+  EXPECT_TRUE(popup_owner->GetPopupNativeView());
 
   // Then, find the extension that created it.
   content::WebContents* active_web_contents =
@@ -470,7 +480,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   // Finally, uninstall the extension, which causes the view to be deleted and
   // the popup to go away. This should not crash.
   UninstallExtension(extension->id());
-  EXPECT_FALSE(browser_action_test_util->HasPopup());
+  popup_owner = extensions_container()->popup_owner_for_testing();
+  EXPECT_FALSE(popup_owner);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
@@ -576,11 +587,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveViewsTest,
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DestroyHWNDDoesNotCrash) {
   OpenPopupViaAPI(false);
 
-  ExtensionsToolbarContainer* extensions_container =
-      browser()->GetBrowserView().toolbar()->extensions_container();
-  ASSERT_TRUE(extensions_container);
   ToolbarActionViewController* popup_owner =
-      extensions_container->popup_owner_for_testing();
+      extensions_container()->popup_owner_for_testing();
   ASSERT_TRUE(popup_owner);
   const gfx::NativeView popup_view = popup_owner->GetPopupNativeView();
   EXPECT_NE(gfx::NativeView(), popup_view);
@@ -978,10 +986,8 @@ class NavigatingExtensionPopupInteractiveTest
     ASSERT_FALSE(HasFailure());
 
     // Verify extension's action exists.
-    ExtensionsToolbarContainer* extensions_container =
-        browser()->GetBrowserView().toolbar()->extensions_container();
     ToolbarActionViewController* action_controller =
-        extensions_container->GetActionForId(popup_extension().id());
+        extensions_container()->GetActionForId(popup_extension().id());
     ASSERT_TRUE(action_controller);
 
     // Trigger the extension's popup by executing its action.
@@ -1039,8 +1045,8 @@ class NavigatingExtensionPopupInteractiveTest
                              ::testing::Eq(GURL("about:blank"))));
       }
 
-      extensions_container->HideActivePopup();
-      ASSERT_FALSE(extensions_container->popup_owner_for_testing());
+      extensions_container()->HideActivePopup();
+      ASSERT_FALSE(extensions_container()->popup_owner_for_testing());
       ASSERT_FALSE(action_controller->GetPopupNativeView());
     }
 
