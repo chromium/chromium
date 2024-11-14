@@ -366,10 +366,6 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
     }
   }
 
-  if (init_params.transparent) {
-    set_color(SK_ColorTRANSPARENT);
-  }
-
   if (params_.has_shadow) {
     // Draws shadow on texture layer for large corner radius bubbles.
     if (params_.has_large_corner_radius) {
@@ -544,7 +540,7 @@ void TrayBubbleView::OnWidgetBoundsChanged(views::Widget* widget,
 }
 
 ui::LayerType TrayBubbleView::GetLayerType() const {
-  if (params_.translucent) {
+  if (params_.translucent || params_.transparent) {
     return ui::LAYER_NOT_DRAWN;
   }
   return ui::LAYER_TEXTURED;
