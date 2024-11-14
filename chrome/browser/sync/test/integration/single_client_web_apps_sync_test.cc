@@ -30,7 +30,6 @@
 #include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/app_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -44,17 +43,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 using syncer::UserSelectableType;
 using syncer::UserSelectableTypeSet;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 using syncer::UserSelectableOsType;
 using syncer::UserSelectableOsTypeSet;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
 namespace {
@@ -71,17 +66,6 @@ class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
     if (!SyncTest::SetupClients()) {
       return false;
     }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Apps sync is controlled by a dedicated preference on Lacros,
-    // corresponding to the Apps toggle in OS Sync settings. which
-    // need to be enabled for this test.
-    if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
-      syncer::SyncServiceImpl* service = GetSyncService(0);
-      syncer::SyncUserSettings* settings = service->GetUserSettings();
-      settings->SetAppsSyncEnabledByOs(true);
-    }
-#endif
 
     for (Profile* profile : GetAllProfiles()) {
       auto* web_app_provider = WebAppProvider::GetForTest(profile);
@@ -135,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   syncer::SyncServiceImpl* service = GetSyncService(0);
   syncer::SyncUserSettings* settings = service->GetUserSettings();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Apps is an OS type on Ash.
   ASSERT_TRUE(
       settings->GetSelectedOsTypes().Has(UserSelectableOsType::kOsApps));
@@ -145,28 +129,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_FALSE(
       settings->GetSelectedOsTypes().Has(UserSelectableOsType::kOsApps));
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
-#else  // BUILDFLAG(IS_CHROMEOS_ASH)
-
+#else
   ASSERT_TRUE(settings->GetSelectedTypes().Has(UserSelectableType::kApps));
   EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Apps sync is controlled by a dedicated preference on Lacros,
-  // corresponding to the Apps toggle in OS Sync settings if
-  // kSyncChromeOSAppsToggleSharing is enabled. Disabling Apps sync requires
-  // disabling Apps toggle in OS.
-  if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
-    settings->SetAppsSyncEnabledByOs(false);
-  } else {
-    settings->SetSelectedTypes(false, UserSelectableTypeSet());
-  }
-#else
   settings->SetSelectedTypes(false, UserSelectableTypeSet());
-#endif
 
   ASSERT_FALSE(settings->GetSelectedTypes().Has(UserSelectableType::kApps));
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
@@ -653,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 
   if (base::FeatureList::IsEnabled(
           features::kWebAppDontAddExistingAppsToSync)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // On Chrome OS it is not possible to install apps before signing in to
     // sync. So in that case we do expect the app to exist in sync.
     EXPECT_EQ(1, GetNumWebAppsInSync());
