@@ -695,8 +695,8 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
           chrome_preloading_predictor::kOmniboxSearchSuggestDefaultMatch,
           confidence, std::move(same_url_matcher),
           triggered_primary_page_source_id);
-    } else if (OnlyAllowDefaultMatchPreloading()) {
-      // Only prefetch default match when in the experiment.
+    } else {
+      // Only prefetch default match.
       continue;
     }
 

@@ -4072,8 +4072,7 @@ class SearchNavigationPrefetchDefaultMatchBrowserTest
         {kSearchPrefetchServicePrefetching,
          {{"max_attempts_per_caching_duration", "3"},
           {"cache_size", "1"},
-          {"device_memory_threshold_MB", "0"}}},
-        {kSearchPrefetchOnlyAllowDefaultMatchPreloading, {{}}}};
+          {"device_memory_threshold_MB", "0"}}}};
     std::vector<base::test::FeatureRef> disabled_features = {};
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,

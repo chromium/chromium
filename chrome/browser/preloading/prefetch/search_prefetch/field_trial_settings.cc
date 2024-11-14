@@ -96,15 +96,6 @@ bool PrefetchSearchHistorySuggestions() {
       kSearchNavigationPrefetch, "prefetch_search_history", true);
 }
 
-BASE_FEATURE(kSearchPrefetchOnlyAllowDefaultMatchPreloading,
-             "SearchPrefetchOnlyAllowDefaultMatchPreloading",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool OnlyAllowDefaultMatchPreloading() {
-  return base::FeatureList::IsEnabled(
-      kSearchPrefetchOnlyAllowDefaultMatchPreloading);
-}
-
 BASE_FEATURE(kAutocompleteDictionaryPreload,
              "AutocompleteDictionaryPreload",
              base::FEATURE_DISABLED_BY_DEFAULT);

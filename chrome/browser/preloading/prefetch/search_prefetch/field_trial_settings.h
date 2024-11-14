@@ -11,8 +11,6 @@
 
 BASE_DECLARE_FEATURE(kSearchPrefetchServicePrefetching);
 
-BASE_DECLARE_FEATURE(kSearchPrefetchOnlyAllowDefaultMatchPreloading);
-
 // Whether the search prefetch service actually initiates prefetches.
 bool SearchPrefetchServicePrefetchingIsEnabled();
 
@@ -66,10 +64,6 @@ bool AllowTopNavigationPrefetch();
 // Allows search history suggestions to be prefetched by navigation prefetch
 // strategies.
 bool PrefetchSearchHistorySuggestions();
-
-// Whether Omnibox prefetch and prerender should be restricted to the suggestion
-// being the default match.
-bool OnlyAllowDefaultMatchPreloading();
 
 // When this feature is enabled, SearchPrefetchService will send a request to
 // the network service to preload shared dictionary from the disk storage for
