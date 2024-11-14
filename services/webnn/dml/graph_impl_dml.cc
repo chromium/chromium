@@ -5531,253 +5531,6 @@ GraphImplDml::AllocateGraphResources(Adapter* adapter,
                                              std::move(temporary_buffer)));
 }
 
-GraphImplDml::ComputeResources::ComputeResources(
-    ComPtr<ID3D12DescriptorHeap> descriptor_heap,
-    AlignedByteLength<std::string> input_aligned_byte_length,
-    ComPtr<ID3D12Resource> upload_buffer,
-    ComPtr<ID3D12Resource> input_buffer,
-    AlignedByteLength<std::string> output_aligned_byte_length,
-    ComPtr<ID3D12Resource> output_buffer,
-    ComPtr<ID3D12Resource> readback_buffer,
-    uint64_t temporary_buffer_byte_length,
-    ComPtr<ID3D12Resource> temporary_resource,
-    std::unique_ptr<CommandRecorder> command_recorder)
-    : input_aligned_byte_length(std::move(input_aligned_byte_length)),
-      upload_buffer(std::move(upload_buffer)),
-      input_buffer(std::move(input_buffer)),
-      output_aligned_byte_length(std::move(output_aligned_byte_length)),
-      output_buffer(std::move(output_buffer)),
-      readback_buffer(std::move(readback_buffer)),
-      graph_resources(std::move(descriptor_heap),
-                      temporary_buffer_byte_length,
-                      std::move(temporary_resource)),
-      command_recorder(std::move(command_recorder)) {}
-
-GraphImplDml::ComputeResources::~ComputeResources() = default;
-
-// static
-base::expected<std::unique_ptr<GraphImplDml::ComputeResources>, HRESULT>
-GraphImplDml::AllocateComputeResources(
-    Adapter* adapter,
-    IDMLCompiledOperator* compiled_operator,
-    const ComputeResourceInfo& compute_resource_info) {
-  TRACE_EVENT0("gpu", "GraphImplDml::AllocateComputeResources");
-
-  // Create the descriptor heap.
-  DML_BINDING_PROPERTIES execution_binding_properties =
-      compiled_operator->GetBindingProperties();
-  ComPtr<ID3D12DescriptorHeap> descriptor_heap;
-  RETURN_UNEXPECTED_IF_FAILED(CreateDescriptorHeap(
-      adapter->d3d12_device(),
-      execution_binding_properties.RequiredDescriptorCount,
-      L"WebNN_Descriptor_Heap_For_Execution", descriptor_heap));
-
-  // Calculate the total byte length of input array buffers to create
-  // GPU input buffer and upload buffer, also records the aligned D3D12_RANGE
-  // for each input.
-  std::optional<AlignedByteLength<std::string>> aligned_byte_length_of_inputs =
-      CalculateAlignedByteLengthFromDescriptors(
-          compute_resource_info.input_names_to_descriptors);
-  if (!aligned_byte_length_of_inputs) {
-    LOG(ERROR)
-        << "[WebNN] Failed to calculate the aligned byte length of inputs.";
-    return base::unexpected(E_INVALIDARG);
-  }
-
-  size_t total_byte_length_of_inputs =
-      aligned_byte_length_of_inputs.value().total_byte_length;
-  ComPtr<ID3D12Resource> upload_buffer;
-  ComPtr<ID3D12Resource> input_buffer;
-  // It is possible that a graph doesn't have any inputs. For example, a graph
-  // may only compute results given weights. For such graphs, there is no need
-  // to allocate upload and input buffers.
-  if (total_byte_length_of_inputs > 0) {
-    if (adapter->IsUMA()) {
-      // For GPU supports UMA, create the custom heap with CPU memory pool, and
-      // create a resource to map the heap. CPU writes the input data into this
-      // resource which could be bound as graph input for GPU reading during
-      // execution.
-      RETURN_UNEXPECTED_IF_FAILED(CreateCustomUploadBuffer(
-          adapter->d3d12_device(), total_byte_length_of_inputs,
-          L"WebNN_Custom_Upload_Buffer_Inputs", input_buffer));
-    } else {
-      // Create the upload heap that can be written by CPU and read from GPU,
-      // and create a resource to map the heap.
-      RETURN_UNEXPECTED_IF_FAILED(CreateUploadBuffer(
-          adapter->d3d12_device(), total_byte_length_of_inputs,
-          L"WebNN_Upload_Buffer_Inputs", upload_buffer));
-      // Create the default heap that only can be accessed by GPU not provide
-      // CPU access, and create a resource to map the heap.
-      RETURN_UNEXPECTED_IF_FAILED(CreateDefaultBuffer(
-          adapter->d3d12_device(), total_byte_length_of_inputs,
-          L"WebNN_Default_Buffer_Inputs", input_buffer));
-    }
-  }
-
-  // Calculate the total byte length of outputs array buffer to create
-  // an output buffer and readback buffer, also records the aligned D3D12_RANGE
-  // for each output.
-  std::optional<AlignedByteLength<std::string>> aligned_byte_length_of_outputs =
-      CalculateAlignedByteLengthFromDescriptors(
-          compute_resource_info.output_names_to_descriptors);
-  if (!aligned_byte_length_of_outputs) {
-    LOG(ERROR)
-        << "[WebNN] Failed to calculate the aligned byte length of outputs.";
-    return base::unexpected(E_INVALIDARG);
-  }
-
-  // Create the output buffer which will be bound for the graph execution.
-  size_t total_byte_length_of_outputs =
-      aligned_byte_length_of_outputs.value().total_byte_length;
-  ComPtr<ID3D12Resource> readback_buffer;
-  ComPtr<ID3D12Resource> output_buffer;
-  if (adapter->IsUMA()) {
-    // For GPU supports UMA, create the custom heap with CPU memory pool, and
-    // create a resource to map the heap. This resource could be bound as graph
-    // execution output for GPU writing. And CPU could read the output data from
-    // this resource after GPU execution.
-    RETURN_UNEXPECTED_IF_FAILED(CreateCustomReadbackBuffer(
-        adapter->d3d12_device(), total_byte_length_of_outputs,
-        L"WebNN_Custom_Readback_Buffer_Outputs", output_buffer));
-  } else {
-    // Create the output buffer which will be written by GPU.
-    RETURN_UNEXPECTED_IF_FAILED(CreateDefaultBuffer(
-        adapter->d3d12_device(), total_byte_length_of_outputs,
-        L"WebNN_Default_Buffer_Outputs", output_buffer));
-
-    // Create the readback buffer which will be read by CPU.
-    RETURN_UNEXPECTED_IF_FAILED(CreateReadbackBuffer(
-        adapter->d3d12_device(), total_byte_length_of_outputs,
-        L"WebNN_ReadBack_Buffer_Outputs", readback_buffer));
-  }
-
-  // Create and bind the temporary resource if the operator execution requires.
-  ComPtr<ID3D12Resource> temporary_buffer;
-  uint64_t temporary_buffer_byte_length =
-      execution_binding_properties.TemporaryResourceSize;
-  if (temporary_buffer_byte_length > 0) {
-    RETURN_UNEXPECTED_IF_FAILED(CreateDefaultBuffer(
-        adapter->d3d12_device(), temporary_buffer_byte_length,
-        L"WebNN_Temporary_Buffer_For_Execution", temporary_buffer));
-  }
-
-  // Create a command recorder which may be re-used between compute() calls.
-  ASSIGN_OR_RETURN(
-      std::unique_ptr<CommandRecorder> command_recorder,
-      CommandRecorder::Create(adapter->command_queue(), adapter->dml_device()));
-
-  return base::WrapUnique(new ComputeResources(
-      std::move(descriptor_heap),
-      std::move(aligned_byte_length_of_inputs.value()),
-      std::move(upload_buffer), std::move(input_buffer),
-      std::move(aligned_byte_length_of_outputs.value()),
-      std::move(output_buffer), std::move(readback_buffer),
-      temporary_buffer_byte_length, std::move(temporary_buffer),
-      std::move(command_recorder)));
-}
-
-// static
-HRESULT GraphImplDml::RecordGraphExecution(
-    Adapter* adapter,
-    IDMLCompiledOperator* compiled_operator,
-    const ComputeResources* compute_resources,
-    const PersistentResource* persistent_resource,
-    const GraphBufferBindingInfo& graph_buffer_binding_info) {
-  TRACE_EVENT0("gpu", "dml::GraphImpl::RecordGraphExecution");
-
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "WebNN.DML.TimingMs.RecordGraphExecutionOnMainThread");
-
-  // Open the command recorder for recording the graph execution commands.
-  RETURN_IF_FAILED(compute_resources->command_recorder->Open());
-
-  // Create the input buffer bindings for the graph execution.
-  std::map<std::string, DML_BUFFER_BINDING>
-      graph_input_name_to_buffer_binding_map;
-  for (auto& [name, d3d12_range] :
-       compute_resources->input_aligned_byte_length.key_to_d3d12_range_map) {
-    auto size_in_bytes = d3d12_range.End - d3d12_range.Begin;
-    graph_input_name_to_buffer_binding_map[name] =
-        DML_BUFFER_BINDING{.Buffer = compute_resources->input_buffer.Get(),
-                           .Offset = d3d12_range.Begin,
-                           .SizeInBytes = size_in_bytes};
-  }
-
-  base::FixedArray<DML_BINDING_DESC> input_buffer_binding_desc(
-      graph_buffer_binding_info.input_buffer_binding_count,
-      DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
-
-  // The graph input tensors must be bound to the binding table during the
-  // graph execution.
-  for (auto& [name, buffer_binding] : graph_input_name_to_buffer_binding_map) {
-    // Get the graph input index with the name.
-    const auto graph_input_index_iterator =
-        graph_buffer_binding_info.graph_input_name_to_index_map.find(name);
-    CHECK(graph_input_index_iterator !=
-          graph_buffer_binding_info.graph_input_name_to_index_map.end());
-    uint32_t graph_input_index = graph_input_index_iterator->second;
-    input_buffer_binding_desc[graph_input_index] = {DML_BINDING_TYPE_BUFFER,
-                                                    &buffer_binding};
-  }
-
-  if (compute_resources->input_aligned_byte_length.total_byte_length > 0 &&
-      !adapter->IsUMA()) {
-    UploadBufferWithBarrier(
-        compute_resources->command_recorder.get(),
-        compute_resources->input_buffer, compute_resources->upload_buffer,
-        compute_resources->input_aligned_byte_length.total_byte_length);
-  }
-
-  // Create the output buffer bindings for the graph execution.
-  size_t output_buffer_binding_count =
-      graph_buffer_binding_info.graph_output_name_to_index_map.size();
-  base::FixedArray<DML_BINDING_DESC> output_buffer_binding_desc(
-      output_buffer_binding_count,
-      DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
-  std::vector<DML_BUFFER_BINDING> output_buffer_binding;
-  output_buffer_binding.reserve(output_buffer_binding_count);
-
-  for (auto& [name, graph_output_index] :
-       graph_buffer_binding_info.graph_output_name_to_index_map) {
-    const auto graph_output_range_iterator =
-        compute_resources->output_aligned_byte_length.key_to_d3d12_range_map
-            .find(name);
-    CHECK(graph_output_range_iterator !=
-          compute_resources->output_aligned_byte_length.key_to_d3d12_range_map
-              .end());
-    const auto& d3d12_range = graph_output_range_iterator->second;
-    output_buffer_binding.push_back(
-        DML_BUFFER_BINDING{.Buffer = compute_resources->output_buffer.Get(),
-                           .Offset = d3d12_range.Begin,
-                           .SizeInBytes = d3d12_range.End - d3d12_range.Begin});
-    output_buffer_binding_desc[graph_output_index] = {
-        DML_BINDING_TYPE_BUFFER, &output_buffer_binding.back()};
-  }
-
-  std::optional<DML_BINDING_DESC> persistent_buffer_binding_desc;
-  if (persistent_resource) {
-    persistent_buffer_binding_desc =
-        persistent_resource->persistent_buffer_binding_desc();
-  }
-
-  // Execute the graph with input, output and persistent buffer bindings.
-  RETURN_IF_FAILED(compute_resources->command_recorder->ExecuteOperator(
-      compiled_operator, compute_resources->graph_resources.descriptor_heap,
-      input_buffer_binding_desc, output_buffer_binding_desc,
-      persistent_buffer_binding_desc,
-      compute_resources->graph_resources.temporary_buffer_binding_desc));
-
-  if (!adapter->IsUMA()) {
-    ReadbackBufferWithBarrier(
-        compute_resources->command_recorder.get(),
-        compute_resources->readback_buffer, compute_resources->output_buffer,
-        compute_resources->output_aligned_byte_length.total_byte_length);
-  }
-
-  RETURN_IF_FAILED(compute_resources->command_recorder->Close());
-  return S_OK;
-}
-
 GraphImplDml::GraphImplDml(
     scoped_refptr<Adapter> adapter,
     ContextImplDml* context,
@@ -5786,7 +5539,6 @@ GraphImplDml::GraphImplDml(
     ComPtr<IDMLCompiledOperator> compiled_operator,
     ComputeResourceInfo compute_resource_info,
     GraphBufferBindingInfo graph_buffer_binding_info,
-    std::unique_ptr<ComputeResources> compute_resources,
     std::unique_ptr<GraphResources> graph_resources)
     : WebNNGraphImpl(context, std::move(compute_resource_info)),
       persistent_resource_(std::move(persistent_resource)),
@@ -5795,7 +5547,6 @@ GraphImplDml::GraphImplDml(
       command_recorder_(std::move(command_recorder)),
       compiled_operator_(std::move(compiled_operator)),
       graph_buffer_binding_info_(std::move(graph_buffer_binding_info)),
-      compute_resources_(std::move(compute_resources)),
       graph_resources_(std::move(graph_resources)) {}
 
 //  Notice that it's the CommandQueue's responsibility to wait for all of the
@@ -6055,27 +5806,6 @@ void GraphImplDml::OnCompilationComplete(
 }
 
 // static
-base::expected<std::unique_ptr<GraphImplDml::ComputeResources>, HRESULT>
-GraphImplDml::RecordGraphExecutionOnBackgroundThread(
-    scoped_refptr<Adapter> adapter,
-    scoped_refptr<PersistentResource> persistent_resource,
-    ComPtr<IDMLCompiledOperator> compiled_operator,
-    std::unique_ptr<ComputeResources> compute_resources,
-    GraphBufferBindingInfo graph_buffer_binding_info) {
-  TRACE_EVENT0("gpu",
-               "dml::GraphImplDml::RecordGraphExecutionOnBackgroundThread");
-
-  SCOPED_UMA_HISTOGRAM_TIMER(
-      "WebNN.DML.TimingMs.RecordGraphExecutionOnBackgroundThread");
-
-  RETURN_UNEXPECTED_IF_FAILED(RecordGraphExecution(
-      adapter.get(), compiled_operator.Get(), compute_resources.get(),
-      persistent_resource.get(), graph_buffer_binding_info));
-
-  return compute_resources;
-}
-
-// static
 void GraphImplDml::CreateWebNNGraphImpl(
     scoped_refptr<Adapter> adapter,
     base::WeakPtr<ContextImplDml> context,
@@ -6083,9 +5813,7 @@ void GraphImplDml::CreateWebNNGraphImpl(
     ComPtr<IDMLCompiledOperator> compiled_operator,
     ComputeResourceInfo compute_resource_info,
     GraphBufferBindingInfo graph_buffer_binding_info,
-    WebNNContextImpl::CreateGraphImplCallback callback,
-    base::expected<std::unique_ptr<ComputeResources>, HRESULT>
-        recording_result) {
+    WebNNContextImpl::CreateGraphImplCallback callback) {
   if (!context) {
     std::move(callback).Run(base::unexpected(CreateError(
         mojom::Error::Code::kUnknownError,
@@ -6093,18 +5821,8 @@ void GraphImplDml::CreateWebNNGraphImpl(
     return;
   }
 
-  if (!recording_result.has_value()) {
-    HandleGraphCreationFailure(
-        "Failed to record commands and bind resources for execution.",
-        std::move(callback), context.get(), recording_result.error());
-    return;
-  }
-  std::unique_ptr<ComputeResources> compute_resources =
-      std::move(recording_result.value());
-
   // Create a new command recorder and pass it to `GraphImplDml` for
-  // `dispatch()`. For `compute()`, a separate command recorder is created by
-  // `AllocateComputeResources()` and stored in `compute_resources`.
+  // `dispatch()`.
   ASSIGN_OR_RETURN(
       std::unique_ptr<CommandRecorder> command_recorder_for_dispatch,
       CommandRecorder::Create(adapter->command_queue(), adapter->dml_device()),
@@ -6158,8 +5876,7 @@ void GraphImplDml::CreateWebNNGraphImpl(
       std::move(adapter), context.get(),
       std::move(command_recorder_for_dispatch), std::move(persistent_resource),
       std::move(compiled_operator), std::move(compute_resource_info),
-      std::move(graph_buffer_binding_info), std::move(compute_resources),
-      std::move(graph_resources))));
+      std::move(graph_buffer_binding_info), std::move(graph_resources))));
 }
 
 // static
@@ -6188,50 +5905,10 @@ void GraphImplDml::OnInitializationComplete(
     return;
   }
 
-  base::expected<std::unique_ptr<ComputeResources>, HRESULT>
-      compute_resources_allocation_result = AllocateComputeResources(
-          adapter.get(), compiled_operator.Get(), compute_resource_info);
-  if (!compute_resources_allocation_result.has_value()) {
-    HandleGraphCreationFailure("Failed to allocate compute resource.",
-                               std::move(callback), context.get(),
-                               compute_resources_allocation_result.error());
-    return;
-  }
-  std::unique_ptr<ComputeResources> compute_resources =
-      std::move(compute_resources_allocation_result.value());
-  CHECK(compute_resources);
-
-  if (adapter->IsNPU()) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::TaskPriority::USER_BLOCKING,
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(&GraphImplDml::RecordGraphExecutionOnBackgroundThread,
-                       adapter, persistent_resource, compiled_operator,
-                       std::move(compute_resources), graph_buffer_binding_info),
-        base::BindOnce(&GraphImplDml::CreateWebNNGraphImpl, adapter,
-                       std::move(context), persistent_resource,
-                       compiled_operator, std::move(compute_resource_info),
-                       graph_buffer_binding_info, std::move(callback)));
-
-    return;
-  }
-
-  hr = RecordGraphExecution(adapter.get(), compiled_operator.Get(),
-                            compute_resources.get(), persistent_resource.get(),
-                            graph_buffer_binding_info);
-  if (FAILED(hr)) {
-    HandleGraphCreationFailure(
-        "Failed to record commands and bind resources for execution.",
-        std::move(callback), context.get(), hr);
-    return;
-  }
-
   CreateWebNNGraphImpl(
       std::move(adapter), std::move(context), std::move(persistent_resource),
       std::move(compiled_operator), std::move(compute_resource_info),
-      std::move(graph_buffer_binding_info), std::move(callback),
-      std::move(compute_resources));
+      std::move(graph_buffer_binding_info), std::move(callback));
 }
 
 // static
