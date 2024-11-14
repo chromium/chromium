@@ -432,7 +432,7 @@ InterceptionManager::PatchClientFunctions(DllInterceptionData* thunks,
   ServiceResolverThunk thunk(child_->Process(), /*relaxed=*/true);
 
   patch.originals = {};
-  for (auto interception : interceptions_) {
+  for (const auto& interception : interceptions_) {
     if (interception.dll != kNtdllName) {
       return base::unexpected(SBOX_ERROR_BAD_PARAMS);
     }
