@@ -103,7 +103,7 @@ inline constexpr char kClientIdQueryParameter[] = "client";
 
 // Query parameter value for client ID sent to translate API for getting
 // supported translate languages.
-inline constexpr char kClientIdQueryParameterValue[] = "cr";
+inline constexpr char kClientIdQueryParameterValue[] = "lens-overlay";
 
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
