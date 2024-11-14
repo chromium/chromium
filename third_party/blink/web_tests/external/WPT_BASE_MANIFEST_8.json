@@ -6216,6 +6216,13 @@
        {}
       ]
      ],
+     "formatblock-when-root-is-editing-host.html": [
+      "b888b897bbc82a97e4c16ae3be2c33d4c1668ada",
+      [
+       null,
+       {}
+      ]
+     ],
      "forwarddelete-after-editable-slot-element-outside-body.html": [
       "480f02ded967d5a2e845302d384d03a2c87285c4",
       [
@@ -81353,6 +81360,19 @@
        {}
       ]
      ],
+     "border-image-021.html": [
+      "5936fae0ef9a75b31a215225110bef1ae1cb0632",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "border-image-calc.html": [
       "c8bc4c7c9a092b57a5119ebf02f9972b9386b965",
       [
@@ -81515,6 +81535,19 @@
        [
         [
          "/css/css-backgrounds/border-image-outset-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "border-image-outset-004.html": [
+      "e9cbe0b75565253d14dd781bee8c5841c093fb13",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -287866,6 +287899,19 @@
          ],
          {}
         ]
+       ],
+       "iframe_sandbox_iframe_pdf_viewer.html": [
+        "dc90c5fd52b986b016774fc2c8499879ade6a489",
+        [
+         null,
+         [
+          [
+           "/html/semantics/embedded-content/the-iframe-element/support/iframe_sandbox_iframe_pdf_viewer.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
        ]
       },
       "the-img-element": {
@@ -374711,7 +374757,7 @@
       []
      ],
      "historical-expected.txt": [
-      "66aa848d244fc8d8461919f0feff565d14d414cd",
+      "942412a770f24ee65e42333a5d7e5399154e09c5",
       []
      ],
      "resources": {
@@ -381790,7 +381836,7 @@
       "b79f75b401caa290603fa667ef77edd96862b467",
       []
      ],
-     "idlharness.https_exclude=(Document_Window_HTML._)-expected.txt": [
+     "idlharness.https_exclude=(Document_Window_HTML.+)-expected.txt": [
       "291ec4875ae39dfc30af60310e319bf0cb38b49b",
       []
      ],
@@ -381798,7 +381844,7 @@
       "a59b20d054bd2e80a3751d8e005a9ad1a183b7f4",
       []
      ],
-     "idlharness.https_include=HTML._-expected.txt": [
+     "idlharness.https_include=HTML.+-expected.txt": [
       "52cb0c58c79bd16e4f69c0e5c5dc42d270886829",
       []
      ],
@@ -387957,6 +388003,10 @@
         ],
         "iframe_sandbox_download_helper.js": [
          "7090e7662ca8e2f5cd0e732a8ea3c386abc273b1",
+         []
+        ],
+        "iframe_sandbox_iframe_pdf_viewer.html": [
+         "bc62187464ac665f3804246460515ee420ed9f77",
          []
         ],
         "load-into-the-iframe.html": [
@@ -399962,7 +400012,7 @@
      []
     ],
     "OWNERS": [
-     "feb07145694d1fe5d698a9464a77d810f841cf2c",
+     "cdcc98d5fd3404303a06376d8486bc79b300befa",
      []
     ],
     "partitioned-popins.permission-all.tentative.sub.https.window.js.headers": [
@@ -598926,9 +598976,9 @@
       ]
      ],
      "idlharness.https.html": [
-      "357a4fbe0bec05d9955aaccb00ef29c2bd3a7e69",
+      "d782118dbaf221b4b339804facc12b859eac19a4",
       [
-       "html/dom/idlharness.https.html?exclude=(Document|Window|HTML.*)",
+       "html/dom/idlharness.https.html?exclude=(Document|Window|HTML.+)",
        {
         "timeout": "long"
        }
@@ -598940,7 +598990,7 @@
        }
       ],
       [
-       "html/dom/idlharness.https.html?include=HTML.*",
+       "html/dom/idlharness.https.html?include=HTML.+",
        {
         "timeout": "long"
        }
