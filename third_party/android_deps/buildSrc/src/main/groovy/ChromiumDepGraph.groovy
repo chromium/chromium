@@ -34,8 +34,6 @@ class ChromiumDepGraph {
             exclude: true),  // We're not using datatransport functionality.
         com_google_android_gms_play_services_cloud_messaging: new PropertyOverride(
             description: 'Firebase Cloud Messaging library that interfaces with GmsCore.'),
-        com_google_android_gms_play_services_base: new PropertyOverride(
-            description: 'Base library for gmscore / Google Play Services.'),
         com_google_android_gms_play_services_location: new PropertyOverride(
             description: 'Provides data about the device\'s physical location via gmscore.'),
         com_google_auto_service_auto_service_annotations: new PropertyOverride(
@@ -614,9 +612,20 @@ class ChromiumDepGraph {
         if (dep.id?.startsWith('com_google_android_')) {
             // Many google dependencies don't set their URL, here is a good default.
             dep.url = dep.url ?: 'https://developers.google.com/android/guides/setup'
+            // Some play services libraries do not come with a description but
+            // the only description we have for most of them is the name of the
+            // lib so might as well automate a fallback.
+            if (!dep.description && dep.id.startsWith('com_google_android_gms_play_services_')) {
+                String lib_name = dep.id.substring('com_google_android_gms_play_services_'.length())
+                lib_name = lib_name.replace('_', ' ').capitalize()
+                dep.description = "$lib_name library for gmscore / Google Play Services."
+            }
         } else if (dep.id?.startsWith('com_google_firebase_')) {
             // Same as above for some firebase dependencies.
             dep.url = dep.url ?: 'https://firebase.google.com'
+        } else if (dep.id?.startsWith('androidx_')) {
+            // Some androidx dependencies don't set their URL, here is a good default.
+            dep.url = dep.url ?: 'https://developer.android.com/jetpack/androidx'
         }
 
         PropertyOverride overrides = PROPERTY_OVERRIDES.get(dep.id)
