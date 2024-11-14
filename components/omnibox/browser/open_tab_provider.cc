@@ -33,10 +33,10 @@ constexpr int kOpenTabDefaultScore = 1500;
 
 int Score(const AutocompleteInput& input,
           const query_parser::QueryNodeVector& input_query_nodes,
-          const std::u16string& title,
-          const GURL& url) {
+          const TabMatcher::TabWrapper tab) {
   if ((input.IsZeroSuggest() || input.text().empty()) && is_android) {
-    return kOpenTabDefaultScore;
+    return kOpenTabDefaultScore +
+           tab.last_shown_time.InSecondsFSinceUnixEpoch();
   }
   // TODO(crbug.com/40211187): The bookmark provider also uses on `query_parser`
   // and
@@ -46,13 +46,13 @@ int Score(const AutocompleteInput& input,
   //  should either verify it's unnecessary here, or do likewise here.
 
   // Extract query words from the title.
-  const std::u16string lower_title = base::i18n::ToLower(title);
+  const std::u16string lower_title = base::i18n::ToLower(tab.title);
   query_parser::QueryWordVector title_words;
   query_parser::QueryParser::ExtractQueryWords(lower_title, &title_words);
 
   // Extract query words from the URL.
   const std::u16string lower_url =
-      base::i18n::ToLower(base::UTF8ToUTF16(url.spec()));
+      base::i18n::ToLower(base::UTF8ToUTF16(tab.url.spec()));
   query_parser::QueryWordVector url_words;
   query_parser::QueryParser::ExtractQueryWords(lower_url, &url_words);
 
@@ -138,7 +138,7 @@ void OpenTabProvider::Start(const AutocompleteInput& input,
     if (!url.is_valid()) {
       continue;
     }
-    int score = Score(input, input_query_nodes, open_tab.title, url);
+    int score = Score(input, input_query_nodes, open_tab);
     if (score > 0) {
       matches_.push_back(CreateOpenTabMatch(adjusted_input, open_tab.title, url,
                                             score, template_url));

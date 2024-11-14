@@ -128,7 +128,8 @@ std::vector<TabMatcher::TabWrapper> TabMatcherAndroid::GetOpenTabs(
     const AutocompleteInput* input) const {
   std::vector<TabMatcher::TabWrapper> open_tabs;
   for (auto& open_tab : GetOpenAndroidTabs(input)) {
-    open_tabs.emplace_back(open_tab->GetTitle(), open_tab->GetURL());
+    open_tabs.emplace_back(open_tab->GetTitle(), open_tab->GetURL(),
+                           open_tab->GetLastShownTimestamp());
   }
 
   return open_tabs;
