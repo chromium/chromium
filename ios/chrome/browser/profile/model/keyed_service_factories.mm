@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/profile/model/keyed_service_factories.h"
 
+#import "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
@@ -158,6 +159,10 @@
 #import "ios/chrome/browser/web/model/java_script_console/java_script_console_feature_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#import "ios/chrome/browser/passwords/model/ios_password_field_classification_model_handler_factory.h"
+#endif
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
 #import "ios/chrome/browser/credential_provider/model/credential_provider_service_factory.h"
@@ -328,6 +333,10 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   VisitedURLRankingServiceFactory::GetInstance();
   WebSessionStateCacheFactory::GetInstance();
   // Keep the above list alphabetized! Don't just add new entries at the end.
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  IOSPasswordFieldClassificationModelHandlerFactory::GetInstance();
+#endif
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   CredentialProviderServiceFactory::GetInstance();

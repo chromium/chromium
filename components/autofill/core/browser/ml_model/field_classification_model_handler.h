@@ -13,7 +13,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
-#include "components/autofill/core/browser/ml_model/field_classification_model_executor.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"

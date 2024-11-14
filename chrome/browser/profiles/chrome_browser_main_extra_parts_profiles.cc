@@ -430,6 +430,7 @@
 #include "chrome/browser/autocomplete/autocomplete_scoring_model_service_factory.h"
 #include "chrome/browser/autocomplete/on_device_tail_model_service_factory.h"
 #include "chrome/browser/autofill/autofill_field_classification_model_service_factory.h"
+#include "chrome/browser/password_manager/password_field_classification_model_handler_factory.h"
 #include "chrome/browser/permissions/prediction_model_handler_provider_factory.h"
 #endif
 
@@ -1054,6 +1055,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   password_manager::PasswordManagerLogRouterFactory::GetInstance();
   password_manager::PasswordRequirementsServiceFactory::GetInstance();
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  PasswordFieldClassificationModelHandlerFactory::GetInstance();
+#endif
   PasswordManagerSettingsServiceFactory::GetInstance();
   PasswordReuseManagerFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
