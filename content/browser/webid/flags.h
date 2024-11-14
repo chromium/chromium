@@ -49,6 +49,9 @@ bool IsFedCmWithoutWellKnownEnforcementEnabled();
 // Whether the Web Identity Digital Credentials API is enabled.
 bool IsWebIdentityDigitalCredentialsEnabled();
 
+// Whether the Web Identity Digital Credentials Creation API is enabled.
+bool IsWebIdentityDigitalCredentialsCreationEnabled();
+
 // Whether "Use Other Account" is enabled.
 bool IsFedCmUseOtherAccountEnabled();
 

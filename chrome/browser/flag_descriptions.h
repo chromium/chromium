@@ -1100,6 +1100,9 @@ extern const char kFedCmWithoutWellKnownEnforcementDescription[];
 extern const char kWebIdentityDigitalCredentialsName[];
 extern const char kWebIdentityDigitalCredentialsDescription[];
 
+extern const char kWebIdentityDigitalCredentialsCreationName[];
+extern const char kWebIdentityDigitalCredentialsCreationDescription[];
+
 extern const char kFileHandlingIconsName[];
 extern const char kFileHandlingIconsDescription[];
 

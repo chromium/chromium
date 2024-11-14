@@ -1,3 +1,4 @@
+
 // vim: set ft=json5:
 // This file lists metadata for chrome://flags entries. This metadata is used to
 // automatically expire flags, as part of the review process, and to clean up
@@ -9345,6 +9346,11 @@
     "name": "web-identity-digital-credentials",
     "owners": ["goto@chromium.org", "web-identity-eng@google.com"],
     "expiry_milestone": 135
+  },
+  {
+    "name": "web-identity-digital-credentials-creation",
+    "owners": ["mamir@chromium.org", "web-identity-eng@google.com"],
+    "expiry_milestone": 140
   },
   {
     "name": "web-machine-learning-neural-network",

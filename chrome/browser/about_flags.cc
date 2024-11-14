@@ -8932,6 +8932,12 @@ const FeatureEntry kFeatureEntries[] = {
          kWebIdentityDigitalIdentityCredentialVariations,
          "WebIdentityDigitalCredentials")},
 
+    {"web-identity-digital-credentials-creation",
+     flag_descriptions::kWebIdentityDigitalCredentialsCreationName,
+     flag_descriptions::kWebIdentityDigitalCredentialsCreationDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(features::kWebIdentityDigitalCredentialsCreation)},
+
     {"sanitizer-api", flag_descriptions::kSanitizerApiName,
      flag_descriptions::kSanitizerApiDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kSanitizerAPI)},

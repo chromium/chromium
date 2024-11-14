@@ -59,6 +59,11 @@ bool IsWebIdentityDigitalCredentialsEnabled() {
   return base::FeatureList::IsEnabled(features::kWebIdentityDigitalCredentials);
 }
 
+bool IsWebIdentityDigitalCredentialsCreationEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kWebIdentityDigitalCredentialsCreation);
+}
+
 bool IsFedCmUseOtherAccountEnabled() {
   // The active mode origin trial can also enable this feature at this moment.
   return base::FeatureList::IsEnabled(features::kFedCmUseOtherAccount) ||

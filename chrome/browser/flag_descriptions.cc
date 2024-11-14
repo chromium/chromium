@@ -1952,6 +1952,11 @@ const char kWebIdentityDigitalCredentialsName[] = "DigitalCredentials";
 const char kWebIdentityDigitalCredentialsDescription[] =
     "Enables the three-party verifier/holder/issuer identity model.";
 
+const char kWebIdentityDigitalCredentialsCreationName[] =
+    "DigitalCredentialsCreation";
+const char kWebIdentityDigitalCredentialsCreationDescription[] =
+    "Enables the Digital Credentials Creation API.";
+
 const char kFileHandlingIconsName[] = "File Handling Icons";
 const char kFileHandlingIconsDescription[] =
     "Allows websites using the file handling API to also register file type "

@@ -4885,9 +4885,15 @@
       origin_trial_feature_name: "WebIdentityDigitalCredentials",
       origin_trial_os: ["android"],
       origin_trial_allows_third_party: true,
-      depends_on: ["FedCm"],
+      implied_by: ["WebIdentityDigitalCredentialsCreation"],
       public: true,
       status: "experimental",
+      base_feature: "none",
+    },
+    {
+      name: "WebIdentityDigitalCredentialsCreation",
+      public: true,
+      status: "test",
       base_feature: "none",
     },
     // Kill switch for making BigInt handling in WebIDL use ToBigInt.

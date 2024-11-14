@@ -17622,6 +17622,8 @@ from previous Chrome versions.
   <int value="-1077752943" label="enable-password-generation"/>
   <int value="-1077534880" label="OmniboxDynamicMaxAutocomplete:enabled"/>
   <int value="-1077006912" label="ReadAnythingOmniboxIcon:disabled"/>
+  <int value="-1076661289"
+      label="WebIdentityDigitalCredentialsCreation:disabled"/>
   <int value="-1075156797" label="enable-brotli"/>
   <int value="-1075089382" label="enable-physical-web"/>
   <int value="-1074257709" label="ScalableAppList:enabled"/>
@@ -19747,6 +19749,8 @@ from previous Chrome versions.
       label="ClearLoginDatabaseForAllMigratedUPMUsers:enabled"/>
   <int value="-213893901"
       label="AutofillUpstreamAuthenticatePreflightCall:disabled"/>
+  <int value="-213843428"
+      label="WebIdentityDigitalCredentialsCreation:enabled"/>
   <int value="-213518852" label="protect-sync-credential:enabled"/>
   <int value="-213214894" label="enable-chromevox-arc-support"/>
   <int value="-211162053" label="OmniboxHeaderPaddingUpdate:enabled"/>
