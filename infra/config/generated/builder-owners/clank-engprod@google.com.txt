@@ -35,7 +35,6 @@ ci/android-oreo-x86-rel
 ci/android-pie-arm64-dbg
 ci/android-pie-arm64-rel
 ci/android-pie-x86-rel
-ci/android-tablet-14-arm64-fyi-rel
 ci/android-tablet-14-arm64-rel
 try/android-12-x64-rel
 try/android-12l-landscape-x64-dbg
@@ -57,7 +56,6 @@ try/android-desktop-x64-clobber-rel
 try/android-desktop-x64-compile-dbg
 try/android-desktop-x64-compile-rel
 try/android-official
-try/android-tablet-14-arm64-fyi-rel
 try/android-tablet-14-arm64-rel
 try/android-x64-rel
 try/android-x64-rel-compilator
