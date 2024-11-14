@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/expected.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/services/on_device_translation/public/mojom/translator.mojom.h"
@@ -42,14 +43,14 @@ class OnDeviceTranslationServiceController
   OnDeviceTranslationServiceController& operator=(
       const OnDeviceTranslationServiceController&) = delete;
 
-  // Creates a translator class that implements
-  // `mojom::Translator`, and bind it with the
-  // `receiver`.
+  // Creates a translator class that implements `mojom::Translator` for the
+  // given language pair.
   void CreateTranslator(
       const std::string& source_lang,
       const std::string& target_lang,
-      base::OnceCallback<void(mojo::PendingRemote<mojom::Translator>)>
-          callback);
+      base::OnceCallback<
+          void(base::expected<mojo::PendingRemote<mojom::Translator>,
+                              blink::mojom::CreateTranslatorError>)> callback);
 
   // Checks if the translate service can do translation from `source_lang` to
   // `target_lang`.
@@ -98,8 +99,9 @@ class OnDeviceTranslationServiceController
   void CreateTranslatorImpl(
       const std::string& source_lang,
       const std::string& target_lang,
-      base::OnceCallback<void(mojo::PendingRemote<mojom::Translator>)>
-          callback);
+      base::OnceCallback<
+          void(base::expected<mojo::PendingRemote<mojom::Translator>,
+                              blink::mojom::CreateTranslatorError>)> callback);
 
   // Called when the TranslateKitBinaryPath pref is changed.
   void OnTranslateKitBinaryPathChanged(const std::string& pref_name);

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/on_device_translation/translation.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -23,9 +24,44 @@
 namespace blink {
 namespace {
 
+using mojom::blink::CreateTranslatorError;
+
 const char kExceptionMessageUnableToCreateTranslator[] =
     "Unable to create translator for the given source and target language.";
+const char kLinkToDocument[] =
+    "See "
+    "https://developer.chrome.com/docs/ai/translator-api?#supported-languages "
+    "for more details.";
 
+String ConvertCreateTranslatorErrorToDebugString(
+    mojom::blink::CreateTranslatorError error) {
+  switch (error) {
+    case CreateTranslatorError::kInvalidBinary:
+      return "Failed to load the translation library.";
+    case CreateTranslatorError::kInvalidFunctionPointer:
+      return "The translation library is not compatible.";
+    case CreateTranslatorError::kFailedToInitialize:
+      return "Failed to initialize the translation library.";
+    case CreateTranslatorError::kFailedToCreateTranslator:
+      return "The translation library failed to create a translator.";
+    case CreateTranslatorError::kAcceptLanguagesCheckFailed:
+      return String(base::StrCat(
+          {"The preferred languages check for Translator API failed. ",
+           kLinkToDocument}));
+    case CreateTranslatorError::kExceedsLanguagePackCountLimitation:
+      return String(base::StrCat(
+          {"The Translator API language pack count exceeded the limitation. ",
+           kLinkToDocument}));
+    case CreateTranslatorError::kServiceCrashed:
+      return "The translation service crashed.";
+    case CreateTranslatorError::kDisallowedByPolicy:
+      return "The translation is disallowed by policy.";
+    case CreateTranslatorError::kExceedsServiceCountLimitation:
+      return "The translation service count exceeded the limitation.";
+    case CreateTranslatorError::kExceedsPendingTaskCountLimitation:
+      return "Too many Translator API requests are queued.";
+  }
+}
 class CreateTranslatorClient
     : public GarbageCollected<CreateTranslatorClient>,
       public mojom::blink::TranslationManagerCreateTranslatorClient,
@@ -65,18 +101,22 @@ class CreateTranslatorClient
     visitor->Trace(receiver_);
   }
 
-  void OnResult(
-      mojo::PendingRemote<mojom::blink::Translator> pending_remote) override {
+  void OnResult(mojom::blink::CreateTranslatorResultPtr result) override {
     if (!GetResolver()) {
       // The request was aborted. Note: Currently abort signal is not supported.
       // TODO(crbug.com/331735396): Support abort signal.
       return;
     }
-    if (pending_remote) {
+    if (result->is_translator()) {
       GetResolver()->Resolve(MakeGarbageCollected<LanguageTranslator>(
-          source_language_, target_language_, std::move(pending_remote),
-          task_runner_));
+          source_language_, target_language_,
+          std::move(result->get_translator()), task_runner_));
     } else {
+      CHECK(result->is_error());
+      translation_->GetExecutionContext()->AddConsoleMessage(
+          mojom::blink::ConsoleMessageSource::kJavaScript,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          ConvertCreateTranslatorErrorToDebugString(result->get_error()));
       GetResolver()->Reject(DOMException::Create(
           kExceptionMessageUnableToCreateTranslator,
           DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));

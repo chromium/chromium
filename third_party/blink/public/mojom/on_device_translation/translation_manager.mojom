@@ -43,12 +43,60 @@ enum CanCreateTranslatorResult {
   kNoExceedsServiceCountLimitation = 9,
 };
 
+// The error of TranslationManager's CreateTranslator IPC.
+enum CreateTranslatorError {
+  // The translator cannot be created because the library binary failed to
+  // loaded.
+  kInvalidBinary = 1,
+
+  // The translator cannot be created because the function pointer of the
+  // library is invalid.
+  kInvalidFunctionPointer = 2,
+
+  // The translator cannot be created because the library failed to initialize.
+  kFailedToInitialize = 3,
+
+  // The translator cannot be created because the library failed to create the
+  // translator.
+  kFailedToCreateTranslator = 4,
+
+  // The translator cannot be created because the Accept-Language check failed.
+  kAcceptLanguagesCheckFailed = 5,
+
+  // The translator cannot be created. New models need to be downloaded,
+  // but the number of downloaded language packs will exceedd the limit.
+  kExceedsLanguagePackCountLimitation = 6,
+
+  // The translator cannot be created, because the translator service crashed.
+  kServiceCrashed = 7,
+
+  // The translator cannot be created, because the use of Translator API is
+  // disallowed by `TranslatorAPIAllowed` Enterprise policy
+  kDisallowedByPolicy = 8,
+
+  // The translator cannot be created, because the number of services exceeds
+  // the limitation.
+  kExceedsServiceCountLimitation = 9,
+
+  // The translator cannot be created, because the number of pending tasks
+  // exceeds the limitation.
+  kExceedsPendingTaskCountLimitation = 10,
+};
+
+// The result of TranslationManager's CreateTranslator IPC.
+union CreateTranslatorResult {
+  // The translator's mojo interface.
+  pending_remote<blink.mojom.Translator> translator;
+  // The error of creating the translator.
+  CreateTranslatorError error;
+};
+
 // The client interface that receives a Translator from a TranslationManager.
 interface TranslationManagerCreateTranslatorClient {
   // Called with a created Translator's mojo interface as a result for the
   // CreateTranslator() method of the TranslationManager. When failed to create
-  // a Translator, this method is called with a null pending remote.
-  OnResult(pending_remote<blink.mojom.Translator>? translator);
+  // a Translator, this method is called with an error result.
+  OnResult(CreateTranslatorResult result);
 };
 
 // This is used when creating a new Translator for Translator API.

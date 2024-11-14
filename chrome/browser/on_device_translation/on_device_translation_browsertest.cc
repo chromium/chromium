@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -203,6 +205,28 @@ class OnDeviceTranslationBrowserTest : public InProcessBrowserTest {
     )",
                                      script))
         .ExtractString();
+  }
+
+  // Creates a console observer for the given pattern. When `target_browser`
+  // is not nullptr, the observer is created in the context of the given
+  // browser, otherwise the observer is created in the context of the default
+  // browser.
+  std::unique_ptr<content::WebContentsConsoleObserver> CreateConsoleObserver(
+      const std::string_view pattern,
+      Browser* target_browser = nullptr) {
+    auto observer = std::make_unique<content::WebContentsConsoleObserver>(
+        (target_browser ? target_browser : browser())
+            ->tab_strip_model()
+            ->GetActiveWebContents());
+    observer->SetPattern(std::string(pattern));
+    return observer;
+  }
+
+  // Waits for the console observer to receive a message.
+  void WaitForConsoleObserver(
+      content::WebContentsConsoleObserver& console_observer) {
+    ASSERT_TRUE(console_observer.Wait());
+    EXPECT_FALSE(console_observer.messages().empty());
   }
 
  private:
@@ -487,6 +511,9 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
                       "window._testPromisesResolved")
                    .ExtractBool());
 
+  auto console_observer =
+      CreateConsoleObserver("Too many Translator API requests are queued.");
+
   // Calling createTranslator() one more time fails.
   EXPECT_EQ(EvalJsCatchingError(R"(
       await translation.createTranslator({
@@ -497,6 +524,9 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   )"),
             "NotSupportedError: Unable to create translator for the given "
             "source and target language.");
+
+  // The console message should be logged.
+  WaitForConsoleObserver(*console_observer);
 
   // The all 1024 promises should not be resolved yet.
   EXPECT_FALSE(EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
@@ -540,10 +570,19 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   TestSimpleTranslationWorks(browser(), "en", "es");
   // Create a translator for En => Zh.
   TestSimpleTranslationWorks(browser(), "en", "zh");
+
+  auto console_observer = CreateConsoleObserver(
+      "The Translator API language pack count exceeded the limitation. See "
+      "https://developer.chrome.com/docs/ai/"
+      "translator-api?#supported-languages for more details.");
+
   // Create a translator for En => Hi.
   TestCreateTranslator(browser(), "en", "hi",
                        "NotSupportedError: Unable to create translator for the "
                        "given source and target language.");
+
+  // The console message should be logged.
+  WaitForConsoleObserver(*console_observer);
 }
 
 // Tests the behavior of the failure of translation.
@@ -599,6 +638,120 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, CrashWhileTranslating) {
   TestSimpleTranslationWorks(browser(), "en", "ja");
 }
 
+// Tests the behavior of failing to load the library
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
+                       CreateTranslatorErrorLibraryLoadFailed) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
+      .Times(1);
+  mock_component_manager.InstallEmptyMockComponent();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+  NavigateToEmptyPage();
+
+  auto console_observer =
+#if BUILDFLAG(IS_WIN)
+      // On Windows, the service crashes when failed to preload the library
+      // in PreLockdownSandboxHook().
+      CreateConsoleObserver("The translation service crashed.");
+#else
+      CreateConsoleObserver("Failed to load the translation library.");
+#endif  // BUILDFLAG(IS_WIN)
+
+  EXPECT_EQ(EvalJsCatchingError(R"(
+            const translator = await translation.createTranslator({
+              sourceLanguage: 'en',
+              targetLanguage: 'ja',
+            });
+      )"),
+            "NotSupportedError: Unable to create translator for the given "
+            "source and target language.");
+
+  // The console message should be logged.
+  WaitForConsoleObserver(*console_observer);
+}
+
+// Tests the behavior of failing to load the library as a result of the
+// incompatibility of the library.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
+                       CreateTranslatorErrorLibraryIncompatible) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
+      .Times(1);
+  mock_component_manager.InstallMockInvalidFunctionPointerLibraryComponent();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+  NavigateToEmptyPage();
+
+  auto console_observer =
+      CreateConsoleObserver("The translation library is not compatible.");
+
+  EXPECT_EQ(EvalJsCatchingError(R"(
+            const translator = await translation.createTranslator({
+              sourceLanguage: 'en',
+              targetLanguage: 'ja',
+            });
+      )"),
+            "NotSupportedError: Unable to create translator for the given "
+            "source and target language.");
+
+  // The console message should be logged.
+  WaitForConsoleObserver(*console_observer);
+}
+
+// Tests the behavior of failing to load the library as a result of the
+// initialization failure of the library.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
+                       CreateTranslatorErrorLibraryFailedToInitialize) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  EXPECT_CALL(mock_component_manager, RegisterTranslateKitComponentImpl())
+      .Times(1);
+  mock_component_manager.InstallMockFailingLibraryComponent();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+  NavigateToEmptyPage();
+
+  auto console_observer =
+      CreateConsoleObserver("Failed to initialize the translation library.");
+
+  EXPECT_EQ(EvalJsCatchingError(R"(
+            const translator = await translation.createTranslator({
+              sourceLanguage: 'en',
+              targetLanguage: 'ja',
+            });
+      )"),
+            "NotSupportedError: Unable to create translator for the given "
+            "source and target language.");
+
+  // The console message should be logged.
+  WaitForConsoleObserver(*console_observer);
+}
+
+// Tests the behavior of failure of translator creation in the library.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
+                       CreateTranslatorErrorLibraryTranslatorCreationFailed) {
+  MockComponentManager mock_component_manager(GetTempDir());
+  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
+      {LanguagePackKey::kEn_Ja});
+  NavigateToEmptyPage();
+
+  auto console_observer = CreateConsoleObserver(
+      "The translation library failed to create a translator.");
+
+  EXPECT_EQ(EvalJsCatchingError(R"(
+            const translator = await translation.createTranslator({
+              sourceLanguage: 'ja',
+              targetLanguage: 'en',
+            });
+      )"),
+            "NotSupportedError: Unable to create translator for the given "
+            "source and target language.");
+
+  // The console message should be logged.
+  WaitForConsoleObserver(*console_observer);
+}
+
 // Tests the behavior of the crash of calling createTranslator() and
 // canTranslate().
 class OnDeviceTranslationCrashingLangBrowserTest
@@ -634,6 +787,9 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
   mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
   NavigateToEmptyPage();
 
+  auto console_observer =
+      CreateConsoleObserver("The translation service crashed.");
+
   // Tries to create a translator for the fake language code `cause_crash`. This
   // causes a crash in the mock TranslateKit component. See comments in
   // mock_translate_kit_lib.cc.
@@ -645,6 +801,9 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
       )"),
             "NotSupportedError: Unable to create translator for the given "
             "source and target language.");
+
+  // The console message should be logged.
+  WaitForConsoleObserver(*console_observer);
 }
 
 // Tests the behavior of the crash of calling canTranslate().
@@ -682,20 +841,28 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, NoExistFileHandling) {
             "is_directory: false");
 }
 
-// Tests the behavior of createTranslator() when the target language is
-// unsupported.
+// Tests the behavior of createTranslator() when the accept language check
+// fails.
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
-                       CreateTranslatorUnsupportedLanguage) {
+                       CreateTranslatorAcceptLanguagesCheckFailed) {
   MockComponentManager mock_component_manager(GetTempDir());
   mock_component_manager.DoNotExpectCallRegisterTranslateKitComponent();
   mock_component_manager.DoNotExpectCallRegisterLanguagePackComponent();
 
   NavigateToEmptyPage();
 
+  auto console_observer = CreateConsoleObserver(
+      "The preferred languages check for Translator API failed. See "
+      "https://developer.chrome.com/docs/ai/"
+      "translator-api?#supported-languages for more details.");
+
   // Create a translator for unsupported language.
   TestCreateTranslator(browser(), "en", "xx",
                        "NotSupportedError: Unable to create translator for the "
                        "given source and target language.");
+
+  // The console message should be logged.
+  WaitForConsoleObserver(*console_observer);
 }
 
 // Tests that the browser process can handle the case that the frame is deleted
@@ -1280,7 +1447,10 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
 
   // When the service count exceeds the limit, the translator cannot be created.
   AddIframe(i, browser());
+  auto console_observer = CreateConsoleObserver(
+      "The translation service count exceeded the limitation.");
   CheckTranslateInIframe(i, /*expect_success=*/false, browser());
+  WaitForConsoleObserver(*console_observer);
   EXPECT_EQ(TryCanTranslateInIframe(i, browser()), "no");
 
   // When the service count is back to under the limit, the translator can be
@@ -1365,8 +1535,13 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrossOriginBrowserTest,
   // cannot be created.
   for (auto* target_browser : browsers) {
     AddIframe(limit_count, target_browser);
+    auto console_observer = CreateConsoleObserver(
+        "The translation service count exceeded the limitation.",
+        target_browser);
     CheckTranslateInIframe(limit_count, /*expect_success=*/false,
                            target_browser);
+    // The console message should be logged.
+    WaitForConsoleObserver(*console_observer);
   }
 
   // When the service count per profile is back to under the limit, the

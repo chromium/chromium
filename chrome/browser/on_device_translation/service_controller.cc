@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -44,6 +45,8 @@ using blink::mojom::CanCreateTranslatorResult;
 
 namespace on_device_translation {
 
+using blink::mojom::CreateTranslatorError;
+using mojom::CreateTranslatorResult;
 using mojom::FileOperationProxy;
 using mojom::OnDeviceTranslationLanguagePackage;
 using mojom::OnDeviceTranslationLanguagePackagePtr;
@@ -68,6 +71,23 @@ std::string ToString(base::FilePath path) {
 #else
   return path.value();
 #endif  // BUILDFLAG(IS_WIN)
+}
+
+// Converts on_device_translation::mojom::CreateTranslatorResult to
+// blink::mojom::CreateTranslatorError.
+CreateTranslatorError ToCreateTranslatorError(CreateTranslatorResult result) {
+  switch (result) {
+    case CreateTranslatorResult::kSuccess:
+      NOTREACHED();
+    case CreateTranslatorResult::kErrorInvalidBinary:
+      return CreateTranslatorError::kInvalidBinary;
+    case CreateTranslatorResult::kErrorInvalidFunctionPointer:
+      return CreateTranslatorError::kInvalidFunctionPointer;
+    case CreateTranslatorResult::kErrorFailedToInitialize:
+      return CreateTranslatorError::kFailedToInitialize;
+    case CreateTranslatorResult::kErrorFailedToCreateTranslator:
+      return CreateTranslatorError::kFailedToCreateTranslator;
+  }
 }
 
 }  // namespace
@@ -124,7 +144,9 @@ OnDeviceTranslationServiceController::~OnDeviceTranslationServiceController() {
 void OnDeviceTranslationServiceController::CreateTranslator(
     const std::string& source_lang,
     const std::string& target_lang,
-    base::OnceCallback<void(mojo::PendingRemote<mojom::Translator>)> callback) {
+    base::OnceCallback<
+        void(base::expected<mojo::PendingRemote<mojom::Translator>,
+                            CreateTranslatorError>)> callback) {
   std::set<LanguagePackKey> required_packs;
   std::vector<LanguagePackKey> required_not_installed_packs;
   // If the language packs are set by the command line, we don't need to check
@@ -139,12 +161,11 @@ void OnDeviceTranslationServiceController::CreateTranslator(
         if (to_be_registered_packs.size() +
                 ComponentManager::GetRegisteredLanguagePacks().size() >
             kTranslationAPILimitLanguagePackCountMax) {
-          // TODO(crbug.com/358030919): Consider printing errors
-          // to DevTool's console.
           RecordLanguagePairUma(
               "Translate.OnDeviceTranslation.DownloadExceedLimit.LanguagePair",
               source_lang, target_lang);
-          std::move(callback).Run(mojo::NullRemote());
+          std::move(callback).Run(base::unexpected(
+              CreateTranslatorError::kExceedsLanguagePackCountLimitation));
           return;
         }
       }
@@ -169,7 +190,8 @@ void OnDeviceTranslationServiceController::CreateTranslator(
     // task and hadle the request as failure to avoid OOM of the browser
     // process.
     if (pending_tasks_.size() == kMaxPendingTaskCount) {
-      std::move(callback).Run(mojo::NullRemote());
+      std::move(callback).Run(base::unexpected(
+          CreateTranslatorError::kExceedsPendingTaskCountLimitation));
       return;
     }
     pending_tasks_.emplace_back(
@@ -186,13 +208,17 @@ void OnDeviceTranslationServiceController::CreateTranslator(
 void OnDeviceTranslationServiceController::CreateTranslatorImpl(
     const std::string& source_lang,
     const std::string& target_lang,
-    base::OnceCallback<void(mojo::PendingRemote<mojom::Translator>)> callback) {
+    base::OnceCallback<
+        void(base::expected<mojo::PendingRemote<mojom::Translator>,
+                            CreateTranslatorError>)> callback) {
   mojo::PendingRemote<mojom::Translator> pending_remote;
   auto pending_receiver = pending_remote.InitWithNewPipeAndPassReceiver();
 
   if (!MaybeStartService()) {
-    // If the service can't be started, we will return a null remote.
-    std::move(callback).Run(mojo::NullRemote());
+    // If the service can't be started, returns `kExceedsServiceCountLimitation`
+    // error.
+    std::move(callback).Run(base::unexpected(
+        CreateTranslatorError::kExceedsServiceCountLimitation));
     return;
   }
   auto callbacks = base::SplitOnceCallback(std::move(callback));
@@ -202,17 +228,21 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
       mojo::WrapCallbackWithDropHandler(
           base::BindOnce(
               [](base::OnceCallback<void(
-                     mojo::PendingRemote<mojom::Translator>)> callback,
+                     base::expected<mojo::PendingRemote<mojom::Translator>,
+                                    CreateTranslatorError>)> callback,
                  mojo::PendingRemote<mojom::Translator> pending_remote,
-                 mojom::CreateTranslatorResult result) {
-                if (result == mojom::CreateTranslatorResult::kSuccess) {
+                 CreateTranslatorResult result) {
+                if (result == CreateTranslatorResult::kSuccess) {
                   std::move(callback).Run(std::move(pending_remote));
                 } else {
-                  std::move(callback).Run(mojo::NullRemote());
+                  std::move(callback).Run(
+                      base::unexpected(ToCreateTranslatorError(result)));
                 }
               },
               std::move(callbacks.first), std::move(pending_remote)),
-          base::BindOnce(std::move(callbacks.second), mojo::NullRemote())));
+          base::BindOnce(
+              std::move(callbacks.second),
+              base::unexpected(CreateTranslatorError::kServiceCrashed))));
 }
 
 void OnDeviceTranslationServiceController::CanTranslate(
