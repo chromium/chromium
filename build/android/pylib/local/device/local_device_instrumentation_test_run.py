@@ -124,7 +124,7 @@ _DEVICE_GOLD_DIR = 'skia_gold'
 # A map of Android product models to SDK ints.
 RENDER_TEST_MODEL_SDK_CONFIGS = {
     # Android x86 emulator.
-    'Android SDK built for x86': [26, 28],
+    'Android SDK built for x86': [26],
     # We would like this to be supported, but it is currently too prone to
     # introducing flakiness due to a combination of Gold and Chromium issues.
     # See crbug.com/1233700 and skbug.com/12149 for more information.
