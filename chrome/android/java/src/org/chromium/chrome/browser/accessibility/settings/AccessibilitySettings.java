@@ -15,7 +15,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
@@ -159,8 +158,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
         }
 
         Preference imageDescriptionsPreference = findPreference(PREF_IMAGE_DESCRIPTIONS);
-        imageDescriptionsPreference.setVisible(
-                ImageDescriptionsController.getInstance().shouldShowImageDescriptionsMenuItem());
+        imageDescriptionsPreference.setVisible(mDelegate.shouldShowImageDescriptionsSetting());
     }
 
     @Override

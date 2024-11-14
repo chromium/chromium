@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.accessibility.settings;
 
+import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
@@ -67,6 +68,11 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     @Override
     public BrowserContextHandle getBrowserContextHandle() {
         return mProfile;
+    }
+
+    @Override
+    public boolean shouldShowImageDescriptionsSetting() {
+        return ImageDescriptionsController.getInstance().shouldShowImageDescriptionsMenuItem();
     }
 
     @Override

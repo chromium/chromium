@@ -39,6 +39,11 @@ public interface AccessibilitySettingsDelegate {
     BrowserContextHandle getBrowserContextHandle();
 
     /**
+     * @return boolean value specifying if the Image Descriptions user setting should be shown.
+     */
+    boolean shouldShowImageDescriptionsSetting();
+
+    /**
      * @return the InterPreferenceDelegate instance that should be used for reading and setting the
      *     text size contrast value for accessibility settings. Return null to omit the preference.
      */
