@@ -178,6 +178,7 @@ class SyncServiceFactoryTest : public testing::Test {
     datatypes.Put(syncer::AUTOFILL_WALLET_DATA);
     datatypes.Put(syncer::AUTOFILL_WALLET_METADATA);
     datatypes.Put(syncer::AUTOFILL_WALLET_OFFER);
+    datatypes.Put(syncer::AUTOFILL_WALLET_USAGE);
     datatypes.Put(syncer::BOOKMARKS);
     if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
       datatypes.Put(syncer::PRODUCT_COMPARISON);

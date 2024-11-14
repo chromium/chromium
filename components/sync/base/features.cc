@@ -24,7 +24,11 @@ BASE_FEATURE(kUnoPhase2FollowUp,
 
 BASE_FEATURE(kSyncAutofillWalletUsageData,
              "SyncAutofillWalletUsageData",
+#if BUILDFLAG(IS_IOS)
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kSyncAutofillWalletCredentialData,
              "SyncAutofillWalletCredentialData",
