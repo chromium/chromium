@@ -226,9 +226,11 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
     return popup;
   }
 
-  // Close the popup window directly.
-  bool ClosePopup() {
-    return ExtensionActionTestHelper::Create(browser())->HidePopup();
+  // Returns whether the popup native view exists.
+  bool HasPopupNativeView() {
+    ToolbarActionViewController* popup_owner =
+        extensions_container()->popup_owner_for_testing();
+    return popup_owner ? popup_owner->GetPopupNativeView() != nullptr : false;
   }
 
   // Trigger a focus loss to close the popup.
@@ -237,7 +239,6 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
         extensions_container()->popup_owner_for_testing();
     EXPECT_TRUE(popup_owner);
     EXPECT_TRUE(popup_owner->GetPopupNativeView());
-
     ExtensionHostTestHelper host_helper(profile());
 
 #if BUILDFLAG(IS_MAC)
@@ -256,6 +257,7 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
     // The window disappears immediately.
     popup_owner = extensions_container()->popup_owner_for_testing();
     EXPECT_FALSE(popup_owner);
+
     // Wait for the notification to achieve a consistent state and verify that
     // the popup was properly torn down.
     host_helper.WaitForHostDestroyed();
@@ -389,11 +391,13 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   // Open a popup with the first extension.
   OpenPopupViaToolbar(first_extension->id());
   ResultCatcher catcher;
+
   // Now, try to open a popup with the second extension. It should fail since
   // there's an active popup.
   listener.Reply("show another");
   ASSERT_TRUE(catcher.GetNextResult()) << message_;
-  EXPECT_TRUE(ClosePopup());
+  extensions_container()->HideActivePopup();
+  EXPECT_FALSE(HasPopupNativeView());
 }
 
 // Test that openPopup does not grant tab permissions like for browser action
@@ -410,7 +414,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
                            browser()->tab_strip_model()->GetActiveWebContents())
                            .id(),
                        mojom::APIPermissionID::kTab));
-  EXPECT_TRUE(ClosePopup());
+
+  extensions_container()->HideActivePopup();
+  EXPECT_FALSE(HasPopupNativeView());
 }
 
 // Test that the extension popup is closed when the browser window is focused.
@@ -462,11 +468,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
                        DeleteBrowserActionWithPopupOpen) {
   // First, we open a popup.
   OpenPopupViaAPI(false);
-
-  ToolbarActionViewController* popup_owner =
-      extensions_container()->popup_owner_for_testing();
-  EXPECT_TRUE(popup_owner);
-  EXPECT_TRUE(popup_owner->GetPopupNativeView());
+  EXPECT_TRUE(HasPopupNativeView());
 
   // Then, find the extension that created it.
   content::WebContents* active_web_contents =
@@ -480,8 +482,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   // Finally, uninstall the extension, which causes the view to be deleted and
   // the popup to go away. This should not crash.
   UninstallExtension(extension->id());
-  popup_owner = extensions_container()->popup_owner_for_testing();
-  EXPECT_FALSE(popup_owner);
+  EXPECT_FALSE(HasPopupNativeView());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
@@ -546,7 +547,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, PopupZoomsIndependently) {
   EXPECT_TRUE(blink::ZoomValuesEqual(popup_zoom_level, default_zoom_level))
       << popup_zoom_level << " vs " << default_zoom_level;
 
-  EXPECT_TRUE(ClosePopup());
+  extensions_container()->HideActivePopup();
+  EXPECT_FALSE(HasPopupNativeView());
 }
 
 class BrowserActionInteractiveViewsTest : public BrowserActionInteractiveTest {
@@ -744,10 +746,11 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
 
   // Wait for the download that this should have triggered to finish.
   downloads_observer.WaitForFinished();
-
   EXPECT_EQ(1u, downloads_observer.NumDownloadsSeenInState(
                     download::DownloadItem::COMPLETE));
-  EXPECT_TRUE(ClosePopup());
+
+  extensions_container()->HideActivePopup();
+  EXPECT_FALSE(HasPopupNativeView());
 }
 
 // Test that we don't try and show a browser action popup with
@@ -861,7 +864,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
   EXPECT_TRUE(dom_message_queue.WaitForMessage(&json));
   EXPECT_EQ("\"DONE\"", json);
 
-  EXPECT_TRUE(ClosePopup());
+  extensions_container()->HideActivePopup();
+  EXPECT_FALSE(HasPopupNativeView());
 }
 
 class BrowserActionInteractiveFencedFrameTest
@@ -927,7 +931,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveFencedFrameTest,
   EXPECT_TRUE(dom_message_queue.WaitForMessage(&json));
   EXPECT_EQ("\"DONE\"", json);
 
-  EXPECT_TRUE(ClosePopup());
+  extensions_container()->HideActivePopup();
+  EXPECT_FALSE(HasPopupNativeView());
 }
 
 class NavigatingExtensionPopupInteractiveTest
