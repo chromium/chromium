@@ -12,6 +12,7 @@
 #include <queue>
 
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "media/base/video_codecs.h"
@@ -229,17 +230,18 @@ class VideoEncoderStateObserverImplTest : public ::testing::Test {
   }
 
   void ExpectTopLayerForSimulcast(
-      int stream_idx,
+      size_t stream_idx,
       int encoder_id_offset,
       base::span<const webrtc::VideoCodec> codec_params) {
-    ExpectTopLayer(encoder_id_offset + stream_idx, 0,
+    ExpectTopLayer(encoder_id_offset + base::checked_cast<int>(stream_idx), 0,
                    PixelRate(codec_params[stream_idx]));
   }
 
   void ExpectTopLayerForSVC(int spatial_id,
                             int encoder_id,
                             base::span<const int> pixel_rates) {
-    ExpectTopLayer(encoder_id, spatial_id, pixel_rates[spatial_id]);
+    ExpectTopLayer(encoder_id, spatial_id,
+                   pixel_rates[base::checked_cast<size_t>(spatial_id)]);
   }
 
   base::test::TaskEnvironment task_environment_{

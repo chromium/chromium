@@ -141,7 +141,8 @@ bool ValidateSubSourceAndGetData(DOMArrayBufferView* view,
   if (!byte_length) {
     byte_length = view->byteLength() - byte_offset;
   }
-  const auto data = view->ByteSpanMaybeShared().subspan(byte_offset);
+  const auto data =
+      view->ByteSpanMaybeShared().subspan(static_cast<size_t>(byte_offset));
   *out_base_address = data.data();
   *out_byte_length = byte_length;
   return true;

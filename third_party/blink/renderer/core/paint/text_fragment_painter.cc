@@ -126,7 +126,7 @@ PhysicalDirection GetDisclosureOrientation(const ComputedStyle& style,
 Path CreatePath(base::span<const gfx::PointF, 4> path) {
   Path result;
   result.MoveTo(gfx::PointF(path[0].x(), path[0].y()));
-  for (int i = 1; i < 4; ++i) {
+  for (size_t i = 1; i < 4; ++i) {
     result.AddLineTo(gfx::PointF(path[i].x(), path[i].y()));
   }
   return result;

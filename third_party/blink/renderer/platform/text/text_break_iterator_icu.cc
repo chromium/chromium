@@ -691,8 +691,8 @@ TextBreakIterator* WordBreakIterator(base::span<const UChar> string) {
 }
 
 TextBreakIterator* WordBreakIterator(const String& string,
-                                     int start,
-                                     int length) {
+                                     wtf_size_t start,
+                                     wtf_size_t length) {
   if (string.empty()) {
     return nullptr;
   }

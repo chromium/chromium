@@ -183,22 +183,6 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
     url_data_ = nullptr;
   }
 
-  // Helper method to write to |loader_| from |data_|.
-  void WriteLoader(int position, int size) {
-    loader_->DidReceiveData(
-        base::as_chars(base::span(data_).subspan(position, size)));
-  }
-
-  void WriteData(int size) {
-    auto data = base::HeapArray<char>::Uninit(size);
-    loader_->DidReceiveData(data);
-  }
-
-  // Verifies that data in buffer[0...size] is equal to data_[pos...pos+size].
-  void VerifyBuffer(uint8_t* buffer, int pos, int size) {
-    EXPECT_EQ(0, memcmp(buffer, data_ + pos, size));
-  }
-
   MOCK_METHOD1(RedirectCallback, void(const scoped_refptr<UrlData>&));
 
   void SetUrlData(const scoped_refptr<UrlData>& new_url_data) {

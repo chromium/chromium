@@ -40,21 +40,26 @@ class InMemoryDataAllocator : public DiskDataAllocator {
  private:
   std::optional<size_t> DoWrite(int64_t offset,
                                 base::span<const uint8_t> data) override {
+    CHECK_GE(offset, 0);
     int64_t end_offset = offset + data.size();
-    if (static_cast<size_t>(end_offset) > kMaxSize)
+    if (end_offset > static_cast<int64_t>(kMaxSize)) {
       return std::nullopt;
+    }
 
-    base::as_writable_bytes(base::span(data_).subspan(offset, data.size()))
+    base::as_writable_bytes(
+        base::span(data_).subspan(static_cast<size_t>(offset), data.size()))
         .copy_from(data);
     max_offset_ = std::max(end_offset, max_offset_);
     return data.size();
   }
 
   void DoRead(int64_t offset, base::span<uint8_t> data) override {
+    CHECK_GE(offset, 0);
     int64_t end_offset = offset + data.size();
     ASSERT_LE(end_offset, max_offset_);
 
-    data.copy_from(base::as_byte_span(data_).subspan(offset, data.size()));
+    data.copy_from(base::as_byte_span(data_).subspan(
+        static_cast<size_t>(offset), data.size()));
   }
 
  private:

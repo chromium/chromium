@@ -35,8 +35,8 @@ class CORE_EXPORT SVGEnumerationMap {
       : entries_(entries), max_exposed_value_(max_exposed_value) {}
 
   const char* NameFromValue(uint16_t value) const {
-    DCHECK(value);  // We should never store 0 (*_UNKNOWN) in the map.
-    return entries_[value - 1];
+    CHECK(value);  // We should never store 0 (*_UNKNOWN) in the map.
+    return entries_[static_cast<size_t>(value - 1)];
   }
   uint16_t ValueFromName(const WTF::String&) const;
 

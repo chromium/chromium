@@ -5667,10 +5667,11 @@ void WebGLRenderingContextBase::TexImageHelperDOMArrayBufferView(
   if (!ValidateTexFuncData(params, pixels, null_disposition, src_offset))
     return;
   // No need to check overflow because validateTexFuncData() already did.
-  base::span<const uint8_t> data = pixels
-                                       ? pixels->ByteSpanMaybeShared().subspan(
-                                             src_offset * pixels->TypeSize())
-                                       : base::span<const uint8_t>();
+  base::span<const uint8_t> data;
+  if (pixels) {
+    data = pixels->ByteSpanMaybeShared().subspan(
+        static_cast<size_t>(src_offset) * pixels->TypeSize());
+  }
   Vector<uint8_t> temp_data;
   bool change_unpack_params = false;
   if (!data.empty() && *params.width && *params.height &&

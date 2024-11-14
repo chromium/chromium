@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/xml/parser/shared_buffer_reader.h"
 
 #include <cstdlib>
+#include <tuple>
 
 #include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,11 +54,11 @@ TEST(SharedBufferReaderTest, readDataWith0BytesRequest) {
 }
 
 TEST(SharedBufferReaderTest, readDataWithSizeBiggerThanSharedBufferSize) {
-  static const auto kTestData = base::span_with_nul_from_cstring("hello");
+  static constexpr auto kTestData = base::span_with_nul_from_cstring("hello");
   scoped_refptr<SharedBuffer> shared_buffer = SharedBuffer::Create(kTestData);
   SharedBufferReader reader(shared_buffer);
 
-  const int kExtraBytes = 3;
+  static constexpr int kExtraBytes = 3;
   char output_buffer[kTestData.size() + kExtraBytes];
 
   const char kInitializationByte = 'a';
@@ -72,8 +73,8 @@ TEST(SharedBufferReaderTest, readDataWithSizeBiggerThanSharedBufferSize) {
 }
 
 TEST(SharedBufferReaderTest, readDataInMultiples) {
-  const int kIterationsCount = 8;
-  const int kBytesPerIteration = 64;
+  static constexpr size_t kIterationsCount = 8;
+  static constexpr size_t kBytesPerIteration = 64;
 
   Vector<char> test_data(kIterationsCount * kBytesPerIteration);
   std::generate(test_data.begin(), test_data.end(), &std::rand);
@@ -82,12 +83,11 @@ TEST(SharedBufferReaderTest, readDataInMultiples) {
   SharedBufferReader reader(shared_buffer);
 
   Vector<char> destination_vector(test_data.size());
-
-  for (int i = 0; i < kIterationsCount; ++i) {
-    const int offset = i * kBytesPerIteration;
-    const int bytes_read = reader.ReadData(
-        base::span(destination_vector).subspan(offset, kBytesPerIteration));
-    EXPECT_EQ(kBytesPerIteration, bytes_read);
+  base::span<char> destination_span(destination_vector), chunk;
+  for (size_t i = 0; i < kIterationsCount; ++i) {
+    std::tie(chunk, destination_span) =
+        destination_span.split_at(kBytesPerIteration);
+    EXPECT_EQ(kBytesPerIteration, reader.ReadData(chunk));
   }
 
   EXPECT_TRUE(base::ranges::equal(test_data, destination_vector));

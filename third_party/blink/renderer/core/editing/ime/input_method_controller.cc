@@ -154,10 +154,9 @@ constexpr bool IsInvalidDeletionLength(const int length) {
   return length == kInvalidDeletionLength;
 }
 
-int CalculateBeforeDeletionLengthsInCodePoints(
-    const String& text,
-    const int before_length_in_code_points,
-    const int selection_start) {
+int CalculateBeforeDeletionLengthsInCodePoints(const String& text,
+                                               int before_length_in_code_points,
+                                               int selection_start) {
   DCHECK_GE(before_length_in_code_points, 0);
   DCHECK_GE(selection_start, 0);
   DCHECK_LE(selection_start, static_cast<int>(text.length()));
@@ -168,7 +167,8 @@ int CalculateBeforeDeletionLengthsInCodePoints(
   int deletion_start = selection_start;
   while (counter > 0 && deletion_start > 0) {
     const TextSegmentationMachineState state =
-        backward_machine.FeedPrecedingCodeUnit(u_text[deletion_start - 1]);
+        backward_machine.FeedPrecedingCodeUnit(
+            u_text[static_cast<size_t>(deletion_start - 1)]);
     // According to Android's InputConnection spec, we should do nothing if
     // |text| has invalid surrogate pair in the deletion range.
     if (state == TextSegmentationMachineState::kInvalid)
@@ -186,19 +186,18 @@ int CalculateBeforeDeletionLengthsInCodePoints(
   return -offset;
 }
 
-int CalculateAfterDeletionLengthsInCodePoints(
-    const String& text,
-    const int after_length_in_code_points,
-    const int selection_end) {
+int CalculateAfterDeletionLengthsInCodePoints(const String& text,
+                                              int after_length_in_code_points,
+                                              int selection_end) {
   DCHECK_GE(after_length_in_code_points, 0);
-  DCHECK_GE(selection_end, 0);
-  const int length = text.length();
-  DCHECK_LE(selection_end, length);
+  const auto end = base::checked_cast<wtf_size_t>(selection_end);
+  const wtf_size_t length = text.length();
+  DCHECK_LE(end, length);
 
   base::span<const UChar> u_text = text.Span16();
   ForwardCodePointStateMachine forward_machine;
   int counter = after_length_in_code_points;
-  int deletion_end = selection_end;
+  wtf_size_t deletion_end = end;
   while (counter > 0 && deletion_end < length) {
     const TextSegmentationMachineState state =
         forward_machine.FeedFollowingCodeUnit(u_text[deletion_end]);
@@ -215,12 +214,12 @@ int CalculateAfterDeletionLengthsInCodePoints(
     return kInvalidDeletionLength;
 
   const int offset = forward_machine.GetBoundaryOffset();
-  DCHECK_EQ(offset, deletion_end - selection_end);
+  DCHECK_EQ(static_cast<wtf_size_t>(offset), deletion_end - end);
   return offset;
 }
 
-Element* RootEditableElementOfSelection(const FrameSelection& frameSelection) {
-  const SelectionInDOMTree& selection = frameSelection.GetSelectionInDOMTree();
+Element* RootEditableElementOfSelection(const FrameSelection& frame_selection) {
+  const SelectionInDOMTree& selection = frame_selection.GetSelectionInDOMTree();
   if (selection.IsNone())
     return nullptr;
   // To avoid update layout, we attempt to get root editable element from
@@ -235,10 +234,10 @@ Element* RootEditableElementOfSelection(const FrameSelection& frameSelection) {
 
   // TODO(editing-dev): Use of UpdateStyleAndLayout
   // needs to be audited. see http://crbug.com/590369 for more details.
-  frameSelection.GetDocument().UpdateStyleAndLayout(
+  frame_selection.GetDocument().UpdateStyleAndLayout(
       DocumentUpdateReason::kEditing);
   const VisibleSelection& visibleSeleciton =
-      frameSelection.ComputeVisibleSelectionInDOMTree();
+      frame_selection.ComputeVisibleSelectionInDOMTree();
   return RootEditableElementOf(visibleSeleciton.Start());
 }
 

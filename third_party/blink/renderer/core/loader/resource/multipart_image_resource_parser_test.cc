@@ -206,8 +206,8 @@ TEST(MultipartResponseTest, MalformedBoundary) {
 
 // Used in for tests that break the data in various places.
 struct TestChunk {
-  const int start_position;  // offset in data
-  const int end_position;    // end offset in data
+  const size_t start_position;  // offset in data
+  const size_t end_position;    // end offset in data
   const size_t expected_responses;
   const std::string_view expected_data;
 };

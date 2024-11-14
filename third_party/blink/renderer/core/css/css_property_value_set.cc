@@ -203,9 +203,10 @@ static bool IsPropertyMatch(const CSSPropertyValueMetadata& metadata,
 template <typename T>
 int ImmutableCSSPropertyValueSet::FindPropertyIndex(const T& property) const {
   uint16_t id = GetConvertedCSSPropertyID(property);
-  for (int n = array_size_ - 1; n >= 0; --n) {
-    if (IsPropertyMatch(MetadataArray()[n], id, property)) {
-      return n;
+  const base::span<const CSSPropertyValueMetadata> metadata = MetadataArray();
+  for (size_t n = array_size_; n; --n) {
+    if (IsPropertyMatch(metadata[n - 1], id, property)) {
+      return static_cast<int>(n - 1);
     }
   }
 

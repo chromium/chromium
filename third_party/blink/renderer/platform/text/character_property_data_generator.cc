@@ -200,20 +200,21 @@ class CharacterPropertyValues {
 };
 
 static void GenerateUTrieSerialized(FILE* fp,
-                                    int32_t size,
+                                    size_t size,
                                     base::span<uint8_t> array) {
   fprintf(fp,
           "#include <cstdint>\n\n"
           "namespace blink {\n\n"
-          "extern const int32_t kSerializedCharacterDataSize = %d;\n"
+          "extern const int32_t kSerializedCharacterDataSize = %zu;\n"
           // The utrie2_openFromSerialized function requires character data to
           // be aligned to 4 bytes.
           "alignas(4) extern const uint8_t kSerializedCharacterData[] = {",
           size);
-  for (int32_t i = 0; i < size;) {
+  for (size_t i = 0; i < size;) {
     fprintf(fp, "\n   ");
-    for (int col = 0; col < 16 && i < size; col++, i++)
+    for (size_t col = 0; col < 16 && i < size; ++col, ++i) {
       fprintf(fp, " 0x%02X,", array[i]);
+    }
   }
   fprintf(fp,
           "\n};\n\n"
@@ -258,17 +259,20 @@ static void GenerateCharacterPropertyData(FILE* fp) {
 
   int32_t serialized_size =
       ucptrie_toBinary(immutable_trie.get(), nullptr, 0, &error);
+  CHECK_GE(serialized_size, 0);
   error = U_ZERO_ERROR;
 
-  auto serialized = base::HeapArray<uint8_t>::Uninit(serialized_size);
+  auto serialized =
+      base::HeapArray<uint8_t>::Uninit(static_cast<size_t>(serialized_size));
   // Ensure 32-bit alignment, as ICU requires that to the ucptrie_toBinary call.
   CHECK(!(reinterpret_cast<intptr_t>(serialized.data()) % 4));
 
   serialized_size = ucptrie_toBinary(immutable_trie.get(), serialized.data(),
                                      serialized.size(), &error);
+  CHECK_GE(serialized_size, 0);
   assert(error == U_ZERO_ERROR);
 
-  GenerateUTrieSerialized(fp, serialized_size, serialized);
+  GenerateUTrieSerialized(fp, static_cast<size_t>(serialized_size), serialized);
 }
 
 //

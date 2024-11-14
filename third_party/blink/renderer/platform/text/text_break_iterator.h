@@ -73,8 +73,8 @@ AcquireLineBreakIterator(StringView, const AtomicString& locale);
 PLATFORM_EXPORT TextBreakIterator* CursorMovementIterator(
     base::span<const UChar>);
 PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(const String&,
-                                                     int start,
-                                                     int length);
+                                                     wtf_size_t start,
+                                                     wtf_size_t length);
 PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(base::span<const UChar>);
 PLATFORM_EXPORT TextBreakIterator* SentenceBreakIterator(
     base::span<const UChar>);

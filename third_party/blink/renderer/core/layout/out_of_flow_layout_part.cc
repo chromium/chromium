@@ -1480,7 +1480,8 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       // This will ensure that the descendants are laid out in the correct
       // order.
       DCHECK(!descendants_span.empty());
-      for (auto& descendant : descendants_span) {
+      for (size_t i = 0; i < descendants_span.size(); ++i) {
+        auto& descendant = descendants_span[i];
         if (GetFragmentainerType() == kFragmentColumn) {
           auto* containing_block = To<LayoutBox>(
               descendant.containing_block.Fragment()->GetLayoutObject());
@@ -1523,8 +1524,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
                 (last_css_containing_block->MayHaveAnchorQuery() ||
                  may_have_anchors_on_oof)) {
               has_new_descendants_span = true;
-              descendants_span = descendants_span.subspan(
-                  &descendant - descendants_span.data());
+              descendants_span = descendants_span.subspan(i);
               break;
             }
             last_css_containing_block = css_containing_block;

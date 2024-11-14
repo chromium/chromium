@@ -326,13 +326,13 @@ class InlinedStringBuffer {
       CharType* begin = inlined->data();
       DCHECK_LE(begin, end);
       DCHECK_LT(end, begin + inlined->size());
-      return String(base::span(*inlined).subspan(0, end - begin));
-    } else {
-      auto& outlined = std::get<OutlinedArray>(buffer_);
-      DCHECK_EQ(begin(), outlined.Characters());
-      outlined.Shrink(static_cast<wtf_size_t>(end - begin()));
-      return String::Adopt(outlined);
+      return String(
+          base::span(*inlined).subspan(0, static_cast<size_t>(end - begin)));
     }
+    auto& outlined = std::get<OutlinedArray>(buffer_);
+    DCHECK_EQ(begin(), outlined.Characters());
+    outlined.Shrink(static_cast<wtf_size_t>(end - begin()));
+    return String::Adopt(outlined);
   }
 
  private:

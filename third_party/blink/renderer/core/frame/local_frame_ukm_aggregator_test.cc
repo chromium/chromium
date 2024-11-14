@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 
 #include "base/metrics/statistics_recorder.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -66,7 +67,10 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
   }
 
   std::string GetMetricName(int index) {
-    std::string name = LocalFrameUkmAggregator::metrics_data()[index].name;
+    std::string name =
+        LocalFrameUkmAggregator::metrics_data()[base::checked_cast<size_t>(
+                                                    index)]
+            .name;
 
     // If `name` is an UMA metric of the form Blink.[MetricName].UpdateTime, the
     // following code extracts out [MetricName] for building up the UKM metric.

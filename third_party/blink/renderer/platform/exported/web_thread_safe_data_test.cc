@@ -85,7 +85,8 @@ TEST(WebThreadSafeDataTest, Access) {
   WebThreadSafeData d1("abc", 3);
   EXPECT_FALSE(d1.IsEmpty());
   for (auto it = d1.begin(); it != d1.end(); ++it) {
-    EXPECT_EQ(*it, base::span_from_cstring("abc")[it - d1.begin()]);
+    EXPECT_EQ(*it, base::span_from_cstring(
+                       "abc")[static_cast<size_t>(it - d1.begin())]);
   }
 
   // Implicit, via range-for.
