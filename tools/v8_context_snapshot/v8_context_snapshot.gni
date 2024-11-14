@@ -19,7 +19,15 @@ declare_args() {
   # times. To avoid impacting developer productivity the context snapshot is
   # only built for official builds.
   include_both_v8_snapshots =
-      is_official_build && target_os == "android" && v8_target_cpu == "arm64"
+      is_official_build && target_os == "android" && target_cpu == "arm64"
+
+  if (target_os == "android") {
+    # Whether to include both snapshots on arm32 when building fat binary.
+    include_both_v8_snapshots_android_secondary_abi = false
+
+    # Whether Android's secondary ABI should use the context snapshot.
+    use_v8_context_snapshot_android_secondary_abi = false
+  }
 }
 
 declare_args() {
@@ -28,31 +36,35 @@ declare_args() {
   use_v8_context_snapshot =
       include_both_v8_snapshots ||
       (!is_chromeos && !is_android && !is_castos && !is_fuchsia &&
-       # Android may build for both 64 bit and 32bit. When this happens, the
-       # v8_target_cpu will not equal the target_cpu (for example,
-       # v8_target_cpu == "arm" but target_os == "arm64").
-       (v8_target_cpu == target_cpu || target_os == "android") &&
        !(host_toolchain == default_toolchain && is_msan) &&
        !(is_win && host_os != "win") && !(is_mac && host_os != "mac"))
+}
 
-  # We use a different filename for arm64 macOS builds so that the arm64 and
-  # x64 snapshots can live side-by-side in a universal macOS app.
-  if (is_mac) {
-    if (v8_target_cpu == "x64") {
-      v8_context_snapshot_filename = "v8_context_snapshot.x86_64.bin"
-    } else if (v8_target_cpu == "arm64") {
-      v8_context_snapshot_filename = "v8_context_snapshot.arm64.bin"
-    }
-  } else if (target_os == "android") {
-    if (v8_current_cpu == "arm" || v8_current_cpu == "x86" ||
-        v8_current_cpu == "mipsel") {
-      v8_context_snapshot_filename = "v8_context_snapshot_32.bin"
-    } else {
-      v8_context_snapshot_filename = "v8_context_snapshot_64.bin"
-    }
-  } else {
-    v8_context_snapshot_filename = "v8_context_snapshot.bin"
+# Apply the secondary abi overrides. Must occur outside of declare_args in
+# order to take effect when include_both_v8_snapshots / use_v8_context_snapshot
+# are set via args.gn.
+if (target_os == "android" && v8_current_cpu != v8_target_cpu) {
+  include_both_v8_snapshots = include_both_v8_snapshots_android_secondary_abi
+  use_v8_context_snapshot = use_v8_context_snapshot_android_secondary_abi
+}
+
+# We use a different filename for arm64 macOS builds so that the arm64 and
+# x64 snapshots can live side-by-side in a universal macOS app.
+if (is_mac) {
+  if (v8_target_cpu == "x64") {
+    v8_context_snapshot_filename = "v8_context_snapshot.x86_64.bin"
+  } else if (v8_target_cpu == "arm64") {
+    v8_context_snapshot_filename = "v8_context_snapshot.arm64.bin"
   }
+} else if (target_os == "android") {
+  if (v8_current_cpu == "arm" || v8_current_cpu == "x86" ||
+      v8_current_cpu == "mipsel") {
+    v8_context_snapshot_filename = "v8_context_snapshot_32.bin"
+  } else {
+    v8_context_snapshot_filename = "v8_context_snapshot_64.bin"
+  }
+} else {
+  v8_context_snapshot_filename = "v8_context_snapshot.bin"
 }
 
 # We cannot use V8 context snapshot, if V8 doesn't use snapshot files.

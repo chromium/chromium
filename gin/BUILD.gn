@@ -164,13 +164,14 @@ if (is_android && enable_java_templates &&
         disable_compression = true
         sources = []
         deps = []
-        if (use_v8_context_snapshot) {
+        if (use_v8_context_snapshot_android_secondary_abi) {
           sources += [ "$root_out_dir/v8_context_snapshot_32.bin" ]
           deps += [
             "//tools/v8_context_snapshot($android_secondary_abi_toolchain)",
           ]
         }
-        if (!use_v8_context_snapshot || include_both_v8_snapshots) {
+        if (!use_v8_context_snapshot_android_secondary_abi ||
+            include_both_v8_snapshots_android_secondary_abi) {
           _secondary_abi_out_dir =
               get_label_info("//v8($android_secondary_abi_toolchain)",
                              "root_out_dir")
