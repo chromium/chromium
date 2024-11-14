@@ -837,7 +837,16 @@
         android:exported="false">
     </receiver>  # DIFF-ANCHOR: 2553238b
     <service android:name="androidx.browser.customtabs.PostMessageService"/>
-    <service android:name="androidx.pdf.service.PdfDocumentService" android:isolatedProcess="true"/>
+    <service  # DIFF-ANCHOR: e97ae51b
+        android:name="androidx.pdf.service.PdfDocumentService"
+        android:exported="false"
+        android:isolatedProcess="true">
+    </service>  # DIFF-ANCHOR: e97ae51b
+    <service  # DIFF-ANCHOR: 5d82e3ff
+        android:name="androidx.pdf.service.PdfDocumentServiceImpl"
+        android:exported="false"
+        android:isolatedProcess="true">
+    </service>  # DIFF-ANCHOR: 5d82e3ff
     <service  # DIFF-ANCHOR: 4c2196d9
         android:name="com.google.ipc.invalidation.ticl.android2.channel.GcmRegistrationTaskService"
         android:exported="true"
