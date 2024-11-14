@@ -540,13 +540,14 @@ void FromDrawQuad(const DisplayResourceProvider* resource_provider,
 
   const TextureDrawQuad* quad = TextureDrawQuad::MaterialCast(*it);
   dc_layer.resource_id = quad->resource_id();
-  dc_layer.plane_z_order = 1;
-  dc_layer.resource_size_in_pixels = quad->resource_size_in_pixels();
+  dc_layer.resource_size_in_pixels =
+      resource_provider->GetResourceBackedSize(quad->resource_id());
   dc_layer.uv_rect =
       gfx::BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
   dc_layer.display_rect = gfx::RectF(quad->rect);
   dc_layer.format =
       resource_provider->GetSharedImageFormat(quad->resource_id());
+  dc_layer.color = quad->background_color;
 
   // Quad rect is in quad content space so both quad to target, and target to
   // root transforms must be applied to it.
@@ -1224,12 +1225,19 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
   // Underlays are less efficient, so attempt regular overlays first. We can
   // only check for occlusion within a render pass.
   if (is_overlay) {
+    dc_layer.plane_z_order = 1;
     ProcessForOverlay(render_pass, it, previous_frame_state,
                       current_frame_state);
   } else {
+    // Assign decreasing z-order so that underlays processed earlier, and hence
+    // which are above the subsequent underlays, are placed above in the direct
+    // composition visual tree. The z-orders are assigned relative to other
+    // underlays in its render pass, not relative to the total number of
+    // underlays across all render passes.
+    dc_layer.plane_z_order = -1 - overlay_data.promoted_overlays.size();
     ProcessForUnderlay(render_pass, it, quad_rect_in_target_space,
                        previous_frame_state, global_overlay_state, overlay_data,
-                       current_frame_state, dc_layer);
+                       current_frame_state);
   }
 
   current_frame_state.overlay_rects.push_back(
@@ -1272,15 +1280,7 @@ void DCLayerOverlayProcessor::ProcessForUnderlay(
     const RenderPassPreviousFrameState& previous_frame_state,
     const GlobalOverlayState& global_overlay_state,
     RenderPassOverlayData& overlay_data,
-    RenderPassCurrentFrameState& current_frame_state,
-    OverlayCandidate& dc_layer) {
-  // Assign decreasing z-order so that underlays processed earlier, and hence
-  // which are above the subsequent underlays, are placed above in the direct
-  // composition visual tree. The z-orders are assigned relative to other
-  // underlays in its render pass, not relative to the total number of underlays
-  // across all render passes.
-  dc_layer.plane_z_order = -1 - overlay_data.promoted_overlays.size();
-
+    RenderPassCurrentFrameState& current_frame_state) {
   bool is_opaque = false;
   render_pass->ReplaceExistingQuadWithHolePunch(it, &is_opaque);
 

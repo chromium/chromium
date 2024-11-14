@@ -319,8 +319,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
       const RenderPassPreviousFrameState& previous_frame_state,
       const GlobalOverlayState& global_overlay_state,
       RenderPassOverlayData& overlay_data,
-      RenderPassCurrentFrameState& current_frame_state,
-      OverlayCandidate& dc_layer);
+      RenderPassCurrentFrameState& current_frame_state);
 
   void UpdateDamageRect(
       AggregatedRenderPass* render_pass,
