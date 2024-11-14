@@ -159,6 +159,12 @@ class GroupDataModelTest : public testing::Test {
 
   testing::NiceMock<MockModelObserver>& model_observer() { return observer_; }
 
+  FakeDataSharingSDKDelegate& sdk_delegate() { return sdk_delegate_; }
+
+  CollaborationGroupSyncBridge& collaboration_group_bridge() {
+    return *collaboration_group_bridge_;
+  }
+
   void WaitForModelLoaded() {
     if (model_->IsModelLoaded()) {
       return;
@@ -312,6 +318,35 @@ TEST_F(GroupDataModelTest, ShouldUpdateGroup) {
 
   EXPECT_THAT(model().GetGroup(group_id),
               Optional(HasMemberWithGaiaId(member_gaia_id)));
+}
+
+TEST_F(GroupDataModelTest, ShouldHandlePartialReadGroupsFailure) {
+  WaitForModelLoaded();
+
+  // Both groups are in CollaborationGroupSyncBridge, but only one is in
+  // DataSharingSDKDelegate.
+  const std::string display_name = "group";
+  const GroupId group_id1 = sdk_delegate().AddGroupAndReturnId(display_name);
+  const GroupId group_id2 = GroupId("non_existent_group_id");
+
+  syncer::EntityChangeList entity_changes;
+  entity_changes.push_back(EntityChangeAddFromSpecifics(
+      MakeSpecifics(group_id1, /*changed_at_millis_since_unix_epoch=*/1000)));
+  entity_changes.push_back(EntityChangeAddFromSpecifics(
+      MakeSpecifics(group_id2, /*changed_at_millis_since_unix_epoch=*/1000)));
+  collaboration_group_bridge().ApplyIncrementalSyncChanges(
+      collaboration_group_bridge().CreateMetadataChangeList(),
+      std::move(entity_changes));
+
+  // First group should be successfully read.
+  base::RunLoop run_loop;
+  EXPECT_CALL(model_observer(), OnGroupAdded(group_id1, NotNullTime()))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  run_loop.Run();
+
+  EXPECT_THAT(model().GetGroup(group_id1),
+              Optional(HasDisplayName(display_name)));
+  EXPECT_FALSE(model().GetGroup(group_id2).has_value());
 }
 
 TEST_F(GroupDataModelTest, ShouldNotifyAboutGroupChanges) {

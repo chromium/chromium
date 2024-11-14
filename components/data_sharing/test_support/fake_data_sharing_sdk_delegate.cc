@@ -106,16 +106,15 @@ void FakeDataSharingSDKDelegate::ReadGroups(
     const GroupId group_id(raw_group_id);
     if (groups_.find(group_id) != groups_.end()) {
       *result.add_group_data() = groups_[group_id];
+    } else {
+      // Partial failure is not supported in this fake to simplify testing.
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback), base::unexpected(absl::Status(
+                                                  absl::StatusCode::kNotFound,
+                                                  "Groups not found"))));
+      return;
     }
-  }
-
-  if (result.group_data().empty()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       base::unexpected(absl::Status(
-                           absl::StatusCode::kNotFound, "Groups not found"))));
-    return;
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
