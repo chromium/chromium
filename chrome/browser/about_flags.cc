@@ -1001,6 +1001,8 @@ const FeatureEntry::Choice kLacrosAvailabilityPolicyChoices[] = {
      ash::standalone_browser::kLacrosAvailabilityPolicyLacrosOnly},
 };
 
+const char kArcEnableAttestationFlag[] = "arc-enable-attestation";
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const FeatureEntry::Choice kForceUIDirectionChoices[] = {
@@ -6013,7 +6015,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcCustomTabsExperimentName,
      flag_descriptions::kArcCustomTabsExperimentDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kCustomTabsExperimentFeature)},
-    {"arc-enable-attestation", flag_descriptions::kArcEnableAttestationName,
+    {kArcEnableAttestationFlag, flag_descriptions::kArcEnableAttestationName,
      flag_descriptions::kArcEnableAttestationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(arc::kEnableArcAttestation)},
     {kArcEnableVirtioBlkForDataInternalName,
@@ -12004,6 +12006,12 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   if (!strcmp(kLacrosSelectionInternalName, entry.internal_name)) {
     return ash::standalone_browser::GetCachedLacrosSelectionPolicy() !=
            ash::standalone_browser::LacrosSelectionPolicy::kUserChoice;
+  }
+
+  // Skip arc-enable-attestation if it is enabled by ash switch.
+  if (!strcmp(kArcEnableAttestationFlag, entry.internal_name)) {
+    return base::CommandLine::ForCurrentProcess()->HasSwitch(
+        ash::switches::kArcEnableAttestation);
   }
 
   if (!strcmp(kPreferDcheckInternalName, entry.internal_name)) {

@@ -548,7 +548,9 @@ bool ShouldUseArcKeyMint() {
 bool ShouldUseArcAttestation() {
   // Attesation depends on keymint.
   return ShouldUseArcKeyMint() &&
-         base::FeatureList::IsEnabled(kEnableArcAttestation);
+         (base::FeatureList::IsEnabled(kEnableArcAttestation) ||
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              ash::switches::kArcEnableAttestation));
 }
 
 int GetDaysUntilArcVmDataMigrationDeadline(PrefService* prefs) {

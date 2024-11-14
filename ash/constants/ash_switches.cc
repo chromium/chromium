@@ -143,6 +143,9 @@ const char kArcDisableTtsCache[] = "arc-disable-tts-cache";
 // Uprev rather than caches from CrOS build stage for arccachesetup service.
 const char kArcUseDevCaches[] = "arc-use-dev-caches";
 
+// Flag that enables key and ID attestation for KeyMint.
+const char kArcEnableAttestation[] = "arc-enable-attestation";
+
 // Flag that indicates ARC images are formatted with EROFS (go/arcvm-erofs).
 const char kArcErofs[] = "arc-erofs";
 
