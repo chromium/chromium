@@ -7463,15 +7463,6 @@
     "expiry_milestone": 136
   },
   {
-    "name": "read-anything-read-aloud-language-pack-downloading",
-    "owners": [
-      "kristislee@google.com",
-      "lwinston@google.com",
-      "//ui/accessibility/OWNERS"
-    ],
-    "expiry_milestone": 136
-  },
-  {
     "name": "read-anything-read-aloud-phrase-highlighting",
     "owners": [
       "xiangxiao@google.com",

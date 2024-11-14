@@ -311,15 +311,6 @@ bool IsReadAloudAutoVoiceSwitchingEnabled() {
          base::FeatureList::IsEnabled(::features::kReadAloudAutoVoiceSwitching);
 }
 
-BASE_FEATURE(kReadAloudLanguagePackDownloading,
-             "ReadAloudLanguagePackDownloading",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsReadAloudLanguagePackDownloadingEnabled() {
-  return IsReadAnythingReadAloudEnabled() &&
-         base::FeatureList::IsEnabled(
-             ::features::kReadAloudLanguagePackDownloading);
-}
-
 BASE_FEATURE(kReadAnythingReadAloudPhraseHighlighting,
              "ReadAnythingReadAloudPhraseHighlighting",
              base::FEATURE_DISABLED_BY_DEFAULT);

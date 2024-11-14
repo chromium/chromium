@@ -205,8 +205,6 @@ suite('AppReceivesToolbarChanges', () => {
       let sentInstallRequestFor: string;
 
       setup(() => {
-        chrome.readingMode.isLanguagePackDownloadingEnabled = true;
-
         sentInstallRequestFor = '';
         // Monkey patch sendInstallVoicePackRequest() to spy on the method
         chrome.readingMode.sendInstallVoicePackRequest = (language) => {

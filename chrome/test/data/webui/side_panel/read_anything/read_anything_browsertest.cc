@@ -22,7 +22,6 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
     scoped_feature_list_.InitWithFeatures(
         {features::kReadAnythingReadAloud,
-         features::kReadAloudLanguagePackDownloading,
          features::kReadAnythingImagesViaAlgorithm},
         {});
   }

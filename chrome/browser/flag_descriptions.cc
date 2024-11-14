@@ -5107,12 +5107,6 @@ const char kReadAnythingReadAloudPhraseHighlightingDescription[] =
     "when reading aloud, when the phrase option is selected from the highlight "
     "menu.";
 
-const char kReadAloudLanguagePackDownloadingName[] =
-    "Reading Mode Language Downloading";
-const char kReadAloudLanguagePackDownloadingDescription[] =
-    "Enables the experimental Reading Mode feature that downloads Google TTS "
-    "languages directly from the Read Aloud menus.";
-
 const char kReadAnythingDocsIntegrationName[] =
     "Reading Mode Google Docs Integration";
 const char kReadAnythingDocsIntegrationDescription[] =

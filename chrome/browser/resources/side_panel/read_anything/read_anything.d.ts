@@ -68,9 +68,6 @@ declare namespace chrome {
     // Whether the automatic voice switching feature flag is enabled.
     let isAutoVoiceSwitchingEnabled: boolean;
 
-    // Whether the language pack download feature flag is enabled.
-    let isLanguagePackDownloadingEnabled: boolean;
-
     // Whether the phrase highlighting feature flag is enabled.
     let isPhraseHighlightingEnabled: boolean;
 

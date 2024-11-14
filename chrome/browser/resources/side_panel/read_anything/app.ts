@@ -2166,10 +2166,8 @@ export class AppElement extends AppElementBase {
       if (langCodeForVoicePackManager) {
         this.languagesForVoiceDownloads.delete(langCodeForVoicePackManager);
         // Uninstall the Natural voice when a language is deselected.
-        if (chrome.readingMode.isLanguagePackDownloadingEnabled) {
-          chrome.readingMode.sendUninstallVoiceRequest(
-              langCodeForVoicePackManager);
-        }
+        chrome.readingMode.sendUninstallVoiceRequest(
+            langCodeForVoicePackManager);
       }
     }
     this.enabledLangs = currentlyEnabled ?
@@ -2465,9 +2463,6 @@ export class AppElement extends AppElementBase {
   private installVoicePackIfPossible(
       langOrLocale: string, onlyInstallExactGoogleLocaleMatch: boolean,
       retryIfPreviousInstallFailed: boolean) {
-    if (!chrome.readingMode.isLanguagePackDownloadingEnabled) {
-      return;
-    }
 
     // Don't attempt to install a language if it's not a Google TTS language
     // available for downloading. It's possible for other non-Google TTS
