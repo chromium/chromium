@@ -7,10 +7,14 @@ package org.chromium.chrome.browser.back_press;
 import android.view.Window;
 
 import androidx.activity.BackEventCompat;
+import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
 import org.chromium.ui.UiUtils;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * A utility class to record back press related histograms. TODO(crbug.com/41481803): Move other
@@ -24,6 +28,20 @@ public class BackPressMetrics {
             "Android.BackPress.Intercept.LeftEdge";
     private static final String INTERCEPT_FROM_RIGHT_HISTOGRAM =
             "Android.BackPress.Intercept.RightEdge";
+
+    @IntDef({
+        PredictiveGestureNavPhase.ACTIVATED,
+        PredictiveGestureNavPhase.CANCELLED,
+        PredictiveGestureNavPhase.COMPLETED
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PredictiveGestureNavPhase {
+        int ACTIVATED = 0;
+        int CANCELLED = 1;
+        int COMPLETED = 2;
+
+        int NUM_ENTRIES = 3;
+    }
 
     /**
      * @param type The {@link Type} of the back press handler.
@@ -80,5 +98,21 @@ public class BackPressMetrics {
                     "Navigation.OnGestureStart.NavigationInProgress.3ButtonMode",
                     isNavigationInProgress);
         }
+    }
+
+    /**
+     * Record the phase when a gesture nav is started.
+     *
+     * @param transition If a back forward transition is triggered by this gesture.
+     * @param phase The current {@link PredictiveGestureNavPhase}.
+     */
+    public static void recordPredictiveGestureNav(
+            boolean transition, @PredictiveGestureNavPhase int phase) {
+        RecordHistogram.recordEnumeratedHistogram(
+                transition
+                        ? "Android.PredictiveGestureNavigation.WithTransition"
+                        : "Android.PredictiveGestureNavigation.WithoutTransition",
+                phase,
+                PredictiveGestureNavPhase.NUM_ENTRIES);
     }
 }

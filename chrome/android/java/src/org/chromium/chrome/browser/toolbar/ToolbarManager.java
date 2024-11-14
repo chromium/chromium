@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.BackPressMetrics;
+import org.chromium.chrome.browser.back_press.BackPressMetrics.PredictiveGestureNavPhase;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -425,6 +426,8 @@ public class ToolbarManager
             if (mIsGestureMode) {
                 BackPressMetrics.recordNavStatusDuringGesture(
                         mStartNavDuringOngoingGesture, mActivity.getWindow());
+                BackPressMetrics.recordPredictiveGestureNav(
+                        mHandler != null, PredictiveGestureNavPhase.COMPLETED);
             }
             int res = BackPressResult.SUCCESS;
 
@@ -450,6 +453,8 @@ public class ToolbarManager
             if (mIsGestureMode) {
                 BackPressMetrics.recordNavStatusDuringGesture(
                         mStartNavDuringOngoingGesture, mActivity.getWindow());
+                BackPressMetrics.recordPredictiveGestureNav(
+                        mHandler != null, PredictiveGestureNavPhase.CANCELLED);
             }
             mBackGestureInProgress = false;
             if (mHandler == null) return;
@@ -508,13 +513,8 @@ public class ToolbarManager
             // The transition should only be triggered by swipe rather than a button press.
             // TODO(crbug.com/376306986): add some tests to ensure the this handler is not
             // initialized in 3-button mode.
-            if (!mIsGestureMode) return;
-            if (!GestureNavigationUtils.allowTransition(mActivityTabProvider.get(), false)) return;
-
-            boolean navigatesForward = isForward();
-            if (TabOnBackGestureHandler.shouldAnimateNavigationTransition(
-                            navigatesForward, backEvent.getSwipeEdge())
-                    && mActivityTabProvider.get().canGoBack()) {
+            final boolean withTransition = shouldStartTransition(backEvent);
+            if (withTransition) {
                 // Always force to show the top control at the start of the gesture.
                 TabBrowserControlsConstraintsHelper.update(
                         mLocationBarModel.getTab(),
@@ -526,9 +526,27 @@ public class ToolbarManager
                         backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT
                                 ? BackGestureEventSwipeEdge.LEFT
                                 : BackGestureEventSwipeEdge.RIGHT,
-                        navigatesForward,
+                        isForward(),
                         mIsGestureMode);
             }
+            if (mIsGestureMode) {
+                BackPressMetrics.recordPredictiveGestureNav(
+                        withTransition, PredictiveGestureNavPhase.ACTIVATED);
+            }
+        }
+
+        private boolean shouldStartTransition(BackEventCompat backEvent) {
+            if (!mIsGestureMode) return false;
+            if (!GestureNavigationUtils.allowTransition(mActivityTabProvider.get(), false)) {
+                return false;
+            }
+
+            final Tab tab = mActivityTabProvider.get();
+            final boolean navigateForward = isForward();
+            final boolean navigable = navigateForward ? tab.canGoForward() : tab.canGoBack();
+            return navigable
+                    && TabOnBackGestureHandler.shouldAnimateNavigationTransition(
+                            navigateForward, backEvent.getSwipeEdge());
         }
     }
 
