@@ -617,6 +617,7 @@ class CONTENT_EXPORT WebContentsImpl
   bool HasRecentInteraction() override;
   [[nodiscard]] ScopedIgnoreInputEvents IgnoreInputEvents(
       std::optional<WebInputEventAuditCallback> audit_callback) override;
+  bool ShouldIgnoreInputEventsForTesting() override;
   bool HasActiveEffectivelyFullscreenVideo() override;
   void WriteIntoTrace(perfetto::TracedValue context) override;
   const base::Location& GetCreatorLocation() override;

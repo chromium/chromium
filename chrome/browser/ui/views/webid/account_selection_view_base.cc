@@ -864,3 +864,6 @@ bool AccountSelectionViewBase::CanFitInWebContents() {
          preferred_bubble_size.height() <
              (web_contents_size.height() - kTopMargin);
 }
+
+void AccountSelectionViewBase::DidShowWidget() {}
+void AccountSelectionViewBase::DidHideWidget() {}

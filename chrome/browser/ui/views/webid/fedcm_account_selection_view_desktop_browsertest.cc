@@ -20,6 +20,9 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 
+// TODO(https://crbug.com/378939142): This is a misuse of DialogBrowserTest.
+// DialogBrowserTest exists to test the visual properties of dialogs. Instead
+// use FedCmBrowserTest below.
 class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
  public:
   FedCmAccountSelectionViewBrowserTest() {
@@ -296,4 +299,60 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
     wait_loop.Run();
   }
   EXPECT_TRUE(dialog_view->GetEnabled());
+}
+
+// These are normal browser tests. Add more of these.
+class FedCmBrowserTest : public InProcessBrowserTest {
+ public:
+  void ShowModalLoadingDialog() {
+    delegate_ = std::make_unique<FakeDelegate>(
+        browser()->GetActiveTabInterface()->GetContents());
+    account_selection_view_ = std::make_unique<FedCmAccountSelectionView>(
+        delegate_.get(), browser()->GetActiveTabInterface());
+    account_selection_view_->ShowLoadingDialog(
+        "rp-example.com", "idp_etld_plus_one.com",
+        blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kActive);
+  }
+  std::unique_ptr<FakeDelegate> delegate_;
+  std::unique_ptr<FedCmAccountSelectionView> account_selection_view_;
+};
+
+IN_PROC_BROWSER_TEST_F(FedCmBrowserTest, InputDisabled) {
+  // Check that input is enabled by default.
+  EXPECT_FALSE(browser()
+                   ->GetActiveTabInterface()
+                   ->GetContents()
+                   ->ShouldIgnoreInputEventsForTesting());
+
+  // Show a modal dialog.
+  ShowModalLoadingDialog();
+
+  // Now input should be disabled.
+  EXPECT_TRUE(browser()
+                  ->GetActiveTabInterface()
+                  ->GetContents()
+                  ->ShouldIgnoreInputEventsForTesting());
+
+  // If we make a new tab input should be enabled.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_FALSE(browser()
+                   ->GetActiveTabInterface()
+                   ->GetContents()
+                   ->ShouldIgnoreInputEventsForTesting());
+
+  // If we switch to original tab input should be disabled.
+  browser()->tab_strip_model()->ActivateTabAt(/*index=*/0);
+  EXPECT_TRUE(browser()
+                  ->GetActiveTabInterface()
+                  ->GetContents()
+                  ->ShouldIgnoreInputEventsForTesting());
+
+  // If we close the dialog input should be enabled.
+  account_selection_view_.reset();
+  EXPECT_FALSE(browser()
+                   ->GetActiveTabInterface()
+                   ->GetContents()
+                   ->ShouldIgnoreInputEventsForTesting());
 }

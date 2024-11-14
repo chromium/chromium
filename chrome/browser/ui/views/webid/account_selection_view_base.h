@@ -336,6 +336,12 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
   // Virtual for testing purposes.
   virtual bool CanFitInWebContents();
 
+  // Temporary logic to disable interactions with the tab's WebContents for the
+  // modal dialog.
+  // TODO(https://crbug.com/377803489): Remove this.
+  virtual void DidShowWidget();
+  virtual void DidHideWidget();
+
   bool IsOccluded() const { return is_occluded_; }
 
  protected:
