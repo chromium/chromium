@@ -2,15 +2,29 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/updater/apply_updater_branding.gni")
 import("//testing/test.gni")
+
+apply_updater_branding("cruregistration_header_branding") {
+  template_file = "CRURegistration.h.in"
+  output = "$target_gen_dir/CRURegistration.h"
+}
+
+# CRURegistration is intended to be used outside of Chromium, so it imports
+# headers by name only. However, the generated header (with brand substitution)
+# will not end up in the same directory as the sources that import it, so the
+# location it is generated into must be added as an include path.
+config("cruregistration_include_path") {
+  include_dirs = [ "$target_gen_dir" ]
+}
 
 source_set("public_sources") {
   sources = [
+    "$target_gen_dir/CRURegistration.h",
     "CRURegistration-Private.h",
-    "CRURegistration.h",
     "CRURegistration.m",
   ]
-  deps = [ "//chrome/updater:branding_header" ]
+  public_deps = [ ":cruregistration_header_branding" ]
   assert_no_deps = [
     "//base:*",
     "//base/*",
@@ -18,6 +32,7 @@ source_set("public_sources") {
     "//net/*",
     "//third_party/*",
   ]
+  public_configs = [ ":cruregistration_include_path" ]
   frameworks = [ "Foundation.framework" ]
 }
 

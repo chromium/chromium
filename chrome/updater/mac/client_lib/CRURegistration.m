@@ -8,7 +8,6 @@
 #import <dispatch/dispatch.h>
 
 #import "CRURegistration-Private.h"
-#include "chrome/updater/updater_branding.h"
 
 #pragma mark - Constants
 
@@ -421,7 +420,7 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
   NSURL* bundleURL = NSBundle.mainBundle.bundleURL;
   NSString* helperPathInBundle = [NSString
       stringWithFormat:@"Contents/Helpers/%1$s.app/Contents/MacOS/%1$s",
-                       PRODUCT_FULLNAME_STRING];
+                       CRU_PRODUCT_FULLNAME_STRING];
   NSURL* helperURL = [bundleURL URLByAppendingPathComponent:helperPathInBundle
                                                 isDirectory:NO];
   NSFileManager* fm = [NSFileManager defaultManager];
@@ -432,7 +431,7 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
   helperPathInBundle =
       [NSString stringWithFormat:
                     @"Contents/Helpers/%1$s_test.app/Contents/MacOS/%1$s_test",
-                    PRODUCT_FULLNAME_STRING];
+                    CRU_PRODUCT_FULLNAME_STRING];
   helperURL = [bundleURL URLByAppendingPathComponent:helperPathInBundle
                                          isDirectory:NO];
   if ([fm isExecutableFileAtPath:helperURL.path]) {
@@ -459,8 +458,8 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
     return NO;
   }
   NSString* activesPathUnderLibrary =
-      [NSString stringWithFormat:@"%s/%s/Actives", COMPANY_SHORTNAME_STRING,
-                                 KEYSTONE_NAME];
+      [NSString stringWithFormat:@"%s/%s/Actives", CRU_COMPANY_SHORTNAME_STRING,
+                                 CRU_KEYSTONE_NAME];
   NSURL* activesPath =
       [library URLByAppendingPathComponent:activesPathUnderLibrary
                                isDirectory:YES];
@@ -496,9 +495,10 @@ NSString* const CRUReturnCodeKey = @"org.chromium.CRUReturnCode";
   NSArray<NSURL*>* libraries =
       [fm URLsForDirectory:NSLibraryDirectory
                  inDomains:NSUserDomainMask | NSLocalDomainMask];
-  NSString* ksadminPathUnderLibrary = [NSString
-      stringWithFormat:@"%s/%s/%s.bundle/Contents/Helpers/ksadmin",
-                       COMPANY_SHORTNAME_STRING, KEYSTONE_NAME, KEYSTONE_NAME];
+  NSString* ksadminPathUnderLibrary =
+      [NSString stringWithFormat:@"%s/%s/%s.bundle/Contents/Helpers/ksadmin",
+                                 CRU_COMPANY_SHORTNAME_STRING,
+                                 CRU_KEYSTONE_NAME, CRU_KEYSTONE_NAME];
   // URLsForDirectory returns paths in ascending order of domain mask values.
   // To match Keystone's behavior, we prefer local domain (machine install) over
   // user domain; local domain has the higher numerical value, so we test

@@ -8,6 +8,13 @@
 #import <Foundation/Foundation.h>
 #import <dispatch/dispatch.h>
 
+/** C macros for brand-specific constants. In the .h.in version of this file,
+  * the real values will be inserted via the `apply_updater_branding` step. In
+  * the .h version, they have already been interpolated. */
+#define CRU_COMPANY_SHORTNAME_STRING "@COMPANY_SHORTNAME@"
+#define CRU_KEYSTONE_NAME "@KEYSTONE_NAME@"
+#define CRU_PRODUCT_FULLNAME_STRING "@PRODUCT_FULLNAME@"
+
 NS_ASSUME_NONNULL_BEGIN
 
 /** The domain for user or system errors reported by CRURegistration. */
