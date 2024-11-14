@@ -354,12 +354,12 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
 
   std::vector<skgpu::graphite::BackendTexture> BeginReadAccess() override {
     DCHECK(!scoped_hardware_buffer_);
-    auto* stream_texture_sii = video_backing()->stream_texture_sii_.get();
 
     // Obtain the AHB for the current video frame.
     {
       base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
-      scoped_hardware_buffer_ = stream_texture_sii->GetAHardwareBuffer();
+      scoped_hardware_buffer_ =
+          video_backing()->stream_texture_sii_->GetAHardwareBuffer();
     }
     if (!scoped_hardware_buffer_) {
       LOG(ERROR) << "Failed to get the hardware buffer.";
