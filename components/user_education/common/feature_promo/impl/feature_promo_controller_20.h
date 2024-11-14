@@ -34,6 +34,8 @@ class FeaturePromoController20 : public FeaturePromoControllerCommon {
   ~FeaturePromoController20() override;
 
   // FeaturePromoControllerCommon:
+  FeaturePromoResult CanShowPromo(
+      const FeaturePromoParams& params) const override;
   void MaybeShowStartupPromo(FeaturePromoParams params) override;
   void MaybeShowPromo(FeaturePromoParams params) override;
   FeaturePromoResult MaybeShowPromoForDemoPage(
@@ -41,11 +43,40 @@ class FeaturePromoController20 : public FeaturePromoControllerCommon {
   bool IsPromoQueued(const base::Feature& iph_feature) const override;
 
  protected:
+  // Provide optional outputs for `CanShowPromoCommon()`.
+  struct CanShowPromoOutputs {
+    CanShowPromoOutputs();
+    CanShowPromoOutputs(CanShowPromoOutputs&&) noexcept;
+    CanShowPromoOutputs& operator=(CanShowPromoOutputs&&) noexcept;
+    ~CanShowPromoOutputs();
+
+    // The specification of the promo that has been requested to be shown; for
+    // rotating promos, this is different from the `display_spec`.
+    raw_ptr<const FeaturePromoSpecification> primary_spec = nullptr;
+
+    // The specification of the actual promo to be shown; for non-rotating
+    // promos, this is the same as `primary_spec`.
+    raw_ptr<const FeaturePromoSpecification> display_spec = nullptr;
+
+    // An object representing the lifecycle of the promo; used to determine
+    // whether the promo can show and record pref and histogram data when it
+    // does.
+    std::unique_ptr<FeaturePromoLifecycle> lifecycle;
+
+    // The UI element the promo should attach to.
+    raw_ptr<ui::TrackedElement> anchor_element = nullptr;
+  };
+
+  // Performs common logic for determining if a feature promo for `iph_feature`
+  // could be shown right now.
+  //
+  // The `output` parameter, if not null, receives execution data for the IPH on
+  // success (its fields will not be modified on failure).
+  FeaturePromoResult CanShowPromoCommon(const FeaturePromoParams& params,
+                                        ShowSource source,
+                                        CanShowPromoOutputs* outputs) const;
+
   // FeaturePromoControllerCommon:
-  FeaturePromoResult CanShowPromoCommon(
-      const FeaturePromoParams& params,
-      ShowSource source,
-      CanShowPromoOutputs* outputs) const override;
   bool MaybeUnqueuePromo(const base::Feature& iph_feature) override;
   void MaybeShowQueuedPromo() override;
   base::WeakPtr<FeaturePromoController> GetAsWeakPtr() override;
@@ -67,6 +98,10 @@ class FeaturePromoController20 : public FeaturePromoControllerCommon {
   // small number of promos should be queued at any given point, it's probably
   // still faster than some kind of linked map implementation would be.
   using QueuedPromos = std::list<QueuedPromoData>;
+
+  // Common logic for showing feature promos.
+  FeaturePromoResult MaybeShowPromoCommon(FeaturePromoParams params,
+                                          ShowSource source);
 
   // Internal entry point for showing a promo.
   FeaturePromoResult MaybeShowPromoImpl(FeaturePromoParams params,

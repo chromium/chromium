@@ -9,6 +9,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_registry.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/common/product_messaging_controller.h"
@@ -31,6 +32,8 @@ class FeaturePromoController25 : public FeaturePromoControllerCommon {
   ~FeaturePromoController25() override;
 
   // FeaturePromoControllerCommon:
+  FeaturePromoResult CanShowPromo(
+      const FeaturePromoParams& params) const override;
   void MaybeShowStartupPromo(FeaturePromoParams params) override;
   void MaybeShowPromo(FeaturePromoParams params) override;
   FeaturePromoResult MaybeShowPromoForDemoPage(
@@ -39,10 +42,6 @@ class FeaturePromoController25 : public FeaturePromoControllerCommon {
 
  protected:
   // FeaturePromoControllerCommon:
-  FeaturePromoResult CanShowPromoCommon(
-      const FeaturePromoParams& params,
-      ShowSource source,
-      CanShowPromoOutputs* outputs) const override;
   bool MaybeUnqueuePromo(const base::Feature& iph_feature) override;
   void MaybeShowQueuedPromo() override;
   base::WeakPtr<FeaturePromoController> GetAsWeakPtr() override;

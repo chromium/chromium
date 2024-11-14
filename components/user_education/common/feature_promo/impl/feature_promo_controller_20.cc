@@ -15,6 +15,14 @@ namespace {
 DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(kFeaturePromoControllerNotice);
 }
 
+FeaturePromoController20::CanShowPromoOutputs::CanShowPromoOutputs() = default;
+FeaturePromoController20::CanShowPromoOutputs::CanShowPromoOutputs(
+    CanShowPromoOutputs&&) noexcept = default;
+FeaturePromoController20::CanShowPromoOutputs&
+FeaturePromoController20::CanShowPromoOutputs::operator=(
+    CanShowPromoOutputs&&) noexcept = default;
+FeaturePromoController20::CanShowPromoOutputs::~CanShowPromoOutputs() = default;
+
 struct FeaturePromoController20::QueuedPromoData {
   using PromoInfo = FeaturePromoPriorityProvider::PromoPriorityInfo;
 
@@ -242,6 +250,16 @@ FeaturePromoResult FeaturePromoController20::MaybeShowPromoForDemoPage(
   return MaybeShowPromoCommon(std::move(params), ShowSource::kDemo);
 }
 
+FeaturePromoResult FeaturePromoController20::CanShowPromo(
+    const FeaturePromoParams& params) const {
+  auto result = CanShowPromoCommon(params, ShowSource::kNormal, nullptr);
+  if (result &&
+      !feature_engagement_tracker()->WouldTriggerHelpUI(*params.feature)) {
+    result = FeaturePromoResult::kBlockedByConfig;
+  }
+  return result;
+}
+
 bool FeaturePromoController20::MaybeUnqueuePromo(
     const base::Feature& iph_feature) {
   const auto it = FindQueuedPromo(iph_feature);
@@ -377,6 +395,85 @@ void FeaturePromoController20::MaybeShowQueuedPromo() {
   if (!result) {
     MaybeShowQueuedPromo();
   }
+}
+
+FeaturePromoResult FeaturePromoController20::MaybeShowPromoCommon(
+    FeaturePromoParams params,
+    ShowSource source) {
+  // Perform common checks.
+  CanShowPromoOutputs outputs;
+  auto result = CanShowPromoCommon(params, source, &outputs);
+  if (!result) {
+    return result;
+  }
+  CHECK(outputs.primary_spec);
+  CHECK(outputs.display_spec);
+  CHECK(outputs.lifecycle);
+  CHECK(outputs.anchor_element);
+  const bool for_demo = source == ShowSource::kDemo;
+
+  // If the session policy allows overriding the current promo, abort it.
+  if (current_promo()) {
+    EndPromo(*GetCurrentPromoFeature(),
+             for_demo ? FeaturePromoClosedReason::kOverrideForDemo
+                      : FeaturePromoClosedReason::kOverrideForPrecedence);
+  }
+
+  // If the session policy allows overriding other help bubbles, close them.
+  if (auto* const help_bubble = bubble_factory_registry()->GetHelpBubble(
+          outputs.anchor_element->context())) {
+    help_bubble->Close(HelpBubble::CloseReason::kProgrammaticallyClosed);
+  }
+
+  // TODO(crbug.com/40200981): Currently this must be called before
+  // ShouldTriggerHelpUI() below. See bug for details.
+  const bool screen_reader_available =
+      CheckScreenReaderPromptAvailable(for_demo || in_iph_demo_mode());
+
+  if (!for_demo && !feature_engagement_tracker()->ShouldTriggerHelpUI(
+                       params.feature.get())) {
+    return FeaturePromoResult::kBlockedByConfig;
+  }
+
+  // If the tracker says we should trigger, but we have a promo
+  // currently showing, there is a bug somewhere in here.
+  DCHECK(!current_promo());
+  set_current_promo(std::move(outputs.lifecycle));
+  // Construct the parameters for the promotion.
+  ShowPromoBubbleParams show_params;
+  show_params.spec = outputs.display_spec;
+  show_params.anchor_element = outputs.anchor_element;
+  show_params.screen_reader_prompt_available = screen_reader_available;
+  show_params.body_format = std::move(params.body_params);
+  show_params.screen_reader_format = std::move(params.screen_reader_params);
+  show_params.title_format = std::move(params.title_params);
+  show_params.can_snooze = current_promo()->CanSnooze();
+
+  // Try to show the bubble and bail out if we cannot.
+  auto bubble = ShowPromoBubbleImpl(std::move(show_params));
+  if (!bubble) {
+    set_current_promo(nullptr);
+    if (!for_demo) {
+      feature_engagement_tracker()->Dismissed(params.feature.get());
+    }
+    return FeaturePromoResult::kError;
+  }
+
+  // Update the most recent promo info.
+  set_last_promo_info(
+      session_policy()->GetPromoPriorityInfo(*outputs.primary_spec));
+  session_policy()->NotifyPromoShown(last_promo_info());
+
+  set_bubble_closed_callback(std::move(params.close_callback));
+
+  if (for_demo) {
+    current_promo()->OnPromoShownForDemo(std::move(bubble));
+  } else {
+    current_promo()->OnPromoShown(std::move(bubble),
+                                  feature_engagement_tracker());
+  }
+
+  return result;
 }
 
 FeaturePromoResult FeaturePromoController20::MaybeShowPromoImpl(

@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 
 namespace user_education {
 
@@ -27,6 +28,11 @@ FeaturePromoController25::FeaturePromoController25(
 
 FeaturePromoController25::~FeaturePromoController25() = default;
 
+FeaturePromoResult FeaturePromoController25::CanShowPromo(
+    const FeaturePromoParams& params) const {
+  return FeaturePromoResult::kError;
+}
+
 void FeaturePromoController25::MaybeShowStartupPromo(
     FeaturePromoParams params) {}
 
@@ -42,13 +48,6 @@ FeaturePromoResult FeaturePromoController25::MaybeShowPromoForDemoPage(
 bool FeaturePromoController25::IsPromoQueued(
     const base::Feature& iph_feature) const {
   return false;
-}
-
-FeaturePromoResult FeaturePromoController25::CanShowPromoCommon(
-    const FeaturePromoParams& params,
-    ShowSource source,
-    CanShowPromoOutputs* outputs) const {
-  return FeaturePromoResult::kError;
 }
 
 bool FeaturePromoController25::MaybeUnqueuePromo(

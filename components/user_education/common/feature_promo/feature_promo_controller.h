@@ -237,8 +237,6 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 #endif
 
   // FeaturePromoController:
-  FeaturePromoResult CanShowPromo(
-      const FeaturePromoParams& params) const override;
   FeaturePromoStatus GetPromoStatus(
       const base::Feature& iph_feature) const override;
   const FeaturePromoSpecification* GetCurrentPromoSpecificationForAnchor(
@@ -277,17 +275,45 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   friend BrowserFeaturePromoController20Test;
   friend FeaturePromoLifecycleUiTest;
 
-  enum class ShowSource { kNormal, kQueue, kDemo };
+  struct ShowPromoBubbleParams {
+    ShowPromoBubbleParams();
+    ShowPromoBubbleParams(ShowPromoBubbleParams&& other) noexcept;
+    ~ShowPromoBubbleParams();
 
-  // Common logic for showing feature promos.
-  FeaturePromoResult MaybeShowPromoCommon(FeaturePromoParams params,
-                                          ShowSource source);
+    raw_ptr<const FeaturePromoSpecification> spec = nullptr;
+    raw_ptr<ui::TrackedElement> anchor_element = nullptr;
+    FeaturePromoSpecification::FormatParameters body_format;
+    FeaturePromoSpecification::FormatParameters screen_reader_format;
+    FeaturePromoSpecification::FormatParameters title_format;
+    bool screen_reader_prompt_available = false;
+    bool can_snooze = false;
+  };
+
+  enum class ShowSource { kNormal, kQueue, kDemo };
 
   // Records when and why an IPH was not shown.
   void RecordPromoNotShown(const char* feature_name,
                            FeaturePromoResult::Failure failure) const final;
 
   const base::Feature* GetCurrentPromoFeature() const final;
+
+  // Method that creates the bubble for a feature promo. May return null if the
+  // bubble cannot be shown.
+  std::unique_ptr<HelpBubble> ShowPromoBubbleImpl(
+      ShowPromoBubbleParams show_params);
+
+  // Does the work of ending a promo with the specified `close_reason`.
+  bool EndPromo(const base::Feature& iph_feature,
+                FeaturePromoClosedReason close_reason);
+
+  // Returns whether we can play a screen reader prompt for the "focus help
+  // bubble" promo.
+  // TODO(crbug.com/40200981): This must be called *before* we ask if the bubble
+  // will show because a limitation in the current FE backend causes
+  // ShouldTriggerHelpUI() to always return false if another promo is being
+  // displayed. Once we have machinery to allow concurrency in the FE system
+  // all of this logic can be rewritten.
+  bool CheckScreenReaderPromptAvailable(bool for_demo) const;
 
   // Derived classes need non-const access to these members in const methods.
   // Be careful when calling them.
@@ -300,16 +326,25 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   ProductMessagingController* messaging_controller() const {
     return messaging_controller_;
   }
+  FeaturePromoSessionPolicy* session_policy() { return session_policy_; }
   const FeaturePromoSessionPolicy* session_policy() const {
     return session_policy_;
   }
 
+  FeaturePromoLifecycle* current_promo() { return current_promo_.get(); }
   const FeaturePromoLifecycle* current_promo() const {
     return current_promo_.get();
+  }
+  void set_current_promo(std::unique_ptr<FeaturePromoLifecycle> current_promo) {
+    current_promo_ = std::move(current_promo);
   }
   const FeaturePromoPriorityProvider::PromoPriorityInfo& last_promo_info()
       const {
     return last_promo_info_;
+  }
+  void set_last_promo_info(
+      const FeaturePromoPriorityProvider::PromoPriorityInfo& last_promo_info) {
+    last_promo_info_ = last_promo_info;
   }
   HelpBubble* promo_bubble() {
     return current_promo_ ? current_promo_->help_bubble() : nullptr;
@@ -318,39 +353,15 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
     return current_promo_ ? current_promo_->help_bubble() : nullptr;
   }
 
-  // Provide optional outputs for `CanShowPromoCommon()`.
-  struct CanShowPromoOutputs {
-    CanShowPromoOutputs();
-    CanShowPromoOutputs(CanShowPromoOutputs&&) noexcept;
-    CanShowPromoOutputs& operator=(CanShowPromoOutputs&&) noexcept;
-    ~CanShowPromoOutputs();
+  // Saves the close callback for the current bubble.
+  void set_bubble_closed_callback(BubbleCloseCallback callback) {
+    bubble_closed_callback_ = std::move(callback);
+  }
 
-    // The specification of the promo that has been requested to be shown; for
-    // rotating promos, this is different from the `display_spec`.
-    raw_ptr<const FeaturePromoSpecification> primary_spec = nullptr;
+  const FeaturePromoRegistry* registry() const { return registry_; }
+  FeaturePromoRegistry* registry() { return registry_; }
 
-    // The specification of the actual promo to be shown; for non-rotating
-    // promos, this is the same as `primary_spec`.
-    raw_ptr<const FeaturePromoSpecification> display_spec = nullptr;
-
-    // An object representing the lifecycle of the promo; used to determine
-    // whether the promo can show and record pref and histogram data when it
-    // does.
-    std::unique_ptr<FeaturePromoLifecycle> lifecycle;
-
-    // The UI element the promo should attach to.
-    raw_ptr<ui::TrackedElement> anchor_element = nullptr;
-  };
-
-  // Performs common logic for determining if a feature promo for `iph_feature`
-  // could be shown right now.
-  //
-  // The `output` parameter, if not null, receives execution data for the IPH on
-  // success (its fields will not be modified on failure).
-  virtual FeaturePromoResult CanShowPromoCommon(
-      const FeaturePromoParams& params,
-      ShowSource source,
-      CanShowPromoOutputs* outputs) const = 0;
+  bool in_iph_demo_mode() const { return in_iph_demo_mode_; }
 
   // Removes a promo from the queue and returns whether the promo was found and
   // canceled.
@@ -396,16 +407,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       FeaturePromoSpecification::PromoType promo_type,
       ui::TrackedElement* anchor_element) const = 0;
 
-  const FeaturePromoRegistry* registry() const { return registry_; }
-  FeaturePromoRegistry* registry() { return registry_; }
-
-  bool in_iph_demo_mode() const { return in_iph_demo_mode_; }
-
  private:
-  struct ShowPromoBubbleParams;
-
-  bool EndPromo(const base::Feature& iph_feature,
-                FeaturePromoClosedReason close_reason);
   void RecordPromoEnded(FeaturePromoClosedReason close_reason,
                         bool continue_after_close);
 
@@ -415,20 +417,6 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 
   // FeaturePromoController:
   void FinishContinuedPromo(const base::Feature& iph_feature) override;
-
-  // Returns whether we can play a screen reader prompt for the "focus help
-  // bubble" promo.
-  // TODO(crbug.com/40200981): This must be called *before* we ask if the bubble
-  // will show because a limitation in the current FE backend causes
-  // ShouldTriggerHelpUI() to always return false if another promo is being
-  // displayed. Once we have machinery to allow concurrency in the FE system
-  // all of this logic can be rewritten.
-  bool CheckScreenReaderPromptAvailable(bool for_demo) const;
-
-  // Method that creates the bubble for a feature promo. May return null if the
-  // bubble cannot be shown.
-  std::unique_ptr<HelpBubble> ShowPromoBubbleImpl(
-      ShowPromoBubbleParams show_params);
 
   // Callback that cleans up a help bubble when it is closed.
   void OnHelpBubbleClosed(HelpBubble* bubble, HelpBubble::CloseReason reason);
@@ -510,7 +498,7 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // bubble.
   FeaturePromoHandle tutorial_promo_handle_;
 
-  base::OnceClosure bubble_closed_callback_;
+  BubbleCloseCallback bubble_closed_callback_;
   base::CallbackListSubscription bubble_closed_subscription_;
 
   const raw_ptr<feature_engagement::Tracker> feature_engagement_tracker_;
