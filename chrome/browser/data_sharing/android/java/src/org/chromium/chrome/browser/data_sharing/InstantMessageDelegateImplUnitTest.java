@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.data_sharing;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -14,13 +15,18 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.COLLABORATION_ID1;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.GIVEN_NAME1;
 import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER1;
 import static org.chromium.components.messages.MessageBannerProperties.MESSAGE_IDENTIFIER;
 import static org.chromium.components.messages.MessageBannerProperties.ON_FULLY_VISIBLE;
+import static org.chromium.components.messages.MessageBannerProperties.ON_PRIMARY_ACTION;
 import static org.chromium.components.messages.MessageBannerProperties.TITLE;
+import static org.chromium.components.messages.PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
 
-import androidx.test.core.app.ApplicationProvider;
+import android.app.Activity;
+
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -35,6 +41,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.UnownedUserDataHost;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -51,6 +58,7 @@ import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.MockitoHelper;
@@ -67,6 +75,10 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     @Mock private Profile mProfile;
     @Mock private MessagingBackendService mMessagingBackendService;
     @Mock private ManagedMessageDispatcher mManagedMessageDispatcher;
@@ -74,24 +86,35 @@ public class InstantMessageDelegateImplUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private Callback<Boolean> mSuccessCallback;
     @Mock private DataSharingNotificationManager mDataSharingNotificationManager;
+    @Mock private DataSharingTabManager mDataSharingTabManager;
 
     @Captor private ArgumentCaptor<PropertyModel> mPropertyModelCaptor;
+
+    private final UnownedUserDataHost mUnownedUserDataHost = new UnownedUserDataHost();
 
     private InstantMessageDelegateImpl mDelegate;
 
     @Before
     public void setUp() {
         MockitoHelper.forwardBind(mSuccessCallback);
+        mActivityScenarioRule.getScenario().onActivity(this::onActivity);
+    }
+
+    private void onActivity(Activity activity) {
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
-        when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
+
+        when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUnownedUserDataHost);
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mManagedMessageDispatcher);
-        when(mWindowAndroid.getContext())
-                .thenReturn(new WeakReference<>(ApplicationProvider.getApplicationContext()));
+
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
         when(mTabGroupModelFilter.getRootIdFromStableId(TAB_GROUP_ID)).thenReturn(TAB_ID);
 
         mDelegate = new InstantMessageDelegateImpl(mProfile);
         mDelegate.attachWindow(
-                mWindowAndroid, mTabGroupModelFilter, mDataSharingNotificationManager);
+                mWindowAndroid,
+                mTabGroupModelFilter,
+                mDataSharingNotificationManager,
+                mDataSharingTabManager);
     }
 
     private InstantMessage newInstantMessage(@CollaborationEvent int collaborationEvent) {
@@ -172,8 +195,9 @@ public class InstantMessageDelegateImplUnitTest {
 
     @Test
     public void testCollaborationMemberAdded() {
-        mDelegate.displayInstantaneousMessage(
-                newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED), mSuccessCallback);
+        InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
+        message.attribution.collaborationId = COLLABORATION_ID1;
+        mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
 
         verify(mManagedMessageDispatcher)
                 .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
@@ -186,6 +210,26 @@ public class InstantMessageDelegateImplUnitTest {
 
         propertyModel.get(ON_FULLY_VISIBLE).onResult(true);
         verify(mSuccessCallback).onResult(true);
+
+        Supplier<Integer> action = propertyModel.get(ON_PRIMARY_ACTION);
+        assertNotNull(action);
+        assertEquals(DISMISS_IMMEDIATELY, action.get().intValue());
+        verify(mDataSharingTabManager).showManageSharing(any(), any());
+    }
+
+    @Test
+    public void testCollaborationMemberAdded_NullCollaborationId() {
+        InstantMessage message = newInstantMessage(CollaborationEvent.COLLABORATION_MEMBER_ADDED);
+        message.attribution.collaborationId = null;
+        mDelegate.displayInstantaneousMessage(message, mSuccessCallback);
+
+        verify(mManagedMessageDispatcher)
+                .enqueueWindowScopedMessage(mPropertyModelCaptor.capture(), anyBoolean());
+        PropertyModel propertyModel = mPropertyModelCaptor.getValue();
+        Supplier<Integer> action = propertyModel.get(ON_PRIMARY_ACTION);
+        assertNotNull(action);
+        assertEquals(DISMISS_IMMEDIATELY, action.get().intValue());
+        verify(mDataSharingTabManager, never()).showManageSharing(any(), any());
     }
 
     @Test

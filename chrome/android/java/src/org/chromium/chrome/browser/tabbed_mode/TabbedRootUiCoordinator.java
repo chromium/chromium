@@ -1235,7 +1235,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mInstantMessageDelegateImpl.attachWindow(
                                     mWindowAndroid,
                                     tabGroupModelFilter,
-                                    dataSharingNotificationManager);
+                                    dataSharingNotificationManager,
+                                    mDataSharingTabManager);
                         });
     }
 

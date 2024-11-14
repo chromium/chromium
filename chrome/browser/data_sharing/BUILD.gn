@@ -14,13 +14,10 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactory.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingServiceFactoryBridge.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUiDelegateAndroid.java",
-      "android/java/src/org/chromium/chrome/browser/data_sharing/InstantMessageDelegateFactory.java",
     ]
 
     deps = [
       ":java",
-      ":messages_java",
       "//base:base_java",
       "//base:service_loader_java",
       "//build/android:build_java",
@@ -136,12 +133,16 @@ if (is_android) {
     resources_package = "org.chromium.chrome.browser.data_sharing"
     sources = [
       "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingNotificationManager.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/DataSharingUiDelegateAndroid.java",
+      "android/java/src/org/chromium/chrome/browser/data_sharing/InstantMessageDelegateFactory.java",
       "android/java/src/org/chromium/chrome/browser/data_sharing/InstantMessageDelegateImpl.java",
     ]
 
     deps = [
       ":java_resources",
+      ":tab_group_ui_java",
       "//base:base_java",
+      "//base:service_loader_java",
       "//base:supplier_java",
       "//chrome/android:chrome_app_java_resources",
       "//chrome/browser/android/intents:java",
@@ -158,6 +159,7 @@ if (is_android) {
       "//components/saved_tab_groups/public:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_core_core_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_java",
       "//url:url_java",
     ]
@@ -190,6 +192,7 @@ if (is_android) {
       ":java",
       ":messages_java",
       ":shared_image_tiles_java",
+      ":tab_group_ui_java",
       "//base:base_java",
       "//base:base_junit_test_support",
       "//chrome/browser/collaboration:messaging_factory_java",
@@ -211,6 +214,7 @@ if (is_android) {
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_test_core_java",
+      "//third_party/androidx:androidx_test_ext_junit_java",
       "//third_party/junit:junit",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_java_test_support",
