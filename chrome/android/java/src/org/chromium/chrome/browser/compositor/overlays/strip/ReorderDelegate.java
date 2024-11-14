@@ -404,14 +404,10 @@ public class ReorderDelegate {
      *
      * @param groupTitles The list of {@link StripLayoutGroupTitle}.
      * @param stripTabs The list of {@link StripLayoutTab}.
-     * @param rootId The interacting tab's group's root ID.
      * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
      */
     void moveInteractingTabOutOfGroup(
-            StripLayoutGroupTitle[] groupTitles,
-            StripLayoutTab[] stripTabs,
-            int rootId,
-            boolean towardEnd) {
+            StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs, boolean towardEnd) {
         final int tabId = mInteractingTab.getTabId();
         // TODO(crbug.com/377750438): Skip creating the ActionConfirmationDelegate for Incognito as
         //  it won't be used here.
@@ -423,7 +419,7 @@ public class ReorderDelegate {
             // next action. e.g delete tab group when user confirms the delete, or restore
             // indicators back on strip when user cancel the delete.
             mActionConfirmationDelegate.handleDeleteGroupAction(
-                    rootId,
+                    StripLayoutUtils.getRootId(mModel, mInteractingTab),
                     /* draggingLastTabOffStrip= */ false,
                     /* tabClosing= */ false,
                     () -> moveTabOutOfGroupInDirection(tabId, towardEnd));
@@ -435,13 +431,15 @@ public class ReorderDelegate {
             moveTabOutOfGroupInDirection(tabId, towardEnd);
         }
 
-        // Run indicator animations.
-        // TODO(crbug.com/372546700): Investigate deriving rootId from mInteractingTab instead of
-        //  passing in here.
-        animateGroupIndicatorForTabReorder(
-                StripLayoutUtils.findGroupTitle(groupTitles, rootId),
-                /* isMovingOutOfGroup= */ true,
-                towardEnd);
+        // Run indicator animations. Find the group title after handling the removal, since the
+        // group may have been deleted OR the rootID may have changed.
+        StripLayoutGroupTitle groupTitle =
+                StripLayoutUtils.findGroupTitle(
+                        groupTitles, StripLayoutUtils.getRootId(mModel, mInteractingTab));
+        if (groupTitle != null) {
+            animateGroupIndicatorForTabReorder(
+                    groupTitle, /* isMovingOutOfGroup= */ true, towardEnd);
+        }
     }
 
     /**

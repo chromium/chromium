@@ -79,6 +79,17 @@ public class StripLayoutUtils {
     }
 
     /**
+     * @param model The {@link TabModel} that holds the given tab.
+     * @param stripTab The {@link StripLayoutTab} to find the root ID for.
+     * @return The root ID for the given tab. {@code Tab.INVALID_TAB_ID} if no {@link Tab} found.
+     */
+    static int getRootId(TabModel model, StripLayoutTab stripTab) {
+        if (stripTab == null) return Tab.INVALID_TAB_ID;
+        Tab tab = model.getTabById(stripTab.getTabId());
+        return tab == null ? Tab.INVALID_TAB_ID : tab.getRootId();
+    }
+
+    /**
      * @param groupTitles A list of {@link StripLayoutGroupTitle}.
      * @param rootId The root ID for the tab group title we're searching for.
      * @return The {@link StripLayoutGroupTitle} with the given root ID. {@code null} otherwise.

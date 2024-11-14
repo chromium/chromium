@@ -3881,10 +3881,7 @@ public class StripLayoutHelper
                 if (Math.abs(offset)
                         > mReorderDelegate.getDragOutThreshold(interactingGroupTitle, towardEnd)) {
                     mReorderDelegate.moveInteractingTabOutOfGroup(
-                            mStripGroupTitles,
-                            mStripTabs,
-                            interactingGroupTitle.getRootId(),
-                            towardEnd);
+                            mStripGroupTitles, mStripTabs, towardEnd);
                     // TODO(crbug.com/372546700): Currently, we return a destIndex equal to the
                     //  starting index to mark that a tab move out or merge was successful. This is
                     //  not immediately clear, so track this state more directly.
