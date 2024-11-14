@@ -273,12 +273,24 @@ gfx::GpuMemoryBufferHandle AllocateGpuMemoryBufferHandle(
 }
 
 UniqueTrackingTokenHelper::UniqueTrackingTokenHelper() {
+  Initialize();
+}
+
+UniqueTrackingTokenHelper::~UniqueTrackingTokenHelper() = default;
+
+void UniqueTrackingTokenHelper::ClearTokens() {
+  tokens_.clear();
+  Initialize();
+}
+
+void UniqueTrackingTokenHelper::Initialize() {
+  // This should only be run with an empty token list.
+  CHECK_EQ(0u, tokens_.size());
+
   // Insert an empty tracking token. This guarantees that all returned tokens
   // will be non-empty.
   tokens_.insert(base::UnguessableToken());
 }
-
-UniqueTrackingTokenHelper::~UniqueTrackingTokenHelper() = default;
 
 void UniqueTrackingTokenHelper::ClearToken(
     const base::UnguessableToken& token) {

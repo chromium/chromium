@@ -231,6 +231,12 @@ CroStatus::Or<GpuBufferLayout> PlatformVideoFramePool::Initialize(
   // |visible_rect| into account for IsSameFormat_Locked() any more.
   if (!IsSameFormat_Locked(format, coded_size, visible_rect, use_protected)) {
     DVLOGF(4) << "The video frame format is changed. Clearing the pool.";
+    // This loop clears the free frames' tokens from
+    // |frame_tracking_token_helper_|. The in-use frames' tokens will be cleared
+    // as the frames are released.
+    for (const auto& frame : free_frames_) {
+      frame_tracking_token_helper_.ClearToken(frame->tracking_token());
+    }
     free_frames_.clear();
     auto maybe_frame = create_frame_cb_.Run(
         format, coded_size, visible_rect, natural_size, use_protected,
@@ -311,6 +317,7 @@ void PlatformVideoFramePool::ReleaseAllFrames() {
   base::AutoLock auto_lock(lock_);
   free_frames_.clear();
   frames_in_use_.clear();
+  frame_tracking_token_helper_.ClearTokens();
   weak_this_factory_.InvalidateWeakPtrs();
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }

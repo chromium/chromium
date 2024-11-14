@@ -27,6 +27,9 @@ class UniqueTrackingTokenHelper {
       delete;
   ~UniqueTrackingTokenHelper();
 
+  // Clears all tokens. Used when releasing all frames.
+  void ClearTokens();
+
   // Clears a token from the helper. Called when a token is no longer used to
   // ensure the helper does not leak tokens.
   void ClearToken(const base::UnguessableToken& token);
@@ -37,6 +40,10 @@ class UniqueTrackingTokenHelper {
   void SetUniqueTrackingToken(VideoFrameMetadata& metadata);
 
  private:
+  // Initializes |tokens_| with an empty UnguessableToken. This ensures that
+  // users cannot insert an empty token.
+  void Initialize();
+
   // Generates a unique UnguessableToken.
   base::UnguessableToken GenerateToken();
 
