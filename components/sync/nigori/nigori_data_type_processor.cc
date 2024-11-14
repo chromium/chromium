@@ -132,7 +132,7 @@ void NigoriDataTypeProcessor::OnUpdateReceived(
     return;
   }
 
-  // TODO(crbug.com/40860698): validate incoming updates, e.g. |gc_directive|
+  // TODO(crbug.com/40860698): validate incoming updates, e.g. `gc_directive`
   // must be empty for Nigori.
   std::optional<ModelError> error;
 
@@ -209,7 +209,7 @@ void NigoriDataTypeProcessor::StorePendingInvalidations(
   data_type_state_.mutable_invalidations()->Assign(
       invalidations_to_store.begin(), invalidations_to_store.end());
   // ApplyIncrementalSyncChanges does actually query and persist the
-  // |data_type_state_|.
+  // `data_type_state_`.
   bridge_->ApplyIncrementalSyncChanges(/*data=*/std::nullopt);
 }
 
@@ -250,7 +250,7 @@ void NigoriDataTypeProcessor::OnSyncStopping(
       ClearMetadataAndReset();
       model_ready_to_sync_ = false;
 
-      // The model is immediately ready to sync again (with the same |bridge_|).
+      // The model is immediately ready to sync again (with the same `bridge_`).
       ModelReadyToSync(bridge_, NigoriMetadataBatch());
       break;
     }

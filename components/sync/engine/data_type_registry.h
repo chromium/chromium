@@ -38,7 +38,7 @@ using CommitContributorMap =
 class DataTypeRegistry : public DataTypeConnector,
                          public SyncEncryptionHandler::Observer {
  public:
-  // |nudge_handler|, |cancelation_signal| and |sync_encryption_handler| must
+  // `nudge_handler`, `cancelation_signal` and `sync_encryption_handler` must
   // outlive this object.
   DataTypeRegistry(NudgeHandler* nudge_handler,
                    CancelationSignal* cancelation_signal,
@@ -78,7 +78,7 @@ class DataTypeRegistry : public DataTypeConnector,
   // applied.
   DataTypeSet GetInitialSyncEndedTypes() const;
 
-  // Returns the update handler for |type|. If UpdateHandler of |type| doesn't
+  // Returns the update handler for `type`. If UpdateHandler of `type` doesn't
   // exist, returns nullptr.
   const UpdateHandler* GetUpdateHandler(DataType type) const;
   UpdateHandler* GetMutableUpdateHandler(DataType type);

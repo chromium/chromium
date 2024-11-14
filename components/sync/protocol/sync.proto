@@ -61,7 +61,7 @@ message ClientConfigParams {
   // necessary to send invalidations for the committed data. A client is
   // considered active if it's DeviceInfo has updated recent enough. This flag
   // does not take into account whether standalone invalidations are enabled (as
-  // opposed to |single_client_with_standalone_invalidations|). However, it's
+  // opposed to `single_client_with_standalone_invalidations`). However, it's
   // set depending on interested data types of other devices, e.g. if there are
   // other devices but they are not interested in SESSION data type, and current
   // commit request contains only SESSION, it will be set to true.
@@ -78,23 +78,23 @@ message ClientConfigParams {
   // items.
   // 3. An empty list could also mean that the current client is the only
   // client. This case should be covered by the
-  // |single_client_with_standalone_invalidations| field instead (otherwise it
+  // `single_client_with_standalone_invalidations` field instead (otherwise it
   // could be mixed up with older clients). The server doesn't have to use this
   // field and can ignore it. Note that this list does not take into account
   // interested data types from the other clients.
   // Introduced in M89.
   repeated string devices_fcm_registration_tokens = 5;
 
-  // Similar to |single_client| but takes into account only clients with enabled
+  // Similar to `single_client` but takes into account only clients with enabled
   // sync standalone invalidations. When set to true, there are no other clients
   // with sync standalone invalidations interested in the committing types and
   // hence it's not necessary to send out standalone invalidations (it may still
   // be necessary to send out invalidations using the legacy system, see
-  // |single_client| instead).
+  // `single_client` instead).
   // Introduced in M105.
   optional bool single_client_with_standalone_invalidations = 6;
 
-  // Similar to |devices_fcm_registration_tokens| but takes into account clients
+  // Similar to `devices_fcm_registration_tokens` but takes into account clients
   // which are subscribed to the data types which are committed in current
   // commit request.
   // A list of FCM registration tokens which are obtained from other clients.
@@ -107,16 +107,16 @@ message ClientConfigParams {
   // items.
   // 3. An empty list could also mean that the current client is the only
   // client. This case should be covered by the
-  // |single_client_with_standalone_invalidations| field instead (otherwise it
+  // `single_client_with_standalone_invalidations` field instead (otherwise it
   // could be mixed up with older clients). The server doesn't have to use this
   // field and can ignore it.
   // Introduced in M105.
   repeated string fcm_registration_tokens_for_interested_clients = 7;
 
-  // Similar to |single_client| but takes into account only clients which are
+  // Similar to `single_client` but takes into account only clients which are
   // subscribed to old invalidations (i.e. not subscribed to sync standalone
   // invalidations). When set to true, there are no other clients subscribed to
-  // old invalidations. Note that opposed to |single_client|, this flag does not
+  // old invalidations. Note that opposed to `single_client`, this flag does not
   // always take into account the list of interested data types (because
   // interested data types were introduced in M89). When the list is empty, a
   // client is considered to be subscribed to all data types. Note that "single
@@ -260,7 +260,7 @@ message ClientStatus {
 }
 
 message ClientToServerMessage {
-  // |share| field is only used on the server for logging and can sometimes
+  // `share` field is only used on the server for logging and can sometimes
   // contain empty string. It is still useful for logging username when it can't
   // be derived from access token in case of auth error.
   required string share = 1;
@@ -396,14 +396,14 @@ message GetUpdatesResponse {
   // persist the values returned in this field, and present them back to the
   // server to indicate the starting point for future update requests.
   //
-  // This will be sent only if the client provided |from_progress_marker|
+  // This will be sent only if the client provided `from_progress_marker`
   // in the update request.
   //
   // The server may provide a new progress marker even if this is the end of
   // the batch, or if there were no new updates on the server; and the client
-  // must save these.  If the server does not provide a |new_progress_marker|
+  // must save these.  If the server does not provide a `new_progress_marker`
   // value for a particular datatype, when the request provided a
-  // |from_progress_marker| value for that datatype, the client should
+  // `from_progress_marker` value for that datatype, the client should
   // interpret this to mean "no change from the previous state" and retain its
   // previous progress-marker value for that datatype.
   repeated DataTypeProgressMarker new_progress_marker = 5;
@@ -469,7 +469,7 @@ message ClientToServerResponse {
     reserved "url";
     optional SyncEnums.Action action = 4 [default = UNKNOWN_ACTION];
 
-    // Currently meaningful if |error_type| is throttled or partial_failure.
+    // Currently meaningful if `error_type` is throttled or partial_failure.
     // In the throttled case, if this field is absent then the whole client
     // (all datatypes) is throttled.
     // In the partial_failure case, this field denotes partial failures. The

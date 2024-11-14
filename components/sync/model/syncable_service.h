@@ -55,9 +55,9 @@ class SyncableService {
   // MergeDataAndStartSyncing is called during both.
   virtual void WillStartInitialSync();
 
-  // Informs the service to begin syncing the specified synced datatype |type|.
-  // The service should then merge |initial_sync_data| into it's local data,
-  // calling |sync_processor|'s ProcessSyncChanges as necessary to reconcile the
+  // Informs the service to begin syncing the specified synced datatype `type`.
+  // The service should then merge `initial_sync_data` into it's local data,
+  // calling `sync_processor`'s ProcessSyncChanges as necessary to reconcile the
   // two. After this, the SyncableService's local data should match the server
   // data, and the service should be ready to receive and process any further
   // SyncChange's as they occur.

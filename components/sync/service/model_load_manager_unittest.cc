@@ -60,7 +60,7 @@ class SyncModelLoadManagerTest : public testing::Test {
   DataTypeController::TypeMap controllers_;
 };
 
-// Start a type and make sure ModelLoadManager callst the |Start|
+// Start a type and make sure ModelLoadManager callst the `Start`
 // method and calls the callback when it is done.
 TEST_F(SyncModelLoadManagerTest, SimpleModelStart) {
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);

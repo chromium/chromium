@@ -278,7 +278,7 @@ void SyncEngineImpl::StopSyncingForShutdown() {
 }
 
 void SyncEngineImpl::Shutdown(ShutdownReason reason) {
-  // StopSyncingForShutdown() (which nulls out |host_|) should be
+  // StopSyncingForShutdown() (which nulls out `host_`) should be
   // called first.
   DCHECK(!host_);
 
@@ -301,7 +301,7 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
       FROM_HERE,
       base::BindOnce(&SyncEngineBackend::DoShutdown, backend_, reason));
 
-  // Ensure that |backend_| destroyed inside Sync sequence, not inside current
+  // Ensure that `backend_` destroyed inside Sync sequence, not inside current
   // one.
   sync_task_runner_->ReleaseSoon(FROM_HERE, std::move(backend_));
 
@@ -347,7 +347,7 @@ void SyncEngineImpl::HasUnsyncedItemsForTest(
 void SyncEngineImpl::GetThrottledDataTypesForTest(
     base::OnceCallback<void(DataTypeSet)> cb) const {
   DCHECK(IsInitialized());
-  // Instead of reading directly from |cached_status_.throttled_types|, issue
+  // Instead of reading directly from `cached_status_.throttled_types`, issue
   // a round trip to the backend sequence, in case there is an ongoing cycle
   // that could update the throttled types.
   sync_task_runner_->PostTaskAndReply(
@@ -507,7 +507,7 @@ void SyncEngineImpl::HandleSyncStatusChanged(const SyncStatus& status) {
   if (has_new_invalidated_data_types) {
     // Notify about any new data types having pending invalidations. When there
     // are less such data types, this basically means that sync cycle has been
-    // finished, and |host_| will be notified via OnSyncCycleCompleted(), so
+    // finished, and `host_` will be notified via OnSyncCycleCompleted(), so
     // there is no point in duplicating it.
     host_->OnNewInvalidatedDataTypes();
   }

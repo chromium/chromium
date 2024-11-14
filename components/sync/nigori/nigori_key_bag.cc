@@ -16,7 +16,7 @@
 namespace syncer {
 namespace {
 
-// Note that |key_name| is redundant but computing the name from |nigori| can be
+// Note that `key_name` is redundant but computing the name from `nigori` can be
 // expensive.
 sync_pb::NigoriKey NigoriToProto(const Nigori& nigori,
                                  const std::string& key_name) {

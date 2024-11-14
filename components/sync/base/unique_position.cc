@@ -236,16 +236,16 @@ std::string UniquePosition::FindSmallerWithSuffix(const std::string& reference,
   }
 
   if (suffix_str.substr(suffix_zeroes) < reference.substr(ref_zeroes)) {
-    // Prepend zeroes so the result has as many zero digits as |reference|.
+    // Prepend zeroes so the result has as many zero digits as `reference`.
     return std::string(ref_zeroes - suffix_zeroes, '\0');
   } else if (suffix_zeroes > 1) {
-    // Prepend zeroes so the result has one more zero digit than |reference|.
+    // Prepend zeroes so the result has one more zero digit than `reference`.
     // We could also take the "else" branch below, but taking this branch will
     // give us a smaller result.
     return std::string(ref_zeroes - suffix_zeroes + 1, '\0');
   } else {
-    // Prepend zeroes to match those in the |reference|, then something smaller
-    // than the first non-zero digit in |reference|.
+    // Prepend zeroes to match those in the `reference`, then something smaller
+    // than the first non-zero digit in `reference`.
     char lt_digit = static_cast<uint8_t>(reference[ref_zeroes]) / 2;
     return std::string(ref_zeroes, '\0') + lt_digit;
   }
@@ -273,18 +273,18 @@ std::string UniquePosition::FindGreaterWithSuffix(const std::string& reference,
   }
 
   if (suffix_str.substr(suffix_FFs) > reference.substr(ref_FFs)) {
-    // Prepend FF digits to match those in |reference|.
+    // Prepend FF digits to match those in `reference`.
     return std::string(ref_FFs - suffix_FFs,
                        std::numeric_limits<uint8_t>::max());
   } else if (suffix_FFs > 1) {
     // Prepend enough leading FF digits so result has one more of them than
-    // |reference| does.  We could also take the "else" branch below, but this
+    // `reference` does.  We could also take the "else" branch below, but this
     // gives us a smaller result.
     return std::string(ref_FFs - suffix_FFs + 1,
                        std::numeric_limits<uint8_t>::max());
   } else {
-    // Prepend FF digits to match those in |reference|, then something larger
-    // than the first non-FF digit in |reference|.
+    // Prepend FF digits to match those in `reference`, then something larger
+    // than the first non-FF digit in `reference`.
     char gt_digit = static_cast<uint8_t>(reference[ref_FFs]) +
                     (std::numeric_limits<uint8_t>::max() -
                      static_cast<uint8_t>(reference[ref_FFs]) + 1) /
@@ -334,17 +334,17 @@ std::string UniquePosition::FindBetweenWithSuffix(const std::string& before,
       // digits.  Exploring both options is an optimization and is not required
       // for the correctness of this algorithm.
 
-      // Option A: Round down the current digit.  This makes our |mid| <
-      // |after|, no matter what we append afterwards.  We then focus on
-      // appending digits until |mid| > |before|.
+      // Option A: Round down the current digit.  This makes our `mid` <
+      // `after`, no matter what we append afterwards.  We then focus on
+      // appending digits until `mid` > `before`.
       std::string mid_a = mid;
       mid_a.push_back(a_digit);
       mid_a.append(FindGreaterWithSuffix(before.substr(i + 1), suffix));
 
-      // Option B: Round up the current digit.  This makes our |mid| > |before|,
+      // Option B: Round up the current digit.  This makes our `mid` > `before`,
       // no matter what we append afterwards.  We then focus on appending digits
-      // until |mid| < |after|.  Note that this option may not be viable if the
-      // current digit is the last one in |after|, so we skip the option in that
+      // until `mid` < `after`.  Note that this option may not be viable if the
+      // current digit is the last one in `after`, so we skip the option in that
       // case.
       if (after.length() > i + 1) {
         std::string mid_b = mid;
@@ -365,9 +365,9 @@ std::string UniquePosition::FindBetweenWithSuffix(const std::string& before,
   DCHECK_EQ(before, mid);
   DCHECK_LT(before.length(), after.length());
 
-  // We know that we'll need to append at least one more byte to |mid| in the
-  // process of making it < |after|.  Appending any digit, regardless of the
-  // value, will make |before| < |mid|.  Therefore, the following will get us a
+  // We know that we'll need to append at least one more byte to `mid` in the
+  // process of making it < `after`.  Appending any digit, regardless of the
+  // value, will make `before` < `mid`.  Therefore, the following will get us a
   // valid position.
 
   mid.append(FindSmallerWithSuffix(after.substr(i), suffix));
@@ -467,7 +467,7 @@ UniquePosition::UniquePosition(const std::string& uncompressed,
 
 namespace {
 
-// Appends an encoded run length to |output_str|.
+// Appends an encoded run length to `output_str`.
 static void WriteEncodedRunLength(uint32_t length,
                                   bool high_encoding,
                                   std::string* output_str) {
@@ -489,7 +489,7 @@ static void WriteEncodedRunLength(uint32_t length,
   output_str->append(1, 0xff & (encoded_length >> 0U));
 }
 
-// Reads an encoded run length for |str| at position |i|.
+// Reads an encoded run length for `str` at position `i`.
 static uint32_t ReadEncodedRunLength(const std::string& str, size_t i) {
   DCHECK_LE(i + 4, str.length());
 
@@ -556,7 +556,7 @@ std::string UniquePosition::CompressImpl(const std::string& str) {
 
       // Handle the 'runs until end' special case specially.
       size_t run_length;
-      bool encode_high;  // True if the next byte is greater than |rep_digit|.
+      bool encode_high;  // True if the next byte is greater than `rep_digit`.
       if (runs_until == std::string::npos) {
         run_length = str.length() - i;
         encode_high = false;

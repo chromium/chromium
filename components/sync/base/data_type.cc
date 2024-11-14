@@ -571,7 +571,7 @@ DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
     return PLUS_ADDRESS_SETTING;
   }
 
-  // This client version doesn't understand |specifics|.
+  // This client version doesn't understand `specifics`.
   DVLOG(1) << "Unknown datatype in sync proto.";
   return UNSPECIFIED;
 }

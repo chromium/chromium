@@ -130,7 +130,7 @@ const std::string FakeServerHttpPostProvider::GetResponseHeaderValue(
 }
 
 void FakeServerHttpPostProvider::Abort() {
-  // Note: This may be called on any thread, so no |sequence_checker_| here.
+  // Note: This may be called on any thread, so no `sequence_checker_` here.
   // The sync thread could be blocked in MakeSynchronousPost(), waiting
   // for HandleCommandOnFakeServerThread() to be processed and completed.
   // This causes an immediate unblocking which will be returned as

@@ -27,7 +27,7 @@ message TypedUrlSpecifics {
   optional bool hidden = 4;
   // Timestamps for all visits to this URL.
   repeated int64 visits = 7 [packed = true];
-  // The PageTransition::Type for each of the visits in the |visit| array. Both
+  // The PageTransition::Type for each of the visits in the `visit` array. Both
   // arrays must be the same length.
   repeated int32 visit_transitions = 8 [packed = true];
 

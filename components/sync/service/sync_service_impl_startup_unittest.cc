@@ -183,7 +183,7 @@ class SyncServiceImplStartupTest : public testing::Test {
   SyncServiceImplBundle sync_service_impl_bundle_;
   SyncPrefs sync_prefs_;
   std::unique_ptr<SyncServiceImpl> sync_service_;
-  // The controllers are owned by |sync_service_|.
+  // The controllers are owned by `sync_service_`.
   std::map<DataType, raw_ptr<FakeDataTypeController, CtnExperimental>>
       controller_map_;
 };

@@ -182,7 +182,7 @@ void DataTypeController::LoadModels(
   request.sync_mode = configure_context.sync_mode;
   request.configuration_start_time = configure_context.configuration_start_time;
 
-  // Note that |request.authenticated_account_id| may be empty for local sync.
+  // Note that `request.authenticated_account_id` may be empty for local sync.
   DCHECK(!request.cache_guid.empty());
 
   // Ask the delegate to actually start the datatype.

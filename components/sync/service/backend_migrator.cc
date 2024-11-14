@@ -104,7 +104,7 @@ void BackendMigrator::OnConfigureDone(
     return;
   }
 
-  // |manager_|'s methods aren't re-entrant, and we're notified from
+  // `manager_`'s methods aren't re-entrant, and we're notified from
   // them, so post a task to avoid problems.
   SDVLOG(1) << "Posting OnConfigureDoneImpl";
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

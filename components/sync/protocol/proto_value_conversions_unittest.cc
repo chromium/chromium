@@ -283,7 +283,7 @@ MATCHER(ValueHasNonEmptyGetUpdateTriggers, "") {
 }  // namespace
 
 // Create a ClientToServerMessage with an EntitySpecifics.  Converting it to
-// a value should respect the |include_specifics| flag.
+// a value should respect the `include_specifics` flag.
 TEST(ProtoValueConversionsTest, ClientToServerMessageToValue) {
   sync_pb::ClientToServerMessage message;
   sync_pb::CommitMessage* commit_message = message.mutable_commit();
@@ -333,7 +333,7 @@ TEST(ProtoValueConversionsTest, ClientToServerMessageToValueGUTriggers) {
 }
 
 // Create a ClientToServerResponse with an EntitySpecifics.  Converting it to
-// a value should respect the |include_specifics| flag.
+// a value should respect the `include_specifics` flag.
 TEST(ProtoValueConversionsTest, ClientToServerResponseToValue) {
   sync_pb::ClientToServerResponse message;
   sync_pb::GetUpdatesResponse* response = message.mutable_get_updates();

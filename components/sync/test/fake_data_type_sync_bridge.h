@@ -148,7 +148,7 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
   // tag hashes in EntityData whenever committing entities.
   void SetSupportsGetClientTag(bool supports_get_client_tag);
 
-  // Checks whether |entity| has the client tag hash filled in or whether the
+  // Checks whether `entity` has the client tag hash filled in or whether the
   // bridge itself is able to provide the client tag to the processor.
   bool EntityHasClientTag(const EntityData& entity);
 
@@ -193,7 +193,7 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
   std::unique_ptr<Store> db_;
 
  private:
-  // Applies |change_list| to the metadata store.
+  // Applies `change_list` to the metadata store.
   void ApplyMetadataChangeList(std::unique_ptr<MetadataChangeList> change_list);
 
   // Same as GetStorageKey(), but doesn't check that SupportsGetStorageKey()
@@ -230,7 +230,7 @@ class FakeDataTypeSyncBridge : public DataTypeSyncBridge {
   bool supports_get_client_tag_ = true;
 
   // Last dynamically-generated storage key, for the case where
-  // |supports_get_storage_key_| == false (otherwise the storage key gets
+  // `supports_get_storage_key_` == false (otherwise the storage key gets
   // inferred deterministically from specifics).
   int last_generated_storage_key_ = 0;
 

@@ -303,8 +303,8 @@ class SyncServiceImplTest : public ::testing::Test {
   SyncServiceImplBundle sync_service_impl_bundle_;
   std::unique_ptr<SyncServiceImpl> service_;
   raw_ptr<SyncClientMock, DanglingUntriaged> sync_client_ =
-      nullptr;  // Owned by |service_|.
-  // The controllers are owned by |service_|.
+      nullptr;  // Owned by `service_`.
+  // The controllers are owned by `service_`.
   std::map<DataType, raw_ptr<FakeDataTypeController, CtnExperimental>>
       controller_map_;
 };

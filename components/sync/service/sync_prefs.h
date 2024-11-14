@@ -59,7 +59,7 @@ class SyncPrefs {
     kSyncing = 2
   };
 
-  // |pref_service| must not be null and must outlive this object.
+  // `pref_service` must not be null and must outlive this object.
   explicit SyncPrefs(PrefService* pref_service);
 
   SyncPrefs(const SyncPrefs&) = delete;
@@ -132,14 +132,14 @@ class SyncPrefs {
   int GetNumberOfAccountsWithPasswordsSelected() const;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-  // Sets the selection state for all |registered_types| and "keep everything
+  // Sets the selection state for all `registered_types` and "keep everything
   // synced" flag.
-  // |keep_everything_synced| indicates that all current and future types
+  // `keep_everything_synced` indicates that all current and future types
   // should be synced. If this is set to true, then GetSelectedTypes() will
   // always return UserSelectableTypeSet::All(), even if not all of them are
   // registered or individually marked as selected.
   // Changes are still made to the individual selectable type prefs even if
-  // |keep_everything_synced| is true, but won't be visible until it's set to
+  // `keep_everything_synced` is true, but won't be visible until it's set to
   // false.
   void SetSelectedTypesForSyncingUser(bool keep_everything_synced,
                                       UserSelectableTypeSet registered_types,
@@ -151,7 +151,7 @@ class SyncPrefs {
                                  const signin::GaiaIdHash& gaia_id_hash);
 
   // Used to clear per account prefs for all users *except* the ones in the
-  // passed-in |available_gaia_ids|.
+  // passed-in `available_gaia_ids`.
   void KeepAccountSettingsPrefsOnlyForUsers(
       const std::vector<signin::GaiaIdHash>& available_gaia_ids);
 
@@ -171,10 +171,10 @@ class SyncPrefs {
                           UserSelectableOsTypeSet registered_types,
                           UserSelectableOsTypeSet selected_types);
 
-  // Maps |type| to its corresponding preference name.
+  // Maps `type` to its corresponding preference name.
   static const char* GetPrefNameForOsTypeForTesting(UserSelectableOsType type);
 
-  // Sets |type| as disabled in the given |policy_prefs|, which should
+  // Sets `type` as disabled in the given `policy_prefs`, which should
   // correspond to the "managed" (aka policy-controlled) pref store.
   static void SetOsTypeDisabledByPolicy(PrefValueMap* policy_prefs,
                                         UserSelectableOsType type);
@@ -183,15 +183,15 @@ class SyncPrefs {
   // Whether Sync is disabled on the client for all profiles and accounts.
   bool IsSyncClientDisabledByPolicy() const;
 
-  // Maps |type| to its corresponding preference name.
+  // Maps `type` to its corresponding preference name.
   static const char* GetPrefNameForTypeForTesting(UserSelectableType type);
 
-  // Sets |type| as disabled in the given |policy_prefs|, which should
+  // Sets `type` as disabled in the given `policy_prefs`, which should
   // correspond to the "managed" (aka policy-controlled) pref store.
   static void SetTypeDisabledByPolicy(PrefValueMap* policy_prefs,
                                       UserSelectableType type);
 
-  // Sets |type| as disabled in the given |supervised_user_prefs|, which should
+  // Sets `type` as disabled in the given `supervised_user_prefs`, which should
   // correspond to the custodian-controlled pref store (i.e. controlled by
   // parent/guardian of a child account).
   static void SetTypeDisabledByCustodian(PrefValueMap* supervised_user_prefs,

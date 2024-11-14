@@ -301,7 +301,7 @@ class SyncServiceImpl : public SyncService,
   // Reconfigures the data type manager with the latest enabled types.
   // Note: Does not initialize the engine if it is not already initialized.
   // If a Sync setup is currently in progress (i.e. a settings UI is open), then
-  // the reconfiguration will only happen if |bypass_setup_in_progress_check| is
+  // the reconfiguration will only happen if `bypass_setup_in_progress_check` is
   // set to true.
   void ReconfigureDatatypeManager(bool bypass_setup_in_progress_check);
 
@@ -312,7 +312,7 @@ class SyncServiceImpl : public SyncService,
 
   void UpdateDataTypesForInvalidations();
 
-  // Shuts down and destroys the engine. |reset_reason| specifies the reason for
+  // Shuts down and destroys the engine. `reset_reason` specifies the reason for
   // the shutdown, and dictates if sync metadata should be kept or not.
   // If the engine is still allowed to run (per IsEngineAllowedToRun()), it will
   // soon start up again (possibly in transport-only mode).
@@ -465,7 +465,7 @@ class SyncServiceImpl : public SyncService,
 
   std::unique_ptr<BackendMigrator> migrator_;
 
-  // This is the last |SyncProtocolError| we received from the server that had
+  // This is the last `SyncProtocolError` we received from the server that had
   // an action set on it.
   SyncProtocolError last_actionable_error_;
 

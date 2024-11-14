@@ -159,14 +159,14 @@ class SectionList {
   SectionList() = default;
 
   // WARNING: If this section includes any Personally Identifiable Information,
-  // |is_sensitive| should be set to true.
+  // `is_sensitive` should be set to true.
   Section* AddSection(const std::string& title, bool is_sensitive) {
     sections_.push_back(std::make_unique<Section>(title, is_sensitive));
     return sections_.back().get();
   }
 
-  // If |include_sensitive_data| is true, returns all added sections. Otherwise,
-  // omits those added with |is_sensitive| set to true.
+  // If `include_sensitive_data` is true, returns all added sections. Otherwise,
+  // omits those added with `is_sensitive` set to true.
   base::Value::List ToValue(IncludeSensitiveData include_sensitive_data) const {
     base::Value::List result;
     for (const std::unique_ptr<Section>& section : sections_) {
@@ -251,7 +251,7 @@ std::string GetUserActionableErrorString(
 std::string GetVersionString(const std::string& channel) {
   // Build a version string that matches syncer::MakeUserAgentForSync with the
   // addition of channel info and proper OS names.
-  // |channel| will be an empty string for stable channel or unofficial builds,
+  // `channel` will be an empty string for stable channel or unofficial builds,
   // the channel string otherwise. We want to have "-devel" for unofficial
   // builds only.
   std::string version_modifier = channel;
@@ -506,7 +506,7 @@ base::Value::Dict ConstructAboutInformation(
   bool is_local_sync_enabled_state = service->IsLocalSyncEnabled();
 
   // Version Info.
-  // |client_version| was already set above.
+  // `client_version` was already set above.
   if (!is_local_sync_enabled_state) {
     server_url->Set(service->GetSyncServiceUrlForDebugging().spec());
   }

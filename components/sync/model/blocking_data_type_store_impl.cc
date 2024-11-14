@@ -154,7 +154,7 @@ std::string GetStorageTypePrefix(StorageType storage_type) {
 
 }  // namespace
 
-// Formats key prefix for data records of |data_type| using |storage_type|.
+// Formats key prefix for data records of `data_type` using `storage_type`.
 std::string FormatDataPrefix(DataType data_type, StorageType storage_type) {
   return base::StrCat(
       {BlockingDataTypeStoreImpl::FormatPrefixForDataTypeAndStorageType(
@@ -162,7 +162,7 @@ std::string FormatDataPrefix(DataType data_type, StorageType storage_type) {
        kDataPrefix});
 }
 
-// Formats key prefix for metadata records of |data_type| using |storage_type|.
+// Formats key prefix for metadata records of `data_type` using `storage_type`.
 std::string FormatMetaPrefix(DataType data_type, StorageType storage_type) {
   return base::StrCat(
       {BlockingDataTypeStoreImpl::FormatPrefixForDataTypeAndStorageType(
@@ -170,7 +170,7 @@ std::string FormatMetaPrefix(DataType data_type, StorageType storage_type) {
        kMetadataPrefix});
 }
 
-// Formats key for global metadata record of |data_type| using |storage_type|.
+// Formats key for global metadata record of `data_type` using `storage_type`.
 std::string FormatGlobalMetadataKey(DataType data_type,
                                     StorageType storage_type) {
   return base::StrCat(

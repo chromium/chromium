@@ -260,7 +260,7 @@ TEST_F(DataTypeControllerTest, StopWhileStopping) {
   // Data should be cleared.
   EXPECT_CALL(*delegate(), OnSyncStopping(CLEAR_METADATA));
 
-  // The |stop_completion| callback should be called twice, because Stop() was
+  // The `stop_completion` callback should be called twice, because Stop() was
   // called once while the state was MODEL_STARTING and another while the state
   // was STOPPING.
   EXPECT_CALL(stop_completion, Run()).Times(2);

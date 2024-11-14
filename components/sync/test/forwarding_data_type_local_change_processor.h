@@ -20,7 +20,7 @@ namespace syncer {
 class ForwardingDataTypeLocalChangeProcessor
     : public DataTypeLocalChangeProcessor {
  public:
-  // |other| must not be nullptr and must outlive this object.
+  // `other` must not be nullptr and must outlive this object.
   explicit ForwardingDataTypeLocalChangeProcessor(
       DataTypeLocalChangeProcessor* other);
   ~ForwardingDataTypeLocalChangeProcessor() override;

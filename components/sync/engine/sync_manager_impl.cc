@@ -304,7 +304,7 @@ void SyncManagerImpl::ShutdownOnSyncThread() {
 
   RemoveObserver(&debug_info_event_listener_);
 
-  // |connection_manager_| may end up being null here in tests (in synchronous
+  // `connection_manager_` may end up being null here in tests (in synchronous
   // initialization mode).
   //
   // TODO(akalin): Fix this behavior.

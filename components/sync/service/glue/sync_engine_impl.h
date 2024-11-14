@@ -42,7 +42,7 @@ class SyncEngineImpl : public SyncEngine,
                        public InvalidationsListener,
                        public FCMRegistrationTokenObserver {
  public:
-  // |sync_invalidations_service| must not be null.
+  // `sync_invalidations_service` must not be null.
   SyncEngineImpl(const std::string& name,
                  SyncInvalidationsService* sync_invalidations_service,
                  std::unique_ptr<ActiveDevicesProvider> active_devices_provider,
@@ -112,7 +112,7 @@ class SyncEngineImpl : public SyncEngine,
   // Reports backend initialization success.  Includes some objects from sync
   // manager initialization to be passed back to the UI thread.
   //
-  // |data_type_connector| is our DataTypeConnector, which is owned because in
+  // `data_type_connector` is our DataTypeConnector, which is owned because in
   // production it is a proxy object to the real DataTypeConnector.
   void HandleInitializationSuccessOnFrontendLoop(
       std::unique_ptr<DataTypeConnector> data_type_connector,
@@ -148,7 +148,7 @@ class SyncEngineImpl : public SyncEngine,
   void OnCookieJarChangedDoneOnFrontendLoop(base::OnceClosure callback);
 
   // Called on each device infos change and might be called more than once with
-  // the same |active_devices|.
+  // the same `active_devices`.
   void OnActiveDevicesChanged();
 
   // Sets the last synced time to the current time.
@@ -180,7 +180,7 @@ class SyncEngineImpl : public SyncEngine,
   raw_ptr<SyncInvalidationsService> sync_invalidations_service_ = nullptr;
 
   // Our backend, which communicates directly to the syncapi. Use refptr instead
-  // of WeakHandle because |backend_| is created on the UI thread but released
+  // of WeakHandle because `backend_` is created on the UI thread but released
   // on the sync sequence.
   scoped_refptr<SyncEngineBackend> backend_;
 

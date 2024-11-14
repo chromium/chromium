@@ -45,7 +45,7 @@ class PassphraseTypeMetricsProvider : public metrics::MetricsProvider {
   using GetAllSyncServicesCallback =
       base::RepeatingCallback<std::vector<const SyncService*>()>;
 
-  // All SyncServices returned by |get_all_sync_services_callback| must be not
+  // All SyncServices returned by `get_all_sync_services_callback` must be not
   // null. If `use_cached_passphrase_type` is true, the metric will be computed
   // based on the passphrase type that's cached in sync prefs.
   PassphraseTypeMetricsProvider(

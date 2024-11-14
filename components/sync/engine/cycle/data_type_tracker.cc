@@ -253,7 +253,7 @@ void DataTypeTracker::RecordSuccessfulSyncCycleIfNotBlocked() {
   // sync cycle, before this method gets called (i.e. after a successful
   // "normal" sync cycle). However, in some cases the initial sync might not
   // have happened, e.g. if this one data type got blocked or throttled during
-  // the configure cycle. For those cases, also clear |initial_sync_required_|
+  // the configure cycle. For those cases, also clear `initial_sync_required_`
   // here.
   initial_sync_required_ = false;
 

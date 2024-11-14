@@ -61,20 +61,20 @@ class FCMHandler : public gcm::GCMAppHandler {
   // Returns if the handler is listening for incoming invalidations.
   bool IsListening() const;
 
-  // Add a new |listener| which will be notified on each new incoming
-  // invalidation. |listener| must not be nullptr. Does nothing if the
-  // |listener| has already been added before. When a new |listener| is added,
+  // Add a new `listener` which will be notified on each new incoming
+  // invalidation. `listener` must not be nullptr. Does nothing if the
+  // `listener` has already been added before. When a new `listener` is added,
   // previously received messages will be immediately replayed.
   void AddListener(InvalidationsListener* listener);
 
   // Returns whether `listener` was added before.
   bool HasListener(InvalidationsListener* listener);
 
-  // Removes |listener|, does nothing if it wasn't added before. |listener| must
+  // Removes `listener`, does nothing if it wasn't added before. `listener` must
   // not be nullptr.
   void RemoveListener(InvalidationsListener* listener);
 
-  // Add or remove an FCM token change observer. |observer| must not be nullptr.
+  // Add or remove an FCM token change observer. `observer` must not be nullptr.
   void AddTokenObserver(FCMRegistrationTokenObserver* observer);
   void RemoveTokenObserver(FCMRegistrationTokenObserver* observer);
 

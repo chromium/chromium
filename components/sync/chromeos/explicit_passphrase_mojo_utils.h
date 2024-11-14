@@ -13,11 +13,11 @@ namespace syncer {
 
 class Nigori;
 
-// Converts |nigori| into its mojo representation.
+// Converts `nigori` into its mojo representation.
 crosapi::mojom::NigoriKeyPtr NigoriToMojo(const Nigori& nigori);
 
 // Creates Nigori from its mojo representation. Returns nullptr if
-// |mojo_nigori_key| doesn't represent a valid Nigori.
+// `mojo_nigori_key` doesn't represent a valid Nigori.
 std::unique_ptr<Nigori> NigoriFromMojo(
     const crosapi::mojom::NigoriKey& mojo_nigori_key);
 

@@ -62,10 +62,10 @@ class DataTypeStoreBackend
   // Can be called from any sequence.
   bool IsInitialized() const;
 
-  // Reads records with keys formed by prepending ids from |id_list| with
-  // |prefix|. If the record is found its id (without prefix) and value is
+  // Reads records with keys formed by prepending ids from `id_list` with
+  // `prefix`. If the record is found its id (without prefix) and value is
   // appended to record_list. If record is not found its id is appended to
-  // |missing_id_list|. It is not an error that records for ids are not found so
+  // `missing_id_list`. It is not an error that records for ids are not found so
   // function will still return success in this case.
   std::optional<ModelError> ReadRecordsWithPrefix(
       const std::string& prefix,
@@ -73,20 +73,20 @@ class DataTypeStoreBackend
       DataTypeStore::RecordList* record_list,
       DataTypeStore::IdList* missing_id_list);
 
-  // Reads all records with keys starting with |prefix|. Prefix is removed from
-  // key before it is added to |record_list|.
+  // Reads all records with keys starting with `prefix`. Prefix is removed from
+  // key before it is added to `record_list`.
   std::optional<ModelError> ReadAllRecordsWithPrefix(
       const std::string& prefix,
       DataTypeStore::RecordList* record_list);
 
-  // Writes modifications accumulated in |write_batch| to database.
+  // Writes modifications accumulated in `write_batch` to database.
   std::optional<ModelError> WriteModifications(
       std::unique_ptr<leveldb::WriteBatch> write_batch);
 
   std::optional<ModelError> DeleteDataAndMetadataForPrefix(
       const std::string& prefix);
 
-  // Migrate the db schema from |current_version| to |desired_version|.
+  // Migrate the db schema from `current_version` to `desired_version`.
   std::optional<ModelError> MigrateForTest(int64_t current_version,
                                            int64_t desired_version);
 
@@ -129,16 +129,16 @@ class DataTypeStoreBackend
     scoped_refptr<base::SequencedTaskRunner> task_runner_;
   };
 
-  // Normally |env| should be nullptr, this causes leveldb to use default disk
+  // Normally `env` should be nullptr, this causes leveldb to use default disk
   // based environment from leveldb::Env::Default().
-  // Providing |env| allows to override environment used by leveldb for tests
+  // Providing `env` allows to override environment used by leveldb for tests
   // with in-memory or faulty environment.
   explicit DataTypeStoreBackend(std::unique_ptr<leveldb::Env> env);
 
   ~DataTypeStoreBackend();
 
-  // Opens leveldb database passing correct options. On success sets |db_| and
-  // returns ok status. On failure |db_| is nullptr and returned status reflects
+  // Opens leveldb database passing correct options. On success sets `db_` and
+  // returns ok status. On failure `db_` is nullptr and returned status reflects
   // failure type.
   leveldb::Status OpenDatabase(const std::string& path, leveldb::Env* env);
 
@@ -150,7 +150,7 @@ class DataTypeStoreBackend
   // If an error occurs, the value returned is kInvalidSchemaVersion(-1).
   int64_t GetStoreVersion();
 
-  // Migrate the db schema from |current_version| to |desired_version|,
+  // Migrate the db schema from `current_version` to `desired_version`,
   // returning nullopt on success.
   std::optional<ModelError> Migrate(int64_t current_version,
                                     int64_t desired_version);
@@ -176,13 +176,13 @@ class DataTypeStoreBackend
   // env_ declaration should appear before declaration of db_ because
   // environment object should still be valid when db_'s destructor is called.
   //
-  // Note that no custom deleter is used for |env_| because it is non-null for
-  // callers of CreateInMemoryForTest(), which initializes |db_| synchronously
-  // and hence |db_| also gets deleted without involving task-posting (i.e.
-  // |db_| cannot outlive |env_|).
+  // Note that no custom deleter is used for `env_` because it is non-null for
+  // callers of CreateInMemoryForTest(), which initializes `db_` synchronously
+  // and hence `db_` also gets deleted without involving task-posting (i.e.
+  // `db_` cannot outlive `env_`).
   const std::unique_ptr<leveldb::Env> env_;
 
-  // Destruction of |leveldb::DB| may incur blocking calls, and this class may
+  // Destruction of `leveldb::DB` may incur blocking calls, and this class may
   // be destructed on any sequence, so let's avoid worst-case blocking the UI
   // thread by destroying leveldb::DB on the sequence where Init() was called.
   std::unique_ptr<leveldb::DB, CustomOnTaskRunnerDeleter> db_;

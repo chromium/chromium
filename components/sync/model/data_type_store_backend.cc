@@ -87,7 +87,7 @@ DataTypeStoreBackend::CreateUninitialized() {
 // This is a refcounted class and the destructor is safe on any sequence and
 // hence DCHECK_CALLED_ON_VALID_SEQUENCE is omitted. Note that blocking
 // operations in leveldb's DBImpl::~DBImpl are posted to the backend sequence
-// due to the custom deleter used for |db_|.
+// due to the custom deleter used for `db_`.
 DataTypeStoreBackend::~DataTypeStoreBackend() = default;
 
 std::optional<ModelError> DataTypeStoreBackend::Init(

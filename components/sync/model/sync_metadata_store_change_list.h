@@ -48,7 +48,7 @@ class SyncMetadataStoreChangeList : public MetadataChangeList {
  private:
   void SetError(ModelError error);
 
-  // The metadata store to store metadata in; always outlives |this|.
+  // The metadata store to store metadata in; always outlives `this`.
   const raw_ptr<SyncMetadataStore> store_;
 
   // The sync data type for this metadata.

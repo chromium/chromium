@@ -95,7 +95,7 @@ ClientAction PBActionToClientAction(const sync_pb::SyncEnums::Action& action) {
   NOTREACHED();
 }
 
-// Returns true iff |message| is an initial GetUpdates request.
+// Returns true iff `message` is an initial GetUpdates request.
 bool IsVeryFirstGetUpdates(const ClientToServerMessage& message) {
   if (!message.has_get_updates()) {
     return false;
@@ -109,7 +109,7 @@ bool IsVeryFirstGetUpdates(const ClientToServerMessage& message) {
   return true;
 }
 
-// Returns true iff |message| should contain a store birthday.
+// Returns true iff `message` should contain a store birthday.
 bool IsBirthdayRequired(const ClientToServerMessage& message) {
   if (message.has_clear_server_data()) {
     return false;
@@ -378,7 +378,7 @@ SyncProtocolError SyncerProtoUtil::GetProtocolErrorFromResponse(
       sync_protocol_error.action = DISABLE_SYNC_ON_CLIENT;
     }
   } else {
-    // Legacy server implementation. Compute the error based on |error_code|.
+    // Legacy server implementation. Compute the error based on `error_code`.
     sync_protocol_error = ErrorCodeToSyncProtocolError(response.error_code());
   }
 

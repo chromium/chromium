@@ -208,7 +208,7 @@ class SyncEngineImplTest : public testing::Test {
             testing::InvokeWithoutArgs(this, &SyncEngineImplTest::QuitRunLoop));
     backend_->Initialize(std::move(params));
     PumpSyncThread();
-    // |fake_manager_| is set on the sync thread, but we can rely on the message
+    // `fake_manager_` is set on the sync thread, but we can rely on the message
     // loop barriers to guarantee that we see the updated value.
     DCHECK(fake_manager_);
 

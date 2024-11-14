@@ -98,7 +98,7 @@ class SyncUserSettings {
   virtual void SetSelectedType(UserSelectableType type, bool is_type_on) = 0;
 
   // Clears per account prefs for all users *except* the ones in the passed-in
-  // |available_gaia_ids|.
+  // `available_gaia_ids`.
   virtual void KeepAccountSettingsPrefsOnlyForUsers(
       const std::vector<signin::GaiaIdHash>& available_gaia_ids) = 0;
 
@@ -170,17 +170,17 @@ class SyncUserSettings {
   // passphrase is in use, or no time is available, returns an unset base::Time.
   virtual base::Time GetExplicitPassphraseTime() const = 0;
 
-  // Asynchronously sets the passphrase to |passphrase| for encryption.
+  // Asynchronously sets the passphrase to `passphrase` for encryption.
   virtual void SetEncryptionPassphrase(const std::string& passphrase) = 0;
-  // Asynchronously decrypts pending keys using |passphrase|. Returns false
+  // Asynchronously decrypts pending keys using `passphrase`. Returns false
   // immediately if the passphrase could not be used to decrypt a locally cached
   // copy of encrypted keys; returns true otherwise. This method shouldn't be
   // called when passphrase isn't required.
   [[nodiscard]] virtual bool SetDecryptionPassphrase(
       const std::string& passphrase) = 0;
 
-  // Asynchronously decrypts pending keys using |nigori|. |nigori| must not be
-  // null. It's safe to call this method with wrong |nigori| and, unlike
+  // Asynchronously decrypts pending keys using `nigori`. `nigori` must not be
+  // null. It's safe to call this method with wrong `nigori` and, unlike
   // SetDecryptionPassphrase(), when passphrase isn't required.
   virtual void SetExplicitPassphraseDecryptionNigoriKey(
       std::unique_ptr<Nigori> nigori) = 0;

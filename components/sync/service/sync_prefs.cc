@@ -498,7 +498,7 @@ UserSelectableOsTypeSet SyncPrefs::GetSelectedOsTypes() const {
   for (UserSelectableOsType type : UserSelectableOsTypeSet::All()) {
     const char* pref_name = GetPrefNameForOsType(type);
     DCHECK(pref_name);
-    // If the type is managed, |sync_all_os_types| is ignored for this type.
+    // If the type is managed, `sync_all_os_types` is ignored for this type.
     if (pref_service_->GetBoolean(pref_name) ||
         (sync_all_os_types && !IsOsTypeManagedByPolicy(type))) {
       selected_types.Put(type);

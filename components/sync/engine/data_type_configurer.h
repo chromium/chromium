@@ -51,15 +51,15 @@ class DataTypeConfigurer {
   // Changes the set of data types that are currently being synced.
   virtual void ConfigureDataTypes(ConfigureParams params) = 0;
 
-  // Connects the datatype |type|, which means the sync engine will propagate
+  // Connects the datatype `type`, which means the sync engine will propagate
   // changes between the server and datatype's processor, as provided in
-  // |activation_response|. This must be called before requesting the initial
+  // `activation_response`. This must be called before requesting the initial
   // download of a datatype via ConfigureDataTypes().
   virtual void ConnectDataType(
       DataType type,
       std::unique_ptr<DataTypeActivationResponse> activation_response) = 0;
 
-  // Opposite of the above: stops treating |type| as a datatype that is
+  // Opposite of the above: stops treating `type` as a datatype that is
   // propagating changes between the server and the processor. No-op if the
   // type is not connected.
   virtual void DisconnectDataType(DataType type) = 0;

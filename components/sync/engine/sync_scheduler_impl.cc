@@ -61,9 +61,9 @@ bool ShouldRequestEarlyExit(const SyncProtocolError& error) {
     case CLIENT_DATA_OBSOLETE:
     case DISABLED_BY_ADMIN:
     case ENCRYPTION_OBSOLETE:
-      // If we send terminate sync early then |sync_cycle_ended| notification
-      // would not be sent. If there were no actions then |ACTIONABLE_ERROR|
-      // notification wouldnt be sent either. Then the UI layer would be left
+      // If we send terminate sync early then `sync_cycle_ended` notification
+      // would not be sent. If there were no actions then `ACTIONABLE_ERROR`
+      // notification wouldn't be sent either. Then the UI layer would be left
       // waiting forever. So assert we would send something.
       DCHECK_NE(error.action, UNKNOWN_ACTION);
       return true;
@@ -540,7 +540,7 @@ void SyncSchedulerImpl::RestartWaiting() {
       // a global unblock job, we will schedule another unblock job which has
       // same waiting time, then the job will be run later than expected. Even
       // we did not schedule an unblock job when code reach here, it is ok since
-      // |TrySyncCycleJobImpl| will call this function after the scheduled job
+      // `TrySyncCycleJobImpl` will call this function after the scheduled job
       // got run.
       return;
     }
@@ -680,8 +680,8 @@ void SyncSchedulerImpl::PerformDelayedNudge() {
   if (CanRunNudgeJobNow(RespectGlobalBackoff(true))) {
     TrySyncCycleJob(RespectGlobalBackoff(true));
   } else {
-    // If we set |wait_interval_| while this PerformDelayedNudge was pending
-    // callback scheduled to |retry_timer_|, it's possible we didn't re-schedule
+    // If we set `wait_interval_` while this PerformDelayedNudge was pending
+    // callback scheduled to `retry_timer_`, it's possible we didn't re-schedule
     // because this PerformDelayedNudge was going to execute sooner. If that's
     // the case, we need to make sure we setup to waiting callback now.
     RestartWaiting();

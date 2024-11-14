@@ -37,7 +37,7 @@ class FakeDataTypeControllerDelegate : public DataTypeControllerDelegate {
   void SetDataTypeStateForActivationResponse(
       const sync_pb::DataTypeState& data_type_state);
 
-  // Influences the bit |skip_engine_connection| returned in Connect() as part
+  // Influences the bit `skip_engine_connection` returned in Connect() as part
   // of DataTypeActivationResponse.
   void EnableSkipEngineConnectionForActivationResponse();
 

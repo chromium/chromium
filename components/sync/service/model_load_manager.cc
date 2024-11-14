@@ -52,7 +52,7 @@ ModelLoadManager::~ModelLoadManager() = default;
 void ModelLoadManager::Configure(DataTypeSet preferred_types_without_errors,
                                  DataTypeSet preferred_types,
                                  const ConfigureContext& context) {
-  // |preferred_types_without_errors| must be a subset of |preferred_types|.
+  // `preferred_types_without_errors` must be a subset of `preferred_types`.
   DCHECK(preferred_types.HasAll(preferred_types_without_errors))
       << " desired: "
       << DataTypeSetToDebugString(preferred_types_without_errors)
@@ -154,13 +154,13 @@ void ModelLoadManager::StopDatatypeImpl(
 
   delegate_->OnSingleDataTypeWillStop(data_type, error);
 
-  // Note: Depending on |metadata_fate|, data types will clear their metadata
+  // Note: Depending on `metadata_fate`, data types will clear their metadata
   // in response to Stop().
   dtc->Stop(metadata_fate, std::move(callback));
 }
 
 void ModelLoadManager::LoadDesiredTypes() {
-  // Note: |preferred_types_without_errors_| might be modified during iteration
+  // Note: `preferred_types_without_errors_` might be modified during iteration
   // (e.g. in ModelLoadCallback()), so make a copy.
   const DataTypeSet types = preferred_types_without_errors_;
 

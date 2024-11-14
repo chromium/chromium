@@ -33,16 +33,16 @@ class BookmarkEntityBuilder {
     // A bookmark which doesn't contain title and GUID in specifics.
     kWithoutTitleInSpecifics,
     // A bookmark which contains valid GUID in specifics and
-    // |originator_client_item_id|. For bookmarks created after M52.
+    // `originator_client_item_id`. For bookmarks created after M52.
     kLegacyTitleWithoutGuidInSpecifics,
     // Contains legacy title and GUID in specifics which matches to
-    // |originator_client_item_id| (see BookmarkSpecifics for details).
+    // `originator_client_item_id` (see BookmarkSpecifics for details).
     // Introduced in M81.
     kValidGuidAndLegacyTitle,
     // Contains both legacy title and full title in specifics. Introduced in
     // M83.
     kValidGuidAndFullTitle,
-    // Contains |unique_position|, |type| and |parent_guid| in specifics.
+    // Contains `unique_position`, `type` and `parent_guid` in specifics.
     // Introduced in M94.
     kHierarchyFieldsInSpecifics,
   };
@@ -75,7 +75,7 @@ class BookmarkEntityBuilder {
   BookmarkEntityBuilder& SetParentId(const std::string& parent_id);
 
   // Set parent GUID to populate in specifics for generations above
-  // |kHierarchyFieldsInSpecifics|. The GUID must be valid.
+  // `kHierarchyFieldsInSpecifics`. The GUID must be valid.
   BookmarkEntityBuilder& SetParentGuid(const base::Uuid& parent_guid);
 
   // Sets the index of the bookmark to be built. If this is not called,
@@ -109,7 +109,7 @@ class BookmarkEntityBuilder {
       const sync_pb::EntitySpecifics& entity_specifics,
       bool is_folder);
 
-  // Fill in favicon and icon URL in the specifics. |bookmark_specifics| must
+  // Fill in favicon and icon URL in the specifics. `bookmark_specifics` must
   // not be nullptr.
   void FillWithFaviconIfNeeded(sync_pb::BookmarkSpecifics* bookmark_specifics);
 

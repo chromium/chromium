@@ -208,7 +208,7 @@ std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::Build(
 void BookmarkEntityBuilder::FillWithFaviconIfNeeded(
     sync_pb::BookmarkSpecifics* bookmark_specifics) {
   DCHECK(bookmark_specifics);
-  // Both |favicon_| and |icon_url_| must be provided or empty simultaneously.
+  // Both `favicon_` and `icon_url_` must be provided or empty simultaneously.
   DCHECK(favicon_.IsEmpty() == icon_url_.is_empty());
   if (favicon_.IsEmpty()) {
     return;

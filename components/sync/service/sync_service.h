@@ -268,7 +268,7 @@ class SyncService : public KeyedService {
   // DisableReason enum entries.
   // Note: These refer to both Sync-the-feature and Sync-the-transport.
   virtual DisableReasonSet GetDisableReasons() const = 0;
-  // Helper that returns whether GetDisableReasons() contains the given |reason|
+  // Helper that returns whether GetDisableReasons() contains the given `reason`
   // (possibly among others).
   bool HasDisableReason(DisableReason reason) const {
     return GetDisableReasons().Has(reason);
@@ -450,7 +450,7 @@ class SyncService : public KeyedService {
       std::map<syncer::DataType,
                std::vector<syncer::LocalDataItemModel::DataId>> items) = 0;
 
-  // Returns current download status for the given |type|. The caller can use
+  // Returns current download status for the given `type`. The caller can use
   // SyncServiceObserver::OnStateChanged() to track status changes. Must be
   // called for real data types only.
   virtual DataTypeDownloadStatus GetDownloadStatusFor(DataType type) const = 0;
@@ -466,7 +466,7 @@ class SyncService : public KeyedService {
   // TODO(crbug.com/40901006): Remove this API.
   virtual void OnDataTypeRequestsSyncStartup(DataType type) = 0;
 
-  // Triggers a GetUpdates call for the specified |types|, pulling any new data
+  // Triggers a GetUpdates call for the specified `types`, pulling any new data
   // from the sync server. Used by tests and debug UI (sync-internals).
   virtual void TriggerRefresh(const DataTypeSet& types) = 0;
 
@@ -474,7 +474,7 @@ class SyncService : public KeyedService {
   // changed. If preconditions are NOT met, the datatype will be stopped
   // according to the metadata clearing policy returned by the controller's
   // GetPreconditionState(). Otherwise, if preconditions are newly met,
-  // reconfiguration will be triggered so that |type| gets started again. No-op
+  // reconfiguration will be triggered so that `type` gets started again. No-op
   // if the type's state didn't actually change.
   virtual void DataTypePreconditionChanged(DataType type) = 0;
 
@@ -509,7 +509,7 @@ class SyncService : public KeyedService {
   virtual void AddObserver(SyncServiceObserver* observer) = 0;
   virtual void RemoveObserver(SyncServiceObserver* observer) = 0;
 
-  // Returns true if |observer| has already been added as an observer.
+  // Returns true if `observer` has already been added as an observer.
   virtual bool HasObserver(const SyncServiceObserver* observer) const = 0;
 
   //////////////////////////////////////////////////////////////////////////////

@@ -229,7 +229,7 @@ std::string SyncTransportDataPrefs::GetBirthday() const {
 
 void SyncTransportDataPrefs::SetBagOfChips(const std::string& bag_of_chips) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // |bag_of_chips| contains a serialized proto which is not utf-8, hence
+  // `bag_of_chips` contains a serialized proto which is not utf-8, hence
   // we use base64 encoding in prefs.
   std::string encoded = base::Base64Encode(bag_of_chips);
   SetAccountKeyedPrefDictEntry(pref_service_, kSyncTransportDataPerAccount,
@@ -247,7 +247,7 @@ std::string SyncTransportDataPrefs::GetBagOfChips() const {
     encoded = value->GetString();
   }
 
-  // |kSyncBagOfChips| gets stored in base64 because it represents a serialized
+  // `kSyncBagOfChips` gets stored in base64 because it represents a serialized
   // proto which is not utf-8 encoding.
   std::string decoded;
   base::Base64Decode(encoded, &decoded);

@@ -34,7 +34,7 @@ class HistorySyncSessionDurationsMetricsRecorder
 
   bool IsHistorySyncEnabled() const;
 
-  // Informs this service that a session started at |session_start| time.
+  // Informs this service that a session started at `session_start` time.
   void OnSessionStarted(base::TimeTicks session_start);
   void OnSessionEnded(base::TimeDelta session_length);
 

@@ -17,7 +17,7 @@ namespace syncer {
 // constraints.
 class ForwardingDataTypeControllerDelegate : public DataTypeControllerDelegate {
  public:
-  // Except for tests, |other| must not be null and must outlive this object.
+  // Except for tests, `other` must not be null and must outlive this object.
   explicit ForwardingDataTypeControllerDelegate(
       DataTypeControllerDelegate* other);
 

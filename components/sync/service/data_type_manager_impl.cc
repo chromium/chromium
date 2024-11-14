@@ -58,7 +58,7 @@ ConfigureReason GetReasonForProgrammaticReconfigure(
              : ConfigureReason::CONFIGURE_REASON_PROGRAMMATIC;
 }
 
-// Divides |types| into sets by their priorities and return the sets from
+// Divides `types` into sets by their priorities and return the sets from
 // high priority to low priority.
 base::queue<DataTypeSet> PrioritizeTypes(const DataTypeSet& types) {
   // Control types are usually configured before all other types during
@@ -331,7 +331,7 @@ void DataTypeManagerImpl::ConnectDataTypes() {
     CHECK_EQ(dtc->state(), DataTypeController::RUNNING);
 
     if (activation_response->skip_engine_connection) {
-      // |skip_engine_connection| means ConnectDataType() shouldn't be invoked
+      // `skip_engine_connection` means ConnectDataType() shouldn't be invoked
       // because the datatype has some alternative way to sync changes to the
       // server, without relying on this instance of the sync engine. This is
       // currently possible for PASSWORDS on Android.
@@ -567,9 +567,9 @@ void DataTypeManagerImpl::OnAllDataTypesReadyForConfigure() {
     ProcessReconfigure();
     return;
   }
-  // TODO(pavely): By now some of datatypes in |configuration_types_queue_|
+  // TODO(pavely): By now some of datatypes in `configuration_types_queue_`
   // could have failed loading and should be excluded from configuration. I need
-  // to adjust |configuration_types_queue_| for such types.
+  // to adjust `configuration_types_queue_` for such types.
   ConnectDataTypes();
 
   StartNextConfiguration();
@@ -630,7 +630,7 @@ void DataTypeManagerImpl::ProcessReconfigure() {
 
   // An attempt was made to reconfigure while we were already configuring.
   // This can be because a passphrase was accepted or the user changed the
-  // set of desired types. Either way, |preferred_types_| will contain the most
+  // set of desired types. Either way, `preferred_types_` will contain the most
   // recent set of desired types, so we just call configure.
   // Note: we do this whether or not GetControllersNeedingStart is true,
   // because we may need to stop datatypes.
@@ -651,7 +651,7 @@ void DataTypeManagerImpl::ConfigurationCompleted(
     DataTypeSet failed_configuration_types) {
   DCHECK_EQ(CONFIGURING, state_);
 
-  // |succeeded_configuration_types| are the types that were actually downloaded
+  // `succeeded_configuration_types` are the types that were actually downloaded
   // just now (i.e. initial sync was just completed for them).
   downloaded_types_.PutAll(succeeded_configuration_types);
 
@@ -716,7 +716,7 @@ DataTypeManagerImpl::PrepareConfigureParams() {
 
   // All types to download are expected to be protocol types (proxy types should
   // have skipped full activation via
-  // |DataTypeActivationResponse::skip_engine_connection|).
+  // `DataTypeActivationResponse::skip_engine_connection`).
   DCHECK(ProtocolTypes().HasAll(types_to_download));
 
   // Assume that disabled types are not downloaded anymore - if they get
@@ -786,7 +786,7 @@ void DataTypeManagerImpl::Stop(SyncStopMetadataFate metadata_fate) {
   model_load_manager_.Stop(metadata_fate);
 
   // Individual data type controllers might still be STOPPING, but we don't
-  // reflect that in |state_| because, for all practical matters, the manager is
+  // reflect that in `state_` because, for all practical matters, the manager is
   // in a ready state and reconfguration can be triggered.
   // TODO(mastiz): Reconsider waiting in STOPPING state until all datatypes have
   // stopped.

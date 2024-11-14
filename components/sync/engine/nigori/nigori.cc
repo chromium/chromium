@@ -38,16 +38,16 @@ namespace {
 // NigoriStream simplifies the concatenation operation of the Nigori protocol.
 class NigoriStream {
  public:
-  // Append the big-endian representation of the length of |value| with 32 bits,
-  // followed by |value| itself to the stream.
+  // Append the big-endian representation of the length of `value` with 32 bits,
+  // followed by `value` itself to the stream.
   NigoriStream& operator<<(const std::string& value) {
     stream_ << base::as_string_view(base::U32ToBigEndian(value.size()));
     stream_ << value;
     return *this;
   }
 
-  // Append the big-endian representation of the length of |type| with 32 bits,
-  // followed by the big-endian representation of the value of |type|, with 32
+  // Append the big-endian representation of the length of `type` with 32 bits,
+  // followed by the big-endian representation of the value of `type`, with 32
   // bits, to the stream.
   NigoriStream& operator<<(const Nigori::Type type) {
     stream_ << base::as_string_view(base::U32ToBigEndian(sizeof(uint32_t)));
@@ -142,7 +142,7 @@ void Nigori::Keys::InitByDerivationUsingPbkdf2(const std::string& password) {
 
 void Nigori::Keys::InitByDerivationUsingScrypt(const std::string& salt,
                                                const std::string& password) {
-  // |user_key| is not used anymore. However, old clients may fail to import a
+  // `user_key` is not used anymore. However, old clients may fail to import a
   // Nigori node without one. We initialize it to all zeroes to prevent a
   // failure on those clients.
   user_key = std::make_optional<std::array<uint8_t, kKeySizeBytes>>();
@@ -170,7 +170,7 @@ bool Nigori::Keys::InitByImport(const std::string& user_key_str,
                                 const std::string& mac_key_str) {
   if (user_key_str.size() == kKeySizeBytes) {
     user_key = std::make_optional<std::array<uint8_t, kKeySizeBytes>>();
-    // |user_key| is not used anymore so we tolerate a failed import.
+    // `user_key` is not used anymore so we tolerate a failed import.
     base::span(user_key.value()).copy_from(base::as_byte_span(user_key_str));
   }
 

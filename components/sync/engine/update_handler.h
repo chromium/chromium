@@ -46,7 +46,7 @@ class UpdateHandler {
 
   // Fill invalidation related fields in GetUpdates request.
   virtual void CollectPendingInvalidations(sync_pb::GetUpdateTriggers* msg) = 0;
-  // Returns true if |pending_invalidations_| vector is not empty.
+  // Returns true if `pending_invalidations_` vector is not empty.
   virtual bool HasPendingInvalidations() const = 0;
 
   // Processes the contents of a GetUpdates response message.

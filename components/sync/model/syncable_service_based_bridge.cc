@@ -81,7 +81,7 @@ SyncChange::SyncChangeType ConvertToSyncChangeType(
   NOTREACHED();
 }
 
-// Parses the content of |record_list| into |*in_memory_store|. The output
+// Parses the content of `record_list` into `*in_memory_store`. The output
 // parameter is first for binding purposes.
 std::optional<ModelError> ParseInMemoryStoreOnBackendSequence(
     SyncableServiceBasedBridge::InMemoryStore* in_memory_store,
@@ -264,7 +264,7 @@ std::optional<ModelError> SyncableServiceBasedBridge::MergeFullSyncData(
 
   syncable_service_->WillStartInitialSync();
   // We ignore the output of previous call of StoreAndConvertRemoteChanges() at
-  // this point and let StartSyncableService() read from |in_memory_store_|,
+  // this point and let StartSyncableService() read from `in_memory_store_`,
   // which has been updated above as part of StoreAndConvertRemoteChanges().
   return StartSyncableService();
 }

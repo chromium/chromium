@@ -324,12 +324,12 @@ class MockConnectionManager : public ServerConnectionManager {
   std::string keystore_key_;
 
   // Whether we are faking a server mandating clients to throttle requests.
-  // Protected by |response_code_override_lock_|.
+  // Protected by `response_code_override_lock_`.
   bool throttling_ = false;
 
   // Whether we are faking a server mandating clients to partial failure
   // requests.
-  // Protected by |response_code_override_lock_|.
+  // Protected by `response_code_override_lock_`.
   bool partial_failure_ = false;
 
   base::Lock response_code_override_lock_;

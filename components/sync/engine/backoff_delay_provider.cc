@@ -18,7 +18,7 @@ namespace syncer {
 namespace {
 
 // This calculates approx. last_delay * kBackoffMultiplyFactor +/- last_delay
-// * kBackoffJitterFactor. |jitter_sign| must be -1 or 1 and determines whether
+// * kBackoffJitterFactor. `jitter_sign` must be -1 or 1 and determines whether
 // the jitter in the delay will be positive or negative.
 base::TimeDelta GetDelayImpl(base::TimeDelta last_delay, int jitter_sign) {
   DCHECK(jitter_sign == -1 || jitter_sign == 1);
@@ -31,7 +31,7 @@ base::TimeDelta GetDelayImpl(base::TimeDelta last_delay, int jitter_sign) {
       std::max(kMinBackoffTime, last_delay * kBackoffMultiplyFactor) +
       jitter_sign * kBackoffJitterFactor * last_delay;
 
-  // Clamp backoff between 1 second and |kMaxBackoffTime|.
+  // Clamp backoff between 1 second and `kMaxBackoffTime`.
   return std::max(kMinBackoffTime, std::min(backoff, kMaxBackoffTime));
 }
 

@@ -42,7 +42,7 @@ enum class PassphraseType {
 
 bool IsExplicitPassphrase(PassphraseType type);
 
-// Function meant to convert |NigoriSpecifics.passphrase_type| into enum.
+// Function meant to convert `NigoriSpecifics.passphrase_type` into enum.
 // All unknown values are returned as UNKNOWN, which mainly represents future
 // values of the enum that are not currently supported. Note however that if the
 // field is not populated, it defaults to IMPLICIT_PASSPHRASE for backwards
@@ -50,7 +50,7 @@ bool IsExplicitPassphrase(PassphraseType type);
 sync_pb::NigoriSpecifics_PassphraseType ProtoPassphraseInt32ToProtoEnum(
     std::int32_t type);
 
-// Returns std::nullopt if |type| represents an unknown value, likely coming
+// Returns std::nullopt if `type` represents an unknown value, likely coming
 // from a future version of the browser. Note however that if the field is not
 // populated, it defaults to IMPLICIT_PASSPHRASE for backwards compatibility
 // reasons.

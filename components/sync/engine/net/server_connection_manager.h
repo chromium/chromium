@@ -92,7 +92,7 @@ class ServerConnectionManager {
 
   virtual ~ServerConnectionManager();
 
-  // POSTs |buffer_in| and reads the body of the response into |buffer_out|.
+  // POSTs `buffer_in` and reads the body of the response into `buffer_out`.
   // Uses the currently set access token in the headers.
   HttpResponse PostBufferWithCachedAuth(const std::string& buffer_in,
                                         std::string* buffer_out);
@@ -115,7 +115,7 @@ class ServerConnectionManager {
     return server_response_.http_status_code;
   }
 
-  // Sets a new access token. If |access_token| is empty, the current token is
+  // Sets a new access token. If `access_token` is empty, the current token is
   // invalidated and cleared. Returns false if the server is in authentication
   // error state.
   bool SetAccessToken(const std::string& access_token);
@@ -123,7 +123,7 @@ class ServerConnectionManager {
   bool HasInvalidAccessToken() { return access_token_.empty(); }
 
  protected:
-  // Updates |server_response_| and notifies listeners if the server status
+  // Updates `server_response_` and notifies listeners if the server status
   // changed.
   void SetServerResponse(const HttpResponse& server_response);
 

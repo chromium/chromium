@@ -27,7 +27,7 @@ namespace syncer {
 
 namespace {
 
-// Converts |selected_types| to the corresponding DataTypeSet (e.g.
+// Converts `selected_types` to the corresponding DataTypeSet (e.g.
 // {kExtensions} becomes {EXTENSIONS, EXTENSION_SETTINGS}).
 DataTypeSet UserSelectableTypesToDataTypes(
     UserSelectableTypeSet selected_types) {

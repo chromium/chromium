@@ -80,7 +80,7 @@ bool HandleGetEncryptionKeyResponse(
 // Given a GetUpdates response, iterates over all the returned items and
 // divides them according to their type.  Outputs a map from data types to
 // received SyncEntities.  The output map will have entries (possibly empty)
-// for all types in |requested_types|.
+// for all types in `requested_types`.
 void PartitionUpdatesByType(const sync_pb::GetUpdatesResponse& gu_response,
                             DataTypeSet requested_types,
                             TypeSyncEntityMap* updates_by_type) {
@@ -106,7 +106,7 @@ void PartitionUpdatesByType(const sync_pb::GetUpdatesResponse& gu_response,
 }
 
 // Builds a map of DataTypes to indices to progress markers in the given
-// |gu_response| message.  The map is returned in the |index_map| parameter.
+// `gu_response` message.  The map is returned in the `index_map` parameter.
 void PartitionProgressMarkersByType(
     const sync_pb::GetUpdatesResponse& gu_response,
     const DataTypeSet& request_types,

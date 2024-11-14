@@ -33,7 +33,7 @@ class ClientTagHash;
 // UniquePosition value has to change to represent the new order, and all other
 // values can stay the same.
 //
-// Note that the unique suffixes must be exactly |kSuffixLength| bytes long.
+// Note that the unique suffixes must be exactly `kSuffixLength` bytes long.
 //
 // The cost for all these features is potentially unbounded space usage.  In
 // practice, however, most ordinals should be not much longer than the suffix.
@@ -63,15 +63,15 @@ class UniquePosition {
 
   // Creates a position with the given suffix.  Ordering among positions created
   // from this function is the same as that of the integer parameters that were
-  // passed in. |suffix| must be a valid suffix with length |kSuffixLength|.
+  // passed in. `suffix` must be a valid suffix with length `kSuffixLength`.
   static UniquePosition FromInt64(int64_t i, const Suffix& suffix);
 
-  // Returns a valid position. Its ordering is not defined. |suffix| must be a
-  // valid suffix with length |kSuffixLength|.
+  // Returns a valid position. Its ordering is not defined. `suffix` must be a
+  // valid suffix with length `kSuffixLength`.
   static UniquePosition InitialPosition(const Suffix& suffix);
 
   // Returns positions compare smaller than, greater than, or between the input
-  // positions. |suffix| must be a valid suffix with length |kSuffixLength|.
+  // positions. `suffix` must be a valid suffix with length `kSuffixLength`.
   static UniquePosition Before(const UniquePosition& x, const Suffix& suffix);
   static UniquePosition After(const UniquePosition& x, const Suffix& suffix);
   static UniquePosition Between(const UniquePosition& before,
@@ -110,19 +110,19 @@ class UniquePosition {
  private:
   friend class UniquePositionTest;
 
-  // Returns a string X such that (X ++ |suffix|) < |str|.
-  // |str| must be a trailing substring of a valid ordinal.
-  // |suffix| must be a valid unique suffix.
+  // Returns a string X such that (X ++ `suffix`) < `str`.
+  // `str` must be a trailing substring of a valid ordinal.
+  // `suffix` must be a valid unique suffix.
   static std::string FindSmallerWithSuffix(const std::string& str,
                                            const Suffix& suffix);
-  // Returns a string X such that (X ++ |suffix|) > |str|.
-  // |str| must be a trailing substring of a valid ordinal.
-  // |suffix| must be a valid unique suffix.
+  // Returns a string X such that (X ++ `suffix`) > `str`.
+  // `str` must be a trailing substring of a valid ordinal.
+  // `suffix` must be a valid unique suffix.
   static std::string FindGreaterWithSuffix(const std::string& str,
                                            const Suffix& suffix);
-  // Returns a string X such that |before| < (X ++ |suffix|) < |after|.
-  // |before| and after must be a trailing substrings of valid ordinals.
-  // |suffix| must be a valid unique suffix.
+  // Returns a string X such that `before` < (X ++ `suffix`) < `after`.
+  // `before` and after must be a trailing substrings of valid ordinals.
+  // `suffix` must be a valid unique suffix.
   static std::string FindBetweenWithSuffix(const std::string& before,
                                            const std::string& after,
                                            const Suffix& suffix);
@@ -130,8 +130,8 @@ class UniquePosition {
   // Expects a run-length compressed string as input.  For internal use only.
   explicit UniquePosition(const std::string& compressed);
 
-  // Expects an uncompressed prefix and suffix as input.  The |suffix| parameter
-  // must be a suffix of |uncompressed|.  For internal use only.
+  // Expects an uncompressed prefix and suffix as input.  The `suffix` parameter
+  // must be a suffix of `uncompressed`.  For internal use only.
   UniquePosition(const std::string& uncompressed, const Suffix& suffix);
 
   // Implementation of an order-preserving run-length compression scheme.

@@ -66,7 +66,7 @@ ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
   entity_tracker_->set_data_type_state(data_type_state);
 
   // If new encryption requirements come from the server, the entities that are
-  // in |updates| will be recorded here so they can be ignored during the
+  // in `updates` will be recorded here so they can be ignored during the
   // re-encryption phase at the end.
   std::unordered_set<std::string> already_updated;
 
@@ -117,7 +117,7 @@ ClientTagBasedRemoteUpdateHandler::ProcessIncrementalUpdate(
 
     if (entity->CanClearMetadata()) {
       metadata_changes->ClearMetadata(entity->storage_key());
-      // The line below frees |entity| and it shouldn't be used afterwards.
+      // The line below frees `entity` and it shouldn't be used afterwards.
       entity_tracker_->RemoveEntityForStorageKey(entity->storage_key());
     } else {
       metadata_changes->UpdateMetadata(entity->storage_key(),
@@ -212,7 +212,7 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
     return nullptr;
   }
 
-  // Cache update encryption_key_name and is_deleted in case |update| will be
+  // Cache update encryption_key_name and is_deleted in case `update` will be
   // moved away into ResolveConflict().
   const std::string update_encryption_key_name = update.encryption_key_name;
   const bool update_is_tombstone = data.is_deleted();

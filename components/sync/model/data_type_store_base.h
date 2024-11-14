@@ -44,10 +44,10 @@ class DataTypeStoreBase {
 
     virtual ~WriteBatch();
 
-    // Write the given |value| for data with |id|.
+    // Write the given `value` for data with `id`.
     virtual void WriteData(const std::string& id, const std::string& value) = 0;
 
-    // Delete the record for data with |id|.
+    // Delete the record for data with `id`.
     virtual void DeleteData(const std::string& id) = 0;
 
     // Provides access to a MetadataChangeList that will pass its changes
@@ -55,7 +55,7 @@ class DataTypeStoreBase {
     virtual MetadataChangeList* GetMetadataChangeList() = 0;
 
     // Transfers the changes from a MetadataChangeList into this WriteBatch.
-    // |mcl| must have previously been created by CreateMetadataChangeList().
+    // `mcl` must have previously been created by CreateMetadataChangeList().
     // TODO(mastiz): Revisit whether the last requirement above can be removed
     // and make this API more type-safe.
     void TakeMetadataChangesFrom(std::unique_ptr<MetadataChangeList> mcl);

@@ -95,7 +95,7 @@ message NigoriSpecifics {
   // Once keystore migration is performed, we have to freeze the keybag so that
   // older clients (that don't support keystore encryption) do not attempt to
   // update the keybag.
-  // Previously |using_explicit_passphrase|.
+  // Previously `using_explicit_passphrase`.
   optional bool keybag_is_frozen = 2;
 
   // Obsolete encryption fields. These were deprecated due to legacy versions
@@ -165,15 +165,15 @@ message NigoriSpecifics {
   // Enable syncing favicons as part of tab sync.
   optional bool sync_tab_favicons = 29;
 
-  // The state of the passphrase required to decrypt |encryption_keybag|.
+  // The state of the passphrase required to decrypt `encryption_keybag`.
   enum PassphraseType {
     // Proto enums should begin with an 'unknown' value for switch statements,
     // unknown fields, etc.
     UNKNOWN = 0;
     // Gaia-based encryption passphrase. Legacy.
     IMPLICIT_PASSPHRASE = 1;
-    // Keystore key encryption passphrase. Uses |keystore_bootstrap| to
-    // decrypt |encryption_keybag|.
+    // Keystore key encryption passphrase. Uses `keystore_bootstrap` to
+    // decrypt `encryption_keybag`.
     KEYSTORE_PASSPHRASE = 2;
     // Previous Gaia-based passphrase frozen and treated as a custom passphrase.
     FROZEN_IMPLICIT_PASSPHRASE = 3;
@@ -183,14 +183,14 @@ message NigoriSpecifics {
     TRUSTED_VAULT_PASSPHRASE = 5;
   }
 
-  // An |int| field is used instead of enum PassphraseType so we can better
+  // An `int` field is used instead of enum PassphraseType so we can better
   // handle unknown values coming from later versions. Prior to M77, this was an
   // enum so old clients will assume IMPLICIT_PASSPHRASE for values greater than
   // 4.
   optional int32 passphrase_type = 30 [default = 1];
 
   // The keystore decryptor token blob. Encrypted with the keystore key, and
-  // contains the encryption key used to decrypt |encryption_keybag|.
+  // contains the encryption key used to decrypt `encryption_keybag`.
   // Only set if passphrase_state == KEYSTORE_PASSPHRASE.
   optional EncryptedData keystore_decryptor_token = 31;
 
@@ -216,7 +216,7 @@ message NigoriSpecifics {
   reserved "encrypt_autofill_wallet_metadata";
 
   // Boolean indicating whether this node was originally missing a
-  // |keystore_migration_time| field value, and was fixed on the server by
+  // `keystore_migration_time` field value, and was fixed on the server by
   // giving the field a value.
   // THIS FIELD SHOULD ONLY BE SET BY THE SERVER.
   optional bool server_only_was_missing_keystore_migration_time = 40;
@@ -243,11 +243,11 @@ message NigoriSpecifics {
   }
 
   // ID of the method used to derive the encryption key from a custom
-  // passphrase. Should be set only when |passphrase_type| is CUSTOM_PASSPHRASE
+  // passphrase. Should be set only when `passphrase_type` is CUSTOM_PASSPHRASE
   // and only based on CustomPassphraseKeyDerivationMethod. This field has been
   // added in M70. All previous versions just ignore it, attempt to use
   // PBKDF2_HMAC_SHA1_1003 and, thus, reject any passphrase if a different
-  // method has been used. The default corresponds to UNSPECIFIED. An |int|
+  // method has been used. The default corresponds to UNSPECIFIED. An `int`
   // field is used so we can detect unknown values coming from later versions.
   optional int32 custom_passphrase_key_derivation_method = 45 [default = 0];
 

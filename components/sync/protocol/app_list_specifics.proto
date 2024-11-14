@@ -32,7 +32,7 @@ message AppListSpecifics {
     TYPE_APP = 1;
     // A request to remove any matching default installed apps.
     TYPE_REMOVE_DEFAULT_APP = 2;
-    // A folder containing entries whose |parent_id| matches |item_id|.
+    // A folder containing entries whose `parent_id` matches `item_id`.
     TYPE_FOLDER = 3;
     // Obsolete type, intended for URL shortcuts, that was never implemented.
     TYPE_OBSOLETE_URL = 4;

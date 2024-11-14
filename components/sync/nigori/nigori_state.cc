@@ -75,7 +75,7 @@ KeyDerivationParams CustomPassphraseKeyDerivationParamsFromProto(
   NOTREACHED();
 }
 
-// |encrypted| must not be null.
+// `encrypted` must not be null.
 bool EncryptEncryptionKeys(const CryptographerImpl& cryptographer,
                            sync_pb::EncryptedData* encrypted) {
   DCHECK(encrypted);
@@ -189,7 +189,7 @@ NigoriState NigoriState::CreateFromLocalProto(
   state.keystore_keys_cryptographer =
       KeystoreKeysCryptographer::FromKeystoreKeys(keystore_keys);
   if (!state.keystore_keys_cryptographer) {
-    // Crypto error occurs, create empty |keystore_keys_cryptographer|.
+    // Crypto error occurs, create empty `keystore_keys_cryptographer`.
     // Effectively it resets keystore keys.
     state.keystore_keys_cryptographer =
         KeystoreKeysCryptographer::CreateEmpty();
@@ -281,7 +281,7 @@ sync_pb::NigoriModel NigoriState::ToLocalProto() const {
   }
   // TODO(crbug.com/41462727): we currently store keystore keys in proto only to
   // allow rollback of USS Nigori. Having keybag with all keystore keys and
-  // |current_keystore_key_name| is enough to support all logic. We should
+  // `current_keystore_key_name` is enough to support all logic. We should
   // remove them few milestones after USS migration completed.
   for (const std::string& keystore_key :
        keystore_keys_cryptographer->keystore_keys()) {
@@ -312,7 +312,7 @@ sync_pb::NigoriSpecifics NigoriState::ToSpecificsProto() const {
                           specifics.mutable_encryption_keybag());
   } else if (pending_keys.has_value()) {
     // This case is reachable only from bridge's GetDataForDebugging(),
-    // since currently commit is never issued while bridge has |pending_keys_|.
+    // since currently commit is never issued while bridge has `pending_keys_`.
     // Note: with complete support of TRUSTED_VAULT mode, commit might be
     // issued in this case as well.
     *specifics.mutable_encryption_keybag() = *pending_keys;
@@ -338,7 +338,7 @@ sync_pb::NigoriSpecifics NigoriState::ToSpecificsProto() const {
           *pending_keystore_decryptor_token;
     } else {
       // TODO(crbug.com/40868132): ensure correct error handling, e.g. in case
-      // of empty |keystore_keys_cryptographer| or crypto errors (should be
+      // of empty `keystore_keys_cryptographer` or crypto errors (should be
       // impossible, but code doesn't yet guarantee that).
       keystore_keys_cryptographer->EncryptKeystoreDecryptorToken(
           cryptographer->ExportDefaultKey(),

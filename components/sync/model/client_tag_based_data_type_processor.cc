@@ -130,7 +130,7 @@ void ClientTagBasedDataTypeProcessor::OnSyncStarting(
   start_callback_ = std::move(start_callback);
   activation_request_ = request;
 
-  // Notify the bridge sync is starting before calling the |start_callback_|
+  // Notify the bridge sync is starting before calling the `start_callback_`
   // which in turn creates the worker.
   bridge_->OnSyncStarting(request);
 
@@ -243,8 +243,8 @@ void ClientTagBasedDataTypeProcessor::ConnectIfReady() {
           weak_ptr_factory_for_worker_.GetWeakPtr(),
           base::SequencedTaskRunner::GetCurrentDefault());
 
-  // Defer invoking of |start_callback_| to avoid synchronous call from the
-  // |bridge_|. It might cause a situation when inside the ModelReadyToSync()
+  // Defer invoking of `start_callback_` to avoid synchronous call from the
+  // `bridge_`. It might cause a situation when inside the ModelReadyToSync()
   // another methods of the bridge eventually were called. This behavior would
   // be complicated and be unexpected in some bridges.
   // See crbug.com/1055584 for more details.
@@ -273,7 +273,7 @@ void ClientTagBasedDataTypeProcessor::OnSyncStopping(
   switch (metadata_fate) {
     case KEEP_METADATA: {
       bridge_->OnSyncPaused();
-      // The model is still ready to sync (with the same |bridge_|) and same
+      // The model is still ready to sync (with the same `bridge_`) and same
       // sync metadata.
       ResetState(KEEP_METADATA);
       DUMP_WILL_BE_CHECK(model_ready_to_sync_);
@@ -478,7 +478,7 @@ void ClientTagBasedDataTypeProcessor::Put(
                                   DataTypeHistogramValue(type_));
   }
 
-  // |data->specifics| is about to be committed, and therefore represents the
+  // `data->specifics` is about to be committed, and therefore represents the
   // imminent server-side state in most cases.
   sync_pb::EntitySpecifics trimmed_specifics =
       bridge_->TrimAllSupportedFieldsFromRemoteSpecifics(data->specifics);
@@ -493,7 +493,7 @@ void ClientTagBasedDataTypeProcessor::Put(
       entity_tracker_->GetEntityForStorageKey(storage_key);
   if (entity == nullptr) {
     // The bridge is creating a new entity. The bridge may or may not populate
-    // |data->client_tag_hash|, so let's ask for the client tag if needed.
+    // `data->client_tag_hash`, so let's ask for the client tag if needed.
     if (data->client_tag_hash.value().empty()) {
       DUMP_WILL_BE_CHECK(bridge_->SupportsGetClientTag());
       data->client_tag_hash =
@@ -758,7 +758,7 @@ void ClientTagBasedDataTypeProcessor::OnCommitCompleted(
   const DataType data_type = type_;
   base::debug::Alias(&data_type);
 
-  // |error_response_list| is ignored, because all errors are treated as
+  // `error_response_list` is ignored, because all errors are treated as
   // transientand the processor with eventually retry.
 
   std::unique_ptr<MetadataChangeList> metadata_change_list =
@@ -847,7 +847,7 @@ void ClientTagBasedDataTypeProcessor::OnCommitFailed(
     case DataTypeSyncBridge::CommitAttemptFailedBehavior::
         kShouldRetryOnNextCycle:
       // Entities weren't committed. Reset their
-      // |commit_requested_sequence_number| to commit them again on next sync
+      // `commit_requested_sequence_number` to commit them again on next sync
       // cycle.
       entity_tracker_->ClearTransientSyncState();
       break;
@@ -1311,7 +1311,7 @@ void ClientTagBasedDataTypeProcessor::GetAllNodesForDebugging(
     // the authoritative source of truth.
     const ProcessorEntity* entity =
         entity_tracker_->GetEntityForStorageKey(storage_key);
-    // |entity| could be null if there are some unapplied changes.
+    // `entity` could be null if there are some unapplied changes.
     if (entity != nullptr) {
       const sync_pb::EntityMetadata& metadata = entity->metadata();
       // Set id value as the legacy Directory implementation, "s" means server.
@@ -1434,7 +1434,7 @@ void ClientTagBasedDataTypeProcessor::
   const bool valid_cache_guid =
       data_type_state.cache_guid() == activation_request_.cache_guid;
   // Check for a mismatch between the cache guid or the data type id stored
-  // in |data_type_state_| and the one received from sync. A mismatch indicates
+  // in `data_type_state_` and the one received from sync. A mismatch indicates
   // that the stored metadata are invalid (e.g. has been manipulated) and
   // don't belong to the current syncing client.
   const bool valid_data_type_id =

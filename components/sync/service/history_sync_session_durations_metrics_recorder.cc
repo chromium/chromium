@@ -42,7 +42,7 @@ void LogDuration(std::string_view histogram_suffix,
 HistorySyncSessionDurationsMetricsRecorder::
     HistorySyncSessionDurationsMetricsRecorder(SyncService* sync_service)
     : sync_service_(sync_service) {
-  // |sync_service| can be null if sync is disabled by a command line flag.
+  // `sync_service` can be null if sync is disabled by a command line flag.
   if (sync_service_) {
     sync_observation_.Observe(sync_service_.get());
   }
@@ -83,7 +83,7 @@ void HistorySyncSessionDurationsMetricsRecorder::OnSessionEnded(
   CHECK(history_sync_state_timer_);
 
   if (session_length.is_zero()) {
-    // During Profile teardown, this method is called with a |session_length|
+    // During Profile teardown, this method is called with a `session_length`
     // of zero.
     session_length = total_session_timer_->Elapsed();
   }

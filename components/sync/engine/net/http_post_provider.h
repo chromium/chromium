@@ -28,10 +28,10 @@ class HttpPostProvider : public base::RefCountedThreadSafe<HttpPostProvider> {
   virtual void SetURL(const GURL& url) = 0;
 
   // Set the type, length and content of the POST payload.
-  // |content_type| is a null-terminated MIME type specifier.
-  // |content| is a data buffer; Do not interpret as a null-terminated string.
-  // |content_length| is the total number of chars in |content|. It is used to
-  // assign/copy |content| data.
+  // `content_type` is a null-terminated MIME type specifier.
+  // `content` is a data buffer; Do not interpret as a null-terminated string.
+  // `content_length` is the total number of chars in `content`. It is used to
+  // assign/copy `content` data.
   virtual void SetPostPayload(const char* content_type,
                               int content_length,
                               const char* content) = 0;

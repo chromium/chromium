@@ -58,7 +58,7 @@ bool AreFullUpdateTypeDataProgressMarkersEquivalent(
 
 // A fake version of the Sync server used for testing. This class is not thread
 // safe.
-// |switches::kDisableFakeServerFailureOutput| can be passed to the command line
+// `switches::kDisableFakeServerFailureOutput` can be passed to the command line
 // to avoid debug logs upon test failure.
 class FakeServer : public syncer::LoopbackServer::ObserverForTests {
  public:
@@ -73,7 +73,7 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
     virtual void OnWillCommit() {}
 
     // Called after FakeServer has processed a successful commit. The types
-    // updated as part of the commit are passed in |committed_data_types|.
+    // updated as part of the commit are passed in `committed_data_types`.
     virtual void OnCommit(syncer::DataTypeSet committed_data_types) {}
 
     // Called after FakeServer has processed a successful get updates request.
@@ -88,8 +88,8 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
 
   ~FakeServer() override;
 
-  // Handles a /command POST (with the given |request|) to the server.
-  // |response| must not be null.
+  // Handles a /command POST (with the given `request`) to the server.
+  // `response` must not be null.
   net::HttpStatusCode HandleCommand(const std::string& request,
                                     std::string* response);
 
@@ -105,7 +105,7 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // StringValue versions of entity names.
   base::Value::Dict GetEntitiesAsDictForTesting();
 
-  // Returns all entities stored by the server of the given |data_type|.
+  // Returns all entities stored by the server of the given `data_type`.
   // This method returns SyncEntity protocol buffer objects (instead of
   // LoopbackServerEntity) so that callers can inspect datatype-specific data
   // (e.g., the URL of a session tab). Permanent entities are excluded.
@@ -113,7 +113,7 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
       syncer::DataType data_type);
 
   // Returns all permanent entities stored by the server of the given
-  // |data_type|. This method returns SyncEntity protocol buffer objects
+  // `data_type`. This method returns SyncEntity protocol buffer objects
   // (instead of LoopbackServerEntity) so that callers can inspect
   // datatype-specific data (e.g., the URL of a session tab).
   std::vector<sync_pb::SyncEntity> GetPermanentSyncEntitiesByDataType(
@@ -126,14 +126,14 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // new keystore key and touching the Nigori node.
   void TriggerKeystoreKeyRotation();
 
-  // Adds |entity| to the server's collection of entities. This method makes no
+  // Adds `entity` to the server's collection of entities. This method makes no
   // guarantees that the added entity will result in successful server
   // operations.
   void InjectEntity(std::unique_ptr<syncer::LoopbackServerEntity> entity);
 
   // Sets the Wallet card and address data to be served in following GetUpdates
   // requests (any further GetUpdates response will be empty, indicating no
-  // change, if the client already has received |wallet_entities|).
+  // change, if the client already has received `wallet_entities`).
   //
   // The returned value represents the timestamp of the write, such that any
   // progress marker greater or equal to this timestamp must have processed the
@@ -143,7 +143,7 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
 
   // Sets the Autofill offer data to be served in following GetUpdates
   // requests (any further GetUpdates response will be empty, indicating no
-  // change, if the client already has received |offer_entities|).
+  // change, if the client already has received `offer_entities`).
   //
   // The returned value represents the timestamp of the write, such that any
   // progress marker greater or equal to this timestamp must have processed the
@@ -152,15 +152,15 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
       const std::vector<sync_pb::SyncEntity>& offer_entities);
 
   // Allows the caller to know the timestamp corresponding to
-  // |progress_marker| as annotated by the FakeServer during the GetUpdates
+  // `progress_marker` as annotated by the FakeServer during the GetUpdates
   // request that returned the progress marker.
   static base::Time GetProgressMarkerTimestamp(
       const sync_pb::DataTypeProgressMarker& progress_marker);
 
-  // Modifies the entity on the server with the given |id|. The entity's
-  // EntitySpecifics are replaced with |updated_specifics| and its version is
-  // updated. If the given |id| does not exist or the DataType of
-  // |updated_specifics| does not match the entity, false is returned.
+  // Modifies the entity on the server with the given `id`. The entity's
+  // EntitySpecifics are replaced with `updated_specifics` and its version is
+  // updated. If the given `id` does not exist or the DataType of
+  // `updated_specifics` does not match the entity, false is returned.
   // Otherwise, true is returned to represent a successful modification.
   //
   // This method sometimes updates entity data beyond EntitySpecifics. For
@@ -177,7 +177,7 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // store birthday.
   void ClearServerData();
 
-  // Deletes all |data_type| entities from the server without creating
+  // Deletes all `data_type` entities from the server without creating
   // tombstones.
   void DeleteAllEntitiesForDataType(syncer::DataType data_type);
 
@@ -187,16 +187,16 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // Undoes previous calls to SetHttpError().
   void ClearHttpError();
 
-  // Sets the provided |client_command| in all subsequent successful requests.
+  // Sets the provided `client_command` in all subsequent successful requests.
   void SetClientCommand(const sync_pb::ClientCommand& client_command);
 
-  // Force the server to return |error_type| in the error_code field of
+  // Force the server to return `error_type` in the error_code field of
   // ClientToServerResponse on all subsequent commit requests. If any of errors
   // triggerings currently configured it must be called only with
   // sync_pb::SyncEnums::SUCCESS.
   void TriggerCommitError(const sync_pb::SyncEnums_ErrorType& error_type);
 
-  // Force the server to return |error_type| in the error_code field of
+  // Force the server to return `error_type` in the error_code field of
   // ClientToServerResponse on all subsequent sync requests. If any of errors
   // triggerings currently configured it must be called only with
   // sync_pb::SyncEnums::SUCCESS.
@@ -228,12 +228,12 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
   // Mimics throttling of datatypes.
   void SetThrottledTypes(syncer::DataTypeSet types);
 
-  // Adds |observer| to FakeServer's observer list. This should be called
-  // before the Profile associated with |observer| is connected to the server.
+  // Adds `observer` to FakeServer's observer list. This should be called
+  // before the Profile associated with `observer` is connected to the server.
   void AddObserver(Observer* observer);
 
-  // Removes |observer| from the FakeServer's observer list. This method
-  // must be called if AddObserver was ever called with |observer|.
+  // Removes `observer` from the FakeServer's observer list. This method
+  // must be called if AddObserver was ever called with `observer`.
   void RemoveObserver(Observer* observer);
 
   // Enables strong consistency model (i.e. server detects conflicts).
@@ -298,7 +298,7 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
       sync_pb::ClientToServerResponse* response);
 
   // Logs a string that is meant to be shown in case the running test fails,
-  // as long as |switches::kDisableFakeServerFailureOutput| hasn't been passed
+  // as long as `switches::kDisableFakeServerFailureOutput` hasn't been passed
   // to the command line.
   void LogForTestFailure(const base::Location& location,
                          const std::string& title,
@@ -330,16 +330,16 @@ class FakeServer : public syncer::LoopbackServer::ObserverForTests {
       triggered_actionable_error_;
 
   // These values are used in tandem to return a triggered error (either
-  // |error_type_| or |triggered_actionable_error_|) on every other request.
-  // |alternate_triggered_errors_| is set if this feature is enabled and
-  // |request_counter_| is used to send triggered errors on odd-numbered
-  // requests. Note that |request_counter_| can be reset and is not necessarily
+  // `error_type_` or `triggered_actionable_error_`) on every other request.
+  // `alternate_triggered_errors_` is set if this feature is enabled and
+  // `request_counter_` is used to send triggered errors on odd-numbered
+  // requests. Note that `request_counter_` can be reset and is not necessarily
   // indicative of the total number of requests handled during the object's
   // lifetime.
   bool alternate_triggered_errors_ = false;
   int request_counter_ = 0;
 
-  // If set to true all |this| will clear |encryption_keys| in all
+  // If set to true all `this` will clear `encryption_keys` in all
   // GetUpdateResponse's.
   bool disallow_sending_encryption_keys_ = false;
 

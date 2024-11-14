@@ -51,7 +51,7 @@ SyncSessionDurationsMetricsRecorder::SyncSessionDurationsMetricsRecorder(
     : sync_service_(sync_service),
       identity_manager_(identity_manager),
       history_sync_recorder_(sync_service) {
-  // |sync_service| can be null if sync is disabled by a command line flag.
+  // `sync_service` can be null if sync is disabled by a command line flag.
   if (sync_service_) {
     sync_observation_.Observe(sync_service_.get());
   }
@@ -113,7 +113,7 @@ void SyncSessionDurationsMetricsRecorder::OnSessionEnded(
   }
 
   if (session_length.is_zero()) {
-    // During Profile teardown, this method is called with a |session_length|
+    // During Profile teardown, this method is called with a `session_length`
     // of zero.
     session_length = total_session_timer_->Elapsed();
   }
@@ -224,7 +224,7 @@ void SyncSessionDurationsMetricsRecorder::UpdateSyncAndAccountStatus(
            << static_cast<int>(new_sync_status)
            << " new_signin_status: " << static_cast<int>(new_signin_status);
 
-  // |new_sync_status| may be unknown when there is a primary account, but
+  // `new_sync_status` may be unknown when there is a primary account, but
   // the sync engine has not yet started.
   if (ShouldLogUpdate(new_sync_status, new_signin_status)) {
     LogSyncAndAccountDuration(sync_account_session_timer_->Elapsed());
@@ -336,12 +336,12 @@ SyncSessionDurationsMetricsRecorder::DetermineSyncStatus() const {
   // The sync state may already be set to ON/OFF if updated previously. Return
   // the current sync status.
   //
-  // Note: It is possible for |sync_status_| to be ON/OFF at this point. This
+  // Note: It is possible for `sync_status_` to be ON/OFF at this point. This
   // corresponds to sync state transitions that can happen if a turns sync on
   // or off. For example if during browser startup there is no signed-in user,
-  /// then |sync_state_| is OFF. When the user turns on Sync, the sync state
+  /// then `sync_state_` is OFF. When the user turns on Sync, the sync state
   // is essentially unknown for a while - the current implementation keeps
-  // previous |sync_state_|.
+  // previous `sync_state_`.
   return sync_status_;
 }
 

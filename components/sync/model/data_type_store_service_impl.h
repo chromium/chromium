@@ -56,7 +56,7 @@ class DataTypeStoreServiceImpl : public DataTypeStoreService {
   // The backend sequence or thread.
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
-  // Constructed on the UI thread, used on |backend_task_runner_| and destroyed
+  // Constructed on the UI thread, used on `backend_task_runner_` and destroyed
   // on any sequence.
   const scoped_refptr<DataTypeStoreBackend> store_backend_;
 

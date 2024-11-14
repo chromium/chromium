@@ -37,7 +37,7 @@ class SyncableServiceBasedBridge : public DataTypeSyncBridge {
  public:
   using InMemoryStore = std::map<std::string, sync_pb::PersistedEntityData>;
 
-  // Pointers must not be null and |syncable_service| must outlive this object.
+  // Pointers must not be null and `syncable_service` must outlive this object.
   SyncableServiceBasedBridge(
       DataType type,
       OnceDataTypeStoreFactory store_factory,
@@ -99,7 +99,7 @@ class SyncableServiceBasedBridge : public DataTypeSyncBridge {
   std::unique_ptr<DataTypeStore> store_;
   bool syncable_service_started_ = false;
 
-  // In-memory copy of |store_|.
+  // In-memory copy of `store_`.
   InMemoryStore in_memory_store_;
 
   // Time when this object was created, and store creation/loading was started.

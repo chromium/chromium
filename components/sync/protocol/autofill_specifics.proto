@@ -395,7 +395,7 @@ message WalletMaskedCreditCard {
   }
 
   // Server-generated unique ID string. This is opaque to the client.
-  // This is the legacy version of |instrument_id|.
+  // This is the legacy version of `instrument_id`.
   optional string id = 1;
 
   // What the server thinks of this card.
@@ -433,7 +433,7 @@ message WalletMaskedCreditCard {
   optional CardIssuer card_issuer = 13;
 
   // Server-generated unique ID. This is opaque to the client.
-  // |id| is the legacy version of this.
+  // `id` is the legacy version of this.
   optional int64 instrument_id = 15;
 
   // The state of virtual card enrollment.

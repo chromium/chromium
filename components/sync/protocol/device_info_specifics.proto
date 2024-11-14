@@ -70,7 +70,7 @@ message DeviceInfoSpecifics {
   // Name of device manufacturer.
   optional string manufacturer = 12;
 
-  // The interval in minutes with which |last_updated_timestamp| is updated to
+  // The interval in minutes with which `last_updated_timestamp` is updated to
   // the sync servers if online and while sync is actively running (e.g.
   // excludes backgrounded apps on Android). Introduced in M81. The legacy
   // default was 1 day.
@@ -210,8 +210,8 @@ message PhoneAsASecurityKeySpecificFields {
   // remote end is authorized to talk to the device publishing this secret.
   optional bytes secret = 3;
 
-  // An id that identifies |secret|. This, and |secret|, will be rotated and
-  // the ID allows this device to know which |secret| the counterparty is
+  // An id that identifies `secret`. This, and `secret`, will be rotated and
+  // the ID allows this device to know which `secret` the counterparty is
   // using.
   optional fixed32 id = 4;
 

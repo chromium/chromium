@@ -859,7 +859,7 @@ TEST_F(SyncSchedulerImplTest, PollingPersistenceBadClock) {
   base::TimeDelta poll_interval(base::Milliseconds(30));
   scheduler()->OnReceivedPollIntervalUpdate(poll_interval);
 
-  // Set the start time to |poll_interval| in the future.
+  // Set the start time to `poll_interval` in the future.
   TimeTicks optimal_start = TimeTicks::Now() + poll_interval;
   StartSyncScheduler(base::Time::Now() + base::Minutes(10));
 
@@ -1918,7 +1918,7 @@ TEST_F(SyncSchedulerImplTest, InterleavedNudgesStillRestart) {
   EXPECT_FALSE(scheduler()->IsGlobalBackoff());
 
   // This is the tricky piece. We have a gap while the sync job is bouncing to
-  // get onto the |pending_wakeup_timer_|, should be scheduled with no delay.
+  // get onto the `pending_wakeup_timer_`, should be scheduled with no delay.
   scheduler()->ScheduleLocalNudge(HISTORY);
   EXPECT_TRUE(BlockTimerIsRunning());
   EXPECT_EQ(base::TimeDelta(), GetPendingWakeupTimerDelay());

@@ -166,7 +166,7 @@ bool Syncer::DownloadAndApplyUpdates(DataTypeSet* request_types,
                                      const GetUpdatesDelegate& delegate) {
   // CommitOnlyTypes() should not be included in the GetUpdates, but should be
   // included in the Commit. We are given a set of types for our SyncShare,
-  // and we must do this filtering. Note that |request_types| is also an out
+  // and we must do this filtering. Note that `request_types` is also an out
   // param, see below where we update it.
   DataTypeSet requested_commit_only_types =
       Intersection(*request_types, CommitOnlyTypes());

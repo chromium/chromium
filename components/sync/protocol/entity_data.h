@@ -80,8 +80,8 @@ struct EntityData {
   // only outgoing password sharing invitations (created locally).
   sync_pb::CrossUserSharingPublicKey recipient_public_key;
 
-  // Indicate whether bookmark's |unique_position| was missing in the original
-  // specifics during GetUpdates. If the |unique_position| in specifics was
+  // Indicate whether bookmark's `unique_position` was missing in the original
+  // specifics during GetUpdates. If the `unique_position` in specifics was
   // evaluated by AdaptUniquePositionForBookmark(), this field will be set to
   // true. Relevant only for bookmarks.
   bool is_bookmark_unique_position_in_specifics_preprocessed = false;

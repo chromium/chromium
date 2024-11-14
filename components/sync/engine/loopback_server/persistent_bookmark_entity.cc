@@ -20,7 +20,7 @@ namespace syncer {
 
 namespace {
 
-// Returns true if and only if |client_entity| is a bookmark.
+// Returns true if and only if `client_entity` is a bookmark.
 bool IsBookmark(const sync_pb::SyncEntity& client_entity) {
   return syncer::GetDataTypeFromSpecifics(client_entity.specifics()) ==
          syncer::BOOKMARKS;
@@ -94,7 +94,7 @@ PersistentBookmarkEntity::CreateUpdatedVersion(
     originator_cache_guid = current_bookmark_entity.originator_cache_guid_;
     originator_client_item_id =
         current_bookmark_entity.originator_client_item_id_;
-    // Note that the client tag provided by the client in |client_entity| is
+    // Note that the client tag provided by the client in `client_entity` is
     // ignored during non-creations updates, since it's meant to be immutable.
     client_tag_hash = current_bookmark_entity.client_tag_hash_;
   }

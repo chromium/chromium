@@ -24,7 +24,7 @@ class DataTypeStatusTable {
   // Copy and assign welcome.
 
   // Update an individual failed datatype. The type will be added to its
-  // corresponding error map based on |error.error_type()|. Returns true if
+  // corresponding error map based on `error.error_type()`. Returns true if
   // there was an actual change.
   bool UpdateFailedDataType(DataType type, const SyncError& error);
 

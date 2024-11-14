@@ -41,7 +41,7 @@ class SyncBackendMigratorTest : public testing::Test {
 
   void TearDown() override { migrator_.reset(); }
 
-  // Marks all types in |unsynced_types| as unsynced  and all other
+  // Marks all types in `unsynced_types` as unsynced  and all other
   // types as synced.
   void SetUnsyncedTypes(DataTypeSet unsynced_types) {
     ON_CALL(manager_, GetStoppedDataTypesExcludingNigori())

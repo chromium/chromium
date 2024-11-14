@@ -92,7 +92,7 @@ void VerifyNoProgressMarkerExistsInResponseForFullUpdateType(
   }
 }
 
-// Returns a hash representing |entities| including each entity's ID and
+// Returns a hash representing `entities` including each entity's ID and
 // version, in a way that the order of the entities is irrelevant.
 uint64_t ComputeEntitiesHash(const std::vector<sync_pb::SyncEntity>& entities) {
   // Make sure to pick a token that will be consistent across clients when

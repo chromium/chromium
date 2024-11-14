@@ -79,7 +79,7 @@ class DataTypeManager {
 
   // Informs the data type manager that the ready-for-start status of a
   // controller has changed. If the controller is not ready any more, it will
-  // stop |type|. Otherwise, it will trigger reconfiguration so that |type| gets
+  // stop `type`. Otherwise, it will trigger reconfiguration so that `type` gets
   // started again. No-op if the type's state didn't actually change.
   virtual void DataTypePreconditionChanged(DataType type) = 0;
 
@@ -91,7 +91,7 @@ class DataTypeManager {
   // Synchronously stops all registered data types. If called after Configure()
   // is called but before it finishes, it will abort the configure and any data
   // types that have been started will be stopped. If called with metadata fate
-  // |CLEAR_METADATA|, clears sync data for all datatypes.
+  // `CLEAR_METADATA`, clears sync data for all datatypes.
   virtual void Stop(SyncStopMetadataFate metadata_fate) = 0;
 
   // Returns the set of data types that are supported in principle, possibly

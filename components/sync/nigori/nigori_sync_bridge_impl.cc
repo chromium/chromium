@@ -173,7 +173,7 @@ bool SpecificsHasValidKeyDerivationParams(const NigoriSpecifics& specifics) {
   }
 }
 
-// Validates given |specifics| assuming it's not specifics received from the
+// Validates given `specifics` assuming it's not specifics received from the
 // server during first-time sync for current user (i.e. it's not a default
 // specifics).
 bool IsValidNigoriSpecifics(const NigoriSpecifics& specifics) {
@@ -216,7 +216,7 @@ bool IsValidNigoriSpecifics(const NigoriSpecifics& specifics) {
 bool IsValidPassphraseTransition(
     NigoriSpecifics::PassphraseType old_passphrase_type,
     NigoriSpecifics::PassphraseType new_passphrase_type) {
-  // We assume that |new_passphrase_type| is valid.
+  // We assume that `new_passphrase_type` is valid.
   DCHECK_NE(new_passphrase_type, NigoriSpecifics::UNKNOWN);
 
   if (old_passphrase_type == new_passphrase_type) {
@@ -245,7 +245,7 @@ bool IsValidPassphraseTransition(
   NOTREACHED();
 }
 
-// Updates |*current_type| if needed. Returns true if its value was changed.
+// Updates `*current_type` if needed. Returns true if its value was changed.
 bool UpdatePassphraseType(NigoriSpecifics::PassphraseType new_type,
                           NigoriSpecifics::PassphraseType* current_type) {
   DCHECK(current_type);
@@ -266,7 +266,7 @@ bool IsValidEncryptedTypesTransition(bool old_encrypt_everything,
 bool IsValidLocalData(const sync_pb::NigoriLocalData& local_data) {
   if (local_data.data_type_state().initial_sync_state() !=
       sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE) {
-    // |local_data| should not be stored before initial sync is done.
+    // `local_data` should not be stored before initial sync is done.
     return false;
   }
 
@@ -423,7 +423,7 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
   // Keystore key rotation might be not performed, but required.
   MaybeTriggerKeystoreReencryption();
 
-  // Ensure that |cryptographer| contains all keystore keys (non-keystore
+  // Ensure that `cryptographer` contains all keystore keys (non-keystore
   // passphrase types only).
   MaybePopulateKeystoreKeysIntoCryptographer();
 }
@@ -455,7 +455,7 @@ void NigoriSyncBridgeImpl::NotifyInitialStateToObservers() {
   MaybeNotifyOfPendingKeys();
 
   if (state_.passphrase_type != NigoriSpecifics::UNKNOWN) {
-    // if |passphrase_type| is unknown, it is not yet initialized and we
+    // if `passphrase_type` is unknown, it is not yet initialized and we
     // shouldn't expose it.
     PassphraseType enum_passphrase_type =
         *ProtoPassphraseInt32ToEnum(state_.passphrase_type);
@@ -513,7 +513,7 @@ void NigoriSyncBridgeImpl::SetEncryptionPassphrase(
 void NigoriSyncBridgeImpl::SetExplicitPassphraseDecryptionKey(
     std::unique_ptr<Nigori> key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // |key| should be a valid one already (verified by SyncServiceCrypto,
+  // `key` should be a valid one already (verified by SyncServiceCrypto,
   // using pending keys exposed by OnPassphraseRequired()).
   if (!state_.pending_keys) {
     DCHECK_EQ(state_.passphrase_type, NigoriSpecifics::KEYSTORE_PASSPHRASE);
@@ -530,7 +530,7 @@ void NigoriSyncBridgeImpl::SetExplicitPassphraseDecryptionKey(
   }
 
   if (state_.pending_keys.has_value()) {
-    // |pending_keys| could be changed in between of OnPassphraseRequired()
+    // `pending_keys` could be changed in between of OnPassphraseRequired()
     // and SetExplicitPassphraseDecryptionKey() calls (remote update with
     // different keystore Nigori or with transition from keystore to custom
     // passphrase Nigori).
@@ -611,7 +611,7 @@ bool NigoriSyncBridgeImpl::NeedKeystoreKey() const {
   // Explicitly asks the server for keystore keys if it's first-time sync, i.e.
   // if there is no keystore keys yet or remote keybag wasn't decryptable due
   // to absence of some keystore key. In case of key rotation, it's a server
-  // responsibility to send updated keystore keys. |keystore_keys_| is expected
+  // responsibility to send updated keystore keys. `keystore_keys_` is expected
   // to be non-empty before MergeFullSyncData() call, regardless of passphrase
   // type.
   return state_.keystore_keys_cryptographer->IsEmpty() ||
@@ -679,7 +679,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::MergeFullSyncData(
     // pair after the initial sync.
     return UpdateLocalState(data->specifics.nigori());
   }
-  // Ensure we have |keystore_keys| during the initial download, requested to
+  // Ensure we have `keystore_keys` during the initial download, requested to
   // the server as per NeedKeystoreKey(), and required for initializing the
   // default keystore Nigori.
   DCHECK(state_.keystore_keys_cryptographer);
@@ -720,7 +720,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::ApplyIncrementalSyncChanges(
     PutNextApplicablePendingLocalCommit();
   }
 
-  // Receiving empty |data| means metadata-only change (e.g. no remote updates,
+  // Receiving empty `data` means metadata-only change (e.g. no remote updates,
   // or local commit completion), so we need to persist its state.
   storage_->StoreData(SerializeAsNigoriLocalData());
   return std::nullopt;
@@ -783,7 +783,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
 
   // Set incoming encrypted keys as pending, so they are processed in
   // TryDecryptPendingKeysWith(). If the keybag is not immediately decryptable,
-  // it will be kept in |state_.pending_keys| until decryption is possible, e.g.
+  // it will be kept in `state_.pending_keys` until decryption is possible, e.g.
   // upon SetExplicitPassphraseDecryptionKey() or equivalent depending on the
   // passphrase type.
   state_.pending_keys = specifics.encryption_keybag();
@@ -829,7 +829,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
   MaybeNotifyOfPendingKeys();
 
   // There might be pending local commits, so make attempt to apply them on top
-  // of new |state_|.
+  // of new `state_`.
   PutNextApplicablePendingLocalCommit();
 
   storage_->StoreData(SerializeAsNigoriLocalData());
@@ -847,16 +847,16 @@ NigoriKeyBag NigoriSyncBridgeImpl::BuildDecryptionKeyBagForRemoteKeybag()
     if (state_.keystore_keys_cryptographer->DecryptKeystoreDecryptorToken(
             *state_.pending_keystore_decryptor_token,
             &keystore_decryptor_key)) {
-      // Note: |pending_keystore_decryptor_token| will be cleared upon
-      // successful decryption of |pending_keys|.
+      // Note: `pending_keystore_decryptor_token` will be cleared upon
+      // successful decryption of `pending_keys`.
       decryption_key_bag.AddKeyFromProto(keystore_decryptor_key);
     }
   }
 
   if (state_.passphrase_type == NigoriSpecifics::KEYSTORE_PASSPHRASE) {
     // Allow decryption using keystore keys directly: while using
-    // |keystore_decryptor_token| should be sufficient, this supports future
-    // case when |keystore_decryptor_token| is not passed.
+    // `keystore_decryptor_token` should be sufficient, this supports future
+    // case when `keystore_decryptor_token` is not passed.
     decryption_key_bag.AddAllUnknownKeysFrom(
         state_.keystore_keys_cryptographer->GetKeystoreKeybag());
   }
@@ -938,7 +938,7 @@ std::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
         state_.cross_user_sharing_key_pair_version.value());
   }
 
-  // Reset |last_default_trusted_vault_key_name| as |state_| might go out of
+  // Reset `last_default_trusted_vault_key_name` as `state_` might go out of
   // TRUSTED_VAULT passphrase type. The callers are responsible to set it again
   // if needed.
   state_.last_default_trusted_vault_key_name = std::nullopt;

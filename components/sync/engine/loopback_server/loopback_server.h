@@ -45,7 +45,7 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
     virtual ~ObserverForTests() = default;
 
     // Called after the server has processed a successful commit. The types
-    // updated as part of the commit are passed in |committed_data_types|.
+    // updated as part of the commit are passed in `committed_data_types`.
     virtual void OnCommit(syncer::DataTypeSet committed_data_types) = 0;
 
     // Called when a committed tombstone includes a deletion origin.
@@ -57,8 +57,8 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
   explicit LoopbackServer(const base::FilePath& persistent_file);
   ~LoopbackServer() override;
 
-  // Handles a /command POST (with the given |message|) to the server.
-  // |response| must not be null.
+  // Handles a /command POST (with the given `message`) to the server.
+  // `response` must not be null.
   net::HttpStatusCode HandleCommand(
       const sync_pb::ClientToServerMessage& message,
       sync_pb::ClientToServerResponse* response);
@@ -131,54 +131,54 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
   bool CreatePermanentBookmarkFolder(const std::string& server_tag,
                                      const std::string& name);
 
-  // Inserts the default permanent items in |entities_|.
+  // Inserts the default permanent items in `entities_`.
   bool CreateDefaultPermanentItems();
 
   // Returns generated key which may contain any bytes (not necessarily UTF-8).
   std::vector<uint8_t> GenerateNewKeystoreKey() const;
 
-  // Saves a |entity| to |entities_|.
+  // Saves a `entity` to `entities_`.
   void SaveEntity(std::unique_ptr<LoopbackServerEntity> entity);
 
   // Commits a client-side SyncEntity to the server as a LoopbackServerEntity.
-  // The client that sent the commit is identified via |client_guid|. The
-  // parent ID string present in |client_entity| should be ignored in favor
-  // of |parent_id|. If the commit is successful, the entity's server ID string
-  // is returned and a new LoopbackServerEntity is saved in |entities_|.
+  // The client that sent the commit is identified via `client_guid`. The
+  // parent ID string present in `client_entity` should be ignored in favor
+  // of `parent_id`. If the commit is successful, the entity's server ID string
+  // is returned and a new LoopbackServerEntity is saved in `entities_`.
   std::string CommitEntity(
       const sync_pb::SyncEntity& client_entity,
       sync_pb::CommitResponse_EntryResponse* entry_response,
       const std::string& client_guid,
       const std::string& parent_id);
 
-  // Populates |entry_response| based on the stored entity identified by
-  // |entity_id|. It is assumed that the entity identified by |entity_id| has
+  // Populates `entry_response` based on the stored entity identified by
+  // `entity_id`. It is assumed that the entity identified by `entity_id` has
   // already been stored using SaveEntity.
   void BuildEntryResponseForSuccessfulCommit(
       const std::string& entity_id,
       sync_pb::CommitResponse_EntryResponse* entry_response);
 
-  // Determines whether the SyncEntity with id_string |id| is a child of an
-  // entity with id_string |potential_parent_id|.
+  // Determines whether the SyncEntity with id_string `id` is a child of an
+  // entity with id_string `potential_parent_id`.
   bool IsChild(const std::string& id, const std::string& potential_parent_id);
 
   // Creates and saves tombstones for all children of the entity with the given
-  // |parent_id|. A tombstone is not created for the entity itself.
+  // `parent_id`. A tombstone is not created for the entity itself.
   void DeleteChildren(const std::string& parent_id);
 
-  // Updates the |entity| to a new version and increments the version counter
+  // Updates the `entity` to a new version and increments the version counter
   // that the server uses to assign versions.
   void UpdateEntityVersion(LoopbackServerEntity* entity);
 
   // Returns the store birthday.
   std::string GetStoreBirthday() const;
 
-  // Returns all entities stored by the server of the given |data_type|.
+  // Returns all entities stored by the server of the given `data_type`.
   // Permanent entities are excluded. This method is only used in tests.
   std::vector<sync_pb::SyncEntity> GetSyncEntitiesByDataType(
       syncer::DataType data_type);
 
-  // Returns a list of permanent entities of the given |data_type|. This method
+  // Returns a list of permanent entities of the given `data_type`. This method
   // is only used in tests.
   std::vector<sync_pb::SyncEntity> GetPermanentSyncEntitiesByDataType(
       syncer::DataType data_type);
@@ -190,10 +190,10 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
   // by test to verify the contents of the server state.
   base::Value::Dict GetEntitiesAsDictForTesting();
 
-  // Modifies the entity on the server with the given |id|. The entity's
-  // EntitySpecifics are replaced with |updated_specifics| and its version is
-  // updated to n+1. If the given |id| does not exist or the DataType of
-  // |updated_specifics| does not match the entity, false is returned.
+  // Modifies the entity on the server with the given `id`. The entity's
+  // EntitySpecifics are replaced with `updated_specifics` and its version is
+  // updated to n+1. If the given `id` does not exist or the DataType of
+  // `updated_specifics` does not match the entity, false is returned.
   // Otherwise, true is returned to represent a successful modification.
   //
   // This method sometimes updates entity data beyond EntitySpecifics. For
@@ -217,10 +217,10 @@ class LoopbackServer : public base::ImportantFileWriter::DataSerializer {
   // This method is only used in tests.
   void OverrideResponseType(ResponseTypeProvider response_type_override);
 
-  // Serializes the server state to |proto|.
+  // Serializes the server state to `proto`.
   void SerializeState(sync_pb::LoopbackServerProto* proto) const;
 
-  // Populates the server state from |proto|. Returns true iff successful.
+  // Populates the server state from `proto`. Returns true iff successful.
   bool DeSerializeState(const sync_pb::LoopbackServerProto& proto);
 
   // Schedules committing state to disk at some later time. Repeat calls are

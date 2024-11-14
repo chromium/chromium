@@ -190,7 +190,7 @@ void AdaptTypeForBookmark(const sync_pb::SyncEntity& update_entity,
   }
   // Remaining cases should be unreachable today. In case SyncEntity.folder gets
   // removed in the future, with legacy data still being around prior to M94,
-  // infer folderness based on the present of field |url| (only populated for
+  // infer folderness based on the present of field `url` (only populated for
   // URL bookmarks).
   specifics->mutable_bookmark()->set_type(
       specifics->bookmark().has_url() ? sync_pb::BookmarkSpecifics::URL
