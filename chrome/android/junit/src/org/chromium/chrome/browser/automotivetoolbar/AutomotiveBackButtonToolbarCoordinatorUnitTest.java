@@ -36,6 +36,9 @@ import java.util.concurrent.TimeUnit;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
+    private static final int ANIMATION_DURATION_MS = 400;
+    private static final int ON_SWIPE_TOOLBAR_DURATION_MS = 10000;
+
     private AutomotiveBackButtonToolbarCoordinator mAutomotiveBackButtonToolbarCoordinator;
     private View mAutomotiveToolbar;
     private View mOnSwipeAutomotiveToolbar;
@@ -124,11 +127,12 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
                 .onEnterFullscreen(tab, fullscreenOptions);
         mAutomotiveBackButtonToolbarCoordinator.handleSwipe();
 
+        ShadowLooper.idleMainLooper(ANIMATION_DURATION_MS, TimeUnit.MILLISECONDS);
         Assert.assertEquals(
                 "On swipe toolbar should be visible on valid swipe",
                 mOnSwipeAutomotiveToolbar.getVisibility(),
                 View.VISIBLE);
-        ShadowLooper.idleMainLooper(10000, TimeUnit.MILLISECONDS);
+        ShadowLooper.idleMainLooper(ON_SWIPE_TOOLBAR_DURATION_MS, TimeUnit.MILLISECONDS);
         Assert.assertEquals(
                 "On swipe toolbar should disappear after 10s",
                 mOnSwipeAutomotiveToolbar.getVisibility(),
