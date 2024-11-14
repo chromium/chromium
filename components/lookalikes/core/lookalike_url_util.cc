@@ -392,13 +392,13 @@ std::vector<std::string_view> SplitDomainIntoTokens(
 bool ASubdomainIsAllowlisted(
     const base::span<const std::string_view>& domain_labels,
     const LookalikeTargetAllowlistChecker& in_target_allowlist) {
-  DCHECK(domain_labels.size() >= 2);
-  std::string potential_hostname(domain_labels[domain_labels.size() - 1]);
+  CHECK_GT(domain_labels.size(), 1u);
+  std::string potential_hostname(domain_labels.back());
   // Attach each token from the end to the embedded target to check if that
   // subdomain has been allowlisted.
-  for (int i = domain_labels.size() - 2; i >= 0; i--) {
+  for (size_t i = domain_labels.size() - 1; i; --i) {
     potential_hostname =
-        std::string(domain_labels[i]) + "." + potential_hostname;
+        base::StrCat({domain_labels[i - 1], ".", potential_hostname});
     if (in_target_allowlist.Run(potential_hostname)) {
       return true;
     }
@@ -504,13 +504,13 @@ bool UsesCommonWord(const reputation::SafetyTipsConfig* config_proto,
 bool IsEmbeddingItself(const base::span<const std::string_view>& domain_labels,
                        const std::string& embedding_domain) {
   DCHECK(domain_labels.size() >= 2);
-  std::string potential_hostname(domain_labels[domain_labels.size() - 1]);
+  std::string potential_hostname(domain_labels.back());
   // Attach each token from the end to the embedded target to check if that
   // subdomain is the embedding domain. (e.g. using the earlier example, check
   // each ["com", "example.com", "foo.example.com"] against "example.com".
-  for (int i = domain_labels.size() - 2; i >= 0; i--) {
+  for (size_t i = domain_labels.size() - 1; i; --i) {
     potential_hostname =
-        std::string(domain_labels[i]) + "." + potential_hostname;
+        base::StrCat({domain_labels[i - 1], ".", potential_hostname});
     if (embedding_domain == potential_hostname) {
       return true;
     }

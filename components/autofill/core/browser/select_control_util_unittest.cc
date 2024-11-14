@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/select_control_util.h"
 
+#include <optional>
 #include <string>
 
 #include "components/autofill/core/browser/autofill_field.h"
@@ -34,34 +35,32 @@ TEST_F(FieldFillingUtilTest, FindShortestSubstringMatchInSelect) {
   AutofillField field{test::CreateTestSelectField({"États-Unis", "Canada"})};
 
   // Case 1: Exact match
-  int ret =
-      FindShortestSubstringMatchInSelect(u"Canada", false, field.options());
-  EXPECT_EQ(1, ret);
+  EXPECT_EQ(
+      1, FindShortestSubstringMatchInSelect(u"Canada", false, field.options()));
 
   // Case 2: Case-insensitive
-  ret = FindShortestSubstringMatchInSelect(u"CANADA", false, field.options());
-  EXPECT_EQ(1, ret);
+  EXPECT_EQ(
+      1, FindShortestSubstringMatchInSelect(u"CANADA", false, field.options()));
 
   // Case 3: Proper substring
-  ret = FindShortestSubstringMatchInSelect(u"États", false, field.options());
-  EXPECT_EQ(0, ret);
+  EXPECT_EQ(
+      0, FindShortestSubstringMatchInSelect(u"États", false, field.options()));
 
   // Case 4: Accent-insensitive
-  ret =
-      FindShortestSubstringMatchInSelect(u"Etats-Unis", false, field.options());
-  EXPECT_EQ(0, ret);
+  EXPECT_EQ(0, FindShortestSubstringMatchInSelect(u"Etats-Unis", false,
+                                                  field.options()));
 
   // Case 5: Whitespace-insensitive
-  ret = FindShortestSubstringMatchInSelect(u"Ca na da", true, field.options());
-  EXPECT_EQ(1, ret);
+  EXPECT_EQ(1, FindShortestSubstringMatchInSelect(u"Ca na da", true,
+                                                  field.options()));
 
   // Case 6: No match (whitespace-sensitive)
-  ret = FindShortestSubstringMatchInSelect(u"Ca Na Da", false, field.options());
-  EXPECT_EQ(-1, ret);
+  EXPECT_EQ(std::nullopt, FindShortestSubstringMatchInSelect(u"Ca Na Da", false,
+                                                             field.options()));
 
   // Case 7: No match (not present)
-  ret = FindShortestSubstringMatchInSelect(u"Canadia", true, field.options());
-  EXPECT_EQ(-1, ret);
+  EXPECT_EQ(std::nullopt, FindShortestSubstringMatchInSelect(u"Canadia", true,
+                                                             field.options()));
 }
 
 TEST_F(FieldFillingUtilTest, GetSelectControlByValue) {

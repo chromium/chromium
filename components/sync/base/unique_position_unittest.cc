@@ -568,7 +568,7 @@ class IndexedLessThan {
  public:
   explicit IndexedLessThan(base::span<const T> values) : values_(values) {}
 
-  bool operator()(int i1, int i2) {
+  bool operator()(size_t i1, size_t i2) {
     return less_than_(values_[i1], values_[i2]);
   }
 
@@ -579,9 +579,9 @@ class IndexedLessThan {
 
 TEST_F(PositionFromIntTest, ConsistentOrdering) {
   std::array<UniquePosition, kTestValues.size()> positions;
-  std::vector<int> original_ordering(kTestValues.size());
-  std::vector<int> int64_ordering(kTestValues.size());
-  std::vector<int> position_ordering(kTestValues.size());
+  std::vector<size_t> original_ordering(kTestValues.size());
+  std::vector<size_t> int64_ordering(kTestValues.size());
+  std::vector<size_t> position_ordering(kTestValues.size());
   for (size_t i = 0; i < kTestValues.size(); ++i) {
     positions[i] = UniquePosition::FromInt64(kTestValues[i], NextSuffix());
     original_ordering[i] = int64_ordering[i] = position_ordering[i] = i;

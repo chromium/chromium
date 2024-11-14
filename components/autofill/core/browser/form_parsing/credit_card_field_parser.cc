@@ -394,13 +394,14 @@ bool CreditCardFieldParser::LikelyCardTypeSelectField(
 
   // We set |ignore_whitespace| to true on these calls because this is actually
   // a pretty common mistake; e.g., "Master card" instead of "Mastercard".
-  bool isSelect = (FindShortestSubstringMatchInSelect(
-                       l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_VISA), true,
-                       field->options()) >= 0) ||
-                  (FindShortestSubstringMatchInSelect(
-                       l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_MASTERCARD),
-                       true, field->options()) >= 0);
-  return isSelect;
+  return FindShortestSubstringMatchInSelect(
+             l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_VISA), true,
+             field->options())
+             .has_value() ||
+         FindShortestSubstringMatchInSelect(
+             l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_MASTERCARD), true,
+             field->options())
+             .has_value();
 }
 
 // static
