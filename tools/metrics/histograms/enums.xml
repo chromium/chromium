@@ -33951,6 +33951,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="226" label="V8PromiseAny"/>
   <int value="227" label="V8SetMethods"/>
   <int value="228" label="ScrollSnapEvent"/>
+  <int value="229" label="MoveBeforeAPI"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

@@ -284,6 +284,7 @@ enum WebDXFeature {
   kV8PromiseAny = 226,
   kV8SetMethods = 227,
   kScrollSnapEvent = 228,
+  kMoveBeforeAPI = 229,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
