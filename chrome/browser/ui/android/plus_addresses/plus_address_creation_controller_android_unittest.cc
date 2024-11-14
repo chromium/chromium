@@ -284,7 +284,65 @@ TEST_F(PlusAddressCreationControllerAndroidEnabledTest, ShowNoticeCancel) {
           metrics::PlusAddressModalCompletionStatus::kModalCanceled,
           /*notice_shown=*/true),
       0, 1);
-  EXPECT_EQ(plus_address_service().get_triggered_survey_type(), std::nullopt);
+  EXPECT_THAT(plus_address_service().get_triggered_survey_type(),
+              Optional(hats::SurveyType::kDeclinedFirstTimeCreate));
+}
+
+// Tests that the dialog can still be accepted after an error occurs and the
+// user tries again to create the plus address.
+TEST_F(PlusAddressCreationControllerAndroidEnabledTest,
+       AcceptAfterErrorWithNotice) {
+  base::test::ScopedFeatureList features_{
+      features::kPlusAddressUserOnboardingEnabled};
+  std::unique_ptr<content::WebContents> web_contents =
+      ChromeRenderViewHostTestHarness::CreateTestWebContents();
+
+  ON_CALL(plus_address_setting_service(), GetHasAcceptedNotice)
+      .WillByDefault(Return(false));
+  EXPECT_CALL(plus_address_setting_service(), SetHasAcceptedNotice);
+
+  PlusAddressCreationControllerAndroid::CreateForWebContents(
+      web_contents.get());
+  PlusAddressCreationControllerAndroid* controller =
+      PlusAddressCreationControllerAndroid::FromWebContents(web_contents.get());
+  controller->set_suppress_ui_for_testing(true);
+  base::test::TestFuture<const std::string&> future;
+  controller->OfferCreation(
+      url::Origin::Create(GURL("https://mattwashere.example")),
+      /*is_manual_fallback=*/false, future.GetCallback());
+
+  plus_address_service().set_should_fail_to_confirm(true);
+  FastForwardBy(kDuration);
+  controller->OnConfirmed();
+  EXPECT_FALSE(future.IsReady());
+
+  plus_address_service().set_should_fail_to_confirm(false);
+  FastForwardBy(kDuration);
+  controller->OnConfirmed();
+
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          kPlusAddressModalWithNoticeEventHistogram),
+      BucketsAre(
+          base::Bucket(metrics::PlusAddressModalEvent::kModalShown, 1),
+          base::Bucket(metrics::PlusAddressModalEvent::kModalConfirmed, 2)));
+  histogram_tester_.ExpectUniqueTimeSample(
+      FormatModalDurationMetrics(
+          metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
+          /*notice_shown=*/true),
+      2 * kDuration, 1);
+  histogram_tester_.ExpectUniqueSample(
+      FormatRefreshHistogramNameFor(
+          metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
+          /*notice_shown=*/true),
+      0, 1);
+  // The pref is set only when the first time onboarding notice is shown.
+  EXPECT_EQ(profile()->GetTestingPrefService()->GetTime(
+                prefs::kFirstPlusAddressCreationTime),
+            base::Time::Now());
+  EXPECT_THAT(plus_address_service().get_triggered_survey_type(),
+              Optional(hats::SurveyType::kAcceptedFirstTimeCreate));
 }
 
 TEST_F(PlusAddressCreationControllerAndroidEnabledTest, RefreshPlusAddress) {

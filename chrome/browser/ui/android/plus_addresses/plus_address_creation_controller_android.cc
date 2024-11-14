@@ -215,6 +215,7 @@ void PlusAddressCreationControllerAndroid::TryAgainToReservePlusAddress() {
   if (!plus_address_service) {
     return;
   }
+  modal_error_status_.reset();
   plus_address_service->ReservePlusAddress(
       relevant_origin_,
       base::BindOnce(
@@ -237,6 +238,7 @@ void PlusAddressCreationControllerAndroid::OnRefreshClicked() {
 
 void PlusAddressCreationControllerAndroid::OnConfirmed() {
   CHECK(plus_profile_.has_value());
+  modal_error_status_.reset();
   metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalConfirmed,
                             ShouldShowNotice());
   if (plus_profile_->is_confirmed) {
@@ -267,6 +269,9 @@ void PlusAddressCreationControllerAndroid::OnCanceled() {
     RecordModalShownOutcome(
         metrics::PlusAddressModalCompletionStatus::kModalCanceled,
         was_notice_shown);
+    if (was_notice_shown) {
+      TriggerUserPerceptionSurvey(hats::SurveyType::kDeclinedFirstTimeCreate);
+    }
   }
 }
 
