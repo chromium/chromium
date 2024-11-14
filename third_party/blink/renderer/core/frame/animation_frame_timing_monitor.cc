@@ -612,7 +612,7 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
   // Make sure we only monitor top-level promise resolvers that are outside the
   // update-the-rendering phase (promise resolvers directly handled from a
   // posted task).
-  if (state_ != State::kProcessingTask) {
+  if (state_ != State::kProcessingTask && state_ != State::kPendingFrame) {
     return;
   }
 
