@@ -1,5 +1,5 @@
 {
-  "android-tablet-14-arm64-rel": {
+  "android-14-tablet-landscape-arm64-rel": {
     "gtest_tests": [
       {
         "args": [

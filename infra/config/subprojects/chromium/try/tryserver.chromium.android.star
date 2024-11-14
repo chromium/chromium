@@ -179,13 +179,13 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-tablet-14-arm64-rel",
+    name = "android-14-tablet-landscape-arm64-rel",
     mirrors = [
-        "ci/android-tablet-14-arm64-rel",
+        "ci/android-14-tablet-landscape-arm64-rel",
     ],
     gn_args = gn_args.config(
         configs = [
-            "ci/android-tablet-14-arm64-rel",
+            "ci/android-14-tablet-landscape-arm64-rel",
             "release_try_builder",
         ],
     ),

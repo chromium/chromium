@@ -4153,7 +4153,7 @@ ci.builder(
 )
 
 ci.builder(
-    name = "android-tablet-14-arm64-rel",
+    name = "android-14-tablet-landscape-arm64-rel",
     description_html = "Run chromium tests on Android 14 tablets in Landscape Mode.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
