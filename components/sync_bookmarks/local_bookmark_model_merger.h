@@ -20,6 +20,8 @@ class BookmarkModelView;
 
 // Class responsible for implementing the merge algorithm that allows moving all
 // bookmarks from the local BookmarkModel instance to the account one.
+// TODO(crbug.com/332532186): Delete this class in favor of its new replacement,
+// LocalBookmarkToAccountMerger.
 class LocalBookmarkModelMerger {
  public:
   // All parameters must not be null and must outlive this object.
