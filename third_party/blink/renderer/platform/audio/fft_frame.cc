@@ -33,10 +33,8 @@
 
 #include "third_party/blink/renderer/platform/audio/fft_frame.h"
 
-#include <algorithm>
 #include <complex>
 #include <memory>
-
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/fdlibm/ieee754.h"
@@ -50,9 +48,7 @@ namespace blink {
 void FFTFrame::DoPaddedFFT(const float* data, unsigned data_size) {
   // Zero-pad the impulse response
   AudioFloatArray padded_response(FftSize());  // zero-initialized
-  // TODO(crbug.com/375449662): Convert this function to use spans.
-  std::ranges::copy(UNSAFE_TODO(base::span(data, data_size)),
-                    padded_response.begin());
+  padded_response.CopyToRange(data, 0, data_size);
 
   // Get the frequency-domain version of padded response
   DoFFT(padded_response.Data());

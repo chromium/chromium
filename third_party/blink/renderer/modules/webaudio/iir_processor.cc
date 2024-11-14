@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/webaudio/iir_processor.h"
 
-#include <algorithm>
 #include <memory>
 
 #include "third_party/blink/renderer/modules/webaudio/iir_dsp_kernel.h"
@@ -28,8 +27,8 @@ IIRProcessor::IIRProcessor(float sample_rate,
 
   feedforward_.Allocate(feedforward_length);
   feedback_.Allocate(feedback_length);
-  std::ranges::copy(feedforward_coef, feedforward_.begin());
-  std::ranges::copy(feedback_coef, feedback_.begin());
+  feedforward_.CopyToRange(feedforward_coef.data(), 0, feedforward_length);
+  feedback_.CopyToRange(feedback_coef.data(), 0, feedback_length);
 
   // Need to scale the feedback and feedforward coefficients appropriately.
   // (It's up to the caller to ensure feedbackCoef[0] is not 0.)
