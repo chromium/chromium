@@ -52,25 +52,31 @@ const char* valid_attr_values[] = {
     // clang-format off
     "attr(p)",
     "attr(p,)",
-    "attr(p <string>)",
-    "attr(p <url>)",
-    "attr(p <color>)",
-    "attr(p, color)",
-    "attr(p <color>,)",
-    "attr(p <color> | ident, color)",
-    "attr(p <number>+)",
-    "attr(p <color>#, red)",
+    "attr(p type(<string>))",
+    "attr(p type(<url>))",
+    "attr(p type(<color>))",
+    "attr(p, type(color))",
+    "attr(p type(<color>),)",
+    "attr(p type(<color> | ident), color)",
+    "attr(p type(<number>+))",
+    "attr(p type(<color>#), red)",
+    "attr(p px)",
+    "attr(p string)",
     // clang-format on
 };
 
 const char* invalid_attr_values[] = {
     // clang-format off
-    "attr(p < length>)",
-    "attr(p <number >)",
-    "attr(p <number> +)",
-    "attr(p <transform-list>+)",
+    "attr(p type(< length>))",
+    "attr(p type(<angle> !))",
+    "attr(p type(<number >))",
+    "attr(p type(<number> +))",
+    "attr(p type(<transform-list>+))",
+    "attr(p type(!))",
     "attr(p !)",
-    "attr(p <color> red)",
+    "attr(p <px>)",
+    "attr(p <string>)",
+    "attr(p type(<color>) red)",
     // clang-format on
 };
 

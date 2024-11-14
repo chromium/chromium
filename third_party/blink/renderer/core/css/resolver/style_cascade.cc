@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/animation/invalidatable_interpolation.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/animation/transition_interpolation.h"
+#include "third_party/blink/renderer/core/css/css_attr_type.h"
 #include "third_party/blink/renderer/core/css/css_attr_value_tainting.h"
 #include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
@@ -180,26 +181,6 @@ bool IsInterpolation(CascadePriority priority) {
     case CascadeOrigin::kAuthor:
       return false;
   }
-}
-
-// https://drafts.csswg.org/css-values-5/#attr-substitution-value
-const CSSValue* GetAttrSubstitutionValue(
-    const String& attribute_value,
-    std::optional<CSSSyntaxDefinition> syntax,
-    const CSSParserContext& context) {
-  if (attribute_value.IsNull()) {
-    return nullptr;
-  }
-
-  if (!syntax.has_value()) {
-    // Omitting the <syntax> argument causes the attribute’s literal value to be
-    // treated as the value of a CSS string, with no CSS parsing performed at
-    // all (including CSS escapes, whitespace removal, comments, etc).
-    // https://drafts.csswg.org/css-values-5/#attr-notation
-    return MakeGarbageCollected<CSSStringValue>(attribute_value);
-  }
-
-  return syntax->Parse(attribute_value, context, false);
 }
 
 }  // namespace
@@ -1658,15 +1639,18 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
                                    const CSSParserContext& context,
                                    TokenSequence& out) {
   AtomicString attribute_name = ConsumeVariableName(stream);
-  std::optional<CSSSyntaxDefinition> syntax =
-      CSSSyntaxDefinition::Consume(stream);
-  DCHECK(syntax.has_value() || stream.AtEnd() ||
-         stream.Peek().GetType() == kCommaToken);
+  std::optional<CSSAttrType> attr_type = CSSAttrType::Consume(stream);
+  if (!attr_type.has_value()) {
+    attr_type = CSSAttrType::GetDefaultValue();
+  }
+  DCHECK(stream.AtEnd() || stream.Peek().GetType() == kCommaToken);
+
   const String& attribute_value =
       state_.GetUltimateOriginatingElementOrSelf().getAttribute(attribute_name);
 
   const CSSValue* substitution_value =
-      GetAttrSubstitutionValue(attribute_value, syntax, context);
+      attribute_value.IsNull() ? nullptr
+                               : attr_type->Parse(attribute_value, context);
 
   // Validate fallback value.
   if (ConsumeComma(stream)) {
@@ -1683,9 +1667,9 @@ bool StyleCascade::ResolveAttrInto(CSSParserTokenStream& stream,
     }
   }
 
-  if (!syntax.has_value() && !substitution_value) {
-    // If the <syntax> argument is omitted, the fallback defaults to the empty
-    // string if omitted.
+  if (attr_type->IsString() && !substitution_value) {
+    // If the <attr-type> argument is omitted, the fallback defaults to the
+    // empty string if omitted.
     // https://drafts.csswg.org/css-values-5/#attr-notation
     out.Append(CSSParserToken(kStringToken, g_empty_atom), g_empty_atom);
     AppendTaintToken(out);
