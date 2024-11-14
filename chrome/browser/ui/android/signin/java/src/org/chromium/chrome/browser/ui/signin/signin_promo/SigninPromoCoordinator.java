@@ -11,9 +11,11 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
@@ -43,7 +45,14 @@ public final class SigninPromoCoordinator {
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
-        mMediator = new SigninPromoMediator(identityManager, profileDataCache, delegate);
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
+        mMediator =
+                new SigninPromoMediator(
+                        identityManager,
+                        signinManager,
+                        AccountManagerFacadeProvider.getInstance(),
+                        profileDataCache,
+                        delegate);
     }
 
     public void destroy() {

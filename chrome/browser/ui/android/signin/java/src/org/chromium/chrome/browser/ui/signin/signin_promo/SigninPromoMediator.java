@@ -8,25 +8,32 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
+import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.signin.AccountManagerFacade;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.ui.modelutil.PropertyModel;
 
-final class SigninPromoMediator implements ProfileDataCache.Observer {
+final class SigninPromoMediator
+        implements ProfileDataCache.Observer, AccountsChangeObserver, IdentityManager.Observer {
     private final IdentityManager mIdentityManager;
+    private final AccountManagerFacade mAccountManagerFacade;
     private final ProfileDataCache mProfileDataCache;
     private final SigninPromoDelegate mDelegate;
     private final PropertyModel mModel;
 
     SigninPromoMediator(
             IdentityManager identityManager,
+            SigninManager signinManager,
+            AccountManagerFacade accountManagerFacade,
             ProfileDataCache profileDataCache,
             SigninPromoDelegate delegate) {
         mIdentityManager = identityManager;
+        mAccountManagerFacade = accountManagerFacade;
         mProfileDataCache = profileDataCache;
         mDelegate = delegate;
 
@@ -49,9 +56,13 @@ final class SigninPromoMediator implements ProfileDataCache.Observer {
                         delegate.shouldHideDismissButton());
 
         mProfileDataCache.addObserver(this);
+        mIdentityManager.addObserver(this);
+        mAccountManagerFacade.addObserver(this);
     }
 
     public void destroy() {
+        mAccountManagerFacade.removeObserver(this);
+        mIdentityManager.removeObserver(this);
         mProfileDataCache.removeObserver(this);
     }
 
@@ -62,7 +73,24 @@ final class SigninPromoMediator implements ProfileDataCache.Observer {
         if (visibleAccount != null && !visibleAccount.getEmail().equals(accountEmail)) {
             return;
         }
+        updateModel(visibleAccount);
+    }
 
+    @Override
+    public void onCoreAccountInfosChanged() {
+        updateModel(getVisibleAccount());
+    }
+
+    @Override
+    public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
+        updateModel(getVisibleAccount());
+    }
+
+    PropertyModel getModel() {
+        return mModel;
+    }
+
+    private void updateModel(@Nullable CoreAccountInfo visibleAccount) {
         @Nullable
         DisplayableProfileData profileData =
                 visibleAccount == null
@@ -74,20 +102,14 @@ final class SigninPromoMediator implements ProfileDataCache.Observer {
                 profileData == null || mDelegate.shouldHideDismissButton());
     }
 
-    PropertyModel getModel() {
-        return mModel;
-    }
-
     private @Nullable CoreAccountInfo getVisibleAccount() {
         @Nullable
         CoreAccountInfo visibleAccount =
                 mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        final AccountManagerFacade accountManagerFacade =
-                AccountManagerFacadeProvider.getInstance();
         if (visibleAccount == null) {
             visibleAccount =
                     AccountUtils.getDefaultCoreAccountInfoIfFulfilled(
-                            accountManagerFacade.getCoreAccountInfos());
+                            mAccountManagerFacade.getCoreAccountInfos());
         }
         return visibleAccount;
     }
