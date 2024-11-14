@@ -187,8 +187,7 @@ TEST_P(AudioSourceFetcherImplTest, Resample) {
   audio_source_fetcher()->Capture(audio_bus.get(),
                                   /*audio_capture_time=*/base::TimeTicks::Now(),
                                   /*glitch_info=*/{},
-                                  /*volume=*/1.0,
-                                  /*key_pressed=*/true);
+                                  /*volume=*/1.0);
   if (is_server_based()) {
     VerifyAudioBuffer(kServerBasedRecognitionAudioSampleRate,
                       kServerBasedRecognitionAudioFramesPerBuffer);
@@ -236,8 +235,7 @@ TEST_P(AudioSourceFetcherImplTest, StopDuringResample) {
   audio_source_fetcher()->Capture(audio_bus.get(),
                                   /*audio_capture_time=*/base::TimeTicks::Now(),
                                   /*glitch_info=*/{},
-                                  /*volume=*/1.0,
-                                  /*key_pressed=*/true);
+                                  /*volume=*/1.0);
   if (is_server_based()) {
     // Stop will prevent the pending resample call from running, so no audio
     // will be available to verify.

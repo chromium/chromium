@@ -83,8 +83,7 @@ TEST_F(AudioStreamCoordinatorTest, ConnectToAudioCapturerAndReceiveBuses) {
         audio_bus.get(),
         /*audio_capture_time=*/base::TimeTicks::Now(),
         /*glitch_info=*/{},
-        /*volume=*/1.0,
-        /*key_pressed=*/true);
+        /*volume=*/1.0);
   }
   base::RunLoop().RunUntilIdle();
 }

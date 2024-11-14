@@ -141,8 +141,7 @@ void LocalMediaStreamAudioSource::Capture(
     const media::AudioBus* audio_bus,
     base::TimeTicks audio_capture_time,
     const media::AudioGlitchInfo& glitch_info,
-    double volume,
-    bool key_pressed) {
+    double volume) {
   DCHECK(audio_bus);
   DeliverDataToTracks(*audio_bus, audio_capture_time, glitch_info);
 }

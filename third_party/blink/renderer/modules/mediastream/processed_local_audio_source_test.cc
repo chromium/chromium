@@ -233,7 +233,6 @@ TEST_P(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   // Feed audio data into the ProcessedLocalAudioSource and expect it to reach
   // the sink.
   int delay_ms = 65;
-  bool key_pressed = true;
   double volume = 0.9;
   const base::TimeTicks capture_time =
       base::TimeTicks::Now() + base::Milliseconds(delay_ms);
@@ -244,7 +243,7 @@ TEST_P(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   audio_bus->Zero();
   EXPECT_CALL(*sink, OnDataCallback()).Times(AtLeast(1));
   capture_source_callback()->Capture(audio_bus.get(), capture_time, glitch_info,
-                                     volume, key_pressed);
+                                     volume);
 
   // Expect glitches to have been propagated.
   MediaStreamTrackPlatform::AudioFrameStats audio_stats;

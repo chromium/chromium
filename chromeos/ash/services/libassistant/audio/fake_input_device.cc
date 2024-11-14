@@ -143,8 +143,7 @@ class FakeInputDevice {
     DVLOG(2) << "Send " << block->frames() << " audio frames";
     const base::TimeTicks time = base::TimeTicks::Now();
     if (callback_)
-      callback_->Capture(block, time, {}, /*volume=*/0.5,
-                         /*key_pressed=*/false);
+      callback_->Capture(block, time, {}, /*volume=*/0.5);
   }
 
   // LibAssistant doesn't expect the microphone to stop sending data.
@@ -158,8 +157,7 @@ class FakeInputDevice {
         audio_parameters_.GetMicrosecondsPerFrame() * audio_packet->frames();
     const base::TimeTicks time = base::TimeTicks::Now();
     if (callback_) {
-      callback_->Capture(audio_packet.get(), time, {}, /*volume=*/0.5,
-                         /*key_pressed=*/false);
+      callback_->Capture(audio_packet.get(), time, {}, /*volume=*/0.5);
     }
 
     PostDelayedTask(FROM_HERE,

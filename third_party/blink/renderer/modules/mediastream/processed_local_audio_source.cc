@@ -539,8 +539,7 @@ void ProcessedLocalAudioSource::Capture(
     const media::AudioBus* audio_bus,
     base::TimeTicks audio_capture_time,
     const media::AudioGlitchInfo& glitch_info,
-    double volume,
-    bool key_pressed) {
+    double volume) {
   TRACE_EVENT1("audio", "ProcessedLocalAudioSource::Capture", "capture-time",
                audio_capture_time);
   glitch_info_accumulator_.Add(glitch_info);
