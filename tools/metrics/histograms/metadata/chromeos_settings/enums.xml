@@ -658,25 +658,31 @@ chromium-metrics-reviews@google.com.
   <int value="-14666765" label="/accounts"/>
   <int value="8030578" label="/crostini/sharedUsbDevices"/>
   <int value="8530592" label="/syncSetup/advanced"/>
+  <int value="13746958" label="/bruschetta/sharedPaths"/>
   <int value="16287984" label="/languages/details"/>
   <int value="48634426" label="/osReset"/>
   <int value="66296091" label="/graphics-tablet/customizePenButtons"/>
   <int value="149495749" label="/osLanguages"/>
   <int value="223791833" label="/help/about"/>
+  <int value="280410669" label="/passpointDetail"/>
   <int value="282161661" label="/osPeople"/>
   <int value="297583680" label="/device"/>
   <int value="309061570" label="/osPrivacy/accounts"/>
+  <int value="309522547" label="/app-parental-controls"/>
   <int value="334469894" label="/people"/>
   <int value="373649997" label="/per-device-touchpad"/>
   <int value="383306038" label="/ambientMode"/>
   <int value="473528525" label="/audio"/>
   <int value="527386438" label="/osLanguages/languages"/>
   <int value="683177973" label="/cupsPrinters"/>
+  <int value="705275897" label="/manageAccessibility/faceGaze"/>
   <int value="754547746" label="/help/details"/>
   <int value="862324688" label="/graphics-tablet"/>
   <int value="863669423" label="/textToSpeech"/>
   <int value="868952532" label="/pointer-overlay"/>
   <int value="996514470" label="/osSyncSetup"/>
+  <int value="1007816344" label="/oneDrive"/>
+  <int value="1048191138" label="/osPrivacy/privacyHub/camera"/>
   <int value="1064178954" label="/manageAccessibility/faceGazeExpressions"/>
   <int value="1071171447" label="/osPrinting"/>
   <int value="1114615837" label="/accessibility"/>
@@ -685,6 +691,7 @@ chromium-metrics-reviews@google.com.
   <int value="1258785570" label="/crostini/sharedPaths"/>
   <int value="1289925226" label="/osPrivacy/privacyHub"/>
   <int value="1300569861" label="/keyboard-overlay"/>
+  <int value="1344348591" label="/manage-isolated-web-apps"/>
   <int value="1384165448" label="/stylus"/>
   <int value="1429807312" label="/displayAndMagnification"/>
   <int value="1433770724" label="/osSearch"/>
@@ -696,6 +703,8 @@ chromium-metrics-reviews@google.com.
   <int value="1660140707" label="/graphics-tablet/customizeTabletButtons"/>
   <int value="1661964813" label="/reset"/>
   <int value="1693191706" label="/osPrivacy/lockScreen/fingerprint"/>
+  <int value="1726674076" label="/osPrivacy/privacyHub/microphone"/>
+  <int value="1745511811" label="/googleDrive"/>
   <int value="1810385625" label="/crostini"/>
   <int value="1831829553" label="/multidevice/nearbyshare"/>
   <int value="1847987129" label="/bruschetta/sharedUsbDevices"/>
