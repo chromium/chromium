@@ -39,6 +39,11 @@ std::string ToString(LinkCapturingFeatureVersion version) {
   }
 }
 
+std::string LinkCapturingVersionToString(
+    const testing::TestParamInfo<LinkCapturingFeatureVersion>& version) {
+  return ToString(version.param);
+}
+
 std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
     std::optional<bool> override_captures_by_default,
     bool use_v2) {

@@ -35,6 +35,9 @@ enum class LinkCapturingFeatureVersion {
 
 std::string ToString(LinkCapturingFeatureVersion version);
 
+std::string LinkCapturingVersionToString(
+    const testing::TestParamInfo<LinkCapturingFeatureVersion>& version);
+
 // The functions should only be called from tests, and is used to enable or
 // disable link capturing UXes. Only use these if link capturing needs to be
 // enabled on all platforms, i.e. ChromeOS, Windows, Mac and Linux. For platform

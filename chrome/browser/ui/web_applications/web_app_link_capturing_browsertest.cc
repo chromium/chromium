@@ -61,13 +61,6 @@ using ui_test_utils::BrowserChangeObserver;
 namespace web_app {
 namespace {
 using ClientMode = LaunchHandler::ClientMode;
-
-std::string LinkCapturingVersionToString(
-    const testing::TestParamInfo<apps::test::LinkCapturingFeatureVersion>&
-        version) {
-  return apps::test::ToString(version.param);
-}
-
 // Tests that links are captured correctly into an installed WebApp using the
 // 'tabbed' display mode, which allows the webapp window to have multiple tabs.
 class WebAppLinkCapturingBrowserTest
@@ -719,7 +712,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
                     apps::test::LinkCapturingFeatureVersion::kV2DefaultOn),
 #endif
-    LinkCapturingVersionToString);
+    apps::test::LinkCapturingVersionToString);
 
 // TODO(crbug.com/376922620): Add tabbed mode support for navigation capturing.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -797,7 +790,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     WebAppTabStripLinkCapturingBrowserTest,
     testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff),
-    LinkCapturingVersionToString);
+    apps::test::LinkCapturingVersionToString);
 #endif
 
 }  // namespace
