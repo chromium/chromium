@@ -9424,6 +9424,11 @@ test("unit_tests") {
       "//printing/mojom",
     ]
 
+    if (is_chromeos) {
+      sources +=
+          [ "../browser/printing/local_printer_utils_chromeos_unittest.cc" ]
+    }
+
     if (enable_print_preview) {
       sources += [
         "../browser/printing/print_preview_dialog_controller_unittest.cc",

@@ -28,6 +28,9 @@ struct LocalDestinationInfo {
   [MinVersion=3] string? uri@4;
   // The current printer status if any exists for the associated printer.
   [MinVersion=4] PrinterStatus? printer_status@5;
+  // Print job options for the current managed printer configured through a
+  // policy.
+  [MinVersion=5] ManagedPrintOptions? managed_print_options;
 };
 
 // A container for the results of a printer status query. A printer status
@@ -89,6 +92,72 @@ struct StatusReason {
     kWarning,
     kError,
   };
+};
+
+struct Size {
+  uint32 width@0;
+  uint32 height@1;
+};
+
+[Extensible]
+enum DuplexType {
+  [Default] kUnknownDuplex,
+  kOneSided,
+  kShortEdge,
+  kLongEdge,
+};
+
+struct Dpi {
+  uint32 horizontal@0;
+  uint32 vertical@1;
+};
+
+[Extensible]
+enum QualityType {
+  [Default] kUnknownQuality,
+  kDraft,
+  kNormal,
+  kHigh,
+};
+
+struct SizeOption {
+  Size? default_value@0;
+  array<Size>? allowed_values@1;
+};
+
+struct StringOption {
+  string? default_value@0;
+  array<string>? allowed_values@1;
+};
+
+struct DuplexOption {
+  DuplexType? default_value@0;
+  array<DuplexType>? allowed_values@1;
+};
+
+struct BoolOption {
+  bool? default_value@0;
+  array<bool>? allowed_values@1;
+};
+
+struct DpiOption {
+  Dpi? default_value@0;
+  array<Dpi>? allowed_values@1;
+};
+
+struct QualityOption {
+  QualityType? default_value@0;
+  array<QualityType>? allowed_values@1;
+};
+
+struct ManagedPrintOptions {
+  SizeOption media_size@0;
+  StringOption media_type@1;
+  DuplexOption duplex@2;
+  BoolOption color@3;
+  DpiOption dpi@4;
+  QualityOption quality@5;
+  BoolOption print_as_image@6;
 };
 
 // This structure is a subset of the PrintJobInfo message in

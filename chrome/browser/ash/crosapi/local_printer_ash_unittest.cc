@@ -1098,13 +1098,21 @@ TEST(LocalPrinterAsh, ConfigToMojom) {
 }
 
 TEST(LocalPrinterAsh, PrinterToMojom) {
-  Printer printer("id");
-  printer.set_display_name("name");
-  printer.set_description("description");
+  // Status
   chromeos::CupsPrinterStatus status("id");
   status.AddStatusReason(crosapi::mojom::StatusReason::Reason::kOutOfInk,
                          crosapi::mojom::StatusReason::Severity::kWarning);
+  // Managed print options
+  chromeos::Printer::ManagedPrintOptions print_options;
+  chromeos::Printer::PrintOption<bool> color_option;
+  color_option.default_value = true;
+  color_option.allowed_values = std::vector<bool>{false, true};
+
+  Printer printer("id");
+  printer.set_display_name("name");
+  printer.set_description("description");
   printer.set_printer_status(status);
+  printer.set_print_job_options(print_options);
   crosapi::mojom::LocalDestinationInfoPtr mojom =
       printing::PrinterToMojom(printer);
   ASSERT_TRUE(mojom);
@@ -1112,8 +1120,9 @@ TEST(LocalPrinterAsh, PrinterToMojom) {
   EXPECT_EQ("name", mojom->name);
   EXPECT_EQ("description", mojom->description);
   EXPECT_FALSE(mojom->configured_via_policy);
-
   EXPECT_EQ(printing::StatusToMojom(status), mojom->printer_status);
+  EXPECT_EQ(printing::ManagedPrintOptionsToMojom(print_options),
+            mojom->managed_print_options);
 }
 
 TEST(LocalPrinterAsh, PrinterToMojom_ConfiguredViaPolicy) {

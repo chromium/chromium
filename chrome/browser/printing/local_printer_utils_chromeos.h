@@ -9,11 +9,7 @@
 #include <string>
 
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
-
-namespace chromeos {
-class CupsPrinterStatus;
-class Printer;
-}  // namespace chromeos
+#include "chromeos/printing/printer_configuration.h"
 
 namespace printing {
 
@@ -37,6 +33,11 @@ crosapi::mojom::CapabilitiesResponsePtr PrinterWithCapabilitiesToMojom(
 // CupsPrinterStatus object.
 crosapi::mojom::PrinterStatusPtr StatusToMojom(
     const chromeos::CupsPrinterStatus& status);
+
+// The mojom ManagedPrintOptions object contains print job options for a
+// particular managed printer.
+crosapi::mojom::ManagedPrintOptionsPtr ManagedPrintOptionsToMojom(
+    const chromeos::Printer::ManagedPrintOptions& print_job_options);
 
 }  // namespace printing
 
