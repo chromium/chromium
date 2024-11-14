@@ -116,6 +116,8 @@ std::string_view kSuspectedTrackerFlowEntrypointUkmEventName =
     "DIPS.SuspectedTrackerFlowEntrypoint";
 std::string_view kInFlowInteractionUkmEventName =
     "DIPS.TrustIndicator.InFlowInteraction";
+std::string_view kDirectNavigationUkmEventName =
+    "DIPS.TrustIndicator.DirectNavigation";
 std::string_view kSiteA = "a.test";
 std::string_view kSiteB = "b.test";
 std::string_view kSiteC = "c.test";
@@ -216,6 +218,14 @@ class DipsNavigationFlowDetectorTest : public PlatformBrowserTest {
 
   DipsNavigationFlowDetector* GetDetector() {
     return DipsNavigationFlowDetector::FromWebContents(GetActiveWebContents());
+  }
+
+  void SimulateBookmarkNavigation(content::WebContents* web_contents,
+                                  const GURL& url) {
+    content::NavigationController::LoadURLParams navigation_params(url);
+    navigation_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+    content::NavigateToURLBlockUntilNavigationsComplete(web_contents,
+                                                        navigation_params, 1);
   }
 
  private:
@@ -401,6 +411,105 @@ class DipsNavigationFlowDetectorPATApiTest
 
   network::test::TrustTokenRequestHandler trust_token_request_handler_;
 };
+
+IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+                       DirectNavigationEmittedForTypedUrl) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL url = embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
+  base::RunLoop ukm_loop;
+  ukm_recorder().SetOnAddEntryCallback(kDirectNavigationUkmEventName,
+                                       ukm_loop.QuitClosure());
+  ASSERT_TRUE(content::NavigateToURL(web_contents, url));
+  ukm_loop.Run();
+
+  // Expect DirectNavigation UKM entry to be accurate.
+  auto direct_navigation_entries =
+      ukm_recorder().GetEntriesByName(kDirectNavigationUkmEventName);
+  ASSERT_EQ(direct_navigation_entries.size(), 1u);
+  auto direct_navigation_entry = direct_navigation_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(direct_navigation_entry, url);
+  ukm_recorder().ExpectEntryMetric(direct_navigation_entry, "NavigationSource",
+                                   dips::kOmnibar);
+}
+
+IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+                       DirectNavigationEmittedForBookmark) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL url = embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
+  base::RunLoop ukm_loop;
+  ukm_recorder().SetOnAddEntryCallback(kDirectNavigationUkmEventName,
+                                       ukm_loop.QuitClosure());
+  SimulateBookmarkNavigation(web_contents, url);
+  ukm_loop.Run();
+
+  // Expect DirectNavigation UKM entry to be accurate.
+  auto direct_navigation_entries =
+      ukm_recorder().GetEntriesByName(kDirectNavigationUkmEventName);
+  ASSERT_EQ(direct_navigation_entries.size(), 1u);
+  auto direct_navigation_entry = direct_navigation_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(direct_navigation_entry, url);
+  ukm_recorder().ExpectEntryMetric(direct_navigation_entry, "NavigationSource",
+                                   dips::kBookmark);
+}
+
+IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+                       DirectNavigationEmittedForServerRedirect) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL redirector_url = embedded_https_test_server_.GetURL(
+      kSiteA, "/cross-site-with-cookie/b.test/title1.html");
+  GURL final_url = embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
+  base::RunLoop ukm_loop;
+  ukm_recorder().SetOnAddEntryCallback(kDirectNavigationUkmEventName,
+                                       ukm_loop.QuitClosure());
+  ASSERT_TRUE(content::NavigateToURL(web_contents, redirector_url, final_url));
+  ukm_loop.Run();
+
+  // Expect DirectNavigation UKM entry to be accurate.
+  auto direct_navigation_entries =
+      ukm_recorder().GetEntriesByName(kDirectNavigationUkmEventName);
+  ASSERT_EQ(direct_navigation_entries.size(), 1u);
+  auto direct_navigation_entry = direct_navigation_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(direct_navigation_entry,
+                                         redirector_url);
+  ukm_recorder().ExpectEntryMetric(direct_navigation_entry, "NavigationSource",
+                                   dips::kOmnibar);
+}
+
+IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+                       DirectNavigationNotEmittedWhenNoPageCommits) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL url = embedded_https_test_server_.GetURL(kSiteA, "/page204.html");
+  base::RunLoop ukm_loop;
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents, url, GURL(url::kAboutBlankURL)));
+
+  ExpectNoUkmEventsOfType(kDirectNavigationUkmEventName);
+}
+
+IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
+                       DirectNavigationNotEmittedForLinkClick) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  GURL initial_url = embedded_https_test_server_.GetURL(kSiteA, "/title1.html");
+  base::RunLoop ukm_loop;
+  ukm_recorder().SetOnAddEntryCallback(kDirectNavigationUkmEventName,
+                                       ukm_loop.QuitClosure());
+  ASSERT_TRUE(content::NavigateToURL(web_contents, initial_url));
+  ukm_loop.Run();
+  GURL link_target_url =
+      embedded_https_test_server_.GetURL(kSiteB, "/title1.html");
+  ASSERT_TRUE(
+      content::NavigateToURLFromRenderer(web_contents, link_target_url));
+
+  // Expect DirectNavigation UKM entry to be accurate.
+  auto direct_navigation_entries =
+      ukm_recorder().GetEntriesByName(kDirectNavigationUkmEventName);
+  ASSERT_EQ(direct_navigation_entries.size(), 1u);
+  auto direct_navigation_entry = direct_navigation_entries.at(0);
+  ukm_recorder().ExpectEntrySourceHasUrl(direct_navigation_entry, initial_url);
+  ukm_recorder().ExpectEntryMetric(direct_navigation_entry, "NavigationSource",
+                                   dips::kOmnibar);
+  // Implied assert: no DirectNavigation UKM entry for link_target_url.
+}
 
 IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
                        SuspectedTrackerFlowEmittedForServerRedirectExit) {

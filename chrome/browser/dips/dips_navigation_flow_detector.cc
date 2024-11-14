@@ -14,6 +14,36 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace {
+// Types that qualify a navigation for the DIPS.TrustIndicator.DirectNavigation
+// UKM event. Should only contain core page transition types (no qualifiers).
+constexpr const std::array<ui::PageTransition, 2>&
+    kDirectNavigationPageTransitions{
+        ui::PAGE_TRANSITION_TYPED,
+        ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+    };
+
+bool IsPageTransitionDirectNavigation(ui::PageTransition page_transition) {
+  for (auto& direct_navigation_type : kDirectNavigationPageTransitions) {
+    if (ui::PageTransitionCoreTypeIs(page_transition, direct_navigation_type)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+dips::DirectNavigationSource ToDirectNavigationSource(
+    ui::PageTransition page_transition) {
+  if (ui::PageTransitionCoreTypeIs(page_transition,
+                                   ui::PAGE_TRANSITION_TYPED)) {
+    return dips::kOmnibar;
+  }
+  if (ui::PageTransitionCoreTypeIs(page_transition,
+                                   ui::PAGE_TRANSITION_AUTO_BOOKMARK)) {
+    return dips::kBookmark;
+  }
+  return dips::kUnknown;
+}
+
 // Looks for a redirect to the current page that qualifies as a server-redirect
 // exit from a suspected tracker flow (i.e., a single-hop server-side redirect)
 // and returns it, if one exists. Returns nullptr otherwise.
@@ -42,6 +72,26 @@ const DIPSRedirectInfo* GetEntrypointExitServerRedirect(
   return most_recent_redirect;
 }
 
+const DIPSRedirectInfo* GetFirstServerRedirect(
+    const DIPSRedirectContext& redirect_context) {
+  size_t num_redirects = redirect_context.size();
+  if (num_redirects == 0) {
+    return nullptr;
+  }
+
+  int redirect_index = num_redirects - 1;
+  const DIPSRedirectInfo* first_server_redirect = nullptr;
+  while (redirect_index >= 0) {
+    const DIPSRedirectInfo* redirect = &redirect_context[redirect_index];
+    if (redirect->redirect_type != DIPSRedirectType::kServer) {
+      break;
+    }
+    first_server_redirect = redirect;
+    redirect_index -= 1;
+  }
+  return first_server_redirect;
+}
+
 void EmitSuspectedTrackerFlowUkm(ukm::SourceId referrer_source_id,
                                  ukm::SourceId entrypoint_source_id,
                                  int32_t flow_id,
@@ -53,6 +103,25 @@ void EmitSuspectedTrackerFlowUkm(ukm::SourceId referrer_source_id,
   ukm::builders::DIPS_SuspectedTrackerFlowEntrypoint(entrypoint_source_id)
       .SetExitRedirectType(static_cast<int64_t>(exit_redirect_type))
       .SetFlowId(flow_id)
+      .Record(ukm::UkmRecorder::Get());
+}
+
+void MaybeEmitDirectNavigationUkm(content::NavigationHandle* navigation_handle,
+                                  const DIPSRedirectContext& redirect_context) {
+  if (!IsPageTransitionDirectNavigation(
+          navigation_handle->GetPageTransition())) {
+    return;
+  }
+
+  const DIPSRedirectInfo* first_server_redirect =
+      GetFirstServerRedirect(redirect_context);
+  ukm::SourceId source_id = first_server_redirect
+                                ? first_server_redirect->url.source_id
+                                : navigation_handle->GetNextPageUkmSourceId();
+
+  ukm::builders::DIPS_TrustIndicator_DirectNavigation(source_id)
+      .SetNavigationSource(
+          ToDirectNavigationSource(navigation_handle->GetPageTransition()))
       .Record(ukm::UkmRecorder::Get());
 }
 }  // namespace
@@ -159,6 +228,9 @@ void DipsNavigationFlowDetector::OnNavigationCommitted(
   }
   last_page_change_time_ = now;
 
+  MaybeEmitDirectNavigationUkm(
+      navigation_handle,
+      redirect_chain_observation_.GetSource()->CommittedRedirectContext());
   MaybeEmitNavFlowNodeUkmForPreviousPage();
 
   int32_t flow_id = static_cast<int32_t>(base::RandUint64());

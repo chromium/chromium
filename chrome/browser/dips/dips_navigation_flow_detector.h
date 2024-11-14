@@ -30,6 +30,13 @@ class RenderFrameHost;
 
 namespace dips {
 
+// Should match DIPSDirectNavigationSource in tools/metrics/histograms/enums.xml
+enum DirectNavigationSource {
+  kUnknown = 0,
+  kOmnibar = 1,
+  kBookmark = 2,
+};
+
 struct PageVisitInfo {
   PageVisitInfo();
   PageVisitInfo(PageVisitInfo&& other);

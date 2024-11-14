@@ -7491,6 +7491,23 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="DIPS.TrustIndicator.DirectNavigation">
+  <owner>svend@google.com</owner>
+  <owner>dc-komics@google.com</owner>
+  <summary>
+    Recorded when a user navigates directly to a URL via the omnibar or a
+    bookmark. In the case of a server redirect, this event is recorded for the
+    initial target of the navigation (i.e., the URL that was in the omnibar or
+    saved as a bookmark). Only recorded if the navigation eventually results in
+    a committed page.
+  </summary>
+  <metric name="NavigationSource" enum="DIPSDirectNavigationSource">
+    <summary>
+      The source of the direct navigation (e.g., omnibar or bookmark).
+    </summary>
+  </metric>
+</event>
+
 <event name="DIPS.TrustIndicator.InFlowInteraction">
   <owner>svend@google.com</owner>
   <owner>dc-komics@google.com</owner>
