@@ -8548,3 +8548,6 @@ crbug.com/378566925 [ Win ] external/wpt/storage-access-api/requestStorageAccess
 crbug.com/378566925 [ Mac ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-fit-cover-img.html [ Failure Pass ]
 crbug.com/356930166 [ Mac11 ] virtual/gpu-rasterization/external/wpt/css/css-images/object-view-box-same-size.html [ Failure Pass Timeout ]
 crbug.com/356930166 [ Mac13 ] external/wpt/webrtc/legacy/RTCPeerConnection-createOffer-offerToReceive.html [ Failure Pass Timeout ]
+
+crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.any.html [ Pass Timeout ]
+crbug.com/378549335 [ Mac ] wpt_internal/ai/language-model-api-context-overflow.any.worker.html [ Pass Timeout ]
