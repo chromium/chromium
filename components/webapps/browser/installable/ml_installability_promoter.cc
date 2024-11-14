@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
@@ -215,8 +216,7 @@ GURL MLInstallabilityPromoter::GetProjectedManifestIdAfterMetricsCollection() {
   switch (state_) {
     case MLPipelineState::kInactive:
     case MLPipelineState::kRunningMetricTasks:
-      CHECK(false) << "Cannot get manifest id without metrics collected";
-      break;
+      NOTREACHED() << "Cannot get manifest id without metrics collected";
     case MLPipelineState::kUKMCollectionComplete:
     case MLPipelineState::kMLClassificationRequested:
     case MLPipelineState::kWaitingForVisibility:

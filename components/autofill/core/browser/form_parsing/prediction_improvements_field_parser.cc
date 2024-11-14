@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/form_parsing/prediction_improvements_field_parser.h"
 
+#include "base/notreached.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
@@ -17,8 +18,7 @@ std::unique_ptr<FormFieldParser> PredictionImprovementsFieldParser::Parse(
     AutofillScanner* scanner) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   if (context.pattern_file != PatternFile::kPredictionImprovements) {
-    CHECK(false);
-    return nullptr;
+    NOTREACHED();
   }
   std::optional<FieldAndMatchInfo> match;
   base::span<const MatchPatternRef> patterns = GetMatchPatterns(

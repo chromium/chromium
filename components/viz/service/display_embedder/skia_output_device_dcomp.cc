@@ -10,6 +10,7 @@
 
 #include "base/debug/alias.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
@@ -42,7 +43,7 @@ NOINLINE void CheckForLoopFailures() {
   auto now = base::TimeTicks::Now();
   if (!g_last_reshape_failure.is_null() &&
       now - g_last_reshape_failure < threshold) {
-    CHECK(false);
+    NOTREACHED();
   }
   g_last_reshape_failure = now;
 }

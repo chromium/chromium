@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/notreached.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
@@ -94,7 +95,7 @@ MULTIPROCESS_TEST_MAIN(FallbackCrashHandlerLauncherMain) {
 
     dump.Close();
     CHECK(base::DeleteFile(dump_path));
-    CHECK(false) << "Unable to write dump, error " << error;
+    NOTREACHED() << "Unable to write dump, error " << error;
   }
 
   return 0;

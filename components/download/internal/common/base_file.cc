@@ -19,6 +19,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
@@ -620,7 +621,7 @@ void BaseFile::OnQuarantineServiceError(const GURL& source_url,
   OnFileQuarantined(quarantine::SetInternetZoneIdentifierDirectly(
       full_path_, source_url, referrer_url));
 #else   // !BUILDFLAG(IS_WIN)
-  CHECK(false) << "In-process quarantine service should not have failed.";
+  NOTREACHED() << "In-process quarantine service should not have failed.";
 #endif  // !BUILDFLAG(IS_WIN)
 }
 

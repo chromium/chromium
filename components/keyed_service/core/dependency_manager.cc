@@ -217,7 +217,7 @@ void DependencyManager::DestroyFactoriesInOrder(
 void DependencyManager::AssertContextWasntDestroyed(void* context) const {
   if (dead_context_pointers_.find(context) != dead_context_pointers_.end()) {
     // We want to see all possible use-after-destroy in production environment.
-    CHECK(false) << "Attempted to access a context that was ShutDown(). "
+    NOTREACHED() << "Attempted to access a context that was ShutDown(). "
                  << "This is most likely a heap smasher in progress. After "
                  << "KeyedService::Shutdown() completes, your service MUST "
                  << "NOT refer to depended services again.";

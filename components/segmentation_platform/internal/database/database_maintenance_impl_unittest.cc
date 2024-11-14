@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/metrics/metrics_hashes.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_clock.h"
@@ -145,8 +146,7 @@ class DatabaseMaintenanceImplTest : public testing::Test {
           break;
         }
         default: {
-          CHECK(false) << "Incorrect SignalType";
-          break;
+          NOTREACHED() << "Incorrect SignalType";
         }
       }
     }

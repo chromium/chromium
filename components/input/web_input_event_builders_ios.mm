@@ -11,6 +11,7 @@
 
 #import <UIKit/UIKit.h>
 
+#include "base/notreached.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/common/input/web_touch_point.h"
 #include "ui/events/base_event_utils.h"
@@ -49,7 +50,7 @@ void RemoveUITouch(UITouch* touch) {
       return;
     }
   }
-  CHECK(false);
+  NOTREACHED();
 }
 
 int ModifiersFromEvent(UIEvent* event) {
