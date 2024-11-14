@@ -50,7 +50,7 @@ enum MediaStreamType {
 
   // TODO(crbug.com/971228): Remove NUM_MEDIA_TYPES, as per the conventions
   // in docs/security/mojo.md#do-not-define-placeholder-enumerator-values.
-  NUM_MEDIA_TYPES
+  NUM_MEDIA_TYPES,
 };
 
 // Elements in this enum should not be deleted or rearranged; the only
@@ -75,7 +75,7 @@ enum MediaStreamRequestResult {
   DEVICE_IN_USE,
   REQUEST_CANCELLED,
   START_TIMEOUT,
-  NUM_MEDIA_REQUEST_RESULTS
+  NUM_MEDIA_REQUEST_RESULTS,
 };
 
 // Type of state change for the corresponding requests.
@@ -96,6 +96,7 @@ enum PreferredDisplaySurface {
 // This empty struct is used as a union option. Its presence will trigger
 // searching only by device ID. There is no other information needed.
 struct SearchOnlyByDeviceId {};
+
 struct SearchBySessionId {
   // If `session_id_map` contains a mapping for the selected device id, then
   // the session will be re-used, otherwise a new session will be created.
@@ -187,20 +188,27 @@ enum CapturedSurfaceControlResult {
 // notifications or pause requests from the browser process.
 interface MediaStreamDeviceObserver {
   OnDeviceStopped(string label, MediaStreamDevice device);
+
   OnDeviceChanged(string label,
                   MediaStreamDevice old_device,
                   MediaStreamDevice new_device);
+
   // Requests to pause or resume the corresponding media stream device.
-  OnDeviceRequestStateChange(string label, MediaStreamDevice device, MediaStreamStateChange new_state);
+  OnDeviceRequestStateChange(string label,
+                             MediaStreamDevice device,
+                             MediaStreamStateChange new_state);
+
   // Informs the renderer-side that a configuration change has been detected in
   // the corresponding media stream device.
   OnDeviceCaptureConfigurationChange(string label, MediaStreamDevice device);
+
   // Informs the renderer-side that the device's capture handle has changed.
-  OnDeviceCaptureHandleChange(string label,
-                              MediaStreamDevice device);
+  OnDeviceCaptureHandleChange(string label, MediaStreamDevice device);
+
   // Informs the renderer-side that captured surface's the zoom-level has
   // changed.
-  OnZoomLevelChange(string label, MediaStreamDevice device, int32 zoom_level);
+  OnZoomLevelChange(
+      string label, MediaStreamDevice device, int32 zoom_level);
 };
 
 // Contains devices that are assigned to a specific stream. At least one of
@@ -239,17 +247,20 @@ interface MediaStreamDispatcherHost {
   // `pan_tilt_zoom_allowed`: A flag indicating whether pan / tilt / zoom is
   // allowed.
   // TODO(crbug.com/1327958): Use expected<T,E> for the return values.
-  GenerateStreams(int32 request_id, StreamControls controls, bool user_gesture,
-                 StreamSelectionInfo audio_stream_selection_info)
-      => (MediaStreamRequestResult result, string label,
-         StreamDevicesSet? stream_devices,
-         bool pan_tilt_zoom_allowed);
+  GenerateStreams(int32 request_id,
+                  StreamControls controls,
+                  bool user_gesture,
+                  StreamSelectionInfo audio_stream_selection_info)
+      => (MediaStreamRequestResult result,
+          string label,
+          StreamDevicesSet? stream_devices,
+          bool pan_tilt_zoom_allowed);
 
   // The `focus` bit is `true` if focus should be switched to
   // the captured source (tab/window).
   // It is an error to set it to `true` for anything other than
   // a video track derived from tab/window screen-capture.
-  [EnableIfNot=is_android_or_ios]
+  [EnableIfNot=is_android|is_ios]
   FocusCapturedSurface(string label, bool focus);
 
   // Cancels the request for a new media stream or opening a device.
@@ -260,7 +271,8 @@ interface MediaStreamDispatcherHost {
   // `session_id`) has ongoing transfers, in case of transferred
   // MediaStreamTracks, the MediaStreamDevice will not stop immediately and
   // will be kept alive until all the transfers are complete.
-  StopStreamDevice(string device_id, mojo_base.mojom.UnguessableToken? session_id);
+  StopStreamDevice(
+      string device_id, mojo_base.mojom.UnguessableToken? session_id);
 
   // Opens a device identified by `device_id`.
   OpenDevice(int32 request_id, string device_id, MediaStreamType type)
@@ -277,7 +289,8 @@ interface MediaStreamDispatcherHost {
   // for a user's visit to a malicious web page to compromise a render process
   // running a trusted extension to make it report falsehood in this Mojo
   // message.
-  SetCapturingLinkSecured(mojo_base.mojom.UnguessableToken? session_id, MediaStreamType type,
+  SetCapturingLinkSecured(mojo_base.mojom.UnguessableToken? session_id,
+                          MediaStreamType type,
                           bool is_secure);
 
   // Start/stop cropping or restricting the video track.
@@ -297,22 +310,22 @@ interface MediaStreamDispatcherHost {
   // a higher version.)
   //
   // The callback reports success/failure.
-  [EnableIfNot=is_android_or_ios]
+  [EnableIfNot=is_android|is_ios]
   ApplySubCaptureTarget(mojo_base.mojom.UnguessableToken session_id,
-       media.mojom.SubCaptureTargetType type,
-       mojo_base.mojom.Token sub_capture_target,
-       uint32 sub_capture_target_version)
-    => (media.mojom.ApplySubCaptureTargetResult result);
+                        media.mojom.SubCaptureTargetType type,
+                        mojo_base.mojom.Token sub_capture_target,
+                        uint32 sub_capture_target_version)
+      => (media.mojom.ApplySubCaptureTargetResult result);
 
   // Deliver a wheel event from a capturing app to a captured tab.
   //
   // `session_id` identifies the captured tab.
   // `action` is the action (mouse event) to be delivered.
   // `callback` will be invoked with the result.
-  [EnableIfNot=is_android_or_ios]
+  [EnableIfNot=is_android|is_ios]
   SendWheel(mojo_base.mojom.UnguessableToken session_id,
-            CapturedWheelAction action) =>
-    (CapturedSurfaceControlResult result);
+            CapturedWheelAction action)
+      => (CapturedSurfaceControlResult result);
 
   // Sets the zoom level of the captured tab.
   //
@@ -322,17 +335,17 @@ interface MediaStreamDispatcherHost {
   //
   // TODO(crbug.com/1512609): Create a new device mojo interface to replace the
   // use of the device_id token.
-  [EnableIfNot=is_android_or_ios]
-  SetZoomLevel(mojo_base.mojom.UnguessableToken session_id,
-               int32 zoom_level)
-           => (CapturedSurfaceControlResult result);
+  [EnableIfNot=is_android|is_ios]
+  SetZoomLevel(
+      mojo_base.mojom.UnguessableToken session_id, int32 zoom_level)
+      => (CapturedSurfaceControlResult result);
 
   // Request permission to use Captured Surface Control.
   // `session_id` identifies the captured tab.
-  [EnableIfNot=is_android_or_ios]
+  [EnableIfNot=is_android|is_ios]
   RequestCapturedSurfaceControlPermission(
-        mojo_base.mojom.UnguessableToken session_id)
-    => (CapturedSurfaceControlResult result);
+      mojo_base.mojom.UnguessableToken session_id)
+      => (CapturedSurfaceControlResult result);
 
   // Get a MediaStreamDevice metadata object which refers to the same flow of
   // media backing an existing MediaStreamDevice.
@@ -351,9 +364,10 @@ interface MediaStreamDispatcherHost {
   // context to identify this transfer in the browser process.
   // `response` is null if and only if result != OK.
   [Sync]
-  GetOpenDevice(int32 request_id, mojo_base.mojom.UnguessableToken session_id,
+  GetOpenDevice(int32 request_id,
+                mojo_base.mojom.UnguessableToken session_id,
                 mojo_base.mojom.UnguessableToken transfer_id)
-            => (MediaStreamRequestResult result, GetOpenDeviceResponse? response);
+      => (MediaStreamRequestResult result, GetOpenDeviceResponse? response);
 
   // Keeps a MediaStreamDevice alive even if it has been requested to stop.
   //
@@ -372,8 +386,8 @@ interface MediaStreamDispatcherHost {
   // browser process.
   // `device_found` is true if the MediaStreamDevice was found.
   KeepDeviceAliveForTransfer(mojo_base.mojom.UnguessableToken session_id,
-                  mojo_base.mojom.UnguessableToken transfer_id)
-              => (bool device_found);
+                             mojo_base.mojom.UnguessableToken transfer_id)
+      => (bool device_found);
 };
 
 // Browser-side interface that is used by the renderer process to notify the

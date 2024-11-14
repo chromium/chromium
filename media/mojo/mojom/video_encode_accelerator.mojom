@@ -6,13 +6,13 @@ module media.mojom;
 
 import "media/mojo/mojom/media_log.mojom";
 import "media/mojo/mojom/media_types.mojom";
+import "media/mojo/mojom/video_encoder_info.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/color_space.mojom";
-import "media/mojo/mojom/video_encoder_info.mojom";
-import "sandbox/policy/mojom/sandbox.mojom";
 
 // This file is the Mojo version of the media::VideoEncodeAccelerator interface
 // and describes the communication between a Client and a remote "service"
@@ -37,13 +37,11 @@ import "sandbox/policy/mojom/sandbox.mojom";
 // At any time the VEA can send a NotifyError() to the Client. Similarly at any
 // time the Client can send a RequestEncodingParametersChange() to the VEA. None
 // of these messages are acknowledged.
-
-
 enum VideoEncodeAcceleratorSupportedRateControlMode {
   kNoMode,
   kConstantMode,
   kVariableMode,
-  kExternalMode
+  kExternalMode,
 };
 
 struct VideoEncodeAcceleratorSupportedProfile {
@@ -76,8 +74,8 @@ interface VideoEncodeAcceleratorProvider {
   // VideoFrames backed by CPU memory or GpuMemoryBuffer may be supplied as
   // input.
   CreateVideoEncodeAccelerator(
-        EncodeCommandBufferId? command_buffer_id,
-        pending_receiver<VideoEncodeAccelerator> receiver);
+      EncodeCommandBufferId? command_buffer_id,
+      pending_receiver<VideoEncodeAccelerator> receiver);
 
   // Get a VideoEncodeAccelerator supported profiles.
   [Sync]
@@ -101,13 +99,13 @@ interface VideoEncodeAcceleratorProvider {
 // 3) The browser process calls CreateVideoEncodeAcceleratorProvider() passing
 //    the pending_receiver<VideoEncodeAcceleratorProvider> received from the
 //    renderer process.
-[EnableIf=is_linux_or_chromeos,
-ServiceSandbox=sandbox.mojom.Sandbox.kHardwareVideoEncoding]
+[EnableIf=is_chromeos|is_linux,
+    ServiceSandbox=sandbox.mojom.Sandbox.kHardwareVideoEncoding]
 interface VideoEncodeAcceleratorProviderFactory {
   // Creates a VideoEncodeAcceleratorProvider and should be called by the
   // browser process.
   CreateVideoEncodeAcceleratorProvider(
-        pending_receiver<VideoEncodeAcceleratorProvider> receiver);
+      pending_receiver<VideoEncodeAcceleratorProvider> receiver);
 };
 
 // This defines a mojo transport format used in the
@@ -147,8 +145,7 @@ struct VariableBitrate {
   uint32 peak_bps;
 };
 
-struct ExternalBitrate {
-};
+struct ExternalBitrate {};
 
 // This defines a mojo transport format for media::Bitrate.
 union Bitrate {
@@ -163,7 +160,7 @@ struct VideoEncodeAcceleratorConfig {
   // See media::VideoEncodeAccelerator::Config::ContentType
   enum ContentType {
     kCamera,
-    kDisplay
+    kDisplay,
   };
 
   // See media::VideoEncodeAccelerator::Config::StorageType
@@ -221,8 +218,7 @@ interface VideoEncodeAccelerator {
   [Sync]
   Initialize(VideoEncodeAcceleratorConfig config,
              pending_associated_remote<VideoEncodeAcceleratorClient> client,
-             pending_remote<MediaLog> media_log)
-      => (bool result);
+             pending_remote<MediaLog> media_log) => (bool result);
 
   // Encodes a |frame|, being completely done with it after its callback.
   Encode(VideoFrame frame, VideoEncodeOptions options) => ();
@@ -241,9 +237,9 @@ interface VideoEncodeAccelerator {
   //         frame size change only when there is no pending frame in the
   //         encoder.
   RequestEncodingParametersChangeWithLayers(
-    VideoBitrateAllocation bitrate_allocation,
-    uint32 framerate,
-    gfx.mojom.Size? size);
+      VideoBitrateAllocation bitrate_allocation,
+      uint32 framerate,
+      gfx.mojom.Size? size);
 
   // Request a change to the encoding parameters. This method is for use
   // with non-layered bitrates, and may make requests for constant or
@@ -257,9 +253,7 @@ interface VideoEncodeAccelerator {
   //         frame size change only when there is no pending frame in the
   //         encoder.
   RequestEncodingParametersChangeWithBitrate(
-    Bitrate bitrate,
-    uint32 framerate,
-    gfx.mojom.Size? size);
+      Bitrate bitrate, uint32 framerate, gfx.mojom.Size? size);
 
   [Sync]
   IsFlushSupported() => (bool result);
@@ -312,8 +306,8 @@ struct SVCGenericMetadata {
   bool follow_svc_spec;
   uint8 temporal_idx;
   uint8 spatial_idx;
-  uint16 ? reference_flags;
-  uint16 ? refresh_flags;
+  uint16? reference_flags;
+  uint16? refresh_flags;
 };
 
 // DropFrame or Codec specific metadata.
@@ -330,7 +324,7 @@ struct BitstreamBufferMetadata {
   mojo_base.mojom.TimeDelta timestamp;
   int32 qp;
   OptionalMetadata? optional_metadata;
-  SVCGenericMetadata ? svc_generic;
+  SVCGenericMetadata? svc_generic;
   gfx.mojom.Size? encoded_size;
   gfx.mojom.ColorSpace? encoded_color_space;
 };
@@ -341,8 +335,9 @@ interface VideoEncodeAcceleratorClient {
                           gfx.mojom.Size input_coded_size,
                           uint32 output_buffer_size);
 
-  BitstreamBufferReady(int32 bitstream_buffer_id,
-                       BitstreamBufferMetadata metadata);
+  BitstreamBufferReady(
+      int32 bitstream_buffer_id, BitstreamBufferMetadata metadata);
+
   // VideoEncodeAccelerator calls this when the error occurs and it cannot
   // perform encoding any more. |status| represents the detail about the error.
   NotifyErrorStatus(EncoderStatus status);

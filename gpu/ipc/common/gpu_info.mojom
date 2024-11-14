@@ -5,12 +5,13 @@
 // gpu/config/gpu_info.h
 module gpu.mojom;
 
-[EnableIf=is_win]
-import "gpu/ipc/common/luid.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gl/mojom/gl_implementation.mojom";
 import "ui/gl/mojom/gpu_preference.mojom";
+
+[EnableIf=is_win]
+import "gpu/ipc/common/luid.mojom";
 
 [EnableIf=supports_vulkan]
 import "gpu/ipc/common/vulkan_info.mojom";
@@ -19,15 +20,18 @@ import "gpu/ipc/common/vulkan_info.mojom";
 struct GpuDevice {
   uint32 vendor_id;
   uint32 device_id;
+
   [EnableIf=is_win]
   uint32 sub_sys_id;
-  [EnableIf=has_gpu_revision_info]
+
+  [EnableIf=is_chromeos|is_win]
   uint32 revision;
   bool active;
   string vendor_string;
   string device_string;
   string driver_vendor;
   string driver_version;
+
   [EnableIf=is_win]
   Luid luid;
   gl.mojom.GpuPreference gpu_preference;
@@ -187,23 +191,27 @@ struct GpuInfo {
 
   [EnableIf=is_win]
   uint32 directml_feature_level;
+
   [EnableIf=is_win]
   uint32 d3d12_feature_level;
+
   [EnableIf=is_win]
   uint32 vulkan_version;
+
   [EnableIf=is_win]
   OverlayInfo overlay_info;
+
   [EnableIf=is_win]
   bool shared_image_d3d;
 
   array<VideoDecodeAcceleratorSupportedProfile>
-    video_decode_accelerator_supported_profiles;
+      video_decode_accelerator_supported_profiles;
   array<VideoEncodeAcceleratorSupportedProfile>
-    video_encode_accelerator_supported_profiles;
+      video_encode_accelerator_supported_profiles;
   bool jpeg_decode_accelerator_supported;
 
   array<ImageDecodeAcceleratorSupportedProfile>
-    image_decode_accelerator_supported_profiles;
+      image_decode_accelerator_supported_profiles;
 
   bool subpixel_font_rendering;
   uint32 visibility_callback_call_count;

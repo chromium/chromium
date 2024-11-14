@@ -52,8 +52,8 @@ interface VideoDecoderClient {
   // The client shall call VideoFrameHandleReleaser::ReleaseVideoFrame() with
   // |release_token| when it is finished using |frame|.
   OnVideoFrameDecoded@0(VideoFrame frame,
-                      bool can_read_without_stalling,
-                      mojo_base.mojom.UnguessableToken release_token);
+                        bool can_read_without_stalling,
+                        mojo_base.mojom.UnguessableToken release_token);
 
   // Called when the remote decoder is waiting because of |reason|, e.g. waiting
   // for decryption key.
@@ -75,8 +75,8 @@ interface CdmContextEventCallback {
 interface StableCdmContext {
   // Proxies to media::CdmContext::GetChromeOsCdmContext()->GetHwKeyData.
   [MinVersion=1]
-  GetHwKeyData@0(DecryptConfig decrypt_config, array<uint8> hw_identifier) =>
-      (DecryptStatus status, array<uint8> key_data);
+  GetHwKeyData@0(DecryptConfig decrypt_config, array<uint8> hw_identifier)
+      => (DecryptStatus status, array<uint8> key_data);
 
   // Registers an interface for receiving event callbacks. This maps to
   // media::CdmContext::RegisterEventCB.
@@ -100,15 +100,16 @@ interface StableCdmContext {
   // Proxies to
   // media::CdmContext::GetChromeOsCdmContext()->ParseEncryptedSliceHeader.
   [MinVersion=3]
-  ParseEncryptedSliceHeader@5(uint64 secure_handle, uint32 offset,
-                              array<uint8> stream_data)
+  ParseEncryptedSliceHeader@5(
+      uint64 secure_handle, uint32 offset, array<uint8> stream_data)
       => (bool success, array<uint8> slice_header);
 
   // Proxies to
   // media::CdmContext::GetDecryptor()->Decrypt for video data.
   [MinVersion=4]
   DecryptVideoBuffer@6(DecoderBuffer buffer, array<uint8> bytes)
-      => (DecryptStatus status, DecoderBuffer? decoder_buffer,
+      => (DecryptStatus status,
+          DecoderBuffer? decoder_buffer,
           array<uint8> bytes);
 };
 
@@ -123,9 +124,9 @@ interface StableVideoDecoder {
   //
   // May be called before Construct().
   [Sync]
-  GetSupportedConfigs@0() =>
-      (array<SupportedVideoDecoderConfig> supported_configs,
-       VideoDecoderType decoder_type);
+  GetSupportedConfigs@0()
+      => (array<SupportedVideoDecoderConfig> supported_configs,
+          VideoDecoderType decoder_type);
 
   // Initialize the decoder. This must be called before any method other than
   // GetSupportedConfigs().
@@ -155,7 +156,8 @@ interface StableVideoDecoder {
   //
   // TODO(b/195769334): consider passing |cdm_context| in Construct() instead of
   // Initialize().
-  Initialize@2(VideoDecoderConfig config, bool low_delay,
+  Initialize@2(VideoDecoderConfig config,
+               bool low_delay,
                pending_remote<StableCdmContext>? cdm_context)
       => (Status status,
           bool needs_bitstream_conversion,
@@ -176,12 +178,13 @@ interface StableVideoDecoder {
 
 // Only Chrome-for-Linux and ash-chrome should host the implementation of a
 // StableVideoDecoderFactory.
-[EnableIf=is_linux_or_chromeos_ash]
-const sandbox.mojom.Sandbox kStableVideoDecoderFactoryServiceSandbox
- = sandbox.mojom.Sandbox.kHardwareVideoDecoding;
-[EnableIfNot=is_linux_or_chromeos_ash]
-const sandbox.mojom.Sandbox kStableVideoDecoderFactoryServiceSandbox
- = sandbox.mojom.Sandbox.kNoSandbox;
+[EnableIf=is_chromeos_ash|is_linux]
+const sandbox.mojom.Sandbox kStableVideoDecoderFactoryServiceSandbox =
+    sandbox.mojom.Sandbox.kHardwareVideoDecoding;
+
+[EnableIfNot=is_chromeos_ash|is_linux]
+const sandbox.mojom.Sandbox kStableVideoDecoderFactoryServiceSandbox =
+    sandbox.mojom.Sandbox.kNoSandbox;
 
 // A disconnection of this interface can be interpreted as the
 // StableVideoDecoder implementation created by
@@ -224,7 +227,7 @@ interface StableVideoDecoderFactory {
 //    connection to call InitializeStableVideoDecoderFactory() with the
 //    pending_receiver<StableVideoDecoderFactory> from (1).
 [ServiceSandbox=kStableVideoDecoderFactoryServiceSandbox,
-EnableIf=is_linux_or_chromeos_ash]
+    EnableIf=is_chromeos_ash|is_linux]
 interface StableVideoDecoderFactoryProcess {
   // Initializes a StableVideoDecoderFactory using |gpu_feature_info| to
   // restrict the supported video decode configurations.

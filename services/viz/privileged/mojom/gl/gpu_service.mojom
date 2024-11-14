@@ -4,42 +4,51 @@
 
 module viz.mojom;
 
-[EnableIf=is_chromeos_ash]
-import "ash/components/arc/mojom/protected_buffer_manager.mojom";
-[EnableIf=is_chromeos_ash]
-import "ash/components/arc/mojom/video_decode_accelerator.mojom";
-[EnableIf=is_chromeos_ash]
-import "ash/components/arc/mojom/video_decoder.mojom";
-[EnableIf=is_chromeos_ash]
-import "ash/components/arc/mojom/video_encode_accelerator.mojom";
-[EnableIf=is_chromeos_ash]
-import "ash/components/arc/mojom/video_protected_buffer_allocator.mojom";
-[EnableIf=is_chromeos_ash]
-import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
-[EnableIf=is_chromeos_ash]
-import "components/chromeos_camera/common/jpeg_encode_accelerator.mojom";
+import "gpu/ipc/common/client_gmb_interface.mojom";
 import "gpu/ipc/common/device_perf_info.mojom";
 import "gpu/ipc/common/gpu_disk_cache_type.mojom";
 import "gpu/ipc/common/gpu_feature_info.mojom";
 import "gpu/ipc/common/gpu_info.mojom";
 import "gpu/ipc/common/gpu_peak_memory.mojom";
 import "gpu/ipc/common/memory_stats.mojom";
-import "gpu/ipc/common/client_gmb_interface.mojom";
 import "gpu/ipc/common/shared_image_capabilities.mojom";
 import "gpu/ipc/common/surface_handle.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "media/mojo/mojom/video_encode_accelerator.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
+import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/process_id.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/webnn/public/mojom/features.mojom";
 import "services/webnn/public/mojom/webnn_context_provider.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gl/mojom/gpu_preference.mojom";
-import "mojo/public/mojom/base/memory_pressure_level.mojom";
-import "mojo/public/mojom/base/shared_memory.mojom";
+
+[EnableIf=is_chromeos_ash]
+import "ash/components/arc/mojom/protected_buffer_manager.mojom";
+
+[EnableIf=is_chromeos_ash]
+import "ash/components/arc/mojom/video_decode_accelerator.mojom";
+
+[EnableIf=is_chromeos_ash]
+import "ash/components/arc/mojom/video_decoder.mojom";
+
+[EnableIf=is_chromeos_ash]
+import "ash/components/arc/mojom/video_encode_accelerator.mojom";
+
+[EnableIf=is_chromeos_ash]
+import "ash/components/arc/mojom/video_protected_buffer_allocator.mojom";
+
+[EnableIf=is_chromeos_ash]
+import "components/chromeos_camera/common/jpeg_encode_accelerator.mojom";
+
+[EnableIf=is_chromeos_ash]
+import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
+
 [EnableIf=is_win]
 import "mojo/public/mojom/base/unguessable_token.mojom";
+
 [EnableIf=is_win]
 import "ui/gfx/mojom/dxgi_info.mojom";
 
@@ -50,9 +59,8 @@ interface GpuService {
   // synchronously they are available (since the PostTask for
   // GpuHost::DidInitialize might not be dispatched yet.
   [Sync, NoInterrupt]
-  EstablishGpuChannel(int32 client_id,
-                      uint64 client_tracing_id,
-                      bool is_gpu_host)
+  EstablishGpuChannel(
+      int32 client_id, uint64 client_tracing_id, bool is_gpu_host)
       => (handle<message_pipe>? channel_handle,
           gpu.mojom.GpuInfo gpu_info,
           gpu.mojom.GpuFeatureInfo gpu_feature_info,
@@ -65,8 +73,8 @@ interface GpuService {
 
   // Tells the GPU service an assigned cache handle. Note that for each type of
   // handle per client only one unique handle is expected.
-  SetChannelDiskCacheHandle(int32 client_id,
-                            gpu.mojom.GpuDiskCacheHandle cache_handle);
+  SetChannelDiskCacheHandle(
+      int32 client_id, gpu.mojom.GpuDiskCacheHandle cache_handle);
 
   // Called by the browser when the last reference to a GPU disk cache handle
   // is gone. Results in the GPU process purging the in memory copy.
@@ -83,8 +91,7 @@ interface GpuService {
 
   // Create a new ARC VideoDecoder and binds it to |vd|.
   [EnableIf=enable_arc_media]
-  CreateArcVideoDecoder(
-      pending_receiver<arc.mojom.VideoDecoder> vd);
+  CreateArcVideoDecoder(pending_receiver<arc.mojom.VideoDecoder> vd);
 
   // Create a new ARC VideoEncodeAccelerator and binds it to |vea|.
   [EnableIf=enable_arc_media]
@@ -92,12 +99,12 @@ interface GpuService {
       pending_receiver<arc.mojom.VideoEncodeAccelerator> vea);
 
   // Create a new ARC VideoProtectedBufferAllocator and binds it to |pba|.
-  [EnableIf=enable_arc_media ]
+  [EnableIf=enable_arc_media]
   CreateArcVideoProtectedBufferAllocator(
       pending_receiver<arc.mojom.VideoProtectedBufferAllocator> pba);
 
   // Create a new ARC ProtectedBufferManager and binds it to |pbm|.
-  [EnableIf=enable_arc_media ]
+  [EnableIf=enable_arc_media]
   CreateArcProtectedBufferManager(
       pending_receiver<arc.mojom.ProtectedBufferManager> pbm);
 
@@ -129,19 +136,19 @@ interface GpuService {
 
   // Binds the pending receiver.
   BindClientGmbInterface(
-  pending_receiver<gpu.mojom.ClientGmbInterface> receiver, int32 client_id);
+      pending_receiver<gpu.mojom.ClientGmbInterface> receiver,
+      int32 client_id);
 
   // Creates a VideoEncodeAcceleratorProvider and binds it to |vea_provider|.
   CreateVideoEncodeAcceleratorProvider(
-      pending_receiver<media.mojom.VideoEncodeAcceleratorProvider>
-          vea_provider);
+      pending_receiver<media.mojom.VideoEncodeAcceleratorProvider> vea_provider);
 
   // Binds the pending receiver used to access the hardware accelerated OS
   // machine learning APIs.
   [RuntimeFeature=webnn.mojom.features.kWebMachineLearningNeuralNetwork]
   BindWebNNContextProvider(
-      pending_receiver<webnn.mojom.WebNNContextProvider>? receiver, int32
-          client_id);
+      pending_receiver<webnn.mojom.WebNNContextProvider>? receiver,
+      int32 client_id);
 
   [Sync, NoInterrupt]
   CreateGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id,
@@ -152,14 +159,13 @@ interface GpuService {
                         gpu.mojom.SurfaceHandle surface_handle)
       => (gfx.mojom.GpuMemoryBufferHandle buffer_handle);
 
-  DestroyGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id,
-                         int32 client_id);
+  DestroyGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferId id, int32 client_id);
 
   // Copies GMB pixel data to |shared_memory|.
   // Returns |true| if the copy has succeeded.
   CopyGpuMemoryBuffer(gfx.mojom.GpuMemoryBufferHandle buffer_handle,
-                     mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory)
-                     => (bool success);
+                      mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory)
+      => (bool success);
 
   // Returns current video memory usage.
   GetVideoMemoryUsageStats() => (gpu.mojom.VideoMemoryUsageStats stats);
@@ -171,9 +177,10 @@ interface GpuService {
 
   // Ends tracking the peak GPU memory for the associated |sequence_num|.
   // Returning the value of the peak seen since StartPeakMemoryMonitorProcess.
-  GetPeakMemoryUsage(uint32 sequence_num) => (uint64 memory_usage,
-      map<gpu.mojom.GpuPeakMemoryAllocationSource, uint64>
-          memory_per_allocation_source);
+  GetPeakMemoryUsage(uint32 sequence_num)
+      => (uint64 memory_usage,
+          map<gpu.mojom.GpuPeakMemoryAllocationSource, uint64>
+              memory_per_allocation_source);
 
   // Requests that the GPU process query DXGI adapter and output information
   // and return it.
@@ -215,11 +222,12 @@ interface GpuService {
 
   // Called by the browser immediately after the application is backgrounded.
   OnBackgrounded();
+
   // Called by the browser immediately after the application is foregrounded.
   OnForegrounded();
 
   // Called by the browser when the system is under memory pressure.
-  [EnableIf=is_not_android]
+  [EnableIfNot=is_android]
   OnMemoryPressure(mojo_base.mojom.MemoryPressureLevel level);
 
   // Begin a batch of layer tree changes.
@@ -240,6 +248,8 @@ interface GpuService {
   GetDawnInfo(bool collect_metrics) => (array<string> dawn_info_list);
 
   Crash();
+
   Hang();
+
   ThrowJavaException();
 };

@@ -42,10 +42,6 @@ mojom("gl") {
   }
 
   enabled_features = []
-  if (!is_android) {
-    enabled_features += [ "is_not_android" ]
-  }
-
   if (use_clang_profiling_inside_sandbox) {
     enabled_features += [ "use_clang_profiling_inside_sandbox" ]
   }

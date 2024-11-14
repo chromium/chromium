@@ -363,9 +363,6 @@ mojom("interfaces") {
     public_deps += [ ":vulkan_interface" ]
     enabled_features += [ "supports_vulkan" ]
   }
-  if (is_win || is_chromeos) {
-    enabled_features += [ "has_gpu_revision_info" ]
-  }
 
   cpp_typemaps = [
     {

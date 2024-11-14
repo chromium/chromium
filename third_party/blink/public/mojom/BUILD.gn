@@ -375,17 +375,8 @@ mojom("mojom_platform") {
   }
 
   enabled_features = []
-  if (is_linux || is_chromeos) {
-    enabled_features += [ "renderer_pref_system_font_family_name" ]
-  }
   if (use_ozone) {
     enabled_features += [ "is_selection_clipboard_buffer_possible" ]
-  }
-  if (is_android || is_ios) {
-    enabled_features += [ "is_using_open_color_chooser" ]
-  }
-  if (is_android || is_ios) {
-    enabled_features += [ "is_android_or_ios" ]
   }
 
   shared_cpp_typemaps = [

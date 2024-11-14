@@ -77,7 +77,7 @@ enum CreateTranslatorResult {
 // Currently the sandboxing of the On Device Translation service is supported
 // only on macOS and Linux.
 // TODO(crbug.com/340778819): Implement sandboxing on other platforms.
-[EnableIf=is_linux_or_mac]
+[EnableIf=is_linux|is_mac]
 const sandbox.mojom.Sandbox kOnDeviceTranslationSandbox =
     sandbox.mojom.Sandbox.kOnDeviceTranslation;
 
@@ -85,7 +85,7 @@ const sandbox.mojom.Sandbox kOnDeviceTranslationSandbox =
 const sandbox.mojom.Sandbox kOnDeviceTranslationSandbox =
     sandbox.mojom.Sandbox.kService;
 
-[EnableIfNot=is_linux_or_mac_or_win]
+[EnableIfNot=is_linux|is_mac|is_win]
 const sandbox.mojom.Sandbox kOnDeviceTranslationSandbox =
     sandbox.mojom.Sandbox.kNoSandbox;
 
