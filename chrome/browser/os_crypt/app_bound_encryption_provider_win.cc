@@ -15,9 +15,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
-#include "base/version_info/channel.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_win.h"
-#include "chrome/common/channel_info.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -39,15 +37,6 @@ constexpr uint8_t kCryptAppBoundKeyPrefix[] = {'A', 'P', 'P', 'B'};
 // Tag for data encrypted with app-bound encryption key. This is used by
 // OSCryptAsync to identify that data has been encrypted with this key.
 constexpr char kAppBoundDataPrefix[] = "v20";
-
-namespace features {
-// Emergency 'off-switch' just in case a ton of these log entries are created.
-// Current metrics show that fewer than 0.1% of clients should emit a log
-// though.
-BASE_FEATURE(kAppBoundEncryptionMetricsExtendedLogs,
-             "AppBoundEncryptionMetricsExtendedLogs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-}  // namespace features
 
 }  // namespace
 
@@ -95,9 +84,8 @@ class AppBoundEncryptionProviderWin::COMWorker {
     std::string encrypted_key_string(encrypted_key.begin(),
                                      encrypted_key.end());
     std::string decrypted_key_string;
-    std::string log_message;
     HRESULT res = os_crypt::DecryptAppBoundString(
-        encrypted_key_string, decrypted_key_string, last_error, &log_message);
+        encrypted_key_string, decrypted_key_string, last_error);
 
     base::UmaHistogramSparse("OSCrypt.AppBoundProvider.Decrypt.ResultCode",
                              res);
@@ -108,18 +96,6 @@ class AppBoundEncryptionProviderWin::COMWorker {
                  << " GetLastError: " << last_error;
       base::UmaHistogramSparse(
           "OSCrypt.AppBoundProvider.Decrypt.ResultLastError", last_error);
-      // Only log this extended data on Dev channel.
-      if (!log_message.empty() &&
-          chrome::GetChannel() == version_info::Channel::DEV &&
-          base::FeatureList::IsEnabled(
-              features::kAppBoundEncryptionMetricsExtendedLogs)) {
-        // Log message is two paths and some linking text totalling fewer than
-        // 25 characters.
-        static crash_reporter::CrashKeyString<(MAX_PATH * 2) + 25>
-            app_bound_log_message("app_bound_log");
-        app_bound_log_message.Set(log_message);
-        base::debug::DumpWithoutCrashing();
-      }
       return std::nullopt;
     }
 

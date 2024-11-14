@@ -16,7 +16,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/version_info/channel.h"
 #include "base/version_info/version_info.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/win_util.h"
@@ -207,17 +206,10 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
     }
 
     // Note: Validation should always be done using caller impersonation token.
-    std::string log_message;
-    HRESULT validation_result = ValidateData(process, data, &log_message);
+    HRESULT validation_result = ValidateData(process, data);
 
     if (FAILED(validation_result)) {
       *last_error = ::GetLastError();
-      // Only enable extended logging on Dev channel.
-      if (install_static::GetChromeChannel() == version_info::Channel::DEV &&
-          !log_message.empty()) {
-        *plaintext =
-            ::SysAllocStringByteLen(log_message.c_str(), log_message.length());
-      }
       return validation_result;
     }
     plaintext_str = PopFromStringFront(mutable_plaintext);

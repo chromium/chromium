@@ -138,12 +138,10 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecryptInvalid) {
   std::string ciphertext("invalidciphertext");
   std::string returned_plaintext;
   DWORD last_error = 0;
-  std::string log_message;
-  const HRESULT hr = DecryptAppBoundString(ciphertext, returned_plaintext,
-                                           last_error, &log_message);
+  const HRESULT hr =
+      DecryptAppBoundString(ciphertext, returned_plaintext, last_error);
   EXPECT_EQ(elevation_service::Elevator::kErrorCouldNotDecryptWithSystemContext,
             hr);
-  EXPECT_TRUE(log_message.empty());
 }
 
 // These tests verify that the metrics are recorded correctly. The first load of
