@@ -102,6 +102,8 @@ GetRotationDebugTerminationReason(
             return RotationDebugInfo::ROTATION_CHALLENGE_LIMIT_EXCEEDED;
           case Result::kSignChallengeFailed:
             return RotationDebugInfo::ROTATION_SIGN_CHALLENGE_FAILED;
+          case Result::kChallengeRequiredSessionIdMismatch:
+            return RotationDebugInfo::ROTATION_CHALLENGE_SESSION_ID_MISMATCH;
           default:
             return RotationDebugInfo::TERMINATION_REASON_OTHER;
         }

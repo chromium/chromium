@@ -472,9 +472,6 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest, ChallengeRequired) {
   EXPECT_EQ(sec_session_challenge_response(), assertion);
   VerifyMetricsRecorded(Result::kSuccess,
                         /*expect_assertion_was_generated_count=*/1);
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.BoundSessionCredentials.CookieRotationSessionIdsMatch", true,
-      /*expected_bucket_count=*/1);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,
@@ -513,27 +510,11 @@ TEST_F(BoundSessionRefreshCookieFetcherImplTest,
        BadChallengeHeaderSessionIdsDontMatch) {
   RefreshTestFuture future;
   fetcher_->Start(future.GetCallback(), std::nullopt);
-  // Session IDs mismatch doesn't cause failures yet but gets reported to a
-  // histogram below.
-  // TODO(http://b/341261442): this test should expect a failure once the
-  // session ID match is enforced.
   SimulateChallengeRequired(
       CreateChallengeHeaderValue(/*challenge=*/"test", /*session_id=*/"12345"));
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(future.IsReady());
-
-  // Set required cookies and complete the request.
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
-  SimulateOnCookiesAccessed(network::mojom::CookieAccessDetails::Type::kChange);
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(), "");
-
-  EXPECT_EQ(future.Get(), Result::kSuccess);
-  EXPECT_TRUE(fetcher_->IsChallengeReceived());
-
-  histogram_tester_.ExpectUniqueSample(
-      "Signin.BoundSessionCredentials.CookieRotationSessionIdsMatch", false,
-      /*expected_bucket_count=*/1);
+  EXPECT_EQ(future.Get(), Result::kChallengeRequiredSessionIdMismatch);
+  VerifyMetricsRecorded(Result::kChallengeRequiredSessionIdMismatch,
+                        /*expect_assertion_was_generated_count=*/0);
 }
 
 TEST_F(BoundSessionRefreshCookieFetcherImplTest,

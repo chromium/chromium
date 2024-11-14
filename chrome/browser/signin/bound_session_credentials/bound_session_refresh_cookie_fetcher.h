@@ -27,7 +27,8 @@ class BoundSessionRefreshCookieFetcher {
     kChallengeRequiredUnexpectedFormat = 5,
     kChallengeRequiredLimitExceeded = 6,
     kSignChallengeFailed = 7,
-    kMaxValue = kSignChallengeFailed,
+    kChallengeRequiredSessionIdMismatch = 8,
+    kMaxValue = kChallengeRequiredSessionIdMismatch,
   };
 
   static constexpr char kRotationChallengeHeader[] =

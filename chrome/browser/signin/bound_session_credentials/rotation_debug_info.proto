@@ -36,6 +36,7 @@ message RotationDebugInfo {
     ROTATION_UNKNOWN_ERROR = 6;
     TERMINATION_HEADER_RECEIVED = 7;
     SESSION_OVERRIDE = 8;
+    ROTATION_CHALLENGE_SESSION_ID_MISMATCH = 9;
   }
 
   // Contains how many times a specific type of error occurred.

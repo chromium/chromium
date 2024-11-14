@@ -1347,7 +1347,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
 TEST_F(BoundSessionCookieControllerImplTest,
        ThrottlingPausedDifferentCookieRotationErrors) {
   TriggerThrottlingPausedAndVerify();
-  const size_t kCookieRotationResultSize = 7;
+  const size_t kCookieRotationResultSize = 8;
   Result cookie_rotation_result[kCookieRotationResultSize] = {
       Result::kConnectionError,
       Result::kServerTransientError,
@@ -1355,7 +1355,8 @@ TEST_F(BoundSessionCookieControllerImplTest,
       Result::kServerUnexepectedResponse,
       Result::kChallengeRequiredUnexpectedFormat,
       Result::kChallengeRequiredLimitExceeded,
-      Result::kSignChallengeFailed};
+      Result::kSignChallengeFailed,
+      Result::kChallengeRequiredSessionIdMismatch};
 
   ASSERT_TRUE(
       bound_session_cookie_controller()->ShouldPauseThrottlingRequests());

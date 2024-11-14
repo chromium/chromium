@@ -243,6 +243,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Challenge unexpected format"/>
   <int value="6" label="Challenge requests limit exceeded"/>
   <int value="7" label="Sign challenge failed"/>
+  <int value="8" label="Challenge session ID mismatch"/>
 </enum>
 
 <enum name="BoundSessionCredentialsSessionRegistrationResult">

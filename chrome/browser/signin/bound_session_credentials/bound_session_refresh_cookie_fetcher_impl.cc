@@ -301,12 +301,11 @@ void BoundSessionRefreshCookieFetcherImpl::HandleBindingKeyAssertionRequired(
     return;
   }
 
-  // TODO(http://b/341261442): make this a requirement after confirming the
-  // number of affected users.
-  bool session_ids_match = items.session_id == session_id_;
-  base::UmaHistogramBoolean(
-      "Signin.BoundSessionCredentials.CookieRotationSessionIdsMatch",
-      session_ids_match);
+  if (items.session_id != session_id_) {
+    CompleteRequestAndReportRefreshResult(
+        Result::kChallengeRequiredSessionIdMismatch);
+    return;
+  }
 
   // Binding key assertion required.
   assertion_requests_count_++;

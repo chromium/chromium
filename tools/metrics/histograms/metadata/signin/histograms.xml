@@ -725,20 +725,6 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
-<histogram name="Signin.BoundSessionCredentials.CookieRotationSessionIdsMatch"
-    enum="BooleanMatched" expires_after="2024-11-17">
-  <owner>alexilin@chromium.org</owner>
-  <owner>msalama@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Records whether the session ID provided by the server in a challenge header
-    matches the expected one that was set during the session registration.
-    Recorded every time the browser receives a correctly-formed challenge header
-    in response to a cookie rotation request triggered by the bound session
-    credentials feature.
-  </summary>
-</histogram>
-
 <histogram name="Signin.BoundSessionCredentials.CookieRotationTotalDuration"
     units="ms" expires_after="2025-03-30">
   <owner>alexilin@chromium.org</owner>
