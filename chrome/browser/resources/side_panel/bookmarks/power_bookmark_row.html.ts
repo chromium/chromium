@@ -77,6 +77,8 @@ export function getHtml(this: PowerBookmarkRowElement) {
 if (this.shouldExpand_()) {
   return html`
 <cr-expand-button no-hover id="expandButton"
+    collapse-icon="cr:expand-more"
+    expand-icon="cr:chevron-right"
     @expanded-changed=${this.onExpandedChanged_}>
   ${urlListItem}
 </cr-expand-button>
