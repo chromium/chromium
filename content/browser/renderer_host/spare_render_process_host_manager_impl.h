@@ -159,9 +159,17 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   std::vector<RenderProcessHost*> spare_rphs_;
 
   // The timer used to track the startup time of the spare renderer process.
+  // The elapsed time will be tracked even if the spare renderer is destroyed
+  // for memory pressure or timeout.
   std::unique_ptr<base::ElapsedTimer> process_startup_timer_;
   // The timer used to track the delay of spare renderer creation.
   std::unique_ptr<base::ElapsedTimer> delay_timer_;
+  // The timer used to track the time from the last spare renderer creation to
+  // the next call to MaybeTakeSpare(). Note that the created spare renderer
+  // might have already been deleted at the time MaybeTakeSpare() runs, but we
+  // still want to record it so that we can potentially adjust the timeout of
+  // the spare renderer.
+  std::unique_ptr<base::ElapsedTimer> spare_renderer_maybe_take_timer_;
 
   base::OneShotTimer deferred_warmup_timer_;
   base::OneShotTimer deferred_destroy_timer_;
