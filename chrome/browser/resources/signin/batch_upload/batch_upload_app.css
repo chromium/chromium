@@ -89,6 +89,8 @@
   border-top: 2px solid var(--color-batch-upload-data-background);
 }
 
+/** TODO(crbug.com/378442954): Consider using action-container class from
+ * signin/signin_shared.css instead. */
 #action-row {
   column-gap: 8px;
   display: flex;
@@ -97,6 +99,13 @@
   padding-inline-start: var(--batch-upload-dialog-padding);
   padding-inline-end: var(--batch-upload-dialog-padding);
 }
+
+<if expr="is_macosx or is_linux or is_chromeos">
+#action-row {
+  flex-flow: row-reverse;
+  justify-content: flex-start;
+}
+</if>
 
 .custom-scrollbar::-webkit-scrollbar {
   width: var(--scrollbar-width);
