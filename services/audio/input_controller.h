@@ -162,7 +162,6 @@ class InputController final : public StreamMonitor {
     // Write certain amount of data from |data|.
     virtual void Write(const media::AudioBus* data,
                        double volume,
-                       bool key_pressed,
                        base::TimeTicks capture_time,
                        const media::AudioGlitchInfo& glitch_info) = 0;
 

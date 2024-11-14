@@ -67,7 +67,6 @@ class InputSyncWriter final : public InputController::SyncWriter {
   // InputController::SyncWriter implementation.
   void Write(const media::AudioBus* data,
              double volume,
-             bool key_pressed,
              base::TimeTicks capture_time,
              const media::AudioGlitchInfo& glitch_info) final;
 
@@ -85,7 +84,6 @@ class InputSyncWriter final : public InputController::SyncWriter {
   // maximum size.
   bool PushDataToFifo(const media::AudioBus& data,
                       double volume,
-                      bool key_pressed,
                       base::TimeTicks capture_time,
                       const media::AudioGlitchInfo& glitch_info);
 
@@ -94,7 +92,6 @@ class InputSyncWriter final : public InputController::SyncWriter {
   // dropped.
   bool WriteDataToCurrentSegment(const media::AudioBus& data,
                                  double volume,
-                                 bool key_pressed,
                                  base::TimeTicks capture_time,
                                  const media::AudioGlitchInfo& glitch_info);
 
@@ -160,7 +157,6 @@ class InputSyncWriter final : public InputController::SyncWriter {
   // properly.
   struct OverflowData {
     OverflowData(double volume,
-                 bool key_pressed,
                  base::TimeTicks capture_time,
                  const media::AudioGlitchInfo& glitch_info,
                  std::unique_ptr<media::AudioBus> audio_bus);
@@ -174,7 +170,6 @@ class InputSyncWriter final : public InputController::SyncWriter {
     ~OverflowData();
 
     double volume_;
-    bool key_pressed_;
     base::TimeTicks capture_time_;
     media::AudioGlitchInfo glitch_info_;
     std::unique_ptr<media::AudioBus> audio_bus_;

@@ -739,7 +739,6 @@ void InputController::OnData(const media::AudioBus* source,
               (capture_time - base::TimeTicks()).InMillisecondsF(),
               "capture_delay (ms)",
               (base::TimeTicks::Now() - capture_time).InMillisecondsF());
-  const bool key_pressed = CheckForKeyboardInput();
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   if (processing_fifo_) {
     DCHECK(audio_processor_handler_);
@@ -750,7 +749,7 @@ void InputController::OnData(const media::AudioBus* source,
   } else
 #endif
   {
-    sync_writer_->Write(source, volume, key_pressed, capture_time, glitch_info);
+    sync_writer_->Write(source, volume, capture_time, glitch_info);
   }
 
   float average_power_dbfs;
@@ -774,8 +773,8 @@ void InputController::DeliverProcessedAudio(
     const media::AudioGlitchInfo& glitch_info) {
   // When processing is performed in the audio service, the consumer is not
   // expected to use the input volume and keypress information.
-  sync_writer_->Write(&audio_bus, /*volume=*/1.0, /*key_pressed=*/false,
-                      audio_capture_time, glitch_info);
+  sync_writer_->Write(&audio_bus, /*volume=*/1.0, audio_capture_time,
+                      glitch_info);
   if (new_volume) {
     task_runner_->PostTask(
         FROM_HERE,

@@ -108,7 +108,6 @@ class FakeSyncWriter : public FakeConsumer, public InputController::SyncWriter {
   // media::AudioInputController::SyncWriter implementation.
   void Write(const media::AudioBus* data,
              double volume,
-             bool key_pressed,
              base::TimeTicks capture_time,
              const media::AudioGlitchInfo& audio_glitch_info) final {
     FakeConsumer::Consume(*data);

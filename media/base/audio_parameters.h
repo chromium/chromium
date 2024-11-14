@@ -46,7 +46,6 @@ struct MEDIA_SHMEM_EXPORT alignas(kParametersAlignment)
   uint32_t glitch_count;
   uint32_t size;
   uint32_t id;
-  bool key_pressed;
 };
 struct MEDIA_SHMEM_EXPORT alignas(kParametersAlignment)
     AudioOutputBufferParameters {

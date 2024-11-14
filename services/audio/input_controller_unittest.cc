@@ -78,10 +78,9 @@ class MockSyncWriter : public InputController::SyncWriter {
  public:
   MockSyncWriter() = default;
 
-  MOCK_METHOD5(Write,
+  MOCK_METHOD4(Write,
                void(const media::AudioBus* data,
                     double volume,
-                    bool key_pressed,
                     base::TimeTicks capture_time,
                     const media::AudioGlitchInfo& audio_glitch_info));
   MOCK_METHOD0(Close, void());
@@ -243,8 +242,8 @@ TEST_P(SystemTimeInputControllerTest, CreateRecordAndClose) {
     // Wait for Write() to be called ten times.
     testing::InSequence s;
     EXPECT_CALL(user_input_monitor_, EnableKeyPressMonitoring());
-    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _, _)).Times(Exactly(9));
-    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _, _))
+    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _)).Times(Exactly(9));
+    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _))
         .Times(AtLeast(1))
         .WillOnce(InvokeWithoutArgs([&]() { loop.Quit(); }));
   }
@@ -282,7 +281,7 @@ TEST_P(InputControllerTestWithMockAudioManager, PropagatesGlitchInfo) {
   for (int i = 0; i < 5; i++) {
     media::AudioGlitchInfo audio_glitch_info{
         .duration = base::Milliseconds(123 + i), .count = 5};
-    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _, audio_glitch_info));
+    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, audio_glitch_info));
     callback->OnData(audio_bus.get(), base::TimeTicks(), 1, audio_glitch_info);
     testing::Mock::VerifyAndClearExpectations(&sync_writer_);
   }
@@ -704,8 +703,8 @@ TEST_P(SystemTimeInputControllerTestWithDeviceListener, CreateRecordAndClose) {
     // Wait for Write() to be called ten times.
     testing::InSequence s;
     EXPECT_CALL(user_input_monitor_, EnableKeyPressMonitoring());
-    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _, _)).Times(Exactly(9));
-    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _, _))
+    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _)).Times(Exactly(9));
+    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _))
         .Times(AtLeast(1))
         .WillOnce(InvokeWithoutArgs([&]() { loop.Quit(); }));
   }
