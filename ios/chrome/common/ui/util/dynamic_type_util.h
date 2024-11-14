@@ -14,9 +14,4 @@ UIFont* PreferredFontForTextStyleWithMaxCategory(
     UIContentSizeCategory currentCategory,
     UIContentSizeCategory maxCategory);
 
-// Returns min(`currentCategory`,`maxCategory`).
-UIContentSizeCategory ContentSizeCategoryWithMaxCategory(
-    UIContentSizeCategory currentCategory,
-    UIContentSizeCategory maxCategory);
-
 #endif  // IOS_CHROME_COMMON_UI_UTIL_DYNAMIC_TYPE_UTIL_H_

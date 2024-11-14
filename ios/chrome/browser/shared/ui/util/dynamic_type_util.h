@@ -11,9 +11,6 @@
 // Specific cases utils
 // ********************
 
-// The maximum size category the LocationBarSteadyView adjusts its font to.
-extern UIContentSizeCategory const kLocationBarSteadyViewMaxSizeCategory;
-
 // The normal font for the LocationBarSteadyView.
 UIFont* LocationBarSteadyViewFont(UIContentSizeCategory currentCategory);
 

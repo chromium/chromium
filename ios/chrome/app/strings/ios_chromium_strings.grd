@@ -249,9 +249,6 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
         Some of your Chromium data hasn't been saved in <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph> yet.
 Try waiting a few minutes before switching accounts. If you switch accounts now, this data will be deleted.
       </message>
-      <message name="IDS_IOS_DEFAULT_BROWSER_BANNER_PROMO_TEXT" desc="Text for the default browser banner promo [iOS only]">
-        Open links in Chromium by Default
-      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE" desc="Description to user about how to reach the default browser setting in their device. [iOS only]">
         To make Chromium your default:
 1. Open Settings

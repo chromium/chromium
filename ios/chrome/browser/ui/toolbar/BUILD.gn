@@ -117,8 +117,6 @@ source_set("toolbar_ui") {
     "adaptive_toolbar_view_controller.h",
     "adaptive_toolbar_view_controller.mm",
     "adaptive_toolbar_view_controller_delegate.h",
-    "banner_promo_view.h",
-    "banner_promo_view.mm",
     "primary_toolbar_view.h",
     "primary_toolbar_view.mm",
     "primary_toolbar_view_controller.h",
@@ -136,7 +134,6 @@ source_set("toolbar_ui") {
   ]
   deps = [
     "//base",
-    "//components/strings:components_strings_grit",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/keyboard/ui_bundled",
     "//ios/chrome/browser/ntp/ui_bundled:ui_bundled",
@@ -160,7 +157,6 @@ source_set("toolbar_ui") {
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
-    "//ios/chrome/common/ui/util:dynamic_type_util",
     "//ios/third_party/material_components_ios",
     "//ui/base",
   ]

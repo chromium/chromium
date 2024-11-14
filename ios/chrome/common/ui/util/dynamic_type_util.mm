@@ -8,18 +8,12 @@ UIFont* PreferredFontForTextStyleWithMaxCategory(
     UIFontTextStyle style,
     UIContentSizeCategory currentCategory,
     UIContentSizeCategory maxCategory) {
+  NSComparisonResult result =
+      UIContentSizeCategoryCompareToCategory(currentCategory, maxCategory);
   UIContentSizeCategory category =
-      ContentSizeCategoryWithMaxCategory(currentCategory, maxCategory);
+      result == NSOrderedDescending ? maxCategory : currentCategory;
   return [UIFont preferredFontForTextStyle:style
              compatibleWithTraitCollection:
                  [UITraitCollection
                      traitCollectionWithPreferredContentSizeCategory:category]];
-}
-
-UIContentSizeCategory ContentSizeCategoryWithMaxCategory(
-    UIContentSizeCategory currentCategory,
-    UIContentSizeCategory maxCategory) {
-  NSComparisonResult result =
-      UIContentSizeCategoryCompareToCategory(currentCategory, maxCategory);
-  return result == NSOrderedDescending ? maxCategory : currentCategory;
 }

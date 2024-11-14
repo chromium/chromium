@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
-#import "ios/chrome/browser/ui/toolbar/banner_promo_view.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
@@ -26,11 +25,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ui/gfx/ios/uikit_util.h"
-
-namespace {
-// Extra vertical spacing when the banner promo is active.
-const CGFloat kBannerPromoVerticalSpacing = 8;
-}  // namespace
 
 @interface PrimaryToolbarView ()
 
@@ -106,13 +100,7 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
 
 @end
 
-@implementation PrimaryToolbarView {
-  // Background and container for the banner promo.
-  UIView* _bannerPromoBackground;
-
-  // The actual banner promo view.
-  BannerPromoView* _bannerPromo;
-}
+@implementation PrimaryToolbarView
 
 @synthesize fakeOmniboxTarget = _fakeOmniboxTarget;
 @synthesize locationBarBottomConstraint = _locationBarBottomConstraint;
@@ -166,7 +154,6 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   [self setUpProgressBar];
   [self setUpCollapsedToolbarButton];
   [self setUpSeparator];
-  [self setUpBannerPromo];
 
   [self setUpConstraints];
 }
@@ -264,13 +251,6 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
                   ? content_suggestions::FakeToolbarHeight()
                   : ToolbarExpandedHeight(
                         self.traitCollection.preferredContentSizeCategory);
-  }
-
-  if (IsDefaultBrowserBannerPromoEnabled()) {
-    height += _bannerPromo.intrinsicContentSize.height;
-    if (isTopOmnibox) {
-      height += kBannerPromoVerticalSpacing;
-    }
   }
 
   // If the tab group indicator is visible, add its height to the total height.
@@ -393,22 +373,6 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
   [self addSubview:self.separator];
 }
 
-// Sets the banner promo up.
-- (void)setUpBannerPromo {
-  if (!IsDefaultBrowserBannerPromoEnabled()) {
-    return;
-  }
-
-  _bannerPromoBackground = [[UIView alloc] init];
-  _bannerPromoBackground.translatesAutoresizingMaskIntoConstraints = NO;
-  _bannerPromoBackground.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
-  [self addSubview:_bannerPromoBackground];
-
-  _bannerPromo = [[BannerPromoView alloc] init];
-  _bannerPromo.translatesAutoresizingMaskIntoConstraints = NO;
-  [_bannerPromoBackground addSubview:_bannerPromo];
-}
-
 // Sets the constraints up.
 - (void)setUpConstraints {
   id<LayoutGuideProvider> safeArea = self.safeAreaLayoutGuide;
@@ -473,25 +437,6 @@ const CGFloat kBannerPromoVerticalSpacing = 8;
         constraintEqualToAnchor:safeArea.leadingAnchor
                        constant:kExpandedLocationBarHorizontalMargin]
   ]];
-
-  if (IsDefaultBrowserBannerPromoEnabled()) {
-    [NSLayoutConstraint activateConstraints:@[
-      [_bannerPromoBackground.leadingAnchor
-          constraintEqualToAnchor:self.leadingAnchor],
-      [_bannerPromoBackground.trailingAnchor
-          constraintEqualToAnchor:self.trailingAnchor],
-      [_bannerPromoBackground.topAnchor constraintEqualToAnchor:self.topAnchor],
-
-      [_bannerPromo.leadingAnchor
-          constraintEqualToAnchor:_bannerPromoBackground.leadingAnchor],
-      [_bannerPromo.trailingAnchor
-          constraintEqualToAnchor:_bannerPromoBackground.trailingAnchor],
-      [_bannerPromo.bottomAnchor
-          constraintEqualToAnchor:_bannerPromoBackground.bottomAnchor],
-      [_bannerPromo.topAnchor
-          constraintEqualToAnchor:self.safeAreaLayoutGuide.topAnchor],
-    ]];
-  }
 
   // Trailing StackView constraints.
   [NSLayoutConstraint activateConstraints:@[
