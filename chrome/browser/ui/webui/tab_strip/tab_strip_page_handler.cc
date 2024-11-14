@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -644,8 +646,38 @@ void TabStripPageHandler::MoveGroup(const std::string& group_id_string,
     return;
   }
 
+  MaybePauseTrackingSavedTabGroup(source_browser, group_id.value());
   tab_strip_ui::MoveGroupAcrossWindows(source_browser, target_browser, to_index,
                                        group_id.value());
+  MaybeResumeTrackingSavedTabGroup(target_browser);
+}
+
+void TabStripPageHandler::MaybePauseTrackingSavedTabGroup(
+    Browser* browser,
+    const tab_groups::TabGroupId& group_id) {
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
+
+  if (!tab_group_service || !tab_group_service->GetGroup(group_id)) {
+    return;
+  }
+
+  observation_pauser_ = tab_group_service->CreateScopedLocalObserverPauser();
+}
+
+void TabStripPageHandler::MaybeResumeTrackingSavedTabGroup(Browser* browser) {
+  if (!observation_pauser_) {
+    return;
+  }
+
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(browser->profile());
+
+  if (!tab_group_service) {
+    return;
+  }
+
+  observation_pauser_.reset();
 }
 
 void TabStripPageHandler::MoveTab(int32_t tab_id, int32_t to_index) {

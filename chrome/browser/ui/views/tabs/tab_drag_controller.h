@@ -664,8 +664,10 @@ class TabDragController : public views::WidgetObserver,
   // as a result of a drag finishing.
   void NotifyEventIfTabAddedToGroup();
 
+  // Similar implementations present in
+  // chrome/browser/ui/webui/tab_strip/tab_strip_page_handler.cc. If logic  is
+  // updated in one, the other should also be updated.
   void MaybePauseTrackingSavedTabGroup();
-
   void MaybeResumeTrackingSavedTabGroup();
 
 #if defined(USE_AURA)
