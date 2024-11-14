@@ -316,37 +316,6 @@ base::expected<void, std::string> ValidateRecurrentNetworkOperand(
 
 }  // namespace
 
-std::string DataTypeConstraintToString(
-    const SupportedDataTypes& constraint_set) {
-  base::FixedArray<std::string_view> data_types(constraint_set.size());
-  base::ranges::transform(constraint_set, data_types.begin(),
-                          [](OperandDataType data_type) {
-                            switch (data_type) {
-                              case OperandDataType::kFloat32:
-                                return "float32";
-                              case OperandDataType::kFloat16:
-                                return "float16";
-                              case OperandDataType::kInt32:
-                                return "int32";
-                              case OperandDataType::kUint32:
-                                return "uint32";
-                              case OperandDataType::kInt64:
-                                return "int64";
-                              case OperandDataType::kUint64:
-                                return "uint64";
-                              case OperandDataType::kInt8:
-                                return "int8";
-                              case OperandDataType::kUint8:
-                                return "uint8";
-                              case OperandDataType::kInt4:
-                                return "int4";
-                              case OperandDataType::kUint4:
-                                return "uint4";
-                            }
-                          });
-  return base::JoinString(data_types, /*separator=*/",");
-}
-
 base::expected<OperandDescriptor, std::string> ValidateSoftmaxAndInferOutput(
     const ContextProperties& context_properties,
     const OperandDescriptor& input,
@@ -2857,10 +2826,6 @@ base::expected<uint32_t, std::string> CalculateConvTranspose2dOutputSize(
   }
 
   return checked_output_size.ValueOrDie();
-}
-
-bool IsFloatingPointType(OperandDataType data_type) {
-  return DataTypeConstraint::kFloat16To32.Has(data_type);
 }
 
 bool IsDepthwiseConv2d(uint32_t input_channels,

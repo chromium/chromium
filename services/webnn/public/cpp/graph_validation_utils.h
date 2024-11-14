@@ -18,9 +18,6 @@
 
 namespace webnn {
 
-std::string COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
-    DataTypeConstraintToString(const SupportedDataTypes& constraint_set);
-
 // Represents the `MLConv2dFilterOperandLayout` that specifies the layout format
 // of the filter tensor. O is output channels, I is input channels / groups, H
 // is height and W is the width of filter.
@@ -761,9 +758,6 @@ base::expected<uint32_t, std::string> COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
                                        const uint32_t stride,
                                        const uint32_t dilation,
                                        const uint32_t output_padding);
-
-bool COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
-    IsFloatingPointType(OperandDataType data_type);
 
 // A depthwise conv2d operation is a variant of grouped convolution where the
 // options.groups == input_channels == output_channels according to WebNN conv2d
