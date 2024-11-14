@@ -37,7 +37,7 @@ public class EdgeSwipeGestureDetector implements TouchEventObserver {
 
     private AutomotiveBackButtonToolbarCoordinator.OnSwipeCallback mOnSwipeCallback;
     private GestureDetector mDetector;
-    private boolean mIsActive;
+    private boolean mIsReadyForNewScroll;
 
     private final GestureDetector.SimpleOnGestureListener mSwipeGestureListener =
             new GestureDetector.SimpleOnGestureListener() {
@@ -47,11 +47,11 @@ public class EdgeSwipeGestureDetector implements TouchEventObserver {
                         @NonNull MotionEvent currentMotion,
                         float distanceX,
                         float distanceY) {
-                    if (!mIsActive
+                    if (mIsReadyForNewScroll
                             && startMotion != null
                             && isValidSwipe(startMotion, currentMotion, distanceX, distanceY)) {
                         mOnSwipeCallback.handleSwipe();
-                        mIsActive = true;
+                        mIsReadyForNewScroll = false;
                         return true;
                     }
                     return false;
@@ -71,6 +71,7 @@ public class EdgeSwipeGestureDetector implements TouchEventObserver {
         mEdgeWidthPx = EDGE_WIDTH_DP * context.getResources().getDisplayMetrics().density;
         mSwipeThreshold = SWIPE_THRESHOLD_DP * context.getResources().getDisplayMetrics().density;
         mDetector = new GestureDetector(context, mSwipeGestureListener);
+        mIsReadyForNewScroll = true;
     }
 
     @Override
@@ -84,11 +85,9 @@ public class EdgeSwipeGestureDetector implements TouchEventObserver {
         return false;
     }
 
-    /**
-     * @param isActive Whether the swipe is ongoing
-     */
-    public void setIsActive(boolean isActive) {
-        mIsActive = isActive;
+    /** Clear the state and mark the detector ready to detect a new swipe gesture. */
+    public void readyForNewScroll() {
+        mIsReadyForNewScroll = true;
     }
 
     /**

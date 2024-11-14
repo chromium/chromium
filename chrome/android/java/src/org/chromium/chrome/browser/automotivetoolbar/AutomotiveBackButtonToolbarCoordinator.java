@@ -38,7 +38,7 @@ public class AutomotiveBackButtonToolbarCoordinator {
                     if (mIsFullscreen) {
                         mOnSwipeAutomotiveToolbar.startAnimation(mHideOnSwipeToolbarAnimation);
                         if (mEdgeSwipeGestureDetector != null) {
-                            mEdgeSwipeGestureDetector.setIsActive(false);
+                            mEdgeSwipeGestureDetector.readyForNewScroll();
                         }
                     }
                 }
