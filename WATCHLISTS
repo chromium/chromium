@@ -1107,8 +1107,6 @@
     },
     'download_status_updater_chromeos': {
       'filepath': 'chrome/browser/ash/crosapi/download_status_updater|' \
-                  'chrome/browser/download/download_status_updater_lacros|' \
-                  'chrome/browser/lacros/download_status_updater|' \
                   'chrome/browser/ui/ash/download_status/'
     },
     'downloads_ui': {

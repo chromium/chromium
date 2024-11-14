@@ -6984,7 +6984,6 @@ static_library("browser") {
 
     if (is_chromeos_lacros) {
       sources += [
-        "download/download_status_updater_lacros.cc",
         "icon_loader_chromeos.cc",
         "shell_integration_chromeos.cc",
         "upgrade_detector/get_installed_version_lacros.cc",
