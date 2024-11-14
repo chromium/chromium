@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -20,7 +19,6 @@ import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsControlle
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate;
-import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.browser_ui.accessibility.PageZoomPreference;
 import org.chromium.components.browser_ui.accessibility.PageZoomUma;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
@@ -58,9 +56,6 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     private double mPageZoomLatestDefaultZoomPrefValue;
     private PrefService mPrefService;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public FontSizePrefs mFontSizePrefs;
-
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     public void setPrefService(PrefService prefService) {
@@ -69,7 +64,6 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
 
     public void setDelegate(AccessibilitySettingsDelegate delegate) {
         mDelegate = delegate;
-        mFontSizePrefs = FontSizePrefs.getInstance(delegate.getBrowserContextHandle());
     }
 
     @Override
@@ -109,7 +103,8 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
 
         mForceEnableZoomPref = (ChromeSwitchPreference) findPreference(PREF_FORCE_ENABLE_ZOOM);
         mForceEnableZoomPref.setOnPreferenceChangeListener(this);
-        mForceEnableZoomPref.setChecked(mFontSizePrefs.getForceEnableZoom());
+        mForceEnableZoomPref.setChecked(
+                mDelegate.getForceEnableZoomAccessibilityDelegate().getValue());
 
         mJumpStartOmnibox =
                 (ChromeSwitchPreference) findPreference(OmniboxFeatures.KEY_JUMP_START_OMNIBOX);
@@ -183,7 +178,7 @@ public class AccessibilitySettings extends PreferenceFragmentCompat
     @Override
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         if (PREF_FORCE_ENABLE_ZOOM.equals(preference.getKey())) {
-            mFontSizePrefs.setForceEnableZoom((Boolean) newValue);
+            mDelegate.getForceEnableZoomAccessibilityDelegate().setValue((Boolean) newValue);
         } else if (PREF_READER_FOR_ACCESSIBILITY.equals(preference.getKey())) {
             mPrefService.setBoolean(Pref.READER_FOR_ACCESSIBILITY, (Boolean) newValue);
         } else if (PREF_PAGE_ZOOM_DEFAULT_ZOOM.equals(preference.getKey())) {

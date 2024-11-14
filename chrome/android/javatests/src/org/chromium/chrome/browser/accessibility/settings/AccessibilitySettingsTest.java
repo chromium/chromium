@@ -41,12 +41,15 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.accessibility.PageZoomPreference;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.test.util.ViewUtils;
@@ -114,7 +117,8 @@ public class AccessibilitySettingsTest {
                 () ->
                         Assert.assertTrue(
                                 "Force enable zoom user pref was not updated on toggle",
-                                mAccessibilitySettings.mFontSizePrefs.getForceEnableZoom()));
+                                UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                                        .getBoolean(Pref.ACCESSIBILITY_FORCE_ENABLE_ZOOM)));
     }
 
     @Test

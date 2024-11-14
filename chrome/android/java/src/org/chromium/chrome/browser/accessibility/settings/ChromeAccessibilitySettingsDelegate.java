@@ -33,10 +33,31 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
         }
     }
 
+    private static class ForceEnableZoomAccessibilityDelegate implements BooleanPreferenceDelegate {
+        private final BrowserContextHandle mBrowserContextHandle;
+
+        public ForceEnableZoomAccessibilityDelegate(BrowserContextHandle mBrowserContextHandle) {
+            this.mBrowserContextHandle = mBrowserContextHandle;
+        }
+
+        @Override
+        public boolean getValue() {
+            return UserPrefs.get(mBrowserContextHandle)
+                    .getBoolean(Pref.ACCESSIBILITY_FORCE_ENABLE_ZOOM);
+        }
+
+        @Override
+        public void setValue(boolean value) {
+            UserPrefs.get(mBrowserContextHandle)
+                    .setBoolean(Pref.ACCESSIBILITY_FORCE_ENABLE_ZOOM, value);
+        }
+    }
+
     private final Profile mProfile;
 
     /**
      * Constructs a delegate for the given profile.
+     *
      * @param profile The profile associated with the delegate.
      */
     public ChromeAccessibilitySettingsDelegate(Profile profile) {
@@ -51,5 +72,10 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     @Override
     public IntegerPreferenceDelegate getTextSizeContrastAccessibilityDelegate() {
         return new TextSizeContrastAccessibilityDelegate(getBrowserContextHandle());
+    }
+
+    @Override
+    public BooleanPreferenceDelegate getForceEnableZoomAccessibilityDelegate() {
+        return new ForceEnableZoomAccessibilityDelegate(getBrowserContextHandle());
     }
 }

@@ -56,7 +56,7 @@ const char* const kWebPrefsToObserve[] = {
 #if BUILDFLAG(IS_ANDROID)
     browser_ui::prefs::kWebKitFontScaleFactor,
     prefs::kAccessibilityTextSizeContrastFactor,
-    browser_ui::prefs::kWebKitForceEnableZoom,
+    prefs::kAccessibilityForceEnableZoom,
     prefs::kAccessibilityFontWeightAdjustment,
     prefs::kWebKitPasswordEchoEnabled,
 #endif

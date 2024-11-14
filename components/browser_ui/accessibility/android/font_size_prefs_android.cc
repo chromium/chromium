@@ -22,7 +22,6 @@ using base::android::JavaRef;
 
 namespace prefs {
 const char kWebKitFontScaleFactor[] = "webkit.webprefs.font_scale_factor";
-const char kWebKitForceEnableZoom[] = "webkit.webprefs.force_enable_zoom";
 }  // namespace prefs
 
 FontSizePrefsAndroid::FontSizePrefsAndroid(
@@ -41,17 +40,6 @@ void FontSizePrefsAndroid::SetFontScaleFactor(JNIEnv* env,
                                               jfloat font_scale_factor) {
   pref_service_->SetDouble(prefs::kWebKitFontScaleFactor,
                            static_cast<double>(font_scale_factor));
-}
-
-void FontSizePrefsAndroid::SetForceEnableZoom(JNIEnv* env,
-                                              const JavaRef<jobject>& obj,
-                                              jboolean enabled) {
-  pref_service_->SetBoolean(prefs::kWebKitForceEnableZoom, enabled);
-}
-
-bool FontSizePrefsAndroid::GetForceEnableZoom(JNIEnv* env,
-                                              const JavaRef<jobject>& obj) {
-  return pref_service_->GetBoolean(prefs::kWebKitForceEnableZoom);
 }
 
 void FontSizePrefsAndroid::Destroy(JNIEnv* env) {

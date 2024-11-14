@@ -15,7 +15,6 @@ namespace prefs {
 
 // Prefs related to this class.
 extern const char kWebKitFontScaleFactor[];
-extern const char kWebKitForceEnableZoom[];
 
 }  // namespace prefs
 
@@ -38,11 +37,6 @@ class FontSizePrefsAndroid {
   void SetFontScaleFactor(JNIEnv* env,
                           const base::android::JavaRef<jobject>& obj,
                           jfloat font_scale_factor);
-  void SetForceEnableZoom(JNIEnv* env,
-                          const base::android::JavaRef<jobject>& obj,
-                          jboolean enabled);
-  bool GetForceEnableZoom(JNIEnv* env,
-                          const base::android::JavaRef<jobject>& obj);
   void Destroy(JNIEnv* env);
 
  private:

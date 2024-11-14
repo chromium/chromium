@@ -4462,7 +4462,7 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   web_prefs->text_size_contrast_factor =
       prefs->GetInteger(prefs::kAccessibilityTextSizeContrastFactor);
   web_prefs->force_enable_zoom =
-      prefs->GetBoolean(browser_ui::prefs::kWebKitForceEnableZoom);
+      prefs->GetBoolean(prefs::kAccessibilityForceEnableZoom);
   web_prefs->font_weight_adjustment =
       prefs->GetInteger(prefs::kAccessibilityFontWeightAdjustment);
 #endif

@@ -22,12 +22,32 @@ public interface AccessibilitySettingsDelegate {
         void setValue(int value);
     }
 
-    /** @return The BrowserContextHandle that should be used to read and update settings. */
+    /** An interface to control a single integer preference. */
+    interface BooleanPreferenceDelegate {
+        /**
+         * @return boolean - Current value of the preference of this instance.
+         */
+        boolean getValue();
+
+        /** Sets a new value for the preference of this instance. */
+        void setValue(boolean value);
+    }
+
+    /**
+     * @return The BrowserContextHandle that should be used to read and update settings.
+     */
     BrowserContextHandle getBrowserContextHandle();
 
     /**
      * @return the InterPreferenceDelegate instance that should be used for reading and setting the
-     * text size contrast value for accessibility settings. Return null to omit the preference.
+     *     text size contrast value for accessibility settings. Return null to omit the preference.
      */
     IntegerPreferenceDelegate getTextSizeContrastAccessibilityDelegate();
+
+    /**
+     * @return the BooleanPreferenceDelegate instance that should be used for reading and setting
+     *     the force enable zoom value for accessibility settings. Return null to omit the
+     *     preference.
+     */
+    BooleanPreferenceDelegate getForceEnableZoomAccessibilityDelegate();
 }

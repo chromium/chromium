@@ -14,15 +14,14 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 /**
- * Singleton class for user settings related to font sizes. This class manages the force enable zoom
- * user setting, and the "font scale factor" setting. The font scale factor is equal to the OS-level
- * Android "Settings > Accessibility > Display size and text > Font size" setting. This value was
- * previously boosted using the user's Chrome text scaling setting, but that setting has been
- * removed with the release of Accessibility Page Zoom (11/2024). The OS-level user setting is still
- * read and passed to the Web Preference `font_scale_factor`, which is plumbed to the Blink code as
- * the `accessibility_font_scale_factor`. This is used in the text_autosizer.cc file for sites that
- * still use text-size-adjust. The value is no longer boosted, but future work may boost the value
- * based on the user's zoom setting.
+ * Singleton class for user settings related to font sizes. This class manages the "font scale
+ * factor" setting. The font scale factor is equal to the OS-level Android "Settings > Accessibility
+ * > Display size and text > Font size" setting. This value was previously boosted using the user's
+ * Chrome text scaling setting, but that setting has been removed with the release of Accessibility
+ * Page Zoom (11/2024). The OS-level user setting is still read and passed to the Web Preference
+ * `font_scale_factor`, which is plumbed to the Blink code as the `accessibility_font_scale_factor`.
+ * This is used in the text_autosizer.cc file for sites that still use text-size-adjust. The value
+ * is no longer boosted, but future work may boost the value based on the user's zoom setting.
  */
 @JNINamespace("browser_ui")
 public class FontSizePrefs {
@@ -57,21 +56,6 @@ public class FontSizePrefs {
     }
 
     /**
-     * Sets forceEnableZoom due to a user request (e.g. checking a checkbox). This implicitly sets
-     * userSetForceEnableZoom.
-     */
-    public void setForceEnableZoom(boolean enabled) {
-        FontSizePrefsJni.get()
-                .setForceEnableZoom(mFontSizePrefsAndroidPtr, FontSizePrefs.this, enabled);
-    }
-
-    /** Returns whether forceEnableZoom is enabled. */
-    public boolean getForceEnableZoom() {
-        return FontSizePrefsJni.get()
-                .getForceEnableZoom(mFontSizePrefsAndroidPtr, FontSizePrefs.this);
-    }
-
-    /**
      * Updates the fontScaleFactor based on the system-wide font scale.
      *
      * <p>This should be called during application start-up and whenever the system font size
@@ -96,10 +80,5 @@ public class FontSizePrefs {
 
         void setFontScaleFactor(
                 long nativeFontSizePrefsAndroid, FontSizePrefs caller, float fontScaleFactor);
-
-        boolean getForceEnableZoom(long nativeFontSizePrefsAndroid, FontSizePrefs caller);
-
-        void setForceEnableZoom(
-                long nativeFontSizePrefsAndroid, FontSizePrefs caller, boolean enabled);
     }
 }

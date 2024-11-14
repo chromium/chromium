@@ -1816,6 +1816,10 @@ inline constexpr char kFullscreenAllowed[] = "fullscreen.allowed";
 inline constexpr char kAccessibilityFontWeightAdjustment[] =
     "settings.a11y.font_weight_adjustment";
 
+// The user requested that Chrome try to override sites that disable zoom.
+inline constexpr char kAccessibilityForceEnableZoom[] =
+    "webkit.webprefs.force_enable_zoom";
+
 inline constexpr char kAccessibilityTextSizeContrastFactor[] =
     "settings.a11y.text_size_contrast_factor";
 
