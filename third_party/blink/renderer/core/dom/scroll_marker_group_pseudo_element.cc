@@ -53,7 +53,6 @@ void ScrollMarkerGroupPseudoElement::RemoveFromFocusGroup(
   if (wtf_size_t index = focus_group_.Find(scroll_marker); index != kNotFound) {
     focus_group_.EraseAt(index);
     if (selected_marker_ == scroll_marker) {
-      selected_marker_->SetSelected(false);
       if (index == focus_group_.size()) {
         if (index == 0) {
           selected_marker_ = nullptr;
@@ -62,7 +61,6 @@ void ScrollMarkerGroupPseudoElement::RemoveFromFocusGroup(
         --index;
       }
       selected_marker_ = focus_group_[index];
-      selected_marker_->SetSelected(true);
     }
   }
 }
