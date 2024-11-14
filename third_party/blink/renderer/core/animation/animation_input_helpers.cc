@@ -49,7 +49,7 @@ static String CSSPropertyToKeyframeAttribute(const CSSProperty& property) {
 static String PresentationAttributeToKeyframeAttribute(
     const CSSProperty& presentation_attribute) {
   StringBuilder builder;
-  builder.Append(kSVGPrefix, kSVGPrefixLength);
+  builder.Append(base::byte_span_from_cstring(kSVGPrefix));
   builder.Append(presentation_attribute.GetPropertyName());
   return builder.ToString();
 }

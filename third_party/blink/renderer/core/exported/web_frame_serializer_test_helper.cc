@@ -53,8 +53,7 @@ String GenerateMHTMLHelper(WebLocalFrameImpl* frame,
   if (!only_body_parts) {
     WebThreadSafeData header_result = WebFrameSerializer::GenerateMHTMLHeader(
         boundary, frame, &mhtml_delegate);
-    mhtml.Append(header_result.data(),
-                 static_cast<unsigned>(header_result.size()));
+    mhtml.Append(base::as_byte_span(header_result));
   }
 
   base::RunLoop run_loop;
@@ -63,7 +62,7 @@ String GenerateMHTMLHelper(WebLocalFrameImpl* frame,
       WTF::BindOnce(
           [](StringBuilder* mhtml, base::OnceClosure quit,
              WebThreadSafeData data) {
-            mhtml->Append(data.data(), static_cast<unsigned>(data.size()));
+            mhtml->Append(base::as_byte_span(data));
             std::move(quit).Run();
           },
           WTF::Unretained(&mhtml), run_loop.QuitClosure()));
@@ -73,8 +72,7 @@ String GenerateMHTMLHelper(WebLocalFrameImpl* frame,
     scoped_refptr<RawData> footer_data = RawData::Create();
     MHTMLArchive::GenerateMHTMLFooterForTesting(boundary,
                                                 *footer_data->MutableData());
-    mhtml.Append(footer_data->data(),
-                 static_cast<unsigned>(footer_data->size()));
+    mhtml.Append(base::as_byte_span(*footer_data));
   }
 
   String mhtml_string = mhtml.ToString();

@@ -173,19 +173,19 @@ static SVGAngle::SVGAngleType StringToAngleType(const CharType*& ptr,
 }
 
 String SVGAngle::ValueAsString() const {
-  const char* unit_string = "";
+  base::span<const char> unit_string;
   switch (unit_type_) {
     case kSvgAngletypeDeg:
-      unit_string = "deg";
+      unit_string = base::span_from_cstring("deg");
       break;
     case kSvgAngletypeRad:
-      unit_string = "rad";
+      unit_string = base::span_from_cstring("rad");
       break;
     case kSvgAngletypeGrad:
-      unit_string = "grad";
+      unit_string = base::span_from_cstring("grad");
       break;
     case kSvgAngletypeTurn:
-      unit_string = "turn";
+      unit_string = base::span_from_cstring("turn");
       break;
     case kSvgAngletypeUnspecified:
     case kSvgAngletypeUnknown:
@@ -193,7 +193,7 @@ String SVGAngle::ValueAsString() const {
   }
   StringBuilder builder;
   builder.AppendNumber(value_in_specified_units_);
-  builder.Append(unit_string, static_cast<unsigned>(strlen(unit_string)));
+  builder.Append(base::as_bytes(unit_string));
   return builder.ToString();
 }
 

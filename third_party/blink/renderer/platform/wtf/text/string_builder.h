@@ -24,11 +24,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_BUILDER_H_
 
@@ -56,10 +51,6 @@ class WTF_EXPORT StringBuilder {
 
   void Append(base::span<const UChar> chars);
   void Append(base::span<const LChar> chars);
-
-  ALWAYS_INLINE void Append(const char* characters, unsigned length) {
-    Append(base::span(reinterpret_cast<const LChar*>(characters), length));
-  }
 
   void Append(const StringBuilder& other) {
     if (!other.length_)

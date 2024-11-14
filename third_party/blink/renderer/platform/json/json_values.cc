@@ -156,7 +156,7 @@ String JSONValue::ToPrettyJSONString() const {
 
 void JSONValue::WriteJSON(StringBuilder* output) const {
   DCHECK(type_ == kTypeNull);
-  output->Append(kJSONNullString, 4);
+  output->Append(base::byte_span_from_cstring(kJSONNullString));
 }
 
 void JSONValue::PrettyWriteJSON(StringBuilder* output) const {
@@ -204,12 +204,12 @@ void JSONBasicValue::WriteJSON(StringBuilder* output) const {
          GetType() == kTypeDouble);
   if (GetType() == kTypeBoolean) {
     if (bool_value_)
-      output->Append(kJSONTrueString, 4);
+      output->Append(base::byte_span_from_cstring(kJSONTrueString));
     else
-      output->Append(kJSONFalseString, 5);
+      output->Append(base::byte_span_from_cstring(kJSONFalseString));
   } else if (GetType() == kTypeDouble) {
     if (!std::isfinite(double_value_)) {
-      output->Append(kJSONNullString, 4);
+      output->Append(base::byte_span_from_cstring(kJSONNullString));
       return;
     }
     output->Append(Decimal::FromDouble(double_value_).ToString());

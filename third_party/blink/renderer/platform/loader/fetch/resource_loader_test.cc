@@ -199,7 +199,7 @@ TEST_F(ResourceLoaderTest, LoadResponseBody) {
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
   StringBuilder data;
   for (const auto& span : *buffer) {
-    data.Append(span.data(), static_cast<wtf_size_t>(span.size()));
+    data.Append(base::as_bytes(span));
   }
   EXPECT_EQ(data.ToString(), "hello");
 }
@@ -224,7 +224,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_AsyncAndNonStream) {
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
   StringBuilder data;
   for (const auto& span : *buffer) {
-    data.Append(span.data(), static_cast<wtf_size_t>(span.size()));
+    data.Append(base::as_bytes(span));
   }
   EXPECT_EQ(data.ToString(), "Hello World!");
 }
@@ -329,7 +329,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_Sync) {
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
   StringBuilder data;
   for (const auto& span : *buffer) {
-    data.Append(span.data(), static_cast<wtf_size_t>(span.size()));
+    data.Append(base::as_bytes(span));
   }
   EXPECT_EQ(data.ToString(), "Hello World!");
 }
@@ -392,7 +392,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndNonStream) {
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
   StringBuilder data;
   for (const auto& span : *buffer) {
-    data.Append(span.data(), static_cast<wtf_size_t>(span.size()));
+    data.Append(base::as_bytes(span));
   }
   EXPECT_EQ(data.ToString(), "Hello World!");
 }

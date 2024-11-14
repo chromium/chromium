@@ -244,20 +244,18 @@ class ErrorContext {
       return String();
 
     StringBuilder result;
-    constexpr const char* const separator = ": ";
-    constexpr wtf_size_t separator_length =
-        std::char_traits<char>::length(separator);
+    const base::span<const LChar> separator =
+        base::byte_span_from_cstring(": ");
 
-    wtf_size_t length = (messages_.size() - 1) * separator_length;
+    wtf_size_t length = (messages_.size() - 1) * separator.size();
     for (wtf_size_t i = 0; i < messages_.size(); ++i)
       length += strlen(messages_[i]);
     result.ReserveCapacity(length);
 
     for (wtf_size_t i = 0; i < messages_.size(); ++i) {
       if (i)
-        result.Append(separator, separator_length);
-      result.Append(messages_[i],
-                    static_cast<wtf_size_t>(strlen(messages_[i])));
+        result.Append(separator);
+      result.Append(StringView(messages_[i]));
     }
 
     return result.ToString();

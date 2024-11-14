@@ -36,7 +36,7 @@ String ToDataURL(ArrayBufferContents raw_data, const String& data_type) {
   if (raw_data.DataLength()) {
     Vector<char> out;
     Base64Encode(raw_data.ByteSpan(), out);
-    builder.Append(out.data(), out.size());
+    builder.Append(base::as_byte_span(out));
   }
 
   return builder.ToString();

@@ -220,7 +220,7 @@ String StringifyMargin(const Vector<Length>& margin) {
     if (length.IsPercent()) {
       string_builder.Append('%');
     } else {
-      string_builder.Append("px", 2);
+      string_builder.Append(base::byte_span_from_cstring("px"));
     }
   };
 

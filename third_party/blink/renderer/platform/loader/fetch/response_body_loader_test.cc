@@ -66,7 +66,7 @@ class ResponseBodyLoaderTest : public testing::Test {
     void DidReceiveData(base::span<const char> data) override {
       DCHECK(!finished_);
       DCHECK(!failed_);
-      data_.Append(data.data(), static_cast<wtf_size_t>(data.size()));
+      data_.Append(base::as_bytes(data));
       switch (option_) {
         case Option::kNone:
           break;
