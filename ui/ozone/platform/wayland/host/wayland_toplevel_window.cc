@@ -54,10 +54,7 @@ namespace ui {
 namespace {
 
 bool ShouldSetBounds(PlatformWindowState state) {
-  return state == PlatformWindowState::kNormal ||
-         state == PlatformWindowState::kSnappedPrimary ||
-         state == PlatformWindowState::kSnappedSecondary ||
-         state == PlatformWindowState::kFloated;
+  return state == PlatformWindowState::kNormal;
 }
 
 }  // namespace
@@ -248,13 +245,11 @@ void WaylandToplevelWindow::Minimize() {
   fullscreen_display_id_ = display::kInvalidDisplayId;
   shell_toplevel_->SetMinimized();
 
-  if (!SupportsConfigureMinimizedState() && IsSurfaceConfigured()) {
+  if (IsSurfaceConfigured()) {
     // Wayland standard does not have API to notify client apps about
-    // window minimized, while exo has an extension (in
-    // zaura_shell::configure) for it.
-    // In the former case we update the window state here synchronously,
-    // while in the latter case update the window state in the handler of
-    // configure (HandleToplevelConfigureWithOrigin) asynchronously.
+    // window minimized. In this case we update the window state here
+    // synchronously,
+    //
     // We also need to check if the surface is already configured in case of a
     // synchronous minimize because a minimized window cannot ack configure.
     // This can happen if a minimized window is restored by a session restore.
@@ -413,16 +408,6 @@ void WaylandToplevelWindow::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
   }
 }
 
-bool WaylandToplevelWindow::SupportsConfigureMinimizedState() const {
-  // TODO(crbug.com/374244479): remove this.
-  return false;
-}
-
-bool WaylandToplevelWindow::SupportsConfigurePinnedState() const {
-  // TODO(crbug.com/374244479): remove this.
-  return false;
-}
-
 void WaylandToplevelWindow::UpdateWindowScale(bool update_bounds) {
   auto old_scale = applied_state().window_scale;
   WaylandWindow::UpdateWindowScale(update_bounds);
@@ -488,30 +473,15 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   VLOG(3) << __func__ << " states=[ " << window_states.ToString() << "]";
 
   PlatformWindowState window_state = PlatformWindowState::kUnknown;
-  if ((!SupportsConfigureMinimizedState() &&
-       GetLatestRequestedState().window_state ==
+  if ((GetLatestRequestedState().window_state ==
            PlatformWindowState::kMinimized &&
        !window_states.is_activated) ||
       window_states.is_minimized) {
     window_state = PlatformWindowState::kMinimized;
   } else if (window_states.is_fullscreen) {
     window_state = PlatformWindowState::kFullScreen;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  } else if (window_states.is_pinned_fullscreen) {
-    window_state = PlatformWindowState::kPinnedFullscreen;
-  } else if (window_states.is_trusted_pinned_fullscreen) {
-    window_state = PlatformWindowState::kTrustedPinnedFullscreen;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   } else if (window_states.is_maximized) {
     window_state = PlatformWindowState::kMaximized;
-  } else if (window_states.is_snapped_primary) {
-    window_state = PlatformWindowState::kSnappedPrimary;
-  } else if (window_states.is_snapped_secondary) {
-    window_state = PlatformWindowState::kSnappedSecondary;
-  } else if (window_states.is_floated) {
-    window_state = PlatformWindowState::kFloated;
-  } else if (window_states.is_pip) {
-    window_state = PlatformWindowState::kPip;
   } else {
     window_state = PlatformWindowState::kNormal;
   }
@@ -573,9 +543,8 @@ void WaylandToplevelWindow::HandleToplevelConfigureWithOrigin(
   // Update `restored_bounds_dip_` which is used when the window gets back to
   // normal state after it went maximized or fullscreen. It can be client or
   // compositor side change, so we must store previous bounds to restore later.
-  // We reset `restored_bounds_dip_` if the window is normal, snapped or floated
-  // state, or update it to the applied bounds if we don't have any meaningful
-  // value stored.
+  // We reset `restored_bounds_dip_` if the window is normal state, or update it
+  // to the applied bounds if we don't have any meaningful value stored.
   if (ShouldSetBounds(window_state)) {
     SetRestoredBoundsInDIP({});
   } else if (GetRestoredBoundsInDIP().IsEmpty()) {
@@ -644,7 +613,6 @@ bool WaylandToplevelWindow::OnInitialize(
     initial_display_id_ = *properties.display_id;
   }
 #endif
-  SetPinnedModeExtension(this, static_cast<PinnedModeExtension*>(this));
   SetSystemModalExtension(this, static_cast<SystemModalExtension*>(this));
   return true;
 }
@@ -862,30 +830,6 @@ void WaylandToplevelWindow::SendToDeskAtIndex(int index) {
   }
 }
 
-void WaylandToplevelWindow::Pin(bool trusted) {
-  if (SupportsConfigurePinnedState()) {
-    auto new_state = trusted ? PlatformWindowState::kTrustedPinnedFullscreen
-                             : PlatformWindowState::kPinnedFullscreen;
-    SetWindowState(new_state, display::kInvalidDisplayId);
-  } else {
-    if (auto* zaura_surface = GetZAuraSurface()) {
-      zaura_surface->SetPin(trusted);
-    }
-  }
-}
-
-void WaylandToplevelWindow::Unpin() {
-  if (SupportsConfigurePinnedState()) {
-    auto new_state = previously_maximized_ ? PlatformWindowState::kMaximized
-                                           : PlatformWindowState::kNormal;
-    SetWindowState(new_state, display::kInvalidDisplayId);
-  } else {
-    if (auto* zaura_surface = GetZAuraSurface()) {
-      zaura_surface->UnsetPin();
-    }
-  }
-}
-
 void WaylandToplevelWindow::SetSystemModal(bool modal) {
   system_modal_ = modal;
   if (shell_toplevel_)
@@ -935,22 +879,9 @@ void WaylandToplevelWindow::TriggerStateChanges(
     } else if (window_state == PlatformWindowState::kFullScreen) {
       shell_toplevel_->SetFullscreen(
           GetWaylandOutputForDisplayId(fullscreen_display_id_));
-    } else if (window_state == PlatformWindowState::kPinnedFullscreen ||
-               window_state == PlatformWindowState::kTrustedPinnedFullscreen) {
-      if (auto* zaura_surface = GetZAuraSurface()) {
-        zaura_surface->SetPin(window_state ==
-                              PlatformWindowState::kTrustedPinnedFullscreen);
-      }
     } else if (GetLatestRequestedState().window_state ==
                PlatformWindowState::kFullScreen) {
       shell_toplevel_->UnSetFullscreen();
-    } else if (GetLatestRequestedState().window_state ==
-                   PlatformWindowState::kPinnedFullscreen ||
-               GetLatestRequestedState().window_state ==
-                   PlatformWindowState::kTrustedPinnedFullscreen) {
-      if (auto* zaura_surface = GetZAuraSurface()) {
-        zaura_surface->UnsetPin();
-      }
     } else if (window_state == PlatformWindowState::kMaximized) {
       shell_toplevel_->SetMaximized();
     } else if (window_state == PlatformWindowState::kNormal) {

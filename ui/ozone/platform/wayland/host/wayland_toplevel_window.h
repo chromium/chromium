@@ -16,7 +16,6 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/platform_window/extensions/desk_extension.h"
-#include "ui/platform_window/extensions/pinned_mode_extension.h"
 #include "ui/platform_window/extensions/system_modal_extension.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/extensions/workspace_extension.h"
@@ -39,7 +38,6 @@ class WaylandToplevelWindow : public WaylandWindow,
                               public WaylandToplevelExtension,
                               public WorkspaceExtension,
                               public DeskExtension,
-                              public PinnedModeExtension,
                               public SystemModalExtension {
  public:
   WaylandToplevelWindow(PlatformWindowDelegate* delegate,
@@ -88,8 +86,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool IsActive() const override;
   bool IsSuspended() const override;
   void SetWindowGeometry(const PlatformWindowDelegate::State& state) override;
-  bool SupportsConfigureMinimizedState() const override;
-  bool SupportsConfigurePinnedState() const override;
   void ShowTooltip(const std::u16string& text,
                    const gfx::Point& position,
                    const PlatformWindowTooltipTrigger trigger,
@@ -166,10 +162,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool IsVisibleOnAllWorkspaces() const override;
   void SetWorkspaceExtensionDelegate(
       WorkspaceExtensionDelegate* delegate) override;
-
-  // PinnedModeExtension:
-  void Pin(bool trusted) override;
-  void Unpin() override;
 
   // SystemModalExtension:
   void SetSystemModal(bool modal) override;

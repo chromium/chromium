@@ -170,22 +170,6 @@ bool WaylandZAuraSurface::SetInitialWorkspace(int workspace) {
   return false;
 }
 
-bool WaylandZAuraSurface::SetPin(bool trusted) {
-  if (IsSupported(ZAURA_SURFACE_SET_PIN_SINCE_VERSION)) {
-    zaura_surface_set_pin(zaura_surface_.get(), trusted);
-    return true;
-  }
-  return false;
-}
-
-bool WaylandZAuraSurface::UnsetPin() {
-  if (IsSupported(ZAURA_SURFACE_UNSET_PIN_SINCE_VERSION)) {
-    zaura_surface_unset_pin(zaura_surface_.get());
-    return true;
-  }
-  return false;
-}
-
 bool WaylandZAuraSurface::ShowTooltip(const std::u16string& text,
                                       const gfx::Point& position,
                                       zaura_surface_tooltip_trigger trigger,

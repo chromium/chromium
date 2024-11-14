@@ -264,10 +264,6 @@ class WaylandWindow : public PlatformWindow,
     bool is_fullscreen = false;
     bool is_activated = false;
     bool is_minimized = false;
-    bool is_snapped_primary = false;
-    bool is_snapped_secondary = false;
-    bool is_floated = false;
-    bool is_pip = false;
     bool is_suspended = false;
 #if BUILDFLAG(IS_LINUX)
     WindowTiledEdges tiled_edges;
@@ -377,13 +373,6 @@ class WaylandWindow : public PlatformWindow,
   virtual WaylandBubble* AsWaylandBubble();
   virtual WaylandPopup* AsWaylandPopup();
   virtual WaylandToplevelWindow* AsWaylandToplevelWindow();
-
-  // Returns true if this window's configure state supports the minimized state.
-  virtual bool SupportsConfigureMinimizedState() const;
-
-  // Returns true if this window's configure state supports the pinned
-  // fullscreen and trusted pinned states.
-  virtual bool SupportsConfigurePinnedState() const;
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner() {
     return ui_task_runner_;

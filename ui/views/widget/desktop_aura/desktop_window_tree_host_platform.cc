@@ -761,8 +761,8 @@ void DesktopWindowTreeHostPlatform::SetFullscreen(bool fullscreen,
 }
 
 bool DesktopWindowTreeHostPlatform::IsFullscreen() const {
-  return ui::IsPlatformWindowStateFullscreen(
-      platform_window()->GetPlatformWindowState());
+  return platform_window()->GetPlatformWindowState() ==
+         ui::PlatformWindowState::kFullScreen;
 }
 
 void DesktopWindowTreeHostPlatform::SetOpacity(float opacity) {

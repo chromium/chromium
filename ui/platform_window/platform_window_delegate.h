@@ -34,18 +34,7 @@ enum class PlatformWindowState {
   kMinimized,
   kNormal,
   kFullScreen,
-
-  // Currently, only used by ChromeOS.
-  kSnappedPrimary,
-  kSnappedSecondary,
-  kFloated,
-  kPip,
-  kPinnedFullscreen,
-  kTrustedPinnedFullscreen,
 };
-
-COMPONENT_EXPORT(PLATFORM_WINDOW)
-bool IsPlatformWindowStateFullscreen(PlatformWindowState state);
 
 enum class PlatformWindowOcclusionState {
   kUnknown,

@@ -77,8 +77,6 @@ class WaylandZAuraSurface {
   bool SetAspectRatio(float width, float height);
   bool MoveToDesk(int index);
   bool SetInitialWorkspace(int workspace);
-  bool SetPin(bool trusted);
-  bool UnsetPin();
   bool ShowTooltip(const std::u16string& text,
                    const gfx::Point& position,
                    zaura_surface_tooltip_trigger trigger,

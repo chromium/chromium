@@ -473,14 +473,6 @@ void WaylandWindow::DumpState(std::ostream& out) const {
   }
 }
 
-bool WaylandWindow::SupportsConfigureMinimizedState() const {
-  return false;
-}
-
-bool WaylandWindow::SupportsConfigurePinnedState() const {
-  return false;
-}
-
 void WaylandWindow::Close() {
   delegate_->OnClosed();
 }
@@ -768,18 +760,6 @@ std::string WaylandWindow::WindowStates::ToString() const {
   }
   if (is_minimized) {
     states += "minimized ";
-  }
-  if (is_snapped_primary) {
-    states += "snapped_primary ";
-  }
-  if (is_snapped_secondary) {
-    states += "snapped_secondary ";
-  }
-  if (is_floated) {
-    states += "floated ";
-  }
-  if (is_pip) {
-    states += "pip ";
   }
   if (states.empty()) {
     states = "<default>";

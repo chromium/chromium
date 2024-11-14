@@ -14,12 +14,6 @@
 
 namespace ui {
 
-bool IsPlatformWindowStateFullscreen(PlatformWindowState state) {
-  return state == PlatformWindowState::kFullScreen ||
-         state == PlatformWindowState::kPinnedFullscreen ||
-         state == PlatformWindowState::kTrustedPinnedFullscreen;
-}
-
 bool PlatformWindowDelegate::State::WillProduceFrameOnUpdateFrom(
     const State& old) const {
   // None of the following changes will produce a new frame:
