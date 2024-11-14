@@ -12,9 +12,18 @@
 
 namespace autofill {
 
+class AutofillClient;
 class AutofillProfile;
 class CreditCard;
 class FormStructure;
+
+// For each submitted field in the `form_structure`, determines whether
+// `ADDRESS_HOME_STATE` is a possible matching type.
+// This function is intended to run before
+// DeterminePossibleFieldTypesForUpload() on the browser UI thread.
+void PreProcessStateMatchingTypes(const AutofillClient& client,
+                                  const std::vector<AutofillProfile>& profiles,
+                                  FormStructure& form_structure);
 
 // Uses the existing personal data in |profiles| and |credit_cards| to
 // determine possible field types for the |form|.  This is

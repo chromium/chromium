@@ -42,12 +42,6 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     return manager_->external_delegate_.get();
   }
 
-  void PreProcessStateMatchingTypes(
-      const std::vector<AutofillProfile>& profiles,
-      FormStructure* form_structure) {
-    manager_->PreProcessStateMatchingTypes(profiles, form_structure);
-  }
-
   FormInteractionsFlowId address_form_interactions_flow_id() const {
     return manager_->metrics_->address_form_event_logger
         .form_interactions_flow_id_for_test();

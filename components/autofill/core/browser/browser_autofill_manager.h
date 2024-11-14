@@ -669,14 +669,6 @@ class BrowserAutofillManager : public AutofillManager {
       const FormFieldData& field,
       OnGenerateSuggestionsCallback callback);
 
-  // For each submitted field in the |form_structure|, it determines whether
-  // |ADDRESS_HOME_STATE| is a possible matching type.
-  // This method is intended to run matching type detection on the browser UI
-  // thread.
-  void PreProcessStateMatchingTypes(
-      const std::vector<AutofillProfile>& profiles,
-      FormStructure* form_structure);
-
   // Returns an appropriate EventFormLogger, depending on the given `field`'s
   // type. May return nullptr.
   autofill_metrics::FormEventLoggerBase* GetEventFormLogger(

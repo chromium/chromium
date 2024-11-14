@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/disambiguate_possible_field_types.h"
 #include "components/autofill/core/browser/data_model/address.h"
@@ -187,6 +188,40 @@ void FindAndSetPossibleFieldTypes(
 }
 
 }  // namespace
+
+void PreProcessStateMatchingTypes(const AutofillClient& client,
+                                  const std::vector<AutofillProfile>& profiles,
+                                  FormStructure& form_structure) {
+  for (const auto& profile : profiles) {
+    std::optional<AlternativeStateNameMap::CanonicalStateName>
+        canonical_state_name_from_profile =
+            profile.GetAddress().GetCanonicalizedStateName();
+
+    if (!canonical_state_name_from_profile) {
+      continue;
+    }
+
+    const std::u16string& country_code = profile.GetInfo(
+        AutofillType(HtmlFieldType::kCountryCode), client.GetAppLocale());
+
+    for (auto& field : form_structure) {
+      if (field->state_is_a_matching_type()) {
+        continue;
+      }
+
+      std::optional<AlternativeStateNameMap::CanonicalStateName>
+          canonical_state_name_from_text =
+              AlternativeStateNameMap::GetCanonicalStateName(
+                  base::UTF16ToUTF8(country_code), field->value_for_import());
+
+      if (canonical_state_name_from_text &&
+          canonical_state_name_from_text.value() ==
+              canonical_state_name_from_profile.value()) {
+        field->set_state_is_a_matching_type();
+      }
+    }
+  }
+}
 
 void DeterminePossibleFieldTypesForUpload(
     const std::vector<AutofillProfile>& profiles,

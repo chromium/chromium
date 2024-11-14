@@ -971,7 +971,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     // Determine |ADDRESS_HOME_STATE| as a possible types for the fields in the
     // |form_structure| with the help of |AlternativeStateNameMap|.
     // |AlternativeStateNameMap| can only be accessed on the main UI thread.
-    PreProcessStateMatchingTypes(copied_profiles, submitted_form.get());
+    PreProcessStateMatchingTypes(client(), copied_profiles, *submitted_form);
 
     DeterminePossibleFieldTypesForUpload(
         std::move(copied_profiles), std::move(copied_credit_cards),
@@ -1093,7 +1093,7 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
   // Determine |ADDRESS_HOME_STATE| as a possible types for the fields in the
   // |form_structure| with the help of |AlternativeStateNameMap|.
   // |AlternativeStateNameMap| can only be accessed on the main UI thread.
-  PreProcessStateMatchingTypes(copied_profiles, form_structure.get());
+  PreProcessStateMatchingTypes(client(), copied_profiles, *form_structure);
 
   // Ownership of |form_structure| is passed to the
   // BrowserAutofillManager::OnSubmissionFieldTypesDetermined() call.
@@ -3465,40 +3465,6 @@ BrowserAutofillManager::GetEventFormLogger(const AutofillField& field) {
       return nullptr;
   }
   NOTREACHED();
-}
-
-void BrowserAutofillManager::PreProcessStateMatchingTypes(
-    const std::vector<AutofillProfile>& profiles,
-    FormStructure* form_structure) {
-  for (const auto& profile : profiles) {
-    std::optional<AlternativeStateNameMap::CanonicalStateName>
-        canonical_state_name_from_profile =
-            profile.GetAddress().GetCanonicalizedStateName();
-
-    if (!canonical_state_name_from_profile) {
-      continue;
-    }
-
-    const std::u16string& country_code = profile.GetInfo(
-        AutofillType(HtmlFieldType::kCountryCode), client().GetAppLocale());
-
-    for (auto& field : *form_structure) {
-      if (field->state_is_a_matching_type()) {
-        continue;
-      }
-
-      std::optional<AlternativeStateNameMap::CanonicalStateName>
-          canonical_state_name_from_text =
-              AlternativeStateNameMap::GetCanonicalStateName(
-                  base::UTF16ToUTF8(country_code), field->value_for_import());
-
-      if (canonical_state_name_from_text &&
-          canonical_state_name_from_text.value() ==
-              canonical_state_name_from_profile.value()) {
-        field->set_state_is_a_matching_type();
-      }
-    }
-  }
 }
 
 void BrowserAutofillManager::ReportAutofillWebOTPMetrics(bool used_web_otp) {
