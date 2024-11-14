@@ -29,7 +29,6 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/dcheck_always_on.gni")
-import("//build/config/ios/config.gni")
 import("//build/config/logging.gni")
 import("//build/config/nacl/config.gni")
 import("//build/config/profiling/profiling.gni")
@@ -47,6 +46,9 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 if (is_ios) {
+  # Used to access target_environment.
+  import("//build/config/apple/mobile_config.gni")
+
   # Used to access ios_is_app_extension variable definition.
   import("//build/config/ios/ios_sdk.gni")
 }

@@ -33,8 +33,8 @@ if (is_android) {
   import("//third_party/fuchsia-gn-sdk/src/component.gni")
   import("//third_party/fuchsia-gn-sdk/src/package.gni")
 } else if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")
   import("//build/config/apple/swift_source_set.gni")
-  import("//build/config/ios/config.gni")
   import("//content/shell/app/ios/extensions.gni")
 }
 

@@ -25,10 +25,6 @@ if (is_apple) {
   import("//build/config/apple/symbols.gni")
 }
 
-if (is_ios) {
-  import("//build/config/ios/config.gni")
-}
-
 declare_args() {
   # Set to true to use lld, the LLVM linker.
   # In late bring-up on macOS (see docs/mac_lld.md).

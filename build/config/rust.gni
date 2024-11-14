@@ -12,8 +12,7 @@ if (is_android) {
 }
 
 if (is_ios) {
-  import("//build/config/ios/config.gni")  # For `target_environment`
-  import("//build/config/ios/ios_sdk.gni")  # For `xcode_version_int`
+  import("//build/config/apple/mobile_config.gni")  # For `target_environment`
 }
 
 declare_args() {

@@ -11,7 +11,7 @@ import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
 
 if (is_ios) {
-  import("//build/config/ios/ios_sdk.gni")
+  import("//build/config/apple/mobile_config.gni")
 }
 
 # libfuzzer can't cope with shared objects being unloaded, which sometimes

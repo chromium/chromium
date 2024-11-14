@@ -7,7 +7,7 @@ import("//build/config/rust.gni")
 import("clang.gni")
 
 if (is_ios) {
-  import("//build/config/ios/config.gni")  # For `target_environment`
+  import("//build/config/apple/mobile_config.gni")  # For `target_environment`
 }
 
 # Helper function for adding cflags to use a clang plugin.
