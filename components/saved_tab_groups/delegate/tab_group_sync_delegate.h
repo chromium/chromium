@@ -63,10 +63,10 @@ class TabGroupSyncDelegate {
 
   // Local To Remote mutation methods.
 
-  // Called to create a remote tab group for the given local tab group ID.
-  // Called on startup for any unsynced local tab groups and as well as meant to
-  // be called from the local tab model observer when a new group is created.
-  virtual void CreateRemoteTabGroup(
+  // Helper function to create a SavedTabGroup for the given local tab group ID.
+  // Caller is supposed to handle the SavedTabGroup, e.g. add to the sync
+  // service.
+  virtual std::unique_ptr<SavedTabGroup> CreateSavedTabGroupFromLocalGroup(
       const LocalTabGroupID& local_tab_group_id) = 0;
 };
 

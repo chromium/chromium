@@ -271,10 +271,11 @@ std::vector<LocalTabID> TabGroupSyncDelegateDesktop::GetLocalTabIdsForTabGroup(
   // TODO(b/346871861): Implement.
   return std::vector<LocalTabID>();
 }
-
-void TabGroupSyncDelegateDesktop::CreateRemoteTabGroup(
+std::unique_ptr<SavedTabGroup>
+TabGroupSyncDelegateDesktop::CreateSavedTabGroupFromLocalGroup(
     const LocalTabGroupID& local_tab_group_id) {
   // TODO(b/346871861): Implement.
+  return nullptr;
 }
 
 std::unique_ptr<ScopedLocalObservationPauser>

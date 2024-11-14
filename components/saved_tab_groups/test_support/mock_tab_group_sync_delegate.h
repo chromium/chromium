@@ -30,7 +30,9 @@ class MockTabGroupSyncDelegate : public TabGroupSyncDelegate {
   MOCK_METHOD(std::vector<LocalTabID>,
               GetLocalTabIdsForTabGroup,
               (const LocalTabGroupID&));
-  MOCK_METHOD(void, CreateRemoteTabGroup, (const LocalTabGroupID&));
+  MOCK_METHOD(std::unique_ptr<SavedTabGroup>,
+              CreateSavedTabGroupFromLocalGroup,
+              (const LocalTabGroupID&));
 };
 
 }  // namespace tab_groups

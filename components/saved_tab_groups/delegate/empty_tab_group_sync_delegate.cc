@@ -47,7 +47,10 @@ std::vector<LocalTabID> EmptyTabGroupSyncDelegate::GetLocalTabIdsForTabGroup(
   return std::vector<LocalTabID>();
 }
 
-void EmptyTabGroupSyncDelegate::CreateRemoteTabGroup(
-    const LocalTabGroupID& local_tab_group_id) {}
+std::unique_ptr<SavedTabGroup>
+EmptyTabGroupSyncDelegate::CreateSavedTabGroupFromLocalGroup(
+    const LocalTabGroupID& local_tab_group_id) {
+  return nullptr;
+}
 
 }  // namespace tab_groups

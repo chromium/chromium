@@ -39,7 +39,11 @@ void StartupHelper::CreateRemoteTabGroupForNewGroups() {
     }
 
     // This is a local group not known to sync. Add it to sync.
-    platform_delegate_->CreateRemoteTabGroup(group_id);
+    auto saved_tab_group =
+        platform_delegate_->CreateSavedTabGroupFromLocalGroup(group_id);
+    if (saved_tab_group) {
+      service_->AddGroup(std::move(*saved_tab_group));
+    }
   }
 }
 

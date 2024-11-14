@@ -74,7 +74,11 @@ TEST_F(StartupHelperTest, CreateRemoteGroupForNewLocalGroup) {
   EXPECT_CALL(*delegate_, GetLocalTabGroupIds())
       .WillRepeatedly(Return(
           std::vector<LocalTabGroupID>{local_group_id_1_, local_group_id_2_}));
-  EXPECT_CALL(*delegate_, CreateRemoteTabGroup(_)).Times(1);
+  auto saved_tab_group_2 = std::make_unique<SavedTabGroup>(group_2_);
+  EXPECT_CALL(*delegate_,
+              CreateSavedTabGroupFromLocalGroup(Eq(local_group_id_2_)))
+      .WillOnce(Return(std::move(saved_tab_group_2)));
+  EXPECT_CALL(*service_, AddGroup(_)).Times(1);
 
   startup_helper_->CreateRemoteTabGroupForNewGroups();
 }
