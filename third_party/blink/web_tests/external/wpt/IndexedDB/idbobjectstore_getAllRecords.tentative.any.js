@@ -30,17 +30,11 @@ object_store_get_all_records_test(
     'Get all records with large values');
 
 object_store_get_all_records_test(
-    /*storeName=*/ 'out-of-line',
-    /*options=*/ {
-      count: 10,
-    },
-    'Count');
+    /*storeName=*/ 'out-of-line', /*options=*/ {count: 10}, 'Count');
 
 object_store_get_all_records_test(
     /*storeName=*/ 'out-of-line',
-    /*options=*/ {
-      query: IDBKeyRange.bound('g', 'm'),
-    },
+    /*options=*/ {query: IDBKeyRange.bound('g', 'm')},
     'Query with bound range');
 
 object_store_get_all_records_test(
@@ -83,7 +77,7 @@ object_store_get_all_records_test(
 object_store_get_all_records_test(
     /*storeName=*/ 'out-of-line',
     /*options=*/ {query: IDBKeyRange.upperBound('0')},
-    'Query with empty range where  first key < upperBound');
+    'Query with empty range where first key < upperBound');
 
 object_store_get_all_records_test(
     /*storeName=*/ 'out-of-line',

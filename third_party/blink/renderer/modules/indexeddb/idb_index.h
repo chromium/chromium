@@ -39,6 +39,7 @@
 namespace blink {
 
 class ExceptionState;
+class IDBGetAllRecordsOptions;
 class IDBObjectStore;
 
 class IDBIndex final : public ScriptWrappable {
@@ -88,6 +89,9 @@ class IDBIndex final : public ScriptWrappable {
                          const ScriptValue& range,
                          uint32_t max_count,
                          ExceptionState&);
+  IDBRequest* getAllRecords(ScriptState*,
+                            const IDBGetAllRecordsOptions* options,
+                            ExceptionState&);
 
   void MarkDeleted() {
     DCHECK(transaction_->IsVersionChange())

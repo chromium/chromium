@@ -104,6 +104,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
     kObjectStoreOpenKeyCursor,
     kObjectStoreCount,
     kObjectStoreGetAllRecords,
+    kIndexGetAllRecords,
   };
 
   // Container for async tracing state.

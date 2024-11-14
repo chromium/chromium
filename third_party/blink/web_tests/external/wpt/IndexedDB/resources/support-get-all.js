@@ -6,6 +6,7 @@
 
 // Define constants used to populate object stores and indexes.
 const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 const vowels = 'aeiou'.split('');
 
 // Setup multiple object stores to test `getAllKeys()`, `getAll()` and
@@ -70,6 +71,127 @@ function object_store_get_all_records_test(storeName, options, description) {
     request.onsuccess = test.step_func(event => {
       // Build the expected results.
       let expectedResults = expectedObjectStoreRecords[storeName];
+      expectedResults = applyGetAllRecordsOptions(expectedResults, options);
+
+      const actualResults = event.target.result;
+      assert_records_equals(actualResults, expectedResults);
+      test.done();
+    });
+  }, description);
+}
+
+// Setup multiple object stores with indexes to test `getAllKeys()`, `getAll()`
+// and `getAllRecords()`.
+function index_get_all_test(func, name) {
+  indexeddb_test(function(test, connection, transaction) {
+    // Record the keys and values added to each object store's index during test
+    // setup. Maps each object store's name to the array of records in its
+    // index. Tests can use these records to verify the actual results from a
+    // get all request.
+    self.expectedIndexRecords = {
+      'generated': [],
+      'out-of-line': [],
+      'out-of-line-not-unique': [],
+      'out-of-line-multi': [],
+      'empty': [],
+      'large-values': [],
+    };
+
+    // Create an object store with auto-incrementing, inline keys.  Create an
+    // index on the uppercase letter property `upper`.
+    let store = connection.createObjectStore(
+        'generated', {autoIncrement: true, keyPath: 'id'});
+    let index = store.createIndex('test_idx', 'upper');
+    alphabet.forEach(function(letter) {
+      const value = {ch: letter, upper: letter.toUpperCase()};
+      store.put(value);
+
+      const generatedKey = alphabet.indexOf(letter) + 1;
+      expectedIndexRecords['generated'].push(
+          {key: value.upper, primaryKey: generatedKey, value});
+    });
+
+    // Create an object store with out-of-line keys.  Create an index on the
+    // uppercase letter property `upper`.
+    store = connection.createObjectStore('out-of-line', null);
+    index = store.createIndex('test_idx', 'upper');
+    alphabet.forEach(function(letter) {
+      const value = {ch: letter, upper: letter.toUpperCase()};
+      store.put(value, letter);
+
+      expectedIndexRecords['out-of-line'].push(
+          {key: value.upper, primaryKey: letter, value});
+    });
+
+    // Create an index on the `half` property, which is not unique, with two
+    // possible values: `first` and `second`.
+    store = connection.createObjectStore('out-of-line-not-unique', null);
+    index = store.createIndex('test_idx', 'half');
+    alphabet.forEach(function(letter) {
+      let half = 'first';
+      if (letter > 'm') {
+        half = 'second';
+      }
+
+      const value = {ch: letter, half};
+      store.put(value, letter);
+
+      expectedIndexRecords['out-of-line-not-unique'].push(
+          {key: half, primaryKey: letter, value});
+    });
+
+    // Create a multi-entry index on `attribs`, which is an array of strings.
+    store = connection.createObjectStore('out-of-line-multi', null);
+    index = store.createIndex('test_idx', 'attribs', {multiEntry: true});
+    alphabet.forEach(function(letter) {
+      let attrs = [];
+      if (['a', 'e', 'i', 'o', 'u'].indexOf(letter) != -1) {
+        attrs.push('vowel');
+      } else {
+        attrs.push('consonant');
+      }
+      if (letter == 'a') {
+        attrs.push('first');
+      }
+      if (letter == 'z') {
+        attrs.push('last');
+      }
+      const value = {ch: letter, attribs: attrs};
+      store.put(value, letter);
+
+      for (let attr of attrs) {
+        expectedIndexRecords['out-of-line-multi'].push(
+            {key: attr, primaryKey: letter, value});
+      }
+    });
+
+    // Create an empty index.
+    store = connection.createObjectStore('empty', null);
+    index = store.createIndex('test_idx', 'upper');
+
+    // Create an object store and index with 3 large values and their seed.  Use
+    // the large value's seed as the index key.
+    store = connection.createObjectStore('large-values');
+    index = store.createIndex('test_idx', 'seed');
+    for (let i = 0; i < 3; i++) {
+      const seed = i;
+      const randomValue = largeValue(/*size=*/ wrapThreshold, seed);
+      const recordValue = {seed, randomValue};
+      store.put(recordValue, i);
+
+      expectedIndexRecords['large-values'].push(
+          {key: seed, primaryKey: i, value: recordValue});
+    }
+  }, func, name);
+}
+
+function index_get_all_records_test(storeName, options, description) {
+  index_get_all_test((test, connection) => {
+    const request = createGetAllRecordsRequest(
+        test, connection, storeName, options, 'test_idx');
+    request.onsuccess = test.step_func(event => {
+      // Build the expected results.
+      let expectedResults = expectedIndexRecords[storeName];
       expectedResults = applyGetAllRecordsOptions(expectedResults, options);
 
       const actualResults = event.target.result;

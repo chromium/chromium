@@ -46,4 +46,7 @@
                                                                              optional IDBCursorDirection direction = "next");
     [NewObject, CallWith=ScriptState, RaisesException] IDBRequest openKeyCursor(optional any range = null,
                                                                                 optional IDBCursorDirection direction = "next");
+
+    [RuntimeEnabled=IndexedDbGetAllRecords, NewObject, CallWith=ScriptState, RaisesException]
+    IDBRequest getAllRecords(optional IDBGetAllRecordsOptions options = {});
 };

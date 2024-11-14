@@ -1062,6 +1062,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method get
 [Worker]     method getAll
 [Worker]     method getAllKeys
+[Worker]     method getAllRecords
 [Worker]     method getKey
 [Worker]     method openCursor
 [Worker]     method openKeyCursor
