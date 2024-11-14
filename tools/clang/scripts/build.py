@@ -180,11 +180,13 @@ def CheckoutGitRepo(name, git_url, commit, dir):
   sys.exit(1)
 
 
-def GitCherryPick(git_repository, git_remote, commit):
+def GitCherryPick(git_repository, git_remote, commit, git_remote_name='github'):
   print(f'Cherry-picking {commit} in {git_repository} from {git_remote}')
   git_cmd = ['git', '-C', git_repository]
-  RunCommand(git_cmd + ['remote', 'add', 'github', git_remote], fail_hard=False)
-  RunCommand(git_cmd + ['fetch', '--recurse-submodules=no', 'github', commit])
+  RunCommand(git_cmd + ['remote', 'add', git_remote_name, git_remote],
+             fail_hard=False)
+  RunCommand(git_cmd +
+             ['fetch', '--recurse-submodules=no', git_remote_name, commit])
   is_ancestor = RunCommand(git_cmd +
                            ['merge-base', '--is-ancestor', commit, 'HEAD'],
                            fail_hard=False)
@@ -745,6 +747,15 @@ def main():
 
   if not args.skip_checkout:
     CheckoutGitRepo('LLVM monorepo', LLVM_GIT_URL, checkout_revision, LLVM_DIR)
+
+    if not args.llvm_force_head_revision:
+      # Apply https://github.com/llvm/llvm-project/pull/113951 to make rolling
+      # libc++ not blocked on a clang roll. Remove this when rolling past that
+      # revision.
+      GitCherryPick(LLVM_DIR, 'https://github.com/llvm/llvm-project.git',
+                    # This is llvmorg-20-init-10276-g9f69da35e2e5
+                    '9f69da35e2e5438d0c042f76277fff397f6a1505',
+                    git_remote_name='github-llvm')
 
     if sys.platform == 'win32' and not args.llvm_force_head_revision:
       # Apply https://github.com/zmodem/llvm-project/commit/802b816836f1 which
