@@ -46,6 +46,24 @@ bool FeaturePromoQueue::IsQueued(const base::Feature& iph_feature) const {
                       }) != queued_promos_.end();
 }
 
+FeaturePromoResult FeaturePromoQueue::CanQueue(
+    const FeaturePromoSpecification& spec,
+    const FeaturePromoParams& promo_params) const {
+  auto required = required_preconditions_provider_->GetPreconditions(spec);
+  return required.CheckPreconditions().result();
+}
+
+FeaturePromoResult FeaturePromoQueue::CanShow(
+    const FeaturePromoSpecification& spec,
+    const FeaturePromoParams& promo_params) const {
+  const auto can_queue = CanQueue(spec, promo_params);
+  if (!can_queue) {
+    return can_queue;
+  }
+  auto wait_for = wait_for_preconditions_provider_->GetPreconditions(spec);
+  return wait_for.CheckPreconditions().result();
+}
+
 void FeaturePromoQueue::TryToQueue(const FeaturePromoSpecification& spec,
                                    FeaturePromoParams promo_params) {
   auto required = required_preconditions_provider_->GetPreconditions(spec);

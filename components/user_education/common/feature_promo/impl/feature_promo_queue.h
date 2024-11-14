@@ -58,6 +58,18 @@ class FeaturePromoQueue {
   // Returns whether the queue contains the given feature.
   bool IsQueued(const base::Feature& iph_feature) const;
 
+  // Returns whether the feature described by `spec` could be queued with
+  // `promo_params`. Potentially as expensive as actually queueing the promo,
+  // so use with care.
+  FeaturePromoResult CanQueue(const FeaturePromoSpecification& spec,
+                              const FeaturePromoParams& promo_params) const;
+
+  // Returns whether the feature described by `spec` could be shown immediately
+  // `promo_params`. Potentially more expensive than actually queueing the
+  // promo, so use with extreme care.
+  FeaturePromoResult CanShow(const FeaturePromoSpecification& spec,
+                             const FeaturePromoParams& promo_params) const;
+
   // Attempts to queue a new promo defined by `spec` with `promo_params`. If
   // queueing the promo fails, for any reason the "show promo result" callback
   // will be posted with an appropriate failure code and the promo discarded.

@@ -146,6 +146,9 @@ class FeaturePromoQueueTest : public testing::Test {
 
   test::TestPreconditionListProvider& required() { return required_provider_; }
   test::TestPreconditionListProvider& wait_for() { return wait_for_provider_; }
+  const FeaturePromoSpecification& promo_spec(int which) const {
+    return promo_specs_[which];
+  }
 
  private:
   base::test::TaskEnvironment task_environment_{
@@ -179,6 +182,48 @@ TEST_F(FeaturePromoQueueTest, TryToQueueFails) {
   EXPECT_FALSE(queue.IsQueued(kTestFeature1));
   EXPECT_FALSE(queue.IsQueued(kTestFeature2));
   EXPECT_TRUE(queue.is_empty());
+}
+
+TEST_F(FeaturePromoQueueTest, CanQueue) {
+  UNCALLED_MOCK_CALLBACK(ResultCallback, result);
+  auto queue = CreateDefaultQueue();
+
+  // Verify that required conditions affect CanQueue().
+  EXPECT_EQ(FeaturePromoResult::Success(),
+            queue.CanQueue(promo_spec(0), kTestFeature1));
+  required().SetDefault(kPrecond1, false);
+  EXPECT_EQ(FeaturePromoResult(kFailure1),
+            queue.CanQueue(promo_spec(0), kTestFeature1));
+
+  // Verify that wait-for conditions do not affect CanQueue().
+  wait_for().SetDefault(kPrecond3, false);
+  EXPECT_EQ(FeaturePromoResult(kFailure1),
+            queue.CanShow(promo_spec(0), kTestFeature1));
+  required().SetDefault(kPrecond1, true);
+  EXPECT_EQ(FeaturePromoResult::Success(),
+            queue.CanQueue(promo_spec(0), kTestFeature1));
+}
+
+TEST_F(FeaturePromoQueueTest, CanShow) {
+  UNCALLED_MOCK_CALLBACK(ResultCallback, result);
+  auto queue = CreateDefaultQueue();
+
+  // Verify that required conditions affect CanShow().
+  EXPECT_EQ(FeaturePromoResult::Success(),
+            queue.CanShow(promo_spec(0), kTestFeature1));
+  required().SetDefault(kPrecond1, false);
+  EXPECT_EQ(FeaturePromoResult(kFailure1),
+            queue.CanShow(promo_spec(0), kTestFeature1));
+
+  // Verify that required takes precedence over wait-for conditions.
+  wait_for().SetDefault(kPrecond3, false);
+  EXPECT_EQ(FeaturePromoResult(kFailure1),
+            queue.CanShow(promo_spec(0), kTestFeature1));
+
+  // Verify that wait-for conditions can still affect CanShow().
+  required().SetDefault(kPrecond1, true);
+  EXPECT_EQ(FeaturePromoResult(kFailure3),
+            queue.CanShow(promo_spec(0), kTestFeature1));
 }
 
 TEST_F(FeaturePromoQueueTest, TryToRequeueFails) {

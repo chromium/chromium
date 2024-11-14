@@ -5,6 +5,7 @@
 #include "components/user_education/common/feature_promo/impl/feature_promo_queue_set.h"
 
 #include "base/containers/map_util.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
 #include "components/user_education/common/feature_promo/impl/feature_promo_queue.h"
 
@@ -61,6 +62,24 @@ bool FeaturePromoQueueSet::IsQueued(const base::Feature& iph_feature) const {
     }
   }
   return false;
+}
+
+FeaturePromoResult FeaturePromoQueueSet::CanQueue(
+    const FeaturePromoSpecification& spec,
+    const FeaturePromoParams& promo_params) const {
+  const auto info = priority_provider_->GetPromoPriorityInfo(spec);
+  auto* const queue = base::FindOrNull(queues_, info.priority);
+  return queue ? queue->CanQueue(spec, promo_params)
+               : FeaturePromoResult::kError;
+}
+
+FeaturePromoResult FeaturePromoQueueSet::CanShow(
+    const FeaturePromoSpecification& spec,
+    const FeaturePromoParams& promo_params) const {
+  const auto info = priority_provider_->GetPromoPriorityInfo(spec);
+  auto* const queue = base::FindOrNull(queues_, info.priority);
+  return queue ? queue->CanShow(spec, promo_params)
+               : FeaturePromoResult::kError;
 }
 
 void FeaturePromoQueueSet::TryToQueue(const FeaturePromoSpecification& spec,

@@ -257,6 +257,10 @@ class FeaturePromoQueueSetTest : public testing::Test {
     }
   }
 
+  const FeaturePromoSpecification& promo_spec(int which) const {
+    return promo_specs_[which];
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -598,6 +602,42 @@ TEST_F(FeaturePromoQueueSetTest,
   SetPreconditionFor(kTestFeature3, 2, false);
   EXPECT_ASYNC_CALL_IN_SCOPE(callback3, Run(FeaturePromoResult(kFailure3)),
                              IdentifyAndCheckNextPromo(queue, 3));
+}
+
+TEST_F(FeaturePromoQueueSetTest, CanQueueSucceeds) {
+  UNCALLED_MOCK_CALLBACK(ResultCallback, callback);
+  const auto queue = CreateDefaultQueueSet();
+  EXPECT_TRUE(queue.CanQueue(promo_spec(0), kTestFeature1));
+  EXPECT_TRUE(queue.CanQueue(promo_spec(2), kTestFeature3));
+  EXPECT_TRUE(queue.CanQueue(promo_spec(4), kTestFeature5));
+}
+
+TEST_F(FeaturePromoQueueSetTest, CanQueueBlockedByRequired) {
+  UNCALLED_MOCK_CALLBACK(ResultCallback, callback);
+  const auto queue = CreateDefaultQueueSet();
+  SetPrecondition(2, false);  // Medium, required.
+  SetPrecondition(5, false);  // Low, wait-for.
+  EXPECT_TRUE(queue.CanQueue(promo_spec(0), kTestFeature1));
+  EXPECT_FALSE(queue.CanQueue(promo_spec(2), kTestFeature3));
+  EXPECT_TRUE(queue.CanQueue(promo_spec(4), kTestFeature5));
+}
+
+TEST_F(FeaturePromoQueueSetTest, CanShowSucceeds) {
+  UNCALLED_MOCK_CALLBACK(ResultCallback, callback);
+  const auto queue = CreateDefaultQueueSet();
+  EXPECT_TRUE(queue.CanShow(promo_spec(0), kTestFeature1));
+  EXPECT_TRUE(queue.CanShow(promo_spec(2), kTestFeature3));
+  EXPECT_TRUE(queue.CanShow(promo_spec(4), kTestFeature5));
+}
+
+TEST_F(FeaturePromoQueueSetTest, CanShowBlocked) {
+  UNCALLED_MOCK_CALLBACK(ResultCallback, callback);
+  const auto queue = CreateDefaultQueueSet();
+  SetPrecondition(2, false);  // Medium, required.
+  SetPrecondition(5, false);  // Low, wait-for.
+  EXPECT_FALSE(queue.CanShow(promo_spec(0), kTestFeature1));
+  EXPECT_FALSE(queue.CanShow(promo_spec(2), kTestFeature3));
+  EXPECT_TRUE(queue.CanShow(promo_spec(4), kTestFeature5));
 }
 
 }  // namespace user_education::internal
