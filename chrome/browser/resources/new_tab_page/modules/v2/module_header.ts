@@ -22,6 +22,7 @@ export interface MenuItem {
 export interface ModuleHeaderElement {
   $: {
     actionMenu: CrActionMenuElement,
+    menuButton: HTMLElement,
   };
 }
 
