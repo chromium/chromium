@@ -62,12 +62,6 @@ class TasksTest(unittest.TestCase):
 
   def tearDown(self):
     if os.path.exists(self._TTY_FILE):
-      with open(self._TTY_FILE, 'rt') as tty:
-        contents = tty.read()
-        # TTY should only be written to if the server crashes which is probably
-        # unexpected.
-        if contents:
-          self.fail('Found non-empty tty:\n' + repr(contents))
       os.unlink(self._TTY_FILE)
     self._process.terminate()
     self._process.wait()
@@ -87,23 +81,26 @@ class TasksTest(unittest.TestCase):
         'stamp_file': _stamp_file.name,
     })
 
+  def getTtyContents(self):
+    if os.path.exists(self._TTY_FILE):
+      with open(self._TTY_FILE, 'rt') as tty:
+        return tty.read()
+    return ''
+
   def getBuildInfo(self):
     build_info = server.query_build_info(self.id())
     pending_tasks = build_info['pending_tasks']
     completed_tasks = build_info['completed_tasks']
-    pending_outputs = build_info['pending_outputs']
-    return pending_tasks, completed_tasks, pending_outputs
+    return pending_tasks, completed_tasks
 
   def waitForTasksDone(self, timeout_seconds=3):
     timeout_duration = datetime.timedelta(seconds=timeout_seconds)
     start_time = datetime.datetime.now()
-    all_pending_outputs = []
     while True:
-      pending_tasks, completed_tasks, pending_outputs = self.getBuildInfo()
-      all_pending_outputs.extend(pending_outputs)
+      pending_tasks, completed_tasks = self.getBuildInfo()
 
       if completed_tasks > 0 and pending_tasks == 0:
-        return all_pending_outputs
+        return
 
       current_time = datetime.datetime.now()
       duration = current_time - start_time
@@ -113,14 +110,14 @@ class TasksTest(unittest.TestCase):
 
   def testRunsQuietTask(self):
     self.sendTask(['true'])
-    pending_outputs = self.waitForTasksDone()
-    self.assertEqual(len(pending_outputs), 0)
+    self.waitForTasksDone()
+    self.assertEqual(self.getTtyContents(), '')
 
   def testRunsNoisyTask(self):
     self.sendTask(['echo', 'some_output'])
-    pending_outputs = self.waitForTasksDone()
-    self.assertEqual(len(pending_outputs), 1)
-    self.assertIn('some_output', pending_outputs[0])
+    self.waitForTasksDone()
+    tty_contents = self.getTtyContents()
+    self.assertIn('some_output', tty_contents)
 
 
 if __name__ == '__main__':

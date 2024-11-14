@@ -26,7 +26,7 @@ from typing import Callable, Dict, List, Optional, Tuple, IO
 sys.path.append(os.path.join(os.path.dirname(__file__), 'gyp'))
 from util import server_utils
 
-_SOCKET_TIMEOUT = 30  # seconds
+_SOCKET_TIMEOUT = 300  # seconds
 
 _LOGFILES = {}
 _LOGFILE_NAME = 'buildserver.log'
@@ -98,42 +98,6 @@ def create_logfile(build_id, outdir):
   logfile.write(FIRST_LOG_LINE.format(build_id=build_id))
   logfile.flush()
   return logfile
-
-
-class QueuedOutputs:
-  """Class to store outputs for completed tasks until autoninja asks for them."""
-  _lock = threading.Lock()
-  _pending_outputs = collections.defaultdict(list)
-  _output_pipes = {}
-
-  @classmethod
-  def add_output(cls, task: Task, output_str: str):
-    with cls._lock:
-      build_id = task.build_id
-      cls._pending_outputs[build_id].append(output_str)
-      # All ttys should be the same.
-      if task.tty:
-        cls._output_pipes[build_id] = task.tty
-
-  @classmethod
-  def get_pending_outputs(cls, build_id: str):
-    with cls._lock:
-      pending_outputs = cls._pending_outputs[build_id]
-      cls._pending_outputs[build_id] = []
-      return pending_outputs
-
-  @classmethod
-  def flush_messages(cls):
-    with cls._lock:
-      for build_id, messages in cls._pending_outputs.items():
-        if messages:
-          pipe = cls._output_pipes.get(build_id)
-          if pipe:
-            pipe.write('\nfast_local_dev_server.py shutting down with queued ' +
-                       'task outputs. Flushing now:\n')
-            for message in messages:
-              pipe.write(message + '\n')
-      cls._pending_outputs = collections.defaultdict(list)
 
 
 class TaskStats:
@@ -398,7 +362,8 @@ class Task:
           #              in the Traceback section obscure the actual error(s).
           print('\n' + message)
         if self.remote_print:
-          QueuedOutputs.add_output(self, message)
+          self.tty.write(message)
+          self.tty.flush()
     log(f'{status_string} {self.name}',
         quiet=self.options.quiet,
         build_id=self.build_id)
@@ -449,14 +414,12 @@ def _handle_add_task(data, tasks: Dict[Tuple[str, str], Task], options):
 
 def _handle_query_build(data, connection: socket.socket):
   build_id = data['build_id']
-  pending_outputs = QueuedOutputs.get_pending_outputs(build_id)
   pending_tasks = TaskStats.num_pending_tasks(build_id)
   completed_tasks = TaskStats.num_completed_tasks(build_id)
   response = {
       'build_id': build_id,
       'completed_tasks': completed_tasks,
       'pending_tasks': pending_tasks,
-      'pending_outputs': pending_outputs,
   }
   try:
     with connection:
@@ -515,7 +478,6 @@ def _process_requests(sock: socket.socket, options):
     # Terminate all currently running tasks.
     for task in tasks.values():
       task.terminate()
-    QueuedOutputs.flush_messages()
     log('STOPPED', end='\n', quiet=options.quiet)
 
 
@@ -538,9 +500,6 @@ def _wait_for_build(build_id):
   while True:
     build_info = query_build_info(build_id)
     pending_tasks = build_info['pending_tasks']
-    pending_outputs = build_info['pending_outputs']
-    for pending_message in pending_outputs:
-      print('\n' + pending_message)
 
     if pending_tasks == 0:
       print(f'\nAll tasks completed for build_id: {build_id}.')
