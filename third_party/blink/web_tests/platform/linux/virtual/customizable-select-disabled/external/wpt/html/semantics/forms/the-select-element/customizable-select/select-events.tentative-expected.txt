@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Events, implicit button
+  assert_array_equals: after showing lengths differ, expected array ["focusin on option1 at select", "focusin on option1 at wrapper"] length 2, got [] length 0
+[FAIL] Events, explicit button
+  promise_test: Unhandled rejection with value: object "NotAllowedError: Failed to execute 'showPicker' on 'HTMLSelectElement': showPicker() requires a user gesture."
+Harness: the test ran to completion.
+
