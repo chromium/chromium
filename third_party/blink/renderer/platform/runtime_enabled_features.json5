@@ -3525,16 +3525,6 @@
       base_feature: "none",
     },
     {
-      name: "RemotePlaybackBackend",
-      settable_from_internals: true,
-      status: {
-        "Android": "stable",
-        "Win": "stable",
-        "Mac": "stable",
-        "Linux": "stable",
-        "default": "experimental"},
-    },
-    {
       // See https://issues.chromium.org/40805258
       name: "RemoveCollapsedPlaceholder",
       status: "stable",
