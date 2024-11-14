@@ -10,13 +10,18 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/text/bytes_formatting.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "url/gurl.h"
 
@@ -875,6 +880,82 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
   EXPECT_TRUE(tab_strip()->IsGroupCollapsed(group));
   EXPECT_EQ(0, tab_strip()->GetActiveIndex());
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, AccessibleName) {
+  AppendTab();
+  AppendTab();
+
+  ui::AXNodeData data;
+  tab_strip()->tab_at(1)->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(u"New Tab",
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+
+  // AccessibleName should update when tab group is changed
+  tab_groups::TabGroupId group = AddTabToNewGroup(1);
+  std::u16string tab_title = browser()->GetTitleForTab(1);
+  std::u16string group_title = tab_strip()->GetGroupTitle(group);
+  std::u16string title =
+      group_title.empty()
+          ? l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_UNNAMED_GROUP_FORMAT,
+                                       tab_title)
+          : l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_UNNAMED_GROUP_FORMAT,
+                                       tab_title, group_title);
+  data = ui::AXNodeData();
+  tab_strip()->tab_at(1)->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(title,
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+
+  // AccessibleName should update with crashedstatus
+  TabRendererData tab_renderer_data = tab_strip()->tab_at(1)->data();
+  tab_renderer_data.crashed_status =
+      base::TERMINATION_STATUS_PROCESS_WAS_KILLED;
+  tab_strip()->tab_at(1)->SetData(tab_renderer_data);
+  data = ui::AXNodeData();
+  tab_strip()->tab_at(1)->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_CRASHED_FORMAT, title),
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+
+  // AccessibleName update with pinned status and network status change
+  int new_index = tab_strip_model()->SetTabPinned(1, true);
+  title = l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_PINNED_FORMAT, tab_title);
+  tab_renderer_data = tab_strip()->tab_at(new_index)->data();
+  tab_renderer_data.network_state = TabNetworkState::kError;
+  tab_strip()->tab_at(new_index)->SetData(tab_renderer_data);
+  data = ui::AXNodeData();
+  tab_strip()->tab_at(new_index)->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_NETWORK_ERROR_FORMAT, title),
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+
+  // AccessibleName update with alert on tab
+  tab_renderer_data = tab_strip()->tab_at(new_index)->data();
+  tab_renderer_data.network_state = TabNetworkState::kLoading;
+  tab_renderer_data.alert_state.push_back(TabAlertState::AUDIO_PLAYING);
+  tab_strip()->tab_at(new_index)->SetData(tab_renderer_data);
+  data = ui::AXNodeData();
+  tab_strip()->tab_at(new_index)->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(IDS_TAB_AX_LABEL_AUDIO_PLAYING_FORMAT, title),
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+
+  // AccessibleName update with tab resource usage update
+  tab_renderer_data = tab_strip()->tab_at(new_index)->data();
+  auto tab_resource_usage = base::MakeRefCounted<TabResourceUsage>();
+  tab_resource_usage->SetMemoryUsageInBytes(100);
+  tab_renderer_data.tab_resource_usage = std::move(tab_resource_usage);
+  tab_strip()->tab_at(new_index)->SetData(tab_renderer_data);
+  data = ui::AXNodeData();
+  tab_strip()->tab_at(new_index)->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_TAB_AX_MEMORY_USAGE,
+                l10n_util::GetStringFUTF16(
+                    IDS_TAB_AX_LABEL_AUDIO_PLAYING_FORMAT, title),
+                ui::FormatBytes(100)),
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
 IN_PROC_BROWSER_TEST_F(

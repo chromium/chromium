@@ -9,10 +9,13 @@
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/test/ax_event_counter.h"
@@ -197,6 +200,48 @@ TEST_F(PermissionChipUnitTest, AlreadyDisplayedRequestTest) {
   // All chips are feature auto popup bubble. They should not resolve a prompt
   // automatically.
   ASSERT_TRUE(delegate.IsRequestInProgress());
+}
+
+TEST_F(PermissionChipUnitTest, AccessibleName) {
+  TestDelegate delegate(GURL("https://test.origin"),
+                        {permissions::RequestType::kNotifications}, false,
+                        web_contents_);
+  delegate.SetAlreadyDisplayed();
+
+  EXPECT_TRUE(delegate.WasCurrentRequestAlreadyDisplayed());
+
+  PermissionPromptChip chip_prompt(browser(), web_contents_, &delegate);
+  ChipController* chip_controller =
+      chip_prompt.get_chip_controller_for_testing();
+
+  AddTab(browser(), GURL("http://a.com"));
+
+  std::u16string tab_title = browser()->GetTitleForTab(0);
+  std::u16string permission_title = l10n_util::GetStringFUTF16(
+      IDS_TAB_AX_LABEL_PERMISSION_REQUESTED_FORMAT, tab_title);
+
+  chip_controller->ShowPermissionUi(delegate.GetWeakPtr());
+  chip_controller->AnimateExpand();
+  ui::AXNodeData data;
+  browser()
+      ->GetBrowserView()
+      .tabstrip_->tab_at(0)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_TRUE(chip_controller->IsPermissionPromptChipVisible());
+  EXPECT_EQ(permission_title,
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
+
+  chip_controller->HideChip();
+  data = ui::AXNodeData();
+  browser()
+      ->GetBrowserView()
+      .tabstrip_->tab_at(0)
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_FALSE(chip_controller->IsPermissionPromptChipVisible());
+  EXPECT_EQ(tab_title,
+            data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
 TEST_F(PermissionChipUnitTest, ClickOnRequestChipTest) {

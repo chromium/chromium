@@ -33,8 +33,10 @@ TabGroupViews::TabGroupViews(views::View* container_view,
   style_ = std::make_unique<const TabGroupStyle>(*this);
   const TabGroupStyle* style = style_.get();
 
-  header_ = container_view->AddChildView(
-      std::make_unique<TabGroupHeader>(*tab_slot_controller_, group_, *style));
+  auto header =
+      std::make_unique<TabGroupHeader>(*tab_slot_controller_, group_, *style);
+  header->Init(group_);
+  header_ = container_view->AddChildView(std::move(header));
   underline_ = container_view->AddChildView(
       std::make_unique<TabGroupUnderline>(this, group_, *style));
   drag_underline_ = drag_container_view->AddChildView(

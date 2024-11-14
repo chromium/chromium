@@ -525,6 +525,22 @@ TEST_F(BrowserViewTest, DISABLED_AccessibleWindowTitle) {
           TestingProfile::Builder().BuildIncognito(profile)));
 }
 
+TEST_F(BrowserViewTest, UpdateWindowTitle) {
+  AddTab(browser(), GURL("about:blank"));
+  AddTab(browser(), GURL("about:blank"));
+  std::string user_title1 = "Test Title";
+  browser()->SetWindowUserTitle(user_title1);
+  auto window_title = browser_view()->GetAccessibleWindowTitle();
+  EXPECT_EQ(base::UTF8ToUTF16(user_title1),
+            window_title.substr(0, user_title1.size()));
+
+  std::string user_title2 = "Test Title 2";
+  browser()->SetWindowUserTitle(user_title2);
+  window_title = browser_view()->GetAccessibleWindowTitle();
+  EXPECT_EQ(base::UTF8ToUTF16(user_title2),
+            window_title.substr(0, user_title2.size()));
+}
+
 TEST_F(BrowserViewTest, WindowTitleOmitsLowMemoryUsage) {
   scoped_refptr<TabResourceUsage> tab_resource_usage_ =
       base::MakeRefCounted<TabResourceUsage>();
