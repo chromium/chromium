@@ -39,7 +39,6 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
-#include "gpu/command_buffer/service/sync_point_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -71,7 +70,7 @@ class SoftwareRendererTest : public testing::Test {
 
     resource_provider_ = std::make_unique<DisplayResourceProviderSoftware>(
         /*shared_bitmap_manager=*/nullptr, gpu_service->shared_image_manager(),
-        gpu_service->sync_point_manager(), gpu_service->gpu_scheduler());
+        gpu_service->gpu_scheduler());
 
     renderer_ = std::make_unique<SoftwareRenderer>(
         &settings_, &debug_settings_, output_surface_.get(),

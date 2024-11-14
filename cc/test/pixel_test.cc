@@ -353,8 +353,7 @@ void PixelTest::SetUpSoftwareRenderer() {
   auto resource_provider =
       std::make_unique<viz::DisplayResourceProviderSoftware>(
           /*shared_bitmap_manager=*/nullptr,
-          gpu_service->shared_image_manager(),
-          gpu_service->sync_point_manager(), gpu_service->gpu_scheduler());
+          gpu_service->shared_image_manager(), gpu_service->gpu_scheduler());
 
   auto renderer = std::make_unique<viz::SoftwareRenderer>(
       &renderer_settings_, &debug_settings_, output_surface_.get(),

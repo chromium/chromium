@@ -233,11 +233,10 @@ bool SynchronousLayerTreeFrameSink::BindToClient(
   // software only and the overlay processor is a stub.
   display_ = std::make_unique<viz::Display>(
       &shared_bitmap_manager_, /*shared_image_manager=*/nullptr,
-      /*sync_point_manager=*/nullptr, /*gpu_scheduler=*/nullptr,
-      software_renderer_settings, &debug_settings_, kRootFrameSinkId,
-      nullptr /* gpu::GpuTaskSchedulerHelper */, std::move(output_surface),
-      std::move(overlay_processor), nullptr /* scheduler */,
-      nullptr /* current_task_runner */);
+      /*gpu_scheduler=*/nullptr, software_renderer_settings, &debug_settings_,
+      kRootFrameSinkId, nullptr /* gpu::GpuTaskSchedulerHelper */,
+      std::move(output_surface), std::move(overlay_processor),
+      nullptr /* scheduler */, nullptr /* current_task_runner */);
   display_->Initialize(&display_client_,
                        frame_sink_manager_->surface_manager());
   display_->SetVisible(true);

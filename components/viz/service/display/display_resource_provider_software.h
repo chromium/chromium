@@ -19,7 +19,6 @@
 
 namespace gpu {
 class SharedImageManager;
-class SyncPointManager;
 class Scheduler;
 }
 
@@ -31,12 +30,9 @@ class SharedBitmapManager;
 class VIZ_SERVICE_EXPORT DisplayResourceProviderSoftware
     : public DisplayResourceProvider {
  public:
-  // TODO(324276400): Remove the `sync_point_manager` parameter which is no
-  // longer used.
   explicit DisplayResourceProviderSoftware(
       SharedBitmapManager* shared_bitmap_manager,
       gpu::SharedImageManager* shared_image_manager,
-      gpu::SyncPointManager* sync_point_manager,
       gpu::Scheduler* scheduler);
   ~DisplayResourceProviderSoftware() override;
 

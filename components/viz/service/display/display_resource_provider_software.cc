@@ -17,7 +17,6 @@ namespace viz {
 DisplayResourceProviderSoftware::DisplayResourceProviderSoftware(
     SharedBitmapManager* shared_bitmap_manager,
     gpu::SharedImageManager* shared_image_manager,
-    gpu::SyncPointManager* sync_point_manager,
     gpu::Scheduler* scheduler)
     : DisplayResourceProvider(DisplayResourceProvider::kSoftware),
       shared_bitmap_manager_(shared_bitmap_manager),
