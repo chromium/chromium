@@ -2764,11 +2764,11 @@ protocol::Response InspectorDOMAgent::scrollIntoViewIfNeeded(
   }
   PhysicalRect rect_to_scroll =
       PhysicalRect::EnclosingRect(layout_object->AbsoluteBoundingBoxRectF());
-  if (rect.has_value()) {
-    rect_to_scroll.SetX(rect_to_scroll.X() + LayoutUnit(rect.value().getX()));
-    rect_to_scroll.SetY(rect_to_scroll.Y() + LayoutUnit(rect.value().getY()));
-    rect_to_scroll.SetWidth(LayoutUnit(rect.value().getWidth()));
-    rect_to_scroll.SetHeight(LayoutUnit(rect.value().getHeight()));
+  if (rect) {
+    rect_to_scroll.SetX(rect_to_scroll.X() + LayoutUnit(rect->getX()));
+    rect_to_scroll.SetY(rect_to_scroll.Y() + LayoutUnit(rect->getY()));
+    rect_to_scroll.SetWidth(LayoutUnit(rect->getWidth()));
+    rect_to_scroll.SetHeight(LayoutUnit(rect->getHeight()));
   }
   scroll_into_view_util::ScrollRectToVisible(
       *layout_object, rect_to_scroll,

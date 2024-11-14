@@ -259,7 +259,7 @@ Response ConvertSensorReading(device::mojom::SensorType type,
 
 base::expected<device::mojom::VirtualSensorMetadataPtr, Response>
 ParseSensorMetadata(Maybe<Emulation::SensorMetadata>& metadata) {
-  if (!metadata.has_value()) {
+  if (!metadata) {
     return device::mojom::VirtualSensorMetadata::New();
   }
 
@@ -419,7 +419,7 @@ namespace {
 device::mojom::VirtualPressureSourceMetadataPtr ConvertPressureMetadata(
     Maybe<Emulation::PressureMetadata>& metadata) {
   auto pressure_metadata = device::mojom::VirtualPressureSourceMetadata::New();
-  if (metadata.has_value()) {
+  if (metadata) {
     pressure_metadata->available = metadata->GetAvailable(true);
   }
   return pressure_metadata;
@@ -663,8 +663,8 @@ Response EmulationHandler::SetDeviceMetricsOverride(
   display::mojom::ScreenOrientation orientationType =
       display::mojom::ScreenOrientation::kUndefined;
   int orientationAngle = 0;
-  if (screen_orientation.has_value()) {
-    Emulation::ScreenOrientation& orientation = screen_orientation.value();
+  if (screen_orientation) {
+    Emulation::ScreenOrientation& orientation = *screen_orientation;
     orientationType = WebScreenOrientationTypeFromString(orientation.GetType());
     if (orientationType == display::mojom::ScreenOrientation::kUndefined)
       return Response::InvalidParams("Invalid screen orientation type value");
@@ -677,9 +677,8 @@ Response EmulationHandler::SetDeviceMetricsOverride(
   }
 
   std::optional<content::DisplayFeature> content_display_feature = std::nullopt;
-  if (display_feature.has_value()) {
-    protocol::Emulation::DisplayFeature& emu_display_feature =
-        display_feature.value();
+  if (display_feature) {
+    protocol::Emulation::DisplayFeature& emu_display_feature = *display_feature;
     std::optional<content::DisplayFeature::Orientation> disp_orientation =
         DisplayFeatureOrientationTypeFromString(
             emu_display_feature.GetOrientation());
@@ -731,12 +730,12 @@ Response EmulationHandler::SetDeviceMetricsOverride(
         content_display_feature->ComputeViewportSegments(params.view_size);
   }
 
-  if (device_posture.has_value()) {
+  if (device_posture) {
     params.device_posture =
-        DevicePostureTypeFromString(device_posture.value().GetType()).value();
+        DevicePostureTypeFromString(device_posture->GetType()).value();
   }
 
-  if (viewport.has_value()) {
+  if (viewport) {
     params.viewport_offset.SetPoint(viewport->GetX(), viewport->GetY());
 
     double dpfactor =
@@ -828,7 +827,7 @@ Response EmulationHandler::SetUserAgentOverride(
   accept_language_ = accept_lang;
 
   user_agent_metadata_ = std::nullopt;
-  if (!ua_metadata_override.has_value()) {
+  if (!ua_metadata_override) {
     return Response::FallThrough();
   }
 
@@ -837,7 +836,7 @@ Response EmulationHandler::SetUserAgentOverride(
         "Empty userAgent invalid with userAgentMetadata provided");
   }
 
-  Emulation::UserAgentMetadata& ua_metadata = ua_metadata_override.value();
+  Emulation::UserAgentMetadata& ua_metadata = *ua_metadata_override;
   blink::UserAgentMetadata new_ua_metadata;
   blink::UserAgentMetadata default_ua_metadata =
       GetContentClient()->browser()->GetUserAgentMetadata();
@@ -952,8 +951,8 @@ Response EmulationHandler::SetEmulatedMedia(
   prefers_color_scheme_ = "";
   prefers_reduced_motion_ = "";
   prefers_reduced_transparency_ = "";
-  if (features.has_value()) {
-    for (auto const& mediaFeature : features.value()) {
+  if (features) {
+    for (auto const& mediaFeature : *features) {
       auto const& name = mediaFeature->GetName();
       auto const& value = mediaFeature->GetValue();
       if (name == "prefers-color-scheme") {

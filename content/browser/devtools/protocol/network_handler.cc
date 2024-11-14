@@ -309,7 +309,7 @@ std::vector<net::CanonicalCookie> FilterCookies(
     if (!path.empty() && cookie.Path() != path)
       continue;
 
-    if (cookie.PartitionKey().has_value() != partition_key.has_value()) {
+    if (!!cookie.PartitionKey() != !!partition_key) {
       continue;
     }
 
@@ -457,8 +457,7 @@ MakeCookieFromProtocolValues(
     cp = net::CookiePriority::COOKIE_PRIORITY_LOW;
 
   std::optional<net::CookiePartitionKey> cookie_partition_key;
-  if (partition_key.has_value() &&
-      !partition_key.value().GetTopLevelSite().empty()) {
+  if (partition_key && !partition_key->GetTopLevelSite().empty()) {
     base::expected<net::CookiePartitionKey, std::string>
         deserialized_partition_key =
             net::CookiePartitionKey::FromUntrustedInput(
@@ -528,8 +527,8 @@ std::vector<GURL> ComputeCookieURLs(RenderFrameHostImpl* frame_host,
                                     Maybe<Array<String>>& protocol_urls) {
   std::vector<GURL> urls;
 
-  if (protocol_urls.has_value()) {
-    for (const std::string& url : protocol_urls.value()) {
+  if (protocol_urls) {
+    for (const std::string& url : *protocol_urls) {
       urls.emplace_back(url);
     }
   } else {
@@ -2965,8 +2964,8 @@ void NetworkHandler::ContinueInterceptedRequest(
 
   std::unique_ptr<DevToolsURLLoaderInterceptor::Modifications::HeadersVector>
       override_headers;
-  if (opt_headers.has_value()) {
-    const base::Value::Dict& headers = opt_headers.value();
+  if (opt_headers) {
+    const base::Value::Dict& headers = *opt_headers;
     override_headers = std::make_unique<
         DevToolsURLLoaderInterceptor::Modifications::HeadersVector>();
     for (const auto entry : headers) {
@@ -2981,7 +2980,7 @@ void NetworkHandler::ContinueInterceptedRequest(
   using AuthChallengeResponse =
       DevToolsURLLoaderInterceptor::AuthChallengeResponse;
   std::unique_ptr<AuthChallengeResponse> override_auth;
-  if (auth_challenge_response.has_value()) {
+  if (auth_challenge_response) {
     std::string type = auth_challenge_response->GetResponse();
     if (type == Network::AuthChallengeResponse::ResponseEnum::Default) {
       override_auth = std::make_unique<AuthChallengeResponse>(

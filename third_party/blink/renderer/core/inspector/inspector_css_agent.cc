@@ -1290,7 +1290,7 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
             view_transition_name));
       }
     }
-    inherited_entries->value().emplace_back(std::move(entry));
+    (*inherited_entries)->emplace_back(std::move(entry));
   }
 
   *css_keyframes_rules = AnimationsForNode(element, animating_element);
@@ -1314,17 +1314,19 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
       std::make_unique<protocol::Array<protocol::CSS::PseudoElementMatches>>();
 
   for (InspectorCSSMatchedRules* match : resolver.PseudoElementRules()) {
-    pseudo_id_matches->value().emplace_back(
-        protocol::CSS::PseudoElementMatches::create()
-            .setPseudoType(
-                InspectorDOMAgent::ProtocolPseudoElementType(match->pseudo_id))
-            .setMatches(BuildArrayForMatchedRuleList(
-                match->matched_rules, element, ghost_rules, match->pseudo_id,
-                match->view_transition_name))
-            .build());
+    (*pseudo_id_matches)
+        ->emplace_back(
+            protocol::CSS::PseudoElementMatches::create()
+                .setPseudoType(InspectorDOMAgent::ProtocolPseudoElementType(
+                    match->pseudo_id))
+                .setMatches(BuildArrayForMatchedRuleList(
+                    match->matched_rules, element, ghost_rules,
+                    match->pseudo_id, match->view_transition_name))
+                .build());
     if (match->view_transition_name) {
-      pseudo_id_matches->value().back()->setPseudoIdentifier(
-          match->view_transition_name);
+      (*pseudo_id_matches)
+          ->back()
+          ->setPseudoIdentifier(match->view_transition_name);
     }
   }
 
@@ -1355,8 +1357,8 @@ protocol::Response InspectorCSSAgent::getMatchedStylesForNode(
                 .setPseudoElements(std::move(parent_pseudo_element_matches))
                 .build();
 
-    inherited_pseudo_id_matches->value().emplace_back(
-        std::move(inherited_pseudo_element_matches));
+    (*inherited_pseudo_id_matches)
+        ->emplace_back(std::move(inherited_pseudo_element_matches));
   }
 
   // Get the index of the active position try fallback index.
@@ -3575,8 +3577,9 @@ protocol::Response InspectorCSSAgent::getBackgroundColors(
   if (bgcolors.size()) {
     *background_colors = std::make_unique<protocol::Array<String>>();
     for (const auto& color : bgcolors) {
-      background_colors->value().emplace_back(
-          cssvalue::CSSColor::SerializeAsCSSComponentValue(color));
+      (*background_colors)
+          ->emplace_back(
+              cssvalue::CSSColor::SerializeAsCSSComponentValue(color));
     }
   }
   if (!fs.empty())

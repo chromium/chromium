@@ -1817,11 +1817,11 @@ protocol::Response InspectorPageAgent::setFontFamilies(
         "Font families can only be set once");
   }
 
-  if (!for_scripts.has_value()) {
+  if (!for_scripts) {
     for_scripts =
         std::make_unique<protocol::Array<protocol::Page::ScriptFontFamilies>>();
   }
-  auto& script_fonts = for_scripts.value();
+  auto& script_fonts = *for_scripts;
   script_fonts.push_back(protocol::Page::ScriptFontFamilies::create()
                              .setScript(blink::web_pref::kCommonScript)
                              .setFontFamilies(std::move(font_families))

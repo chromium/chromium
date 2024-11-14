@@ -108,18 +108,16 @@ base::expected<LocalFrame*, protocol::Response> ResolveFrame(
     const protocol::Maybe<String>& security_origin,
     const protocol::Maybe<String>& storage_key,
     protocol::Maybe<protocol::Storage::StorageBucket>& storage_bucket) {
-  if (security_origin.has_value() + storage_key.has_value() +
-          storage_bucket.has_value() !=
-      1) {
+  if (!!security_origin + !!storage_key + !!storage_bucket != 1) {
     return base::unexpected(protocol::Response::InvalidParams(
         "At least and at most one of security_origin, "
         "storage_key, and storage_bucket must be specified."));
   }
   LocalFrame* frame;
-  if (storage_bucket.has_value()) {
+  if (storage_bucket) {
     frame =
         inspected_frames->FrameWithStorageKey(storage_bucket->getStorageKey());
-  } else if (storage_key.has_value()) {
+  } else if (storage_key) {
     frame = inspected_frames->FrameWithStorageKey(storage_key.value());
   } else {
     frame = inspected_frames->FrameWithSecurityOrigin(security_origin.value());
@@ -157,7 +155,7 @@ class ExecutableWithIdbFactory
  private:
   void SetUp(LocalFrame* frame,
              protocol::Maybe<protocol::Storage::StorageBucket> storage_bucket) {
-    if (storage_bucket.has_value() && storage_bucket->hasName()) {
+    if (storage_bucket && storage_bucket->hasName()) {
       GetBucketIDBFactory(frame, storage_bucket->getName(""));
     } else {
       GetDefaultIDBFactory(frame);
@@ -912,10 +910,9 @@ void InspectorIndexedDBAgent::requestData(
     int page_size,
     Maybe<protocol::IndexedDB::KeyRange> key_range,
     std::unique_ptr<RequestDataCallback> request_callback) {
-  IDBKeyRange* idb_key_range = key_range.has_value()
-                                   ? IdbKeyRangeFromKeyRange(&key_range.value())
-                                   : nullptr;
-  if (key_range.has_value() && !idb_key_range) {
+  IDBKeyRange* idb_key_range =
+      key_range ? IdbKeyRangeFromKeyRange(&*key_range) : nullptr;
+  if (key_range && !idb_key_range) {
     request_callback->sendFailure(
         protocol::Response::ServerError("Can not parse key range."));
     return;

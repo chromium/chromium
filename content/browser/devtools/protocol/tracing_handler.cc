@@ -766,9 +766,9 @@ void TracingHandler::Start(Maybe<std::string> categories,
   } else {
     base::trace_event::TraceConfig browser_config =
         base::trace_event::TraceConfig();
-    if (config.has_value()) {
+    if (config) {
       base::Value::Dict dict;
-      CHECK(crdtp::ConvertProtocolValue(config.value(), &dict));
+      CHECK(crdtp::ConvertProtocolValue(*config, &dict));
       browser_config =
           GetTraceConfigFromDevToolsConfig(base::Value(std::move(dict)));
     } else if (categories.has_value() || options.has_value()) {
@@ -807,7 +807,7 @@ void TracingHandler::Start(Maybe<std::string> categories,
     return;
   }
 
-  if (config.has_value() && (categories.has_value() || options.has_value())) {
+  if (config && (categories.has_value() || options.has_value())) {
     callback->sendFailure(Response::InvalidParams(
         "Either trace config (preferred), or categories+options should be "
         "specified, but not both."));

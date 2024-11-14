@@ -1114,7 +1114,7 @@ void PageHandler::CaptureScreenshot(
 
   // Check if full page screenshot is expected and get dimensions accordingly.
   if (from_surface.value_or(true) && capture_beyond_viewport.value_or(false) &&
-      !clip.has_value()) {
+      !clip) {
     blink::mojom::LocalMainFrame* main_frame =
         host_->GetAssociatedLocalMainFrame();
     main_frame->GetFullPageSize(base::BindOnce(
@@ -1123,7 +1123,7 @@ void PageHandler::CaptureScreenshot(
         std::move(callback)));
     return;
   }
-  if (clip.has_value()) {
+  if (clip) {
     if (clip->GetWidth() == 0) {
       callback->sendFailure(
           Response::ServerError("Cannot take screenshot with 0 width."));
@@ -1185,9 +1185,8 @@ void PageHandler::CaptureScreenshot(
   // Capture original view size if we know we are going to destroy it. We use
   // it in ScreenshotCaptured to restore.
   const gfx::Size original_view_size =
-      emulation_enabled || clip.has_value()
-          ? widget_host->GetView()->GetViewBounds().size()
-          : gfx::Size();
+      emulation_enabled || clip ? widget_host->GetView()->GetViewBounds().size()
+                                : gfx::Size();
   pending_request->original_view_size = original_view_size;
   gfx::Size emulated_view_size = modified_params.view_size;
 
@@ -1214,9 +1213,9 @@ void PageHandler::CaptureScreenshot(
                    : 1;
     // When clip is specified, we scale viewport via clip, otherwise we use
     // scale.
-    modified_params.scale = clip.has_value() ? 1 : dpfactor;
+    modified_params.scale = clip ? 1 : dpfactor;
     modified_params.view_size = emulated_view_size;
-  } else if (clip.has_value()) {
+  } else if (clip) {
     // When not emulating, still need to emulate the page size.
     modified_params.view_size = original_view_size;
     modified_params.screen_size = gfx::Size();
@@ -1226,9 +1225,8 @@ void PageHandler::CaptureScreenshot(
 
   // Set up viewport in renderer.
   if (clip) {
-    modified_params.viewport_offset.SetPoint(clip.value().GetX(),
-                                             clip.value().GetY());
-    modified_params.viewport_scale = clip.value().GetScale() * dpfactor;
+    modified_params.viewport_offset.SetPoint(clip->GetX(), clip->GetY());
+    modified_params.viewport_scale = clip->GetScale() * dpfactor;
     modified_params.viewport_offset.Scale(widget_host_device_scale_factor);
   }
 
@@ -1260,7 +1258,7 @@ void PageHandler::CaptureScreenshot(
   emulation_handler_->SetDeviceEmulationParams(modified_params);
 
   // Set view size for the screenshot right after emulating.
-  if (clip.has_value()) {
+  if (clip) {
     double scale = dpfactor * clip->GetScale();
     widget_host->GetView()->SetSize(
         gfx::Size(base::ClampRound(clip->GetWidth() * scale),
@@ -1269,12 +1267,12 @@ void PageHandler::CaptureScreenshot(
     widget_host->GetView()->SetSize(
         gfx::ScaleToFlooredSize(emulated_view_size, dpfactor));
   }
-  if (emulation_enabled || clip.has_value()) {
+  if (emulation_enabled || clip) {
     const gfx::Size requested_image_size =
-        clip.has_value() ? gfx::Size(clip->GetWidth(), clip->GetHeight())
-                         : emulated_view_size;
+        clip ? gfx::Size(clip->GetWidth(), clip->GetHeight())
+             : emulated_view_size;
     double scale = widget_host_device_scale_factor * dpfactor;
-    if (clip.has_value()) {
+    if (clip) {
       scale *= clip->GetScale();
     }
     pending_request->requested_image_size =

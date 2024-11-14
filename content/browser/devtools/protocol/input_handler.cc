@@ -714,8 +714,8 @@ class InputHandler::InputInjector
     pending_key_callbacks_.push_back(std::move(callback));
     ui::LatencyInfo latency;
     std::vector<blink::mojom::EditCommandPtr> edit_commands;
-    if (commands.has_value()) {
-      for (const std::string& command : commands.value()) {
+    if (commands) {
+      for (const std::string& command : *commands) {
         edit_commands.push_back(blink::mojom::EditCommand::New(command, ""));
       }
     }
