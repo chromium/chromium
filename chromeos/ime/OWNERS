@@ -1,6 +1,4 @@
-# primary reviewers
-shuchen@chromium.org
-yhanada@chromium.org
+file://chromeos/ash/components/input_method/OWNERS
 
 # backup reviewers
 yukishiino@chromium.org
