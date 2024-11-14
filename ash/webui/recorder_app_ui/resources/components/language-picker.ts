@@ -20,19 +20,21 @@ import {assertExhaustive} from '../core/utils/assert.js';
 
 import {withTooltip} from './directives/with-tooltip.js';
 
+/**
+ * Language selection for users to choose and download transcript language.
+ */
 export class LanguagePicker extends ReactiveLitElement {
   static override styles = css`
     :host {
-      background: var(--cros-sys-surface1);
       border-radius: 20px;
+      display: block;
+    }
+
+    #root {
       display: flex;
       flex-flow: column;
       gap: 8px;
       padding: 0 16px 16px;
-
-      @container style(--dark-theme: 1) {
-        background: var(--cros-sys-app_base);
-      }
     }
 
     #header {
@@ -42,7 +44,6 @@ export class LanguagePicker extends ReactiveLitElement {
       flex-flow: row;
       gap: 16px;
       padding: 16px 8px;
-      position: relative;
 
       & > h3 {
         font: var(--cros-button-1-font);
@@ -237,28 +238,32 @@ export class LanguagePicker extends ReactiveLitElement {
     // TODO: b/377885042 - Render "close" button when language picker is not
     // inside the setting menu.
     return html`
-      <div id="header">
-        <cra-icon-button
-          id="back"
-          buttonstyle="floating"
-          size="small"
-          shape="circle"
-          aria-label=${i18n.languagePickerBackButtonAriaLabel}
-          ${withTooltip(i18n.languagePickerBackButtonTooltip)}
-          @click=${this.onCloseClick}
-        >
-          <cra-icon slot="icon" name="arrow_back"></cra-icon>
-        </cra-icon-button>
-        <h3>${i18n.languagePickerHeader}</h3>
-      </div>
-      <div id="content">
-        <div class="section">
-          <h4 class="title">${i18n.languagePickerSelectedLanguageHeader}</h4>
-          <div class="body">${this.renderSelectedLanguage()}</div>
+      <div id="root">
+        <div id="header">
+          <cra-icon-button
+            id="back"
+            buttonstyle="floating"
+            size="small"
+            shape="circle"
+            aria-label=${i18n.languagePickerBackButtonAriaLabel}
+            ${withTooltip(i18n.languagePickerBackButtonTooltip)}
+            @click=${this.onCloseClick}
+          >
+            <cra-icon slot="icon" name="arrow_back"></cra-icon>
+          </cra-icon-button>
+          <h3>${i18n.languagePickerHeader}</h3>
         </div>
-        <div class="section">
-          <h4 class="title">${i18n.languagePickerAvailableLanguagesHeader}</h4>
-          <div class="body">${this.renderAvailableLanguages()}</div>
+        <div id="content">
+          <div class="section">
+            <h4 class="title">${i18n.languagePickerSelectedLanguageHeader}</h4>
+            <div class="body">${this.renderSelectedLanguage()}</div>
+          </div>
+          <div class="section">
+            <h4 class="title">
+              ${i18n.languagePickerAvailableLanguagesHeader}
+            </h4>
+            <div class="body">${this.renderAvailableLanguages()}</div>
+          </div>
         </div>
       </div>
     `;
