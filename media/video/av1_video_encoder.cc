@@ -29,7 +29,7 @@ namespace media {
 namespace {
 
 // Map externally visible buffer ids [0, 1, 2] to ids used by libaom.
-constexpr std::array<int, 3> kExternalToLibAomBufMap = {
+constexpr std::array<size_t, 3> kExternalToLibAomBufMap = {
     0,  // LAST
     3,  // GOLDEN
     6,  // ALTREF
@@ -257,7 +257,8 @@ EncoderStatus SetUpAomConfig(VideoCodecProfile profile,
   auto scaling_factor_den = base::span(svc_params.scaling_factor_den);
   auto max_quantizers = base::span(svc_params.max_quantizers);
   auto min_quantizers = base::span(svc_params.min_quantizers);
-  for (int i = 0; i < svc_params.number_temporal_layers; ++i) {
+  for (size_t i = 0; i < static_cast<size_t>(svc_params.number_temporal_layers);
+       ++i) {
     scaling_factor_num[i] = 1;
     scaling_factor_den[i] = 1;
     max_quantizers[i] = config.rc_max_quantizer;

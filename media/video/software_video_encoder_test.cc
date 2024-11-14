@@ -264,19 +264,21 @@ class SoftwareVideoEncoderTest
       int stride1 = frame1.stride(plane);
       int stride2 = frame2.stride(plane);
       size_t rows = VideoFrame::Rows(plane, format, visible_size.height());
-      int row_bytes = VideoFrame::RowBytes(plane, format, visible_size.width());
+      size_t row_bytes =
+          VideoFrame::RowBytes(plane, format, visible_size.width());
       auto data1 = frame1.GetVisiblePlaneData(plane);
       auto data2 = frame2.GetVisiblePlaneData(plane);
 
       for (size_t r = 0; r < rows; ++r) {
         auto row1 = data1.subspan(stride1 * r, row_bytes);
         auto row2 = data2.subspan(stride2 * r, row_bytes);
-        for (int i = 0; i < row_bytes; ++i) {
-          uint8_t b1 = row1[i];
-          uint8_t b2 = row2[i];
+        for (size_t c = 0; c < row_bytes; ++c) {
+          uint8_t b1 = row1[c];
+          uint8_t b2 = row2[c];
           uint8_t diff = std::max(b1, b2) - std::min(b1, b2);
-          if (diff > tolerance)
-            diff_cnt++;
+          if (diff > tolerance) {
+            ++diff_cnt;
+          }
         }
       }
     }
@@ -858,9 +860,9 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvcWithEnablingDrop) {
                      std::to_array({0, 2, 1, 2})});
   for (size_t i = 0; i < chunks.size(); ++i) {
     ASSERT_FALSE(chunks[i].data.empty());
-    EXPECT_EQ(
-        chunks[i].temporal_id,
-        kTemporalLayerTable[num_temporal_layers - 1][i % kTemporalLayerCycle]);
+    EXPECT_EQ(chunks[i].temporal_id,
+              kTemporalLayerTable[static_cast<size_t>(num_temporal_layers - 1)]
+                                 [i % kTemporalLayerCycle]);
   }
 
   for (int max_layer = 0; max_layer < num_temporal_layers; max_layer++) {
@@ -891,7 +893,7 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvcWithEnablingDrop) {
         continue;
       }
       const int temporal_id =
-          kTemporalLayerTable[num_temporal_layers - 1]
+          kTemporalLayerTable[static_cast<size_t>(num_temporal_layers - 1)]
                              [encoded_frame_index % kTemporalLayerCycle];
       encoded_frame_index++;
       if (temporal_id > max_layer) {
