@@ -1660,7 +1660,7 @@
   {
     "name": "crabbyavif",
     "owners": [ "vigneshv@google.com", "image-codecs-eng@google.com" ],
-    "expiry_milestone": 132
+    "expiry_milestone": 133
   },
   {
     "name": "cras-processor-dedicated-thread",
