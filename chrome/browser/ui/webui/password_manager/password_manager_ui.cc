@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 
 #include "base/feature_list.h"
@@ -108,10 +103,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, password_manager::kChromeUIPasswordManagerHost);
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kPasswordManagerResources, kPasswordManagerResourcesSize),
-      IDR_PASSWORD_MANAGER_PASSWORD_MANAGER_HTML);
+  webui::SetupWebUIDataSource(source, base::span(kPasswordManagerResources),
+                              IDR_PASSWORD_MANAGER_PASSWORD_MANAGER_HTML);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (IsSystemInEnglishLanguage()) {
@@ -135,8 +128,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 #endif
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
-  source->AddResourcePaths(
-      base::make_span(kSettingsSharedResources, kSettingsSharedResourcesSize));
+  source->AddResourcePaths(base::span(kSettingsSharedResources));
 #endif
 
   static const webui::LocalizedString kStrings[] = {
