@@ -8,6 +8,8 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <Foundation/Foundation.h>
 
+#import <string>
+
 @protocol Credential;
 
 // Enum which represents possible user verification preferences.
@@ -17,6 +19,11 @@ enum class UserVerificationPreference {
   kDiscouraged,
   kOther,
 };
+
+// Decrypts the credential's private key. Can be used to verify if any of the
+// security_domain_secrets from the provided array is valid.
+std::string DecryptPrivateKey(id<Credential> credential,
+                              NSArray<NSData*>* security_domain_secrets);
 
 // On a success, returns a newly created passkey.
 // Returns nil otherwise.

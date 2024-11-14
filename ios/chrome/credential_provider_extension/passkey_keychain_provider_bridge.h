@@ -45,17 +45,14 @@
 
 // Initiates the process to fetch the security domain secret and calls the
 // completion block with the security domain secret the input argument.
+// "credential" will be used to validate the security domain secret.
 - (void)fetchSecurityDomainSecretForGaia:(NSString*)gaia
+                              credential:(id<Credential>)credential
                                  purpose:(PasskeyKeychainProvider::
                                               ReauthenticatePurpose)purpose
                               completion:
                                   (FetchSecurityDomainSecretCompletionBlock)
                                       fetchSecurityDomainSecretCompletion;
-
-// Marks the security domain secret vault keys as stale and calls the completion
-// block.
-- (void)markKeysAsStaleForGaia:(NSString*)gaia
-                    completion:(ProceduralBlock)completion;
 
 @end
 

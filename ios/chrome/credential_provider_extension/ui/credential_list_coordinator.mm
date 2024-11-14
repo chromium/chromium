@@ -137,7 +137,6 @@
                userSelectedPasskey:credential
                     clientDataHash:self.requestParameters.clientDataHash
                 allowedCredentials:self.allowedCredentials
-                        allowRetry:YES
           userVerificationRequired:
               ShouldPerformUserVerificationForPreference(
                   self.requestParameters.userVerificationPreference,

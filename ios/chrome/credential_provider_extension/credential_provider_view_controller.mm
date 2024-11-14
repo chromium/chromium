@@ -442,7 +442,6 @@ UIColor* BackgroundColor() {
 - (void)userSelectedPasskey:(id<Credential>)credential
               clientDataHash:(NSData*)clientDataHash
           allowedCredentials:(NSArray<NSData*>*)allowedCredentials
-                  allowRetry:(BOOL)allowRetry
     userVerificationRequired:(BOOL)userVerificationRequired
     API_AVAILABLE(ios(17.0)) {
   __weak __typeof(self) weakSelf = self;
@@ -450,11 +449,11 @@ UIColor* BackgroundColor() {
     [weakSelf passkeyAssertionWithCredential:credential
                               clientDataHash:clientDataHash
                           allowedCredentials:allowedCredentials
-                       securityDomainSecrets:securityDomainSecrets
-                                  allowRetry:allowRetry];
+                       securityDomainSecrets:securityDomainSecrets];
   };
 
   [self fetchSecurityDomainSecretForGaia:credential.gaia
+                              credential:credential
                                  purpose:PasskeyKeychainProvider::
                                              ReauthenticatePurpose::kDecrypt
                 userVerificationRequired:userVerificationRequired
@@ -664,7 +663,6 @@ UIColor* BackgroundColor() {
       [self userSelectedPasskey:credential
                     clientDataHash:passkeyCredentialRequest.clientDataHash
                 allowedCredentials:nil
-                        allowRetry:YES
           userVerificationRequired:
               [self shouldPerformUserVerificationForPreference:
                         passkeyCredentialRequest.userVerificationPreference]];
@@ -902,6 +900,7 @@ UIColor* BackgroundColor() {
   };
 
   [self fetchSecurityDomainSecretForGaia:gaia
+                              credential:nil
                                  purpose:PasskeyKeychainProvider::
                                              ReauthenticatePurpose::kEncrypt
                 userVerificationRequired:userVerificationRequired
@@ -913,33 +912,17 @@ UIColor* BackgroundColor() {
                         clientDataHash:(NSData*)clientDataHash
                     allowedCredentials:(NSArray<NSData*>*)allowedCredentials
                  securityDomainSecrets:(NSArray<NSData*>*)securityDomainSecrets
-                            allowRetry:(BOOL)allowRetry
     API_AVAILABLE(ios(17.0)) {
   ASPasskeyAssertionCredential* passkeyCredential = PerformPasskeyAssertion(
       credential, clientDataHash, allowedCredentials, securityDomainSecrets);
-  if (passkeyCredential || !allowRetry) {
-    [self userSelectedPasskey:passkeyCredential];
-  } else {
-    // If we failed to perform the passkey assertion on the first attempt, try
-    // to mark the security domain secret vault keys as stale and retry.
-    __weak __typeof(self) weakSelf = self;
-    [self.passkeyKeychainProviderBridge
-        markKeysAsStaleForGaia:credential.gaia
-                    completion:^() {
-                      [weakSelf userSelectedPasskey:credential
-                                     clientDataHash:clientDataHash
-                                 allowedCredentials:allowedCredentials
-                                         allowRetry:NO
-                           userVerificationRequired:NO];  // User verification
-                                                          // would have happen
-                                                          // already if needed.
-                    }];
-  }
+  [self userSelectedPasskey:passkeyCredential];
 }
 
 // Triggers the process to fetch the security domain secret and calls the
 // completion block with the security domain secret as input.
+// "credential" will be used to validate the security domain secret.
 - (void)fetchSecurityDomainSecretForGaia:(NSString*)gaia
+                              credential:(id<Credential>)credential
                                  purpose:(PasskeyKeychainProvider::
                                               ReauthenticatePurpose)purpose
                 userVerificationRequired:(BOOL)userVerificationRequired
@@ -951,6 +934,7 @@ UIColor* BackgroundColor() {
   _userVerificationRequired = userVerificationRequired;
   [self.passkeyKeychainProviderBridge
       fetchSecurityDomainSecretForGaia:gaia
+                            credential:credential
                                purpose:purpose
                             completion:completion];
 }

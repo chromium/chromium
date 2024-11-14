@@ -27,7 +27,6 @@ typedef void (^FetchSecurityDomainSecretCompletionBlock)(
 - (void)userSelectedPasskey:(id<Credential>)passkey
               clientDataHash:(NSData*)clientDataHash
           allowedCredentials:(NSArray<NSData*>*)allowedCredentials
-                  allowRetry:(BOOL)allowRetry
     userVerificationRequired:(BOOL)userVerificationRequired;
 
 - (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode;
