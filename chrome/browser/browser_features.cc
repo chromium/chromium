@@ -159,15 +159,6 @@ base::FeatureParam<bool> kNotificationOneTapUnsubscribeUseServiceIntentParam{
     &kNotificationOneTapUnsubscribe, "use_service_intent", false};
 #endif
 
-// Disables prerendering on the default search engine predictor. This is useful
-// in comparing the impact of the SupportSearchSuggestionForPrerender2 feature
-// during its rollout. Once that rollout is complete, this feature should be
-// removed and instead we should add a new long-term holdback to
-// PreloadingConfig.
-BASE_FEATURE(kPrerenderDSEHoldback,
-             "PrerenderDSEHoldback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables executing the browser commands sent by the NTP promos.
 BASE_FEATURE(kPromoBrowserCommands,
              "PromoBrowserCommands",

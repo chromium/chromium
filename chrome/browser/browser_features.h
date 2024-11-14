@@ -87,7 +87,6 @@ extern base::FeatureParam<bool>
     kNotificationOneTapUnsubscribeUseServiceIntentParam;
 #endif
 
-BASE_DECLARE_FEATURE(kPrerenderDSEHoldback);
 BASE_DECLARE_FEATURE(kPromoBrowserCommands);
 extern const char kBrowserCommandIdParam[];
 
