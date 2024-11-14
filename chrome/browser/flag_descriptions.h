@@ -1418,6 +1418,11 @@ extern const char kLocationBarModelOptimizationsDescription[];
 extern const char kLogJsConsoleMessagesName[];
 extern const char kLogJsConsoleMessagesDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kLoginDbDeprecationAndroidName[];
+extern const char kLoginDbDeprecationAndroidDescription[];
+#endif  // BUILDFLAG(IS_ANDROID)
+
 extern const char kMediaRouterCastAllowAllIPsName[];
 extern const char kMediaRouterCastAllowAllIPsDescription[];
 

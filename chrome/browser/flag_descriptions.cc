@@ -2499,6 +2499,16 @@ const char kLogJsConsoleMessagesDescription[] =
     "Enable logging JS console messages in system logs, please note that they "
     "may contain PII.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kLoginDbDeprecationAndroidName[] =
+    "Deprecate the LoginDB on Android";
+const char kLoginDbDeprecationAndroidDescription[] =
+    "When enabled, Chrome on Android stops using the LoginDB. This applies "
+    "only to users who haven't been migrated to the new Android backend."
+    "Existing passwords in the LoginDB can be accessed in an exported CSV when "
+    "the user chooses to do so.";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const char kMediaRouterCastAllowAllIPsName[] =
     "Connect to Cast devices on all IP addresses";
 const char kMediaRouterCastAllowAllIPsDescription[] =
@@ -7077,7 +7087,8 @@ const char kMahiDebuggingName[] = "Mahi Debugging";
 const char kMahiDebuggingDescription[] = "Enable debugging for mahi.";
 
 const char kMahiPanelResizableName[] = "Mahi panel resizing";
-const char kMahiPanelResizableDescription[] = "Enable Mahi panel resizing on ChromeOS.";
+const char kMahiPanelResizableDescription[] =
+    "Enable Mahi panel resizing on ChromeOS.";
 
 const char kMediaAppPdfMahiName[] = "Mahi feature on Media App PDF";
 const char kMediaAppPdfMahiDescription[] =

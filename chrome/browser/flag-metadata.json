@@ -5783,6 +5783,11 @@
     "expiry_milestone": 124
   },
   {
+    "name": "login-db-deprecation-android",
+    "owners": ["ioanap@chromium.org", "atsvirchkova@google.com"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "mac-address-randomization",
     "owners": [ "chadduffin@chromium.org", "cros-device-enablement@google.com"],
     "expiry_milestone": 135

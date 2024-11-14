@@ -164,6 +164,11 @@ BASE_DECLARE_FEATURE(kClearLoginDatabaseForAllMigratedUPMUsers);
 // login db upon UPM with split stores activation. The db is cleared on
 // the following run anyway.
 BASE_DECLARE_FEATURE(kDropLoginDbRenameForUpmSyncingUsers);
+
+// If enabled, the password store no longer uses the Login DB as a backend.
+// Instead, it either uses the Android-specific storage or an empty backend
+// if the client isn't eligible for the former.
+BASE_DECLARE_FEATURE(kLoginDbDeprecationAndroid);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Improves PSL matching capabilities by utilizing PSL-extension list from

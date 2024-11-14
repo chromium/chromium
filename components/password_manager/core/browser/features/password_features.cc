@@ -157,9 +157,14 @@ BASE_FEATURE(kBiometricAuthIdentityCheck,
 BASE_FEATURE(kClearLoginDatabaseForAllMigratedUPMUsers,
              "ClearLoginDatabaseForAllMigratedUPMUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDropLoginDbRenameForUpmSyncingUsers,
              "DropLoginDbRenameForUpmSyncingUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLoginDbDeprecationAndroid,
+             "LoginDbDeprecationAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 BASE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing,

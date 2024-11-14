@@ -16844,6 +16844,7 @@ from previous Chrome versions.
   <int value="-1386776772" label="FilesZipPack:disabled"/>
   <int value="-1385221197"
       label="AllowSignedHTTPExchangeCertsWithoutExtension:enabled"/>
+  <int value="-1385143942" label="LoginDbDeprecationAndroid:disabled"/>
   <int value="-1384439177" label="EnableNearbyMdns:disabled"/>
   <int value="-1384426209" label="SharingDeviceRegistration:disabled"/>
   <int value="-1383674566" label="EnableProtoApiForClassifyUrl:enabled"/>
@@ -22189,6 +22190,7 @@ from previous Chrome versions.
   <int value="773197199" label="AppInstallServiceUriBorealis:enabled"/>
   <int value="773244977" label="FilesInlineSyncStatusProgressEvents:disabled"/>
   <int value="773563826" label="CrostiniUsbSupport:disabled"/>
+  <int value="773625679" label="LoginDbDeprecationAndroid:enabled"/>
   <int value="773743944" label="show-android-files-in-files-app"/>
   <int value="773908750"
       label="UnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning:disabled"/>
