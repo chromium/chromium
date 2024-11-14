@@ -1052,6 +1052,16 @@ class AccountSelectionMediator {
     }
 
     void onDismissed(@IdentityRequestDialogDismissReason int dismissReason) {
+        boolean isUseOtherAccountCctDismissed =
+                mHeaderType == HeaderType.SIGN_IN && mIsModalDialogOpen;
+        // If dismissed from use other account CCT, reshow the accounts dialog.
+        if (isUseOtherAccountCctDismissed) {
+            mIsModalDialogOpen = false;
+            mSelectedAccount = null;
+            showAccountsInternal(/* newAccounts= */ null);
+            return;
+        }
+
         if (mAccountChooserState != null) {
             maybeRecordAccountChooserResult(mAccountChooserState);
         }
