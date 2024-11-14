@@ -35,6 +35,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -615,6 +616,7 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
     @Test
     @SmallTest
+    @RequiresRestart("Failing 1st try, crbug.com/379168927")
     public void resizeDinoWidgetToFillTargetCellArea_repositionContent() {
         final Resources r = mContext.getResources();
 
