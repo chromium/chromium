@@ -28,11 +28,12 @@ std::string StackTraceGetter::CurrentStackTrace(int max_depth, int skip_count) {
   // within the GTest function that called UponLeavingGTest, and is irrelevant
   // as well.
   {
-    auto mismatch_pair = std::mismatch(departure.rbegin(), departure.rend(),
-                                       current.rbegin(), current.rend());
-    if (mismatch_pair.second != current.rend()) {
-      current = current.subspan(
-          0, current.size() - (mismatch_pair.second - current.rbegin() + 1));
+    const auto r_current = base::Reversed(current);
+    const size_t remaining =
+        r_current.end() -
+        std::ranges::mismatch(base::Reversed(departure), r_current).in2;
+    if (remaining) {
+      current = current.first(remaining - 1);
     }
   }
 
@@ -41,22 +42,21 @@ std::string StackTraceGetter::CurrentStackTrace(int max_depth, int skip_count) {
   // StackTrace's constructor, which are irrelevant. Also ignore the very first
   // mismatch, as it identifies two instructions within current function.
   {
-    auto mismatch_pair = std::mismatch(departure.begin(), departure.end(),
-                                       current.begin(), current.end());
-    if (mismatch_pair.second != current.end()) {
-      auto match_size = (mismatch_pair.second - current.begin()) + 1;
-      current = current.subspan(match_size);
+    const size_t remaining =
+        current.end() - std::ranges::mismatch(departure, current).in2;
+    if (remaining) {
+      current = current.last(remaining - 1);
     }
   }
 
   // Ignore frames that the caller wishes to skip.
   if (skip_count >= 0 && static_cast<size_t>(skip_count) < current.size()) {
-    current = current.subspan(skip_count);
+    current = current.subspan(static_cast<size_t>(skip_count));
   }
 
   // Only return as many as requested.
   if (max_depth >= 0 && static_cast<size_t>(max_depth) < current.size()) {
-    current = current.subspan(0, static_cast<size_t>(max_depth));
+    current = current.first(static_cast<size_t>(max_depth));
   }
 
   return base::debug::StackTrace(current).ToString();
