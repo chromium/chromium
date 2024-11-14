@@ -654,9 +654,18 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, MaybeGetRelyingPartyIdOverride) {
   }
 }
 
+// TODO(crbug.com/372493822): remove these tests when hybrid linking is cleaned
+// up.
+class HybridLinkingChromeAuthenticatorRequestDelegateTest
+    : public ChromeAuthenticatorRequestDelegateTest {
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnHybridLinking};
+};
+
 // Tests that synced GPM passkeys are injected in the transport availability
-// info.
-TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys) {
+// info if there's a phone paired.
+TEST_F(HybridLinkingChromeAuthenticatorRequestDelegateTest, GpmPasskeys) {
   std::string relying_party = "example.com";
   GURL url("https://example.com");
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
@@ -728,7 +737,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys) {
 
 // Tests that synced GPM passkeys are not discovered if there are no sync paired
 // phones.
-TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_NoSyncPairedPhones) {
+TEST_F(HybridLinkingChromeAuthenticatorRequestDelegateTest,
+       GpmPasskeys_NoSyncPairedPhones) {
   GURL url("https://example.com");
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
   ChromeWebAuthnCredentialsDelegateFactory::CreateForWebContents(
@@ -774,7 +784,8 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_NoSyncPairedPhones) {
 }
 
 // Tests that shadowed GPM passkeys are not discovered.
-TEST_F(ChromeAuthenticatorRequestDelegateTest, GpmPasskeys_ShadowedPasskeys) {
+TEST_F(HybridLinkingChromeAuthenticatorRequestDelegateTest,
+       GpmPasskeys_ShadowedPasskeys) {
   GURL url("https://example.com");
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
   ChromeWebAuthnCredentialsDelegateFactory::CreateForWebContents(

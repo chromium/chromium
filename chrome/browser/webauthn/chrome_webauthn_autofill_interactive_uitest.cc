@@ -37,6 +37,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
@@ -252,7 +253,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {},
+        {device::kWebAuthnHybridLinking},
         /*disabled_features=*/{
             // Disable this feature explicitly, as it can cause unexpected email
             // fields to be parsed in these tests.
@@ -580,6 +581,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
   RunSelectAccountTest(kConditionalUIRequestFiltered);
 }
 
+// TODO(crbug.com/372493822): remove when hybrid linking flag is removed.
 IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
                        GPMPasskeys) {
   // Have the virtual device masquerade as a phone.
@@ -658,6 +660,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
 
 // Tests that downloading passkeys from sync during a conditional UI also
 // updates the autofill popup with the newly downloaded credentials.
+// TODO(crbug.com/372493822): remove when hybrid linking flag is removed.
 IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
                        GPMPasskeys_UpdatePasskeys) {
   // Have the virtual device masquerade as a phone.
