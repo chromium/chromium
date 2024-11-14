@@ -15,6 +15,18 @@ suite('ModuleHeaderV2', () => {
     document.body.appendChild(moduleHeaderElementV2);
   });
 
+  test('title only shows if headerText is not null', async () => {
+    // Assert.
+    assertFalse(isVisible(moduleHeaderElementV2.$.title));
+
+    // Act.
+    moduleHeaderElementV2.headerText = 'foo';
+    await microtasksFinished();
+
+    // Assert
+    assertTrue(isVisible(moduleHeaderElementV2.$.title));
+  });
+
   test('clicking the menu button shows the action menu', async () => {
     // Act.
     moduleHeaderElementV2.$.menuButton.click();

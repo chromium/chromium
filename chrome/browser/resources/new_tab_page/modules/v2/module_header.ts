@@ -23,6 +23,7 @@ export interface ModuleHeaderElement {
   $: {
     actionMenu: CrActionMenuElement,
     menuButton: HTMLElement,
+    title: HTMLElement,
   };
 }
 
@@ -48,7 +49,7 @@ export class ModuleHeaderElement extends CrLitElement {
     };
   }
 
-  headerText: string;
+  headerText: string|null = null;
   menuItemGroups: MenuItem[][] = [];
   moreActionsText: string;
 
