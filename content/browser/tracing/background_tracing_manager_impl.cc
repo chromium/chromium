@@ -22,6 +22,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "base/tracing/trace_time.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -164,6 +165,28 @@ class PreferenceManagerImpl
     return tracing::TraceStartupConfig::GetInstance().IsEnabled() &&
            tracing::TraceStartupConfig::GetInstance().GetSessionOwner() ==
                tracing::TraceStartupConfig::SessionOwner::kBackgroundTracing;
+  }
+};
+
+// Emits background tracing metadata as a data source.
+class BackgroundMetadataDataSource
+    : public perfetto::DataSource<BackgroundMetadataDataSource> {
+ public:
+  static void Register() {
+    perfetto::DataSourceDescriptor desc;
+    desc.set_name("org.chromium.background_scenario_metadata");
+    perfetto::DataSource<BackgroundMetadataDataSource>::Register(desc);
+  }
+
+  static void EmitMetadata(TracingScenario* scenario) {
+    Trace([&](TraceContext ctx) {
+      auto packet = ctx.NewTracePacket();
+      packet->set_timestamp(
+          TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds());
+      packet->set_timestamp_clock_id(base::tracing::kTraceClockId);
+      auto* chrome_metadata = packet->set_chrome_metadata();
+      scenario->GenerateMetadataProto(chrome_metadata);
+    });
   }
 };
 
@@ -392,6 +415,7 @@ void BackgroundTracingManagerImpl::AddMetadataGeneratorFunction() {
   metadata_source->AddGeneratorFunction(
       base::BindRepeating(&BackgroundTracingManagerImpl::GenerateMetadataProto,
                           base::Unretained(this)));
+  BackgroundMetadataDataSource::Register();
 }
 
 bool BackgroundTracingManagerImpl::RequestActivateScenario() {
@@ -676,6 +700,7 @@ void BackgroundTracingManagerImpl::OnScenarioRecording(
   DCHECK_EQ(active_scenario_, scenario);
   base::UmaHistogramSparse("Tracing.Background.Scenario.Recording",
                            variations::HashName(scenario->scenario_name()));
+  BackgroundMetadataDataSource::EmitMetadata(scenario);
   OnStartTracingDone();
 }
 
@@ -1102,3 +1127,7 @@ size_t BackgroundTracingManagerImpl::GetTraceUploadLimitKb() const {
 }
 
 }  // namespace content
+
+PERFETTO_DEFINE_DATA_SOURCE_STATIC_MEMBERS_WITH_ATTRS(
+    COMPONENT_EXPORT(TRACING_CPP),
+    content::BackgroundMetadataDataSource);

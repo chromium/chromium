@@ -362,17 +362,18 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
 
   base::TrackEvent::Register();
   tracing::TriggersDataSource::Register();
-  tracing::MetadataDataSource::Register();
   tracing::TracingSamplerProfiler::RegisterDataSource();
   // SystemMetricsSampler will be started when enabling
   // kSystemMetricsSourceName.
   tracing::SystemMetricsSampler::Register(/*system_wide=*/enable_consumer);
-#if BUILDFLAG(IS_WIN)
   if (enable_consumer) {
+    // Metadata only needs to be installed in the browser process.
+    tracing::MetadataDataSource::Register();
+#if BUILDFLAG(IS_WIN)
     // Etw Data Source only needs to be installed in the browser process.
     tracing::EtwSystemDataSource::Register();
-  }
 #endif
+  }
   TrackNameRecorder::GetInstance();
   CustomEventRecorder::GetInstance();
 }

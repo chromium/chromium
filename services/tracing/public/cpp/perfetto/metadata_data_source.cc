@@ -23,15 +23,13 @@ void MetadataDataSource::Register() {
   perfetto::DataSource<MetadataDataSource>::Register(desc);
 }
 
-void MetadataDataSource::OnStart(const StartArgs&) {}
-
-void MetadataDataSource::OnFlush(const FlushArgs&) {
+void MetadataDataSource::OnStart(const StartArgs&) {
   WriteMetadata();
 }
 
-void MetadataDataSource::OnStop(const StopArgs&) {
-  WriteMetadata();
-}
+void MetadataDataSource::OnFlush(const FlushArgs&) {}
+
+void MetadataDataSource::OnStop(const StopArgs&) {}
 
 void MetadataDataSource::WriteMetadata() {
   Trace([&](TraceContext ctx) {
