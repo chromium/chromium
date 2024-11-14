@@ -255,7 +255,6 @@ void CSSDefaultStyleSheets::AddRulesToDefaultStyleSheets(
   switch (type) {
     case NamespaceType::kHTML:
       default_html_style_->AddRulesFromSheet(rules, ScreenEval());
-      default_html_quirks_style_->AddRulesFromSheet(rules, ScreenEval());
       break;
     case NamespaceType::kSVG:
       default_svg_style_->AddRulesFromSheet(rules, ScreenEval());
