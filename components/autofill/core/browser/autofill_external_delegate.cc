@@ -873,7 +873,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
                  base::Contains(shown_suggestion_types_,
                                 SuggestionType::kAddressEntry);
         }();
-        plus_address_delegate->DidFillPlusAddress(did_show_email_suggestion);
+        plus_address_delegate->DidFillPlusAddress(
+            did_show_email_suggestion,
+            trigger_source_ ==
+                AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
       }
       manager_->FillOrPreviewField(
           mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,

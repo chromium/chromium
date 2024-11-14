@@ -154,7 +154,7 @@ void AddressAccessoryControllerImpl::OnFillingTriggered(
   if (selection.suggestion_type() == AccessorySuggestionType::kPlusAddress &&
       plus_address_service_) {
     plus_address_service_->DidFillPlusAddress(
-        /*did_show_email_suggestion=*/false);
+        /*did_show_email_suggestion=*/false, /*is_manual_fallback=*/true);
   }
 }
 

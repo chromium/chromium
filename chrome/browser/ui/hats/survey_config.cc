@@ -144,6 +144,9 @@ constexpr char kHatsSurveyTriggerPlusAddressDeclinedFirstTimeCreate[] =
 constexpr char
     kHatsSurveyTriggerPlusAddressDidChoosePlusAddressOverEmailSurvey[] =
         "plus-address-did-choose-plus-address-over-email";
+constexpr char
+    kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback[] =
+        "plus-address-filled-plus-address-via-manual-fallback";
 constexpr char kHatsSurveyTriggerPrivacySandboxSentimentSurvey[] =
     "privacy-sandbox-sentiment-survey";
 
@@ -499,6 +502,14 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &plus_addresses::features::kPlusAddressUserDidChoosePlusAddressOverEmail,
       kHatsSurveyTriggerPlusAddressDidChoosePlusAddressOverEmailSurvey,
+      /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
+      std::vector<std::string>{
+          plus_addresses::hats::kFirstPlusAddressCreationTime,
+          plus_addresses::hats::kLastPlusAddressFillingTime});
+  survey_configs.emplace_back(
+      &plus_addresses::features::
+          kPlusAddressFilledPlusAddressViaManualFallbackSurvey,
+      kHatsSurveyTriggerPlusAddressFilledPlusAddressViaManualFallback,
       /*presupplied_trigger_id=*/std::nullopt, std::vector<std::string>{},
       std::vector<std::string>{
           plus_addresses::hats::kFirstPlusAddressCreationTime,

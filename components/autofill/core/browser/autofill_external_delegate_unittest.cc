@@ -2273,7 +2273,8 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
                   MockAutofillPlusAddressDelegate::SuggestionEvent::
                       kExistingPlusAddressChosen));
   EXPECT_CALL(plus_address_delegate(),
-              DidFillPlusAddress(/*did_show_email_suggestion=*/true));
+              DidFillPlusAddress(/*did_show_email_suggestion=*/true,
+                                 /*is_manual_fallback=*/false));
   EXPECT_CALL(
       manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,
@@ -2325,7 +2326,8 @@ TEST_F(AutofillExternalDelegatePlusAddressUnitTest,
                   MockAutofillPlusAddressDelegate::SuggestionEvent::
                       kExistingPlusAddressChosen));
   EXPECT_CALL(plus_address_delegate(),
-              DidFillPlusAddress(/*did_show_email_suggestion=*/false));
+              DidFillPlusAddress(/*did_show_email_suggestion=*/false,
+                                 /*is_manual_fallback=*/true));
   EXPECT_CALL(
       manager(),
       FillOrPreviewField(mojom::ActionPersistence::kFill,

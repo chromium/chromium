@@ -97,8 +97,8 @@ void FakePlusAddressService::OnPlusAddressSuggestionShown(
   NOTIMPLEMENTED();
 }
 
-void FakePlusAddressService::DidFillPlusAddress(
-    bool did_show_email_suggestion) {
+void FakePlusAddressService::DidFillPlusAddress(bool did_show_email_suggestion,
+                                                bool is_manual_fallback) {
   did_fill_plus_address_suggestion_ = true;
 }
 

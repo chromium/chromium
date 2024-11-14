@@ -60,6 +60,12 @@ BASE_FEATURE(kPlusAddressFallbackFromContextMenu,
              "PlusAddressFallbackFromContextMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, a HaTS survey is shown after the user fills a plus address
+// after triggering autofill manually.
+BASE_FEATURE(kPlusAddressFilledPlusAddressViaManualFallbackSurvey,
+             "PlusAddressFilledPlusAddressViaManualFallbackSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, if the user has an existing plus address for the current
 // domain, address profile suggestions will be updated to reflect the plus
 // address email instead of the stored one. Note that only profile emails
