@@ -126,6 +126,9 @@ dictionary RTCInboundRtpStreamStats : RTCReceivedRtpStreamStats {
   unsigned long long   retransmittedPacketsReceived;
   unsigned long long   retransmittedBytesReceived;
   unsigned long        rtxSsrc;
+  double               totalCorruptionProbability;
+  double               totalSquaredCorruptionProbability;
+  unsigned long long   corruptionMeasurements;
 };
 
 // https://w3c.github.io/webrtc-stats/#remoteinboundrtpstats-dict*
