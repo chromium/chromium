@@ -852,7 +852,8 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
     const FormFieldData& field_data) {
   external_delegate_->OnQuery(
       form, field_data, /*caret_bounds=*/gfx::Rect(),
-      AutofillSuggestionTriggerSource::kShowCardsFromAccount);
+      AutofillSuggestionTriggerSource::kShowCardsFromAccount,
+      /*update_datalist=*/false);
   AutofillField* autofill_field = GetAutofillField(form, field_data);
   FieldType field_type = autofill_field
                              ? autofill_field->Type().GetStorableType()
@@ -1444,8 +1445,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   }
 
   const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
-  external_delegate_->SetCurrentDataListValues(field.datalist_options());
-  external_delegate_->OnQuery(form, field, caret_bounds, trigger_source);
+  external_delegate_->OnQuery(form, field, caret_bounds, trigger_source,
+                              /*update_datalist=*/true);
 
   SuggestionsContext context = BuildSuggestionsContext(
       form, form_structure, field, autofill_field, trigger_source);

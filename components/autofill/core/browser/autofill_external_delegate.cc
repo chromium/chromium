@@ -301,11 +301,16 @@ void AutofillExternalDelegate::OnQuery(
     const FormData& form,
     const FormFieldData& field,
     const gfx::Rect& caret_bounds,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    bool update_datalist) {
   query_form_ = form;
   query_field_ = field;
   caret_bounds_ = caret_bounds;
   trigger_source_ = trigger_source;
+  if (update_datalist) {
+    manager_->client().UpdateAutofillDataListValues(
+        query_field_.datalist_options());
+  }
 }
 
 const AutofillField* AutofillExternalDelegate::GetQueriedAutofillField() const {
@@ -515,12 +520,6 @@ void AutofillExternalDelegate::OnAutofillAvailabilityEvent(
   // accessibility objects live in both the renderer and browser processes.
   manager_->driver().RendererShouldSetSuggestionAvailability(
       query_field_.global_id(), suggestion_availability);
-}
-
-void AutofillExternalDelegate::SetCurrentDataListValues(
-    std::vector<SelectOption> datalist) {
-  datalist_ = std::move(datalist);
-  manager_->client().UpdateAutofillDataListValues(datalist_);
 }
 
 absl::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
@@ -1475,14 +1474,15 @@ void AutofillExternalDelegate::FillPredictionImprovements(
 
 void AutofillExternalDelegate::InsertDataListValues(
     std::vector<Suggestion>& suggestions) const {
-  if (datalist_.empty()) {
+  const std::vector<SelectOption>& datalist = query_field_.datalist_options();
+  if (datalist.empty()) {
     return;
   }
 
   // Go through the list of autocomplete values and remove them if they are in
   // the list of datalist values.
   auto datalist_values = base::MakeFlatSet<std::u16string_view>(
-      datalist_, {}, [](const SelectOption& option) -> std::u16string_view {
+      datalist, {}, [](const SelectOption& option) -> std::u16string_view {
         return option.value;
       });
   std::erase_if(suggestions, [&datalist_values](const Suggestion& suggestion) {
@@ -1500,12 +1500,12 @@ void AutofillExternalDelegate::InsertDataListValues(
   }
 
   // Insert the datalist elements at the beginning.
-  suggestions.insert(suggestions.begin(), datalist_.size(),
+  suggestions.insert(suggestions.begin(), datalist.size(),
                      Suggestion(SuggestionType::kDatalistEntry));
-  for (size_t i = 0; i < datalist_.size(); i++) {
+  for (size_t i = 0; i < datalist.size(); i++) {
     suggestions[i].main_text =
-        Suggestion::Text(datalist_[i].value, Suggestion::Text::IsPrimary(true));
-    suggestions[i].labels = {{Suggestion::Text(datalist_[i].text)}};
+        Suggestion::Text(datalist[i].value, Suggestion::Text::IsPrimary(true));
+    suggestions[i].labels = {{Suggestion::Text(datalist[i].text)}};
   }
 }
 

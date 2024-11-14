@@ -737,8 +737,8 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     external_delegate().OnQuery(
         form, form.fields().front(),
         /*caret_bounds=*/gfx::Rect(),
-
-        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+        AutofillSuggestionTriggerSource::kFormControlElementClicked,
+        /*update_datalist=*/false);
 
     external_delegate().DidAcceptSuggestion(
         test::CreateAutofillSuggestion(SuggestionType::kCreditCardEntry,
@@ -767,7 +767,8 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     external_delegate().OnQuery(
         form, form.fields().front(),
         /*caret_bounds=*/gfx::Rect(),
-        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+        AutofillSuggestionTriggerSource::kFormControlElementClicked,
+        /*update_datalist=*/false);
 
     external_delegate().DidAcceptSuggestion(
         Suggestion(SuggestionType::kUndoOrClear),
@@ -794,7 +795,8 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     external_delegate().OnQuery(
         form, form.fields().front(),
         /*caret_bounds=*/gfx::Rect(),
-        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+        AutofillSuggestionTriggerSource::kFormControlElementClicked,
+        /*update_datalist=*/false);
 
     external_delegate().DidAcceptSuggestion(
         test::CreateAutofillSuggestion(SuggestionType::kCreditCardEntry,
@@ -928,7 +930,8 @@ TEST_F(AutofillMetricsTest, ProfileCheckoutFlowUserActions) {
     external_delegate().OnQuery(
         form, form.fields().front(),
         /*caret_bounds=*/gfx::Rect(),
-        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+        AutofillSuggestionTriggerSource::kFormControlElementClicked,
+        /*update_datalist=*/false);
 
     external_delegate().DidAcceptSuggestion(
         test::CreateAutofillSuggestion(SuggestionType::kCreditCardEntry,

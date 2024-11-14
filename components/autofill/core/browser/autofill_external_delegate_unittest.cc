@@ -398,11 +398,12 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
   void IssueOnQuery(
       FormData form_data,
       const gfx::Rect& caret_bounds = gfx::Rect(),
-      AutofillSuggestionTriggerSource trigger_source = kDefaultTriggerSource) {
+      AutofillSuggestionTriggerSource trigger_source = kDefaultTriggerSource,
+      bool update_datalist = false) {
     queried_form_ = std::move(form_data);
     manager().OnFormsSeen({queried_form()}, {});
     external_delegate().OnQuery(queried_form(), queried_field(), caret_bounds,
-                                trigger_source);
+                                trigger_source, update_datalist);
   }
 
   void IssueOnQuery(
@@ -431,6 +432,24 @@ class AutofillExternalDelegateUnitTest : public testing::Test {
     IssueOnQuery(/*caret_bounds=*/gfx::Rect(), trigger_source,
                  trigger_field_type, autocomplete_attribute);
   }
+
+  void IssueOnQuery(std::vector<SelectOption> datalist_options) {
+    FormGlobalId form_id = test::MakeFormGlobalId();
+    FieldGlobalId field_id = test::MakeFieldGlobalId();
+    IssueOnQuery(
+        test::GetFormData({
+            .fields = {{.role = NAME_FIRST,
+                        .host_frame = field_id.frame_token,
+                        .renderer_id = field_id.renderer_id,
+                        .autocomplete_attribute = "given-name",
+                        .datalist_options = std::move(datalist_options)}},
+            .host_frame = form_id.frame_token,
+            .renderer_id = form_id.renderer_id,
+        }),
+        /*caret_bounds=*/gfx::Rect(), kDefaultTriggerSource,
+        /*update_datalist=*/true);
+  }
+
   // Returns the triggering `AutofillField`. This is the only field in the form
   // created in `IssueOnQuery()`.
   AutofillField* get_triggering_autofill_field() {
@@ -977,13 +996,11 @@ TEST_F(AutofillExternalDelegateUnitTest, TestExternalDelegateVirtualCalls) {
 
 // Test that data list elements for a node will appear in the Autofill popup.
 TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateDataList) {
-  IssueOnQuery();
-
   std::vector<SelectOption> data_list_items;
   data_list_items.emplace_back();
 
   EXPECT_CALL(client(), UpdateAutofillDataListValues(SizeIs(1)));
-  external_delegate().SetCurrentDataListValues(data_list_items);
+  IssueOnQuery(data_list_items);
 
   // This should call ShowAutofillSuggestions.
   const auto kExpectedSuggestions =
@@ -1010,8 +1027,6 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateDataList) {
 
 // Test that datalist values can get updated while a popup is showing.
 TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
-  IssueOnQuery();
-
   EXPECT_CALL(client(), ShowAutofillSuggestions).Times(0);
 
   // Make sure just setting the data list values doesn't cause the popup to
@@ -1020,7 +1035,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
   data_list_items.emplace_back();
 
   EXPECT_CALL(client(), UpdateAutofillDataListValues(SizeIs(1)));
-  external_delegate().SetCurrentDataListValues(data_list_items);
+  IssueOnQuery(data_list_items);
 
   // Ensure the popup is displayed.
   const auto kExpectedSuggestions =
@@ -1044,14 +1059,12 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
   data_list_items.emplace_back();
 
   EXPECT_CALL(client(), UpdateAutofillDataListValues(SizeIs(2)));
-  external_delegate().SetCurrentDataListValues(data_list_items);
+  IssueOnQuery(data_list_items);
 }
 
 // Test that we _don't_ de-dupe autofill values against datalist values. We
 // keep both with a separator.
 TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
-  IssueOnQuery();
-
   std::vector<SelectOption> datalist{{.value = u"Rick", .text = u"Deckard"},
                                      {.value = u"Beyonce", .text = u"Knowles"}};
   EXPECT_CALL(client(), UpdateAutofillDataListValues(ElementsAre(
@@ -1059,7 +1072,7 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
                                   Field(&SelectOption::text, u"Deckard")),
                             AllOf(Field(&SelectOption::value, u"Beyonce"),
                                   Field(&SelectOption::text, u"Knowles")))));
-  external_delegate().SetCurrentDataListValues(datalist);
+  IssueOnQuery(datalist);
 
   const auto kExpectedSuggestions = SuggestionVectorIdsAre(
       SuggestionType::kDatalistEntry, SuggestionType::kDatalistEntry,
@@ -1083,8 +1096,6 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
 // Test that we de-dupe autocomplete values against datalist values, keeping the
 // latter in case of a match.
 TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutocompleteDatalistValues) {
-  IssueOnQuery();
-
   std::vector<SelectOption> datalist{{.value = u"Rick", .text = u"Deckard"},
                                      {.value = u"Beyonce", .text = u"Knowles"}};
   EXPECT_CALL(client(), UpdateAutofillDataListValues(ElementsAre(
@@ -1092,7 +1103,7 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutocompleteDatalistValues) {
                                   Field(&SelectOption::text, u"Deckard")),
                             AllOf(Field(&SelectOption::value, u"Beyonce"),
                                   Field(&SelectOption::text, u"Knowles")))));
-  external_delegate().SetCurrentDataListValues(datalist);
+  IssueOnQuery(datalist);
 
   const auto kExpectedSuggestions = SuggestionVectorIdsAre(
       // We are expecting only two data list entries.
@@ -1893,7 +1904,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().OnQuery(
       form, form.fields()[0],
       /*caret_bounds=*/gfx::Rect(),
-      AutofillSuggestionTriggerSource::kManualFallbackPayments);
+      AutofillSuggestionTriggerSource::kManualFallbackPayments,
+      /*update_datalist=*/false);
 
   EXPECT_CALL(cc_access_manager(), FetchCreditCard).Times(0);
   EXPECT_CALL(manager(), FillOrPreviewCreditCardForm(
@@ -1938,8 +1950,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().OnQuery(
       form, form.fields()[0],
       /*caret_bounds=*/gfx::Rect(),
-
-      AutofillSuggestionTriggerSource::kManualFallbackPayments);
+      AutofillSuggestionTriggerSource::kManualFallbackPayments,
+      /*update_datalist=*/false);
 
   EXPECT_CALL(manager(), AuthenticateThenFillCreditCardForm(
                              Property(&FormData::global_id, form.global_id()),
@@ -2039,7 +2051,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().OnQuery(
       form, *field_to_fill,
       /*caret_bounds=*/gfx::Rect(),
-      AutofillSuggestionTriggerSource::kPredictionImprovements);
+      AutofillSuggestionTriggerSource::kPredictionImprovements,
+      /*update_datalist=*/false);
   Suggestion fill_suggestion =
       Suggestion(u"Autocomplete", SuggestionType::kFillPredictionImprovements);
   fill_suggestion.payload = Suggestion::PredictionImprovementsPayload(
@@ -2094,7 +2107,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().OnQuery(
       form, *field_to_fill,
       /*caret_bounds=*/gfx::Rect(),
-      AutofillSuggestionTriggerSource::kPredictionImprovements);
+      AutofillSuggestionTriggerSource::kPredictionImprovements,
+      /*update_datalist=*/false);
   EXPECT_CALL(*client().GetAutofillAiDelegate(), OnSuggestionsShown);
   external_delegate().OnSuggestionsShown(std::vector<Suggestion>{
       Suggestion(SuggestionType::kPredictionImprovementsLoadingState)});
@@ -3294,7 +3308,7 @@ TEST_F(AutofillExternalDelegateUnitTest, IgnoreAutocompleteOffForAutofill) {
   field.set_should_autocomplete(false);
 
   external_delegate().OnQuery(form, field, /*caret_bounds=*/gfx::Rect(),
-                              kDefaultTriggerSource);
+                              kDefaultTriggerSource, /*update_datalist=*/false);
 
   std::vector<Suggestion> autofill_items;
   autofill_items.emplace_back();

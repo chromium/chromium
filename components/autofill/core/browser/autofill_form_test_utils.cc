@@ -95,7 +95,9 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
       !fd.select_options.empty()) {
     ff.set_options(fd.select_options);
   }
-
+  if (!fd.datalist_options.empty()) {
+    ff.set_datalist_options(fd.datalist_options);
+  }
   ff.set_renderer_id(fd.renderer_id.value_or(MakeFieldRendererId()));
   ff.set_host_form_id(MakeFormRendererId());
   ff.set_is_focusable(fd.is_focusable);
