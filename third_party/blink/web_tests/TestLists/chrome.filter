@@ -20,3 +20,6 @@ external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html
 # Those tests fall on headless shell, run them with chrome for now
 external/wpt/signed-exchange/reporting/*
 virtual/split-http-cache/external/wpt/signed-exchange/reporting/*
+
+# Translator API is implemented in the `//chrome` layer.
+external/wpt/ai/translator/*
