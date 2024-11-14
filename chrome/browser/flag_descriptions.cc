@@ -5611,6 +5611,10 @@ const char kImmersiveFullscreenName[] = "Immersive Fullscreen Toolbar";
 const char kImmersiveFullscreenDescription[] =
     "Automatically hide and show the toolbar in fullscreen.";
 
+const char kMacAccessibilityAPIMigrationName[] = "Mac A11y API Migration";
+const char kMacAccessibilityAPIMigrationDescription[] =
+    "Enables the migration to the new Cocoa accessibility API.";
+
 const char kMacImeLiveConversionFixName[] = "Mac IME Live Conversion";
 const char kMacImeLiveConversionFixDescription[] =
     "A fix for the Live Conversion feature of Japanese IME.";

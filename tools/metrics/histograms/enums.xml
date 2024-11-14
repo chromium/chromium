@@ -18887,6 +18887,7 @@ from previous Chrome versions.
   <int value="-560246178" label="IwaControlledFrame:enabled"/>
   <int value="-560114351" label="OfflinePagesRenovations:disabled"/>
   <int value="-559098342" label="AutofillEnableBuyNowPayLaterForZip:enabled"/>
+  <int value="-559014545" label="MacAccessibilityAPIMigration:enabled"/>
   <int value="-558471324" label="PreviewsCoinFlipHoldback_UKMOnly:disabled"/>
   <int value="-557742250" label="ContentSuggestionsCategories:disabled"/>
   <int value="-557103748"
@@ -20939,6 +20940,7 @@ from previous Chrome versions.
   <int value="278028552"
       label="SyncShowIdentityErrorsForSignedInUsers:enabled"/>
   <int value="278756320" label="disable-app-list-app-info"/>
+  <int value="279103655" label="MacAccessibilityAPIMigration:disabled"/>
   <int value="279525129" label="SystemEmojiPickerJellySupport:disabled"/>
   <int value="280459238" label="ChromeSharingHubLaunchAdjacent:disabled"/>
   <int value="280644887" label="mash"/>

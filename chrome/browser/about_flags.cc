@@ -11787,6 +11787,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(HAS_MEMORY_TAGGING) &&
         // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
+#if BUILDFLAG(IS_MAC)
+    {"enable-mac-a11y-api-migration",
+     flag_descriptions::kMacAccessibilityAPIMigrationName,
+     flag_descriptions::kMacAccessibilityAPIMigrationDescription, kOsMac,
+     FEATURE_VALUE_TYPE(features::kMacAccessibilityAPIMigration)},
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     {"allow-legacy-mv2-extensions",
      flag_descriptions::kAllowLegacyMV2ExtensionsName,

@@ -3413,6 +3413,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "enable-mac-a11y-api-migration",
+    "owners": [ "shrike@chromium.org", "dtseng@chromium.com" ],
+    "expiry_milestone": 136
+  },
+  {
     "name": "enable-mac-ime-live-conversion-fix",
     "owners": [ "tkent@chromium.org" ],
     "expiry_milestone": 134

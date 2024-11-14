@@ -3233,6 +3233,9 @@ extern const char kEnableExtensibleEnterpriseSSODescription[];
 extern const char kImmersiveFullscreenName[];
 extern const char kImmersiveFullscreenDescription[];
 
+extern const char kMacAccessibilityAPIMigrationName[];
+extern const char kMacAccessibilityAPIMigrationDescription[];
+
 extern const char kMacImeLiveConversionFixName[];
 extern const char kMacImeLiveConversionFixDescription[];
 
