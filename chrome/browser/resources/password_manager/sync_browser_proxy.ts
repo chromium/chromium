@@ -51,6 +51,11 @@ export interface SyncBrowserProxy {
   getAccountInfo(): Promise<AccountInfo>;
 
   /**
+   * Returns the number of local data password from the sync service API.
+   */
+  getLocalPasswordCount(): Promise<number>;
+
+  /**
    * Opens the batch upload dialog on top of the current page with the passwords
    * entry point as input.
    */
@@ -68,6 +73,10 @@ export class SyncBrowserProxyImpl implements SyncBrowserProxy {
 
   getAccountInfo() {
     return sendWithPromise('GetAccountInfo');
+  }
+
+  getLocalPasswordCount() {
+    return sendWithPromise('GetLocalPasswordCount');
   }
 
   openBatchUpload(entryPoint: BatchUploadPasswordsEntryPoint): void {

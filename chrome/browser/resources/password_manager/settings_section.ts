@@ -147,6 +147,11 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
           return loadTimeData.getBoolean('enableWebAuthnGpmPin');
         },
       },
+
+      localPasswordCount_: {
+        type: Number,
+        value: 0,
+      },
     };
   }
 
@@ -171,6 +176,9 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   private toastMessage_: string = '';
   private showDisconnectCloudAuthenticatorDialog_: boolean = false;
   private isDeleteAllPasswordManagerDataRowAvailable_: boolean;
+  // This variable depend on the sync service API, which the Batch Upload Dialog
+  // uses.
+  private localPasswordCount_: number = 0;
 
   private setBlockedSitesListListener_: BlockedSitesListChangedListener|null =
       null;
@@ -188,7 +196,16 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.updatePasswordsOnDevice_();
+    const updateLocalPasswordCount = (localPasswordCount: number) => {
+      this.updateLocalPasswordCount_(localPasswordCount);
+    };
+    const syncBrowserProxy = SyncBrowserProxyImpl.getInstance();
+    if (loadTimeData.getBoolean('isBatchUploadDesktopEnabled')) {
+      syncBrowserProxy.getLocalPasswordCount().then(updateLocalPasswordCount);
+    } else {
+      this.updatePasswordsOnDevice_();
+    }
+
     this.setBlockedSitesListListener_ = blockedSites => {
       this.blockedSites_ = blockedSites;
     };
@@ -197,10 +214,25 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     PasswordManagerImpl.getInstance().addBlockedSitesListChangedListener(
         this.setBlockedSitesListListener_);
 
+    if (loadTimeData.getBoolean('isBatchUploadDesktopEnabled')) {
+      this.addWebUiListener(
+          'sync-service-local-password-count', updateLocalPasswordCount);
+    }
+
     this.setCredentialsChangedListener_ =
         (passwords: chrome.passwordsPrivate.PasswordUiEntry[]) => {
           this.hasPasswordsToExport_ = passwords.length > 0;
-          this.updatePasswordsOnDevice_();
+
+          if (loadTimeData.getBoolean('isBatchUploadDesktopEnabled')) {
+            // Update the local password count based on the SyncService API
+            // whenever the password list was modified.
+            syncBrowserProxy.getLocalPasswordCount().then(
+                (localPasswordCount: number) => {
+                  this.updateLocalPasswordCount_(localPasswordCount);
+                });
+          } else {
+            this.updatePasswordsOnDevice_();
+          }
         };
     PasswordManagerImpl.getInstance().getSavedPasswordList().then(
         this.setCredentialsChangedListener_);
@@ -210,7 +242,6 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
     const trustedVaultStateChanged = (state: TrustedVaultBannerState) => {
       this.trustedVaultBannerState_ = state;
     };
-    const syncBrowserProxy = SyncBrowserProxyImpl.getInstance();
     syncBrowserProxy.getTrustedVaultBannerState().then(
         trustedVaultStateChanged);
     this.addWebUiListener(
@@ -384,13 +415,11 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
 
   private onMovePasswordsClicked_(e: Event) {
     e.preventDefault();
-    // <if expr="not is_chromeos">
     if (loadTimeData.getBoolean('isBatchUploadDesktopEnabled')) {
       SyncBrowserProxyImpl.getInstance().openBatchUpload(
           BatchUploadPasswordsEntryPoint.PASSWORD_MANAGER);
       return;
     }
-    // </if>
 
     this.showMovePasswordsDialog_ = true;
   }
@@ -405,7 +434,23 @@ export class SettingsSectionElement extends SettingsSectionElementBase {
   }
 
   private shouldShowMovePasswordsEntry_(): boolean {
+    if (loadTimeData.getBoolean('isBatchUploadDesktopEnabled')) {
+      // Only show the move password entry if there are passwords returned from
+      // the sync service API. This is needed to be consistent with the
+      // availability of data in the dialog which uses the same API.
+      return this.localPasswordCount_ > 0;
+    }
+
     return this.isAccountStoreUser && this.passwordsOnDevice_.length > 0;
+  }
+
+  // This updates the local password count coming from the Sync Service API.
+  private async updateLocalPasswordCount_(localPasswordCount: number) {
+    this.localPasswordCount_ = localPasswordCount;
+
+    this.movePasswordsLabel_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'deviceOnlyPasswordsIconTooltip', this.localPasswordCount_);
   }
 
   private async updatePasswordsOnDevice_() {

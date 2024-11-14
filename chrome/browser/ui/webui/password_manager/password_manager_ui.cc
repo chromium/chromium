@@ -650,11 +650,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 
   source->AddBoolean("canAddShortcut", web_app::AreWebAppsEnabled(profile));
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  source->AddBoolean(
-      "isBatchUploadDesktopEnabled",
-      base::FeatureList::IsEnabled(switches::kBatchUploadDesktop));
-#endif
+  source->AddBoolean("isBatchUploadDesktopEnabled",
+                     switches::IsBatchUploadDesktopEnabled());
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

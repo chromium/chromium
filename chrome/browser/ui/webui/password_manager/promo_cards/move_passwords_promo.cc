@@ -8,6 +8,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
@@ -91,7 +92,9 @@ bool MovePasswordsPromo::ShouldShowPromo() const {
   syncer::SyncService* sync_service = GetSyncService(profile_);
   if (!sync_service ||
       !password_manager::features_util::IsOptedInForAccountStorage(
-          profile_->GetPrefs(), sync_service)) {
+          profile_->GetPrefs(), sync_service) ||
+      (switches::IsBatchUploadDesktopEnabled() &&
+       !sync_service->IsEngineInitialized())) {
     return false;
   }
 
