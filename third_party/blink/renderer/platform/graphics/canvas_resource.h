@@ -33,7 +33,6 @@
 #include "ui/gfx/geometry/size.h"
 
 class GrBackendTexture;
-class SkImage;
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_H_
@@ -357,7 +356,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
 
   void WillDraw();
   bool IsLost() const { return owning_thread_data().is_lost; }
-  void CopyRenderingResultsToGpuMemoryBuffer(const sk_sp<SkImage>& image);
+  void CopyRenderingResultsToGpuMemoryBuffer(SkSurface* sk_surface);
   bool UsesClientSharedImage() override { return true; }
   scoped_refptr<gpu::ClientSharedImage> GetClientSharedImage() override;
   const scoped_refptr<gpu::ClientSharedImage>& GetClientSharedImage() const;
