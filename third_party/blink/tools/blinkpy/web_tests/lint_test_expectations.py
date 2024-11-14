@@ -433,6 +433,10 @@ def check_test_lists(host, options):
                 line = line[:-1]
             if not line:
                 continue
+            # A sign denoting inclusion or exclusion may prefix terms in filter
+            # files.
+            if line.startswith('+') or line.startswith('-'):
+                line = line[1:]
             if line in parsed_lines:
                 failures.append(
                     '%s:%d duplicate with line %d: %s' %

@@ -464,6 +464,35 @@ class LintTest(LoggingTestCase):
         self.assertRegexpMatches(failures[0], ':2 .*Skip')
 
 
+class CheckTestListsTest(unittest.TestCase):
+
+    def test_check_existence(self):
+        options = optparse.Values({
+            'additional_expectations': [],
+            'platform': 'test'
+        })
+        host = MockHost()
+        port = host.port_factory.get(options.platform, options=options)
+        finder = PathFinder(host.filesystem)
+
+        host.filesystem.write_text_file(
+            finder.path_from_web_tests('TestLists', 'tests.filter'),
+            textwrap.dedent("""\
+                +exists/1.html
+                exists/
+                -does/not/exist/
+                does/not/exist/1.html
+                """))
+        host.filesystem.write_text_file(
+            finder.path_from_web_tests('exists', '1.html'), '')
+
+        failures = lint_test_expectations.check_test_lists(host, options)
+        self.assertEqual(failures, [
+            'tests.filter:3 Test does not exist: does/not/exist/',
+            'tests.filter:4 Test does not exist: does/not/exist/1.html',
+        ])
+
+
 class CheckVirtualSuiteTest(unittest.TestCase):
     def setUp(self):
         self.host = MockHost()
@@ -656,6 +685,7 @@ class CheckVirtualSuiteTest(unittest.TestCase):
         self.assertRegexpMatches(res2[0],
                                  'Virtual suite name "test" has no owner.')
         self.assertEqual(len(res2), 1)
+
 
 class MainTest(unittest.TestCase):
     def setUp(self):
