@@ -236,20 +236,39 @@ class WebIdlSchemaTest(unittest.TestCase):
             'id': 'ExampleType',
             'properties': {
                 'someString': {
-                    'name': 'someString',
-                    'type': 'string'
+                    'name':
+                    'someString',
+                    'type':
+                    'string',
+                    'description':
+                    ('Attribute comment attached to ExampleType.someString.'),
                 },
                 'someNumber': {
-                    'name': 'someNumber',
-                    'type': 'number'
+                    'name':
+                    'someNumber',
+                    'type':
+                    'number',
+                    'description':
+                    ('Comment where <var>someNumber</var> has some markup.'),
                 },
+                # TODO(crbug.com/379052294): using HTML comments like this is a
+                # bit of a hack to allow us to add comments in IDL files (e.g.
+                # for TODOs) and to not have them end up on the documentation
+                # site. We should probably just filter them out during
+                # compilation.
                 'optionalBoolean': {
-                    'name': 'optionalBoolean',
-                    'type': 'boolean',
-                    'optional': True
-                }
+                    'name':
+                    'optionalBoolean',
+                    'type':
+                    'boolean',
+                    'optional':
+                    True,
+                    'description':
+                    ('Comment with HTML comment. <!-- Which should get'
+                     ' through -->'),
+                },
             },
-            'type': 'object'
+            'type': 'object',
         },
         getType(schema, 'ExampleType'),
     )

@@ -104,7 +104,7 @@ def GetNodeDescription(node: IDLNode) -> str:
   formatting, each "paragraph" of the comment  will be wrapped with a <p> tag.
 
   TODO(crbug.com/340297705): Add support for parameter comments and call this
-  for functions, events, types and properties.
+  for functions, events and properties.
 
   Args:
     node: The IDL node to look for a descriptive comment above.
@@ -154,6 +154,9 @@ class Type:
   Attributes:
     node: The IDLNode that represents this type.
     name: The name of the node this type was on.
+    description: The description defined for this node by the preceding comment,
+    used for documentation purposes.
+    optional: If the value this type is for is considered optional.
   """
 
   def __init__(self, node: IDLNode) -> None:
@@ -162,18 +165,22 @@ class Type:
         'Could not find Type node on IDLNode named: %s.' % (node.GetName()))
     self.node = type_node
     self.name = node.GetName()
+    self.description = GetNodeDescription(node)
     self.optional = node.GetProperty('OPTIONAL')
 
   def process(self) -> dict:
     properties = OrderedDict()
     # TODO(crbug.com/340297705): Add support for extended attributes on types.
     # TODO(crbug.com/340297705): Add processing of comments to descriptions on
-    #                            types.
+    #                            types for function acguments.
     properties['name'] = self.name
     # We consider both nullable properties on types or arguments marked as
     # optional as being "optional" in the schema compiler's logic.
     if self.node.GetProperty('NULLABLE') or self.optional:
       properties['optional'] = True
+
+    if self.description:
+      properties['description'] = self.description
 
     # The Type node will have a single child, where the class and name
     # determines the underlying type it represents. This may be a fundamental

@@ -38,8 +38,11 @@ interface TestWebIdl {
 };
 
 dictionary ExampleType {
+  // Attribute comment attached to ExampleType.someString.
   DOMString someString;
+  // Comment where <var>someNumber</var> has some markup.
   double someNumber;
+  // Comment with HTML comment. <!-- Which should get through -->
   boolean? optionalBoolean;
 };
 
