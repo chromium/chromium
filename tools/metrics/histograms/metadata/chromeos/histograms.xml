@@ -52,9 +52,8 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     <owner>chromeos-launcher@google.com</owner>
   </variant>
   <variant name="DiagnosticsUi" summary="CROS Diagnostics Application">
-    <owner>zhangwenyu@google.com</owner>
-    <owner>jimmyxgong@chromium.org</owner>
-    <owner>cros-device-enablement@google.com</owner>
+    <owner>byronlee@google.com</owner>
+    <owner>cros-tdm-tpe-eng@google.com</owner>
   </variant>
   <variant name="EnterpriseESim" summary="enterprise eSIM">
     <owner>chadduffin@chromium.org</owner>
@@ -1314,9 +1313,8 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 <histogram
     name="ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.{ProbeErrorSourceStruct}"
     enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2025-10-20">
-  <owner>zhangwenyu@google.com</owner>
-  <owner>ashleydp@google.com</owner>
-  <owner>cros-device-enablement@google.com</owner>
+  <owner>byronlee@google.com</owner>
+  <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>
     Records the ProbeError::ErrorType returned on request for
     {ProbeErrorSourceStruct}. Recorded on the event a request to cros_healthd
@@ -1332,9 +1330,8 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.DiagnosticsUi.Error.{ErrorSource}"
     enum="CrosDiagnosticsDataError" expires_after="2025-02-23">
-  <owner>zhangwenyu@google.com</owner>
-  <owner>ashleydp@google.com</owner>
-  <owner>cros-device-enablement@google.com</owner>
+  <owner>byronlee@google.com</owner>
+  <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>
     Records error type such as no data error, not a number error and expectation
     not met error when receiving system information including battery info,
@@ -1349,10 +1346,8 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.DiagnosticsUi.InitialScreen"
     units="CrosDiagnosticsNavigationView" expires_after="2025-05-31">
-  <owner>zhangwenyu@google.com</owner>
-  <owner>ashleydp@google.com</owner>
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-device-enablement@google.com</owner>
+  <owner>byronlee@google.com</owner>
+  <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>
     Records requested initial screen when opening the Diagnostics App.
   </summary>
@@ -1360,10 +1355,8 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.DiagnosticsUi.KeyboardTesterRoutineDuration"
     units="ms" expires_after="2025-04-27">
-  <owner>zhangwenyu@google.com</owner>
-  <owner>dpad@chromium.org</owner>
-  <owner>michaelcheco@chromium.org</owner>
-  <owner>cros-device-enablement@google.com</owner>
+  <owner>byronlee@google.com</owner>
+  <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>
     Records the duration that the user spent in the Keyboard Tester. Emitted
     when the user closes the keyboard tester.
@@ -1372,10 +1365,8 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.DiagnosticsUi.MemoryRoutineDuration" units="s"
     expires_after="2025-04-15">
-  <owner>zhangwenyu@google.com</owner>
-  <owner>ashleydp@google.com</owner>
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-device-enablement@google.com</owner>
+  <owner>byronlee@google.com</owner>
+  <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>
     Records the duration that the Memory Routine took to complete. Emitted when
     the routine completes successfully.
@@ -1384,10 +1375,8 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.DiagnosticsUi.OpenDuration" units="ms"
     expires_after="2025-02-23">
-  <owner>zhangwenyu@google.com</owner>
-  <owner>ashleydp@google.com</owner>
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-device-enablement@google.com</owner>
+  <owner>byronlee@google.com</owner>
+  <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>
     Records the duration that the Diagnostics App is open. emitted when the app
     is closed.
@@ -1396,10 +1385,8 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.DiagnosticsUi.RoutineCount" units="routines"
     expires_after="2025-03-30">
-  <owner>zhangwenyu@google.com</owner>
-  <owner>ashleydp@google.com</owner>
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-device-enablement@google.com</owner>
+  <owner>byronlee@google.com</owner>
+  <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>
     Records the number of routines run while the Chrome OS Diagnostics App was
     open. Begins at zero each time the app is open and recorded each time the
@@ -1409,10 +1396,8 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.DiagnosticsUi.{NavigationView}.OpenDuration"
     units="ms" expires_after="2025-03-30">
-  <owner>zhangwenyu@google.com</owner>
-  <owner>ashleydp@google.com</owner>
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-device-enablement@google.com</owner>
+  <owner>byronlee@google.com</owner>
+  <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>
     Records the duration that the Diagnostics App is open for a given page view.
     Emitted when the active page changes or when the app is closed. Cumulatively
@@ -1430,10 +1415,8 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 
 <histogram name="ChromeOS.DiagnosticsUi.{RoutineType}Result"
     enum="CrosDiagnosticsRoutineResult" expires_after="2025-04-27">
-  <owner>zhangwenyu@google.com</owner>
-  <owner>ashleydp@google.com</owner>
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-device-enablement@google.com</owner>
+  <owner>byronlee@google.com</owner>
+  <owner>cros-tdm-tpe-eng@google.com</owner>
   <summary>Records the result of the {RoutineType} Routine.</summary>
   <token key="RoutineType">
     <variant name="BatteryCharge"/>
