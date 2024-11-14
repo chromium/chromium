@@ -243,6 +243,7 @@ void FacilitatedPaymentsManager::SendInitiatePaymentRequest() {
   initiate_payment_network_start_time_ = base::TimeTicks::Now();
   if (FacilitatedPaymentsNetworkInterface* payments_network_interface =
           client_->GetFacilitatedPaymentsNetworkInterface()) {
+    LogInitiatePaymentAttempt();
     payments_network_interface->InitiatePayment(
         std::move(initiate_payment_request_details_),
         base::BindOnce(
@@ -260,14 +261,13 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
       base::TimeTicks::Now() - initiate_payment_network_start_time_;
   if (result !=
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
-    LogInitiatePaymentResult(/*result=*/false, latency);
+    LogInitiatePaymentResultAndLatency(/*result=*/false, latency);
+    LogPayflowExitedReason(PayflowExitedReason::kInitiatePaymentFailed);
     client_->ShowErrorScreen();
-    LogTransactionResult(TransactionResult::kFailed, trigger_source_,
-                         base::TimeTicks::Now() - fop_selector_shown_time_,
-                         ukm_source_id_);
     return;
   }
-  LogInitiatePaymentResult(/*result=*/true, latency);
+  LogInitiatePaymentResultAndLatency(/*result=*/true, latency);
+
   DCHECK(response_details);
   if (response_details->action_token_.empty()) {
     client_->ShowErrorScreen();

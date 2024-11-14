@@ -142,34 +142,37 @@ reviewer.
 </histogram>
 
 <histogram
-    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.Latency"
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.Attempt"
+    enum="BooleanAttempted" expires_after="2025-07-01">
+  <owner>siashah@google.com</owner>
+  <owner>vishwasuppoor@google.com</owner>
+  <owner>rouslan@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logs true when a request is sent to the Initiate Payment backend endpoint.
+    It should never log a false case. [Frequency] Logged at most once per
+    {FacilitatedPaymentsType} flow. [Trigger] User selects a payment instrument
+    from the list of options shown in the {FacilitatedPaymentsType} UI.
+  </summary>
+  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+</histogram>
+
+<histogram
+    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.{Result}.Latency"
     units="ms" expires_after="2025-07-01">
   <owner>siashah@google.com</owner>
   <owner>vishwasuppoor@google.com</owner>
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    Latency for the InitiatePayment backend endpoint. [Frequency] Logged at most
-    once per page load. [Trigger] User selects a payment instrument from the
-    list of options shown in the {FacilitatedPaymentsType} UI.
+    Logs the latency for the InitiatePayment backend endpoint and breaks it down
+    by the result. The result is {Result}. [Frequency] Logged at most once per
+    {FacilitatedPaymentsType} payflow. [Trigger] User selects a payment
+    instrument from the list of options shown in the {FacilitatedPaymentsType}
+    UI.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
-</histogram>
-
-<histogram
-    name="FacilitatedPayments.{FacilitatedPaymentsType}.InitiatePayment.Result"
-    enum="Boolean" expires_after="2025-07-01">
-  <owner>siashah@google.com</owner>
-  <owner>vishwasuppoor@google.com</owner>
-  <owner>rouslan@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Logs whether the call to the InititaePayment backend endpoint was successful
-    or not. [Frequency] Logged at most once per page load. [Trigger] User
-    selects a payment instrument from the list of options shown in the
-    {FacilitatedPaymentsType} UI.
-  </summary>
-  <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
+  <token key="Result" variants="BooleanResult"/>
 </histogram>
 
 <histogram
@@ -285,10 +288,12 @@ reviewer.
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    On a webpage that is eligible for facilitated payments, this histogram logs
-    the overall outcome of the transaction once the FOP selector is shown to the
-    user. [Frequency] Logged at most once per page load. [Trigger] FOP selector
-    is shown to the user and user takes action on it.
+    (Obsolete histogram. Replaced by PayflowExitedReason histogram. Will be
+    removed when new PayflowExitedReason histogram is finished.) On a webpage
+    that is eligible for facilitated payments, this histogram logs the overall
+    outcome of the transaction once the FOP selector is shown to the user.
+    [Frequency] Logged at most once per page load. [Trigger] FOP selector is
+    shown to the user and user takes action on it.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
 </histogram>
@@ -301,10 +306,12 @@ reviewer.
   <owner>rouslan@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
-    On a webpage that is eligible for facilitated payments, this histogram logs
-    the latency of an overall transaction from the time the FOP selector is
-    shown to the user to the time the transaction is completed with the result
-    as {TransactionResult}. [Frequency] Logged at most once per page load.
+    (Obsolete histogram. Replaced by latency histograms for specific actions.
+    Will be removed when related histograms are finished.) On a webpage that is
+    eligible for facilitated payments, this histogram logs the latency of an
+    overall transaction from the time the FOP selector is shown to the user to
+    the time the transaction is completed with the result as
+    {TransactionResult}. [Frequency] Logged at most once per page load.
     [Trigger] FOP selector is shown to the user and user takes action on it.
   </summary>
   <token key="FacilitatedPaymentsType" variants="FacilitatedPaymentsTypes"/>
