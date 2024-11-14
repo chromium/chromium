@@ -7171,7 +7171,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, RecordUkmOnNavigation) {
           ukm_entry, "DeclarativeWebRequestPermissionCount",
           ukm::GetExponentialBucketMin(1u, kBucketSpacing));
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 }

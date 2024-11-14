@@ -2648,10 +2648,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     case ax::mojom::SortDirection::kOther:
       return NSAccessibilitySortDirectionUnknown;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  return NSAccessibilitySortDirectionUnknown;
 }
 
 // NSAccessibility: Setting the Focus.

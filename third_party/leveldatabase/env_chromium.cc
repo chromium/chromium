@@ -423,10 +423,9 @@ std::string GetDumpNameForCache(DBTracker::SharedReadCacheUse cache) {
     case DBTracker::SharedReadCacheUse_InMemory:
       return "leveldatabase/block_cache/in_memory";
     case DBTracker::SharedReadCacheUse_NumCacheUses:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 MemoryAllocatorDump* CreateDumpMalloced(ProcessMemoryDump* pmd,
@@ -461,7 +460,7 @@ void RecordCacheUsageInTracing(ProcessMemoryDump* pmd,
       cache_ptr = leveldb_chrome::GetSharedInMemoryBlockCache();
       break;
     case DBTracker::SharedReadCacheUse_NumCacheUses:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   if (!cache_ptr)
     return;
@@ -546,11 +545,9 @@ const char* MethodIDToString(MethodID method) {
     case kObsoleteDeleteFile:
     case kObsoleteDeleteDir:
     case kNumEntries:
-      NOTREACHED_IN_MIGRATION();
-      return "Unknown";
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return "Unknown";
+  NOTREACHED();
 }
 
 Status MakeIOError(Slice filename,
@@ -775,7 +772,7 @@ const char* ChromiumEnv::FileErrorString(base::File::Error error) {
     case base::File::FILE_OK:
       return "OK.";
     case base::File::FILE_ERROR_MAX:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   NOTIMPLEMENTED();
   return "Unknown error.";
@@ -1119,7 +1116,7 @@ class DBTracker::TrackedDBImpl : public base::LinkNode<TrackedDBImpl>,
     } else if (block_cache == leveldb_chrome::GetSharedInMemoryBlockCache()) {
       shared_read_cache_use_ = SharedReadCacheUse_InMemory;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     tracker_->DatabaseOpened(this);
   }
@@ -1320,7 +1317,7 @@ DBTracker::DBTracker() : mdp_(new MemoryDumpProvider()) {
 }
 
 DBTracker::~DBTracker() {
-  NOTREACHED_IN_MIGRATION();  // DBTracker is a singleton
+  NOTREACHED();  // DBTracker is a singleton
 }
 
 // static
