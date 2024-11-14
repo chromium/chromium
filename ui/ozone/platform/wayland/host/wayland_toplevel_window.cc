@@ -546,7 +546,6 @@ bool WaylandToplevelWindow::OnInitialize(
   SetWmMoveLoopHandler(this, static_cast<WmMoveLoopHandler*>(this));
   SetWorkspaceExtension(this, static_cast<WorkspaceExtension*>(this));
   SetWorkspaceExtensionDelegate(properties.workspace_extension_delegate);
-  SetDeskExtension(this, static_cast<DeskExtension*>(this));
 
   SetZOrderLevel(properties.z_order);
 
@@ -669,27 +668,6 @@ void WaylandToplevelWindow::LockPointer(bool enabled) {
     pointer_constraints->UnlockPointer();
 }
 
-int WaylandToplevelWindow::GetNumberOfDesks() const {
-  auto* zaura_shell = connection()->zaura_shell();
-  return zaura_shell ? zaura_shell->GetNumberOfDesks() : 0;
-}
-
-int WaylandToplevelWindow::GetActiveDeskIndex() const {
-  auto* zaura_shell = connection()->zaura_shell();
-  // The index of the active desk is 0 when there is no virtual desk supported.
-  return zaura_shell ? zaura_shell->GetActiveDeskIndex() : 0;
-}
-
-std::u16string WaylandToplevelWindow::GetDeskName(int index) const {
-  auto* zaura_shell = connection()->zaura_shell();
-  return zaura_shell ? base::UTF8ToUTF16(zaura_shell->GetDeskName(index))
-                     : std::u16string();
-}
-
-void WaylandToplevelWindow::SendToDeskAtIndex(int index) {
-  // TODO(crbug.com/374244479): remove this.
-}
-
 void WaylandToplevelWindow::SetSystemModal(bool modal) {
   system_modal_ = modal;
   if (shell_toplevel_)
@@ -714,8 +692,7 @@ std::string WaylandToplevelWindow::GetWorkspace() const {
 }
 
 void WaylandToplevelWindow::SetVisibleOnAllWorkspaces(bool always_visible) {
-  SendToDeskAtIndex(always_visible ? kVisibleOnAllWorkspaces
-                                   : GetActiveDeskIndex());
+  // TODO(crbug.com/374244479): remove this.
 }
 
 bool WaylandToplevelWindow::IsVisibleOnAllWorkspaces() const {

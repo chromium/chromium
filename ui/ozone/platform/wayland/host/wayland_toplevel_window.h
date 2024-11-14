@@ -15,7 +15,6 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
-#include "ui/platform_window/extensions/desk_extension.h"
 #include "ui/platform_window/extensions/system_modal_extension.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/extensions/workspace_extension.h"
@@ -37,7 +36,6 @@ class WaylandToplevelWindow : public WaylandWindow,
                               public WmMoveLoopHandler,
                               public WaylandToplevelExtension,
                               public WorkspaceExtension,
-                              public DeskExtension,
                               public SystemModalExtension {
  public:
   WaylandToplevelWindow(PlatformWindowDelegate* delegate,
@@ -126,12 +124,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool SupportsPointerLock() override;
   void LockPointer(bool enabled) override;
   bool GetTabletMode() override;
-
-  // DeskExtension:
-  int GetNumberOfDesks() const override;
-  int GetActiveDeskIndex() const override;
-  std::u16string GetDeskName(int index) const override;
-  void SendToDeskAtIndex(int index) override;
 
   // WorkspaceExtension:
   std::string GetWorkspace() const override;

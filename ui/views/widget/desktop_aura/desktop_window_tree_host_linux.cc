@@ -24,7 +24,6 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/linux/linux_ui.h"
-#include "ui/platform_window/extensions/desk_extension.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
 #include "ui/platform_window/extensions/x11_extension.h"
 #include "ui/platform_window/platform_window.h"
