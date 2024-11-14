@@ -106,9 +106,8 @@ class ManagePasswordsUIController
       const url::Origin& origin,
       base::span<const password_manager::PasswordForm> federated_matches)
       override;
-  void OnCredentialLeak(password_manager::CredentialLeakType leak_dialog_type,
-                        const GURL& url,
-                        const std::u16string& username) override;
+  void OnCredentialLeak(
+      password_manager::LeakedPasswordDetails details) override;
   void OnShowMoveToAccountBubble(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_move)
       override;

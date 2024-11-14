@@ -94,6 +94,8 @@ MATCHER_P3(MatchesLoginAndURL,
 // A random URL.
 constexpr char kExampleUrl[] = "http://example.com";
 constexpr char16_t kExampleUsername[] = u"Bob";
+constexpr char16_t kExamplePassword[] = u"pass";
+
 constexpr char kExampleRpId[] = "example.com";
 
 // Number of dismissals that for sure suppresses the bubble.
@@ -1650,11 +1652,12 @@ TEST_F(ManagePasswordsUIControllerTest, SaveBubbleAfterLeakCheck) {
   EXPECT_CALL(*controller(), CreateCredentialLeakPrompt)
       .WillOnce(DoAll(SaveArg<0>(&dialog_controller), Return(&dialog_prompt)));
   EXPECT_CALL(dialog_prompt, ShowCredentialLeakPrompt);
-  controller()->OnCredentialLeak(
+  controller()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
       password_manager::CreateLeakType(password_manager::IsSaved(false),
                                        password_manager::IsReused(false),
                                        password_manager::IsSyncing(false)),
-      GURL(kExampleUrl), kExampleUsername);
+      GURL(kExampleUrl), kExampleUsername, kExamplePassword,
+      /*in_account_store=*/false));
   // The bubble is gone.
   EXPECT_FALSE(controller()->opened_automatic_bubble());
 
@@ -1691,11 +1694,12 @@ TEST_F(ManagePasswordsUIControllerTest,
   EXPECT_CALL(*controller(), CreateCredentialLeakPrompt)
       .WillOnce(DoAll(SaveArg<0>(&dialog_controller), Return(&dialog_prompt)));
   EXPECT_CALL(dialog_prompt, ShowCredentialLeakPrompt);
-  controller()->OnCredentialLeak(
+  controller()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
       password_manager::CreateLeakType(password_manager::IsSaved(false),
                                        password_manager::IsReused(false),
                                        password_manager::IsSyncing(false)),
-      GURL(kExampleUrl), kExampleUsername);
+      GURL(kExampleUrl), kExampleUsername, kExamplePassword,
+      /*in_account_store=*/false));
   // The bubble is gone.
   EXPECT_FALSE(controller()->opened_automatic_bubble());
 
@@ -1727,11 +1731,12 @@ TEST_F(ManagePasswordsUIControllerTest, UpdateBubbleAfterLeakCheck) {
   EXPECT_CALL(*controller(), CreateCredentialLeakPrompt)
       .WillOnce(DoAll(SaveArg<0>(&dialog_controller), Return(&dialog_prompt)));
   EXPECT_CALL(dialog_prompt, ShowCredentialLeakPrompt);
-  controller()->OnCredentialLeak(
+  controller()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
       password_manager::CreateLeakType(password_manager::IsSaved(true),
                                        password_manager::IsReused(false),
                                        password_manager::IsSyncing(false)),
-      GURL(kExampleUrl), kExampleUsername);
+      GURL(kExampleUrl), kExampleUsername, kExamplePassword,
+      /*in_account_store=*/false));
   // The bubble is gone.
   EXPECT_FALSE(controller()->opened_automatic_bubble());
 

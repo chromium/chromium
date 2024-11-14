@@ -63,6 +63,7 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
       IsReused is_reused,
       GURL url,
       std::u16string username,
+      std::u16string password,
       std::vector<GURL> all_urls_with_leaked_credentials);
 
   void OnError(LeakDetectionError error) override;

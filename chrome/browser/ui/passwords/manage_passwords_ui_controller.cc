@@ -408,9 +408,7 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
 }
 
 void ManagePasswordsUIController::OnCredentialLeak(
-    const password_manager::CredentialLeakType leak_type,
-    const GURL& url,
-    const std::u16string& username) {
+    password_manager::LeakedPasswordDetails details) {
   // Existing dialog shouldn't be closed.
   if (dialog_controller_) {
     return;
@@ -423,12 +421,13 @@ void ManagePasswordsUIController::OnCredentialLeak(
     ClearPopUpFlagForBubble();
   }
 
+  auto metric_recorder = std::make_unique<
+      password_manager::metrics_util::LeakDialogMetricsRecorder>(
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
+      password_manager::GetLeakDialogType(details.leak_type));
+
   auto* raw_controller = new CredentialLeakDialogControllerImpl(
-      this, leak_type, url, username,
-      std::make_unique<
-          password_manager::metrics_util::LeakDialogMetricsRecorder>(
-          web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
-          password_manager::GetLeakDialogType(leak_type)));
+      this, std::move(details), std::move(metric_recorder));
   dialog_controller_.reset(raw_controller);
   raw_controller->ShowCredentialLeakPrompt(
       CreateCredentialLeakPrompt(raw_controller));

@@ -39,6 +39,31 @@ enum class PasswordCheckupReferrer {
 // Contains combination of CredentialLeakFlags values.
 using CredentialLeakType = std::underlying_type_t<CredentialLeakFlags>;
 
+// Structure to combine all the information required to display a warning about
+// a leaked password.
+struct LeakedPasswordDetails {
+  LeakedPasswordDetails(CredentialLeakType leak_type,
+                        GURL origin,
+                        std::u16string username,
+                        std::u16string password,
+                        bool in_account_store);
+
+  LeakedPasswordDetails(const LeakedPasswordDetails&);
+  LeakedPasswordDetails(LeakedPasswordDetails&& other);
+  ~LeakedPasswordDetails();
+
+  LeakedPasswordDetails& operator=(const LeakedPasswordDetails&);
+  LeakedPasswordDetails& operator=(LeakedPasswordDetails&& other);
+
+  bool operator==(const LeakedPasswordDetails& other) const;
+
+  CredentialLeakType leak_type;
+  GURL origin;
+  std::u16string username;
+  std::u16string password;
+  bool in_account_store;
+};
+
 using IsSaved = base::StrongAlias<class IsSavedTag, bool>;
 using IsReused = base::StrongAlias<class IsReusedTag, bool>;
 using IsSyncing = base::StrongAlias<class IsSyncingTag, bool>;

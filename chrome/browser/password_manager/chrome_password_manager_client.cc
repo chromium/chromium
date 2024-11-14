@@ -839,15 +839,12 @@ void ChromePasswordManagerClient::AutofillHttpAuth(
 }
 
 void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
-    password_manager::CredentialLeakType leak_type,
-    const GURL& url,
-    const std::u16string& username,
-    bool in_account_store) {
+    password_manager::LeakedPasswordDetails details) {
 #if BUILDFLAG(IS_ANDROID)
   auto metrics_recorder = std::make_unique<
       password_manager::metrics_util::LeakDialogMetricsRecorder>(
       web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
-      password_manager::GetLeakDialogType(leak_type));
+      password_manager::GetLeakDialogType(details.leak_type));
   const syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
   // If the leaked credential is stored in the account store, the user should be
@@ -856,12 +853,13 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
   // in the local store, password check for local should be accessible from the
   // dialog.
   std::string account =
-      in_account_store && password_manager::sync_util::HasChosenToSyncPasswords(
-                              sync_service)
+      details.in_account_store &&
+              password_manager::sync_util::HasChosenToSyncPasswords(
+                  sync_service)
           ? sync_service->GetAccountInfo().email
           : "";
   (new CredentialLeakControllerAndroid(
-       leak_type, url, username, profile_,
+       details.leak_type, details.origin, details.username, profile_,
        web_contents()->GetTopLevelNativeWindow(),
        std::make_unique<PasswordCheckupLauncherHelperImpl>(),
        std::move(metrics_recorder), account))
@@ -870,7 +868,7 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
       PasswordsClientUIDelegateFromWebContents(web_contents());
   if (manage_passwords_ui_controller) {
-    manage_passwords_ui_controller->OnCredentialLeak(leak_type, url, username);
+    manage_passwords_ui_controller->OnCredentialLeak(std::move(details));
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

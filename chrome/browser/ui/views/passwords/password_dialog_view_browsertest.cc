@@ -485,9 +485,9 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, EscCancelsAutoSigninPrompt) {
 IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, PopupCredentialsLeakedPrompt) {
   CredentialLeakType leak_type = CredentialLeakFlags::kPasswordSaved |
                                  CredentialLeakFlags::kPasswordUsedOnOtherSites;
-  GURL origin("https://example.com");
-  std::u16string username(u"Eve");
-  controller()->OnCredentialLeak(leak_type, origin, username);
+  controller()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
+      leak_type, GURL("https://example.com"), u"Eve", u"qwerty",
+      /*in_account_store=*/false));
   ASSERT_TRUE(controller()->current_credential_leak_prompt());
   EXPECT_EQ(password_manager::ui::INACTIVE_STATE, controller()->GetState());
   CredentialLeakDialogView* dialog =
@@ -554,12 +554,14 @@ void PasswordDialogViewTest::ShowUi(const std::string& name) {
   }
 
   GURL origin("https://example.com");
-  std::u16string username(u"Eve");
   if (name == "CredentialLeak") {
     CredentialLeakType leak_type =
         CredentialLeakFlags::kPasswordSaved |
         CredentialLeakFlags::kPasswordUsedOnOtherSites;
-    controller()->OnCredentialLeak(leak_type, origin, username);
+
+    controller()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
+        leak_type, origin, u"Eve", u"qwerty",
+        /*in_account_store=*/false));
     return;
   }
 

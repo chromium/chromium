@@ -322,10 +322,7 @@ class PasswordManagerClient {
                                 const PasswordFormManagerForUI* form_manager);
 
   // Informs the embedder that user credentials were leaked.
-  virtual void NotifyUserCredentialsWereLeaked(CredentialLeakType leak_type,
-                                               const GURL& origin,
-                                               const std::u16string& username,
-                                               bool in_account_store);
+  virtual void NotifyUserCredentialsWereLeaked(LeakedPasswordDetails details);
 
   // Requests a reauth for the primary account with |access_point| representing
   // where the reauth was triggered.

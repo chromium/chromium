@@ -110,6 +110,7 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
     IsReused is_reused,
     GURL url,
     std::u16string username,
+    std::u16string password,
     std::vector<GURL> all_urls_with_leaked_credentials) {
   std::vector<std::pair<GURL, std::u16string>> identities;
   for (const auto& u : all_urls_with_leaked_credentials) {
@@ -153,8 +154,9 @@ void LeakDetectionDelegate::OnShowLeakDetectionNotification(
   CredentialLeakType leak_type =
       CreateLeakType(IsSaved(in_stores != PasswordForm::Store::kNotSet),
                      is_reused, is_syncing);
-  client_->NotifyUserCredentialsWereLeaked(leak_type, url, username,
-                                           in_account_store);
+  client_->NotifyUserCredentialsWereLeaked(
+      LeakedPasswordDetails(leak_type, std::move(url), std::move(username),
+                            std::move(password), in_account_store));
 }
 
 void LeakDetectionDelegate::OnError(LeakDetectionError error) {

@@ -100,7 +100,7 @@ void LeakDetectionDelegateHelper::ProcessResults() {
       }));
 
   std::move(callback_).Run(in_stores, is_reused, std::move(url_),
-                           std::move(username_),
+                           std::move(username_), std::move(password_),
                            std::move(all_urls_with_leaked_credentials));
 }
 
