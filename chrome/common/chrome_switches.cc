@@ -902,6 +902,11 @@ const char kGuest[] = "guest";
 const char kForceNtpMobilePromo[] = "force-ntp-mobile-promo";
 #endif
 
+#if BUILDFLAG(ENABLE_GLIC)
+// Overrides the glic guest URL.
+const char kGlicGuestURL[] = "glic-guest-url";
+#endif
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Writes open and installed web apps for each profile to the specified file
 // without launching a new browser window or tab. Pass a absolute file path to

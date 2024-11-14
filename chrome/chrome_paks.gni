@@ -501,6 +501,10 @@ template("chrome_extra_paks") {
       sources += [ "$root_gen_dir/chrome/compose_resources.pak" ]
       deps += [ "//chrome/browser/resources/compose:resources" ]
     }
+    if (enable_glic) {
+      sources += [ "$root_gen_dir/chrome/glic_resources.pak" ]
+      deps += [ "//chrome/browser/resources/glic:resources" ]
+    }
 
     if (enable_dice_support) {
       sources += [ "$root_gen_dir/chrome/batch_upload_resources.pak" ]

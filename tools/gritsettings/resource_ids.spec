@@ -408,6 +408,10 @@
     "META": {"sizes": {"includes": [20],}},
     "includes": [4000],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/glic/resources.grd": {
+    "META": {"sizes": {"includes": [8]}},
+    "includes": [4010],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/hats/resources.grd": {
     "META": {"sizes": {"includes": [10]}},
     "includes": [4020],

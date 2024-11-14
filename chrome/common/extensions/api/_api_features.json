@@ -219,6 +219,7 @@
       "chrome://assistant-optin/*",
       "chrome://add-supervision/*",
       "chrome://chrome-signin/*",
+      "chrome://glic/*",
       "chrome://graduation/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",

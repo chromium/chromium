@@ -34472,6 +34472,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="911597664" label="chrome://multidevice-setup/"/>
   <int value="918960088" label="chrome://instant/"/>
   <int value="943766809" label="chrome://view-cert/"/>
+  <int value="949558394" label="chrome://glic/"/>
   <int value="962490408" label="chrome-untrusted://camera-app/"/>
   <int value="971254590"
       label="chrome://shopping-insights-side-panel.top-chrome/"/>

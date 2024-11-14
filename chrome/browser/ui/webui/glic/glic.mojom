@@ -1,0 +1,24 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module glic.mojom;
+
+import "mojo/public/mojom/base/version.mojom";
+
+// Factory for PageHandler used in chrome://glic.
+interface PageHandlerFactory {
+  // Creates the PageHandler.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> receiver);
+};
+
+// Access to the browser from the glic WebUI.
+interface PageHandler {
+  // Returns the Chrome version.
+  GetChromeVersion() => (mojo_base.mojom.Version version);
+};
+
+// Access to the WebUI page from the browser.
+interface Page {
+};

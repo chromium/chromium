@@ -30,6 +30,7 @@ browser_exposed_mojom_targets = [
   "//chrome/browser/ui/webui/data_sharing_internals:mojo_bindings",
   "//chrome/browser/ui/webui/discards:mojo_bindings",
   "//chrome/browser/ui/webui/downloads:mojo_bindings",
+  "//chrome/browser/ui/webui/glic:mojo_bindings",
   "//chrome/browser/ui/webui/hats:mojo_bindings",
   "//chrome/browser/ui/webui/internals/user_education:mojo_bindings",
   "//chrome/browser/ui/webui/location_internals:mojo_bindings",

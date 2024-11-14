@@ -94,6 +94,10 @@ if (is_chromeos) {
   ]
 }
 
+if (is_mac || is_win || is_linux) {
+  mojo_ts_files += [ "mojo/public/mojom/base/version.mojom-webui.ts" ]
+}
+
 preprocess_if_expr("copy_mojo_ts") {
   visibility = [ ":build_ts" ]
 

@@ -198,6 +198,10 @@
 #include "chrome/browser/ui/webui/on_device_translation_internals/on_device_translation_internals_ui.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/ui/webui/glic/glic_ui.h"
+#endif
+
 void RegisterChromeWebUIConfigs() {
   // Don't add calls to `AddWebUIConfig()` for Ash-specific WebUIs here. Add
   // them in chrome_web_ui_configs_chromeos.cc.
@@ -403,4 +407,7 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<SigninErrorUIConfig>());
   map.AddWebUIConfig(std::make_unique<SigninEmailConfirmationUIConfig>());
 #endif  //  !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_GLIC)
+  map.AddWebUIConfig(std::make_unique<glic::GlicUIConfig>());
+#endif
 }

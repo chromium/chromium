@@ -159,6 +159,10 @@ group("resources") {
   if (enable_compose) {
     public_deps += [ "compose:resources" ]
   }
+
+  if (enable_glic) {
+    public_deps += [ "glic:resources" ]
+  }
 }
 
 if (is_chromeos_ash && enable_js_type_check) {

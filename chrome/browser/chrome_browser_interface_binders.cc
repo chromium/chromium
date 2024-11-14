@@ -492,6 +492,10 @@
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/ui/webui/glic/glic_ui.h"
+#endif
+
 namespace chrome::internal {
 
 using content::RegisterWebUIControllerInterfaceBinder;
@@ -958,6 +962,13 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       data_sharing_internals::mojom::PageHandlerFactory,
       DataSharingInternalsUI>(map);
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (base::FeatureList::IsEnabled(features::kGlic)) {
+    RegisterWebUIControllerInterfaceBinder<glic::mojom::PageHandlerFactory,
+                                           glic::GlicUI>(map);
+  }
+#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_ASH)

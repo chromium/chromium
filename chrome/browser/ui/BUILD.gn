@@ -3256,6 +3256,10 @@ static_library("ui") {
       ]
 
       deps += [ "webui/signin/batch_upload:mojo_bindings" ]
+
+      if (enable_glic) {
+        deps += [ "webui/glic:mojo_bindings" ]
+      }
     }
   }
 
@@ -5647,6 +5651,15 @@ static_library("ui") {
       "//chrome/common/compose:mojo_bindings",
       "//components/compose/core/browser",
       "//components/compose/core/browser:mojo_bindings",
+    ]
+  }
+
+  if (enable_glic) {
+    sources += [
+      "webui/glic/glic_page_handler.cc",
+      "webui/glic/glic_page_handler.h",
+      "webui/glic/glic_ui.cc",
+      "webui/glic/glic_ui.h",
     ]
   }
 
